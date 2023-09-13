@@ -2,19 +2,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.krpc.KRPC
+import org.jetbrains.krpc.RPC
+import org.jetbrains.krpc.RPCEngine
+import org.jetbrains.krpc.rpcClientOf
 import kotlin.concurrent.thread
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 
-internal object KRPC {
-    val RPC_SERVICES = mutableMapOf<KType, (RPCEngine) -> RPC>()
-}
-
-val TMMP = Unit.apply {
+val INIT_RPC = Unit.apply {
     KRPC.RPC_SERVICES[typeOf<MyServiceClient>()] = ::MyServiceClient
 }
-
 // User
 interface MyService : RPC {
 
@@ -50,10 +49,3 @@ fun main(args: Array<String>) {
     }
 }
 
-inline fun <reified T> rpcClientOf(engine: RPCEngine): T {
-    return rpcClientOf(typeOf<T>(), engine)
-}
-
-fun <T> rpcClientOf(kType: KType, engine: RPCEngine): T {
-    return KRPC.RPC_SERVICES[kType]!!.invoke(engine) as T
-}

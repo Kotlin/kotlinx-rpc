@@ -6,6 +6,12 @@ plugins {
 group = "org.example"
 version = "1.0-SNAPSHOT"
 
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -13,6 +19,7 @@ repositories {
 kotlin {
     jvm {
         jvmToolchain(8)
+
         withJava()
         testRuns.named("test") {
             executionTask.configure {
@@ -21,13 +28,7 @@ kotlin {
         }
     }
     js {
-        browser {
-            commonWebpackConfig {
-                cssSupport {
-                    enabled.set(true)
-                }
-            }
-        }
+        browser()
     }
     val hostOs = System.getProperty("os.name")
     val isArm64 = System.getProperty("os.arch") == "aarch64"
@@ -45,6 +46,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation(project(":runtime"))
+
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
             }
@@ -54,11 +57,5 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
-        val jvmMain by getting
-        val jvmTest by getting
-        val jsMain by getting
-        val jsTest by getting
-        val nativeMain by getting
-        val nativeTest by getting
     }
 }

@@ -10,3 +10,6 @@ plugins {
 }
 
 rootProject.name = "kRPC"
+
+include(":codegen")
+include(":runtime")
