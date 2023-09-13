@@ -6,6 +6,6 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
 
 class RPCSymbolProcessorProvider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
-        return RPCSymbolProcessor()
+        return RPCSymbolProcessor(environment)
     }
 }

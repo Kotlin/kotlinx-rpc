@@ -13,3 +13,4 @@ rootProject.name = "kRPC"
 
 include(":codegen")
 include(":runtime")
+include(":testJvmModule")

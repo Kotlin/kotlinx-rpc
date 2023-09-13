@@ -37,4 +37,10 @@ class MyServiceClient(private val engine: RPCEngine) : MyService {
         check(result is Flow<*>)
         return result as Flow<String>
     }
+
+    @Serializable
+    class SimpleWithParams_Data(val name: String)
+
+    @Serializable
+    class StreamRequest_Data(val messages: Flow<String>)
 }
