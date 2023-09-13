@@ -101,28 +101,19 @@ class RPCClientServiceGenerator(
         writer.write("val returnType = typeOf<${returnType?.toCode() ?: "Unit"}>()")
         writer.newLine()
 
-        val data = "${name.functionGeneratedClass()}(${
-            argumentTypes.joinToString {
-                when {
-                    it.isVararg -> "${it.name}.toList()"
-                    else -> it.name
+        val data = "${name.functionGeneratedClass()}${
+            if (argumentTypes.isEmpty()) "" else "(${
+                argumentTypes.joinToString {
+                    when {
+                        it.isVararg -> "${it.name}.toList()"
+                        else -> it.name
+                    }
                 }
-            }
-        })"
-
-        val argumentTypeInfos = if (argumentTypes.isEmpty()) "emptyList()" else {
-            val types = argumentTypes.joinToString {
-                val type = when {
-                    it.isVararg -> "List<${it.type.toCode()}>"
-                    else -> it.type.toCode()
-                }
-                "typeOf<$type>()"
-            }
-            "listOf($types)"
-        }
+            })"
+        }"
 
         val prefix = if (returnType.isUnit()) "" else "val result = "
-        writer.write("${prefix}engine.call(RPCCallInfo($data, $argumentTypeInfos, returnType))")
+        writer.write("${prefix}engine.call(RPCCallInfo(\"$name\", $data, typeOf<${name.functionGeneratedClass()}>(), returnType))")
         writer.newLine()
 
         if (!returnType.isUnit()) {
@@ -138,7 +129,8 @@ class RPCClientServiceGenerator(
         writer.newLine()
         writer.write("@Suppress(\"unused\")")
         writer.newLine()
-        writer.write("internal class ${name.functionGeneratedClass()}${if (argumentTypes.isEmpty()) " : RPCMethodClassArguments {" else "("}")
+        val classOrObject = if (argumentTypes.isEmpty()) "object" else "class"
+        writer.write("internal $classOrObject ${name.functionGeneratedClass()}${if (argumentTypes.isEmpty()) " : RPCMethodClassArguments {" else "("}")
         if (argumentTypes.isNotEmpty()) {
             writer.newLine()
             with(writer.nested()) {
