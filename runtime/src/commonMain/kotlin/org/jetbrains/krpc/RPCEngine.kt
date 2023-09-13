@@ -1,7 +1,7 @@
 package org.jetbrains.krpc
 
-interface RPCEngine {
-    suspend fun register(methodInfo: RPCMethodInfo)
+import kotlinx.coroutines.CoroutineScope
 
+interface RPCEngine : CoroutineScope {
     suspend fun call(callInfo: RPCCallInfo): Any?
 }
