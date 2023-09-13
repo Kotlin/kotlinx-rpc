@@ -5,7 +5,7 @@
 */
 
 job("kRPC: Build and run tests") {
-   gradlew("amazoncorretto:11-alpine", "build")
+   gradlew("stl5/ktor-test-image", "build")
 
    startOn {
       gitPush { enabled = true }
