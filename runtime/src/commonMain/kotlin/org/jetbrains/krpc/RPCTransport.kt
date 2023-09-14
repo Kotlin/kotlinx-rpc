@@ -10,5 +10,39 @@ interface RPCTransport {
 }
 
 
+fun serializeException(cause: Throwable): SerializedException {
+    val message = cause.message ?: "Unknown exception"
+    val stacktrace = cause.stackElements()
+    val serializedCause = cause.cause?.let { serializeException(it) }
+
+    return SerializedException(cause.toString(), message, stacktrace, serializedCause)
+}
+
+internal expect fun Throwable.stackElements(): List<StackElement>
+
 @Serializable
-data class SerializedException(val message: String)
+data class StackElement(
+    val clazz: String,
+    val method: String,
+    val fileName: String?,
+    val lineNumber: Int
+)
+
+@Serializable
+class SerializedException(
+    val toStringMessage: String,
+    val message: String,
+    val stacktrace: List<StackElement>,
+    val cause: SerializedException?
+) {
+    internal fun deserialize(): Throwable {
+        return DeserializedException(toStringMessage, message, stacktrace, cause)
+    }
+}
+
+expect class DeserializedException(
+    toStringMessage: String,
+    message: String,
+    stacktrace: List<StackElement>,
+    cause: SerializedException?
+) : Throwable

@@ -2,33 +2,42 @@ package org.jetbrains.krpc
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.serializer
+import kotlinx.serialization.modules.polymorphic
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.resumeWithException
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.callSuspend
-import kotlin.reflect.full.companionObject
+import kotlin.reflect.typeOf
 
-val MY_SERVICE_METHODS: MutableMap<String, KType> = mutableMapOf()
-val SERVICES_METHODS: MutableMap<KClass<*>, MutableMap<String, KType>> = mutableMapOf()
+fun <T : RPC> serviceMethodOfTemp(methodName: String): KType? {
+    error("Stub serviceMethodOf function, will be replaced with call to a companion object in compile time")
+}
 
-inline fun <reified T : RPC> rpcBackendOf(service: T, transport: RPCTransport): RPCBackend<T> =
-    RPCBackend(service, transport, T::class)
+inline fun <reified T : RPC> rpcBackendOf(
+    service: T,
+    transport: RPCTransport,
+    noinline serviceMethodsGetter: (String) -> KType?
+): RPCBackend<T> {
+    return RPCBackend(service, transport, typeOf<T>(), serviceMethodsGetter)
+}
 
-class RPCBackend<T>(val service: T, val transport: RPCTransport, serviceClass: KClass<*>) : CoroutineScope {
-    private val methods: Map<String, KCallable<*>> = serviceClass
+class RPCBackend<T>(
+    val service: T,
+    val transport: RPCTransport,
+    serviceType: KType,
+    val serviceMethodsGetter: (String) -> KType?
+) : CoroutineScope {
+    private val methods: Map<String, KCallable<*>> = (serviceType.classifier as KClass<*>)
         .members
         .filter { it.name != "toString" && it.name != "hashCode" && it.name != "equals" }
         .map { it.name to it }.toMap()
-
-    private val methodTypes: MutableMap<String, KType> = SERVICES_METHODS[serviceClass]!!
 
     override val coroutineContext: CoroutineContext = Dispatchers.IO + Job()
 
@@ -39,7 +48,6 @@ class RPCBackend<T>(val service: T, val transport: RPCTransport, serviceClass: K
         launch {
             transport.incoming.collect {
                 val callId = it.callId
-                println("Received message $it")
 
                 when (it) {
                     is RPCMessage.CallData -> {
@@ -51,16 +59,19 @@ class RPCBackend<T>(val service: T, val transport: RPCTransport, serviceClass: K
                     }
 
                     is RPCMessage.CallSuccess -> error("Unexpected success message")
-                    is RPCMessage.StreamCancel -> TODO()
-                    is RPCMessage.StreamFinished -> TODO()
+                    is RPCMessage.StreamCancel -> {
+                        val callContext = callContexts[callId] ?: error("Unknown call $callId")
+                        callContext.cancelFlow(it)
+                    }
+
+                    is RPCMessage.StreamFinished -> {
+                        val callContext = callContexts[callId] ?: error("Unknown call $callId")
+                        callContext.closeFlow(it)
+                    }
+
                     is RPCMessage.StreamMessage -> {
                         val callContext = callContexts[callId] ?: error("Unknown call $callId")
-                        val flowId = it.flowId
-                        val value = callContext.incomingFlows[flowId] ?: error("Unknown flow $flowId")
-                        val flow = value.flow as MutableStateFlow<Any>
-                        val json = prepareJson(callContext)
-                        val message = json.decodeFromString(value.elementSerializer, it.data)
-                        flow.tryEmit(message)
+                        callContext.send(it, prepareJson(callContext))
                     }
                 }
             }
@@ -74,18 +85,22 @@ class RPCBackend<T>(val service: T, val transport: RPCTransport, serviceClass: K
         callContexts[callId] = callContext
         val methodName = callData.method
         val method = methods[methodName] ?: error("Unknown method $methodName")
-        val type = methodTypes[methodName] ?: error("Unknown method $methodName")
-        val args = json.decodeFromString(serializer(type), callData.data) as MethodParameters
+        val type = serviceMethodsGetter(methodName) ?: error("Unknown method $methodName")
+        val serializerModule = json.serializersModule
+        val paramsSerializer = serializerModule.contextualForFlow(type)
+        val args = json.decodeFromString(paramsSerializer, callData.data) as RPCMethodClassArguments
+
         val argsArray: Array<Any?> = args.asArray()
 
         calls[callId] = launch {
             val result = try {
                 val returnType = method.returnType
                 val value = method.callSuspend(service, *argsArray)
-                val jsonResult = json.encodeToString(serializer(returnType), value)
+                val returnSerializer = json.serializersModule.contextualForFlow(returnType)
+                val jsonResult = json.encodeToString(returnSerializer, value)
                 RPCMessage.CallSuccess(callId, jsonResult)
             } catch (cause: Throwable) {
-                val serializedCause = SerializedException(cause.message ?: "Unknown error")
+                val serializedCause = serializeException(cause)
                 RPCMessage.CallException(callId, serializedCause)
             }
             transport.send(result)
@@ -98,6 +113,7 @@ class RPCBackend<T>(val service: T, val transport: RPCTransport, serviceClass: K
     }
 
     private suspend fun handleOutgoingFlows(callContext: RPCCallContext, json: Json) {
+        val mutex = Mutex()
         for (clientFlow in callContext.outgoingFlows) {
             launch {
                 val callId = clientFlow.callId
@@ -105,12 +121,16 @@ class RPCBackend<T>(val service: T, val transport: RPCTransport, serviceClass: K
                 val elementSerializer = clientFlow.elementSerializer
                 try {
                     clientFlow.flow.collect {
-                        val data = json.encodeToString(elementSerializer, it!!)
-                        val message = RPCMessage.StreamMessage(callId, flowId, data)
-                        transport.send(message)
+                        // because we can send new message for the new flow,
+                        // which is not published with `transport.send(message)`
+                        mutex.withLock {
+                            val data = json.encodeToString(elementSerializer, it!!)
+                            val message = RPCMessage.StreamMessage(callId, flowId, data)
+                            transport.send(message)
+                        }
                     }
                 } catch (cause: Throwable) {
-                    val serializedReason = SerializedException(cause.message ?: "Unknown error")
+                    val serializedReason = serializeException(cause)
                     val message = RPCMessage.StreamCancel(callId, flowId, serializedReason)
                     transport.send(message)
                     throw cause
@@ -124,6 +144,9 @@ class RPCBackend<T>(val service: T, val transport: RPCTransport, serviceClass: K
 
     private fun prepareJson(rpcCallContext: RPCCallContext): Json = Json {
         serializersModule = SerializersModule {
+            polymorphic(Flow::class) {
+                defaultDeserializer { TODO() }
+            }
             contextual(Flow::class) {
                 FlowSerializer(rpcCallContext, it.first() as KSerializer<Any>)
             }
@@ -134,11 +157,3 @@ class RPCBackend<T>(val service: T, val transport: RPCTransport, serviceClass: K
         coroutineContext.cancel()
     }
 }
-
-//suspend fun callSuspend(callable: KCallable<*>, args: Array<Any?>): Any? = suspendCancellableCoroutine {
-//    try {
-//        callable.call(*args, it)
-//    } catch (cause: Throwable) {
-//        it.resumeWithException(cause)
-//    }
-//}

@@ -81,7 +81,7 @@ private class IrTransformerContext(
     }
 
     fun generatedClientClassType(serviceDeclaration: IrClass): IrClassSymbol {
-        val name = serviceDeclaration.kotlinFqName.asString()
+        val name = serviceDeclaration.kotlinFqName.shortName()
         return getRpcClassDeclaration("${name}Client")
     }
 

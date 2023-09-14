@@ -1,6 +1,7 @@
 package org.jetbrains.krpc
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor

@@ -33,10 +33,5 @@ kotlin {
                 implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
             }
         }
-        commonTest {
-            dependencies {
-                implementation(kotlin("test"))
-            }
-        }
     }
 }

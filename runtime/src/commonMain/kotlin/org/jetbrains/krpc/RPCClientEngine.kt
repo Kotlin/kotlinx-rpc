@@ -2,7 +2,6 @@ package org.jetbrains.krpc
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
@@ -16,12 +15,12 @@ class RPCClientEngine(private val transport: RPCTransport) : RPCEngine {
 
     private var callIndex: Long = 0
 
-    override suspend fun call(callInfo: RPCCallInfo): Any {
+    override suspend fun call(callInfo: RPCCallInfo): Any? {
         val callId = callInfo.dataType.toString() + ":" + callIndex++
         val callContext = RPCCallContext(callId)
         val json = prepareJson(callContext)
         val message = serializeRequest(callId, callInfo, json)
-        val result = CompletableDeferred<Any>()
+        val result = CompletableDeferred<Any?>()
 
         launch {
             val incoming: Flow<RPCMessage> = transport.incoming.filter { it.callId == callId }
@@ -29,34 +28,27 @@ class RPCClientEngine(private val transport: RPCTransport) : RPCEngine {
             incoming.collect {
                 when (it) {
                     is RPCMessage.CallData -> error("Unexpected message")
-                    is RPCMessage.CallException -> result.completeExceptionally(Exception("please parse me"))
+                    is RPCMessage.CallException -> {
+                        val cause = it.cause.deserialize()
+                        result.completeExceptionally(cause)
+                    }
+
                     is RPCMessage.CallSuccess -> {
-                        val serializerResult = serializer(callInfo.returnType)
-                        result.complete(json.decodeFromString(serializerResult, it.data)!!)
+                        val serializerResult = json.serializersModule.contextualForFlow(callInfo.returnType)
+                        val value = json.decodeFromString(serializerResult, it.data)
+                        result.complete(value)
                     }
 
                     is RPCMessage.StreamCancel -> {
-                        val flowId = it.flowId
-                        val value = callContext.incomingFlows[flowId]!!
-                        val flow = value.flow as MutableStateFlow<Any>
-
-                        TODO()
+                        callContext.cancelFlow(it)
                     }
 
                     is RPCMessage.StreamFinished -> {
-                        val flowId = it.flowId
-                        val value = callContext.incomingFlows[flowId]!!
-                        val flow = value.flow as MutableStateFlow<Any>
-
-                        TODO()
+                        callContext.closeFlow(it)
                     }
 
                     is RPCMessage.StreamMessage -> {
-                        val flowId = it.flowId
-                        val value = callContext.incomingFlows[flowId]!!
-                        val flow = value.flow as MutableStateFlow<Any>
-                        val message = json.decodeFromString(value.elementSerializer, it.data)
-                        flow.tryEmit(message)
+                        callContext.send(it, json)
                     }
                 }
             }
@@ -84,7 +76,7 @@ class RPCClientEngine(private val transport: RPCTransport) : RPCEngine {
                         transport.send(message)
                     }
                 } catch (cause: Throwable) {
-                    val serializedReason = SerializedException(cause.message ?: "Unknown error")
+                    val serializedReason = serializeException(cause)
                     val message = RPCMessage.StreamCancel(callId, flowId, serializedReason)
                     transport.send(message)
                     throw cause
@@ -97,7 +89,7 @@ class RPCClientEngine(private val transport: RPCTransport) : RPCEngine {
     }
 
     private fun serializeRequest(callId: String, callInfo: RPCCallInfo, json: Json): RPCMessage {
-        val serializerData = serializer(callInfo.dataType)
+        val serializerData = json.serializersModule.contextualForFlow(callInfo.dataType)
         val jsonData = json.encodeToString(serializerData, callInfo.data)
         return RPCMessage.CallData(callId, callInfo.methodName, jsonData)
     }
@@ -110,4 +102,3 @@ class RPCClientEngine(private val transport: RPCTransport) : RPCEngine {
         }
     }
 }
-

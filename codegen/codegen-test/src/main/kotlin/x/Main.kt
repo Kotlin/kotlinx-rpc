@@ -1,13 +1,24 @@
+package x
+
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.Serializable
 import org.jetbrains.krpc.*
-import org.jetbrains.test.TestClass
-import org.jetbrains.test.TestList
-import org.jetbrains.test.TestList2
 import kotlin.coroutines.CoroutineContext
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 
+@Serializable
+open class TestClass(val value: Int = 0) {
+    override fun equals(other: Any?): Boolean {
+        if (other !is TestClass) return false
+        return value == other.value
+    }
+}
+
+@Serializable
+data class TestList<T : TestClass>(val value: Int = 42)
+
+@Serializable
+data class TestList2<out T : TestClass>(val value: Int = 42)
 val stubEngine = object : RPCEngine {
     override val coroutineContext: CoroutineContext
         get() = TODO("Not yet implemented")
@@ -41,7 +52,7 @@ interface MyService : RPC {
     suspend fun mapParams(arg1: Map<List<String>, Map<Int, Unit>>)
     suspend fun customType(arg1: TestClass): TestClass
     suspend fun nullable(arg1: String?): TestClass?
-    suspend fun variance(arg1: List<*>, arg2: TestList<in TestClass>, arg3: TestList2<*>): TestList<out TestClass>?
+    suspend fun variance(arg2: TestList<in TestClass>, arg3: TestList2<*>): TestList<out TestClass>?
     suspend fun flow(arg1: Flow<Flow<String>>): Flow<String>
 
 //    companion object : RPCClientProvider<MyService>, RPCMethodClassTypeProvider {
