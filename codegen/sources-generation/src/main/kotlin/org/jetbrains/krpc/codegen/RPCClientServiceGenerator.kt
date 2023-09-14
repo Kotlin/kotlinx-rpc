@@ -30,12 +30,16 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
 
         writer.write("import kotlinx.serialization.Serializable")
         writer.newLine()
+        writer.write("import kotlinx.serialization.Contextual")
+        writer.newLine()
         writer.write("import kotlin.reflect.typeOf")
         writer.newLine()
         writer.write("import ${service.fullName}")
         writer.newLine()
         writer.newLine()
 
+        writer.write("@Suppress(\"unused\")")
+        writer.newLine()
         writer.write("class ${service.simpleName.withClientImplSuffix()}(private val engine: RPCEngine) : ${service.fullName} {")
         writer.newLine()
         val nested = writer.nested()
@@ -141,8 +145,12 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             writer.newLine()
             with(writer.nested()) {
                 argumentTypes.forEach { arg ->
+                    val prefix = if (arg.type.declaration.simpleName.asString() == "Flow") {
+                        "@Contextual "
+                    } else ""
+
                     val type = if (arg.isVararg) "List<${arg.type.toCode()}>" else arg.type.toCode()
-                    write("val ${arg.name}: $type,")
+                    write("${prefix}val ${arg.name}: $type,")
                     newLine()
                 }
             }
