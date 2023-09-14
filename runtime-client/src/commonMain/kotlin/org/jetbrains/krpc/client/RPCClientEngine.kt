@@ -1,12 +1,14 @@
-package org.jetbrains.krpc
+package org.jetbrains.krpc.client
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.serializer
+import org.jetbrains.krpc.*
 import kotlin.coroutines.CoroutineContext
 
 class RPCClientEngine(private val transport: RPCTransport) : RPCEngine {
@@ -64,6 +66,7 @@ class RPCClientEngine(private val transport: RPCTransport) : RPCEngine {
     }
 
     private suspend fun handleOutgoingFlows(callContext: RPCCallContext, json: Json) {
+        val mutex = Mutex()
         for (clientFlow in callContext.outgoingFlows) {
             launch {
                 val callId = clientFlow.callId
@@ -71,9 +74,11 @@ class RPCClientEngine(private val transport: RPCTransport) : RPCEngine {
                 val elementSerializer = clientFlow.elementSerializer
                 try {
                     clientFlow.flow.collect {
-                        val message =
-                            RPCMessage.StreamMessage(callId, flowId, json.encodeToString(elementSerializer, it!!))
-                        transport.send(message)
+                        mutex.withLock {
+                            val data = json.encodeToString(elementSerializer, it!!)
+                            val message = RPCMessage.StreamMessage(callId, flowId, data)
+                            transport.send(message)
+                        }
                     }
                 } catch (cause: Throwable) {
                     val serializedReason = serializeException(cause)

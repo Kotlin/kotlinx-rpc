@@ -84,18 +84,14 @@ class MyServiceBackend : MyService {
         return flow { emit("a"); emit("b"); emit("c") }
     }
 
-    override suspend fun outgoingStreamAsync(): Flow<String> {
-        val flow = MutableSharedFlow<String>()
-        GlobalScope.launch {
-            flow.emit("a")
-            flow.emit("b")
-            flow.emit("c")
-        }
-        return flow
-    }
-
     override suspend fun bidirectionalStream(arg1: Flow<String>): Flow<String> {
         return arg1.map { it.reversed() }
+    }
+
+    override suspend fun echoStream(arg1: Flow<Int>): Flow<Int> = flow {
+        arg1.collect {
+            emit(it)
+        }
     }
 
     override suspend fun streamInDataClass(payloadWithStream: PayloadWithStream): Int {

@@ -22,28 +22,28 @@ data class PayloadWithPayload(val payload: String, val flow: @Contextual Flow<Pa
 }
 
 fun payload(index: Int = 0): PayloadWithStream {
-    return  PayloadWithStream(
+    return PayloadWithStream(
         "test$index",
         flow { emit("a$index"); emit("b$index"); emit("c$index"); }
     )
 }
 
-fun payloadWithPayload(index: Int = 0) : PayloadWithPayload {
+fun payloadWithPayload(index: Int = 0): PayloadWithPayload {
     return PayloadWithPayload("test$index", payloadStream(index))
 }
 
 fun payloadStream(count: Int = 10): Flow<PayloadWithStream> {
     return flow {
-            repeat(count) {
-                emit(payload(it))
-            }
+        repeat(count) {
+            emit(payload(it))
+        }
     }
 }
 
 fun payloadWithPayloadStream(count: Int = 10): Flow<PayloadWithPayload> {
     return flow {
-            repeat(count) {
-                emit(payloadWithPayload(it))
-            }
+        repeat(count) {
+            emit(payloadWithPayload(it))
+        }
     }
 }

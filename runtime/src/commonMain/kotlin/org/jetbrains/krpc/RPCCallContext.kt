@@ -5,13 +5,14 @@ import kotlinx.coroutines.flow.*
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 
-internal class RPCCallContext(
+class RPCCallContext(
     val callId: String,
 ) {
     private var flowId = 0
     private val incomingFlows = ConcurrentMap<String, FlowInfo>()
     private val incomingChannels = ConcurrentMap<String, Channel<Any>>()
-    internal val outgoingFlows = Channel<FlowInfo>(capacity = Channel.UNLIMITED)
+
+    public val outgoingFlows: Channel<FlowInfo> = Channel<FlowInfo>(capacity = Channel.UNLIMITED)
 
     fun registerFlow(flow: Flow<*>, elementSerializer: KSerializer<Any>): String {
         val id = "flow:${flowId++}"

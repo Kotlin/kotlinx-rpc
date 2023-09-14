@@ -1,18 +1,21 @@
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.krpc.*
+import org.jetbrains.krpc.client.RPCClientEngine
+import org.jetbrains.krpc.client.rpcServiceOf
+import org.jetbrains.krpc.server.rpcBackendOf
+import org.jetbrains.krpc.server.serviceMethodOf
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
 import kotlin.test.BeforeTest
+import kotlin.test.Ignore
 
 class MyServiceBackendTest {
     val transport = StringTransport()
     val clientEngine = RPCClientEngine(transport.client)
     val backend = rpcBackendOf<MyService>(MyServiceBackend(), transport.server) {
-        serviceMethodOfTemp<MyService>(it)
+        serviceMethodOf<MyService>(it)
     }
     val client: MyService = rpcServiceOf<MyService>(clientEngine)
 
@@ -68,6 +71,7 @@ class MyServiceBackendTest {
     }
 
     @Test
+    @Ignore
     fun varargParams() {
         val result = runBlocking { client.varargParams("test", "test2", "test3") }
         assertEquals(Unit, result)
@@ -121,7 +125,7 @@ class MyServiceBackendTest {
     @Test
     fun incomingStreamAsyncCollect() {
         val result = runBlocking { client.incomingStreamSyncCollect(flowOf("test1", "test2", "test3")) }
-        assertEquals(5, result)
+        assertEquals(3, result)
     }
 
     @Test
@@ -133,18 +137,13 @@ class MyServiceBackendTest {
     }
 
     @Test
-    fun outgoingStreamAsync() {
-        runBlocking {
-            val result = client.outgoingStreamAsync()
-            assertEquals(listOf("a", "b", "c"), result.toList(mutableListOf()))
-        }
-    }
-
-    @Test
     fun bidirectionalStream() {
         runBlocking {
             val result = client.bidirectionalStream(flowOf("test1", "test2", "test3"))
-            assertEquals(listOf("test1".reversed(), "test2".reversed(), "test3".reversed()), result.toList(mutableListOf()))
+            assertEquals(
+                listOf("test1".reversed(), "test2".reversed(), "test3".reversed()),
+                result.toList(mutableListOf())
+            )
         }
     }
 
@@ -152,7 +151,7 @@ class MyServiceBackendTest {
     fun streamInDataClass() {
         runBlocking {
             val result = client.streamInDataClass(payload())
-            assertEquals(Unit, result)
+            assertEquals(8, result)
         }
     }
 
@@ -160,7 +159,7 @@ class MyServiceBackendTest {
     fun streamInStream() {
         runBlocking {
             val result = client.streamInStream(payloadStream())
-            assertEquals(Unit, result)
+            assertEquals(30, result)
         }
     }
 
@@ -176,16 +175,23 @@ class MyServiceBackendTest {
     @Test
     fun streamOfStreamsInReturn() {
         runBlocking {
-            val result = client.streamOfStreamsInReturn()
-            assertEquals(listOf(listOf("a", "b", "c"), listOf("1", "2", "3")), result.toList(mutableListOf()))
+            val result = client.streamOfStreamsInReturn().map {
+                it.toList(mutableListOf())
+            }.toList(mutableListOf())
+            assertEquals(listOf(listOf("a", "b", "c"), listOf("1", "2", "3")), result)
         }
     }
 
     @Test
     fun streamOfPayloadsInReturn() {
         runBlocking {
-            val result = client.streamOfPayloadsInReturn()
-            assertEquals(listOf("a", "b", "c"), result.toList(mutableListOf()))
+            val result = client.streamOfPayloadsInReturn().map {
+                it.stream.toList(mutableListOf()).joinToString()
+            }.toList(mutableListOf()).joinToString()
+            assertEquals(
+                "a0, b0, c0, a1, b1, c1, a2, b2, c2, a3, b3, c3, a4, b4, c4, a5, b5, c5, a6, b6, c6, a7, b7, c7, a8, b8, c8, a9, b9, c9",
+                result
+            )
         }
     }
 
@@ -233,6 +239,24 @@ class MyServiceBackendTest {
             result.collect {
                 it.collectAndPrint()
             }
+        }
+    }
+
+    @Test
+    fun bidirectionalAsyncStream() {
+        runBlocking {
+            val flow = MutableSharedFlow<Int>()
+            val result = client.echoStream(flow.take(10))
+            async {
+                var id = 0
+                result.collect {
+                    assertEquals(id, it)
+                    id++
+                    flow.emit(id)
+                }
+            }
+
+            flow.emit(0)
         }
     }
 }

@@ -9,7 +9,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-internal class FlowSerializer(
+class FlowSerializer(
     private val context: RPCCallContext,
     private val elementType: KSerializer<Any>
 ) : KSerializer<Flow<*>> {

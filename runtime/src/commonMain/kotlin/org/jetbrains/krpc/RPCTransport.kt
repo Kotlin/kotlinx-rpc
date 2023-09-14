@@ -35,7 +35,7 @@ class SerializedException(
     val stacktrace: List<StackElement>,
     val cause: SerializedException?
 ) {
-    internal fun deserialize(): Throwable {
+    public fun deserialize(): Throwable {
         return DeserializedException(toStringMessage, message, stacktrace, cause)
     }
 }

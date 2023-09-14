@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import org.jetbrains.krpc.*
+import org.jetbrains.krpc.client.rpcServiceOf
+import org.jetbrains.krpc.server.serviceMethodOf
 import kotlin.coroutines.CoroutineContext
 
 @Serializable
@@ -19,6 +21,7 @@ data class TestList<T : TestClass>(val value: Int = 42)
 
 @Serializable
 data class TestList2<out T : TestClass>(val value: Int = 42)
+
 val stubEngine = object : RPCEngine {
     override val coroutineContext: CoroutineContext
         get() = TODO("Not yet implemented")

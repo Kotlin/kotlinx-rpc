@@ -21,8 +21,8 @@ interface MyService : RPC {
     suspend fun incomingStreamSyncCollect(arg1: Flow<String>): Int
     suspend fun incomingStreamAsyncCollect(arg1: Flow<String>): Int
     suspend fun outgoingStream(): Flow<String>
-    suspend fun outgoingStreamAsync(): Flow<String>
     suspend fun bidirectionalStream(arg1: Flow<String>): Flow<String>
+    suspend fun echoStream(arg1: Flow<Int>): Flow<Int>
 
     suspend fun streamInDataClass(payloadWithStream: PayloadWithStream): Int
     suspend fun streamInStream(payloadWithStream: Flow<PayloadWithStream>): Int

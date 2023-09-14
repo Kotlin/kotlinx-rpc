@@ -32,10 +32,10 @@ class IrExtension(private val logger: MessageCollector) : IrGenerationExtension 
 private class IrTransformerContext(val pluginContext: IrPluginContext) {
     val rpcStubCallAnnotation = getRpcClassDeclaration("RPCStubCall")
 
-    val rpcServiceOfStubFunction = getRpcFunctionDeclaration("rpcServiceOf") { symbol ->
+    val rpcServiceOfStubFunction = getRpcFunctionDeclaration("rpcServiceOf", "org.jetbrains.krpc.client") { symbol ->
         symbol.owner.hasAnnotation(rpcStubCallAnnotation)
     }
-    val rpcServiceMethodOfStubFunction = getRpcFunctionDeclaration("serviceMethodOf") { symbol ->
+    val rpcServiceMethodOfStubFunction = getRpcFunctionDeclaration("serviceMethodOf", "org.jetbrains.krpc.server") { symbol ->
         symbol.owner.hasAnnotation(rpcStubCallAnnotation)
     }
 
@@ -44,8 +44,8 @@ private class IrTransformerContext(val pluginContext: IrPluginContext) {
         return getRpcClassDeclaration("${name}Client")
     }
 
-    private fun getRpcClassDeclaration(name: String): IrClassSymbol {
-        return getClassDeclaration("org.jetbrains.krpc", name)
+    private fun getRpcClassDeclaration(name: String, packageName: String = "org.jetbrains.krpc"): IrClassSymbol {
+        return getClassDeclaration(packageName, name)
     }
 
     @Suppress("SameParameterValue")
@@ -61,9 +61,10 @@ private class IrTransformerContext(val pluginContext: IrPluginContext) {
 
     private fun getRpcFunctionDeclaration(
         name: String,
+        packageName: String = "org.jetbrains.krpc",
         single: (IrSimpleFunctionSymbol) -> Boolean
     ): IrSimpleFunctionSymbol {
-        return getTopLevelFunctionDeclaration("org.jetbrains.krpc", name, single)
+        return getTopLevelFunctionDeclaration(packageName = packageName, name, single)
     }
 
     @Suppress("SameParameterValue")
