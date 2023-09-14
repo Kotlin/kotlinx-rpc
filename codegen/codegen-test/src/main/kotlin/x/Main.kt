@@ -36,7 +36,10 @@ fun main() {
         service.empty()
     }
 
-    println(serviceMethodOf<MyService>("empty"))
+    val type = serviceMethodOf<MyService>("empty")
+    println(type)
+    val type1 = MyServiceClient.methodType("empty")
+    println(type1)
 }
 
 interface MyService : RPC {

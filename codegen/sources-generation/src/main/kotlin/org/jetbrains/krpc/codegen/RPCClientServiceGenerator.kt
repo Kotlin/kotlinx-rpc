@@ -173,9 +173,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         writer.write("companion object {")
         writer.newLine()
         with(writer.nested()) {
-            write("@Suppress(\"unused\")")
-            newLine()
-            write("val methodNames = mapOf(")
+            write("private val methodNames = mapOf(")
             newLine()
             with(nested()) {
                 service.functions.forEach { function ->
@@ -184,6 +182,11 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
                 }
             }
             write(")")
+            newLine()
+            newLine()
+            write("@Suppress(\"unused\")")
+            newLine()
+            write("fun methodType(methodName: String): kotlin.reflect.KType? = methodNames[methodName]")
             newLine()
         }
         writer.write("}")

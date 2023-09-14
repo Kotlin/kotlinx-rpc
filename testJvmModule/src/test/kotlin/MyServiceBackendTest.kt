@@ -6,7 +6,6 @@ import org.jetbrains.krpc.*
 import org.junit.Test
 
 import org.junit.Assert.*
-import kotlin.reflect.typeOf
 import kotlin.test.BeforeTest
 
 class MyServiceBackendTest {
