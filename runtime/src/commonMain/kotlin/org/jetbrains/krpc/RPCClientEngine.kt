@@ -17,7 +17,7 @@ class RPCClientEngine(private val transport: RPCTransport) : RPCEngine {
     private var callIndex: Long = 0
 
     override suspend fun call(callInfo: RPCCallInfo): Any {
-        val callId = callInfo.data::class.qualifiedName + ":" + callIndex++
+        val callId = callInfo.dataType.toString() + ":" + callIndex++
         val callContext = RPCCallContext(callId)
         val json = prepareJson(callContext)
         val message = serializeRequest(callId, callInfo, json)
