@@ -42,6 +42,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         service.functions.forEach {
             it.toCode(nested)
         }
+        generateMethodTypes(writer.nested(), service)
         writer.write("}")
 
         writer.flush()
@@ -157,6 +158,27 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         }
         writer.write("}")
         writer.newLine()
+        writer.newLine()
+    }
+
+    private fun generateMethodTypes(writer: CodeWriter, service: RPCServiceDeclaration) {
+        writer.write("companion object {")
+        writer.newLine()
+        with(writer.nested()) {
+            write("@Suppress(\"unused\")")
+            newLine()
+            write("val methodNames = mapOf(")
+            newLine()
+            with(nested()) {
+                service.functions.forEach { function ->
+                    write("${service.fullName}::${function.name}.name to typeOf<${service.simpleName.withClientImplSuffix()}.${function.name.functionGeneratedClass()}>(),")
+                    newLine()
+                }
+            }
+            write(")")
+            newLine()
+        }
+        writer.write("}")
         writer.newLine()
     }
 }

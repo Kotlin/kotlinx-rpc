@@ -8,7 +8,7 @@ annotation class RPCReplacementCall
 
 @Suppress("UNUSED_PARAMETER")
 @RPCStubCall
-fun <T : RPC> rpcServiceOf(engine: RPCEngine): T {
+inline fun <reified T : RPC> rpcServiceOf(engine: RPCEngine): T {
     error("Stub rpcServiceOf function, will be replaced with call to a companion object in compile time")
 }
 
@@ -21,7 +21,7 @@ fun <T : RPC> rpcServiceOf(serviceProvider: RPCClientProvider<T>, engine: RPCEng
 
 @RPCStubCall
 @Suppress("UNUSED_PARAMETER", "unused")
-fun <T : RPC> serviceMethodOf(methodName: String): KType? {
+inline fun <reified T : RPC> serviceMethodOf(methodName: String): KType? {
     error("Stub serviceMethodOf function, will be replaced with call to a companion object in compile time")
 }
 
