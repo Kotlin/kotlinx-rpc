@@ -1,11 +1,29 @@
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.krpc.RPC
+import org.jetbrains.krpc.RPCCallInfo
+import org.jetbrains.krpc.RPCEngine
+import org.jetbrains.krpc.rpcServiceOf
 import org.jetbrains.test.TestClass
 import org.jetbrains.test.TestList
 import org.jetbrains.test.TestList2
+import kotlin.coroutines.CoroutineContext
 
+val stubEngine = object : RPCEngine {
+    override val coroutineContext: CoroutineContext
+        get() = TODO("Not yet implemented")
+
+    override suspend fun call(callInfo: RPCCallInfo): Any? {
+        println("Called ${callInfo.methodName}")
+        return null
+    }
+}
 
 fun main() {
-    println("Hello, world!")
+    val service = rpcServiceOf<MyService>(stubEngine)
+
+    runBlocking {
+        service.empty()
+    }
 }
 
 interface MyService : RPC {
@@ -22,4 +40,14 @@ interface MyService : RPC {
     suspend fun customType(arg1: TestClass): TestClass
     suspend fun nullable(arg1: String?): TestClass?
     suspend fun variance(arg1: List<*>, arg2: TestList<in TestClass>, arg3: TestList2<*>): TestList<out TestClass>?
+
+//    companion object : RPCClientProvider<MyService>, RPCMethodClassTypeProvider {
+//        override fun client(engine: RPCEngine): MyService {
+//            return MyServiceClient(engine)
+//        }
+//
+//        override fun methodClassType(methodName: String): KType? {
+//            return null
+//        }
+//    }
 }

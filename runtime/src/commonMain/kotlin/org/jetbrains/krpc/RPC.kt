@@ -1,11 +1,6 @@
 package org.jetbrains.krpc
 
 import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 
+// market interface for services
 interface RPC
-
-public object KRPC {
-    val RPC_SERVICES = mutableMapOf<KType, (RPCEngine) -> RPC>()
-}
-

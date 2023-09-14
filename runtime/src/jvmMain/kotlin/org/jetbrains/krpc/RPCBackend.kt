@@ -14,6 +14,7 @@ import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.callSuspend
+import kotlin.reflect.full.companionObject
 
 val MY_SERVICE_METHODS: MutableMap<String, KType> = mutableMapOf()
 val SERVICES_METHODS: MutableMap<KClass<*>, MutableMap<String, KType>> = mutableMapOf()

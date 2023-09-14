@@ -11,6 +11,8 @@ plugins {
 
 rootProject.name = "kRPC"
 
-include(":codegen")
+include(":codegen:codegen-test")
+include(":codegen:ir-extension")
+include(":codegen:sources-generation")
 include(":runtime")
 include(":testJvmModule")

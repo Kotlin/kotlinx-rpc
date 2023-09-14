@@ -11,23 +11,22 @@ import com.google.devtools.ksp.symbol.*
 class RPCSymbolProcessor(
     private val env: SymbolProcessorEnvironment
 ) : SymbolProcessor {
-    private val logger = env.logger
+    private var services: Sequence<RPCServiceDeclaration> = emptySequence()
 
-    private var called = false
+    override fun finish() {
+        val codegen = RPCClientServiceGenerator(env.codeGenerator)
+
+        services.forEach {
+            codegen.generate(it)
+        }
+    }
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        if (called) {
-            return emptyList()
-        }
-        called = true
-
         val rpc = resolver.getClassDeclarationByName("org.jetbrains.krpc.RPC")?.asType(typeArguments = emptyList())
             ?: codegenError("Could not find org.jetbrains.krpc.RPC interface")
 
-        val services = sequence {
+        services = sequence {
             resolver.getAllFiles().forEach { file ->
-                logger.warn("Received file: ${file.fileName}")
-
                 file.declarations.forEach { declaration ->
                     if (declaration is KSClassDeclaration && declaration.classKind == ClassKind.INTERFACE && declaration.superTypes.find { it.resolve() == rpc } != null) {
                         yield(processService(serviceDeclaration = declaration, file = file))
@@ -36,21 +35,10 @@ class RPCSymbolProcessor(
             }
         }
 
-        val codegen = RPCClientServiceGenerator(env.codeGenerator)
-
-        val all = services.map {
-            codegen.generate(it)
-            it
-        }
-
-        RPCServiceMetaInfoGenerator.generate(env.codeGenerator, all.toList())
-
         return emptyList()
     }
 
     private fun processService(serviceDeclaration: KSClassDeclaration, file: KSFile): RPCServiceDeclaration {
-        logger.warn("Process Service declaration: ${serviceDeclaration.qualifiedName?.asString()}")
-
         if (serviceDeclaration.getDeclaredProperties().count() != 0) {
             codegenError("RPC Service can not have declared properties", serviceDeclaration)
         }
@@ -76,8 +64,6 @@ class RPCSymbolProcessor(
     }
 
     private fun processServiceFunction(functionDeclaration: KSFunctionDeclaration): RPCServiceDeclaration.Function {
-        logger.warn("Process function ${functionDeclaration.qualifiedName?.asString()}")
-
         if (functionDeclaration.typeParameters.isNotEmpty()) {
             codegenError("RPC Service function can not have type parameters", functionDeclaration)
         }

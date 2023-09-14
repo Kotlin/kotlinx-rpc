@@ -4,9 +4,7 @@ import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.symbol.KSType
 
-class RPCClientServiceGenerator(
-    private val codegen: CodeGenerator,
-) {
+class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
     fun generate(service: RPCServiceDeclaration) {
         val writer = codegen.createNewFile(
             dependencies = Dependencies(aggregating = true, service.file),
@@ -15,6 +13,13 @@ class RPCClientServiceGenerator(
             extensionName = "kt",
         ).bufferedWriter(charset = Charsets.UTF_8).codeWriter()
 
+        generate(writer, service)
+    }
+
+    private fun generate(
+        writer: CodeWriter,
+        service: RPCServiceDeclaration,
+    ) {
         writer.write("@file:Suppress(\"RedundantUnitReturnType\", \"RemoveRedundantQualifierName\", \"USELESS_CAST\", \"UNCHECKED_CAST\", \"ClassName\", \"MemberVisibilityCanBePrivate\")")
         writer.newLine()
         writer.newLine()
