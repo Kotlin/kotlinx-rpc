@@ -21,8 +21,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0")
 
-    implementation(project("::codegen:codegen-test:test-submodule"))
-
     testImplementation(kotlin("test"))
     ksp(project(":codegen:sources-generation"))
 

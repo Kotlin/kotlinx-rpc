@@ -6,7 +6,11 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.rpcServiceOf
 import org.jetbrains.krpc.server.serviceMethodOf
+import sub.SubModuleService
 import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 
 @Serializable
 open class TestClass(val value: Int = 0) {
@@ -32,44 +36,41 @@ val stubEngine = object : RPCEngine {
     }
 }
 
+inline fun <reified T : RPC> get() = rpcServiceOf<T>(stubEngine)
+inline fun <reified T : RPC> getName() = serviceMethodOf<T>("empty")
+
 fun main() {
     val service = rpcServiceOf<MyService>(stubEngine)
+    val service2 = get<MyService>()
+//    val submodule = rpcServiceOf<SubModuleService>(stubEngine)
+
+    val methodName = serviceMethodOf<MyService>("empty")
+    println(methodName)
+    println(getName<MyService>())
 
     runBlocking {
+//        submodule.hello()
         service.empty()
+        service2.empty()
     }
 
-    val type = serviceMethodOf<MyService>("empty")
-    println(type)
-    val type1 = MyServiceClient.methodType("empty")
-    println(type1)
+//    val type = serviceMethodOf<MyService>("empty")
+//    println(type)
 }
 
 interface MyService : RPC {
     suspend fun empty()
-    suspend fun returnType(): String
-    suspend fun genericReturnType(): List<String>
-    suspend fun doubleGenericReturnType(): List<List<String>>
-    suspend fun paramsSingle(arg1: String)
-    suspend fun paramsDouble(arg1: String, arg2: String)
-    suspend fun varargParams(arg1: String, vararg arg2: String)
-    suspend fun genericParams(arg1: List<String>)
-    suspend fun doubleGenericParams(arg1: List<List<String>>)
-    suspend fun mapParams(arg1: Map<List<String>, Map<Int, Unit>>)
-    suspend fun customType(arg1: TestClass): TestClass
-    suspend fun nullable(arg1: String?): TestClass?
-    suspend fun variance(arg2: TestList<in TestClass>, arg3: TestList2<*>): TestList<out TestClass>?
-    suspend fun flow(arg1: Flow<Flow<String>>): Flow<String>
-
-//    companion object : RPCClientProvider<MyService>, RPCMethodClassTypeProvider {
-//        override fun client(engine: RPCEngine): MyService {
-//            return MyServiceClient(engine)
-//        }
-//
-//        override fun methodClassType(methodName: String): KType? {
-//            val companion = MyServiceClient
-//            val map = companion.methodNames
-//            return map[methodName]
-//        }
-//    }
+//    suspend fun returnType(): String
+//    suspend fun genericReturnType(): List<String>
+//    suspend fun doubleGenericReturnType(): List<List<String>>
+//    suspend fun paramsSingle(arg1: String)
+//    suspend fun paramsDouble(arg1: String, arg2: String)
+//    suspend fun varargParams(arg1: String, vararg arg2: String)
+//    suspend fun genericParams(arg1: List<String>)
+//    suspend fun doubleGenericParams(arg1: List<List<String>>)
+//    suspend fun mapParams(arg1: Map<List<String>, Map<Int, Unit>>)
+//    suspend fun customType(arg1: TestClass): TestClass
+//    suspend fun nullable(arg1: String?): TestClass?
+//    suspend fun variance(arg2: TestList<in TestClass>, arg3: TestList2<*>): TestList<out TestClass>?
+//    suspend fun flow(arg1: Flow<Flow<String>>): Flow<String>
 }

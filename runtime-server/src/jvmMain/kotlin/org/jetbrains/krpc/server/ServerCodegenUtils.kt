@@ -7,5 +7,11 @@ import kotlin.reflect.KType
 @RPCStubCall
 @Suppress("UNUSED_PARAMETER", "unused")
 inline fun <reified T : RPC> serviceMethodOf(methodName: String): KType? {
-    error("Stub serviceMethodOf function, will be replaced with call to a companion object in compile time")
+    error("Stub serviceMethodOf function, will be replaced with the module specific version in compile time")
+}
+
+@RPCStubCall
+@Suppress("UNUSED_PARAMETER")
+fun serviceMethodOf(kType: KType, methodName: String): KType? {
+    error("Stub serviceMethodOf function, will be replaced with the module specific version in compile time")
 }
