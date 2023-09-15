@@ -37,4 +37,20 @@ interface MyService : RPC {
     suspend fun returnFlowPayloadWithPayload(): Flow<PayloadWithPayload>
 
     suspend fun bidirectionalFlowOfPayloadWithPayload(payloadWithPayload: Flow<PayloadWithPayload>): Flow<PayloadWithPayload>
+
+    suspend fun getNInts(n: Int): Flow<Int>
+    suspend fun getNIntsBatched(n: Int): Flow<List<Int>>
+
+    suspend fun bytes(byteArray: ByteArray)
+    suspend fun nullableBytes(byteArray: ByteArray?)
+
+    suspend fun throwsIllegalArgument(message: String)
+    suspend fun throwsThrowable(message: String)
+    suspend fun throwsUNSTOPPABLEThrowable(message: String)
+
+    suspend fun nullableInt(v: Int?): Int?
+    suspend fun nullableList(v: List<Int>?): List<Int>?
+    suspend fun delayForever(): Flow<Boolean>
+
+    suspend fun answerToAnything(arg: String): Int
 }

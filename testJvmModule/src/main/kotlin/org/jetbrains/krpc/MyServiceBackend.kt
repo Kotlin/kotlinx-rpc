@@ -1,9 +1,9 @@
 package org.jetbrains.krpc
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import kotlin.coroutines.resumeWithException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MyServiceBackend : MyService {
@@ -139,5 +139,55 @@ class MyServiceBackend : MyService {
 
     override suspend fun bidirectionalFlowOfPayloadWithPayload(payloadWithPayload: Flow<PayloadWithPayload>): Flow<PayloadWithPayload> {
          return payloadWithPayload
+    }
+
+    override suspend fun getNInts(n: Int): Flow<Int> {
+        return flow {
+            (1..n).forEach {
+                emit(it)
+            }
+        }
+    }
+
+    override suspend fun getNIntsBatched(n: Int): Flow<List<Int>> {
+        return flow {
+            (1..n).chunked(1000).forEach {
+                emit(it)
+            }
+        }
+    }
+
+    override suspend fun bytes(byteArray: ByteArray) {
+    }
+
+    override suspend fun nullableBytes(byteArray: ByteArray?) {
+    }
+
+    override suspend fun throwsIllegalArgument(message: String) {
+        error(message)
+    }
+
+    override suspend fun throwsThrowable(message: String) {
+        throw Throwable(message)
+    }
+
+    override suspend fun throwsUNSTOPPABLEThrowable(message: String) {
+        suspendCancellableCoroutine<Unit> { continuation ->
+            Thread {
+                continuation.resumeWithException(Throwable(message))
+            }.start()
+        }
+    }
+
+    override suspend fun nullableInt(v: Int?): Int? = v
+    override suspend fun nullableList(v: List<Int>?): List<Int>? = v
+
+    override suspend fun delayForever(): Flow<Boolean> = flow {
+            emit(true)
+            delay(Int.MAX_VALUE.toLong())
+    }
+
+    override suspend fun answerToAnything(arg: String): Int {
+        return 42
     }
 }

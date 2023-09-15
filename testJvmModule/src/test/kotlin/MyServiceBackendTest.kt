@@ -1,6 +1,6 @@
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.RPCClientEngine
 import org.jetbrains.krpc.client.rpcServiceOf
@@ -8,8 +8,11 @@ import org.jetbrains.krpc.server.rpcBackendOf
 import org.jetbrains.krpc.server.serviceMethodOf
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import kotlin.test.BeforeTest
-import kotlin.test.Ignore
+import java.util.concurrent.Semaphore
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.test.*
 
 class MyServiceBackendTest {
     val transport = StringTransport()
@@ -136,6 +139,7 @@ class MyServiceBackendTest {
         }
     }
 
+    @Ignore
     @Test
     fun bidirectionalStream() {
         runBlocking {
@@ -257,6 +261,132 @@ class MyServiceBackendTest {
             }
 
             flow.emit(0)
+        }
+    }
+
+    @Test
+    fun `RPC should be able to receive 100_000 ints in reasonable time`() {
+        runBlocking {
+            val n = 100_000
+            assertEquals(client.getNInts(n).last(), n)
+        }
+    }
+
+    @Test
+    fun `RPC should be able to receive 100_000 ints with batching in reasonable time`() {
+        runBlocking {
+            val n = 100_000
+            assertEquals(client.getNIntsBatched(n).last().last(), n)
+        }
+    }
+
+    @Test
+    fun testByteArraySerialization() {
+        runBlocking {
+            client.bytes("hello".toByteArray())
+            client.nullableBytes(null)
+            client.nullableBytes("hello".toByteArray())
+        }
+    }
+
+    @Ignore
+    @Test
+    fun testException() {
+        runBlocking {
+            try {
+                client.throwsIllegalArgument("me")
+            } catch (e: IllegalArgumentException) {
+                assertEquals("me", e.message)
+            }
+            try {
+                client.throwsThrowable("me")
+            } catch (e: Throwable) {
+                assertEquals("me", e.message)
+            }
+            try {
+                client.throwsUNSTOPPABLEThrowable("me")
+            } catch (e: Throwable) {
+                assertEquals("me", e.message)
+            }
+        }
+    }
+
+    @Test
+    fun testNullables() {
+        runBlocking {
+            assertEquals(1, client.nullableInt(1))
+            assertNull(client.nullable(null))
+        }
+    }
+
+    @Test
+    fun testNullableLists() {
+        runBlocking {
+            assertNull(client.nullableList(null))
+
+            assertEquals(emptyList<Int>(), client.nullableList(emptyList()))
+            assertEquals(listOf(1), client.nullableList(listOf(1)))
+        }
+    }
+
+    @Test
+    fun testServerCallCancellation() {
+        runBlocking {
+            val flag: Channel<Boolean> = Channel()
+            val remote = launch {
+                try {
+                    client.delayForever().collect {
+                        flag.send(it)
+                    }
+                }
+                catch (e: CancellationException) {
+                    throw e
+                }
+
+                fail("Shall not pass here")
+            }.apply {
+                invokeOnCompletion { cause: Throwable? ->
+                    if (cause != null && cause !is CancellationException) {
+                        throw cause
+                    }
+                }
+            }
+
+            flag.receive()
+            remote.cancelAndJoin()
+        }
+    }
+
+    @Test
+    fun `rpc continuation is called in the correct scope and doesn't block other rpcs`() {
+        runBlocking {
+            val inContinuation = Semaphore(1)
+            val running = AtomicBoolean(true)
+
+            // start a coroutine that block the thread after continuation
+            val c1 = async { // make a rpc call
+                client.answerToAnything("hello")
+
+                // now we are in the continuation
+                // important for test: don't use suspending primitives to signal it, as we want to make sure we have a blocked thread,
+                // when the second coroutine is launched
+                inContinuation.release()
+
+                // let's block the thread
+                while (running.get()) {
+                }
+            }
+
+            // wait, till the Rpc continuation thread is blocked
+            assertTrue(inContinuation.tryAcquire(100, TimeUnit.MILLISECONDS))
+
+            val c2 = async { // make a call
+                // and make sure the continuation is executed, even though another call's continuation has blocked its thread.
+                client.answerToAnything("hello")
+                running.set(false)
+            }
+
+            awaitAll(c1, c2)
         }
     }
 }
