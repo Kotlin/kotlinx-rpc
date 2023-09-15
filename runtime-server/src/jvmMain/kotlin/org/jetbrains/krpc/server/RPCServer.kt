@@ -9,6 +9,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import org.jetbrains.krpc.*
+import java.lang.reflect.InvocationTargetException
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KCallable
@@ -102,6 +103,9 @@ class RPCServer<T>(
                 val returnSerializer = json.serializersModule.contextualForFlow(returnType)
                 val jsonResult = json.encodeToString(returnSerializer, value)
                 RPCMessage.CallSuccess(callId, jsonResult)
+            } catch (cause: InvocationTargetException) {
+                val serializedCause = serializeException(cause.cause!!)
+                RPCMessage.CallException(callId, serializedCause)
             } catch (cause: Throwable) {
                 val serializedCause = serializeException(cause)
                 RPCMessage.CallException(callId, serializedCause)
@@ -119,25 +123,20 @@ class RPCServer<T>(
         val mutex = Mutex()
         for (clientFlow in callContext.outgoingFlows) {
             launch {
-                println("Launch outgoing flow")
                 val callId = clientFlow.callId
                 val flowId = clientFlow.flowId
                 val elementSerializer = clientFlow.elementSerializer
                 try {
-                    println("Collecting ${clientFlow.flow}")
                     clientFlow.flow.collect {
-                        println("Collecting $it")
                         // because we can send new message for the new flow,
                         // which is not published with `transport.send(message)`
                         mutex.withLock {
-                            println("Send $it")
                             val data = json.encodeToString(elementSerializer, it!!)
                             val message = RPCMessage.StreamMessage(callId, flowId, data)
                             transport.send(message)
                         }
                     }
                 } catch (cause: Throwable) {
-                    println("FOO")
                     val serializedReason = serializeException(cause)
                     val message = RPCMessage.StreamCancel(callId, flowId, serializedReason)
                     transport.send(message)

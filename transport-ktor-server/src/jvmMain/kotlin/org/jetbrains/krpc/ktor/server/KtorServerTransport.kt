@@ -11,11 +11,11 @@ import org.jetbrains.krpc.server.serviceMethodOf
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
-inline fun <reified T: RPC> Route.RPC(service: T, json: Json = Json) {
-    RPC(service, typeOf<T>(), json) { serviceMethodOf<T>(it) }
+inline fun <reified T: RPC> Route.rpc(service: T, json: Json = Json) {
+    rpc(service, typeOf<T>(), json) { serviceMethodOf<T>(it) }
 }
 
-fun <T: RPC> Route.RPC(service: T, serviceType: KType, json: Json, serviceMethodsGetter: (String) -> KType?) {
+fun <T: RPC> Route.rpc(service: T, serviceType: KType, json: Json, serviceMethodsGetter: (String) -> KType?) {
     webSocket {
         val transport = KtorTransport(json, this)
         val backend: RPCServer<T> = rpcBackendOf(service, serviceType, transport, serviceMethodsGetter)

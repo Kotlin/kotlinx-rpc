@@ -1,31 +1,104 @@
-# krpc/kRPC
+# kRPC - the Kotlin RPC Framework
 
+kRPC is a Kotlin RPC (Remote Procedure Call) framework that leverages the power of suspend functions
+to simplify and streamline the development of distributed applications.
+With kRPC, you can easily create remote services, call remote methods,
+and handle asynchronous communication between different parts of your application,
+all while writing concise and clean Kotlin code.
 
+## Features
+
+- **Multiplatform**: kRPC is written in common Kotlin and allows to be used on all platforms
+  supported by Kotlin. Current transport is using Ktor and runs on all platforms supported by Ktor.
+
+- **Suspend**: kRPC makes extensive use of Kotlin's suspend functions,
+  allowing you to write asynchronous code in a sequential, easy-to-read manner
+
+- **Exception Transparent**: kRPC automatically bypass exceptions thrown by remote services
+
+- **Cancellation and Interruption Transparent**: kRPC bypass cancellation and interruption
+  of remote services both from the client and the server side
+
+- **Streaming Support**: kRPC supports streaming using `Flow` of both requests and responses.
+  Nested streams are also supported.
+
+- **Serialization support**: All serializable classes are transferred automatically.
+
+- **Pluggable transport**: kRPC transport is pluggable, allowing you to use any implementation.
+  Currently, it uses WebSockets provided by Ktor.
 
 ## Getting Started
 
-Download links:
+Make an interface for your service:
 
-SSH clone URL: ssh://git@git.jetbrains.team/krpc/kRPC.git
+```kotlin
+@Serializable
+class Image(val data: ByteArray)
 
-HTTPS clone URL: https://git.jetbrains.team/krpc/kRPC.git
+enum class Category {
+    CAT, DOG
+}
 
+interface ImageRecognizer : RPC {
+    suspend fun recognize(image: Image): Category
 
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
-
-## Prerequisites
-
-What things you need to install the software and how to install them.
-
+    suspend fun recognizeAll(images: Flow<Image>): Flow<Category>
+}
 ```
-Examples
+
+Implement the service:
+
+```kotlin
+class ImageRecognizerService : ImageRecognizer {
+    override suspend fun recognize(image: Image): Category {
+        val byte = image.data[0].toInt()
+        return if (byte == 0) Category.CAT else Category.DOG
+    }
+
+    override suspend fun recognizeAll(images: Flow<Image>): Flow<Category> {
+        return images.map { recognize(it) }
+    }
+}
 ```
 
-## Deployment
+Start the server:
 
-Add additional notes about how to deploy this on a production system.
+```kotlin
+embeddedServer(Netty, port = 8080) {
+    install(WebSockets)
+    routing {
+        route("image-recognizer") {
+            rpc<ImageRecognizer>(ImageRecognizerService())
+        }
+    }
+}.start(wait = true)
+```
 
-## Resources
+Connect to the server:
 
-Add links to external resources for this project, such as CI server, bug tracker, etc.
+```kotlin
+val client = HttpClient {
+    install(WebSockets)
+}
+
+val recognizer: ImageRecognizer = client.rpc<ImageRecognizer> {
+    url {
+        host = "localhost"
+        port = 8080
+        encodedPath = "image-recognizer"
+    }
+}
+
+val image = Image(byteArrayOf(0, 1, 2, 3))
+val category = recognizer.recognize(image)
+println("Recognized category: $category")
+
+val imageFlow = flow {
+    repeat(10) {
+        emit(image)
+    }
+}
+
+val categories = recognizer.recognizeAll(imageFlow)
+categories.collect { println("Recognized category: $it") }
+```

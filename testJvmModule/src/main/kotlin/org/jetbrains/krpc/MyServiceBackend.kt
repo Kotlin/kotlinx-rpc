@@ -164,7 +164,7 @@ class MyServiceBackend : MyService {
     }
 
     override suspend fun throwsIllegalArgument(message: String) {
-        error(message)
+        throw IllegalArgumentException(message)
     }
 
     override suspend fun throwsThrowable(message: String) {
@@ -188,6 +188,7 @@ class MyServiceBackend : MyService {
     }
 
     override suspend fun answerToAnything(arg: String): Int {
+        println("Return 42")
         return 42
     }
 }

@@ -139,14 +139,13 @@ class MyServiceBackendTest {
         }
     }
 
-    @Ignore
     @Test
     fun bidirectionalStream() {
         runBlocking {
             val result = client.bidirectionalStream(flowOf("test1", "test2", "test3"))
             assertEquals(
                 listOf("test1".reversed(), "test2".reversed(), "test3".reversed()),
-                result.toList(mutableListOf())
+                result.toList(mutableListOf()),
             )
         }
     }
@@ -194,7 +193,7 @@ class MyServiceBackendTest {
             }.toList(mutableListOf()).joinToString()
             assertEquals(
                 "a0, b0, c0, a1, b1, c1, a2, b2, c2, a3, b3, c3, a4, b4, c4, a5, b5, c5, a6, b6, c6, a7, b7, c7, a8, b8, c8, a9, b9, c9",
-                result
+                result,
             )
         }
     }
@@ -234,11 +233,13 @@ class MyServiceBackendTest {
     @Test
     fun bidirectionalFlowOfPayloadWithPayload() {
         runBlocking {
-            val result = client.bidirectionalFlowOfPayloadWithPayload(flow {
-                repeat(5) {
-                    emit(payloadWithPayload(10))
-                }
-            })
+            val result = client.bidirectionalFlowOfPayloadWithPayload(
+                flow {
+                    repeat(5) {
+                        emit(payloadWithPayload(10))
+                    }
+                },
+            )
 
             result.collect {
                 it.collectAndPrint()
@@ -289,13 +290,13 @@ class MyServiceBackendTest {
         }
     }
 
-    @Ignore
     @Test
     fun testException() {
         runBlocking {
             try {
                 client.throwsIllegalArgument("me")
             } catch (e: IllegalArgumentException) {
+                e.printStackTrace()
                 assertEquals("me", e.message)
             }
             try {
@@ -338,8 +339,7 @@ class MyServiceBackendTest {
                     client.delayForever().collect {
                         flag.send(it)
                     }
-                }
-                catch (e: CancellationException) {
+                } catch (e: CancellationException) {
                     throw e
                 }
 
@@ -364,7 +364,7 @@ class MyServiceBackendTest {
             val running = AtomicBoolean(true)
 
             // start a coroutine that block the thread after continuation
-            val c1 = async { // make a rpc call
+            val c1 = async(Dispatchers.IO) { // make a rpc call
                 client.answerToAnything("hello")
 
                 // now we are in the continuation

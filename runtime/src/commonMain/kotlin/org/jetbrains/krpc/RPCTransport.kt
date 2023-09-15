@@ -14,8 +14,9 @@ fun serializeException(cause: Throwable): SerializedException {
     val message = cause.message ?: "Unknown exception"
     val stacktrace = cause.stackElements()
     val serializedCause = cause.cause?.let { serializeException(it) }
+    val className = cause::class.qualifiedName ?: ""
 
-    return SerializedException(cause.toString(), message, stacktrace, serializedCause)
+    return SerializedException(cause.toString(), message, stacktrace, serializedCause, className)
 }
 
 internal expect fun Throwable.stackElements(): List<StackElement>
@@ -33,16 +34,17 @@ class SerializedException(
     val toStringMessage: String,
     val message: String,
     val stacktrace: List<StackElement>,
-    val cause: SerializedException?
+    val cause: SerializedException?,
+    val className: String
 ) {
-    public fun deserialize(): Throwable {
-        return DeserializedException(toStringMessage, message, stacktrace, cause)
-    }
 }
+
+expect fun SerializedException.deserialize(): Throwable
 
 expect class DeserializedException(
     toStringMessage: String,
     message: String,
     stacktrace: List<StackElement>,
-    cause: SerializedException?
+    cause: SerializedException?,
+    className: String
 ) : Throwable

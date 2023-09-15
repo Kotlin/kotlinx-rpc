@@ -6,11 +6,7 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PayloadWithStream(val payload: String, val stream: @Contextual Flow<String>) {
-    suspend fun collectAndPrint() {
-        stream.collect { println("item $it") }
-    }
-}
+data class PayloadWithStream(val payload: String, val stream: @Contextual Flow<String>)
 
 @Serializable
 data class PayloadWithPayload(val payload: String, val flow: @Contextual Flow<PayloadWithStream>) {
