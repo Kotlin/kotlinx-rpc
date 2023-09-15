@@ -1,5 +1,6 @@
 import io.ktor.websocket.*
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.krpc.RPCMessage
@@ -12,21 +13,20 @@ class KtorTransport(
 
     private object FlowEnd
 
-    private val incomingFlow: Flow<Any> = flow {
-        for (message in webSocketSession.incoming) {
-            check(message is Frame.Text)
-            val messageText = message.readText()
-            val rpcMessage = json.decodeFromString<RPCMessage>(messageText)
-            emit(rpcMessage)
+    private val incomingFlow = MutableSharedFlow<RPCMessage>()
+
+    init {
+        webSocketSession.launch {
+            for (message in webSocketSession.incoming) {
+                check(message is Frame.Text)
+                val messageText = message.readText()
+                val rpcMessage = json.decodeFromString<RPCMessage>(messageText)
+                incomingFlow.emit(rpcMessage)
+            }
         }
-        emit(FlowEnd)
     }
 
-    override val incoming: SharedFlow<RPCMessage>
-        get() = incomingFlow
-            .takeWhile { it != FlowEnd }
-            .map { it as RPCMessage }
-            .shareIn(webSocketSession, started = SharingStarted.Eagerly)
+    override val incoming: SharedFlow<RPCMessage> = incomingFlow
 
     override suspend fun send(message: RPCMessage) {
         val messageText = json.encodeToString(message)
