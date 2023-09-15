@@ -9,17 +9,3 @@ import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.client.RPCClientEngine
 import org.jetbrains.krpc.client.rpcServiceOf
 
-
-suspend inline fun <reified T : RPC> HttpClient.rpc(urlString: String, json: Json = Json): T = rpc(json) {
-    url(urlString)
-}
-
-suspend inline fun <reified T : RPC> HttpClient.rpc(
-    json: Json = Json,
-    noinline block: HttpRequestBuilder.() -> Unit,
-): T {
-    val session = webSocketSession(block)
-    val transport = KtorTransport(json, session)
-    val clientEngine = RPCClientEngine(transport)
-    return rpcServiceOf<T>(clientEngine)
-}

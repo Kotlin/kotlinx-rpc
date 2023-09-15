@@ -2,9 +2,11 @@ package org.jetbrains.krpc
 
 import kotlinx.serialization.Serializable
 
+@Serializable
 sealed interface RPCMessage {
     val callId: String
 
+    @Serializable
     sealed interface CallResult : RPCMessage
 
     @Serializable

@@ -10,9 +10,6 @@ import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.krpc.RPC
-import org.jetbrains.krpc.client.rpcServiceOf
-import org.jetbrains.krpc.ktor.client.rpc
-import org.jetbrains.krpc.ktor.server.rpc
 import org.junit.Assert.assertEquals
 import kotlin.test.Test
 
