@@ -1,5 +1,4 @@
 @file:Suppress("ExtractKtorModule")
-
 package sample
 
 import io.ktor.client.*
@@ -8,7 +7,6 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.routing.*
-import io.ktor.server.util.*
 import io.ktor.server.websocket.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

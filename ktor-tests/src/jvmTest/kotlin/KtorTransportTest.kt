@@ -1,5 +1,7 @@
 @file:Suppress("ExtractKtorModule")
 
+package sample
+
 import io.ktor.client.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*

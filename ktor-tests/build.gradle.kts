@@ -4,6 +4,11 @@ plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization") version "1.9.0"
     id("com.google.devtools.ksp") version "1.9.0-1.0.11"
+    id("org.jetbrains.krpc")
+}
+
+repositories {
+    mavenLocal()
 }
 
 kotlin {
@@ -29,7 +34,7 @@ kotlin {
                 implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
             }
         }
-        val jvmTest by getting {
+        val jvmMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-server-netty:2.3.4")
                 implementation("io.ktor:ktor-client-cio:2.3.4")
@@ -39,6 +44,6 @@ kotlin {
 }
 
 dependencies {
-    add("kspJvmTest", project(":codegen:sources-generation"))
+    add("kspJvm", project(":codegen:sources-generation"))
     PLUGIN_CLASSPATH_CONFIGURATION_NAME(project(":codegen:ir-extension"))
 }
