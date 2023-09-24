@@ -1,4 +1,4 @@
 package org.jetbrains.krpc
 
-// market interface for services
+// Marker interface for services
 interface RPC

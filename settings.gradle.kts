@@ -4,8 +4,6 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
-
-    includeBuild("codegen/gradle-plugin")
 }
 
 plugins {
@@ -14,10 +12,14 @@ plugins {
 
 rootProject.name = "kRPC"
 
-include(":codegen:codegen-test")
-include(":codegen:codegen-test:test-submodule")
-include(":codegen:ir-extension")
+include(":gradle-plugin")
+
+include(":codegen:common")
+include(":codegen:compiler-plugin")
 include(":codegen:sources-generation")
+include(":codegen:test")
+include(":codegen:test:common")
+
 include(":runtime")
 include(":runtime-client")
 include(":runtime-server")

@@ -7,14 +7,18 @@ import kotlinx.serialization.json.Json
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.server.RPCServer
 import org.jetbrains.krpc.server.rpcBackendOf
-import org.jetbrains.krpc.server.serviceMethodOf
+import org.jetbrains.krpc.server.rpcServiceMethodSerializationTypeOf
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
-fun <T: RPC> Route.rpc(service: T, serviceType: KType, json: Json, serviceMethodsGetter: (String) -> KType?) {
+inline fun <reified T : RPC> Route.rpc(service: T, json: Json = Json) {
+    rpc(service, typeOf<T>(), json)
+}
+
+fun <T: RPC> Route.rpc(service: T, serviceType: KType, json: Json) {
     webSocket {
         val transport = KtorTransport(json, this)
-        val backend: RPCServer<T> = rpcBackendOf(service, serviceType, transport, serviceMethodsGetter)
+        val backend: RPCServer<T> = rpcBackendOf(service, serviceType, transport)
         backend.start().join()
     }
 }

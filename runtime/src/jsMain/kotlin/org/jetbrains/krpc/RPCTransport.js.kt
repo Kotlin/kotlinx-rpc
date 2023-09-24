@@ -17,3 +17,6 @@ internal actual fun Throwable.stackElements(): List<StackElement> = emptyList()
 actual fun SerializedException.deserialize(): Throwable {
     return DeserializedException(toStringMessage, message, stacktrace, cause, className)
 }
+
+internal actual val Throwable.qualifiedClassName: String?
+    get() = this::class.toString()

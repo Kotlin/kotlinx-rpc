@@ -9,6 +9,8 @@ import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.*
 
+private val ws = Regex("\\s")
+
 class RPCSymbolProcessor(
     private val env: SymbolProcessorEnvironment
 ) : SymbolProcessor {
@@ -17,21 +19,9 @@ class RPCSymbolProcessor(
     override fun finish() {
         val codegen = RPCClientServiceGenerator(env.codeGenerator)
 
-        val all = services.map {
+        services.forEach {
             codegen.generate(it)
-            it
-        }.toList()
-
-        val moduleId = env.options["moduleId"] ?: error("Expected 'moduleId' option for ksp")
-
-        env.codeGenerator.createNewFile(
-            dependencies = Dependencies(aggregating = false),
-            packageName = "org.jetbrains.krpc",
-            fileName = "rpcGeneratedMetadataFunctions_${moduleId}",
-            extensionName = "kt"
-        ).bufferedWriter(Charsets.UTF_8).codeWriter().apply {
-            RPCMetadataGenerator.generate(this, moduleId, emptyList(), all)
-        }.flush()
+        }
     }
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -146,17 +136,6 @@ class RPCSymbolProcessor(
             Modifier.ACTUAL,
             Modifier.FINAL,
             Modifier.TAILREC,
-            Modifier.OVERRIDE
-        )
-
-        private val ALLOW_LIST_NOT_SERIALIZABLE_ARGUMENT_TYPES_BY_DEPTH = mapOf(
-            -1 to setOf("List", "Set", "Array", ""),
-            0 to setOf("Flow"),
-        )
-
-        private val ALLOW_LIST_NOT_SERIALIZABLE_RETURN_TYPES_BY_DEPTH = mapOf(
-            0 to setOf("Flow"),
-            1 to setOf("Flow"),
         )
     }
 }

@@ -21,25 +21,22 @@ import kotlin.reflect.typeOf
 inline fun <reified T : RPC> rpcBackendOf(
     service: T,
     transport: RPCTransport,
-    noinline serviceMethodsGetter: (String) -> KType?
 ): RPCServer<T> {
-    return rpcBackendOf(service, typeOf<T>(), transport, serviceMethodsGetter)
+    return rpcBackendOf(service, typeOf<T>(), transport)
 }
 
 fun <T : RPC> rpcBackendOf(
     service: T,
     serviceType: KType,
     transport: RPCTransport,
-    serviceMethodsGetter: (String) -> KType?
 ): RPCServer<T> {
-    return RPCServer(service, transport, serviceType, serviceMethodsGetter)
+    return RPCServer(service, transport, serviceType)
 }
 
 class RPCServer<T>(
     val service: T,
     val transport: RPCTransport,
-    serviceType: KType,
-    val serviceMethodsGetter: (String) -> KType?
+    val serviceType: KType,
 ) : CoroutineScope {
     private val methods: Map<String, KCallable<*>> = (serviceType.classifier as KClass<*>)
         .members
@@ -90,7 +87,7 @@ class RPCServer<T>(
         callContexts[callId] = callContext
         val methodName = callData.method
         val method = methods[methodName] ?: error("Unknown method $methodName")
-        val type = serviceMethodsGetter(methodName) ?: error("Unknown method $methodName")
+        val type = rpcServiceMethodSerializationTypeOf(serviceType, methodName) ?: error("Unknown method $methodName")
         val serializerModule = json.serializersModule
         val paramsSerializer = serializerModule.contextualForFlow(type)
         val args = json.decodeFromString(paramsSerializer, callData.data) as RPCMethodClassArguments

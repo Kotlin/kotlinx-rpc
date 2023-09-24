@@ -18,5 +18,5 @@ dependencies {
     testImplementation(kotlin("test"))
 
     ksp(project(":codegen:sources-generation"))
-    PLUGIN_CLASSPATH_CONFIGURATION_NAME(project(":codegen:ir-extension"))
+    PLUGIN_CLASSPATH_CONFIGURATION_NAME(project(":codegen:compiler-plugin"))
 }

@@ -32,6 +32,8 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         writer.newLine()
         writer.write("import kotlinx.serialization.Contextual")
         writer.newLine()
+        writer.write("import org.jetbrains.krpc.internal.*")
+        writer.newLine()
         writer.write("import kotlin.reflect.typeOf")
         writer.newLine()
         writer.write("import ${service.fullName}")
@@ -46,7 +48,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         service.functions.forEach {
             it.toCode(nested)
         }
-        generateMethodTypes(writer.nested(), service)
+        generateProviders(writer.nested(), service)
         writer.write("}")
 
         writer.flush()
@@ -169,8 +171,10 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         writer.newLine()
     }
 
-    private fun generateMethodTypes(writer: CodeWriter, service: RPCServiceDeclaration) {
-        writer.write("companion object {")
+    private fun generateProviders(writer: CodeWriter, service: RPCServiceDeclaration) {
+        writer.write("@OptIn(InternalKRPCApi::class)")
+        writer.newLine()
+        writer.write("companion object : RPCClientObject<${service.fullName}> {")
         writer.newLine()
         with(writer.nested()) {
             write("private val methodNames = mapOf(")
@@ -186,7 +190,12 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             newLine()
             write("@Suppress(\"unused\")")
             newLine()
-            write("fun methodType(methodName: String): kotlin.reflect.KType? = methodNames[methodName]")
+            write("override fun methodTypeOf(methodName: String): kotlin.reflect.KType? = methodNames[methodName]")
+            newLine()
+        }
+        writer.newLine()
+        with(writer.nested()) {
+            write("override fun client(engine: RPCEngine): ${service.fullName} = ${service.simpleName.withClientImplSuffix()}(engine)")
             newLine()
         }
         writer.write("}")

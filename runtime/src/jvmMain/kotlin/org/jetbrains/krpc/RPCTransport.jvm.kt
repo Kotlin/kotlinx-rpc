@@ -92,3 +92,6 @@ private fun tryCreateException(constructor: Constructor<*>, serialized: Serializ
 
     return result as? Throwable?
 }
+
+internal actual val Throwable.qualifiedClassName: String?
+    get() = this::class.qualifiedName

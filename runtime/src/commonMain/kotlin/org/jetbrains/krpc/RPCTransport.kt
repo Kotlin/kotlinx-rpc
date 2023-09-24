@@ -14,10 +14,12 @@ fun serializeException(cause: Throwable): SerializedException {
     val message = cause.message ?: "Unknown exception"
     val stacktrace = cause.stackElements()
     val serializedCause = cause.cause?.let { serializeException(it) }
-    val className = cause::class.qualifiedName ?: ""
+    val className = cause.qualifiedClassName ?: ""
 
     return SerializedException(cause.toString(), message, stacktrace, serializedCause, className)
 }
+
+internal expect val Throwable.qualifiedClassName: String?
 
 internal expect fun Throwable.stackElements(): List<StackElement>
 

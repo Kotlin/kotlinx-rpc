@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import org.jetbrains.krpc.RPC
+import org.jetbrains.krpc.ktor.client.rpc
+import org.jetbrains.krpc.ktor.server.rpc
 
 @Serializable
 class Image(val data: ByteArray)

@@ -4,7 +4,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization") version "1.9.0"
     id("com.google.devtools.ksp") version "1.9.0-1.0.11"
-    id("org.jetbrains.krpc")
+//    id("org.jetbrains.krpc")
 }
 
 repositories {
@@ -45,5 +45,6 @@ kotlin {
 
 dependencies {
     add("kspJvm", project(":codegen:sources-generation"))
-    PLUGIN_CLASSPATH_CONFIGURATION_NAME(project(":codegen:ir-extension"))
+    add("kspJvmTest", project(":codegen:sources-generation"))
+    PLUGIN_CLASSPATH_CONFIGURATION_NAME(project(":codegen:compiler-plugin"))
 }

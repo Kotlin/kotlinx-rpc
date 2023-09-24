@@ -5,7 +5,7 @@ import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.RPCClientEngine
 import org.jetbrains.krpc.client.rpcServiceOf
 import org.jetbrains.krpc.server.rpcBackendOf
-import org.jetbrains.krpc.server.serviceMethodOf
+import org.jetbrains.krpc.server.rpcServiceMethodSerializationTypeOf
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.concurrent.Semaphore
@@ -17,9 +17,7 @@ import kotlin.test.*
 class MyServiceBackendTest {
     val transport = StringTransport()
     val clientEngine = RPCClientEngine(transport.client)
-    val backend = rpcBackendOf<MyService>(MyServiceBackend(), transport.server) {
-        serviceMethodOf<MyService>(it)
-    }
+    val backend = rpcBackendOf<MyService>(MyServiceBackend(), transport.server)
     val client: MyService = rpcServiceOf<MyService>(clientEngine)
 
     @BeforeTest
