@@ -1,6 +1,5 @@
 pluginManagement {
     repositories {
-        mavenLocal()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -12,19 +11,19 @@ plugins {
 
 rootProject.name = "kRPC"
 
-include(":gradle-plugin")
+include(":krpc-codegen:krpc-compiler-plugin")
+include(":krpc-codegen:krpc-ksp-plugin")
 
-include(":codegen:common")
-include(":codegen:compiler-plugin")
-include(":codegen:sources-generation")
-include(":codegen:test")
-include(":codegen:test:common")
+include(":krpc-codegen:krpc-codegen-tests:krpc-codegen-tests-jvm")
+include(":krpc-codegen:krpc-codegen-tests:krpc-codegen-tests-mpp")
 
-include(":runtime")
-include(":runtime-client")
-include(":runtime-server")
-include(":testJvmModule")
-include(":transport-ktor")
-include(":transport-ktor-server")
-include(":transport-ktor-client")
-include(":ktor-tests")
+include(":krpc-runtime")
+include(":krpc-runtime:krpc-runtime-client")
+include(":krpc-runtime:krpc-runtime-server")
+include(":krpc-runtime:krpc-runtime-test")
+
+include(":krpc-transport:krpc-transport-ktor")
+include(":krpc-transport:krpc-transport-ktor:krpc-transport-ktor-server")
+include(":krpc-transport:krpc-transport-ktor:krpc-transport-ktor-client")
+
+includeBuild("samples/krpc-ktor")
