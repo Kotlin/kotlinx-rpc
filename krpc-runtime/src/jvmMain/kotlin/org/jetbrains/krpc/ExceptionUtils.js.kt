@@ -1,11 +1,13 @@
 package org.jetbrains.krpc
 
+import org.jetbrains.krpc.internal.InternalKRPCApi
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
 
 private val throwableFields = Throwable::class.java.fieldsCountOrDefault(-1)
 
-actual class DeserializedException actual constructor(
+@OptIn(InternalKRPCApi::class)
+internal actual class DeserializedException @OptIn(InternalKRPCApi::class) actual constructor(
     val toStringMessage: String,
     override val message: String,
     stacktrace: List<StackElement>,
@@ -23,25 +25,21 @@ actual class DeserializedException actual constructor(
     override fun toString(): String = toStringMessage
 }
 
+
+@OptIn(InternalKRPCApi::class)
 internal actual fun Throwable.stackElements(): List<StackElement> = stackTrace.map {
     StackElement(
-        clazz = it.className,
-        method = it.methodName,
-        fileName = it.fileName,
-        lineNumber = it.lineNumber
+        clazz = it.className, method = it.methodName, fileName = it.fileName, lineNumber = it.lineNumber
     )
 }
 
+@InternalKRPCApi
 actual fun SerializedException.deserialize(): Throwable {
     try {
         val clazz = Class.forName(className)
         val fieldsCount = clazz.fieldsCountOrDefault(throwableFields)
         if (fieldsCount != throwableFields) return DeserializedException(
-            toStringMessage,
-            message,
-            stacktrace,
-            cause,
-            className
+            toStringMessage, message, stacktrace, cause, className
         )
 
         val constructors = clazz.constructors.sortedByDescending { it.parameterTypes.size }
@@ -66,6 +64,7 @@ private tailrec fun Class<*>.fieldsCount(accumulator: Int = 0): Int {
     return superClass.fieldsCount(totalFields)
 }
 
+@OptIn(InternalKRPCApi::class)
 private fun tryCreateException(constructor: Constructor<*>, serialized: SerializedException): Throwable? {
     val parameters = constructor.parameterTypes
 

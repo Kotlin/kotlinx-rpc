@@ -4,7 +4,7 @@ import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.internal.InternalKRPCApi
 import org.jetbrains.krpc.internal.RPCServiceMethodSerializationTypeProvider
 import org.jetbrains.krpc.internal.kClass
-import org.jetbrains.krpc.internal.withRPCClientObject
+import org.jetbrains.krpc.internal.findRPCProviderInCompanion
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -18,5 +18,5 @@ actual fun rpcServiceMethodSerializationTypeOf(serviceType: KType, methodName: S
 
 @OptIn(InternalKRPCApi::class)
 fun <T: RPC> rpcServiceMethodSerializationTypeOf(kClass: KClass<T>, methodName: String): KType? {
-    return withRPCClientObject<RPCServiceMethodSerializationTypeProvider>(kClass).methodTypeOf(methodName)
+    return findRPCProviderInCompanion<RPCServiceMethodSerializationTypeProvider>(kClass).methodTypeOf(methodName)
 }

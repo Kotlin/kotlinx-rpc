@@ -6,7 +6,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
 
 @InternalKRPCApi
-fun <R> withRPCClientObject(kClass: KClass<*>): R {
+actual fun <R> findRPCProviderInCompanion(kClass: KClass<*>): R {
     @Suppress("UNCHECKED_CAST")
     return kClass.java.classLoader
         .loadClass("org.jetbrains.krpc.${kClass.simpleName}Client")

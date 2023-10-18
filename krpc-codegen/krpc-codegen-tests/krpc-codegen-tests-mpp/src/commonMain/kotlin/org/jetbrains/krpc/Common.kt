@@ -1,7 +1,7 @@
 package org.jetbrains.krpc
 
 import kotlinx.coroutines.Job
-import org.jetbrains.krpc.client.rpcServiceOf
+import org.jetbrains.krpc.client.clientOf
 import org.jetbrains.krpc.server.rpcServiceMethodSerializationTypeOf
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.typeOf
@@ -24,10 +24,9 @@ interface CommonService : RPC, EmptyService {
 }
 
 inline fun <reified T : RPC> testService(test: T.() -> Unit) {
-    rpcServiceOf<T>(stubEngine).test()
-
-    rpcServiceOf<T>(typeOf<T>(), stubEngine).test()
+    RPC.clientOf<T>(stubEngine).test()
+    RPC.clientOf<T>(typeOf<T>(), stubEngine).test()
 
     println(rpcServiceMethodSerializationTypeOf<T>("empty"))
-    println(rpcServiceMethodSerializationTypeOf(typeOf<T>(),"empty"))
+    println(rpcServiceMethodSerializationTypeOf(typeOf<T>(), "empty"))
 }

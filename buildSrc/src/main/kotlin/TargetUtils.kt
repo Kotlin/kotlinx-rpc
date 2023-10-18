@@ -22,7 +22,7 @@ fun KotlinMultiplatformExtension.allTargets(
             iosArm64(),
             iosSimulatorArm64(),
             watchosX64(),
-            watchosArm32(),
+//            watchosArm32(),
             watchosArm64(),
             watchosSimulatorArm64(),
 //            watchosDeviceArm64(),
@@ -54,12 +54,12 @@ fun KotlinMultiplatformExtension.allTargets(
         }
     }
 
-    if (js) {
-        result += js(IR) {
-            browser()
-            nodejs()
-        }
-    }
+//    if (js) {
+//        result += js(IR) {
+//            browser()
+//            nodejs()
+//        }
+//    }
 
     return result
 }

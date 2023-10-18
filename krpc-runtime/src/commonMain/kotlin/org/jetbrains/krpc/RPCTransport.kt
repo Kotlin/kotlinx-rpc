@@ -1,53 +1,28 @@
 package org.jetbrains.krpc
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.serialization.Serializable
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import org.jetbrains.krpc.internal.InternalKRPCApi
+import kotlin.coroutines.CoroutineContext
 
-interface RPCTransport : CoroutineScope {
-    val incoming: SharedFlow<RPCMessage>
+abstract class RPCTransport(
+    override val coroutineContext: CoroutineContext = Job()
+) : CoroutineScope {
+    abstract suspend fun send(message: RPCMessage)
 
-    suspend fun send(message: RPCMessage)
+    /**
+     * Subscribes to RPC messages and executes the specified block when a message is received.
+     *
+     * @param block The block of code to be executed when a message is received. The block should accept a single
+     * parameter of type `RPCMessage` and return a boolean indicating whether the RPCMessage is consumed or not.
+     *
+     * If the [block] throws an exception, it will be removed from the list of subscribers.
+     *
+     * @return Unit
+     */
+    abstract suspend fun subscribe(block: suspend (RPCMessage) -> Boolean)
 }
-
-
-fun serializeException(cause: Throwable): SerializedException {
-    val message = cause.message ?: "Unknown exception"
-    val stacktrace = cause.stackElements()
-    val serializedCause = cause.cause?.let { serializeException(it) }
-    val className = cause.qualifiedClassName ?: ""
-
-    return SerializedException(cause.toString(), message, stacktrace, serializedCause, className)
-}
-
-internal expect val Throwable.qualifiedClassName: String?
-
-internal expect fun Throwable.stackElements(): List<StackElement>
-
-@Serializable
-data class StackElement(
-    val clazz: String,
-    val method: String,
-    val fileName: String?,
-    val lineNumber: Int
-)
-
-@Serializable
-class SerializedException(
-    val toStringMessage: String,
-    val message: String,
-    val stacktrace: List<StackElement>,
-    val cause: SerializedException?,
-    val className: String
-) {
-}
-
-expect fun SerializedException.deserialize(): Throwable
-
-expect class DeserializedException(
-    toStringMessage: String,
-    message: String,
-    stacktrace: List<StackElement>,
-    cause: SerializedException?,
-    className: String
-) : Throwable

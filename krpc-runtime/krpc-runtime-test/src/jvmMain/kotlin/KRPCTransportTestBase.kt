@@ -3,10 +3,11 @@ package org.jetbrains.krpc.test
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCTransport
-import org.jetbrains.krpc.client.RPCClientEngine
-import org.jetbrains.krpc.client.rpcServiceOf
-import org.jetbrains.krpc.server.rpcServerOf
+import org.jetbrains.krpc.client.clientOf
+import org.jetbrains.krpc.server.RPCServerEngine
+import org.jetbrains.krpc.server.serverOf
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.concurrent.Semaphore
@@ -15,28 +16,24 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.*
 
-abstract class KRPCTransportTestBase(
-) {
+abstract class KRPCTransportTestBase {
     abstract val clientTransport: RPCTransport
     abstract val serverTransport: RPCTransport
 
-    val clientEngine by lazy { RPCClientEngine(clientTransport) }
-    val backend by lazy { rpcServerOf<MyService>(MyServiceBackend(), serverTransport) }
-    val client by lazy { rpcServiceOf<MyService>(clientEngine) }
+    lateinit var backend: RPCServerEngine<MyService>
+    lateinit var client: MyService
 
     @OptIn(DelicateCoroutinesApi::class)
     @BeforeTest
     fun start() {
-        GlobalScope.launch {
-            backend.run()
-        }
+        backend = RPC.serverOf<MyService>(MyServiceBackend(), serverTransport)
+        client = RPC.clientOf<MyService>(clientTransport)
     }
 
     @Test
     fun empty() {
-        runBlocking {
-            client.empty()
-        }
+        backend.cancel()
+        client.cancel()
     }
 
     @Test

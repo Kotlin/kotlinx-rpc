@@ -1,5 +1,6 @@
 package org.jetbrains.krpc.server
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.sync.Mutex
@@ -7,8 +8,8 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
 import org.jetbrains.krpc.*
+import org.jetbrains.krpc.internal.InternalKRPCApi
 import java.lang.reflect.InvocationTargetException
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
@@ -16,80 +17,88 @@ import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.callSuspend
-import kotlin.reflect.typeOf
 
-inline fun <reified T : RPC> rpcServerOf(service: T, transport: RPCTransport): RPCServer<T> =
-    rpcServerOf(service, typeOf<T>(), transport)
-
-fun <T : RPC> rpcServerOf(
-    service: T,
-    serviceType: KType,
-    transport: RPCTransport,
-): RPCServer<T> {
-    return RPCServer(service, transport, serviceType)
-}
-
-class RPCServer<T>(
+class RPCServerEngine<T : RPC>(
     val service: T,
     val transport: RPCTransport,
     val serviceType: KType,
 ) : CoroutineScope {
+    private val serviceTypeString = serviceType.toString()
+    private val logger = KotlinLogging.logger("RPCServer[0x${hashCode().toString(16)}]")
 
-    private val methods: Map<String, KCallable<*>> = (serviceType.classifier as KClass<*>)
-        .members
-        .filter { it.name != "toString" && it.name != "hashCode" && it.name != "equals" }
-        .map { it.name to it }.toMap()
+    private val methods: Map<String, KCallable<*>> =
+        (serviceType.classifier as KClass<*>).members.filter { it.name != "toString" && it.name != "hashCode" && it.name != "equals" }
+            .associateBy { it.name }
 
-    override val coroutineContext: CoroutineContext = transport.coroutineContext
+    override val coroutineContext: CoroutineContext = transport.coroutineContext + Job(transport.coroutineContext.job)
 
     private val calls: MutableMap<String, Job> = ConcurrentHashMap()
 
     private val callContexts = ConcurrentHashMap<String, RPCCallContext>()
 
-    @OptIn(InternalCoroutinesApi::class)
-    suspend fun run() {
-        runCatching {
-            withContext(coroutineContext) {
-                transport.incoming.collect {
-                    val callId = it.callId
+    init {
+        service.coroutineContext.job.invokeOnCompletion {
+            logger.trace { "Service completed with $it" }
+        }
 
-                    when (it) {
-                        is RPCMessage.CallData -> {
-                            handleCall(callId, it)
-                        }
-
-                        is RPCMessage.CallException -> {
-                            calls[callId]?.cancel()
-                        }
-
-                        is RPCMessage.CallSuccess -> error("Unexpected success message")
-                        is RPCMessage.StreamCancel -> {
-                            val callContext = callContexts[callId] ?: error("Unknown call $callId")
-                            callContext.cancelFlow(it)
-                        }
-
-                        is RPCMessage.StreamFinished -> {
-                            val callContext = callContexts[callId] ?: error("Unknown call $callId")
-                            callContext.closeFlow(it)
-                        }
-
-                        is RPCMessage.StreamMessage -> {
-                            val callContext = callContexts[callId] ?: error("Unknown call $callId")
-                            callContext.send(it, prepareJson(callContext))
-                        }
-                    }
-                }
-            }
+        launch {
+            run()
         }
     }
 
-    @OptIn(InternalCoroutinesApi::class)
+    internal suspend fun run(): Unit = withContext(coroutineContext) {
+        transport.subscribe { message ->
+            if (message.serviceType != serviceTypeString) return@subscribe false
+            val callId = message.callId
+            logger.trace { "Incoming message $message" }
+
+            when (message) {
+                is RPCMessage.CallData -> {
+                    handleCall(callId, message)
+                }
+
+                is RPCMessage.CallException -> {
+                    calls[callId]?.cancel()
+                }
+
+                is RPCMessage.CallSuccess -> error("Unexpected success message")
+                is RPCMessage.StreamCancel -> {
+                    val callContext = callContexts[callId] ?: error("Unknown call $callId")
+                    callContext.cancelFlow(message)
+                }
+
+                is RPCMessage.StreamFinished -> {
+                    val callContext = callContexts[callId] ?: error("Unknown call $callId")
+                    callContext.closeFlow(message)
+                }
+
+                is RPCMessage.StreamMessage -> {
+                    val callContext = callContexts[callId] ?: error("Unknown call $callId")
+                    callContext.send(message, prepareJson(callContext))
+                }
+            }
+
+            return@subscribe true
+        }
+    }
+
+    @OptIn(InternalCoroutinesApi::class, InternalKRPCApi::class)
     private fun handleCall(callId: String, callData: RPCMessage.CallData) {
         val callContext = RPCCallContext(callId)
         val json = prepareJson(callContext)
         callContexts[callId] = callContext
         val methodName = callData.method
-        val method = methods[methodName] ?: error("Unknown method $methodName")
+        val method = methods[methodName]
+
+        if (method == null) {
+            val cause = NoSuchMethodException("Service ${serviceType.classifier} has no method $methodName")
+            val message = RPCMessage.CallException(callId, serviceTypeString, serializeException(cause))
+            launch {
+                transport.send(message)
+            }
+            return
+        }
+
         val type = rpcServiceMethodSerializationTypeOf(serviceType, methodName) ?: error("Unknown method $methodName")
         val serializerModule = json.serializersModule
         val paramsSerializer = serializerModule.contextualForFlow(type)
@@ -102,13 +111,13 @@ class RPCServer<T>(
                 val value = method.callSuspend(service, *argsArray)
                 val returnSerializer = json.serializersModule.contextualForFlow(returnType)
                 val jsonResult = json.encodeToString(returnSerializer, value)
-                RPCMessage.CallSuccess(callId, jsonResult)
+                RPCMessage.CallSuccess(callId, serviceTypeString, jsonResult)
             } catch (cause: InvocationTargetException) {
                 val serializedCause = serializeException(cause.cause!!)
-                RPCMessage.CallException(callId, serializedCause)
+                RPCMessage.CallException(callId, serviceTypeString, serializedCause)
             } catch (cause: Throwable) {
                 val serializedCause = serializeException(cause)
-                RPCMessage.CallException(callId, serializedCause)
+                RPCMessage.CallException(callId, serviceTypeString, serializedCause)
             }
             transport.send(result)
             handleOutgoingFlows(callContext, json)
@@ -119,6 +128,7 @@ class RPCServer<T>(
         }
     }
 
+    @OptIn(InternalKRPCApi::class)
     private suspend fun handleOutgoingFlows(callContext: RPCCallContext, json: Json) {
         val mutex = Mutex()
         for (clientFlow in callContext.outgoingFlows) {
@@ -132,18 +142,18 @@ class RPCServer<T>(
                         // which is not published with `transport.send(message)`
                         mutex.withLock {
                             val data = json.encodeToString(elementSerializer, it!!)
-                            val message = RPCMessage.StreamMessage(callId, flowId, data)
+                            val message = RPCMessage.StreamMessage(callId, serviceTypeString, flowId, data)
                             transport.send(message)
                         }
                     }
                 } catch (cause: Throwable) {
                     val serializedReason = serializeException(cause)
-                    val message = RPCMessage.StreamCancel(callId, flowId, serializedReason)
+                    val message = RPCMessage.StreamCancel(callId, serviceTypeString, flowId, serializedReason)
                     transport.send(message)
                     throw cause
                 }
 
-                val message = RPCMessage.StreamFinished(callId, flowId)
+                val message = RPCMessage.StreamFinished(callId, serviceTypeString, flowId)
                 transport.send(message)
             }
         }
@@ -151,12 +161,8 @@ class RPCServer<T>(
 
     private fun prepareJson(rpcCallContext: RPCCallContext): Json = Json {
         serializersModule = SerializersModule {
-            polymorphic(Flow::class) {
-                defaultDeserializer { TODO() }
-            }
             contextual(Flow::class) {
-                @Suppress("UNCHECKED_CAST")
-                FlowSerializer(rpcCallContext, it.first() as KSerializer<Any>)
+                @Suppress("UNCHECKED_CAST") FlowSerializer(rpcCallContext, it.first() as KSerializer<Any>)
             }
         }
     }

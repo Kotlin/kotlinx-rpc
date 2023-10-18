@@ -18,7 +18,7 @@ annotation class WithRPCClientObject(
 
 @InternalKRPCApi
 @OptIn(ExperimentalAssociatedObjects::class)
-fun <R> withRPCClientObject(kClass: KClass<*>): R {
+actual fun <R> findRPCProviderInCompanion(kClass: KClass<*>): R {
     @Suppress("UNCHECKED_CAST")
     return kClass.findAssociatedObject<WithRPCClientObject>() as? R
         ?: internalError("unable to find $kClass rpc client object")

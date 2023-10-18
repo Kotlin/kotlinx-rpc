@@ -8,8 +8,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.job
 import kotlinx.serialization.json.Json
 import org.jetbrains.krpc.RPC
-import org.jetbrains.krpc.client.RPCClientEngine
-import org.jetbrains.krpc.client.rpcServiceOf
+import org.jetbrains.krpc.client.clientOf
 import org.jetbrains.krpc.transport.ktor.KtorTransport
 
 @OptIn(InternalCoroutinesApi::class)
@@ -19,8 +18,7 @@ suspend inline fun <reified T : RPC> HttpClient.rpc(
 ): T {
     val session = webSocketSession(block)
     val transport = KtorTransport(json, session)
-    val clientEngine = RPCClientEngine(transport)
-    val result = rpcServiceOf<T>(clientEngine)
+    val result = RPC.clientOf<T>(transport)
 
     result.coroutineContext.job.invokeOnCompletion(onCancelling = true) {
         transport.cancel()

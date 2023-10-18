@@ -1,6 +1,9 @@
 package org.jetbrains.krpc
 
-actual class DeserializedException actual constructor(
+import org.jetbrains.krpc.internal.InternalKRPCApi
+
+internal actual class DeserializedException @OptIn(InternalKRPCApi::class)
+actual constructor(
     private val toStringMessage: String,
     override val message: String,
     stacktrace: List<StackElement>,
@@ -8,13 +11,16 @@ actual class DeserializedException actual constructor(
     className: String
 ) : Throwable() {
 
+    @OptIn(InternalKRPCApi::class)
     override val cause: Throwable? = cause?.deserialize()
 
     override fun toString(): String = toStringMessage
 }
 
+@OptIn(InternalKRPCApi::class)
 internal actual fun Throwable.stackElements(): List<StackElement> = emptyList()
 
+@OptIn(InternalKRPCApi::class)
 actual fun SerializedException.deserialize(): Throwable {
     return DeserializedException(toStringMessage, message, stacktrace, cause, className)
 }

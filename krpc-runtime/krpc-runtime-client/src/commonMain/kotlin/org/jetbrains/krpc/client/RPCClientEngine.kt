@@ -1,58 +1,95 @@
 package org.jetbrains.krpc.client
 
+import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.StringFormat
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import org.jetbrains.krpc.*
+import org.jetbrains.krpc.internal.InternalKRPCApi
 import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.KType
 
-class RPCClientEngine(private val transport: RPCTransport) : RPCEngine {
+private val CLIENT_ENGINE_ID = atomic(initial = 0L)
+
+@OptIn(InternalCoroutinesApi::class)
+internal class RPCClientEngine(
+    private val transport: RPCTransport,
+    private val serviceType: KType,
+) : RPCEngine {
+    private val callCounter = atomic(0L)
+    private val engineId: Long = CLIENT_ENGINE_ID.incrementAndGet()
+    private val logger = KotlinLogging.logger("RPCClientEngine[0x${hashCode().toString(16)}]")
+    private val serviceTypeString = serviceType.toString()
 
     override val coroutineContext: CoroutineContext = Job() + Dispatchers.Default
 
-    private var callIndex: Long = 0
+    init {
+        coroutineContext.job.invokeOnCompletion {
+            logger.trace { "Job completed with $it" }
+        }
+    }
 
+    @OptIn(InternalKRPCApi::class)
     override suspend fun call(callInfo: RPCCallInfo): Any? {
-        val callId = callInfo.dataType.toString() + ":" + callIndex++
+        val id = callCounter.incrementAndGet()
+        val callId = "$engineId:${callInfo.dataType}:$id"
+
+        logger.trace { "start a call[$callId] ${callInfo.methodName}" }
+
         val callContext = RPCCallContext(callId)
         val json = prepareJson(callContext)
-        val message = serializeRequest(callId, callInfo, json)
-        val result = CompletableDeferred<Any?>()
+        val firstMessage = serializeRequest(callId, callInfo, json)
+        val deferred = CompletableDeferred<Any?>()
 
         launch {
-            val incoming: Flow<RPCMessage> = transport.incoming.filter { it.callId == callId }
+            transport.subscribe { message ->
+                if (message.callId != callId) return@subscribe false
 
-            incoming.collect {
-                when (it) {
+                when (message) {
                     is RPCMessage.CallData -> error("Unexpected message")
                     is RPCMessage.CallException -> {
-                        val cause = it.cause.deserialize()
-                        result.completeExceptionally(cause)
+                        val cause = runCatching {
+                            message.cause.deserialize()
+                        }
+
+                        val result = if (cause.isFailure) {
+                            cause.exceptionOrNull()!!
+                        } else {
+                            cause.getOrNull()!!
+                        }
+
+                        deferred.completeExceptionally(result)
                     }
 
                     is RPCMessage.CallSuccess -> {
-                        val serializerResult = json.serializersModule.contextualForFlow(callInfo.returnType)
-                        val value = json.decodeFromString(serializerResult, it.data)
-                        result.complete(value)
+                        val value = runCatching {
+                            val serializerResult = json.serializersModule.contextualForFlow(callInfo.returnType)
+                            json.decodeFromString(serializerResult, message.data)
+                        }
+
+                        deferred.completeWith(value)
                     }
 
                     is RPCMessage.StreamCancel -> {
-                        callContext.cancelFlow(it)
+                        callContext.cancelFlow(message)
                     }
 
                     is RPCMessage.StreamFinished -> {
-                        callContext.closeFlow(it)
+                        callContext.closeFlow(message)
                     }
 
                     is RPCMessage.StreamMessage -> {
-                        callContext.send(it, json)
+                        callContext.send(message, json)
                     }
                 }
+
+                return@subscribe true
             }
         }
 
@@ -60,15 +97,16 @@ class RPCClientEngine(private val transport: RPCTransport) : RPCEngine {
             callContext.close()
         }
 
-        transport.send(message)
+        transport.send(firstMessage)
 
         launch {
             handleOutgoingFlows(callContext, json)
         }
 
-        return result.await()
+        return deferred.await()
     }
 
+    @OptIn(InternalKRPCApi::class)
     private suspend fun handleOutgoingFlows(callContext: RPCCallContext, json: Json) {
         val mutex = Mutex()
         for (clientFlow in callContext.outgoingFlows) {
@@ -80,27 +118,27 @@ class RPCClientEngine(private val transport: RPCTransport) : RPCEngine {
                     clientFlow.flow.collect {
                         mutex.withLock {
                             val data = json.encodeToString(elementSerializer, it!!)
-                            val message = RPCMessage.StreamMessage(callId, flowId, data)
+                            val message = RPCMessage.StreamMessage(callId, serviceTypeString, flowId, data)
                             transport.send(message)
                         }
                     }
                 } catch (cause: Throwable) {
                     val serializedReason = serializeException(cause)
-                    val message = RPCMessage.StreamCancel(callId, flowId, serializedReason)
+                    val message = RPCMessage.StreamCancel(callId, serviceTypeString, flowId, serializedReason)
                     transport.send(message)
                     throw cause
                 }
 
-                val message = RPCMessage.StreamFinished(callId, flowId)
+                val message = RPCMessage.StreamFinished(callId, serviceTypeString, flowId)
                 transport.send(message)
             }
         }
     }
 
-    private fun serializeRequest(callId: String, callInfo: RPCCallInfo, json: Json): RPCMessage {
+    private fun serializeRequest(callId: String, callInfo: RPCCallInfo, json: StringFormat): RPCMessage {
         val serializerData = json.serializersModule.contextualForFlow(callInfo.dataType)
         val jsonData = json.encodeToString(serializerData, callInfo.data)
-        return RPCMessage.CallData(callId, callInfo.methodName, jsonData)
+        return RPCMessage.CallData(callId, serviceTypeString, callInfo.methodName, jsonData)
     }
 
     private fun prepareJson(rpcCallContext: RPCCallContext): Json = Json {

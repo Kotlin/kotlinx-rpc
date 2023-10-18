@@ -2,6 +2,7 @@ package org.jetbrains.krpc.transport.ktor
 
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.NonCancellable.invokeOnCompletion
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -12,14 +13,16 @@ import kotlin.coroutines.CoroutineContext
 @OptIn(InternalCoroutinesApi::class, DelicateCoroutinesApi::class)
 class KtorTransport(
     private val json: Json,
-    private val webSocketSession: WebSocketSession
-) : RPCTransport {
+    private val webSocketSession: WebSocketSession,
+) : RPCTransport() {
     // Transport job should always be cancelled and never closed
     private val transportJob = Job()
 
     override val coroutineContext: CoroutineContext = webSocketSession.coroutineContext + transportJob
 
-    private val incomingFlow = MutableSharedFlow<RPCMessage>()
+    private val subscribers = mutableListOf<suspend (RPCMessage) -> Boolean>()
+    private val first = Job()
+
 
     init {
         // Close the socket when the transport job is cancelled manually
@@ -29,28 +32,29 @@ class KtorTransport(
                 webSocketSession.close()
             }
         }
-    }
 
-    init {
         launch {
+            first.join()
+
             for (message in webSocketSession.incoming) {
                 check(message is Frame.Text)
                 val messageText = message.readText()
                 val rpcMessage = json.decodeFromString<RPCMessage>(messageText)
-                incomingFlow.emit(rpcMessage)
-
+                subscribers.forEach { it(rpcMessage) }
             }
 
             webSocketSession.close()
-            // Cancelling the job when the socket is closed from the other side
             transportJob.cancel()
         }
     }
 
-    override val incoming: SharedFlow<RPCMessage> = incomingFlow
-
     override suspend fun send(message: RPCMessage) {
         val messageText = json.encodeToString(message)
         webSocketSession.send(messageText)
+    }
+
+    override suspend fun subscribe(block: suspend (RPCMessage) -> Boolean) {
+        subscribers.add(block)
+        first.complete()
     }
 }

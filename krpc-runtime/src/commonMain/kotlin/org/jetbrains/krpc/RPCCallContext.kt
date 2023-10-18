@@ -4,6 +4,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
+import org.jetbrains.krpc.internal.InternalKRPCApi
 
 class RPCCallContext(
     val callId: String,
@@ -20,6 +21,7 @@ class RPCCallContext(
         return id
     }
 
+    @OptIn(InternalKRPCApi::class)
     fun prepareFlow(flowId: String, elementSerializer: KSerializer<Any>): Flow<*> {
         val incoming: Channel<Any> = Channel(Channel.UNLIMITED)
         incomingChannels[flowId] = incoming

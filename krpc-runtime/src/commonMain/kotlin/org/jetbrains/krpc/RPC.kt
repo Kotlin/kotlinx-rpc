@@ -3,4 +3,6 @@ package org.jetbrains.krpc
 import kotlinx.coroutines.CoroutineScope
 
 // Marker interface for services
-interface RPC : CoroutineScope
+interface RPC : CoroutineScope {
+    companion object
+}

@@ -11,10 +11,8 @@ fun Project.configureMppPublication() {
     val spacePassword = System.getenv("SPACE_PASSWORD")
 
     the<PublishingExtension>().apply {
-        if (spaceUser == null || spacePassword == null) {
-            println("SPACE_USERNAME or SPACE_PASSWORD is not set, skipping remote publication config")
-            return
-        }
+        if (spaceUser == null || spacePassword == null) return
+
         repositories {
             maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven") {
                 credentials {
