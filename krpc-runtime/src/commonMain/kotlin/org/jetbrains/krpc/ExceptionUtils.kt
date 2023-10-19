@@ -37,7 +37,7 @@ class SerializedException(
 @InternalKRPCApi
 expect fun SerializedException.deserialize(): Throwable
 
-internal expect class DeserializedException @OptIn(InternalKRPCApi::class) constructor(
+internal expect class DeserializedException(
     toStringMessage: String,
     message: String,
     stacktrace: List<StackElement>,

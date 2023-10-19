@@ -14,6 +14,7 @@ fun <T : RPC> RPC.Companion.serverOf(
     transport: RPCTransport,
 ): RPCServerEngine<T> = RPCServerEngine(service, transport, serviceType)
 
+@Suppress("unused")
 @Deprecated(
     "Use RPC.serverOf(service, transport) instead.",
     ReplaceWith("RPC.serverOf(service, transport)", "org.jetbrains.krpc.server.serverOf", "org.jetbrains.krpc.RPC"),
@@ -23,6 +24,7 @@ inline fun <reified T : RPC> rpcServerOf(service: T, transport: RPCTransport): R
     RPC.serverOf(service, typeOf<T>(), transport)
 
 
+@Suppress("unused")
 @Deprecated(
     "Use RPC.serverOf(service, serviceType, transport) instead.", ReplaceWith(
         "RPC.serverOf(service, serviceType, transport)", "org.jetbrains.krpc.server.serverOf", "org.jetbrains.krpc.RPC"
@@ -33,5 +35,5 @@ fun <T : RPC> rpcServerOf(
     serviceType: KType,
     transport: RPCTransport,
 ): RPCServerEngine<T> {
-    return RPCServerEngine(service, transport, serviceType)
+    return RPC.serverOf(service, serviceType, transport)
 }

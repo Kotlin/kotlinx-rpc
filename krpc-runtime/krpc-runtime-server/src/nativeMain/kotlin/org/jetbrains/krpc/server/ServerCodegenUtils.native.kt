@@ -12,6 +12,7 @@ actual inline fun <reified T : RPC> rpcServiceMethodSerializationTypeOf(methodNa
     return rpcServiceMethodSerializationTypeOf(T::class, methodName)
 }
 
+@OptIn(InternalKRPCApi::class)
 actual fun rpcServiceMethodSerializationTypeOf(serviceType: KType, methodName: String): KType? {
     return rpcServiceMethodSerializationTypeOf(serviceType.kClass(), methodName)
 }

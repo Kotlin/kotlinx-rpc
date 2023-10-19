@@ -17,10 +17,9 @@ import kotlin.reflect.KType
 
 private val CLIENT_ENGINE_ID = atomic(initial = 0L)
 
-@OptIn(InternalCoroutinesApi::class)
 internal class RPCClientEngine(
     private val transport: RPCTransport,
-    private val serviceType: KType,
+    serviceType: KType,
 ) : RPCEngine {
     private val callCounter = atomic(0L)
     private val engineId: Long = CLIENT_ENGINE_ID.incrementAndGet()

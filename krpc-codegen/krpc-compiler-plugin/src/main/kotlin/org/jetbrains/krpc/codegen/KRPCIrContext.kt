@@ -31,10 +31,6 @@ internal class KRPCIrContext(private val pluginContext: IrPluginContext) {
         getRpcIrClassSymbol("InternalKRPCApi", "internal")
     }
 
-    val rpcClientObjectClass by lazy {
-        getRpcIrClassSymbol("RPCClientObject", "internal")
-    }
-
     private fun getRpcIrClassSymbol(name: String, subpackage: String? = null): IrClassSymbol {
         val suffix = subpackage?.let { ".$subpackage" } ?: ""
         return getIrClassSymbol("org.jetbrains.krpc$suffix", name)

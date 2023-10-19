@@ -1,14 +1,11 @@
 package org.jetbrains.krpc.buildutils
 
-import org.gradle.api.Action
-import org.gradle.api.NamedDomainObjectContainer
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 fun KotlinMultiplatformExtension.allTargets(
     jvm: Boolean = true,
-    js: Boolean = true,
+    js: Boolean = false,
     native: Boolean = true,
 ): List<KotlinTarget> {
     val result = mutableListOf<KotlinTarget>()
@@ -28,7 +25,7 @@ fun KotlinMultiplatformExtension.allTargets(
 //            watchosDeviceArm64(),
             tvosX64(),
             tvosArm64(),
-            tvosSimulatorArm64(),
+//            tvosSimulatorArm64(),
             macosX64(),
             macosArm64()
         )
@@ -54,12 +51,12 @@ fun KotlinMultiplatformExtension.allTargets(
         }
     }
 
-//    if (js) {
-//        result += js(IR) {
-//            browser()
-//            nodejs()
-//        }
-//    }
+    if (js) {
+        result += js(IR) {
+            browser()
+            nodejs()
+        }
+    }
 
     return result
 }

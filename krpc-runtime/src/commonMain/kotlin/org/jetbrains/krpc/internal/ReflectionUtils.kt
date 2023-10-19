@@ -3,6 +3,7 @@ package org.jetbrains.krpc.internal
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
+@InternalKRPCApi
 @Suppress("UNCHECKED_CAST")
 fun <T : Any> KType.kClass(): KClass<T> {
     val classifier = classifier ?: error("Expected denotable type, found $this")
@@ -11,7 +12,7 @@ fun <T : Any> KType.kClass(): KClass<T> {
     return classifierClass as KClass<T>
 }
 
-
+@InternalKRPCApi
 fun internalError(message: String): Nothing {
     error("Internal kRPC error: $message")
 }

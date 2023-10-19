@@ -15,7 +15,6 @@ import org.junit.Assert.assertEquals
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.Test
 
-
 interface NewService : RPC {
     suspend fun echo(value: String): String
 }

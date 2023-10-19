@@ -1,12 +1,7 @@
 package org.jetbrains.krpc
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import org.jetbrains.krpc.internal.InternalKRPCApi
 import kotlin.coroutines.CoroutineContext
 
 abstract class RPCTransport(

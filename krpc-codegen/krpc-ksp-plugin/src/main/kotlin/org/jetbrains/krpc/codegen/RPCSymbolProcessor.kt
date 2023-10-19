@@ -3,13 +3,10 @@ package org.jetbrains.krpc.codegen
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.getDeclaredProperties
-import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.*
-
-private val ws = Regex("\\s")
 
 class RPCSymbolProcessor(
     private val env: SymbolProcessorEnvironment

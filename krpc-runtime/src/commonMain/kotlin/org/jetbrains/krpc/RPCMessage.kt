@@ -19,7 +19,11 @@ sealed interface RPCMessage {
     ) : RPCMessage
 
     @Serializable
-    data class CallSuccess(override val callId: String, override val serviceType: String, val data: String) : CallResult
+    data class CallSuccess(
+        override val callId: String,
+        override val serviceType: String,
+        val data: String
+    ) : CallResult
 
     /**
      * Both for client and server
@@ -45,8 +49,7 @@ sealed interface RPCMessage {
         override val serviceType: String,
         val flowId: String,
         val cause: SerializedException
-    ) :
-        RPCMessage
+    ) : RPCMessage
 
     @Serializable
     data class StreamFinished(

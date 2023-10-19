@@ -2,6 +2,7 @@ package org.jetbrains.krpc.test
 
 import kotlinx.serialization.Serializable
 
+@Suppress("EqualsOrHashCode")
 @Serializable
 open class TestClass(val value: Int = 0) {
     override fun equals(other: Any?): Boolean {
@@ -11,7 +12,7 @@ open class TestClass(val value: Int = 0) {
 }
 
 @Serializable
-data class TestList<T : TestClass>(val value: Int = 42)
+data class TestList<@Suppress("unused") T : TestClass>(val value: Int = 42)
 
 @Serializable
-data class TestList2<out T : TestClass>(val value: Int = 42)
+data class TestList2<@Suppress("unused") out T : TestClass>(val value: Int = 42)

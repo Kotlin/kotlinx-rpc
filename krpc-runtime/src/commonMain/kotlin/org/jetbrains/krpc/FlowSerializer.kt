@@ -1,7 +1,6 @@
 package org.jetbrains.krpc
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -15,8 +14,8 @@ class FlowSerializer(
 ) : KSerializer<Flow<*>> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(
-        "FlowIdentifier",
-        PrimitiveKind.STRING
+        serialName = "FlowIdentifier",
+        kind = PrimitiveKind.STRING
     )
 
     override fun deserialize(decoder: Decoder): Flow<*> {

@@ -1,6 +1,5 @@
 package org.jetbrains.krpc
 
-import kotlinx.coroutines.flow.Flow
 import kotlin.reflect.KType
 
 data class RPCCallInfo(
@@ -9,5 +8,3 @@ data class RPCCallInfo(
     val dataType: KType,
     val returnType: KType
 )
-
-fun RPCCallInfo.returnsFlow() = returnType.classifier == Flow::class

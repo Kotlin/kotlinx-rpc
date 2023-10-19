@@ -50,7 +50,7 @@ class MyServiceBackend : MyService {
     }
 
     override suspend fun mapParams(arg1: Map<String, Map<Int, List<String>>>) {
-        println("Received map: ${arg1.entries.joinToString { "${it.key} -> ${it.value.entries.joinToString { "${it.key} -> ${it.value.joinToString()}" }}" }}")
+        println("Received map: ${arg1.entries.joinToString { "${it.key} -> ${it.value.entries.joinToString { (key, value) -> "$key -> ${value.joinToString()}" }}" }}")
     }
 
     override suspend fun customType(arg1: TestClass): TestClass {
@@ -65,7 +65,7 @@ class MyServiceBackend : MyService {
     override suspend fun variance(
         arg2: TestList<in TestClass>,
         arg3: TestList2<*>
-    ): TestList<out TestClass>? {
+    ): TestList<out TestClass> {
         println("variance: $arg2 $arg3")
         return TestList(3)
     }

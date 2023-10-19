@@ -6,9 +6,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import org.jetbrains.krpc.internal.InternalKRPCApi
 
-class RPCCallContext(
-    val callId: String,
-) {
+class RPCCallContext(private val callId: String) {
     private var flowId = 0
     private val incomingFlows = ConcurrentMap<String, FlowInfo>()
     private val incomingChannels = ConcurrentMap<String, Channel<Any>>()

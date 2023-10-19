@@ -19,9 +19,9 @@ import kotlin.reflect.KType
 import kotlin.reflect.full.callSuspend
 
 class RPCServerEngine<T : RPC>(
-    val service: T,
-    val transport: RPCTransport,
-    val serviceType: KType,
+    private val service: T,
+    private val transport: RPCTransport,
+    private val serviceType: KType,
 ) : CoroutineScope {
     private val serviceTypeString = serviceType.toString()
     private val logger = KotlinLogging.logger("RPCServer[0x${hashCode().toString(16)}]")
@@ -46,7 +46,7 @@ class RPCServerEngine<T : RPC>(
         }
     }
 
-    internal suspend fun run(): Unit = withContext(coroutineContext) {
+    private suspend fun run(): Unit = withContext(coroutineContext) {
         transport.subscribe { message ->
             if (message.serviceType != serviceTypeString) return@subscribe false
             val callId = message.callId

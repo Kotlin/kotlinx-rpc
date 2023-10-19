@@ -2,7 +2,7 @@ import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.test.KRPCTransportTestBase
 
 class StringTransportTest : KRPCTransportTestBase() {
-    val transport = StringTransport()
+    private val transport = StringTransport()
 
     override val clientTransport: RPCTransport
         get() = transport.client

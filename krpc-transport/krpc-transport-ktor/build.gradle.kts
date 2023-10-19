@@ -9,7 +9,7 @@ plugins {
 }
 
 kotlin {
-    val targets = allTargets()
+    allTargets()
 
     sourceSets {
         commonMain {

@@ -12,7 +12,7 @@ data class PayloadWithStream(val payload: String, val stream: @Contextual Flow<S
 data class PayloadWithPayload(val payload: String, val flow: @Contextual Flow<PayloadWithStream>) {
     suspend fun collectAndPrint() {
         flow.collect {
-            it.stream.collect { println("item $it") }
+            it.stream.collect { item -> println("item $item") }
         }
     }
 }

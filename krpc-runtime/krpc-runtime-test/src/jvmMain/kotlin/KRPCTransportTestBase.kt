@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package org.jetbrains.krpc.test
 
 import kotlinx.coroutines.*
@@ -20,10 +22,9 @@ abstract class KRPCTransportTestBase {
     abstract val clientTransport: RPCTransport
     abstract val serverTransport: RPCTransport
 
-    lateinit var backend: RPCServerEngine<MyService>
-    lateinit var client: MyService
+    private lateinit var backend: RPCServerEngine<MyService>
+    private lateinit var client: MyService
 
-    @OptIn(DelicateCoroutinesApi::class)
     @BeforeTest
     fun start() {
         backend = RPC.serverOf<MyService>(MyServiceBackend(), serverTransport)
@@ -254,7 +255,7 @@ abstract class KRPCTransportTestBase {
         runBlocking {
             val flow = MutableSharedFlow<Int>()
             val result = client.echoStream(flow.take(10))
-            async {
+            launch {
                 var id = 0
                 result.collect {
                     assertEquals(id, it)
@@ -298,7 +299,6 @@ abstract class KRPCTransportTestBase {
             try {
                 client.throwsIllegalArgument("me")
             } catch (e: IllegalArgumentException) {
-                e.printStackTrace()
                 assertEquals("me", e.message)
             }
             try {
@@ -376,6 +376,7 @@ abstract class KRPCTransportTestBase {
 
                 // let's block the thread
                 while (running.get()) {
+                    // do nothing
                 }
             }
 

@@ -1,13 +1,9 @@
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import org.jetbrains.krpc.RPCMessage
 import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.broadcast
-import org.jetbrains.krpc.multiclient
-import kotlin.coroutines.CoroutineContext
 
 class StringTransport(waiting: Boolean = true) : CoroutineScope {
     override val coroutineContext = Job()

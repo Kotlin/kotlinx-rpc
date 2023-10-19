@@ -7,8 +7,8 @@ import java.lang.reflect.Modifier
 private val throwableFields = Throwable::class.java.fieldsCountOrDefault(-1)
 
 @OptIn(InternalKRPCApi::class)
-internal actual class DeserializedException @OptIn(InternalKRPCApi::class) actual constructor(
-    val toStringMessage: String,
+internal actual class DeserializedException actual constructor(
+    private val toStringMessage: String,
     override val message: String,
     stacktrace: List<StackElement>,
     cause: SerializedException?,
@@ -25,11 +25,12 @@ internal actual class DeserializedException @OptIn(InternalKRPCApi::class) actua
     override fun toString(): String = toStringMessage
 }
 
-
-@OptIn(InternalKRPCApi::class)
 internal actual fun Throwable.stackElements(): List<StackElement> = stackTrace.map {
     StackElement(
-        clazz = it.className, method = it.methodName, fileName = it.fileName, lineNumber = it.lineNumber
+        clazz = it.className,
+        method = it.methodName,
+        fileName = it.fileName,
+        lineNumber = it.lineNumber,
     )
 }
 
@@ -38,9 +39,9 @@ actual fun SerializedException.deserialize(): Throwable {
     try {
         val clazz = Class.forName(className)
         val fieldsCount = clazz.fieldsCountOrDefault(throwableFields)
-        if (fieldsCount != throwableFields) return DeserializedException(
-            toStringMessage, message, stacktrace, cause, className
-        )
+        if (fieldsCount != throwableFields) {
+            return DeserializedException(toStringMessage, message, stacktrace, cause, className)
+        }
 
         val constructors = clazz.constructors.sortedByDescending { it.parameterTypes.size }
         for (constructor in constructors) {

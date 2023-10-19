@@ -2,8 +2,6 @@ package org.jetbrains.krpc.transport.ktor
 
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.NonCancellable.invokeOnCompletion
-import kotlinx.coroutines.flow.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.krpc.RPCMessage

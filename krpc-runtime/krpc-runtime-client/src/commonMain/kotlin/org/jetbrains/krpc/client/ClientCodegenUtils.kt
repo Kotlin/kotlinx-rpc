@@ -24,7 +24,8 @@ inline fun <reified T : RPC> RPC.Companion.clientOf(transport: RPCTransport): T 
 /**
  * Creates a client of the specified RPC type using the given RPCEngine.
  *
- * @param engine The RPCEngine instance used for creating the client.
+ * @param serviceType The type of the service to retrieve.
+ * @param transport the transport to be used for communication with the remote server
  * @return A client of the specified RPC type.
  */
 fun <T: RPC> RPC.Companion.clientOf(serviceType: KType, transport: RPCTransport): T {
@@ -39,6 +40,7 @@ fun <T: RPC> RPC.Companion.clientOf(serviceType: KType, transport: RPCTransport)
  * @param engine The RPC engine used to retrieve the service.
  * @return An instance of the specified service type.
  */
+@OptIn(InternalKRPCApi::class)
 fun <T : RPC> RPC.Companion.clientOf(serviceType: KType, engine: RPCEngine): T {
     return clientOf(serviceType.kClass(), engine)
 }
@@ -64,6 +66,7 @@ fun <T : RPC> RPC.Companion.clientOf(kClass: KClass<T>, engine: RPCEngine): T {
     return withRPCClientObject.client(engine)
 }
 
+@Suppress("unused")
 @Deprecated(
     "All RPC methods migrated to [RPC] scope",
     level = DeprecationLevel.WARNING,
@@ -73,6 +76,7 @@ fun <T : RPC> RPC.Companion.clientOf(kClass: KClass<T>, engine: RPCEngine): T {
 )
 inline fun <reified T : RPC> rpcServiceOf(transport: RPCTransport): T = RPC.clientOf(transport)
 
+@Suppress("unused")
 @Deprecated(
     "All RPC methods migrated to the [RPC] scope",
     level = DeprecationLevel.WARNING,
