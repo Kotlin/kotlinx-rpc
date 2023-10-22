@@ -12,7 +12,7 @@ class RPCServiceDeclaration(
     class Function(
         val name: String,
         val argumentTypes: List<Argument>,
-        val returnType: KSType?,
+        val returnType: KSType,
     ) {
         class Argument(
             val name: String,

@@ -20,7 +20,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         writer: CodeWriter,
         service: RPCServiceDeclaration,
     ) {
-        writer.write("@file:Suppress(\"RedundantUnitReturnType\", \"RemoveRedundantQualifierName\", \"USELESS_CAST\", \"UNCHECKED_CAST\", \"ClassName\", \"MemberVisibilityCanBePrivate\")")
+        writer.write("@file:Suppress(\"RedundantUnitReturnType\", \"RemoveRedundantQualifierName\", \"USELESS_CAST\", \"UNCHECKED_CAST\", \"ClassName\", \"MemberVisibilityCanBePrivate\", \"KotlinRedundantDiagnosticSuppress\", \"UnusedImport\")")
         writer.newLine()
         writer.newLine()
 
@@ -69,7 +69,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
     private fun RPCServiceDeclaration.Function.toCode(writer: CodeWriter) {
         generateFunctionClass(writer)
 
-        val returnTypeGenerated = if (returnType.isUnit()) ": Unit" else ": ${returnType!!.toCode()}"
+        val returnTypeGenerated = if (returnType.isUnit()) ": Unit" else ": ${returnType.toCode()}"
         writer.write("override suspend fun ${name}(${argumentTypes.joinToString { it.toCode() }})$returnTypeGenerated = withContext(coroutineContext) {")
         writer.newLine()
         generateBody(writer.nested())
@@ -122,7 +122,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
     }
 
     private fun RPCServiceDeclaration.Function.generateBody(writer: CodeWriter) {
-        writer.write("val returnType = typeOf<${returnType?.toCode() ?: "Unit"}>()")
+        writer.write("val returnType = typeOf<${returnType.toCode()}>()")
         writer.newLine()
 
         val data = "${name.functionGeneratedClass()}${
@@ -137,11 +137,11 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         }"
 
         val prefix = if (returnType.isUnit()) "" else "val result = "
-        writer.write("${prefix}engine.call(RPCCallInfo(\"$name\", $data, typeOf<${name.functionGeneratedClass()}>(), returnType))")
+        writer.write("${prefix}engine.call(RPCCallInfo(\"$name\", $data, typeOf<${name.functionGeneratedClass()}>(), returnType, RPCMessage.CallType.Method))")
         writer.newLine()
 
         if (!returnType.isUnit()) {
-            writer.write("check(result is ${returnType!!.toCodeSimplified()})")
+            writer.write("check(result is ${returnType.toCodeSimplified()})")
             writer.newLine()
             writer.write("return@withContext result as ${returnType.toCode()}")
             writer.newLine()

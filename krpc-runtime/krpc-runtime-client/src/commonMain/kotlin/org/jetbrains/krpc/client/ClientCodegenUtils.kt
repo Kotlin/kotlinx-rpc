@@ -1,8 +1,6 @@
 package org.jetbrains.krpc.client
 
-import org.jetbrains.krpc.RPC
-import org.jetbrains.krpc.RPCEngine
-import org.jetbrains.krpc.RPCTransport
+import org.jetbrains.krpc.*
 import org.jetbrains.krpc.internal.InternalKRPCApi
 import org.jetbrains.krpc.internal.RPCClientProvider
 import org.jetbrains.krpc.internal.findRPCProviderInCompanion
@@ -17,8 +15,11 @@ import kotlin.reflect.typeOf
  * @param transport the transport to be used for communication with the remote server
  * @return an instance of the client for the specified RPC interface
  */
-inline fun <reified T : RPC> RPC.Companion.clientOf(transport: RPCTransport): T {
-    return clientOf(typeOf<T>(), transport)
+inline fun <reified T : RPC> RPC.Companion.clientOf(
+    transport: RPCTransport,
+    noinline configBuilder: RPCConfigBuilder.Client.() -> Unit = {},
+): T {
+    return clientOf(typeOf<T>(), transport, configBuilder)
 }
 
 /**
@@ -28,8 +29,13 @@ inline fun <reified T : RPC> RPC.Companion.clientOf(transport: RPCTransport): T 
  * @param transport the transport to be used for communication with the remote server
  * @return A client of the specified RPC type.
  */
-fun <T: RPC> RPC.Companion.clientOf(serviceType: KType, transport: RPCTransport): T {
-    val engine = RPCClientEngine(transport, serviceType)
+fun <T : RPC> RPC.Companion.clientOf(
+    serviceType: KType,
+    transport: RPCTransport,
+    configBuilder: RPCConfigBuilder.Client.() -> Unit = {},
+): T {
+    val config = RPCConfigBuilder.Client().apply(configBuilder).build()
+    val engine = RPCClientEngine(transport, serviceType, config)
     return clientOf(serviceType, engine)
 }
 
@@ -54,6 +60,7 @@ fun <T : RPC> RPC.Companion.clientOf(serviceType: KType, engine: RPCEngine): T {
 inline fun <reified T : RPC> RPC.Companion.clientOf(engine: RPCEngine): T {
     return clientOf(T::class, engine)
 }
+
 /**
  * Returns an instance of the specified service type from the given RPC engine.
  *

@@ -96,7 +96,7 @@ class RPCSymbolProcessor(
         return RPCServiceDeclaration.Function(
             name = functionDeclaration.simpleName.getShortName(),
             argumentTypes = functionDeclaration.parameters.map { processFunctionArgument(functionDeclaration, it) },
-            returnType = functionDeclaration.returnType?.resolve(), // todo validation
+            returnType = functionDeclaration.returnType?.resolve() ?: error("Failed to resolve returnType for $functionDeclaration"), // todo validation
         )
     }
 

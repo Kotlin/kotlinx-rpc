@@ -7,5 +7,5 @@ class FlowInfo(
     val callId: String,
     val flowId: String,
     val flow: Flow<*>,
-    val elementSerializer: KSerializer<Any>
+    val elementSerializer: KSerializer<Any?>,
 )
