@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resumeWithException
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class KRPCTestServiceBackend : KRPCTestService {
@@ -235,5 +236,30 @@ class KRPCTestServiceBackend : KRPCTestService {
         stateFlowOfFlowsOfFlowsOfInts.value.value.emit(value)
         stateFlowOfFlowsOfFlowsOfInts.value.emit(MutableStateFlow(value))
         stateFlowOfFlowsOfFlowsOfInts.emit(MutableStateFlow(MutableStateFlow(value)))
+    }
+
+    override suspend fun sharedFlowInFunction(sharedFlow: SharedFlow<Int>): StateFlow<Int> {
+        val state = MutableStateFlow(-1)
+
+        launch {
+            assertEquals(listOf(0, 1, 2, 3, 4), sharedFlow.take(5).toList())
+            println("hello 1")
+            state.emit(1)
+            println("hello 2")
+        }
+
+        return state
+    }
+
+    override suspend fun stateFlowInFunction(stateFlow: StateFlow<Int>): StateFlow<Int> {
+        val state = MutableStateFlow(-1)
+        assertEquals(-1, stateFlow.value)
+
+        launch {
+            assertEquals(42, stateFlow.first { it == 42 })
+            state.emit(1)
+        }
+
+        return state
     }
 }

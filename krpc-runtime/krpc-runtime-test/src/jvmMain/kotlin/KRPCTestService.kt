@@ -80,4 +80,8 @@ interface KRPCTestService : RPC {
     suspend fun emitNextForStateFlowOfFlowsOfInts(value: Int)
 
     suspend fun emitNextForStateFlowOfFlowsOfFlowsOfInts(value: Int)
+
+    suspend fun sharedFlowInFunction(sharedFlow: SharedFlow<Int>): StateFlow<Int>
+
+    suspend fun stateFlowInFunction(stateFlow: StateFlow<Int>): StateFlow<Int>
 }

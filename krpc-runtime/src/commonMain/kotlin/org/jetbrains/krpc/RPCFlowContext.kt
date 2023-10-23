@@ -64,10 +64,6 @@ class RPCFlowContext(private val callId: String, private val config: RPCConfig) 
         val incoming: Channel<Any?> = Channel(Channel.UNLIMITED)
         incomingChannels[flowId] = incoming
 
-        flow {
-            emit(1)
-        }
-
         val flow = flowOf(flowKind, stateFlowInitialValue, incoming)
         incomingFlows[flowId] = FlowInfo(callId, flowId, flow, elementSerializer)
         return flow

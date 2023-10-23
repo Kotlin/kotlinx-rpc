@@ -53,7 +53,7 @@ class RPCSymbolProcessor(
         }
 
         val processedFunctions = serviceDeclaration.getDeclaredFunctions().toList().map {
-            processServiceFunction(it)
+            processServiceFunction(it, context)
         }
 
         val processedProperties = serviceDeclaration.getDeclaredProperties().toList().map {
@@ -72,7 +72,10 @@ class RPCSymbolProcessor(
         )
     }
 
-    private fun processServiceFunction(functionDeclaration: KSFunctionDeclaration): RPCServiceDeclaration.Function {
+    private fun processServiceFunction(
+        functionDeclaration: KSFunctionDeclaration,
+        context: RPCSymbolProcessorContext,
+    ): RPCServiceDeclaration.Function {
         if (functionDeclaration.typeParameters.isNotEmpty()) {
             codegenError("RPC Service function can not have type parameters", functionDeclaration)
         }
@@ -101,22 +104,26 @@ class RPCSymbolProcessor(
 
         return RPCServiceDeclaration.Function(
             name = functionDeclaration.simpleName.getShortName(),
-            argumentTypes = functionDeclaration.parameters.map { processFunctionArgument(functionDeclaration, it) },
+            argumentTypes = functionDeclaration.parameters.map { processFunctionArgument(functionDeclaration, it, context) },
             returnType = returnType,
         )
     }
 
     private fun processFunctionArgument(
         functionDeclaration: KSFunctionDeclaration,
-        argument: KSValueParameter
+        argument: KSValueParameter,
+        context: RPCSymbolProcessorContext,
     ): RPCServiceDeclaration.Function.Argument {
+        val type = argument.type.resolve()
+
         return RPCServiceDeclaration.Function.Argument(
             name = argument.name?.getShortName() ?: codegenError(
                 "Expected function argument name",
                 functionDeclaration
             ),
-            type = argument.type.resolve(),
+            type = type,
             isVararg = argument.isVararg,
+            isContextual = type.declaration.flowTypeOrNull(context) != null,
         )
     }
 
@@ -134,19 +141,21 @@ class RPCSymbolProcessor(
 
         val type = propertyDeclaration.type.resolve()
 
-        val flowType = when (type.declaration) {
-            context.plainFlowType.declaration -> RPCServiceDeclaration.FlowProperty.Type.Plain
-            context.sharedFlowType.declaration -> RPCServiceDeclaration.FlowProperty.Type.Shared
-            context.stateFlowType.declaration -> RPCServiceDeclaration.FlowProperty.Type.State
-
-            else -> {
-                codegenError("Only Flow, SharedFlow and StateFlow properties are allowed in RPC Service interfaces", propertyDeclaration)
-            }
-        }
+        val flowType = type.declaration.flowTypeOrNull(context)
+            ?: codegenError("Only Flow, SharedFlow and StateFlow properties are allowed in RPC Service interfaces", propertyDeclaration)
 
         val isEager = propertyDeclaration.annotations.any { it.annotationType.resolve() == context.rpcEagerProperty }
 
         return RPCServiceDeclaration.FlowProperty(propertyDeclaration.simpleName.asString(), type, flowType, isEager)
+    }
+
+    private fun KSDeclaration.flowTypeOrNull(context: RPCSymbolProcessorContext): RPCServiceDeclaration.FlowProperty.Type? {
+        return when (this) {
+            context.plainFlowType.declaration -> RPCServiceDeclaration.FlowProperty.Type.Plain
+            context.sharedFlowType.declaration -> RPCServiceDeclaration.FlowProperty.Type.Shared
+            context.stateFlowType.declaration -> RPCServiceDeclaration.FlowProperty.Type.State
+            else -> null
+        }
     }
 
     companion object {

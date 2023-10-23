@@ -30,7 +30,13 @@ abstract class KRPCTransportTestBase {
     @BeforeTest
     fun start() {
         service = KRPCTestServiceBackend()
-        backend = RPC.serverOf<KRPCTestService>(service, serverTransport)
+
+        backend = RPC.serverOf<KRPCTestService>(service, serverTransport)  {
+            incomingSharedFlowFactory {
+                replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
+            }
+        }
+
         client = RPC.clientOf<KRPCTestService>(clientTransport) {
             incomingSharedFlowFactory {
                 replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
@@ -487,7 +493,7 @@ abstract class KRPCTransportTestBase {
 
             client.emitNextForStateFlowOfInts(42)
 
-            assertEquals(42, flow.take(1).first())
+            assertEquals(42, flow.first { it == 42 })
         }
     }
 
@@ -501,8 +507,8 @@ abstract class KRPCTransportTestBase {
 
             client.emitNextForStateFlowOfFlowsOfInts(42)
 
-            assertEquals(42, flow2.take(1).first())
-            assertEquals(42, flow1.take(1).first().value)
+            assertEquals(42, flow2.first { it == 42 })
+            assertEquals(42, flow1.first { it.value == 42 }.value)
         }
     }
 
@@ -517,9 +523,35 @@ abstract class KRPCTransportTestBase {
 
             client.emitNextForStateFlowOfFlowsOfFlowsOfInts(42)
 
-            assertEquals(42, flow3.take(1).first())
-            assertEquals(42, flow2.take(1).first().value)
-            assertEquals(42, flow1.take(1).first().value.value)
+            assertEquals(42, flow3.first { it == 42 })
+            assertEquals(42, flow2.first { it.value == 42 }.value)
+            assertEquals(42, flow1.first { it.value.value == 42 }.value.value)
+        }
+    }
+
+    @Test
+    fun testSharedFlowInFunction() {
+        runBlocking {
+            val flow = sharedFlowOfT { it }
+            println("hello 1.1")
+
+            val state = client.sharedFlowInFunction(flow)
+            println("hello 1.2")
+
+            assertEquals(1, state.first { it == 1 })
+        }
+    }
+
+    @Test
+    fun testStateFlowInFunction() {
+        runBlocking {
+            val flow = stateFlowOfT { it }
+
+            val state = client.stateFlowInFunction(flow)
+
+            flow.emit(42)
+
+            assertEquals(1, state.first { it == 1 })
         }
     }
 }

@@ -19,6 +19,7 @@ class RPCServiceDeclaration(
             val name: String,
             val type: KSType,
             val isVararg: Boolean,
+            val isContextual: Boolean,
         )
     }
 

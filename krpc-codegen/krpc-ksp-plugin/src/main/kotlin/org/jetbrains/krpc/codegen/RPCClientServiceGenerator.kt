@@ -2,6 +2,7 @@ package org.jetbrains.krpc.codegen
 
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
+import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSType
 
 class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
@@ -185,7 +186,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             writer.newLine()
             with(writer.nested()) {
                 argumentTypes.forEach { arg ->
-                    val prefix = if (arg.type.declaration.simpleName.asString() == "Flow") {
+                    val prefix = if (arg.isContextual) {
                         "@Contextual "
                     } else ""
 
