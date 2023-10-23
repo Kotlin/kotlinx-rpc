@@ -2,9 +2,7 @@ package org.jetbrains.krpc
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import org.jetbrains.krpc.client.clientOf
 import org.jetbrains.krpc.server.rpcServiceMethodSerializationTypeOf
 import kotlin.coroutines.CoroutineContext
@@ -12,6 +10,12 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 interface EmptyService {
+    val flow: Flow<Int>
+
+    val sharedFlow: SharedFlow<Int>
+
+    val stateFlow: StateFlow<Int>
+
     suspend fun empty()
 }
 
@@ -23,24 +27,42 @@ val stubEngine = object : RPCEngine {
         return null
     }
 
-    override fun <T> registerFlowField(fieldName: String, type: KType): Flow<T> {
-        TODO("Not yet implemented")
+    override fun <T> registerPlainFlowField(fieldName: String, type: KType): Flow<T> {
+        println("registered flow: $fieldName")
+        return flow {  }
     }
 
     override fun <T> registerSharedFlowField(fieldName: String, type: KType): SharedFlow<T> {
-        TODO("Not yet implemented")
+        println("registered flow: $fieldName")
+        return MutableSharedFlow(1)
     }
 
-    override fun <T> registerStateFlowField(fieldName: String, type: KType): StateFlow<T> {
-        TODO("Not yet implemented")
+    override fun <T : Any?> registerStateFlowField(fieldName: String, type: KType): StateFlow<T> {
+        println("registered flow: $fieldName")
+
+        @Suppress("UNCHECKED_CAST")
+        return MutableStateFlow<Any?>(null) as StateFlow<T>
     }
 }
 
 interface CommonService : RPC, EmptyService {
+    override val flow: Flow<Int>
+
+    override val sharedFlow: SharedFlow<Int>
+
+    override val stateFlow: StateFlow<Int>
+
     override suspend fun empty()
 }
 
-inline fun <reified T : RPC> testService(test: T.() -> Unit) {
+suspend inline fun <reified T> testService() where T : RPC, T : EmptyService {
+    val test: suspend T.() -> Unit = {
+        empty()
+        flow
+        sharedFlow
+        stateFlow
+    }
+
     RPC.clientOf<T>(stubEngine).test()
     RPC.clientOf<T>(typeOf<T>(), stubEngine).test()
 

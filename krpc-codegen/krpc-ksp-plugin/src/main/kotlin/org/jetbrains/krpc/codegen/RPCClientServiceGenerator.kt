@@ -56,6 +56,11 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
 
         nested.write("override val coroutineContext: CoroutineContext = engine.coroutineContext + Job()")
         nested.newLine()
+        nested.newLine()
+
+        service.properties.forEach {
+            it.toCode(nested)
+        }
 
         service.functions.forEach {
             it.toCode(nested)
@@ -83,6 +88,22 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         return "$prefix$name: ${type.toCode()}"
     }
 
+    private fun RPCServiceDeclaration.FlowProperty.toCode(writer: CodeWriter) {
+        val method = when (flowType) {
+            RPCServiceDeclaration.FlowProperty.Type.Plain -> "registerPlainFlowField"
+            RPCServiceDeclaration.FlowProperty.Type.Shared -> "registerSharedFlowField"
+            RPCServiceDeclaration.FlowProperty.Type.State -> "registerStateFlowField"
+        }
+
+        val codeType = type.toCode()
+
+        val codeDeclaration = "override val $name: $codeType = engine.$method(\"$name\", typeOf<$codeType>())"
+
+        writer.write(codeDeclaration)
+        writer.newLine()
+        writer.newLine()
+    }
+
     private fun KSType.toCode(): String {
         val qualifier = declaration.qualifiedName?.asString() ?: codegenError("Expected qualifier for KSType")
 
@@ -102,7 +123,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         return "$qualifier$arguments$nullability"
     }
 
-    private fun KSType.toCodeSimplified(): String {
+    private fun KSType.toCodeWithStarTypeArguments(): String {
         val qualifier = declaration.qualifiedName?.asString() ?: codegenError("Expected qualifier for KSType")
 
         val typeParameters = if (arguments.isNotEmpty()) {
@@ -141,7 +162,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         writer.newLine()
 
         if (!returnType.isUnit()) {
-            writer.write("check(result is ${returnType.toCodeSimplified()})")
+            writer.write("check(result is ${returnType.toCodeWithStarTypeArguments()})")
             writer.newLine()
             writer.write("return@withContext result as ${returnType.toCode()}")
             writer.newLine()

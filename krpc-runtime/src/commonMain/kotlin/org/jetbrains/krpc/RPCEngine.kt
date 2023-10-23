@@ -10,7 +10,7 @@ import kotlin.reflect.KType
 interface RPCEngine : CoroutineScope {
     suspend fun call(callInfo: RPCCallInfo, deferred: CompletableDeferred<*> = CompletableDeferred<Any?>()): Any?
 
-    fun <T> registerFlowField(fieldName: String, type: KType): Flow<T>
+    fun <T> registerPlainFlowField(fieldName: String, type: KType): Flow<T>
 
     fun <T> registerSharedFlowField(fieldName: String, type: KType): SharedFlow<T>
 

@@ -7,6 +7,7 @@ class RPCServiceDeclaration(
     val simpleName: String,
     val fullName: String,
     val functions: List<Function>,
+    val properties: List<FlowProperty>,
     val file: KSFile,
 ) {
     class Function(
@@ -19,5 +20,15 @@ class RPCServiceDeclaration(
             val type: KSType,
             val isVararg: Boolean,
         )
+    }
+
+    class FlowProperty(
+        val name: String,
+        val type: KSType,
+        val flowType: Type,
+    ) {
+        enum class Type {
+            Plain, Shared, State;
+        }
     }
 }

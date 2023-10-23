@@ -80,13 +80,11 @@ class RPCServerEngine<T : RPC>(
                     }
 
                     is RPCMessage.StreamFinished -> {
-//                        logger.info { "Receive $callId ${message.flowId}, flow close" }
                         val flowContext = flowContexts[callId] ?: error("Unknown call $callId")
                         flowContext.initialize().closeFlow(message)
                     }
 
                     is RPCMessage.StreamMessage -> {
-//                        logger.info { "Receive $callId ${message.flowId}, flow message" }
                         val flowContext = flowContexts[callId] ?: error("Unknown call $callId")
                         flowContext.initialize().send(message, prepareJson(flowContext))
                     }

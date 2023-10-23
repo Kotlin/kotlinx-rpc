@@ -1,7 +1,17 @@
 package org.jetbrains.krpc
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+
 interface CommonTestService : RPC, EmptyService {
     override suspend fun empty()
+
+    override val flow: Flow<Int>
+
+    override val sharedFlow: SharedFlow<Int>
+
+    override val stateFlow: StateFlow<Int>
 }
 
 abstract class CommonTestSuite {
@@ -11,9 +21,9 @@ abstract class CommonTestSuite {
             where S1 : RPC, S2 : RPC, S3 : RPC, S4 : RPC,
                   S1 : EmptyService, S2 : EmptyService, S3 : EmptyService, S4 : EmptyService =
         runAsync {
-            testService<S1> { empty() }
-            testService<S2> { empty() }
-            testService<S3> { empty() }
-            testService<S4> { empty() }
+            testService<S1>()
+            testService<S2>()
+            testService<S3>()
+            testService<S4>()
         }
 }

@@ -1,6 +1,5 @@
 package org.jetbrains.krpc.codegen
 
-import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.processing.Resolver
@@ -22,14 +21,13 @@ class RPCSymbolProcessor(
     }
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val rpc = resolver.getClassDeclarationByName("org.jetbrains.krpc.RPC")?.asType(typeArguments = emptyList())
-            ?: codegenError("Could not find org.jetbrains.krpc.RPC interface")
+        val context = RPCSymbolProcessorContext(resolver)
 
         services = sequence {
             resolver.getAllFiles().forEach { file ->
                 file.declarations.forEach { declaration ->
-                    if (declaration is KSClassDeclaration && declaration.classKind == ClassKind.INTERFACE && declaration.superTypes.find { it.resolve() == rpc } != null) {
-                        yield(processService(serviceDeclaration = declaration, file = file))
+                    if (declaration is KSClassDeclaration && declaration.classKind == ClassKind.INTERFACE && declaration.superTypes.find { it.resolve() == context.rpcType } != null) {
+                        yield(processService(declaration, file, context))
                     }
                 }
             }
@@ -38,11 +36,11 @@ class RPCSymbolProcessor(
         return emptyList()
     }
 
-    private fun processService(serviceDeclaration: KSClassDeclaration, file: KSFile): RPCServiceDeclaration {
-        if (serviceDeclaration.getDeclaredProperties().count() != 0) {
-            codegenError("RPC Service can not have declared properties", serviceDeclaration)
-        }
-
+    private fun processService(
+        serviceDeclaration: KSClassDeclaration,
+        file: KSFile,
+        context: RPCSymbolProcessorContext,
+    ): RPCServiceDeclaration {
         if (serviceDeclaration.typeParameters.isNotEmpty()) {
             codegenError("RPC Service can not have type parameters", serviceDeclaration)
         }
@@ -58,6 +56,10 @@ class RPCSymbolProcessor(
             processServiceFunction(it)
         }
 
+        val processedProperties = serviceDeclaration.getDeclaredProperties().toList().map {
+            processServiceProperty(it, context)
+        }
+
         return RPCServiceDeclaration(
             simpleName = serviceDeclaration.simpleName.asString(),
             fullName = serviceDeclaration.qualifiedName?.asString() ?: codegenError(
@@ -65,6 +67,7 @@ class RPCSymbolProcessor(
                 serviceDeclaration
             ),
             functions = processedFunctions,
+            properties = processedProperties,
             file = file,
         )
     }
@@ -93,10 +96,13 @@ class RPCSymbolProcessor(
             codegenError("RPC Service function can not have default implementation", functionDeclaration)
         }
 
+        val returnType = functionDeclaration.returnType?.resolve()
+            ?: error("Failed to resolve returnType for $functionDeclaration")
+
         return RPCServiceDeclaration.Function(
             name = functionDeclaration.simpleName.getShortName(),
             argumentTypes = functionDeclaration.parameters.map { processFunctionArgument(functionDeclaration, it) },
-            returnType = functionDeclaration.returnType?.resolve() ?: error("Failed to resolve returnType for $functionDeclaration"), // todo validation
+            returnType = returnType,
         )
     }
 
@@ -112,6 +118,33 @@ class RPCSymbolProcessor(
             type = argument.type.resolve(),
             isVararg = argument.isVararg,
         )
+    }
+
+    private fun processServiceProperty(
+        propertyDeclaration: KSPropertyDeclaration,
+        context: RPCSymbolProcessorContext
+    ): RPCServiceDeclaration.FlowProperty {
+        if (propertyDeclaration.isMutable) {
+            codegenError("RPC Service field can not be mutable", propertyDeclaration)
+        }
+
+        if (propertyDeclaration.extensionReceiver != null) {
+            codegenError("RPC Service field can not have extension receiver", propertyDeclaration)
+        }
+
+        val type = propertyDeclaration.type.resolve()
+
+        val flowType = when (type.declaration) {
+            context.plainFlowType.declaration -> RPCServiceDeclaration.FlowProperty.Type.Plain
+            context.sharedFlowType.declaration -> RPCServiceDeclaration.FlowProperty.Type.Shared
+            context.stateFlowType.declaration -> RPCServiceDeclaration.FlowProperty.Type.State
+
+            else -> {
+                codegenError("Only Flow, SharedFlow and StateFlow properties are allowed in RPC Service interfaces", propertyDeclaration)
+            }
+        }
+
+        return RPCServiceDeclaration.FlowProperty(propertyDeclaration.simpleName.asString(), type, flowType)
     }
 
     companion object {

@@ -37,7 +37,7 @@ internal class RPCClientEngine(
         }
     }
 
-    override fun <T> registerFlowField(fieldName: String, type: KType): Flow<T> {
+    override fun <T> registerPlainFlowField(fieldName: String, type: KType): Flow<T> {
         return RPCFlow.Plain<T>(serviceTypeString).also { rpcFlow ->
             initializeFlowField(rpcFlow, fieldName, type)
         }
@@ -184,7 +184,6 @@ internal class RPCClientEngine(
                     clientFlow.flow.collect {
                         mutex.withLock {
                             val data = json.encodeToString(elementSerializer, it)
-//                            logger.info { "Send $callId $flowId, $data" }
                             val message = RPCMessage.StreamMessage(callId, serviceTypeString, flowId, data)
                             transport.send(message)
                         }
@@ -196,7 +195,6 @@ internal class RPCClientEngine(
                     throw cause
                 }
 
-//                logger.info { "Close $callId $flowId" }
                 val message = RPCMessage.StreamFinished(callId, serviceTypeString, flowId)
                 transport.send(message)
             }
