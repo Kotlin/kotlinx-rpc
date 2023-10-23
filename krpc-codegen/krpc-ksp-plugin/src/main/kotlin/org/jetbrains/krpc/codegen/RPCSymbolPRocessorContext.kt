@@ -14,6 +14,8 @@ class RPCSymbolProcessorContext(private val resolver: Resolver) {
 
     val stateFlowType by lazy { resolveClass("kotlinx.coroutines.flow.StateFlow") }
 
+    val rpcEagerProperty by lazy { resolveClass("org.jetbrains.krpc.RPCEagerProperty") }
+
     private fun resolveClass(name: String, typeArguments: List<KSTypeArgument> = emptyList()): KSType {
         return resolver.getClassDeclarationByName(name)?.asType(typeArguments)
             ?: codegenError("Could not find $name declaration")

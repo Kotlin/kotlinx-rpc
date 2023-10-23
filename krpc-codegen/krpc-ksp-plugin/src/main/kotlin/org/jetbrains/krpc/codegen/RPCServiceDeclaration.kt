@@ -26,6 +26,7 @@ class RPCServiceDeclaration(
         val name: String,
         val type: KSType,
         val flowType: Type,
+        val isEager: Boolean,
     ) {
         enum class Type {
             Plain, Shared, State;

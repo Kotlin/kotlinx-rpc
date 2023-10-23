@@ -1,7 +1,11 @@
 package org.jetbrains.krpc.test
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 
@@ -42,4 +46,24 @@ fun payloadWithPayloadStream(count: Int = 10): Flow<PayloadWithPayload> {
             emit(payloadWithPayload(it))
         }
     }
+}
+
+fun <T> plainFlow(count: Int = 5, get: (Int) -> T): Flow<T> {
+    return flow { repeat(count) { emit(get(it)) } }
+}
+
+private fun <T, FlowT : MutableSharedFlow<T>> CoroutineScope.runSharedFlow(flow: FlowT, count: Int = 5, getter: (Int) -> T) = apply {
+    launch {
+        repeat(count) {
+            flow.emit(getter(it))
+        }
+    }
+}
+
+fun <T> CoroutineScope.sharedFlowOfT(getter: (Int) -> T): MutableSharedFlow<T> {
+    return MutableSharedFlow<T>(KRPCTestServiceBackend.SHARED_FLOW_REPLAY).also { flow -> runSharedFlow(flow) { getter(it) } }
+}
+
+fun <T> CoroutineScope.stateFlowOfT(getter: (Int) -> T): MutableStateFlow<T> {
+    return MutableStateFlow(getter(-1)).also { runSharedFlow(it) { flow -> getter(flow) } }
 }

@@ -1,6 +1,8 @@
 package org.jetbrains.krpc.test
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.krpc.RPC
 
 interface KRPCTestService : RPC {
@@ -54,4 +56,22 @@ interface KRPCTestService : RPC {
     suspend fun delayForever(): Flow<Boolean>
 
     suspend fun answerToAnything(arg: String): Int
+
+    val plainFlowOfInts : Flow<Int>
+
+    val plainFlowOfFlowsOfInts : Flow<Flow<Int>>
+
+    val plainFlowOfFlowsOfFlowsOfInts : Flow<Flow<Flow<Int>>>
+
+    val sharedFlowOfInts : SharedFlow<Int>
+
+    val sharedFlowOfFlowsOfInts : SharedFlow<SharedFlow<Int>>
+
+    val sharedFlowOfFlowsOfFlowsOfInts : SharedFlow<SharedFlow<SharedFlow<Int>>>
+
+    val stateFlowOfInts : StateFlow<Int>
+
+    val stateFlowOfFlowsOfInts : StateFlow<StateFlow<Int>>
+
+    val stateFlowOfFlowsOfFlowsOfInts : StateFlow<StateFlow<StateFlow<Int>>>
 }

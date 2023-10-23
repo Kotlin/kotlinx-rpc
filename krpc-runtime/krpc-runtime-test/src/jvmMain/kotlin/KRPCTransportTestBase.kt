@@ -11,24 +11,35 @@ import org.jetbrains.krpc.client.clientOf
 import org.jetbrains.krpc.server.RPCServerEngine
 import org.jetbrains.krpc.server.serverOf
 import org.junit.Assert.assertEquals
-import org.junit.Test
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.*
+import kotlin.test.Test
 
 abstract class KRPCTransportTestBase {
     abstract val clientTransport: RPCTransport
     abstract val serverTransport: RPCTransport
 
+    private lateinit var service: KRPCTestService
     private lateinit var backend: RPCServerEngine<KRPCTestService>
     private lateinit var client: KRPCTestService
 
     @BeforeTest
     fun start() {
-        backend = RPC.serverOf<KRPCTestService>(KRPCTestServiceBackend(), serverTransport)
-        client = RPC.clientOf<KRPCTestService>(clientTransport)
+        service = KRPCTestServiceBackend()
+        backend = RPC.serverOf<KRPCTestService>(service, serverTransport)
+        client = RPC.clientOf<KRPCTestService>(clientTransport) {
+            incomingSharedFlowFactory {
+                replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
+            }
+        }
+    }
+
+    @AfterTest
+    fun end() {
+        service.coroutineContext.cancel()
     }
 
     @Test
@@ -390,6 +401,79 @@ abstract class KRPCTransportTestBase {
             }
 
             awaitAll(c1, c2)
+        }
+    }
+
+    @Test
+    fun testPlainFlowOfInts() {
+        runBlocking {
+            val flow = client.plainFlowOfInts.toList()
+            assertEquals(List(5) { it }, flow)
+        }
+    }
+
+    @Test
+    fun testPlainFlowOfFlowsOfInts() {
+        runBlocking {
+            val lists = client.plainFlowOfFlowsOfInts.map {
+                it.toList()
+            }.toList()
+
+            assertEquals(List(5) { List(5) { it } }, lists)
+        }
+    }
+
+    @Test
+    fun testPlainFlowOfFlowsOfFlowsOfInts() {
+        runBlocking {
+            val lists = client.plainFlowOfFlowsOfFlowsOfInts.map {
+                it.map { i -> i.toList() }.toList()
+            }.toList()
+
+            assertEquals(List(5) { List(5) { List(5) { it } } }, lists)
+        }
+    }
+
+    @Test
+    fun testSharedFlowOfInts() {
+        runBlocking {
+            val list1 = client.sharedFlowOfInts.take(5).toList()
+            val list2 = client.sharedFlowOfInts.take(3).toList()
+
+            assertEquals(List(5) { it }, list1)
+            assertEquals(List(3) {it }, list2)
+        }
+    }
+
+    @Test
+    fun testSharedFlowOfFlowsOfInts() {
+        runBlocking {
+            val list1 = client.sharedFlowOfFlowsOfInts.take(5).map {
+                it.take(5).toList()
+            }.toList()
+
+            val list2 = client.sharedFlowOfFlowsOfInts.take(3).map {
+                it.take(3).toList()
+            }.toList()
+
+            assertEquals(List(5) { List(5) { it} }, list1)
+            assertEquals(List(3) { List(3) { it} }, list2)
+        }
+    }
+
+    @Test
+    fun testSharedFlowOfFlowsOfFlowsOfInts() {
+        runBlocking {
+            val list1 = client.sharedFlowOfFlowsOfFlowsOfInts.take(5).map {
+                it.take(5).map { i -> i.take(5).toList() }.toList()
+            }.toList()
+
+            val list2 = client.sharedFlowOfFlowsOfFlowsOfInts.take(3).map {
+                it.take(3).map { i -> i.take(3).toList() }.toList()
+            }.toList()
+
+            assertEquals(List(5) { List(5) { List(5) { it } } }, list1)
+            assertEquals(List(3) { List(3) { List(3) { it } } }, list2)
         }
     }
 }

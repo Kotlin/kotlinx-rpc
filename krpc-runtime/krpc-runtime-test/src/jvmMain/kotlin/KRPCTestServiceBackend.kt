@@ -7,6 +7,10 @@ import kotlin.coroutines.resumeWithException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class KRPCTestServiceBackend : KRPCTestService {
+    companion object {
+        const val SHARED_FLOW_REPLAY = 5
+    }
+
     override val coroutineContext: CoroutineContext = Job()
 
     override suspend fun empty() {
@@ -140,7 +144,7 @@ class KRPCTestServiceBackend : KRPCTestService {
     }
 
     override suspend fun bidirectionalFlowOfPayloadWithPayload(payloadWithPayload: Flow<PayloadWithPayload>): Flow<PayloadWithPayload> {
-         return payloadWithPayload
+        return payloadWithPayload
     }
 
     override suspend fun getNInts(n: Int): Flow<Int> {
@@ -185,8 +189,8 @@ class KRPCTestServiceBackend : KRPCTestService {
     override suspend fun nullableList(v: List<Int>?): List<Int>? = v
 
     override suspend fun delayForever(): Flow<Boolean> = flow {
-            emit(true)
-            delay(Int.MAX_VALUE.toLong())
+        emit(true)
+        delay(Int.MAX_VALUE.toLong())
     }
 
     override suspend fun answerToAnything(arg: String): Int {
@@ -194,4 +198,27 @@ class KRPCTestServiceBackend : KRPCTestService {
         return 42
     }
 
+    override val plainFlowOfInts: Flow<Int> = plainFlow { it }
+
+    override val plainFlowOfFlowsOfInts: Flow<Flow<Int>> = plainFlow { plainFlow { i -> i } }
+
+    override val plainFlowOfFlowsOfFlowsOfInts: Flow<Flow<Flow<Int>>> = plainFlow { plainFlow { plainFlow { i -> i } } }
+
+    override val sharedFlowOfInts: SharedFlow<Int> =
+        sharedFlowOfT { it }
+
+    override val sharedFlowOfFlowsOfInts: SharedFlow<SharedFlow<Int>> =
+        sharedFlowOfT { sharedFlowOfT { it } }
+
+    override val sharedFlowOfFlowsOfFlowsOfInts: SharedFlow<SharedFlow<SharedFlow<Int>>> =
+        sharedFlowOfT { sharedFlowOfT { sharedFlowOfT { it } } }
+
+    override val stateFlowOfInts: StateFlow<Int> =
+        stateFlowOfT { it }
+
+    override val stateFlowOfFlowsOfInts: StateFlow<StateFlow<Int>> =
+        stateFlowOfT { stateFlowOfT { it } }
+
+    override val stateFlowOfFlowsOfFlowsOfInts: StateFlow<StateFlow<StateFlow<Int>>> =
+        stateFlowOfT { stateFlowOfT { stateFlowOfT { it } } }
 }

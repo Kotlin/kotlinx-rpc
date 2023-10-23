@@ -1,6 +1,8 @@
 package org.jetbrains.krpc
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.serializer
@@ -19,8 +21,9 @@ internal fun SerializersModule.buildContextual(type: KType): KSerializer<Any?> {
 }
 
 
-fun SerializersModule.contextualForFlow(type: KType): KSerializer<Any?> = if (type.classifier == Flow::class) {
-    buildContextual(type)
-} else {
-    serializer(type)
+fun SerializersModule.contextualForFlow(type: KType): KSerializer<Any?> {
+    return when (type.classifier) {
+        Flow::class, SharedFlow::class, StateFlow::class -> buildContextual(type)
+        else -> serializer(type)
+    }
 }

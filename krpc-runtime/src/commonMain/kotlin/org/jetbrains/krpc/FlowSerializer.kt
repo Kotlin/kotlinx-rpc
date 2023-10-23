@@ -8,74 +8,70 @@ import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-class FlowSerializer(
-    private val context: RPCFlowContext,
-    private val elementType: KSerializer<Any?>,
-) : KSerializer<Flow<*>> {
-    private val stateFlowInitialValueSerializer by lazy {
-        RPCStateFlowInitialValue.Serializer(elementType)
-    }
+sealed class FlowSerializer<FlowT : Flow<*>>(private val flowKind: FlowKind) : KSerializer<FlowT> {
+    protected abstract val context: RPCFlowContext
+    protected abstract val elementType: KSerializer<Any?>
 
-    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("FlowSerializer") {
-        element("flowId", PrimitiveSerialDescriptor("FlowIdSerializer", PrimitiveKind.STRING))
-        element("flowKind", FlowKind.serializer.descriptor)
-        element("stateFlowInitialValue", stateFlowInitialValueSerializer.descriptor, isOptional = true)
-    }
+    protected open fun ClassSerialDescriptorBuilder.descriptorExtension() { }
 
-    override fun deserialize(decoder: Decoder): Flow<*> {
-        val flowId = decoder.decodeString()
-        val kindIndex = decoder.decodeEnum(FlowKind.serializer.descriptor)
-        if (kindIndex !in FlowKind.entries.indices) {
-            throw SerializationException(
-                "$kindIndex is not among valid FlowKind enum values, values size is ${FlowKind.entries.size}"
-            )
+    protected open fun decodeStateFlowInitialValue(decoder: Decoder): Any? { return null }
+
+    protected open fun encodeStateFlowInitialValue(encoder: Encoder, flow: FlowT) { }
+
+    override val descriptor: SerialDescriptor by lazy {
+        buildClassSerialDescriptor("FlowSerializer.${flowKind.name}") {
+            element("flowId", PrimitiveSerialDescriptor("FlowIdSerializer", PrimitiveKind.STRING))
+            descriptorExtension()
         }
-        val flowKind = FlowKind.entries[kindIndex]
-        @OptIn(ExperimentalSerializationApi::class)
-        val stateValue = decoder.decodeNullableSerializableValue(stateFlowInitialValueSerializer)?.value
-
-        return context.prepareFlow(flowId, flowKind, stateValue, elementType)
     }
 
-    override fun serialize(encoder: Encoder, value: Flow<*>) {
+    override fun deserialize(decoder: Decoder): FlowT {
+        val flowId = decoder.decodeString()
+
+        val stateValue = decodeStateFlowInitialValue(decoder)
+
+        @Suppress("UNCHECKED_CAST")
+        return context.prepareFlow(flowId, flowKind, stateValue, elementType) as FlowT
+    }
+
+    override fun serialize(encoder: Encoder, value: FlowT) {
         val id = context.registerFlow(value, elementType)
-        val (kind, stateValue) = value.kindAndOptionalStateValue()
 
         encoder.encodeString(id)
-        encoder.encodeEnum(FlowKind.serializer.descriptor, kind.ordinal)
+
+        encodeStateFlowInitialValue(encoder, value)
+    }
+
+    class Plain(
+        override val context: RPCFlowContext,
+        override val elementType: KSerializer<Any?>,
+    ) : FlowSerializer<Flow<Any?>>(FlowKind.Plain)
+
+    class Shared(
+        override val context: RPCFlowContext,
+        override val elementType: KSerializer<Any?>,
+    ) : FlowSerializer<SharedFlow<Any?>>(FlowKind.Shared)
+
+    class State(
+        override val context: RPCFlowContext,
+        override val elementType: KSerializer<Any?>,
+    ) : FlowSerializer<StateFlow<Any?>>(FlowKind.State) {
+        override fun ClassSerialDescriptorBuilder.descriptorExtension() {
+            element("stateFlowInitialValue", elementType.descriptor, isOptional = true)
+        }
 
         @OptIn(ExperimentalSerializationApi::class)
-        encoder.encodeNullableSerializableValue(stateFlowInitialValueSerializer, stateValue)
+        override fun decodeStateFlowInitialValue(decoder: Decoder): Any? {
+            return decoder.decodeNullableSerializableValue(elementType)
+        }
+
+        @OptIn(ExperimentalSerializationApi::class)
+        override fun encodeStateFlowInitialValue(encoder: Encoder, flow: StateFlow<Any?>) {
+            encoder.encodeNullableSerializableValue(elementType, flow.value)
+        }
     }
 }
 
-@Serializable
 enum class FlowKind {
     Plain, Shared, State;
-
-    companion object {
-        val serializer by lazy { serializer() }
-    }
-}
-
-private data class RPCStateFlowInitialValue(val value: Any?) {
-    class Serializer(private val elementType: KSerializer<Any?>) : KSerializer<RPCStateFlowInitialValue> {
-        override val descriptor: SerialDescriptor = buildClassSerialDescriptor("StateFlowInitialValueSerializer") {
-            element("value", elementType.descriptor)
-        }
-
-        override fun deserialize(decoder: Decoder): RPCStateFlowInitialValue {
-            return RPCStateFlowInitialValue(decoder.decodeSerializableValue(elementType))
-        }
-
-        override fun serialize(encoder: Encoder, value: RPCStateFlowInitialValue) {
-            encoder.encodeSerializableValue(elementType, value.value)
-        }
-    }
-}
-
-private fun Flow<*>.kindAndOptionalStateValue(): Pair<FlowKind, RPCStateFlowInitialValue?> = when (this) {
-    is StateFlow<*> -> FlowKind.State to RPCStateFlowInitialValue(value)
-    is SharedFlow<*> -> FlowKind.Shared to null
-    else -> FlowKind.Plain to null
 }

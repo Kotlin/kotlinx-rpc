@@ -3,6 +3,8 @@ package org.jetbrains.krpc.server
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.KSerializer
@@ -216,7 +218,17 @@ class RPCServerEngine<T : RPC>(
         serializersModule = SerializersModule {
             contextual(Flow::class) {
                 @Suppress("UNCHECKED_CAST")
-                FlowSerializer(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
+                FlowSerializer.Plain(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
+            }
+
+            contextual(SharedFlow::class) {
+                @Suppress("UNCHECKED_CAST")
+                FlowSerializer.Shared(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
+            }
+
+            contextual(StateFlow::class) {
+                @Suppress("UNCHECKED_CAST")
+                FlowSerializer.State(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
             }
 
             config.serializersModuleExtension?.invoke(this)

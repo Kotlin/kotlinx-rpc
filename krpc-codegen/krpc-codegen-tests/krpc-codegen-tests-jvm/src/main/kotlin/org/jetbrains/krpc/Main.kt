@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.runBlocking
 
 interface MainService : RPC, EmptyService {
+    @RPCEagerProperty
     override val flow: Flow<Int>
 
     override val stateFlow: StateFlow<Int>

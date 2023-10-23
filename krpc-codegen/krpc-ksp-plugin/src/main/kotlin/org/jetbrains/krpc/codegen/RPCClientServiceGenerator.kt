@@ -97,7 +97,12 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
 
         val codeType = type.toCode()
 
-        val codeDeclaration = "override val $name: $codeType = engine.$method(\"$name\", typeOf<$codeType>())"
+        val (prefix, suffix) = when {
+            isEager -> "=" to ""
+            else -> "by lazy {" to " }"
+        }
+
+        val codeDeclaration = "override val $name: $codeType $prefix engine.$method(\"$name\", typeOf<$codeType>())$suffix"
 
         writer.write(codeDeclaration)
         writer.newLine()

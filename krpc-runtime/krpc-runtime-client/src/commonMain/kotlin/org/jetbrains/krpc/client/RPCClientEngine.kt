@@ -73,7 +73,7 @@ internal class RPCClientEngine(
     }
 
     @Serializable
-    private object FieldDataObject : RPCMethodClassArguments {
+    object FieldDataObject : RPCMethodClassArguments {
         override fun asArray(): Array<Any?> = emptyArray()
     }
 
@@ -220,7 +220,17 @@ internal class RPCClientEngine(
         serializersModule = SerializersModule {
             contextual(Flow::class) {
                 @Suppress("UNCHECKED_CAST")
-                FlowSerializer(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
+                FlowSerializer.Plain(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
+            }
+
+            contextual(SharedFlow::class) {
+                @Suppress("UNCHECKED_CAST")
+                FlowSerializer.Shared(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
+            }
+
+            contextual(StateFlow::class) {
+                @Suppress("UNCHECKED_CAST")
+                FlowSerializer.State(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
             }
 
             config.serializersModuleExtension?.invoke(this)

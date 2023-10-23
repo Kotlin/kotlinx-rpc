@@ -144,7 +144,9 @@ class RPCSymbolProcessor(
             }
         }
 
-        return RPCServiceDeclaration.FlowProperty(propertyDeclaration.simpleName.asString(), type, flowType)
+        val isEager = propertyDeclaration.annotations.any { it.annotationType.resolve() == context.rpcEagerProperty }
+
+        return RPCServiceDeclaration.FlowProperty(propertyDeclaration.simpleName.asString(), type, flowType, isEager)
     }
 
     companion object {
