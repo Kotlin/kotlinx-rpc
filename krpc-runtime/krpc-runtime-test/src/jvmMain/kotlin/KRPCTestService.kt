@@ -3,7 +3,7 @@ package org.jetbrains.krpc.test
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.krpc.RPC
 
-interface MyService : RPC {
+interface KRPCTestService : RPC {
     suspend fun empty()
     suspend fun returnType(): String
     suspend fun simpleWithParams(name: String): String

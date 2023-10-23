@@ -3,7 +3,7 @@ import kotlinx.coroutines.*
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.client.clientOf
 import org.jetbrains.krpc.server.serverOf
-import org.jetbrains.krpc.test.MyService
+import org.jetbrains.krpc.test.KRPCTestService
 import org.slf4j.simple.SimpleLogger
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
@@ -51,7 +51,7 @@ class TransportTest {
     fun testUsingWrongService(): Unit = runBlocking {
         val transports = StringTransport(waiting = false)
 
-        val client = RPC.clientOf<MyService>(transports.client)
+        val client = RPC.clientOf<KRPCTestService>(transports.client)
         val result = async {
             assertFailsWith<IllegalStateException> {
                 client.simpleWithParams("foo")
@@ -184,7 +184,7 @@ class TransportTest {
     fun testCancelFromClientToServer() = runBlocking {
         val transports = StringTransport()
 
-        val client = RPC.clientOf<MyService>(transports.client)
+        val client = RPC.clientOf<KRPCTestService>(transports.client)
 
         val echoServer = EchoServer()
         RPC.serverOf<Echo>(echoServer, transports.server)
@@ -199,7 +199,7 @@ class TransportTest {
     fun testCancelFromServerToClient() = runBlocking {
         val transports = StringTransport()
 
-        val client = RPC.clientOf<MyService>(transports.client)
+        val client = RPC.clientOf<KRPCTestService>(transports.client)
 
         val echoServer = EchoServer()
         RPC.serverOf<Echo>(echoServer, transports.server)

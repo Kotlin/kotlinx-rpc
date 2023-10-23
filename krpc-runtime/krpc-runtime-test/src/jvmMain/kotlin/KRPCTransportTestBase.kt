@@ -22,13 +22,13 @@ abstract class KRPCTransportTestBase {
     abstract val clientTransport: RPCTransport
     abstract val serverTransport: RPCTransport
 
-    private lateinit var backend: RPCServerEngine<MyService>
-    private lateinit var client: MyService
+    private lateinit var backend: RPCServerEngine<KRPCTestService>
+    private lateinit var client: KRPCTestService
 
     @BeforeTest
     fun start() {
-        backend = RPC.serverOf<MyService>(MyServiceBackend(), serverTransport)
-        client = RPC.clientOf<MyService>(clientTransport)
+        backend = RPC.serverOf<KRPCTestService>(KRPCTestServiceBackend(), serverTransport)
+        client = RPC.clientOf<KRPCTestService>(clientTransport)
     }
 
     @Test

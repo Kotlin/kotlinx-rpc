@@ -6,7 +6,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resumeWithException
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class MyServiceBackend : MyService {
+class KRPCTestServiceBackend : KRPCTestService {
     override val coroutineContext: CoroutineContext = Job()
 
     override suspend fun empty() {
