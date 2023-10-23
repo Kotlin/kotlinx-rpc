@@ -64,6 +64,6 @@ fun <T> CoroutineScope.sharedFlowOfT(getter: (Int) -> T): MutableSharedFlow<T> {
     return MutableSharedFlow<T>(KRPCTestServiceBackend.SHARED_FLOW_REPLAY).also { flow -> runSharedFlow(flow) { getter(it) } }
 }
 
-fun <T> CoroutineScope.stateFlowOfT(getter: (Int) -> T): MutableStateFlow<T> {
-    return MutableStateFlow(getter(-1)).also { runSharedFlow(it) { flow -> getter(flow) } }
+fun <T> stateFlowOfT(getter: (Int) -> T): MutableStateFlow<T> {
+    return MutableStateFlow(getter(-1))
 }

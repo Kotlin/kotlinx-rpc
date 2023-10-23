@@ -7,6 +7,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCTransport
+import org.jetbrains.krpc.client.awaitFieldInitialization
 import org.jetbrains.krpc.client.clientOf
 import org.jetbrains.krpc.server.RPCServerEngine
 import org.jetbrains.krpc.server.serverOf
@@ -474,6 +475,51 @@ abstract class KRPCTransportTestBase {
 
             assertEquals(List(5) { List(5) { List(5) { it } } }, list1)
             assertEquals(List(3) { List(3) { List(3) { it } } }, list2)
+        }
+    }
+
+    @Test
+    fun testStateFlowOfInts() {
+        runBlocking {
+            val flow = client.awaitFieldInitialization { stateFlowOfInts }
+
+            assertEquals(-1, flow.value)
+
+            client.emitNextForStateFlowOfInts(42)
+
+            assertEquals(42, flow.take(1).first())
+        }
+    }
+
+    @Test
+    fun testStateFlowOfFlowsOfInts() {
+        runBlocking {
+            val flow1 = client.awaitFieldInitialization { stateFlowOfFlowsOfInts }
+            val flow2 = flow1.value
+
+            assertEquals(-1, flow2.value)
+
+            client.emitNextForStateFlowOfFlowsOfInts(42)
+
+            assertEquals(42, flow2.take(1).first())
+            assertEquals(42, flow1.take(1).first().value)
+        }
+    }
+
+    @Test
+    fun testStateFlowOfFlowsOfFlowsOfInts() {
+        runBlocking {
+            val flow1 = client.awaitFieldInitialization { stateFlowOfFlowsOfFlowsOfInts }
+            val flow2 = flow1.value
+            val flow3 = flow2.value
+
+            assertEquals(-1, flow3.value)
+
+            client.emitNextForStateFlowOfFlowsOfFlowsOfInts(42)
+
+            assertEquals(42, flow3.take(1).first())
+            assertEquals(42, flow2.take(1).first().value)
+            assertEquals(42, flow1.take(1).first().value.value)
         }
     }
 }

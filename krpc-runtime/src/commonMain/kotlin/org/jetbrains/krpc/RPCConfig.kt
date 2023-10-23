@@ -2,7 +2,6 @@ package org.jetbrains.krpc
 
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.serialization.modules.SerializersModuleBuilder
 
 abstract class RPCConfigBuilder {

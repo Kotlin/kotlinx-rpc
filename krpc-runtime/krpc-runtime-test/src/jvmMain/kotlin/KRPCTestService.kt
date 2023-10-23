@@ -74,4 +74,10 @@ interface KRPCTestService : RPC {
     val stateFlowOfFlowsOfInts : StateFlow<StateFlow<Int>>
 
     val stateFlowOfFlowsOfFlowsOfInts : StateFlow<StateFlow<StateFlow<Int>>>
+
+    suspend fun emitNextForStateFlowOfInts(value: Int)
+
+    suspend fun emitNextForStateFlowOfFlowsOfInts(value: Int)
+
+    suspend fun emitNextForStateFlowOfFlowsOfFlowsOfInts(value: Int)
 }
