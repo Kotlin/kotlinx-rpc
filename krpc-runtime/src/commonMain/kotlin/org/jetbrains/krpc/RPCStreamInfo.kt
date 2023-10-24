@@ -1,11 +1,11 @@
 package org.jetbrains.krpc
 
-import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.KSerializer
 
-class FlowInfo(
+class RPCStreamInfo(
     val callId: String,
-    val flowId: String,
-    val flow: Flow<*>,
+    val streamId: String,
+    val stream: Any,
+    val kind: StreamKind,
     val elementSerializer: KSerializer<Any?>,
 )

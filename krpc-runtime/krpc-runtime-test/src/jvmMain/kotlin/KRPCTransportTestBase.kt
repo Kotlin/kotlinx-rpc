@@ -32,13 +32,13 @@ abstract class KRPCTransportTestBase {
         service = KRPCTestServiceBackend()
 
         backend = RPC.serverOf<KRPCTestService>(service, serverTransport)  {
-            incomingSharedFlowFactory {
+            sharedFlowParameters {
                 replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
             }
         }
 
         client = RPC.clientOf<KRPCTestService>(clientTransport) {
-            incomingSharedFlowFactory {
+            sharedFlowParameters {
                 replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
             }
         }

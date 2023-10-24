@@ -1,5 +1,6 @@
 package org.jetbrains.krpc
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -44,7 +45,8 @@ sealed interface RPCMessage {
     data class StreamMessage(
         override val callId: String,
         override val serviceType: String,
-        val flowId: String,
+        @SerialName("flowId")
+        val streamId: String,
         val data: String
     ) : RPCMessage
 
@@ -52,7 +54,8 @@ sealed interface RPCMessage {
     data class StreamCancel(
         override val callId: String,
         override val serviceType: String,
-        val flowId: String,
+        @SerialName("flowId")
+        val streamId: String,
         val cause: SerializedException
     ) : RPCMessage
 
@@ -60,6 +63,7 @@ sealed interface RPCMessage {
     data class StreamFinished(
         override val callId: String,
         override val serviceType: String,
-        val flowId: String
+        @SerialName("flowId")
+        val streamId: String,
     ) : RPCMessage
 }

@@ -6,18 +6,18 @@ import kotlinx.serialization.modules.SerializersModuleBuilder
 
 abstract class RPCConfigBuilder {
     @Suppress("MemberVisibilityCanBePrivate")
-    class SharedFlowFactoryBuilder {
+    class SharedFlowParametersBuilder {
         var replay: Int = 1
         var extraBufferCapacity: Int = 10
         var onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND
 
-        fun factory(): () -> MutableSharedFlow<Any?> = { MutableSharedFlow(replay, extraBufferCapacity, onBufferOverflow) }
+        fun builder(): () -> MutableSharedFlow<Any?> = { MutableSharedFlow(replay, extraBufferCapacity, onBufferOverflow) }
     }
 
-    protected var incomingSharedFlowFactory: () -> MutableSharedFlow<Any?> = SharedFlowFactoryBuilder().factory()
+    protected var sharedFlowBuilder: () -> MutableSharedFlow<Any?> = SharedFlowParametersBuilder().builder()
 
-    fun incomingSharedFlowFactory(builder: SharedFlowFactoryBuilder.() -> Unit) {
-        incomingSharedFlowFactory = SharedFlowFactoryBuilder().apply(builder).factory()
+    fun sharedFlowParameters(builder: SharedFlowParametersBuilder.() -> Unit) {
+        sharedFlowBuilder = SharedFlowParametersBuilder().apply(builder).builder()
     }
 
     protected var serializersModuleExtension: (SerializersModuleBuilder.() -> Unit)? = null
@@ -30,7 +30,7 @@ abstract class RPCConfigBuilder {
     class Client: RPCConfigBuilder() {
         fun build(): RPCConfig.Client {
             return RPCConfig.Client(
-                incomingSharedFlowFactory = incomingSharedFlowFactory,
+                sharedFlowBuilder = sharedFlowBuilder,
                 serializersModuleExtension = serializersModuleExtension,
             )
         }
@@ -39,7 +39,7 @@ abstract class RPCConfigBuilder {
     class Server: RPCConfigBuilder() {
         fun build(): RPCConfig.Server {
             return RPCConfig.Server(
-                incomingSharedFlowFactory = incomingSharedFlowFactory,
+                sharedFlowBuilder = sharedFlowBuilder,
                 serializersModuleExtension = serializersModuleExtension,
             )
         }
@@ -47,11 +47,11 @@ abstract class RPCConfigBuilder {
 }
 
 interface RPCConfig {
-    val incomingSharedFlowFactory: () -> MutableSharedFlow<Any?>
+    val sharedFlowBuilder: () -> MutableSharedFlow<Any?>
     val serializersModuleExtension: (SerializersModuleBuilder.() -> Unit)?
 
     class Client internal constructor(
-        override val incomingSharedFlowFactory: () -> MutableSharedFlow<Any?>,
+        override val sharedFlowBuilder: () -> MutableSharedFlow<Any?>,
         override val serializersModuleExtension: (SerializersModuleBuilder.() -> Unit)? = null,
     ): RPCConfig {
         companion object {
@@ -60,7 +60,7 @@ interface RPCConfig {
     }
 
     class Server internal constructor(
-        override val incomingSharedFlowFactory: () -> MutableSharedFlow<Any?>,
+        override val sharedFlowBuilder: () -> MutableSharedFlow<Any?>,
         override val serializersModuleExtension: (SerializersModuleBuilder.() -> Unit)? = null,
     ): RPCConfig  {
         companion object {

@@ -94,13 +94,13 @@ internal class RPCClientEngine(
     private suspend fun <T> prepareAndExecuteCall(
         callInfo: RPCCallInfo,
         deferred: CompletableDeferred<T>,
-    ): Pair<LazyRPCFlowContext, Json> {
+    ): Pair<LazyRPCStreamContext, Json> {
         val id = callCounter.incrementAndGet()
         val callId = "$engineId:${callInfo.dataType}:$id"
 
         logger.trace { "start a call[$callId] ${callInfo.callableName}" }
 
-        val flowContext = LazyRPCFlowContext { RPCFlowContext(callId, config) }
+        val flowContext = LazyRPCStreamContext { RPCStreamContext(callId, config) }
         val json = prepareJson(flowContext)
         val firstMessage = serializeRequest(callId, callInfo, json)
 
@@ -113,7 +113,7 @@ internal class RPCClientEngine(
     @OptIn(InternalKRPCApi::class)
     private suspend fun executeCall(
         callId: String,
-        flowContext: LazyRPCFlowContext,
+        flowContext: LazyRPCStreamContext,
         callInfo: RPCCallInfo,
         firstMessage: RPCMessage,
         json: Json,
@@ -149,11 +149,11 @@ internal class RPCClientEngine(
                     }
 
                     is RPCMessage.StreamCancel -> {
-                        flowContext.initialize().cancelFlow(message)
+                        flowContext.initialize().cancelStream(message)
                     }
 
                     is RPCMessage.StreamFinished -> {
-                        flowContext.initialize().closeFlow(message)
+                        flowContext.initialize().closeStream(message)
                     }
 
                     is RPCMessage.StreamMessage -> {
@@ -173,19 +173,25 @@ internal class RPCClientEngine(
     }
 
     @OptIn(InternalKRPCApi::class)
-    private suspend fun handleOutgoingFlows(flowContext: LazyRPCFlowContext, json: Json) {
+    private suspend fun handleOutgoingFlows(flowContext: LazyRPCStreamContext, json: Json) {
         val mutex = Mutex()
-        for (clientFlow in flowContext.awaitInitialized().outgoingFlows) {
+        for (clientStream in flowContext.awaitInitialized().outgoingStreams) {
             launch {
-                val callId = clientFlow.callId
-                val flowId = clientFlow.flowId
-                val elementSerializer = clientFlow.elementSerializer
+                val callId = clientStream.callId
+                val flowId = clientStream.streamId
+                val elementSerializer = clientStream.elementSerializer
                 try {
-                    clientFlow.flow.collect {
-                        mutex.withLock {
-                            val data = json.encodeToString(elementSerializer, it)
-                            val message = RPCMessage.StreamMessage(callId, serviceTypeString, flowId, data)
-                            transport.send(message)
+                    when (clientStream.kind) {
+                        StreamKind.Flow, StreamKind.SharedFlow, StreamKind.StateFlow -> {
+                            val stream = clientStream.stream as Flow<*>
+
+                            stream.collect {
+                                mutex.withLock {
+                                    val data = json.encodeToString(elementSerializer, it)
+                                    val message = RPCMessage.StreamMessage(callId, serviceTypeString, flowId, data)
+                                    transport.send(message)
+                                }
+                            }
                         }
                     }
                 } catch (cause: Throwable) {
@@ -201,7 +207,7 @@ internal class RPCClientEngine(
         }
     }
 
-    private suspend fun handleIncomingHotFlows(flowContext: LazyRPCFlowContext) {
+    private suspend fun handleIncomingHotFlows(flowContext: LazyRPCStreamContext) {
         for (hotFlow in flowContext.awaitInitialized().incomingHotFlows) {
             launch {
                 /** Start consuming incoming requests, see [RPCIncomingHotFlow.emit] */
@@ -216,21 +222,21 @@ internal class RPCClientEngine(
         return RPCMessage.CallData(callId, serviceTypeString, callInfo.callableName, jsonData, callInfo.type)
     }
 
-    private fun prepareJson(rpcFlowContext: LazyRPCFlowContext): Json = Json {
+    private fun prepareJson(rpcFlowContext: LazyRPCStreamContext): Json = Json {
         serializersModule = SerializersModule {
             contextual(Flow::class) {
                 @Suppress("UNCHECKED_CAST")
-                FlowSerializer.Plain(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
+                StreamSerializer.Flow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
             }
 
             contextual(SharedFlow::class) {
                 @Suppress("UNCHECKED_CAST")
-                FlowSerializer.Shared(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
+                StreamSerializer.SharedFlow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
             }
 
             contextual(StateFlow::class) {
                 @Suppress("UNCHECKED_CAST")
-                FlowSerializer.State(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
+                StreamSerializer.StateFlow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
             }
 
             config.serializersModuleExtension?.invoke(this)

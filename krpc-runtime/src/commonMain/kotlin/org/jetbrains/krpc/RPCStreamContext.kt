@@ -9,8 +9,8 @@ import kotlinx.serialization.json.Json
 import org.jetbrains.krpc.internal.InternalKRPCApi
 import kotlin.coroutines.CoroutineContext
 
-class LazyRPCFlowContext(private val initializer: () -> RPCFlowContext) {
-    private val deferred = CompletableDeferred<RPCFlowContext>()
+class LazyRPCStreamContext(private val initializer: () -> RPCStreamContext) {
+    private val deferred = CompletableDeferred<RPCStreamContext>()
     private val lazyValue by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         initializer().also { deferred.complete(it) }
     }
@@ -19,16 +19,16 @@ class LazyRPCFlowContext(private val initializer: () -> RPCFlowContext) {
 
     val valueOrNull get() = if (deferred.isCompleted) lazyValue else null
 
-    fun initialize(): RPCFlowContext = lazyValue
+    fun initialize(): RPCStreamContext = lazyValue
 }
 
-class RPCFlowContext(private val callId: String, private val config: RPCConfig) {
-    private val flowId = atomic(0L)
+class RPCStreamContext(private val callId: String, private val config: RPCConfig) {
+    private val streamId = atomic(0L)
 
-    private var incomingFlowsInitialized: Boolean = false
-    private val incomingFlows by lazy {
-        incomingFlowsInitialized = true
-        ConcurrentMap<String, FlowInfo>()
+    private var incomingStreamsInitialized: Boolean = false
+    private val incomingStreams by lazy {
+        incomingStreamsInitialized = true
+        ConcurrentMap<String, RPCStreamInfo>()
     }
 
     private var incomingChannelsInitialized: Boolean = false
@@ -37,9 +37,9 @@ class RPCFlowContext(private val callId: String, private val config: RPCConfig) 
         ConcurrentMap<String, Channel<Any?>>()
     }
 
-    private var outgoingFlowsInitialized: Boolean = false
-    val outgoingFlows: Channel<FlowInfo> by lazy {
-        outgoingFlowsInitialized = true
+    private var outgoingStreamsInitialized: Boolean = false
+    val outgoingStreams: Channel<RPCStreamInfo> by lazy {
+        outgoingStreamsInitialized = true
         Channel(capacity = Channel.UNLIMITED)
     }
 
@@ -49,47 +49,48 @@ class RPCFlowContext(private val callId: String, private val config: RPCConfig) 
         Channel(Channel.UNLIMITED)
     }
 
-    fun registerFlow(flow: Flow<*>, elementSerializer: KSerializer<Any?>): String {
-        val id = "flow:${flowId.getAndIncrement()}"
-        outgoingFlows.trySend(FlowInfo(callId, id, flow, elementSerializer))
+    fun <StreamT : Any> registerStream(stream: StreamT, streamKind: StreamKind, elementSerializer: KSerializer<Any?>): String {
+        val id = "stream:${streamId.getAndIncrement()}"
+        outgoingStreams.trySend(RPCStreamInfo(callId, id, stream, streamKind, elementSerializer))
         return id
     }
 
-    fun prepareFlow(
-        flowId: String,
-        flowKind: FlowKind,
+    fun <StreamT : Any> prepareStream(
+        streamId: String,
+        streamKind: StreamKind,
         stateFlowInitialValue: Any?,
         elementSerializer: KSerializer<Any?>,
-    ): Flow<*> {
+    ): StreamT {
         val incoming: Channel<Any?> = Channel(Channel.UNLIMITED)
-        incomingChannels[flowId] = incoming
+        incomingChannels[streamId] = incoming
 
-        val flow = flowOf(flowKind, stateFlowInitialValue, incoming)
-        incomingFlows[flowId] = FlowInfo(callId, flowId, flow, elementSerializer)
-        return flow
+        val stream = streamOf<StreamT>(streamKind, stateFlowInitialValue, incoming)
+        incomingStreams[streamId] = RPCStreamInfo(callId, streamId, stream, streamKind, elementSerializer)
+        return stream
     }
 
     @OptIn(InternalKRPCApi::class)
-    private fun flowOf(flowKind: FlowKind, stateFlowInitialValue: Any?, incoming: Channel<Any?>): Flow<Any?> {
-        suspend fun consume(collector: FlowCollector<Any?>, onError: (Throwable) -> Unit) {
+    @Suppress("UNCHECKED_CAST")
+    private fun <StreamT : Any> streamOf(streamKind: StreamKind, stateFlowInitialValue: Any?, incoming: Channel<Any?>): StreamT {
+        suspend fun consumeFlow(collector: FlowCollector<Any?>, onError: (Throwable) -> Unit) {
             for (message in incoming) {
                 when (message) {
-                    is FlowCancel -> onError(message.cause.cause.deserialize())
-                    is FlowEnd -> return
+                    is StreamCancel -> onError(message.cause.cause.deserialize())
+                    is StreamEnd -> return
                     else -> collector.emit(message)
                 }
             }
         }
 
-        return when (flowKind) {
-            FlowKind.Plain -> flow {
-                consume(this) { e -> throw e }
+        return when (streamKind) {
+            StreamKind.Flow -> flow {
+                consumeFlow(this) { e -> throw e }
             }
 
-            FlowKind.Shared -> {
-                val sharedFlow: MutableSharedFlow<Any?> = config.incomingSharedFlowFactory()
+            StreamKind.SharedFlow -> {
+                val sharedFlow: MutableSharedFlow<Any?> = config.sharedFlowBuilder()
 
-                object : RPCIncomingHotFlow(sharedFlow, ::consume), MutableSharedFlow<Any?> by sharedFlow {
+                object : RPCIncomingHotFlow(sharedFlow, ::consumeFlow), MutableSharedFlow<Any?> by sharedFlow {
                     override suspend fun collect(collector: FlowCollector<Any?>): Nothing {
                         super.collect(collector)
                     }
@@ -100,10 +101,10 @@ class RPCFlowContext(private val callId: String, private val config: RPCConfig) 
                 }.also { incomingHotFlows.trySend(it) }
             }
 
-            FlowKind.State -> {
+            StreamKind.StateFlow -> {
                 val stateFlow = MutableStateFlow(stateFlowInitialValue)
 
-                object : RPCIncomingHotFlow(stateFlow, ::consume), MutableStateFlow<Any?> by stateFlow {
+                object : RPCIncomingHotFlow(stateFlow, ::consumeFlow), MutableStateFlow<Any?> by stateFlow {
                     override suspend fun collect(collector: FlowCollector<Any?>): Nothing {
                         super.collect(collector)
                     }
@@ -113,25 +114,25 @@ class RPCFlowContext(private val callId: String, private val config: RPCConfig) 
                     }
                 }.also { incomingHotFlows.trySend(it) }
             }
-        }
+        } as StreamT
     }
 
-    suspend fun closeFlow(message: RPCMessage.StreamFinished) {
-        incomingChannelOf(message.flowId).send(FlowEnd)
+    suspend fun closeStream(message: RPCMessage.StreamFinished) {
+        incomingChannelOf(message.streamId).send(StreamEnd)
     }
 
-    suspend fun cancelFlow(message: RPCMessage.StreamCancel) {
-        incomingChannelOf(message.flowId).send(FlowCancel(message))
+    suspend fun cancelStream(message: RPCMessage.StreamCancel) {
+        incomingChannelOf(message.streamId).send(StreamCancel(message))
     }
 
     suspend fun send(message: RPCMessage.StreamMessage, json: Json) {
-        val info = incomingFlows[message.flowId] ?: error("Unknown flow ${message.flowId}")
+        val info = incomingStreams[message.streamId] ?: error("Unknown stream ${message.streamId}")
         val result = json.decodeFromString(info.elementSerializer, message.data)
-        incomingChannelOf(message.flowId).send(result)
+        incomingChannelOf(message.streamId).send(result)
     }
 
-    private fun incomingChannelOf(flowId: String): Channel<Any?> {
-        return incomingChannels[flowId] ?: error("Expected flow with id \"$flowId\" to be present in incomingChannels")
+    private fun incomingChannelOf(stremaId: String): Channel<Any?> {
+        return incomingChannels[stremaId] ?: error("Expected stream with id \"$stremaId\" to be present in incomingChannels")
     }
 
     fun close() {
@@ -143,12 +144,12 @@ class RPCFlowContext(private val callId: String, private val config: RPCConfig) 
             incomingChannels.clear()
         }
 
-        if (incomingFlowsInitialized) {
-            incomingFlows.clear()
+        if (incomingStreamsInitialized) {
+            incomingStreams.clear()
         }
 
-        if (outgoingFlowsInitialized) {
-            outgoingFlows.close()
+        if (outgoingStreamsInitialized) {
+            outgoingStreams.close()
         }
 
         if (incomingHotFlowsInitialized) {
@@ -157,9 +158,9 @@ class RPCFlowContext(private val callId: String, private val config: RPCConfig) 
     }
 }
 
-private object FlowEnd
+private object StreamEnd
 
-private class FlowCancel(
+private class StreamCancel(
     val cause: RPCMessage.StreamCancel
 )
 
