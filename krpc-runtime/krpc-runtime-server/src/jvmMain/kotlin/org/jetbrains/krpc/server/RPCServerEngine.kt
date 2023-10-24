@@ -109,13 +109,18 @@ class RPCServerEngine<T : RPC>(
         val json = prepareJson(flowContext)
         flowContexts[callId] = flowContext
         val callableName = callData.callableName
-        val callable = when(callData.callType) {
-            RPCMessage.CallType.Method -> methods[callableName]
-            RPCMessage.CallType.Field -> fields[callableName]
+
+        val (isMethod, actualName) = when {
+            callableName.endsWith("\$method") -> true to callableName.removeSuffix("\$method")
+            callableName.endsWith("\$field") -> false to callableName.removeSuffix("\$field")
+            else -> true to callableName // compatibility with old clients
         }
 
+        val callable = (if (isMethod) methods else fields)[actualName]
+
         if (callable == null) {
-            val cause = NoSuchMethodException("Service ${serviceType.classifier} has no ${callData.callType.name.lowercase()} $callableName")
+            val callType = if (isMethod) "method" else "field"
+            val cause = NoSuchMethodException("Service ${serviceType.classifier} has no $callType $actualName")
             val message = RPCMessage.CallException(callId, serviceTypeString, serializeException(cause))
             launch {
                 transport.send(message)
@@ -123,9 +128,9 @@ class RPCServerEngine<T : RPC>(
             return
         }
 
-        val argsArray = if (callData.callType == RPCMessage.CallType.Method) {
-            val type = rpcServiceMethodSerializationTypeOf(serviceType, callData.callableName)
-                ?: error("Unknown method ${callData.callableName}")
+        val argsArray = if (isMethod) {
+            val type = rpcServiceMethodSerializationTypeOf(serviceType, actualName)
+                ?: error("Unknown method $actualName")
 
             val serializerModule = json.serializersModule
             val paramsSerializer = serializerModule.rpcSerializerForType(type)
@@ -136,14 +141,9 @@ class RPCServerEngine<T : RPC>(
 
         calls[callId] = launch {
             val result = try {
-                val value = when (callData.callType) {
-                    RPCMessage.CallType.Method -> {
-                        callable.callSuspend(service, *argsArray!!)
-                    }
-
-                    RPCMessage.CallType.Field -> {
-                        callable.call(service)
-                    }
+                val value = when {
+                    isMethod -> callable.callSuspend(service, *argsArray!!)
+                    else -> callable.call(service)
                 }
 
                 val returnType = callable.returnType

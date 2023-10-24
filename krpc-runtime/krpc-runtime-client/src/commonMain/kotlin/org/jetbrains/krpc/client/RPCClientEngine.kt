@@ -61,7 +61,6 @@ internal class RPCClientEngine(
             data = FieldDataObject,
             dataType = typeOf<FieldDataObject>(),
             returnType = type,
-            type = RPCMessage.CallType.Field,
         )
 
         launch {
@@ -219,7 +218,7 @@ internal class RPCClientEngine(
     private fun serializeRequest(callId: String, callInfo: RPCCallInfo, json: StringFormat): RPCMessage {
         val serializerData = json.serializersModule.rpcSerializerForType(callInfo.dataType)
         val jsonData = json.encodeToString(serializerData, callInfo.data)
-        return RPCMessage.CallData(callId, serviceTypeString, callInfo.callableName, jsonData, callInfo.type)
+        return RPCMessage.CallData(callId, serviceTypeString, callInfo.callableName, jsonData)
     }
 
     private fun prepareJson(rpcFlowContext: LazyRPCStreamContext): Json = Json {

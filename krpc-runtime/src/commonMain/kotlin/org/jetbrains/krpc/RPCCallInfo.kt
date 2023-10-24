@@ -7,5 +7,4 @@ data class RPCCallInfo(
     val data: Any,
     val dataType: KType,
     val returnType: KType,
-    val type: RPCMessage.CallType,
 )

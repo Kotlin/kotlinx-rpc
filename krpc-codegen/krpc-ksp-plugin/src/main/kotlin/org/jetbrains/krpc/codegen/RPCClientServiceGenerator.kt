@@ -102,7 +102,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             else -> "by lazy {" to " }"
         }
 
-        val codeDeclaration = "override val $name: $codeType $prefix engine.$method(\"$name\", typeOf<$codeType>())$suffix"
+        val codeDeclaration = "override val $name: $codeType $prefix engine.$method(\"$name\\\$field\", typeOf<$codeType>())$suffix"
 
         writer.write(codeDeclaration)
         writer.newLine()
@@ -163,7 +163,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         }"
 
         val prefix = if (returnType.isUnit()) "" else "val result = "
-        writer.write("${prefix}engine.call(RPCCallInfo(\"$name\", $data, typeOf<${name.functionGeneratedClass()}>(), returnType, RPCMessage.CallType.Method))")
+        writer.write("${prefix}engine.call(RPCCallInfo(\"${name}\\\$method\", $data, typeOf<${name.functionGeneratedClass()}>(), returnType))")
         writer.newLine()
 
         if (!returnType.isUnit()) {

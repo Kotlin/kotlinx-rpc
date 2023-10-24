@@ -15,14 +15,10 @@ sealed interface RPCMessage {
     data class CallData(
         override val callId: String,
         override val serviceType: String,
+        @SerialName("method")
         val callableName: String,
         val data: String,
-        val callType: CallType,
     ) : RPCMessage
-
-    enum class CallType {
-        Method, Field;
-    }
 
     @Serializable
     data class CallSuccess(

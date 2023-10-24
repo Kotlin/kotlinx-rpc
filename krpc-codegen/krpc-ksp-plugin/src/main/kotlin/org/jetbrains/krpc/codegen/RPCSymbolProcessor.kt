@@ -102,8 +102,14 @@ class RPCSymbolProcessor(
         val returnType = functionDeclaration.returnType?.resolve()
             ?: error("Failed to resolve returnType for $functionDeclaration")
 
+        val name = functionDeclaration.simpleName.getShortName()
+
+        if (name.contains("$")) {
+            codegenError("RPC Service method's name cannot contain \$ symbol", functionDeclaration)
+        }
+
         return RPCServiceDeclaration.Function(
-            name = functionDeclaration.simpleName.getShortName(),
+            name = name,
             argumentTypes = functionDeclaration.parameters.map { processFunctionArgument(functionDeclaration, it, context) },
             returnType = returnType,
         )
@@ -118,8 +124,8 @@ class RPCSymbolProcessor(
 
         return RPCServiceDeclaration.Function.Argument(
             name = argument.name?.getShortName() ?: codegenError(
-                "Expected function argument name",
-                functionDeclaration
+                message = "Expected function argument name",
+                service = functionDeclaration,
             ),
             type = type,
             isVararg = argument.isVararg,
@@ -146,7 +152,13 @@ class RPCSymbolProcessor(
 
         val isEager = propertyDeclaration.annotations.any { it.annotationType.resolve() == context.rpcEagerProperty }
 
-        return RPCServiceDeclaration.FlowProperty(propertyDeclaration.simpleName.asString(), type, flowType, isEager)
+        val name = propertyDeclaration.simpleName.asString()
+
+        if (name.contains("$")) {
+            codegenError("RPC Service field's name cannot contain \$ symbol", propertyDeclaration)
+        }
+
+        return RPCServiceDeclaration.FlowProperty(name, type, flowType, isEager)
     }
 
     private fun KSDeclaration.flowTypeOrNull(context: RPCSymbolProcessorContext): RPCServiceDeclaration.FlowProperty.Type? {
