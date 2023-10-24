@@ -141,7 +141,7 @@ internal class RPCClientEngine(
 
                     is RPCMessage.CallSuccess -> {
                         val value = runCatching {
-                            val serializerResult = json.serializersModule.contextualForFlow(callInfo.returnType)
+                            val serializerResult = json.serializersModule.rpcSerializerForType(callInfo.returnType)
                             json.decodeFromString(serializerResult, message.data)
                         }
 
@@ -211,7 +211,7 @@ internal class RPCClientEngine(
     }
 
     private fun serializeRequest(callId: String, callInfo: RPCCallInfo, json: StringFormat): RPCMessage {
-        val serializerData = json.serializersModule.contextualForFlow(callInfo.dataType)
+        val serializerData = json.serializersModule.rpcSerializerForType(callInfo.dataType)
         val jsonData = json.encodeToString(serializerData, callInfo.data)
         return RPCMessage.CallData(callId, serviceTypeString, callInfo.callableName, jsonData, callInfo.type)
     }

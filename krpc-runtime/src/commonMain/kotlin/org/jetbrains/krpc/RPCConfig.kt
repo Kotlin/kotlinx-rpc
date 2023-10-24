@@ -22,6 +22,7 @@ abstract class RPCConfigBuilder {
 
     protected var serializersModuleExtension: (SerializersModuleBuilder.() -> Unit)? = null
 
+    @Suppress("unused")
     fun serializersModuleExtension(extension: SerializersModuleBuilder.() -> Unit) {
         serializersModuleExtension = extension
     }

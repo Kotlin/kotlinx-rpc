@@ -96,7 +96,7 @@ class RPCServerEngine<T : RPC>(
             }
 
             if (result.isFailure) {
-                logger.error { result.exceptionOrNull().toString() }
+                logger.error { result.exceptionOrNull()?.stackTrace?.toString() }
             }
 
             result.getOrNull() == true
@@ -128,7 +128,7 @@ class RPCServerEngine<T : RPC>(
                 ?: error("Unknown method ${callData.callableName}")
 
             val serializerModule = json.serializersModule
-            val paramsSerializer = serializerModule.contextualForFlow(type)
+            val paramsSerializer = serializerModule.rpcSerializerForType(type)
             val args = json.decodeFromString(paramsSerializer, callData.data) as RPCMethodClassArguments
 
             args.asArray()
@@ -147,7 +147,7 @@ class RPCServerEngine<T : RPC>(
                 }
 
                 val returnType = callable.returnType
-                val returnSerializer = json.serializersModule.contextualForFlow(returnType)
+                val returnSerializer = json.serializersModule.rpcSerializerForType(returnType)
                 val jsonResult = json.encodeToString(returnSerializer, value)
                 RPCMessage.CallSuccess(callId, serviceTypeString, jsonResult)
             } catch (cause: InvocationTargetException) {

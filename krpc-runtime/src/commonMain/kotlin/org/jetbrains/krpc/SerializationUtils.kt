@@ -14,14 +14,14 @@ import kotlin.reflect.KType
 internal fun SerializersModule.buildContextual(type: KType): KSerializer<Any?> {
     val result = getContextual(
         type.classifier as? KClass<*> ?: error("Unknown type $type"),
-        type.arguments.map { contextualForFlow(it.type ?: error("No type information for $type<$it>") ) }
+        type.arguments.map { rpcSerializerForType(it.type ?: error("No type information for $type<$it>") ) }
     )
     @Suppress("UNCHECKED_CAST")
     return result as? KSerializer<Any?> ?: error("No serializer found for $type")
 }
 
 
-fun SerializersModule.contextualForFlow(type: KType): KSerializer<Any?> {
+fun SerializersModule.rpcSerializerForType(type: KType): KSerializer<Any?> {
     return when (type.classifier) {
         Flow::class, SharedFlow::class, StateFlow::class -> buildContextual(type)
         else -> serializer(type)

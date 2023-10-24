@@ -2,7 +2,6 @@ package org.jetbrains.krpc.codegen
 
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
-import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSType
 
 class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
