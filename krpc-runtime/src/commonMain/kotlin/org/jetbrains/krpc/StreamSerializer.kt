@@ -7,6 +7,15 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 sealed class StreamSerializer<StreamT : Any>(private val streamKind: StreamKind) : KSerializer<StreamT> {
+    companion object {
+        private const val STREAM_SERIALIZER_NAME_PREFIX = "StreamSerializer"
+
+        private const val STREAM_ID_SERIAL_NAME = "streamId"
+        private const val STREAM_ID_SERIALIZER_NAME = "StreamIdSerializer"
+
+        private const val STATE_FLOW_INITIAL_VALUE_SERIAL_NAME = "stateFlowInitialValue"
+    }
+
     protected abstract val context: RPCStreamContext
     protected abstract val elementType: KSerializer<Any?>
 
@@ -17,8 +26,8 @@ sealed class StreamSerializer<StreamT : Any>(private val streamKind: StreamKind)
     protected open fun encodeStateFlowInitialValue(encoder: Encoder, flow: StreamT) { }
 
     override val descriptor: SerialDescriptor by lazy {
-        buildClassSerialDescriptor("StreamSerializer.${streamKind.name}") {
-            element("streamId", PrimitiveSerialDescriptor("StreamIdSerializer", PrimitiveKind.STRING))
+        buildClassSerialDescriptor("$STREAM_SERIALIZER_NAME_PREFIX.${streamKind.name}") {
+            element(STREAM_ID_SERIAL_NAME, PrimitiveSerialDescriptor(STREAM_ID_SERIALIZER_NAME, PrimitiveKind.STRING))
             descriptorExtension()
         }
     }
@@ -54,7 +63,7 @@ sealed class StreamSerializer<StreamT : Any>(private val streamKind: StreamKind)
         override val elementType: KSerializer<Any?>,
     ) : StreamSerializer<kotlinx.coroutines.flow.StateFlow<Any?>>(StreamKind.StateFlow) {
         override fun ClassSerialDescriptorBuilder.descriptorExtension() {
-            element("stateFlowInitialValue", elementType.descriptor, isOptional = true)
+            element(STATE_FLOW_INITIAL_VALUE_SERIAL_NAME, elementType.descriptor, isOptional = true)
         }
 
         @OptIn(ExperimentalSerializationApi::class)

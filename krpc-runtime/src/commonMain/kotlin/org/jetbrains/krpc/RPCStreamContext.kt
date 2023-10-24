@@ -23,6 +23,10 @@ class LazyRPCStreamContext(private val initializer: () -> RPCStreamContext) {
 }
 
 class RPCStreamContext(private val callId: String, private val config: RPCConfig) {
+    companion object {
+        private const val STREAM_ID_PREFIX = "stream:"
+    }
+
     private val streamId = atomic(0L)
 
     private var incomingStreamsInitialized: Boolean = false
@@ -50,7 +54,7 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
     }
 
     fun <StreamT : Any> registerStream(stream: StreamT, streamKind: StreamKind, elementSerializer: KSerializer<Any?>): String {
-        val id = "stream:${streamId.getAndIncrement()}"
+        val id = "$STREAM_ID_PREFIX${streamId.getAndIncrement()}"
         outgoingStreams.trySend(RPCStreamInfo(callId, id, stream, streamKind, elementSerializer))
         return id
     }
