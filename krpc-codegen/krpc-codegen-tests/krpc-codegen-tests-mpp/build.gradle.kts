@@ -17,6 +17,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
                 implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+                implementation("io.github.oshai:kotlin-logging:5.1.0")
 
                 implementation(project(":krpc-runtime:krpc-runtime-client"))
                 implementation(project(":krpc-runtime:krpc-runtime-server"))

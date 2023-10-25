@@ -28,7 +28,7 @@ class RPCServerEngine<T : RPC>(
     private val config: RPCConfig.Server = RPCConfig.Server.Default,
 ) : CoroutineScope {
     private val serviceTypeString = serviceType.toString()
-    private val logger = KotlinLogging.logger("RPCServer[0x${hashCode().toString(16)}]")
+    private val logger = KotlinLogging.logger("RPCServerEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
 
     private val methods: Map<String, KCallable<*>>
     private val fields: Map<String, KCallable<*>>

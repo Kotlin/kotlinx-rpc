@@ -5,6 +5,12 @@ import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.symbol.KSType
 
 class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
+    companion object {
+        private const val REGISTER_PLAIN_FLOW_FIELD_METHOD = "registerPlainFlowField"
+        private const val REGISTER_SHARED_FLOW_FIELD_METHOD = "registerSharedFlowField"
+        private const val REGISTER_STATE_FLOW_FIELD_METHOD = "registerStateFlowField"
+    }
+
     fun generate(service: RPCServiceDeclaration) {
         val writer = codegen.createNewFile(
             dependencies = Dependencies(aggregating = true, service.file),
@@ -88,11 +94,11 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         return "$prefix$name: ${type.toCode()}"
     }
 
-    private fun RPCServiceDeclaration.FlowProperty.toCode(writer: CodeWriter) {
+    private fun RPCServiceDeclaration.FlowField.toCode(writer: CodeWriter) {
         val method = when (flowType) {
-            RPCServiceDeclaration.FlowProperty.Type.Plain -> "registerPlainFlowField"
-            RPCServiceDeclaration.FlowProperty.Type.Shared -> "registerSharedFlowField"
-            RPCServiceDeclaration.FlowProperty.Type.State -> "registerStateFlowField"
+            RPCServiceDeclaration.FlowField.Type.Plain -> REGISTER_PLAIN_FLOW_FIELD_METHOD
+            RPCServiceDeclaration.FlowField.Type.Shared -> REGISTER_SHARED_FLOW_FIELD_METHOD
+            RPCServiceDeclaration.FlowField.Type.State -> REGISTER_STATE_FLOW_FIELD_METHOD
         }
 
         val codeType = type.toCode()
@@ -110,7 +116,8 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
     }
 
     private fun KSType.toCode(): String {
-        val qualifier = declaration.qualifiedName?.asString() ?: codegenError("Expected qualifier for KSType")
+        val qualifier = declaration.qualifiedName?.asString()
+            ?: codegenError<AbsentQualifiedNameCodeGenerationException>(declaration)
 
         val arguments = arguments.joinToString {
             val variance =
@@ -129,7 +136,8 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
     }
 
     private fun KSType.toCodeWithStarTypeArguments(): String {
-        val qualifier = declaration.qualifiedName?.asString() ?: codegenError("Expected qualifier for KSType")
+        val qualifier = declaration.qualifiedName?.asString()
+            ?: codegenError<AbsentQualifiedNameCodeGenerationException>(declaration)
 
         val typeParameters = if (arguments.isNotEmpty()) {
             "<${arguments.joinToString { "*" }}>"

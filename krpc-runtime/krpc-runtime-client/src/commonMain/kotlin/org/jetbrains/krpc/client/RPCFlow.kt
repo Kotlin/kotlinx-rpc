@@ -37,7 +37,7 @@ internal sealed class RPCFlow<T, FlowT : Flow<T>>(private val serviceName: Strin
         }
     }
 
-    protected fun <R> rpcProperty(getter: FlowT.() -> R): RPCPropertyProvider<FlowT, R> {
-        return RPCPropertyProvider(serviceName, deferred, getter)
+    protected fun <R> rpcProperty(getter: FlowT.() -> R): RPCFieldProvider<FlowT, R> {
+        return RPCFieldProvider(serviceName, deferred, getter)
     }
 }

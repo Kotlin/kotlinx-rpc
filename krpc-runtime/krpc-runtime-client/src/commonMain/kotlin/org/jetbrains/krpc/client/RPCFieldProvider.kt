@@ -4,7 +4,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlin.reflect.KProperty
 
-internal class RPCPropertyProvider<T, R>(
+internal class RPCFieldProvider<T, R>(
     private val serviceName: String,
     private val deferred: CompletableDeferred<T> = CompletableDeferred(),
     val getter: T.() -> R,
@@ -19,7 +19,7 @@ internal class RPCPropertyProvider<T, R>(
     }
 }
 
-@Suppress("FunctionName", "unused")
-internal fun <T> RPCFieldProvider(serviceName: String, deferred: CompletableDeferred<T> = CompletableDeferred()): RPCPropertyProvider<T, T> {
-    return RPCPropertyProvider(serviceName, deferred) { this }
+@Suppress("unused")
+internal fun <T> RPCFieldProvider(serviceName: String, deferred: CompletableDeferred<T> = CompletableDeferred()): RPCFieldProvider<T, T> {
+    return RPCFieldProvider(serviceName, deferred) { this }
 }

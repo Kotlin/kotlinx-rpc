@@ -3,7 +3,7 @@ package org.jetbrains.krpc.client
 import org.jetbrains.krpc.RPC
 
 /**
- * Allows to wait for the initialization of an RPC field in the generated client:
+ * Waits for the initialization of an RPC field in the generated client:
  * ```kotlin
  * interface MyService : RPC {
  *     val stateFlow: StateFlow<Int>

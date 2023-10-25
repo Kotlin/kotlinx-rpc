@@ -7,7 +7,7 @@ class RPCServiceDeclaration(
     val simpleName: String,
     val fullName: String,
     val functions: List<Function>,
-    val properties: List<FlowProperty>,
+    val properties: List<FlowField>,
     val file: KSFile,
 ) {
     class Function(
@@ -23,7 +23,7 @@ class RPCServiceDeclaration(
         )
     }
 
-    class FlowProperty(
+    class FlowField(
         val name: String,
         val type: KSType,
         val flowType: Type,

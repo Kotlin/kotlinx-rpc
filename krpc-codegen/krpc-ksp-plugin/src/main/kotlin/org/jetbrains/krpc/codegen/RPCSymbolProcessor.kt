@@ -27,7 +27,7 @@ class RPCSymbolProcessor(
             resolver.getAllFiles().forEach { file ->
                 file.declarations.forEach { declaration ->
                     if (declaration is KSClassDeclaration && declaration.classKind == ClassKind.INTERFACE && declaration.superTypes.find { it.resolve() == context.rpcType } != null) {
-                        yield(processService(declaration, file, context))
+                        yield(handleService(declaration, file, context))
                     }
                 }
             }
@@ -36,86 +36,84 @@ class RPCSymbolProcessor(
         return emptyList()
     }
 
-    private fun processService(
+    private fun handleService(
         serviceDeclaration: KSClassDeclaration,
         file: KSFile,
         context: RPCSymbolProcessorContext,
     ): RPCServiceDeclaration {
         if (serviceDeclaration.typeParameters.isNotEmpty()) {
-            codegenError("RPC Service can not have type parameters", serviceDeclaration)
+            codegenError<ServiceInterfaceTypeParametersCodeGenerationException>(serviceDeclaration)
         }
 
         if (serviceDeclaration.modifiers.intersect(DENY_LIST_SERVICE_MODIFIERS).isNotEmpty()) {
-            codegenError(
-                "RPC Service can not have any of these modifiers: ${DENY_LIST_SERVICE_MODIFIERS.joinToString()}",
-                serviceDeclaration
-            )
+            codegenError<ForbiddenServiceInterfaceModifierCodeGenerationException>(serviceDeclaration)
         }
 
         val processedFunctions = serviceDeclaration.getDeclaredFunctions().toList().map {
-            processServiceFunction(it, context)
+            handleServiceFunction(it, context)
         }
 
         val processedProperties = serviceDeclaration.getDeclaredProperties().toList().map {
-            processServiceProperty(it, context)
+            handleServiceField(it, context)
         }
 
         return RPCServiceDeclaration(
             simpleName = serviceDeclaration.simpleName.asString(),
-            fullName = serviceDeclaration.qualifiedName?.asString() ?: codegenError(
-                "Expected service qualified name",
-                serviceDeclaration
-            ),
+            fullName = serviceDeclaration.qualifiedName?.asString()
+                ?: codegenError<AbsentQualifiedNameCodeGenerationException>(serviceDeclaration),
             functions = processedFunctions,
             properties = processedProperties,
             file = file,
         )
     }
 
-    private fun processServiceFunction(
+    private fun handleServiceFunction(
         functionDeclaration: KSFunctionDeclaration,
         context: RPCSymbolProcessorContext,
     ): RPCServiceDeclaration.Function {
         if (functionDeclaration.typeParameters.isNotEmpty()) {
-            codegenError("RPC Service function can not have type parameters", functionDeclaration)
+            codegenError<MethodTypeParametersCodeGenerationException>(functionDeclaration)
         }
 
         if (functionDeclaration.extensionReceiver != null) {
-            codegenError("RPC Service function can not have extension receiver", functionDeclaration)
+            codegenError<MethodExtensionReceiverCodeGenerationException>(functionDeclaration)
         }
 
         if (functionDeclaration.modifiers.intersect(DENY_LIST_FUNCTION_MODIFIERS).isNotEmpty()) {
-            codegenError(
-                "RPC Service function can not have any of these modifiers: ${DENY_LIST_FUNCTION_MODIFIERS.joinToString()}",
-                functionDeclaration
-            )
+            codegenError<ForbiddenMethodModifierCodeGenerationException>(functionDeclaration)
         }
 
         if (!functionDeclaration.modifiers.contains(Modifier.SUSPEND)) {
-            codegenError("RPC Service function must have 'suspend' modifier")
+            codegenError<AbsentSuspendMethodModifierCodeGenerationException>(functionDeclaration)
         }
 
         if (!functionDeclaration.isAbstract) {
-            codegenError("RPC Service function can not have default implementation", functionDeclaration)
+            codegenError<MethodDefaultImplementationCodeGenerationException>(functionDeclaration)
         }
 
         val returnType = functionDeclaration.returnType?.resolve()
-            ?: error("Failed to resolve returnType for $functionDeclaration")
+            ?: codegenError<UnresolvedMethodReturnTypeCodeGenerationException>(functionDeclaration)
 
         val name = functionDeclaration.simpleName.getShortName()
 
         if (name.contains("$")) {
-            codegenError("RPC Service method's name cannot contain \$ symbol", functionDeclaration)
+            codegenError<InvalidMethodNameCodeGenerationException>(functionDeclaration)
         }
 
         return RPCServiceDeclaration.Function(
             name = name,
-            argumentTypes = functionDeclaration.parameters.map { processFunctionArgument(functionDeclaration, it, context) },
+            argumentTypes = functionDeclaration.parameters.map {
+                handleFunctionArgument(
+                    functionDeclaration,
+                    it,
+                    context
+                )
+            },
             returnType = returnType,
         )
     }
 
-    private fun processFunctionArgument(
+    private fun handleFunctionArgument(
         functionDeclaration: KSFunctionDeclaration,
         argument: KSValueParameter,
         context: RPCSymbolProcessorContext,
@@ -123,55 +121,53 @@ class RPCSymbolProcessor(
         val type = argument.type.resolve()
 
         return RPCServiceDeclaration.Function.Argument(
-            name = argument.name?.getShortName() ?: codegenError(
-                message = "Expected function argument name",
-                service = functionDeclaration,
-            ),
+            name = argument.name?.getShortName()
+                ?: codegenError<AbsentShortNameCodeGenerationException>(functionDeclaration),
             type = type,
             isVararg = argument.isVararg,
             isContextual = type.declaration.flowTypeOrNull(context) != null,
         )
     }
 
-    private fun processServiceProperty(
+    private fun handleServiceField(
         propertyDeclaration: KSPropertyDeclaration,
         context: RPCSymbolProcessorContext
-    ): RPCServiceDeclaration.FlowProperty {
+    ): RPCServiceDeclaration.FlowField {
         if (propertyDeclaration.isMutable) {
-            codegenError("RPC Service field can not be mutable", propertyDeclaration)
+            codegenError<MutableFieldCodeGenerationException>(propertyDeclaration)
         }
 
         if (propertyDeclaration.extensionReceiver != null) {
-            codegenError("RPC Service field can not have extension receiver", propertyDeclaration)
+            codegenError<FieldExtensionReceiverCodeGenerationException>(propertyDeclaration)
         }
 
         val type = propertyDeclaration.type.resolve()
 
         val flowType = type.declaration.flowTypeOrNull(context)
-            ?: codegenError("Only Flow, SharedFlow and StateFlow properties are allowed in RPC Service interfaces", propertyDeclaration)
+            ?: codegenError<ForbiddenFieldTypeCodeGenerationException>(propertyDeclaration)
 
         val isEager = propertyDeclaration.annotations.any { it.annotationType.resolve() == context.rpcEagerProperty }
 
         val name = propertyDeclaration.simpleName.asString()
 
         if (name.contains("$")) {
-            codegenError("RPC Service field's name cannot contain \$ symbol", propertyDeclaration)
+            codegenError<InvalidFieldNameCodeGenerationException>(propertyDeclaration)
         }
 
-        return RPCServiceDeclaration.FlowProperty(name, type, flowType, isEager)
+        return RPCServiceDeclaration.FlowField(name, type, flowType, isEager)
     }
 
-    private fun KSDeclaration.flowTypeOrNull(context: RPCSymbolProcessorContext): RPCServiceDeclaration.FlowProperty.Type? {
+    private fun KSDeclaration.flowTypeOrNull(context: RPCSymbolProcessorContext): RPCServiceDeclaration.FlowField.Type? {
         return when (this) {
-            context.plainFlowType.declaration -> RPCServiceDeclaration.FlowProperty.Type.Plain
-            context.sharedFlowType.declaration -> RPCServiceDeclaration.FlowProperty.Type.Shared
-            context.stateFlowType.declaration -> RPCServiceDeclaration.FlowProperty.Type.State
+            context.plainFlowType.declaration -> RPCServiceDeclaration.FlowField.Type.Plain
+            context.sharedFlowType.declaration -> RPCServiceDeclaration.FlowField.Type.Shared
+            context.stateFlowType.declaration -> RPCServiceDeclaration.FlowField.Type.State
             else -> null
         }
     }
 
     companion object {
-        private val DENY_LIST_SERVICE_MODIFIERS = setOf(
+        internal val DENY_LIST_SERVICE_MODIFIERS = setOf(
             Modifier.PRIVATE,
             Modifier.SEALED,
             Modifier.INTERNAL,
@@ -180,7 +176,7 @@ class RPCSymbolProcessor(
             Modifier.EXTERNAL
         )
 
-        private val DENY_LIST_FUNCTION_MODIFIERS = setOf(
+        internal val DENY_LIST_FUNCTION_MODIFIERS = setOf(
             Modifier.PRIVATE,
             Modifier.INTERNAL,
             Modifier.INFIX,

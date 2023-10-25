@@ -26,8 +26,8 @@ internal class RPCClientEngine(
 ) : RPCEngine {
     private val callCounter = atomic(0L)
     private val engineId: Long = CLIENT_ENGINE_ID.incrementAndGet()
-    private val logger = KotlinLogging.logger("RPCClientEngine[0x${hashCode().toString(16)}]")
     private val serviceTypeString = serviceType.toString()
+    private val logger = KotlinLogging.logger("RPCClientEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
 
     override val coroutineContext: CoroutineContext = Job() + Dispatchers.Default
 
@@ -69,11 +69,6 @@ internal class RPCClientEngine(
                 deferred = rpcFlow.deferred,
             )
         }
-    }
-
-    @Serializable
-    object FieldDataObject : RPCMethodClassArguments {
-        override fun asArray(): Array<Any?> = emptyArray()
     }
 
     override suspend fun call(callInfo: RPCCallInfo, deferred: CompletableDeferred<*>): Any? {
