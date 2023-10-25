@@ -18,16 +18,15 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
-import kotlin.reflect.KType
 import kotlin.reflect.full.callSuspend
 
 class RPCServerEngine<T : RPC>(
     private val service: T,
     private val transport: RPCTransport,
-    private val serviceType: KType,
+    private val serviceKClass: KClass<T>,
     private val config: RPCConfig.Server = RPCConfig.Server.Default,
 ) : CoroutineScope {
-    private val serviceTypeString = serviceType.toString()
+    private val serviceTypeString = serviceKClass.toString()
     private val logger = KotlinLogging.logger("RPCServerEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
 
     private val methods: Map<String, KCallable<*>>
@@ -40,7 +39,7 @@ class RPCServerEngine<T : RPC>(
     private val flowContexts = ConcurrentHashMap<String, LazyRPCStreamContext>()
 
     init {
-        val (fieldsMap, methodsMap) = (serviceType.classifier as KClass<*>).members
+        val (fieldsMap, methodsMap) = serviceKClass.members
             .filter { it.name != "toString" && it.name != "hashCode" && it.name != "equals" }
             .partition { it is KProperty<*> }
 
@@ -120,7 +119,7 @@ class RPCServerEngine<T : RPC>(
 
         if (callable == null) {
             val callType = if (isMethod) "method" else "field"
-            val cause = NoSuchMethodException("Service ${serviceType.classifier} has no $callType $actualName")
+            val cause = NoSuchMethodException("Service $serviceTypeString has no $callType $actualName")
             val message = RPCMessage.CallException(callId, serviceTypeString, serializeException(cause))
             launch {
                 transport.send(message)
@@ -129,7 +128,7 @@ class RPCServerEngine<T : RPC>(
         }
 
         val argsArray = if (isMethod) {
-            val type = rpcServiceMethodSerializationTypeOf(serviceType, actualName)
+            val type = rpcServiceMethodSerializationTypeOf(serviceKClass, actualName)
                 ?: error("Unknown method $actualName")
 
             val serializerModule = json.serializersModule

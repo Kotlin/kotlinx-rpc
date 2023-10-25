@@ -3,17 +3,19 @@ package org.jetbrains.krpc.client
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import org.jetbrains.krpc.*
 import org.jetbrains.krpc.internal.InternalKRPCApi
 import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
@@ -21,12 +23,12 @@ private val CLIENT_ENGINE_ID = atomic(initial = 0L)
 
 internal class RPCClientEngine(
     private val transport: RPCTransport,
-    serviceType: KType,
+    serviceKClass: KClass<out RPC>,
     private val config: RPCConfig.Client = RPCConfig.Client.Default,
 ) : RPCEngine {
     private val callCounter = atomic(0L)
     private val engineId: Long = CLIENT_ENGINE_ID.incrementAndGet()
-    private val serviceTypeString = serviceType.toString()
+    private val serviceTypeString = serviceKClass.toString()
     private val logger = KotlinLogging.logger("RPCClientEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
 
     override val coroutineContext: CoroutineContext = Job() + Dispatchers.Default

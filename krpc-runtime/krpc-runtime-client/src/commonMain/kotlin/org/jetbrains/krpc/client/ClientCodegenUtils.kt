@@ -12,8 +12,8 @@ import kotlin.reflect.typeOf
 /**
  * Creates a client for the specified RPC interface using the provided transport.
  *
- * @param transport the transport to be used for communication with the remote server
- * @return an instance of the client for the specified RPC interface
+ * @param transport The transport to be used for communication with the remote server
+ * @return An instance of the client for the specified RPC interface
  */
 inline fun <reified T : RPC> RPC.Companion.clientOf(
     transport: RPCTransport,
@@ -26,17 +26,33 @@ inline fun <reified T : RPC> RPC.Companion.clientOf(
  * Creates a client of the specified RPC type using the given RPCEngine.
  *
  * @param serviceType The type of the service to retrieve.
- * @param transport the transport to be used for communication with the remote server
+ * @param transport The transport to be used for communication with the remote server
  * @return A client of the specified RPC type.
  */
+@OptIn(InternalKRPCApi::class)
 fun <T : RPC> RPC.Companion.clientOf(
     serviceType: KType,
     transport: RPCTransport,
     configBuilder: RPCConfigBuilder.Client.() -> Unit = {},
 ): T {
+    return clientOf(serviceType.kClass(), transport, configBuilder)
+}
+
+/**
+ * Creates a client of the specified RPC type using the given RPCEngine.
+ *
+ * @param serviceKClass The [KClass] of the service to retrieve.
+ * @param transport The transport to be used for communication with the remote server
+ * @return A client of the specified RPC type.
+ */
+fun <T : RPC> RPC.Companion.clientOf(
+    serviceKClass: KClass<T>,
+    transport: RPCTransport,
+    configBuilder: RPCConfigBuilder.Client.() -> Unit = {},
+): T {
     val config = RPCConfigBuilder.Client().apply(configBuilder).build()
-    val engine = RPCClientEngine(transport, serviceType, config)
-    return clientOf(serviceType, engine)
+    val engine = RPCClientEngine(transport, serviceKClass, config)
+    return clientOf(serviceKClass, engine)
 }
 
 /**
