@@ -1,5 +1,5 @@
-import org.jetbrains.krpc.buildutils.allTargets
 import org.jetbrains.krpc.buildutils.configureMppPublication
+import org.jetbrains.krpc.buildutils.kmp
 
 plugins {
     kotlin("multiplatform")
@@ -7,9 +7,7 @@ plugins {
 
 configureMppPublication()
 
-kotlin {
-    allTargets()
-
+kmp {
     sourceSets {
         commonMain {
             dependencies {

@@ -1,6 +1,7 @@
-package org.jetbrains.krpc
+package org.jetbrains.krpc.internal
 
-import org.jetbrains.krpc.internal.InternalKRPCApi
+import org.jetbrains.krpc.SerializedException
+import org.jetbrains.krpc.StackElement
 
 internal actual class DeserializedException actual constructor(
     private val toStringMessage: String,

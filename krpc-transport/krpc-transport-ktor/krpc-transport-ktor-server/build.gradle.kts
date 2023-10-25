@@ -1,5 +1,6 @@
 import org.jetbrains.krpc.buildutils.allTargets
 import org.jetbrains.krpc.buildutils.configureMppPublication
+import org.jetbrains.krpc.buildutils.kmp
 
 plugins {
     kotlin("multiplatform")
@@ -7,9 +8,7 @@ plugins {
 
 configureMppPublication()
 
-kotlin {
-    allTargets(js = false, native = false)
-
+kmp(js = false, native = false) {
     sourceSets {
 
         val jvmMain by getting {

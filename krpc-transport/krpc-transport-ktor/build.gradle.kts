@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
-import org.jetbrains.krpc.buildutils.allTargets
 import org.jetbrains.krpc.buildutils.configureMppPublication
+import org.jetbrains.krpc.buildutils.kmp
 
 plugins {
     kotlin("multiplatform")
@@ -8,9 +8,7 @@ plugins {
     kotlin("plugin.serialization")
 }
 
-kotlin {
-    allTargets()
-
+kmp {
     sourceSets {
         commonMain {
             dependencies {

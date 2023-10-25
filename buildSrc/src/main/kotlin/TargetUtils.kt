@@ -1,12 +1,14 @@
 package org.jetbrains.krpc.buildutils
 
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
 fun KotlinMultiplatformExtension.allTargets(
     jvm: Boolean = true,
-    js: Boolean = false,
+    js: Boolean = true,
     native: Boolean = true,
 ): List<KotlinTarget> {
     val result = mutableListOf<KotlinTarget>()
@@ -54,17 +56,39 @@ fun KotlinMultiplatformExtension.allTargets(
 
     if (js) {
         result += js(IR) {
-            browser()
             nodejs()
+            browser()
         }
     }
 
     return result
 }
 
-
 fun KotlinProjectExtension.optInForInternalKRPCApi() {
     sourceSets.all {
         languageSettings.optIn("org.jetbrains.krpc.internal.InternalKRPCApi")
+    }
+}
+
+fun Project.kotlin(block: KotlinMultiplatformExtension.() -> Unit) {
+    configure(block)
+}
+
+fun Project.kmp(
+    jvm: Boolean = true,
+    js: Boolean = true,
+    native: Boolean = true,
+    extraConfig: KotlinMultiplatformExtension.(List<KotlinTarget>) -> Unit = {},
+) {
+    if (js) {
+        configureJs()
+    }
+
+    kotlin {
+        optInForInternalKRPCApi()
+
+        val targets = allTargets(jvm, js, native)
+
+        extraConfig(targets)
     }
 }

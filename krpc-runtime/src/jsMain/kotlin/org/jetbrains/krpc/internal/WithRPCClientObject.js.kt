@@ -9,7 +9,6 @@ import kotlin.reflect.findAssociatedObject
 @InternalKRPCApi
 @AssociatedObjectKey
 @OptIn(ExperimentalAssociatedObjects::class)
-//@Retention(value = AnnotationRetention.BINARY)
 @Target(AnnotationTarget.CLASS)
 annotation class WithRPCClientObject(
     @Suppress("unused")

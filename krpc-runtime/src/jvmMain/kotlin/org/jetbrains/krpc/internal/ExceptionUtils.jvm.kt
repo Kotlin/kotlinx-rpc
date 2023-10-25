@@ -2,7 +2,6 @@ package org.jetbrains.krpc.internal
 
 import org.jetbrains.krpc.SerializedException
 import org.jetbrains.krpc.StackElement
-import org.jetbrains.krpc.internal.InternalKRPCApi
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
 

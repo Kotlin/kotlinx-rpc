@@ -1,19 +1,14 @@
 import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
-import org.jetbrains.krpc.buildutils.allTargets
-import org.jetbrains.krpc.buildutils.optInForInternalKRPCApi
+import org.jetbrains.krpc.buildutils.kmp
 
 plugins {
     kotlin("multiplatform")
     id("com.google.devtools.ksp")
 }
 
-kotlin {
-    optInForInternalKRPCApi()
-
-    val targets = allTargets()
-
+kmp { targets ->
     sourceSets {
         val commonMain by getting {
             dependencies {

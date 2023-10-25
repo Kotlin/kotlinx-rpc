@@ -9,11 +9,7 @@ plugins {
 
 configureMppPublication()
 
-kotlin {
-    optInForInternalKRPCApi()
-
-    allTargets()
-
+kmp {
     sourceSets {
         val jvmMain by getting {
             dependencies {
