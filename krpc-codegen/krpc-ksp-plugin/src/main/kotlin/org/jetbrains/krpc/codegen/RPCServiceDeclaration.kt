@@ -7,7 +7,7 @@ class RPCServiceDeclaration(
     val simpleName: String,
     val fullName: String,
     val functions: List<Function>,
-    val properties: List<FlowField>,
+    val fields: List<FlowField>,
     val file: KSFile,
 ) {
     class Function(

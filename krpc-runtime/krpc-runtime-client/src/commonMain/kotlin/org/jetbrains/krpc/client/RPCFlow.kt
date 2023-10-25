@@ -5,8 +5,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.jetbrains.krpc.internal.InternalKRPCApi
+import org.jetbrains.krpc.internal.RPCField
 
-internal sealed class RPCFlow<T, FlowT : Flow<T>>(private val serviceName: String): RPCProperty<FlowT> {
+@OptIn(InternalKRPCApi::class)
+internal sealed class RPCFlow<T, FlowT : Flow<T>>(private val serviceName: String): RPCField<FlowT> {
     val deferred: CompletableDeferred<FlowT> = CompletableDeferred()
 
     override suspend fun await(): FlowT {

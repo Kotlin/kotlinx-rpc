@@ -62,7 +62,7 @@ class RPCSymbolProcessor(
             fullName = serviceDeclaration.qualifiedName?.asString()
                 ?: codegenError<AbsentQualifiedNameCodeGenerationException>(serviceDeclaration),
             functions = processedFunctions,
-            properties = processedProperties,
+            fields = processedProperties,
             file = file,
         )
     }

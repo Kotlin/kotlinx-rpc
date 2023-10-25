@@ -554,4 +554,15 @@ abstract class KRPCTransportTestBase {
             assertEquals(1, state.first { it == 1 })
         }
     }
+
+    @Test
+    fun testAwaitAllFields() {
+        runBlocking {
+            with(client.awaitFieldInitialization()) {
+                assertEquals(-1, stateFlowOfInts.value)
+                assertEquals(-1, stateFlowOfFlowsOfInts.value.value)
+                assertEquals(-1, stateFlowOfFlowsOfFlowsOfInts.value.value.value)
+            }
+        }
+    }
 }

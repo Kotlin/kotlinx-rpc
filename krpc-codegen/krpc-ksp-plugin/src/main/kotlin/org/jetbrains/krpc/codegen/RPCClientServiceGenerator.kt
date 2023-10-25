@@ -64,7 +64,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         nested.newLine()
         nested.newLine()
 
-        service.properties.forEach {
+        service.fields.forEach {
             it.toCode(nested)
         }
 
@@ -234,14 +234,36 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             write(")")
             newLine()
             newLine()
+
             write("@Suppress(\"unused\")")
             newLine()
             write("override fun methodTypeOf(methodName: String): kotlin.reflect.KType? = methodNames[methodName]")
             newLine()
-        }
-        writer.newLine()
-        with(writer.nested()) {
+            newLine()
+
             write("override fun client(engine: RPCEngine): ${service.fullName} = ${service.simpleName.withClientImplSuffix()}(engine)")
+            newLine()
+            newLine()
+
+            write("override fun rpcFields(client: ${service.fullName}): List<RPCField<*>> = with(client) {")
+            newLine()
+            with(nested()) {
+                if (service.fields.isEmpty()) {
+                    write("return emptyList()")
+                } else {
+                    write("return listOf(")
+                    newLine()
+                    with(nested()) {
+                        service.fields.forEach {
+                            write("${it.name},")
+                            newLine()
+                        }
+                    }
+                    write(") as List<RPCField<*>>")
+                }
+                newLine()
+            }
+            write("}")
             newLine()
         }
         writer.write("}")

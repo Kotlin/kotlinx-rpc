@@ -5,7 +5,7 @@ import org.jetbrains.krpc.RPCEngine
 import kotlin.reflect.KType
 
 @InternalKRPCApi
-interface RPCClientObject<T : RPC> : RPCClientProvider<T>, RPCServiceMethodSerializationTypeProvider
+interface RPCClientObject<T : RPC> : RPCClientProvider<T>, RPCServiceMethodSerializationTypeProvider, RPCServiceFieldsProvider<T>
 
 @InternalKRPCApi
 interface RPCClientProvider<T : RPC> {
@@ -15,4 +15,9 @@ interface RPCClientProvider<T : RPC> {
 @InternalKRPCApi
 interface RPCServiceMethodSerializationTypeProvider {
     fun methodTypeOf(methodName: String): KType?
+}
+
+@InternalKRPCApi
+interface RPCServiceFieldsProvider<T : RPC> {
+    fun rpcFields(client: T): List<RPCField<*>>
 }
