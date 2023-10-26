@@ -13,7 +13,9 @@ import kotlinx.serialization.StringFormat
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import org.jetbrains.krpc.*
-import org.jetbrains.krpc.internal.InternalKRPCApi
+import org.jetbrains.krpc.client.internal.FieldDataObject
+import org.jetbrains.krpc.client.internal.RPCFlow
+import org.jetbrains.krpc.internal.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -21,11 +23,11 @@ import kotlin.reflect.typeOf
 
 private val CLIENT_ENGINE_ID = atomic(initial = 0L)
 
-internal class RPCClientEngine(
+internal class RPCClientEngineImpl(
     private val transport: RPCTransport,
     serviceKClass: KClass<out RPC>,
     private val config: RPCConfig.Client = RPCConfig.Client.Default,
-) : RPCEngine {
+) : RPCClientEngine {
     private val callCounter = atomic(0L)
     private val engineId: Long = CLIENT_ENGINE_ID.incrementAndGet()
     private val serviceTypeString = serviceKClass.toString()
@@ -106,7 +108,6 @@ internal class RPCClientEngine(
         return flowContext to json
     }
 
-    @OptIn(InternalKRPCApi::class)
     private suspend fun executeCall(
         callId: String,
         flowContext: LazyRPCStreamContext,
@@ -168,7 +169,6 @@ internal class RPCClientEngine(
         transport.send(firstMessage)
     }
 
-    @OptIn(InternalKRPCApi::class)
     private suspend fun handleOutgoingFlows(flowContext: LazyRPCStreamContext, json: Json) {
         val mutex = Mutex()
         for (clientStream in flowContext.awaitInitialized().outgoingStreams) {

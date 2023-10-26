@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
+val krpc_version: String by project
 
 plugins {
     kotlin("jvm") version "1.9.10"
@@ -26,15 +27,19 @@ repositories {
     mavenCentral()
 }
 
+kotlin {
+    jvmToolchain(11)
+}
+
 dependencies {
-    ksp("org.jetbrains.krpc:krpc-ksp-plugin:1.9.10-beta-1")
-    PLUGIN_CLASSPATH_CONFIGURATION_NAME("org.jetbrains.krpc:krpc-compiler-plugin:1.9.10-beta-1")
+    ksp("org.jetbrains.krpc:krpc-ksp-plugin:$krpc_version")
+    PLUGIN_CLASSPATH_CONFIGURATION_NAME("org.jetbrains.krpc:krpc-compiler-plugin:$krpc_version")
 
-    implementation("org.jetbrains.krpc:krpc-runtime-client:1.9.10-beta-1")
-    implementation("org.jetbrains.krpc:krpc-runtime-client:1.9.10-beta-1")
+    implementation("org.jetbrains.krpc:krpc-runtime-client:$krpc_version")
+    implementation("org.jetbrains.krpc:krpc-runtime-client:$krpc_version")
 
-    implementation("org.jetbrains.krpc:krpc-transport-ktor-client:1.9.10-beta-1")
-    implementation("org.jetbrains.krpc:krpc-transport-ktor-server:1.9.10-beta-1")
+    implementation("org.jetbrains.krpc:krpc-transport-ktor-client:$krpc_version")
+    implementation("org.jetbrains.krpc:krpc-transport-ktor-server:$krpc_version")
 
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-client-cio-jvm")

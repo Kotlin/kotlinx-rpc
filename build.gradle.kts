@@ -6,7 +6,7 @@ plugins {
 
 allprojects {
     group = "org.jetbrains.krpc"
-    version = "1.9.10-beta-3"
+    version = "1.9.10-beta-4.2"
 
     repositories {
         mavenCentral()

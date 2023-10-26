@@ -1,4 +1,4 @@
-package org.jetbrains.krpc
+package org.jetbrains.krpc.internal
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
@@ -7,6 +7,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.serializer
 import kotlinx.serialization.modules.SerializersModule
+import org.jetbrains.krpc.internal.InternalKRPCApi
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -20,7 +21,7 @@ internal fun SerializersModule.buildContextual(type: KType): KSerializer<Any?> {
     return result as? KSerializer<Any?> ?: error("No serializer found for $type")
 }
 
-
+@InternalKRPCApi
 fun SerializersModule.rpcSerializerForType(type: KType): KSerializer<Any?> {
     return when (type.classifier) {
         Flow::class, SharedFlow::class, StateFlow::class -> buildContextual(type)

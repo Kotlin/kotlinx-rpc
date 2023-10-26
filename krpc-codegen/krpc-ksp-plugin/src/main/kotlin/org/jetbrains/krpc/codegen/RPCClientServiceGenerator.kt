@@ -28,6 +28,8 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
     ) {
         writer.write("@file:Suppress(\"RedundantUnitReturnType\", \"RemoveRedundantQualifierName\", \"USELESS_CAST\", \"UNCHECKED_CAST\", \"ClassName\", \"MemberVisibilityCanBePrivate\", \"KotlinRedundantDiagnosticSuppress\", \"UnusedImport\")")
         writer.newLine()
+        writer.write("@file:OptIn(InternalKRPCApi::class)")
+        writer.newLine()
         writer.newLine()
 
         writer.write("package org.jetbrains.krpc")
@@ -54,7 +56,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
 
         writer.write("@Suppress(\"unused\")")
         writer.newLine()
-        writer.write("class ${service.simpleName.withClientImplSuffix()}(private val engine: RPCEngine) : ${service.fullName} {")
+        writer.write("class ${service.simpleName.withClientImplSuffix()}(private val engine: RPCClientEngine) : ${service.fullName} {")
         writer.newLine()
 
 
@@ -218,20 +220,22 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
     }
 
     private fun generateProviders(writer: CodeWriter, service: RPCServiceDeclaration) {
-        writer.write("@OptIn(InternalKRPCApi::class)")
         writer.newLine()
         writer.write("companion object : RPCClientObject<${service.fullName}> {")
         writer.newLine()
         with(writer.nested()) {
-            write("private val methodNames = mapOf(")
-            newLine()
-            with(nested()) {
-                service.functions.forEach { function ->
-                    write("${service.fullName}::${function.name}.name to typeOf<${service.simpleName.withClientImplSuffix()}.${function.name.functionGeneratedClass()}>(),")
-                    newLine()
+            val mapFunction = if (service.functions.isEmpty()) "emptyMap()" else "mapOf("
+            write("private val methodNames: Map<String, kotlin.reflect.KType> = $mapFunction")
+            if (service.functions.isNotEmpty()) {
+                newLine()
+                with(nested()) {
+                    service.functions.forEach { function ->
+                        write("${service.fullName}::${function.name}.name to typeOf<${service.simpleName.withClientImplSuffix()}.${function.name.functionGeneratedClass()}>(),")
+                        newLine()
+                    }
                 }
+                write(")")
             }
-            write(")")
             newLine()
             newLine()
 
@@ -241,7 +245,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             newLine()
             newLine()
 
-            write("override fun client(engine: RPCEngine): ${service.fullName} = ${service.simpleName.withClientImplSuffix()}(engine)")
+            write("override fun client(engine: RPCClientEngine): ${service.fullName} = ${service.simpleName.withClientImplSuffix()}(engine)")
             newLine()
             newLine()
 

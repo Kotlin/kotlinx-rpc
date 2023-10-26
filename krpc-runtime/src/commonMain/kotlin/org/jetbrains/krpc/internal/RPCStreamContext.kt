@@ -1,14 +1,19 @@
-package org.jetbrains.krpc
+package org.jetbrains.krpc.internal
 
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
-import org.jetbrains.krpc.internal.InternalKRPCApi
+import org.jetbrains.krpc.RPCConfig
+import org.jetbrains.krpc.RPCMessage
 import kotlin.coroutines.CoroutineContext
 
+@InternalKRPCApi
 class LazyRPCStreamContext(private val initializer: () -> RPCStreamContext) {
     private val deferred = CompletableDeferred<RPCStreamContext>()
     private val lazyValue by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
@@ -22,6 +27,7 @@ class LazyRPCStreamContext(private val initializer: () -> RPCStreamContext) {
     fun initialize(): RPCStreamContext = lazyValue
 }
 
+@InternalKRPCApi
 class RPCStreamContext(private val callId: String, private val config: RPCConfig) {
     companion object {
         private const val STREAM_ID_PREFIX = "stream:"
@@ -73,7 +79,6 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
         return stream
     }
 
-    @OptIn(InternalKRPCApi::class)
     @Suppress("UNCHECKED_CAST")
     private fun <StreamT : Any> streamOf(streamKind: StreamKind, stateFlowInitialValue: Any?, incoming: Channel<Any?>): StreamT {
         suspend fun consumeFlow(collector: FlowCollector<Any?>, onError: (Throwable) -> Unit) {

@@ -1,7 +1,6 @@
 package org.jetbrains.krpc.client
 
 import org.jetbrains.krpc.RPC
-import org.jetbrains.krpc.internal.InternalKRPCApi
 import org.jetbrains.krpc.internal.RPCField
 import org.jetbrains.krpc.internal.RPCServiceFieldsProvider
 import org.jetbrains.krpc.internal.findRPCProviderInCompanion
@@ -18,7 +17,6 @@ import kotlin.reflect.KClass
  * val currentValue = client.awaitFieldInitialization { stateFlow }.value
  * ```
  */
-@OptIn(InternalKRPCApi::class)
 suspend fun <T : RPC, R> T.awaitFieldInitialization(getter: T.() -> R): R {
     val field = getter()
 
@@ -60,7 +58,6 @@ suspend inline fun <reified T : RPC> T.awaitFieldInitialization(): T {
  * // fields `stateFlow1` and `stateFlow2` are initialized
  * ```
  */
-@OptIn(InternalKRPCApi::class)
 suspend fun <T : RPC> T.awaitFieldInitialization(kClass: KClass<T>): T {
     findRPCProviderInCompanion<RPCServiceFieldsProvider<T>>(kClass)
         .rpcFields(this)

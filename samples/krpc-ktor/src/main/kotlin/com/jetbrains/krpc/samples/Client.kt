@@ -3,8 +3,10 @@ package com.jetbrains.krpc.samples
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.krpc.transport.ktor.client.rpc
 
@@ -19,6 +21,12 @@ fun main() = runBlocking {
             host = "localhost"
             port = 8080
             encodedPath = "image-recognizer"
+        }
+    }
+
+    val stateJob = launch(Dispatchers.Unconfined) {
+        recognizer.currentlyProcessedImage.collect {
+            println("New state, current image: ${it?.data}")
         }
     }
 
@@ -37,4 +45,5 @@ fun main() = runBlocking {
 
     recognizer.cancel()
     client.close()
+    stateJob.cancel()
 }

@@ -11,7 +11,8 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import org.jetbrains.krpc.*
-import org.jetbrains.krpc.internal.InternalKRPCApi
+import org.jetbrains.krpc.internal.*
+import org.jetbrains.krpc.server.internal.rpcServiceMethodSerializationTypeOf
 import java.lang.reflect.InvocationTargetException
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
@@ -20,6 +21,13 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.callSuspend
 
+/**
+ * Server engine for the provided RPC [service].
+ * Handles incoming messages from [transport] and routes them to the provided [service].
+ * Handles requests made via [service] and routes them to the [transport]
+ *
+ * Server engine is also in change of serialization, exception handling and stream management.
+ */
 class RPCServerEngine<T : RPC>(
     private val service: T,
     private val transport: RPCTransport,
@@ -102,7 +110,7 @@ class RPCServerEngine<T : RPC>(
         }
     }
 
-    @OptIn(InternalCoroutinesApi::class, InternalKRPCApi::class)
+    @OptIn(InternalCoroutinesApi::class)
     private fun handleCall(callId: String, callData: RPCMessage.CallData) {
         val flowContext = LazyRPCStreamContext { RPCStreamContext(callId, config) }
         val json = prepareJson(flowContext)
@@ -173,7 +181,6 @@ class RPCServerEngine<T : RPC>(
         }
     }
 
-    @OptIn(InternalKRPCApi::class)
     private suspend fun handleOutgoingFlows(flowContext: LazyRPCStreamContext, json: Json) {
         val mutex = Mutex()
         for (clientStream in flowContext.awaitInitialized().outgoingStreams) {

@@ -1,7 +1,8 @@
-package org.jetbrains.krpc.client
+package org.jetbrains.krpc.client.internal
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.jetbrains.krpc.client.UninitializedRPCFieldException
 import kotlin.reflect.KProperty
 
 internal class RPCFieldProvider<T, R>(

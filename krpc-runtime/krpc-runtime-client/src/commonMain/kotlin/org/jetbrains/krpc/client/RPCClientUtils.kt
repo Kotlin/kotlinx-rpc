@@ -1,7 +1,6 @@
 package org.jetbrains.krpc.client
 
 import org.jetbrains.krpc.*
-import org.jetbrains.krpc.internal.InternalKRPCApi
 import org.jetbrains.krpc.internal.RPCClientProvider
 import org.jetbrains.krpc.internal.findRPCProviderInCompanion
 import org.jetbrains.krpc.internal.kClass
@@ -13,13 +12,14 @@ import kotlin.reflect.typeOf
  * Creates a client for the specified RPC interface using the provided transport.
  *
  * @param transport The transport to be used for communication with the remote server
+ * @param config Client configuration
  * @return An instance of the client for the specified RPC interface
  */
 inline fun <reified T : RPC> RPC.Companion.clientOf(
     transport: RPCTransport,
-    noinline configBuilder: RPCConfigBuilder.Client.() -> Unit = {},
+    config: RPCConfig.Client = RPCConfig.Client.Default,
 ): T {
-    return clientOf(typeOf<T>(), transport, configBuilder)
+    return clientOf(typeOf<T>(), transport, config)
 }
 
 /**
@@ -27,15 +27,15 @@ inline fun <reified T : RPC> RPC.Companion.clientOf(
  *
  * @param serviceType The type of the service to retrieve.
  * @param transport The transport to be used for communication with the remote server
+ * @param config Client configuration
  * @return A client of the specified RPC type.
  */
-@OptIn(InternalKRPCApi::class)
 fun <T : RPC> RPC.Companion.clientOf(
     serviceType: KType,
     transport: RPCTransport,
-    configBuilder: RPCConfigBuilder.Client.() -> Unit = {},
+    config: RPCConfig.Client = RPCConfig.Client.Default,
 ): T {
-    return clientOf(serviceType.kClass(), transport, configBuilder)
+    return clientOf(serviceType.kClass(), transport, config)
 }
 
 /**
@@ -43,15 +43,15 @@ fun <T : RPC> RPC.Companion.clientOf(
  *
  * @param serviceKClass The [KClass] of the service to retrieve.
  * @param transport The transport to be used for communication with the remote server
+ * @param config Client configuration
  * @return A client of the specified RPC type.
  */
 fun <T : RPC> RPC.Companion.clientOf(
     serviceKClass: KClass<T>,
     transport: RPCTransport,
-    configBuilder: RPCConfigBuilder.Client.() -> Unit = {},
+    config: RPCConfig.Client = RPCConfig.Client.Default,
 ): T {
-    val config = RPCConfigBuilder.Client().apply(configBuilder).build()
-    val engine = RPCClientEngine(transport, serviceKClass, config)
+    val engine = RPCClientEngineImpl(transport, serviceKClass, config)
     return clientOf(serviceKClass, engine)
 }
 
@@ -62,8 +62,7 @@ fun <T : RPC> RPC.Companion.clientOf(
  * @param engine The RPC engine used to retrieve the service.
  * @return An instance of the specified service type.
  */
-@OptIn(InternalKRPCApi::class)
-fun <T : RPC> RPC.Companion.clientOf(serviceType: KType, engine: RPCEngine): T {
+fun <T : RPC> RPC.Companion.clientOf(serviceType: KType, engine: RPCClientEngine): T {
     return clientOf(serviceType.kClass(), engine)
 }
 
@@ -73,7 +72,7 @@ fun <T : RPC> RPC.Companion.clientOf(serviceType: KType, engine: RPCEngine): T {
  * @param engine The RPCEngine instance used for creating the client.
  * @return A client of the specified RPC type.
  */
-inline fun <reified T : RPC> RPC.Companion.clientOf(engine: RPCEngine): T {
+inline fun <reified T : RPC> RPC.Companion.clientOf(engine: RPCClientEngine): T {
     return clientOf(T::class, engine)
 }
 
@@ -83,8 +82,7 @@ inline fun <reified T : RPC> RPC.Companion.clientOf(engine: RPCEngine): T {
  * @param kClass The type of the service to retrieve.
  * @param engine The RPC engine used to retrieve the service.
  */
-@OptIn(InternalKRPCApi::class)
-fun <T : RPC> RPC.Companion.clientOf(kClass: KClass<T>, engine: RPCEngine): T {
+fun <T : RPC> RPC.Companion.clientOf(kClass: KClass<T>, engine: RPCClientEngine): T {
     val withRPCClientObject = findRPCProviderInCompanion<RPCClientProvider<T>>(kClass)
     return withRPCClientObject.client(engine)
 }
@@ -105,7 +103,7 @@ inline fun <reified T : RPC> rpcServiceOf(transport: RPCTransport): T = RPC.clie
     level = DeprecationLevel.WARNING,
     replaceWith = ReplaceWith("RPC.clientOf<T>(engine)", "org.jetbrains.krpc.client.clientOf", "org.jetbrains.krpc.RPC")
 )
-inline fun <reified T : RPC> rpcServiceOf(engine: RPCEngine): T = RPC.clientOf(engine)
+inline fun <reified T : RPC> rpcServiceOf(engine: RPCClientEngine): T = RPC.clientOf(engine)
 
 @Deprecated(
     "All RPC methods migrated to the [RPC] scope",
@@ -115,4 +113,4 @@ inline fun <reified T : RPC> rpcServiceOf(engine: RPCEngine): T = RPC.clientOf(e
         "org.jetbrains.krpc.client.clientOf", "org.jetbrains.krpc.RPC"
     )
 )
-fun <T : RPC> rpcServiceOf(serviceType: KType, engine: RPCEngine): T = RPC.clientOf(serviceType, engine)
+fun <T : RPC> rpcServiceOf(serviceType: KType, engine: RPCClientEngine): T = RPC.clientOf(serviceType, engine)

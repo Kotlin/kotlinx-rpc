@@ -1,7 +1,7 @@
-package org.jetbrains.krpc
+package org.jetbrains.krpc.internal
 
-import kotlinx.serialization.Serializable
-import org.jetbrains.krpc.internal.InternalKRPCApi
+import org.jetbrains.krpc.SerializedException
+import org.jetbrains.krpc.StackElement
 
 @InternalKRPCApi
 fun serializeException(cause: Throwable): SerializedException {
@@ -16,23 +16,6 @@ fun serializeException(cause: Throwable): SerializedException {
 internal expect val Throwable.qualifiedClassName: String?
 
 internal expect fun Throwable.stackElements(): List<StackElement>
-
-@Serializable
-data class StackElement(
-    val clazz: String,
-    val method: String,
-    val fileName: String?,
-    val lineNumber: Int
-)
-
-@Serializable
-class SerializedException(
-    val toStringMessage: String,
-    val message: String,
-    val stacktrace: List<StackElement>,
-    val cause: SerializedException?,
-    val className: String
-)
 
 @InternalKRPCApi
 expect fun SerializedException.deserialize(): Throwable

@@ -2,6 +2,7 @@ import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.krpc.buildutils.allTargets
+import org.jetbrains.krpc.buildutils.optInForInternalKRPCApi
 
 plugins {
     kotlin("multiplatform")
@@ -9,6 +10,8 @@ plugins {
 }
 
 kotlin {
+    optInForInternalKRPCApi()
+
     val targets = allTargets()
 
     sourceSets {

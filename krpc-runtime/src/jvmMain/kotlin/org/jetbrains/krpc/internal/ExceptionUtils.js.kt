@@ -1,12 +1,13 @@
-package org.jetbrains.krpc
+package org.jetbrains.krpc.internal
 
+import org.jetbrains.krpc.SerializedException
+import org.jetbrains.krpc.StackElement
 import org.jetbrains.krpc.internal.InternalKRPCApi
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
 
 private val throwableFields = Throwable::class.java.fieldsCountOrDefault(-1)
 
-@OptIn(InternalKRPCApi::class)
 internal actual class DeserializedException actual constructor(
     private val toStringMessage: String,
     override val message: String,
@@ -65,7 +66,6 @@ private tailrec fun Class<*>.fieldsCount(accumulator: Int = 0): Int {
     return superClass.fieldsCount(totalFields)
 }
 
-@OptIn(InternalKRPCApi::class)
 private fun tryCreateException(constructor: Constructor<*>, serialized: SerializedException): Throwable? {
     val parameters = constructor.parameterTypes
 

@@ -5,7 +5,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import org.jetbrains.krpc.client.clientOf
-import org.jetbrains.krpc.server.rpcServiceMethodSerializationTypeOf
+import org.jetbrains.krpc.server.internal.rpcServiceMethodSerializationTypeOf
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -22,7 +22,7 @@ interface EmptyService {
     suspend fun empty()
 }
 
-val stubEngine = object : RPCEngine {
+val stubEngine = object : RPCClientEngine {
     override val coroutineContext: CoroutineContext = Job()
 
     override suspend fun call(callInfo: RPCCallInfo, deferred: CompletableDeferred<*>): Any? {

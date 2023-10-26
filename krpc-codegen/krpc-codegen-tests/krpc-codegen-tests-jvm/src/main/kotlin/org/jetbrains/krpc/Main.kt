@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.krpc.client.clientOf
 
 interface MainService : RPC, EmptyService {
     @RPCEagerField
@@ -16,7 +17,13 @@ interface MainService : RPC, EmptyService {
     override suspend fun empty()
 }
 
-fun main() = runBlocking {
+interface FieldOnly : RPC {
+    val flow: Flow<Int>
+}
+
+fun main(): Unit = runBlocking {
     testService<MainService>()
     testService<CommonService>()
+
+    RPC.clientOf<FieldOnly>(stubEngine)
 }

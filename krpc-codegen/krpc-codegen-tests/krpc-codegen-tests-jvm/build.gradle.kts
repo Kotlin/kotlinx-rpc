@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
+import org.jetbrains.krpc.buildutils.optInForInternalKRPCApi
 
 plugins {
     kotlin("jvm")
@@ -8,6 +9,10 @@ plugins {
 
 repositories {
     mavenCentral()
+}
+
+kotlin {
+    optInForInternalKRPCApi()
 }
 
 dependencies {

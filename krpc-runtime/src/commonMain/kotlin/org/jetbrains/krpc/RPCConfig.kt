@@ -4,9 +4,9 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.serialization.modules.SerializersModuleBuilder
 
-abstract class RPCConfigBuilder {
+abstract class RPCConfigBuilder internal constructor() {
     @Suppress("MemberVisibilityCanBePrivate")
-    class SharedFlowParametersBuilder {
+    class SharedFlowParametersBuilder internal constructor() {
         var replay: Int = 1
         var extraBufferCapacity: Int = 10
         var onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND
@@ -67,4 +67,12 @@ interface RPCConfig {
             val Default: Server = RPCConfigBuilder.Server().build()
         }
     }
+}
+
+fun rpcClientConfig(builder: RPCConfigBuilder.Client.() -> Unit = {}): RPCConfig.Client {
+    return RPCConfigBuilder.Client().apply(builder).build()
+}
+
+fun rpcServerConfig(builder: RPCConfigBuilder.Server.() -> Unit = {}): RPCConfig.Server {
+    return RPCConfigBuilder.Server().apply(builder).build()
 }

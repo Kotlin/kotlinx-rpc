@@ -9,6 +9,8 @@ import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.client.awaitFieldInitialization
 import org.jetbrains.krpc.client.clientOf
+import org.jetbrains.krpc.rpcClientConfig
+import org.jetbrains.krpc.rpcServerConfig
 import org.jetbrains.krpc.server.RPCServerEngine
 import org.jetbrains.krpc.server.serverOf
 import org.junit.Assert.assertEquals
@@ -20,6 +22,20 @@ import kotlin.test.*
 import kotlin.test.Test
 
 abstract class KRPCTransportTestBase {
+    companion object {
+        private val serverConfig = rpcServerConfig {
+            sharedFlowParameters {
+                replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
+            }
+        }
+
+        private val clientConfig = rpcClientConfig {
+            sharedFlowParameters {
+                replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
+            }
+        }
+    }
+
     abstract val clientTransport: RPCTransport
     abstract val serverTransport: RPCTransport
 
@@ -31,17 +47,8 @@ abstract class KRPCTransportTestBase {
     fun start() {
         service = KRPCTestServiceBackend()
 
-        backend = RPC.serverOf<KRPCTestService>(service, serverTransport)  {
-            sharedFlowParameters {
-                replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
-            }
-        }
-
-        client = RPC.clientOf<KRPCTestService>(clientTransport) {
-            sharedFlowParameters {
-                replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
-            }
-        }
+        backend = RPC.serverOf<KRPCTestService>(service, serverTransport, serverConfig)
+        client = RPC.clientOf<KRPCTestService>(clientTransport, clientConfig)
     }
 
     @AfterTest

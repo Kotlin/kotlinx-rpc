@@ -9,6 +9,8 @@ plugins {
 configureMppPublication()
 
 kotlin {
+    optInForInternalKRPCApi()
+
     allTargets()
 
     sourceSets {

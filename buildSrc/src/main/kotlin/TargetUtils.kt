@@ -1,6 +1,7 @@
 package org.jetbrains.krpc.buildutils
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
 fun KotlinMultiplatformExtension.allTargets(
@@ -59,4 +60,11 @@ fun KotlinMultiplatformExtension.allTargets(
     }
 
     return result
+}
+
+
+fun KotlinProjectExtension.optInForInternalKRPCApi() {
+    sourceSets.all {
+        languageSettings.optIn("org.jetbrains.krpc.internal.InternalKRPCApi")
+    }
 }

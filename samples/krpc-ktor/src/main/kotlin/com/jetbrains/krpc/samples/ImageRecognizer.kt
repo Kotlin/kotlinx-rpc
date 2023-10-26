@@ -1,7 +1,10 @@
 package com.jetbrains.krpc.samples
 
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import org.jetbrains.krpc.RPC
@@ -15,6 +18,8 @@ enum class Category {
 }
 
 interface ImageRecognizer : RPC {
+    val currentlyProcessedImage: StateFlow<Image?>
+
     suspend fun recognize(image: Image): Category
 
     suspend fun recognizeAll(images: Flow<Image>): Flow<Category>
@@ -23,9 +28,15 @@ interface ImageRecognizer : RPC {
 class ImageRecognizerService : ImageRecognizer {
     override val coroutineContext: CoroutineContext = Job()
 
+    override val currentlyProcessedImage: MutableStateFlow<Image?> = MutableStateFlow(null)
+
     override suspend fun recognize(image: Image): Category {
+        currentlyProcessedImage.value = image
         val byte = image.data[0].toInt()
-        return if (byte == 0) Category.CAT else Category.DOG
+        delay(100) // heavy processing
+        val result = if (byte == 0) Category.CAT else Category.DOG
+        currentlyProcessedImage.value = null
+        return result
     }
 
     override suspend fun recognizeAll(images: Flow<Image>): Flow<Category> {
