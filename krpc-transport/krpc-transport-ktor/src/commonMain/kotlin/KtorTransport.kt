@@ -2,15 +2,14 @@ package org.jetbrains.krpc.transport.ktor
 
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.*
 import org.jetbrains.krpc.RPCMessage
 import org.jetbrains.krpc.RPCTransport
 import kotlin.coroutines.CoroutineContext
 
 @OptIn(InternalCoroutinesApi::class, DelicateCoroutinesApi::class)
 class KtorTransport(
-    private val json: Json,
+    private val serialFormat: SerialFormat,
     private val webSocketSession: WebSocketSession,
 ) : RPCTransport() {
     // Transport job should always be cancelled and never closed
@@ -35,9 +34,19 @@ class KtorTransport(
             first.join()
 
             for (message in webSocketSession.incoming) {
-                check(message is Frame.Text)
-                val messageText = message.readText()
-                val rpcMessage = json.decodeFromString<RPCMessage>(messageText)
+                val rpcMessage = when (serialFormat) {
+                    is StringFormat -> {
+                        check(message is Frame.Text)
+                        val messageText = message.readText()
+                        serialFormat.decodeFromString<RPCMessage>(messageText)
+                    }
+                    is BinaryFormat -> {
+                        check(message is Frame.Binary)
+                        val messageText = message.readBytes()
+                        serialFormat.decodeFromByteArray<RPCMessage>(messageText)
+                    }
+                    else -> error("Unsupported serial format, only StringFormat and BinaryFormats are supported")
+                }
                 subscribers.forEach { it(rpcMessage) }
             }
 
@@ -47,8 +56,16 @@ class KtorTransport(
     }
 
     override suspend fun send(message: RPCMessage) {
-        val messageText = json.encodeToString(message)
-        webSocketSession.send(messageText)
+        when (serialFormat) {
+            is StringFormat -> {
+                val messageText = serialFormat.encodeToString(message)
+                webSocketSession.send(messageText)
+            }
+            is BinaryFormat -> {
+                val messageText = serialFormat.encodeToByteArray(message)
+                webSocketSession.send(messageText)
+            }
+        }
     }
 
     override suspend fun subscribe(block: suspend (RPCMessage) -> Boolean) {

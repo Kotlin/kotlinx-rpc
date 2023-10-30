@@ -17,6 +17,9 @@ kmp {
                 api(project(":krpc-runtime:krpc-runtime-server"))
                 api(project(":krpc-runtime:krpc-runtime-client"))
 
+                implementation(project(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-json"))
+
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))

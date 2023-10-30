@@ -32,6 +32,9 @@ include(":krpc-runtime:krpc-runtime-client")
 include(":krpc-runtime:krpc-runtime-server")
 include(":krpc-runtime:krpc-runtime-test")
 
+include(":krpc-runtime:krpc-runtime-serialization")
+include(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-json")
+
 include(":krpc-transport:krpc-transport-ktor")
 include(":krpc-transport:krpc-transport-ktor:krpc-transport-ktor-server")
 include(":krpc-transport:krpc-transport-ktor:krpc-transport-ktor-client")

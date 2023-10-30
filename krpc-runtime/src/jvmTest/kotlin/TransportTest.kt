@@ -2,6 +2,9 @@ import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.*
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.client.clientOf
+import org.jetbrains.krpc.rpcClientConfig
+import org.jetbrains.krpc.rpcServerConfig
+import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.server.serverOf
 import org.jetbrains.krpc.test.KRPCTestService
 import org.slf4j.simple.SimpleLogger
@@ -47,11 +50,23 @@ class TransportTest {
         System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE")
     }
 
+    private val clientConfig = rpcClientConfig {
+        serialization {
+            json()
+        }
+    }
+
+    private val serverConfig = rpcServerConfig {
+        serialization {
+            json()
+        }
+    }
+
     @Test
     fun testUsingWrongService(): Unit = runBlocking {
         val transports = StringTransport(waiting = false)
 
-        val client = RPC.clientOf<KRPCTestService>(transports.client)
+        val client = RPC.clientOf<KRPCTestService>(transports.client, clientConfig)
         val result = async {
             assertFailsWith<IllegalStateException> {
                 client.simpleWithParams("foo")
@@ -59,7 +74,7 @@ class TransportTest {
         }
 
         val echoServer = EchoServer()
-        val server = RPC.serverOf<Echo>(echoServer, transports.server)
+        val server = RPC.serverOf<Echo>(echoServer, transports.server, serverConfig)
         result.await()
         server.cancel()
     }
@@ -68,13 +83,13 @@ class TransportTest {
     fun testLateConnect() = runBlocking {
         val transports = StringTransport()
 
-        val client = RPC.clientOf<Echo>(transports.client)
+        val client = RPC.clientOf<Echo>(transports.client, clientConfig)
         val result: Deferred<String> = async {
             client.echo("foo")
         }
 
         val echoServer = EchoServer()
-        val server = RPC.serverOf<Echo>(echoServer, transports.server)
+        val server = RPC.serverOf<Echo>(echoServer, transports.server, serverConfig)
 
         assertEquals("foo", result.await())
         assertEquals(1, echoServer.received.get())
@@ -86,7 +101,7 @@ class TransportTest {
     fun testLateConnectWithManyCalls() = runBlocking {
         val transports = StringTransport()
 
-        val client = RPC.clientOf<Echo>(transports.client)
+        val client = RPC.clientOf<Echo>(transports.client, clientConfig)
         val result = List(10) {
             async {
                 client.echo("foo")
@@ -94,7 +109,7 @@ class TransportTest {
         }
 
         val echoServer = EchoServer()
-        val server = RPC.serverOf<Echo>(echoServer, transports.server)
+        val server = RPC.serverOf<Echo>(echoServer, transports.server, serverConfig)
 
         val response = result.awaitAll()
         assertTrue { response.all { it == "foo" } }
@@ -109,13 +124,13 @@ class TransportTest {
 
         val result = List(10) {
             async {
-                val client = RPC.clientOf<Echo>(transports.client)
+                val client = RPC.clientOf<Echo>(transports.client, clientConfig)
                 client.echo("foo")
             }
         }
 
         val echoServer = EchoServer()
-        val server = RPC.serverOf<Echo>(echoServer, transports.server)
+        val server = RPC.serverOf<Echo>(echoServer, transports.server, serverConfig)
 
         val response = result.awaitAll()
         assertTrue { response.all { it == "foo" } }
@@ -131,7 +146,7 @@ class TransportTest {
 
         val result = List(10) {
             async {
-                val client = RPC.clientOf<Echo>(transports.client)
+                val client = RPC.clientOf<Echo>(transports.client, clientConfig)
                 List(10) {
                     async {
                         client.echo("foo")
@@ -141,7 +156,7 @@ class TransportTest {
         }
 
         val echoServer = EchoServer()
-        val server = RPC.serverOf<Echo>(echoServer, transports.server)
+        val server = RPC.serverOf<Echo>(echoServer, transports.server, serverConfig)
 
         val response = result.awaitAll().flatten()
         assertTrue { response.all { it == "foo" } }
@@ -154,26 +169,26 @@ class TransportTest {
     fun testConnectMultipleServicesOnSingleTransport(): Unit = runBlocking {
         val transports = StringTransport()
 
-        val firstClient = RPC.clientOf<Echo>(transports.client)
+        val firstClient = RPC.clientOf<Echo>(transports.client, clientConfig)
         val firstResult = async {
             firstClient.echo("foo")
         }
 
-        val secondClient = RPC.clientOf<Second>(transports.client)
+        val secondClient = RPC.clientOf<Second>(transports.client, clientConfig)
         val secondResult = async {
             secondClient.second("bar")
         }
 
         delay(1000)
         val echoServer = EchoServer()
-        val echo = RPC.serverOf<Echo>(echoServer, transports.server)
+        val echo = RPC.serverOf<Echo>(echoServer, transports.server, serverConfig)
         assertEquals("foo", firstResult.await())
         assertEquals(1, echoServer.received.get())
         echo.cancel()
 
         delay(1000)
         val secondServer = SecondServer()
-        val second = RPC.serverOf<Second>(secondServer, transports.server)
+        val second = RPC.serverOf<Second>(secondServer, transports.server, serverConfig)
         assertEquals("bar", secondResult.await())
         assertEquals(1, secondServer.received.get())
         second.cancel()
@@ -184,10 +199,10 @@ class TransportTest {
     fun testCancelFromClientToServer() = runBlocking {
         val transports = StringTransport()
 
-        val client = RPC.clientOf<KRPCTestService>(transports.client)
+        val client = RPC.clientOf<KRPCTestService>(transports.client, clientConfig)
 
         val echoServer = EchoServer()
-        RPC.serverOf<Echo>(echoServer, transports.server)
+        RPC.serverOf<Echo>(echoServer, transports.server, serverConfig)
 
         client.cancel()
         echoServer.coroutineContext.job.join()
@@ -199,10 +214,10 @@ class TransportTest {
     fun testCancelFromServerToClient() = runBlocking {
         val transports = StringTransport()
 
-        val client = RPC.clientOf<KRPCTestService>(transports.client)
+        val client = RPC.clientOf<KRPCTestService>(transports.client, clientConfig)
 
         val echoServer = EchoServer()
-        RPC.serverOf<Echo>(echoServer, transports.server)
+        RPC.serverOf<Echo>(echoServer, transports.server, serverConfig)
 
         echoServer.cancel()
         client.coroutineContext.job.join()

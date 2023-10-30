@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.internal.FieldDataObject
@@ -76,10 +76,10 @@ internal class RPCClientEngineImpl(
     }
 
     override suspend fun call(callInfo: RPCCallInfo, deferred: CompletableDeferred<*>): Any? {
-        val (callContext, json) = prepareAndExecuteCall(callInfo, deferred)
+        val (callContext, serialFormat) = prepareAndExecuteCall(callInfo, deferred)
 
         launch {
-            handleOutgoingFlows(callContext, json)
+            handleOutgoingFlows(callContext, serialFormat)
         }
 
         launch {
@@ -92,20 +92,20 @@ internal class RPCClientEngineImpl(
     private suspend fun <T> prepareAndExecuteCall(
         callInfo: RPCCallInfo,
         deferred: CompletableDeferred<T>,
-    ): Pair<LazyRPCStreamContext, Json> {
+    ): Pair<LazyRPCStreamContext, SerialFormat> {
         val id = callCounter.incrementAndGet()
         val callId = "$engineId:${callInfo.dataType}:$id"
 
         logger.trace { "start a call[$callId] ${callInfo.callableName}" }
 
         val flowContext = LazyRPCStreamContext { RPCStreamContext(callId, config) }
-        val json = prepareJson(flowContext)
-        val firstMessage = serializeRequest(callId, callInfo, json)
+        val serialFormat = prepareSerialFormat(flowContext)
+        val firstMessage = serializeRequest(callId, callInfo, serialFormat)
 
         @Suppress("UNCHECKED_CAST")
-        executeCall(callId, flowContext, callInfo, firstMessage, json, deferred as CompletableDeferred<Any?>)
+        executeCall(callId, flowContext, callInfo, firstMessage, serialFormat, deferred as CompletableDeferred<Any?>)
 
-        return flowContext to json
+        return flowContext to serialFormat
     }
 
     private suspend fun executeCall(
@@ -113,7 +113,7 @@ internal class RPCClientEngineImpl(
         flowContext: LazyRPCStreamContext,
         callInfo: RPCCallInfo,
         firstMessage: RPCMessage,
-        json: Json,
+        serialFormat: SerialFormat,
         deferred: CompletableDeferred<Any?>,
     ) {
         launch {
@@ -138,8 +138,12 @@ internal class RPCClientEngineImpl(
 
                     is RPCMessage.CallSuccess -> {
                         val value = runCatching {
-                            val serializerResult = json.serializersModule.rpcSerializerForType(callInfo.returnType)
-                            json.decodeFromString(serializerResult, message.data)
+                            val serializerResult = serialFormat.serializersModule.rpcSerializerForType(callInfo.returnType)
+
+                            when (serialFormat) {
+                                is StringFormat -> serialFormat.decodeFromString(serializerResult, message.data)
+                                else -> error("binary not supported for RPCMessage.CallSuccess")
+                            }
                         }
 
                         deferred.completeWith(value)
@@ -154,7 +158,7 @@ internal class RPCClientEngineImpl(
                     }
 
                     is RPCMessage.StreamMessage -> {
-                        flowContext.initialize().send(message, json)
+                        flowContext.initialize().send(message, serialFormat)
                     }
                 }
 
@@ -169,7 +173,7 @@ internal class RPCClientEngineImpl(
         transport.send(firstMessage)
     }
 
-    private suspend fun handleOutgoingFlows(flowContext: LazyRPCStreamContext, json: Json) {
+    private suspend fun handleOutgoingFlows(flowContext: LazyRPCStreamContext, serialFormat: SerialFormat) {
         val mutex = Mutex()
         for (clientStream in flowContext.awaitInitialized().outgoingStreams) {
             launch {
@@ -183,7 +187,10 @@ internal class RPCClientEngineImpl(
 
                             stream.collect {
                                 mutex.withLock {
-                                    val data = json.encodeToString(elementSerializer, it)
+                                    val data = when (serialFormat) {
+                                        is StringFormat -> serialFormat.encodeToString(elementSerializer, it)
+                                        else -> error("binary not supported for RPCMessage.CallSuccess")
+                                    }
                                     val message = RPCMessage.StreamMessage(callId, serviceTypeString, flowId, data)
                                     transport.send(message)
                                 }
@@ -212,14 +219,17 @@ internal class RPCClientEngineImpl(
         }
     }
 
-    private fun serializeRequest(callId: String, callInfo: RPCCallInfo, json: StringFormat): RPCMessage {
-        val serializerData = json.serializersModule.rpcSerializerForType(callInfo.dataType)
-        val jsonData = json.encodeToString(serializerData, callInfo.data)
-        return RPCMessage.CallData(callId, serviceTypeString, callInfo.callableName, jsonData)
+    private fun serializeRequest(callId: String, callInfo: RPCCallInfo, serialFormat: SerialFormat): RPCMessage {
+        val serializerData = serialFormat.serializersModule.rpcSerializerForType(callInfo.dataType)
+        val encodedData = when (serialFormat) {
+            is StringFormat -> serialFormat.encodeToString(serializerData, callInfo.data)
+            else -> error("binary not supported for RPCMessage.CallSuccess")
+        }
+        return RPCMessage.CallData(callId, serviceTypeString, callInfo.callableName, encodedData)
     }
 
-    private fun prepareJson(rpcFlowContext: LazyRPCStreamContext): Json = Json {
-        serializersModule = SerializersModule {
+    private fun prepareSerialFormat(rpcFlowContext: LazyRPCStreamContext): SerialFormat {
+        val module = SerializersModule {
             contextual(Flow::class) {
                 @Suppress("UNCHECKED_CAST")
                 StreamSerializer.Flow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
@@ -234,8 +244,8 @@ internal class RPCClientEngineImpl(
                 @Suppress("UNCHECKED_CAST")
                 StreamSerializer.StateFlow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
             }
-
-            config.serializersModuleExtension?.invoke(this)
         }
+
+        return config.serialFormatInitializer.applySerializersModuleAndGet(module)
     }
 }

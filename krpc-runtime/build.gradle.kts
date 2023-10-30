@@ -19,8 +19,10 @@ kmp { allTargets ->
                 api(project(":krpc-runtime:krpc-runtime-api"))
                 api(project(":concurrent-hash-map"))
 
+                implementation(project(":krpc-runtime:krpc-runtime-serialization"))
+
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0")
                 implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
                 implementation("io.github.oshai:kotlin-logging:5.1.0")
             }
@@ -31,9 +33,10 @@ kmp { allTargets ->
 
                 implementation(project(":krpc-runtime:krpc-runtime-client"))
                 implementation(project(":krpc-runtime:krpc-runtime-server"))
+                implementation(project(":krpc-runtime:krpc-runtime-serialization"))
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0")
                 implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
             }
         }
@@ -47,6 +50,7 @@ kmp { allTargets ->
         val jvmTest by getting {
             dependencies {
                 implementation(project(":krpc-runtime:krpc-runtime-test"))
+                implementation(project(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-json"))
 
                 implementation("org.slf4j:slf4j-api:2.0.9")
                 implementation("org.slf4j:slf4j-simple:2.0.9")

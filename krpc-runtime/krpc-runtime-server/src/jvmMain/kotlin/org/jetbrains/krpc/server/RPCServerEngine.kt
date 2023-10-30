@@ -8,7 +8,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.SerialFormat
+import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCConfig
@@ -98,7 +99,7 @@ class RPCServerEngine<T : RPC>(
 
                     is RPCMessage.StreamMessage -> {
                         val flowContext = flowContexts[callId] ?: error("Unknown call $callId")
-                        flowContext.initialize().send(message, prepareJson(flowContext))
+                        flowContext.initialize().send(message, prepareSerialFormat(flowContext))
                     }
                 }
 
@@ -116,7 +117,7 @@ class RPCServerEngine<T : RPC>(
     @OptIn(InternalCoroutinesApi::class)
     private fun handleCall(callId: String, callData: RPCMessage.CallData) {
         val flowContext = LazyRPCStreamContext { RPCStreamContext(callId, config) }
-        val json = prepareJson(flowContext)
+        val serialFormat = prepareSerialFormat(flowContext)
         flowContexts[callId] = flowContext
         val callableName = callData.callableName
 
@@ -142,9 +143,12 @@ class RPCServerEngine<T : RPC>(
             val type = rpcServiceMethodSerializationTypeOf(serviceKClass, actualName)
                 ?: error("Unknown method $actualName")
 
-            val serializerModule = json.serializersModule
+            val serializerModule = serialFormat.serializersModule
             val paramsSerializer = serializerModule.rpcSerializerForType(type)
-            val args = json.decodeFromString(paramsSerializer, callData.data) as RPCMethodClassArguments
+            val args = when (serialFormat) {
+                is StringFormat -> serialFormat.decodeFromString(paramsSerializer, callData.data) as RPCMethodClassArguments
+                else -> error("binary not supported for RPCMessage.CallSuccess")
+            }
 
             args.asArray()
         } else null
@@ -157,9 +161,12 @@ class RPCServerEngine<T : RPC>(
                 }
 
                 val returnType = callable.returnType
-                val returnSerializer = json.serializersModule.rpcSerializerForType(returnType)
-                val jsonResult = json.encodeToString(returnSerializer, value)
-                RPCMessage.CallSuccess(callId, serviceTypeString, jsonResult)
+                val returnSerializer = serialFormat.serializersModule.rpcSerializerForType(returnType)
+                val encodedResult = when (serialFormat) {
+                    is StringFormat -> serialFormat.encodeToString(returnSerializer, value)
+                    else -> error("binary not supported for RPCMessage.CallSuccess")
+                }
+                RPCMessage.CallSuccess(callId, serviceTypeString, encodedResult)
             } catch (cause: InvocationTargetException) {
                 val serializedCause = serializeException(cause.cause ?: cause)
                 RPCMessage.CallException(callId, serviceTypeString, serializedCause)
@@ -168,9 +175,9 @@ class RPCServerEngine<T : RPC>(
                 RPCMessage.CallException(callId, serviceTypeString, serializedCause)
             }
             transport.send(result)
-            
+
             launch {
-                handleOutgoingFlows(flowContext, json)
+                handleOutgoingFlows(flowContext, serialFormat)
             }
 
             launch {
@@ -184,7 +191,7 @@ class RPCServerEngine<T : RPC>(
         }
     }
 
-    private suspend fun handleOutgoingFlows(flowContext: LazyRPCStreamContext, json: Json) {
+    private suspend fun handleOutgoingFlows(flowContext: LazyRPCStreamContext, serialFormat: SerialFormat) {
         val mutex = Mutex()
         for (clientStream in flowContext.awaitInitialized().outgoingStreams) {
             launch {
@@ -199,7 +206,10 @@ class RPCServerEngine<T : RPC>(
                                 // because we can send new message for the new flow,
                                 // which is not published with `transport.send(message)`
                                 mutex.withLock {
-                                    val data = json.encodeToString(elementSerializer, it)
+                                    val data = when (serialFormat) {
+                                        is StringFormat -> serialFormat.encodeToString(elementSerializer, it)
+                                        else -> error("binary not supported for RPCMessage.CallSuccess")
+                                    }
                                     val message = RPCMessage.StreamMessage(callId, serviceTypeString, streamId, data)
                                     transport.send(message)
                                 }
@@ -228,8 +238,8 @@ class RPCServerEngine<T : RPC>(
         }
     }
 
-    private fun prepareJson(rpcFlowContext: LazyRPCStreamContext): Json = Json {
-        serializersModule = SerializersModule {
+    private fun prepareSerialFormat(rpcFlowContext: LazyRPCStreamContext): SerialFormat {
+        val module = SerializersModule {
             contextual(Flow::class) {
                 @Suppress("UNCHECKED_CAST")
                 StreamSerializer.Flow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
@@ -244,9 +254,9 @@ class RPCServerEngine<T : RPC>(
                 @Suppress("UNCHECKED_CAST")
                 StreamSerializer.StateFlow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
             }
-
-            config.serializersModuleExtension?.invoke(this)
         }
+
+        return config.serialFormatInitializer.applySerializersModuleAndGet(module)
     }
 
     fun stop() {

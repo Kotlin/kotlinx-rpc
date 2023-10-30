@@ -11,6 +11,7 @@ import org.jetbrains.krpc.client.awaitFieldInitialization
 import org.jetbrains.krpc.client.clientOf
 import org.jetbrains.krpc.rpcClientConfig
 import org.jetbrains.krpc.rpcServerConfig
+import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.server.RPCServerEngine
 import org.jetbrains.krpc.server.serverOf
 import org.junit.Assert.assertEquals
@@ -19,7 +20,6 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.*
-import kotlin.test.Test
 
 abstract class KRPCTransportTestBase {
     companion object {
@@ -27,11 +27,19 @@ abstract class KRPCTransportTestBase {
             sharedFlowParameters {
                 replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
             }
+
+            serialization {
+                json()
+            }
         }
 
         private val clientConfig = rpcClientConfig {
             sharedFlowParameters {
                 replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
+            }
+
+            serialization {
+                json()
             }
         }
     }

@@ -9,6 +9,7 @@ import io.ktor.server.netty.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import kotlinx.coroutines.*
+import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.transport.ktor.client.rpc
 import org.jetbrains.krpc.transport.ktor.server.rpc
 import org.junit.Assert.assertEquals
@@ -34,7 +35,11 @@ class KtorTransportTest {
         val server = embeddedServer(Netty, port = 4242) {
             install(WebSockets)
             routing {
-                rpc<NewService>("/rpc", NewServiceImpl())
+                rpc<NewService>("/rpc", NewServiceImpl(), rpcConfig = rpcServerConfig {
+                    serialization {
+                        json()
+                    }
+                })
             }
         }.start()
 
@@ -42,7 +47,11 @@ class KtorTransportTest {
             install(io.ktor.client.plugins.websocket.WebSockets)
         }
 
-        val service = client.rpc<NewService>("ws://localhost:4242/rpc")
+        val service = client.rpc<NewService>("ws://localhost:4242/rpc", rpcConfig = rpcClientConfig {
+            serialization {
+                json()
+            }
+        })
         val actual = service.echo("Hello, world!")
 
         assertEquals("Hello, world!", actual)

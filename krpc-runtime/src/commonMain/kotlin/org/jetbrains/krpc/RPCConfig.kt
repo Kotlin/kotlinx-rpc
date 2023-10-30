@@ -2,7 +2,10 @@ package org.jetbrains.krpc
 
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.serialization.modules.SerializersModuleBuilder
+import kotlinx.serialization.BinaryFormat
+import kotlinx.serialization.StringFormat
+import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
+import org.jetbrains.krpc.serialization.RPCSerialFormatInitializer
 
 abstract class RPCConfigBuilder internal constructor() {
     @Suppress("MemberVisibilityCanBePrivate")
@@ -11,7 +14,9 @@ abstract class RPCConfigBuilder internal constructor() {
         var extraBufferCapacity: Int = 10
         var onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND
 
-        fun builder(): () -> MutableSharedFlow<Any?> = { MutableSharedFlow(replay, extraBufferCapacity, onBufferOverflow) }
+        fun builder(): () -> MutableSharedFlow<Any?> = {
+            MutableSharedFlow(replay, extraBufferCapacity, onBufferOverflow)
+        }
     }
 
     protected var sharedFlowBuilder: () -> MutableSharedFlow<Any?> = SharedFlowParametersBuilder().builder()
@@ -20,27 +25,43 @@ abstract class RPCConfigBuilder internal constructor() {
         sharedFlowBuilder = SharedFlowParametersBuilder().apply(builder).builder()
     }
 
-    protected var serializersModuleExtension: (SerializersModuleBuilder.() -> Unit)? = null
+    private var serialFormatInitializer: RPCSerialFormatInitializer<*, *>? = null
 
-    @Suppress("unused")
-    fun serializersModuleExtension(extension: SerializersModuleBuilder.() -> Unit) {
-        serializersModuleExtension = extension
+    private val configuration = object : RPCSerialFormatConfiguration {
+        override fun <Format : StringFormat> registerString(rpcSerialFormatInitializer: RPCSerialFormatInitializer<Format, *>) {
+            serialFormatInitializer = rpcSerialFormatInitializer
+        }
+
+        override fun <Format : BinaryFormat> registerBinary(rpcSerialFormatInitializer: RPCSerialFormatInitializer<Format, *>) {
+            serialFormatInitializer = rpcSerialFormatInitializer
+        }
     }
 
-    class Client: RPCConfigBuilder() {
+    fun serialization(builder: RPCSerialFormatConfiguration.() -> Unit) {
+        configuration.builder()
+    }
+
+    protected fun rpcSerialFormat(): RPCSerialFormatInitializer<*, *> {
+        return when (val format = serialFormatInitializer) {
+            null -> error("Please, choose serialization format")
+            else -> format
+        }
+    }
+
+    class Client : RPCConfigBuilder() {
         fun build(): RPCConfig.Client {
             return RPCConfig.Client(
                 sharedFlowBuilder = sharedFlowBuilder,
-                serializersModuleExtension = serializersModuleExtension,
+                serialFormatInitializer = rpcSerialFormat(),
             )
         }
     }
 
-    class Server: RPCConfigBuilder() {
+    class Server : RPCConfigBuilder() {
         fun build(): RPCConfig.Server {
             return RPCConfig.Server(
                 sharedFlowBuilder = sharedFlowBuilder,
-                serializersModuleExtension = serializersModuleExtension,
+                serialFormatInitializer = rpcSerialFormat(),
             )
         }
     }
@@ -48,23 +69,23 @@ abstract class RPCConfigBuilder internal constructor() {
 
 interface RPCConfig {
     val sharedFlowBuilder: () -> MutableSharedFlow<Any?>
-    val serializersModuleExtension: (SerializersModuleBuilder.() -> Unit)?
+    val serialFormatInitializer: RPCSerialFormatInitializer<*, *>
 
     class Client internal constructor(
         override val sharedFlowBuilder: () -> MutableSharedFlow<Any?>,
-        override val serializersModuleExtension: (SerializersModuleBuilder.() -> Unit)? = null,
-    ): RPCConfig {
+        override val serialFormatInitializer: RPCSerialFormatInitializer<*, *>,
+    ) : RPCConfig {
         companion object {
-            val Default: Client = RPCConfigBuilder.Client().build()
+            val Default: Client by lazy { RPCConfigBuilder.Client().build() }
         }
     }
 
     class Server internal constructor(
         override val sharedFlowBuilder: () -> MutableSharedFlow<Any?>,
-        override val serializersModuleExtension: (SerializersModuleBuilder.() -> Unit)? = null,
-    ): RPCConfig  {
+        override val serialFormatInitializer: RPCSerialFormatInitializer<*, *>,
+    ) : RPCConfig {
         companion object {
-            val Default: Server = RPCConfigBuilder.Server().build()
+            val Default: Server by lazy { RPCConfigBuilder.Server().build() }
         }
     }
 }
