@@ -24,13 +24,13 @@ import kotlin.reflect.typeOf
 private val CLIENT_ENGINE_ID = atomic(initial = 0L)
 
 internal class RPCClientEngineImpl(
-    private val transport: RPCTransport,
+    override val transport: RPCTransport,
     serviceKClass: KClass<out RPC>,
-    private val config: RPCConfig.Client = RPCConfig.Client.Default,
-) : RPCClientEngine {
+    override val config: RPCConfig.Client = RPCConfig.Client.Default,
+) : RPCEngine(), RPCClientEngine {
     private val callCounter = atomic(0L)
     private val engineId: Long = CLIENT_ENGINE_ID.incrementAndGet()
-    private val serviceTypeString = serviceKClass.toString()
+    override val serviceTypeString = serviceKClass.toString()
     private val logger = KotlinLogging.logger("RPCClientEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
 
     override val coroutineContext: CoroutineContext = Job() + Dispatchers.Default
@@ -79,11 +79,11 @@ internal class RPCClientEngineImpl(
         val (callContext, serialFormat) = prepareAndExecuteCall(callInfo, deferred)
 
         launch {
-            handleOutgoingFlows(callContext, serialFormat)
+            handleOutgoingStreams(this, callContext, serialFormat)
         }
 
         launch {
-            handleIncomingHotFlows(callContext)
+            handleIncomingHotFlows(this, callContext)
         }
 
         return deferred.await()
@@ -173,52 +173,6 @@ internal class RPCClientEngineImpl(
         transport.send(firstMessage)
     }
 
-    private suspend fun handleOutgoingFlows(flowContext: LazyRPCStreamContext, serialFormat: SerialFormat) {
-        val mutex = Mutex()
-        for (clientStream in flowContext.awaitInitialized().outgoingStreams) {
-            launch {
-                val callId = clientStream.callId
-                val flowId = clientStream.streamId
-                val elementSerializer = clientStream.elementSerializer
-                try {
-                    when (clientStream.kind) {
-                        StreamKind.Flow, StreamKind.SharedFlow, StreamKind.StateFlow -> {
-                            val stream = clientStream.stream as Flow<*>
-
-                            stream.collect {
-                                mutex.withLock {
-                                    val data = when (serialFormat) {
-                                        is StringFormat -> serialFormat.encodeToString(elementSerializer, it)
-                                        else -> error("binary not supported for RPCMessage.CallSuccess")
-                                    }
-                                    val message = RPCMessage.StreamMessage(callId, serviceTypeString, flowId, data)
-                                    transport.send(message)
-                                }
-                            }
-                        }
-                    }
-                } catch (cause: Throwable) {
-                    val serializedReason = serializeException(cause)
-                    val message = RPCMessage.StreamCancel(callId, serviceTypeString, flowId, serializedReason)
-                    transport.send(message)
-                    throw cause
-                }
-
-                val message = RPCMessage.StreamFinished(callId, serviceTypeString, flowId)
-                transport.send(message)
-            }
-        }
-    }
-
-    private suspend fun handleIncomingHotFlows(flowContext: LazyRPCStreamContext) {
-        for (hotFlow in flowContext.awaitInitialized().incomingHotFlows) {
-            launch {
-                /** Start consuming incoming requests, see [RPCIncomingHotFlow.emit] */
-                hotFlow.emit(null)
-            }
-        }
-    }
-
     private fun serializeRequest(callId: String, callInfo: RPCCallInfo, serialFormat: SerialFormat): RPCMessage {
         val serializerData = serialFormat.serializersModule.rpcSerializerForType(callInfo.dataType)
         val encodedData = when (serialFormat) {
@@ -226,26 +180,5 @@ internal class RPCClientEngineImpl(
             else -> error("binary not supported for RPCMessage.CallSuccess")
         }
         return RPCMessage.CallData(callId, serviceTypeString, callInfo.callableName, encodedData)
-    }
-
-    private fun prepareSerialFormat(rpcFlowContext: LazyRPCStreamContext): SerialFormat {
-        val module = SerializersModule {
-            contextual(Flow::class) {
-                @Suppress("UNCHECKED_CAST")
-                StreamSerializer.Flow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
-            }
-
-            contextual(SharedFlow::class) {
-                @Suppress("UNCHECKED_CAST")
-                StreamSerializer.SharedFlow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
-            }
-
-            contextual(StateFlow::class) {
-                @Suppress("UNCHECKED_CAST")
-                StreamSerializer.StateFlow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
-            }
-        }
-
-        return config.serialFormatInitializer.applySerializersModuleAndGet(module)
     }
 }

@@ -34,11 +34,11 @@ import kotlin.reflect.full.callSuspend
  */
 class RPCServerEngine<T : RPC>(
     private val service: T,
-    private val transport: RPCTransport,
+    override val transport: RPCTransport,
     private val serviceKClass: KClass<T>,
-    private val config: RPCConfig.Server = RPCConfig.Server.Default,
-) : CoroutineScope {
-    private val serviceTypeString = serviceKClass.toString()
+    override val config: RPCConfig.Server = RPCConfig.Server.Default,
+) : RPCEngine(), CoroutineScope {
+    override val serviceTypeString = serviceKClass.toString()
     private val logger = KotlinLogging.logger("RPCServerEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
 
     private val methods: Map<String, KCallable<*>>
@@ -177,11 +177,11 @@ class RPCServerEngine<T : RPC>(
             transport.send(result)
 
             launch {
-                handleOutgoingFlows(flowContext, serialFormat)
+                handleOutgoingStreams(this, flowContext, serialFormat)
             }
 
             launch {
-                handleIncomingHotFlows(flowContext)
+                handleIncomingHotFlows(this, flowContext)
             }
         }.apply {
             invokeOnCompletion(onCancelling = true) {
@@ -189,74 +189,6 @@ class RPCServerEngine<T : RPC>(
                 flowContext.valueOrNull?.close()
             }
         }
-    }
-
-    private suspend fun handleOutgoingFlows(flowContext: LazyRPCStreamContext, serialFormat: SerialFormat) {
-        val mutex = Mutex()
-        for (clientStream in flowContext.awaitInitialized().outgoingStreams) {
-            launch {
-                val callId = clientStream.callId
-                val streamId = clientStream.streamId
-                val elementSerializer = clientStream.elementSerializer
-                try {
-                    when (clientStream.kind) {
-                        StreamKind.Flow, StreamKind.SharedFlow, StreamKind.StateFlow -> {
-                            val stream = clientStream.stream as Flow<*>
-                            stream.collect {
-                                // because we can send new message for the new flow,
-                                // which is not published with `transport.send(message)`
-                                mutex.withLock {
-                                    val data = when (serialFormat) {
-                                        is StringFormat -> serialFormat.encodeToString(elementSerializer, it)
-                                        else -> error("binary not supported for RPCMessage.CallSuccess")
-                                    }
-                                    val message = RPCMessage.StreamMessage(callId, serviceTypeString, streamId, data)
-                                    transport.send(message)
-                                }
-                            }
-                        }
-                    }
-                } catch (cause: Throwable) {
-                    val serializedReason = serializeException(cause)
-                    val message = RPCMessage.StreamCancel(callId, serviceTypeString, streamId, serializedReason)
-                    transport.send(message)
-                    throw cause
-                }
-
-                val message = RPCMessage.StreamFinished(callId, serviceTypeString, streamId)
-                transport.send(message)
-            }
-        }
-    }
-
-    private suspend fun handleIncomingHotFlows(flowContext: LazyRPCStreamContext) {
-        for (hotFlow in flowContext.awaitInitialized().incomingHotFlows) {
-            launch {
-                /** Start consuming incoming requests, see [RPCIncomingHotFlow.emit] */
-                hotFlow.emit(null)
-            }
-        }
-    }
-
-    private fun prepareSerialFormat(rpcFlowContext: LazyRPCStreamContext): SerialFormat {
-        val module = SerializersModule {
-            contextual(Flow::class) {
-                @Suppress("UNCHECKED_CAST")
-                StreamSerializer.Flow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
-            }
-
-            contextual(SharedFlow::class) {
-                @Suppress("UNCHECKED_CAST")
-                StreamSerializer.SharedFlow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
-            }
-
-            contextual(StateFlow::class) {
-                @Suppress("UNCHECKED_CAST")
-                StreamSerializer.StateFlow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
-            }
-        }
-
-        return config.serialFormatInitializer.applySerializersModuleAndGet(module)
     }
 
     fun stop() {
