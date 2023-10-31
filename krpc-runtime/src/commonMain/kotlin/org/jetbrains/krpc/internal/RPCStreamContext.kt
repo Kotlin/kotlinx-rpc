@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialFormat
-import kotlinx.serialization.StringFormat
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCMessage
 import org.jetbrains.krpc.internal.map.ConcurrentHashMap
@@ -136,12 +135,9 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
         incomingChannelOf(message.streamId).send(StreamCancel(message))
     }
 
-    suspend fun send(message: RPCMessage.StreamMessage, format: SerialFormat) {
+    suspend fun send(message: RPCMessage.StreamMessage, serialFormat: SerialFormat) {
         val info = incomingStreams.getDeferred(message.streamId).await()
-        val result = when (format) {
-            is StringFormat -> format.decodeFromString(info.elementSerializer, message.data)
-            else -> error("binary not supported for RPCMessage.CallSuccess")
-        }
+        val result = decodeMessageData(serialFormat, info.elementSerializer, message)
         incomingChannelOf(message.streamId).send(result)
     }
 

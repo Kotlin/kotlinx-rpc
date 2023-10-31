@@ -6,12 +6,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.KSerializer
+import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
-import kotlinx.serialization.modules.SerializersModule
 import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.internal.FieldDataObject
 import org.jetbrains.krpc.client.internal.RPCFlow
@@ -140,10 +137,7 @@ internal class RPCClientEngineImpl(
                         val value = runCatching {
                             val serializerResult = serialFormat.serializersModule.rpcSerializerForType(callInfo.returnType)
 
-                            when (serialFormat) {
-                                is StringFormat -> serialFormat.decodeFromString(serializerResult, message.data)
-                                else -> error("binary not supported for RPCMessage.CallSuccess")
-                            }
+                            decodeMessageData(serialFormat, serializerResult, message)
                         }
 
                         deferred.completeWith(value)
@@ -175,10 +169,16 @@ internal class RPCClientEngineImpl(
 
     private fun serializeRequest(callId: String, callInfo: RPCCallInfo, serialFormat: SerialFormat): RPCMessage {
         val serializerData = serialFormat.serializersModule.rpcSerializerForType(callInfo.dataType)
-        val encodedData = when (serialFormat) {
-            is StringFormat -> serialFormat.encodeToString(serializerData, callInfo.data)
-            else -> error("binary not supported for RPCMessage.CallSuccess")
+        return when (serialFormat) {
+            is StringFormat -> {
+                val stringValue = serialFormat.encodeToString(serializerData, callInfo.data)
+                RPCMessage.CallDataString(callId, serviceTypeString, callInfo.callableName, stringValue)
+            }
+            is BinaryFormat -> {
+                val binaryValue = serialFormat.encodeToByteArray(serializerData, callInfo.data)
+                RPCMessage.CallDataBinary(callId, serviceTypeString, callInfo.callableName, binaryValue)
+            }
+            else -> unsupportedSerialFormatError(serialFormat)
         }
-        return RPCMessage.CallData(callId, serviceTypeString, callInfo.callableName, encodedData)
     }
 }

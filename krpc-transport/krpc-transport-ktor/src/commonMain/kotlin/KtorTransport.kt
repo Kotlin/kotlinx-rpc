@@ -5,6 +5,7 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.*
 import org.jetbrains.krpc.RPCMessage
 import org.jetbrains.krpc.RPCTransport
+import org.jetbrains.krpc.internal.unsupportedSerialFormatError
 import kotlin.coroutines.CoroutineContext
 
 @OptIn(InternalCoroutinesApi::class, DelicateCoroutinesApi::class)
@@ -45,7 +46,7 @@ class KtorTransport(
                         val messageText = message.readBytes()
                         serialFormat.decodeFromByteArray<RPCMessage>(messageText)
                     }
-                    else -> error("Unsupported serial format, only StringFormat and BinaryFormats are supported")
+                    else -> unsupportedSerialFormatError(serialFormat)
                 }
                 subscribers.forEach { it(rpcMessage) }
             }

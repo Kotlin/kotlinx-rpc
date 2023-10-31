@@ -75,11 +75,19 @@ abstract class RPCEngine {
             // because we can send new message for the new flow,
             // which is not published with `transport.send(message)`
             mutex.withLock {
-                val data = when (serialFormat) {
-                    is StringFormat -> serialFormat.encodeToString(elementSerializer, it)
-                    else -> error("binary not supported for RPCMessage.StreamMessage")
+                val message = when (serialFormat) {
+                    is StringFormat -> {
+                        val stringData = serialFormat.encodeToString(elementSerializer, it)
+                        RPCMessage.StreamMessageString(callId, serviceTypeString, streamId, stringData)
+                    }
+
+                    is BinaryFormat -> {
+                        val binaryData = serialFormat.encodeToByteArray(elementSerializer, it)
+                        RPCMessage.StreamMessageBinary(callId, serviceTypeString, streamId, binaryData)
+                    }
+
+                    else -> unsupportedSerialFormatError(serialFormat)
                 }
-                val message = RPCMessage.StreamMessage(callId, serviceTypeString, streamId, data)
                 transport.send(message)
             }
         }

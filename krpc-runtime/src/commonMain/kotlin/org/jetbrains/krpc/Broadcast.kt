@@ -19,15 +19,16 @@ fun RPCTransport.multiclient(waitForService: Boolean = true): RPCTransport {
 
     receiver.launch {
         val toRemove = mutableSetOf<suspend (RPCMessage) -> Boolean>()
-        receiver.subscribe {
+        receiver.subscribe { message ->
             var done = false
             mutex.withLock {
                 for (subscriber in subscribers) {
                     val result = runCatching {
-                        subscriber(it)
+                        subscriber(message)
                     }
 
                     if (result.isFailure) {
+                        logger.error(result.exceptionOrNull()) { "Service failed" }
                         toRemove.add(subscriber)
                         continue
                     }
@@ -40,14 +41,14 @@ fun RPCTransport.multiclient(waitForService: Boolean = true): RPCTransport {
 
                 if (!done) {
                     if (waitForService) {
-                        waiting.add(it)
-                        logger.warn { "No service registered for ${it.serviceType} at the moment. Waiting for new services." }
+                        waiting.add(message)
+                        logger.warn { "No registered service of ${message.serviceType} service type was able to process message at the moment. Waiting for new services." }
                         return@subscribe false
                     }
 
-                    val cause = IllegalStateException("No service found for ${it.serviceType} call ${it.callId}")
-                    val message = RPCMessage.CallException(it.callId, it.serviceType, serializeException(cause))
-                    send(message)
+                    val cause = IllegalStateException("Failed to process call ${message.callId} for service ${message.serviceType}, ${if (toRemove.isEmpty()) "no services found" else "${toRemove.size} attempts failed"}")
+                    val callException = RPCMessage.CallException(message.callId, message.serviceType, serializeException(cause))
+                    send(callException)
                 }
 
                 subscribers.removeAll(toRemove)

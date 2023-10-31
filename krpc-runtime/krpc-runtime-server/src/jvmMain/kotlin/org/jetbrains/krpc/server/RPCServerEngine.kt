@@ -2,15 +2,8 @@ package org.jetbrains.krpc.server
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialFormat
+import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.StringFormat
-import kotlinx.serialization.modules.SerializersModule
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCMessage
@@ -145,10 +138,7 @@ class RPCServerEngine<T : RPC>(
 
             val serializerModule = serialFormat.serializersModule
             val paramsSerializer = serializerModule.rpcSerializerForType(type)
-            val args = when (serialFormat) {
-                is StringFormat -> serialFormat.decodeFromString(paramsSerializer, callData.data) as RPCMethodClassArguments
-                else -> error("binary not supported for RPCMessage.CallSuccess")
-            }
+            val args = decodeMessageData(serialFormat, paramsSerializer, callData) as RPCMethodClassArguments
 
             args.asArray()
         } else null
@@ -162,11 +152,17 @@ class RPCServerEngine<T : RPC>(
 
                 val returnType = callable.returnType
                 val returnSerializer = serialFormat.serializersModule.rpcSerializerForType(returnType)
-                val encodedResult = when (serialFormat) {
-                    is StringFormat -> serialFormat.encodeToString(returnSerializer, value)
-                    else -> error("binary not supported for RPCMessage.CallSuccess")
+                when (serialFormat) {
+                    is StringFormat -> {
+                        val stringValue = serialFormat.encodeToString(returnSerializer, value)
+                        RPCMessage.CallSuccessString(callId, serviceTypeString, stringValue)
+                    }
+                    is BinaryFormat -> {
+                        val binaryValue = serialFormat.encodeToByteArray(returnSerializer, value)
+                        RPCMessage.CallSuccessBinary(callId, serviceTypeString, binaryValue)
+                    }
+                    else -> unsupportedSerialFormatError(serialFormat)
                 }
-                RPCMessage.CallSuccess(callId, serviceTypeString, encodedResult)
             } catch (cause: InvocationTargetException) {
                 val serializedCause = serializeException(cause.cause ?: cause)
                 RPCMessage.CallException(callId, serviceTypeString, serializedCause)
