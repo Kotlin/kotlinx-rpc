@@ -86,9 +86,9 @@ internal class RPCClientEngineImpl(
         return deferred.await()
     }
 
-    private suspend fun <T> prepareAndExecuteCall(
+    private suspend fun prepareAndExecuteCall(
         callInfo: RPCCallInfo,
-        deferred: CompletableDeferred<T>,
+        deferred: CompletableDeferred<*>,
     ): Pair<LazyRPCStreamContext, SerialFormat> {
         val id = callCounter.incrementAndGet()
         val callId = "$engineId:${callInfo.dataType}:$id"
@@ -115,7 +115,9 @@ internal class RPCClientEngineImpl(
     ) {
         launch {
             transport.subscribe { message ->
-                if (message.callId != callId) return@subscribe false
+                if (message.serviceType != serviceTypeString || message.callId != callId) {
+                    return@subscribe false
+                }
 
                 when (message) {
                     is RPCMessage.CallData -> error("Unexpected message")
@@ -144,15 +146,15 @@ internal class RPCClientEngineImpl(
                     }
 
                     is RPCMessage.StreamCancel -> {
-                        flowContext.initialize().cancelStream(message)
+                        flowContext.awaitInitialized().cancelStream(message)
                     }
 
                     is RPCMessage.StreamFinished -> {
-                        flowContext.initialize().closeStream(message)
+                        flowContext.awaitInitialized().closeStream(message)
                     }
 
                     is RPCMessage.StreamMessage -> {
-                        flowContext.initialize().send(message, serialFormat)
+                        flowContext.awaitInitialized().send(message, serialFormat)
                     }
                 }
 

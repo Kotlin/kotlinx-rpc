@@ -82,17 +82,17 @@ class RPCServerEngine<T : RPC>(
                     is RPCMessage.CallSuccess -> error("Unexpected success message")
                     is RPCMessage.StreamCancel -> {
                         val flowContext = flowContexts[callId] ?: error("Unknown call $callId")
-                        flowContext.initialize().cancelStream(message)
+                        flowContext.awaitInitialized().cancelStream(message)
                     }
 
                     is RPCMessage.StreamFinished -> {
                         val flowContext = flowContexts[callId] ?: error("Unknown call $callId")
-                        flowContext.initialize().closeStream(message)
+                        flowContext.awaitInitialized().closeStream(message)
                     }
 
                     is RPCMessage.StreamMessage -> {
                         val flowContext = flowContexts[callId] ?: error("Unknown call $callId")
-                        flowContext.initialize().send(message, prepareSerialFormat(flowContext))
+                        flowContext.awaitInitialized().send(message, prepareSerialFormat(flowContext))
                     }
                 }
 

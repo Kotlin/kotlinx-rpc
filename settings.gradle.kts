@@ -34,6 +34,8 @@ include(":krpc-runtime:krpc-runtime-test")
 
 include(":krpc-runtime:krpc-runtime-serialization")
 include(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-json")
+include(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-cbor")
+include(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-protobuf")
 
 include(":krpc-transport:krpc-transport-ktor")
 include(":krpc-transport:krpc-transport-ktor:krpc-transport-ktor-server")

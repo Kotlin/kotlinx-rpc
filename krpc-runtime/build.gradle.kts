@@ -51,6 +51,8 @@ kmp { allTargets ->
             dependencies {
                 implementation(project(":krpc-runtime:krpc-runtime-test"))
                 implementation(project(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-json"))
+                implementation(project(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-cbor"))
+                implementation(project(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-protobuf"))
 
                 implementation("org.slf4j:slf4j-api:2.0.9")
                 implementation("org.slf4j:slf4j-simple:2.0.9")

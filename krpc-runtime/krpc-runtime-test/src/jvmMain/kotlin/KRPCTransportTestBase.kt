@@ -11,6 +11,7 @@ import org.jetbrains.krpc.client.awaitFieldInitialization
 import org.jetbrains.krpc.client.clientOf
 import org.jetbrains.krpc.rpcClientConfig
 import org.jetbrains.krpc.rpcServerConfig
+import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
 import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.server.RPCServerEngine
 import org.jetbrains.krpc.server.serverOf
@@ -22,24 +23,28 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.*
 
 abstract class KRPCTransportTestBase {
-    companion object {
-        private val serverConfig = rpcServerConfig {
+    protected abstract val serializationConfig: RPCSerialFormatConfiguration.() -> Unit
+
+    private val serverConfig by lazy {
+        rpcServerConfig {
             sharedFlowParameters {
                 replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
             }
 
             serialization {
-                json()
+                serializationConfig()
             }
         }
+    }
 
-        private val clientConfig = rpcClientConfig {
+    private val clientConfig  by lazy {
+        rpcClientConfig {
             sharedFlowParameters {
                 replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
             }
 
             serialization {
-                json()
+                serializationConfig()
             }
         }
     }
@@ -141,7 +146,7 @@ abstract class KRPCTransportTestBase {
     }
 
     @Test
-    fun nullable() {
+    open fun nullable() {
         val result = runBlocking { client.nullable("test") }
         assertEquals(TestClass(), result)
 
@@ -318,7 +323,7 @@ abstract class KRPCTransportTestBase {
     }
 
     @Test
-    fun testByteArraySerialization() {
+    open fun testByteArraySerialization() {
         runBlocking {
             client.bytes("hello".toByteArray())
             client.nullableBytes(null)
@@ -348,7 +353,7 @@ abstract class KRPCTransportTestBase {
     }
 
     @Test
-    fun testNullables() {
+    open fun testNullables() {
         runBlocking {
             assertEquals(1, client.nullableInt(1))
             assertNull(client.nullable(null))
@@ -356,7 +361,7 @@ abstract class KRPCTransportTestBase {
     }
 
     @Test
-    fun testNullableLists() {
+    open fun testNullableLists() {
         runBlocking {
             assertNull(client.nullableList(null))
 
@@ -463,7 +468,7 @@ abstract class KRPCTransportTestBase {
             val list2 = client.sharedFlowOfInts.take(3).toList()
 
             assertEquals(List(5) { it }, list1)
-            assertEquals(List(3) {it }, list2)
+            assertEquals(List(3) { it }, list2)
         }
     }
 
@@ -478,8 +483,8 @@ abstract class KRPCTransportTestBase {
                 it.take(3).toList()
             }.toList()
 
-            assertEquals(List(5) { List(5) { it} }, list1)
-            assertEquals(List(3) { List(3) { it} }, list2)
+            assertEquals(List(5) { List(5) { it } }, list1)
+            assertEquals(List(3) { List(3) { it } }, list2)
         }
     }
 

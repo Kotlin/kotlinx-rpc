@@ -5,7 +5,7 @@ import org.jetbrains.krpc.RPCMessage
 import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.broadcast
 
-class StringTransport(waiting: Boolean = true) : CoroutineScope {
+class LocalTransport(waiting: Boolean = true) : CoroutineScope {
     override val coroutineContext = Job()
     private val clientIncoming = Channel<RPCMessage>()
     private val serverIncoming = Channel<RPCMessage>()

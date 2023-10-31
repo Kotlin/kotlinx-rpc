@@ -64,7 +64,7 @@ class TransportTest {
 
     @Test
     fun testUsingWrongService(): Unit = runBlocking {
-        val transports = StringTransport(waiting = false)
+        val transports = LocalTransport(waiting = false)
 
         val client = RPC.clientOf<KRPCTestService>(transports.client, clientConfig)
         val result = async {
@@ -81,7 +81,7 @@ class TransportTest {
 
     @Test
     fun testLateConnect() = runBlocking {
-        val transports = StringTransport()
+        val transports = LocalTransport()
 
         val client = RPC.clientOf<Echo>(transports.client, clientConfig)
         val result: Deferred<String> = async {
@@ -99,7 +99,7 @@ class TransportTest {
 
     @Test
     fun testLateConnectWithManyCalls() = runBlocking {
-        val transports = StringTransport()
+        val transports = LocalTransport()
 
         val client = RPC.clientOf<Echo>(transports.client, clientConfig)
         val result = List(10) {
@@ -120,7 +120,7 @@ class TransportTest {
 
     @Test
     fun testLateConnectWithManyClients() = runBlocking {
-        val transports = StringTransport()
+        val transports = LocalTransport()
 
         val result = List(10) {
             async {
@@ -142,7 +142,7 @@ class TransportTest {
 
     @Test
     fun testLateConnectWithManyCallsAndClients() = runBlocking {
-        val transports = StringTransport()
+        val transports = LocalTransport()
 
         val result = List(10) {
             async {
@@ -167,7 +167,7 @@ class TransportTest {
 
     @Test
     fun testConnectMultipleServicesOnSingleTransport(): Unit = runBlocking {
-        val transports = StringTransport()
+        val transports = LocalTransport()
 
         val firstClient = RPC.clientOf<Echo>(transports.client, clientConfig)
         val firstResult = async {
@@ -197,7 +197,7 @@ class TransportTest {
     @Test
     @Ignore
     fun testCancelFromClientToServer() = runBlocking {
-        val transports = StringTransport()
+        val transports = LocalTransport()
 
         val client = RPC.clientOf<KRPCTestService>(transports.client, clientConfig)
 
@@ -212,7 +212,7 @@ class TransportTest {
     @Test
     @Ignore
     fun testCancelFromServerToClient() = runBlocking {
-        val transports = StringTransport()
+        val transports = LocalTransport()
 
         val client = RPC.clientOf<KRPCTestService>(transports.client, clientConfig)
 
