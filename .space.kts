@@ -5,7 +5,7 @@
 */
 
 job("kRPC: Build and run tests") {
-   gradlew("stl5/ktor-test-image", "build")
+   gradlew("stl5/ktor-test-image", "build", "--stacktrace")
 
    startOn {
       gitPush { enabled = true }

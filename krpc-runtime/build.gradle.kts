@@ -16,6 +16,9 @@ kmp { allTargets ->
     sourceSets {
         commonMain {
             dependencies {
+                api(project(":krpc-runtime:krpc-runtime-api"))
+                api(project(":concurrent-hash-map"))
+
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
                 implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")

@@ -7,7 +7,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.serializer
 import kotlinx.serialization.modules.SerializersModule
-import org.jetbrains.krpc.internal.InternalKRPCApi
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 

@@ -11,6 +11,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCMessage
+import org.jetbrains.krpc.internal.map.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
 
 @InternalKRPCApi
@@ -38,13 +39,13 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
     private var incomingStreamsInitialized: Boolean = false
     private val incomingStreams by lazy {
         incomingStreamsInitialized = true
-        ConcurrentMap<String, RPCStreamInfo>()
+        ConcurrentHashMap<String, CompletableDeferred<RPCStreamInfo>>()
     }
 
     private var incomingChannelsInitialized: Boolean = false
     private val incomingChannels by lazy {
         incomingChannelsInitialized = true
-        ConcurrentMap<String, Channel<Any?>>()
+        ConcurrentHashMap<String, CompletableDeferred<Channel<Any?>>>()
     }
 
     private var outgoingStreamsInitialized: Boolean = false
@@ -135,19 +136,22 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
     }
 
     suspend fun send(message: RPCMessage.StreamMessage, json: Json) {
-        val info = incomingStreams[message.streamId] ?: error("Unknown stream ${message.streamId}")
+        val info = incomingStreams.getDeferred(message.streamId).await()
         val result = json.decodeFromString(info.elementSerializer, message.data)
         incomingChannelOf(message.streamId).send(result)
     }
 
-    private fun incomingChannelOf(stremaId: String): Channel<Any?> {
-        return incomingChannels[stremaId] ?: error("Expected stream with id \"$stremaId\" to be present in incomingChannels")
+    private suspend fun incomingChannelOf(streamId: String): Channel<Any?> {
+        return incomingChannels.getDeferred(streamId).await()
     }
 
     fun close() {
         if (incomingChannelsInitialized) {
             for (channel in incomingChannels.values) {
-                channel.close()
+                if (channel.isCompleted) {
+                    @OptIn(ExperimentalCoroutinesApi::class)
+                    channel.getCompleted().close()
+                }
             }
 
             incomingChannels.clear()
@@ -199,4 +203,12 @@ private abstract class RPCIncomingHotFlow(
             subscriptionContexts.forEach { it.cancel(CancellationException(e.message, e)) }
         }
     }
+}
+
+private fun <K : Any, V> ConcurrentHashMap<K, CompletableDeferred<V>>.getDeferred(key: K): CompletableDeferred<V> {
+    return putIfAbsentAndGet(key, CompletableDeferred())
+}
+
+private operator fun <K : Any, V> ConcurrentHashMap<K, CompletableDeferred<V>>.set(key: K, value: V) {
+    getDeferred(key).complete(value)
 }

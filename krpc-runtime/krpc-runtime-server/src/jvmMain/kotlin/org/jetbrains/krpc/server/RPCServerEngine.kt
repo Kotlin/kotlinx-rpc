@@ -10,11 +10,14 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
-import org.jetbrains.krpc.*
+import org.jetbrains.krpc.RPC
+import org.jetbrains.krpc.RPCConfig
+import org.jetbrains.krpc.RPCMessage
+import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.internal.*
+import org.jetbrains.krpc.internal.map.ConcurrentHashMap
 import org.jetbrains.krpc.server.internal.rpcServiceMethodSerializationTypeOf
 import java.lang.reflect.InvocationTargetException
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
@@ -42,7 +45,7 @@ class RPCServerEngine<T : RPC>(
 
     override val coroutineContext: CoroutineContext = transport.coroutineContext + Job(transport.coroutineContext.job)
 
-    private val calls: MutableMap<String, Job> = ConcurrentHashMap()
+    private val calls = ConcurrentHashMap<String, Job>()
 
     private val flowContexts = ConcurrentHashMap<String, LazyRPCStreamContext>()
 
