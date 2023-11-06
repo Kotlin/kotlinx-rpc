@@ -1,9 +1,7 @@
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.*
-import org.jetbrains.krpc.RPC
+import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.clientOf
-import org.jetbrains.krpc.rpcClientConfig
-import org.jetbrains.krpc.rpcServerConfig
 import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.server.serverOf
 import org.jetbrains.krpc.test.KRPCTestService
@@ -50,13 +48,13 @@ class TransportTest {
         System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE")
     }
 
-    private val clientConfig = rpcClientConfig {
+    private val clientConfig = rpcClientConfigBuilder {
         serialization {
             json()
         }
     }
 
-    private val serverConfig = rpcServerConfig {
+    private val serverConfig = rpcServerConfigBuilder {
         serialization {
             json()
         }

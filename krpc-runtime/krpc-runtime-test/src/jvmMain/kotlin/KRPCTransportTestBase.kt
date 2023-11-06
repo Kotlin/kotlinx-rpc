@@ -5,14 +5,10 @@ package org.jetbrains.krpc.test
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import org.jetbrains.krpc.RPC
-import org.jetbrains.krpc.RPCTransport
+import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.awaitFieldInitialization
 import org.jetbrains.krpc.client.clientOf
-import org.jetbrains.krpc.rpcClientConfig
-import org.jetbrains.krpc.rpcServerConfig
 import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
-import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.server.RPCServerEngine
 import org.jetbrains.krpc.server.serverOf
 import org.junit.Assert.assertEquals
@@ -26,7 +22,7 @@ abstract class KRPCTransportTestBase {
     protected abstract val serializationConfig: RPCSerialFormatConfiguration.() -> Unit
 
     private val serverConfig by lazy {
-        rpcServerConfig {
+        rpcServerConfigBuilder {
             sharedFlowParameters {
                 replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
             }
@@ -38,7 +34,7 @@ abstract class KRPCTransportTestBase {
     }
 
     private val clientConfig  by lazy {
-        rpcClientConfig {
+        rpcClientConfigBuilder {
             sharedFlowParameters {
                 replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
             }

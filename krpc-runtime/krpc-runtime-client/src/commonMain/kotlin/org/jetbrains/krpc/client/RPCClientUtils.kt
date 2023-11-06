@@ -17,7 +17,7 @@ import kotlin.reflect.typeOf
  */
 inline fun <reified T : RPC> RPC.Companion.clientOf(
     transport: RPCTransport,
-    config: RPCConfig.Client = RPCConfig.Client.Default,
+    noinline config: RPCConfigBuilder.Client.() -> Unit = { },
 ): T {
     return clientOf(typeOf<T>(), transport, config)
 }
@@ -33,7 +33,7 @@ inline fun <reified T : RPC> RPC.Companion.clientOf(
 fun <T : RPC> RPC.Companion.clientOf(
     serviceType: KType,
     transport: RPCTransport,
-    config: RPCConfig.Client = RPCConfig.Client.Default,
+    config: RPCConfigBuilder.Client.() -> Unit = { },
 ): T {
     return clientOf(serviceType.kClass(), transport, config)
 }
@@ -49,7 +49,23 @@ fun <T : RPC> RPC.Companion.clientOf(
 fun <T : RPC> RPC.Companion.clientOf(
     serviceKClass: KClass<T>,
     transport: RPCTransport,
-    config: RPCConfig.Client = RPCConfig.Client.Default,
+    config: RPCConfigBuilder.Client.() -> Unit = { },
+): T {
+    return clientOf(serviceKClass, transport, rpcClientConfig(config))
+}
+
+/**
+ * Creates a client of the specified RPC type using the given RPCEngine.
+ *
+ * @param serviceKClass The [KClass] of the service to retrieve.
+ * @param transport The transport to be used for communication with the remote server
+ * @param config Client configuration
+ * @return A client of the specified RPC type.
+ */
+fun <T : RPC> RPC.Companion.clientOf(
+    serviceKClass: KClass<T>,
+    transport: RPCTransport,
+    config: RPCConfig.Client,
 ): T {
     val engine = RPCClientEngineImpl(transport, serviceKClass, config)
     return clientOf(serviceKClass, engine)

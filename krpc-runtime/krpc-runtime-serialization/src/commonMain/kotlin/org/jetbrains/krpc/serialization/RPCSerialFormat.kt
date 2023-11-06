@@ -1,5 +1,6 @@
 package org.jetbrains.krpc.serialization
 
+import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.modules.SerializersModule
 
@@ -9,21 +10,35 @@ interface RPCSerialFormat<Format : SerialFormat, FormatBuilder : Any> {
     fun FormatBuilder.applySerializersModule(serializersModule: SerializersModule)
 }
 
-class RPCSerialFormatInitializer<Format: SerialFormat, FormatBuilder : Any>(
+sealed class RPCSerialFormatBuilder<Format : SerialFormat, FormatBuilder : Any>(
     rpcSerialFormat: RPCSerialFormat<Format, FormatBuilder>,
     from: Format? = null,
     builder: FormatBuilder.() -> Unit,
 ) {
-    private val getter: (SerializersModule) -> SerialFormat = { serializersModule ->
+    private val builder: (SerializersModule?) -> SerialFormat = { serializersModule ->
         with(rpcSerialFormat) {
             withBuilder(from) {
                 builder()
-                applySerializersModule(serializersModule)
+                serializersModule?.let { applySerializersModule(it) }
             }
         }
     }
 
-    fun applySerializersModuleAndGet(serializersModule: SerializersModule): SerialFormat {
-        return getter(serializersModule)
+    fun build(): SerialFormat = builder(null)
+
+    fun applySerializersModuleAndBuild(serializersModule: SerializersModule): SerialFormat {
+        return builder(serializersModule)
     }
+
+    class Binary<Format : BinaryFormat, FormatBuilder : Any>(
+        rpcSerialFormat: RPCSerialFormat<Format, FormatBuilder>,
+        from: Format? = null,
+        builder: FormatBuilder.() -> Unit,
+    ): RPCSerialFormatBuilder<Format, FormatBuilder>(rpcSerialFormat, from, builder)
+
+    class String<Format : SerialFormat, FormatBuilder : Any>(
+        rpcSerialFormat: RPCSerialFormat<Format, FormatBuilder>,
+        from: Format? = null,
+        builder: FormatBuilder.() -> Unit,
+    ): RPCSerialFormatBuilder<Format, FormatBuilder>(rpcSerialFormat, from, builder)
 }

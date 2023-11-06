@@ -117,6 +117,6 @@ abstract class RPCEngine {
             }
         }
 
-        return config.serialFormatInitializer.applySerializersModuleAndGet(module)
+        return config.serialFormatInitializer.applySerializersModuleAndBuild(module)
     }
 }

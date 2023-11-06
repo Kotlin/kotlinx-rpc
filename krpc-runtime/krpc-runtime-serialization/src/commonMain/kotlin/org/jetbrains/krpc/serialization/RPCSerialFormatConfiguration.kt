@@ -1,10 +1,7 @@
 package org.jetbrains.krpc.serialization
 
-import kotlinx.serialization.BinaryFormat
-import kotlinx.serialization.StringFormat
-
 interface RPCSerialFormatConfiguration {
-    fun register(rpcSerialFormatInitializer: RPCSerialFormatInitializer<out StringFormat, *>)
+    fun register(rpcSerialFormatInitializer: RPCSerialFormatBuilder.String<*, *>)
 
-    fun register(rpcSerialFormatInitializer: RPCSerialFormatInitializer<out BinaryFormat, *>)
+    fun register(rpcSerialFormatInitializer: RPCSerialFormatBuilder.Binary<*, *>)
 }
