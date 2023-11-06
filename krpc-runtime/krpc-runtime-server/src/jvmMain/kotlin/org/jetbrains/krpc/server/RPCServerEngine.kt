@@ -32,7 +32,7 @@ class RPCServerEngine<T : RPC>(
     override val config: RPCConfig.Server = RPCConfig.Server.Default,
 ) : RPCEngine(), CoroutineScope {
     override val serviceTypeString = serviceKClass.toString()
-    private val logger = KotlinLogging.logger("RPCServerEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
+    override val logger = KotlinLogging.logger("RPCServerEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
 
     private val methods: Map<String, KCallable<*>>
     private val fields: Map<String, KCallable<*>>
@@ -41,7 +41,7 @@ class RPCServerEngine<T : RPC>(
 
     private val calls = ConcurrentHashMap<String, Job>()
 
-    private val flowContexts = ConcurrentHashMap<String, LazyRPCStreamContext>()
+    private val streamContexts = ConcurrentHashMap<String, LazyRPCStreamContext>()
 
     init {
         val (fieldsMap, methodsMap) = serviceKClass.members
@@ -81,18 +81,18 @@ class RPCServerEngine<T : RPC>(
 
                     is RPCMessage.CallSuccess -> error("Unexpected success message")
                     is RPCMessage.StreamCancel -> {
-                        val flowContext = flowContexts[callId] ?: error("Unknown call $callId")
-                        flowContext.awaitInitialized().cancelStream(message)
+                        val streamContext = streamContexts[callId] ?: error("Unknown call $callId")
+                        streamContext.awaitInitialized().cancelStream(message)
                     }
 
                     is RPCMessage.StreamFinished -> {
-                        val flowContext = flowContexts[callId] ?: error("Unknown call $callId")
-                        flowContext.awaitInitialized().closeStream(message)
+                        val streamContext = streamContexts[callId] ?: error("Unknown call $callId")
+                        streamContext.awaitInitialized().closeStream(message)
                     }
 
                     is RPCMessage.StreamMessage -> {
-                        val flowContext = flowContexts[callId] ?: error("Unknown call $callId")
-                        flowContext.awaitInitialized().send(message, prepareSerialFormat(flowContext))
+                        val streamContext = streamContexts[callId] ?: error("Unknown call $callId")
+                        streamContext.awaitInitialized().send(message, prepareSerialFormat(streamContext))
                     }
                 }
 
@@ -109,9 +109,9 @@ class RPCServerEngine<T : RPC>(
 
     @OptIn(InternalCoroutinesApi::class)
     private fun handleCall(callId: String, callData: RPCMessage.CallData) {
-        val flowContext = LazyRPCStreamContext { RPCStreamContext(callId, config) }
-        val serialFormat = prepareSerialFormat(flowContext)
-        flowContexts[callId] = flowContext
+        val streamContext = LazyRPCStreamContext { RPCStreamContext(callId, config) }
+        val serialFormat = prepareSerialFormat(streamContext)
+        streamContexts[callId] = streamContext
         val callableName = callData.callableName
 
         val (isMethod, actualName) = when {
@@ -173,16 +173,16 @@ class RPCServerEngine<T : RPC>(
             transport.send(result)
 
             launch {
-                handleOutgoingStreams(this, flowContext, serialFormat)
+                handleOutgoingStreams(this, streamContext, serialFormat)
             }
 
             launch {
-                handleIncomingHotFlows(this, flowContext)
+                handleIncomingHotFlows(this, streamContext)
             }
         }.apply {
             invokeOnCompletion(onCancelling = true) {
                 calls.remove(callId)
-                flowContext.valueOrNull?.close()
+                streamContext.valueOrNull?.close()
             }
         }
     }

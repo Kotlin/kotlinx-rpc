@@ -1,5 +1,6 @@
 package org.jetbrains.krpc.internal
 
+import io.github.oshai.kotlinlogging.KLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
@@ -21,9 +22,10 @@ abstract class RPCEngine {
     protected abstract val serviceTypeString: String
     protected abstract val transport: RPCTransport
     protected abstract val config: RPCConfig
+    protected abstract val logger: KLogger
 
-    protected suspend fun handleIncomingHotFlows(scope: CoroutineScope, flowContext: LazyRPCStreamContext) {
-        for (hotFlow in flowContext.awaitInitialized().incomingHotFlows) {
+    protected suspend fun handleIncomingHotFlows(scope: CoroutineScope, streamContext: LazyRPCStreamContext) {
+        for (hotFlow in streamContext.awaitInitialized().incomingHotFlows) {
             scope.launch {
                 /** Start consuming incoming requests, see [RPCIncomingHotFlow.emit] */
                 hotFlow.emit(null)
@@ -33,32 +35,36 @@ abstract class RPCEngine {
 
     protected suspend fun handleOutgoingStreams(
         scope: CoroutineScope,
-        flowContext: LazyRPCStreamContext,
+        streamContext: LazyRPCStreamContext,
         serialFormat: SerialFormat
     ) {
         val mutex = Mutex()
-        for (clientStream in flowContext.awaitInitialized().outgoingStreams) {
+        for (outgoingStream in streamContext.awaitInitialized().outgoingStreams) {
             scope.launch {
-                val callId = clientStream.callId
-                val streamId = clientStream.streamId
-                val elementSerializer = clientStream.elementSerializer
+                val callId = outgoingStream.callId
+                val streamId = outgoingStream.streamId
+                val elementSerializer = outgoingStream.elementSerializer
                 try {
-                    when (clientStream.kind) {
+                    when (outgoingStream.kind) {
                         StreamKind.Flow, StreamKind.SharedFlow, StreamKind.StateFlow -> {
-                            val stream = clientStream.stream as Flow<*>
+                            val stream = outgoingStream.stream as Flow<*>
 
                             collectAndSendOutgoingFlow(mutex, serialFormat, stream, callId, streamId, elementSerializer)
                         }
                     }
                 } catch (cause: Throwable) {
-                    val serializedReason = serializeException(cause)
-                    val message = RPCMessage.StreamCancel(callId, serviceTypeString, streamId, serializedReason)
-                    transport.send(message)
+                    mutex.withLock {
+                        val serializedReason = serializeException(cause)
+                        val message = RPCMessage.StreamCancel(callId, serviceTypeString, streamId, serializedReason)
+                        transport.send(message)
+                    }
                     throw cause
                 }
 
-                val message = RPCMessage.StreamFinished(callId, serviceTypeString, streamId)
-                transport.send(message)
+                mutex.withLock {
+                    val message = RPCMessage.StreamFinished(callId, serviceTypeString, streamId)
+                    transport.send(message)
+                }
             }
         }
     }

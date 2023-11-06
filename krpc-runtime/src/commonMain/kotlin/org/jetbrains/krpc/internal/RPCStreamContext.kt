@@ -60,13 +60,13 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
         Channel(Channel.UNLIMITED)
     }
 
-    fun <StreamT : Any> registerStream(stream: StreamT, streamKind: StreamKind, elementSerializer: KSerializer<Any?>): String {
+    fun <StreamT : Any> registerOutgoingStream(stream: StreamT, streamKind: StreamKind, elementSerializer: KSerializer<Any?>): String {
         val id = "$STREAM_ID_PREFIX${streamIdCounter.getAndIncrement()}"
         outgoingStreams.trySend(RPCStreamInfo(callId, id, stream, streamKind, elementSerializer))
         return id
     }
 
-    fun <StreamT : Any> prepareStream(
+    fun <StreamT : Any> prepareIncomingStream(
         streamId: String,
         streamKind: StreamKind,
         stateFlowInitialValue: Any?,

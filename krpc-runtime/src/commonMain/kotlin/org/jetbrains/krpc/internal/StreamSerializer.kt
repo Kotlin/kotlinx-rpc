@@ -34,15 +34,15 @@ sealed class StreamSerializer<StreamT : Any>(private val streamKind: StreamKind)
     }
 
     override fun deserialize(decoder: Decoder): StreamT {
-        val flowId = decoder.decodeString()
+        val streamId = decoder.decodeString()
 
         val stateFlowValue = decodeStateFlowInitialValue(decoder)
 
-        return context.prepareStream(flowId, streamKind, stateFlowValue, elementType) as StreamT
+        return context.prepareIncomingStream(streamId, streamKind, stateFlowValue, elementType) as StreamT
     }
 
     override fun serialize(encoder: Encoder, value: StreamT) {
-        val id = context.registerStream(value, streamKind, elementType)
+        val id = context.registerOutgoingStream(value, streamKind, elementType)
 
         encoder.encodeString(id)
 

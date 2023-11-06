@@ -28,7 +28,7 @@ internal class RPCClientEngineImpl(
     private val callCounter = atomic(0L)
     private val engineId: Long = CLIENT_ENGINE_ID.incrementAndGet()
     override val serviceTypeString = serviceKClass.toString()
-    private val logger = KotlinLogging.logger("RPCClientEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
+    override val logger = KotlinLogging.logger("RPCClientEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
 
     override val coroutineContext: CoroutineContext = Job() + Dispatchers.Default
 
@@ -95,19 +95,19 @@ internal class RPCClientEngineImpl(
 
         logger.trace { "start a call[$callId] ${callInfo.callableName}" }
 
-        val flowContext = LazyRPCStreamContext { RPCStreamContext(callId, config) }
-        val serialFormat = prepareSerialFormat(flowContext)
+        val streamContext = LazyRPCStreamContext { RPCStreamContext(callId, config) }
+        val serialFormat = prepareSerialFormat(streamContext)
         val firstMessage = serializeRequest(callId, callInfo, serialFormat)
 
         @Suppress("UNCHECKED_CAST")
-        executeCall(callId, flowContext, callInfo, firstMessage, serialFormat, deferred as CompletableDeferred<Any?>)
+        executeCall(callId, streamContext, callInfo, firstMessage, serialFormat, deferred as CompletableDeferred<Any?>)
 
-        return flowContext to serialFormat
+        return streamContext to serialFormat
     }
 
     private suspend fun executeCall(
         callId: String,
-        flowContext: LazyRPCStreamContext,
+        streamContext: LazyRPCStreamContext,
         callInfo: RPCCallInfo,
         firstMessage: RPCMessage,
         serialFormat: SerialFormat,
@@ -119,54 +119,64 @@ internal class RPCClientEngineImpl(
                     return@subscribe false
                 }
 
-                when (message) {
-                    is RPCMessage.CallData -> error("Unexpected message")
-                    is RPCMessage.CallException -> {
-                        val cause = runCatching {
-                            message.cause.deserialize()
-                        }
-
-                        val result = if (cause.isFailure) {
-                            cause.exceptionOrNull()!!
-                        } else {
-                            cause.getOrNull()!!
-                        }
-
-                        deferred.completeExceptionally(result)
-                    }
-
-                    is RPCMessage.CallSuccess -> {
-                        val value = runCatching {
-                            val serializerResult = serialFormat.serializersModule.rpcSerializerForType(callInfo.returnType)
-
-                            decodeMessageData(serialFormat, serializerResult, message)
-                        }
-
-                        deferred.completeWith(value)
-                    }
-
-                    is RPCMessage.StreamCancel -> {
-                        flowContext.awaitInitialized().cancelStream(message)
-                    }
-
-                    is RPCMessage.StreamFinished -> {
-                        flowContext.awaitInitialized().closeStream(message)
-                    }
-
-                    is RPCMessage.StreamMessage -> {
-                        flowContext.awaitInitialized().send(message, serialFormat)
-                    }
-                }
+                handleMessage(message, streamContext, callInfo, serialFormat, deferred)
 
                 return@subscribe true
             }
         }
 
         coroutineContext.job.invokeOnCompletion {
-            flowContext.valueOrNull?.close()
+            streamContext.valueOrNull?.close()
         }
 
         transport.send(firstMessage)
+    }
+
+    private suspend fun handleMessage(
+        message: RPCMessage,
+        streamContext: LazyRPCStreamContext,
+        callInfo: RPCCallInfo,
+        serialFormat: SerialFormat,
+        deferred: CompletableDeferred<Any?>,
+    ) {
+        when (message) {
+            is RPCMessage.CallData -> error("Unexpected message")
+            is RPCMessage.CallException -> {
+                val cause = runCatching {
+                    message.cause.deserialize()
+                }
+
+                val result = if (cause.isFailure) {
+                    cause.exceptionOrNull()!!
+                } else {
+                    cause.getOrNull()!!
+                }
+
+                deferred.completeExceptionally(result)
+            }
+
+            is RPCMessage.CallSuccess -> {
+                val value = runCatching {
+                    val serializerResult = serialFormat.serializersModule.rpcSerializerForType(callInfo.returnType)
+
+                    decodeMessageData(serialFormat, serializerResult, message)
+                }
+
+                deferred.completeWith(value)
+            }
+
+            is RPCMessage.StreamCancel -> {
+                streamContext.awaitInitialized().cancelStream(message)
+            }
+
+            is RPCMessage.StreamFinished -> {
+                streamContext.awaitInitialized().closeStream(message)
+            }
+
+            is RPCMessage.StreamMessage -> {
+                streamContext.awaitInitialized().send(message, serialFormat)
+            }
+        }
     }
 
     private fun serializeRequest(callId: String, callInfo: RPCCallInfo, serialFormat: SerialFormat): RPCMessage {
