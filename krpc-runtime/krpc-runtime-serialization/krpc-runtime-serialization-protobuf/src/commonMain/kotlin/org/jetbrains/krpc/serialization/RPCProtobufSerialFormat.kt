@@ -22,5 +22,5 @@ fun RPCSerialFormatConfiguration.protobuf(
     from: ProtoBuf = ProtoBuf.Default,
     builderConsumer: ProtoBufBuilder.() -> Unit = {},
 ) {
-    registerBinary(RPCSerialFormatInitializer(RPCProtobufSerialFormat, from, builderConsumer))
+    register(RPCSerialFormatInitializer(RPCProtobufSerialFormat, from, builderConsumer))
 }

@@ -19,5 +19,5 @@ internal object RPCCborSerialFormat : RPCSerialFormat<Cbor, CborBuilder> {
 }
 
 fun RPCSerialFormatConfiguration.cbor(from: Cbor = Cbor.Default, builderConsumer: CborBuilder.() -> Unit = {}) {
-    registerBinary(RPCSerialFormatInitializer(RPCCborSerialFormat, from, builderConsumer))
+    register(RPCSerialFormatInitializer(RPCCborSerialFormat, from, builderConsumer))
 }

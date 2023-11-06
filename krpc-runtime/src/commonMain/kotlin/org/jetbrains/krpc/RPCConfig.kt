@@ -28,11 +28,11 @@ abstract class RPCConfigBuilder internal constructor() {
     private var serialFormatInitializer: RPCSerialFormatInitializer<*, *>? = null
 
     private val configuration = object : RPCSerialFormatConfiguration {
-        override fun <Format : StringFormat> registerString(rpcSerialFormatInitializer: RPCSerialFormatInitializer<Format, *>) {
+        override fun register(rpcSerialFormatInitializer: RPCSerialFormatInitializer<out StringFormat, *>) {
             serialFormatInitializer = rpcSerialFormatInitializer
         }
 
-        override fun <Format : BinaryFormat> registerBinary(rpcSerialFormatInitializer: RPCSerialFormatInitializer<Format, *>) {
+        override fun register(rpcSerialFormatInitializer: RPCSerialFormatInitializer<out BinaryFormat, *>) {
             serialFormatInitializer = rpcSerialFormatInitializer
         }
     }
