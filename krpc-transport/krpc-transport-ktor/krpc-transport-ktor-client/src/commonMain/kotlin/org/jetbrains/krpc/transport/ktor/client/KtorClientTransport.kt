@@ -8,20 +8,16 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.job
 import org.jetbrains.krpc.RPC
-import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCConfigBuilder
 import org.jetbrains.krpc.client.clientOf
 import org.jetbrains.krpc.rpcClientConfig
 import org.jetbrains.krpc.transport.ktor.KtorTransport
 import kotlin.reflect.KClass
 
-private val RPCConfigAttributeKey = AttributeKey<RPCConfig.Client>("RPCConfigAttributeKey")
+private val RPCRequestConfigAttributeKey = AttributeKey<RPCConfigBuilder.Client.() -> Unit>("RPCRequestConfigAttributeKey")
 
 fun HttpRequestBuilder.rpcConfig(configBuilder: RPCConfigBuilder.Client.() -> Unit = {}) {
-    // todo apply settings from ContentNegotiation
-    val config = rpcClientConfig(configBuilder)
-
-    attributes.put(RPCConfigAttributeKey, config)
+    attributes.put(RPCRequestConfigAttributeKey, configBuilder)
 }
 
 suspend inline fun <reified T : RPC> HttpClient.rpc(
@@ -44,7 +40,12 @@ suspend fun <T : RPC> HttpClient.rpc(
     block: HttpRequestBuilder.() -> Unit,
 ): T {
     val session = webSocketSession(block)
-    val rpcConfig = session.call.attributes[RPCConfigAttributeKey]
+
+    val pluginConfigBuilder = attributes.getOrNull(RPCClientPluginAttributesKey)
+    val requestConfigBuilder = attributes.getOrNull(RPCRequestConfigAttributeKey) ?: {}
+    val rpcConfig = pluginConfigBuilder?.apply(requestConfigBuilder)?.build()
+        ?: rpcClientConfig(requestConfigBuilder)
+
     val transport = KtorTransport(rpcConfig.serialFormatInitializer.build(), session)
     val result = RPC.clientOf(serviceKClass, transport, rpcConfig)
 

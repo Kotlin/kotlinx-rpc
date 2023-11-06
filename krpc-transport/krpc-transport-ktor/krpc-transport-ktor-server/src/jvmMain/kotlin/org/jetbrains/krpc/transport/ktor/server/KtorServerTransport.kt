@@ -26,7 +26,10 @@ fun <T: RPC> Route.rpc(
     rpcConfigBuilder: RPCConfigBuilder.Server.() -> Unit = {},
 ) {
     webSocket {
-        val rpcConfig = rpcServerConfig(rpcConfigBuilder)
+        val pluginConfigBuilder = application.attributes.getOrNull(RPCServerPluginAttributesKey)
+        val rpcConfig = pluginConfigBuilder?.apply(rpcConfigBuilder)?.build()
+            ?: rpcServerConfig(rpcConfigBuilder)
+
         val transport = KtorTransport(rpcConfig.serialFormatInitializer.build(), this)
         val server = RPC.serverOf(service, serviceKClass, transport, rpcConfig)
         server.coroutineContext.job.join()
