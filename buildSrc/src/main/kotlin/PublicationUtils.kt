@@ -7,6 +7,8 @@ import org.gradle.kotlin.dsl.*
 
 fun Project.configureMppPublication() {
     apply(plugin = "maven-publish")
+    setEAPVersion()
+
     val spaceUser = System.getenv("SPACE_USERNAME")
     val spacePassword = System.getenv("SPACE_PASSWORD")
 
@@ -22,6 +24,13 @@ fun Project.configureMppPublication() {
             }
         }
     }
+}
+
+fun Project.setEAPVersion() {
+    if (!System.getenv().containsKey("EAP_VERSION")) return
+
+    val eapVersion = System.getenv("EAP_VERSION")
+    project.version = "${project.version}-eap-$eapVersion"
 }
 
 fun Project.configureJvmPublication() {
