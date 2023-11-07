@@ -67,13 +67,13 @@ internal class RPCClientEngineImpl(
         launch {
             call(
                 callInfo = callInfo,
-                deferred = rpcFlow.deferred,
+                callResult = rpcFlow.deferred,
             )
         }
     }
 
-    override suspend fun call(callInfo: RPCCallInfo, deferred: CompletableDeferred<*>): Any? {
-        val (callContext, serialFormat) = prepareAndExecuteCall(callInfo, deferred)
+    override suspend fun call(callInfo: RPCCallInfo, callResult: CompletableDeferred<*>): Any? {
+        val (callContext, serialFormat) = prepareAndExecuteCall(callInfo, callResult)
 
         launch {
             handleOutgoingStreams(this, callContext, serialFormat)
@@ -83,12 +83,12 @@ internal class RPCClientEngineImpl(
             handleIncomingHotFlows(this, callContext)
         }
 
-        return deferred.await()
+        return callResult.await()
     }
 
     private suspend fun prepareAndExecuteCall(
         callInfo: RPCCallInfo,
-        deferred: CompletableDeferred<*>,
+        callResult: CompletableDeferred<*>,
     ): Pair<LazyRPCStreamContext, SerialFormat> {
         val id = callCounter.incrementAndGet()
         val callId = "$engineId:${callInfo.dataType}:$id"
@@ -100,7 +100,7 @@ internal class RPCClientEngineImpl(
         val firstMessage = serializeRequest(callId, callInfo, serialFormat)
 
         @Suppress("UNCHECKED_CAST")
-        executeCall(callId, streamContext, callInfo, firstMessage, serialFormat, deferred as CompletableDeferred<Any?>)
+        executeCall(callId, streamContext, callInfo, firstMessage, serialFormat, callResult as CompletableDeferred<Any?>)
 
         return streamContext to serialFormat
     }
@@ -111,7 +111,7 @@ internal class RPCClientEngineImpl(
         callInfo: RPCCallInfo,
         firstMessage: RPCMessage,
         serialFormat: SerialFormat,
-        deferred: CompletableDeferred<Any?>,
+        callResult: CompletableDeferred<Any?>,
     ) {
         launch {
             transport.subscribe { message ->
@@ -119,7 +119,7 @@ internal class RPCClientEngineImpl(
                     return@subscribe false
                 }
 
-                handleMessage(message, streamContext, callInfo, serialFormat, deferred)
+                handleMessage(message, streamContext, callInfo, serialFormat, callResult)
 
                 return@subscribe true
             }
@@ -137,7 +137,7 @@ internal class RPCClientEngineImpl(
         streamContext: LazyRPCStreamContext,
         callInfo: RPCCallInfo,
         serialFormat: SerialFormat,
-        deferred: CompletableDeferred<Any?>,
+        callResult: CompletableDeferred<Any?>,
     ) {
         when (message) {
             is RPCMessage.CallData -> error("Unexpected message")
@@ -152,7 +152,7 @@ internal class RPCClientEngineImpl(
                     cause.getOrNull()!!
                 }
 
-                deferred.completeExceptionally(result)
+                callResult.completeExceptionally(result)
             }
 
             is RPCMessage.CallSuccess -> {
@@ -162,7 +162,7 @@ internal class RPCClientEngineImpl(
                     decodeMessageData(serialFormat, serializerResult, message)
                 }
 
-                deferred.completeWith(value)
+                callResult.completeWith(value)
             }
 
             is RPCMessage.StreamCancel -> {

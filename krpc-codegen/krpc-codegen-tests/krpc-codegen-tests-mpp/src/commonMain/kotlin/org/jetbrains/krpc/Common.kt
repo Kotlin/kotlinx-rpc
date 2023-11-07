@@ -25,7 +25,7 @@ interface EmptyService {
 val stubEngine = object : RPCClientEngine {
     override val coroutineContext: CoroutineContext = Job()
 
-    override suspend fun call(callInfo: RPCCallInfo, deferred: CompletableDeferred<*>): Any? {
+    override suspend fun call(callInfo: RPCCallInfo, callResult: CompletableDeferred<*>): Any? {
         logger.info { "Called ${callInfo.callableName}" }
         return null
     }

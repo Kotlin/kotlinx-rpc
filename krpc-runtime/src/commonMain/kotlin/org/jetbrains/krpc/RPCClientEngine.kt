@@ -15,7 +15,7 @@ import kotlin.reflect.KType
  * Client engine is also in change of serialization, exception handling and stream management.
  */
 interface RPCClientEngine : CoroutineScope {
-    suspend fun call(callInfo: RPCCallInfo, deferred: CompletableDeferred<*> = CompletableDeferred<Any?>()): Any?
+    suspend fun call(callInfo: RPCCallInfo, callResult: CompletableDeferred<*> = CompletableDeferred<Any?>()): Any?
 
     fun <T> registerPlainFlowField(fieldName: String, type: KType): Flow<T>
 

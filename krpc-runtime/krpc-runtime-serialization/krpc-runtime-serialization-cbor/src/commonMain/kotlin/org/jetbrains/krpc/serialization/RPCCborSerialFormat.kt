@@ -18,6 +18,18 @@ internal object RPCCborSerialFormat : RPCSerialFormat<Cbor, CborBuilder> {
     }
 }
 
+/**
+ * Extension function that allows to configure CBOR kRPC serial format
+ * Usage:
+ * ```kotlin
+ * // this: RPCConfig
+ * serialization {
+ *     cbor {
+ *         // custom params
+ *     }
+ * }
+ * ```
+ */
 fun RPCSerialFormatConfiguration.cbor(from: Cbor = Cbor.Default, builderConsumer: CborBuilder.() -> Unit = {}) {
     register(RPCSerialFormatBuilder.Binary(RPCCborSerialFormat, from, builderConsumer))
 }

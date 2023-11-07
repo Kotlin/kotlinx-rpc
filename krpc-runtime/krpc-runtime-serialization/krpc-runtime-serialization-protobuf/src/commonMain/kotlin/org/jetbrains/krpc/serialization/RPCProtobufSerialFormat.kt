@@ -18,6 +18,18 @@ internal object RPCProtobufSerialFormat : RPCSerialFormat<ProtoBuf, ProtoBufBuil
     }
 }
 
+/**
+ * Extension function that allows to configure ProtoBuf kRPC serial format
+ * Usage:
+ * ```kotlin
+ * // this: RPCConfig
+ * serialization {
+ *     protobuf {
+ *         // custom params
+ *     }
+ * }
+ * ```
+ */
 fun RPCSerialFormatConfiguration.protobuf(
     from: ProtoBuf = ProtoBuf.Default,
     builderConsumer: ProtoBufBuilder.() -> Unit = {},

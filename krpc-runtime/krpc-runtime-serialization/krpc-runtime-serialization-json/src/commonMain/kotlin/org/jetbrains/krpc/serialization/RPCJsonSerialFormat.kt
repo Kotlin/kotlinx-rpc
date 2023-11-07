@@ -15,6 +15,18 @@ internal object RPCJsonSerialFormat : RPCSerialFormat<Json, JsonBuilder> {
     }
 }
 
+/**
+ * Extension function that allows to configure JSON kRPC serial format
+ * Usage:
+ * ```kotlin
+ * // this: RPCConfig
+ * serialization {
+ *     json {
+ *         // custom params
+ *     }
+ * }
+ * ```
+ */
 fun RPCSerialFormatConfiguration.json(from: Json = Json.Default, builderConsumer: JsonBuilder.() -> Unit = {}) {
     register(RPCSerialFormatBuilder.String(RPCJsonSerialFormat, from, builderConsumer))
 }
