@@ -1,12 +1,8 @@
-import org.jetbrains.krpc.buildutils.*
-
 plugins {
-    kotlin("multiplatform")
-    kotlin("plugin.serialization")
-    id("kotlinx-atomicfu")
+    alias(libs.plugins.conventions.kmp)
+    alias(libs.plugins.serialization)
+    alias(libs.plugins.atomicfu)
 }
-
-configureMppPublication()
 
 kmp {
     sourceSets {
@@ -15,10 +11,10 @@ kmp {
                 api(project(":krpc-runtime"))
                 implementation(project(":krpc-runtime:krpc-runtime-serialization"))
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0")
-                implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
-                implementation("io.github.oshai:kotlin-logging:5.1.0")
+                implementation(libs.coroutines.core)
+                implementation(libs.serialization.core)
+                implementation(libs.kotlin.reflect)
+                implementation(libs.kotlin.logging)
             }
         }
     }

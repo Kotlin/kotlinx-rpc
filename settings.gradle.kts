@@ -1,8 +1,14 @@
 pluginManagement {
+    includeBuild("gradle-settings-conventions")
+    includeBuild("gradle-conventions")
+
+    includeBuild("krpc-gradle-plugin")
+
     repositories {
         mavenCentral()
         gradlePluginPortal()
     }
+
     resolutionStrategy {
         eachPlugin {
             if (requested.id.id == "kotlinx-atomicfu") {
@@ -13,18 +19,17 @@ pluginManagement {
 }
 
 plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"
+    id("settings-conventions")
 }
 
 rootProject.name = "kRPC"
 
-include(":concurrent-hash-map")
+include(":krpc-bom")
 
-include(":krpc-codegen:krpc-compiler-plugin")
-include(":krpc-codegen:krpc-ksp-plugin")
+include(":krpc-utils")
 
-include(":krpc-codegen:krpc-codegen-tests:krpc-codegen-tests-jvm")
-include(":krpc-codegen:krpc-codegen-tests:krpc-codegen-tests-mpp")
+include(":krpc-compiler-plugin")
+include(":krpc-ksp-plugin")
 
 include(":krpc-runtime")
 include(":krpc-runtime:krpc-runtime-api")
@@ -40,5 +45,8 @@ include(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-pro
 include(":krpc-transport:krpc-transport-ktor")
 include(":krpc-transport:krpc-transport-ktor:krpc-transport-ktor-server")
 include(":krpc-transport:krpc-transport-ktor:krpc-transport-ktor-client")
+
+include(":tests:codegen-tests:codegen-tests-mpp")
+include(":tests:codegen-tests:codegen-tests-jvm")
 
 includeBuild("samples/krpc-ktor")

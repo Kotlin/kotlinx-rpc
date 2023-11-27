@@ -1,14 +1,12 @@
-import org.jetbrains.krpc.buildutils.kmp
-
 plugins {
-    kotlin("multiplatform")
+    alias(libs.plugins.conventions.kmp)
 }
 
 kmp {
     sourceSets {
         commonMain {
             dependencies {
-                api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0")
+                api(libs.serialization.core)
             }
         }
     }

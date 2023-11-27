@@ -1,7 +1,5 @@
-import org.jetbrains.krpc.buildutils.kmp
-
 plugins {
-    kotlin("multiplatform")
+    alias(libs.plugins.conventions.kmp)
 }
 
 kmp {
@@ -9,7 +7,7 @@ kmp {
         commonMain {
             dependencies {
                 api(project(":krpc-runtime:krpc-runtime-serialization"))
-                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+                api(libs.serialization.json)
             }
         }
     }

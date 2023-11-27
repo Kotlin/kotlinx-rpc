@@ -1,11 +1,6 @@
-import org.jetbrains.krpc.buildutils.configureMppPublication
-import org.jetbrains.krpc.buildutils.kmp
-
 plugins {
-    kotlin("multiplatform")
+    alias(libs.plugins.conventions.kmp)
 }
-
-configureMppPublication()
 
 kmp {
     sourceSets {
@@ -15,11 +10,11 @@ kmp {
                 api(project(":krpc-transport:krpc-transport-ktor"))
                 api(project(":krpc-runtime:krpc-runtime-serialization"))
 
-                api("io.ktor:ktor-client-core:2.3.4")
-                api("io.ktor:ktor-client-websockets:2.3.4")
+                api(libs.ktor.client.core)
+                api(libs.ktor.client.websockets)
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-                implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+                implementation(libs.coroutines.core)
+                implementation(libs.kotlin.reflect)
             }
         }
     }

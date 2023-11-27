@@ -1,0 +1,75 @@
+[versions]
+# kotlin
+kotlin-lang = "1.9.10"
+krpc-core = "beta-4.2" # version for plugins and suffix for krpc-full
+
+# stubs, will be replaced with the actual versions by a settings-conventions plugin
+krpc-full = "<stub>" # krpc prefixed by kotlin-lang
+ksp = "<stub>" # from ksp.versions.json
+
+# other
+atomicfu = "0.22.0"
+gradle-kotlin-dsl = "4.1.0"
+coroutines = "1.7.3"
+serialization = "1.6.0"
+kotlin-logging = "5.1.0"
+ktor = "2.3.5"
+slf4j = "2.0.9"
+gradle-plugin-publish = "1.2.0"
+
+[libraries]
+# kotlin
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin-lang" }
+kotlin-stdlib-jdk7 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin-lang" }
+kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin-lang" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin-lang" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin-lang" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin-lang" }
+kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin-lang" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-lang" }
+
+# serialization
+serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "serialization" }
+serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+serialization-cbor = { module = "org.jetbrains.kotlinx:kotlinx-serialization-cbor", version.ref = "serialization" }
+serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "serialization" }
+
+# ksp, version will be inherited from kotlin-lang and ksp.versions.json lookup table
+ksp-runtime-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+ksp-gradle-plugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+
+# ktor
+ktor-websockets = { module = "io.ktor:ktor-websockets", version.ref = "ktor" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
+ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
+ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
+
+# slf4j
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+
+# other
+kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-lang" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-lang" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-lang" }
+
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+atomicfu = { id = "kotlinx-atomicfu", version.ref = "atomicfu" }
+gradle-kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version.ref = "gradle-kotlin-dsl" }
+gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
+
+# gradle-conventions project
+conventions-common = { id = "conventions-common", version.ref = "krpc-core" }
+conventions-jvm = { id = "conventions-jvm", version.ref = "krpc-core" }
+conventions-kmp = { id = "conventions-kmp", version.ref = "krpc-core" }
+
+# gradle-plugin project
+krpc = { id = "org.jetbrains.krpc.plugin", version.ref = "krpc-core" }

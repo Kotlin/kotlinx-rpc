@@ -1,7 +1,5 @@
-import org.jetbrains.krpc.buildutils.kmp
-
 plugins {
-    kotlin("multiplatform")
+    alias(libs.plugins.conventions.kmp)
 }
 
 kmp()

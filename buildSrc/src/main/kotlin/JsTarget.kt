@@ -1,10 +1,8 @@
-package org.jetbrains.krpc.buildutils
-
 import org.gradle.api.*
 import org.gradle.kotlin.dsl.*
 import java.io.*
 
-fun Project.configureJs() {
+internal fun Project.configureJs() {
     configureJsTasks()
 
     kotlin {

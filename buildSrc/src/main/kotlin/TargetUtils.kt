@@ -1,18 +1,18 @@
-package org.jetbrains.krpc.buildutils
-
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
-fun KotlinMultiplatformExtension.allTargets(
+internal fun Project.kotlin(block: KotlinMultiplatformExtension.() -> Unit) {
+    configure(block)
+}
+
+private fun KotlinMultiplatformExtension.configureTargets(
     jvm: Boolean = true,
     js: Boolean = true,
     native: Boolean = true,
-): List<KotlinTarget> {
-    val result = mutableListOf<KotlinTarget>()
-
+) {
     if (native) {
         val nativeTargets = listOf<KotlinTarget>(
 //            mingwX64(),
@@ -32,6 +32,7 @@ fun KotlinMultiplatformExtension.allTargets(
             macosX64(),
             macosArm64()
         )
+
         val commonMain = sourceSets.findByName("commonMain")!!
         val commonTest = sourceSets.findByName("commonTest")!!
         val nativeMain = sourceSets.create("nativeMain")
@@ -44,51 +45,35 @@ fun KotlinMultiplatformExtension.allTargets(
             sourceSets.findByName("${target.name}Main")?.dependsOn(nativeMain)
             sourceSets.findByName("${target.name}Test")?.dependsOn(nativeTest)
         }
-
-        result += nativeTargets
     }
 
     if (jvm) {
-        result += jvm {
+        jvm {
             jvmToolchain(8)
         }
     }
 
     if (js) {
-        result += js(IR) {
+        js(IR) {
             nodejs()
             browser()
         }
     }
-
-    return result
-}
-
-fun KotlinProjectExtension.optInForInternalKRPCApi() {
-    sourceSets.all {
-        languageSettings.optIn("org.jetbrains.krpc.internal.InternalKRPCApi")
-    }
-}
-
-fun Project.kotlin(block: KotlinMultiplatformExtension.() -> Unit) {
-    configure(block)
 }
 
 fun Project.kmp(
     jvm: Boolean = true,
     js: Boolean = true,
     native: Boolean = true,
-    extraConfig: KotlinMultiplatformExtension.(List<KotlinTarget>) -> Unit = {},
+    action: Action<KotlinMultiplatformExtension> = Action { }
 ) {
     if (js) {
         configureJs()
     }
 
     kotlin {
-        optInForInternalKRPCApi()
+        configureTargets(jvm, js, native)
 
-        val targets = allTargets(jvm, js, native)
-
-        extraConfig(targets)
+        action.execute(this)
     }
 }

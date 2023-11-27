@@ -1,13 +1,9 @@
-import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
-import org.jetbrains.krpc.buildutils.*
-
 plugins {
-    kotlin("multiplatform")
-    kotlin("plugin.serialization")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.conventions.kmp)
+    alias(libs.plugins.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.krpc)
 }
-
-configureMppPublication()
 
 kmp {
     sourceSets {
@@ -19,16 +15,11 @@ kmp {
 
                 implementation(project(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-json"))
 
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-                implementation(kotlin("test"))
-                implementation(kotlin("test-junit"))
+                implementation(libs.coroutines.core)
+                implementation(libs.serialization.core)
+                implementation(libs.kotlin.test)
+                implementation(libs.kotlin.test.junit)
             }
         }
     }
-}
-
-dependencies {
-    add("kspJvm", project(":krpc-codegen:krpc-ksp-plugin"))
-    PLUGIN_CLASSPATH_CONFIGURATION_NAME(project(":krpc-codegen:krpc-compiler-plugin"))
 }

@@ -16,6 +16,7 @@ import kotlin.reflect.KClass
 
 private val RPCRequestConfigAttributeKey = AttributeKey<RPCConfigBuilder.Client.() -> Unit>("RPCRequestConfigAttributeKey")
 
+// todo this method does not work (?)
 fun HttpRequestBuilder.rpcConfig(configBuilder: RPCConfigBuilder.Client.() -> Unit = {}) {
     attributes.put(RPCRequestConfigAttributeKey, configBuilder)
 }

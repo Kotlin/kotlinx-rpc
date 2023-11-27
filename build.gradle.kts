@@ -1,18 +1,18 @@
 plugins {
-    kotlin("plugin.serialization") version "1.9.10" apply false
-    id("com.google.devtools.ksp") version "1.9.10-1.0.13" apply false
-    id("kotlinx-atomicfu") version "0.22.0" apply false
+    alias(libs.plugins.serialization) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.krpc) apply false
+    alias(libs.plugins.atomicfu) apply false
 }
 
 allprojects {
     group = "org.jetbrains.krpc"
-    version = "1.9.10-beta-4.2"
-
-    repositories {
-        mavenCentral()
-    }
+    version = rootProject.libs.versions.krpc.full.get()
 }
 
+println("Running kRPC project, version: $version")
+
+// necessary for CI js tests
 rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
     rootProject.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().ignoreScripts = false
 }
