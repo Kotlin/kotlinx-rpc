@@ -1,16 +1,17 @@
 package org.jetbrains.krpc
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.jetbrains.krpc.internal.logging.CommonLogger
+import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.serializeException
 
 fun RPCTransport.broadcast(waitForService: Boolean = true): RPCTransport = multiclient(waitForService)
 
 @OptIn(InternalCoroutinesApi::class, DelicateCoroutinesApi::class)
 fun RPCTransport.multiclient(waitForService: Boolean = true): RPCTransport {
-    val logger = KotlinLogging.logger("RPCTransport.multiclient")
+    val logger = CommonLogger.initialized().logger("RPCTransport.multiclient")
     val mutex = Mutex()
     val receiver = this
 

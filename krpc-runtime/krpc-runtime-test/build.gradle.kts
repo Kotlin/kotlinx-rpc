@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.krpc)
 }
 
-kmp {
+kotlin {
     sourceSets {
         val jvmMain by getting {
             dependencies {

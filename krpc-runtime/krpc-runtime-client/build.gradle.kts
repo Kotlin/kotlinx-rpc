@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.atomicfu)
 }
 
-kmp {
+kotlin {
     sourceSets {
         commonMain {
             dependencies {
@@ -14,7 +14,8 @@ kmp {
                 implementation(libs.coroutines.core)
                 implementation(libs.serialization.core)
                 implementation(libs.kotlin.reflect)
-                implementation(libs.kotlin.logging)
+
+                implementation(project(":krpc-runtime::krpc-runtime-logging"))
             }
         }
     }

@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.conventions.kmp)
 }
 
-kmp(js = false, native = false) {
+kotlin {
     sourceSets {
         val jvmMain by getting {
             dependencies {

@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.serialization)
 }
 
-kmp {
+kotlin {
     sourceSets {
         commonMain {
             dependencies {

@@ -17,7 +17,7 @@ interface NativeTestService : RPC, EmptyService {
     override val stateFlow: StateFlow<Int>
 }
 
-class NativeTest : CommonTestSuite() {
+class NativeTest : CommonTestSuite<Unit>() {
     override fun runAsync(body: suspend () -> Unit) = runBlocking { body() }
 
     @Test

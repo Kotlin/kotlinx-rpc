@@ -3,18 +3,18 @@ plugins {
     alias(libs.plugins.serialization)
 }
 
-kmp {
+kotlin {
     sourceSets {
         commonMain {
             dependencies {
                 api(project(":krpc-runtime"))
 
                 implementation(project(":krpc-runtime:krpc-runtime-serialization"))
+                implementation(project(":krpc-runtime::krpc-runtime-logging"))
 
                 implementation(libs.coroutines.core)
                 implementation(libs.serialization.core)
                 implementation(libs.kotlin.reflect)
-                implementation(libs.kotlin.logging)
             }
         }
     }

@@ -1,6 +1,5 @@
 package org.jetbrains.krpc.server
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.StringFormat
@@ -9,6 +8,8 @@ import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCMessage
 import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.internal.*
+import org.jetbrains.krpc.internal.logging.CommonLogger
+import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.map.ConcurrentHashMap
 import org.jetbrains.krpc.server.internal.rpcServiceMethodSerializationTypeOf
 import java.lang.reflect.InvocationTargetException
@@ -32,7 +33,7 @@ class RPCServerEngine<T : RPC>(
     override val config: RPCConfig.Server = RPCConfig.Server.Default,
 ) : RPCEngine(), CoroutineScope {
     override val serviceTypeString = serviceKClass.toString()
-    override val logger = KotlinLogging.logger("RPCServerEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
+    override val logger = CommonLogger.initialized().logger("RPCServerEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
 
     private val methods: Map<String, KCallable<*>>
     private val fields: Map<String, KCallable<*>>

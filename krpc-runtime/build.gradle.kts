@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.atomicfu)
 }
 
-kmp {
+kotlin {
     sourceSets {
         commonMain {
             dependencies {
@@ -18,7 +18,8 @@ kmp {
                 api(libs.coroutines.core)
                 implementation(libs.serialization.core)
                 implementation(libs.kotlin.reflect)
-                implementation(libs.kotlin.logging)
+
+                implementation(project(":krpc-runtime::krpc-runtime-logging"))
             }
         }
         commonTest {
@@ -48,5 +49,18 @@ kmp {
                 implementation(libs.slf4j.simple)
             }
         }
+    }
+}
+
+// otherwise it complains and fails the build on 1.8.*
+project(":krpc-runtime:krpc-runtime-test").tasks.matching { it.name == "jsProductionLibraryCompileSync" }.all {
+    val jsProductionLibraryCompileSync = this
+
+    tasks.named("jsBrowserTest") {
+        dependsOn(jsProductionLibraryCompileSync)
+    }
+
+    tasks.named("jsNodeTest") {
+        dependsOn(jsProductionLibraryCompileSync)
     }
 }

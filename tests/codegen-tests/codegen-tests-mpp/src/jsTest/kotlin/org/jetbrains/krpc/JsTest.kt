@@ -1,12 +1,12 @@
 package org.jetbrains.krpc
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+import kotlin.js.Promise
 import kotlin.test.Test
+import kotlin.test.fail
 
 interface JsTestService : RPC, EmptyService {
     override suspend fun empty()
@@ -18,9 +18,13 @@ interface JsTestService : RPC, EmptyService {
     override val stateFlow: StateFlow<Int>
 }
 
-class JsTest : CommonTestSuite() {
-    override fun runAsync(body: suspend () -> Unit) {
-        CoroutineScope(Dispatchers.Main).launch { body() }
+class JsTest : CommonTestSuite<Promise<Unit>>() {
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun runAsync(body: suspend () -> Unit): Promise<Unit> {
+        return GlobalScope.async(
+            Dispatchers.Unconfined,
+            block = { body() }
+        ).asPromise()
     }
 
     @Test

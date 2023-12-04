@@ -16,7 +16,7 @@ interface JvmTestService : RPC, EmptyService {
     override val stateFlow: StateFlow<Int>
 }
 
-class JvmTest : CommonTestSuite() {
+class JvmTest : CommonTestSuite<Unit>() {
     override fun runAsync(body: suspend () -> Unit) = runBlocking { body() }
 
     @Test

@@ -3,15 +3,16 @@ package org.jetbrains.krpc
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
 import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
-import org.jetbrains.kotlin.gradle.plugin.extraProperties
-import org.jetbrains.krpc.KRPCPluginConst.KRPC_CONFIG_PROPERTY
+import org.jetbrains.krpc.KRPCPluginConst.KRPC_COMPILER_PLUGIN_MODULE
 import org.jetbrains.krpc.KRPCPluginConst.KRPC_GROUP_ID
 import org.jetbrains.krpc.KRPCPluginConst.KRPC_INTERNAL_DEVELOPMENT_PROPERTY
 import org.jetbrains.krpc.KRPCPluginConst.KRPC_KSP_PLUGIN_ARTIFACT_ID
+import org.jetbrains.krpc.KRPCPluginConst.KRPC_KSP_PLUGIN_MODULE
 import org.jetbrains.krpc.KRPCPluginConst.KSP_PLUGIN_ID
 import org.jetbrains.krpc.KRPCPluginConst.kotlinVersion
 import org.jetbrains.krpc.KRPCPluginConst.krpcFullVersion
@@ -24,7 +25,7 @@ class KRPCGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         val isInternalDevelopment =
             (target.properties.getOrDefault(KRPC_INTERNAL_DEVELOPMENT_PROPERTY, null) as String?)
-                ?.toBooleanStrictOrNull() ?: false
+                ?.toBoolean() ?: false
 
         val config = KRPCConfig(
             isInternalDevelopment = isInternalDevelopment,
@@ -37,24 +38,20 @@ class KRPCGradlePlugin : Plugin<Project> {
 
     private fun applyCompilerPlugin(target: Project, config: KRPCConfig) {
         if (config.isInternalDevelopment) {
+            val compilerPlugin = target.rootProject.subprojects
+                .singleOrNull { subproject -> subproject.name == KRPC_COMPILER_PLUGIN_MODULE }
+                ?: error("Expected compiler plugin module '$KRPC_COMPILER_PLUGIN_MODULE' to be present")
+
             target.dependencies.apply {
                 if (target.configurations.findByName(PLUGIN_CLASSPATH_CONFIGURATION_NAME) != null) {
-                    add(
-                        PLUGIN_CLASSPATH_CONFIGURATION_NAME,
-                        target.project(":krpc-compiler-plugin")
-                    )
+                    add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, compilerPlugin)
                 }
 
                 if (target.configurations.findByName(NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME) != null) {
-                    add(
-                        NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME,
-                        target.project(":krpc-compiler-plugin")
-                    )
+                    add(NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME, compilerPlugin)
                 }
             }
         } else {
-            target.extraProperties[KRPC_CONFIG_PROPERTY] = config
-
             target.plugins.apply(KRPCKotlinCompilerPlugin::class.java)
         }
     }
@@ -64,7 +61,7 @@ class KRPCGradlePlugin : Plugin<Project> {
         withKspPlugin(target) {
             val krpcKspPlugin = when {
                 config.isInternalDevelopment -> {
-                    target.project(":krpc-ksp-plugin")
+                    target.project(":$KRPC_KSP_PLUGIN_MODULE")
                 }
 
                 else -> {
@@ -74,6 +71,12 @@ class KRPCGradlePlugin : Plugin<Project> {
 
             val isKmpProject = target.extensions.findByType(KotlinMultiplatformExtension::class.java) != null
 
+            // separate function is needed for different gradle versions
+            // in 7.6 `Configuration` argument is `this`, in 8.* it is a first argument (hence `it`)
+            val onConfiguration: (Configuration) -> Unit = { kspConfiguration ->
+                target.dependencies.add(kspConfiguration.name, krpcKspPlugin)
+            }
+
             target.configurations
                 // `matching` and `all` functions are live in gradle, without them code would not work
                 .matching { config ->
@@ -81,7 +84,8 @@ class KRPCGradlePlugin : Plugin<Project> {
                     // all ksp configurations start with ksp prefix
                     name.startsWith("ksp") &&
                             // filter out non-compilation configs
-                            !name.lowercase().contains("metadata") &&
+                            !name.contains("metadata") &&
+                            !name.contains("Metadata") &&
                             !name.contains("ProcessorClasspath") &&
                             !name.contains("GeneratedByKsp") &&
                             !name.contains("PluginClasspath") &&
@@ -89,9 +93,7 @@ class KRPCGradlePlugin : Plugin<Project> {
                             // target specific configurations are present instead
                             !(isKmpProject && (name == "ksp" || name == "kspTest"))
                 }
-                .all { kspConfiguration ->
-                    target.dependencies.add(kspConfiguration.name, krpcKspPlugin)
-                }
+                .all(onConfiguration)
 
             kspPluginConfigurationsApplied = true
         }
@@ -104,8 +106,9 @@ class KRPCGradlePlugin : Plugin<Project> {
     }
 
     private fun withKspPlugin(target: Project, action: Action<Unit>) {
-        // `withId` is live, so order of plugins can be arbitrary
-        target.plugins.withId(KSP_PLUGIN_ID) {
+        // separate function is needed for different gradle versions
+        // in 7.6 `Plugin` argument is `this`, in 8.* it is a first argument (hence `it`)
+        val onPlugin: (Plugin<Any>) -> Unit = {
             val plugin = it as KotlinCompilerPluginSupportPlugin
 
             val version = plugin.getPluginArtifact().version
@@ -115,6 +118,9 @@ class KRPCGradlePlugin : Plugin<Project> {
 
             action.execute(Unit)
         }
+
+        // `withId` is live, so order of plugins can be arbitrary
+        target.plugins.withId(KSP_PLUGIN_ID, onPlugin)
     }
 
     private fun applyPlatformConfiguration(target: Project, config: KRPCConfig) {

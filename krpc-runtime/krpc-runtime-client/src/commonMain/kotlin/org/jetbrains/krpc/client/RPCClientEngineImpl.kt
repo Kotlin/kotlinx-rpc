@@ -1,6 +1,5 @@
 package org.jetbrains.krpc.client
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +12,8 @@ import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.internal.FieldDataObject
 import org.jetbrains.krpc.client.internal.RPCFlow
 import org.jetbrains.krpc.internal.*
+import org.jetbrains.krpc.internal.logging.CommonLogger
+import org.jetbrains.krpc.internal.logging.initialized
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -28,7 +29,7 @@ internal class RPCClientEngineImpl(
     private val callCounter = atomic(0L)
     private val engineId: Long = CLIENT_ENGINE_ID.incrementAndGet()
     override val serviceTypeString = serviceKClass.toString()
-    override val logger = KotlinLogging.logger("RPCClientEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
+    override val logger = CommonLogger.initialized().logger("RPCClientEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
 
     override val coroutineContext: CoroutineContext = Job() + Dispatchers.Default
 

@@ -20,6 +20,7 @@ pluginManagement {
 
 plugins {
     id("settings-conventions")
+    id("compiler-specific-modules")
 }
 
 rootProject.name = "kRPC"
@@ -27,12 +28,14 @@ rootProject.name = "kRPC"
 include(":krpc-bom")
 
 include(":krpc-utils")
+include(":krpc-utils:krpc-utils-service-loader")
 
 include(":krpc-compiler-plugin")
 include(":krpc-ksp-plugin")
 
 include(":krpc-runtime")
 include(":krpc-runtime:krpc-runtime-api")
+include(":krpc-runtime:krpc-runtime-logging")
 include(":krpc-runtime:krpc-runtime-client")
 include(":krpc-runtime:krpc-runtime-server")
 include(":krpc-runtime:krpc-runtime-test")

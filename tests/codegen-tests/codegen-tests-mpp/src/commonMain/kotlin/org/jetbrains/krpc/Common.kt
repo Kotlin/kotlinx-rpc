@@ -1,16 +1,19 @@
 package org.jetbrains.krpc
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import org.jetbrains.krpc.client.clientOf
+import org.jetbrains.krpc.internal.logging.CommonLogger
+import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.server.internal.rpcServiceMethodSerializationTypeOf
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
-val logger = KotlinLogging.logger("KSPGeneratorTest")
+val logger by lazy {
+    CommonLogger.initialized().logger("KSPGeneratorTest")
+}
 
 interface EmptyService {
     val flow: Flow<Int>

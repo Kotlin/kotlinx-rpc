@@ -1,6 +1,5 @@
 package org.jetbrains.krpc.internal
 
-import io.github.oshai.kotlinlogging.KLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
@@ -16,13 +15,14 @@ import kotlinx.serialization.modules.SerializersModule
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCMessage
 import org.jetbrains.krpc.RPCTransport
+import org.jetbrains.krpc.internal.logging.CommonLogger
 
 @InternalKRPCApi
 abstract class RPCEngine {
     protected abstract val serviceTypeString: String
     protected abstract val transport: RPCTransport
     protected abstract val config: RPCConfig
-    protected abstract val logger: KLogger
+    protected abstract val logger: CommonLogger
 
     protected suspend fun handleIncomingHotFlows(scope: CoroutineScope, streamContext: LazyRPCStreamContext) {
         for (hotFlow in streamContext.awaitInitialized().incomingHotFlows) {

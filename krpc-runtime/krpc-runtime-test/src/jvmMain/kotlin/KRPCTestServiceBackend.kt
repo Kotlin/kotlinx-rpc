@@ -105,6 +105,7 @@ class KRPCTestServiceBackend : KRPCTestService {
         return payloadWithStream.payload.length + payloadWithStream.stream.count()
     }
 
+    @OptIn(FlowPreview::class)
     override suspend fun streamInStream(payloadWithStream: Flow<PayloadWithStream>): Int {
         return payloadWithStream.flatMapConcat { it.stream }.count()
     }

@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import util.optInForInternalKRPCApi
 
 plugins {
@@ -5,8 +6,10 @@ plugins {
     id("org.jetbrains.kotlin.jvm")
 }
 
-kotlin {
-    jvmToolchain(8)
+configure<KotlinJvmProjectExtension> {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
 
     optInForInternalKRPCApi()
 }

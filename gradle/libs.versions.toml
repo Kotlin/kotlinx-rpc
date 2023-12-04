@@ -1,21 +1,22 @@
 [versions]
 # kotlin
-kotlin-lang = "1.9.10"
+kotlin-lang = "1.9.21"
 krpc-core = "beta-4.2" # version for plugins and suffix for krpc-full
 
-# stubs, will be replaced with the actual versions by a settings-conventions plugin
-krpc-full = "<stub>" # krpc prefixed by kotlin-lang
-ksp = "<stub>" # from ksp.versions.json
+# kotlin-dependent versions, will be replaced with the actual versions by a settings-conventions plugin
+#   from 'kotlin-versions-lookup.json' lookup table
+krpc-full = "<stub>" # krpc-core prefixed by kotlin-lang
+ksp = "<stub>"
+atomicfu = "<stub>"
+serialization = "<stub>"
+coroutines = "<stub>"
+ktor = "<stub>"
+kotlin-logging = "<stub>"
+gradle-kotlin-dsl = "<stub>"
+gradle-plugin-publish = "<stub>"
 
 # other
-atomicfu = "0.22.0"
-gradle-kotlin-dsl = "4.1.0"
-coroutines = "1.7.3"
-serialization = "1.6.0"
-kotlin-logging = "5.1.0"
-ktor = "2.3.5"
 slf4j = "2.0.9"
-gradle-plugin-publish = "1.2.0"
 
 [libraries]
 # kotlin
@@ -25,8 +26,9 @@ kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", versi
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin-lang" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin-lang" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin-lang" }
-kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin-lang" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-lang" }
+
+kotlin-compiler-embeddable = { group = "org.jetbrains.kotlin", name = "kotlin-compiler-embeddable" }
 
 # serialization
 serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "serialization" }
@@ -34,7 +36,7 @@ serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-jso
 serialization-cbor = { module = "org.jetbrains.kotlinx:kotlinx-serialization-cbor", version.ref = "serialization" }
 serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "serialization" }
 
-# ksp, version will be inherited from kotlin-lang and ksp.versions.json lookup table
+# ksp, version will be inherited from kotlin-lang and kotlin-versions-lookup.json lookup table
 ksp-runtime-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 ksp-gradle-plugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 
@@ -53,6 +55,7 @@ slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 
 # other
 kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
+kotlin-logging-legacy = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
@@ -70,6 +73,7 @@ gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradl
 conventions-common = { id = "conventions-common", version.ref = "krpc-core" }
 conventions-jvm = { id = "conventions-jvm", version.ref = "krpc-core" }
 conventions-kmp = { id = "conventions-kmp", version.ref = "krpc-core" }
+compiler-specific-module = { id = "compiler-specific-module", version.ref = "krpc-core" }
 
 # gradle-plugin project
 krpc = { id = "org.jetbrains.krpc.plugin", version.ref = "krpc-core" }

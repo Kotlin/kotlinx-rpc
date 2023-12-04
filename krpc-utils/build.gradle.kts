@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.atomicfu)
 }
 
-kmp {
+kotlin {
     sourceSets {
         commonMain {
             dependencies {
