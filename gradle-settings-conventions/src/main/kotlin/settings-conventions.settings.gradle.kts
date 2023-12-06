@@ -29,7 +29,6 @@ data class KotlinLookupTable(
     val ktor: String,
     val kotlinLogging: String,
     val gradleKotlinDsl: String,
-    val gradlePluginPublish: String,
 )
 
 object SettingsConventions {
@@ -43,7 +42,6 @@ object SettingsConventions {
     const val KTOR_VERSION_ALIAS = "ktor"
     const val KOTLIN_LOGGING_VERSION_ALIAS = "kotlin-logging"
     const val KOTLIN_DSL_VERSION_ALIAS = "gradle-kotlin-dsl"
-    const val GRADLE_PUBLISH_VERSION_ALIAS = "gradle-plugin-publish"
     const val KRPC_CORE_VERSION_ALIAS = "krpc-core"
     const val KRPC_FULL_VERSION_ALIAS = "krpc-full"
     const val KOTLIN_VERSION_ALIAS = "kotlin-lang"
@@ -96,7 +94,6 @@ fun loadLookupTable(rootDir: Path, kotlinVersion: String): KotlinLookupTable {
         ktor = currentTable.getValue(SettingsConventions.KTOR_VERSION_ALIAS),
         kotlinLogging = currentTable.getValue(SettingsConventions.KOTLIN_LOGGING_VERSION_ALIAS),
         gradleKotlinDsl = currentTable.getValue(SettingsConventions.KOTLIN_DSL_VERSION_ALIAS),
-        gradlePluginPublish = currentTable.getValue(SettingsConventions.GRADLE_PUBLISH_VERSION_ALIAS),
     )
 }
 
@@ -190,37 +187,19 @@ dependencyResolutionManagement {
             // Other Kotlin-dependant versions 
             val lookupTable = loadLookupTable(rootDir, kotlinVersion)
 
-            version(SettingsConventions.KSP_VERSION_ALIAS) {
-                strictly("$kotlinVersion-${lookupTable.ksp}")
-            }
+            version(SettingsConventions.KSP_VERSION_ALIAS, "$kotlinVersion-${lookupTable.ksp}")
 
-            version(SettingsConventions.ATOMICFU_VERSION_ALIAS) {
-                strictly(lookupTable.atomicfu)
-            }
+            version(SettingsConventions.ATOMICFU_VERSION_ALIAS, lookupTable.atomicfu)
 
-            version(SettingsConventions.SERIALIZATION_VERSION_ALIAS) {
-                strictly(lookupTable.serialization)
-            }
+            version(SettingsConventions.SERIALIZATION_VERSION_ALIAS, lookupTable.serialization)
 
-            version(SettingsConventions.COROUTINES_VERSION_ALIAS) {
-                strictly(lookupTable.coroutines)
-            }
+            version(SettingsConventions.COROUTINES_VERSION_ALIAS, lookupTable.coroutines)
 
-            version(SettingsConventions.KTOR_VERSION_ALIAS) {
-                strictly(lookupTable.ktor)
-            }
+            version(SettingsConventions.KTOR_VERSION_ALIAS, lookupTable.ktor)
 
-            version(SettingsConventions.KOTLIN_LOGGING_VERSION_ALIAS) {
-                strictly(lookupTable.kotlinLogging)
-            }
+            version(SettingsConventions.KOTLIN_LOGGING_VERSION_ALIAS, lookupTable.kotlinLogging)
 
-            version(SettingsConventions.KOTLIN_DSL_VERSION_ALIAS) {
-                strictly(lookupTable.gradleKotlinDsl)
-            }
-
-            version(SettingsConventions.GRADLE_PUBLISH_VERSION_ALIAS) {
-                strictly(lookupTable.gradlePluginPublish)
-            }
+            version(SettingsConventions.KOTLIN_DSL_VERSION_ALIAS, lookupTable.gradleKotlinDsl)
         }
     }
 }

@@ -21,7 +21,7 @@ const val TARGETS_SINCE_KOTLIN_LOOKUP_PATH = "gradle/targets-since-kotlin-lookup
  * "<some_version>" - target supported since <some_version> kotlin version including that version
  */
 @Suppress("UNCHECKED_CAST")
-private fun loadTargetsSinceLookupTable(rootDir: String): Map<String, String> {
+private fun loadTargetsSinceKotlinLookupTable(rootDir: String): Map<String, String> {
     val file = File("$rootDir/$TARGETS_SINCE_KOTLIN_LOOKUP_PATH")
     val table = JsonSlurper()
         .parseText(file.readText(Charsets.UTF_8)) as Map<String, String>
@@ -55,7 +55,7 @@ private fun KotlinMultiplatformExtension.configureTargets(
         // TLDR: Default hierarchy template is enabled by default since 1.9.20
         //
         // https://kotlinlang.org/docs/multiplatform-hierarchy.html#default-hierarchy-template
-        if (nativeTargets.isNotEmpty() && kotlinVersion > "1.9.20") {
+        if (nativeTargets.isNotEmpty() && kotlinVersion < "1.9.20") {
             val commonMain = sourceSets.findByName("commonMain")!!
             val commonTest = sourceSets.findByName("commonTest")!!
             val nativeMain = sourceSets.create("nativeMain")
@@ -94,7 +94,7 @@ fun Project.configureKotlin(
     action: Action<KotlinMultiplatformExtension> = Action { },
 ) {
     val kotlinVersion = getKotlinPluginVersion()
-    val lookupTable = loadTargetsSinceLookupTable(rootProject.rootDir.absolutePath)
+    val lookupTable = loadTargetsSinceKotlinLookupTable(rootProject.rootDir.absolutePath)
 
     if (js) {
         configureJs()

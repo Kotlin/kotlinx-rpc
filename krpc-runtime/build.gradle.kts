@@ -52,15 +52,16 @@ kotlin {
     }
 }
 
+evaluationDependsOn(":krpc-runtime:krpc-runtime-test")
+
 // otherwise it complains and fails the build on 1.8.*
-project(":krpc-runtime:krpc-runtime-test").tasks.matching { it.name == "jsProductionLibraryCompileSync" }.all {
-    val jsProductionLibraryCompileSync = this
+val jsProductionLibraryCompileSync: TaskProvider<Task> = project(":krpc-runtime:krpc-runtime-test")
+    .tasks.named("jsProductionLibraryCompileSync")
 
-    tasks.named("jsBrowserTest") {
-        dependsOn(jsProductionLibraryCompileSync)
-    }
+tasks.named("jsBrowserTest") {
+    dependsOn(jsProductionLibraryCompileSync)
+}
 
-    tasks.named("jsNodeTest") {
-        dependsOn(jsProductionLibraryCompileSync)
-    }
+tasks.named("jsNodeTest") {
+    dependsOn(jsProductionLibraryCompileSync)
 }

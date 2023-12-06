@@ -54,6 +54,13 @@ class KRPCGradlePlugin : Plugin<Project> {
         } else {
             target.plugins.apply(KRPCKotlinCompilerPlugin::class.java)
         }
+
+        // https://youtrack.jetbrains.com/issue/KT-53477/Native-Gradle-plugin-doesnt-add-compiler-plugin-transitive-dependencies-to-compiler-plugin-classpath
+        target.configurations.matching {
+            it.name.startsWith("kotlin") && it.name.contains("CompilerPluginClasspath")
+        }.all {
+            isTransitive = true
+        }
     }
 
     private fun applyKspPlugin(target: Project, config: KRPCConfig) {

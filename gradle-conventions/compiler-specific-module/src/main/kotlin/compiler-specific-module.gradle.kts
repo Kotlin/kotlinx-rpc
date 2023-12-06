@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.plugin.*
+import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 
 //  ### Utils ###
 
@@ -52,13 +52,6 @@ subprojects {
         name == coreProjectName -> {
             lazyApi(project(CSM.KRPC_SERVICE_LOADER_MODULE))
 
-            // This and the same for version specific submodule causes
-            //
-            // Could not determine the dependencies of task ':krpc-compiler-plugin:compileJava'.
-            // > Cannot change dependencies of dependency configuration ':krpc-compiler-plugin:api' after it has been included in dependency resolution.
-            //
-            // on linuxX64Test for some reason. For js and jvm works ok
-            // disabling this target for 1.7.* for now
             root.lazyApi(this)
         }
 

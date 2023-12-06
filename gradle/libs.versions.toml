@@ -13,7 +13,6 @@ coroutines = "<stub>"
 ktor = "<stub>"
 kotlin-logging = "<stub>"
 gradle-kotlin-dsl = "<stub>"
-gradle-plugin-publish = "<stub>"
 
 # other
 slf4j = "2.0.9"
@@ -67,7 +66,6 @@ serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref 
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 atomicfu = { id = "kotlinx-atomicfu", version.ref = "atomicfu" }
 gradle-kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version.ref = "gradle-kotlin-dsl" }
-gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
 
 # gradle-conventions project
 conventions-common = { id = "conventions-common", version.ref = "krpc-core" }

@@ -1,28 +1,15 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import util.configureKotlin
 import util.optInForInternalKRPCApi
-import kotlin.reflect.KProperty
+import util.optionalProperty
 
 plugins {
     id("conventions-common")
     id("org.jetbrains.kotlin.multiplatform")
 }
 
-kotlin {
+configure<KotlinMultiplatformExtension> {
     optInForInternalKRPCApi()
-}
-
-class OptionalProperty(private val target: Project) {
-    operator fun getValue(thisRef: Any, property: KProperty<*>): Boolean {
-        val propName = "krpc.kmp.${property.name}"
-        return when {
-            target.hasProperty(propName) -> (target.properties[propName] as String).toBoolean()
-            else -> false
-        }
-    }
-}
-
-fun Project.optionalProperty(): OptionalProperty {
-    return OptionalProperty(this)
 }
 
 val excludeJs: Boolean by optionalProperty()
