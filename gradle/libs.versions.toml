@@ -11,10 +11,12 @@ atomicfu = "<stub>"
 serialization = "<stub>"
 coroutines = "<stub>"
 ktor = "<stub>"
+detekt-gradle-plugin = "<stub>"
 kotlin-logging = "<stub>"
 gradle-kotlin-dsl = "<stub>"
 
 # other
+detekt-analyzer = "1.23.4" # actual version of the tool, can be different from gradle plugin
 slf4j = "2.0.9"
 
 [libraries]
@@ -57,6 +59,7 @@ kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kot
 kotlin-logging-legacy = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt-gradle-plugin" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-lang" }
@@ -64,6 +67,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-lang" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-lang" }
 
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt-gradle-plugin" }
 atomicfu = { id = "kotlinx-atomicfu", version.ref = "atomicfu" }
 gradle-kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version.ref = "gradle-kotlin-dsl" }
 

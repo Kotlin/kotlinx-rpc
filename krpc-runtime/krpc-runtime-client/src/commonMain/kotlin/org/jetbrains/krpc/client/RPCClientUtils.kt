@@ -11,6 +11,7 @@ import kotlin.reflect.typeOf
 /**
  * Creates a client for the specified RPC interface using the provided transport.
  *
+ * @param T type of the service to be provided
  * @param transport The transport to be used for communication with the remote server
  * @param config Client configuration
  * @return An instance of the client for the specified RPC interface
@@ -25,6 +26,7 @@ inline fun <reified T : RPC> RPC.Companion.clientOf(
 /**
  * Creates a client of the specified RPC type using the given RPCEngine.
  *
+ * @param T type of the service to be provided
  * @param serviceType The type of the service to retrieve.
  * @param transport The transport to be used for communication with the remote server
  * @param config Client configuration
@@ -41,6 +43,7 @@ fun <T : RPC> RPC.Companion.clientOf(
 /**
  * Creates a client of the specified RPC type using the given RPCEngine.
  *
+ * @param T type of the service to be provided
  * @param serviceKClass The [KClass] of the service to retrieve.
  * @param transport The transport to be used for communication with the remote server
  * @param config Client configuration
@@ -57,6 +60,7 @@ fun <T : RPC> RPC.Companion.clientOf(
 /**
  * Creates a client of the specified RPC type using the given RPCEngine.
  *
+ * @param T type of the service to be provided
  * @param serviceKClass The [KClass] of the service to retrieve.
  * @param transport The transport to be used for communication with the remote server
  * @param config Client configuration
@@ -74,6 +78,7 @@ fun <T : RPC> RPC.Companion.clientOf(
 /**
  * Returns an instance of the specified service type from the given RPC engine.
  *
+ * @param T type of the service to be provided
  * @param serviceType The type of the service to retrieve.
  * @param engine The RPC engine used to retrieve the service.
  * @return An instance of the specified service type.
@@ -85,6 +90,7 @@ fun <T : RPC> RPC.Companion.clientOf(serviceType: KType, engine: RPCClientEngine
 /**
  * Creates a client of the specified RPC type using the given RPCEngine.
  *
+ * @param T type of the service to be provided
  * @param engine The RPCEngine instance used for creating the client.
  * @return A client of the specified RPC type.
  */
@@ -95,6 +101,7 @@ inline fun <reified T : RPC> RPC.Companion.clientOf(engine: RPCClientEngine): T 
 /**
  * Returns an instance of the specified service type from the given RPC engine.
  *
+ * @param T type of the service to be provided
  * @param kClass The type of the service to retrieve.
  * @param engine The RPC engine used to retrieve the service.
  */

@@ -13,6 +13,10 @@ configurations.configureEach {
 
 dependencies {
     implementation(libs.kotlin.gradle.plugin)
+    implementation(libs.detekt.gradle.plugin)
+
+    // https://stackoverflow.com/questions/76713758/use-version-catalog-inside-precompiled-gradle-plugin
+    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 }
 
 gradlePlugin {

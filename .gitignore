@@ -7,3 +7,5 @@ build
 .idea
 .DS_Store
 
+# Ignore generated Detekt reports
+detekt/reports/**

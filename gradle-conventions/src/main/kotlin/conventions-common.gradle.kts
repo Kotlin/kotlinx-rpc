@@ -1,6 +1,12 @@
+import io.gitlab.arturbosch.detekt.Detekt
 import util.configureJvmPublication
 import util.configureKmpPublication
 import util.configureKrpcPublication
+import util.libs
+
+plugins {
+    id("io.gitlab.arturbosch.detekt")
+}
 
 val publishingExtension = project.extensions.findByType<PublishingExtension>()
 
@@ -15,5 +21,54 @@ if (name.startsWith("krpc")) {
         plugins.withId("org.jetbrains.kotlin.multiplatform") {
             configureKmpPublication()
         }
+    }
+}
+
+val globalRootDir: String = extra["globalRootDir"] as? String
+    ?: error("Expected 'globalRootDir' property to be present in project's extra")
+
+val globalDetektDir = "$globalRootDir/detekt"
+
+// https://detekt.dev/docs/gettingstarted/gradle#options-for-detekt-configuration-closure
+detekt {
+    toolVersion = libs.versions.detekt.analyzer.get()
+
+    buildUponDefaultConfig = false
+
+    // TC will fail only on Detekt codestyle configuration
+    // Otherwise it would be annoying during development process
+    ignoreFailures = true
+
+    config.setFrom("$globalDetektDir/config.yaml")
+    baseline = file("$globalDetektDir/baseline.xml")
+}
+
+val detektGlobalReportsDir = "$globalDetektDir/reports/${rootProject.name}"
+
+fun capitalize(string: String): String {
+    if (string.isEmpty()) {
+        return ""
+    }
+    val firstChar = string[0]
+    return string.replaceFirst(firstChar, Character.toTitleCase(firstChar))
+}
+
+tasks.withType<Detekt>().configureEach {
+    reports {
+        listOf(html, xml, sarif).forEach { report ->
+            report.required.set(true)
+            val output = "$detektGlobalReportsDir/${report.type.reportId}/${project.name}.${report.type.extension}"
+            report.outputLocation.set(file(output))
+        }
+    }
+}
+
+// https://detekt.dev/docs/gettingstarted/gradle#disabling-detekt-from-the-check-task
+// 'build' task depends on check, and we don't want to run detekt all the time
+afterEvaluate {
+    tasks.named("check") {
+        setDependsOn(dependsOn.filterNot {
+            it is TaskProvider<*> && it.name.contains("detekt")
+        })
     }
 }

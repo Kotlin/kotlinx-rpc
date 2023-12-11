@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.krpc.RPC
 
+@Suppress("detekt.TooManyFunctions")
 interface KRPCTestService : RPC {
     suspend fun empty()
     suspend fun returnType(): String
@@ -39,7 +40,9 @@ interface KRPCTestService : RPC {
     suspend fun returnPayloadWithPayload(): PayloadWithPayload
     suspend fun returnFlowPayloadWithPayload(): Flow<PayloadWithPayload>
 
-    suspend fun bidirectionalFlowOfPayloadWithPayload(payloadWithPayload: Flow<PayloadWithPayload>): Flow<PayloadWithPayload>
+    suspend fun bidirectionalFlowOfPayloadWithPayload(
+        payloadWithPayload: Flow<PayloadWithPayload>
+    ): Flow<PayloadWithPayload>
 
     suspend fun getNInts(n: Int): Flow<Int>
     suspend fun getNIntsBatched(n: Int): Flow<List<Int>>

@@ -2,7 +2,7 @@ package org.jetbrains.krpc.test
 
 import kotlinx.serialization.Serializable
 
-@Suppress("EqualsOrHashCode")
+@Suppress("EqualsOrHashCode", "detekt.EqualsWithHashCodeExist")
 @Serializable
 open class TestClass(val value: Int = 0) {
     override fun equals(other: Any?): Boolean {

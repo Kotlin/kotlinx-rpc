@@ -14,6 +14,7 @@ import kotlinx.coroutines.runBlocking
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.transport.ktor.client.rpc
+import org.jetbrains.krpc.transport.ktor.client.rpcConfig
 import org.jetbrains.krpc.transport.ktor.server.rpc
 import org.junit.Assert.assertEquals
 import kotlin.coroutines.CoroutineContext
@@ -47,7 +48,7 @@ class KtorTransportTest {
             }
         }.start()
 
-        val client = HttpClient {
+        val clientWithGlobalConfig = HttpClient {
             install(io.ktor.client.plugins.websocket.WebSockets)
             install(org.jetbrains.krpc.transport.ktor.client.KRPC) {
                 serialization {
@@ -56,14 +57,34 @@ class KtorTransportTest {
             }
         }
 
-        val service = client.rpc<NewService>("ws://localhost:4242/rpc")
-        val actual = service.echo("Hello, world!")
+        val clientWithServiceConfig = HttpClient {
+            install(io.ktor.client.plugins.websocket.WebSockets)
+            install(org.jetbrains.krpc.transport.ktor.client.KRPC)
+        }
 
-        assertEquals("Hello, world!", actual)
+        val serviceWithGlobalConfig = clientWithGlobalConfig.rpc<NewService>("ws://localhost:4242/rpc")
+        val actual1 = serviceWithGlobalConfig.echo("Hello, world!")
 
-        service.cancel()
+        assertEquals("Hello, world!", actual1)
+
+        serviceWithGlobalConfig.cancel()
+        clientWithGlobalConfig.close()
+
+        val serviceWithLocalConfig = clientWithServiceConfig.rpc<NewService>("ws://localhost:4242/rpc") {
+            rpcConfig {
+                serialization {
+                    json()
+                }
+            }
+        }
+
+        val actual2 = serviceWithLocalConfig.echo("Hello, world!")
+
+        assertEquals("Hello, world!", actual2)
+
+        serviceWithLocalConfig.cancel()
+        clientWithServiceConfig.close()
 
         server.stop()
-        client.close()
     }
 }

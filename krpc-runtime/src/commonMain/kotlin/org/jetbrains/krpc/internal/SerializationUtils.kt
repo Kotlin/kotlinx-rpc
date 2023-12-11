@@ -43,7 +43,8 @@ fun unexpectedDataFormatForProvidedSerialFormat(data: RPCMessage.Data, shouldBeB
         else -> "StringFormat" to "binary"
     }
 
-    error("Unexpected message format for provided serial format: message is in $actual format (${data::class}), but provided SerialFormat is $expected")
+    error("Unexpected message format for provided serial format: " +
+            "message is in $actual format (${data::class}), but provided SerialFormat is $expected")
 }
 
 @InternalKRPCApi
@@ -65,6 +66,8 @@ fun decodeMessageData(serialFormat: SerialFormat, dataSerializer: KSerializer<An
             serialFormat.decodeFromByteArray(dataSerializer, data.data)
         }
 
-        else -> unsupportedSerialFormatError(serialFormat)
+        else -> {
+            unsupportedSerialFormatError(serialFormat)
+        }
     }
 }

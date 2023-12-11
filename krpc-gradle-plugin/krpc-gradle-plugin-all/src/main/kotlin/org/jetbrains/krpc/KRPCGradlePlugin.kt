@@ -107,7 +107,8 @@ class KRPCGradlePlugin : Plugin<Project> {
 
         target.afterEvaluate {
             if (!kspPluginConfigurationsApplied) {
-                error("Expected KSP Gradle Plugin to be present in the project's configuration. Please, add `id(\"$KSP_PLUGIN_ID\")` plugin to the project.")
+                error("Expected KSP Gradle Plugin to be present in the project's configuration. " +
+                        "Please, add `id(\"$KSP_PLUGIN_ID\")` plugin to the project.")
             }
         }
     }

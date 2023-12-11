@@ -1,10 +1,11 @@
+package org.jetbrains.krpc.test
+
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.*
 import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.clientOf
 import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.server.serverOf
-import org.jetbrains.krpc.test.KRPCTestService
 import org.slf4j.simple.SimpleLogger
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext

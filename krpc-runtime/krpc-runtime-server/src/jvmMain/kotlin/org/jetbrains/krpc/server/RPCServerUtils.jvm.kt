@@ -9,6 +9,7 @@ import kotlin.reflect.typeOf
 /**
  * Creates a server engine for the specified RPC interface using the provided transport and service.
  *
+ * @param T Service type for which the server should be created
  * @param service The service implementation that should handle incoming calls
  * @param transport The transport to be used for communication with the remote client
  * @param config Server configuration
@@ -25,6 +26,7 @@ inline fun <reified T : RPC> RPC.Companion.serverOf(
 /**
  * Creates a server engine for the specified RPC interface using the provided transport and service.
  *
+ * @param T Service type for which the server should be created
  * @param service The service implementation that should handle incoming calls
  * @param serviceType The [KType] value of the [service]
  * @param transport The transport to be used for communication with the remote client
@@ -43,6 +45,7 @@ fun <T : RPC> RPC.Companion.serverOf(
 /**
  * Creates a server engine for the specified RPC interface using the provided transport and service.
  *
+ * @param T Service type for which the server should be created
  * @param service The service implementation that should handle incoming calls
  * @param serviceKClass The [KClass] value of the [service]
  * @param transport The transport to be used for communication with the remote client
@@ -61,6 +64,7 @@ fun <T : RPC> RPC.Companion.serverOf(
 /**
  * Creates a server engine for the specified RPC interface using the provided transport and service.
  *
+ * @param T Service type for which the server should be created
  * @param service The service implementation that should handle incoming calls
  * @param serviceKClass The [KClass] value of the [service]
  * @param transport The transport to be used for communication with the remote client

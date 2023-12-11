@@ -11,7 +11,7 @@ class KRPCPlatformPlugin : Plugin<Project> {
         target.dependencies.apply {
             val bomDependency = "${KRPC_GROUP_ID}:${KRPC_BOM_ARTIFACT_ID}:${krpcFullVersion}"
 
-            add("implementation", enforcedPlatform(bomDependency))
+            add("implementation", platform(bomDependency))
         }
     }
 }

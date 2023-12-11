@@ -19,6 +19,8 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.callSuspend
 
+private const val HEX_RADIX = 16
+
 /**
  * Server engine for the provided RPC [service].
  * Handles incoming messages from [transport] and routes them to the provided [service].
@@ -33,7 +35,8 @@ class RPCServerEngine<T : RPC>(
     override val config: RPCConfig.Server = RPCConfig.Server.Default,
 ) : RPCEngine(), CoroutineScope {
     override val serviceTypeString = serviceKClass.toString()
-    override val logger = CommonLogger.initialized().logger("RPCServerEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
+    override val logger = CommonLogger.initialized()
+        .logger("RPCServerEngine[$serviceTypeString][0x${hashCode().toString(HEX_RADIX)}]")
 
     private val methods: Map<String, KCallable<*>>
     private val fields: Map<String, KCallable<*>>
@@ -80,7 +83,10 @@ class RPCServerEngine<T : RPC>(
                         calls[callId]?.cancel()
                     }
 
-                    is RPCMessage.CallSuccess -> error("Unexpected success message")
+                    is RPCMessage.CallSuccess -> {
+                        error("Unexpected success message")
+                    }
+
                     is RPCMessage.StreamCancel -> {
                         val streamContext = streamContexts[callId] ?: error("Unknown call $callId")
                         streamContext.awaitInitialized().cancelStream(message)
@@ -142,10 +148,13 @@ class RPCServerEngine<T : RPC>(
             val args = decodeMessageData(serialFormat, paramsSerializer, callData) as RPCMethodClassArguments
 
             args.asArray()
-        } else null
+        } else {
+            null
+        }
 
         calls[callId] = launch {
             val result = try {
+                @Suppress("detekt.SpreadOperator")
                 val value = when {
                     isMethod -> callable.callSuspend(service, *argsArray!!)
                     else -> callable.call(service)
@@ -158,16 +167,20 @@ class RPCServerEngine<T : RPC>(
                         val stringValue = serialFormat.encodeToString(returnSerializer, value)
                         RPCMessage.CallSuccessString(callId, serviceTypeString, stringValue)
                     }
+
                     is BinaryFormat -> {
                         val binaryValue = serialFormat.encodeToByteArray(returnSerializer, value)
                         RPCMessage.CallSuccessBinary(callId, serviceTypeString, binaryValue)
                     }
-                    else -> unsupportedSerialFormatError(serialFormat)
+
+                    else -> {
+                        unsupportedSerialFormatError(serialFormat)
+                    }
                 }
             } catch (cause: InvocationTargetException) {
                 val serializedCause = serializeException(cause.cause ?: cause)
                 RPCMessage.CallException(callId, serviceTypeString, serializedCause)
-            } catch (cause: Throwable) {
+            } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
                 val serializedCause = serializeException(cause)
                 RPCMessage.CallException(callId, serviceTypeString, serializedCause)
             }

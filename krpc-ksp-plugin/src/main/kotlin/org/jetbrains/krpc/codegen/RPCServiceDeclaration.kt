@@ -1,9 +1,11 @@
 package org.jetbrains.krpc.codegen
 
+import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSType
 
 class RPCServiceDeclaration(
+    private val declaration: KSDeclaration,
     val simpleName: String,
     val fullName: String,
     val functions: List<Function>,
@@ -21,6 +23,10 @@ class RPCServiceDeclaration(
             val isVararg: Boolean,
             val isContextual: Boolean,
         )
+
+        fun collectRootImports(): List<KSDeclaration> {
+            return (argumentTypes.map { it.type } + returnType).mapNotNull { it.asRootType() }
+        }
     }
 
     class FlowField(
@@ -32,5 +38,23 @@ class RPCServiceDeclaration(
         enum class Type {
             Plain, Shared, State;
         }
+
+        fun collectRootImports(): List<KSDeclaration> {
+            return listOfNotNull(type.asRootType())
+        }
     }
+
+    fun collectRootImports(): List<KSDeclaration> {
+        return functions.flatMap { it.collectRootImports() } +
+                fields.flatMap { it.collectRootImports() } +
+                listOfNotNull(declaration.asRootType())
+    }
+}
+
+private fun KSType.asRootType(): KSDeclaration? {
+    return declaration.asRootType()
+}
+
+private fun KSDeclaration.asRootType(): KSDeclaration? {
+    return if (this.packageName.asString().isBlank()) this else null
 }

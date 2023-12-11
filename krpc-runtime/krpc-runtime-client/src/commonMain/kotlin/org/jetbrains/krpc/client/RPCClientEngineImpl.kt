@@ -20,6 +20,7 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 private val CLIENT_ENGINE_ID = atomic(initial = 0L)
+private const val HEX_RADIX = 16
 
 internal class RPCClientEngineImpl(
     override val transport: RPCTransport,
@@ -29,7 +30,8 @@ internal class RPCClientEngineImpl(
     private val callCounter = atomic(0L)
     private val engineId: Long = CLIENT_ENGINE_ID.incrementAndGet()
     override val serviceTypeString = serviceKClass.toString()
-    override val logger = CommonLogger.initialized().logger("RPCClientEngine[$serviceTypeString][0x${hashCode().toString(16)}]")
+    override val logger = CommonLogger.initialized()
+        .logger("RPCClientEngine[$serviceTypeString][0x${hashCode().toString(HEX_RADIX)}]")
 
     override val coroutineContext: CoroutineContext = Job() + Dispatchers.Default
 
@@ -101,7 +103,14 @@ internal class RPCClientEngineImpl(
         val firstMessage = serializeRequest(callId, callInfo, serialFormat)
 
         @Suppress("UNCHECKED_CAST")
-        executeCall(callId, streamContext, callInfo, firstMessage, serialFormat, callResult as CompletableDeferred<Any?>)
+        executeCall(
+            callId = callId,
+            streamContext = streamContext,
+            callInfo = callInfo,
+            firstMessage = firstMessage,
+            serialFormat = serialFormat,
+            callResult = callResult as CompletableDeferred<Any?>
+        )
 
         return streamContext to serialFormat
     }
@@ -141,7 +150,10 @@ internal class RPCClientEngineImpl(
         callResult: CompletableDeferred<Any?>,
     ) {
         when (message) {
-            is RPCMessage.CallData -> error("Unexpected message")
+            is RPCMessage.CallData -> {
+                error("Unexpected message")
+            }
+
             is RPCMessage.CallException -> {
                 val cause = runCatching {
                     message.cause.deserialize()
@@ -187,11 +199,15 @@ internal class RPCClientEngineImpl(
                 val stringValue = serialFormat.encodeToString(serializerData, callInfo.data)
                 RPCMessage.CallDataString(callId, serviceTypeString, callInfo.callableName, stringValue)
             }
+
             is BinaryFormat -> {
                 val binaryValue = serialFormat.encodeToByteArray(serializerData, callInfo.data)
                 RPCMessage.CallDataBinary(callId, serviceTypeString, callInfo.callableName, binaryValue)
             }
-            else -> unsupportedSerialFormatError(serialFormat)
+
+            else -> {
+                unsupportedSerialFormatError(serialFormat)
+            }
         }
     }
 }

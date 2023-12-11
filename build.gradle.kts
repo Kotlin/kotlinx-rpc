@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.krpc) apply false
     alias(libs.plugins.atomicfu) apply false
+    alias(libs.plugins.detekt) apply false
 }
 
 allprojects {

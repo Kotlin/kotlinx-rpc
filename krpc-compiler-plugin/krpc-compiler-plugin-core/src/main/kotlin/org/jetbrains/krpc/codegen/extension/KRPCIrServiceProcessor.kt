@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.ir.util.isInterface
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
 
 internal class KRPCIrServiceProcessor(
+    @Suppress("unused")
     private val logger: MessageCollector,
 ) : IrElementTransformer<KRPCIrContext> {
     override fun visitClass(declaration: IrClass, data: KRPCIrContext): IrStatement {

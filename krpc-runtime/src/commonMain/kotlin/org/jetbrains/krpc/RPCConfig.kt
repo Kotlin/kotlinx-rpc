@@ -2,21 +2,24 @@ package org.jetbrains.krpc
 
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.serialization.BinaryFormat
-import kotlinx.serialization.StringFormat
 import org.jetbrains.krpc.internal.InternalKRPCApi
-import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
 import org.jetbrains.krpc.serialization.RPCSerialFormatBuilder
+import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
 
 abstract class RPCConfigBuilder internal constructor() {
     @Suppress("MemberVisibilityCanBePrivate")
     class SharedFlowParametersBuilder internal constructor() {
-        var replay: Int = 1
-        var extraBufferCapacity: Int = 10
+        var replay: Int = DEFAULT_REPLAY
+        var extraBufferCapacity: Int = DEFAULT_EXTRA_BUFFER_CAPACITY
         var onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND
 
         fun builder(): () -> MutableSharedFlow<Any?> = {
             MutableSharedFlow(replay, extraBufferCapacity, onBufferOverflow)
+        }
+
+        companion object {
+            const val DEFAULT_REPLAY = 1
+            const val DEFAULT_EXTRA_BUFFER_CAPACITY = 10
         }
     }
 

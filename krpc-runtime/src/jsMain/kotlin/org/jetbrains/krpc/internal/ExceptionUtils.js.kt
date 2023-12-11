@@ -1,3 +1,5 @@
+@file:Suppress("detekt.MatchingDeclarationName")
+
 package org.jetbrains.krpc.internal
 
 import org.jetbrains.krpc.SerializedException

@@ -14,9 +14,10 @@ import org.jetbrains.krpc.rpcClientConfig
 import org.jetbrains.krpc.transport.ktor.KtorTransport
 import kotlin.reflect.KClass
 
-private val RPCRequestConfigAttributeKey = AttributeKey<RPCConfigBuilder.Client.() -> Unit>("RPCRequestConfigAttributeKey")
+private val RPCRequestConfigAttributeKey = AttributeKey<RPCConfigBuilder.Client.() -> Unit>(
+    name = "RPCRequestConfigAttributeKey"
+)
 
-// todo this method does not work (?)
 fun HttpRequestBuilder.rpcConfig(configBuilder: RPCConfigBuilder.Client.() -> Unit = {}) {
     attributes.put(RPCRequestConfigAttributeKey, configBuilder)
 }
@@ -40,10 +41,16 @@ suspend fun <T : RPC> HttpClient.rpc(
     serviceKClass: KClass<T>,
     block: HttpRequestBuilder.() -> Unit,
 ): T {
-    val session = webSocketSession(block)
+    var requestConfigBuilder: RPCConfigBuilder.Client.() -> Unit = {}
+    val session = webSocketSession {
+        block()
+
+        attributes.getOrNull(RPCRequestConfigAttributeKey)?.let {
+            requestConfigBuilder = it
+        }
+    }
 
     val pluginConfigBuilder = attributes.getOrNull(RPCClientPluginAttributesKey)
-    val requestConfigBuilder = attributes.getOrNull(RPCRequestConfigAttributeKey) ?: {}
     val rpcConfig = pluginConfigBuilder?.apply(requestConfigBuilder)?.build()
         ?: rpcClientConfig(requestConfigBuilder)
 

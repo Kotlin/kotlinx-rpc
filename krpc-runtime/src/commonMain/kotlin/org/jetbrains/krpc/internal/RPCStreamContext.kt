@@ -60,7 +60,11 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
         Channel(Channel.UNLIMITED)
     }
 
-    fun <StreamT : Any> registerOutgoingStream(stream: StreamT, streamKind: StreamKind, elementSerializer: KSerializer<Any?>): String {
+    fun <StreamT : Any> registerOutgoingStream(
+        stream: StreamT,
+        streamKind: StreamKind,
+        elementSerializer: KSerializer<Any?>,
+    ): String {
         val id = "$STREAM_ID_PREFIX${streamIdCounter.getAndIncrement()}"
         outgoingStreams.trySend(RPCStreamInfo(callId, id, stream, streamKind, elementSerializer))
         return id
@@ -81,7 +85,11 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun <StreamT : Any> streamOf(streamKind: StreamKind, stateFlowInitialValue: Any?, incoming: Channel<Any?>): StreamT {
+    private fun <StreamT : Any> streamOf(
+        streamKind: StreamKind,
+        stateFlowInitialValue: Any?,
+        incoming: Channel<Any?>,
+    ): StreamT {
         suspend fun consumeFlow(collector: FlowCollector<Any?>, onError: (Throwable) -> Unit) {
             for (message in incoming) {
                 when (message) {
@@ -93,8 +101,10 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
         }
 
         return when (streamKind) {
-            StreamKind.Flow -> flow {
-                consumeFlow(this) { e -> throw e }
+            StreamKind.Flow -> {
+                flow {
+                    consumeFlow(this) { e -> throw e }
+                }
             }
 
             StreamKind.SharedFlow -> {

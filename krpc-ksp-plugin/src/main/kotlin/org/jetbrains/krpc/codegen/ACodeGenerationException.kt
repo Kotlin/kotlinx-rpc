@@ -1,3 +1,5 @@
+@file:Suppress("detekt:all")
+
 package org.jetbrains.krpc.codegen
 
 import com.google.devtools.ksp.symbol.KSDeclaration

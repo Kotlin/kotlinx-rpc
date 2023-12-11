@@ -41,12 +41,16 @@ class KtorTransport(
                         val messageText = message.readText()
                         serialFormat.decodeFromString<RPCMessage>(messageText)
                     }
+
                     is BinaryFormat -> {
                         check(message is Frame.Binary)
                         val messageText = message.readBytes()
                         serialFormat.decodeFromByteArray<RPCMessage>(messageText)
                     }
-                    else -> unsupportedSerialFormatError(serialFormat)
+
+                    else -> {
+                        unsupportedSerialFormatError(serialFormat)
+                    }
                 }
                 subscribers.forEach { it(rpcMessage) }
             }

@@ -5,13 +5,18 @@ package org.jetbrains.krpc.test
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import org.jetbrains.krpc.*
+import org.jetbrains.krpc.RPC
+import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.client.awaitFieldInitialization
 import org.jetbrains.krpc.client.clientOf
+import org.jetbrains.krpc.rpcClientConfigBuilder
+import org.jetbrains.krpc.rpcServerConfigBuilder
 import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
 import org.jetbrains.krpc.server.RPCServerEngine
 import org.jetbrains.krpc.server.serverOf
 import org.junit.Assert.assertEquals
+import org.junit.Rule
+import org.junit.rules.Timeout
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -64,6 +69,10 @@ abstract class KRPCTransportTestBase {
     fun end() {
         service.coroutineContext.cancel()
     }
+
+    @Rule
+    @JvmField
+    val globalTimeout: Timeout = Timeout.seconds(30)
 
     @Test
     fun empty() {
@@ -229,7 +238,8 @@ abstract class KRPCTransportTestBase {
                 it.stream.toList(mutableListOf()).joinToString()
             }.toList(mutableListOf()).joinToString()
             assertEquals(
-                "a0, b0, c0, a1, b1, c1, a2, b2, c2, a3, b3, c3, a4, b4, c4, a5, b5, c5, a6, b6, c6, a7, b7, c7, a8, b8, c8, a9, b9, c9",
+                "a0, b0, c0, a1, b1, c1, a2, b2, c2, a3, b3, c3, a4, " +
+                        "b4, c4, a5, b5, c5, a6, b6, c6, a7, b7, c7, a8, b8, c8, a9, b9, c9",
                 result,
             )
         }
@@ -328,6 +338,7 @@ abstract class KRPCTransportTestBase {
     }
 
     @Test
+    @Suppress("detekt.TooGenericExceptionCaught")
     fun testException() {
         runBlocking {
             try {
@@ -404,7 +415,8 @@ abstract class KRPCTransportTestBase {
                 client.answerToAnything("hello")
 
                 // now we are in the continuation
-                // important for test: don't use suspending primitives to signal it, as we want to make sure we have a blocked thread,
+                // important for test: don't use suspending primitives to signal it,
+                // as we want to make sure we have a blocked thread,
                 // when the second coroutine is launched
                 inContinuation.release()
 
@@ -418,7 +430,8 @@ abstract class KRPCTransportTestBase {
             assertTrue(inContinuation.tryAcquire(100, TimeUnit.MILLISECONDS))
 
             val c2 = async { // make a call
-                // and make sure the continuation is executed, even though another call's continuation has blocked its thread.
+                // and make sure the continuation is executed,
+                // even though another call's continuation has blocked its thread.
                 client.answerToAnything("hello")
                 running.set(false)
             }

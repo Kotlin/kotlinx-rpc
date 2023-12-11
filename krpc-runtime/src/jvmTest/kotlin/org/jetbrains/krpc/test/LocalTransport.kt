@@ -1,3 +1,5 @@
+package org.jetbrains.krpc.test
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel

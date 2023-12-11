@@ -1,5 +1,8 @@
+@file:Suppress("unused")
+
 package org.jetbrains.krpc
 
+import RootService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +27,7 @@ interface FieldOnly : RPC {
 fun main(): Unit = runBlocking {
     testService<MainService>()
     testService<CommonService>()
+    testService<RootService>()
 
     RPC.clientOf<FieldOnly>(stubEngine)
 }

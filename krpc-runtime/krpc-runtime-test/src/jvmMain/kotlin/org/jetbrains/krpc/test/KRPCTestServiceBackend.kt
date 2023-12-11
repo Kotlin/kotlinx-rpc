@@ -54,6 +54,7 @@ class KRPCTestServiceBackend : KRPCTestService {
         println("Received list of lists: ${arg1.joinToString { it.joinToString() }} }}")
     }
 
+    @Suppress("detekt.MaxLineLength")
     override suspend fun mapParams(arg1: Map<String, Map<Int, List<String>>>) {
         println("Received map: ${arg1.entries.joinToString { "${it.key} -> ${it.value.entries.joinToString { (key, value) -> "$key -> ${value.joinToString()}" }}" }}")
     }
@@ -81,6 +82,7 @@ class KRPCTestServiceBackend : KRPCTestService {
 
     @OptIn(DelicateCoroutinesApi::class)
     override suspend fun incomingStreamAsyncCollect(arg1: Flow<String>): Int {
+        @Suppress("detekt.GlobalCoroutineUsage")
         GlobalScope.launch {
             arg1.collect { println("incomingStreamAsyncCollect item $it") }
         }
@@ -105,6 +107,8 @@ class KRPCTestServiceBackend : KRPCTestService {
         return payloadWithStream.payload.length + payloadWithStream.stream.count()
     }
 
+    // necessary for older Kotlin versions
+    @Suppress("UnnecessaryOptInAnnotation")
     @OptIn(FlowPreview::class)
     override suspend fun streamInStream(payloadWithStream: Flow<PayloadWithStream>): Int {
         return payloadWithStream.flatMapConcat { it.stream }.count()
@@ -145,13 +149,15 @@ class KRPCTestServiceBackend : KRPCTestService {
         return payloadWithPayloadStream()
     }
 
-    override suspend fun bidirectionalFlowOfPayloadWithPayload(payloadWithPayload: Flow<PayloadWithPayload>): Flow<PayloadWithPayload> {
+    override suspend fun bidirectionalFlowOfPayloadWithPayload(
+        payloadWithPayload: Flow<PayloadWithPayload>
+    ): Flow<PayloadWithPayload> {
         return payloadWithPayload
     }
 
     override suspend fun getNInts(n: Int): Flow<Int> {
         return flow {
-            (1..n).forEach {
+            for (it in 1..n) {
                 emit(it)
             }
         }
@@ -159,22 +165,24 @@ class KRPCTestServiceBackend : KRPCTestService {
 
     override suspend fun getNIntsBatched(n: Int): Flow<List<Int>> {
         return flow {
-            (1..n).chunked(1000).forEach {
+            for (it in (1..n).chunked(1000)) {
                 emit(it)
             }
         }
     }
 
-    override suspend fun bytes(byteArray: ByteArray) {
-    }
+    @Suppress("detekt.EmptyFunctionBlock")
+    override suspend fun bytes(byteArray: ByteArray) { }
 
-    override suspend fun nullableBytes(byteArray: ByteArray?) {
-    }
+    @Suppress("detekt.EmptyFunctionBlock")
+    override suspend fun nullableBytes(byteArray: ByteArray?) { }
 
+    @Suppress("detekt.TooGenericExceptionThrown")
     override suspend fun throwsIllegalArgument(message: String) {
         throw IllegalArgumentException(message)
     }
 
+    @Suppress("detekt.TooGenericExceptionThrown")
     override suspend fun throwsThrowable(message: String) {
         throw Throwable(message)
     }

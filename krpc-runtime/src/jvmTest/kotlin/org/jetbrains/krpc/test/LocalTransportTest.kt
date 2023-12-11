@@ -1,10 +1,11 @@
+package org.jetbrains.krpc.test
+
 import kotlinx.serialization.ExperimentalSerializationApi
 import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
 import org.jetbrains.krpc.serialization.cbor
 import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.serialization.protobuf
-import org.jetbrains.krpc.test.KRPCTransportTestBase
 
 abstract class LocalTransportTest : KRPCTransportTestBase() {
     private val transport = LocalTransport()
@@ -29,6 +30,7 @@ class CborLocalTransportTest : LocalTransportTest() {
     }
 }
 
+@Suppress("detekt.EmptyFunctionBlock")
 class ProtoBufLocalTransportTest : LocalTransportTest() {
     @OptIn(ExperimentalSerializationApi::class)
     override val serializationConfig: RPCSerialFormatConfiguration.() -> Unit = {

@@ -52,7 +52,7 @@ abstract class RPCEngine {
                             collectAndSendOutgoingFlow(mutex, serialFormat, stream, callId, streamId, elementSerializer)
                         }
                     }
-                } catch (cause: Throwable) {
+                } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
                     mutex.withLock {
                         val serializedReason = serializeException(cause)
                         val message = RPCMessage.StreamCancel(callId, serviceTypeString, streamId, serializedReason)
@@ -92,7 +92,9 @@ abstract class RPCEngine {
                         RPCMessage.StreamMessageBinary(callId, serviceTypeString, streamId, binaryData)
                     }
 
-                    else -> unsupportedSerialFormatError(serialFormat)
+                    else -> {
+                        unsupportedSerialFormatError(serialFormat)
+                    }
                 }
                 transport.send(message)
             }

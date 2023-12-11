@@ -11,7 +11,9 @@ subprojects {
         return notation.get().pluginId
     }
 
-    plugins.apply(alias(rootProject.libs.plugins.conventions.jvm))
+    afterEvaluate {
+        plugins.apply(alias(rootProject.libs.plugins.conventions.jvm))
+    }
     plugins.apply(alias(rootProject.libs.plugins.gradle.kotlin.dsl))
 
     // This block is needed to show plugin tasks on --dry-run
@@ -47,4 +49,5 @@ configureMetaTasks(
     "publish", // publish to Space
     "publishToMavenLocal", // for local plugin development
     "validatePlugins", // plugin validation
+    "detekt", // run Detekt tasks
 )

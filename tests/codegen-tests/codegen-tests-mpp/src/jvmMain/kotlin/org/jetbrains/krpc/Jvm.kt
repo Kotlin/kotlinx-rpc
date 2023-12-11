@@ -1,3 +1,5 @@
+@file:Suppress("detekt.MatchingDeclarationName")
+
 package org.jetbrains.krpc
 
 import kotlinx.coroutines.flow.Flow

@@ -30,6 +30,8 @@ interface RPCSerialFormat<Format : SerialFormat, FormatBuilder : Any> {
  * Special wrapper class that is used to register serialization format in [RPCSerialFormatConfiguration]
  * Comes in two instances: [RPCSerialFormatBuilder.Binary] and [RPCSerialFormatBuilder.String]
  *
+ * @param Format [SerialFormat] type that this builder should create for RPC
+ * @param FormatBuilder builder class for [Format]
  * @param rpcSerialFormat - instance of [RPCSerialFormat]
  * @param from - optional default format instance
  * @param builder - builder function for format configuration

@@ -21,6 +21,9 @@ internal class RPCFieldProvider<T, R>(
 }
 
 @Suppress("unused")
-internal fun <T> RPCFieldProvider(serviceName: String, deferred: CompletableDeferred<T> = CompletableDeferred()): RPCFieldProvider<T, T> {
+internal fun <T> RPCFieldProvider(
+    serviceName: String,
+    deferred: CompletableDeferred<T> = CompletableDeferred()
+): RPCFieldProvider<T, T> {
     return RPCFieldProvider(serviceName, deferred) { this }
 }

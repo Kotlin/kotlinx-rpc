@@ -1,3 +1,5 @@
+@file:Suppress("detekt:all")
+
 package org.jetbrains.krpc.codegen
 
 import com.google.devtools.ksp.getDeclaredFunctions
@@ -58,6 +60,7 @@ class RPCSymbolProcessor(
         }
 
         return RPCServiceDeclaration(
+            declaration = serviceDeclaration,
             simpleName = serviceDeclaration.simpleName.asString(),
             fullName = serviceDeclaration.qualifiedName?.asString()
                 ?: codegenError<AbsentQualifiedNameCodeGenerationException>(serviceDeclaration),

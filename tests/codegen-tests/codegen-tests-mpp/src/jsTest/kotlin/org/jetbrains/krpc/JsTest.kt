@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.js.Promise
 import kotlin.test.Test
-import kotlin.test.fail
 
 interface JsTestService : RPC, EmptyService {
     override suspend fun empty()
@@ -21,6 +20,7 @@ interface JsTestService : RPC, EmptyService {
 class JsTest : CommonTestSuite<Promise<Unit>>() {
     @OptIn(DelicateCoroutinesApi::class)
     override fun runAsync(body: suspend () -> Unit): Promise<Unit> {
+        @Suppress("detekt.GlobalCoroutineUsage")
         return GlobalScope.async(
             Dispatchers.Unconfined,
             block = { body() }

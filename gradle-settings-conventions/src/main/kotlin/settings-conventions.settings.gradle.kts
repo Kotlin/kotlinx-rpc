@@ -5,6 +5,13 @@ import java.nio.file.Files
 import java.nio.file.OpenOption
 import java.nio.file.Path
 
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
 fun Path.bufferedReader(
     charset: Charset = Charsets.UTF_8,
     bufferSize: Int = DEFAULT_BUFFER_SIZE,
@@ -27,6 +34,7 @@ data class KotlinLookupTable(
     val serialization: String,
     val coroutines: String,
     val ktor: String,
+    val detekt: String,
     val kotlinLogging: String,
     val gradleKotlinDsl: String,
 )
@@ -40,6 +48,7 @@ object SettingsConventions {
     const val SERIALIZATION_VERSION_ALIAS = "serialization"
     const val COROUTINES_VERSION_ALIAS = "coroutines"
     const val KTOR_VERSION_ALIAS = "ktor"
+    const val DETEKT_VERSION_ALIAS = "detekt-gradle-plugin"
     const val KOTLIN_LOGGING_VERSION_ALIAS = "kotlin-logging"
     const val KOTLIN_DSL_VERSION_ALIAS = "gradle-kotlin-dsl"
     const val KRPC_CORE_VERSION_ALIAS = "krpc-core"
@@ -72,6 +81,12 @@ fun findGlobalRootDirPath(start: Path, onDir: () -> Unit = {}): Path {
         onDir()
     }
 
+    gradle.rootProject {
+        allprojects {
+            this.extra["globalRootDir"] = path.toAbsolutePath().toString()
+        }
+    }
+
     return path
 }
 
@@ -92,6 +107,7 @@ fun loadLookupTable(rootDir: Path, kotlinVersion: String): KotlinLookupTable {
         serialization = currentTable.getValue(SettingsConventions.SERIALIZATION_VERSION_ALIAS),
         coroutines = currentTable.getValue(SettingsConventions.COROUTINES_VERSION_ALIAS),
         ktor = currentTable.getValue(SettingsConventions.KTOR_VERSION_ALIAS),
+        detekt = currentTable.getValue(SettingsConventions.DETEKT_VERSION_ALIAS),
         kotlinLogging = currentTable.getValue(SettingsConventions.KOTLIN_LOGGING_VERSION_ALIAS),
         gradleKotlinDsl = currentTable.getValue(SettingsConventions.KOTLIN_DSL_VERSION_ALIAS),
     )
@@ -196,6 +212,8 @@ dependencyResolutionManagement {
             version(SettingsConventions.COROUTINES_VERSION_ALIAS, lookupTable.coroutines)
 
             version(SettingsConventions.KTOR_VERSION_ALIAS, lookupTable.ktor)
+
+            version(SettingsConventions.DETEKT_VERSION_ALIAS, lookupTable.detekt)
 
             version(SettingsConventions.KOTLIN_LOGGING_VERSION_ALIAS, lookupTable.kotlinLogging)
 

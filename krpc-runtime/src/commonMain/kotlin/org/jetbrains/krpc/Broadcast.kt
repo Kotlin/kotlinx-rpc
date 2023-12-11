@@ -43,12 +43,23 @@ fun RPCTransport.multiclient(waitForService: Boolean = true): RPCTransport {
                 if (!done) {
                     if (waitForService) {
                         waiting.add(message)
-                        logger.warn { "No registered service of ${message.serviceType} service type was able to process message at the moment. Waiting for new services." }
+                        logger.warn {
+                            "No registered service of ${message.serviceType} service type " +
+                                    "was able to process message at the moment. Waiting for new services."
+                        }
                         return@subscribe false
                     }
 
-                    val cause = IllegalStateException("Failed to process call ${message.callId} for service ${message.serviceType}, ${if (toRemove.isEmpty()) "no services found" else "${toRemove.size} attempts failed"}")
-                    val callException = RPCMessage.CallException(message.callId, message.serviceType, serializeException(cause))
+                    val cause = IllegalStateException(
+                        "Failed to process call ${message.callId} for service ${message.serviceType}, " +
+                                if (toRemove.isEmpty()) "no services found" else "${toRemove.size} attempts failed"
+                    )
+
+                    val callException = RPCMessage.CallException(
+                        callId = message.callId,
+                        serviceType = message.serviceType,
+                        cause = serializeException(cause)
+                    )
                     send(callException)
                 }
 

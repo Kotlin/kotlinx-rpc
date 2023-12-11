@@ -1,3 +1,5 @@
+@file:Suppress("detekt:all")
+
 package org.jetbrains.krpc.codegen
 
 import com.google.devtools.ksp.processing.CodeGenerator
@@ -36,23 +38,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         writer.newLine()
         writer.newLine()
 
-        writer.write("import kotlinx.coroutines.Job")
-        writer.newLine()
-        writer.write("import kotlinx.coroutines.withContext")
-        writer.newLine()
-        writer.write("import kotlinx.serialization.Serializable")
-        writer.newLine()
-        writer.write("import kotlinx.serialization.Contextual")
-        writer.newLine()
-        writer.write("import org.jetbrains.krpc.internal.*")
-        writer.newLine()
-        writer.write("import kotlin.reflect.typeOf")
-        writer.newLine()
-        writer.write("import kotlin.coroutines.CoroutineContext")
-        writer.newLine()
-        writer.write("import ${service.fullName}")
-        writer.newLine()
-        writer.newLine()
+        generateImports(writer, service)
 
         writer.write("@Suppress(\"unused\")")
         writer.newLine()
@@ -77,6 +63,29 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         writer.write("}")
 
         writer.flush()
+    }
+
+    private fun generateImports(writer: CodeWriter, service: RPCServiceDeclaration) {
+        writer.write("import kotlinx.coroutines.Job")
+        writer.newLine()
+        writer.write("import kotlinx.coroutines.withContext")
+        writer.newLine()
+        writer.write("import kotlinx.serialization.Serializable")
+        writer.newLine()
+        writer.write("import kotlinx.serialization.Contextual")
+        writer.newLine()
+        writer.write("import org.jetbrains.krpc.internal.*")
+        writer.newLine()
+        writer.write("import kotlin.reflect.typeOf")
+        writer.newLine()
+        writer.write("import kotlin.coroutines.CoroutineContext")
+        writer.newLine()
+        service.collectRootImports().forEach {
+            writer.write("import ${it.simpleName.asString()}")
+            writer.newLine()
+        }
+        writer.newLine()
+        writer.newLine()
     }
 
     private fun RPCServiceDeclaration.Function.toCode(writer: CodeWriter) {
