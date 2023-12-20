@@ -99,7 +99,7 @@ private fun KotlinMultiplatformExtension.configureTargets(
 }
 
 private fun Project.configureDetekt(targets: List<KotlinTarget>) {
-    val sources = (targets.map { it.name} + "common").flatMap { name ->
+    val sources = (targets.map { it.name} + "common" + "native").flatMap { name ->
         listOf("src/${name}Main/kotlin", "src/${name}Test/kotlin")
     }
 

@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.krpc.client.clientOf
+import org.jetbrains.krpc.client.withService
 
 interface MainService : RPC, EmptyService {
     @RPCEagerField
@@ -33,5 +33,5 @@ fun main(): Unit = runBlocking {
     testService<CommonService>()
     testService<RootService>()
 
-    RPC.clientOf<FieldOnly>(stubEngine)
+    stubEngine.withService<FieldOnly>().flow
 }

@@ -4,8 +4,6 @@
 
 package org.jetbrains.krpc.internal
 
-import org.jetbrains.krpc.SerializedException
-import org.jetbrains.krpc.StackElement
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
 
@@ -95,6 +93,3 @@ private fun tryCreateException(constructor: Constructor<*>, serialized: Serializ
 
     return result as? Throwable?
 }
-
-internal actual val Throwable.qualifiedClassName: String?
-    get() = this::class.qualifiedName

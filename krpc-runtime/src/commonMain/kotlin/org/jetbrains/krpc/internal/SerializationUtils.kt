@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.*
 import kotlinx.serialization.modules.SerializersModule
-import org.jetbrains.krpc.RPCMessage
+import org.jetbrains.krpc.internal.transport.RPCMessage
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 

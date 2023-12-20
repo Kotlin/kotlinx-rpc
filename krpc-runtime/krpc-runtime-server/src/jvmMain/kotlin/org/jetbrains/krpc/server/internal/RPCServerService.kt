@@ -1,21 +1,17 @@
-/*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
- */
-
-package org.jetbrains.krpc.server
+package org.jetbrains.krpc.server.internal
 
 import kotlinx.coroutines.*
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.StringFormat
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCConfig
-import org.jetbrains.krpc.RPCMessage
-import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.map.ConcurrentHashMap
-import org.jetbrains.krpc.server.internal.rpcServiceMethodSerializationTypeOf
+import org.jetbrains.krpc.internal.transport.RPCMessage
+import org.jetbrains.krpc.internal.transport.RPCMessageSender
+import org.jetbrains.krpc.internal.transport.RPCEndpointBase
 import java.lang.reflect.InvocationTargetException
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KCallable
@@ -23,29 +19,19 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.callSuspend
 
-private const val HEX_RADIX = 16
-
-/**
- * Server engine for the provided RPC [service].
- * Handles incoming messages from [transport] and routes them to the provided [service].
- * Handles requests made via [service] and routes them to the [transport]
- *
- * Server engine is also in change of serialization, exception handling and stream management.
- */
-class RPCServerEngine<T : RPC>(
+internal class RPCServerService<T : RPC>(
     private val service: T,
-    override val transport: RPCTransport,
     private val serviceKClass: KClass<T>,
     override val config: RPCConfig.Server = RPCConfig.Server.Default,
-) : RPCEngine(), CoroutineScope {
-    override val serviceTypeString = serviceKClass.toString()
-    override val logger = CommonLogger.initialized()
-        .logger("RPCServerEngine[$serviceTypeString][0x${hashCode().toString(HEX_RADIX)}]")
+    override val sender: RPCMessageSender,
+) : RPCEndpointBase(), CoroutineScope {
+    private val serviceTypeString = serviceKClass.qualifiedClassName
+    override val logger = CommonLogger.initialized().logger(objectId(serviceTypeString))
 
     private val methods: Map<String, KCallable<*>>
     private val fields: Map<String, KCallable<*>>
 
-    override val coroutineContext: CoroutineContext = transport.coroutineContext + Job(transport.coroutineContext.job)
+    override val coroutineContext: CoroutineContext = sender.coroutineContext + Job(sender.coroutineContext.job)
 
     private val calls = ConcurrentHashMap<String, Job>()
 
@@ -62,59 +48,47 @@ class RPCServerEngine<T : RPC>(
         service.coroutineContext.job.invokeOnCompletion {
             logger.trace { "Service completed with $it" }
         }
-
-        launch {
-            run()
-        }
     }
 
-    private suspend fun run(): Unit = withContext(coroutineContext) {
-        transport.subscribe { message ->
-            val result = runCatching {
-                if (message.serviceType != serviceTypeString) {
-                    return@runCatching false
+    suspend fun accept(message: RPCMessage) {
+        val result = runCatching {
+            val callId = message.callId
+            logger.trace { "Incoming message $message" }
+
+            when (message) {
+                is RPCMessage.CallData -> {
+                    handleCall(callId, message)
                 }
 
-                val callId = message.callId
-                logger.trace { "Incoming message $message" }
-
-                when (message) {
-                    is RPCMessage.CallData -> {
-                        handleCall(callId, message)
-                    }
-
-                    is RPCMessage.CallException -> {
-                        calls[callId]?.cancel()
-                    }
-
-                    is RPCMessage.CallSuccess -> {
-                        error("Unexpected success message")
-                    }
-
-                    is RPCMessage.StreamCancel -> {
-                        val streamContext = streamContexts[callId] ?: error("Unknown call $callId")
-                        streamContext.awaitInitialized().cancelStream(message)
-                    }
-
-                    is RPCMessage.StreamFinished -> {
-                        val streamContext = streamContexts[callId] ?: error("Unknown call $callId")
-                        streamContext.awaitInitialized().closeStream(message)
-                    }
-
-                    is RPCMessage.StreamMessage -> {
-                        val streamContext = streamContexts[callId] ?: error("Unknown call $callId")
-                        streamContext.awaitInitialized().send(message, prepareSerialFormat(streamContext))
-                    }
+                is RPCMessage.CallException -> {
+                    calls[callId]?.cancel()
                 }
 
-                return@runCatching true
+                is RPCMessage.CallSuccess -> {
+                    error("Unexpected success message")
+                }
+
+                is RPCMessage.StreamCancel -> {
+                    val streamContext = streamContexts[callId] ?: error("Unknown call $callId")
+                    streamContext.awaitInitialized().cancelStream(message)
+                }
+
+                is RPCMessage.StreamFinished -> {
+                    val streamContext = streamContexts[callId] ?: error("Unknown call $callId")
+                    streamContext.awaitInitialized().closeStream(message)
+                }
+
+                is RPCMessage.StreamMessage -> {
+                    val streamContext = streamContexts[callId] ?: error("Unknown call $callId")
+                    streamContext.awaitInitialized().send(message, prepareSerialFormat(streamContext))
+                }
             }
 
-            if (result.isFailure) {
-                logger.error { result.exceptionOrNull()?.stackTrace?.toString() }
-            }
+            return@runCatching true
+        }
 
-            result.getOrNull() == true
+        if (result.isFailure) {
+            logger.error { result.exceptionOrNull()?.stackTrace?.toString() }
         }
     }
 
@@ -123,29 +97,30 @@ class RPCServerEngine<T : RPC>(
         val streamContext = LazyRPCStreamContext { RPCStreamContext(callId, config) }
         val serialFormat = prepareSerialFormat(streamContext)
         streamContexts[callId] = streamContext
-        val callableName = callData.callableName
 
-        val (isMethod, actualName) = when {
-            callableName.endsWith("\$method") -> true to callableName.removeSuffix("\$method")
-            callableName.endsWith("\$field") -> false to callableName.removeSuffix("\$field")
-            else -> true to callableName // compatibility with old clients
+        val isMethod = when (callData.callType) {
+            RPCMessage.CallType.Method -> true
+            RPCMessage.CallType.Field -> false
+            else -> true // compatibility with old clients
         }
 
-        val callable = (if (isMethod) methods else fields)[actualName]
+        val callableName = callData.callableName
+
+        val callable = (if (isMethod) methods else fields)[callableName]
 
         if (callable == null) {
             val callType = if (isMethod) "method" else "field"
-            val cause = NoSuchMethodException("Service $serviceTypeString has no $callType $actualName")
+            val cause = NoSuchMethodException("Service $serviceTypeString has no $callType $callableName")
             val message = RPCMessage.CallException(callId, serviceTypeString, serializeException(cause))
             launch {
-                transport.send(message)
+                sender.sendMessage(message)
             }
             return
         }
 
         val argsArray = if (isMethod) {
-            val type = rpcServiceMethodSerializationTypeOf(serviceKClass, actualName)
-                ?: error("Unknown method $actualName")
+            val type = rpcServiceMethodSerializationTypeOf(serviceKClass, callableName)
+                ?: error("Unknown method $callableName")
 
             val serializerModule = serialFormat.serializersModule
             val paramsSerializer = serializerModule.rpcSerializerForType(type)
@@ -188,10 +163,10 @@ class RPCServerEngine<T : RPC>(
                 val serializedCause = serializeException(cause)
                 RPCMessage.CallException(callId, serviceTypeString, serializedCause)
             }
-            transport.send(result)
+            sender.sendMessage(result)
 
             launch {
-                handleOutgoingStreams(this, streamContext, serialFormat)
+                handleOutgoingStreams(this, streamContext, serialFormat, serviceTypeString)
             }
 
             launch {
@@ -203,9 +178,5 @@ class RPCServerEngine<T : RPC>(
                 streamContext.valueOrNull?.close()
             }
         }
-    }
-
-    fun stop() {
-        coroutineContext.cancel()
     }
 }

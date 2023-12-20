@@ -1,13 +1,13 @@
-/*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
- */
-
-package org.jetbrains.krpc
+package org.jetbrains.krpc.internal.transport
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.jetbrains.krpc.internal.InternalKRPCApi
+import org.jetbrains.krpc.internal.SerializedException
 
+@InternalKRPCApi
 @Serializable
+@SerialName("RPCMessage")
 sealed interface RPCMessage {
     val callId: String
     val serviceType: String
@@ -28,6 +28,12 @@ sealed interface RPCMessage {
     @Serializable
     sealed interface CallData : RPCMessage, Data {
         val callableName: String
+        val callType: CallType?
+    }
+
+    @Serializable
+    enum class CallType {
+        Method, Field,
     }
 
     @Serializable
@@ -37,6 +43,7 @@ sealed interface RPCMessage {
         override val serviceType: String,
         @SerialName("method")
         override val callableName: String,
+        override val callType: CallType?,
         override val data: String,
     ) : CallData, Data.StringData
 
@@ -47,6 +54,7 @@ sealed interface RPCMessage {
         override val serviceType: String,
         @SerialName("method")
         override val callableName: String,
+        override val callType: CallType?,
         override val data: ByteArray,
     ) : CallData, Data.BinaryData
 

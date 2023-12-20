@@ -5,7 +5,7 @@
 package org.jetbrains.krpc.internal
 
 import org.jetbrains.krpc.RPC
-import org.jetbrains.krpc.RPCClientEngine
+import org.jetbrains.krpc.RPCClient
 import kotlin.reflect.KType
 
 @InternalKRPCApi
@@ -16,7 +16,7 @@ interface RPCClientObject<T : RPC> :
 
 @InternalKRPCApi
 interface RPCClientProvider<T : RPC> {
-    fun client(engine: RPCClientEngine) : T
+    fun withClient(client: RPCClient) : T
 }
 
 @InternalKRPCApi
@@ -26,5 +26,5 @@ interface RPCServiceMethodSerializationTypeProvider {
 
 @InternalKRPCApi
 interface RPCServiceFieldsProvider<T : RPC> {
-    fun rpcFields(client: T): List<RPCField<*>>
+    fun rpcFields(service: T): List<RPCDeferredField<*>>
 }

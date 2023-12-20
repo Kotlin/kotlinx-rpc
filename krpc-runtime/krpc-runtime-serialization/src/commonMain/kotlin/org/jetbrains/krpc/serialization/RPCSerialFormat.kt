@@ -6,7 +6,9 @@ package org.jetbrains.krpc.serialization
 
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat
+import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
+import org.jetbrains.krpc.internal.InternalKRPCApi
 
 /**
  * [RPCSerialFormat] interface defines an object which helps kRPC to work with various serialization formats
@@ -54,8 +56,10 @@ sealed class RPCSerialFormatBuilder<Format : SerialFormat, FormatBuilder : Any>(
         }
     }
 
+    @InternalKRPCApi
     fun build(): SerialFormat = builder(null)
 
+    @InternalKRPCApi
     fun applySerializersModuleAndBuild(serializersModule: SerializersModule): SerialFormat {
         return builder(serializersModule)
     }
@@ -66,7 +70,7 @@ sealed class RPCSerialFormatBuilder<Format : SerialFormat, FormatBuilder : Any>(
         builder: FormatBuilder.() -> Unit,
     ): RPCSerialFormatBuilder<Format, FormatBuilder>(rpcSerialFormat, from, builder)
 
-    class String<Format : SerialFormat, FormatBuilder : Any>(
+    class String<Format : StringFormat, FormatBuilder : Any>(
         rpcSerialFormat: RPCSerialFormat<Format, FormatBuilder>,
         from: Format? = null,
         builder: FormatBuilder.() -> Unit,

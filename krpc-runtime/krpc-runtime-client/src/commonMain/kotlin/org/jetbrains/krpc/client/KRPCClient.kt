@@ -13,88 +13,89 @@ import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import org.jetbrains.krpc.*
+import org.jetbrains.krpc.RPCField
+import org.jetbrains.krpc.RPCClient
 import org.jetbrains.krpc.client.internal.FieldDataObject
+import org.jetbrains.krpc.client.internal.RPCClientConnector
 import org.jetbrains.krpc.client.internal.RPCFlow
 import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.initialized
+import org.jetbrains.krpc.internal.transport.RPCMessage
+import org.jetbrains.krpc.internal.transport.RPCMessageSender
+import org.jetbrains.krpc.internal.transport.RPCEndpointBase
+import org.jetbrains.krpc.internal.transport.RPCTransport
 import kotlin.coroutines.CoroutineContext
-import kotlin.reflect.KClass
-import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 private val CLIENT_ENGINE_ID = atomic(initial = 0L)
-private const val HEX_RADIX = 16
 
-internal class RPCClientEngineImpl(
-    override val transport: RPCTransport,
-    serviceKClass: KClass<out RPC>,
+abstract class KRPCClient(
     override val config: RPCConfig.Client = RPCConfig.Client.Default,
-) : RPCEngine(), RPCClientEngine {
+    private val waitForServices: Boolean = true,
+) : RPCEndpointBase(), RPCClient {
+    private val connector by lazy {
+        RPCClientConnector(config.serialFormatInitializer.build(), Transport(), waitForServices)
+    }
+
+    override val sender: RPCMessageSender
+        get() = connector
+
     private val callCounter = atomic(0L)
     private val engineId: Long = CLIENT_ENGINE_ID.incrementAndGet()
-    override val serviceTypeString = serviceKClass.toString()
-    override val logger = CommonLogger.initialized()
-        .logger("RPCClientEngine[$serviceTypeString][0x${hashCode().toString(HEX_RADIX)}]")
+    override val logger = CommonLogger.initialized().logger(objectId())
 
-    override val coroutineContext: CoroutineContext = Job() + Dispatchers.Default
-
-    init {
-        coroutineContext.job.invokeOnCompletion {
-            logger.trace { "Job completed with $it" }
+    override fun <T> registerPlainFlowField(field: RPCField): Flow<T> {
+        return RPCFlow.Plain<T>(field.serviceTypeString).also { rpcFlow ->
+            initializeFlowField(rpcFlow, field)
         }
     }
 
-    override fun <T> registerPlainFlowField(fieldName: String, type: KType): Flow<T> {
-        return RPCFlow.Plain<T>(serviceTypeString).also { rpcFlow ->
-            initializeFlowField(rpcFlow, fieldName, type)
+    override fun <T> registerSharedFlowField(field: RPCField): SharedFlow<T> {
+        return RPCFlow.Shared<T>(field.serviceTypeString).also { rpcFlow ->
+            initializeFlowField(rpcFlow, field)
         }
     }
 
-    override fun <T> registerSharedFlowField(fieldName: String, type: KType): SharedFlow<T> {
-        return RPCFlow.Shared<T>(serviceTypeString).also { rpcFlow ->
-            initializeFlowField(rpcFlow, fieldName, type)
+    override fun <T> registerStateFlowField(field: RPCField): StateFlow<T> {
+        return RPCFlow.State<T>(field.serviceTypeString).also { rpcFlow ->
+            initializeFlowField(rpcFlow, field)
         }
     }
 
-    override fun <T> registerStateFlowField(fieldName: String, type: KType): StateFlow<T> {
-        return RPCFlow.State<T>(serviceTypeString).also { rpcFlow ->
-            initializeFlowField(rpcFlow, fieldName, type)
-        }
-    }
-
-    private fun initializeFlowField(rpcFlow: RPCFlow<*, *>, fieldName: String, type: KType) {
-        val callInfo = RPCCallInfo(
-            callableName = fieldName,
+    private fun <T, FlowT : Flow<T>> initializeFlowField(rpcFlow: RPCFlow<T, FlowT>, field: RPCField) {
+        val call = RPCCall(
+            serviceTypeString = field.serviceTypeString,
+            callableName = field.name,
+            type = RPCCall.Type.Field,
             data = FieldDataObject,
             dataType = typeOf<FieldDataObject>(),
-            returnType = type,
+            returnType = field.type,
         )
 
         launch {
-            call(
-                callInfo = callInfo,
-                callResult = rpcFlow.deferred,
-            )
+            call(call, rpcFlow.deferred)
         }
     }
 
-    override suspend fun call(callInfo: RPCCallInfo, callResult: CompletableDeferred<*>): Any? {
-        val (callContext, serialFormat) = prepareAndExecuteCall(callInfo, callResult)
+    override suspend fun <T> call(call: RPCCall): T {
+        return CompletableDeferred<T>().also { result -> call(call, result) }.await()
+    }
+
+    private suspend fun <T> call(call: RPCCall, callResult: CompletableDeferred<T>) {
+        val (callContext, serialFormat) = prepareAndExecuteCall(call, callResult)
 
         launch {
-            handleOutgoingStreams(this, callContext, serialFormat)
+            handleOutgoingStreams(this, callContext, serialFormat, call.serviceTypeString)
         }
 
         launch {
             handleIncomingHotFlows(this, callContext)
         }
-
-        return callResult.await()
     }
 
     private suspend fun prepareAndExecuteCall(
-        callInfo: RPCCallInfo,
+        callInfo: RPCCall,
         callResult: CompletableDeferred<*>,
     ): Pair<LazyRPCStreamContext, SerialFormat> {
         val id = callCounter.incrementAndGet()
@@ -110,7 +111,7 @@ internal class RPCClientEngineImpl(
         executeCall(
             callId = callId,
             streamContext = streamContext,
-            callInfo = callInfo,
+            call = callInfo,
             firstMessage = firstMessage,
             serialFormat = serialFormat,
             callResult = callResult as CompletableDeferred<Any?>
@@ -122,34 +123,26 @@ internal class RPCClientEngineImpl(
     private suspend fun executeCall(
         callId: String,
         streamContext: LazyRPCStreamContext,
-        callInfo: RPCCallInfo,
+        call: RPCCall,
         firstMessage: RPCMessage,
         serialFormat: SerialFormat,
         callResult: CompletableDeferred<Any?>,
     ) {
-        launch {
-            transport.subscribe { message ->
-                if (message.serviceType != serviceTypeString || message.callId != callId) {
-                    return@subscribe false
-                }
-
-                handleMessage(message, streamContext, callInfo, serialFormat, callResult)
-
-                return@subscribe true
-            }
+        connector.subscribeToCallResponse(call.serviceTypeString, callId) { message ->
+            handleMessage(message, streamContext, call, serialFormat, callResult)
         }
 
         coroutineContext.job.invokeOnCompletion {
             streamContext.valueOrNull?.close()
         }
 
-        transport.send(firstMessage)
+        connector.sendMessage(firstMessage)
     }
 
     private suspend fun handleMessage(
         message: RPCMessage,
         streamContext: LazyRPCStreamContext,
-        callInfo: RPCCallInfo,
+        callInfo: RPCCall,
         serialFormat: SerialFormat,
         callResult: CompletableDeferred<Any?>,
     ) {
@@ -196,22 +189,50 @@ internal class RPCClientEngineImpl(
         }
     }
 
-    private fun serializeRequest(callId: String, callInfo: RPCCallInfo, serialFormat: SerialFormat): RPCMessage {
-        val serializerData = serialFormat.serializersModule.rpcSerializerForType(callInfo.dataType)
+    private fun serializeRequest(callId: String, call: RPCCall, serialFormat: SerialFormat): RPCMessage {
+        val serializerData = serialFormat.serializersModule.rpcSerializerForType(call.dataType)
         return when (serialFormat) {
             is StringFormat -> {
-                val stringValue = serialFormat.encodeToString(serializerData, callInfo.data)
-                RPCMessage.CallDataString(callId, serviceTypeString, callInfo.callableName, stringValue)
+                val stringValue = serialFormat.encodeToString(serializerData, call.data)
+                RPCMessage.CallDataString(
+                    callId = callId,
+                    serviceType = call.serviceTypeString,
+                    callableName = call.callableName,
+                    callType = call.type.toMessageCallType(),
+                    data = stringValue
+                )
             }
 
             is BinaryFormat -> {
-                val binaryValue = serialFormat.encodeToByteArray(serializerData, callInfo.data)
-                RPCMessage.CallDataBinary(callId, serviceTypeString, callInfo.callableName, binaryValue)
+                val binaryValue = serialFormat.encodeToByteArray(serializerData, call.data)
+                RPCMessage.CallDataBinary(
+                    callId = callId,
+                    serviceType = call.serviceTypeString,
+                    callableName = call.callableName,
+                    callType = call.type.toMessageCallType(),
+                    data = binaryValue
+                )
             }
 
             else -> {
                 unsupportedSerialFormatError(serialFormat)
             }
+        }
+    }
+
+    abstract suspend fun send(message: RPCTransportMessage)
+
+    abstract suspend fun receive(): RPCTransportMessage
+
+    private inner class Transport : RPCTransport {
+        override val coroutineContext: CoroutineContext get() = this@KRPCClient.coroutineContext
+
+        override suspend fun send(message: RPCTransportMessage) {
+            this@KRPCClient.send(message)
+        }
+
+        override suspend fun receive(): RPCTransportMessage {
+            return this@KRPCClient.receive()
         }
     }
 }

@@ -32,7 +32,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         writer: CodeWriter,
         service: RPCServiceDeclaration,
     ) {
-        writer.write("@file:Suppress(\"RedundantUnitReturnType\", \"RemoveRedundantQualifierName\", \"USELESS_CAST\", \"UNCHECKED_CAST\", \"ClassName\", \"MemberVisibilityCanBePrivate\", \"KotlinRedundantDiagnosticSuppress\", \"UnusedImport\")")
+        writer.write("@file:Suppress(\"RedundantUnitReturnType\", \"RemoveRedundantQualifierName\", \"USELESS_CAST\", \"UNCHECKED_CAST\", \"ClassName\", \"MemberVisibilityCanBePrivate\", \"KotlinRedundantDiagnosticSuppress\", \"UnusedImport\", \"detekt.all\")")
         writer.newLine()
         writer.write("@file:OptIn(InternalKRPCApi::class)")
         writer.newLine()
@@ -46,22 +46,22 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
 
         writer.write("@Suppress(\"unused\")")
         writer.newLine()
-        writer.write("class ${service.simpleName.withClientImplSuffix()}(private val engine: RPCClientEngine) : ${service.fullName} {")
+        writer.write("class ${service.simpleName.withClientImplSuffix()}(private val client: RPCClient) : ${service.fullName} {")
         writer.newLine()
 
 
         val nested = writer.nested()
 
-        nested.write("override val coroutineContext: CoroutineContext = engine.coroutineContext + Job()")
+        nested.write("override val coroutineContext: CoroutineContext = client.coroutineContext + Job()")
         nested.newLine()
         nested.newLine()
 
         service.fields.forEach {
-            it.toCode(nested)
+            it.toCode(service.fullName, nested)
         }
 
         service.functions.forEach {
-            it.toCode(nested)
+            it.toCode(service.fullName, nested)
         }
         generateProviders(writer.nested(), service)
         writer.write("}")
@@ -92,13 +92,13 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         writer.newLine()
     }
 
-    private fun RPCServiceDeclaration.Function.toCode(writer: CodeWriter) {
+    private fun RPCServiceDeclaration.Function.toCode(serviceType: String, writer: CodeWriter) {
         generateFunctionClass(writer)
 
         val returnTypeGenerated = if (returnType.isUnit()) ": Unit" else ": ${returnType.toCode()}"
         writer.write("override suspend fun ${name}(${argumentTypes.joinToString { it.toCode() }})$returnTypeGenerated = withContext(coroutineContext) {")
         writer.newLine()
-        generateBody(writer.nested())
+        generateBody(serviceType, writer.nested())
         writer.write("}")
         writer.newLine()
         writer.newLine()
@@ -109,7 +109,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         return "$prefix$name: ${type.toCode()}"
     }
 
-    private fun RPCServiceDeclaration.FlowField.toCode(writer: CodeWriter) {
+    private fun RPCServiceDeclaration.FlowField.toCode(serviceType: String, writer: CodeWriter) {
         val method = when (flowType) {
             RPCServiceDeclaration.FlowField.Type.Plain -> REGISTER_PLAIN_FLOW_FIELD_METHOD
             RPCServiceDeclaration.FlowField.Type.Shared -> REGISTER_SHARED_FLOW_FIELD_METHOD
@@ -123,7 +123,9 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             else -> "by lazy {" to " }"
         }
 
-        val codeDeclaration = "override val $name: $codeType $prefix engine.$method(\"$name\\\$field\", typeOf<$codeType>())$suffix"
+        val rpcFiled = "RPCField(\"$serviceType\", \"$name\", typeOf<$codeType>())"
+
+        val codeDeclaration = "override val $name: $codeType $prefix client.$method($rpcFiled)$suffix"
 
         writer.write(codeDeclaration)
         writer.newLine()
@@ -150,28 +152,14 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         return "$qualifier$arguments$nullability"
     }
 
-    private fun KSType.toCodeWithStarTypeArguments(): String {
-        val qualifier = declaration.qualifiedName?.asString()
-            ?: codegenError<AbsentQualifiedNameCodeGenerationException>(declaration)
-
-        val typeParameters = if (arguments.isNotEmpty()) {
-            "<${arguments.joinToString { "*" }}>"
-        } else ""
-
-        val nullability = when {
-            isMarkedNullable -> "?"
-            else -> ""
-        }
-
-        return "$qualifier$typeParameters$nullability"
-    }
-
     private fun KSType?.isUnit(): Boolean {
         return this == null || this.declaration.simpleName.getShortName() == "Unit"
     }
 
-    private fun RPCServiceDeclaration.Function.generateBody(writer: CodeWriter) {
+    private fun RPCServiceDeclaration.Function.generateBody(serviceType: String, writer: CodeWriter) {
         writer.write("val returnType = typeOf<${returnType.toCode()}>()")
+        writer.newLine()
+        writer.write("val dataType = typeOf<${name.functionGeneratedClass()}>()")
         writer.newLine()
 
         val data = "${name.functionGeneratedClass()}${
@@ -185,16 +173,9 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             })"
         }"
 
-        val prefix = if (returnType.isUnit()) "" else "val result = "
-        writer.write("${prefix}engine.call(RPCCallInfo(\"${name}\\\$method\", $data, typeOf<${name.functionGeneratedClass()}>(), returnType))")
+        val rpcCall = "RPCCall(\"$serviceType\", \"$name\", RPCCall.Type.Method, $data, dataType, returnType)"
+        writer.write("client.call($rpcCall)")
         writer.newLine()
-
-        if (!returnType.isUnit()) {
-            writer.write("check(result is ${returnType.toCodeWithStarTypeArguments()})")
-            writer.newLine()
-            writer.write("return@withContext result as ${returnType.toCode()}")
-            writer.newLine()
-        }
     }
 
     private fun RPCServiceDeclaration.Function.generateFunctionClass(writer: CodeWriter) {
@@ -258,11 +239,11 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             newLine()
             newLine()
 
-            write("override fun client(engine: RPCClientEngine): ${service.fullName} = ${service.simpleName.withClientImplSuffix()}(engine)")
+            write("override fun withClient(client: RPCClient): ${service.fullName} = ${service.simpleName.withClientImplSuffix()}(client)")
             newLine()
             newLine()
 
-            write("override fun rpcFields(client: ${service.fullName}): List<RPCField<*>> = with(client) {")
+            write("override fun rpcFields(service: ${service.fullName}): List<RPCDeferredField<*>> = with(service) {")
             newLine()
             with(nested()) {
                 if (service.fields.isEmpty()) {
@@ -276,7 +257,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
                             newLine()
                         }
                     }
-                    write(") as List<RPCField<*>>")
+                    write(") as List<RPCDeferredField<*>>")
                 }
                 newLine()
             }

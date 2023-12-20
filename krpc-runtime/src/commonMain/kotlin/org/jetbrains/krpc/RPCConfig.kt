@@ -10,14 +10,14 @@ import org.jetbrains.krpc.internal.InternalKRPCApi
 import org.jetbrains.krpc.serialization.RPCSerialFormatBuilder
 import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
 
-abstract class RPCConfigBuilder internal constructor() {
+sealed class RPCConfigBuilder private constructor() {
     @Suppress("MemberVisibilityCanBePrivate")
     class SharedFlowParametersBuilder internal constructor() {
         var replay: Int = DEFAULT_REPLAY
         var extraBufferCapacity: Int = DEFAULT_EXTRA_BUFFER_CAPACITY
         var onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND
 
-        fun builder(): () -> MutableSharedFlow<Any?> = {
+        fun build(): () -> MutableSharedFlow<Any?> = {
             MutableSharedFlow(replay, extraBufferCapacity, onBufferOverflow)
         }
 
@@ -27,10 +27,10 @@ abstract class RPCConfigBuilder internal constructor() {
         }
     }
 
-    protected var sharedFlowBuilder: () -> MutableSharedFlow<Any?> = SharedFlowParametersBuilder().builder()
+    protected var sharedFlowBuilder: () -> MutableSharedFlow<Any?> = SharedFlowParametersBuilder().build()
 
     fun sharedFlowParameters(builder: SharedFlowParametersBuilder.() -> Unit) {
-        sharedFlowBuilder = SharedFlowParametersBuilder().apply(builder).builder()
+        sharedFlowBuilder = SharedFlowParametersBuilder().apply(builder).build()
     }
 
     private var serialFormatInitializer: RPCSerialFormatBuilder<*, *>? = null
@@ -75,8 +75,10 @@ abstract class RPCConfigBuilder internal constructor() {
     }
 }
 
-interface RPCConfig {
+sealed interface RPCConfig {
+    @InternalKRPCApi
     val sharedFlowBuilder: () -> MutableSharedFlow<Any?>
+    @InternalKRPCApi
     val serialFormatInitializer: RPCSerialFormatBuilder<*, *>
 
     class Client internal constructor(
@@ -98,20 +100,10 @@ interface RPCConfig {
     }
 }
 
-fun rpcClientConfigBuilder(builder: RPCConfigBuilder.Client.() -> Unit = {}): RPCConfigBuilder.Client.() -> Unit {
-    return builder
-}
-
-fun rpcServerConfigBuilder(builder: RPCConfigBuilder.Server.() -> Unit = {}): RPCConfigBuilder.Server.() -> Unit {
-    return builder
-}
-
-@InternalKRPCApi
 fun rpcClientConfig(builder: RPCConfigBuilder.Client.() -> Unit = {}): RPCConfig.Client {
     return RPCConfigBuilder.Client().apply(builder).build()
 }
 
-@InternalKRPCApi
 fun rpcServerConfig(builder: RPCConfigBuilder.Server.() -> Unit = {}): RPCConfig.Server {
     return RPCConfigBuilder.Server().apply(builder).build()
 }

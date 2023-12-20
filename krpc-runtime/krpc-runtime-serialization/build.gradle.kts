@@ -11,6 +11,8 @@ kotlin {
         commonMain {
             dependencies {
                 api(libs.serialization.core)
+
+                implementation(project(":krpc-runtime::krpc-runtime-api"))
             }
         }
     }
