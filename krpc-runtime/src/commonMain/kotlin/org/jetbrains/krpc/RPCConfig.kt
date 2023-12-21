@@ -17,7 +17,7 @@ sealed class RPCConfigBuilder private constructor() {
         var extraBufferCapacity: Int = DEFAULT_EXTRA_BUFFER_CAPACITY
         var onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND
 
-        fun build(): () -> MutableSharedFlow<Any?> = {
+        fun builder(): () -> MutableSharedFlow<Any?> = {
             MutableSharedFlow(replay, extraBufferCapacity, onBufferOverflow)
         }
 
@@ -27,10 +27,10 @@ sealed class RPCConfigBuilder private constructor() {
         }
     }
 
-    protected var sharedFlowBuilder: () -> MutableSharedFlow<Any?> = SharedFlowParametersBuilder().build()
+    protected var sharedFlowBuilder: () -> MutableSharedFlow<Any?> = SharedFlowParametersBuilder().builder()
 
     fun sharedFlowParameters(builder: SharedFlowParametersBuilder.() -> Unit) {
-        sharedFlowBuilder = SharedFlowParametersBuilder().apply(builder).build()
+        sharedFlowBuilder = SharedFlowParametersBuilder().apply(builder).builder()
     }
 
     private var serialFormatInitializer: RPCSerialFormatBuilder<*, *>? = null
@@ -56,11 +56,14 @@ sealed class RPCConfigBuilder private constructor() {
         }
     }
 
+    var waitForServices: Boolean = true
+
     class Client : RPCConfigBuilder() {
         fun build(): RPCConfig.Client {
             return RPCConfig.Client(
                 sharedFlowBuilder = sharedFlowBuilder,
                 serialFormatInitializer = rpcSerialFormat(),
+                waitForServices = waitForServices,
             )
         }
     }
@@ -70,6 +73,7 @@ sealed class RPCConfigBuilder private constructor() {
             return RPCConfig.Server(
                 sharedFlowBuilder = sharedFlowBuilder,
                 serialFormatInitializer = rpcSerialFormat(),
+                waitForServices = waitForServices,
             )
         }
     }
@@ -80,24 +84,20 @@ sealed interface RPCConfig {
     val sharedFlowBuilder: () -> MutableSharedFlow<Any?>
     @InternalKRPCApi
     val serialFormatInitializer: RPCSerialFormatBuilder<*, *>
+    @InternalKRPCApi
+    val waitForServices: Boolean
 
     class Client internal constructor(
         override val sharedFlowBuilder: () -> MutableSharedFlow<Any?>,
         override val serialFormatInitializer: RPCSerialFormatBuilder<*, *>,
-    ) : RPCConfig {
-        companion object {
-            val Default: Client by lazy { RPCConfigBuilder.Client().build() }
-        }
-    }
+        override val waitForServices: Boolean,
+    ) : RPCConfig
 
     class Server internal constructor(
         override val sharedFlowBuilder: () -> MutableSharedFlow<Any?>,
         override val serialFormatInitializer: RPCSerialFormatBuilder<*, *>,
-    ) : RPCConfig {
-        companion object {
-            val Default: Server by lazy { RPCConfigBuilder.Server().build() }
-        }
-    }
+        override val waitForServices: Boolean,
+    ) : RPCConfig
 }
 
 fun rpcClientConfig(builder: RPCConfigBuilder.Client.() -> Unit = {}): RPCConfig.Client {

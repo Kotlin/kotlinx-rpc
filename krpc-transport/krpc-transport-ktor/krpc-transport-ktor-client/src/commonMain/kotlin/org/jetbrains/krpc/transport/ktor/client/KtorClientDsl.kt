@@ -8,15 +8,9 @@ import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.util.*
-import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.job
-import org.jetbrains.krpc.RPC
+import org.jetbrains.krpc.RPCClient
 import org.jetbrains.krpc.RPCConfigBuilder
-import org.jetbrains.krpc.client.clientOf
 import org.jetbrains.krpc.rpcClientConfig
-import org.jetbrains.krpc.transport.ktor.KtorTransport
-import kotlin.reflect.KClass
 
 private val RPCRequestConfigAttributeKey = AttributeKey<RPCConfigBuilder.Client.() -> Unit>(
     name = "RPCRequestConfigAttributeKey"
@@ -26,25 +20,19 @@ fun HttpRequestBuilder.rpcConfig(configBuilder: RPCConfigBuilder.Client.() -> Un
     attributes.put(RPCRequestConfigAttributeKey, configBuilder)
 }
 
-suspend inline fun <reified T : RPC> HttpClient.rpc(
+suspend fun HttpClient.rpc(
     urlString: String,
-    crossinline block: HttpRequestBuilder.() -> Unit = {},
-): T {
+    block: HttpRequestBuilder.() -> Unit = {},
+): RPCClient {
     return rpc {
         url(urlString)
         block()
     }
 }
 
-suspend inline fun <reified T : RPC> HttpClient.rpc(
-    noinline block: HttpRequestBuilder.() -> Unit = {}
-): T = rpc(T::class, block)
-
-@OptIn(InternalCoroutinesApi::class)
-suspend fun <T : RPC> HttpClient.rpc(
-    serviceKClass: KClass<T>,
+suspend fun HttpClient.rpc(
     block: HttpRequestBuilder.() -> Unit,
-): T {
+): RPCClient {
     var requestConfigBuilder: RPCConfigBuilder.Client.() -> Unit = {}
     val session = webSocketSession {
         block()
@@ -58,12 +46,5 @@ suspend fun <T : RPC> HttpClient.rpc(
     val rpcConfig = pluginConfigBuilder?.apply(requestConfigBuilder)?.build()
         ?: rpcClientConfig(requestConfigBuilder)
 
-    val transport = KtorTransport(rpcConfig.serialFormatInitializer.build(), session)
-    val result = RPC.clientOf(serviceKClass, transport, rpcConfig)
-
-    result.coroutineContext.job.invokeOnCompletion(onCancelling = true) {
-        transport.cancel()
-    }
-
-    return result
+    return KtorRPCClient(session, rpcConfig)
 }

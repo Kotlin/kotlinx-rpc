@@ -5,7 +5,7 @@
 package org.jetbrains.krpc.test
 
 import kotlinx.serialization.ExperimentalSerializationApi
-import org.jetbrains.krpc.internal.transport.RPCTransport
+import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
 import org.jetbrains.krpc.serialization.cbor
 import org.jetbrains.krpc.serialization.json

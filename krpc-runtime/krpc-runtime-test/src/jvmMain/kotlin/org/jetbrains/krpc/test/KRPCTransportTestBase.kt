@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.*
 import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.awaitFieldInitialization
 import org.jetbrains.krpc.client.withService
-import org.jetbrains.krpc.internal.transport.RPCTransport
+import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
 import org.jetbrains.krpc.server.KRPCServer
 import org.jetbrains.krpc.server.registerService

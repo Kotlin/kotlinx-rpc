@@ -22,7 +22,7 @@ import kotlin.reflect.full.callSuspend
 internal class RPCServerService<T : RPC>(
     private val service: T,
     private val serviceKClass: KClass<T>,
-    override val config: RPCConfig.Server = RPCConfig.Server.Default,
+    override val config: RPCConfig.Server,
     override val sender: RPCMessageSender,
 ) : RPCEndpointBase(), CoroutineScope {
     private val serviceTypeString = serviceKClass.qualifiedClassName

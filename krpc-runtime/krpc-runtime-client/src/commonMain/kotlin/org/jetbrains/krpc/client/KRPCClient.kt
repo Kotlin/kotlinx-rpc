@@ -24,18 +24,16 @@ import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.transport.RPCMessage
 import org.jetbrains.krpc.internal.transport.RPCMessageSender
 import org.jetbrains.krpc.internal.transport.RPCEndpointBase
-import org.jetbrains.krpc.internal.transport.RPCTransport
-import kotlin.coroutines.CoroutineContext
+import org.jetbrains.krpc.RPCTransport
 import kotlin.reflect.typeOf
 
 private val CLIENT_ENGINE_ID = atomic(initial = 0L)
 
 abstract class KRPCClient(
-    override val config: RPCConfig.Client = RPCConfig.Client.Default,
-    private val waitForServices: Boolean = true,
-) : RPCEndpointBase(), RPCClient {
+    final override val config: RPCConfig.Client
+) : RPCEndpointBase(), RPCClient, RPCTransport {
     private val connector by lazy {
-        RPCClientConnector(config.serialFormatInitializer.build(), Transport(), waitForServices)
+        RPCClientConnector(config.serialFormatInitializer.build(), this, config.waitForServices)
     }
 
     override val sender: RPCMessageSender
@@ -217,22 +215,6 @@ abstract class KRPCClient(
             else -> {
                 unsupportedSerialFormatError(serialFormat)
             }
-        }
-    }
-
-    abstract suspend fun send(message: RPCTransportMessage)
-
-    abstract suspend fun receive(): RPCTransportMessage
-
-    private inner class Transport : RPCTransport {
-        override val coroutineContext: CoroutineContext get() = this@KRPCClient.coroutineContext
-
-        override suspend fun send(message: RPCTransportMessage) {
-            this@KRPCClient.send(message)
-        }
-
-        override suspend fun receive(): RPCTransportMessage {
-            return this@KRPCClient.receive()
         }
     }
 }

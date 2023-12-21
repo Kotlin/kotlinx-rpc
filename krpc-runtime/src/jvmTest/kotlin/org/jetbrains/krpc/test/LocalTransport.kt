@@ -7,8 +7,8 @@ package org.jetbrains.krpc.test
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.RPCTransportMessage
-import org.jetbrains.krpc.internal.transport.RPCTransport
 import kotlin.coroutines.CoroutineContext
 
 class LocalTransport : CoroutineScope {

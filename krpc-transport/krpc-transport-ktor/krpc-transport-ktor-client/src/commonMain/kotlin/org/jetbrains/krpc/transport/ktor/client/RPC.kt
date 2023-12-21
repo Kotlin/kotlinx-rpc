@@ -14,6 +14,6 @@ internal val RPCClientPluginAttributesKey = AttributeKey<RPCConfigBuilder.Client
 /**
  * Plugin for setting global kRPC configuration. See [RPCConfig.Client]
  */
-val KRPC = createClientPlugin("kRPC", { RPCConfigBuilder.Client() }) {
+val RPC = createClientPlugin("RPC", { RPCConfigBuilder.Client() }) {
     client.attributes.put(RPCClientPluginAttributesKey, pluginConfig)
 }

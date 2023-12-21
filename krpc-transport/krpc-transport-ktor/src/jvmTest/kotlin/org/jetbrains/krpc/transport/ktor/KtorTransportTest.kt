@@ -16,6 +16,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.krpc.RPC
+import org.jetbrains.krpc.client.withService
 import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.transport.ktor.client.rpc
 import org.jetbrains.krpc.transport.ktor.client.rpcConfig
@@ -37,57 +38,71 @@ class NewServiceImpl : NewService {
 }
 
 class KtorTransportTest {
-
     @Test
     fun testEcho() = runBlocking {
         val server = embeddedServer(Netty, port = 4242) {
             install(WebSockets)
-            install(org.jetbrains.krpc.transport.ktor.server.KRPC) {
+            install(org.jetbrains.krpc.transport.ktor.server.RPC) {
                 serialization {
                     json()
                 }
             }
             routing {
-                rpc<NewService>("/rpc", NewServiceImpl())
+                rpc("/rpc") {
+                    rpcConfig {
+                        serialization {
+                            json {
+                                ignoreUnknownKeys = true
+                            }
+                        }
+
+                        waitForServices = true
+                    }
+
+                    registerService<NewService>(NewServiceImpl())
+                }
             }
         }.start()
 
         val clientWithGlobalConfig = HttpClient {
             install(io.ktor.client.plugins.websocket.WebSockets)
-            install(org.jetbrains.krpc.transport.ktor.client.KRPC) {
+            install(org.jetbrains.krpc.transport.ktor.client.RPC) {
                 serialization {
                     json()
                 }
             }
         }
 
-        val clientWithServiceConfig = HttpClient {
-            install(io.ktor.client.plugins.websocket.WebSockets)
-            install(org.jetbrains.krpc.transport.ktor.client.KRPC)
-        }
+        val serviceWithGlobalConfig = clientWithGlobalConfig
+            .rpc("ws://localhost:4242/rpc")
+            .withService<NewService>()
 
-        val serviceWithGlobalConfig = clientWithGlobalConfig.rpc<NewService>("ws://localhost:4242/rpc")
-        val actual1 = serviceWithGlobalConfig.echo("Hello, world!")
+        val firstActual = serviceWithGlobalConfig.echo("Hello, world!")
 
-        assertEquals("Hello, world!", actual1)
+        assertEquals("Hello, world!", firstActual)
 
         serviceWithGlobalConfig.cancel()
-        clientWithGlobalConfig.close()
+        clientWithGlobalConfig.cancel()
 
-        val serviceWithLocalConfig = clientWithServiceConfig.rpc<NewService>("ws://localhost:4242/rpc") {
+        val clientWithNoConfig = HttpClient {
+            install(io.ktor.client.plugins.websocket.WebSockets)
+            install(org.jetbrains.krpc.transport.ktor.client.RPC)
+        }
+
+        val serviceWithLocalConfig = clientWithNoConfig.rpc("ws://localhost:4242/rpc") {
             rpcConfig {
                 serialization {
                     json()
                 }
             }
-        }
+        }.withService<NewService>()
 
-        val actual2 = serviceWithLocalConfig.echo("Hello, world!")
+        val secondActual = serviceWithLocalConfig.echo("Hello, world!")
 
-        assertEquals("Hello, world!", actual2)
+        assertEquals("Hello, world!", secondActual)
 
         serviceWithLocalConfig.cancel()
-        clientWithServiceConfig.close()
+        clientWithNoConfig.cancel()
 
         server.stop()
     }

@@ -6,11 +6,8 @@ package org.jetbrains.krpc.test
 
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.*
-import org.jetbrains.krpc.RPC
-import org.jetbrains.krpc.RPCClient
+import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.withService
-import org.jetbrains.krpc.rpcClientConfig
-import org.jetbrains.krpc.rpcServerConfig
 import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.server.RPCServer
 import org.jetbrains.krpc.server.registerService
@@ -69,15 +66,16 @@ class TransportTest {
         }
     }
 
-    private fun clientOf(localTransport: LocalTransport, waiting: Boolean = true): RPCClient {
-        return KRPCTestClient(clientConfig, Job(), localTransport.client, waiting)
+    private fun clientOf(localTransport: LocalTransport): RPCClient {
+        return KRPCTestClient(clientConfig, Job(), localTransport.client)
     }
 
     private fun serverOf(
         localTransport: LocalTransport,
-        waiting: Boolean = true,
+        config: (RPCConfigBuilder.Server.() -> Unit)? = null
     ): RPCServer {
-        return KRPCTestServer(serverConfig, Job(), localTransport.server, waiting)
+        val serverConfig = config?.let { rpcServerConfig(it) } ?: serverConfig
+        return KRPCTestServer(serverConfig, Job(), localTransport.server)
     }
 
     @Test
@@ -92,7 +90,13 @@ class TransportTest {
         }
 
         val echoServer = EchoServer()
-        val server = serverOf(transports, waiting = false)
+        val server = serverOf(transports) {
+            serialization {
+                json()
+            }
+
+            waitForServices = false
+        }
         server.registerService<Echo>(echoServer)
 
         result.await()
