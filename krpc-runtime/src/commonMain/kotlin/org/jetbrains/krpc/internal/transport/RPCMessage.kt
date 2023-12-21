@@ -7,7 +7,6 @@ import org.jetbrains.krpc.internal.SerializedException
 
 @InternalKRPCApi
 @Serializable
-@SerialName("RPCMessage")
 sealed interface RPCMessage {
     val callId: String
     val serviceType: String

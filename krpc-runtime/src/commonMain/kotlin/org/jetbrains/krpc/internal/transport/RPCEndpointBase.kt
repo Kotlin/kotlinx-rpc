@@ -115,26 +115,17 @@ abstract class RPCEndpointBase: CoroutineScope {
         val module = SerializersModule {
             contextual(Flow::class) {
                 @Suppress("UNCHECKED_CAST")
-                (StreamSerializer.Flow(
-                    rpcFlowContext.initialize(),
-                    it.first() as KSerializer<Any?>
-                ))
+                StreamSerializer.Flow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
             }
 
             contextual(SharedFlow::class) {
                 @Suppress("UNCHECKED_CAST")
-                (StreamSerializer.SharedFlow(
-                    rpcFlowContext.initialize(),
-                    it.first() as KSerializer<Any?>
-                ))
+                StreamSerializer.SharedFlow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
             }
 
             contextual(StateFlow::class) {
                 @Suppress("UNCHECKED_CAST")
-                (StreamSerializer.StateFlow(
-                    rpcFlowContext.initialize(),
-                    it.first() as KSerializer<Any?>
-                ))
+                StreamSerializer.StateFlow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
             }
         }
 
