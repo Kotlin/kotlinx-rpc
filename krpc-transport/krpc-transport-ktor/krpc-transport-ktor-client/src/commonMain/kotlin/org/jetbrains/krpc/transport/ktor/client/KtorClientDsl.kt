@@ -5,6 +5,7 @@
 package org.jetbrains.krpc.transport.ktor.client
 
 import io.ktor.client.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.util.*
@@ -31,8 +32,10 @@ suspend fun HttpClient.rpc(
 }
 
 suspend fun HttpClient.rpc(
-    block: HttpRequestBuilder.() -> Unit,
+    block: HttpRequestBuilder.() -> Unit = {},
 ): RPCClient {
+    pluginOrNull(WebSockets) ?: error("RPC for client requires $WebSockets plugin to be installed firstly")
+
     var requestConfigBuilder: RPCConfigBuilder.Client.() -> Unit = {}
     val session = webSocketSession {
         block()

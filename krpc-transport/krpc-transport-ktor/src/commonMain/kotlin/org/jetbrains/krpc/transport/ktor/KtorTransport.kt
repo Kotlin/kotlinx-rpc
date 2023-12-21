@@ -8,8 +8,10 @@ import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.RPCTransportMessage
+import org.jetbrains.krpc.internal.InternalKRPCApi
 import kotlin.coroutines.CoroutineContext
 
+@InternalKRPCApi
 @OptIn(InternalCoroutinesApi::class, DelicateCoroutinesApi::class)
 class KtorTransport(private val webSocketSession: WebSocketSession): RPCTransport {
     // Transport job should always be cancelled and never closed
