@@ -6,7 +6,12 @@ package org.jetbrains.krpc
 
 import kotlinx.coroutines.CoroutineScope
 
-// Marker interface for services
+/**
+ * Marker interface for all RPC services.
+ * For each service that inherits this interface kRPC will generate an implementation to use on client side.
+ *
+ * [CoroutineScope] defines service lifetime.
+ */
 interface RPC : CoroutineScope {
     companion object
 }

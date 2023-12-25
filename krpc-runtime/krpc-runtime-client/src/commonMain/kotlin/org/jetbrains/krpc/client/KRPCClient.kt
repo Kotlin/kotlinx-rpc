@@ -29,6 +29,14 @@ import kotlin.reflect.typeOf
 
 private val CLIENT_ENGINE_ID = atomic(initial = 0L)
 
+/**
+ * Default implementation of [RPCClient].
+ * Takes care of tracking requests and responses,
+ * serializing data, tracking streams, processing exceptions and other protocol responsibilities.
+ * Leaves out the delivery of encoded messages to the specific implementations.
+ *
+ * @property config configuration provided for that specific client. Applied to all services that use this client.
+ */
 abstract class KRPCClient(
     final override val config: RPCConfig.Client
 ) : RPCEndpointBase(), RPCClient, RPCTransport {

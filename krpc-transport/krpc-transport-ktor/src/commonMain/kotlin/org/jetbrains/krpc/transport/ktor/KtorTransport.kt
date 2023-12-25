@@ -29,6 +29,11 @@ class KtorTransport(private val webSocketSession: WebSocketSession): RPCTranspor
         }
     }
 
+    /**
+     * Sends a single encoded RPC message over network (or any other medium) to a peer endpoint.
+     *
+     * @param message a message to send. Either of string or binary type.
+     */
     override suspend fun send(message: RPCTransportMessage) {
         when (message) {
             is RPCTransportMessage.StringMessage -> {
@@ -41,6 +46,11 @@ class KtorTransport(private val webSocketSession: WebSocketSession): RPCTranspor
         }
     }
 
+    /**
+     * Suspends until next RPC message from a peer endpoint is received and then returns it.
+     *
+     * @return received RPC message.
+     */
     override suspend fun receive(): RPCTransportMessage {
         return when (val message = webSocketSession.incoming.receive()) {
             is Frame.Text -> {

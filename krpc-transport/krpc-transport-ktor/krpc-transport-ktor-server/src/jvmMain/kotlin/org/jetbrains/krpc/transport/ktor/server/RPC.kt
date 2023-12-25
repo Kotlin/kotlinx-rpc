@@ -12,7 +12,7 @@ import org.jetbrains.krpc.RPCConfigBuilder
 internal val RPCServerPluginAttributesKey = AttributeKey<RPCConfigBuilder.Server>("RPCServerPluginAttributesKey")
 
 /**
- * Plugin for setting global kRPC configuration. See [RPCConfig.Server]
+ * Ktor server plugin that allows to configure RPC globally for all mounted servers.
  */
 val RPC: ApplicationPlugin<RPCConfigBuilder.Server> = createApplicationPlugin("RPC", { RPCConfigBuilder.Server() }) {
     application.attributes.put(RPCServerPluginAttributesKey, pluginConfig)

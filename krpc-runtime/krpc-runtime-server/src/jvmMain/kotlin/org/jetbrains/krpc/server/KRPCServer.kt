@@ -9,6 +9,15 @@ import org.jetbrains.krpc.internal.transport.RPCConnector
 import org.jetbrains.krpc.server.internal.RPCServerService
 import kotlin.reflect.KClass
 
+/**
+ * Default implementation of [RPCServer].
+ * Takes care of tracking requests and responses,
+ * serializing data, tracking streams, processing exceptions and other protocol responsibilities.
+ * Routes resulting messages to the proper registered services.
+ * Leaves out the delivery of encoded messages to the specific implementations.
+ *
+ * @param config configuration provided for that specific client. Applied to all services that use this server.
+ */
 abstract class KRPCServer(private val config: RPCConfig.Server): RPCServer, RPCTransport {
     override fun <Service : RPC> registerService(service: Service, serviceKClass: KClass<Service>) {
         val name = serviceKClass.qualifiedClassName

@@ -6,7 +6,15 @@ import io.ktor.server.websocket.*
 import io.ktor.util.*
 import kotlinx.coroutines.job
 import org.jetbrains.krpc.rpcServerConfig
+import org.jetbrains.krpc.server.RPCServer
 
+/**
+ * Adds an RPC route to the specified [Route]. Provides builder to configure [RPCServer] that will be used internally.
+ * Note that the [WebSockets] plugin is required for such a route to work.
+ *
+ * @param path The relative path on which RPC server should mount.
+ * @param builder Builder function to configure RPC server.
+ */
 @KtorDsl
 fun Route.rpc(path: String, builder: RPCRoute.() -> Unit) {
     route(path) {
@@ -14,6 +22,12 @@ fun Route.rpc(path: String, builder: RPCRoute.() -> Unit) {
     }
 }
 
+/**
+ * Adds an RPC route to the specified [Route]. Provides builder to configure [RPCServer] that will be used internally.
+ * Note that the [WebSockets] plugin is required for such a route to work.
+ *
+ * @param builder Builder function to configure RPC server.
+ */
 @KtorDsl
 fun Route.rpc(builder: RPCRoute.() -> Unit) {
     createRPCServer(builder)

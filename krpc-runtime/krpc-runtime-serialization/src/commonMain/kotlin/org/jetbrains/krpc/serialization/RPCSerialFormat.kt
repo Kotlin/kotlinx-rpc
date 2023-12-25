@@ -64,12 +64,18 @@ sealed class RPCSerialFormatBuilder<Format : SerialFormat, FormatBuilder : Any>(
         return builder(serializersModule)
     }
 
+    /**
+     * @see RPCSerialFormatBuilder
+     */
     class Binary<Format : BinaryFormat, FormatBuilder : Any>(
         rpcSerialFormat: RPCSerialFormat<Format, FormatBuilder>,
         from: Format? = null,
         builder: FormatBuilder.() -> Unit,
     ): RPCSerialFormatBuilder<Format, FormatBuilder>(rpcSerialFormat, from, builder)
 
+    /**
+     * @see RPCSerialFormatBuilder
+     */
     class String<Format : StringFormat, FormatBuilder : Any>(
         rpcSerialFormat: RPCSerialFormat<Format, FormatBuilder>,
         from: Format? = null,

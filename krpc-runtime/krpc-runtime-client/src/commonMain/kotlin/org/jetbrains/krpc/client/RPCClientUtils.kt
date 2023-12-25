@@ -12,14 +12,34 @@ import org.jetbrains.krpc.internal.kClass
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
+/**
+ * Creates instance of the generated service, that is able to communicate with server using RPCClient
+ *
+ * @param T exact type of the service to be created.
+ * @return instance of the generated service.
+ */
 inline fun <reified T : RPC> RPCClient.withService(): T {
     return withService(T::class)
 }
 
-fun <T : RPC> RPCClient.withService(kType: KType): T {
-    return withService(kType.kClass())
+/**
+ * Creates instance of the generated service, that is able to communicate with server using RPCClient
+ *
+ * @param T exact type of the service to be created.
+ * @param serviceKType [KType] of the service to be created.
+ * @return instance of the generated service.
+ */
+fun <T : RPC> RPCClient.withService(serviceKType: KType): T {
+    return withService(serviceKType.kClass())
 }
 
+/**
+ * Creates instance of the generated service, that is able to communicate with server using RPCClient
+ *
+ * @param T exact type of the service to be created.
+ * @param serviceKClass [KClass] of the service to be created.
+ * @return instance of the generated service.
+ */
 fun <T : RPC> RPCClient.withService(serviceKClass: KClass<T>): T {
     val withRPCClientObject = findRPCProviderInCompanion<RPCClientProvider<T>>(serviceKClass)
     return withRPCClientObject.withClient(this)

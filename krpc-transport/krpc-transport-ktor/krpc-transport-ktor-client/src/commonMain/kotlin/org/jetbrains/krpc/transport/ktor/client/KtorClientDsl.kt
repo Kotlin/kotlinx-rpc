@@ -17,10 +17,25 @@ private val RPCRequestConfigAttributeKey = AttributeKey<RPCConfigBuilder.Client.
     name = "RPCRequestConfigAttributeKey"
 )
 
+/**
+ * Extension function for the [HttpRequestBuilder] that allows to configure RPC for the call.
+ * Usually used with the [rpc] functions.
+ * Overrides [RPC] plugin configuration.
+ *
+ * @param configBuilder The function that configures RPC.
+ */
 fun HttpRequestBuilder.rpcConfig(configBuilder: RPCConfigBuilder.Client.() -> Unit = {}) {
     attributes.put(RPCRequestConfigAttributeKey, configBuilder)
 }
 
+/**
+ * Configures [RPCClient] for the following path. Provides means for additional configuration via [block].
+ * Note that the [WebSockets] plugin is required for these calls.
+ *
+ * @param urlString The URL to use for the request.
+ * @param block Optional configuration for the
+ * @return An instance of [RPCClient] that is configured to send messages to the server.
+ */
 suspend fun HttpClient.rpc(
     urlString: String,
     block: HttpRequestBuilder.() -> Unit = {},
@@ -31,6 +46,13 @@ suspend fun HttpClient.rpc(
     }
 }
 
+/**
+ * Configures [RPCClient] for the following path. Provides means for additional cinfiguration via [block].
+ * Note that the [WebSockets] plugin is required for these calls.
+ *
+ * @param block Optional configuration for the
+ * @return An instance of [RPCClient] that is configured to send messages to the server.
+ */
 suspend fun HttpClient.rpc(
     block: HttpRequestBuilder.() -> Unit = {},
 ): RPCClient {

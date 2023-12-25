@@ -12,14 +12,20 @@ import kotlin.reflect.KClass
 
 /**
  * Waits for the initialization of an RPC field in the generated client:
+ *
  * ```kotlin
  * interface MyService : RPC {
  *     val stateFlow: StateFlow<Int>
  * }
  *
- * val client = RPC.clientOf<MyService>(transport)
- * val currentValue = client.awaitFieldInitialization { stateFlow }.value
+ * val service = rpcClient.withService<MyService>()
+ * val currentValue = service.awaitFieldInitialization { stateFlow }.value
  * ```
+ *
+ * @param T service type
+ * @param R field type
+ * @param getter function that returns the field of the context service to wait for.
+ * @return service filed after it was initialized.
  */
 suspend fun <T : RPC, R> T.awaitFieldInitialization(getter: T.() -> R): R {
     val field = getter()
@@ -34,16 +40,20 @@ suspend fun <T : RPC, R> T.awaitFieldInitialization(getter: T.() -> R): R {
 
 /**
  * Waits for the initialization of all RPC fields in the generated client:
+ *
  * ```kotlin
  * interface MyService : RPC {
  *     val stateFlow1: StateFlow<Int>
  *     val stateFlow2: StateFlow<Int>
  * }
  *
- * val client = RPC.clientOf<MyService>(transport)
- * val currentValue = client.awaitFieldInitialization()
+ * val service = rpcClient.withService<MyService>()
+ * val currentValue = service.awaitFieldInitialization()
  * // fields `stateFlow1` and `stateFlow2` are initialized
  * ```
+ *
+ * @param T service type
+ * @return specified service, after all of it's field were initialized.
  */
 suspend inline fun <reified T : RPC> T.awaitFieldInitialization(): T {
     return awaitFieldInitialization(T::class)
@@ -51,16 +61,21 @@ suspend inline fun <reified T : RPC> T.awaitFieldInitialization(): T {
 
 /**
  * Waits for the initialization of all RPC fields in the generated client:
+ *
  * ```kotlin
  * interface MyService : RPC {
  *     val stateFlow1: StateFlow<Int>
  *     val stateFlow2: StateFlow<Int>
  * }
  *
- * val client = RPC.clientOf<MyService>(transport)
- * val currentValue = client.awaitFieldInitialization(MyService::class)
+ * val service = rpcClient.withService<MyService>()
+ * val currentValue = service.awaitFieldInitialization(MyService::class)
  * // fields `stateFlow1` and `stateFlow2` are initialized
  * ```
+ *
+ * @param T service type
+ * @param kClass [KClass] of the [T] type.
+ * @return specified service, after all of it's field were initialized.
  */
 suspend fun <T : RPC> T.awaitFieldInitialization(kClass: KClass<T>): T {
     findRPCProviderInCompanion<RPCServiceFieldsProvider<T>>(kClass)

@@ -79,6 +79,9 @@ sealed class RPCConfigBuilder private constructor() {
     }
 }
 
+/**
+ * Configuration class that is used by kRPC default RPC client and server.
+ */
 sealed interface RPCConfig {
     @InternalKRPCApi
     val sharedFlowBuilder: () -> MutableSharedFlow<Any?>
