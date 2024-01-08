@@ -11,37 +11,37 @@ import org.jetbrains.krpc.internal.SerializedException
 
 @InternalKRPCApi
 @Serializable
-sealed interface RPCMessage {
-    val callId: String
-    val serviceType: String
+public sealed interface RPCMessage {
+    public val callId: String
+    public val serviceType: String
 
-    sealed interface Data {
-        sealed interface BinaryData: Data {
-            val data: ByteArray
+    public sealed interface Data {
+        public sealed interface BinaryData: Data {
+            public val data: ByteArray
         }
 
-        sealed interface StringData: Data {
-            val data: String
+        public sealed interface StringData: Data {
+            public val data: String
         }
     }
 
     @Serializable
-    sealed interface CallResult : RPCMessage
+    public sealed interface CallResult : RPCMessage
 
     @Serializable
-    sealed interface CallData : RPCMessage, Data {
-        val callableName: String
-        val callType: CallType?
+    public sealed interface CallData : RPCMessage, Data {
+        public val callableName: String
+        public val callType: CallType?
     }
 
     @Serializable
-    enum class CallType {
+    public enum class CallType {
         Method, Field,
     }
 
     @Serializable
     @SerialName("CallData")
-    data class CallDataString(
+    public data class CallDataString(
         override val callId: String,
         override val serviceType: String,
         @SerialName("method")
@@ -52,7 +52,7 @@ sealed interface RPCMessage {
 
     @Suppress("ArrayInDataClass")
     @Serializable
-    data class CallDataBinary(
+    public data class CallDataBinary(
         override val callId: String,
         override val serviceType: String,
         @SerialName("method")
@@ -62,11 +62,11 @@ sealed interface RPCMessage {
     ) : CallData, Data.BinaryData
 
     @Serializable
-    sealed interface CallSuccess : RPCMessage, Data
+    public sealed interface CallSuccess : RPCMessage, Data
 
     @Serializable
     @SerialName("CallSuccess")
-    data class CallSuccessString(
+    public data class CallSuccessString(
         override val callId: String,
         override val serviceType: String,
         override val data: String
@@ -74,7 +74,7 @@ sealed interface RPCMessage {
 
     @Suppress("ArrayInDataClass")
     @Serializable
-    data class CallSuccessBinary(
+    public data class CallSuccessBinary(
         override val callId: String,
         override val serviceType: String,
         override val data: ByteArray
@@ -84,20 +84,20 @@ sealed interface RPCMessage {
      * Both for client and server
      */
     @Serializable
-    data class CallException(
+    public data class CallException(
         override val callId: String,
         override val serviceType: String,
         val cause: SerializedException
     ) : CallResult
 
     @Serializable
-    sealed interface StreamMessage : RPCMessage, Data {
-        val streamId: String
+    public sealed interface StreamMessage : RPCMessage, Data {
+        public val streamId: String
     }
 
     @Serializable
     @SerialName("StreamMessage")
-    data class StreamMessageString(
+    public data class StreamMessageString(
         override val callId: String,
         override val serviceType: String,
         @SerialName("flowId")
@@ -107,7 +107,7 @@ sealed interface RPCMessage {
 
     @Suppress("ArrayInDataClass")
     @Serializable
-    data class StreamMessageBinary(
+    public data class StreamMessageBinary(
         override val callId: String,
         override val serviceType: String,
         @SerialName("flowId")
@@ -116,7 +116,7 @@ sealed interface RPCMessage {
     ) : StreamMessage, Data.BinaryData
 
     @Serializable
-    data class StreamCancel(
+    public data class StreamCancel(
         override val callId: String,
         override val serviceType: String,
         @SerialName("flowId")
@@ -125,7 +125,7 @@ sealed interface RPCMessage {
     ) : RPCMessage
 
     @Serializable
-    data class StreamFinished(
+    public data class StreamFinished(
         override val callId: String,
         override val serviceType: String,
         @SerialName("flowId")

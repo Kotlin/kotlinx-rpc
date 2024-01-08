@@ -17,8 +17,8 @@ import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.initialized
 
 @InternalKRPCApi
-interface RPCMessageSender : CoroutineScope {
-    suspend fun sendMessage(message: RPCMessage)
+public interface RPCMessageSender : CoroutineScope {
+    public suspend fun sendMessage(message: RPCMessage)
 }
 
 private typealias RPCMessageHandler = suspend (RPCMessage) -> Unit
@@ -37,7 +37,7 @@ private typealias RPCMessageHandler = suspend (RPCMessage) -> Unit
  * @param getKey a lambda function that returns the subscription key for a given [RPCMessage].
  */
 @InternalKRPCApi
-class RPCConnector<SubscriptionKey>(
+public class RPCConnector<SubscriptionKey>(
     private val serialFormat: SerialFormat,
     private val transport: RPCTransport,
     private val waitForSubscribers: Boolean = true,
@@ -68,7 +68,7 @@ class RPCConnector<SubscriptionKey>(
         transport.send(transportMessage)
     }
 
-    suspend fun subscribeToMessages(key: SubscriptionKey, handler: RPCMessageHandler) {
+    public suspend fun subscribeToMessages(key: SubscriptionKey, handler: RPCMessageHandler) {
         mutex.withLock {
             subscriptions[key] = handler
             processWaiters(key, handler)

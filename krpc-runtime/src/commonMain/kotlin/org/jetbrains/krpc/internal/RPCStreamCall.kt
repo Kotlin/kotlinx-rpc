@@ -6,8 +6,7 @@ package org.jetbrains.krpc.internal
 
 import kotlinx.serialization.KSerializer
 
-@InternalKRPCApi
-class RPCStreamCall(
+internal data class RPCStreamCall(
     val callId: String,
     val streamId: String,
     val stream: Any,

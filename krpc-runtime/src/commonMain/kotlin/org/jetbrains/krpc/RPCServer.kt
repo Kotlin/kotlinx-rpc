@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
  * Server may contain multiple services.
  * [CoroutineScope] defines server lifetime.
  */
-interface RPCServer : CoroutineScope {
+public interface RPCServer : CoroutineScope {
     /**
      * Registers new service to the server. Server will route all designated messages to it.
      * Service of any type should be unique on the server, but RPCServer does not specify the actual retention policy.
@@ -23,7 +23,7 @@ interface RPCServer : CoroutineScope {
      * @param service the actual implementation of the service that will handle the calls.
      * @param serviceKClass [KClass] of the [Service].
      */
-    fun <Service : RPC> registerService(service: Service, serviceKClass: KClass<Service>)
+    public fun <Service : RPC> registerService(service: Service, serviceKClass: KClass<Service>)
 }
 
 /**
@@ -35,6 +35,6 @@ interface RPCServer : CoroutineScope {
  * type `MyService` should be specified explicitly.
  * @param service the actual implementation of the service that will handle the calls.
  */
-inline fun <reified Service : RPC> RPCServer.registerService(service: Service) {
+public inline fun <reified Service : RPC> RPCServer.registerService(service: Service) {
     registerService(service, Service::class)
 }

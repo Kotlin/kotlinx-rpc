@@ -15,7 +15,7 @@ import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
 /**
  * Builder for [RPCConfig]. Provides DSL to configure parameters for KRPCClient and/or KRPCServer.
  */
-sealed class RPCConfigBuilder private constructor() {
+public sealed class RPCConfigBuilder private constructor() {
     /**
      * DSL for parameters of [MutableSharedFlow] and [SharedFlow].
      *
@@ -25,18 +25,18 @@ sealed class RPCConfigBuilder private constructor() {
      * So then creating their instance on an endpoint, kRPC should know which parameters to use.
      */
     @Suppress("MemberVisibilityCanBePrivate")
-    class SharedFlowParametersBuilder internal constructor() {
+    public class SharedFlowParametersBuilder internal constructor() {
         /**
          * The number of values replayed to new subscribers (cannot be negative, defaults to zero).
          */
-        var replay: Int = DEFAULT_REPLAY
+        public var replay: Int = DEFAULT_REPLAY
 
         /**
          * The number of values buffered in addition to replay.
          * emit does not suspend while there is a buffer space remaining
          * (optional, cannot be negative, defaults to zero).
          */
-        var extraBufferCapacity: Int = DEFAULT_EXTRA_BUFFER_CAPACITY
+        public var extraBufferCapacity: Int = DEFAULT_EXTRA_BUFFER_CAPACITY
 
         /**
          * Configures an emit action on buffer overflow.
@@ -47,14 +47,14 @@ sealed class RPCConfigBuilder private constructor() {
          * In the absence of subscribers only the most recent replay values are stored
          * and the buffer overflow behavior is never triggered and has no effect.
          */
-        var onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND
+        public var onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND
 
         @InternalKRPCApi
-        fun builder(): () -> MutableSharedFlow<Any?> = {
+        public fun builder(): () -> MutableSharedFlow<Any?> = {
             MutableSharedFlow(replay, extraBufferCapacity, onBufferOverflow)
         }
 
-        companion object {
+        private companion object {
             /**
              * Default value of [replay]
              */
@@ -71,7 +71,7 @@ sealed class RPCConfigBuilder private constructor() {
     /**
      * @see SharedFlowParametersBuilder
      */
-    fun sharedFlowParameters(builder: SharedFlowParametersBuilder.() -> Unit) {
+    public fun sharedFlowParameters(builder: SharedFlowParametersBuilder.() -> Unit) {
         sharedFlowBuilder = SharedFlowParametersBuilder().apply(builder).builder()
     }
 
@@ -102,7 +102,7 @@ sealed class RPCConfigBuilder private constructor() {
      * @see RPCSerialFormatConfiguration
      * @see RPCSerialFormat
      */
-    fun serialization(builder: RPCSerialFormatConfiguration.() -> Unit) {
+    public fun serialization(builder: RPCSerialFormatConfiguration.() -> Unit) {
         configuration.builder()
     }
 
@@ -119,13 +119,13 @@ sealed class RPCConfigBuilder private constructor() {
      * If false, the endpoint that sent the message will receive call exception
      * that says that there were no services to process its message.
      */
-    var waitForServices: Boolean = true
+    public var waitForServices: Boolean = true
 
     /**
      * @see [RPCConfigBuilder]
      */
-    class Client : RPCConfigBuilder() {
-        fun build(): RPCConfig.Client {
+    public class Client : RPCConfigBuilder() {
+        public fun build(): RPCConfig.Client {
             return RPCConfig.Client(
                 sharedFlowBuilder = sharedFlowBuilder,
                 serialFormatInitializer = rpcSerialFormat(),
@@ -137,8 +137,8 @@ sealed class RPCConfigBuilder private constructor() {
     /**
      * @see [RPCConfigBuilder]
      */
-    class Server : RPCConfigBuilder() {
-        fun build(): RPCConfig.Server {
+    public class Server : RPCConfigBuilder() {
+        public fun build(): RPCConfig.Server {
             return RPCConfig.Server(
                 sharedFlowBuilder = sharedFlowBuilder,
                 serialFormatInitializer = rpcSerialFormat(),
@@ -151,18 +151,18 @@ sealed class RPCConfigBuilder private constructor() {
 /**
  * Configuration class that is used by kRPC default RPC client and server (KRPCClient and KRPCServer).
  */
-sealed interface RPCConfig {
+public sealed interface RPCConfig {
     @InternalKRPCApi
-    val sharedFlowBuilder: () -> MutableSharedFlow<Any?>
+    public val sharedFlowBuilder: () -> MutableSharedFlow<Any?>
     @InternalKRPCApi
-    val serialFormatInitializer: RPCSerialFormatBuilder<*, *>
+    public val serialFormatInitializer: RPCSerialFormatBuilder<*, *>
     @InternalKRPCApi
-    val waitForServices: Boolean
+    public val waitForServices: Boolean
 
     /**
      * @see [RPCConfig]
      */
-    class Client internal constructor(
+    public class Client internal constructor(
         override val sharedFlowBuilder: () -> MutableSharedFlow<Any?>,
         override val serialFormatInitializer: RPCSerialFormatBuilder<*, *>,
         override val waitForServices: Boolean,
@@ -171,7 +171,7 @@ sealed interface RPCConfig {
     /**
      * @see [RPCConfig]
      */
-    class Server internal constructor(
+    public class Server internal constructor(
         override val sharedFlowBuilder: () -> MutableSharedFlow<Any?>,
         override val serialFormatInitializer: RPCSerialFormatBuilder<*, *>,
         override val waitForServices: Boolean,
@@ -181,13 +181,13 @@ sealed interface RPCConfig {
 /**
  * Creates [RPCConfig.Client] using [RPCConfigBuilder.Client] DSL
  */
-fun rpcClientConfig(builder: RPCConfigBuilder.Client.() -> Unit = {}): RPCConfig.Client {
+public fun rpcClientConfig(builder: RPCConfigBuilder.Client.() -> Unit = {}): RPCConfig.Client {
     return RPCConfigBuilder.Client().apply(builder).build()
 }
 
 /**
  * Creates [RPCConfig.Server] using [RPCConfigBuilder.Server]  DSL.
  */
-fun rpcServerConfig(builder: RPCConfigBuilder.Server.() -> Unit = {}): RPCConfig.Server {
+public fun rpcServerConfig(builder: RPCConfigBuilder.Server.() -> Unit = {}): RPCConfig.Server {
     return RPCConfigBuilder.Server().apply(builder).build()
 }

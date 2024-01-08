@@ -13,6 +13,9 @@ internal val RPCServerPluginAttributesKey = AttributeKey<RPCConfigBuilder.Server
 /**
  * Ktor server plugin that allows to configure RPC globally for all mounted servers.
  */
-val RPC: ApplicationPlugin<RPCConfigBuilder.Server> = createApplicationPlugin("RPC", { RPCConfigBuilder.Server() }) {
+public val RPC: ApplicationPlugin<RPCConfigBuilder.Server> = createApplicationPlugin(
+    name = "RPC",
+    createConfiguration = { RPCConfigBuilder.Server() },
+) {
     application.attributes.put(RPCServerPluginAttributesKey, pluginConfig)
 }

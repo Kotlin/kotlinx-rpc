@@ -15,7 +15,7 @@ import org.jetbrains.krpc.internal.InternalKRPCApi
  *
  * Each serialization that can be used in kRPC should define an object of [RPCSerialFormat]
  */
-interface RPCSerialFormat<Format : SerialFormat, FormatBuilder : Any> {
+public interface RPCSerialFormat<Format : SerialFormat, FormatBuilder : Any> {
     /**
      * Generalization of kotlinx.serialization approach to configure serial formats
      *
@@ -23,13 +23,13 @@ interface RPCSerialFormat<Format : SerialFormat, FormatBuilder : Any> {
      *             If not provided default one should be used
      * @param builderConsumer function that configures serial format
      */
-    fun withBuilder(from: Format? = null, builderConsumer: FormatBuilder.() -> Unit): Format
+    public fun withBuilder(from: Format? = null, builderConsumer: FormatBuilder.() -> Unit): Format
 
     /**
      * Special extension for [SerialFormat] API, that allows to extend it with additional [SerializersModule].
      * Required for kRPC to work properly with special argument types like Flows
      */
-    fun FormatBuilder.applySerializersModule(serializersModule: SerializersModule)
+    public fun FormatBuilder.applySerializersModule(serializersModule: SerializersModule)
 }
 
 /**
@@ -42,7 +42,7 @@ interface RPCSerialFormat<Format : SerialFormat, FormatBuilder : Any> {
  * @param from - optional default format instance
  * @param builder - builder function for format configuration
  */
-sealed class RPCSerialFormatBuilder<Format : SerialFormat, FormatBuilder : Any>(
+public sealed class RPCSerialFormatBuilder<Format : SerialFormat, FormatBuilder : Any>(
     rpcSerialFormat: RPCSerialFormat<Format, FormatBuilder>,
     from: Format? = null,
     builder: FormatBuilder.() -> Unit,
@@ -57,17 +57,17 @@ sealed class RPCSerialFormatBuilder<Format : SerialFormat, FormatBuilder : Any>(
     }
 
     @InternalKRPCApi
-    fun build(): SerialFormat = builder(null)
+    public fun build(): SerialFormat = builder(null)
 
     @InternalKRPCApi
-    fun applySerializersModuleAndBuild(serializersModule: SerializersModule): SerialFormat {
+    public fun applySerializersModuleAndBuild(serializersModule: SerializersModule): SerialFormat {
         return builder(serializersModule)
     }
 
     /**
      * @see RPCSerialFormatBuilder
      */
-    class Binary<Format : BinaryFormat, FormatBuilder : Any>(
+    public class Binary<Format : BinaryFormat, FormatBuilder : Any>(
         rpcSerialFormat: RPCSerialFormat<Format, FormatBuilder>,
         from: Format? = null,
         builder: FormatBuilder.() -> Unit,
@@ -76,7 +76,7 @@ sealed class RPCSerialFormatBuilder<Format : SerialFormat, FormatBuilder : Any>(
     /**
      * @see RPCSerialFormatBuilder
      */
-    class String<Format : StringFormat, FormatBuilder : Any>(
+    public class String<Format : StringFormat, FormatBuilder : Any>(
         rpcSerialFormat: RPCSerialFormat<Format, FormatBuilder>,
         from: Format? = null,
         builder: FormatBuilder.() -> Unit,

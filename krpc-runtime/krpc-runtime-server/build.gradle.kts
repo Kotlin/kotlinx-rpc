@@ -13,6 +13,8 @@ kotlin {
             dependencies {
                 api(project(":krpc-runtime"))
 
+                implementation(project(":krpc-utils"))
+                implementation(project(":krpc-utils:krpc-utils-service-loader"))
                 implementation(project(":krpc-runtime:krpc-runtime-serialization"))
                 implementation(project(":krpc-runtime::krpc-runtime-logging"))
 

@@ -28,7 +28,7 @@ internal fun SerializersModule.buildContextual(type: KType): KSerializer<Any?> {
 }
 
 @InternalKRPCApi
-fun SerializersModule.rpcSerializerForType(type: KType): KSerializer<Any?> {
+public fun SerializersModule.rpcSerializerForType(type: KType): KSerializer<Any?> {
     return when (type.classifier) {
         Flow::class, SharedFlow::class, StateFlow::class -> buildContextual(type)
         else -> serializer(type)
@@ -36,12 +36,11 @@ fun SerializersModule.rpcSerializerForType(type: KType): KSerializer<Any?> {
 }
 
 @InternalKRPCApi
-fun unsupportedSerialFormatError(serialFormat: SerialFormat): Nothing {
+public fun unsupportedSerialFormatError(serialFormat: SerialFormat): Nothing {
     error("Unsupported serial format ${serialFormat::class}, only StringFormat and BinaryFormats are supported")
 }
 
-@InternalKRPCApi
-fun unexpectedDataFormatForProvidedSerialFormat(data: RPCMessage.Data, shouldBeBinary: Boolean): Nothing {
+internal fun unexpectedDataFormatForProvidedSerialFormat(data: RPCMessage.Data, shouldBeBinary: Boolean): Nothing {
     val (expected, actual) = when {
         shouldBeBinary -> "BinaryFormat" to "string"
         else -> "StringFormat" to "binary"
@@ -52,7 +51,11 @@ fun unexpectedDataFormatForProvidedSerialFormat(data: RPCMessage.Data, shouldBeB
 }
 
 @InternalKRPCApi
-fun decodeMessageData(serialFormat: SerialFormat, dataSerializer: KSerializer<Any?>, data: RPCMessage.Data): Any? {
+public fun decodeMessageData(
+    serialFormat: SerialFormat,
+    dataSerializer: KSerializer<Any?>,
+    data: RPCMessage.Data,
+): Any? {
     return when (serialFormat) {
         is StringFormat -> {
             if (data !is RPCMessage.Data.StringData) {

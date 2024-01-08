@@ -19,22 +19,22 @@ import org.jetbrains.krpc.internal.transport.RPCMessage
 import kotlin.coroutines.CoroutineContext
 
 @InternalKRPCApi
-class LazyRPCStreamContext(private val initializer: () -> RPCStreamContext) {
+public class LazyRPCStreamContext(private val initializer: () -> RPCStreamContext) {
     private val deferred = CompletableDeferred<RPCStreamContext>()
     private val lazyValue by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         initializer().also { deferred.complete(it) }
     }
 
-    suspend fun awaitInitialized() = deferred.await()
+    public suspend fun awaitInitialized(): RPCStreamContext = deferred.await()
 
-    val valueOrNull get() = if (deferred.isCompleted) lazyValue else null
+    public val valueOrNull: RPCStreamContext? get() = if (deferred.isCompleted) lazyValue else null
 
-    fun initialize(): RPCStreamContext = lazyValue
+    public fun initialize(): RPCStreamContext = lazyValue
 }
 
 @InternalKRPCApi
-class RPCStreamContext(private val callId: String, private val config: RPCConfig) {
-    companion object {
+public class RPCStreamContext(private val callId: String, private val config: RPCConfig) {
+    private companion object {
         private const val STREAM_ID_PREFIX = "stream:"
     }
 
@@ -53,18 +53,18 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
     }
 
     private var outgoingStreamsInitialized: Boolean = false
-    val outgoingStreams: Channel<RPCStreamCall> by lazy {
+    internal val outgoingStreams: Channel<RPCStreamCall> by lazy {
         outgoingStreamsInitialized = true
         Channel(capacity = Channel.UNLIMITED)
     }
 
     private var incomingHotFlowsInitialized: Boolean = false
-    val incomingHotFlows: Channel<FlowCollector<Any?>> by lazy {
+    internal val incomingHotFlows: Channel<FlowCollector<Any?>> by lazy {
         incomingHotFlowsInitialized = true
         Channel(Channel.UNLIMITED)
     }
 
-    fun <StreamT : Any> registerOutgoingStream(
+    internal fun <StreamT : Any> registerOutgoingStream(
         stream: StreamT,
         streamKind: StreamKind,
         elementSerializer: KSerializer<Any?>,
@@ -74,7 +74,7 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
         return id
     }
 
-    fun <StreamT : Any> prepareIncomingStream(
+    internal fun <StreamT : Any> prepareIncomingStream(
         streamId: String,
         streamKind: StreamKind,
         stateFlowInitialValue: Any?,
@@ -141,15 +141,15 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
         } as StreamT
     }
 
-    suspend fun closeStream(message: RPCMessage.StreamFinished) {
+    public suspend fun closeStream(message: RPCMessage.StreamFinished) {
         incomingChannelOf(message.streamId).send(StreamEnd)
     }
 
-    suspend fun cancelStream(message: RPCMessage.StreamCancel) {
+    public suspend fun cancelStream(message: RPCMessage.StreamCancel) {
         incomingChannelOf(message.streamId).send(StreamCancel(message))
     }
 
-    suspend fun send(message: RPCMessage.StreamMessage, serialFormat: SerialFormat) {
+    public suspend fun send(message: RPCMessage.StreamMessage, serialFormat: SerialFormat) {
         val info = incomingStreams.getDeferred(message.streamId).await()
         val result = decodeMessageData(serialFormat, info.elementSerializer, message)
         incomingChannelOf(message.streamId).send(result)
@@ -159,7 +159,7 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
         return incomingChannels.getDeferred(streamId).await()
     }
 
-    fun close() {
+    public fun close() {
         if (incomingChannelsInitialized) {
             for (channel in incomingChannels.values) {
                 if (channel.isCompleted) {

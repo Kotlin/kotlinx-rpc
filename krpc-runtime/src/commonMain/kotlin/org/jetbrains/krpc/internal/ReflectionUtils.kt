@@ -9,7 +9,7 @@ import kotlin.reflect.KType
 
 @InternalKRPCApi
 @Suppress("UNCHECKED_CAST")
-fun <T : Any> KType.kClass(): KClass<T> {
+public fun <T : Any> KType.kClass(): KClass<T> {
     val classifier = classifier ?: error("Expected denotable type, found $this")
     val classifierClass = classifier as? KClass<*> ?: error("Expected class type, found $this")
 
@@ -17,13 +17,13 @@ fun <T : Any> KType.kClass(): KClass<T> {
 }
 
 @InternalKRPCApi
-fun internalError(message: String): Nothing {
+public fun internalError(message: String): Nothing {
     error("Internal kRPC error: $message")
 }
 
 @InternalKRPCApi
-expect val KClass<*>.qualifiedClassNameOrNull: String?
+public expect val KClass<*>.qualifiedClassNameOrNull: String?
 
 @InternalKRPCApi
-val KClass<*>.qualifiedClassName: String  get() = qualifiedClassNameOrNull
+public val KClass<*>.qualifiedClassName: String  get() = qualifiedClassNameOrNull
     ?: error("Expected qualifiedClassName for $this")

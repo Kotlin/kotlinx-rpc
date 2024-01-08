@@ -31,6 +31,6 @@ internal object RPCJsonSerialFormat : RPCSerialFormat<Json, JsonBuilder> {
  * }
  * ```
  */
-fun RPCSerialFormatConfiguration.json(from: Json = Json.Default, builderConsumer: JsonBuilder.() -> Unit = {}) {
+public fun RPCSerialFormatConfiguration.json(from: Json = Json.Default, builderConsumer: JsonBuilder.() -> Unit = {}) {
     register(RPCSerialFormatBuilder.String(RPCJsonSerialFormat, from, builderConsumer))
 }

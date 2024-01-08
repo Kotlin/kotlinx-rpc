@@ -10,10 +10,10 @@ import kotlinx.coroutines.CoroutineScope
  * A single message that can be transferred from one RPC endpoint to another.
  * Can be either of string or binary type.
  */
-sealed interface RPCTransportMessage {
-    class StringMessage(val value: String) : RPCTransportMessage
+public sealed interface RPCTransportMessage {
+    public class StringMessage(public val value: String) : RPCTransportMessage
 
-    class BinaryMessage(val value: ByteArray) : RPCTransportMessage
+    public class BinaryMessage(public val value: ByteArray) : RPCTransportMessage
 }
 
 /**
@@ -29,18 +29,18 @@ sealed interface RPCTransportMessage {
  *
  * Good example of the implementation is KtorTransport, that uses websocket protocol to deliver messages.
  */
-interface RPCTransport : CoroutineScope {
+public interface RPCTransport : CoroutineScope {
     /**
      * Sends a single encoded RPC message over network (or any other medium) to a peer endpoint.
      *
      * @param message a message to send. Either of string or binary type.
      */
-    suspend fun send(message: RPCTransportMessage)
+    public suspend fun send(message: RPCTransportMessage)
 
     /**
      * Suspends until next RPC message from a peer endpoint is received and then returns it.
      *
      * @return received RPC message.
      */
-    suspend fun receive(): RPCTransportMessage
+    public suspend fun receive(): RPCTransportMessage
 }

@@ -20,7 +20,7 @@ import org.jetbrains.krpc.RPCServer
  * @param builder Builder function to configure RPC server.
  */
 @KtorDsl
-fun Route.rpc(path: String, builder: RPCRoute.() -> Unit) {
+public fun Route.rpc(path: String, builder: RPCRoute.() -> Unit) {
     route(path) {
         rpc(builder)
     }
@@ -33,7 +33,7 @@ fun Route.rpc(path: String, builder: RPCRoute.() -> Unit) {
  * @param builder Builder function to configure RPC server.
  */
 @KtorDsl
-fun Route.rpc(builder: RPCRoute.() -> Unit) {
+public fun Route.rpc(builder: RPCRoute.() -> Unit) {
     createRPCServer(builder)
 }
 

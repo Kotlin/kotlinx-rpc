@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 
 @InternalKRPCApi
 @Serializable
-data class StackElement(
+public data class StackElement(
     val clazz: String,
     val method: String,
     val fileName: String?,
@@ -17,10 +17,10 @@ data class StackElement(
 
 @InternalKRPCApi
 @Serializable
-class SerializedException(
-    val toStringMessage: String,
-    val message: String,
-    val stacktrace: List<StackElement>,
-    val cause: SerializedException?,
-    val className: String
+public class SerializedException(
+    public val toStringMessage: String,
+    public val message: String,
+    public val stacktrace: List<StackElement>,
+    public val cause: SerializedException?,
+    public val className: String
 )

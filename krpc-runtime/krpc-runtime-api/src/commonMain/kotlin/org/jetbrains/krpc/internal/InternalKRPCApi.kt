@@ -8,4 +8,5 @@ package org.jetbrains.krpc.internal
     message = "This is internal kRPC api that is subject to change and should not be used",
     level = RequiresOptIn.Level.ERROR,
 )
-annotation class InternalKRPCApi
+@InternalKRPCApi
+public annotation class InternalKRPCApi

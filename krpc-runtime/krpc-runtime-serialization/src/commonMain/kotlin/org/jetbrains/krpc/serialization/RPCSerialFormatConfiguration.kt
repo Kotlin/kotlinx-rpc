@@ -13,14 +13,14 @@ package org.jetbrains.krpc.serialization
  * }
  * ```
  */
-interface RPCSerialFormatConfiguration {
+public interface RPCSerialFormatConfiguration {
     /**
      * Register a serialization format in the RPCSerialFormatConfiguration.
      *
      * @param rpcSerialFormatInitializer The serialization format initializer of String type.
      * It is used to configure the serialization format for a kRPC service.
      */
-    fun register(rpcSerialFormatInitializer: RPCSerialFormatBuilder.String<*, *>)
+    public fun register(rpcSerialFormatInitializer: RPCSerialFormatBuilder.String<*, *>)
 
     /**
      * Register a serialization format in the RPCSerialFormatConfiguration.
@@ -28,5 +28,5 @@ interface RPCSerialFormatConfiguration {
      * @param rpcSerialFormatInitializer The serialization format initializer of Binary type.
      * It is used to configure the serialization format for a kRPC service.
      */
-    fun register(rpcSerialFormatInitializer: RPCSerialFormatBuilder.Binary<*, *>)
+    public fun register(rpcSerialFormatInitializer: RPCSerialFormatBuilder.Binary<*, *>)
 }

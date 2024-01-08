@@ -15,8 +15,9 @@ kotlin {
         commonMain {
             dependencies {
                 api(project(":krpc-runtime:krpc-runtime-api"))
-                api(project(":krpc-utils"))
 
+                implementation(project(":krpc-utils"))
+                implementation(project(":krpc-utils:krpc-utils-service-loader"))
                 implementation(project(":krpc-runtime:krpc-runtime-serialization"))
 
                 api(libs.coroutines.core)

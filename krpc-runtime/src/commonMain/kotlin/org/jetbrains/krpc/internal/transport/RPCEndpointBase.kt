@@ -22,7 +22,7 @@ import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
 
 @InternalKRPCApi
-abstract class RPCEndpointBase: CoroutineScope {
+public abstract class RPCEndpointBase: CoroutineScope {
     protected abstract val sender: RPCMessageSender
     protected abstract val config: RPCConfig
     protected abstract val logger: CommonLogger

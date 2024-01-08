@@ -5,7 +5,7 @@
 package org.jetbrains.krpc.internal
 
 @InternalKRPCApi
-fun serializeException(cause: Throwable): SerializedException {
+public fun serializeException(cause: Throwable): SerializedException {
     val message = cause.message ?: "Unknown exception"
     val stacktrace = cause.stackElements()
     val serializedCause = cause.cause?.let { serializeException(it) }
@@ -17,7 +17,7 @@ fun serializeException(cause: Throwable): SerializedException {
 internal expect fun Throwable.stackElements(): List<StackElement>
 
 @InternalKRPCApi
-expect fun SerializedException.deserialize(): Throwable
+public expect fun SerializedException.deserialize(): Throwable
 
 internal expect class DeserializedException(
     toStringMessage: String,

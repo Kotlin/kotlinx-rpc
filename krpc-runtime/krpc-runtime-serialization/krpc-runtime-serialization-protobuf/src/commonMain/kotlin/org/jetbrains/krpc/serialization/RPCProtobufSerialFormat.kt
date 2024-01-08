@@ -34,7 +34,7 @@ internal object RPCProtobufSerialFormat : RPCSerialFormat<ProtoBuf, ProtoBufBuil
  * }
  * ```
  */
-fun RPCSerialFormatConfiguration.protobuf(
+public fun RPCSerialFormatConfiguration.protobuf(
     from: ProtoBuf = ProtoBuf.Default,
     builderConsumer: ProtoBufBuilder.() -> Unit = {},
 ) {

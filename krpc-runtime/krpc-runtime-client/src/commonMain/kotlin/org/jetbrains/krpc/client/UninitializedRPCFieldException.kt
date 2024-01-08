@@ -11,6 +11,6 @@ import kotlin.reflect.KProperty
  *
  * Use [awaitFieldInitialization] to await for the field initialization
  */
-class UninitializedRPCFieldException(serviceName: String, property: KProperty<*>): Exception() {
+public class UninitializedRPCFieldException(serviceName: String, property: KProperty<*>): Exception() {
     override val message: String = "${property.name} field of RPC service \"$serviceName\" in not initialized"
 }

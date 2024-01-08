@@ -16,7 +16,7 @@ import kotlin.reflect.KType
  * Utility method that returns [KType] for the class which is used to serialize method request with the [methodName]
  */
 @InternalKRPCApi
-inline fun <reified T : RPC> rpcServiceMethodSerializationTypeOf(methodName: String): KType? {
+public inline fun <reified T : RPC> rpcServiceMethodSerializationTypeOf(methodName: String): KType? {
     return rpcServiceMethodSerializationTypeOf(T::class, methodName)
 }
 
@@ -24,7 +24,7 @@ inline fun <reified T : RPC> rpcServiceMethodSerializationTypeOf(methodName: Str
  * Utility method that returns [KType] for the class which is used to serialize method request with the [methodName]
  */
 @InternalKRPCApi
-fun rpcServiceMethodSerializationTypeOf(serviceType: KType, methodName: String): KType? {
+public fun rpcServiceMethodSerializationTypeOf(serviceType: KType, methodName: String): KType? {
     return rpcServiceMethodSerializationTypeOf(serviceType.kClass<Any>(), methodName)
 }
 
@@ -32,6 +32,6 @@ fun rpcServiceMethodSerializationTypeOf(serviceType: KType, methodName: String):
  * Utility method that returns [KType] for the class which is used to serialize method request with the [methodName]
  */
 @InternalKRPCApi
-fun rpcServiceMethodSerializationTypeOf(serviceKClass: KClass<*>, methodName: String): KType? {
+public fun rpcServiceMethodSerializationTypeOf(serviceKClass: KClass<*>, methodName: String): KType? {
     return findRPCProviderInCompanion<RPCServiceMethodSerializationTypeProvider>(serviceKClass).methodTypeOf(methodName)
 }

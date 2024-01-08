@@ -20,7 +20,7 @@ import kotlin.reflect.KType
  * @param T exact type of the service to be created.
  * @return instance of the generated service.
  */
-inline fun <reified T : RPC> RPCClient.withService(): T {
+public inline fun <reified T : RPC> RPCClient.withService(): T {
     return withService(T::class)
 }
 
@@ -33,7 +33,7 @@ inline fun <reified T : RPC> RPCClient.withService(): T {
  * @param serviceKType [KType] of the service to be created.
  * @return instance of the generated service.
  */
-fun <T : RPC> RPCClient.withService(serviceKType: KType): T {
+public fun <T : RPC> RPCClient.withService(serviceKType: KType): T {
     return withService(serviceKType.kClass())
 }
 
@@ -46,7 +46,7 @@ fun <T : RPC> RPCClient.withService(serviceKType: KType): T {
  * @param serviceKClass [KClass] of the service to be created.
  * @return instance of the generated service.
  */
-fun <T : RPC> RPCClient.withService(serviceKClass: KClass<T>): T {
+public fun <T : RPC> RPCClient.withService(serviceKClass: KClass<T>): T {
     val withRPCClientObject = findRPCProviderInCompanion<RPCClientProvider<T>>(serviceKClass)
     return withRPCClientObject.withClient(this)
 }
