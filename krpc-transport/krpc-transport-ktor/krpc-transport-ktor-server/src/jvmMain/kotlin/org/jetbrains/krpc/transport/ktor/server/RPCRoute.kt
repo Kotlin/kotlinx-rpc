@@ -14,7 +14,9 @@ import kotlin.reflect.KClass
  * RPCRoute class represents an RPC server that is mounted in Ktor routing.
  * This class provides API to register services and optionally setup configuration.
  */
-class RPCRoute(webSocketSession: DefaultWebSocketServerSession) : DefaultWebSocketServerSession by webSocketSession {
+public class RPCRoute(
+    webSocketSession: DefaultWebSocketServerSession
+) : DefaultWebSocketServerSession by webSocketSession {
     internal var configBuilder: RPCConfigBuilder.Server.() -> Unit = {}
 
     /**
@@ -23,7 +25,7 @@ class RPCRoute(webSocketSession: DefaultWebSocketServerSession) : DefaultWebSock
      *
      * @param configBuilder The function that configures RPC.
      */
-    fun rpcConfig(configBuilder: RPCConfigBuilder.Server.() -> Unit) {
+    public fun rpcConfig(configBuilder: RPCConfigBuilder.Server.() -> Unit) {
         this.configBuilder = configBuilder
     }
 
@@ -39,7 +41,7 @@ class RPCRoute(webSocketSession: DefaultWebSocketServerSession) : DefaultWebSock
      * @param service the actual implementation of the service that will handle the calls.
      * @param serviceKClass [KClass] of the [Service].
      */
-    fun <Service : RPC> registerService(service: Service, serviceKClass: KClass<Service>) {
+    public fun <Service : RPC> registerService(service: Service, serviceKClass: KClass<Service>) {
         registrations.add {
             registerService(service, serviceKClass)
         }
@@ -54,7 +56,7 @@ class RPCRoute(webSocketSession: DefaultWebSocketServerSession) : DefaultWebSock
      * type `MyService` should be specified explicitly.
      * @param service the actual implementation of the service that will handle the calls.
      */
-    inline fun <reified Service : RPC> registerService(service: Service) {
+    public inline fun <reified Service : RPC> registerService(service: Service) {
         registerService(service, Service::class)
     }
 }

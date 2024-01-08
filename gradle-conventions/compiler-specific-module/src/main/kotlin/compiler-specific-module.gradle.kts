@@ -26,7 +26,8 @@ val kotlinVersion = getKotlinPluginVersion()
 // ### Plugin Logic ###
 // What happens here, is that root module is being made a complete compile specific module for current version of Kotlin
 // We take -core submodule that contains compiler version independent code, add to it version specific module
-// and the summary is presented to the outer world as a complete module, which is the root module for these two submodules
+// and the summary is presented to the outer world as a complete module,
+// which is the root module for these two submodules.
 // Root module takes its submodules as `api` gradle configurations, and root's jar will consist of
 // two submodules' artifacts and will be presented to the world as it was always a one complete module.
 
@@ -49,12 +50,17 @@ fun Project.lazyApi(notation: Any) {
     lazyDependency("api", notation)
 }
 
+fun Project.lazyImplementation(notation: Any) {
+    lazyDependency("implementation", notation)
+}
+
+
 val root = project
 
 subprojects {
     when {
         name == coreProjectName -> {
-            lazyApi(project(CSM.KRPC_SERVICE_LOADER_MODULE))
+            lazyImplementation(project(CSM.KRPC_SERVICE_LOADER_MODULE))
 
             root.lazyApi(this)
         }
@@ -69,7 +75,7 @@ subprojects {
                 val coreProject = root.subprojects.singleOrNull { it.name == coreProjectName }
                     ?: error("Expected to find subproject with name '$coreProjectName'")
 
-                lazyApi(project(CSM.KRPC_SERVICE_LOADER_MODULE))
+                lazyImplementation(project(CSM.KRPC_SERVICE_LOADER_MODULE))
                 lazyApi(coreProject)
 
                 root.lazyApi(this)

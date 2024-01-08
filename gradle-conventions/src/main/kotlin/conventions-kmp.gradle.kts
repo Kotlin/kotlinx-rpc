@@ -14,6 +14,8 @@ plugins {
 
 configure<KotlinMultiplatformExtension> {
     optInForInternalKRPCApi()
+
+    explicitApi()
 }
 
 val excludeJs: Boolean by optionalProperty()

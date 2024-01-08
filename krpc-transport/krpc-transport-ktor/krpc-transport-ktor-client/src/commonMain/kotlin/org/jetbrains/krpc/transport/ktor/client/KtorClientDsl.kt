@@ -24,7 +24,7 @@ private val RPCRequestConfigAttributeKey = AttributeKey<RPCConfigBuilder.Client.
  *
  * @param configBuilder The function that configures RPC.
  */
-fun HttpRequestBuilder.rpcConfig(configBuilder: RPCConfigBuilder.Client.() -> Unit = {}) {
+public fun HttpRequestBuilder.rpcConfig(configBuilder: RPCConfigBuilder.Client.() -> Unit = {}) {
     attributes.put(RPCRequestConfigAttributeKey, configBuilder)
 }
 
@@ -36,7 +36,7 @@ fun HttpRequestBuilder.rpcConfig(configBuilder: RPCConfigBuilder.Client.() -> Un
  * @param block Optional configuration for the
  * @return An instance of [RPCClient] that is configured to send messages to the server.
  */
-suspend fun HttpClient.rpc(
+public suspend fun HttpClient.rpc(
     urlString: String,
     block: HttpRequestBuilder.() -> Unit = {},
 ): RPCClient {
@@ -53,7 +53,7 @@ suspend fun HttpClient.rpc(
  * @param block Optional configuration for the
  * @return An instance of [RPCClient] that is configured to send messages to the server.
  */
-suspend fun HttpClient.rpc(
+public suspend fun HttpClient.rpc(
     block: HttpRequestBuilder.() -> Unit = {},
 ): RPCClient {
     pluginOrNull(WebSockets)

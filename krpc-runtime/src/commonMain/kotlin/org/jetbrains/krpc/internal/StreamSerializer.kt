@@ -10,8 +10,7 @@ import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-@InternalKRPCApi
-sealed class StreamSerializer<StreamT : Any>(private val streamKind: StreamKind) : KSerializer<StreamT> {
+internal sealed class StreamSerializer<StreamT : Any>(private val streamKind: StreamKind) : KSerializer<StreamT> {
     companion object {
         private const val STREAM_SERIALIZER_NAME_PREFIX = "StreamSerializer"
 
@@ -83,7 +82,6 @@ sealed class StreamSerializer<StreamT : Any>(private val streamKind: StreamKind)
     }
 }
 
-@InternalKRPCApi
-enum class StreamKind {
+internal enum class StreamKind {
     Flow, SharedFlow, StateFlow;
 }

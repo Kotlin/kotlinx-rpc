@@ -8,4 +8,4 @@ package org.jetbrains.krpc
  * The field marked with this annotation will be initialized with the service creation.
  */
 @Target(AnnotationTarget.PROPERTY)
-annotation class RPCEagerField
+public annotation class RPCEagerField

@@ -9,5 +9,5 @@ package org.jetbrains.krpc.internal
 import kotlin.reflect.KClass
 
 @InternalKRPCApi
-actual val KClass<*>.qualifiedClassNameOrNull: String?
+public actual val KClass<*>.qualifiedClassNameOrNull: String?
     get() = toString()

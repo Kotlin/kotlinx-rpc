@@ -38,6 +38,4 @@ import kotlinx.coroutines.CoroutineScope
  * @see RPCClient
  * @see RPCServer
  */
-interface RPC : CoroutineScope {
-    companion object
-}
+public interface RPC : CoroutineScope

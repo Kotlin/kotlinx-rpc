@@ -21,6 +21,6 @@ internal actual class DeserializedException actual constructor(
 
 internal actual fun Throwable.stackElements(): List<StackElement> = emptyList()
 
-actual fun SerializedException.deserialize(): Throwable {
+public actual fun SerializedException.deserialize(): Throwable {
     return DeserializedException(toStringMessage, message, stacktrace, cause, className)
 }

@@ -5,6 +5,6 @@
 package org.jetbrains.krpc.internal
 
 @InternalKRPCApi
-interface RPCDeferredField<Self> {
-    suspend fun await(): Self
+public interface RPCDeferredField<Self> {
+    public suspend fun await(): Self
 }

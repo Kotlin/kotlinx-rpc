@@ -18,7 +18,7 @@ import kotlin.reflect.KType
  * @property dataType The [KType] of the [data].
  * @property returnType The [KType] of the return type.
  */
-data class RPCCall(
+public data class RPCCall(
     val serviceTypeString: String,
     val callableName: String,
     val type: Type,
@@ -26,7 +26,7 @@ data class RPCCall(
     val dataType: KType,
     val returnType: KType,
 ) {
-    enum class Type {
+    public enum class Type {
         Method, Field;
     }
 }
@@ -39,7 +39,7 @@ data class RPCCall(
  * @property name The name of the field.
  * @property type The [KType] of the field.
  */
-data class RPCField(
+public data class RPCField(
     val serviceTypeString: String,
     val name: String,
     val type: KType

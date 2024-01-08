@@ -49,14 +49,6 @@ detekt {
 
 val detektGlobalReportsDir = "$globalDetektDir/reports/${rootProject.name}"
 
-fun capitalize(string: String): String {
-    if (string.isEmpty()) {
-        return ""
-    }
-    val firstChar = string[0]
-    return string.replaceFirst(firstChar, Character.toTitleCase(firstChar))
-}
-
 tasks.withType<Detekt>().configureEach {
     reports {
         listOf(html, xml, sarif).forEach { report ->

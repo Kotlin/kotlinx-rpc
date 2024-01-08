@@ -16,4 +16,6 @@ configure<KotlinJvmProjectExtension> {
     }
 
     optInForInternalKRPCApi()
+
+    explicitApi()
 }

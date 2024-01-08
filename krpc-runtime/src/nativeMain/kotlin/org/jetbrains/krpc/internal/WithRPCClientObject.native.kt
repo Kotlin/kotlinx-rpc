@@ -16,14 +16,14 @@ import kotlin.reflect.findAssociatedObject
 @AssociatedObjectKey
 @OptIn(ExperimentalAssociatedObjects::class)
 @Target(AnnotationTarget.CLASS)
-annotation class WithRPCClientObject(
+public annotation class WithRPCClientObject(
     @Suppress("unused")
     val client: KClass<out RPCClientObject<out RPC>>
 )
 
 @InternalKRPCApi
 @OptIn(ExperimentalAssociatedObjects::class)
-actual fun <R> findRPCProviderInCompanion(kClass: KClass<*>): R {
+public actual fun <R> findRPCProviderInCompanion(kClass: KClass<*>): R {
     @Suppress("UNCHECKED_CAST")
     return kClass.findAssociatedObject<WithRPCClientObject>() as? R
         ?: internalError("unable to find $kClass rpc client object")

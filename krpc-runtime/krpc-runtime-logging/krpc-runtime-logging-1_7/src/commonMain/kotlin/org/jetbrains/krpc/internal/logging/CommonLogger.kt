@@ -2,8 +2,10 @@ package org.jetbrains.krpc.internal.logging
 
 import mu.KLogger
 import mu.KotlinLogging
+import org.jetbrains.krpc.internal.InternalKRPCApi
 
-fun CommonLogger.Companion.initialized(): CommonLogger.Companion = apply {
+@InternalKRPCApi
+public fun CommonLogger.Companion.initialized(): CommonLogger.Companion = apply {
     CommonLoggerFactoryImpl.init()
 }
 

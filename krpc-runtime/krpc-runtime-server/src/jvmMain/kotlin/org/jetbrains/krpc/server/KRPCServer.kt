@@ -33,7 +33,7 @@ import kotlin.reflect.KClass
  *
  * @param config configuration provided for that specific server. Applied to all services that use this server.
  */
-abstract class KRPCServer(private val config: RPCConfig.Server): RPCServer, RPCTransport {
+public abstract class KRPCServer(private val config: RPCConfig.Server): RPCServer, RPCTransport {
     override fun <Service : RPC> registerService(service: Service, serviceKClass: KClass<Service>) {
         val name = serviceKClass.qualifiedClassName
 

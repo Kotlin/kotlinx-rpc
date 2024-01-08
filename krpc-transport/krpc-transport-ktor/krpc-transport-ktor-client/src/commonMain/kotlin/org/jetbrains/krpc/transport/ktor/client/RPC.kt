@@ -13,6 +13,6 @@ internal val RPCClientPluginAttributesKey = AttributeKey<RPCConfigBuilder.Client
 /**
  * Ktor client plugin that allows to configure RPC globally for all instances obtained via [rpc] functions.
  */
-val RPC: ClientPlugin<RPCConfigBuilder.Client> = createClientPlugin("RPC", { RPCConfigBuilder.Client() }) {
+public val RPC: ClientPlugin<RPCConfigBuilder.Client> = createClientPlugin("RPC", { RPCConfigBuilder.Client() }) {
     client.attributes.put(RPCClientPluginAttributesKey, pluginConfig)
 }

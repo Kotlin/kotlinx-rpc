@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
  * transform them, send to the server and handle responses and errors.
  * [CoroutineScope] defines the lifetime of the client.
  */
-interface RPCClient : CoroutineScope {
+public interface RPCClient : CoroutineScope {
     /**
      * This method is used by generated clients to perform a call to the server.
      *
@@ -23,7 +23,7 @@ interface RPCClient : CoroutineScope {
      * that is needed to route it properly to the server.
      * @return actual result of the call, e.g. data from the server.
      */
-    suspend fun <T> call(call: RPCCall): T
+    public suspend fun <T> call(call: RPCCall): T
 
     /**
      * Registers Flow<T> field of the interface. Sends initialization request, subscribes to emitted values
@@ -34,7 +34,7 @@ interface RPCClient : CoroutineScope {
      * that is used to be mapped to the corresponding field pn server.
      * @return Flow instance to be consumed.
      */
-    fun <T> registerPlainFlowField(field: RPCField): Flow<T>
+    public fun <T> registerPlainFlowField(field: RPCField): Flow<T>
 
     /**
      * Registers SharedFlow<T> field of the interface. Sends initialization request, subscribes to emitted values
@@ -45,7 +45,7 @@ interface RPCClient : CoroutineScope {
      * that is used to be mapped to the corresponding field pn server.
      * @return SharedFlow instance to be consumed.
      */
-    fun <T> registerSharedFlowField(field: RPCField): SharedFlow<T>
+    public fun <T> registerSharedFlowField(field: RPCField): SharedFlow<T>
 
     /**
      * Registers StateFlow<T> field of the interface. Sends initialization request, subscribes to emitted values
@@ -56,5 +56,5 @@ interface RPCClient : CoroutineScope {
      * that is used to be mapped to the corresponding field pn server.
      * @return StateFlow instance to be consumed.
      */
-    fun <T> registerStateFlowField(field: RPCField): StateFlow<T>
+    public fun <T> registerStateFlowField(field: RPCField): StateFlow<T>
 }

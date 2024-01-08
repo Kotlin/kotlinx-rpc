@@ -46,7 +46,7 @@ private val CLIENT_ENGINE_ID = atomic(initial = 0L)
  *
  * @property config configuration provided for that specific client. Applied to all services that use this client.
  */
-abstract class KRPCClient(
+public abstract class KRPCClient(
     final override val config: RPCConfig.Client
 ) : RPCEndpointBase(), RPCClient, RPCTransport {
     private val connector by lazy {
@@ -58,7 +58,7 @@ abstract class KRPCClient(
 
     private val callCounter = atomic(0L)
     private val engineId: Long = CLIENT_ENGINE_ID.incrementAndGet()
-    override val logger = CommonLogger.initialized().logger(objectId())
+    override val logger: CommonLogger = CommonLogger.initialized().logger(objectId())
 
     override fun <T> registerPlainFlowField(field: RPCField): Flow<T> {
         return RPCFlow.Plain<T>(field.serviceTypeString).also { rpcFlow ->

@@ -13,7 +13,7 @@ import kotlin.coroutines.CoroutineContext
 
 @InternalKRPCApi
 @OptIn(InternalCoroutinesApi::class, DelicateCoroutinesApi::class)
-class KtorTransport(private val webSocketSession: WebSocketSession): RPCTransport {
+public class KtorTransport(private val webSocketSession: WebSocketSession): RPCTransport {
     // Transport job should always be cancelled and never closed
     private val transportJob = Job()
 
