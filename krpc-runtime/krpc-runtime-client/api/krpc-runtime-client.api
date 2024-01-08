@@ -1,0 +1,27 @@
+public final class org/jetbrains/krpc/client/AwaitFieldInitializationKt {
+	public static final fun awaitFieldInitialization (Lorg/jetbrains/krpc/RPC;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun awaitFieldInitialization (Lorg/jetbrains/krpc/RPC;Lkotlin/reflect/KClass;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract class org/jetbrains/krpc/client/KRPCClient : org/jetbrains/krpc/internal/transport/RPCEndpointBase, org/jetbrains/krpc/RPCClient, org/jetbrains/krpc/RPCTransport {
+	public fun <init> (Lorg/jetbrains/krpc/RPCConfig$Client;)V
+	public fun call (Lorg/jetbrains/krpc/RPCCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	protected final fun getConfig ()Lorg/jetbrains/krpc/RPCConfig$Client;
+	public synthetic fun getConfig ()Lorg/jetbrains/krpc/RPCConfig;
+	protected fun getLogger ()Lorg/jetbrains/krpc/internal/logging/CommonLogger;
+	protected fun getSender ()Lorg/jetbrains/krpc/internal/transport/RPCMessageSender;
+	public fun registerPlainFlowField (Lorg/jetbrains/krpc/RPCField;)Lkotlinx/coroutines/flow/Flow;
+	public fun registerSharedFlowField (Lorg/jetbrains/krpc/RPCField;)Lkotlinx/coroutines/flow/SharedFlow;
+	public fun registerStateFlowField (Lorg/jetbrains/krpc/RPCField;)Lkotlinx/coroutines/flow/StateFlow;
+}
+
+public final class org/jetbrains/krpc/client/RPCClientUtilsKt {
+	public static final fun withService (Lorg/jetbrains/krpc/RPCClient;Lkotlin/reflect/KClass;)Lorg/jetbrains/krpc/RPC;
+	public static final fun withService (Lorg/jetbrains/krpc/RPCClient;Lkotlin/reflect/KType;)Lorg/jetbrains/krpc/RPC;
+}
+
+public final class org/jetbrains/krpc/client/UninitializedRPCFieldException : java/lang/Exception {
+	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KProperty;)V
+	public fun getMessage ()Ljava/lang/String;
+}
+

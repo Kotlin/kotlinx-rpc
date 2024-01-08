@@ -41,6 +41,7 @@ data class KotlinLookupTable(
     val detekt: String,
     val kotlinLogging: String,
     val gradleKotlinDsl: String,
+    val binaryCompatibilityValidator: String
 )
 
 object SettingsConventions {
@@ -55,6 +56,8 @@ object SettingsConventions {
     const val DETEKT_VERSION_ALIAS = "detekt-gradle-plugin"
     const val KOTLIN_LOGGING_VERSION_ALIAS = "kotlin-logging"
     const val KOTLIN_DSL_VERSION_ALIAS = "gradle-kotlin-dsl"
+    const val BINARY_COMPATIBILITY_VALIDATOR = "binary-compatibility-validator"
+
     const val KRPC_CORE_VERSION_ALIAS = "krpc-core"
     const val KRPC_FULL_VERSION_ALIAS = "krpc-full"
     const val KOTLIN_VERSION_ALIAS = "kotlin-lang"
@@ -114,6 +117,7 @@ fun loadLookupTable(rootDir: Path, kotlinVersion: String): KotlinLookupTable {
         detekt = currentTable.getValue(SettingsConventions.DETEKT_VERSION_ALIAS),
         kotlinLogging = currentTable.getValue(SettingsConventions.KOTLIN_LOGGING_VERSION_ALIAS),
         gradleKotlinDsl = currentTable.getValue(SettingsConventions.KOTLIN_DSL_VERSION_ALIAS),
+        binaryCompatibilityValidator = currentTable.getValue(SettingsConventions.BINARY_COMPATIBILITY_VALIDATOR),
     )
 }
 
@@ -222,6 +226,8 @@ dependencyResolutionManagement {
             version(SettingsConventions.KOTLIN_LOGGING_VERSION_ALIAS, lookupTable.kotlinLogging)
 
             version(SettingsConventions.KOTLIN_DSL_VERSION_ALIAS, lookupTable.gradleKotlinDsl)
+
+            version(SettingsConventions.BINARY_COMPATIBILITY_VALIDATOR, lookupTable.binaryCompatibilityValidator)
         }
     }
 }
