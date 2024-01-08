@@ -47,7 +47,7 @@ suspend fun HttpClient.rpc(
 }
 
 /**
- * Configures [RPCClient] for the following path. Provides means for additional cinfiguration via [block].
+ * Configures [RPCClient] for the following path. Provides means for additional configuration via [block].
  * Note that the [WebSockets] plugin is required for these calls.
  *
  * @param block Optional configuration for the
@@ -56,7 +56,8 @@ suspend fun HttpClient.rpc(
 suspend fun HttpClient.rpc(
     block: HttpRequestBuilder.() -> Unit = {},
 ): RPCClient {
-    pluginOrNull(WebSockets) ?: error("RPC for client requires $WebSockets plugin to be installed firstly")
+    pluginOrNull(WebSockets)
+        ?: error("RPC for client requires $WebSockets plugin to be installed firstly")
 
     var requestConfigBuilder: RPCConfigBuilder.Client.() -> Unit = {}
     val session = webSocketSession {

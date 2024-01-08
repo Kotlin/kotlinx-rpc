@@ -34,7 +34,8 @@ fun Route.rpc(builder: RPCRoute.() -> Unit) {
 }
 
 private fun Route.createRPCServer(rpcRouteBuilder: RPCRoute.() -> Unit) {
-    pluginOrNull(WebSockets) ?: error("RPC for server requires $WebSockets plugin to be installed firstly")
+    application.pluginOrNull(WebSockets)
+        ?: error("RPC for server requires $WebSockets plugin to be installed firstly")
 
     webSocket {
         val rpcRoute = RPCRoute(this).apply(rpcRouteBuilder)
