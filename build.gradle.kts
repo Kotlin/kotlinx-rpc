@@ -11,6 +11,31 @@ plugins {
     alias(libs.plugins.krpc) apply false
     alias(libs.plugins.atomicfu) apply false
     alias(libs.plugins.detekt) apply false
+    alias(libs.plugins.binary.compatibility.validator)
+}
+
+object Const {
+    const val KRPC_COMPILER_PLUGIN_MODULE_NAME = "krpc-compiler-plugin"
+    const val INTERNAL_KRPC_API_ANNOTATION = "org.jetbrains.krpc.internal.InternalKRPCApi"
+}
+
+apiValidation {
+    val compilerPluginModules = subprojects.single { it.name == Const.KRPC_COMPILER_PLUGIN_MODULE_NAME }.let {
+        it.subprojects.map { sub -> sub.name }
+    } + Const.KRPC_COMPILER_PLUGIN_MODULE_NAME
+
+    ignoredProjects.addAll(
+        listOf(
+            "codegen-tests-jvm",
+            "codegen-tests-mpp",
+            "krpc-runtime-test",
+            "krpc-utils",
+            "krpc-utils-service-loader",
+            "krpc-ksp-plugin",
+        ) + compilerPluginModules
+    )
+
+    nonPublicMarkers.add(Const.INTERNAL_KRPC_API_ANNOTATION)
 }
 
 allprojects {

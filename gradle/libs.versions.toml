@@ -14,6 +14,7 @@ ktor = "<stub>"
 detekt-gradle-plugin = "<stub>"
 kotlin-logging = "<stub>"
 gradle-kotlin-dsl = "<stub>"
+binary-compatibility-validator = "<stub>"
 
 # other
 detekt-analyzer = "1.23.4" # actual version of the tool, can be different from gradle plugin
@@ -68,6 +69,7 @@ serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref 
 
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt-gradle-plugin" }
+binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compatibility-validator" }
 atomicfu = { id = "kotlinx-atomicfu", version.ref = "atomicfu" }
 gradle-kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version.ref = "gradle-kotlin-dsl" }
 

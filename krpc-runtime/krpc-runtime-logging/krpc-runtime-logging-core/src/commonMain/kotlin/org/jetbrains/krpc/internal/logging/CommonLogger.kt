@@ -37,6 +37,7 @@ public interface CommonLogger {
 
     public fun warn(t: Throwable?, msg: () -> Any?)
 
+    @InternalKRPCApi
     public companion object : CompanionServiceContainer<CommonLoggerFactory>(CommonLoggerFactory::class) {
         private val factory by lazy { loadService() }
 
