@@ -294,6 +294,8 @@ abstract class KRPCTransportTestBase {
         }
     }
 
+    // it is flaky, https://youtrack.jetbrains.com/issue/KRPC-49
+    @Ignore
     @Test
     fun bidirectionalAsyncStream() {
         runBlocking {
