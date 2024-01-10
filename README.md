@@ -1,6 +1,4 @@
-# kRPC - the Kotlin RPC Framework
-
-https://youtu.be/YDGrHOw8WGg
+# kRPC—the Kotlin RPC Framework
 
 kRPC is a Kotlin RPC (Remote Procedure Call) framework that leverages the power of suspend functions
 to simplify and streamline the development of distributed applications.
