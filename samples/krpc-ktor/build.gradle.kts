@@ -8,7 +8,7 @@ val krpc_version: String by project
 plugins {
     kotlin("jvm") version "1.9.10"
     kotlin("plugin.serialization") version "1.9.10"
-    id("io.ktor.plugin") version "2.3.4"
+    id("io.ktor.plugin") version "2.3.7"
     id("com.google.devtools.ksp") version "1.9.10-1.0.13"
 }
 
