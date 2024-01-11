@@ -34,6 +34,8 @@ dependencyResolutionManagement {
     includeBuild("compiler-plugin")
 }
 
+includePublic(":protobuf-plugin")
+
 includePublic(":bom")
 
 includePublic(":utils")
