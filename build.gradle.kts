@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.kotlinx.rpc) apply false
     alias(libs.plugins.conventions.kover)
+    id("com.google.protobuf") version "0.9.4" apply false
     alias(libs.plugins.conventions.gradle.doctor)
     alias(libs.plugins.binary.compatibility.validator)
 
@@ -39,6 +40,8 @@ apiValidation {
             "compiler-plugin-tests",
             "krpc-test",
             "utils",
+            "protobuf-plugin",
+//            "plugin-test",
         )
     )
 

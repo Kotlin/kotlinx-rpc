@@ -47,6 +47,8 @@ dependencyResolutionManagement {
     }
 }
 
+includePublic(":protobuf-plugin")
+
 includePublic(":bom")
 
 includePublic(":utils")
