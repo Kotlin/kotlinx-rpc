@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package kotlinx.rpc.protobuf.test;
+
+import "google/protobuf/descriptor.proto";
+import "options.proto";
+
+extend google.protobuf.EnumValueOptions {
+  optional Options options = 50000;
+}
+
+enum Enum {
+  option allow_alias = true;
+  ZERO = 0;
+  ONE = 1;
+  ONE_SECOND = 1;
+  TWO = 2 [deprecated = true];
+  THREE = 3 [
+    (options).string = "three",
+    (options).inner.string = "inner three"
+  ];
+}
