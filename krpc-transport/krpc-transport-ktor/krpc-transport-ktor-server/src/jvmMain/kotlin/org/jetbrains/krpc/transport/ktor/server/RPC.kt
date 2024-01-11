@@ -6,7 +6,6 @@ package org.jetbrains.krpc.transport.ktor.server
 
 import io.ktor.server.application.*
 import io.ktor.util.*
-import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCConfigBuilder
 
 internal val RPCServerPluginAttributesKey = AttributeKey<RPCConfigBuilder.Server>("RPCServerPluginAttributesKey")

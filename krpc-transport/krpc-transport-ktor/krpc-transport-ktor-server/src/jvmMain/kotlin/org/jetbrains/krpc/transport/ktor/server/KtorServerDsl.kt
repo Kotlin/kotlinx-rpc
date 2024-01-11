@@ -6,7 +6,7 @@ import io.ktor.server.websocket.*
 import io.ktor.util.*
 import kotlinx.coroutines.job
 import org.jetbrains.krpc.rpcServerConfig
-import org.jetbrains.krpc.server.RPCServer
+import org.jetbrains.krpc.RPCServer
 
 /**
  * Adds an RPC route to the specified [Route]. Provides builder to configure [RPCServer] that will be used internally.

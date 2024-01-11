@@ -19,19 +19,32 @@ interface RPCMessageSender : CoroutineScope {
 
 private typealias RPCMessageHandler = suspend (RPCMessage) -> Unit
 
+/**
+ * Represents a connector for remote procedure call (RPC) communication.
+ * This class is responsible for sending and receiving [RPCMessage] over a specified transport.
+ *
+ * @param SubscriptionKey the type of the subscription key used for message subscriptions.
+ * @param serialFormat the serial format used for encoding and decoding [RPCMessage].
+ * @param transport the transport used for sending and receiving encoded RPC messages.
+ * @param waitForSubscribers a flag indicating whether the connector should wait for subscribers
+ * if no service is available to process the message immediately.
+ * If false, the endpoint that sent the message will receive a [RPCMessage.CallException]
+ * that says that there were no services to process its message.
+ * @param getKey a lambda function that returns the subscription key for a given [RPCMessage].
+ */
 @InternalKRPCApi
-class RPCConnector<SubKey>(
+class RPCConnector<SubscriptionKey>(
     private val serialFormat: SerialFormat,
     private val transport: RPCTransport,
     private val waitForSubscribers: Boolean = true,
-    private val getKey: RPCMessage.() -> SubKey,
+    private val getKey: RPCMessage.() -> SubscriptionKey,
 ) : RPCMessageSender, CoroutineScope by transport {
     private val logger = CommonLogger.initialized().logger(objectId())
 
     private val mutex = Mutex()
 
-    private val waiting = mutableMapOf<SubKey, MutableList<RPCMessage>>()
-    private val subscriptions = mutableMapOf<SubKey, RPCMessageHandler>()
+    private val waiting = mutableMapOf<SubscriptionKey, MutableList<RPCMessage>>()
+    private val subscriptions = mutableMapOf<SubscriptionKey, RPCMessageHandler>()
 
     override suspend fun sendMessage(message: RPCMessage) {
         val transportMessage = when (serialFormat) {
@@ -51,7 +64,7 @@ class RPCConnector<SubKey>(
         transport.send(transportMessage)
     }
 
-    suspend fun subscribeToMessages(key: SubKey, handler: RPCMessageHandler) {
+    suspend fun subscribeToMessages(key: SubscriptionKey, handler: RPCMessageHandler) {
         mutex.withLock {
             subscriptions[key] = handler
             processWaiters(key, handler)
@@ -135,7 +148,7 @@ class RPCConnector<SubKey>(
         }
     }
 
-    private suspend fun processWaiters(key: SubKey, handler: RPCMessageHandler) {
+    private suspend fun processWaiters(key: SubscriptionKey, handler: RPCMessageHandler) {
         if (waiting.isEmpty()) return
 
         val iterator = waiting[key]?.iterator() ?: return

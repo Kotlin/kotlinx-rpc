@@ -3,7 +3,7 @@ package org.jetbrains.krpc.transport.ktor.server
 import io.ktor.server.websocket.DefaultWebSocketServerSession
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCConfigBuilder
-import org.jetbrains.krpc.server.RPCServer
+import org.jetbrains.krpc.RPCServer
 import kotlin.reflect.KClass
 
 /**

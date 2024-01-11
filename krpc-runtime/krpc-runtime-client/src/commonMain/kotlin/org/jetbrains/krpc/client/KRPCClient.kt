@@ -35,6 +35,15 @@ private val CLIENT_ENGINE_ID = atomic(initial = 0L)
  * serializing data, tracking streams, processing exceptions and other protocol responsibilities.
  * Leaves out the delivery of encoded messages to the specific implementations.
  *
+ *  * Simple example, how this client may be implemented:
+ *  * ```kotlin
+ *  * class MyTransport : RPCTransport { /*...*/ }
+ *  *
+ *  * class MyClient(
+ *  *     config: RPCConfig.Client,
+ *  *     override val coroutineContext: CoroutineContext,
+ *  * ): KRPCClient(config), RPCTransport by MyTransport()
+ *
  * @property config configuration provided for that specific client. Applied to all services that use this client.
  */
 abstract class KRPCClient(

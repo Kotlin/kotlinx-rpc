@@ -9,8 +9,6 @@ import kotlinx.coroutines.*
 import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.withService
 import org.jetbrains.krpc.serialization.json
-import org.jetbrains.krpc.server.RPCServer
-import org.jetbrains.krpc.server.registerService
 import org.slf4j.simple.SimpleLogger
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext

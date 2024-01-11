@@ -5,9 +5,7 @@
 package org.jetbrains.krpc
 
 /**
- * [RPCEagerField] annotation is used to define service field as eagerly initialized one.
- * By default, all service fields are initialized after lazily, after first access to them.
- * But if the field is marked with the [RPCEagerField] annotation - it will be initialized with the service creation.
+ * The field marked with this annotation will be initialized with the service creation.
  */
 @Target(AnnotationTarget.PROPERTY)
 annotation class RPCEagerField

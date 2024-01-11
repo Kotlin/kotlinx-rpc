@@ -14,6 +14,16 @@ sealed interface RPCTransportMessage {
 
 /**
  * An abstraction of transport capabilities for KRPCClient and KRPCServer.
+ *
+ * For developers of custom transports:
+ * - The implementation should be able to handle both binary and string formats,
+ * though not necessary if you absolutely sure that only one will be supplied and received.
+ * - The KRPCClient and KRPCServer suppose that they have exclusive instance of transport.
+ * That means that each client or/and server should have only one transport instance,
+ * otherwise some messages may be lost or processed incorrectly.
+ * - The implementation should manage lifetime of the connection using its [CoroutineScope].
+ *
+ * Good example of the implementation is KtorTransport, that uses websocket protocol to deliver messages.
  */
 interface RPCTransport : CoroutineScope {
     /**

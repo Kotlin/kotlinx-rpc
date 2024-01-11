@@ -3,6 +3,7 @@ package org.jetbrains.krpc.server
 import kotlinx.coroutines.launch
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCConfig
+import org.jetbrains.krpc.RPCServer
 import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.internal.qualifiedClassName
 import org.jetbrains.krpc.internal.transport.RPCConnector
@@ -16,7 +17,17 @@ import kotlin.reflect.KClass
  * Routes resulting messages to the proper registered services.
  * Leaves out the delivery of encoded messages to the specific implementations.
  *
- * @param config configuration provided for that specific client. Applied to all services that use this server.
+ * Simple example, how this server may be implemented:
+ * ```kotlin
+ * class MyTransport : RPCTransport { /*...*/ }
+ *
+ * class MyServer(
+ *     config: RPCConfig.Server,
+ *     override val coroutineContext: CoroutineContext,
+ * ): KRPCServer(config), RPCTransport by MyTransport()
+ * ```
+ *
+ * @param config configuration provided for that specific server. Applied to all services that use this server.
  */
 abstract class KRPCServer(private val config: RPCConfig.Server): RPCServer, RPCTransport {
     override fun <Service : RPC> registerService(service: Service, serviceKClass: KClass<Service>) {

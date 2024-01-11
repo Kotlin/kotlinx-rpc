@@ -13,7 +13,9 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
 /**
- * Creates instance of the generated service, that is able to communicate with server using RPCClient
+ * Creates instance of the generated service [T], that is able to communicate with server using RPCClient.
+ *
+ * [awaitFieldInitialization] method can be used on that instance.
  *
  * @param T exact type of the service to be created.
  * @return instance of the generated service.
@@ -23,7 +25,9 @@ inline fun <reified T : RPC> RPCClient.withService(): T {
 }
 
 /**
- * Creates instance of the generated service, that is able to communicate with server using RPCClient
+ * Creates instance of the generated service [T], that is able to communicate with server using RPCClient.
+ *
+ * [awaitFieldInitialization] method can be used on that instance.
  *
  * @param T exact type of the service to be created.
  * @param serviceKType [KType] of the service to be created.
@@ -34,7 +38,9 @@ fun <T : RPC> RPCClient.withService(serviceKType: KType): T {
 }
 
 /**
- * Creates instance of the generated service, that is able to communicate with server using RPCClient
+ * Creates instance of the generated service [T], that is able to communicate with server using RPCClient.
+ *
+ * [awaitFieldInitialization] method can be used on that instance.
  *
  * @param T exact type of the service to be created.
  * @param serviceKClass [KClass] of the service to be created.

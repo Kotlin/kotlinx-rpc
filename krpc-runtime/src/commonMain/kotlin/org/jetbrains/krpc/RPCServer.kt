@@ -1,7 +1,6 @@
-package org.jetbrains.krpc.server
+package org.jetbrains.krpc
 
 import kotlinx.coroutines.CoroutineScope
-import org.jetbrains.krpc.RPC
 import kotlin.reflect.KClass
 
 /**

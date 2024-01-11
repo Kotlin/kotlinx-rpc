@@ -15,7 +15,6 @@ import org.jetbrains.krpc.client.withService
 import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
 import org.jetbrains.krpc.server.KRPCServer
-import org.jetbrains.krpc.server.registerService
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.rules.Timeout

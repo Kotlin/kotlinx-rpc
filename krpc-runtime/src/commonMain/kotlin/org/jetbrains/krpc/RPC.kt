@@ -7,10 +7,36 @@ package org.jetbrains.krpc
 import kotlinx.coroutines.CoroutineScope
 
 /**
- * Marker interface for all RPC services.
- * For each service that inherits this interface kRPC will generate an implementation to use on client side.
+ * Marker interface for an RPC service.
+ * For each service that inherits this interface kRPC will generate an implementation to use it on the client side.
  *
  * [CoroutineScope] defines service lifetime.
+ *
+ * Example usage:
+ * ```kotlin
+ * // common code
+ * interface MyService : RPC {
+ *    suspend fun sayHello(firstName: String, lastName: String, age: Int): String
+ * }
+ *
+ * // client code
+ * val rpcClient: RPCClient
+ * val myService = rpcClient.withService<MyService>()
+ * val greetingFromServer = myService.sayHello("Alex", "Smith", 35)
+ *
+ * // server code
+ * class MyServiceImpl: MyService {
+ *     override suspend fun sayHello(firstName: String, lastName: String, age: Int): String {
+ *         return "Hello, $firstName $lastName, of age $age. I am your server!"
+ *     }
+ * }
+ *
+ * val server: RPCServer
+ * server.registerService<MyService>(MyServiceImpl())
+ * ```
+ *
+ * @see RPCClient
+ * @see RPCServer
  */
 interface RPC : CoroutineScope {
     companion object
