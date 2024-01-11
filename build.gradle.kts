@@ -3,15 +3,13 @@
  */
 
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
-import util.configureApiValidation
-import util.configureNpm
-import util.configureProjectReport
 import util.libs
 
 plugins {
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.kotlinx.rpc) apply false
     alias(libs.plugins.conventions.kover)
+    id("com.google.protobuf") version "0.9.4" apply false
     alias(libs.plugins.conventions.gradle.doctor)
     alias(libs.plugins.atomicfu)
     id("build-util")
