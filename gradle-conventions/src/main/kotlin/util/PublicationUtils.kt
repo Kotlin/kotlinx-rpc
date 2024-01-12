@@ -31,8 +31,12 @@ internal fun Project.configureKmpPublication() {
     the<PublishingExtension>().configureKrpcPublication()
 }
 
-internal fun Project.configureJvmPublication() {
+internal fun Project.configureJvmPublication(skipJvm: Boolean) {
     configureKmpPublication()
+
+    if (skipJvm) {
+        return
+    }
 
     the<PublishingExtension>().apply {
         publications {

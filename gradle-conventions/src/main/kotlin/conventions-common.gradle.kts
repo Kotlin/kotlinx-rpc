@@ -3,10 +3,10 @@
  */
 
 import io.gitlab.arturbosch.detekt.Detekt
+import util.*
 import util.configureJvmPublication
 import util.configureKmpPublication
 import util.configureKrpcPublication
-import util.libs
 
 plugins {
     id("io.gitlab.arturbosch.detekt")
@@ -14,12 +14,15 @@ plugins {
 
 val publishingExtension = project.extensions.findByType<PublishingExtension>()
 
+// for some reason jvm publication will be registered by module itself, for example for gradle plugins
+val skipJvmPublication: Boolean? by extra
+
 if (name.startsWith("krpc")) {
     if (publishingExtension != null) {
         publishingExtension.configureKrpcPublication()
     } else {
         plugins.withId("org.jetbrains.kotlin.jvm") {
-            configureJvmPublication()
+            configureJvmPublication(skipJvmPublication == true)
         }
 
         plugins.withId("org.jetbrains.kotlin.multiplatform") {
