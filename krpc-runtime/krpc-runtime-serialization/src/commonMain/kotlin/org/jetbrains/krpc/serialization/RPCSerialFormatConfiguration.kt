@@ -7,14 +7,26 @@ package org.jetbrains.krpc.serialization
 /**
  * Special interface to configure serialization for a kRPC service in RPCConfig
  * ```kotlin
- * // this: RPCConfig
+ * // this: RPCConfigBuilder
  * serialization { // this: RPCSerialFormatConfiguration
  *    // register serialization here
  * }
  * ```
  */
 interface RPCSerialFormatConfiguration {
+    /**
+     * Register a serialization format in the RPCSerialFormatConfiguration.
+     *
+     * @param rpcSerialFormatInitializer The serialization format initializer of String type.
+     * It is used to configure the serialization format for a kRPC service.
+     */
     fun register(rpcSerialFormatInitializer: RPCSerialFormatBuilder.String<*, *>)
 
+    /**
+     * Register a serialization format in the RPCSerialFormatConfiguration.
+     *
+     * @param rpcSerialFormatInitializer The serialization format initializer of Binary type.
+     * It is used to configure the serialization format for a kRPC service.
+     */
     fun register(rpcSerialFormatInitializer: RPCSerialFormatBuilder.Binary<*, *>)
 }

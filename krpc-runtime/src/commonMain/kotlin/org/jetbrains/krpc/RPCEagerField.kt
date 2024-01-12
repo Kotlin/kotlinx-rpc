@@ -5,7 +5,7 @@
 package org.jetbrains.krpc
 
 /**
- * When applied to an RPC service field - the field will be initialized eagerly rather then lazily
+ * The field marked with this annotation will be initialized with the service creation.
  */
 @Target(AnnotationTarget.PROPERTY)
 annotation class RPCEagerField

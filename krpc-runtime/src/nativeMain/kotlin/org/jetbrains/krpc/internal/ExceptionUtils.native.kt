@@ -2,10 +2,9 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package org.jetbrains.krpc.internal
+@file:Suppress("detekt.MatchingDeclarationName")
 
-import org.jetbrains.krpc.SerializedException
-import org.jetbrains.krpc.StackElement
+package org.jetbrains.krpc.internal
 
 internal actual class DeserializedException actual constructor(
     private val toStringMessage: String,
@@ -25,6 +24,3 @@ internal actual fun Throwable.stackElements(): List<StackElement> = emptyList()
 actual fun SerializedException.deserialize(): Throwable {
     return DeserializedException(toStringMessage, message, stacktrace, cause, className)
 }
-
-internal actual val Throwable.qualifiedClassName: String?
-    get() = this::class.qualifiedName

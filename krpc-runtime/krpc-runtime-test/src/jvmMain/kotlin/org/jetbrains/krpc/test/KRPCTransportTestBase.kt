@@ -9,15 +9,12 @@ package org.jetbrains.krpc.test
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import org.jetbrains.krpc.RPC
-import org.jetbrains.krpc.RPCTransport
+import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.awaitFieldInitialization
-import org.jetbrains.krpc.client.clientOf
-import org.jetbrains.krpc.rpcClientConfigBuilder
-import org.jetbrains.krpc.rpcServerConfigBuilder
+import org.jetbrains.krpc.client.withService
+import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
-import org.jetbrains.krpc.server.RPCServerEngine
-import org.jetbrains.krpc.server.serverOf
+import org.jetbrains.krpc.server.KRPCServer
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.rules.Timeout
@@ -31,7 +28,7 @@ abstract class KRPCTransportTestBase {
     protected abstract val serializationConfig: RPCSerialFormatConfiguration.() -> Unit
 
     private val serverConfig by lazy {
-        rpcServerConfigBuilder {
+        rpcServerConfig {
             sharedFlowParameters {
                 replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
             }
@@ -43,7 +40,7 @@ abstract class KRPCTransportTestBase {
     }
 
     private val clientConfig  by lazy {
-        rpcClientConfigBuilder {
+        rpcClientConfig {
             sharedFlowParameters {
                 replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
             }
@@ -58,15 +55,17 @@ abstract class KRPCTransportTestBase {
     abstract val serverTransport: RPCTransport
 
     private lateinit var service: KRPCTestService
-    private lateinit var backend: RPCServerEngine<KRPCTestService>
+    private lateinit var backend: KRPCServer
     private lateinit var client: KRPCTestService
 
     @BeforeTest
     fun start() {
         service = KRPCTestServiceBackend()
 
-        backend = RPC.serverOf<KRPCTestService>(service, serverTransport, serverConfig)
-        client = RPC.clientOf<KRPCTestService>(clientTransport, clientConfig)
+        backend = KRPCTestServer(serverConfig, service.coroutineContext, serverTransport)
+        backend.registerService<KRPCTestService>(service)
+
+        client = KRPCTestClient(clientConfig, service.coroutineContext, clientTransport).withService()
     }
 
     @AfterTest

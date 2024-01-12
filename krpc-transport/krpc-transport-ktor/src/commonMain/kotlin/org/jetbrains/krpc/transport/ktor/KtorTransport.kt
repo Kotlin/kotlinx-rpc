@@ -6,25 +6,18 @@ package org.jetbrains.krpc.transport.ktor
 
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
-import kotlinx.serialization.*
-import org.jetbrains.krpc.RPCMessage
 import org.jetbrains.krpc.RPCTransport
-import org.jetbrains.krpc.internal.unsupportedSerialFormatError
+import org.jetbrains.krpc.RPCTransportMessage
+import org.jetbrains.krpc.internal.InternalKRPCApi
 import kotlin.coroutines.CoroutineContext
 
+@InternalKRPCApi
 @OptIn(InternalCoroutinesApi::class, DelicateCoroutinesApi::class)
-class KtorTransport(
-    private val serialFormat: SerialFormat,
-    private val webSocketSession: WebSocketSession,
-) : RPCTransport() {
+class KtorTransport(private val webSocketSession: WebSocketSession): RPCTransport {
     // Transport job should always be cancelled and never closed
     private val transportJob = Job()
 
     override val coroutineContext: CoroutineContext = webSocketSession.coroutineContext + transportJob
-
-    private val subscribers = mutableListOf<suspend (RPCMessage) -> Boolean>()
-    private val first = Job()
-
 
     init {
         // Close the socket when the transport job is cancelled manually
@@ -34,51 +27,43 @@ class KtorTransport(
                 webSocketSession.close()
             }
         }
-
-        launch {
-            first.join()
-
-            for (message in webSocketSession.incoming) {
-                val rpcMessage = when (serialFormat) {
-                    is StringFormat -> {
-                        check(message is Frame.Text)
-                        val messageText = message.readText()
-                        serialFormat.decodeFromString<RPCMessage>(messageText)
-                    }
-
-                    is BinaryFormat -> {
-                        check(message is Frame.Binary)
-                        val messageText = message.readBytes()
-                        serialFormat.decodeFromByteArray<RPCMessage>(messageText)
-                    }
-
-                    else -> {
-                        unsupportedSerialFormatError(serialFormat)
-                    }
-                }
-                subscribers.forEach { it(rpcMessage) }
-            }
-
-            webSocketSession.close()
-            transportJob.cancel()
-        }
     }
 
-    override suspend fun send(message: RPCMessage) {
-        when (serialFormat) {
-            is StringFormat -> {
-                val messageText = serialFormat.encodeToString(message)
-                webSocketSession.send(messageText)
+    /**
+     * Sends a single encoded RPC message over network (or any other medium) to a peer endpoint.
+     *
+     * @param message a message to send. Either of string or binary type.
+     */
+    override suspend fun send(message: RPCTransportMessage) {
+        when (message) {
+            is RPCTransportMessage.StringMessage -> {
+                webSocketSession.send(message.value)
             }
-            is BinaryFormat -> {
-                val messageText = serialFormat.encodeToByteArray(message)
-                webSocketSession.send(messageText)
+
+            is RPCTransportMessage.BinaryMessage -> {
+                webSocketSession.send(message.value)
             }
         }
     }
 
-    override suspend fun subscribe(block: suspend (RPCMessage) -> Boolean) {
-        subscribers.add(block)
-        first.complete()
+    /**
+     * Suspends until next RPC message from a peer endpoint is received and then returns it.
+     *
+     * @return received RPC message.
+     */
+    override suspend fun receive(): RPCTransportMessage {
+        return when (val message = webSocketSession.incoming.receive()) {
+            is Frame.Text -> {
+                RPCTransportMessage.StringMessage(message.readText())
+            }
+
+            is Frame.Binary -> {
+                RPCTransportMessage.BinaryMessage(message.readBytes())
+            }
+
+            else -> {
+                error("Unsupported websocket frame type: ${message::class}. Expected Frame.Text or Frame.Binary")
+            }
+        }
     }
 }

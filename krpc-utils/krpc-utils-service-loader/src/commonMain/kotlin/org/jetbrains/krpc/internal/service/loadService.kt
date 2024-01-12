@@ -26,6 +26,7 @@ open class ServiceContainer {
     }
 }
 
+@InternalKRPCApi
 open class CompanionServiceContainer<DeclaringClass : Any>(
     private val declaringKClass: KClass<DeclaringClass>,
 ) : ServiceContainer() {

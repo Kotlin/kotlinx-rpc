@@ -20,3 +20,10 @@ fun <T : Any> KType.kClass(): KClass<T> {
 fun internalError(message: String): Nothing {
     error("Internal kRPC error: $message")
 }
+
+@InternalKRPCApi
+expect val KClass<*>.qualifiedClassNameOrNull: String?
+
+@InternalKRPCApi
+val KClass<*>.qualifiedClassName: String  get() = qualifiedClassNameOrNull
+    ?: error("Expected qualifiedClassName for $this")

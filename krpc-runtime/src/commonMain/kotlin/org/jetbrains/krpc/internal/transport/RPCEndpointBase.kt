@@ -2,7 +2,7 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package org.jetbrains.krpc.internal
+package org.jetbrains.krpc.internal.transport
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -16,15 +16,14 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
+import org.jetbrains.krpc.RPCCall
 import org.jetbrains.krpc.RPCConfig
-import org.jetbrains.krpc.RPCMessage
-import org.jetbrains.krpc.RPCTransport
+import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
 
 @InternalKRPCApi
-abstract class RPCEngine {
-    protected abstract val serviceTypeString: String
-    protected abstract val transport: RPCTransport
+abstract class RPCEndpointBase: CoroutineScope {
+    protected abstract val sender: RPCMessageSender
     protected abstract val config: RPCConfig
     protected abstract val logger: CommonLogger
 
@@ -40,7 +39,8 @@ abstract class RPCEngine {
     protected suspend fun handleOutgoingStreams(
         scope: CoroutineScope,
         streamContext: LazyRPCStreamContext,
-        serialFormat: SerialFormat
+        serialFormat: SerialFormat,
+        serviceTypeString: String
     ) {
         val mutex = Mutex()
         for (outgoingStream in streamContext.awaitInitialized().outgoingStreams) {
@@ -53,21 +53,29 @@ abstract class RPCEngine {
                         StreamKind.Flow, StreamKind.SharedFlow, StreamKind.StateFlow -> {
                             val stream = outgoingStream.stream as Flow<*>
 
-                            collectAndSendOutgoingFlow(mutex, serialFormat, stream, callId, streamId, elementSerializer)
+                            collectAndSendOutgoingFlow(
+                                mutex = mutex,
+                                serialFormat = serialFormat,
+                                flow = stream,
+                                callId = callId,
+                                streamId = streamId,
+                                elementSerializer = elementSerializer,
+                                serviceTypeString = serviceTypeString
+                            )
                         }
                     }
                 } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
                     mutex.withLock {
                         val serializedReason = serializeException(cause)
                         val message = RPCMessage.StreamCancel(callId, serviceTypeString, streamId, serializedReason)
-                        transport.send(message)
+                        sender.sendMessage(message)
                     }
                     throw cause
                 }
 
                 mutex.withLock {
                     val message = RPCMessage.StreamFinished(callId, serviceTypeString, streamId)
-                    transport.send(message)
+                    sender.sendMessage(message)
                 }
             }
         }
@@ -80,6 +88,7 @@ abstract class RPCEngine {
         callId: String,
         streamId: String,
         elementSerializer: KSerializer<Any?>,
+        serviceTypeString: String
     ) {
         flow.collect {
             // because we can send new message for the new flow,
@@ -100,7 +109,8 @@ abstract class RPCEngine {
                         unsupportedSerialFormatError(serialFormat)
                     }
                 }
-                transport.send(message)
+
+                sender.sendMessage(message)
             }
         }
     }
@@ -124,5 +134,12 @@ abstract class RPCEngine {
         }
 
         return config.serialFormatInitializer.applySerializersModuleAndBuild(module)
+    }
+
+    protected fun RPCCall.Type.toMessageCallType(): RPCMessage.CallType {
+        return when (this) {
+            RPCCall.Type.Method -> RPCMessage.CallType.Method
+            RPCCall.Type.Field -> RPCMessage.CallType.Field
+        }
     }
 }

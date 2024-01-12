@@ -14,8 +14,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialFormat
 import org.jetbrains.krpc.RPCConfig
-import org.jetbrains.krpc.RPCMessage
 import org.jetbrains.krpc.internal.map.ConcurrentHashMap
+import org.jetbrains.krpc.internal.transport.RPCMessage
 import kotlin.coroutines.CoroutineContext
 
 @InternalKRPCApi
@@ -43,7 +43,7 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
     private var incomingStreamsInitialized: Boolean = false
     private val incomingStreams by lazy {
         incomingStreamsInitialized = true
-        ConcurrentHashMap<String, CompletableDeferred<RPCStreamInfo>>()
+        ConcurrentHashMap<String, CompletableDeferred<RPCStreamCall>>()
     }
 
     private var incomingChannelsInitialized: Boolean = false
@@ -53,7 +53,7 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
     }
 
     private var outgoingStreamsInitialized: Boolean = false
-    val outgoingStreams: Channel<RPCStreamInfo> by lazy {
+    val outgoingStreams: Channel<RPCStreamCall> by lazy {
         outgoingStreamsInitialized = true
         Channel(capacity = Channel.UNLIMITED)
     }
@@ -70,7 +70,7 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
         elementSerializer: KSerializer<Any?>,
     ): String {
         val id = "$STREAM_ID_PREFIX${streamIdCounter.getAndIncrement()}"
-        outgoingStreams.trySend(RPCStreamInfo(callId, id, stream, streamKind, elementSerializer))
+        outgoingStreams.trySend(RPCStreamCall(callId, id, stream, streamKind, elementSerializer))
         return id
     }
 
@@ -84,7 +84,7 @@ class RPCStreamContext(private val callId: String, private val config: RPCConfig
         incomingChannels[streamId] = incoming
 
         val stream = streamOf<StreamT>(streamKind, stateFlowInitialValue, incoming)
-        incomingStreams[streamId] = RPCStreamInfo(callId, streamId, stream, streamKind, elementSerializer)
+        incomingStreams[streamId] = RPCStreamCall(callId, streamId, stream, streamKind, elementSerializer)
         return stream
     }
 

@@ -4,15 +4,13 @@
 
 package org.jetbrains.krpc
 
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
-import org.jetbrains.krpc.client.clientOf
+import org.jetbrains.krpc.client.withService
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.server.internal.rpcServiceMethodSerializationTypeOf
 import kotlin.coroutines.CoroutineContext
-import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 val logger by lazy {
@@ -29,26 +27,26 @@ interface EmptyService {
     suspend fun empty()
 }
 
-val stubEngine = object : RPCClientEngine {
+val stubEngine = object : RPCClient {
     override val coroutineContext: CoroutineContext = Job()
 
-    override suspend fun call(callInfo: RPCCallInfo, callResult: CompletableDeferred<*>): Any? {
-        logger.info { "Called ${callInfo.callableName}" }
-        return null
+    override suspend fun <T> call(call: RPCCall): T {
+        logger.info { "Called ${call.callableName}" }
+        error("ok")
     }
 
-    override fun <T> registerPlainFlowField(fieldName: String, type: KType): Flow<T> {
-        logger.info { "registered flow: $fieldName" }
+    override fun <T> registerPlainFlowField(field: RPCField): Flow<T> {
+        logger.info { "registered flow: ${field.name}" }
         return flow {  }
     }
 
-    override fun <T> registerSharedFlowField(fieldName: String, type: KType): SharedFlow<T> {
-        logger.info { "registered flow: $fieldName" }
+    override fun <T> registerSharedFlowField(field: RPCField): SharedFlow<T> {
+        logger.info { "registered flow: ${field.name}" }
         return MutableSharedFlow(1)
     }
 
-    override fun <T : Any?> registerStateFlowField(fieldName: String, type: KType): StateFlow<T> {
-        logger.info { "registered flow: $fieldName" }
+    override fun <T> registerStateFlowField(field: RPCField): StateFlow<T> {
+        logger.info { "registered flow: ${field.name}" }
 
         @Suppress("UNCHECKED_CAST")
         return MutableStateFlow<Any?>(null) as StateFlow<T>
@@ -67,14 +65,18 @@ interface CommonService : RPC, EmptyService {
 
 suspend inline fun <reified T> testService() where T : RPC, T : EmptyService {
     val test: suspend T.() -> Unit = {
-        empty()
+        runCatching {
+            empty()
+        }
+
         flow
         sharedFlow
         stateFlow
     }
 
-    RPC.clientOf<T>(stubEngine).test()
-    RPC.clientOf<T>(typeOf<T>(), stubEngine).test()
+    stubEngine.withService<T>().test()
+    stubEngine.withService<T>(typeOf<T>()).test()
+    stubEngine.withService(T::class).test()
 
     logger.info { rpcServiceMethodSerializationTypeOf<T>("empty") }
     logger.info { rpcServiceMethodSerializationTypeOf(typeOf<T>(), "empty") }
