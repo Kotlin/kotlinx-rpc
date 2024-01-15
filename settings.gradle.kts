@@ -56,4 +56,5 @@ include(":krpc-transport:krpc-transport-ktor:krpc-transport-ktor-client")
 include(":tests:codegen-tests:codegen-tests-mpp")
 include(":tests:codegen-tests:codegen-tests-jvm")
 
+includeBuild("samples/ktor-web-app")
 includeBuild("samples/krpc-ktor")
