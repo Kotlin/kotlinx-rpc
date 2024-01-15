@@ -1,0 +1,58 @@
+[versions]
+kotlin = "1.9.21"
+kotlin-wrappers-bom = "1.0.0-pre.685"
+ktor = "2.3.7"
+kotlinx-serialization-json = "1.6.1"
+kotlinx-coroutines-core = "1.7.3"
+logback = "1.4.4"
+krpc = "beta-5.1"
+ksp = "1.9.21-1.0.16"
+
+[libraries]
+# kotlin
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-stdlib-js = { module = "org.jetbrains.kotlin:kotlin-stdlib-js", version.ref = "kotlin" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+
+# kotlinx
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-core" }
+kotlinx-coroutines-core-js = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-js", version.ref = "kotlinx-coroutines-core" }
+kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines-core" }
+
+# kotlin wrappers
+kotlin-wrappers-bom = { module = "org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom", version.ref = "kotlin-wrappers-bom" }
+react = { module = "org.jetbrains.kotlin-wrappers:kotlin-react" }
+react-dom = { module = "org.jetbrains.kotlin-wrappers:kotlin-react-dom" }
+emotion = { module = "org.jetbrains.kotlin-wrappers:kotlin-emotion" }
+
+# ktor
+ktor-server-cio = { module = "io.ktor:ktor-server-cio", version.ref = "ktor" }
+ktor-server-core-jvm = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
+ktor-server-cors-jvm = { module = "io.ktor:ktor-server-cors-jvm", version.ref = "ktor" }
+ktor-server-websockets-jvm = { module = "io.ktor:ktor-server-websockets-jvm", version.ref = "ktor" }
+ktor-server-host-common-jvm = { module = "io.ktor:ktor-server-host-common-jvm", version.ref = "ktor" }
+ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-websockets-js = { module = "io.ktor:ktor-client-websockets-js", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
+
+# logback
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+
+# krpc
+krpc-runtime = { module = "org.jetbrains.krpc:krpc-runtime" }
+krpc-runtime-client = { module = "org.jetbrains.krpc:krpc-runtime-client" }
+krpc-runtime-server = { module = "org.jetbrains.krpc:krpc-runtime-server" }
+krpc-transport-ktor-client = { module = "org.jetbrains.krpc:krpc-transport-ktor-client" }
+krpc-transport-ktor-server = { module = "org.jetbrains.krpc:krpc-transport-ktor-server" }
+krpc-runtime-serialization-json = { module = "org.jetbrains.krpc:krpc-runtime-serialization-json" }
+
+[plugins]
+kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+krpc = { id = "org.jetbrains.krpc.plugin", version.ref = "krpc" }
+krpc-platform = { id = "org.jetbrains.krpc.platform", version.ref = "krpc" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
