@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.9.21"
+kotlin = "1.9.22"
 kotlin-wrappers-bom = "1.0.0-pre.685"
 ktor = "2.3.7"
 kotlinx-serialization-json = "1.6.1"
