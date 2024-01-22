@@ -2,35 +2,42 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package com.jetbrains.krpc.samples
-
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.krpc.client.withService
+import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.transport.ktor.client.rpc
-
+import org.jetbrains.krpc.transport.ktor.client.rpcConfig
 
 fun main() = runBlocking {
-    val client = HttpClient {
+    val ktorClient = HttpClient {
         install(WebSockets)
     }
 
-    val recognizer: ImageRecognizer = client.rpc<ImageRecognizer> {
+    val client = ktorClient.rpc {
         url {
             host = "localhost"
             port = 8080
             encodedPath = "image-recognizer"
         }
+
+        rpcConfig {
+            serialization {
+                json()
+            }
+        }
     }
 
-    val stateJob = launch(Dispatchers.Unconfined) {
+    val recognizer: ImageRecognizer = client.withService<ImageRecognizer>()
+
+    val stateJob = launch {
         recognizer.currentlyProcessedImage.collect {
-            println("New state, current image: ${it?.data}")
+            println("New state, current image: $it")
         }
     }
 
@@ -48,6 +55,6 @@ fun main() = runBlocking {
     categories.collect { println("Recognized category: $it") }
 
     recognizer.cancel()
-    client.close()
+    ktorClient.close()
     stateJob.cancel()
 }

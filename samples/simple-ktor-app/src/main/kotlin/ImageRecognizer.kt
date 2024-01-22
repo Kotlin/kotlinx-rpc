@@ -2,8 +2,6 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package com.jetbrains.krpc.samples
-
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -12,16 +10,24 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import org.jetbrains.krpc.RPC
+import org.jetbrains.krpc.RPCEagerField
 import kotlin.coroutines.CoroutineContext
 
+@Suppress("ArrayInDataClass")
 @Serializable
-class Image(val data: ByteArray)
+data class Image(val data: ByteArray) {
+    @OptIn(ExperimentalStdlibApi::class)
+    override fun toString(): String {
+        return "Image(${data.joinToString("") { it.toHexString() }})"
+    }
+}
 
 enum class Category {
     CAT, DOG
 }
 
 interface ImageRecognizer : RPC {
+    @RPCEagerField
     val currentlyProcessedImage: StateFlow<Image?>
 
     suspend fun recognize(image: Image): Category
