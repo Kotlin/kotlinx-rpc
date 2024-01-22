@@ -30,34 +30,11 @@ fun Path.bufferedReader(
     )
 }
 
-// actual libraries versions for current Kotlin version.
-// Resolved from 'gradle/targets-since-kotlin-lookup.json'
-data class KotlinLookupTable(
-    val ksp: String,
-    val atomicfu: String,
-    val serialization: String,
-    val coroutines: String,
-    val ktor: String,
-    val detekt: String,
-    val kotlinLogging: String,
-    val gradleKotlinDsl: String,
-    val binaryCompatibilityValidator: String
-)
-
 object SettingsConventions {
     const val KOTLIN_VERSION_ENV_VAR_NAME = "KOTLIN_VERSION"
     const val EAP_VERSION_ENV_VAR_NAME = "EAP_VERSION"
 
     const val KSP_VERSION_ALIAS = "ksp"
-    const val ATOMICFU_VERSION_ALIAS = "atomicfu"
-    const val SERIALIZATION_VERSION_ALIAS = "serialization"
-    const val COROUTINES_VERSION_ALIAS = "coroutines"
-    const val KTOR_VERSION_ALIAS = "ktor"
-    const val DETEKT_VERSION_ALIAS = "detekt-gradle-plugin"
-    const val KOTLIN_LOGGING_VERSION_ALIAS = "kotlin-logging"
-    const val KOTLIN_DSL_VERSION_ALIAS = "gradle-kotlin-dsl"
-    const val BINARY_COMPATIBILITY_VALIDATOR = "binary-compatibility-validator"
-
     const val KRPC_CORE_VERSION_ALIAS = "krpc-core"
     const val KRPC_FULL_VERSION_ALIAS = "krpc-full"
     const val KOTLIN_VERSION_ALIAS = "kotlin-lang"
@@ -66,7 +43,7 @@ object SettingsConventions {
 
     const val GRADLE_WRAPPER_FOLDER = "gradle"
     const val LIBS_VERSION_CATALOG_PATH = "$GRADLE_WRAPPER_FOLDER/libs.versions.toml"
-    const val KOTLIN_VERSIONS_LOOKUP_PATH = "$GRADLE_WRAPPER_FOLDER/kotlin-versions-lookup.json"
+    const val KOTLIN_VERSIONS_LOOKUP_PATH = "$GRADLE_WRAPPER_FOLDER/kotlin-versions-lookup.csv"
 }
 
 // ### VERSION RESOLVING SECTION ###
@@ -97,28 +74,32 @@ fun findGlobalRootDirPath(start: Path, onDir: () -> Unit = {}): Path {
     return path
 }
 
-// Resolves 'gradle/targets-since-kotlin-lookup.json'
-fun loadLookupTable(rootDir: Path, kotlinVersion: String): KotlinLookupTable {
+// Resolves 'gradle/kotlin-versions-lookup.csv'
+fun loadLookupTable(rootDir: Path, kotlinVersion: String): Map<String, String> {
     val file = rootDir.resolve(SettingsConventions.KOTLIN_VERSIONS_LOOKUP_PATH).toFile()
 
-    @Suppress("UNCHECKED_CAST")
-    val fullTable = groovy.json.JsonSlurper()
-        .parseText(file.readText()) as Map<String, Map<String, String>>
+    return file.readText()
+        .split("\n")
+        .takeIf { it.size >= 2 }
+        ?.run {
+            when (val versionsRow = singleOrNull { it.startsWith(kotlinVersion) }) {
+                null -> null
+                else -> first().asCsvValues() to versionsRow.asCsvValues()
+            }
+        }
+        ?.takeIf { (keys, values) -> keys.size == values.size }
+        ?.let { (keys, values) ->
+            keys.zip(values)
+        }?.associate { it }
+        ?: error(
+            "Malformed Kotlin version in lookup table, " +
+                    "should be proper CSV file with horizontal header of version names " +
+                    "and vertical headers of Kotlin versions."
+        )
+}
 
-    val currentTable = fullTable[kotlinVersion]
-        ?: error("Unsupported Kotlin version in lookup: $kotlinVersion. Available: ${fullTable.keys.joinToString()}")
-
-    return KotlinLookupTable(
-        ksp = currentTable.getValue(SettingsConventions.KSP_VERSION_ALIAS),
-        atomicfu = currentTable.getValue(SettingsConventions.ATOMICFU_VERSION_ALIAS),
-        serialization = currentTable.getValue(SettingsConventions.SERIALIZATION_VERSION_ALIAS),
-        coroutines = currentTable.getValue(SettingsConventions.COROUTINES_VERSION_ALIAS),
-        ktor = currentTable.getValue(SettingsConventions.KTOR_VERSION_ALIAS),
-        detekt = currentTable.getValue(SettingsConventions.DETEKT_VERSION_ALIAS),
-        kotlinLogging = currentTable.getValue(SettingsConventions.KOTLIN_LOGGING_VERSION_ALIAS),
-        gradleKotlinDsl = currentTable.getValue(SettingsConventions.KOTLIN_DSL_VERSION_ALIAS),
-        binaryCompatibilityValidator = currentTable.getValue(SettingsConventions.BINARY_COMPATIBILITY_VALIDATOR),
-    )
+fun String.asCsvValues(): List<String> {
+    return split(",").map { it.trim() }.drop(1)
 }
 
 // Resolves [versions] section from 'gradle/libs.versions.toml' into map
@@ -211,23 +192,21 @@ dependencyResolutionManagement {
             // Other Kotlin-dependant versions 
             val lookupTable = loadLookupTable(rootDir, kotlinVersion)
 
-            version(SettingsConventions.KSP_VERSION_ALIAS, "$kotlinVersion-${lookupTable.ksp}")
+            logger.info("Resolved compiler specific dependencies versions (Kotlin $kotlinVersion):")
+            lookupTable.forEach { (name, version) ->
+                val fullVersion = when (name) {
+                    SettingsConventions.KSP_VERSION_ALIAS -> {
+                        "$kotlinVersion-${version}"
+                    }
 
-            version(SettingsConventions.ATOMICFU_VERSION_ALIAS, lookupTable.atomicfu)
+                    else -> {
+                        version
+                    }
+                }
 
-            version(SettingsConventions.SERIALIZATION_VERSION_ALIAS, lookupTable.serialization)
-
-            version(SettingsConventions.COROUTINES_VERSION_ALIAS, lookupTable.coroutines)
-
-            version(SettingsConventions.KTOR_VERSION_ALIAS, lookupTable.ktor)
-
-            version(SettingsConventions.DETEKT_VERSION_ALIAS, lookupTable.detekt)
-
-            version(SettingsConventions.KOTLIN_LOGGING_VERSION_ALIAS, lookupTable.kotlinLogging)
-
-            version(SettingsConventions.KOTLIN_DSL_VERSION_ALIAS, lookupTable.gradleKotlinDsl)
-
-            version(SettingsConventions.BINARY_COMPATIBILITY_VALIDATOR, lookupTable.binaryCompatibilityValidator)
+                logger.info("$name -> $fullVersion")
+                version(name, fullVersion)
+            }
         }
     }
 }

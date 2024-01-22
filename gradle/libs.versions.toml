@@ -1,6 +1,6 @@
 [versions]
 # kotlin
-kotlin-lang = "1.9.21"
+kotlin-lang = "1.9.22"
 krpc-core = "5.2-beta" # version for plugins and suffix for krpc-full
 
 # kotlin-dependent versions, will be replaced with the actual versions by a settings-conventions plugin
