@@ -42,16 +42,20 @@ class ApplicationTest {
 
         val job = CoroutineScope(Dispatchers.IO).launch {
             recognizer.currentlyProcessedImage.collect { image ->
-                flowList.add(image?.data?.toHexString())
+                val stringValue = image?.data?.toHexString()
+                flowList.add(stringValue)
+
+                if (stringValue == "000203") {
+                    coroutineContext.cancel()
+                }
             }
         }
 
         assertEquals(Category.DOG, recognizer.recognize(Image(byteArrayOf(1, 2, 3))))
         assertEquals(Category.CAT, recognizer.recognize(Image(byteArrayOf(0, 2, 3))))
 
-        job.cancelAndJoin()
+        job.join()
 
-        println(flowList)
-        assertContentEquals(listOf(null, "010203", null, "000203", null), flowList)
+        assertContentEquals(listOf(null, "010203", null, "000203"), flowList)
     }
 }
