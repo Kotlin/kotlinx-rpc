@@ -2,25 +2,22 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
-
-val ktor_version: String by project
-val kotlin_version: String by project
-val logback_version: String by project
-val krpc_version: String by project
-
 plugins {
-    kotlin("jvm") version "1.9.10"
-    kotlin("plugin.serialization") version "1.9.10"
-    id("io.ktor.plugin") version "2.3.4"
-    id("com.google.devtools.ksp") version "1.9.10-1.0.13"
+    kotlin("jvm") version "1.9.22"
+    kotlin("plugin.serialization") version "1.9.22"
+    id("io.ktor.plugin") version "2.3.7"
+    id("com.google.devtools.ksp") version "1.9.22-1.0.16"
+    id("org.jetbrains.krpc.plugin") version "5.2-beta"
 }
 
-group = "com.jetbrains.krpc.samples"
+val kotlin_version: String by project
+val logback_version: String by project
+
+group = "com.example"
 version = "0.0.1"
 
 application {
-    mainClass.set("com.jetbrains.krpc.samples.ApplicationKt")
+    mainClass.set("ApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
@@ -36,14 +33,12 @@ kotlin {
 }
 
 dependencies {
-    ksp("org.jetbrains.krpc:krpc-ksp-plugin:$krpc_version")
-    PLUGIN_CLASSPATH_CONFIGURATION_NAME("org.jetbrains.krpc:krpc-compiler-plugin:$krpc_version")
+    implementation("org.jetbrains.krpc:krpc-runtime-client")
+    implementation("org.jetbrains.krpc:krpc-runtime-server")
+    implementation("org.jetbrains.krpc:krpc-runtime-serialization-json")
 
-    implementation("org.jetbrains.krpc:krpc-runtime-client:$krpc_version")
-    implementation("org.jetbrains.krpc:krpc-runtime-client:$krpc_version")
-
-    implementation("org.jetbrains.krpc:krpc-transport-ktor-client:$krpc_version")
-    implementation("org.jetbrains.krpc:krpc-transport-ktor-server:$krpc_version")
+    implementation("org.jetbrains.krpc:krpc-transport-ktor-client")
+    implementation("org.jetbrains.krpc:krpc-transport-ktor-server")
 
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-client-cio-jvm")
@@ -51,6 +46,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("ch.qos.logback:logback-classic:$logback_version")
+
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
