@@ -3,11 +3,11 @@
  */
 
 plugins {
-    kotlin("jvm") version "1.9.21"
-    kotlin("plugin.serialization") version "1.9.21"
+    kotlin("jvm") version "1.9.22"
+    kotlin("plugin.serialization") version "1.9.22"
     id("io.ktor.plugin") version "2.3.7"
-    id("com.google.devtools.ksp") version "1.9.21-1.0.16"
-    id("org.jetbrains.krpc.plugin") version "beta-5.1"
+    id("com.google.devtools.ksp") version "1.9.22-1.0.16"
+    id("org.jetbrains.krpc.plugin") version "5.2-beta"
 }
 
 val kotlin_version: String by project
