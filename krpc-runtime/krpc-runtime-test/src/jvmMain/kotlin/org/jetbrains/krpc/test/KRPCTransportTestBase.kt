@@ -297,12 +297,10 @@ abstract class KRPCTransportTestBase {
         }
     }
 
-    // it is flaky, https://youtrack.jetbrains.com/issue/KRPC-49
-    @Ignore
     @Test
     fun bidirectionalAsyncStream() {
         runBlocking {
-            val flow = MutableSharedFlow<Int>()
+            val flow = MutableSharedFlow<Int>(1)
             val result = client.echoStream(flow.take(10))
             launch {
                 var id = 0
