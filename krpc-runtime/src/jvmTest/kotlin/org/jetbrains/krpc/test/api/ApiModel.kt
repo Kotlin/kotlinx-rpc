@@ -75,8 +75,8 @@ private fun ApiTestContext.checkType(kClass: KClass<*>, type: KType) {
             fails.add("Custom protocol classes can not have type arguments: $name")
         }
 
-        !name.startsWith("org.jetbrains.krpc.internal.transport") -> {
-            fails.add("All protocol classes must be located in 'org.jetbrains.krpc.internal.transport' package: $name")
+        !name.startsWith("org.jetbrains.krpc") -> {
+            fails.add("All protocol classes must be located in 'org.jetbrains.krpc' package or its descendant: $name")
         }
 
         !kClass.isData -> {

@@ -1,0 +1,6 @@
+org.jetbrains.krpc.StackElement
+  - clazz: kotlin.String
+  - fileName: kotlin.String
+    - Nullable
+  - lineNumber: kotlin.Int
+  - method: kotlin.String

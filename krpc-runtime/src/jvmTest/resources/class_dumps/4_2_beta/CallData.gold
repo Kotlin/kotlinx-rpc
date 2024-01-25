@@ -1,0 +1,6 @@
+org.jetbrains.krpc.RPCMessage.CallData
+  - callId: kotlin.String
+  - method: kotlin.String
+    - Declared name: callableName
+  - data: kotlin.String
+  - serviceType: kotlin.String
