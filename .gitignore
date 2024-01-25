@@ -9,3 +9,6 @@ build
 
 # Ignore generated Detekt reports
 detekt/reports/**
+
+# tmp files created by tests
+*.tmp

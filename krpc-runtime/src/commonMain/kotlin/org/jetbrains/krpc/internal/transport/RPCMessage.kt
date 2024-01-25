@@ -7,7 +7,6 @@ package org.jetbrains.krpc.internal.transport
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.jetbrains.krpc.internal.InternalKRPCApi
-import org.jetbrains.krpc.internal.SerializedException
 
 @InternalKRPCApi
 @Serializable
