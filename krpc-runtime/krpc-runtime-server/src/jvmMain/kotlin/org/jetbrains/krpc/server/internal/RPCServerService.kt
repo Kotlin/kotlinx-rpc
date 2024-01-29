@@ -13,9 +13,9 @@ import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.map.ConcurrentHashMap
+import org.jetbrains.krpc.internal.transport.RPCEndpointBase
 import org.jetbrains.krpc.internal.transport.RPCMessage
 import org.jetbrains.krpc.internal.transport.RPCMessageSender
-import org.jetbrains.krpc.internal.transport.RPCEndpointBase
 import java.lang.reflect.InvocationTargetException
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KCallable
@@ -105,10 +105,12 @@ internal class RPCServerService<T : RPC>(
         val isMethod = when (callData.callType) {
             RPCMessage.CallType.Method -> true
             RPCMessage.CallType.Field -> false
-            else -> true // compatibility with old clients
+            else -> callData.callableName
+                .endsWith("\$method") // compatibility with beta-4.2 clients
         }
 
         val callableName = callData.callableName
+            .substringBefore('$') // compatibility with beta-4.2 clients
 
         val callable = (if (isMethod) methods else fields)[callableName]
 

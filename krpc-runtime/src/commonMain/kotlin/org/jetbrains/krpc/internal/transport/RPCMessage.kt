@@ -7,10 +7,10 @@ package org.jetbrains.krpc.internal.transport
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.jetbrains.krpc.internal.InternalKRPCApi
-import org.jetbrains.krpc.internal.SerializedException
 
 @InternalKRPCApi
 @Serializable
+@SerialName("org.jetbrains.krpc.RPCMessage")
 public sealed interface RPCMessage {
     public val callId: String
     public val serviceType: String
@@ -30,6 +30,7 @@ public sealed interface RPCMessage {
 
     @InternalKRPCApi
     @Serializable
+    @SerialName("org.jetbrains.krpc.RPCMessage.CallResult")
     public sealed interface CallResult : RPCMessage
 
     @InternalKRPCApi
@@ -47,7 +48,7 @@ public sealed interface RPCMessage {
 
     @InternalKRPCApi
     @Serializable
-    @SerialName("CallData")
+    @SerialName("org.jetbrains.krpc.RPCMessage.CallData")
     public data class CallDataString(
         override val callId: String,
         override val serviceType: String,
@@ -71,16 +72,16 @@ public sealed interface RPCMessage {
 
     @InternalKRPCApi
     @Serializable
-    public sealed interface CallSuccess : RPCMessage, Data
+    public sealed interface CallSuccess : CallResult, Data
 
     @InternalKRPCApi
     @Serializable
-    @SerialName("CallSuccess")
+    @SerialName("org.jetbrains.krpc.RPCMessage.CallSuccess")
     public data class CallSuccessString(
         override val callId: String,
         override val serviceType: String,
         override val data: String
-    ) : CallResult, CallSuccess, Data.StringData
+    ) : CallSuccess, Data.StringData
 
     @InternalKRPCApi
     @Suppress("ArrayInDataClass")
@@ -89,13 +90,14 @@ public sealed interface RPCMessage {
         override val callId: String,
         override val serviceType: String,
         override val data: ByteArray
-    ) : CallResult, CallSuccess, Data.BinaryData
+    ) : CallSuccess, Data.BinaryData
 
     /**
      * Both for client and server
      */
     @InternalKRPCApi
     @Serializable
+    @SerialName("org.jetbrains.krpc.RPCMessage.CallException")
     public data class CallException(
         override val callId: String,
         override val serviceType: String,
@@ -110,7 +112,7 @@ public sealed interface RPCMessage {
 
     @InternalKRPCApi
     @Serializable
-    @SerialName("StreamMessage")
+    @SerialName("org.jetbrains.krpc.RPCMessage.StreamMessage")
     public data class StreamMessageString(
         override val callId: String,
         override val serviceType: String,
@@ -132,6 +134,7 @@ public sealed interface RPCMessage {
 
     @InternalKRPCApi
     @Serializable
+    @SerialName("org.jetbrains.krpc.RPCMessage.StreamCancel")
     public data class StreamCancel(
         override val callId: String,
         override val serviceType: String,
@@ -142,6 +145,7 @@ public sealed interface RPCMessage {
 
     @InternalKRPCApi
     @Serializable
+    @SerialName("org.jetbrains.krpc.RPCMessage.StreamFinished")
     public data class StreamFinished(
         override val callId: String,
         override val serviceType: String,

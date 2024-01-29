@@ -1,0 +1,6 @@
+org.jetbrains.krpc.RPCMessage.StreamMessage
+  - callId: kotlin.String
+  - data: kotlin.String
+  - serviceType: kotlin.String
+  - flowId: kotlin.String
+    - Declared name: streamId

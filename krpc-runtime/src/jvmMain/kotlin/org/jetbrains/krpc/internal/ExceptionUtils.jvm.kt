@@ -4,6 +4,8 @@
 
 package org.jetbrains.krpc.internal
 
+import org.jetbrains.krpc.internal.transport.SerializedException
+import org.jetbrains.krpc.internal.transport.StackElement
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
 

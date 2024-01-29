@@ -6,6 +6,9 @@
 
 package org.jetbrains.krpc.internal
 
+import org.jetbrains.krpc.internal.transport.SerializedException
+import org.jetbrains.krpc.internal.transport.StackElement
+
 internal actual class DeserializedException actual constructor(
     private val toStringMessage: String,
     override val message: String,

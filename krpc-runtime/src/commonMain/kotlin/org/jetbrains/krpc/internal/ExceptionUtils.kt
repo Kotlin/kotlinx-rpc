@@ -4,6 +4,9 @@
 
 package org.jetbrains.krpc.internal
 
+import org.jetbrains.krpc.internal.transport.SerializedException
+import org.jetbrains.krpc.internal.transport.StackElement
+
 @InternalKRPCApi
 public fun serializeException(cause: Throwable): SerializedException {
     val message = cause.message ?: "Unknown exception"
