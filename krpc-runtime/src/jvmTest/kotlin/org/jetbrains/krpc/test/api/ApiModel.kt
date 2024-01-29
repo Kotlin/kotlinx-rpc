@@ -8,7 +8,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.jetbrains.krpc.internal.kClass
 import org.jetbrains.krpc.internal.qualifiedClassName
-import org.jetbrains.krpc.test.api.ApiTestContext.Companion.NewLine
+import org.jetbrains.krpc.test.api.util.GoldUtils.NewLine
 import kotlin.reflect.*
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.findAnnotation

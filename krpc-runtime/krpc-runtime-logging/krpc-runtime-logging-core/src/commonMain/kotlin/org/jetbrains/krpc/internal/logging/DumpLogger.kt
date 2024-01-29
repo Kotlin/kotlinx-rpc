@@ -1,0 +1,23 @@
+/*
+ * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+package org.jetbrains.krpc.internal.logging
+
+import org.jetbrains.krpc.internal.InternalKRPCApi
+
+@InternalKRPCApi
+public interface DumpLogger {
+    public val isEnabled: Boolean
+
+    public fun dump(vararg tags: String, message: () -> String)
+}
+
+@InternalKRPCApi
+public object DumpLoggerNoop : DumpLogger {
+    override val isEnabled: Boolean = false
+
+    override fun dump(vararg tags: String, message: () -> String) {
+        // noop
+    }
+}
