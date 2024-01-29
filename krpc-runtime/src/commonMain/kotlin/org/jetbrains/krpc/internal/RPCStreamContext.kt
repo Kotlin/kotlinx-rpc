@@ -33,7 +33,11 @@ public class LazyRPCStreamContext(private val initializer: () -> RPCStreamContex
 }
 
 @InternalKRPCApi
-public class RPCStreamContext(private val callId: String, private val config: RPCConfig) {
+public class RPCStreamContext(
+    private val callId: String,
+    private val config: RPCConfig,
+    private val connectionId: Long?,
+) {
     private companion object {
         private const val STREAM_ID_PREFIX = "stream:"
     }
@@ -70,7 +74,7 @@ public class RPCStreamContext(private val callId: String, private val config: RP
         elementSerializer: KSerializer<Any?>,
     ): String {
         val id = "$STREAM_ID_PREFIX${streamIdCounter.getAndIncrement()}"
-        outgoingStreams.trySend(RPCStreamCall(callId, id, stream, streamKind, elementSerializer))
+        outgoingStreams.trySend(RPCStreamCall(callId, id, stream, streamKind, elementSerializer, connectionId))
         return id
     }
 
@@ -84,7 +88,7 @@ public class RPCStreamContext(private val callId: String, private val config: RP
         incomingChannels[streamId] = incoming
 
         val stream = streamOf<StreamT>(streamKind, stateFlowInitialValue, incoming)
-        incomingStreams[streamId] = RPCStreamCall(callId, streamId, stream, streamKind, elementSerializer)
+        incomingStreams[streamId] = RPCStreamCall(callId, streamId, stream, streamKind, elementSerializer, connectionId)
         return stream
     }
 

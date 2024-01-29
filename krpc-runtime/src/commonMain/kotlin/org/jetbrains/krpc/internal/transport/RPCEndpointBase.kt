@@ -22,7 +22,7 @@ import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
 
 @InternalKRPCApi
-public abstract class RPCEndpointBase: CoroutineScope {
+public abstract class RPCEndpointBase : CoroutineScope {
     protected abstract val sender: RPCMessageSender
     protected abstract val config: RPCConfig
     protected abstract val logger: CommonLogger
@@ -40,7 +40,7 @@ public abstract class RPCEndpointBase: CoroutineScope {
         scope: CoroutineScope,
         streamContext: LazyRPCStreamContext,
         serialFormat: SerialFormat,
-        serviceTypeString: String
+        serviceTypeString: String,
     ) {
         val mutex = Mutex()
         for (outgoingStream in streamContext.awaitInitialized().outgoingStreams) {
@@ -53,42 +53,57 @@ public abstract class RPCEndpointBase: CoroutineScope {
                         StreamKind.Flow, StreamKind.SharedFlow, StreamKind.StateFlow -> {
                             val stream = outgoingStream.stream as Flow<*>
 
-                            collectAndSendOutgoingFlow(
+                            collectAndSendOutgoingStream(
                                 mutex = mutex,
                                 serialFormat = serialFormat,
                                 flow = stream,
                                 callId = callId,
                                 streamId = streamId,
                                 elementSerializer = elementSerializer,
-                                serviceTypeString = serviceTypeString
+                                serviceTypeString = serviceTypeString,
+                                connectionId = outgoingStream.connectionId,
                             )
                         }
                     }
                 } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
                     mutex.withLock {
                         val serializedReason = serializeException(cause)
-                        val message = RPCMessage.StreamCancel(callId, serviceTypeString, streamId, serializedReason)
+                        val message = RPCMessage.StreamCancel(
+                            callId = callId,
+                            serviceType = serviceTypeString,
+                            streamId = streamId,
+                            cause = serializedReason,
+                            connectionId = outgoingStream.connectionId,
+                        )
                         sender.sendMessage(message)
                     }
                     throw cause
                 }
 
                 mutex.withLock {
-                    val message = RPCMessage.StreamFinished(callId, serviceTypeString, streamId)
+                    val message = RPCMessage.StreamFinished(
+                        callId = callId,
+                        serviceType = serviceTypeString,
+                        streamId = streamId,
+                        connectionId = outgoingStream.connectionId,
+                    )
+
                     sender.sendMessage(message)
                 }
             }
         }
     }
 
-    private suspend fun collectAndSendOutgoingFlow(
+    @Suppress("detekt.LongParameterList")
+    private suspend fun collectAndSendOutgoingStream(
         mutex: Mutex,
         serialFormat: SerialFormat,
         flow: Flow<*>,
         callId: String,
         streamId: String,
         elementSerializer: KSerializer<Any?>,
-        serviceTypeString: String
+        serviceTypeString: String,
+        connectionId: Long?,
     ) {
         flow.collect {
             // because we can send new message for the new flow,
@@ -97,12 +112,24 @@ public abstract class RPCEndpointBase: CoroutineScope {
                 val message = when (serialFormat) {
                     is StringFormat -> {
                         val stringData = serialFormat.encodeToString(elementSerializer, it)
-                        RPCMessage.StreamMessageString(callId, serviceTypeString, streamId, stringData)
+                        RPCMessage.StreamMessageString(
+                            callId = callId,
+                            serviceType = serviceTypeString,
+                            streamId = streamId,
+                            data = stringData,
+                            connectionId = connectionId,
+                        )
                     }
 
                     is BinaryFormat -> {
                         val binaryData = serialFormat.encodeToByteArray(elementSerializer, it)
-                        RPCMessage.StreamMessageBinary(callId, serviceTypeString, streamId, binaryData)
+                        RPCMessage.StreamMessageBinary(
+                            callId = callId,
+                            serviceType = serviceTypeString,
+                            streamId = streamId,
+                            data = binaryData,
+                            connectionId = connectionId,
+                        )
                     }
 
                     else -> {

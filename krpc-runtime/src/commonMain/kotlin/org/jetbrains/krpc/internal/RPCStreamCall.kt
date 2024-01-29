@@ -12,4 +12,5 @@ internal data class RPCStreamCall(
     val stream: Any,
     val kind: StreamKind,
     val elementSerializer: KSerializer<Any?>,
+    val connectionId: Long?,
 )

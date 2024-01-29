@@ -16,6 +16,7 @@ import org.jetbrains.krpc.internal.map.ConcurrentHashMap
 import org.jetbrains.krpc.internal.transport.RPCEndpointBase
 import org.jetbrains.krpc.internal.transport.RPCMessage
 import org.jetbrains.krpc.internal.transport.RPCMessageSender
+import org.jetbrains.krpc.internal.transport.RPCPlugin
 import java.lang.reflect.InvocationTargetException
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KCallable
@@ -28,6 +29,7 @@ internal class RPCServerService<T : RPC>(
     private val serviceKClass: KClass<T>,
     override val config: RPCConfig.Server,
     override val sender: RPCMessageSender,
+    private val clientPlugins: (connectionId: Long?) -> Set<RPCPlugin>,
 ) : RPCEndpointBase(), CoroutineScope {
     private val serviceTypeString = serviceKClass.qualifiedClassName
     override val logger = CommonLogger.initialized().logger(objectId(serviceTypeString))
@@ -98,7 +100,7 @@ internal class RPCServerService<T : RPC>(
 
     @OptIn(InternalCoroutinesApi::class)
     private fun handleCall(callId: String, callData: RPCMessage.CallData) {
-        val streamContext = LazyRPCStreamContext { RPCStreamContext(callId, config) }
+        val streamContext = LazyRPCStreamContext { RPCStreamContext(callId, config, callData.connectionId) }
         val serialFormat = prepareSerialFormat(streamContext)
         streamContexts[callId] = streamContext
 
@@ -117,7 +119,12 @@ internal class RPCServerService<T : RPC>(
         if (callable == null) {
             val callType = if (isMethod) "method" else "field"
             val cause = NoSuchMethodException("Service $serviceTypeString has no $callType $callableName")
-            val message = RPCMessage.CallException(callId, serviceTypeString, serializeException(cause))
+            val message = RPCMessage.CallException(
+                callId = callId,
+                serviceType = serviceTypeString,
+                cause = serializeException(cause),
+                connectionId = callData.connectionId,
+            )
             launch {
                 sender.sendMessage(message)
             }
@@ -150,12 +157,22 @@ internal class RPCServerService<T : RPC>(
                 when (serialFormat) {
                     is StringFormat -> {
                         val stringValue = serialFormat.encodeToString(returnSerializer, value)
-                        RPCMessage.CallSuccessString(callId, serviceTypeString, stringValue)
+                        RPCMessage.CallSuccessString(
+                            callId = callId,
+                            serviceType = serviceTypeString,
+                            data = stringValue,
+                            connectionId = callData.connectionId,
+                        )
                     }
 
                     is BinaryFormat -> {
                         val binaryValue = serialFormat.encodeToByteArray(returnSerializer, value)
-                        RPCMessage.CallSuccessBinary(callId, serviceTypeString, binaryValue)
+                        RPCMessage.CallSuccessBinary(
+                            callId = callId,
+                            serviceType = serviceTypeString,
+                            data = binaryValue,
+                            connectionId = callData.connectionId,
+                        )
                     }
 
                     else -> {
@@ -164,10 +181,10 @@ internal class RPCServerService<T : RPC>(
                 }
             } catch (cause: InvocationTargetException) {
                 val serializedCause = serializeException(cause.cause ?: cause)
-                RPCMessage.CallException(callId, serviceTypeString, serializedCause)
+                RPCMessage.CallException(callId, serviceTypeString, serializedCause, callData.connectionId)
             } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
                 val serializedCause = serializeException(cause)
-                RPCMessage.CallException(callId, serviceTypeString, serializedCause)
+                RPCMessage.CallException(callId, serviceTypeString, serializedCause, callData.connectionId)
             }
             sender.sendMessage(result)
 

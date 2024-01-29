@@ -4,15 +4,26 @@
 
 package org.jetbrains.krpc.server
 
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.launch
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCServer
 import org.jetbrains.krpc.RPCTransport
+import org.jetbrains.krpc.internal.InternalKRPCApi
+import org.jetbrains.krpc.internal.logging.CommonLogger
+import org.jetbrains.krpc.internal.logging.DumpLogger
+import org.jetbrains.krpc.internal.logging.DumpLoggerNoop
+import org.jetbrains.krpc.internal.logging.initialized
+import org.jetbrains.krpc.internal.objectId
 import org.jetbrains.krpc.internal.qualifiedClassName
-import org.jetbrains.krpc.internal.transport.RPCConnector
+import org.jetbrains.krpc.internal.transport.RPCPlugin
+import org.jetbrains.krpc.internal.transport.RPCProtocolMessage
+import org.jetbrains.krpc.server.internal.RPCServerConnector
 import org.jetbrains.krpc.server.internal.RPCServerService
 import kotlin.reflect.KClass
+
+private val SERVER_ID = atomic(initial = 0L)
 
 /**
  * Default implementation of [RPCServer].
@@ -34,28 +45,58 @@ import kotlin.reflect.KClass
  * @param config configuration provided for that specific server. Applied to all services that use this server.
  */
 public abstract class KRPCServer(private val config: RPCConfig.Server) : RPCServer, RPCTransport {
+    private val serverId = SERVER_ID.getAndIncrement()
+    private val logger = CommonLogger.initialized().logger(objectId(serverId.toString()))
+
+    private val connector by lazy {
+        RPCServerConnector(
+            serialFormat = config.serialFormatInitializer.build(),
+            transport = this,
+            waitForServices = config.waitForServices,
+            dumpLogger = dumpLogger,
+        )
+    }
+
+    private val subscribeToProtocolMessages by lazy {
+        launch {
+            connector.subscribeToProtocolMessages(::handleProtocolMessage)
+        }
+    }
+
+    private val clientSupportedPlugins: MutableMap<Long, Set<RPCPlugin>> = mutableMapOf()
+
+    private suspend fun handleProtocolMessage(message: RPCProtocolMessage) {
+        when (message) {
+            is RPCProtocolMessage.Handshake -> {
+                clientSupportedPlugins[message.connectionId] = message.supportedPlugins
+                connector.sendMessage(RPCProtocolMessage.Handshake(message.connectionId, RPCPlugin.ALL))
+            }
+
+            is RPCProtocolMessage.Failure -> {
+                logger.error {
+                    "Client [${message.connectionId}] failed to handle protocol message ${message.failedMessage}: " +
+                            message.errorMessage
+                }
+            }
+        }
+    }
+
     override fun <Service : RPC> registerService(service: Service, serviceKClass: KClass<Service>) {
         val name = serviceKClass.qualifiedClassName
 
-        val rpcService = RPCServerService(service, serviceKClass, config, connector)
+        val rpcService = RPCServerService(service, serviceKClass, config, connector) { connectionId ->
+            connectionId?.let { clientSupportedPlugins[it] } ?: emptySet()
+        }
 
         launch {
-            connector.subscribeToMessages(name) {
+            subscribeToProtocolMessages.join()
+
+            connector.subscribeToServiceMessages(name) {
                 rpcService.accept(it)
             }
         }
     }
 
-    private val connector by lazy {
-        RPCConnector(
-            serialFormat = config.serialFormatInitializer.build(),
-            transport = this,
-            waitForSubscribers = config.waitForServices,
-            getKey = {
-                serviceType
-                    .removePrefix("class ") // beta-4.2 compatibility
-            },
-            isServer = true,
-        )
-    }
+    @InternalKRPCApi
+    protected open val dumpLogger: DumpLogger = DumpLoggerNoop
 }

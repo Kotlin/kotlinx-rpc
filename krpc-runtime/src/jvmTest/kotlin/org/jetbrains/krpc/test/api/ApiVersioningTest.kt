@@ -41,7 +41,7 @@ class ApiVersioningTest {
         sample {
             val response = clientStream(plainFlow { it }).joinToString()
             val expected = List(5) { it }.joinToString()
-            
+
             assertEquals(expected, response)
         }
     }
@@ -62,7 +62,7 @@ class ApiVersioningTest {
         sample {
             val response = serverFlow().toList().joinToString()
             val expected = List(5) { SamplingData("data") }.joinToString()
-            
+
             assertEquals(expected, response)
         }
     }
@@ -72,7 +72,7 @@ class ApiVersioningTest {
         sample {
             val response = serverNestedFlow().map { it.toList() }.toList().join()
             val expected = List(5) { List(5) { it } }.join()
-            
+
             assertEquals(expected, response)
         }
     }
@@ -95,7 +95,7 @@ class ApiVersioningTest {
     fun testPlainFlowSampling() = wireSamplingTest("plainFlow") {
         sample {
             val response = plainFlow.toList().joinToString()
-            val expected = List(5) { it }.joinToString() 
+            val expected = List(5) { it }.joinToString()
 
             assertEquals(expected, response)
         }

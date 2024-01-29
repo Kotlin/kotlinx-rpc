@@ -5,7 +5,6 @@
 package org.jetbrains.krpc.internal.transport
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -24,17 +23,17 @@ import kotlin.collections.set
 
 @InternalKRPCApi
 public interface RPCMessageSender : CoroutineScope {
-    public suspend fun sendMessage(message: RPCMessage)
+    public suspend fun sendMessage(message: RPCAnyMessage)
 }
 
-private typealias RPCMessageHandler = suspend (RPCMessage) -> Unit
+private typealias RPCMessageHandler = suspend (RPCAnyMessage) -> Unit
 
 /**
  * Represents a connector for remote procedure call (RPC) communication.
- * This class is responsible for sending and receiving [RPCMessage] over a specified transport.
+ * This class is responsible for sending and receiving [RPCAnyMessage] over a specified transport.
  *
  * @param SubscriptionKey the type of the subscription key used for message subscriptions.
- * @param serialFormat the serial format used for encoding and decoding [RPCMessage].
+ * @param serialFormat the serial format used for encoding and decoding [RPCAnyMessage].
  * @param transport the transport used for sending and receiving encoded RPC messages.
  * @param waitForSubscribers a flag indicating whether the connector should wait for subscribers
  * if no service is available to process the message immediately.
@@ -42,6 +41,7 @@ private typealias RPCMessageHandler = suspend (RPCMessage) -> Unit
  * that says that there were no services to process its message.
  * @param isServer flag indication whether this is a server or a client.
  * @param getKey a lambda function that returns the subscription key for a given [RPCMessage].
+ * DO NOT use actual dumper in production! Default is [DumpLoggerNoop] that does nothing.
  */
 @InternalKRPCApi
 public class RPCConnector<SubscriptionKey>(
@@ -49,19 +49,19 @@ public class RPCConnector<SubscriptionKey>(
     private val transport: RPCTransport,
     private val waitForSubscribers: Boolean = true,
     isServer: Boolean,
-    private val getKey: RPCMessage.() -> SubscriptionKey,
+    private val getKey: RPCAnyMessage.() -> SubscriptionKey,
 ) : RPCMessageSender, CoroutineScope by transport {
     private val role = if (isServer) SERVER_ROLE else CLIENT_ROLE
     private val logger = CommonLogger.initialized().logger(objectId(role))
 
     private val mutex = Mutex()
 
-    private val waiting = mutableMapOf<SubscriptionKey, MutableList<RPCMessage>>()
+    private val waiting = mutableMapOf<SubscriptionKey, MutableList<RPCAnyMessage>>()
     private val subscriptions = mutableMapOf<SubscriptionKey, RPCMessageHandler>()
 
     private val dumpLogger by lazy { DumpLoggerContainer.provide() }
 
-    override suspend fun sendMessage(message: RPCMessage) {
+    override suspend fun sendMessage(message: RPCAnyMessage) {
         val transportMessage = when (serialFormat) {
             is StringFormat -> {
                 RPCTransportMessage.StringMessage(serialFormat.encodeToString(message))
@@ -92,14 +92,14 @@ public class RPCConnector<SubscriptionKey>(
 
     init {
         launch {
-            while (isActive) {
+            while (true) {
                 processMessage(transport.receive())
             }
         }
     }
 
     private suspend fun processMessage(transportMessage: RPCTransportMessage) {
-        val message: RPCMessage = when {
+        val message: RPCAnyMessage = when {
             serialFormat is StringFormat && transportMessage is RPCTransportMessage.StringMessage -> {
                 serialFormat.decodeFromString(transportMessage.value)
             }
@@ -120,40 +120,71 @@ public class RPCConnector<SubscriptionKey>(
         processMessage(message)
     }
 
-    private suspend fun processMessage(message: RPCMessage) {
-        mutex.withLock {
-            val done = tryHandle(message)
-
-            if (!done) {
-                if (waitForSubscribers) {
-                    waiting.getOrPut(message.getKey()) { mutableListOf() }.add(message)
-
-                    logger.warn {
-                        "No registered service of ${message.serviceType} service type " +
-                                "was able to process message at the moment. Waiting for new services."
-                    }
-
-                    return
-                }
-
-                val cause = IllegalStateException(
-                    "Failed to process call ${message.callId} for service ${message.serviceType}, " +
-                            "${subscriptions.size} attempts failed"
-                )
-
-                val callException = RPCMessage.CallException(
-                    callId = message.callId,
-                    serviceType = message.serviceType,
-                    cause = serializeException(cause)
-                )
-
-                sendMessage(callException)
-            }
+    private suspend fun processMessage(message: RPCAnyMessage) = mutex.withLock {
+        when (message) {
+            is RPCMessage -> processServiceMessage(message)
+            is RPCProtocolMessage -> processProtocolMessage(message)
         }
     }
 
-    private suspend fun tryHandle(message: RPCMessage, handler: RPCMessageHandler? = null): Boolean {
-        val subscriber = handler ?: subscriptions[message.getKey()] ?: return false
+    private suspend fun processProtocolMessage(message: RPCProtocolMessage) {
+        when (val result = tryHandle(message)) {
+            is HandlerResult.Failure -> {
+                sendMessage(
+                    RPCProtocolMessage.Failure(
+                        connectionId = message.connectionId,
+                        errorMessage = "Failed to process protocol message: ${result.cause?.message}",
+                        failedMessage = message,
+                    )
+                )
+            }
+
+            HandlerResult.NoSubscription -> {
+                waiting.getOrPut(message.getKey()) { mutableListOf() }.add(message)
+            }
+
+            HandlerResult.Success -> {} // ok
+        }
+    }
+
+    private suspend fun processServiceMessage(message: RPCMessage) {
+        val result = tryHandle(message)
+
+        // todo better exception processing probably
+        if (result != HandlerResult.Success) {
+            if (waitForSubscribers) {
+                waiting.getOrPut(message.getKey()) { mutableListOf() }.add(message)
+
+                logger.warn {
+                    "No registered service of ${message.serviceType} service type " +
+                            "was able to process message at the moment. Waiting for new services."
+                }
+
+                return
+            }
+
+            val cause = IllegalStateException(
+                "Failed to process call ${message.callId} for service ${message.serviceType}, " +
+                        "${subscriptions.size} attempts failed"
+            )
+
+            val callException = RPCMessage.CallException(
+                callId = message.callId,
+                serviceType = message.serviceType,
+                cause = serializeException(cause),
+                connectionId = message.connectionId,
+            )
+
+            sendMessage(callException)
+        }
+    }
+
+    private suspend fun tryHandle(
+        message: RPCAnyMessage,
+        handler: RPCMessageHandler? = null,
+    ): HandlerResult {
+        val key = message.getKey()
+        val subscriber = handler ?: subscriptions[key] ?: return HandlerResult.NoSubscription
 
         val result = runCatching {
             subscriber(message)
@@ -161,12 +192,12 @@ public class RPCConnector<SubscriptionKey>(
 
         return when {
             result.isFailure -> {
-                logger.error(result.exceptionOrNull()) { "Service failed" }
-                false
+                logger.error(result.exceptionOrNull()) { "Failed to handle message with key $key" }
+                HandlerResult.Failure(result.exceptionOrNull())
             }
 
             else -> {
-                true
+                HandlerResult.Success
             }
         }
     }
@@ -178,7 +209,7 @@ public class RPCConnector<SubscriptionKey>(
         while (iterator.hasNext()) {
             val message = iterator.next()
 
-            if (tryHandle(message, handler)) {
+            if (tryHandle(message, handler) == HandlerResult.Success) {
                 iterator.remove()
             }
         }
@@ -198,4 +229,14 @@ public class RPCConnector<SubscriptionKey>(
             }
         }
     }
+}
+
+
+@Suppress("ConvertObjectToDataObject") // not supported in 1.8.22 or earlier
+private sealed interface HandlerResult {
+    object Success : HandlerResult
+
+    object NoSubscription : HandlerResult
+
+    data class Failure(val cause: Throwable?) : HandlerResult
 }

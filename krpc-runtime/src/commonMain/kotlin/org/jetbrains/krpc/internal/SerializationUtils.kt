@@ -40,7 +40,10 @@ public fun unsupportedSerialFormatError(serialFormat: SerialFormat): Nothing {
     error("Unsupported serial format ${serialFormat::class}, only StringFormat and BinaryFormats are supported")
 }
 
-internal fun unexpectedDataFormatForProvidedSerialFormat(data: RPCMessage.Data, shouldBeBinary: Boolean): Nothing {
+internal fun unexpectedDataFormatForProvidedSerialFormat(
+    data: RPCMessage.Data,
+    shouldBeBinary: Boolean,
+): Nothing {
     val (expected, actual) = when {
         shouldBeBinary -> "BinaryFormat" to "string"
         else -> "StringFormat" to "binary"

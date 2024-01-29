@@ -21,13 +21,13 @@ import org.jetbrains.krpc.client.internal.RPCClientConnector
 import org.jetbrains.krpc.client.internal.RPCFlow
 import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
+import org.jetbrains.krpc.internal.logging.DumpLogger
+import org.jetbrains.krpc.internal.logging.DumpLoggerNoop
 import org.jetbrains.krpc.internal.logging.initialized
-import org.jetbrains.krpc.internal.transport.RPCEndpointBase
-import org.jetbrains.krpc.internal.transport.RPCMessage
-import org.jetbrains.krpc.internal.transport.RPCMessageSender
+import org.jetbrains.krpc.internal.transport.*
 import kotlin.reflect.typeOf
 
-private val CLIENT_ENGINE_ID = atomic(initial = 0L)
+private val CONNECTION_ID = atomic(initial = 0L)
 
 /**
  * Default implementation of [RPCClient].
@@ -49,16 +49,50 @@ private val CLIENT_ENGINE_ID = atomic(initial = 0L)
 public abstract class KRPCClient(
     final override val config: RPCConfig.Client
 ) : RPCEndpointBase(), RPCClient, RPCTransport {
+    @InternalKRPCApi
+    protected open val dumpLogger: DumpLogger = DumpLoggerNoop
+
     private val connector by lazy {
-        RPCClientConnector(config.serialFormatInitializer.build(), this, config.waitForServices)
+        RPCClientConnector(config.serialFormatInitializer.build(), this, config.waitForServices, dumpLogger)
     }
+
+    private val connectionId: Long = CONNECTION_ID.incrementAndGet()
 
     override val sender: RPCMessageSender
         get() = connector
 
     private val callCounter = atomic(0L)
-    private val engineId: Long = CLIENT_ENGINE_ID.incrementAndGet()
-    override val logger: CommonLogger = CommonLogger.initialized().logger(objectId())
+
+    override val logger: CommonLogger = CommonLogger.initialized().logger(objectId(connectionId.toString()))
+
+    private val serverSupportedPlugins: CompletableDeferred<Set<RPCPlugin>> = CompletableDeferred()
+
+    private val initHandshake by lazy {
+        launch {
+            connector.sendMessage(RPCProtocolMessage.Handshake(connectionId, RPCPlugin.ALL))
+
+            connector.subscribeToProtocolMessages(::handleProtocolMessage)
+        }
+    }
+
+    private fun handleProtocolMessage(message: RPCProtocolMessage) {
+        when (message) {
+            is RPCProtocolMessage.Handshake -> {
+                serverSupportedPlugins.complete(message.supportedPlugins)
+            }
+
+            is RPCProtocolMessage.Failure -> {
+                logger.error {
+                    "Server [${message.connectionId}] failed to process protocol message ${message.failedMessage}: " +
+                            message.errorMessage
+                }
+
+                serverSupportedPlugins.completeExceptionally(
+                    IllegalStateException("Server failed to process protocol message: ${message.failedMessage}")
+                )
+            }
+        }
+    }
 
     override fun <T> registerPlainFlowField(field: RPCField): Flow<T> {
         return RPCFlow.Plain<T>(field.serviceTypeString).also { rpcFlow ->
@@ -113,12 +147,16 @@ public abstract class KRPCClient(
         callInfo: RPCCall,
         callResult: CompletableDeferred<*>,
     ): Pair<LazyRPCStreamContext, SerialFormat> {
+        // we should init and await for handshake to finish
+        initHandshake.join()
+        serverSupportedPlugins.await()
+
         val id = callCounter.incrementAndGet()
-        val callId = "$engineId:${callInfo.dataType}:$id"
+        val callId = "$connectionId:${callInfo.dataType}:$id"
 
         logger.trace { "start a call[$callId] ${callInfo.callableName}" }
 
-        val streamContext = LazyRPCStreamContext { RPCStreamContext(callId, config) }
+        val streamContext = LazyRPCStreamContext { RPCStreamContext(callId, config, connectionId) }
         val serialFormat = prepareSerialFormat(streamContext)
         val firstMessage = serializeRequest(callId, callInfo, serialFormat)
 
@@ -214,7 +252,8 @@ public abstract class KRPCClient(
                     serviceType = call.serviceTypeString,
                     callableName = call.callableName,
                     callType = call.type.toMessageCallType(),
-                    data = stringValue
+                    data = stringValue,
+                    connectionId = connectionId,
                 )
             }
 
@@ -225,7 +264,8 @@ public abstract class KRPCClient(
                     serviceType = call.serviceTypeString,
                     callableName = call.callableName,
                     callType = call.type.toMessageCallType(),
-                    data = binaryValue
+                    data = binaryValue,
+                    connectionId = connectionId,
                 )
             }
 
