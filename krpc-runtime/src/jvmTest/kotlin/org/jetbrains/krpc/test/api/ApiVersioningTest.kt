@@ -129,10 +129,10 @@ class ApiVersioningTest {
     private fun List<List<*>>.join() = joinToString { "[${it.joinToString()}]" }
 
     companion object {
-        val LIBRARY_VERSION = System.getenv("LIBRARY_VERSION")?.versionToDirName()
+        val LIBRARY_VERSION_DIR = System.getenv("LIBRARY_VERSION")?.versionToDirName()
             ?: error("Expected LIBRARY_VERSION env variable")
 
-        val CLASS_DUMPS_DIR: Path = Path("src/jvmTest/resources/class_dumps/$LIBRARY_VERSION")
+        val CLASS_DUMPS_DIR: Path = Path("src/jvmTest/resources/class_dumps/$LIBRARY_VERSION_DIR")
         val WIRE_DUMPS_DIR: Path = Path("src/jvmTest/resources/wire_dumps/")
 
         private fun String.versionToDirName(): String {
