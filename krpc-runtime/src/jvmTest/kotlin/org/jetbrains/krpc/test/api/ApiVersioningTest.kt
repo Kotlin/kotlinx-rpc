@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import org.jetbrains.krpc.client.awaitFieldInitialization
-import org.jetbrains.krpc.internal.transport.RPCMessage
+import org.jetbrains.krpc.internal.transport.RPCAnyMessage
+import org.jetbrains.krpc.internal.transport.RPCPlugin
+import org.jetbrains.krpc.internal.transport.RPCPluginKey
 import org.jetbrains.krpc.test.api.util.GoldUtils.NewLine
 import org.jetbrains.krpc.test.api.util.SamplingData
 import org.jetbrains.krpc.test.plainFlow
@@ -23,9 +25,19 @@ import kotlin.test.fail
 class ApiVersioningTest {
     @Test
     fun testProtocolApiVersion() {
-        val context = checkProtocolApi<RPCMessage>()
+        val context = checkProtocolApi<RPCAnyMessage>()
 
         context.fails.failIfAnyCauses()
+    }
+
+    @Test
+    fun testRPCPluginEnum() {
+        testEnum<RPCPlugin>()
+    }
+
+    @Test
+    fun testRPCPluginKeyEnum() {
+        testEnum<RPCPluginKey>()
     }
 
     @Test
@@ -134,6 +146,7 @@ class ApiVersioningTest {
 
         val CLASS_DUMPS_DIR: Path = Path("src/jvmTest/resources/class_dumps/$LIBRARY_VERSION_DIR")
         val WIRE_DUMPS_DIR: Path = Path("src/jvmTest/resources/wire_dumps/")
+        val INDEXED_ENUM_DUMPS_DIR: Path = Path("src/jvmTest/resources/indexed_enum_dumps/")
 
         private fun String.versionToDirName(): String {
             return replace('.', '_').replace('-', '_')

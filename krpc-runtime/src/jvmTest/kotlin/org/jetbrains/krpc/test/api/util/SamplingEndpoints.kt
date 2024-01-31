@@ -16,7 +16,7 @@ class SamplingClient(
 ) : KRPCClient(config), RPCTransport by localTransport.client {
     init {
         val engineId = KRPCClient::class.java.declaredFields
-            .single { it.name == "engineId" }
+            .single { it.name == "connectionId" }
             .apply { isAccessible = true }
 
         // reproducible ids

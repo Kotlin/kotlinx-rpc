@@ -309,7 +309,7 @@ private class WireContent(
     }
 
     override fun compare(other: WireContent): GoldComparisonResult {
-        return if (transformed == other.transformed) GoldComparisonResult.Ok else GoldComparisonResult.Failure
+        return if (transformed == other.transformed) GoldComparisonResult.Ok else GoldComparisonResult.Failure()
     }
 
     override fun dump(): String {

@@ -20,14 +20,14 @@ interface GoldComparable<T : GoldComparable<T>> {
 sealed interface GoldComparisonResult {
     object Ok : GoldComparisonResult
 
-    object Failure : GoldComparisonResult
+    class Failure(val message: String? = null) : GoldComparisonResult
 }
 
 class StringGoldContent(private val value: String) : GoldComparable<StringGoldContent> {
     override fun compare(other: StringGoldContent): GoldComparisonResult {
         return when {
             value.removeLineSeparators() == other.value.removeLineSeparators() -> GoldComparisonResult.Ok
-            else -> GoldComparisonResult.Failure
+            else -> GoldComparisonResult.Failure()
         }
     }
 
@@ -51,8 +51,11 @@ fun <T : GoldComparable<T>> checkGold(
 ): String? {
     val (gold, goldPath) = loadGold(fileDir, filename, parseGoldFile) ?: (null to null)
 
-    if (gold == null || content.compare(gold) != GoldComparisonResult.Ok) {
-        return writeTmp(fileDir, filename, content.dump(), goldPath)
+    val comparison = gold?.let { content.compare(gold) }
+        ?: GoldComparisonResult.Failure("No previous Gold file")
+
+    if (comparison is GoldComparisonResult.Failure) {
+        return writeTmp(fileDir, filename, content.dump(), goldPath, comparison.message)
     }
 
     return null
@@ -75,6 +78,7 @@ private fun writeTmp(
     filename: String,
     content: String,
     goldPath: String?,
+    reason: String?,
 ): String {
     if (isCI) {
         return "Attempting to write temp files on CI"
@@ -92,6 +96,7 @@ private fun writeTmp(
     file.writeText(content, Charsets.UTF_8)
 
     return """
+        ${reason?.let { "Failure reason: $it" } ?: ""}
         Please, review and commit:
         ${goldFileLine(goldPath)}
         Temp file: file://${file.absolutePath}
