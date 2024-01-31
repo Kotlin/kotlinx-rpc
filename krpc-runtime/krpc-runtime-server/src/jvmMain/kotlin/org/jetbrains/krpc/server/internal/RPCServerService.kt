@@ -29,6 +29,7 @@ internal class RPCServerService<T : RPC>(
     private val serviceKClass: KClass<T>,
     override val config: RPCConfig.Server,
     override val sender: RPCMessageSender,
+    @Suppress("detekt.UnusedPrivateProperty")
     private val clientPlugins: (connectionId: Long?) -> Set<RPCPlugin>,
 ) : RPCEndpointBase(), CoroutineScope {
     private val serviceTypeString = serviceKClass.qualifiedClassName
