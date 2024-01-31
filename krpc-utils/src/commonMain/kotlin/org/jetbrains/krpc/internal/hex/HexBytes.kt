@@ -6,6 +6,8 @@
 
 package org.jetbrains.krpc.internal.hex
 
+import org.jetbrains.krpc.internal.InternalKRPCApi
+
 // Original HexExtensions.kt from stdlib are not available for Kotlin 1.8 and earlier versions
 
 private const val LOWER_CASE_HEX_DIGITS = "0123456789abcdef"
@@ -48,4 +50,17 @@ private fun String.decimalFromHexDigitAt(index: Int): Int {
         throw NumberFormatException("Expected a hexadecimal digit at index $index, but was ${this[index]}")
     }
     return HEX_DIGITS_TO_DECIMAL[code]
+}
+
+@InternalKRPCApi
+fun String.hexToReadableBinary(): String {
+    return hexToByteArrayInternal().joinToString("") { byte ->
+        byte.toInt().toChar().display()
+    }
+}
+
+private fun Char.display(): String {
+    // visible symbols range
+    // https://www.asciitable.com/
+    return if (code !in 32..126) "?" else toString()
 }

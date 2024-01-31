@@ -12,12 +12,23 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlin.reflect.KClass
 
+/**
+ * Better unique value holder than ordinal. Easier for testing and maintaining.
+ */
 @InternalKRPCApi
-abstract class ShortEnumKSerializer<E : Enum<E>>(
+interface IndexedEnum {
+    /**
+     * Values between 0 and 65500 are allowed, other are reserved for testing.
+     */
+    val uniqueIndex: Int
+}
+
+@InternalKRPCApi
+abstract class ShortEnumKSerializer<E>(
     kClass: KClass<E>,
     val unknownValue: E,
     val allValues: Iterable<E>,
-) : KSerializer<E> {
+) : KSerializer<E> where E : Enum<E>, E : IndexedEnum {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(
         serialName = "ShortEnumKSerializer<${kClass.simpleName}>",
         kind = PrimitiveKind.SHORT, // short can hold 65536 entries, should be more than enough
@@ -25,11 +36,11 @@ abstract class ShortEnumKSerializer<E : Enum<E>>(
 
     override fun deserialize(decoder: Decoder): E {
         val value = decoder.decodeShort() + MODULO
-        return allValues.singleOrNull { it.ordinal == value } ?: unknownValue
+        return allValues.singleOrNull { it.uniqueIndex == value } ?: unknownValue
     }
 
     override fun serialize(encoder: Encoder, value: E) {
-        val shortValue = (value.ordinal - MODULO).toShort()
+        val shortValue = (value.uniqueIndex - MODULO).toShort()
         encoder.encodeShort(shortValue)
     }
 

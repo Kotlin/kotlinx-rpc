@@ -5,6 +5,7 @@
 package org.jetbrains.krpc.internal.transport
 
 import kotlinx.serialization.Serializable
+import org.jetbrains.krpc.internal.IndexedEnum
 import org.jetbrains.krpc.internal.InternalKRPCApi
 import org.jetbrains.krpc.internal.ShortEnumKSerializer
 
@@ -12,13 +13,13 @@ import org.jetbrains.krpc.internal.ShortEnumKSerializer
  * Represents the set of RPC plugins supported by the kRPC protocol.
  * These plugins provide meta-information that helps endpoints understand how to communicate with their peers.
  *
- * IMPORTANT: Enum entries MUST NOT be rearranged! This will cause unexpected behavior.
+ * IMPORTANT: Enum [uniqueIndex] MUST NOT be changed once set! This will cause unexpected behavior.
  *
  * Only entries with ordinals from 0 to 65500 are allowed, other are reserved for tests.
  */
 @InternalKRPCApi
 @Serializable(with = RPCPluginSerializer::class)
-public enum class RPCPlugin {
+public enum class RPCPlugin(override val uniqueIndex: Int) : IndexedEnum {
     /**
      * Represents all unknown plugins.
      * Endpoint may get this value from a peer, when peer has a newer version and with it some new plugins
@@ -26,7 +27,7 @@ public enum class RPCPlugin {
      *
      * Can be safely ignored. Endpoint must only handle the plugins it knows of.
      */
-    UNKNOWN,
+    UNKNOWN(0),
 
     /**
      * Represents the handshake plugin of the kRPC protocol.
@@ -37,7 +38,7 @@ public enum class RPCPlugin {
      * However, servers will be able to communicate with clients that do not support handshake,
      * BUT not the other way around.
      */
-    HANDSHAKE,
+    HANDSHAKE(1),
     ;
 
     @InternalKRPCApi

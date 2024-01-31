@@ -5,26 +5,27 @@
 package org.jetbrains.krpc.internal.transport
 
 import kotlinx.serialization.Serializable
+import org.jetbrains.krpc.internal.IndexedEnum
 import org.jetbrains.krpc.internal.InternalKRPCApi
 import org.jetbrains.krpc.internal.ShortEnumKSerializer
 
 /**
  * Keys for [RPCAnyMessage.pluginParams] map.
  *
- * @property associatedPlugin is a [RPCPlugin] that introduces this key into the map.
+ * [associatedPlugin] is a [RPCPlugin] that introduces this key into the map.
  * One [RPCPlugin] can introduce multiple keys.
  *
- * IMPORTANT: Enum entries MUST NOT be rearranged! This will cause unexpected behavior.
+ * IMPORTANT: Enum [uniqueIndex] MUST NOT be changed once set! This will cause unexpected behavior.
  *
  * Only entries with ordinals from 0 to 65500 are allowed, other are reserved for tests.
  */
 @InternalKRPCApi
 @Serializable(with = RPCPluginKeySerializer::class)
-public enum class RPCPluginKey(internal val associatedPlugin: RPCPlugin) {
+public enum class RPCPluginKey(override val uniqueIndex: Int, private val associatedPlugin: RPCPlugin): IndexedEnum {
     /**
      * Failed to decode key, possible due to different endpoint versions.
      */
-    UNKNOWN(RPCPlugin.UNKNOWN),
+    UNKNOWN(0, RPCPlugin.UNKNOWN),
     ;
 
     init {

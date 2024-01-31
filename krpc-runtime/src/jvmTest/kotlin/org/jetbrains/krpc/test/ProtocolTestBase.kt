@@ -10,9 +10,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
+import kotlinx.serialization.BinaryFormat
 import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.KRPCClient
 import org.jetbrains.krpc.client.withService
+import org.jetbrains.krpc.internal.hex.hexToReadableBinary
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.DumpLogger
 import org.jetbrains.krpc.internal.logging.initialized
@@ -51,14 +53,22 @@ abstract class ProtocolTestBase {
     class TestBody(
         clientConfig: RPCConfig.Client,
         serverConfig: RPCConfig.Server,
-        val scope: TestScope
+        private val scope: TestScope
     ) : CoroutineScope by scope {
         private val logger = object : DumpLogger {
             private val _log = CommonLogger.initialized().logger("ProtocolTestDump")
             override val isEnabled: Boolean = true
+            private val isBinary = clientConfig.serialFormatInitializer.build() is BinaryFormat
 
             override fun dump(vararg tags: String, message: () -> String) {
-                _log.info { "${tags.joinToString(" ") { "[$it]" }} ${message()}" }
+                val text = if (isBinary) {
+                    val hex = message()
+                    "$hex (readable: ${hex.hexToReadableBinary()})"
+                } else {
+                    message()
+                }
+
+                _log.info { "${tags.joinToString(" ") { "[$it]" }} $text" }
             }
         }
 
