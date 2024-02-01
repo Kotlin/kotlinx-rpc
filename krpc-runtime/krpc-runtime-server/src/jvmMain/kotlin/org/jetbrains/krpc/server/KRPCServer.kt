@@ -55,6 +55,7 @@ public abstract class KRPCServer(private val config: RPCConfig.Server) : RPCServ
                 serviceType
                     .removePrefix("class ") // beta-4.2 compatibility
             },
+            isServer = true,
         )
     }
 }

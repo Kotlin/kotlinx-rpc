@@ -12,9 +12,15 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.*
 import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.RPCTransportMessage
-import org.jetbrains.krpc.internal.*
+import org.jetbrains.krpc.internal.InternalKRPCApi
+import org.jetbrains.krpc.internal.hex.toHexStringInternal
 import org.jetbrains.krpc.internal.logging.CommonLogger
+import org.jetbrains.krpc.internal.logging.DumpLoggerContainer
 import org.jetbrains.krpc.internal.logging.initialized
+import org.jetbrains.krpc.internal.objectId
+import org.jetbrains.krpc.internal.serializeException
+import org.jetbrains.krpc.internal.unsupportedSerialFormatError
+import kotlin.collections.set
 
 @InternalKRPCApi
 public interface RPCMessageSender : CoroutineScope {
@@ -34,6 +40,7 @@ private typealias RPCMessageHandler = suspend (RPCMessage) -> Unit
  * if no service is available to process the message immediately.
  * If false, the endpoint that sent the message will receive a [RPCMessage.CallException]
  * that says that there were no services to process its message.
+ * @param isServer flag indication whether this is a server or a client.
  * @param getKey a lambda function that returns the subscription key for a given [RPCMessage].
  */
 @InternalKRPCApi
@@ -41,14 +48,18 @@ public class RPCConnector<SubscriptionKey>(
     private val serialFormat: SerialFormat,
     private val transport: RPCTransport,
     private val waitForSubscribers: Boolean = true,
+    isServer: Boolean,
     private val getKey: RPCMessage.() -> SubscriptionKey,
 ) : RPCMessageSender, CoroutineScope by transport {
-    private val logger = CommonLogger.initialized().logger(objectId())
+    private val role = if (isServer) SERVER_ROLE else CLIENT_ROLE
+    private val logger = CommonLogger.initialized().logger(objectId(role))
 
     private val mutex = Mutex()
 
     private val waiting = mutableMapOf<SubscriptionKey, MutableList<RPCMessage>>()
     private val subscriptions = mutableMapOf<SubscriptionKey, RPCMessageHandler>()
+
+    private val dumpLogger by lazy { DumpLoggerContainer.provide() }
 
     override suspend fun sendMessage(message: RPCMessage) {
         val transportMessage = when (serialFormat) {
@@ -63,6 +74,10 @@ public class RPCConnector<SubscriptionKey>(
             else -> {
                 unsupportedSerialFormatError(serialFormat)
             }
+        }
+
+        if (dumpLogger.isEnabled) {
+            dumpLogger.dump(role, SEND_PHASE) { transportMessage.dump() }
         }
 
         transport.send(transportMessage)
@@ -96,6 +111,10 @@ public class RPCConnector<SubscriptionKey>(
             else -> {
                 return
             }
+        }
+
+        if (dumpLogger.isEnabled) {
+            dumpLogger.dump(role, RECEIVE_PHASE) { transportMessage.dump() }
         }
 
         processMessage(message)
@@ -161,6 +180,21 @@ public class RPCConnector<SubscriptionKey>(
 
             if (tryHandle(message, handler)) {
                 iterator.remove()
+            }
+        }
+    }
+
+    internal companion object {
+        const val SEND_PHASE = "Send"
+        const val RECEIVE_PHASE = "Receive"
+
+        const val SERVER_ROLE = "Server"
+        const val CLIENT_ROLE = "Client"
+
+        private fun RPCTransportMessage.dump(): String {
+            return when (this) {
+                is RPCTransportMessage.StringMessage -> value
+                is RPCTransportMessage.BinaryMessage -> value.toHexStringInternal()
             }
         }
     }

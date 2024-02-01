@@ -67,6 +67,16 @@ tasks.withType<KotlinJvmTest> {
     environment("LIBRARY_VERSION", libs.versions.krpc.core.get())
 }
 
+tasks.named("clean") {
+    doLast {
+        projectDir.resolve("src/jvmTest/resources").walk().forEach {
+            if (it.isFile && it.extension == "tmp") {
+                it.delete()
+            }
+        }
+    }
+}
+
 evaluationDependsOn(":krpc-runtime:krpc-runtime-test")
 
 // otherwise it complains and fails the build on 1.8.*

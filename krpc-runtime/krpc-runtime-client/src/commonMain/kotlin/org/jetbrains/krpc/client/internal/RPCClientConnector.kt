@@ -5,10 +5,10 @@
 package org.jetbrains.krpc.client.internal
 
 import kotlinx.serialization.SerialFormat
+import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.internal.transport.RPCConnector
 import org.jetbrains.krpc.internal.transport.RPCMessage
 import org.jetbrains.krpc.internal.transport.RPCMessageSender
-import org.jetbrains.krpc.RPCTransport
 
 internal data class CallSubscriptionId(
     val serviceTypeString: String,
@@ -21,9 +21,9 @@ internal class RPCClientConnector(
     constructor(
         serialFormat: SerialFormat,
         transport: RPCTransport,
-        waitForServices: Boolean = false
+        waitForServices: Boolean = false,
     ) : this(
-        RPCConnector(serialFormat, transport, waitForServices) {
+        RPCConnector(serialFormat, transport, waitForServices, isServer = false) {
             CallSubscriptionId(serviceType, callId)
         }
     )

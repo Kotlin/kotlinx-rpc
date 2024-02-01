@@ -11,8 +11,9 @@ import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.RPCTransportMessage
 import kotlin.coroutines.CoroutineContext
 
-class LocalTransport : CoroutineScope {
-    override val coroutineContext = Job()
+class LocalTransport(parentScope: CoroutineScope? = null) : CoroutineScope {
+    override val coroutineContext = parentScope?.run {coroutineContext + Job() } ?: Job()
+
     private val clientIncoming = Channel<RPCTransportMessage>()
     private val serverIncoming = Channel<RPCTransportMessage>()
 

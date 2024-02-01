@@ -5,26 +5,26 @@
 package org.jetbrains.krpc.client
 
 import kotlinx.atomicfu.atomic
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.completeWith
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import org.jetbrains.krpc.*
-import org.jetbrains.krpc.RPCField
-import org.jetbrains.krpc.RPCClient
 import org.jetbrains.krpc.client.internal.FieldDataObject
 import org.jetbrains.krpc.client.internal.RPCClientConnector
 import org.jetbrains.krpc.client.internal.RPCFlow
 import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.initialized
+import org.jetbrains.krpc.internal.transport.RPCEndpointBase
 import org.jetbrains.krpc.internal.transport.RPCMessage
 import org.jetbrains.krpc.internal.transport.RPCMessageSender
-import org.jetbrains.krpc.internal.transport.RPCEndpointBase
-import org.jetbrains.krpc.RPCTransport
 import kotlin.reflect.typeOf
 
 private val CLIENT_ENGINE_ID = atomic(initial = 0L)
