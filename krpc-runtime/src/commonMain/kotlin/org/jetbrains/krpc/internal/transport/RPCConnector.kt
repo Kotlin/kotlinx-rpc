@@ -15,16 +15,11 @@ import org.jetbrains.krpc.RPCTransportMessage
 import org.jetbrains.krpc.internal.InternalKRPCApi
 import org.jetbrains.krpc.internal.hex.toHexStringInternal
 import org.jetbrains.krpc.internal.logging.CommonLogger
-import org.jetbrains.krpc.internal.logging.DumpLogger
-import org.jetbrains.krpc.internal.logging.DumpLoggerNoop
+import org.jetbrains.krpc.internal.logging.DumpLoggerContainer
 import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.objectId
 import org.jetbrains.krpc.internal.serializeException
 import org.jetbrains.krpc.internal.unsupportedSerialFormatError
-import kotlin.collections.MutableList
-import kotlin.collections.getOrPut
-import kotlin.collections.mutableListOf
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
 
 @InternalKRPCApi
@@ -46,9 +41,7 @@ private typealias RPCMessageHandler = suspend (RPCMessage) -> Unit
  * If false, the endpoint that sent the message will receive a [RPCMessage.CallException]
  * that says that there were no services to process its message.
  * @param isServer flag indication whether this is a server or a client.
- * @param dumpLogger instance of [DumpLogger] that is used to dump wire messages.
  * @param getKey a lambda function that returns the subscription key for a given [RPCMessage].
- * DO NOT use actual dumper in production! Default is [DumpLoggerNoop] that does nothing.
  */
 @InternalKRPCApi
 public class RPCConnector<SubscriptionKey>(
@@ -56,7 +49,6 @@ public class RPCConnector<SubscriptionKey>(
     private val transport: RPCTransport,
     private val waitForSubscribers: Boolean = true,
     isServer: Boolean,
-    private val dumpLogger: DumpLogger = DumpLoggerNoop,
     private val getKey: RPCMessage.() -> SubscriptionKey,
 ) : RPCMessageSender, CoroutineScope by transport {
     private val role = if (isServer) SERVER_ROLE else CLIENT_ROLE
@@ -66,6 +58,8 @@ public class RPCConnector<SubscriptionKey>(
 
     private val waiting = mutableMapOf<SubscriptionKey, MutableList<RPCMessage>>()
     private val subscriptions = mutableMapOf<SubscriptionKey, RPCMessageHandler>()
+
+    private val dumpLogger by lazy { DumpLoggerContainer.provide() }
 
     override suspend fun sendMessage(message: RPCMessage) {
         val transportMessage = when (serialFormat) {

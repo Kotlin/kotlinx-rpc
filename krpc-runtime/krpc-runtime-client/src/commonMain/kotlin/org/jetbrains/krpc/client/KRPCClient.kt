@@ -21,8 +21,6 @@ import org.jetbrains.krpc.client.internal.RPCClientConnector
 import org.jetbrains.krpc.client.internal.RPCFlow
 import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
-import org.jetbrains.krpc.internal.logging.DumpLogger
-import org.jetbrains.krpc.internal.logging.DumpLoggerNoop
 import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.transport.RPCEndpointBase
 import org.jetbrains.krpc.internal.transport.RPCMessage
@@ -51,11 +49,8 @@ private val CLIENT_ENGINE_ID = atomic(initial = 0L)
 public abstract class KRPCClient(
     final override val config: RPCConfig.Client
 ) : RPCEndpointBase(), RPCClient, RPCTransport {
-    @InternalKRPCApi
-    protected open val dumpLogger: DumpLogger = DumpLoggerNoop
-
     private val connector by lazy {
-        RPCClientConnector(config.serialFormatInitializer.build(), this, config.waitForServices, dumpLogger)
+        RPCClientConnector(config.serialFormatInitializer.build(), this, config.waitForServices)
     }
 
     override val sender: RPCMessageSender

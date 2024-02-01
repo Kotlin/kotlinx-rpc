@@ -14,10 +14,22 @@ public interface DumpLogger {
 }
 
 @InternalKRPCApi
-public object DumpLoggerNoop : DumpLogger {
-    override val isEnabled: Boolean = false
+public object DumpLoggerContainer {
+    private var logger: DumpLogger? = null
 
-    override fun dump(vararg tags: String, message: () -> String) {
-        // noop
+    public fun set(logger: DumpLogger?) {
+        this.logger = logger
+    }
+
+    public fun provide(): DumpLogger {
+        return object : DumpLogger {
+            override val isEnabled: Boolean get() = logger?.isEnabled ?: false
+
+            override fun dump(vararg tags: String, message: () -> String) {
+                if (isEnabled) {
+                    logger?.dump(*tags, message = message)
+                }
+            }
+        }
     }
 }

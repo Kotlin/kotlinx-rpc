@@ -7,14 +7,12 @@ package org.jetbrains.krpc.test.api.util
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.client.KRPCClient
-import org.jetbrains.krpc.internal.logging.DumpLogger
 import org.jetbrains.krpc.server.KRPCServer
 import org.jetbrains.krpc.test.LocalTransport
 
 class SamplingClient(
     config: RPCConfig.Client,
     localTransport: LocalTransport,
-    override val dumpLogger: DumpLogger,
 ) : KRPCClient(config), RPCTransport by localTransport.client {
     init {
         val engineId = KRPCClient::class.java.declaredFields
@@ -29,5 +27,4 @@ class SamplingClient(
 class SamplingServer(
     config: RPCConfig.Server,
     localTransport: LocalTransport,
-    override val dumpLogger: DumpLogger,
 ) : KRPCServer(config), RPCTransport by localTransport.server

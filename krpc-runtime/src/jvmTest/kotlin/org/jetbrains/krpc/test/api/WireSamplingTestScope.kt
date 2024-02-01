@@ -4,9 +4,7 @@
 
 package org.jetbrains.krpc.test.api
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -16,6 +14,7 @@ import org.jetbrains.krpc.client.withService
 import org.jetbrains.krpc.internal.hex.hexToByteArrayInternal
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.DumpLogger
+import org.jetbrains.krpc.internal.logging.DumpLoggerContainer
 import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.transport.RPCConnector
 import org.jetbrains.krpc.registerService
@@ -61,7 +60,7 @@ class WireSamplingTestScope(private val sampleName: String, scope: TestScope) : 
 
                 service.block()
 
-                transport.cancel()
+                stop()
             }
 
             val log = checkGold(
@@ -88,7 +87,11 @@ class WireSamplingTestScope(private val sampleName: String, scope: TestScope) : 
     }
 
     private suspend fun runTestForVersionDirectory(dir: Path) {
-        dir.listFiles().filter { it.name.startsWith(sampleName) }.forEach { path ->
+        dir.listFiles().filter {
+            it.name.run {
+                startsWith(sampleName) && endsWith(GoldUtils.GOLD_EXTENSION)
+            }
+        }.forEach { path ->
             val file = path.toFile()
             val formatName = file.name
                 .removePrefix("${sampleName}_")
@@ -177,7 +180,7 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
     val transport = LocalTransport(scope)
 
     val client by lazy {
-        SamplingClient(rpcClientConfig { serialization { format.init(this) } }, transport, dumpLogger)
+        SamplingClient(rpcClientConfig { serialization { format.init(this) } }, transport)
     }
 
     val service: SamplingService by lazy {
@@ -185,7 +188,7 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
     }
 
     val server by lazy {
-        SamplingServer(rpcServerConfig { serialization { format.init(this) } }, transport, dumpLogger).apply {
+        SamplingServer(rpcServerConfig { serialization { format.init(this) } }, transport).apply {
             registerService<SamplingService>(SamplingServiceImpl(transport.coroutineContext))
         }
     }
@@ -207,6 +210,15 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
                 logs.add(DumpLog(Role.fromText(tags[0]), Phase.fromText(tags[1]), message()))
             }
         }
+    }
+
+    suspend fun stop() {
+        DumpLoggerContainer.set(null)
+        transport.coroutineContext.job.cancelAndJoin()
+    }
+
+    init {
+        DumpLoggerContainer.set(dumpLogger)
     }
 }
 

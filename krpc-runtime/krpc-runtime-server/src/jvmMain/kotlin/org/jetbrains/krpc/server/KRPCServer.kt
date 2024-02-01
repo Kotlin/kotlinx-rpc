@@ -9,9 +9,6 @@ import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCServer
 import org.jetbrains.krpc.RPCTransport
-import org.jetbrains.krpc.internal.InternalKRPCApi
-import org.jetbrains.krpc.internal.logging.DumpLogger
-import org.jetbrains.krpc.internal.logging.DumpLoggerNoop
 import org.jetbrains.krpc.internal.qualifiedClassName
 import org.jetbrains.krpc.internal.transport.RPCConnector
 import org.jetbrains.krpc.server.internal.RPCServerService
@@ -59,10 +56,6 @@ public abstract class KRPCServer(private val config: RPCConfig.Server) : RPCServ
                     .removePrefix("class ") // beta-4.2 compatibility
             },
             isServer = true,
-            dumpLogger = dumpLogger,
         )
     }
-
-    @InternalKRPCApi
-    protected open val dumpLogger: DumpLogger = DumpLoggerNoop
 }
