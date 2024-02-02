@@ -23,8 +23,6 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 
 abstract class ProtocolTestBase {
     @Suppress("RedundantUnitReturnType")
@@ -39,10 +37,9 @@ abstract class ProtocolTestBase {
                 json()
             }
         },
-        timeout: Duration = 10.seconds,
         block: suspend TestBody.() -> Unit,
     ): TestResult {
-        return kotlinx.coroutines.test.runTest(timeout = timeout) {
+        return kotlinx.coroutines.test.runTest {
             val finished = TestBody(clientConfig, serverConfig, this).apply { block() }
 
             finished.transport.coroutineContext.job.cancelAndJoin()
