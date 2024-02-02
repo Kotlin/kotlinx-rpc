@@ -10,6 +10,7 @@ import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCServer
 import org.jetbrains.krpc.RPCTransport
+import org.jetbrains.krpc.internal.SeqIdConuter
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.objectId
@@ -21,6 +22,12 @@ import org.jetbrains.krpc.server.internal.RPCServerService
 import kotlin.reflect.KClass
 
 private val SERVER_CONNECTION_COUNTER = atomic(initial = 0L)
+
+private val seqCounter = object : SeqIdConuter {
+    override fun nextId(): Long {
+        return SERVER_CONNECTION_COUNTER.incrementAndGet()
+    }
+}
 
 /**
  * Default implementation of [RPCServer].
@@ -42,8 +49,7 @@ private val SERVER_CONNECTION_COUNTER = atomic(initial = 0L)
  * @param config configuration provided for that specific server. Applied to all services that use this server.
  */
 public abstract class KRPCServer(private val config: RPCConfig.Server) : RPCServer, RPCTransport {
-    private val serverId = SERVER_CONNECTION_COUNTER.getAndIncrement()
-    private val logger = CommonLogger.initialized().logger(objectId(serverId.toString()))
+    private val logger = CommonLogger.initialized().logger(objectId())
 
     private val connector by lazy {
         RPCServerConnector(
@@ -61,10 +67,12 @@ public abstract class KRPCServer(private val config: RPCConfig.Server) : RPCServ
 
     private val clientSupportedPlugins: MutableMap<Long, Set<RPCPlugin>> = mutableMapOf()
 
+    private val idCounter: SeqIdConuter = seqCounter
+
     private suspend fun handleProtocolMessage(message: RPCProtocolMessage) {
         when (message) {
             is RPCProtocolMessage.Handshake -> {
-                val connectionId = SERVER_CONNECTION_COUNTER.incrementAndGet()
+                val connectionId = idCounter.nextId()
                 clientSupportedPlugins[connectionId] = message.supportedPlugins
                 connector.sendMessage(RPCProtocolMessage.Handshake(RPCPlugin.ALL, connectionId))
             }

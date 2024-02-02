@@ -3,6 +3,10 @@ org.jetbrains.krpc.internal.transport.RPCMessage.CallData
     - Nullable
   - callableName: kotlin.String
   - callId: kotlin.String
+  - connectionId: kotlin.Long
+    - Nullable
+  - pluginParams: kotlin.collections.Map
+    - Nullable
   - serviceType: kotlin.String
 
   org.jetbrains.krpc.internal.transport.RPCMessage.CallDataBinary

@@ -1,4 +1,8 @@
 org.jetbrains.krpc.internal.transport.RPCMessage.CallSuccessBinary
   - callId: kotlin.String
+  - connectionId: kotlin.Long
+    - Nullable
   - data: kotlin.ByteArray
+  - pluginParams: kotlin.collections.Map
+    - Nullable
   - serviceType: kotlin.String

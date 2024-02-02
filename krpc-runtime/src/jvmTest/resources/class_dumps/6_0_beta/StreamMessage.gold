@@ -1,6 +1,10 @@
 org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessage
   - streamId: kotlin.String
   - callId: kotlin.String
+  - connectionId: kotlin.Long
+    - Nullable
+  - pluginParams: kotlin.collections.Map
+    - Nullable
   - serviceType: kotlin.String
 
   org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessageBinary

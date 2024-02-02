@@ -2,4 +2,8 @@ org.jetbrains.krpc.RPCMessage.CallException [Declared name: org.jetbrains.krpc.i
   - callId: kotlin.String
   - cause: org.jetbrains.krpc.SerializedException
     - Declared name: org.jetbrains.krpc.internal.transport.SerializedException
+  - connectionId: kotlin.Long
+    - Nullable
+  - pluginParams: kotlin.collections.Map
+    - Nullable
   - serviceType: kotlin.String

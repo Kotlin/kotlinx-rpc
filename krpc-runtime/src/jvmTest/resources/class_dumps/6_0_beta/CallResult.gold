@@ -1,5 +1,9 @@
 org.jetbrains.krpc.RPCMessage.CallResult [Declared name: org.jetbrains.krpc.internal.transport.RPCMessage.CallResult]
   - callId: kotlin.String
+  - connectionId: kotlin.Long
+    - Nullable
+  - pluginParams: kotlin.collections.Map
+    - Nullable
   - serviceType: kotlin.String
 
   org.jetbrains.krpc.RPCMessage.CallException
