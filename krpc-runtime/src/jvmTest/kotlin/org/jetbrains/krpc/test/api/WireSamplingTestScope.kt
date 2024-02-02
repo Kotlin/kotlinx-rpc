@@ -4,7 +4,10 @@
 
 package org.jetbrains.krpc.test.api
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -129,14 +132,14 @@ class WireSamplingTestScope(private val sampleName: String, scope: TestScope) : 
         }
 
         // if logs are over, and we've reached this line, test is considered successful
-        oldClientToolkit.transport.cancel()
+        oldClientToolkit.stop()
     }
 
     private suspend fun runOldServerTest(version: String, format: SamplingFormat, dump: List<DumpLog>) {
         val oldServerToolkit = WireToolkit(this, format, logger)
         logger.info { "Running wire test: old server (version: $version) with current client on $format format" }
 
-        oldServerToolkit.transport.launch {
+        val clientJob = oldServerToolkit.transport.launch {
             val runClient = clientSampling
                 ?: error("Client sampling is absent for $sampleName test")
 
@@ -155,8 +158,9 @@ class WireSamplingTestScope(private val sampleName: String, scope: TestScope) : 
                 }
             }
         }
+        clientJob.join()
         // if logs are over, and we've reached this line, test is considered successful
-        oldServerToolkit.transport.cancel()
+        oldServerToolkit.stop()
     }
 
     private fun String.toTransportMessage(format: SamplingFormat): RPCTransportMessage {
@@ -292,7 +296,7 @@ private class WireContent(
     private val stackTraceRegExp = Regex("\"stacktrace\":\\[.*?\\]")
 
     private fun String.removeExceptionStackTraceData(): String {
-        return replace(stackTraceRegExp, "\"stacktrace\":[<Removed>]")
+        return replace(stackTraceRegExp, "\"stacktrace\":[]")
     }
 
     private val logs = rawLogs.map {

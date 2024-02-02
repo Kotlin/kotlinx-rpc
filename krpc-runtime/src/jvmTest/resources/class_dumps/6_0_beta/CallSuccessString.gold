@@ -1,0 +1,4 @@
+org.jetbrains.krpc.RPCMessage.CallSuccess [Declared name: org.jetbrains.krpc.internal.transport.RPCMessage.CallSuccessString]
+  - callId: kotlin.String
+  - data: kotlin.String
+  - serviceType: kotlin.String
