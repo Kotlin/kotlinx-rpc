@@ -30,22 +30,21 @@ public sealed interface RPCAnyMessage {
 @InternalKRPCApi
 @Serializable
 public sealed interface RPCProtocolMessage : RPCAnyMessage {
-    override val connectionId: Long
     override val pluginParams: Map<RPCPluginKey, String>
 
     @InternalKRPCApi
     @Serializable
     public data class Handshake(
-        override val connectionId: Long,
         val supportedPlugins: Set<RPCPlugin>,
+        override val connectionId: Long? = null,
         override val pluginParams: Map<RPCPluginKey, String> = emptyMap(),
     ) : RPCProtocolMessage
 
     @InternalKRPCApi
     @Serializable
     public data class Failure(
-        override val connectionId: Long,
         val errorMessage: String,
+        override val connectionId: Long? = null,
         val failedMessage: RPCProtocolMessage? = null,
         override val pluginParams: Map<RPCPluginKey, String> = emptyMap(),
     ) : RPCProtocolMessage

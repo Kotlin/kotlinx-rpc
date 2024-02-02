@@ -4,10 +4,7 @@
 
 package org.jetbrains.krpc.test
 
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.serialization.BinaryFormat
@@ -17,11 +14,13 @@ import org.jetbrains.krpc.client.withService
 import org.jetbrains.krpc.internal.hex.hexToReadableBinary
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.DumpLogger
+import org.jetbrains.krpc.internal.logging.DumpLoggerContainer
 import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.transport.RPCPlugin
 import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.server.KRPCServer
 import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
 import kotlin.time.Duration
@@ -46,7 +45,7 @@ abstract class ProtocolTestBase {
         return kotlinx.coroutines.test.runTest(timeout = timeout) {
             val finished = TestBody(clientConfig, serverConfig, this).apply { block() }
 
-            finished.transport.coroutineContext.cancel()
+            finished.transport.coroutineContext.job.cancelAndJoin()
         }
     }
 
@@ -72,13 +71,17 @@ abstract class ProtocolTestBase {
             }
         }
 
+        init {
+            DumpLoggerContainer.set(logger)
+        }
+
         val transport = LocalTransport()
 
         // lazy - initialize default endpoints only if needed
-        val defaultClient by lazy { ProtocolTestClient(clientConfig, transport, logger) }
+        val defaultClient by lazy { ProtocolTestClient(clientConfig, transport) }
 
         val defaultServer by lazy {
-            ProtocolTestServer(serverConfig, transport, logger).apply {
+            ProtocolTestServer(serverConfig, transport).apply {
                 registerService<ProtocolTestService>(
                     ProtocolTestServiceImpl(transport.coroutineContext)
                 )
@@ -104,7 +107,6 @@ private class ProtocolTestServiceImpl(
 class ProtocolTestServer(
     config: RPCConfig.Server,
     transport: LocalTransport,
-    override val dumpLogger: DumpLogger,
 ) : KRPCServer(config), RPCTransport by transport.server {
     val clientPlugins: Map<Long, Set<RPCPlugin>>
 
@@ -124,7 +126,6 @@ class ProtocolTestServer(
 class ProtocolTestClient(
     config: RPCConfig.Client,
     transport: LocalTransport,
-    override val dumpLogger: DumpLogger,
 ) : KRPCClient(config), RPCTransport by transport.client {
     @OptIn(ExperimentalCoroutinesApi::class)
     val serverPlugins: Set<RPCPlugin>
@@ -136,7 +137,11 @@ class ProtocolTestClient(
 
     private val serverSupportedPluginsDeferred: CompletableDeferred<Set<RPCPlugin>>
 
-    val id: Long
+    private lateinit var idProperty: KProperty1<KRPCClient, *>
+
+    val id: Long by lazy {
+        idProperty.call(this) as Long
+    }
 
     init {
         val (idProp, deferredProp) = KRPCClient::class
@@ -146,10 +151,9 @@ class ProtocolTestClient(
             .onEach {
                 it.isAccessible = true
             }
+        idProperty = idProp
 
         @Suppress("UNCHECKED_CAST")
         serverSupportedPluginsDeferred = deferredProp.call(this) as CompletableDeferred<Set<RPCPlugin>>
-
-        id = idProp.call(this) as Long
     }
 }

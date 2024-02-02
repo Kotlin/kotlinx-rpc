@@ -6,8 +6,6 @@ package org.jetbrains.krpc.server.internal
 
 import kotlinx.serialization.SerialFormat
 import org.jetbrains.krpc.RPCTransport
-import org.jetbrains.krpc.internal.logging.DumpLogger
-import org.jetbrains.krpc.internal.logging.DumpLoggerNoop
 import org.jetbrains.krpc.internal.transport.RPCConnector
 import org.jetbrains.krpc.internal.transport.RPCMessage
 import org.jetbrains.krpc.internal.transport.RPCMessageSender
@@ -27,9 +25,8 @@ internal class RPCServerConnector private constructor(
         serialFormat: SerialFormat,
         transport: RPCTransport,
         waitForServices: Boolean = false,
-        dumpLogger: DumpLogger = DumpLoggerNoop
     ) : this(
-        RPCConnector(serialFormat, transport, waitForServices, isServer = true, dumpLogger) {
+        RPCConnector(serialFormat, transport, waitForServices, isServer = true) {
             when (this) {
                 is RPCMessage -> MessageKey.Service(serviceType)
                 is RPCProtocolMessage -> MessageKey.Protocol

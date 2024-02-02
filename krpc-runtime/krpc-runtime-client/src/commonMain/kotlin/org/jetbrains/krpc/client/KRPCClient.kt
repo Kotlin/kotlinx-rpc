@@ -21,13 +21,10 @@ import org.jetbrains.krpc.client.internal.RPCClientConnector
 import org.jetbrains.krpc.client.internal.RPCFlow
 import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
-import org.jetbrains.krpc.internal.logging.DumpLogger
-import org.jetbrains.krpc.internal.logging.DumpLoggerNoop
 import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.transport.*
+import kotlin.properties.Delegates
 import kotlin.reflect.typeOf
-
-private val CONNECTION_ID = atomic(initial = 0L)
 
 /**
  * Default implementation of [RPCClient].
@@ -49,35 +46,41 @@ private val CONNECTION_ID = atomic(initial = 0L)
 public abstract class KRPCClient(
     final override val config: RPCConfig.Client
 ) : RPCEndpointBase(), RPCClient, RPCTransport {
-    @InternalKRPCApi
-    protected open val dumpLogger: DumpLogger = DumpLoggerNoop
 
     private val connector by lazy {
-        RPCClientConnector(config.serialFormatInitializer.build(), this, config.waitForServices, dumpLogger)
+        RPCClientConnector(config.serialFormatInitializer.build(), this, config.waitForServices)
     }
 
-    private val connectionId: Long = CONNECTION_ID.incrementAndGet()
+    private var connectionId: Long by Delegates.notNull()
 
     override val sender: RPCMessageSender
         get() = connector
 
     private val callCounter = atomic(0L)
 
-    override val logger: CommonLogger = CommonLogger.initialized().logger(objectId(connectionId.toString()))
+    override val logger: CommonLogger = CommonLogger.initialized().logger(objectId())
 
     private val serverSupportedPlugins: CompletableDeferred<Set<RPCPlugin>> = CompletableDeferred()
 
     private val initHandshake by lazy {
         launch {
-            connector.sendMessage(RPCProtocolMessage.Handshake(connectionId, RPCPlugin.ALL))
+            connector.sendMessage(RPCProtocolMessage.Handshake(RPCPlugin.ALL))
 
             connector.subscribeToProtocolMessages(::handleProtocolMessage)
         }
     }
 
-    private fun handleProtocolMessage(message: RPCProtocolMessage) {
+    private suspend fun handleProtocolMessage(message: RPCProtocolMessage) {
         when (message) {
             is RPCProtocolMessage.Handshake -> {
+                connectionId = message.connectionId ?: run {
+                    val failure = "Server sent null connectionId"
+
+                    connector.sendMessage(RPCProtocolMessage.Failure(failure, failedMessage = message))
+                    serverSupportedPlugins.completeExceptionally(IllegalStateException(failure))
+                    return
+                }
+
                 serverSupportedPlugins.complete(message.supportedPlugins)
             }
 

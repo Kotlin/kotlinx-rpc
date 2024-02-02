@@ -10,10 +10,7 @@ import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCServer
 import org.jetbrains.krpc.RPCTransport
-import org.jetbrains.krpc.internal.InternalKRPCApi
 import org.jetbrains.krpc.internal.logging.CommonLogger
-import org.jetbrains.krpc.internal.logging.DumpLogger
-import org.jetbrains.krpc.internal.logging.DumpLoggerNoop
 import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.objectId
 import org.jetbrains.krpc.internal.qualifiedClassName
@@ -23,7 +20,7 @@ import org.jetbrains.krpc.server.internal.RPCServerConnector
 import org.jetbrains.krpc.server.internal.RPCServerService
 import kotlin.reflect.KClass
 
-private val SERVER_ID = atomic(initial = 0L)
+private val SERVER_CONNECTION_COUNTER = atomic(initial = 0L)
 
 /**
  * Default implementation of [RPCServer].
@@ -45,7 +42,7 @@ private val SERVER_ID = atomic(initial = 0L)
  * @param config configuration provided for that specific server. Applied to all services that use this server.
  */
 public abstract class KRPCServer(private val config: RPCConfig.Server) : RPCServer, RPCTransport {
-    private val serverId = SERVER_ID.getAndIncrement()
+    private val serverId = SERVER_CONNECTION_COUNTER.getAndIncrement()
     private val logger = CommonLogger.initialized().logger(objectId(serverId.toString()))
 
     private val connector by lazy {
@@ -53,7 +50,6 @@ public abstract class KRPCServer(private val config: RPCConfig.Server) : RPCServ
             serialFormat = config.serialFormatInitializer.build(),
             transport = this,
             waitForServices = config.waitForServices,
-            dumpLogger = dumpLogger,
         )
     }
 
@@ -68,8 +64,9 @@ public abstract class KRPCServer(private val config: RPCConfig.Server) : RPCServ
     private suspend fun handleProtocolMessage(message: RPCProtocolMessage) {
         when (message) {
             is RPCProtocolMessage.Handshake -> {
-                clientSupportedPlugins[message.connectionId] = message.supportedPlugins
-                connector.sendMessage(RPCProtocolMessage.Handshake(message.connectionId, RPCPlugin.ALL))
+                val connectionId = SERVER_CONNECTION_COUNTER.incrementAndGet()
+                clientSupportedPlugins[connectionId] = message.supportedPlugins
+                connector.sendMessage(RPCProtocolMessage.Handshake(RPCPlugin.ALL, connectionId))
             }
 
             is RPCProtocolMessage.Failure -> {
@@ -96,7 +93,4 @@ public abstract class KRPCServer(private val config: RPCConfig.Server) : RPCServ
             }
         }
     }
-
-    @InternalKRPCApi
-    protected open val dumpLogger: DumpLogger = DumpLoggerNoop
 }
