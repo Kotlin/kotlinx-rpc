@@ -70,6 +70,15 @@ public abstract class KRPCClient(
         }
     }
 
+    /**
+     * Starts the handshake process and awaits for completion.
+     * If the handshake was completed before, nothing happens.
+     */
+    private suspend fun awaitHandshakeCompletion() {
+        initHandshake.join()
+        serverSupportedPlugins.await()
+    }
+
     private suspend fun handleProtocolMessage(message: RPCProtocolMessage) {
         when (message) {
             is RPCProtocolMessage.Handshake -> {
@@ -151,8 +160,7 @@ public abstract class KRPCClient(
         callResult: CompletableDeferred<*>,
     ): Pair<LazyRPCStreamContext, SerialFormat> {
         // we should init and await for handshake to finish
-        initHandshake.join()
-        serverSupportedPlugins.await()
+        awaitHandshakeCompletion()
 
         val id = callCounter.incrementAndGet()
         val callId = "$connectionId:${callInfo.dataType}:$id"

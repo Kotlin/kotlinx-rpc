@@ -1,6 +1,6 @@
 package org.jetbrains.krpc.internal
 
 @InternalKRPCApi
-interface SeqIdConuter {
+interface SequentialIdCounter {
     fun nextId(): Long
 }

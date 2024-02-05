@@ -10,7 +10,7 @@ import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCServer
 import org.jetbrains.krpc.RPCTransport
-import org.jetbrains.krpc.internal.SeqIdConuter
+import org.jetbrains.krpc.internal.SequentialIdCounter
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.objectId
@@ -21,11 +21,14 @@ import org.jetbrains.krpc.server.internal.RPCServerConnector
 import org.jetbrains.krpc.server.internal.RPCServerService
 import kotlin.reflect.KClass
 
-private val SERVER_CONNECTION_COUNTER = atomic(initial = 0L)
+private val SERVER_ATOMIC_CONNECTION_COUNTER = atomic(initial = 0L)
 
-private val seqCounter = object : SeqIdConuter {
+/**
+ * Gives ids to the incoming connections in sequential order. Ids are sent to peers during the handshake process.
+ */
+private val serverConnectionIdConuter = object : SequentialIdCounter {
     override fun nextId(): Long {
-        return SERVER_CONNECTION_COUNTER.incrementAndGet()
+        return SERVER_ATOMIC_CONNECTION_COUNTER.incrementAndGet()
     }
 }
 
@@ -67,7 +70,7 @@ public abstract class KRPCServer(private val config: RPCConfig.Server) : RPCServ
 
     private val clientSupportedPlugins: MutableMap<Long, Set<RPCPlugin>> = mutableMapOf()
 
-    private val idCounter: SeqIdConuter = seqCounter
+    private val idCounter: SequentialIdCounter = serverConnectionIdConuter
 
     private suspend fun handleProtocolMessage(message: RPCProtocolMessage) {
         when (message) {

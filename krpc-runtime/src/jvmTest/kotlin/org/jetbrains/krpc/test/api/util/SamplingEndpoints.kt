@@ -7,7 +7,7 @@ package org.jetbrains.krpc.test.api.util
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.client.KRPCClient
-import org.jetbrains.krpc.internal.SeqIdConuter
+import org.jetbrains.krpc.internal.SequentialIdCounter
 import org.jetbrains.krpc.server.KRPCServer
 import org.jetbrains.krpc.test.LocalTransport
 
@@ -26,7 +26,7 @@ class SamplingServer(
             .apply { isAccessible = true }
 
         // reproducible ids
-        idCounterField.set(this, object : SeqIdConuter {
+        idCounterField.set(this, object : SequentialIdCounter {
             override fun nextId(): Long {
                 return 1
             }
