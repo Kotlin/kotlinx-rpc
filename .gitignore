@@ -4,7 +4,20 @@
 # Ignore Gradle build output directory
 build
 
-.idea
+# idea files
+.idea/*
+!.idea/runConfigurations
+!.idea/runConfigurations/*
+!.idea/vcs.xml
+!.idea/dictionaries
+!.idea/dictionaries/*
+!.idea/copyright
+!.idea/copyright/*
+!.idea/codeStyles
+!.idea/codeStyles/*
+!.idea/icon.png
+!.idea/detekt.xml
+
 .DS_Store
 
 # Ignore generated Detekt reports

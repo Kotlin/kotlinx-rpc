@@ -40,10 +40,7 @@ dependencies {
     implementation("org.jetbrains.krpc:krpc-transport-ktor-client")
     implementation("org.jetbrains.krpc:krpc-transport-ktor-server")
 
-    implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-client-cio-jvm")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
