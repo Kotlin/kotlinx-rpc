@@ -71,7 +71,7 @@ val rpcClient = HttpClient { install(WebSockets) }.rpc {
 rpcClient.withService<AwesomeService>().sayHello("Hello from client!")
 ```
 
-Check out our [onboarding guide](ONBOARDING.md) for the thorough overview of all components and features.
+Check out our [getting started guide](GETTING_STARTED.md) for a thorough overview of all components and features.
 
 ## Configure the project
 
