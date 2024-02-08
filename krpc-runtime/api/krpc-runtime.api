@@ -154,166 +154,166 @@ public final class org/jetbrains/krpc/internal/SerializationUtilsKt {
 public final class org/jetbrains/krpc/internal/WithRPCClientObject_jvmKt {
 }
 
-public final class org/jetbrains/krpc/internal/transport/RPCAnyMessage$Companion {
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$CallData$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$CallData$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$CallDataBinary$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
-	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCMessage$CallDataBinary$$serializer;
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$CallDataBinary$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$CallDataBinary$$serializer;
 	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCMessage$CallDataBinary;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$CallDataBinary;
 	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCMessage$CallDataBinary;)V
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$CallDataBinary;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$CallDataBinary$Companion {
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$CallDataBinary$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$CallDataString$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
-	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCMessage$CallDataString$$serializer;
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$CallDataString$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$CallDataString$$serializer;
 	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCMessage$CallDataString;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$CallDataString;
 	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCMessage$CallDataString;)V
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$CallDataString;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$CallDataString$Companion {
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$CallDataString$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$CallException$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
-	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCMessage$CallException$$serializer;
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$CallException$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$CallException$$serializer;
 	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCMessage$CallException;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$CallException;
 	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCMessage$CallException;)V
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$CallException;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$CallException$Companion {
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$CallException$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$CallResult$Companion {
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$CallResult$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$CallSuccess$Companion {
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$CallSuccess$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$CallSuccessBinary$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
-	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCMessage$CallSuccessBinary$$serializer;
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$CallSuccessBinary$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$CallSuccessBinary$$serializer;
 	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCMessage$CallSuccessBinary;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$CallSuccessBinary;
 	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCMessage$CallSuccessBinary;)V
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$CallSuccessBinary;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$CallSuccessBinary$Companion {
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$CallSuccessBinary$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$CallSuccessString$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
-	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCMessage$CallSuccessString$$serializer;
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$CallSuccessString$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$CallSuccessString$$serializer;
 	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCMessage$CallSuccessString;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$CallSuccessString;
 	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCMessage$CallSuccessString;)V
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$CallSuccessString;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$CallSuccessString$Companion {
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$CallSuccessString$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$CallType$Companion {
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$CallType$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$StreamCancel$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$StreamCancel$$serializer;
+	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$StreamCancel;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$StreamCancel;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$StreamCancel$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$StreamFinished$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$StreamFinished$$serializer;
+	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$StreamFinished;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$StreamFinished;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$StreamFinished$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$StreamMessage$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$StreamMessageBinary$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$StreamMessageBinary$$serializer;
+	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$StreamMessageBinary;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$StreamMessageBinary;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$StreamMessageBinary$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$StreamMessageString$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$StreamMessageString$$serializer;
+	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$StreamMessageString;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCCallMessage$StreamMessageString;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$StreamMessageString$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
 public final class org/jetbrains/krpc/internal/transport/RPCMessage$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$StreamCancel$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
-	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCMessage$StreamCancel$$serializer;
-	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
-	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCMessage$StreamCancel;
-	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCMessage$StreamCancel;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
-}
-
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$StreamCancel$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$StreamFinished$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
-	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCMessage$StreamFinished$$serializer;
-	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
-	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCMessage$StreamFinished;
-	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCMessage$StreamFinished;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
-}
-
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$StreamFinished$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$StreamMessage$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$StreamMessageBinary$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
-	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCMessage$StreamMessageBinary$$serializer;
-	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
-	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCMessage$StreamMessageBinary;
-	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCMessage$StreamMessageBinary;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
-}
-
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$StreamMessageBinary$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$StreamMessageString$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
-	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCMessage$StreamMessageString$$serializer;
-	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
-	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCMessage$StreamMessageString;
-	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCMessage$StreamMessageString;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
-}
-
-public final class org/jetbrains/krpc/internal/transport/RPCMessage$StreamMessageString$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 

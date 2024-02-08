@@ -68,7 +68,7 @@ public abstract class RPCEndpointBase : CoroutineScope {
                 } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
                     mutex.withLock {
                         val serializedReason = serializeException(cause)
-                        val message = RPCMessage.StreamCancel(
+                        val message = RPCCallMessage.StreamCancel(
                             callId = callId,
                             serviceType = serviceTypeString,
                             streamId = streamId,
@@ -81,7 +81,7 @@ public abstract class RPCEndpointBase : CoroutineScope {
                 }
 
                 mutex.withLock {
-                    val message = RPCMessage.StreamFinished(
+                    val message = RPCCallMessage.StreamFinished(
                         callId = callId,
                         serviceType = serviceTypeString,
                         streamId = streamId,
@@ -112,7 +112,7 @@ public abstract class RPCEndpointBase : CoroutineScope {
                 val message = when (serialFormat) {
                     is StringFormat -> {
                         val stringData = serialFormat.encodeToString(elementSerializer, it)
-                        RPCMessage.StreamMessageString(
+                        RPCCallMessage.StreamMessageString(
                             callId = callId,
                             serviceType = serviceTypeString,
                             streamId = streamId,
@@ -123,7 +123,7 @@ public abstract class RPCEndpointBase : CoroutineScope {
 
                     is BinaryFormat -> {
                         val binaryData = serialFormat.encodeToByteArray(elementSerializer, it)
-                        RPCMessage.StreamMessageBinary(
+                        RPCCallMessage.StreamMessageBinary(
                             callId = callId,
                             serviceType = serviceTypeString,
                             streamId = streamId,
@@ -163,10 +163,10 @@ public abstract class RPCEndpointBase : CoroutineScope {
         return config.serialFormatInitializer.applySerializersModuleAndBuild(module)
     }
 
-    protected fun RPCCall.Type.toMessageCallType(): RPCMessage.CallType {
+    protected fun RPCCall.Type.toMessageCallType(): RPCCallMessage.CallType {
         return when (this) {
-            RPCCall.Type.Method -> RPCMessage.CallType.Method
-            RPCCall.Type.Field -> RPCMessage.CallType.Field
+            RPCCall.Type.Method -> RPCCallMessage.CallType.Method
+            RPCCall.Type.Field -> RPCCallMessage.CallType.Field
         }
     }
 }

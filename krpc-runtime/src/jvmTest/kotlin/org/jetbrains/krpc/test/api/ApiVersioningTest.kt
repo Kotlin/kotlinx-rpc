@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import org.jetbrains.krpc.client.awaitFieldInitialization
-import org.jetbrains.krpc.internal.transport.RPCAnyMessage
+import org.jetbrains.krpc.internal.transport.RPCMessage
 import org.jetbrains.krpc.internal.transport.RPCPlugin
 import org.jetbrains.krpc.internal.transport.RPCPluginKey
 import org.jetbrains.krpc.test.api.util.GoldUtils.NewLine
@@ -25,7 +25,7 @@ import kotlin.test.fail
 class ApiVersioningTest {
     @Test
     fun testProtocolApiVersion() {
-        val context = checkProtocolApi<RPCAnyMessage>()
+        val context = checkProtocolApi<RPCMessage>()
 
         context.fails.failIfAnyCauses()
     }

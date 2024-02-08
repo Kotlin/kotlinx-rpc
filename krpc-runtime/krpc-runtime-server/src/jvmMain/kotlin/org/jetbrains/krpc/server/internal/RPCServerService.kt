@@ -13,8 +13,8 @@ import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.map.ConcurrentHashMap
+import org.jetbrains.krpc.internal.transport.RPCCallMessage
 import org.jetbrains.krpc.internal.transport.RPCEndpointBase
-import org.jetbrains.krpc.internal.transport.RPCMessage
 import org.jetbrains.krpc.internal.transport.RPCMessageSender
 import org.jetbrains.krpc.internal.transport.RPCPlugin
 import java.lang.reflect.InvocationTargetException
@@ -57,35 +57,35 @@ internal class RPCServerService<T : RPC>(
         }
     }
 
-    suspend fun accept(message: RPCMessage) {
+    suspend fun accept(message: RPCCallMessage) {
         val result = runCatching {
             val callId = message.callId
             logger.trace { "Incoming message $message" }
 
             when (message) {
-                is RPCMessage.CallData -> {
+                is RPCCallMessage.CallData -> {
                     handleCall(callId, message)
                 }
 
-                is RPCMessage.CallException -> {
+                is RPCCallMessage.CallException -> {
                     calls[callId]?.cancel()
                 }
 
-                is RPCMessage.CallSuccess -> {
+                is RPCCallMessage.CallSuccess -> {
                     error("Unexpected success message")
                 }
 
-                is RPCMessage.StreamCancel -> {
+                is RPCCallMessage.StreamCancel -> {
                     val streamContext = streamContexts[callId] ?: error("Unknown call $callId")
                     streamContext.awaitInitialized().cancelStream(message)
                 }
 
-                is RPCMessage.StreamFinished -> {
+                is RPCCallMessage.StreamFinished -> {
                     val streamContext = streamContexts[callId] ?: error("Unknown call $callId")
                     streamContext.awaitInitialized().closeStream(message)
                 }
 
-                is RPCMessage.StreamMessage -> {
+                is RPCCallMessage.StreamMessage -> {
                     val streamContext = streamContexts[callId] ?: error("Unknown call $callId")
                     streamContext.awaitInitialized().send(message, prepareSerialFormat(streamContext))
                 }
@@ -100,14 +100,14 @@ internal class RPCServerService<T : RPC>(
     }
 
     @OptIn(InternalCoroutinesApi::class)
-    private fun handleCall(callId: String, callData: RPCMessage.CallData) {
+    private fun handleCall(callId: String, callData: RPCCallMessage.CallData) {
         val streamContext = LazyRPCStreamContext { RPCStreamContext(callId, config, callData.connectionId) }
         val serialFormat = prepareSerialFormat(streamContext)
         streamContexts[callId] = streamContext
 
         val isMethod = when (callData.callType) {
-            RPCMessage.CallType.Method -> true
-            RPCMessage.CallType.Field -> false
+            RPCCallMessage.CallType.Method -> true
+            RPCCallMessage.CallType.Field -> false
             else -> callData.callableName
                 .endsWith("\$method") // compatibility with beta-4.2 clients
         }
@@ -120,7 +120,7 @@ internal class RPCServerService<T : RPC>(
         if (callable == null) {
             val callType = if (isMethod) "method" else "field"
             val cause = NoSuchMethodException("Service $serviceTypeString has no $callType $callableName")
-            val message = RPCMessage.CallException(
+            val message = RPCCallMessage.CallException(
                 callId = callId,
                 serviceType = serviceTypeString,
                 cause = serializeException(cause),
@@ -158,7 +158,7 @@ internal class RPCServerService<T : RPC>(
                 when (serialFormat) {
                     is StringFormat -> {
                         val stringValue = serialFormat.encodeToString(returnSerializer, value)
-                        RPCMessage.CallSuccessString(
+                        RPCCallMessage.CallSuccessString(
                             callId = callId,
                             serviceType = serviceTypeString,
                             data = stringValue,
@@ -168,7 +168,7 @@ internal class RPCServerService<T : RPC>(
 
                     is BinaryFormat -> {
                         val binaryValue = serialFormat.encodeToByteArray(returnSerializer, value)
-                        RPCMessage.CallSuccessBinary(
+                        RPCCallMessage.CallSuccessBinary(
                             callId = callId,
                             serviceType = serviceTypeString,
                             data = binaryValue,
@@ -182,10 +182,10 @@ internal class RPCServerService<T : RPC>(
                 }
             } catch (cause: InvocationTargetException) {
                 val serializedCause = serializeException(cause.cause ?: cause)
-                RPCMessage.CallException(callId, serviceTypeString, serializedCause, callData.connectionId)
+                RPCCallMessage.CallException(callId, serviceTypeString, serializedCause, callData.connectionId)
             } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
                 val serializedCause = serializeException(cause)
-                RPCMessage.CallException(callId, serviceTypeString, serializedCause, callData.connectionId)
+                RPCCallMessage.CallException(callId, serviceTypeString, serializedCause, callData.connectionId)
             }
             sender.sendMessage(result)
 

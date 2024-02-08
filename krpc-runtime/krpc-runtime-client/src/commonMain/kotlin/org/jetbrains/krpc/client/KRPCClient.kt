@@ -188,7 +188,7 @@ public abstract class KRPCClient(
         callId: String,
         streamContext: LazyRPCStreamContext,
         call: RPCCall,
-        firstMessage: RPCMessage,
+        firstMessage: RPCCallMessage,
         serialFormat: SerialFormat,
         callResult: CompletableDeferred<Any?>,
     ) {
@@ -204,18 +204,18 @@ public abstract class KRPCClient(
     }
 
     private suspend fun handleMessage(
-        message: RPCMessage,
+        message: RPCCallMessage,
         streamContext: LazyRPCStreamContext,
         callInfo: RPCCall,
         serialFormat: SerialFormat,
         callResult: CompletableDeferred<Any?>,
     ) {
         when (message) {
-            is RPCMessage.CallData -> {
+            is RPCCallMessage.CallData -> {
                 error("Unexpected message")
             }
 
-            is RPCMessage.CallException -> {
+            is RPCCallMessage.CallException -> {
                 val cause = runCatching {
                     message.cause.deserialize()
                 }
@@ -229,7 +229,7 @@ public abstract class KRPCClient(
                 callResult.completeExceptionally(result)
             }
 
-            is RPCMessage.CallSuccess -> {
+            is RPCCallMessage.CallSuccess -> {
                 val value = runCatching {
                     val serializerResult = serialFormat.serializersModule.rpcSerializerForType(callInfo.returnType)
 
@@ -239,26 +239,26 @@ public abstract class KRPCClient(
                 callResult.completeWith(value)
             }
 
-            is RPCMessage.StreamCancel -> {
+            is RPCCallMessage.StreamCancel -> {
                 streamContext.awaitInitialized().cancelStream(message)
             }
 
-            is RPCMessage.StreamFinished -> {
+            is RPCCallMessage.StreamFinished -> {
                 streamContext.awaitInitialized().closeStream(message)
             }
 
-            is RPCMessage.StreamMessage -> {
+            is RPCCallMessage.StreamMessage -> {
                 streamContext.awaitInitialized().send(message, serialFormat)
             }
         }
     }
 
-    private fun serializeRequest(callId: String, call: RPCCall, serialFormat: SerialFormat): RPCMessage {
+    private fun serializeRequest(callId: String, call: RPCCall, serialFormat: SerialFormat): RPCCallMessage {
         val serializerData = serialFormat.serializersModule.rpcSerializerForType(call.dataType)
         return when (serialFormat) {
             is StringFormat -> {
                 val stringValue = serialFormat.encodeToString(serializerData, call.data)
-                RPCMessage.CallDataString(
+                RPCCallMessage.CallDataString(
                     callId = callId,
                     serviceType = call.serviceTypeString,
                     callableName = call.callableName,
@@ -270,7 +270,7 @@ public abstract class KRPCClient(
 
             is BinaryFormat -> {
                 val binaryValue = serialFormat.encodeToByteArray(serializerData, call.data)
-                RPCMessage.CallDataBinary(
+                RPCCallMessage.CallDataBinary(
                     callId = callId,
                     serviceType = call.serviceTypeString,
                     callableName = call.callableName,

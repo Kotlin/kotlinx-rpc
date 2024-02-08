@@ -1,7 +1,8 @@
-org.jetbrains.krpc.internal.transport.RPCMessage.CallDataBinary
+org.jetbrains.krpc.internal.transport.RPCMessage.CallDataBinary [Declared name: org.jetbrains.krpc.internal.transport.RPCCallMessage.CallDataBinary]
   - callId: kotlin.String
   - callType: org.jetbrains.krpc.internal.transport.RPCMessage.CallType
     - Nullable
+    - Declared name: org.jetbrains.krpc.internal.transport.RPCCallMessage.CallType
   - method: kotlin.String
     - Declared name: callableName
   - connectionId: kotlin.Long

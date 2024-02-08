@@ -15,7 +15,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialFormat
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.internal.map.ConcurrentHashMap
-import org.jetbrains.krpc.internal.transport.RPCMessage
+import org.jetbrains.krpc.internal.transport.RPCCallMessage
 import kotlin.coroutines.CoroutineContext
 
 @InternalKRPCApi
@@ -145,15 +145,15 @@ public class RPCStreamContext(
         } as StreamT
     }
 
-    public suspend fun closeStream(message: RPCMessage.StreamFinished) {
+    public suspend fun closeStream(message: RPCCallMessage.StreamFinished) {
         incomingChannelOf(message.streamId).send(StreamEnd)
     }
 
-    public suspend fun cancelStream(message: RPCMessage.StreamCancel) {
+    public suspend fun cancelStream(message: RPCCallMessage.StreamCancel) {
         incomingChannelOf(message.streamId).send(StreamCancel(message))
     }
 
-    public suspend fun send(message: RPCMessage.StreamMessage, serialFormat: SerialFormat) {
+    public suspend fun send(message: RPCCallMessage.StreamMessage, serialFormat: SerialFormat) {
         val info = incomingStreams.getDeferred(message.streamId).await()
         val result = decodeMessageData(serialFormat, info.elementSerializer, message)
         incomingChannelOf(message.streamId).send(result)
@@ -192,7 +192,7 @@ public class RPCStreamContext(
 private object StreamEnd
 
 private class StreamCancel(
-    val cause: RPCMessage.StreamCancel
+    val cause: RPCCallMessage.StreamCancel
 )
 
 private abstract class RPCIncomingHotFlow(

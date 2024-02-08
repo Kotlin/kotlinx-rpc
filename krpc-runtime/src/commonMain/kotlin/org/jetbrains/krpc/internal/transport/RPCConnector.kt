@@ -23,24 +23,24 @@ import kotlin.collections.set
 
 @InternalKRPCApi
 public interface RPCMessageSender : CoroutineScope {
-    public suspend fun sendMessage(message: RPCAnyMessage)
+    public suspend fun sendMessage(message: RPCMessage)
 }
 
-private typealias RPCMessageHandler = suspend (RPCAnyMessage) -> Unit
+private typealias RPCMessageHandler = suspend (RPCMessage) -> Unit
 
 /**
  * Represents a connector for remote procedure call (RPC) communication.
- * This class is responsible for sending and receiving [RPCAnyMessage] over a specified transport.
+ * This class is responsible for sending and receiving [RPCMessage] over a specified transport.
  *
  * @param SubscriptionKey the type of the subscription key used for message subscriptions.
- * @param serialFormat the serial format used for encoding and decoding [RPCAnyMessage].
+ * @param serialFormat the serial format used for encoding and decoding [RPCMessage].
  * @param transport the transport used for sending and receiving encoded RPC messages.
  * @param waitForSubscribers a flag indicating whether the connector should wait for subscribers
  * if no service is available to process the message immediately.
- * If false, the endpoint that sent the message will receive a [RPCMessage.CallException]
+ * If false, the endpoint that sent the message will receive a [RPCCallMessage.CallException]
  * that says that there were no services to process its message.
  * @param isServer flag indication whether this is a server or a client.
- * @param getKey a lambda function that returns the subscription key for a given [RPCMessage].
+ * @param getKey a lambda function that returns the subscription key for a given [RPCCallMessage].
  * DO NOT use actual dumper in production! Default is [DumpLoggerNoop] that does nothing.
  */
 @InternalKRPCApi
@@ -49,19 +49,19 @@ public class RPCConnector<SubscriptionKey>(
     private val transport: RPCTransport,
     private val waitForSubscribers: Boolean = true,
     isServer: Boolean,
-    private val getKey: RPCAnyMessage.() -> SubscriptionKey,
+    private val getKey: RPCMessage.() -> SubscriptionKey,
 ) : RPCMessageSender, CoroutineScope by transport {
     private val role = if (isServer) SERVER_ROLE else CLIENT_ROLE
     private val logger = CommonLogger.initialized().logger(objectId(role))
 
     private val mutex = Mutex()
 
-    private val waiting = mutableMapOf<SubscriptionKey, MutableList<RPCAnyMessage>>()
+    private val waiting = mutableMapOf<SubscriptionKey, MutableList<RPCMessage>>()
     private val subscriptions = mutableMapOf<SubscriptionKey, RPCMessageHandler>()
 
     private val dumpLogger by lazy { DumpLoggerContainer.provide() }
 
-    override suspend fun sendMessage(message: RPCAnyMessage) {
+    override suspend fun sendMessage(message: RPCMessage) {
         val transportMessage = when (serialFormat) {
             is StringFormat -> {
                 RPCTransportMessage.StringMessage(serialFormat.encodeToString(message))
@@ -99,7 +99,7 @@ public class RPCConnector<SubscriptionKey>(
     }
 
     private suspend fun processMessage(transportMessage: RPCTransportMessage) {
-        val message: RPCAnyMessage = when {
+        val message: RPCMessage = when {
             serialFormat is StringFormat && transportMessage is RPCTransportMessage.StringMessage -> {
                 serialFormat.decodeFromString(transportMessage.value)
             }
@@ -120,9 +120,9 @@ public class RPCConnector<SubscriptionKey>(
         processMessage(message)
     }
 
-    private suspend fun processMessage(message: RPCAnyMessage) = mutex.withLock {
+    private suspend fun processMessage(message: RPCMessage) = mutex.withLock {
         when (message) {
-            is RPCMessage -> processServiceMessage(message)
+            is RPCCallMessage -> processServiceMessage(message)
             is RPCProtocolMessage -> processProtocolMessage(message)
         }
     }
@@ -147,7 +147,7 @@ public class RPCConnector<SubscriptionKey>(
         }
     }
 
-    private suspend fun processServiceMessage(message: RPCMessage) {
+    private suspend fun processServiceMessage(message: RPCCallMessage) {
         val result = tryHandle(message)
 
         // todo better exception processing probably
@@ -168,7 +168,7 @@ public class RPCConnector<SubscriptionKey>(
                         "${subscriptions.size} attempts failed"
             )
 
-            val callException = RPCMessage.CallException(
+            val callException = RPCCallMessage.CallException(
                 callId = message.callId,
                 serviceType = message.serviceType,
                 cause = serializeException(cause),
@@ -180,7 +180,7 @@ public class RPCConnector<SubscriptionKey>(
     }
 
     private suspend fun tryHandle(
-        message: RPCAnyMessage,
+        message: RPCMessage,
         handler: RPCMessageHandler? = null,
     ): HandlerResult {
         val key = message.getKey()

@@ -10,7 +10,7 @@ import org.jetbrains.krpc.internal.InternalKRPCApi
 import org.jetbrains.krpc.internal.ShortEnumKSerializer
 
 /**
- * Keys for [RPCAnyMessage.pluginParams] map.
+ * Keys for [RPCMessage.pluginParams] map.
  *
  * [associatedPlugin] is a [RPCPlugin] that introduces this key into the map.
  * One [RPCPlugin] can introduce multiple keys.

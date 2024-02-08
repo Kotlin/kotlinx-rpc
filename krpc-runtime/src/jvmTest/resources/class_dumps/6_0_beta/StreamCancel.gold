@@ -1,4 +1,4 @@
-org.jetbrains.krpc.RPCMessage.StreamCancel [Declared name: org.jetbrains.krpc.internal.transport.RPCMessage.StreamCancel]
+org.jetbrains.krpc.RPCMessage.StreamCancel [Declared name: org.jetbrains.krpc.internal.transport.RPCCallMessage.StreamCancel]
   - callId: kotlin.String
   - cause: org.jetbrains.krpc.SerializedException
     - Declared name: org.jetbrains.krpc.internal.transport.SerializedException

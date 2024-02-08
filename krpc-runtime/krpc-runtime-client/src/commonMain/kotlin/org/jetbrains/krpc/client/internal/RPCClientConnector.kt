@@ -6,8 +6,8 @@ package org.jetbrains.krpc.client.internal
 
 import kotlinx.serialization.SerialFormat
 import org.jetbrains.krpc.RPCTransport
+import org.jetbrains.krpc.internal.transport.RPCCallMessage
 import org.jetbrains.krpc.internal.transport.RPCConnector
-import org.jetbrains.krpc.internal.transport.RPCMessage
 import org.jetbrains.krpc.internal.transport.RPCMessageSender
 import org.jetbrains.krpc.internal.transport.RPCProtocolMessage
 
@@ -31,7 +31,7 @@ internal class RPCClientConnector private constructor(
     ) : this(
         RPCConnector(serialFormat, transport, waitForServices, isServer = false) {
             when (this) {
-                is RPCMessage -> CallSubscriptionId.Service(serviceType, callId)
+                is RPCCallMessage -> CallSubscriptionId.Service(serviceType, callId)
                 is RPCProtocolMessage -> CallSubscriptionId.Protocol
             }
         }
@@ -40,10 +40,10 @@ internal class RPCClientConnector private constructor(
     suspend fun subscribeToCallResponse(
         serviceTypeString: String,
         callId: String,
-        subscription: suspend (RPCMessage) -> Unit,
+        subscription: suspend (RPCCallMessage) -> Unit,
     ) {
         connector.subscribeToMessages(CallSubscriptionId.Service(serviceTypeString, callId)) {
-            subscription(it as RPCMessage)
+            subscription(it as RPCCallMessage)
         }
     }
 
