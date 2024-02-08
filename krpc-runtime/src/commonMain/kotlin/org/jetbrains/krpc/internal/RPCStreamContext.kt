@@ -15,7 +15,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialFormat
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.internal.map.ConcurrentHashMap
-import org.jetbrains.krpc.internal.transport.RPCMessage
+import org.jetbrains.krpc.internal.transport.RPCCallMessage
 import kotlin.coroutines.CoroutineContext
 
 @InternalKRPCApi
@@ -33,7 +33,11 @@ public class LazyRPCStreamContext(private val initializer: () -> RPCStreamContex
 }
 
 @InternalKRPCApi
-public class RPCStreamContext(private val callId: String, private val config: RPCConfig) {
+public class RPCStreamContext(
+    private val callId: String,
+    private val config: RPCConfig,
+    private val connectionId: Long?,
+) {
     private companion object {
         private const val STREAM_ID_PREFIX = "stream:"
     }
@@ -70,7 +74,7 @@ public class RPCStreamContext(private val callId: String, private val config: RP
         elementSerializer: KSerializer<Any?>,
     ): String {
         val id = "$STREAM_ID_PREFIX${streamIdCounter.getAndIncrement()}"
-        outgoingStreams.trySend(RPCStreamCall(callId, id, stream, streamKind, elementSerializer))
+        outgoingStreams.trySend(RPCStreamCall(callId, id, stream, streamKind, elementSerializer, connectionId))
         return id
     }
 
@@ -84,7 +88,7 @@ public class RPCStreamContext(private val callId: String, private val config: RP
         incomingChannels[streamId] = incoming
 
         val stream = streamOf<StreamT>(streamKind, stateFlowInitialValue, incoming)
-        incomingStreams[streamId] = RPCStreamCall(callId, streamId, stream, streamKind, elementSerializer)
+        incomingStreams[streamId] = RPCStreamCall(callId, streamId, stream, streamKind, elementSerializer, connectionId)
         return stream
     }
 
@@ -141,15 +145,15 @@ public class RPCStreamContext(private val callId: String, private val config: RP
         } as StreamT
     }
 
-    public suspend fun closeStream(message: RPCMessage.StreamFinished) {
+    public suspend fun closeStream(message: RPCCallMessage.StreamFinished) {
         incomingChannelOf(message.streamId).send(StreamEnd)
     }
 
-    public suspend fun cancelStream(message: RPCMessage.StreamCancel) {
+    public suspend fun cancelStream(message: RPCCallMessage.StreamCancel) {
         incomingChannelOf(message.streamId).send(StreamCancel(message))
     }
 
-    public suspend fun send(message: RPCMessage.StreamMessage, serialFormat: SerialFormat) {
+    public suspend fun send(message: RPCCallMessage.StreamMessage, serialFormat: SerialFormat) {
         val info = incomingStreams.getDeferred(message.streamId).await()
         val result = decodeMessageData(serialFormat, info.elementSerializer, message)
         incomingChannelOf(message.streamId).send(result)
@@ -188,7 +192,7 @@ public class RPCStreamContext(private val callId: String, private val config: RP
 private object StreamEnd
 
 private class StreamCancel(
-    val cause: RPCMessage.StreamCancel
+    val cause: RPCCallMessage.StreamCancel
 )
 
 private abstract class RPCIncomingHotFlow(

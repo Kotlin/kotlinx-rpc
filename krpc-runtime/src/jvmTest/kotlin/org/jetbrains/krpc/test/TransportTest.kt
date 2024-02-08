@@ -9,7 +9,6 @@ import kotlinx.coroutines.*
 import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.withService
 import org.jetbrains.krpc.serialization.json
-import org.slf4j.simple.SimpleLogger
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.Ignore
@@ -48,10 +47,6 @@ class SecondServer : Second {
 }
 
 class TransportTest {
-    init {
-        System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE")
-    }
-
     private val clientConfig = rpcClientConfig {
         serialization {
             json()

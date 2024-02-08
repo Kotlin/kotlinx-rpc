@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import org.jetbrains.krpc.client.awaitFieldInitialization
 import org.jetbrains.krpc.internal.transport.RPCMessage
+import org.jetbrains.krpc.internal.transport.RPCPlugin
+import org.jetbrains.krpc.internal.transport.RPCPluginKey
 import org.jetbrains.krpc.test.api.util.GoldUtils.NewLine
 import org.jetbrains.krpc.test.api.util.SamplingData
 import org.jetbrains.krpc.test.plainFlow
@@ -29,6 +31,16 @@ class ApiVersioningTest {
     }
 
     @Test
+    fun testRPCPluginEnum() {
+        testEnum<RPCPlugin>()
+    }
+
+    @Test
+    fun testRPCPluginKeyEnum() {
+        testEnum<RPCPluginKey>()
+    }
+
+    @Test
     fun testEchoSampling() = wireSamplingTest("echo") {
         sample {
             val response = echo("Hello", SamplingData("data"))
@@ -41,7 +53,7 @@ class ApiVersioningTest {
         sample {
             val response = clientStream(plainFlow { it }).joinToString()
             val expected = List(5) { it }.joinToString()
-            
+
             assertEquals(expected, response)
         }
     }
@@ -62,7 +74,7 @@ class ApiVersioningTest {
         sample {
             val response = serverFlow().toList().joinToString()
             val expected = List(5) { SamplingData("data") }.joinToString()
-            
+
             assertEquals(expected, response)
         }
     }
@@ -72,7 +84,7 @@ class ApiVersioningTest {
         sample {
             val response = serverNestedFlow().map { it.toList() }.toList().join()
             val expected = List(5) { List(5) { it } }.join()
-            
+
             assertEquals(expected, response)
         }
     }
@@ -95,7 +107,7 @@ class ApiVersioningTest {
     fun testPlainFlowSampling() = wireSamplingTest("plainFlow") {
         sample {
             val response = plainFlow.toList().joinToString()
-            val expected = List(5) { it }.joinToString() 
+            val expected = List(5) { it }.joinToString()
 
             assertEquals(expected, response)
         }
@@ -134,6 +146,7 @@ class ApiVersioningTest {
 
         val CLASS_DUMPS_DIR: Path = Path("src/jvmTest/resources/class_dumps/$LIBRARY_VERSION_DIR")
         val WIRE_DUMPS_DIR: Path = Path("src/jvmTest/resources/wire_dumps/")
+        val INDEXED_ENUM_DUMPS_DIR: Path = Path("src/jvmTest/resources/indexed_enum_dumps/")
 
         private fun String.versionToDirName(): String {
             return replace('.', '_').replace('-', '_')

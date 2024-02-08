@@ -5,6 +5,7 @@
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.serialization)
+    alias(libs.plugins.atomicfu)
 }
 
 kotlin {

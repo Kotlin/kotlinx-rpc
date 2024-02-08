@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.*
 import kotlinx.serialization.modules.SerializersModule
-import org.jetbrains.krpc.internal.transport.RPCMessage
+import org.jetbrains.krpc.internal.transport.RPCCallMessage
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -40,7 +40,10 @@ public fun unsupportedSerialFormatError(serialFormat: SerialFormat): Nothing {
     error("Unsupported serial format ${serialFormat::class}, only StringFormat and BinaryFormats are supported")
 }
 
-internal fun unexpectedDataFormatForProvidedSerialFormat(data: RPCMessage.Data, shouldBeBinary: Boolean): Nothing {
+internal fun unexpectedDataFormatForProvidedSerialFormat(
+    data: RPCCallMessage.Data,
+    shouldBeBinary: Boolean,
+): Nothing {
     val (expected, actual) = when {
         shouldBeBinary -> "BinaryFormat" to "string"
         else -> "StringFormat" to "binary"
@@ -54,11 +57,11 @@ internal fun unexpectedDataFormatForProvidedSerialFormat(data: RPCMessage.Data, 
 public fun decodeMessageData(
     serialFormat: SerialFormat,
     dataSerializer: KSerializer<Any?>,
-    data: RPCMessage.Data,
+    data: RPCCallMessage.Data,
 ): Any? {
     return when (serialFormat) {
         is StringFormat -> {
-            if (data !is RPCMessage.Data.StringData) {
+            if (data !is RPCCallMessage.Data.StringData) {
                 unexpectedDataFormatForProvidedSerialFormat(data, shouldBeBinary = false)
             }
 
@@ -66,7 +69,7 @@ public fun decodeMessageData(
         }
 
         is BinaryFormat -> {
-            if (data !is RPCMessage.Data.BinaryData) {
+            if (data !is RPCCallMessage.Data.BinaryData) {
                 unexpectedDataFormatForProvidedSerialFormat(data, shouldBeBinary = true)
             }
 

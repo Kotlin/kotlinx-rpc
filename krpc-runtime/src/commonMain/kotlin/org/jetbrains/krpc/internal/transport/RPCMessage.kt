@@ -10,20 +10,66 @@ import org.jetbrains.krpc.internal.InternalKRPCApi
 
 @InternalKRPCApi
 @Serializable
-@SerialName("org.jetbrains.krpc.RPCMessage")
 public sealed interface RPCMessage {
+    /**
+     * Unique id for the current connection client-server connection.
+     */
+    public val connectionId: Long?
+
+    /**
+     * [pluginParams] map contains additional parameters to send over wire.
+     * Map is much easier to update without breaking compatibility,
+     * thought being more limiting in terms of content.
+     *
+     * Use [RPCPluginKey] to retrieve a value.
+     * The structure of the values should not change over time to ensure compatibility.
+     */
+    public val pluginParams: Map<RPCPluginKey, String>?
+}
+
+@InternalKRPCApi
+@Serializable
+public sealed interface RPCProtocolMessage : RPCMessage {
+    override val pluginParams: Map<RPCPluginKey, String>
+
+    @InternalKRPCApi
+    @Serializable
+    public data class Handshake(
+        val supportedPlugins: Set<RPCPlugin>,
+        override val connectionId: Long? = null,
+        override val pluginParams: Map<RPCPluginKey, String> = emptyMap(),
+    ) : RPCProtocolMessage
+
+    @InternalKRPCApi
+    @Serializable
+    public data class Failure(
+        val errorMessage: String,
+        override val connectionId: Long? = null,
+        val failedMessage: RPCProtocolMessage? = null,
+        override val pluginParams: Map<RPCPluginKey, String> = emptyMap(),
+    ) : RPCProtocolMessage
+}
+
+/**
+ * Only service messages (method calls, streams, etc.), name is kept for easier compatibility.
+ */
+@InternalKRPCApi
+@Serializable
+@SerialName("org.jetbrains.krpc.RPCMessage")
+public sealed interface RPCCallMessage : RPCMessage {
     public val callId: String
     public val serviceType: String
 
     @InternalKRPCApi
+    @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.Data")
     public sealed interface Data {
         @InternalKRPCApi
-        public sealed interface BinaryData: Data {
+        public sealed interface BinaryData : Data {
             public val data: ByteArray
         }
 
         @InternalKRPCApi
-        public sealed interface StringData: Data {
+        public sealed interface StringData : Data {
             public val data: String
         }
     }
@@ -31,17 +77,19 @@ public sealed interface RPCMessage {
     @InternalKRPCApi
     @Serializable
     @SerialName("org.jetbrains.krpc.RPCMessage.CallResult")
-    public sealed interface CallResult : RPCMessage
+    public sealed interface CallResult : RPCCallMessage
 
     @InternalKRPCApi
     @Serializable
-    public sealed interface CallData : RPCMessage, Data {
+    @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.CallData")
+    public sealed interface CallData : RPCCallMessage, Data {
         public val callableName: String
         public val callType: CallType?
     }
 
     @InternalKRPCApi
     @Serializable
+    @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.CallType")
     public enum class CallType {
         Method, Field,
     }
@@ -56,11 +104,14 @@ public sealed interface RPCMessage {
         override val callableName: String,
         override val callType: CallType?,
         override val data: String,
+        override val connectionId: Long? = null,
+        override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : CallData, Data.StringData
 
     @InternalKRPCApi
     @Suppress("ArrayInDataClass")
     @Serializable
+    @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.CallDataBinary")
     public data class CallDataBinary(
         override val callId: String,
         override val serviceType: String,
@@ -68,10 +119,13 @@ public sealed interface RPCMessage {
         override val callableName: String,
         override val callType: CallType?,
         override val data: ByteArray,
+        override val connectionId: Long? = null,
+        override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : CallData, Data.BinaryData
 
     @InternalKRPCApi
     @Serializable
+    @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.CallSuccess")
     public sealed interface CallSuccess : CallResult, Data
 
     @InternalKRPCApi
@@ -80,16 +134,21 @@ public sealed interface RPCMessage {
     public data class CallSuccessString(
         override val callId: String,
         override val serviceType: String,
-        override val data: String
+        override val data: String,
+        override val connectionId: Long? = null,
+        override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : CallSuccess, Data.StringData
 
     @InternalKRPCApi
     @Suppress("ArrayInDataClass")
     @Serializable
+    @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.CallSuccessBinary")
     public data class CallSuccessBinary(
         override val callId: String,
         override val serviceType: String,
-        override val data: ByteArray
+        override val data: ByteArray,
+        override val connectionId: Long? = null,
+        override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : CallSuccess, Data.BinaryData
 
     /**
@@ -101,12 +160,15 @@ public sealed interface RPCMessage {
     public data class CallException(
         override val callId: String,
         override val serviceType: String,
-        val cause: SerializedException
+        val cause: SerializedException,
+        override val connectionId: Long? = null,
+        override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : CallResult
 
     @InternalKRPCApi
     @Serializable
-    public sealed interface StreamMessage : RPCMessage, Data {
+    @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessage")
+    public sealed interface StreamMessage : RPCCallMessage, Data {
         public val streamId: String
     }
 
@@ -118,18 +180,23 @@ public sealed interface RPCMessage {
         override val serviceType: String,
         @SerialName("flowId")
         override val streamId: String,
-        override val data: String
+        override val data: String,
+        override val connectionId: Long? = null,
+        override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : StreamMessage, Data.StringData
 
     @InternalKRPCApi
     @Suppress("ArrayInDataClass")
     @Serializable
+    @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessageBinary")
     public data class StreamMessageBinary(
         override val callId: String,
         override val serviceType: String,
         @SerialName("flowId")
         override val streamId: String,
-        override val data: ByteArray
+        override val data: ByteArray,
+        override val connectionId: Long? = null,
+        override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : StreamMessage, Data.BinaryData
 
     @InternalKRPCApi
@@ -140,8 +207,10 @@ public sealed interface RPCMessage {
         override val serviceType: String,
         @SerialName("flowId")
         val streamId: String,
-        val cause: SerializedException
-    ) : RPCMessage
+        val cause: SerializedException,
+        override val connectionId: Long? = null,
+        override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
+    ) : RPCCallMessage
 
     @InternalKRPCApi
     @Serializable
@@ -151,5 +220,7 @@ public sealed interface RPCMessage {
         override val serviceType: String,
         @SerialName("flowId")
         val streamId: String,
-    ) : RPCMessage
+        override val connectionId: Long? = null,
+        override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
+    ) : RPCCallMessage
 }

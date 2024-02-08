@@ -4,15 +4,33 @@
 
 package org.jetbrains.krpc.server
 
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.launch
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCServer
 import org.jetbrains.krpc.RPCTransport
+import org.jetbrains.krpc.internal.SequentialIdCounter
+import org.jetbrains.krpc.internal.logging.CommonLogger
+import org.jetbrains.krpc.internal.logging.initialized
+import org.jetbrains.krpc.internal.objectId
 import org.jetbrains.krpc.internal.qualifiedClassName
-import org.jetbrains.krpc.internal.transport.RPCConnector
+import org.jetbrains.krpc.internal.transport.RPCPlugin
+import org.jetbrains.krpc.internal.transport.RPCProtocolMessage
+import org.jetbrains.krpc.server.internal.RPCServerConnector
 import org.jetbrains.krpc.server.internal.RPCServerService
 import kotlin.reflect.KClass
+
+private val SERVER_ATOMIC_CONNECTION_COUNTER = atomic(initial = 0L)
+
+/**
+ * Gives ids to the incoming connections in sequential order. Ids are sent to peers during the handshake process.
+ */
+private val serverConnectionIdConuter = object : SequentialIdCounter {
+    override fun nextId(): Long {
+        return SERVER_ATOMIC_CONNECTION_COUNTER.incrementAndGet()
+    }
+}
 
 /**
  * Default implementation of [RPCServer].
@@ -34,28 +52,56 @@ import kotlin.reflect.KClass
  * @param config configuration provided for that specific server. Applied to all services that use this server.
  */
 public abstract class KRPCServer(private val config: RPCConfig.Server) : RPCServer, RPCTransport {
-    override fun <Service : RPC> registerService(service: Service, serviceKClass: KClass<Service>) {
-        val name = serviceKClass.qualifiedClassName
+    private val logger = CommonLogger.initialized().logger(objectId())
 
-        val rpcService = RPCServerService(service, serviceKClass, config, connector)
+    private val connector by lazy {
+        RPCServerConnector(
+            serialFormat = config.serialFormatInitializer.build(),
+            transport = this,
+            waitForServices = config.waitForServices,
+        )
+    }
 
+    private val subscribeToProtocolMessages by lazy {
         launch {
-            connector.subscribeToMessages(name) {
-                rpcService.accept(it)
+            connector.subscribeToProtocolMessages(::handleProtocolMessage)
+        }
+    }
+
+    private val clientSupportedPlugins: MutableMap<Long, Set<RPCPlugin>> = mutableMapOf()
+
+    private val idCounter: SequentialIdCounter = serverConnectionIdConuter
+
+    private suspend fun handleProtocolMessage(message: RPCProtocolMessage) {
+        when (message) {
+            is RPCProtocolMessage.Handshake -> {
+                val connectionId = idCounter.nextId()
+                clientSupportedPlugins[connectionId] = message.supportedPlugins
+                connector.sendMessage(RPCProtocolMessage.Handshake(RPCPlugin.ALL, connectionId))
+            }
+
+            is RPCProtocolMessage.Failure -> {
+                logger.error {
+                    "Client [${message.connectionId}] failed to handle protocol message ${message.failedMessage}: " +
+                            message.errorMessage
+                }
             }
         }
     }
 
-    private val connector by lazy {
-        RPCConnector(
-            serialFormat = config.serialFormatInitializer.build(),
-            transport = this,
-            waitForSubscribers = config.waitForServices,
-            getKey = {
-                serviceType
-                    .removePrefix("class ") // beta-4.2 compatibility
-            },
-            isServer = true,
-        )
+    override fun <Service : RPC> registerService(service: Service, serviceKClass: KClass<Service>) {
+        val name = serviceKClass.qualifiedClassName
+
+        val rpcService = RPCServerService(service, serviceKClass, config, connector) { connectionId ->
+            connectionId?.let { clientSupportedPlugins[it] } ?: emptySet()
+        }
+
+        launch {
+            subscribeToProtocolMessages.join()
+
+            connector.subscribeToServiceMessages(name) {
+                rpcService.accept(it)
+            }
+        }
     }
 }

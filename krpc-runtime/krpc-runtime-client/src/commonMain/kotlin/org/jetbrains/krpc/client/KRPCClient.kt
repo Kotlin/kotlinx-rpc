@@ -22,12 +22,9 @@ import org.jetbrains.krpc.client.internal.RPCFlow
 import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.initialized
-import org.jetbrains.krpc.internal.transport.RPCEndpointBase
-import org.jetbrains.krpc.internal.transport.RPCMessage
-import org.jetbrains.krpc.internal.transport.RPCMessageSender
+import org.jetbrains.krpc.internal.transport.*
+import kotlin.properties.Delegates
 import kotlin.reflect.typeOf
-
-private val CLIENT_ENGINE_ID = atomic(initial = 0L)
 
 /**
  * Default implementation of [RPCClient].
@@ -49,16 +46,65 @@ private val CLIENT_ENGINE_ID = atomic(initial = 0L)
 public abstract class KRPCClient(
     final override val config: RPCConfig.Client
 ) : RPCEndpointBase(), RPCClient, RPCTransport {
+
     private val connector by lazy {
         RPCClientConnector(config.serialFormatInitializer.build(), this, config.waitForServices)
     }
+
+    private var connectionId: Long by Delegates.notNull()
 
     override val sender: RPCMessageSender
         get() = connector
 
     private val callCounter = atomic(0L)
-    private val engineId: Long = CLIENT_ENGINE_ID.incrementAndGet()
+
     override val logger: CommonLogger = CommonLogger.initialized().logger(objectId())
+
+    private val serverSupportedPlugins: CompletableDeferred<Set<RPCPlugin>> = CompletableDeferred()
+
+    private val initHandshake by lazy {
+        launch {
+            connector.sendMessage(RPCProtocolMessage.Handshake(RPCPlugin.ALL))
+
+            connector.subscribeToProtocolMessages(::handleProtocolMessage)
+        }
+    }
+
+    /**
+     * Starts the handshake process and awaits for completion.
+     * If the handshake was completed before, nothing happens.
+     */
+    private suspend fun awaitHandshakeCompletion() {
+        initHandshake.join()
+        serverSupportedPlugins.await()
+    }
+
+    private suspend fun handleProtocolMessage(message: RPCProtocolMessage) {
+        when (message) {
+            is RPCProtocolMessage.Handshake -> {
+                connectionId = message.connectionId ?: run {
+                    val failure = "Server sent null connectionId"
+
+                    connector.sendMessage(RPCProtocolMessage.Failure(failure, failedMessage = message))
+                    serverSupportedPlugins.completeExceptionally(IllegalStateException(failure))
+                    return
+                }
+
+                serverSupportedPlugins.complete(message.supportedPlugins)
+            }
+
+            is RPCProtocolMessage.Failure -> {
+                logger.error {
+                    "Server [${message.connectionId}] failed to process protocol message ${message.failedMessage}: " +
+                            message.errorMessage
+                }
+
+                serverSupportedPlugins.completeExceptionally(
+                    IllegalStateException("Server failed to process protocol message: ${message.failedMessage}")
+                )
+            }
+        }
+    }
 
     override fun <T> registerPlainFlowField(field: RPCField): Flow<T> {
         return RPCFlow.Plain<T>(field.serviceTypeString).also { rpcFlow ->
@@ -113,12 +159,15 @@ public abstract class KRPCClient(
         callInfo: RPCCall,
         callResult: CompletableDeferred<*>,
     ): Pair<LazyRPCStreamContext, SerialFormat> {
+        // we should init and await for handshake to finish
+        awaitHandshakeCompletion()
+
         val id = callCounter.incrementAndGet()
-        val callId = "$engineId:${callInfo.dataType}:$id"
+        val callId = "$connectionId:${callInfo.dataType}:$id"
 
         logger.trace { "start a call[$callId] ${callInfo.callableName}" }
 
-        val streamContext = LazyRPCStreamContext { RPCStreamContext(callId, config) }
+        val streamContext = LazyRPCStreamContext { RPCStreamContext(callId, config, connectionId) }
         val serialFormat = prepareSerialFormat(streamContext)
         val firstMessage = serializeRequest(callId, callInfo, serialFormat)
 
@@ -139,7 +188,7 @@ public abstract class KRPCClient(
         callId: String,
         streamContext: LazyRPCStreamContext,
         call: RPCCall,
-        firstMessage: RPCMessage,
+        firstMessage: RPCCallMessage,
         serialFormat: SerialFormat,
         callResult: CompletableDeferred<Any?>,
     ) {
@@ -155,18 +204,18 @@ public abstract class KRPCClient(
     }
 
     private suspend fun handleMessage(
-        message: RPCMessage,
+        message: RPCCallMessage,
         streamContext: LazyRPCStreamContext,
         callInfo: RPCCall,
         serialFormat: SerialFormat,
         callResult: CompletableDeferred<Any?>,
     ) {
         when (message) {
-            is RPCMessage.CallData -> {
+            is RPCCallMessage.CallData -> {
                 error("Unexpected message")
             }
 
-            is RPCMessage.CallException -> {
+            is RPCCallMessage.CallException -> {
                 val cause = runCatching {
                     message.cause.deserialize()
                 }
@@ -180,7 +229,7 @@ public abstract class KRPCClient(
                 callResult.completeExceptionally(result)
             }
 
-            is RPCMessage.CallSuccess -> {
+            is RPCCallMessage.CallSuccess -> {
                 val value = runCatching {
                     val serializerResult = serialFormat.serializersModule.rpcSerializerForType(callInfo.returnType)
 
@@ -190,42 +239,44 @@ public abstract class KRPCClient(
                 callResult.completeWith(value)
             }
 
-            is RPCMessage.StreamCancel -> {
+            is RPCCallMessage.StreamCancel -> {
                 streamContext.awaitInitialized().cancelStream(message)
             }
 
-            is RPCMessage.StreamFinished -> {
+            is RPCCallMessage.StreamFinished -> {
                 streamContext.awaitInitialized().closeStream(message)
             }
 
-            is RPCMessage.StreamMessage -> {
+            is RPCCallMessage.StreamMessage -> {
                 streamContext.awaitInitialized().send(message, serialFormat)
             }
         }
     }
 
-    private fun serializeRequest(callId: String, call: RPCCall, serialFormat: SerialFormat): RPCMessage {
+    private fun serializeRequest(callId: String, call: RPCCall, serialFormat: SerialFormat): RPCCallMessage {
         val serializerData = serialFormat.serializersModule.rpcSerializerForType(call.dataType)
         return when (serialFormat) {
             is StringFormat -> {
                 val stringValue = serialFormat.encodeToString(serializerData, call.data)
-                RPCMessage.CallDataString(
+                RPCCallMessage.CallDataString(
                     callId = callId,
                     serviceType = call.serviceTypeString,
                     callableName = call.callableName,
                     callType = call.type.toMessageCallType(),
-                    data = stringValue
+                    data = stringValue,
+                    connectionId = connectionId,
                 )
             }
 
             is BinaryFormat -> {
                 val binaryValue = serialFormat.encodeToByteArray(serializerData, call.data)
-                RPCMessage.CallDataBinary(
+                RPCCallMessage.CallDataBinary(
                     callId = callId,
                     serviceType = call.serviceTypeString,
                     callableName = call.callableName,
                     callType = call.type.toMessageCallType(),
-                    data = binaryValue
+                    data = binaryValue,
+                    connectionId = connectionId,
                 )
             }
 

@@ -1,4 +1,8 @@
-org.jetbrains.krpc.RPCMessage.CallSuccess [Declared name: org.jetbrains.krpc.internal.transport.RPCMessage.CallSuccessString]
+org.jetbrains.krpc.RPCMessage.CallSuccess [Declared name: org.jetbrains.krpc.internal.transport.RPCCallMessage.CallSuccessString]
   - callId: kotlin.String
+  - connectionId: kotlin.Long
+    - Nullable
   - data: kotlin.String
+  - pluginParams: kotlin.collections.Map
+    - Nullable
   - serviceType: kotlin.String

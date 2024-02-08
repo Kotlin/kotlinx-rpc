@@ -57,7 +57,7 @@ kotlin {
                 implementation(project(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-cbor"))
                 implementation(project(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-protobuf"))
 
-                implementation(libs.slf4j.simple)
+                implementation(libs.logback.classic)
             }
         }
     }

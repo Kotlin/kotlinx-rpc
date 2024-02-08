@@ -15,6 +15,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import org.jetbrains.krpc.RPCTransportMessage
 import org.jetbrains.krpc.client.withService
 import org.jetbrains.krpc.internal.hex.hexToByteArrayInternal
+import org.jetbrains.krpc.internal.hex.hexToReadableBinary
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.DumpLogger
 import org.jetbrains.krpc.internal.logging.DumpLoggerContainer
@@ -206,7 +207,7 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
             if (logger != null) {
                 val log = when (format) {
                     SamplingFormat.Json -> message()
-                    SamplingFormat.Protobuf -> message().toReadableProtobufBinary()
+                    SamplingFormat.Protobuf -> message().hexToReadableBinary()
                 }
 
                 logger.info { "DumpLog: ${tags.joinToString(" ") { "[$it]" }} $log" }
@@ -308,7 +309,7 @@ private class WireContent(
     }
 
     override fun compare(other: WireContent): GoldComparisonResult {
-        return if (transformed == other.transformed) GoldComparisonResult.Ok else GoldComparisonResult.Failure
+        return if (transformed == other.transformed) GoldComparisonResult.Ok else GoldComparisonResult.Failure()
     }
 
     override fun dump(): String {
@@ -316,7 +317,7 @@ private class WireContent(
             val base = "[${dump.role}] [${dump.phase}] $ ${dump.log}"
 
             if (commentBinaryOutput) {
-                val decodedBytes = dump.log.toReadableProtobufBinary()
+                val decodedBytes = dump.log.hexToReadableBinary()
 
                 "// decoded: $decodedBytes" + GoldUtils.NewLine + base
             } else {
@@ -333,16 +334,4 @@ private class WireContent(
             )
         }
     }
-}
-
-private fun String.toReadableProtobufBinary(): String {
-    return hexToByteArrayInternal().joinToString("") { byte ->
-        byte.toInt().toChar().display()
-    }
-}
-
-private fun Char.display(): String {
-    // visible symbols range
-    // https://www.asciitable.com/
-    return if (code !in 32..126) "?" else toString()
 }

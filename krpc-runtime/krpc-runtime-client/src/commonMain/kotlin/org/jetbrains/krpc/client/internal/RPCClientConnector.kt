@@ -6,16 +6,22 @@ package org.jetbrains.krpc.client.internal
 
 import kotlinx.serialization.SerialFormat
 import org.jetbrains.krpc.RPCTransport
+import org.jetbrains.krpc.internal.transport.RPCCallMessage
 import org.jetbrains.krpc.internal.transport.RPCConnector
-import org.jetbrains.krpc.internal.transport.RPCMessage
 import org.jetbrains.krpc.internal.transport.RPCMessageSender
+import org.jetbrains.krpc.internal.transport.RPCProtocolMessage
 
-internal data class CallSubscriptionId(
-    val serviceTypeString: String,
-    val callId: String,
-)
+internal sealed interface CallSubscriptionId {
+    data class Service(
+        val serviceTypeString: String,
+        val callId: String,
+    ) : CallSubscriptionId
 
-internal class RPCClientConnector(
+    @Suppress("ConvertObjectToDataObject") // not supported in 1.8.22 or earlier
+    object Protocol : CallSubscriptionId
+}
+
+internal class RPCClientConnector private constructor(
     private val connector: RPCConnector<CallSubscriptionId>
 ) : RPCMessageSender by connector {
     constructor(
@@ -24,15 +30,26 @@ internal class RPCClientConnector(
         waitForServices: Boolean = false,
     ) : this(
         RPCConnector(serialFormat, transport, waitForServices, isServer = false) {
-            CallSubscriptionId(serviceType, callId)
+            when (this) {
+                is RPCCallMessage -> CallSubscriptionId.Service(serviceType, callId)
+                is RPCProtocolMessage -> CallSubscriptionId.Protocol
+            }
         }
     )
 
     suspend fun subscribeToCallResponse(
         serviceTypeString: String,
         callId: String,
-        subscription: suspend (RPCMessage) -> Unit,
+        subscription: suspend (RPCCallMessage) -> Unit,
     ) {
-        connector.subscribeToMessages(CallSubscriptionId(serviceTypeString, callId), subscription)
+        connector.subscribeToMessages(CallSubscriptionId.Service(serviceTypeString, callId)) {
+            subscription(it as RPCCallMessage)
+        }
+    }
+
+    suspend fun subscribeToProtocolMessages(subscription: suspend (RPCProtocolMessage) -> Unit) {
+        connector.subscribeToMessages(CallSubscriptionId.Protocol) {
+            subscription(it as RPCProtocolMessage)
+        }
     }
 }
