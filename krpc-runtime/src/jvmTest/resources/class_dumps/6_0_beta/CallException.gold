@@ -1,0 +1,5 @@
+org.jetbrains.krpc.RPCMessage.CallException [Declared name: org.jetbrains.krpc.internal.transport.RPCMessage.CallException]
+  - callId: kotlin.String
+  - cause: org.jetbrains.krpc.SerializedException
+    - Declared name: org.jetbrains.krpc.internal.transport.SerializedException
+  - serviceType: kotlin.String
