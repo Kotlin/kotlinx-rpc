@@ -104,7 +104,7 @@ private class ProtocolTestServiceImpl(
 class ProtocolTestServer(
     config: RPCConfig.Server,
     transport: LocalTransport,
-) : KRPCServer(config), RPCTransport by transport.server {
+) : KRPCServer(config, transport.server) {
     val clientPlugins: Map<Long, Set<RPCPlugin>>
 
     init {
@@ -123,7 +123,7 @@ class ProtocolTestServer(
 class ProtocolTestClient(
     config: RPCConfig.Client,
     transport: LocalTransport,
-) : KRPCClient(config), RPCTransport by transport.client {
+) : KRPCClient(config, transport.client) {
     @OptIn(ExperimentalCoroutinesApi::class)
     val serverPlugins: Set<RPCPlugin>
         get() = if (serverSupportedPluginsDeferred.isCompleted) {

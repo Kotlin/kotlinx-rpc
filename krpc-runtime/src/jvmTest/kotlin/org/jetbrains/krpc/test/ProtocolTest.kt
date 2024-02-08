@@ -21,12 +21,14 @@ import org.junit.Test
 class ProtocolTest : ProtocolTestBase() {
     @Test
     fun testHandshakeWithUpToDateEndpoints() = runTest {
-        // handshake is lazy
-        assertEquals(emptySet<RPCPlugin>(), defaultClient.serverPlugins)
+        // the client sends the handshake message first,
+        // so as the service is not initializaed yet here,
+        // the server should not have any handshake data yet
         assertEquals(0, defaultServer.clientPlugins.size)
 
         service.sendRequest()
 
+        // after a call is finished - all handshake data should be exchanged
         assertEquals(RPCPlugin.ALL, defaultClient.serverPlugins)
         assertEquals(RPCPlugin.ALL, defaultServer.clientPlugins[defaultClient.id])
     }

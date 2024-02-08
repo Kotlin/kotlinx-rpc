@@ -9,10 +9,12 @@ package org.jetbrains.krpc.test
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import org.jetbrains.krpc.*
+import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.client.awaitFieldInitialization
 import org.jetbrains.krpc.client.withService
-import org.jetbrains.krpc.RPCTransport
+import org.jetbrains.krpc.registerService
+import org.jetbrains.krpc.rpcClientConfig
+import org.jetbrains.krpc.rpcServerConfig
 import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
 import org.jetbrains.krpc.server.KRPCServer
 import org.junit.Assert.assertEquals
@@ -62,10 +64,10 @@ abstract class KRPCTransportTestBase {
     fun start() {
         service = KRPCTestServiceBackend()
 
-        backend = KRPCTestServer(serverConfig, service.coroutineContext, serverTransport)
+        backend = KRPCTestServer(serverConfig, serverTransport)
         backend.registerService<KRPCTestService>(service)
 
-        client = KRPCTestClient(clientConfig, service.coroutineContext, clientTransport).withService()
+        client = KRPCTestClient(clientConfig, clientTransport).withService()
     }
 
     @AfterTest
