@@ -60,7 +60,7 @@ class TransportTest {
     }
 
     private fun clientOf(localTransport: LocalTransport): RPCClient {
-        return KRPCTestClient(clientConfig, Job(), localTransport.client)
+        return KRPCTestClient(clientConfig, localTransport.client)
     }
 
     private fun serverOf(
@@ -68,7 +68,7 @@ class TransportTest {
         config: (RPCConfigBuilder.Server.() -> Unit)? = null
     ): RPCServer {
         val serverConfig = config?.let { rpcServerConfig(it) } ?: serverConfig
-        return KRPCTestServer(serverConfig, Job(), localTransport.server)
+        return KRPCTestServer(serverConfig, localTransport.server)
     }
 
     @Test

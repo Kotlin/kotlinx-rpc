@@ -5,9 +5,8 @@
 package org.jetbrains.krpc.test
 
 import org.jetbrains.krpc.RPCConfig
-import org.jetbrains.krpc.client.KRPCClient
 import org.jetbrains.krpc.RPCTransport
-import kotlin.coroutines.CoroutineContext
+import org.jetbrains.krpc.client.KRPCClient
 
 /**
  * Implementation of [KRPCClient] that can be used to test custom [RPCTransport].
@@ -17,6 +16,5 @@ import kotlin.coroutines.CoroutineContext
  */
 class KRPCTestClient(
     config: RPCConfig.Client,
-    override val coroutineContext: CoroutineContext,
     transport: RPCTransport,
-) : KRPCClient(config), RPCTransport by transport
+) : KRPCClient(config, transport)

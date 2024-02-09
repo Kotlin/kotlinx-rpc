@@ -5,6 +5,7 @@
 package org.jetbrains.krpc.server
 
 import kotlinx.atomicfu.atomic
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCConfig
@@ -19,6 +20,7 @@ import org.jetbrains.krpc.internal.transport.RPCPlugin
 import org.jetbrains.krpc.internal.transport.RPCProtocolMessage
 import org.jetbrains.krpc.server.internal.RPCServerConnector
 import org.jetbrains.krpc.server.internal.RPCServerService
+import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 
 private val SERVER_ATOMIC_CONNECTION_COUNTER = atomic(initial = 0L)
@@ -35,42 +37,44 @@ private val serverConnectionIdConuter = object : SequentialIdCounter {
 /**
  * Default implementation of [RPCServer].
  * Takes care of tracking requests and responses,
- * serializing data, tracking streams, processing exceptions and other protocol responsibilities.
+ * serializing data, tracking streams, processing exceptions, and other protocol responsibilities.
  * Routes resulting messages to the proper registered services.
  * Leaves out the delivery of encoded messages to the specific implementations.
  *
- * Simple example, how this server may be implemented:
+ * A simple example of how this server may be implemented:
  * ```kotlin
  * class MyTransport : RPCTransport { /*...*/ }
  *
- * class MyServer(
- *     config: RPCConfig.Server,
- *     override val coroutineContext: CoroutineContext,
- * ): KRPCServer(config), RPCTransport by MyTransport()
+ * class MyServer(config: RPCConfig.Server): KRPCServer(config, MyTransport())
  * ```
  *
  * @param config configuration provided for that specific server. Applied to all services that use this server.
+ * @param transport [RPCTransport] instance that will be used to send and receive RPC messages.
+ * IMPORTANT: Must be exclusive to this server, otherwise unexpected behavior may occur.
  */
-public abstract class KRPCServer(private val config: RPCConfig.Server) : RPCServer, RPCTransport {
+public abstract class KRPCServer(
+    private val config: RPCConfig.Server,
+    transport: RPCTransport,
+) : RPCServer {
+    final override val coroutineContext: CoroutineContext = transport.coroutineContext
+
     private val logger = CommonLogger.initialized().logger(objectId())
 
     private val connector by lazy {
         RPCServerConnector(
             serialFormat = config.serialFormatInitializer.build(),
-            transport = this,
+            transport = transport,
             waitForServices = config.waitForServices,
         )
-    }
-
-    private val subscribeToProtocolMessages by lazy {
-        launch {
-            connector.subscribeToProtocolMessages(::handleProtocolMessage)
-        }
     }
 
     private val clientSupportedPlugins: MutableMap<Long, Set<RPCPlugin>> = mutableMapOf()
 
     private val idCounter: SequentialIdCounter = serverConnectionIdConuter
+
+    private val subscribeToProtocolMessages: Job = launch {
+        connector.subscribeToProtocolMessages(::handleProtocolMessage)
+    }
 
     private suspend fun handleProtocolMessage(message: RPCProtocolMessage) {
         when (message) {

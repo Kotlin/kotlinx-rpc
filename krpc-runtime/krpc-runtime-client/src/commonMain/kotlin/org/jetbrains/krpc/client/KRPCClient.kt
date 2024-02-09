@@ -5,13 +5,10 @@
 package org.jetbrains.krpc.client
 
 import kotlinx.atomicfu.atomic
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.completeWith
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.job
-import kotlinx.coroutines.launch
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
@@ -23,32 +20,35 @@ import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.transport.*
+import kotlin.coroutines.CoroutineContext
 import kotlin.properties.Delegates
 import kotlin.reflect.typeOf
 
 /**
  * Default implementation of [RPCClient].
  * Takes care of tracking requests and responses,
- * serializing data, tracking streams, processing exceptions and other protocol responsibilities.
+ * serializing data, tracking streams, processing exceptions, and other protocol responsibilities.
  * Leaves out the delivery of encoded messages to the specific implementations.
  *
- *  * Simple example, how this client may be implemented:
- *  * ```kotlin
- *  * class MyTransport : RPCTransport { /*...*/ }
- *  *
- *  * class MyClient(
- *  *     config: RPCConfig.Client,
- *  *     override val coroutineContext: CoroutineContext,
- *  * ): KRPCClient(config), RPCTransport by MyTransport()
+ * A simple example of how this client may be implemented:
+ * ```kotlin
+ * class MyTransport : RPCTransport { /*...*/ }
+ *
+ * class MyClient(config: RPCConfig.Client): KRPCClient(config, MyTransport())
+ * ```
  *
  * @property config configuration provided for that specific client. Applied to all services that use this client.
+ * @param transport [RPCTransport] instance that will be used to send and receive RPC messages.
+ * IMPORTANT: Must be exclusive to this client, otherwise unexpected behavior may occur.
  */
 public abstract class KRPCClient(
-    final override val config: RPCConfig.Client
-) : RPCEndpointBase(), RPCClient, RPCTransport {
+    final override val config: RPCConfig.Client,
+    transport: RPCTransport,
+) : RPCEndpointBase(), RPCClient {
+    final override val coroutineContext: CoroutineContext = transport.coroutineContext
 
     private val connector by lazy {
-        RPCClientConnector(config.serialFormatInitializer.build(), this, config.waitForServices)
+        RPCClientConnector(config.serialFormatInitializer.build(), transport, config.waitForServices)
     }
 
     private var connectionId: Long by Delegates.notNull()
@@ -62,12 +62,10 @@ public abstract class KRPCClient(
 
     private val serverSupportedPlugins: CompletableDeferred<Set<RPCPlugin>> = CompletableDeferred()
 
-    private val initHandshake by lazy {
-        launch {
-            connector.sendMessage(RPCProtocolMessage.Handshake(RPCPlugin.ALL))
+    private val initHandshake: Job = launch {
+        connector.sendMessage(RPCProtocolMessage.Handshake(RPCPlugin.ALL))
 
-            connector.subscribeToProtocolMessages(::handleProtocolMessage)
-        }
+        connector.subscribeToProtocolMessages(::handleProtocolMessage)
     }
 
     /**
@@ -106,19 +104,19 @@ public abstract class KRPCClient(
         }
     }
 
-    override fun <T> registerPlainFlowField(field: RPCField): Flow<T> {
+    final override fun <T> registerPlainFlowField(field: RPCField): Flow<T> {
         return RPCFlow.Plain<T>(field.serviceTypeString).also { rpcFlow ->
             initializeFlowField(rpcFlow, field)
         }
     }
 
-    override fun <T> registerSharedFlowField(field: RPCField): SharedFlow<T> {
+    final override fun <T> registerSharedFlowField(field: RPCField): SharedFlow<T> {
         return RPCFlow.Shared<T>(field.serviceTypeString).also { rpcFlow ->
             initializeFlowField(rpcFlow, field)
         }
     }
 
-    override fun <T> registerStateFlowField(field: RPCField): StateFlow<T> {
+    final override fun <T> registerStateFlowField(field: RPCField): StateFlow<T> {
         return RPCFlow.State<T>(field.serviceTypeString).also { rpcFlow ->
             initializeFlowField(rpcFlow, field)
         }
@@ -139,7 +137,7 @@ public abstract class KRPCClient(
         }
     }
 
-    override suspend fun <T> call(call: RPCCall): T {
+    final override suspend fun <T> call(call: RPCCall): T {
         return CompletableDeferred<T>().also { result -> call(call, result) }.await()
     }
 

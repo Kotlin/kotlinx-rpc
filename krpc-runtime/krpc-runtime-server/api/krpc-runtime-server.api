@@ -1,5 +1,6 @@
-public abstract class org/jetbrains/krpc/server/KRPCServer : org/jetbrains/krpc/RPCServer, org/jetbrains/krpc/RPCTransport {
-	public fun <init> (Lorg/jetbrains/krpc/RPCConfig$Server;)V
+public abstract class org/jetbrains/krpc/server/KRPCServer : org/jetbrains/krpc/RPCServer {
+	public fun <init> (Lorg/jetbrains/krpc/RPCConfig$Server;Lorg/jetbrains/krpc/RPCTransport;)V
+	public final fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	public fun registerService (Lorg/jetbrains/krpc/RPC;Lkotlin/reflect/KClass;)V
 }
 
