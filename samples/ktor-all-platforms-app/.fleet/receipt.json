@@ -17,11 +17,6 @@
                     "compose"
                 ]
             },
-            "web": {
-                "ui": [
-                    "compose"
-                ]
-            },
             "server": {
                 "engine": [
                     "ktor"

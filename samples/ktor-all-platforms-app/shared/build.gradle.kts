@@ -1,16 +1,16 @@
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+/*
+ * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.krpc)
+    alias(libs.plugins.kotlinPluginSerialization)
 }
 
 kotlin {
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-       browser()
-    }
-    
     androidTarget {
         compilations.all {
             kotlinOptions {
@@ -27,7 +27,10 @@ kotlin {
     
     sourceSets {
         commonMain.dependencies {
-            // put your Multiplatform dependencies here
+            api(libs.kotlinx.coroutines.core)
+
+            implementation(libs.krpc.runtime)
+            implementation(libs.kotlinx.serialization.json)
         }
     }
 }

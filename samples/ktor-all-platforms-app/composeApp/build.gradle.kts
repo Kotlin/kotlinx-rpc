@@ -1,25 +1,17 @@
-import org.jetbrains.compose.ExperimentalComposeLibrary
+/*
+ * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.krpc.platform)
 }
 
 kotlin {
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        moduleName = "composeApp"
-        browser {
-            commonWebpackConfig {
-                outputFileName = "composeApp.js"
-            }
-        }
-        binaries.executable()
-    }
-    
     androidTarget {
         compilations.all {
             kotlinOptions {
@@ -27,9 +19,9 @@ kotlin {
             }
         }
     }
-    
+
     jvm("desktop")
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -53,9 +45,15 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material)
             implementation(compose.ui)
-            @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             implementation(projects.shared)
+
+            implementation(libs.krpc.runtime.client)
+            implementation(libs.krpc.runtime.serialization.json)
+            implementation(libs.krpc.transport.ktor.client)
+            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.websockets)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -107,8 +105,4 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
-}
-
-compose.experimental {
-    web.application {}
 }

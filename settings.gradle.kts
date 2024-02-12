@@ -60,6 +60,7 @@ val isCI = System.getenv("TEAMCITY_VERSION")?.let { true } ?: false
 
 // samples build with CI different configs, but may break core build if gradle/kotlin version mismatch with theirs
 if (!isCI) {
+    includeBuild("samples/ktor-all-platforms-app")
     includeBuild("samples/ktor-web-app")
     includeBuild("samples/ktor-android-app")
     includeBuild("samples/simple-ktor-app")
