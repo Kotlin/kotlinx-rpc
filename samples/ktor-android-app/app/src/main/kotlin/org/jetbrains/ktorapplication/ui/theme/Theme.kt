@@ -1,4 +1,4 @@
-package com.example.ktorapplication.ui.theme
+package org.jetbrains.ktorapplication.ui.theme
 
 import android.app.Activity
 import android.os.Build

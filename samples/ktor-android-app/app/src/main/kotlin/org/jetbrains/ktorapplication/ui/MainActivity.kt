@@ -2,7 +2,7 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package com.example.ktorapplication.ui
+package org.jetbrains.ktorapplication.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -20,8 +20,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.ktorapplication.ui.state.WelcomeData
-import com.example.ktorapplication.ui.theme.KtorApplicationTheme
+import org.jetbrains.ktorapplication.ui.state.WelcomeData
+import org.jetbrains.ktorapplication.ui.theme.KtorApplicationTheme
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue

@@ -2,14 +2,14 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package com.example.ktorapplication.ui
+package org.jetbrains.ktorapplication.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.common.MyService
-import com.example.common.UserData
-import com.example.ktorapplication.data.createRpcClient
-import com.example.ktorapplication.ui.state.WelcomeData
+import MyService
+import UserData
+import org.jetbrains.ktorapplication.data.createRpcClient
+import org.jetbrains.ktorapplication.ui.state.WelcomeData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay

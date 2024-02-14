@@ -15,7 +15,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.ktorapplication"
+    namespace = "org.jetbrains.ktorapplication"
     compileSdk = 34
 
     packagingOptions {
@@ -26,7 +26,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.ktorapplication"
+        applicationId = "org.jetbrains.ktorapplication"
         minSdk = 26
         targetSdk = 34
         versionCode = 1

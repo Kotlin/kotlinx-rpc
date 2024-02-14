@@ -1,14 +1,14 @@
 /*
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
-package com.example.ktorapplication
+package org.jetbrains.ktorapplication
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.ktorapplication.ui.Screen
-import com.example.ktorapplication.ui.theme.KtorApplicationTheme
+import org.jetbrains.ktorapplication.ui.Screen
+import org.jetbrains.ktorapplication.ui.theme.KtorApplicationTheme
 
 import org.junit.Test
 import org.junit.runner.RunWith
