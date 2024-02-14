@@ -12,7 +12,7 @@
 
 [//]: # ([![TeamCity build]&#40;https://img.shields.io/teamcity/build/s/Build_kRPC_All.svg?server=http%3A%2F%2Fkrpc.teamcity.com&#41;]&#40;https://teamcity.jetbrains.com/viewType.html?buildTypeId=Build_kRPC_All&guest=1&#41;)
 
-kRPC is a Kotlin framework for adding asynchronous Remote Procedure Call (RPC) services to your applications. 
+kRPC is a Kotlin library for adding asynchronous Remote Procedure Call (RPC) services to your applications. 
 Build your RPC with already known language constructs and nothing more!
 
 ## Quick start
@@ -71,7 +71,7 @@ val rpcClient = HttpClient { install(WebSockets) }.rpc {
 rpcClient.withService<AwesomeService>().sayHello("Hello from client!")
 ```
 
-Check out our [onboarding guide](ONBOARDING.md) for the thorough overview of all components and features.
+Check out our [getting started guide](GETTING_STARTED.md) for a thorough overview of all components and features.
 
 ## Configure the project
 
