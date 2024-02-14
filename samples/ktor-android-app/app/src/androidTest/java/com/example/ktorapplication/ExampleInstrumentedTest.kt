@@ -1,12 +1,20 @@
+/*
+ * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
 package com.example.ktorapplication
 
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.ktorapplication.ui.Screen
+import com.example.ktorapplication.ui.theme.KtorApplicationTheme
 
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.junit.Assert.*
+import org.junit.Rule
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -15,10 +23,17 @@ import org.junit.Assert.*
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
     @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.ktorapplication", appContext.packageName)
+    fun checkTextOnScreen() {
+        composeTestRule.setContent {
+            KtorApplicationTheme {
+                Screen(welcomeData = null)
+            }
+        }
+        composeTestRule.onNodeWithText("Establishing connection...").assertIsDisplayed()
+
     }
 }

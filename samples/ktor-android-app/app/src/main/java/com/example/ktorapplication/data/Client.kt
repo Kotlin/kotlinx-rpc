@@ -1,3 +1,7 @@
+/*
+ * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package com.example.ktorapplication.data
 
 import io.ktor.client.HttpClient
@@ -13,7 +17,7 @@ suspend fun createRpcClient(): RPCClient {
     return HttpClient(OkHttp) {
         install(WebSockets)
     }.rpc {
-        url("ws://localhost:8080/api")
+        url("ws://10.0.2.2:8080/api")
 
         rpcConfig {
             serialization {

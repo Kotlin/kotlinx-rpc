@@ -1,3 +1,7 @@
+/*
+ * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package com.example.ktorapplication.ui
 
 import android.os.Bundle
@@ -18,17 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.ktorapplication.ui.state.WelcomeData
 import com.example.ktorapplication.ui.theme.KtorApplicationTheme
-import io.ktor.server.application.Application
-import io.ktor.server.engine.*
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.example.ktorapplication.server.appRouting
-import io.ktor.server.cio.*
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var server: CIOApplicationEngine
     private val viewModel: AppViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,26 +38,20 @@ class MainActivity : ComponentActivity() {
                 Screen(uiState)
             }
         }
-        startServer()
     }
+}
 
-    @Composable
-    private fun Screen(welcomeData: WelcomeData?) {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            if (welcomeData == null) {
-                Text(
-                    text = "Establishing connection...",
-                    color = MaterialTheme.colorScheme.primary
-                )
-            } else {
-                SendGreetings(welcomeData = welcomeData)
-            }
+@Composable
+fun Screen(welcomeData: WelcomeData?) {
+    Surface(modifier = Modifier.fillMaxSize()) {
+        if (welcomeData == null) {
+            Text(
+                text = "Establishing connection...",
+                color = MaterialTheme.colorScheme.primary
+            )
+        } else {
+            SendGreetings(welcomeData = welcomeData)
         }
-    }
-
-    override fun onDestroy() {
-        server.stop(0, 0)
-        super.onDestroy()
     }
 }
 
@@ -87,10 +80,4 @@ fun SendGreetings(welcomeData: WelcomeData) {
             }
         }
     }
-}
-
-private fun startServer() {
-    val server =
-        embeddedServer(CIO, port = 8080, host = "127.0.0.1", module = Application::appRouting)
-    server.start()
 }
