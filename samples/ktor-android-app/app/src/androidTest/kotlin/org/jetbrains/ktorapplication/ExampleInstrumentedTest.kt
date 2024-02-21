@@ -1,6 +1,7 @@
 /*
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
+
 package org.jetbrains.ktorapplication
 
 import androidx.compose.ui.test.assertIsDisplayed
@@ -13,7 +14,6 @@ import org.jetbrains.ktorapplication.ui.theme.KtorApplicationTheme
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import org.junit.Assert.*
 import org.junit.Rule
 
 /**

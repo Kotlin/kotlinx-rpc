@@ -16,6 +16,8 @@ import org.jetbrains.krpc.client.withService
 import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.transport.ktor.client.rpc
 import org.jetbrains.krpc.transport.ktor.client.rpcConfig
+import org.jetbrains.ktorapplication.MyService
+import org.jetbrains.ktorapplication.UserData
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

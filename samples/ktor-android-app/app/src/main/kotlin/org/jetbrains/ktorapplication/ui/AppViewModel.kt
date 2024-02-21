@@ -6,8 +6,6 @@ package org.jetbrains.ktorapplication.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import MyService
-import UserData
 import org.jetbrains.ktorapplication.data.createRpcClient
 import org.jetbrains.ktorapplication.ui.state.WelcomeData
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +16,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.krpc.RPCClient
 import org.jetbrains.krpc.client.withService
+import org.jetbrains.ktorapplication.MyService
+import org.jetbrains.ktorapplication.UserData
 
 class AppViewModel : ViewModel() {
     private var rpcClient: RPCClient? = null

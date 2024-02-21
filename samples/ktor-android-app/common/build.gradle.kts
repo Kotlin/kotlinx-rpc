@@ -3,21 +3,21 @@
  */
 
 plugins {
-    kotlin("jvm") version "1.9.10"
-    kotlin("plugin.serialization") version "1.9.10"
-    id("com.google.devtools.ksp") version "1.9.10-1.0.13"
-    id("io.ktor.plugin") version "2.3.8"
-    id("org.jetbrains.krpc.platform") version "5.3-beta"
-    id("org.jetbrains.krpc.plugin") version "5.3-beta"
+    alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.kotlinPluginSerialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.ktor)
+
+    alias(libs.plugins.krpc)
+    alias(libs.plugins.krpc.platform)
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-cio-jvm")
-    implementation("io.ktor:ktor-server-core-jvm")
-    implementation("io.ktor:ktor-server-cors-jvm")
-    implementation("io.ktor:ktor-server-websockets-jvm")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm")
-
-    implementation("org.jetbrains.krpc:krpc-transport-ktor-server")
-    implementation("org.jetbrains.krpc:krpc-runtime-serialization-json")
+    implementation(libs.ktor.server.cio)
+    implementation(libs.ktor.server.core.jvm)
+    implementation(libs.ktor.server.cors.jvm)
+    implementation(libs.ktor.server.websockets.jvm)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.krpc.transport.ktor.server)
+    implementation(libs.krpc.runtime.serialization.json)
 }

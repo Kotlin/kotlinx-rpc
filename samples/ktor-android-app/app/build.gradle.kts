@@ -2,16 +2,14 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-val ktor_version: String by project
-
 plugins {
-    id("com.android.application") version "8.1.3"
-    id("org.jetbrains.kotlin.android") version "1.9.10"
-    id("com.google.devtools.ksp") version "1.9.10-1.0.13"
-    kotlin("plugin.serialization") version "1.9.10"
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.kotlinPluginSerialization)
+    alias(libs.plugins.ksp)
 
-    id("org.jetbrains.krpc.platform") version "5.3-beta"
-    id("org.jetbrains.krpc.plugin") version "5.3-beta"
+    alias(libs.plugins.krpc)
+    alias(libs.plugins.krpc.platform)
 }
 
 android {
@@ -58,7 +56,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
+        kotlinCompilerExtensionVersion = "1.5.9"
     }
     packaging {
         resources {
@@ -69,42 +67,42 @@ android {
 
 dependencies {
     implementation(project(":common"))
-    implementation("com.google.devtools.ksp:symbol-processing-api:1.9.10-1.0.13")
+    testImplementation(libs.krpc.runtime.client)
+    testImplementation(libs.krpc.runtime.server)
+    implementation(libs.krpc.runtime.serialization.json)
 
-    ksp("org.jetbrains.krpc:krpc-ksp-plugin")
-    implementation("org.jetbrains.krpc:krpc-runtime-client")
-    implementation("org.jetbrains.krpc:krpc-runtime-server")
-    implementation("org.jetbrains.krpc:krpc-runtime-serialization-json")
+    implementation(libs.krpc.transport.ktor.client)
+    implementation(libs.krpc.transport.ktor.server)
 
-    implementation("org.jetbrains.krpc:krpc-transport-ktor-client")
-    implementation("org.jetbrains.krpc:krpc-transport-ktor-server")
+    implementation(libs.ktor.server.cio)
+    implementation(libs.ktor.server.core.jvm)
+    implementation(libs.ktor.server.cors.jvm)
+    implementation(libs.ktor.server.websockets.jvm)
 
-    implementation("io.ktor:ktor-server-cio-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-netty:$ktor_version")
-    implementation("io.ktor:ktor-server-core:$ktor_version")
-    implementation("io.ktor:ktor-client-android:${ktor_version}")
-    implementation("io.ktor:ktor-client-okhttp:${ktor_version}")
-    implementation("io.ktor:ktor-client-core:${ktor_version}")
-    implementation("io.ktor:ktor-client-cio:${ktor_version}")
-    implementation("io.ktor:ktor-client-content-negotiation:${ktor_version}")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:${ktor_version}")
-    implementation("io.ktor:ktor-client-serialization:${ktor_version}")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.contentnegotiation)
+    implementation(libs.ktor.client.serialization)
+    implementation(libs.ktor.serialization.kotlinx.json)
+
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.activity:activity-compose:1.8.1")
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.graphics)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.material3)
 
-    implementation("androidx.test.ext:junit-ktx:1.1.5")
-    testImplementation("junit:junit:4.13.2")
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.activity.compose)
+
+    implementation(libs.androidx.test.junit)
+    testImplementation(libs.junit)
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    debugImplementation(libs.compose.ui.tooling)
+    debugImplementation(libs.compose.ui.test.manifest)
 }
