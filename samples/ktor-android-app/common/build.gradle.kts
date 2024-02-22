@@ -15,7 +15,6 @@ plugins {
 dependencies {
     implementation(libs.ktor.server.cio)
     implementation(libs.ktor.server.core.jvm)
-    implementation(libs.ktor.server.cors.jvm)
     implementation(libs.ktor.server.websockets.jvm)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.krpc.transport.ktor.server)
