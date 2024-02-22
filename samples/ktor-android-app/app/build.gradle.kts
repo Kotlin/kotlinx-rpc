@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kotlinPluginSerialization)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.krpc.platform)
+    alias(libs.plugins.krpc)
 }
 
 android {

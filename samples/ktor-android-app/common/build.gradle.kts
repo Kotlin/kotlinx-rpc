@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.kotlinPluginSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.ktor)
-    alias(libs.plugins.krpc.platform)
+    alias(libs.plugins.krpc)
 }
 
 dependencies {
