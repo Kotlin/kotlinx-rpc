@@ -78,4 +78,5 @@ kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 krpc = { id = "org.jetbrains.krpc.plugin", version.ref = "krpc" }
+krpc-platform = { id = "org.jetbrains.krpc.platform", version.ref = "krpc" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
