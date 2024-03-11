@@ -4,9 +4,11 @@
 
 package util
 
-import org.gradle.api.*
-import org.gradle.kotlin.dsl.*
-import java.io.*
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.getValue
+import org.gradle.kotlin.dsl.getting
+import org.gradle.kotlin.dsl.invoke
+import java.io.File
 
 internal fun Project.configureJs() {
     configureJsTasks()
@@ -15,7 +17,7 @@ internal fun Project.configureJs() {
         sourceSets {
             val jsTest by getting {
                 dependencies {
-                    implementation(npm("puppeteer", "*"))
+                    implementation(npm("puppeteer", "21.4.1"))
                 }
             }
         }
