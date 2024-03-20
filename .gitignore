@@ -25,3 +25,5 @@ detekt/reports/**
 
 # tmp files created by tests
 *.tmp
+
+.puppeteer
