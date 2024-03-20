@@ -1,0 +1,84 @@
+[versions]
+kotlin = "1.9.23"
+ksp = "1.9.23-1.0.19"
+
+agp = "8.2.0"
+android-compileSdk = "34"
+android-minSdk = "24"
+android-targetSdk = "34"
+androidx-activityCompose = "1.8.2"
+androidx-appcompat = "1.6.1"
+androidx-constraintlayout = "2.1.4"
+androidx-core-ktx = "1.12.0"
+androidx-espresso-core = "3.5.1"
+androidx-material = "1.11.0"
+androidx-test-junit = "1.1.5"
+compose = "1.6.1"
+compose-plugin = "1.6.1"
+junit = "4.13.2"
+ktor = "2.3.8"
+logback = "1.4.14"
+kotlinx-serialization-json = "1.6.1"
+kotlinx-coroutines-core = "1.7.3"
+krpc = "5.4-beta"
+
+[libraries]
+# kotlin
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+
+# android
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
+androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso-core" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidx-material" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraintlayout" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+
+# compose
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
+
+# kotlinx
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-core" }
+kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines-core" }
+
+# ktor
+ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
+ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor" }
+ktor-server-cors-jvm = { module = "io.ktor:ktor-server-cors-jvm", version.ref = "ktor" }
+ktor-server-websockets-jvm = { module = "io.ktor:ktor-server-websockets-jvm", version.ref = "ktor" }
+ktor-server-host-common-jvm = { module = "io.ktor:ktor-server-host-common-jvm", version.ref = "ktor" }
+ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+
+# krpc
+krpc-runtime = { module = "org.jetbrains.krpc:krpc-runtime" }
+krpc-runtime-client = { module = "org.jetbrains.krpc:krpc-runtime-client" }
+krpc-runtime-server = { module = "org.jetbrains.krpc:krpc-runtime-server" }
+krpc-transport-ktor-client = { module = "org.jetbrains.krpc:krpc-transport-ktor-client" }
+krpc-transport-ktor-server = { module = "org.jetbrains.krpc:krpc-transport-ktor-server" }
+krpc-runtime-serialization-json = { module = "org.jetbrains.krpc:krpc-runtime-serialization-json" }
+
+# other
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+
+# testing
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+krpc = { id = "org.jetbrains.krpc.plugin", version.ref = "krpc" }
+krpc-platform = { id = "org.jetbrains.krpc.platform", version.ref = "krpc" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
