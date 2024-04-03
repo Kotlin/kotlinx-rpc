@@ -7,18 +7,20 @@ package org.jetbrains.krpc.codegen.extension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
-import org.jetbrains.kotlin.ir.util.kotlinFqName
+import org.jetbrains.kotlin.ir.util.packageFqName
 import org.jetbrains.krpc.codegen.VersionSpecificApi
 
-internal class KRPCIrContext(
+internal class RPCIrContext(
     private val pluginContext: IrPluginContext,
     private val versionSpecificApi: VersionSpecificApi,
 ) {
     val irBuiltIns = pluginContext.irBuiltIns
 
     fun generatedClientCompanionObject(serviceDeclaration: IrClass): IrClassSymbol {
-        val name = serviceDeclaration.kotlinFqName.shortName()
-        return getRpcIrClassSymbol("${name}Client.Companion")
+        val name = serviceDeclaration.name.asString()
+        val packageName = serviceDeclaration.packageFqName?.asString()
+            ?: error("Expected package name for $name")
+        return getIrClassSymbol(packageName, "${name}Stub.Companion")
     }
 
     val optInAnnotation by lazy {
@@ -29,8 +31,8 @@ internal class KRPCIrContext(
         getRpcIrClassSymbol("RPC")
     }
 
-    val withRPCClientObjectAnnotation by lazy {
-        getRpcIrClassSymbol("WithRPCClientObject", "internal")
+    val withRPCStubObjectAnnotation by lazy {
+        getRpcIrClassSymbol("WithRPCStubObject", "internal")
     }
 
     val internalKRPCApiAnnotation by lazy {

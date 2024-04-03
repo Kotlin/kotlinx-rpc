@@ -20,8 +20,8 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
     fun generate(service: RPCServiceDeclaration) {
         val writer = codegen.createNewFile(
             dependencies = Dependencies(aggregating = true, service.file),
-            packageName = "org.jetbrains.krpc",
-            fileName = service.simpleName.withClientImplSuffix(),
+            packageName = service.packageName,
+            fileName = service.simpleName.withStubImplSuffix(),
             extensionName = "kt",
         ).bufferedWriter(charset = Charsets.UTF_8).codeWriter()
 
@@ -38,15 +38,17 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         writer.newLine()
         writer.newLine()
 
-        writer.write("package org.jetbrains.krpc")
-        writer.newLine()
-        writer.newLine()
+        if (service.packageName.isNotBlank()) {
+            writer.write("package ${service.packageName}")
+            writer.newLine()
+            writer.newLine()
+        }
 
         generateImports(writer, service)
 
         writer.write("@Suppress(\"unused\")")
         writer.newLine()
-        writer.write("class ${service.simpleName.withClientImplSuffix()}(private val client: RPCClient) : ${service.fullName} {")
+        writer.write("class ${service.simpleName.withStubImplSuffix()}(private val client: RPCClient) : ${service.fullName} {")
         writer.newLine()
 
 
@@ -79,6 +81,8 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         writer.write("import kotlinx.serialization.Contextual")
         writer.newLine()
         writer.write("import org.jetbrains.krpc.internal.*")
+        writer.newLine()
+        writer.write("import org.jetbrains.krpc.*")
         writer.newLine()
         writer.write("import kotlin.reflect.typeOf")
         writer.newLine()
@@ -215,7 +219,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
 
     private fun generateProviders(writer: CodeWriter, service: RPCServiceDeclaration) {
         writer.newLine()
-        writer.write("companion object : RPCClientObject<${service.fullName}> {")
+        writer.write("companion object : RPCStubObject<${service.fullName}> {")
         writer.newLine()
         with(writer.nested()) {
             val mapFunction = if (service.functions.isEmpty()) "emptyMap()" else "mapOf("
@@ -224,7 +228,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
                 newLine()
                 with(nested()) {
                     service.functions.forEach { function ->
-                        write("${service.fullName}::${function.name}.name to typeOf<${service.simpleName.withClientImplSuffix()}.${function.name.functionGeneratedClass()}>(),")
+                        write("${service.fullName}::${function.name}.name to typeOf<${service.simpleName.withStubImplSuffix()}.${function.name.functionGeneratedClass()}>(),")
                         newLine()
                     }
                 }
@@ -239,7 +243,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             newLine()
             newLine()
 
-            write("override fun withClient(client: RPCClient): ${service.fullName} = ${service.simpleName.withClientImplSuffix()}(client)")
+            write("override fun withClient(client: RPCClient): ${service.fullName} = ${service.simpleName.withStubImplSuffix()}(client)")
             newLine()
             newLine()
 
@@ -269,6 +273,6 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
     }
 }
 
-fun String.withClientImplSuffix() = "${this}Client"
+fun String.withStubImplSuffix() = "${this}Stub"
 
 fun String.functionGeneratedClass() = "${replaceFirstChar { it.uppercaseChar() }}_RPCData"

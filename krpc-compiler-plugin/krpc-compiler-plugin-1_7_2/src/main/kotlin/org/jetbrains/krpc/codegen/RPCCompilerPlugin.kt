@@ -5,30 +5,28 @@
 package org.jetbrains.krpc.codegen
 
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
+import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
-import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
-import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
+import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
 
-@OptIn(ExperimentalCompilerApi::class)
-class KRPCCommandLineProcessor : CommandLineProcessor {
+class RPCCommandLineProcessor : CommandLineProcessor {
     override val pluginId = "org.jetbrains.krpc.krpc-compiler-plugin"
 
     override val pluginOptions = emptyList<CliOption>()
 }
 
-@OptIn(ExperimentalCompilerApi::class)
-class KRPCCompilerPlugin : CompilerPluginRegistrar() {
+class RPCCompilerPlugin : ComponentRegistrar {
     init {
         VersionSpecificApi.upload(VersionSpecificApiImpl)
     }
 
-    override val supportsK2: Boolean = false
+    override val supportsK2: Boolean = true
 
-    override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-        val extension = KRPCCompilerPluginCore.provideExtension(configuration)
+    override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
+        val extension = RPCCompilerPluginCore.provideExtension(configuration)
 
-        IrGenerationExtension.registerExtension(extension)
+        IrGenerationExtension.registerExtension(project, extension)
     }
 }

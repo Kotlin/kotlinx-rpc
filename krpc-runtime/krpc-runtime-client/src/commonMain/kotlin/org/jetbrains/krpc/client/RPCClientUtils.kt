@@ -6,7 +6,7 @@ package org.jetbrains.krpc.client
 
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCClient
-import org.jetbrains.krpc.internal.RPCClientProvider
+import org.jetbrains.krpc.internal.RPCStubServiceProvider
 import org.jetbrains.krpc.internal.findRPCProviderInCompanion
 import org.jetbrains.krpc.internal.kClass
 import kotlin.reflect.KClass
@@ -47,6 +47,6 @@ public fun <T : RPC> RPCClient.withService(serviceKType: KType): T {
  * @return instance of the generated service.
  */
 public fun <T : RPC> RPCClient.withService(serviceKClass: KClass<T>): T {
-    val withRPCClientObject = findRPCProviderInCompanion<RPCClientProvider<T>>(serviceKClass)
-    return withRPCClientObject.withClient(this)
+    val provider = findRPCProviderInCompanion<RPCStubServiceProvider<T>>(serviceKClass)
+    return provider.withClient(this)
 }

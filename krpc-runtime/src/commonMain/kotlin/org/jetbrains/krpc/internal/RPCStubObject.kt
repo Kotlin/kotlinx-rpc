@@ -9,13 +9,13 @@ import org.jetbrains.krpc.RPCClient
 import kotlin.reflect.KType
 
 @InternalKRPCApi
-public interface RPCClientObject<T : RPC> :
-    RPCClientProvider<T>,
+public interface RPCStubObject<T : RPC> :
+    RPCStubServiceProvider<T>,
     RPCServiceMethodSerializationTypeProvider,
     RPCServiceFieldsProvider<T>
 
 @InternalKRPCApi
-public interface RPCClientProvider<T : RPC> {
+public interface RPCStubServiceProvider<T : RPC> {
     public fun withClient(client: RPCClient) : T
 }
 

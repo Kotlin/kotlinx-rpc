@@ -15,11 +15,11 @@ import org.jetbrains.kotlin.ir.util.constructors
 import org.jetbrains.kotlin.ir.util.isInterface
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
 
-internal class KRPCIrServiceProcessor(
+internal class RPCIrServiceProcessor(
     @Suppress("unused")
     private val logger: MessageCollector,
-) : IrElementTransformer<KRPCIrContext> {
-    override fun visitClass(declaration: IrClass, data: KRPCIrContext): IrStatement {
+) : IrElementTransformer<RPCIrContext> {
+    override fun visitClass(declaration: IrClass, data: RPCIrContext): IrStatement {
         if (declaration.isInterface &&
             // data.rpc is resolved lazily, so first check is rather heuristic
             declaration.maybeRPC() &&
@@ -33,7 +33,7 @@ internal class KRPCIrServiceProcessor(
 
     private fun IrClass.maybeRPC() = superTypes.any { it.classFqName?.asString()?.contains("RPC") == true }
 
-    private fun addAssociatedObjectAnnotation(declaration: IrClass, data: KRPCIrContext) {
+    private fun addAssociatedObjectAnnotation(declaration: IrClass, data: RPCIrContext) {
         declaration.annotations += IrConstructorCallImpl(
             startOffset = declaration.startOffset,
             endOffset = declaration.endOffset,
@@ -60,8 +60,8 @@ internal class KRPCIrServiceProcessor(
         declaration.annotations += IrConstructorCallImpl(
             startOffset = declaration.startOffset,
             endOffset = declaration.endOffset,
-            type = data.withRPCClientObjectAnnotation.typeWith(),
-            symbol = data.withRPCClientObjectAnnotation.constructors.single(),
+            type = data.withRPCStubObjectAnnotation.typeWith(),
+            symbol = data.withRPCStubObjectAnnotation.constructors.single(),
             typeArgumentsCount = 0,
             constructorTypeArgumentsCount = 0,
             valueArgumentsCount = 1,
