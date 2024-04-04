@@ -8,18 +8,18 @@ import org.jetbrains.krpc.internal.InternalKRPCApi
 
 @InternalKRPCApi
 actual fun <K : Any, V : Any> ConcurrentHashMap(initialSize: Int): ConcurrentHashMap<K, V> {
-    return ConcurrentHasMapJvm(initialSize)
+    return ConcurrentHashMapJvm(initialSize)
 }
 
-private class ConcurrentHasMapJvm<K : Any, V: Any>(initialSize: Int) : ConcurrentHashMap<K, V> {
+private class ConcurrentHashMapJvm<K : Any, V: Any>(initialSize: Int) : ConcurrentHashMap<K, V> {
     private val map = java.util.concurrent.ConcurrentHashMap<K, V>(initialSize)
 
     override fun put(key: K, value: V): V? {
         return map.put(key, value)
     }
 
-    override fun putIfAbsent(key: K, value: V): V? {
-        return map.putIfAbsent(key, value)
+    override fun computeIfAbsent(key: K, computeValue: () -> V): V {
+        return map.computeIfAbsent(key) { computeValue() }
     }
 
     override operator fun get(key: K): V? {
@@ -33,6 +33,16 @@ private class ConcurrentHasMapJvm<K : Any, V: Any>(initialSize: Int) : Concurren
     override fun clear() {
         map.clear()
     }
+
+    override fun containsKey(key: K): Boolean {
+        return map.containsKey(key)
+    }
+
+    override val entries: Set<ConcurrentHashMap.Entry<K, V>>
+        get() = map.entries.map { ConcurrentHashMap.Entry(it.key, it.value) }.toSet()
+
+    override val keys: Collection<K>
+        get() = map.keys
 
     override val values: Collection<V>
         get() = map.values

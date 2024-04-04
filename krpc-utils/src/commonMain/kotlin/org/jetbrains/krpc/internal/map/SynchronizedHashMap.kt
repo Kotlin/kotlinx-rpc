@@ -14,8 +14,8 @@ internal class SynchronizedHashMap<K : Any, V: Any> : ConcurrentHashMap<K, V>, S
         map.put(key, value)
     }
 
-    override fun putIfAbsent(key: K, value: V): V? = synchronized(this) {
-        map[key] ?: map.put(key, value)
+    override fun computeIfAbsent(key: K, computeValue: () -> V): V = synchronized(this) {
+        map[key] ?: computeValue().also { map[key] = it }
     }
 
     override operator fun get(key: K): V? = synchronized(this) {
@@ -29,6 +29,16 @@ internal class SynchronizedHashMap<K : Any, V: Any> : ConcurrentHashMap<K, V>, S
     override fun clear() = synchronized(this) {
         map.clear()
     }
+
+    override fun containsKey(key: K): Boolean = synchronized(this) {
+        map.containsKey(key)
+    }
+
+    override val entries: Set<ConcurrentHashMap.Entry<K, V>>
+        get() = synchronized(this) { map.entries }.map { ConcurrentHashMap.Entry(it.key, it.value) }.toSet()
+
+    override val keys: Collection<K>
+        get() = synchronized(this) { map.keys }
 
     override val values: Collection<V>
         get() = synchronized(this) { map.values }
