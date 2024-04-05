@@ -222,11 +222,3 @@ private abstract class RPCIncomingHotFlow(
         }
     }
 }
-
-private fun <K : Any, V> ConcurrentHashMap<K, CompletableDeferred<V>>.getDeferred(key: K): CompletableDeferred<V> {
-    return putIfAbsentAndGet(key, CompletableDeferred())
-}
-
-private operator fun <K : Any, V> ConcurrentHashMap<K, CompletableDeferred<V>>.set(key: K, value: V) {
-    getDeferred(key).complete(value)
-}

@@ -16,6 +16,7 @@ kotlin {
                 api(project(":krpc-runtime:krpc-runtime-api"))
 
                 implementation(libs.serialization.core)
+                implementation(libs.coroutines.core)
             }
         }
     }
