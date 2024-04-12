@@ -9,8 +9,8 @@ import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.util.*
 import kotlinx.coroutines.job
-import org.jetbrains.krpc.rpcServerConfig
 import org.jetbrains.krpc.RPCServer
+import org.jetbrains.krpc.rpcServerConfig
 
 /**
  * Adds an RPC route to the specified [Route]. Provides builder to configure [RPCServer] that will be used internally.
@@ -50,7 +50,7 @@ private fun Route.createRPCServer(rpcRouteBuilder: RPCRoute.() -> Unit) {
         val server = KtorRPCServer(this, rpcConfig)
 
         rpcRoute.registrations.forEach { registration ->
-            server.registration()
+            registration(server)
         }
 
         server.coroutineContext.job.join()

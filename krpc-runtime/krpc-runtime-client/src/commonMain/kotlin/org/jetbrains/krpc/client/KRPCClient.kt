@@ -21,7 +21,6 @@ import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.transport.*
 import kotlin.coroutines.CoroutineContext
-import kotlin.properties.Delegates
 import kotlin.reflect.typeOf
 
 /**
@@ -41,19 +40,22 @@ import kotlin.reflect.typeOf
  * @param transport [RPCTransport] instance that will be used to send and receive RPC messages.
  * IMPORTANT: Must be exclusive to this client, otherwise unexpected behavior may occur.
  */
+@OptIn(InternalCoroutinesApi::class)
 public abstract class KRPCClient(
     final override val config: RPCConfig.Client,
     transport: RPCTransport,
-) : RPCEndpointBase(), RPCClient {
-    final override val coroutineContext: CoroutineContext = transport.coroutineContext
+) : RPCServiceHandler(), RPCClient, RPCEndpoint {
+    // we make a child here, so we can send cancellation messages before closing the connection
+    final override val coroutineContext: CoroutineContext = SupervisorJob(transport.coroutineContext.job)
 
     private val connector by lazy {
         RPCClientConnector(config.serialFormatInitializer.build(), transport, config.waitForServices)
     }
 
-    private var connectionId: Long by Delegates.notNull()
+    private var connectionId: Long? = null
 
-    override val sender: RPCMessageSender
+    @InternalKRPCApi
+    final override val sender: RPCMessageSender
         get() = connector
 
     private val callCounter = atomic(0L)
@@ -61,6 +63,39 @@ public abstract class KRPCClient(
     override val logger: CommonLogger = CommonLogger.initialized().logger(objectId())
 
     private val serverSupportedPlugins: CompletableDeferred<Set<RPCPlugin>> = CompletableDeferred()
+
+    @InternalKRPCApi
+    final override val supportedPlugins: Set<RPCPlugin>
+        get() = serverSupportedPlugins.getOrNull() ?: emptySet()
+
+    private var clientCancelled = false
+
+    init {
+        coroutineContext.job.invokeOnCompletion(onCancelling = true) {
+            clientCancelled = true
+
+            sendCancellation(CancellationType.ENDPOINT, null, null, closeTransportAfterSending = true)
+        }
+
+        launch {
+            connector.subscribeToGenericMessages(::handleGenericMessage)
+        }
+    }
+
+    @OptIn(InternalCoroutinesApi::class)
+    @InternalKRPCApi
+    final override fun provideStubContext(serviceId: Long): CoroutineContext {
+        val childContext = SupervisorJob(coroutineContext.job)
+
+        childContext.job.invokeOnCompletion(onCancelling = true) {
+            if (!clientCancelled) {
+                // cancellation only by serviceId
+                sendCancellation(CancellationType.SERVICE, serviceId.toString(), null)
+            }
+        }
+
+        return childContext
+    }
 
     private val initHandshake: Job = launch {
         connector.sendMessage(RPCProtocolMessage.Handshake(RPCPlugin.ALL))
@@ -77,16 +112,10 @@ public abstract class KRPCClient(
         serverSupportedPlugins.await()
     }
 
-    private suspend fun handleProtocolMessage(message: RPCProtocolMessage) {
+    private fun handleProtocolMessage(message: RPCProtocolMessage) {
         when (message) {
             is RPCProtocolMessage.Handshake -> {
-                connectionId = message.connectionId ?: run {
-                    val failure = "Server sent null connectionId"
-
-                    connector.sendMessage(RPCProtocolMessage.Failure(failure, failedMessage = message))
-                    serverSupportedPlugins.completeExceptionally(IllegalStateException(failure))
-                    return
-                }
+                connectionId = message.connectionId
 
                 serverSupportedPlugins.complete(message.supportedPlugins)
             }
@@ -143,22 +172,38 @@ public abstract class KRPCClient(
     }
 
     private suspend fun <T> call(call: RPCCall, callResult: CompletableDeferred<T>) {
-        val (callContext, serialFormat) = prepareAndExecuteCall(call, callResult)
+        val wrappedCallResult = RequestCompletableDeferred(callResult)
+        val (streamContext, serialFormat, callId) = prepareAndExecuteCall(call, wrappedCallResult)
 
         launch {
-            handleOutgoingStreams(this, callContext, serialFormat, call.serviceTypeString)
+            handleOutgoingStreams(streamContext, serialFormat, call.serviceTypeString)
         }
 
         launch {
-            handleIncomingHotFlows(this, callContext)
+            handleIncomingHotFlows(streamContext)
+        }
+
+        callResult.invokeOnCompletion(onCancelling = true) { cause ->
+            // todo remove leak when streams are present
+            if (cause != null || streamContext.valueOrNull == null) {
+                connector.unsubscribeFromMessages(call.serviceTypeString, callId)
+            }
+
+            if (cause != null) {
+                if (!wrappedCallResult.callExceptionOccurred) {
+                    sendCancellation(CancellationType.REQUEST, call.serviceId.toString(), callId)
+                }
+
+                streamContext.valueOrNull?.close()
+            }
         }
     }
 
     private suspend fun prepareAndExecuteCall(
         callInfo: RPCCall,
-        callResult: CompletableDeferred<*>,
-    ): Pair<LazyRPCStreamContext, SerialFormat> {
-        // we should init and await for handshake to finish
+        callResult: RequestCompletableDeferred<*>,
+    ): CallResult {
+        // we should wait for the handshake to finish
         awaitHandshakeCompletion()
 
         val id = callCounter.incrementAndGet()
@@ -179,11 +224,17 @@ public abstract class KRPCClient(
             call = callInfo,
             firstMessage = firstMessage,
             serialFormat = serialFormat,
-            callResult = callResult as CompletableDeferred<Any?>
+            callResult = callResult as RequestCompletableDeferred<Any?>
         )
 
-        return streamContext to serialFormat
+        return CallResult(streamContext, serialFormat, callId)
     }
+
+    private data class CallResult(
+        val streamContext: LazyRPCStreamContext,
+        val serialFormat: SerialFormat,
+        val callId: String,
+    )
 
     private suspend fun executeCall(
         callId: String,
@@ -191,14 +242,10 @@ public abstract class KRPCClient(
         call: RPCCall,
         firstMessage: RPCCallMessage,
         serialFormat: SerialFormat,
-        callResult: CompletableDeferred<Any?>,
+        callResult: RequestCompletableDeferred<Any?>,
     ) {
         connector.subscribeToCallResponse(call.serviceTypeString, callId) { message ->
             handleMessage(message, streamContext, call, serialFormat, callResult)
-        }
-
-        coroutineContext.job.invokeOnCompletion {
-            streamContext.valueOrNull?.close()
         }
 
         connector.sendMessage(firstMessage)
@@ -209,7 +256,7 @@ public abstract class KRPCClient(
         streamContext: LazyRPCStreamContext,
         callInfo: RPCCall,
         serialFormat: SerialFormat,
-        callResult: CompletableDeferred<Any?>,
+        callResult: RequestCompletableDeferred<Any?>,
     ) {
         when (message) {
             is RPCCallMessage.CallData -> {
@@ -227,6 +274,7 @@ public abstract class KRPCClient(
                     cause.getOrNull()!!
                 }
 
+                callResult.callExceptionOccurred = true
                 callResult.completeExceptionally(result)
             }
 
@@ -250,6 +298,22 @@ public abstract class KRPCClient(
 
             is RPCCallMessage.StreamMessage -> {
                 streamContext.awaitInitialized().send(message, serialFormat)
+            }
+        }
+    }
+
+    @InternalKRPCApi
+    final override fun handleCancellation(message: RPCGenericMessage) {
+        when (val type = message.cancellationType()) {
+            CancellationType.ENDPOINT -> {
+                cancel("Closing client after server cancellation") // we cancel this client
+            }
+
+            else -> {
+                error(
+                    "Unsupported ${RPCPluginKey.CANCELLATION_TYPE} $type for client, " +
+                            "only 'endpoint' type may be sent by a server"
+                )
             }
         }
     }
@@ -288,4 +352,8 @@ public abstract class KRPCClient(
             }
         }
     }
+}
+
+private class RequestCompletableDeferred<T>(delegate: CompletableDeferred<T>) : CompletableDeferred<T> by delegate {
+    var callExceptionOccurred: Boolean = false
 }

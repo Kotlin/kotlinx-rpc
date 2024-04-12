@@ -4,10 +4,11 @@
 
 package org.jetbrains.krpc.transport.ktor.server
 
-import io.ktor.server.websocket.DefaultWebSocketServerSession
+import io.ktor.server.websocket.*
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCConfigBuilder
 import org.jetbrains.krpc.RPCServer
+import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 
 /**
@@ -29,7 +30,7 @@ public class RPCRoute(
         this.configBuilder = configBuilder
     }
 
-    internal val registrations = mutableListOf<RPCServer.() -> Unit>()
+    internal val registrations = mutableListOf<(RPCServer) -> Unit>()
 
     /**
      * Registers new service to the server. Server will route all designated messages to it.
@@ -38,12 +39,15 @@ public class RPCRoute(
      * @param Service the exact type of the server to be registered.
      * For example for service with `MyService` interface and `MyServiceImpl` implementation,
      * type `MyService` should be specified explicitly.
-     * @param service the actual implementation of the service that will handle the calls.
      * @param serviceKClass [KClass] of the [Service].
+     * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
      */
-    public fun <Service : RPC> registerService(service: Service, serviceKClass: KClass<Service>) {
-        registrations.add {
-            registerService(service, serviceKClass)
+    public fun <Service : RPC> registerService(
+        serviceKClass: KClass<Service>,
+        serviceFactory: (CoroutineContext) -> Service,
+    ) {
+        registrations.add { server ->
+            server.registerService(serviceKClass, serviceFactory)
         }
     }
 
@@ -54,9 +58,11 @@ public class RPCRoute(
      * @param Service the exact type of the server to be registered.
      * For example for service with `MyService` interface and `MyServiceImpl` implementation,
      * type `MyService` should be specified explicitly.
-     * @param service the actual implementation of the service that will handle the calls.
+     * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
      */
-    public inline fun <reified Service : RPC> registerService(service: Service) {
-        registerService(service, Service::class)
+    public inline fun <reified Service : RPC> registerService(
+        noinline serviceFactory: (CoroutineContext) -> Service,
+    ) {
+        registerService(Service::class, serviceFactory)
     }
 }

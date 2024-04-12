@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlin.coroutines.CoroutineContext
 
 /**
  * RPCClient represents an abstraction of a RPC client, that can handle requests from several RPC services,
@@ -57,4 +58,13 @@ public interface RPCClient : CoroutineScope {
      * @return StateFlow instance to be consumed.
      */
     public fun <T> registerStateFlowField(field: RPCField): StateFlow<T>
+
+    /**
+     * Provides child [CoroutineContext] for a new [RPC] service stub.
+     *
+     * This function should not be called directly.
+     *
+     * @param serviceId id of the new service. Used for service cancellation messages.
+     */
+    public fun provideStubContext(serviceId: Long): CoroutineContext
 }

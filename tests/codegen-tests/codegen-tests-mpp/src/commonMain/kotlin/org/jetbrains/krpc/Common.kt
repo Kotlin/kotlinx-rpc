@@ -5,7 +5,9 @@
 package org.jetbrains.krpc
 
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.job
 import org.jetbrains.krpc.client.withService
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.initialized
@@ -50,6 +52,10 @@ val stubEngine = object : RPCClient {
 
         @Suppress("UNCHECKED_CAST")
         return MutableStateFlow<Any?>(null) as StateFlow<T>
+    }
+
+    override fun provideStubContext(serviceId: Long): CoroutineContext {
+        return SupervisorJob(coroutineContext.job)
     }
 }
 

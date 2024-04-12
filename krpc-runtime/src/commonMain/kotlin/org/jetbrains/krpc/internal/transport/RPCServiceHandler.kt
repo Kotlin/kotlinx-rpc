@@ -22,13 +22,15 @@ import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
 
 @InternalKRPCApi
-public abstract class RPCEndpointBase {
+public abstract class RPCServiceHandler : CoroutineScope {
     protected abstract val sender: RPCMessageSender
     protected abstract val config: RPCConfig
     protected abstract val logger: CommonLogger
+    private val scope: CoroutineScope get() = this
 
-    protected suspend fun handleIncomingHotFlows(scope: CoroutineScope, streamContext: LazyRPCStreamContext) {
-        for (hotFlow in streamContext.awaitInitialized().incomingHotFlows) {
+    protected suspend fun handleIncomingHotFlows(streamContext: LazyRPCStreamContext) {
+        val context = streamContext.awaitInitialized()
+        for (hotFlow in context.incomingHotFlows) {
             scope.launch {
                 /** Start consuming incoming requests, see [RPCIncomingHotFlow.emit] */
                 hotFlow.emit(null)
@@ -37,7 +39,6 @@ public abstract class RPCEndpointBase {
     }
 
     protected suspend fun handleOutgoingStreams(
-        scope: CoroutineScope,
         streamContext: LazyRPCStreamContext,
         serialFormat: SerialFormat,
         serviceTypeString: String,
@@ -72,6 +73,7 @@ public abstract class RPCEndpointBase {
                         )
                         sender.sendMessage(message)
                     }
+
                     throw cause
                 }
 
@@ -137,21 +139,21 @@ public abstract class RPCEndpointBase {
         }
     }
 
-    protected fun prepareSerialFormat(rpcFlowContext: LazyRPCStreamContext): SerialFormat {
+    protected fun prepareSerialFormat(rpcStreamContext: LazyRPCStreamContext): SerialFormat {
         val module = SerializersModule {
             contextual(Flow::class) {
                 @Suppress("UNCHECKED_CAST")
-                StreamSerializer.Flow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
+                StreamSerializer.Flow(rpcStreamContext.initialize(), it.first() as KSerializer<Any?>)
             }
 
             contextual(SharedFlow::class) {
                 @Suppress("UNCHECKED_CAST")
-                StreamSerializer.SharedFlow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
+                StreamSerializer.SharedFlow(rpcStreamContext.initialize(), it.first() as KSerializer<Any?>)
             }
 
             contextual(StateFlow::class) {
                 @Suppress("UNCHECKED_CAST")
-                StreamSerializer.StateFlow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
+                StreamSerializer.StateFlow(rpcStreamContext.initialize(), it.first() as KSerializer<Any?>)
             }
         }
 

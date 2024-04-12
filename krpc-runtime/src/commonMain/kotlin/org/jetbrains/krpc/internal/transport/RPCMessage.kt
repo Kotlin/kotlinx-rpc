@@ -38,7 +38,12 @@ public sealed interface RPCMessage {
 public data class RPCGenericMessage(
     override val connectionId: Long?,
     override val pluginParams: Map<RPCPluginKey, String>?
-) : RPCMessage
+) : RPCMessage {
+    @InternalKRPCApi
+    public companion object {
+        public const val CANCELLATION_TYPE: String = "cancellation"
+    }
+}
 
 @InternalKRPCApi
 @Serializable

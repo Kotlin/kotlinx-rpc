@@ -59,7 +59,11 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
 
         val nested = writer.nested()
 
-        nested.write("override val coroutineContext: CoroutineContext = client.coroutineContext + Job()")
+        nested.write("override val coroutineContext: CoroutineContext = client.provideStubContext(id)")
+        nested.newLine()
+        nested.newLine()
+
+        nested.write("private val scope: CoroutineScope = this")
         nested.newLine()
         nested.newLine()
 
@@ -77,9 +81,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
     }
 
     private fun generateImports(writer: CodeWriter, service: RPCServiceDeclaration) {
-        writer.write("import kotlinx.coroutines.Job")
-        writer.newLine()
-        writer.write("import kotlinx.coroutines.withContext")
+        writer.write("import kotlinx.coroutines.*")
         writer.newLine()
         writer.write("import kotlinx.serialization.Serializable")
         writer.newLine()
@@ -103,7 +105,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         generateFunctionClass(writer)
 
         val returnTypeGenerated = if (returnType.isUnit()) ": Unit" else ": ${returnType.toCode()}"
-        writer.write("override suspend fun ${name}(${argumentTypes.joinToString { it.toCode() }})$returnTypeGenerated = withContext(coroutineContext) {")
+        writer.write("override suspend fun ${name}(${argumentTypes.joinToString { it.toCode() }})$returnTypeGenerated = scopedClientCall(scope) {")
         writer.newLine()
         generateBody(serviceType, writer.nested())
         writer.write("}")
