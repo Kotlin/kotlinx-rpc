@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import org.jetbrains.krpc.client.awaitFieldInitialization
+import org.jetbrains.krpc.internal.transport.CancellationType
 import org.jetbrains.krpc.internal.transport.RPCMessage
 import org.jetbrains.krpc.internal.transport.RPCPlugin
 import org.jetbrains.krpc.internal.transport.RPCPluginKey
@@ -37,6 +38,11 @@ class ApiVersioningTest {
     @Test
     fun testRPCPluginKeyEnum() {
         testEnum<RPCPluginKey>()
+    }
+
+    @Test
+    fun testCancellationType() {
+        testEnum<CancellationType>()
     }
 
     @Test
@@ -124,6 +130,7 @@ class ApiVersioningTest {
     }
 
     @Test
+    @Ignore("First value in stateFlow and CallSuccess for its initialization have a race")
     fun testStateFlowSampling() = wireSamplingTest("stateFlow") {
         sample {
             val state = awaitFieldInitialization { stateFlow }

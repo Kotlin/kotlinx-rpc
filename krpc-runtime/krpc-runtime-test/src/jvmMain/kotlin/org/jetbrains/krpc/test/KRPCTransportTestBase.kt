@@ -56,23 +56,20 @@ abstract class KRPCTransportTestBase {
     abstract val clientTransport: RPCTransport
     abstract val serverTransport: RPCTransport
 
-    private lateinit var service: KRPCTestService
     private lateinit var backend: KRPCServer
     private lateinit var client: KRPCTestService
 
     @BeforeTest
     fun start() {
-        service = KRPCTestServiceBackend()
-
         backend = KRPCTestServer(serverConfig, serverTransport)
-        backend.registerService<KRPCTestService>(service)
+        backend.registerService<KRPCTestService> { KRPCTestServiceBackend(it) }
 
         client = KRPCTestClient(clientConfig, clientTransport).withService()
     }
 
     @AfterTest
     fun end() {
-        service.coroutineContext.cancel()
+        backend.cancel()
     }
 
     @Rule

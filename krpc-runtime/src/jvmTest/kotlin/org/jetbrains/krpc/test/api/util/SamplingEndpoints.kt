@@ -6,7 +6,6 @@ package org.jetbrains.krpc.test.api.util
 
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.client.KRPCClient
-import org.jetbrains.krpc.internal.SequentialIdCounter
 import org.jetbrains.krpc.server.KRPCServer
 import org.jetbrains.krpc.test.LocalTransport
 
@@ -18,17 +17,4 @@ class SamplingClient(
 class SamplingServer(
     config: RPCConfig.Server,
     localTransport: LocalTransport,
-) : KRPCServer(config, localTransport.server) {
-    init {
-        val idCounterField = KRPCServer::class.java.declaredFields
-            .single { it.name == "idCounter" }
-            .apply { isAccessible = true }
-
-        // reproducible ids
-        idCounterField.set(this, object : SequentialIdCounter {
-            override fun nextId(): Long {
-                return 1
-            }
-        })
-    }
-}
+) : KRPCServer(config, localTransport.server)

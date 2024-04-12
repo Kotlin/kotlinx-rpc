@@ -4,7 +4,9 @@
 
 package org.jetbrains.krpc.test
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.job
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.serialization.BinaryFormat
@@ -16,13 +18,9 @@ import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.DumpLogger
 import org.jetbrains.krpc.internal.logging.DumpLoggerContainer
 import org.jetbrains.krpc.internal.logging.initialized
-import org.jetbrains.krpc.internal.transport.RPCPlugin
 import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.server.KRPCServer
 import kotlin.coroutines.CoroutineContext
-import kotlin.reflect.KProperty1
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.jvm.isAccessible
 
 abstract class ProtocolTestBase {
     @Suppress("RedundantUnitReturnType")
@@ -79,9 +77,9 @@ abstract class ProtocolTestBase {
 
         val defaultServer by lazy {
             ProtocolTestServer(serverConfig, transport).apply {
-                registerService<ProtocolTestService>(
+                registerService<ProtocolTestService> {
                     ProtocolTestServiceImpl(transport.coroutineContext)
-                )
+                }
             }
         }
 
@@ -104,53 +102,9 @@ private class ProtocolTestServiceImpl(
 class ProtocolTestServer(
     config: RPCConfig.Server,
     transport: LocalTransport,
-) : KRPCServer(config, transport.server) {
-    val clientPlugins: Map<Long, Set<RPCPlugin>>
-
-    init {
-        val prop = KRPCServer::class
-            .memberProperties
-            .single { it.name == "clientSupportedPlugins" }
-            .apply {
-                isAccessible = true
-            }
-
-        @Suppress("UNCHECKED_CAST")
-        clientPlugins = prop.call(this) as Map<Long, Set<RPCPlugin>>
-    }
-}
+) : KRPCServer(config, transport.server)
 
 class ProtocolTestClient(
     config: RPCConfig.Client,
     transport: LocalTransport,
-) : KRPCClient(config, transport.client) {
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val serverPlugins: Set<RPCPlugin>
-        get() = if (serverSupportedPluginsDeferred.isCompleted) {
-            serverSupportedPluginsDeferred.getCompleted()
-        } else {
-            emptySet()
-        }
-
-    private val serverSupportedPluginsDeferred: CompletableDeferred<Set<RPCPlugin>>
-
-    private lateinit var idProperty: KProperty1<KRPCClient, *>
-
-    val id: Long by lazy {
-        idProperty.call(this) as Long
-    }
-
-    init {
-        val (idProp, deferredProp) = KRPCClient::class
-            .memberProperties
-            .filter { it.name == "serverSupportedPlugins" || it.name == "connectionId" }
-            .sortedBy { it.name }
-            .onEach {
-                it.isAccessible = true
-            }
-        idProperty = idProp
-
-        @Suppress("UNCHECKED_CAST")
-        serverSupportedPluginsDeferred = deferredProp.call(this) as CompletableDeferred<Set<RPCPlugin>>
-    }
-}
+) : KRPCClient(config, transport.client)

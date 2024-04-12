@@ -12,7 +12,6 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.krpc.RPC
@@ -29,9 +28,7 @@ interface NewService : RPC {
     suspend fun echo(value: String): String
 }
 
-class NewServiceImpl : NewService {
-    override val coroutineContext: CoroutineContext = Job()
-
+class NewServiceImpl(override val coroutineContext: CoroutineContext) : NewService {
     override suspend fun echo(value: String): String {
         return value
     }
@@ -59,7 +56,7 @@ class KtorTransportTest {
                         waitForServices = true
                     }
 
-                    registerService<NewService>(NewServiceImpl())
+                    registerService<NewService> { NewServiceImpl(it) }
                 }
             }
         }.start()

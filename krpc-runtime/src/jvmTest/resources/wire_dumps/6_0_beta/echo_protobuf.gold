@@ -1,11 +1,11 @@
-// decoded: ?Borg.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake?????????????
-[Client] [Send] $ 0a426f72672e6a6574627261696e732e6b7270632e696e7465726e616c2e7472616e73706f72742e52504350726f746f636f6c4d6573736167652e48616e647368616b65120b088180feffffffffffff01
-// decoded: ?Borg.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake?????????????
-[Server] [Receive] $ 0a426f72672e6a6574627261696e732e6b7270632e696e7465726e616c2e7472616e73706f72742e52504350726f746f636f6c4d6573736167652e48616e647368616b65120b088180feffffffffffff01
-// decoded: ?Borg.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake???????????????
-[Server] [Send] $ 0a426f72672e6a6574627261696e732e6b7270632e696e7465726e616c2e7472616e73706f72742e52504350726f746f636f6c4d6573736167652e48616e647368616b65120d088180feffffffffffff011001
-// decoded: ?Borg.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake???????????????
-[Client] [Receive] $ 0a426f72672e6a6574627261696e732e6b7270632e696e7465726e616c2e7472616e73706f72742e52504350726f746f636f6c4d6573736167652e48616e647368616b65120d088180feffffffffffff011001
+// decoded: ?Borg.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake????????????????????????
+[Client] [Send] $ 0a426f72672e6a6574627261696e732e6b7270632e696e7465726e616c2e7472616e73706f72742e52504350726f746f636f6c4d6573736167652e48616e647368616b651216088180feffffffffffff01088280feffffffffffff01
+// decoded: ?Borg.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake????????????????????????
+[Server] [Receive] $ 0a426f72672e6a6574627261696e732e6b7270632e696e7465726e616c2e7472616e73706f72742e52504350726f746f636f6c4d6573736167652e48616e647368616b651216088180feffffffffffff01088280feffffffffffff01
+// decoded: ?Borg.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake??????????????????????????
+[Server] [Send] $ 0a426f72672e6a6574627261696e732e6b7270632e696e7465726e616c2e7472616e73706f72742e52504350726f746f636f6c4d6573736167652e48616e647368616b651218088180feffffffffffff01088280feffffffffffff011001
+// decoded: ?Borg.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake??????????????????????????
+[Client] [Receive] $ 0a426f72672e6a6574627261696e732e6b7270632e696e7465726e616c2e7472616e73706f72742e52504350726f746f636f6c4d6573736167652e48616e647368616b651218088180feffffffffffff01088280feffffffffffff011001
 // decoded: ??org.jetbrains.krpc.internal.transport.RPCMessage.CallDataBinary????91:org.jetbrains.krpc.SamplingServiceClient.Echo_RPCData:1?0org.jetbrains.krpc.test.api.util.SamplingService??echo ?*???Hello????data0?8?
 [Client] [Send] $ 0a3f6f72672e6a6574627261696e732e6b7270632e696e7465726e616c2e7472616e73706f72742e5250434d6573736167652e43616c6c4461746142696e617279128a010a39313a6f72672e6a6574627261696e732e6b7270632e53616d706c696e6753657276696365436c69656e742e4563686f5f525043446174613a3112306f72672e6a6574627261696e732e6b7270632e746573742e6170692e7574696c2e53616d706c696e67536572766963651a046563686f20002a0f0a0548656c6c6f12060a046461746130013801
 // decoded: ??org.jetbrains.krpc.internal.transport.RPCMessage.CallDataBinary????91:org.jetbrains.krpc.SamplingServiceClient.Echo_RPCData:1?0org.jetbrains.krpc.test.api.util.SamplingService??echo ?*???Hello????data0?8?

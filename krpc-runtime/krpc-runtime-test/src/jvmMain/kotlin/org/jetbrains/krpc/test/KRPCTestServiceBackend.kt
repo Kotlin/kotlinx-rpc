@@ -11,12 +11,10 @@ import kotlin.coroutines.resumeWithException
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class KRPCTestServiceBackend : KRPCTestService {
+class KRPCTestServiceBackend(override val coroutineContext: CoroutineContext) : KRPCTestService {
     companion object {
         const val SHARED_FLOW_REPLAY = 5
     }
-
-    override val coroutineContext: CoroutineContext = Job()
 
     override suspend fun empty() {
         println("empty")
