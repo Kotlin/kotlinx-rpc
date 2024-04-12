@@ -2,20 +2,22 @@ public abstract interface class org/jetbrains/krpc/RPC : kotlinx/coroutines/Coro
 }
 
 public final class org/jetbrains/krpc/RPCCall {
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lorg/jetbrains/krpc/RPCCall$Type;Ljava/lang/Object;Lkotlin/reflect/KType;Lkotlin/reflect/KType;)V
+	public fun <init> (Ljava/lang/String;JLjava/lang/String;Lorg/jetbrains/krpc/RPCCall$Type;Ljava/lang/Object;Lkotlin/reflect/KType;Lkotlin/reflect/KType;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Lorg/jetbrains/krpc/RPCCall$Type;
-	public final fun component4 ()Ljava/lang/Object;
-	public final fun component5 ()Lkotlin/reflect/KType;
+	public final fun component2 ()J
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Lorg/jetbrains/krpc/RPCCall$Type;
+	public final fun component5 ()Ljava/lang/Object;
 	public final fun component6 ()Lkotlin/reflect/KType;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lorg/jetbrains/krpc/RPCCall$Type;Ljava/lang/Object;Lkotlin/reflect/KType;Lkotlin/reflect/KType;)Lorg/jetbrains/krpc/RPCCall;
-	public static synthetic fun copy$default (Lorg/jetbrains/krpc/RPCCall;Ljava/lang/String;Ljava/lang/String;Lorg/jetbrains/krpc/RPCCall$Type;Ljava/lang/Object;Lkotlin/reflect/KType;Lkotlin/reflect/KType;ILjava/lang/Object;)Lorg/jetbrains/krpc/RPCCall;
+	public final fun component7 ()Lkotlin/reflect/KType;
+	public final fun copy (Ljava/lang/String;JLjava/lang/String;Lorg/jetbrains/krpc/RPCCall$Type;Ljava/lang/Object;Lkotlin/reflect/KType;Lkotlin/reflect/KType;)Lorg/jetbrains/krpc/RPCCall;
+	public static synthetic fun copy$default (Lorg/jetbrains/krpc/RPCCall;Ljava/lang/String;JLjava/lang/String;Lorg/jetbrains/krpc/RPCCall$Type;Ljava/lang/Object;Lkotlin/reflect/KType;Lkotlin/reflect/KType;ILjava/lang/Object;)Lorg/jetbrains/krpc/RPCCall;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getCallableName ()Ljava/lang/String;
 	public final fun getData ()Ljava/lang/Object;
 	public final fun getDataType ()Lkotlin/reflect/KType;
 	public final fun getReturnType ()Lkotlin/reflect/KType;
+	public final fun getServiceId ()J
 	public final fun getServiceTypeString ()Ljava/lang/String;
 	public final fun getType ()Lorg/jetbrains/krpc/RPCCall$Type;
 	public fun hashCode ()I
@@ -97,14 +99,16 @@ public abstract interface annotation class org/jetbrains/krpc/RPCEagerField : ja
 }
 
 public final class org/jetbrains/krpc/RPCField {
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/reflect/KType;)V
+	public fun <init> (Ljava/lang/String;JLjava/lang/String;Lkotlin/reflect/KType;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Lkotlin/reflect/KType;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lkotlin/reflect/KType;)Lorg/jetbrains/krpc/RPCField;
-	public static synthetic fun copy$default (Lorg/jetbrains/krpc/RPCField;Ljava/lang/String;Ljava/lang/String;Lkotlin/reflect/KType;ILjava/lang/Object;)Lorg/jetbrains/krpc/RPCField;
+	public final fun component2 ()J
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Lkotlin/reflect/KType;
+	public final fun copy (Ljava/lang/String;JLjava/lang/String;Lkotlin/reflect/KType;)Lorg/jetbrains/krpc/RPCField;
+	public static synthetic fun copy$default (Lorg/jetbrains/krpc/RPCField;Ljava/lang/String;JLjava/lang/String;Lkotlin/reflect/KType;ILjava/lang/Object;)Lorg/jetbrains/krpc/RPCField;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getName ()Ljava/lang/String;
+	public final fun getServiceId ()J
 	public final fun getServiceTypeString ()Ljava/lang/String;
 	public final fun getType ()Lkotlin/reflect/KType;
 	public fun hashCode ()I
@@ -313,8 +317,26 @@ public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$StreamMe
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class org/jetbrains/krpc/internal/transport/RPCGenericMessage$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCGenericMessage$$serializer;
+	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lorg/jetbrains/krpc/internal/transport/RPCGenericMessage;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCGenericMessage;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class org/jetbrains/krpc/internal/transport/RPCGenericMessage$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class org/jetbrains/krpc/internal/transport/RPCMessage$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class org/jetbrains/krpc/internal/transport/RPCMessageKt {
 }
 
 public final class org/jetbrains/krpc/internal/transport/RPCProtocolMessage$Companion {

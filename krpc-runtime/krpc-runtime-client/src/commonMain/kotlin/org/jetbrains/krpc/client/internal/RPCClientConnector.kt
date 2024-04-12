@@ -6,10 +6,7 @@ package org.jetbrains.krpc.client.internal
 
 import kotlinx.serialization.SerialFormat
 import org.jetbrains.krpc.RPCTransport
-import org.jetbrains.krpc.internal.transport.RPCCallMessage
-import org.jetbrains.krpc.internal.transport.RPCConnector
-import org.jetbrains.krpc.internal.transport.RPCMessageSender
-import org.jetbrains.krpc.internal.transport.RPCProtocolMessage
+import org.jetbrains.krpc.internal.transport.*
 
 internal sealed interface CallSubscriptionId {
     data class Service(
@@ -19,6 +16,9 @@ internal sealed interface CallSubscriptionId {
 
     @Suppress("ConvertObjectToDataObject") // not supported in 1.8.22 or earlier
     object Protocol : CallSubscriptionId
+
+    @Suppress("ConvertObjectToDataObject") // not supported in 1.8.22 or earlier
+    object Generic : CallSubscriptionId
 }
 
 internal class RPCClientConnector private constructor(
@@ -33,9 +33,15 @@ internal class RPCClientConnector private constructor(
             when (this) {
                 is RPCCallMessage -> CallSubscriptionId.Service(serviceType, callId)
                 is RPCProtocolMessage -> CallSubscriptionId.Protocol
+                is RPCGenericMessage -> CallSubscriptionId.Generic
             }
         }
     )
+
+    @Suppress("unused")
+    fun unsubscribeFromMessages(serviceTypeString: String, callId: String) {
+        connector.unsubscribeFromMessages(CallSubscriptionId.Service(serviceTypeString, callId))
+    }
 
     suspend fun subscribeToCallResponse(
         serviceTypeString: String,
@@ -50,6 +56,13 @@ internal class RPCClientConnector private constructor(
     suspend fun subscribeToProtocolMessages(subscription: suspend (RPCProtocolMessage) -> Unit) {
         connector.subscribeToMessages(CallSubscriptionId.Protocol) {
             subscription(it as RPCProtocolMessage)
+        }
+    }
+
+    @Suppress("unused")
+    suspend fun subscribeToGenericMessages(subscription: suspend (RPCGenericMessage) -> Unit) {
+        connector.subscribeToMessages(CallSubscriptionId.Generic) {
+            subscription(it as RPCGenericMessage)
         }
     }
 }

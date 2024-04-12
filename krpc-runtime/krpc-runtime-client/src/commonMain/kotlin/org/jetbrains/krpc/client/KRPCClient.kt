@@ -125,6 +125,7 @@ public abstract class KRPCClient(
     private fun <T, FlowT : Flow<T>> initializeFlowField(rpcFlow: RPCFlow<T, FlowT>, field: RPCField) {
         val call = RPCCall(
             serviceTypeString = field.serviceTypeString,
+            serviceId = field.serviceId,
             callableName = field.name,
             type = RPCCall.Type.Field,
             data = FieldDataObject,
@@ -165,7 +166,9 @@ public abstract class KRPCClient(
 
         logger.trace { "start a call[$callId] ${callInfo.callableName}" }
 
-        val streamContext = LazyRPCStreamContext { RPCStreamContext(callId, config, connectionId) }
+        val streamContext = LazyRPCStreamContext {
+            RPCStreamContext(callId, config, connectionId, callInfo.serviceId)
+        }
         val serialFormat = prepareSerialFormat(streamContext)
         val firstMessage = serializeRequest(callId, callInfo, serialFormat)
 
@@ -263,6 +266,7 @@ public abstract class KRPCClient(
                     callType = call.type.toMessageCallType(),
                     data = stringValue,
                     connectionId = connectionId,
+                    serviceId = call.serviceId,
                 )
             }
 
@@ -275,6 +279,7 @@ public abstract class KRPCClient(
                     callType = call.type.toMessageCallType(),
                     data = binaryValue,
                     connectionId = connectionId,
+                    serviceId = call.serviceId,
                 )
             }
 

@@ -46,9 +46,16 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
 
         writer.write("@Suppress(\"unused\")")
         writer.newLine()
-        writer.write("class ${service.simpleName.withClientImplSuffix()}(private val client: RPCClient) : ${service.fullName} {")
+        writer.write("class ${service.simpleName.withClientImplSuffix()}(")
         writer.newLine()
-
+        with(writer.nested()) {
+            write("override val id: Long,")
+            newLine()
+            write("private val client: RPCClient,")
+            newLine()
+        }
+        writer.write(") : ${service.fullName}, RPCClientService {")
+        writer.newLine()
 
         val nested = writer.nested()
 
@@ -123,7 +130,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             else -> "by lazy {" to " }"
         }
 
-        val rpcFiled = "RPCField(\"$serviceType\", \"$name\", typeOf<$codeType>())"
+        val rpcFiled = "RPCField(\"$serviceType\", id, \"$name\", typeOf<$codeType>())"
 
         val codeDeclaration = "override val $name: $codeType $prefix client.$method($rpcFiled)$suffix"
 
@@ -173,7 +180,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             })"
         }"
 
-        val rpcCall = "RPCCall(\"$serviceType\", \"$name\", RPCCall.Type.Method, $data, dataType, returnType)"
+        val rpcCall = "RPCCall(\"$serviceType\", id, \"$name\", RPCCall.Type.Method, $data, dataType, returnType)"
         writer.write("client.call($rpcCall)")
         writer.newLine()
     }
@@ -239,7 +246,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             newLine()
             newLine()
 
-            write("override fun withClient(client: RPCClient): ${service.fullName} = ${service.simpleName.withClientImplSuffix()}(client)")
+            write("override fun withClient(serviceId: Long, client: RPCClient): ${service.fullName} = ${service.simpleName.withClientImplSuffix()}(serviceId, client)")
             newLine()
             newLine()
 

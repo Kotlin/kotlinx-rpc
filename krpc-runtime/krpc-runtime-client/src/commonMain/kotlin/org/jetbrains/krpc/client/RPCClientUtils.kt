@@ -4,6 +4,7 @@
 
 package org.jetbrains.krpc.client
 
+import kotlinx.atomicfu.atomic
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCClient
 import org.jetbrains.krpc.internal.RPCClientProvider
@@ -38,6 +39,12 @@ public fun <T : RPC> RPCClient.withService(serviceKType: KType): T {
 }
 
 /**
+ * Counter for locally added services.
+ * Used to differentiate uniques local services, regardless of their type.
+ */
+private val SERVICE_ID = atomic(0L)
+
+/**
  * Creates instance of the generated service [T], that is able to communicate with server using RPCClient.
  *
  * [awaitFieldInitialization] method can be used on that instance.
@@ -47,6 +54,8 @@ public fun <T : RPC> RPCClient.withService(serviceKType: KType): T {
  * @return instance of the generated service.
  */
 public fun <T : RPC> RPCClient.withService(serviceKClass: KClass<T>): T {
-    val withRPCClientObject = findRPCProviderInCompanion<RPCClientProvider<T>>(serviceKClass)
-    return withRPCClientObject.withClient(this)
+    val provider = findRPCProviderInCompanion<RPCClientProvider<T>>(serviceKClass)
+    val id = SERVICE_ID.incrementAndGet()
+
+    return provider.withClient(id, this)
 }
