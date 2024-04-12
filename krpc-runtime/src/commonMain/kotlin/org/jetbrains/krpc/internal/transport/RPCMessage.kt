@@ -11,12 +11,11 @@ import org.jetbrains.krpc.internal.InternalKRPCApi
 @InternalKRPCApi
 @Serializable
 public sealed interface RPCMessage {
+    //NOTE: It turned out that the connectionId is not necessary when we have
+    //     * 1-to-1 client-server connections.
+    //     * But I left it for future usages, and now it is always null.
     /**
      * Unique id for the current connection client-server connection.
-     *
-     * NOTE: It turned out that the connectionId is not necessary when we have
-     * 1-to-1 client-server connections.
-     * But I left it for future usages, and now it is always null.
      */
     public val connectionId: Long?
 

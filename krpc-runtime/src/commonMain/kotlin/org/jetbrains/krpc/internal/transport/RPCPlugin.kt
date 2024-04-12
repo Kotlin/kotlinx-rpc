@@ -7,6 +7,7 @@ package org.jetbrains.krpc.internal.transport
 import kotlinx.serialization.Serializable
 import org.jetbrains.krpc.internal.IndexedEnum
 import org.jetbrains.krpc.internal.InternalKRPCApi
+import org.jetbrains.krpc.internal.RPCVersion
 import org.jetbrains.krpc.internal.ShortEnumKSerializer
 
 /**
@@ -24,7 +25,7 @@ public enum class RPCPlugin(
     /**
      * Only for maintenance purposes. Indicates when the plugin was added.
      */
-    @Suppress("unused") private val since: String,
+    @Suppress("unused") private val since: RPCVersion,
 ) : IndexedEnum {
     /**
      * Represents all unknown plugins.
@@ -33,7 +34,7 @@ public enum class RPCPlugin(
      *
      * Can be safely ignored. Endpoint must only handle the plugins it knows of.
      */
-    UNKNOWN(0, "-"),
+    UNKNOWN(0, RPCVersion.V_6_0_BETA),
 
     /**
      * Represents the handshake plugin of the kRPC protocol.
@@ -44,7 +45,7 @@ public enum class RPCPlugin(
      * However, servers will be able to communicate with clients that do not support handshake,
      * BUT not the other way around.
      */
-    HANDSHAKE(1, "6.0-beta"),
+    HANDSHAKE(1, RPCVersion.V_6_0_BETA),
     ;
 
     @InternalKRPCApi

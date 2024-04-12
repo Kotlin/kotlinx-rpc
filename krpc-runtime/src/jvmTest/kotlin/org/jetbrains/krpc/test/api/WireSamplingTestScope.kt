@@ -12,8 +12,9 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.ExperimentalSerializationApi
-import org.jetbrains.krpc.RPCTransportMessage
+import org.jetbrains.krpc.*
 import org.jetbrains.krpc.client.withService
+import org.jetbrains.krpc.internal.RPCClientService
 import org.jetbrains.krpc.internal.hex.hexToByteArrayInternal
 import org.jetbrains.krpc.internal.hex.hexToReadableBinary
 import org.jetbrains.krpc.internal.logging.CommonLogger
@@ -21,9 +22,6 @@ import org.jetbrains.krpc.internal.logging.DumpLogger
 import org.jetbrains.krpc.internal.logging.DumpLoggerContainer
 import org.jetbrains.krpc.internal.logging.initialized
 import org.jetbrains.krpc.internal.transport.RPCConnector
-import org.jetbrains.krpc.registerService
-import org.jetbrains.krpc.rpcClientConfig
-import org.jetbrains.krpc.rpcServerConfig
 import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
 import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.serialization.protobuf
@@ -189,7 +187,7 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
     }
 
     val service: SamplingService by lazy {
-        client.withService()
+        client.withService<SamplingService>().withConsistentServiceId()
     }
 
     val server by lazy {
@@ -224,6 +222,16 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
 
     init {
         DumpLoggerContainer.set(dumpLogger)
+    }
+
+    private inline fun <reified Service : RPC> Service.withConsistentServiceId(): Service = apply {
+        val clazz = this::class.java
+        val prop = clazz
+            .declaredFields
+            .single { it.name == RPCClientService::id.name }
+            .apply { isAccessible = true }
+
+        prop.set(this, 1L)
     }
 }
 

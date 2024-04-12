@@ -5,4 +5,6 @@ org.jetbrains.krpc.internal.transport.RPCMessage.CallSuccessBinary [Declared nam
   - data: kotlin.ByteArray
   - pluginParams: kotlin.collections.Map
     - Nullable
+  - serviceId: kotlin.Long
+    - Nullable
   - serviceType: kotlin.String

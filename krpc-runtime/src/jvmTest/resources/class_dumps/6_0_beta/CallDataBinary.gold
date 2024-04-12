@@ -10,4 +10,6 @@ org.jetbrains.krpc.internal.transport.RPCMessage.CallDataBinary [Declared name: 
   - data: kotlin.ByteArray
   - pluginParams: kotlin.collections.Map
     - Nullable
+  - serviceId: kotlin.Long
+    - Nullable
   - serviceType: kotlin.String

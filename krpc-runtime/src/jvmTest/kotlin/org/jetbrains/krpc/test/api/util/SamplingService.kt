@@ -4,7 +4,9 @@
 
 package org.jetbrains.krpc.test.api.util
 
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.test.plainFlow
@@ -71,6 +73,10 @@ class SamplingServiceImpl(override val coroutineContext: CoroutineContext) : Sam
     override val stateFlow: MutableStateFlow<Int> = stateFlowOfT { it }
 
     override suspend fun emitNextInStateFlow(next: Int) {
-        stateFlow.value = next
+        launch {
+            // CallSuccess and StreamMessage may race, so we prevent this
+            delay(500)
+            stateFlow.value = next
+        }
     }
 }

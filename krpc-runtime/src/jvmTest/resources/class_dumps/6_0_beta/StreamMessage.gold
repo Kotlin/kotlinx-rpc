@@ -5,6 +5,8 @@ org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessage [Declared name: o
     - Nullable
   - pluginParams: kotlin.collections.Map
     - Nullable
+  - serviceId: kotlin.Long
+    - Nullable
   - serviceType: kotlin.String
 
   org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessageBinary
