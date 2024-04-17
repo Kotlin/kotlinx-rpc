@@ -12,7 +12,7 @@ junit = "4.13.2"
 ktor = "2.3.8"
 kotlinx-serialization-json = "1.6.1"
 kotlinx-coroutines-core = "1.7.3"
-logback = "1.4.4"
+logback = "1.5.6"
 krpc = "5.3-beta"
 ksp = "1.9.22-1.0.17"
 

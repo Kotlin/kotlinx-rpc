@@ -4,7 +4,7 @@ kotlin-wrappers-bom = "1.0.0-pre.685"
 ktor = "2.3.7"
 kotlinx-serialization-json = "1.6.1"
 kotlinx-coroutines-core = "1.7.3"
-logback = "1.4.4"
+logback = "1.5.6"
 krpc = "5.2-beta"
 ksp = "1.9.22-1.0.17"
 
