@@ -10,4 +10,6 @@ org.jetbrains.krpc.RPCMessage.CallData [Declared name: org.jetbrains.krpc.intern
   - data: kotlin.String
   - pluginParams: kotlin.collections.Map
     - Nullable
+  - serviceId: kotlin.Long
+    - Nullable
   - serviceType: kotlin.String

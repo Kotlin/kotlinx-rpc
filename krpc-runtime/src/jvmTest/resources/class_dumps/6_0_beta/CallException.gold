@@ -6,4 +6,6 @@ org.jetbrains.krpc.RPCMessage.CallException [Declared name: org.jetbrains.krpc.i
     - Nullable
   - pluginParams: kotlin.collections.Map
     - Nullable
+  - serviceId: kotlin.Long
+    - Nullable
   - serviceType: kotlin.String

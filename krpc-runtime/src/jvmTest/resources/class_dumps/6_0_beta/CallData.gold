@@ -8,6 +8,8 @@ org.jetbrains.krpc.internal.transport.RPCMessage.CallData [Declared name: org.je
     - Nullable
   - pluginParams: kotlin.collections.Map
     - Nullable
+  - serviceId: kotlin.Long
+    - Nullable
   - serviceType: kotlin.String
 
   org.jetbrains.krpc.internal.transport.RPCMessage.CallDataBinary

@@ -5,4 +5,6 @@ org.jetbrains.krpc.RPCMessage.CallSuccess [Declared name: org.jetbrains.krpc.int
   - data: kotlin.String
   - pluginParams: kotlin.collections.Map
     - Nullable
+  - serviceId: kotlin.Long
+    - Nullable
   - serviceType: kotlin.String

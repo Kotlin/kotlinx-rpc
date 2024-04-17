@@ -6,4 +6,5 @@ org.jetbrains.krpc.internal.transport.RPCMessage
 
   org.jetbrains.krpc.RPCMessage
   - Declared name: org.jetbrains.krpc.internal.transport.RPCCallMessage
+  org.jetbrains.krpc.internal.transport.RPCGenericMessage
   org.jetbrains.krpc.internal.transport.RPCProtocolMessage

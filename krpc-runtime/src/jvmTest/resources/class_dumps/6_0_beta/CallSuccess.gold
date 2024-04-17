@@ -4,6 +4,8 @@ org.jetbrains.krpc.internal.transport.RPCMessage.CallSuccess [Declared name: org
     - Nullable
   - pluginParams: kotlin.collections.Map
     - Nullable
+  - serviceId: kotlin.Long
+    - Nullable
   - serviceType: kotlin.String
 
   org.jetbrains.krpc.internal.transport.RPCMessage.CallSuccessBinary

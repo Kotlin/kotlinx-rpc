@@ -64,7 +64,7 @@ internal class RPCServerService<T : RPC>(
 
             when (message) {
                 is RPCCallMessage.CallData -> {
-                    handleCall(callId, message)
+                    handleCall(message)
                 }
 
                 is RPCCallMessage.CallException -> {
@@ -100,10 +100,12 @@ internal class RPCServerService<T : RPC>(
     }
 
     @OptIn(InternalCoroutinesApi::class)
-    private fun handleCall(callId: String, callData: RPCCallMessage.CallData) {
-        val streamContext = LazyRPCStreamContext { RPCStreamContext(callId, config, callData.connectionId) }
+    private fun handleCall(callData: RPCCallMessage.CallData) {
+        val streamContext = LazyRPCStreamContext {
+            RPCStreamContext(callData.callId, config, callData.connectionId, callData.serviceId)
+        }
         val serialFormat = prepareSerialFormat(streamContext)
-        streamContexts[callId] = streamContext
+        streamContexts[callData.callId] = streamContext
 
         val isMethod = when (callData.callType) {
             RPCCallMessage.CallType.Method -> true
@@ -121,10 +123,11 @@ internal class RPCServerService<T : RPC>(
             val callType = if (isMethod) "method" else "field"
             val cause = NoSuchMethodException("Service $serviceTypeString has no $callType $callableName")
             val message = RPCCallMessage.CallException(
-                callId = callId,
+                callId = callData.callId,
                 serviceType = serviceTypeString,
                 cause = serializeException(cause),
                 connectionId = callData.connectionId,
+                serviceId = callData.serviceId,
             )
             launch {
                 sender.sendMessage(message)
@@ -145,7 +148,7 @@ internal class RPCServerService<T : RPC>(
             null
         }
 
-        calls[callId] = launch {
+        calls[callData.callId] = launch {
             val result = try {
                 @Suppress("detekt.SpreadOperator")
                 val value = when {
@@ -159,20 +162,22 @@ internal class RPCServerService<T : RPC>(
                     is StringFormat -> {
                         val stringValue = serialFormat.encodeToString(returnSerializer, value)
                         RPCCallMessage.CallSuccessString(
-                            callId = callId,
+                            callId = callData.callId,
                             serviceType = serviceTypeString,
                             data = stringValue,
                             connectionId = callData.connectionId,
+                            serviceId = callData.serviceId,
                         )
                     }
 
                     is BinaryFormat -> {
                         val binaryValue = serialFormat.encodeToByteArray(returnSerializer, value)
                         RPCCallMessage.CallSuccessBinary(
-                            callId = callId,
+                            callId = callData.callId,
                             serviceType = serviceTypeString,
                             data = binaryValue,
                             connectionId = callData.connectionId,
+                            serviceId = callData.serviceId,
                         )
                     }
 
@@ -182,10 +187,22 @@ internal class RPCServerService<T : RPC>(
                 }
             } catch (cause: InvocationTargetException) {
                 val serializedCause = serializeException(cause.cause ?: cause)
-                RPCCallMessage.CallException(callId, serviceTypeString, serializedCause, callData.connectionId)
+                RPCCallMessage.CallException(
+                    callId = callData.callId,
+                    serviceType = serviceTypeString,
+                    cause = serializedCause,
+                    connectionId = callData.connectionId,
+                    serviceId = callData.serviceId,
+                )
             } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
                 val serializedCause = serializeException(cause)
-                RPCCallMessage.CallException(callId, serviceTypeString, serializedCause, callData.connectionId)
+                RPCCallMessage.CallException(
+                    callId = callData.callId,
+                    serviceType = serviceTypeString,
+                    cause = serializedCause,
+                    connectionId = callData.connectionId,
+                    serviceId = callData.serviceId,
+                )
             }
             sender.sendMessage(result)
 
@@ -198,7 +215,7 @@ internal class RPCServerService<T : RPC>(
             }
         }.apply {
             invokeOnCompletion(onCancelling = true) {
-                calls.remove(callId)
+                calls.remove(callData.callId)
                 streamContext.valueOrNull?.close()
             }
         }

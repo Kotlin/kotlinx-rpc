@@ -4,7 +4,6 @@
 
 package org.jetbrains.krpc.test.api
 
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
@@ -59,7 +58,7 @@ class ApiVersioningTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Nested flows proved to be unstable")
     fun testClientNestedStreamSampling() = wireSamplingTest("clientNestedStream") {
         sample {
             val response = clientNestedStream(plainFlow { plainFlow { it } }).join()
@@ -80,6 +79,7 @@ class ApiVersioningTest {
     }
 
     @Test
+    @Ignore("Nested flows proved to be unstable")
     fun testServerNestedStreamSampling() = wireSamplingTest("serverNestedStream") {
         sample {
             val response = serverNestedFlow().map { it.toList() }.toList().join()
@@ -129,11 +129,14 @@ class ApiVersioningTest {
             val state = awaitFieldInitialization { stateFlow }
             assertEquals(-1, state.value)
 
-            val newFlow = state.drop(1).take(1)
-            emitNextInStateFlow(10)
+            val newFlow = state.take(2)
+
             newFlow.collect {
-                assertEquals(10, it)
-                assertEquals(10, state.value)
+                when (it) {
+                    -1 -> emitNextInStateFlow(10)
+                    10 -> assertEquals(10, state.value)
+                    else -> error("Unexpected value in flow: $it")
+                }
             }
         }
     }

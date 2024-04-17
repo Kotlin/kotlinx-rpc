@@ -16,7 +16,7 @@ public interface RPCClientObject<T : RPC> :
 
 @InternalKRPCApi
 public interface RPCClientProvider<T : RPC> {
-    public fun withClient(client: RPCClient) : T
+    public fun withClient(serviceId: Long, client: RPCClient) : T
 }
 
 @InternalKRPCApi

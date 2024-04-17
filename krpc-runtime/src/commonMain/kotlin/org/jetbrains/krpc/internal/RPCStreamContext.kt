@@ -37,6 +37,7 @@ public class RPCStreamContext(
     private val callId: String,
     private val config: RPCConfig,
     private val connectionId: Long?,
+    private val serviceId: Long?,
 ) {
     private companion object {
         private const val STREAM_ID_PREFIX = "stream:"
@@ -74,7 +75,17 @@ public class RPCStreamContext(
         elementSerializer: KSerializer<Any?>,
     ): String {
         val id = "$STREAM_ID_PREFIX${streamIdCounter.getAndIncrement()}"
-        outgoingStreams.trySend(RPCStreamCall(callId, id, stream, streamKind, elementSerializer, connectionId))
+        outgoingStreams.trySend(
+            RPCStreamCall(
+                callId = callId,
+                streamId = id,
+                stream = stream,
+                kind = streamKind,
+                elementSerializer = elementSerializer,
+                connectionId = connectionId,
+                serviceId = serviceId,
+            )
+        )
         return id
     }
 
@@ -88,7 +99,15 @@ public class RPCStreamContext(
         incomingChannels[streamId] = incoming
 
         val stream = streamOf<StreamT>(streamKind, stateFlowInitialValue, incoming)
-        incomingStreams[streamId] = RPCStreamCall(callId, streamId, stream, streamKind, elementSerializer, connectionId)
+        incomingStreams[streamId] = RPCStreamCall(
+            callId = callId,
+            streamId = streamId,
+            stream = stream,
+            kind = streamKind,
+            elementSerializer = elementSerializer,
+            connectionId = connectionId,
+            serviceId = serviceId,
+        )
         return stream
     }
 

@@ -11,6 +11,9 @@ import org.jetbrains.krpc.internal.InternalKRPCApi
 @InternalKRPCApi
 @Serializable
 public sealed interface RPCMessage {
+    //NOTE: It turned out that the connectionId is not necessary when we have
+    //     * 1-to-1 client-server connections.
+    //     * But I left it for future usages, and now it is always null.
     /**
      * Unique id for the current connection client-server connection.
      */
@@ -26,6 +29,16 @@ public sealed interface RPCMessage {
      */
     public val pluginParams: Map<RPCPluginKey, String>?
 }
+
+/**
+ * Use this message to add new message types without adding new classes to the protocol hierarchy.
+ */
+@InternalKRPCApi
+@Serializable
+public data class RPCGenericMessage(
+    override val connectionId: Long?,
+    override val pluginParams: Map<RPCPluginKey, String>?
+) : RPCMessage
 
 @InternalKRPCApi
 @Serializable
@@ -45,7 +58,7 @@ public sealed interface RPCProtocolMessage : RPCMessage {
     public data class Failure(
         val errorMessage: String,
         override val connectionId: Long? = null,
-        val failedMessage: RPCProtocolMessage? = null,
+        val failedMessage: RPCMessage? = null,
         override val pluginParams: Map<RPCPluginKey, String> = emptyMap(),
     ) : RPCProtocolMessage
 }
@@ -59,6 +72,7 @@ public sealed interface RPCProtocolMessage : RPCMessage {
 public sealed interface RPCCallMessage : RPCMessage {
     public val callId: String
     public val serviceType: String
+    public val serviceId: Long?
 
     @InternalKRPCApi
     @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.Data")
@@ -105,6 +119,7 @@ public sealed interface RPCCallMessage : RPCMessage {
         override val callType: CallType?,
         override val data: String,
         override val connectionId: Long? = null,
+        override val serviceId: Long? = null,
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : CallData, Data.StringData
 
@@ -120,6 +135,7 @@ public sealed interface RPCCallMessage : RPCMessage {
         override val callType: CallType?,
         override val data: ByteArray,
         override val connectionId: Long? = null,
+        override val serviceId: Long? = null,
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : CallData, Data.BinaryData
 
@@ -136,6 +152,7 @@ public sealed interface RPCCallMessage : RPCMessage {
         override val serviceType: String,
         override val data: String,
         override val connectionId: Long? = null,
+        override val serviceId: Long? = null,
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : CallSuccess, Data.StringData
 
@@ -148,6 +165,7 @@ public sealed interface RPCCallMessage : RPCMessage {
         override val serviceType: String,
         override val data: ByteArray,
         override val connectionId: Long? = null,
+        override val serviceId: Long? = null,
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : CallSuccess, Data.BinaryData
 
@@ -162,6 +180,7 @@ public sealed interface RPCCallMessage : RPCMessage {
         override val serviceType: String,
         val cause: SerializedException,
         override val connectionId: Long? = null,
+        override val serviceId: Long? = null,
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : CallResult
 
@@ -182,6 +201,7 @@ public sealed interface RPCCallMessage : RPCMessage {
         override val streamId: String,
         override val data: String,
         override val connectionId: Long? = null,
+        override val serviceId: Long? = null,
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : StreamMessage, Data.StringData
 
@@ -196,6 +216,7 @@ public sealed interface RPCCallMessage : RPCMessage {
         override val streamId: String,
         override val data: ByteArray,
         override val connectionId: Long? = null,
+        override val serviceId: Long? = null,
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : StreamMessage, Data.BinaryData
 
@@ -209,6 +230,7 @@ public sealed interface RPCCallMessage : RPCMessage {
         val streamId: String,
         val cause: SerializedException,
         override val connectionId: Long? = null,
+        override val serviceId: Long? = null,
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : RPCCallMessage
 
@@ -221,6 +243,10 @@ public sealed interface RPCCallMessage : RPCMessage {
         @SerialName("flowId")
         val streamId: String,
         override val connectionId: Long? = null,
+        override val serviceId: Long? = null,
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : RPCCallMessage
 }
+
+@InternalKRPCApi
+public operator fun RPCMessage.get(key: RPCPluginKey): String? = pluginParams?.get(key)

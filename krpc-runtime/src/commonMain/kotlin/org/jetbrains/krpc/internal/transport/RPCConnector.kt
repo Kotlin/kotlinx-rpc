@@ -41,7 +41,7 @@ private typealias RPCMessageHandler = suspend (RPCMessage) -> Unit
  * that says that there were no services to process its message.
  * @param isServer flag indication whether this is a server or a client.
  * @param getKey a lambda function that returns the subscription key for a given [RPCCallMessage].
- * DO NOT use actual dumper in production! Default is [DumpLoggerNoop] that does nothing.
+ * DO NOT use actual dumper in production!
  */
 @InternalKRPCApi
 public class RPCConnector<SubscriptionKey>(
@@ -81,6 +81,10 @@ public class RPCConnector<SubscriptionKey>(
         }
 
         transport.send(transportMessage)
+    }
+
+    public fun unsubscribeFromMessages(key: SubscriptionKey) {
+        launch { mutex.withLock { subscriptions.remove(key) } }
     }
 
     public suspend fun subscribeToMessages(key: SubscriptionKey, handler: RPCMessageHandler) {
@@ -123,20 +127,20 @@ public class RPCConnector<SubscriptionKey>(
     private suspend fun processMessage(message: RPCMessage) = mutex.withLock {
         when (message) {
             is RPCCallMessage -> processServiceMessage(message)
-            is RPCProtocolMessage -> processProtocolMessage(message)
+            is RPCProtocolMessage, is RPCGenericMessage -> processNonServiceMessage(message)
         }
     }
 
-    private suspend fun processProtocolMessage(message: RPCProtocolMessage) {
+    private suspend fun processNonServiceMessage(message: RPCMessage) {
         when (val result = tryHandle(message)) {
             is HandlerResult.Failure -> {
-                sendMessage(
-                    RPCProtocolMessage.Failure(
-                        connectionId = message.connectionId,
-                        errorMessage = "Failed to process protocol message: ${result.cause?.message}",
-                        failedMessage = message,
-                    )
+                val failure = RPCProtocolMessage.Failure(
+                    connectionId = message.connectionId,
+                    errorMessage = "Failed to process ${message::class.simpleName}, error: ${result.cause?.message}",
+                    failedMessage = message,
                 )
+
+                sendMessage(failure)
             }
 
             HandlerResult.NoSubscription -> {
@@ -173,6 +177,7 @@ public class RPCConnector<SubscriptionKey>(
                 serviceType = message.serviceType,
                 cause = serializeException(cause),
                 connectionId = message.connectionId,
+                serviceId = message.serviceId,
             )
 
             sendMessage(callException)

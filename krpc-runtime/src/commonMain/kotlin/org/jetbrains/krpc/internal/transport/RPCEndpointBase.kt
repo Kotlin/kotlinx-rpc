@@ -45,9 +45,6 @@ public abstract class RPCEndpointBase {
         val mutex = Mutex()
         for (outgoingStream in streamContext.awaitInitialized().outgoingStreams) {
             scope.launch {
-                val callId = outgoingStream.callId
-                val streamId = outgoingStream.streamId
-                val elementSerializer = outgoingStream.elementSerializer
                 try {
                     when (outgoingStream.kind) {
                         StreamKind.Flow, StreamKind.SharedFlow, StreamKind.StateFlow -> {
@@ -57,11 +54,8 @@ public abstract class RPCEndpointBase {
                                 mutex = mutex,
                                 serialFormat = serialFormat,
                                 flow = stream,
-                                callId = callId,
-                                streamId = streamId,
-                                elementSerializer = elementSerializer,
+                                outgoingStream = outgoingStream,
                                 serviceTypeString = serviceTypeString,
-                                connectionId = outgoingStream.connectionId,
                             )
                         }
                     }
@@ -69,11 +63,12 @@ public abstract class RPCEndpointBase {
                     mutex.withLock {
                         val serializedReason = serializeException(cause)
                         val message = RPCCallMessage.StreamCancel(
-                            callId = callId,
+                            callId = outgoingStream.callId,
                             serviceType = serviceTypeString,
-                            streamId = streamId,
+                            streamId = outgoingStream.streamId,
                             cause = serializedReason,
                             connectionId = outgoingStream.connectionId,
+                            serviceId = outgoingStream.serviceId,
                         )
                         sender.sendMessage(message)
                     }
@@ -82,10 +77,11 @@ public abstract class RPCEndpointBase {
 
                 mutex.withLock {
                     val message = RPCCallMessage.StreamFinished(
-                        callId = callId,
+                        callId = outgoingStream.callId,
                         serviceType = serviceTypeString,
-                        streamId = streamId,
+                        streamId = outgoingStream.streamId,
                         connectionId = outgoingStream.connectionId,
+                        serviceId = outgoingStream.serviceId,
                     )
 
                     sender.sendMessage(message)
@@ -99,11 +95,8 @@ public abstract class RPCEndpointBase {
         mutex: Mutex,
         serialFormat: SerialFormat,
         flow: Flow<*>,
-        callId: String,
-        streamId: String,
-        elementSerializer: KSerializer<Any?>,
         serviceTypeString: String,
-        connectionId: Long?,
+        outgoingStream: RPCStreamCall,
     ) {
         flow.collect {
             // because we can send new message for the new flow,
@@ -111,24 +104,26 @@ public abstract class RPCEndpointBase {
             mutex.withLock {
                 val message = when (serialFormat) {
                     is StringFormat -> {
-                        val stringData = serialFormat.encodeToString(elementSerializer, it)
+                        val stringData = serialFormat.encodeToString(outgoingStream.elementSerializer, it)
                         RPCCallMessage.StreamMessageString(
-                            callId = callId,
+                            callId = outgoingStream.callId,
                             serviceType = serviceTypeString,
-                            streamId = streamId,
+                            streamId = outgoingStream.streamId,
                             data = stringData,
-                            connectionId = connectionId,
+                            connectionId = outgoingStream.connectionId,
+                            serviceId = outgoingStream.serviceId,
                         )
                     }
 
                     is BinaryFormat -> {
-                        val binaryData = serialFormat.encodeToByteArray(elementSerializer, it)
+                        val binaryData = serialFormat.encodeToByteArray(outgoingStream.elementSerializer, it)
                         RPCCallMessage.StreamMessageBinary(
-                            callId = callId,
+                            callId = outgoingStream.callId,
                             serviceType = serviceTypeString,
-                            streamId = streamId,
+                            streamId = outgoingStream.streamId,
                             data = binaryData,
-                            connectionId = connectionId,
+                            connectionId = outgoingStream.connectionId,
+                            serviceId = outgoingStream.serviceId,
                         )
                     }
 
