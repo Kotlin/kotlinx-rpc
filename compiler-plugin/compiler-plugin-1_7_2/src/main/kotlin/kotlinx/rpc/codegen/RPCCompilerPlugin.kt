@@ -22,7 +22,7 @@ class RPCCompilerPlugin : ComponentRegistrar {
         VersionSpecificApi.upload(VersionSpecificApiImpl)
     }
 
-    override val supportsK2: Boolean = false
+    override val supportsK2: Boolean = true
 
     override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
         val extension = RPCCompilerPluginCore.provideExtension(configuration)
