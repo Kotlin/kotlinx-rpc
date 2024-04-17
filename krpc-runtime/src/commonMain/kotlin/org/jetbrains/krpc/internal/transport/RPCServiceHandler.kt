@@ -29,8 +29,7 @@ public abstract class RPCServiceHandler : CoroutineScope {
     private val scope: CoroutineScope get() = this
 
     protected suspend fun handleIncomingHotFlows(streamContext: LazyRPCStreamContext) {
-        val context = streamContext.awaitInitialized()
-        for (hotFlow in context.incomingHotFlows) {
+        for (hotFlow in streamContext.awaitInitialized().incomingHotFlows) {
             scope.launch {
                 /** Start consuming incoming requests, see [RPCIncomingHotFlow.emit] */
                 hotFlow.emit(null)
@@ -73,7 +72,6 @@ public abstract class RPCServiceHandler : CoroutineScope {
                         )
                         sender.sendMessage(message)
                     }
-
                     throw cause
                 }
 
@@ -139,21 +137,21 @@ public abstract class RPCServiceHandler : CoroutineScope {
         }
     }
 
-    protected fun prepareSerialFormat(rpcStreamContext: LazyRPCStreamContext): SerialFormat {
+    protected fun prepareSerialFormat(rpcFlowContext: LazyRPCStreamContext): SerialFormat {
         val module = SerializersModule {
             contextual(Flow::class) {
                 @Suppress("UNCHECKED_CAST")
-                StreamSerializer.Flow(rpcStreamContext.initialize(), it.first() as KSerializer<Any?>)
+                StreamSerializer.Flow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
             }
 
             contextual(SharedFlow::class) {
                 @Suppress("UNCHECKED_CAST")
-                StreamSerializer.SharedFlow(rpcStreamContext.initialize(), it.first() as KSerializer<Any?>)
+                StreamSerializer.SharedFlow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
             }
 
             contextual(StateFlow::class) {
                 @Suppress("UNCHECKED_CAST")
-                StreamSerializer.StateFlow(rpcStreamContext.initialize(), it.first() as KSerializer<Any?>)
+                StreamSerializer.StateFlow(rpcFlowContext.initialize(), it.first() as KSerializer<Any?>)
             }
         }
 
