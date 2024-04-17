@@ -12,8 +12,15 @@ import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.util.dumpKotlinLike
 import org.jetbrains.kotlin.ir.util.packageFqName
 
+/**
+ * This class scans user declared RPC service
+ * and returns all necessary information for code generation by [RPCStubGenerator].
+ *
+ * Some checks are preformed during scanning,
+ * but all user-friendly errors are expected to be thrown by frontend plugins
+ */
 internal object RPCDeclarationScanner {
-    fun scan(service: IrClass, ctx: RPCIrContext): ServiceDeclaration {
+    fun scanServiceDeclaration(service: IrClass, ctx: RPCIrContext): ServiceDeclaration {
         val declarations = service.declarations.memoryOptimizedMap { declaration ->
             when (declaration) {
                 is IrSimpleFunction -> {

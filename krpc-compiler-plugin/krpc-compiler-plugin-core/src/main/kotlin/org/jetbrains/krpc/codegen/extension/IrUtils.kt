@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.ir.types.IrTypeProjection
 import org.jetbrains.kotlin.ir.types.SimpleTypeNullability
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
+import org.jetbrains.kotlin.ir.util.dump
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.Variance
 import java.util.*
@@ -35,6 +36,10 @@ fun IrClassifierSymbol.typeWith(type: IrType, variance: Variance): IrType {
     )
 }
 
+val IrProperty.getterOrFail: IrSimpleFunction get () {
+    return getter ?: error("'getter' should be present, but was null: ${dump()}")
+}
+
 fun IrProperty.addDefaultGetter(
     parentClass: IrClass,
     builtIns: IrBuiltIns,
@@ -42,7 +47,7 @@ fun IrProperty.addDefaultGetter(
 ) {
     addDefaultGetter(parentClass, builtIns)
 
-    getter!!.apply {
+    getterOrFail.apply {
         dispatchReceiverParameter!!.origin = IrDeclarationOrigin.DEFINED
 
         configure()

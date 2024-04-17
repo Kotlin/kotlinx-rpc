@@ -32,7 +32,7 @@ internal class RPCIrServiceProcessor(
     private fun IrClass.maybeRPC() = superTypes.any { it.classFqName?.asString()?.contains("RPC") == true }
 
     private fun processService(service: IrClass, context: RPCIrContext) {
-        val declaration = RPCDeclarationScanner.scan(service, context)
+        val declaration = RPCDeclarationScanner.scanServiceDeclaration(service, context)
         RPCStubGenerator(declaration, context).generate()
     }
 }

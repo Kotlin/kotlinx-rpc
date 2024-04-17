@@ -512,8 +512,6 @@ internal class RPCStubGenerator(
     @Suppress(
         "detekt.NestedBlockDepth",
         "detekt.LongMethod",
-        "detekt.CyclomaticComplexMethod",
-        "detekt.MagicNumber",
     )
     private fun IrClass.generateRpcMethod(method: ServiceDeclaration.Method) {
         val isMethodObject = method.argumentTypes.isEmpty()
@@ -606,83 +604,13 @@ internal class RPCStubGenerator(
                             }
 
                             body = irBuilder(symbol).irBlockBody {
-                                val call = irCall(
-                                    callee = ctx.functions.rpcClientCall.symbol,
-                                    type = method.function.returnType,
-                                    typeArgumentsCount = 1,
-                                    valueArgumentsCount = 1,
-                                ).apply {
-                                    dispatchReceiver = irCallProperty(
-                                        clazz = stubClass,
-                                        property = clientProperty,
-                                        symbol = functionThisReceiver.symbol,
-                                    )
-
-                                    putTypeArgument(0, method.function.returnType)
-
-                                    val rpcCallConstructor = irCallConstructor(
-                                        callee = ctx.rpcCall.constructors.single(),
-                                        typeArguments = emptyList(),
-                                    ).apply {
-                                        putValueArgument(
-                                            index = 0,
-                                            valueArgument = stringConst(declaration.service.kotlinFqName.asString()),
-                                        )
-
-                                        putValueArgument(
-                                            index = 1,
-                                            valueArgument = stringConst(method.function.name.asString()),
-                                        )
-
-                                        putValueArgument(
-                                            index = 2,
-                                            valueArgument = IrGetEnumValueImpl(
-                                                startOffset = UNDEFINED_OFFSET,
-                                                endOffset = UNDEFINED_OFFSET,
-                                                type = ctx.rpcCallType.defaultType,
-                                                symbol = ctx.rpcCallTypeMethod,
-                                            ),
-                                        )
-
-                                        val dataParameter = if (isMethodObject) {
-                                            irGetObject(methodClass.symbol)
-                                        } else {
-                                            irCallConstructor(
-                                                // serialization plugin adds additional constructor with more arguments
-                                                callee = methodClass.constructors.single {
-                                                    it.valueParameters.size == method.argumentTypes.size
-                                                }.symbol,
-                                                typeArguments = emptyList(),
-                                            ).apply {
-                                                arguments.forEachIndexed { i, valueParameter ->
-                                                    putValueArgument(i, irGet(valueParameter))
-                                                }
-                                            }
-                                        }
-
-                                        putValueArgument(3, dataParameter)
-
-                                        putValueArgument(
-                                            index = 4,
-                                            valueArgument = irCall(
-                                                ctx.functions.typeOf,
-                                            ).apply {
-                                                putTypeArgument(0, methodClass.defaultType)
-                                            },
-                                        )
-
-                                        putValueArgument(
-                                            index = 5,
-                                            valueArgument = irCall(
-                                                ctx.functions.typeOf,
-                                            ).apply {
-                                                putTypeArgument(0, method.function.returnType)
-                                            },
-                                        )
-                                    }
-
-                                    putValueArgument(0, rpcCallConstructor)
-                                }
+                                val call = irRPCMethodClientCall(
+                                    method = method,
+                                    functionThisReceiver = functionThisReceiver,
+                                    isMethodObject = isMethodObject,
+                                    methodClass = methodClass,
+                                    arguments = arguments,
+                                )
 
                                 if (method.function.returnType == ctx.irBuiltIns.unitType) {
                                     +call
@@ -705,6 +633,111 @@ internal class RPCStubGenerator(
                 )
             }
         }
+    }
+
+    /**
+     * Part of [generateRpcMethod] that generates next call:
+     *
+     * ```kotlin
+     * client.call(RPCCall(
+     *     "<service-name>",
+     *     "<method-name>",
+     *     RPCCall.Type.Method,
+     *     (<method-class>(<method-args>)|<method-object>),
+     *     typeOf<<method-class>>(),
+     *     typeOf<<return-type>>(),
+     * ))
+     * ```
+     */
+    @Suppress(
+        "detekt.NestedBlockDepth",
+        "detekt.MagicNumber",
+    )
+    private fun IrBlockBodyBuilder.irRPCMethodClientCall(
+        method: ServiceDeclaration.Method,
+        functionThisReceiver: IrValueParameter,
+        isMethodObject: Boolean,
+        methodClass: IrClass,
+        arguments: List<IrValueParameter>
+    ): IrCall {
+        val call = irCall(
+            callee = ctx.functions.rpcClientCall.symbol,
+            type = method.function.returnType,
+            typeArgumentsCount = 1,
+            valueArgumentsCount = 1,
+        ).apply {
+            dispatchReceiver = irCallProperty(
+                clazz = stubClass,
+                property = clientProperty,
+                symbol = functionThisReceiver.symbol,
+            )
+
+            putTypeArgument(0, method.function.returnType)
+
+            val rpcCallConstructor = irCallConstructor(
+                callee = ctx.rpcCall.constructors.single(),
+                typeArguments = emptyList(),
+            ).apply {
+                putValueArgument(
+                    index = 0,
+                    valueArgument = stringConst(declaration.service.kotlinFqName.asString()),
+                )
+
+                putValueArgument(
+                    index = 1,
+                    valueArgument = stringConst(method.function.name.asString()),
+                )
+
+                putValueArgument(
+                    index = 2,
+                    valueArgument = IrGetEnumValueImpl(
+                        startOffset = UNDEFINED_OFFSET,
+                        endOffset = UNDEFINED_OFFSET,
+                        type = ctx.rpcCallType.defaultType,
+                        symbol = ctx.rpcCallTypeMethod,
+                    ),
+                )
+
+                val dataParameter = if (isMethodObject) {
+                    irGetObject(methodClass.symbol)
+                } else {
+                    irCallConstructor(
+                        // serialization plugin adds additional constructor with more arguments
+                        callee = methodClass.constructors.single {
+                            it.valueParameters.size == method.argumentTypes.size
+                        }.symbol,
+                        typeArguments = emptyList(),
+                    ).apply {
+                        arguments.forEachIndexed { i, valueParameter ->
+                            putValueArgument(i, irGet(valueParameter))
+                        }
+                    }
+                }
+
+                putValueArgument(3, dataParameter)
+
+                putValueArgument(
+                    index = 4,
+                    valueArgument = irCall(
+                        ctx.functions.typeOf,
+                    ).apply {
+                        putTypeArgument(0, methodClass.defaultType)
+                    },
+                )
+
+                putValueArgument(
+                    index = 5,
+                    valueArgument = irCall(
+                        ctx.functions.typeOf,
+                    ).apply {
+                        putTypeArgument(0, method.function.returnType)
+                    },
+                )
+            }
+
+            putValueArgument(0, rpcCallConstructor)
+        }
+        return call
     }
 
     private fun irCallProperty(
