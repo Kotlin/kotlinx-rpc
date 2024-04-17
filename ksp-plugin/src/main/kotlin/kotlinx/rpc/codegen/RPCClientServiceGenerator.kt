@@ -24,8 +24,8 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
     fun generate(service: RPCServiceDeclaration) {
         val writer = codegen.createNewFile(
             dependencies = Dependencies(aggregating = true, service.file),
-            packageName = "kotlinx.rpc",
-            fileName = service.simpleName.withClientImplSuffix(),
+            packageName = service.packageName,
+            fileName = service.simpleName.withStubImplSuffix(useKSPSuffix = false),
             extensionName = "kt",
         ).bufferedWriter(charset = Charsets.UTF_8).codeWriter()
 
@@ -40,45 +40,71 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         writer.writeLine("@file:OptIn(InternalRPCApi::class)")
         writer.newLine()
 
-        writer.writeLine("package kotlinx.rpc")
-        writer.newLine()
+        if (service.packageName.isNotBlank()) {
+            writer.writeLine("package ${service.packageName}")
+            writer.newLine()
+        }
 
         generateImports(writer, service)
 
-        writer.writeLine("@Suppress(\"unused\")")
-        writer.writeLine("class ${service.simpleName.withClientImplSuffix()}(")
-        with(writer.nested()) {
-            writeLine("private val $ID_PROPERTY_NAME: Long,")
-            writeLine("private val $CLIENT_PROPERTY_NAME: RPCClient,")
-        }
-        writer.writeLine(") : ${service.fullName} {")
+        // todo remove after all compiler parts are done
+        //  left commented out for further debugging
+//        writer.write("class ${service.simpleName.withClientImplSuffix()}(")
+//        writer.newLine()
+//        with(writer.nested()) {
+//            write("private val $ID_PROPERTY_NAME: Long,")
+//            newLine()
+//            write("private val $CLIENT_PROPERTY_NAME: RPCClient,")
+//            newLine()
+//        }
+//        writer.write(") : ${service.fullName} {")
+//        writer.newLine()
+//
+//        val nested = writer.nested()
+//
+//        nested.write("override val coroutineContext: CoroutineContext = $CLIENT_PROPERTY_NAME.provideStubContext($ID_PROPERTY_NAME)")
+//        nested.newLine()
+//        nested.newLine()
+//
+//        nested.write("private val $SCOPE_PROPERTY_NAME: CoroutineScope = this")
+//        nested.newLine()
+//        nested.newLine()
+//
+//        service.fields.forEach {
+//            it.toCode(service.fullName, nested)
+//        }
+//
+//        service.functions.forEach {
+//            it.toCode(service.fullName, nested)
+//        }
+//        generateProviders(writer.nested(), service)
+//        writer.write("}")
 
-        val nested = writer.nested()
-
-        nested.writeLine("override val coroutineContext: CoroutineContext = $CLIENT_PROPERTY_NAME.provideStubContext($ID_PROPERTY_NAME)")
-        nested.newLine()
-
-        nested.writeLine("private val $SCOPE_PROPERTY_NAME: CoroutineScope = this")
-        nested.newLine()
-
-        service.fields.forEach {
-            it.toCode(service.fullName, nested)
-        }
-
-        service.functions.forEach {
-            it.toCode(service.fullName, nested)
-        }
-        generateProviders(writer.nested(), service)
-        writer.writeLine("}")
+        generateStubClass(service, writer)
 
         writer.flush()
     }
 
+    private fun generateStubClass(service: RPCServiceDeclaration, writer: CodeWriter) {
+        writer.writeLine("@Deprecated(level = DeprecationLevel.HIDDEN, message = \"Internal kotlinx.rpc API, do not use!\")")
+        writer.writeLine("class ${service.simpleName.withStubImplSuffix(useKSPSuffix = false)} {")
+
+        with(writer.nested()) {
+            service.functions.forEach {
+                it.generateFunctionClass(this)
+            }
+
+            writeLine("companion object")
+        }
+
+        writer.writeLine("}")
+    }
+
     private fun generateImports(writer: CodeWriter, service: RPCServiceDeclaration) {
         writer.writeLine("import kotlinx.coroutines.*")
-        writer.writeLine("import kotlinx.serialization.Serializable")
-        writer.writeLine("import kotlinx.serialization.Contextual")
+        writer.writeLine("import kotlinx.serialization.*")
         writer.writeLine("import kotlinx.rpc.internal.*")
+        writer.writeLine("import kotlinx.rpc.*")
         writer.writeLine("import kotlin.reflect.typeOf")
         writer.writeLine("import kotlin.coroutines.CoroutineContext")
         service.collectRootImports().forEach {
@@ -88,12 +114,10 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         writer.newLine()
     }
 
-    private fun RPCServiceDeclaration.Function.toCode(serviceType: String, writer: CodeWriter) {
-        generateFunctionClass(writer)
-
+    private fun RPCServiceDeclaration.Function.toCode(service: RPCServiceDeclaration, writer: CodeWriter) {
         val returnTypeGenerated = if (returnType.isUnit()) ": Unit" else ": ${returnType.toCode()}"
         writer.writeLine("override suspend fun ${name}(${argumentTypes.joinToString { it.toCode() }})$returnTypeGenerated = scopedClientCall($SCOPE_PROPERTY_NAME) {")
-        generateBody(serviceType, writer.nested())
+        generateBody(service, writer.nested())
         writer.writeLine("}")
         writer.newLine()
     }
@@ -119,7 +143,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
 
         val rpcFiled = "RPCField(\"$serviceType\", $ID_PROPERTY_NAME, \"$name\", typeOf<$codeType>())"
 
-        val codeDeclaration = "override val $name: $codeType $prefix $CLIENT_PROPERTY_NAME.$method($SCOPE_PROPERTY_NAME, $rpcFiled)$suffix"
+        val codeDeclaration = "final override val $name: $codeType $prefix $CLIENT_PROPERTY_NAME.$method($SCOPE_PROPERTY_NAME, $rpcFiled)$suffix"
 
         writer.writeLine(codeDeclaration)
         writer.newLine()
@@ -149,10 +173,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         return this == null || this.declaration.simpleName.getShortName() == "Unit"
     }
 
-    private fun RPCServiceDeclaration.Function.generateBody(serviceType: String, writer: CodeWriter) {
-        writer.writeLine("val returnType = typeOf<${returnType.toCode()}>()")
-        writer.writeLine("val dataType = typeOf<${name.functionGeneratedClass()}>()")
-
+    private fun RPCServiceDeclaration.Function.generateBody(service: RPCServiceDeclaration, writer: CodeWriter) {
         val data = "${name.functionGeneratedClass()}${
             if (argumentTypes.isEmpty()) "" else "(${
                 argumentTypes.joinToString {
@@ -164,13 +185,15 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             })"
         }"
 
-        val rpcCall = "RPCCall(\"$serviceType\", $ID_PROPERTY_NAME, \"$name\", RPCCall.Type.Method, $data, dataType, returnType)"
+        val rpcCall =
+            "RPCCall(\"${service.fullName}\", $ID_PROPERTY_NAME, \"$name\", RPCCall.Type.Method, $data, typeOf<${
+                name.functionGeneratedClass()
+            }>(), typeOf<${returnType.toCode()}>())"
         writer.writeLine("$CLIENT_PROPERTY_NAME.call($rpcCall)")
     }
 
     private fun RPCServiceDeclaration.Function.generateFunctionClass(writer: CodeWriter) {
         writer.writeLine("@Serializable")
-        writer.writeLine("@Suppress(\"unused\")")
         val classOrObject = if (argumentTypes.isEmpty()) "object" else "class"
         writer.writeLine("internal $classOrObject ${name.functionGeneratedClass()}${if (argumentTypes.isEmpty()) " : RPCMethodClassArguments {" else "("}")
         if (argumentTypes.isNotEmpty()) {
@@ -198,36 +221,40 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
 
     private fun generateProviders(writer: CodeWriter, service: RPCServiceDeclaration) {
         writer.newLine()
-        writer.writeLine("companion object : RPCClientObject<${service.fullName}> {")
+        writer.writeLine("companion object : RPCStubObject<${service.fullName}> {")
         with(writer.nested()) {
             val mapFunction = if (service.functions.isEmpty()) "emptyMap()" else "mapOf("
             writeLine("private val methodNames: Map<String, kotlin.reflect.KType> = $mapFunction")
             if (service.functions.isNotEmpty()) {
                 with(nested()) {
                     service.functions.forEach { function ->
-                        writeLine("${service.fullName}::${function.name}.name to typeOf<${service.simpleName.withClientImplSuffix()}.${function.name.functionGeneratedClass()}>(),")
+                        writeLine("\"${function.name}\" to typeOf<${function.name.functionGeneratedClass()}>(),")
                     }
                 }
                 writeLine(")")
             }
             newLine()
 
-            writeLine("@Suppress(\"unused\")")
-            writeLine("override fun methodTypeOf(methodName: String): kotlin.reflect.KType? = methodNames[methodName]")
-            newLine()
-
             writeLine("override fun withClient(serviceId: Long, client: RPCClient): ${service.fullName} = ${service.simpleName.withClientImplSuffix()}(serviceId, client)")
             newLine()
 
-            writeLine("override fun rpcFields(service: ${service.fullName}): List<RPCDeferredField<*>> = with(service) {")
+            writeLine("override fun methodTypeOf(methodName: String): kotlin.reflect.KType? = methodNames[methodName]")
+            newLine()
+
+            writeLine("override fun withClient(serviceId: Long, client: RPCClient): ${service.fullName} = ${service.simpleName.withStubImplSuffix()}(client)")
+            newLine()
+
+            writeLine("override fun rpcFields(service: ${service.fullName}): List<RPCDeferredField<*>> {")
             with(nested()) {
                 if (service.fields.isEmpty()) {
                     writeLine("return emptyList()")
                 } else {
-                    writeLine("return listOf(")
+                    write("return listOf<Any?>(")
+                    newLine()
                     with(nested()) {
                         service.fields.forEach {
-                            writeLine("${it.name},")
+                            write("service.${it.name},")
+                            newLine()
                         }
                     }
                     writeLine(") as List<RPCDeferredField<*>>")
@@ -239,6 +266,6 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
     }
 }
 
-fun String.withClientImplSuffix() = "${this}Client"
+fun String.withStubImplSuffix(useKSPSuffix: Boolean = true) = "${this}Stub${if (useKSPSuffix) "_KSP" else ""}"
 
 fun String.functionGeneratedClass() = "${replaceFirstChar { it.uppercaseChar() }}_RPCData"

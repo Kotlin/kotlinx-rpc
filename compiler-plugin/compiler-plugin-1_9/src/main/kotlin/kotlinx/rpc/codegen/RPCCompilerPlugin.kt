@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 
 @OptIn(ExperimentalCompilerApi::class)
 class RPCCommandLineProcessor : CommandLineProcessor {
-    override val pluginId = "kotlinx.rpc.compiler-plugin"
+    override val pluginId = "kotlinx.rpc.codegen"
 
     override val pluginOptions = emptyList<CliOption>()
 }
@@ -24,7 +24,7 @@ class RPCCompilerPlugin : CompilerPluginRegistrar() {
         VersionSpecificApi.INSTANCE = VersionSpecificApiImpl
     }
 
-    override val supportsK2: Boolean = false
+    override val supportsK2: Boolean = true
 
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
         val extension = RPCCompilerPluginCore.provideExtension(configuration)

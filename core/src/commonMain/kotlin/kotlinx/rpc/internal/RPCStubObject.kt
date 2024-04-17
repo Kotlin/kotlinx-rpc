@@ -9,13 +9,13 @@ import kotlinx.rpc.RPCClient
 import kotlin.reflect.KType
 
 @InternalRPCApi
-public interface RPCClientObject<T : RPC> :
-    RPCClientProvider<T>,
+public interface RPCStubObject<T : RPC> :
+    RPCStubServiceProvider<T>,
     RPCServiceMethodSerializationTypeProvider,
     RPCServiceFieldsProvider<T>
 
 @InternalRPCApi
-public interface RPCClientProvider<T : RPC> {
+public interface RPCStubServiceProvider<T : RPC> {
     public fun withClient(serviceId: Long, client: RPCClient) : T
 }
 

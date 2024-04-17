@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
-import org.jetbrains.kotlin.platform.konan.isNative
 
 internal class RPCIrExtension(
     private val logger: MessageCollector,
@@ -19,10 +18,9 @@ internal class RPCIrExtension(
         moduleFragment: IrModuleFragment,
         pluginContext: IrPluginContext,
     ) {
-        if (versionSpecificApi.isJs(pluginContext.platform) || pluginContext.platform.isNative()) {
-            val context = RPCIrContext(pluginContext, versionSpecificApi)
+        val context = RPCIrContext(pluginContext, versionSpecificApi)
 
-            moduleFragment.transform(RPCIrServiceProcessor(logger), context)
-        }
+        val processor = RPCIrServiceProcessor(logger)
+        moduleFragment.transform(processor, context)
     }
 }
