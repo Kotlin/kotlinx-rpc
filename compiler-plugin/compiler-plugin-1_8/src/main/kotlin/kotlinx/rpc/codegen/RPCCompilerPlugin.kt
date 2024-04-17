@@ -24,7 +24,7 @@ class RPCCompilerPlugin : CompilerPluginRegistrar() {
         VersionSpecificApi.upload(VersionSpecificApiImpl)
     }
 
-    override val supportsK2: Boolean = false
+    override val supportsK2: Boolean = true
 
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
         val extension = RPCCompilerPluginCore.provideExtension(configuration)
