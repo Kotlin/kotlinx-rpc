@@ -4,6 +4,7 @@
 
 package org.jetbrains.krpc
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.*
@@ -37,17 +38,17 @@ val stubEngine = object : RPCClient {
         error("ok")
     }
 
-    override fun <T> registerPlainFlowField(field: RPCField): Flow<T> {
+    override fun <T> registerPlainFlowField(serviceScope: CoroutineScope, field: RPCField): Flow<T> {
         logger.info { "registered flow: ${field.name}" }
-        return flow {  }
+        return flow { }
     }
 
-    override fun <T> registerSharedFlowField(field: RPCField): SharedFlow<T> {
+    override fun <T> registerSharedFlowField(serviceScope: CoroutineScope, field: RPCField): SharedFlow<T> {
         logger.info { "registered flow: ${field.name}" }
         return MutableSharedFlow(1)
     }
 
-    override fun <T> registerStateFlowField(field: RPCField): StateFlow<T> {
+    override fun <T> registerStateFlowField(serviceScope: CoroutineScope, field: RPCField): StateFlow<T> {
         logger.info { "registered flow: ${field.name}" }
 
         @Suppress("UNCHECKED_CAST")

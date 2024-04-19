@@ -31,33 +31,36 @@ public interface RPCClient : CoroutineScope {
      * and returns the instance of the flow to be consumed
      *
      * @param T type parameter for Flow
+     * @param serviceScope Service's coroutine scope
      * @param field object that contains information about the field,
      * that is used to be mapped to the corresponding field pn server.
      * @return Flow instance to be consumed.
      */
-    public fun <T> registerPlainFlowField(field: RPCField): Flow<T>
+    public fun <T> registerPlainFlowField(serviceScope: CoroutineScope, field: RPCField): Flow<T>
 
     /**
      * Registers SharedFlow<T> field of the interface. Sends initialization request, subscribes to emitted values
      * and returns the instance of the flow to be consumed
      *
      * @param T type parameter for SharedFlow
+     * @param serviceScope Service's coroutine scope
      * @param field object that contains information about the field,
      * that is used to be mapped to the corresponding field pn server.
      * @return SharedFlow instance to be consumed.
      */
-    public fun <T> registerSharedFlowField(field: RPCField): SharedFlow<T>
+    public fun <T> registerSharedFlowField(serviceScope: CoroutineScope, field: RPCField): SharedFlow<T>
 
     /**
      * Registers StateFlow<T> field of the interface. Sends initialization request, subscribes to emitted values
      * and returns the instance of the flow to be consumed
      *
      * @param T type parameter for StateFlow
+     * @param serviceScope Service's coroutine scope
      * @param field object that contains information about the field,
      * that is used to be mapped to the corresponding field pn server.
      * @return StateFlow instance to be consumed.
      */
-    public fun <T> registerStateFlowField(field: RPCField): StateFlow<T>
+    public fun <T> registerStateFlowField(serviceScope: CoroutineScope, field: RPCField): StateFlow<T>
 
     /**
      * Provides child [CoroutineContext] for a new [RPC] service stub.

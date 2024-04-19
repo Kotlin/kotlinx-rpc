@@ -85,7 +85,7 @@ public abstract class KRPCClient(
     @OptIn(InternalCoroutinesApi::class)
     @InternalKRPCApi
     final override fun provideStubContext(serviceId: Long): CoroutineContext {
-        val childContext = SupervisorJob(coroutineContext.job)
+        val childContext = SupervisorJob(coroutineContext.job).withClientStreamScope()
 
         childContext.job.invokeOnCompletion(onCancelling = true) {
             if (!clientCancelled) {
@@ -133,25 +133,25 @@ public abstract class KRPCClient(
         }
     }
 
-    final override fun <T> registerPlainFlowField(field: RPCField): Flow<T> {
-        return RPCFlow.Plain<T>(field.serviceTypeString).also { rpcFlow ->
-            initializeFlowField(rpcFlow, field)
+    final override fun <T> registerPlainFlowField(serviceScope: CoroutineScope, field: RPCField): Flow<T> {
+        return RPCFlow.Plain<T>(field.serviceTypeString, serviceScope.coroutineContext.job).also { rpcFlow ->
+            serviceScope.initializeFlowField(rpcFlow, field)
         }
     }
 
-    final override fun <T> registerSharedFlowField(field: RPCField): SharedFlow<T> {
-        return RPCFlow.Shared<T>(field.serviceTypeString).also { rpcFlow ->
-            initializeFlowField(rpcFlow, field)
+    final override fun <T> registerSharedFlowField(serviceScope: CoroutineScope, field: RPCField): SharedFlow<T> {
+        return RPCFlow.Shared<T>(field.serviceTypeString, serviceScope.coroutineContext.job).also { rpcFlow ->
+            serviceScope.initializeFlowField(rpcFlow, field)
         }
     }
 
-    final override fun <T> registerStateFlowField(field: RPCField): StateFlow<T> {
-        return RPCFlow.State<T>(field.serviceTypeString).also { rpcFlow ->
-            initializeFlowField(rpcFlow, field)
+    final override fun <T> registerStateFlowField(serviceScope: CoroutineScope, field: RPCField): StateFlow<T> {
+        return RPCFlow.State<T>(field.serviceTypeString, serviceScope.coroutineContext.job).also { rpcFlow ->
+            serviceScope.initializeFlowField(rpcFlow, field)
         }
     }
 
-    private fun <T, FlowT : Flow<T>> initializeFlowField(rpcFlow: RPCFlow<T, FlowT>, field: RPCField) {
+    private fun <T, FlowT : Flow<T>> CoroutineScope.initializeFlowField(rpcFlow: RPCFlow<T, FlowT>, field: RPCField) {
         val call = RPCCall(
             serviceTypeString = field.serviceTypeString,
             serviceId = field.serviceId,
@@ -162,47 +162,84 @@ public abstract class KRPCClient(
             returnType = field.type,
         )
 
+        /**
+         * Launched on the service scope (receiver)
+         * Moreover, this scope has [StreamScope] that is used to handle field streams.
+         * [StreamScope] is provided to a service via [provideStubContext].
+         */
         launch {
-            call(call, rpcFlow.deferred)
+            val rpcCall = call(call, rpcFlow.deferred)
+
+            rpcFlow.deferred.invokeOnCompletion { cause ->
+                if (cause == null) {
+                    rpcCall.streamContext.valueOrNull?.launchIf({ incomingHotFlowsAvailable }) {
+                        handleIncomingHotFlows(it)
+                    }
+                }
+            }
         }
     }
 
     final override suspend fun <T> call(call: RPCCall): T {
-        return CompletableDeferred<T>().also { result -> call(call, result) }.await()
+        val callCompletableResult = SupervisedCompletableDeferred<T>()
+        val rpcCall = call(call, callCompletableResult)
+        val result = callCompletableResult.await()
+
+        // incomingHotFlowsAvailable value is known after await
+        rpcCall.streamContext.valueOrNull?.launchIf({ incomingHotFlowsAvailable }) {
+            handleIncomingHotFlows(it)
+        }
+
+        return result
     }
 
-    private suspend fun <T> call(call: RPCCall, callResult: CompletableDeferred<T>) {
+    private suspend fun <T> call(call: RPCCall, callResult: CompletableDeferred<T>): RPCCallStreamContextFormatAndId {
         val wrappedCallResult = RequestCompletableDeferred(callResult)
-        val (streamContext, serialFormat, callId) = prepareAndExecuteCall(call, wrappedCallResult)
+        val rpcCall = prepareAndExecuteCall(call, wrappedCallResult)
 
-        launch {
-            handleOutgoingStreams(streamContext, serialFormat, call.serviceTypeString)
+        rpcCall.streamContext.valueOrNull?.launchIf({ outgoingStreamsAvailable }) {
+            handleOutgoingStreams(it, rpcCall.serialFormat, call.serviceTypeString)
         }
 
-        launch {
-            handleIncomingHotFlows(streamContext)
+        var requestCancelled = false
+
+        val streamScope = streamScopeOrNull()
+
+        streamScope?.onScopeCompletion(rpcCall.callId) {
+            connector.unsubscribeFromMessages(call.serviceTypeString, rpcCall.callId)
+
+            if (!requestCancelled) {
+                requestCancelled = true
+
+                sendCancellation(CancellationType.REQUEST, call.serviceId.toString(), rpcCall.callId)
+            }
         }
 
-        callResult.invokeOnCompletion(onCancelling = true) { cause ->
-            // todo remove leak when streams are present
-            if (cause != null || streamContext.valueOrNull == null) {
-                connector.unsubscribeFromMessages(call.serviceTypeString, callId)
+        callResult.invokeOnCompletion { cause ->
+            // no streams available
+            if (rpcCall.streamContext.valueOrNull == null && streamScope != null) {
+                streamScope.cancelRequestScopeById(rpcCall.callId, "No streams provided", null)
             }
 
             if (cause != null) {
-                if (!wrappedCallResult.callExceptionOccurred) {
-                    sendCancellation(CancellationType.REQUEST, call.serviceId.toString(), callId)
-                }
+                connector.unsubscribeFromMessages(call.serviceTypeString, rpcCall.callId)
 
-                streamContext.valueOrNull?.close()
+                rpcCall.streamContext.valueOrNull?.cancel("Request failed", cause)
+
+                if (!wrappedCallResult.callExceptionOccurred && !requestCancelled) {
+                    requestCancelled = true
+                    sendCancellation(CancellationType.REQUEST, call.serviceId.toString(), rpcCall.callId)
+                }
             }
         }
+
+        return rpcCall
     }
 
     private suspend fun prepareAndExecuteCall(
         callInfo: RPCCall,
         callResult: RequestCompletableDeferred<*>,
-    ): CallResult {
+    ): RPCCallStreamContextFormatAndId {
         // we should wait for the handshake to finish
         awaitHandshakeCompletion()
 
@@ -211,8 +248,8 @@ public abstract class KRPCClient(
 
         logger.trace { "start a call[$callId] ${callInfo.callableName}" }
 
-        val streamContext = LazyRPCStreamContext {
-            RPCStreamContext(callId, config, connectionId, callInfo.serviceId)
+        val streamContext = LazyRPCStreamContext(streamScopeOrNull()) {
+            RPCStreamContext(callId, config, connectionId, callInfo.serviceId, it)
         }
         val serialFormat = prepareSerialFormat(streamContext)
         val firstMessage = serializeRequest(callId, callInfo, serialFormat)
@@ -227,10 +264,10 @@ public abstract class KRPCClient(
             callResult = callResult as RequestCompletableDeferred<Any?>
         )
 
-        return CallResult(streamContext, serialFormat, callId)
+        return RPCCallStreamContextFormatAndId(streamContext, serialFormat, callId)
     }
 
-    private data class CallResult(
+    private data class RPCCallStreamContextFormatAndId(
         val streamContext: LazyRPCStreamContext,
         val serialFormat: SerialFormat,
         val callId: String,

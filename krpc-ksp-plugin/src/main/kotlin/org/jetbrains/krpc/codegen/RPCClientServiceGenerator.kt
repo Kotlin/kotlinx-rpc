@@ -105,7 +105,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         generateFunctionClass(writer)
 
         val returnTypeGenerated = if (returnType.isUnit()) ": Unit" else ": ${returnType.toCode()}"
-        writer.write("override suspend fun ${name}(${argumentTypes.joinToString { it.toCode() }})$returnTypeGenerated = scopedClientCall(scope) {")
+        writer.write("override suspend fun ${name}(${argumentTypes.joinToString { it.toCode() }})$returnTypeGenerated = scopedClientCall(scope, id) {")
         writer.newLine()
         generateBody(serviceType, writer.nested())
         writer.write("}")
@@ -134,7 +134,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
 
         val rpcFiled = "RPCField(\"$serviceType\", id, \"$name\", typeOf<$codeType>())"
 
-        val codeDeclaration = "override val $name: $codeType $prefix client.$method($rpcFiled)$suffix"
+        val codeDeclaration = "override val $name: $codeType $prefix client.$method(scope, $rpcFiled)$suffix"
 
         writer.write(codeDeclaration)
         writer.newLine()

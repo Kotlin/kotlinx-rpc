@@ -4,11 +4,9 @@
 
 package org.jetbrains.krpc.internal.transport
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.BinaryFormat
@@ -22,15 +20,14 @@ import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
 
 @InternalKRPCApi
-public abstract class RPCServiceHandler : CoroutineScope {
+public abstract class RPCServiceHandler {
     protected abstract val sender: RPCMessageSender
     protected abstract val config: RPCConfig
     protected abstract val logger: CommonLogger
-    private val scope: CoroutineScope get() = this
 
-    protected suspend fun handleIncomingHotFlows(streamContext: LazyRPCStreamContext) {
-        for (hotFlow in streamContext.awaitInitialized().incomingHotFlows) {
-            scope.launch {
+    protected suspend fun handleIncomingHotFlows(streamContext: RPCStreamContext) {
+        for (hotFlow in streamContext.incomingHotFlows) {
+            streamContext.launch {
                 /** Start consuming incoming requests, see [RPCIncomingHotFlow.emit] */
                 hotFlow.emit(null)
             }
@@ -38,13 +35,13 @@ public abstract class RPCServiceHandler : CoroutineScope {
     }
 
     protected suspend fun handleOutgoingStreams(
-        streamContext: LazyRPCStreamContext,
+        streamContext: RPCStreamContext,
         serialFormat: SerialFormat,
         serviceTypeString: String,
     ) {
         val mutex = Mutex()
-        for (outgoingStream in streamContext.awaitInitialized().outgoingStreams) {
-            scope.launch {
+        for (outgoingStream in streamContext.outgoingStreams) {
+            streamContext.launch {
                 try {
                     when (outgoingStream.kind) {
                         StreamKind.Flow, StreamKind.SharedFlow, StreamKind.StateFlow -> {
