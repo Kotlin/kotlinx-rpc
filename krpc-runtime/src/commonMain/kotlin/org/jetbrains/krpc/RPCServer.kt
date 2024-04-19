@@ -5,6 +5,7 @@
 package org.jetbrains.krpc
 
 import kotlinx.coroutines.CoroutineScope
+import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 
 /**
@@ -20,10 +21,13 @@ public interface RPCServer : CoroutineScope {
      * @param Service the exact type of the server to be registered.
      * For example for service with `MyService` interface and `MyServiceImpl` implementation,
      * type `MyService` should be specified explicitly.
-     * @param service the actual implementation of the service that will handle the calls.
      * @param serviceKClass [KClass] of the [Service].
+     * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
      */
-    public fun <Service : RPC> registerService(service: Service, serviceKClass: KClass<Service>)
+    public fun <Service : RPC> registerService(
+        serviceKClass: KClass<Service>,
+        serviceFactory: (CoroutineContext) -> Service,
+    )
 }
 
 /**
@@ -33,8 +37,10 @@ public interface RPCServer : CoroutineScope {
  * @param Service the exact type of the server to be registered.
  * For example for service with `MyService` interface and `MyServiceImpl` implementation,
  * type `MyService` should be specified explicitly.
- * @param service the actual implementation of the service that will handle the calls.
+ * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
  */
-public inline fun <reified Service : RPC> RPCServer.registerService(service: Service) {
-    registerService(service, Service::class)
+public inline fun <reified Service : RPC> RPCServer.registerService(
+    noinline serviceFactory: (CoroutineContext) -> Service,
+) {
+    registerService(Service::class, serviceFactory)
 }

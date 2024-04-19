@@ -22,12 +22,13 @@ import org.jetbrains.krpc.internal.*
 import org.jetbrains.krpc.internal.logging.CommonLogger
 
 @InternalKRPCApi
-public abstract class RPCEndpointBase {
+public abstract class RPCServiceHandler : CoroutineScope {
     protected abstract val sender: RPCMessageSender
     protected abstract val config: RPCConfig
     protected abstract val logger: CommonLogger
+    private val scope: CoroutineScope get() = this
 
-    protected suspend fun handleIncomingHotFlows(scope: CoroutineScope, streamContext: LazyRPCStreamContext) {
+    protected suspend fun handleIncomingHotFlows(streamContext: LazyRPCStreamContext) {
         for (hotFlow in streamContext.awaitInitialized().incomingHotFlows) {
             scope.launch {
                 /** Start consuming incoming requests, see [RPCIncomingHotFlow.emit] */
@@ -37,7 +38,6 @@ public abstract class RPCEndpointBase {
     }
 
     protected suspend fun handleOutgoingStreams(
-        scope: CoroutineScope,
         streamContext: LazyRPCStreamContext,
         serialFormat: SerialFormat,
         serviceTypeString: String,

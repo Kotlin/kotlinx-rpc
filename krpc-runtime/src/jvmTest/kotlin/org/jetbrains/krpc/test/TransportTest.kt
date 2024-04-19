@@ -20,13 +20,11 @@ interface Echo : RPC {
     suspend fun echo(message: String): String
 }
 
-interface Second: RPC {
+interface Second : RPC {
     suspend fun second(message: String): String
 }
 
-class EchoServer : Echo {
-    override val coroutineContext: CoroutineContext = Job()
-
+class EchoImpl(override val coroutineContext: CoroutineContext) : Echo {
     val received = AtomicInteger()
 
     override suspend fun echo(message: String): String {
@@ -35,9 +33,7 @@ class EchoServer : Echo {
     }
 }
 
-class SecondServer : Second {
-    override val coroutineContext: CoroutineContext = Job()
-
+class SecondServer(override val coroutineContext: CoroutineContext) : Second {
     val received = AtomicInteger()
 
     override suspend fun second(message: String): String {
@@ -82,7 +78,6 @@ class TransportTest {
             }
         }
 
-        val echoServer = EchoServer()
         val server = serverOf(transports) {
             serialization {
                 json()
@@ -90,7 +85,7 @@ class TransportTest {
 
             waitForServices = false
         }
-        server.registerService<Echo>(echoServer)
+        server.registerService<Echo> { EchoImpl(it) }
 
         result.await()
         server.cancel()
@@ -105,12 +100,12 @@ class TransportTest {
             client.echo("foo")
         }
 
-        val echoServer = EchoServer()
         val server = serverOf(transports)
-        server.registerService<Echo>(echoServer)
+
+        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
 
         assertEquals("foo", result.await())
-        assertEquals(1, echoServer.received.get())
+        assertEquals(1, echoServices.single().received.get())
 
         server.cancel()
     }
@@ -126,13 +121,12 @@ class TransportTest {
             }
         }
 
-        val echoServer = EchoServer()
         val server = serverOf(transports)
-        server.registerService<Echo>(echoServer)
+        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
 
         val response = result.awaitAll()
         assertTrue { response.all { it == "foo" } }
-        assertEquals(10, echoServer.received.get())
+        assertEquals(10, echoServices.single().received.get())
 
         server.cancel()
     }
@@ -150,13 +144,12 @@ class TransportTest {
             }
         }
 
-        val echoServer = EchoServer()
         val server = serverOf(transports)
-        server.registerService<Echo>(echoServer)
+        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
 
         val response = result.awaitAll()
         assertTrue { response.all { it == "foo" } }
-        assertEquals(10, echoServer.received.get())
+        assertEquals(10, echoServices.sumOf { it.received.get() })
 
         server.cancel()
     }
@@ -179,13 +172,12 @@ class TransportTest {
             }
         }
 
-        val echoServer = EchoServer()
         val server = serverOf(transports)
-        server.registerService<Echo>(echoServer)
+        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
 
         val response = result.awaitAll().flatten()
         assertTrue { response.all { it == "foo" } }
-        assertEquals(100, echoServer.received.get())
+        assertEquals(100, echoServices.sumOf { it.received.get() })
 
         server.cancel()
     }
@@ -209,18 +201,16 @@ class TransportTest {
         val server = serverOf(transports)
 
         delay(1000)
-        val echoServer = EchoServer()
-        server.registerService<Echo>(echoServer)
+        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
         assertEquals("foo", firstResult.await())
-        assertEquals(1, echoServer.received.get())
-        echoServer.cancel()
+        assertEquals(1, echoServices.single().received.get())
+        echoServices.single().cancel()
 
         delay(1000)
-        val secondServer = SecondServer()
-        server.registerService<Second>(secondServer)
+        val secondServices = server.registerServiceAndReturn<Second, _> { SecondServer(it) }
         assertEquals("bar", secondResult.await())
-        assertEquals(1, secondServer.received.get())
-        secondServer.cancel()
+        assertEquals(1, secondServices.single().received.get())
+        secondServices.single().cancel()
 
         server.cancel()
     }
@@ -232,28 +222,23 @@ class TransportTest {
 
         val client = clientOf(transports).withService<KRPCTestService>()
 
-        val echoServer = EchoServer()
         val server = serverOf(transports)
-        server.registerService<Echo>(echoServer)
+        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
 
         client.cancel()
-        echoServer.coroutineContext.job.join()
-        assertTrue(echoServer.coroutineContext.job.isCancelled)
+        echoServices.single().coroutineContext.job.join()
+        assertTrue(echoServices.single().coroutineContext.job.isCancelled)
     }
 
-    @Test
-    @Ignore
-    fun testCancelFromServerToClient() = runBlocking {
-        val transports = LocalTransport()
+    private inline fun <reified Service : RPC, reified Impl : Service> RPCServer.registerServiceAndReturn(
+        crossinline body: (CoroutineContext) -> Impl,
+    ): List<Impl> {
+        val instances = mutableListOf<Impl>()
 
-        val client = clientOf(transports).withService<KRPCTestService>()
+        registerService<Service> { ctx ->
+            body(ctx).also { instances.add(it) }
+        }
 
-        val echoServer = EchoServer()
-        val server = serverOf(transports)
-        server.registerService<Echo>(echoServer)
-
-        echoServer.cancel()
-        client.coroutineContext.job.join()
-        assertTrue(client.coroutineContext.job.isCancelled)
+        return instances
     }
 }

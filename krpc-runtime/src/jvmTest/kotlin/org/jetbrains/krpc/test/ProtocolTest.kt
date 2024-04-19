@@ -15,6 +15,7 @@ import org.jetbrains.krpc.rpcClientConfig
 import org.jetbrains.krpc.rpcServerConfig
 import org.jetbrains.krpc.serialization.protobuf
 import org.junit.Test
+import kotlin.test.assertContentEquals
 
 @Suppress("detekt.MaxLineLength")
 @OptIn(ExperimentalSerializationApi::class)
@@ -24,13 +25,13 @@ class ProtocolTest : ProtocolTestBase() {
         // the client sends the handshake message first,
         // so as the service is not initializaed yet here,
         // the server should not have any handshake data yet
-        assertEquals(0, defaultServer.clientPlugins.size)
+        assertEquals(0, defaultServer.supportedPlugins.size)
 
         service.sendRequest()
 
         // after a call is finished - all handshake data should be exchanged
-        assertEquals(RPCPlugin.ALL, defaultClient.serverPlugins)
-        assertEquals(RPCPlugin.ALL, defaultServer.clientPlugins[defaultClient.id])
+        assertEquals(RPCPlugin.ALL, defaultClient.supportedPlugins)
+        assertEquals(RPCPlugin.ALL, defaultServer.supportedPlugins)
     }
 
     // old client: pre 5.3-beta (including)
@@ -50,7 +51,7 @@ class ProtocolTest : ProtocolTestBase() {
             "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallSuccess\",\"callId\":\"1:org.jetbrains.krpc.ProtocolTestServiceClient.SendRequest_RPCData:1\",\"serviceType\":\"org.jetbrains.krpc.test.ProtocolTestService\",\"data\":\"{}\"}",
             response.value
         )
-        assertEquals(0, defaultServer.clientPlugins.size)
+        assertEquals(0, defaultServer.supportedPlugins.size)
     }
 
     // old client: pre 5.3-beta (including)
@@ -77,7 +78,7 @@ class ProtocolTest : ProtocolTestBase() {
             "0a426f72672e6a6574627261696e732e6b7270632e696e7465726e616c2e7472616e73706f72742e5250434d6573736167652e43616c6c5375636365737342696e61727912750a44313a6f72672e6a6574627261696e732e6b7270632e50726f746f636f6c5465737453657276696365436c69656e742e53656e64526571756573745f525043446174613a31122b6f72672e6a6574627261696e732e6b7270632e746573742e50726f746f636f6c54657374536572766963651a00",
             response.value.toHexStringInternal()
         )
-        assertEquals(0, defaultServer.clientPlugins.size)
+        assertEquals(0, defaultServer.supportedPlugins.size)
     }
 
     @Test
@@ -106,7 +107,7 @@ class ProtocolTest : ProtocolTestBase() {
 
         job.join()
 
-        assertEquals(RPCPlugin.ALL + RPCPlugin.UNKNOWN, defaultClient.serverPlugins)
+        assertContentEquals(listOf(RPCPlugin.HANDSHAKE, RPCPlugin.UNKNOWN), defaultClient.supportedPlugins)
     }
 
     @Test
@@ -122,7 +123,7 @@ class ProtocolTest : ProtocolTestBase() {
 
         transport.client.receive()
 
-        assertEquals(RPCPlugin.ALL + RPCPlugin.UNKNOWN, defaultServer.clientPlugins.values.single())
+        assertContentEquals(listOf(RPCPlugin.HANDSHAKE, RPCPlugin.UNKNOWN), defaultServer.supportedPlugins)
     }
 
     @Test

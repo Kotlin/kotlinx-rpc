@@ -21,11 +21,31 @@ import org.jetbrains.krpc.internal.ShortEnumKSerializer
  */
 @InternalKRPCApi
 @Serializable(with = RPCPluginKeySerializer::class)
+@Suppress("detekt.MagicNumber")
 public enum class RPCPluginKey(override val uniqueIndex: Int, private val associatedPlugin: RPCPlugin): IndexedEnum {
     /**
      * Failed to decode key, possible due to different endpoint versions.
      */
     UNKNOWN(0, RPCPlugin.UNKNOWN),
+
+    GENERIC_MESSAGE_TYPE(1, RPCPlugin.HANDSHAKE),
+
+    /**
+     * Represents the type of resource that is being canceled.
+     * Possible values: 'request', 'service', 'endpoint'.
+     */
+    CANCELLATION_TYPE(2, RPCPlugin.CANCELLATION),
+
+    /**
+     * Represents id of the resource that is being canceled.
+     * It can be a service type name, service id, request call id or nothing (for endpoint cancellation).
+     */
+    CANCELLATION_ID(3, RPCPlugin.CANCELLATION),
+
+    /**
+     * Represents a service id that is unique to a current connection.
+     */
+    CLIENT_SERVICE_ID(4, RPCPlugin.CANCELLATION),
     ;
 
     init {

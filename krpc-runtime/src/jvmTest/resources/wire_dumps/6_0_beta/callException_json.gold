@@ -1,7 +1,7 @@
-[Client] [Send] $ {"type":"org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake","supportedPlugins":[-32767]}
-[Server] [Receive] $ {"type":"org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake","supportedPlugins":[-32767]}
-[Server] [Send] $ {"type":"org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake","supportedPlugins":[-32767],"connectionId":1}
-[Client] [Receive] $ {"type":"org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake","supportedPlugins":[-32767],"connectionId":1}
+[Client] [Send] $ {"type":"org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake","supportedPlugins":[-32767,-32766]}
+[Server] [Receive] $ {"type":"org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake","supportedPlugins":[-32767,-32766]}
+[Server] [Send] $ {"type":"org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake","supportedPlugins":[-32767,-32766],"connectionId":1}
+[Client] [Receive] $ {"type":"org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake","supportedPlugins":[-32767,-32766],"connectionId":1}
 [Client] [Send] $ {"type":"org.jetbrains.krpc.RPCMessage.CallData","callId":"1:org.jetbrains.krpc.SamplingServiceClient.CallException_RPCData:1","serviceType":"org.jetbrains.krpc.test.api.util.SamplingService","method":"callException","callType":"Method","data":"{}","connectionId":1,"serviceId":1}
 [Server] [Receive] $ {"type":"org.jetbrains.krpc.RPCMessage.CallData","callId":"1:org.jetbrains.krpc.SamplingServiceClient.CallException_RPCData:1","serviceType":"org.jetbrains.krpc.test.api.util.SamplingService","method":"callException","callType":"Method","data":"{}","connectionId":1,"serviceId":1}
 [Server] [Send] $ {"type":"org.jetbrains.krpc.RPCMessage.CallException","callId":"1:org.jetbrains.krpc.SamplingServiceClient.CallException_RPCData:1","serviceType":"org.jetbrains.krpc.test.api.util.SamplingService","cause":{"toStringMessage":"java.lang.IllegalStateException: Server exception","message":"Server exception","stacktrace":[],"cause":null,"className":"java.lang.IllegalStateException"},"connectionId":1,"serviceId":1}

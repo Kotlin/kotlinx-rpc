@@ -34,6 +34,7 @@ public final class org/jetbrains/krpc/RPCCall$Type : java/lang/Enum {
 
 public abstract interface class org/jetbrains/krpc/RPCClient : kotlinx/coroutines/CoroutineScope {
 	public abstract fun call (Lorg/jetbrains/krpc/RPCCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun provideStubContext (J)Lkotlin/coroutines/CoroutineContext;
 	public abstract fun registerPlainFlowField (Lorg/jetbrains/krpc/RPCField;)Lkotlinx/coroutines/flow/Flow;
 	public abstract fun registerSharedFlowField (Lorg/jetbrains/krpc/RPCField;)Lkotlinx/coroutines/flow/SharedFlow;
 	public abstract fun registerStateFlowField (Lorg/jetbrains/krpc/RPCField;)Lkotlinx/coroutines/flow/StateFlow;
@@ -116,7 +117,7 @@ public final class org/jetbrains/krpc/RPCField {
 }
 
 public abstract interface class org/jetbrains/krpc/RPCServer : kotlinx/coroutines/CoroutineScope {
-	public abstract fun registerService (Lorg/jetbrains/krpc/RPC;Lkotlin/reflect/KClass;)V
+	public abstract fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;)V
 }
 
 public abstract interface class org/jetbrains/krpc/RPCTransport : kotlinx/coroutines/CoroutineScope {
@@ -152,10 +153,16 @@ public final class org/jetbrains/krpc/internal/ReflectionUtilsKt {
 public final class org/jetbrains/krpc/internal/ReflectionUtils_jvmKt {
 }
 
+public final class org/jetbrains/krpc/internal/ScopedClientCallKt {
+}
+
 public final class org/jetbrains/krpc/internal/SerializationUtilsKt {
 }
 
 public final class org/jetbrains/krpc/internal/WithRPCClientObject_jvmKt {
+}
+
+public final class org/jetbrains/krpc/internal/transport/CancellationTypeKt {
 }
 
 public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$CallData$Companion {
@@ -317,6 +324,9 @@ public final class org/jetbrains/krpc/internal/transport/RPCCallMessage$StreamMe
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class org/jetbrains/krpc/internal/transport/RPCEndpoint$DefaultImpls {
+}
+
 public final class org/jetbrains/krpc/internal/transport/RPCGenericMessage$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lorg/jetbrains/krpc/internal/transport/RPCGenericMessage$$serializer;
 	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
@@ -326,10 +336,6 @@ public final class org/jetbrains/krpc/internal/transport/RPCGenericMessage$$seri
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lorg/jetbrains/krpc/internal/transport/RPCGenericMessage;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
-}
-
-public final class org/jetbrains/krpc/internal/transport/RPCGenericMessage$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
 public final class org/jetbrains/krpc/internal/transport/RPCMessage$Companion {

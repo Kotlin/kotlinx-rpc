@@ -1,2 +1,6 @@
 org.jetbrains.krpc.internal.transport.RPCPluginKey
   UNKNOWN
+  GENERIC_MESSAGE_TYPE
+  CANCELLATION_TYPE
+  CANCELLATION_ID
+  CLIENT_SERVICE_ID

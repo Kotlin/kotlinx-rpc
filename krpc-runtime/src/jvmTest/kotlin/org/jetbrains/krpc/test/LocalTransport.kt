@@ -6,19 +6,22 @@ package org.jetbrains.krpc.test
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.job
 import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.RPCTransportMessage
 import kotlin.coroutines.CoroutineContext
 
 class LocalTransport(parentScope: CoroutineScope? = null) : CoroutineScope {
-    override val coroutineContext = parentScope?.run {coroutineContext + Job() } ?: Job()
+    override val coroutineContext = parentScope?.run { SupervisorJob(coroutineContext.job) }
+        ?: SupervisorJob()
 
     private val clientIncoming = Channel<RPCTransportMessage>()
     private val serverIncoming = Channel<RPCTransportMessage>()
 
     val client: RPCTransport = object : RPCTransport {
-        override val coroutineContext: CoroutineContext = this@LocalTransport.coroutineContext
+        override val coroutineContext: CoroutineContext = Job(this@LocalTransport.coroutineContext.job)
 
         override suspend fun send(message: RPCTransportMessage) {
             serverIncoming.send(message)
@@ -30,7 +33,7 @@ class LocalTransport(parentScope: CoroutineScope? = null) : CoroutineScope {
     }
 
     val server: RPCTransport = object : RPCTransport {
-        override val coroutineContext: CoroutineContext = this@LocalTransport.coroutineContext
+        override val coroutineContext: CoroutineContext = Job(this@LocalTransport.coroutineContext)
 
         override suspend fun send(message: RPCTransportMessage) {
             clientIncoming.send(message)

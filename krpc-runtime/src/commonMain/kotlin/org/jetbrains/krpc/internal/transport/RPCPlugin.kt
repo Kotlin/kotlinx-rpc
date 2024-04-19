@@ -46,6 +46,11 @@ public enum class RPCPlugin(
      * BUT not the other way around.
      */
     HANDSHAKE(1, RPCVersion.V_6_0_BETA),
+
+    /**
+     * This feature adds support for proper service/request cancellation over the network.
+     */
+    CANCELLATION(2, RPCVersion.V_6_0_BETA),
     ;
 
     @InternalKRPCApi

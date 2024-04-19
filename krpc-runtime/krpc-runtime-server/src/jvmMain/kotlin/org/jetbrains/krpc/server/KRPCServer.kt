@@ -4,35 +4,22 @@
 
 package org.jetbrains.krpc.server
 
-import kotlinx.atomicfu.atomic
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.jetbrains.krpc.RPC
 import org.jetbrains.krpc.RPCConfig
 import org.jetbrains.krpc.RPCServer
 import org.jetbrains.krpc.RPCTransport
-import org.jetbrains.krpc.internal.SequentialIdCounter
+import org.jetbrains.krpc.internal.InternalKRPCApi
 import org.jetbrains.krpc.internal.logging.CommonLogger
 import org.jetbrains.krpc.internal.logging.initialized
+import org.jetbrains.krpc.internal.map.ConcurrentHashMap
 import org.jetbrains.krpc.internal.objectId
 import org.jetbrains.krpc.internal.qualifiedClassName
-import org.jetbrains.krpc.internal.transport.RPCPlugin
-import org.jetbrains.krpc.internal.transport.RPCProtocolMessage
+import org.jetbrains.krpc.internal.transport.*
 import org.jetbrains.krpc.server.internal.RPCServerConnector
 import org.jetbrains.krpc.server.internal.RPCServerService
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
-
-private val SERVER_ATOMIC_CONNECTION_COUNTER = atomic(initial = 0L)
-
-/**
- * Gives ids to the incoming connections in sequential order. Ids are sent to peers during the handshake process.
- */
-private val serverConnectionIdConuter = object : SequentialIdCounter {
-    override fun nextId(): Long {
-        return SERVER_ATOMIC_CONNECTION_COUNTER.incrementAndGet()
-    }
-}
 
 /**
  * Default implementation of [RPCServer].
@@ -52,11 +39,13 @@ private val serverConnectionIdConuter = object : SequentialIdCounter {
  * @param transport [RPCTransport] instance that will be used to send and receive RPC messages.
  * IMPORTANT: Must be exclusive to this server, otherwise unexpected behavior may occur.
  */
+@OptIn(InternalCoroutinesApi::class)
 public abstract class KRPCServer(
     private val config: RPCConfig.Server,
     transport: RPCTransport,
-) : RPCServer {
-    final override val coroutineContext: CoroutineContext = transport.coroutineContext
+) : RPCServer, RPCEndpoint {
+    // we make a child here, so we can send cancellation messages before closing the connection
+    final override val coroutineContext: CoroutineContext = SupervisorJob(transport.coroutineContext.job)
 
     private val logger = CommonLogger.initialized().logger(objectId())
 
@@ -68,20 +57,39 @@ public abstract class KRPCServer(
         )
     }
 
-    private val clientSupportedPlugins: MutableMap<Long, Set<RPCPlugin>> = mutableMapOf()
+    @InternalKRPCApi
+    final override val sender: RPCMessageSender get() = connector
 
-    private val idCounter: SequentialIdCounter = serverConnectionIdConuter
+    @InternalKRPCApi
+    final override var supportedPlugins: Set<RPCPlugin> = emptySet()
+        private set
 
-    private val subscribeToProtocolMessages: Job = launch {
-        connector.subscribeToProtocolMessages(::handleProtocolMessage)
+    private val rpcServices = ConcurrentHashMap<Long, RPCServerService<*>>()
+
+    // compatibility with clients that do not have serviceId
+    private var nullRpcServices = ConcurrentHashMap<String, RPCServerService<*>>()
+
+    private var cancelledByClient = false
+
+    init {
+        coroutineContext.job.invokeOnCompletion(onCancelling = true) {
+            if (!cancelledByClient) {
+                sendCancellation(CancellationType.ENDPOINT, null, null, closeTransportAfterSending = true)
+            }
+        }
+
+        launch {
+            connector.subscribeToProtocolMessages(::handleProtocolMessage)
+
+            connector.subscribeToGenericMessages(::handleGenericMessage)
+        }
     }
 
     private suspend fun handleProtocolMessage(message: RPCProtocolMessage) {
         when (message) {
             is RPCProtocolMessage.Handshake -> {
-                val connectionId = idCounter.nextId()
-                clientSupportedPlugins[connectionId] = message.supportedPlugins
-                connector.sendMessage(RPCProtocolMessage.Handshake(RPCPlugin.ALL, connectionId))
+                supportedPlugins = message.supportedPlugins
+                connector.sendMessage(RPCProtocolMessage.Handshake(RPCPlugin.ALL, connectionId = 1))
             }
 
             is RPCProtocolMessage.Failure -> {
@@ -93,18 +101,69 @@ public abstract class KRPCServer(
         }
     }
 
-    override fun <Service : RPC> registerService(service: Service, serviceKClass: KClass<Service>) {
-        val name = serviceKClass.qualifiedClassName
-
-        val rpcService = RPCServerService(service, serviceKClass, config, connector) { connectionId ->
-            connectionId?.let { clientSupportedPlugins[it] } ?: emptySet()
-        }
+    final override fun <Service : RPC> registerService(
+        serviceKClass: KClass<Service>,
+        serviceFactory: (CoroutineContext) -> Service,
+    ) {
+        val fqServiceName = serviceKClass.qualifiedClassName
 
         launch {
-            subscribeToProtocolMessages.join()
+            connector.subscribeToServiceMessages(fqServiceName) { message ->
+                val rpcServerService = when (val id = message.serviceId) {
+                    null -> nullRpcServices.computeIfAbsent(fqServiceName) {
+                        createNewServiceInstance(serviceKClass, serviceFactory)
+                    }
 
-            connector.subscribeToServiceMessages(name) {
-                rpcService.accept(it)
+                    else -> rpcServices.computeIfAbsent(id) {
+                        createNewServiceInstance(serviceKClass, serviceFactory)
+                    }
+                }
+
+                rpcServerService.accept(message)
+            }
+        }
+    }
+
+    private fun <Service : RPC> createNewServiceInstance(
+        serviceKClass: KClass<Service>,
+        serviceFactory: (CoroutineContext) -> Service,
+    ): RPCServerService<Service> {
+        val serviceInstanceContext = SupervisorJob(coroutineContext.job)
+
+        return RPCServerService(
+            service = serviceFactory(serviceInstanceContext),
+            serviceKClass = serviceKClass,
+            config = config,
+            connector = connector,
+            coroutineContext = serviceInstanceContext,
+        )
+    }
+
+    @InternalKRPCApi
+    final override fun handleCancellation(message: RPCGenericMessage) {
+        when (message.cancellationType()) {
+            CancellationType.ENDPOINT -> {
+                cancelledByClient = true
+
+                cancel("Server cancelled by client")
+                rpcServices.clear()
+            }
+
+            CancellationType.SERVICE -> {
+                val serviceId = message[RPCPluginKey.CLIENT_SERVICE_ID]?.toLongOrNull()
+                    ?: error("Expected CLIENT_SERVICE_ID for cancellation of type 'service' as Long value")
+
+                rpcServices[serviceId]?.cancel("Sevice cancelled by client")
+            }
+
+            CancellationType.REQUEST -> {
+                val serviceId = message[RPCPluginKey.CLIENT_SERVICE_ID]?.toLongOrNull()
+                    ?: error("Expected CLIENT_SERVICE_ID for cancellation of type 'request' as Long value")
+
+                val callId = message[RPCPluginKey.CANCELLATION_ID]
+                    ?: error("Expected CANCELLATION_ID for cancellation of type 'request'")
+
+                rpcServices[serviceId]?.cancelRequest(callId, "Request cancelled by client")
             }
         }
     }

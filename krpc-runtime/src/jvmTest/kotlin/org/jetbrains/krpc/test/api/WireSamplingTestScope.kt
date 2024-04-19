@@ -25,6 +25,9 @@ import org.jetbrains.krpc.internal.transport.RPCConnector
 import org.jetbrains.krpc.serialization.RPCSerialFormatConfiguration
 import org.jetbrains.krpc.serialization.json
 import org.jetbrains.krpc.serialization.protobuf
+import org.jetbrains.krpc.test.KRPCTestClient
+import org.jetbrains.krpc.test.KRPCTestServer
+import org.jetbrains.krpc.test.KRPCTestServiceBackend
 import org.jetbrains.krpc.test.LocalTransport
 import org.jetbrains.krpc.test.api.util.*
 import java.nio.file.Files
@@ -183,7 +186,15 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
     val transport = LocalTransport(scope)
 
     val client by lazy {
-        SamplingClient(rpcClientConfig { serialization { format.init(this) } }, transport)
+        KRPCTestClient(rpcClientConfig {
+            serialization {
+                format.init(this)
+            }
+
+            sharedFlowParameters {
+                replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
+            }
+        }, transport.client)
     }
 
     val service: SamplingService by lazy {
@@ -191,8 +202,8 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
     }
 
     val server by lazy {
-        SamplingServer(rpcServerConfig { serialization { format.init(this) } }, transport).apply {
-            registerService<SamplingService>(SamplingServiceImpl(transport.coroutineContext))
+        KRPCTestServer(rpcServerConfig { serialization { format.init(this) } }, transport.server).apply {
+            registerService<SamplingService> { SamplingServiceImpl(it) }
         }
     }
 
