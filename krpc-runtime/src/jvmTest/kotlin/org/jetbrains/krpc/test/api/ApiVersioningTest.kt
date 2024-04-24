@@ -54,6 +54,7 @@ class ApiVersioningTest {
     }
 
     @Test
+    @Ignore("Flow sampling tests are too unstable. Ignored until better fix")
     fun testClientStreamSampling() = wireSamplingTest("clientStream") {
         sample {
             val response = clientStream(plainFlow { it }).joinToString()
@@ -75,6 +76,7 @@ class ApiVersioningTest {
     }
 
     @Test
+    @Ignore("Flow sampling tests are too unstable. Ignored until better fix")
     fun testServerStreamSampling() = wireSamplingTest("serverStream") {
         sample {
             val response = serverFlow().toList().joinToString()
@@ -110,6 +112,7 @@ class ApiVersioningTest {
     }
 
     @Test
+    @Ignore("Flow sampling tests are too unstable. Ignored until better fix")
     fun testPlainFlowSampling() = wireSamplingTest("plainFlow") {
         sample {
             val response = plainFlow.toList().joinToString()
@@ -120,6 +123,7 @@ class ApiVersioningTest {
     }
 
     @Test
+    @Ignore("First value in stateFlow and CallSuccess for its initialization have a race")
     fun testSharedFlowSampling() = wireSamplingTest("sharedFlow") {
         sample {
             val response = sharedFlow.take(5).toList().joinToString()

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.*
 import org.jetbrains.krpc.RPCTransport
 import org.jetbrains.krpc.client.awaitFieldInitialization
 import org.jetbrains.krpc.client.withService
+import org.jetbrains.krpc.internal.streamScoped
 import org.jetbrains.krpc.registerService
 import org.jetbrains.krpc.rpcClientConfig
 import org.jetbrains.krpc.rpcServerConfig
@@ -41,7 +42,7 @@ abstract class KRPCTransportTestBase {
         }
     }
 
-    private val clientConfig  by lazy {
+    private val clientConfig by lazy {
         rpcClientConfig {
             sharedFlowParameters {
                 replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
@@ -169,96 +170,112 @@ abstract class KRPCTransportTestBase {
 
     @Test
     fun incomingStreamSyncCollect() {
-        val result = runBlocking { client.incomingStreamSyncCollect(flowOf("test1", "test2", "test3")) }
-        assertEquals(3, result)
-    }
-
-    @Test
-    fun incomingStreamAsyncCollect() {
-        val result = runBlocking { client.incomingStreamSyncCollect(flowOf("test1", "test2", "test3")) }
+        val result = runBlocking {
+            streamScoped {
+                client.incomingStreamSyncCollect(flowOf("test1", "test2", "test3"))
+            }
+        }
         assertEquals(3, result)
     }
 
     @Test
     fun outgoingStream() {
         runBlocking {
-            val result = client.outgoingStream()
-            assertEquals(listOf("a", "b", "c"), result.toList(mutableListOf()))
+            streamScoped {
+                val result = client.outgoingStream()
+                assertEquals(listOf("a", "b", "c"), result.toList(mutableListOf()))
+            }
         }
     }
 
     @Test
     fun bidirectionalStream() {
         runBlocking {
-            val result = client.bidirectionalStream(flowOf("test1", "test2", "test3"))
-            assertEquals(
-                listOf("test1".reversed(), "test2".reversed(), "test3".reversed()),
-                result.toList(mutableListOf()),
-            )
+            streamScoped {
+                val result = client.bidirectionalStream(flowOf("test1", "test2", "test3"))
+                assertEquals(
+                    listOf("test1".reversed(), "test2".reversed(), "test3".reversed()),
+                    result.toList(mutableListOf()),
+                )
+            }
         }
     }
 
     @Test
     fun streamInDataClass() {
         runBlocking {
-            val result = client.streamInDataClass(payload())
-            assertEquals(8, result)
+            streamScoped {
+                val result = client.streamInDataClass(payload())
+                assertEquals(8, result)
+            }
         }
     }
 
     @Test
     fun streamInStream() {
         runBlocking {
-            val result = client.streamInStream(payloadStream())
-            assertEquals(30, result)
+            streamScoped {
+                val result = client.streamInStream(payloadStream())
+                assertEquals(30, result)
+            }
         }
     }
 
     @Test
     fun streamOutDataClass() {
         runBlocking {
-            val result = client.streamOutDataClass()
-            assertEquals("test0", result.payload)
-            assertEquals(listOf("a0", "b0", "c0"), result.stream.toList(mutableListOf()))
+            streamScoped {
+                val result = client.streamOutDataClass()
+                assertEquals("test0", result.payload)
+                assertEquals(listOf("a0", "b0", "c0"), result.stream.toList(mutableListOf()))
+            }
         }
     }
 
     @Test
     fun streamOfStreamsInReturn() {
         runBlocking {
-            val result = client.streamOfStreamsInReturn().map {
-                it.toList(mutableListOf())
-            }.toList(mutableListOf())
-            assertEquals(listOf(listOf("a", "b", "c"), listOf("1", "2", "3")), result)
+            streamScoped {
+                val result = client.streamOfStreamsInReturn().map {
+                    it.toList(mutableListOf())
+                }.toList(mutableListOf())
+                assertEquals(listOf(listOf("a", "b", "c"), listOf("1", "2", "3")), result)
+            }
         }
     }
 
     @Test
     fun streamOfPayloadsInReturn() {
         runBlocking {
-            val result = client.streamOfPayloadsInReturn().map {
-                it.stream.toList(mutableListOf()).joinToString()
-            }.toList(mutableListOf()).joinToString()
-            assertEquals(
-                "a0, b0, c0, a1, b1, c1, a2, b2, c2, a3, b3, c3, a4, " +
-                        "b4, c4, a5, b5, c5, a6, b6, c6, a7, b7, c7, a8, b8, c8, a9, b9, c9",
-                result,
-            )
+            streamScoped {
+                val result = client.streamOfPayloadsInReturn().map {
+                    it.stream.toList(mutableListOf()).joinToString()
+                }.toList(mutableListOf()).joinToString()
+                assertEquals(
+                    "a0, b0, c0, a1, b1, c1, a2, b2, c2, a3, b3, c3, a4, " +
+                            "b4, c4, a5, b5, c5, a6, b6, c6, a7, b7, c7, a8, b8, c8, a9, b9, c9",
+                    result,
+                )
+            }
         }
     }
 
     @Test
     fun streamInDataClassWithStream() {
         runBlocking {
-            val result = client.streamInDataClassWithStream(payloadWithPayload())
-            assertEquals(5, result)
+            streamScoped {
+                val result = client.streamInDataClassWithStream(payloadWithPayload())
+                assertEquals(5, result)
+            }
         }
     }
 
     @Test
     fun streamInStreamWithStream() {
         runBlocking {
-            val result = client.streamInStreamWithStream(payloadWithPayloadStream())
+            val result = streamScoped {
+                client.streamInStreamWithStream(payloadWithPayloadStream())
+            }
             assertEquals(5, result)
         }
     }
@@ -266,15 +283,19 @@ abstract class KRPCTransportTestBase {
     @Test
     fun returnPayloadWithPayload() {
         runBlocking {
-            client.returnPayloadWithPayload().collectAndPrint()
+            streamScoped {
+                client.returnPayloadWithPayload().collectAndPrint()
+            }
         }
     }
 
     @Test
     fun returnFlowPayloadWithPayload() {
         runBlocking {
-            client.returnFlowPayloadWithPayload().collect {
-                it.collectAndPrint()
+            streamScoped {
+                client.returnFlowPayloadWithPayload().collect {
+                    it.collectAndPrint()
+                }
             }
         }
     }
@@ -282,16 +303,18 @@ abstract class KRPCTransportTestBase {
     @Test
     fun bidirectionalFlowOfPayloadWithPayload() {
         runBlocking {
-            val result = client.bidirectionalFlowOfPayloadWithPayload(
-                flow {
-                    repeat(5) {
-                        emit(payloadWithPayload(10))
-                    }
-                },
-            )
+            streamScoped {
+                val result = client.bidirectionalFlowOfPayloadWithPayload(
+                    flow {
+                        repeat(5) {
+                            emit(payloadWithPayload(10))
+                        }
+                    },
+                )
 
-            result.collect {
-                it.collectAndPrint()
+                result.collect {
+                    it.collectAndPrint()
+                }
             }
         }
     }
@@ -299,34 +322,40 @@ abstract class KRPCTransportTestBase {
     @Test
     fun bidirectionalAsyncStream() {
         runBlocking {
-            val flow = MutableSharedFlow<Int>(1)
-            val result = client.echoStream(flow.take(10))
-            launch {
-                var id = 0
-                result.collect {
-                    assertEquals(id, it)
-                    id++
-                    flow.emit(id)
+            streamScoped {
+                val flow = MutableSharedFlow<Int>(1)
+                val result = client.echoStream(flow.take(10))
+                launch {
+                    var id = 0
+                    result.collect {
+                        assertEquals(id, it)
+                        id++
+                        flow.emit(id)
+                    }
                 }
-            }
 
-            flow.emit(0)
+                flow.emit(0)
+            }
         }
     }
 
     @Test
     fun `RPC should be able to receive 100_000 ints in reasonable time`() {
         runBlocking {
-            val n = 100_000
-            assertEquals(client.getNInts(n).last(), n)
+            streamScoped {
+                val n = 100_000
+                assertEquals(client.getNInts(n).last(), n)
+            }
         }
     }
 
     @Test
     fun `RPC should be able to receive 100_000 ints with batching in reasonable time`() {
         runBlocking {
-            val n = 100_000
-            assertEquals(client.getNIntsBatched(n).last().last(), n)
+            streamScoped {
+                val n = 100_000
+                assertEquals(client.getNIntsBatched(n).last().last(), n)
+            }
         }
     }
 
@@ -339,6 +368,7 @@ abstract class KRPCTransportTestBase {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     @Suppress("detekt.TooGenericExceptionCaught")
     fun testException() {
@@ -385,8 +415,10 @@ abstract class KRPCTransportTestBase {
             val flag: Channel<Boolean> = Channel()
             val remote = launch {
                 try {
-                    client.delayForever().collect {
-                        flag.send(it)
+                    streamScoped {
+                        client.delayForever().collect {
+                            flag.send(it)
+                        }
                     }
                 } catch (e: CancellationException) {
                     throw e
@@ -563,26 +595,30 @@ abstract class KRPCTransportTestBase {
     @Test
     fun testSharedFlowInFunction() {
         runBlocking {
-            val flow = sharedFlowOfT { it }
-            println("hello 1.1")
+            streamScoped {
+                val flow = sharedFlowOfT { it }
+                println("hello 1.1")
 
-            val state = client.sharedFlowInFunction(flow)
-            println("hello 1.2")
+                val state = client.sharedFlowInFunction(flow)
+                println("hello 1.2")
 
-            assertEquals(1, state.first { it == 1 })
+                assertEquals(1, state.first { it == 1 })
+            }
         }
     }
 
     @Test
     fun testStateFlowInFunction() {
         runBlocking {
-            val flow = stateFlowOfT { it }
+            streamScoped {
+                val flow = stateFlowOfT { it }
 
-            val state = client.stateFlowInFunction(flow)
+                val state = client.stateFlowInFunction(flow)
 
-            flow.emit(42)
+                flow.emit(42)
 
-            assertEquals(1, state.first { it == 1 })
+                assertEquals(1, state.first { it == 1 })
+            }
         }
     }
 
