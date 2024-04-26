@@ -1,0 +1,3 @@
+public abstract interface annotation class org/jetbrains/krpc/internal/ExperimentalRPCApi : java/lang/annotation/Annotation {
+}
+
