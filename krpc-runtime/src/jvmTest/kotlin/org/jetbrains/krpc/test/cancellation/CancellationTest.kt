@@ -5,7 +5,12 @@
 package org.jetbrains.krpc.test.cancellation
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
 import org.jetbrains.krpc.client.withService
+import org.jetbrains.krpc.internal.invokeOnStreamScopeCompletion
+import org.jetbrains.krpc.internal.streamScoped
 import kotlin.test.*
 
 class CancellationTest {
@@ -175,6 +180,351 @@ class CancellationTest {
         serverInstances.forEachIndexed { i, impl ->
             checkAlive(expectAlive = false, impl.join(), "server instance $i")
         }
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testStreamScopeOutgoing() = runCancellationTest {
+        streamScoped {
+            service.outgoingStream(delayedFlow())
+            serverInstance().firstIncomingConsumed.await()
+        }
+
+        serverInstance().consumedAll.await()
+        assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testStreamScopeAbsentForOutgoingStream() = runCancellationTest {
+        assertFailsWith<IllegalStateException> {
+            service.outgoingStream(delayedFlow())
+        }
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testStreamScopeAbsentForIncomingStream() = runCancellationTest {
+        assertFailsWith<IllegalStateException> {
+            service.incomingStream()
+        }
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testStreamScopeIncoming() = runCancellationTest {
+        val flow = streamScoped {
+            service.incomingStream().apply {
+                unskippableDelay(300)
+            }
+        }
+
+        val consumed = flow.toList()
+
+        assertContentEquals(listOf(0), consumed)
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testExceptionInStreamScope() = runCancellationTest {
+        runCatching {
+            streamScoped {
+                service.outgoingStream(delayedFlow())
+                serverInstance().firstIncomingConsumed.await()
+                error("exception in stream scope")
+            }
+        }
+
+        serverInstance().consumedAll.await()
+        assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testExceptionInRequest() = runCancellationTest {
+        streamScoped {
+            runCatching {
+                service.outgoingStreamWithException(delayedFlow())
+            }
+
+            // to be sure that exception canceled the stream and not scope closure
+            serverInstance().consumedAll.await()
+        }
+
+        assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testNestedStreamScopesForbidden() {
+        runBlocking {
+            assertFailsWith<IllegalStateException> {
+                streamScoped { streamScoped { } }
+            }
+        }
+    }
+
+    @Test
+    fun testExceptionInRequestDoesNotCancelOtherRequests() = runCancellationTest {
+        val result = streamScoped {
+            val flow = service.incomingStream(delayMillis = 50)
+
+            runCatching {
+                service.outgoingStreamWithException(delayedFlow())
+            }
+
+            flow.toList()
+        }
+
+        serverInstance().consumedAll.await()
+        assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
+
+        assertContentEquals(List(10) { it }, result)
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testRequestCancellationCancelsStream() = runCancellationTest {
+        streamScoped {
+            val job = launch {
+                service.outgoingStreamWithDelayedResponse(delayedFlow(delayMillis = 50))
+            }
+
+            serverInstance().firstIncomingConsumed.await()
+
+            job.cancel("Test request cancelled")
+            job.join()
+            assertTrue("Job must be canceled") { job.isCancelled }
+
+            // close by request cancel and not scope closure
+            serverInstance().consumedAll.await()
+        }
+
+        assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testRequestCancellationCancelsStreamButNotOthers() = runCancellationTest {
+        val result = streamScoped {
+            val job = launch {
+                service.outgoingStreamWithDelayedResponse(delayedFlow(delayMillis = 50))
+            }
+
+            val flow = service.incomingStream(delayMillis = 100)
+
+            serverInstance().firstIncomingConsumed.await()
+
+            job.cancel("Test request cancelled")
+            job.join()
+            assertTrue("Job must be canceled") { job.isCancelled }
+
+            // close by request cancel and not scope closure
+            serverInstance().consumedAll.await()
+
+            flow.toList()
+        }
+
+        assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
+        assertContentEquals(List(10) { it }, result)
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testServiceCancellationCancelsStream() = runCancellationTest {
+        streamScoped {
+            launch {
+                service.outgoingStreamWithDelayedResponse(delayedFlow(delayMillis = 100))
+            }
+
+            serverInstance().firstIncomingConsumed.await()
+
+            service.cancel("Test request cancelled")
+            service.join()
+        }
+
+        assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testServiceCancellationCancelsStreamButNotOthers() = runCancellationTest {
+        val secondServiceResult = streamScoped {
+            launch {
+                service.outgoingStreamWithDelayedResponse(delayedFlow(delayMillis = 100))
+            }
+
+            serverInstance().firstIncomingConsumed.await()
+
+            val secondServiceFlow = client
+                .withService<CancellationService>()
+                .incomingStream(delayMillis = 50)
+
+            service.cancel("Test request cancelled")
+            service.join()
+
+            secondServiceFlow.toList()
+        }
+
+        assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
+        assertContentEquals(List(10) { it }, secondServiceResult)
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testScopeClosureCancelsAllStreams() = runCancellationTest {
+        streamScoped {
+            service.outgoingStream(delayedFlow())
+
+            client.withService<CancellationService>().outgoingStream(delayedFlow())
+
+            serverInstance().firstIncomingConsumed.await()
+
+            while (true) {
+                if (serverInstances.size == 2) {
+                    serverInstances[1].firstIncomingConsumed.await()
+                    break
+                }
+
+                unskippableDelay(50)
+            }
+        }
+
+        assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
+        assertContentEquals(listOf(0), serverInstances[1].consumedIncomingValues)
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testFieldFlowWorksWithNoScope() = runCancellationTest {
+        val result = service.fastFieldFlow.toList()
+
+        assertContentEquals(List(10) { it }, result)
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testServiceCancellationCancelsFieldFlow() = runCancellationTest {
+        val flow = service.slowFieldFlow
+        val firstCollected = CompletableDeferred<Int>()
+        val allCollected = mutableListOf<Int>()
+
+        val job = launch {
+            flow.collect {
+                if (!firstCollected.isCompleted) {
+                    firstCollected.complete(it)
+                }
+
+                allCollected.add(it)
+            }
+        }
+
+        firstCollected.await()
+
+        service.cancel("Service cancelled")
+
+        job.join()
+        assertContentEquals(listOf(0), allCollected)
+        assertContentEquals(listOf(0), serverInstance().emittedFromSlowField)
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testInvokeOnStreamScopeCompletionOnServerWithNoStreams() = runCancellationTest {
+        streamScoped {
+            service.closedStreamScopeCallback()
+        }
+
+        serverInstance().streamScopeCallbackResult.await()
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testInvokeOnStreamScopeCompletionOnServer() = runCancellationTest {
+        val result = streamScoped {
+            service.closedStreamScopeCallbackWithStream().toList()
+        }
+
+        serverInstance().streamScopeCallbackResult.await()
+
+        assertContentEquals(List(5) { it }, result)
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testInvokeOnStreamScopeCompletionOnClient() = runCancellationTest {
+        val streamScopeCompleted = CompletableDeferred<Unit>()
+
+        streamScoped {
+            service.closedStreamScopeCallback()
+
+            invokeOnStreamScopeCompletion {
+                streamScopeCompleted.complete(Unit)
+            }
+        }
+
+        streamScopeCompleted.await()
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testOutgoingHotFlow() = runCancellationTest {
+        streamScoped {
+            val state = MutableStateFlow(-1)
+
+            service.outgoingHotFlow(state)
+
+            val mirror = serverInstance().hotFlowMirror
+            mirror.first { it == -1 } // initial value
+
+            repeat(3) { value ->
+                state.value = value
+                mirror.first { it == value }
+            }
+        }
+
+        assertEquals(4, serverInstance().hotFlowConsumedSize.await())
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testIncomingHotFlow() = runCancellationTest {
+        val state = streamScoped {
+            val state = service.incomingHotFlow()
+
+            val mirror = serverInstance().hotFlowMirror
+            repeat(3) { value ->
+                state.first { it == value }
+                mirror.value = value
+            }
+
+            state.first { it == 3 }
+
+            state
+        }
+
+        serverInstance().incomingHotFlowJob.join()
+        assertEquals(3, state.value)
+        assertEquals(2, serverInstance().hotFlowMirror.value)
+
         stopAllAndJoin()
     }
 

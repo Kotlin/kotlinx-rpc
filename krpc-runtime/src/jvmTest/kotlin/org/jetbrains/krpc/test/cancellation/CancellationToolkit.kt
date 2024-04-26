@@ -4,12 +4,9 @@
 
 package org.jetbrains.krpc.test.cancellation
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withContext
 import org.jetbrains.krpc.RPCConfigBuilder
 import org.jetbrains.krpc.client.withService
 import org.jetbrains.krpc.internal.logging.CommonLogger
@@ -66,10 +63,18 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
     val service: CancellationService by lazy { client.withService() }
 
     val serverInstances: MutableList<CancellationServiceImpl> = mutableListOf()
+    private val firstServerInstance = CompletableDeferred<CancellationServiceImpl>()
+    suspend fun serverInstance(): CancellationServiceImpl = firstServerInstance.await()
 
     val server = KRPCTestServer(rpcServerConfig { serializationConfig() }, transport.server).apply {
         registerService<CancellationService> {
-            CancellationServiceImpl(it).also { impl -> serverInstances.add(impl) }
+            CancellationServiceImpl(it).also { impl ->
+                if (!firstServerInstance.isCompleted) {
+                    firstServerInstance.complete(impl)
+                }
+
+                serverInstances.add(impl)
+            }
         }
     }
 }
