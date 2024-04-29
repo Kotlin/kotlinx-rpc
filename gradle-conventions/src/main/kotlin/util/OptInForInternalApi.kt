@@ -6,8 +6,9 @@ package util
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
-internal fun KotlinProjectExtension.optInForInternalKRPCApi() {
+internal fun KotlinProjectExtension.optInForRPCApi() {
     sourceSets.all {
         languageSettings.optIn("org.jetbrains.krpc.internal.InternalKRPCApi")
+        languageSettings.optIn("org.jetbrains.krpc.internal.ExperimentalRPCApi")
     }
 }

@@ -3,7 +3,7 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
-import util.optInForInternalKRPCApi
+import util.optInForRPCApi
 
 plugins {
     id("conventions-common")
@@ -15,7 +15,7 @@ configure<KotlinJvmProjectExtension> {
         languageVersion.set(JavaLanguageVersion.of(8))
     }
 
-    optInForInternalKRPCApi()
+    optInForRPCApi()
 
     explicitApi()
 }

@@ -19,6 +19,7 @@ private val HEX_DIGITS_TO_DECIMAL = IntArray(128) { -1 }.apply {
     UPPER_CASE_HEX_DIGITS.forEachIndexed { index, char -> this[char.code] = index }
 }
 
+@InternalKRPCApi
 fun ByteArray.toHexStringInternal(lowercase: Boolean = true): String {
     val digits = if (lowercase) LOWER_CASE_HEX_DIGITS else UPPER_CASE_HEX_DIGITS
 
@@ -32,6 +33,7 @@ fun ByteArray.toHexStringInternal(lowercase: Boolean = true): String {
     }
 }
 
+@InternalKRPCApi
 fun String.hexToByteArrayInternal(): ByteArray {
     val result = ByteArray(length / 2)
 

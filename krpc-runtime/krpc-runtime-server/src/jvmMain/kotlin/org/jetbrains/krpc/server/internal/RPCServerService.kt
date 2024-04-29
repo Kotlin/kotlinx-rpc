@@ -28,11 +28,14 @@ internal class RPCServerService<T : RPC>(
     private val serviceKClass: KClass<T>,
     override val config: RPCConfig.Server,
     private val connector: RPCServerConnector,
-    override val coroutineContext: CoroutineContext,
+    coroutineContext: CoroutineContext,
 ) : RPCServiceHandler(), CoroutineScope {
     private val serviceTypeString = serviceKClass.qualifiedClassName
     override val logger = CommonLogger.initialized().logger(objectId(serviceTypeString))
     override val sender: RPCMessageSender get() = connector
+    private val scope: CoroutineScope = this
+
+    override val coroutineContext: CoroutineContext = coroutineContext.withServerStreamScope()
 
     private val methods: Map<String, KCallable<*>>
     private val fields: Map<String, KCallable<*>>
@@ -47,7 +50,7 @@ internal class RPCServerService<T : RPC>(
         fields = fieldsMap.associateBy { it.name }
         methods = methodsMap.associateBy { it.name }
 
-        service.coroutineContext.job.invokeOnCompletion {
+        coroutineContext.job.invokeOnCompletion {
             logger.trace { "Service completed with $it" }
         }
     }
@@ -64,6 +67,7 @@ internal class RPCServerService<T : RPC>(
             cancelRequest(
                 callId = message.callId,
                 message = "Cancelled after failed to process message: $message, error message: ${exception.message}",
+                cause = exception,
             )
 
             if (exception is CancellationException) {
@@ -103,15 +107,15 @@ internal class RPCServerService<T : RPC>(
             }
 
             is RPCCallMessage.StreamCancel -> {
+                // if no stream is present, it probably was already canceled
                 getAndAwaitStreamContext(message)
                     ?.cancelStream(message)
-                    ?: error("Invalid request call id: ${message.callId}")
             }
 
             is RPCCallMessage.StreamFinished -> {
+                // if no stream is present, it probably was already finished
                 getAndAwaitStreamContext(message)
                     ?.closeStream(message)
-                    ?: error("Invalid request call id: ${message.callId}")
             }
 
             is RPCCallMessage.StreamMessage -> {
@@ -126,13 +130,12 @@ internal class RPCServerService<T : RPC>(
         return requestMap[message.callId]?.streamContext?.awaitInitialized()
     }
 
-    @OptIn(InternalCoroutinesApi::class)
     @Suppress("detekt.ThrowsCount", "detekt.LongMethod")
     private fun handleCall(callData: RPCCallMessage.CallData) {
         val callId = callData.callId
 
-        val streamContext = LazyRPCStreamContext {
-            RPCStreamContext(callId, config, callData.connectionId, callData.serviceId)
+        val streamContext = LazyRPCStreamContext(streamScopeOrNull(scope)) {
+            RPCStreamContext(callId, config, callData.connectionId, callData.serviceId, it)
         }
         val serialFormat = prepareSerialFormat(streamContext)
 
@@ -166,11 +169,16 @@ internal class RPCServerService<T : RPC>(
             null
         }
 
+        var failure: Throwable? = null
+
         val requestJob = launch(start = CoroutineStart.LAZY) {
             val result = try {
                 @Suppress("detekt.SpreadOperator")
                 val value = when {
-                    isMethod -> callable.callSuspend(service, *argsArray!!)
+                    isMethod -> callScoped(callId) {
+                        callable.callSuspend(service, *argsArray!!)
+                    }
+
                     else -> callable.call(service)
                 }
 
@@ -208,6 +216,7 @@ internal class RPCServerService<T : RPC>(
                     throw cause.cause!!
                 }
 
+                failure = cause.cause ?: cause
                 val serializedCause = serializeException(cause.cause ?: cause)
                 RPCCallMessage.CallException(
                     callId = callId,
@@ -219,6 +228,8 @@ internal class RPCServerService<T : RPC>(
             } catch (cause: CancellationException) {
                 throw cause
             } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
+                failure = cause
+
                 val serializedCause = serializeException(cause)
                 RPCCallMessage.CallException(
                     callId = callId,
@@ -228,41 +239,56 @@ internal class RPCServerService<T : RPC>(
                     serviceId = callData.serviceId,
                 )
             }
+
             sender.sendMessage(result)
 
-            launch {
-                handleIncomingHotFlows(streamContext)
-            }
+            if (failure == null) {
+                streamContext.valueOrNull?.apply {
+                    launchIf({ incomingHotFlowsAvailable }) {
+                        handleIncomingHotFlows(it)
+                    }
 
-            launch {
-                handleOutgoingStreams(streamContext, serialFormat, serviceTypeString)
+                    launchIf({ outgoingStreamsAvailable }) {
+                        handleOutgoingStreams(it, serialFormat, serviceTypeString)
+                    }
+                } ?: run {
+                    cancelRequest(callId, fromJob = true)
+                }
+            } else {
+                cancelRequest(callId, "Server request failed", failure, fromJob = true)
             }
         }
 
-        val request = RPCRequest(requestJob, streamContext)
-
-        requestJob.invokeOnCompletion(onCancelling = true) {
-            request.cancelAndClose()
-        }
-
-        requestMap[callId] = request
+        requestMap[callId] = RPCRequest(requestJob, streamContext)
 
         requestJob.start()
     }
 
-    fun cancelRequest(callId: String, message: String? = null, cause: Throwable? = null) {
-        requestMap.remove(callId)?.cancelAndClose(message, cause)
+    fun cancelRequest(callId: String, message: String? = null, cause: Throwable? = null, fromJob: Boolean = false) {
+        requestMap.remove(callId)?.cancelAndClose(callId, message, cause, fromJob)
     }
 }
 
 private class RPCRequest(val handlerJob: Job, val streamContext: LazyRPCStreamContext) {
-    fun cancelAndClose(message: String? = null, cause: Throwable? = null) {
-        when {
-            message != null && cause != null -> handlerJob.cancel(message, cause)
-            message != null -> handlerJob.cancel(message)
-            else -> handlerJob.cancel()
+    fun cancelAndClose(
+        callId: String,
+        message: String? = null,
+        cause: Throwable? = null,
+        fromJob: Boolean = false,
+    ) {
+        if (!handlerJob.isCompleted && !fromJob) {
+            when {
+                message != null && cause != null -> handlerJob.cancel(message, cause)
+                message != null -> handlerJob.cancel(message)
+                else -> handlerJob.cancel()
+            }
         }
 
-        streamContext.valueOrNull?.close()
+        val ctx = streamContext.valueOrNull
+        if (ctx == null) {
+            streamContext.streamScopeOrNull?.cancelRequestScopeById(callId, message ?: "Scope cancelled", cause)
+        } else {
+            ctx.cancel(message ?: "Request cancelled", cause)
+        }
     }
 }

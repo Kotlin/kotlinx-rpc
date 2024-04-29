@@ -19,10 +19,17 @@ import org.jetbrains.krpc.internal.transport.RPCCallMessage
 import kotlin.coroutines.CoroutineContext
 
 @InternalKRPCApi
-public class LazyRPCStreamContext(private val initializer: () -> RPCStreamContext) {
+public class LazyRPCStreamContext(
+    public val streamScopeOrNull: StreamScope?,
+    private val initializer: (StreamScope) -> RPCStreamContext,
+) {
     private val deferred = CompletableDeferred<RPCStreamContext>()
     private val lazyValue by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-        initializer().also { deferred.complete(it) }
+        if (streamScopeOrNull == null) {
+            noStreamScopeError()
+        }
+
+        initializer(streamScopeOrNull).also { deferred.complete(it) }
     }
 
     public suspend fun awaitInitialized(): RPCStreamContext = deferred.await()
@@ -34,16 +41,47 @@ public class LazyRPCStreamContext(private val initializer: () -> RPCStreamContex
 
 @InternalKRPCApi
 public class RPCStreamContext(
-    private val callId: String,
+    internal val callId: String,
     private val config: RPCConfig,
     private val connectionId: Long?,
     private val serviceId: Long?,
+    private val streamScope: StreamScope,
 ) {
     private companion object {
         private const val STREAM_ID_PREFIX = "stream:"
     }
 
+    @InternalKRPCApi
+    public inline fun launchIf(
+        condition: RPCStreamContext.() -> Boolean,
+        noinline block: suspend CoroutineScope.(RPCStreamContext) -> Unit,
+    ) {
+        if (condition(this)) {
+            launch(block)
+        }
+    }
+
+    public fun launch(block: suspend CoroutineScope.(RPCStreamContext) -> Unit) {
+        streamScope.launch(callId) {
+            block(this@RPCStreamContext)
+        }
+    }
+
+    public fun cancel(message: String, cause: Throwable?) {
+        streamScope.cancelRequestScopeById(callId, message, cause)
+    }
+
+    init {
+        streamScope.onScopeCompletion(callId) { cause ->
+            close(cause)
+        }
+    }
+
     private val streamIdCounter = atomic(0L)
+
+    public val incomingHotFlowsAvailable: Boolean get() = incomingHotFlowsInitialized
+
+    public val outgoingStreamsAvailable: Boolean get() = outgoingStreamsInitialized
 
     private var incomingStreamsInitialized: Boolean = false
     private val incomingStreams by lazy {
@@ -98,7 +136,7 @@ public class RPCStreamContext(
         val incoming: Channel<Any?> = Channel(Channel.UNLIMITED)
         incomingChannels[streamId] = incoming
 
-        val stream = streamOf<StreamT>(streamKind, stateFlowInitialValue, incoming)
+        val stream = streamOf<StreamT>(streamId, streamKind, stateFlowInitialValue, incoming)
         incomingStreams[streamId] = RPCStreamCall(
             callId = callId,
             streamId = streamId,
@@ -113,16 +151,38 @@ public class RPCStreamContext(
 
     @Suppress("UNCHECKED_CAST")
     private fun <StreamT : Any> streamOf(
+        streamId: String,
         streamKind: StreamKind,
         stateFlowInitialValue: Any?,
         incoming: Channel<Any?>,
     ): StreamT {
         suspend fun consumeFlow(collector: FlowCollector<Any?>, onError: (Throwable) -> Unit) {
+            fun onClose() {
+                incoming.cancel()
+
+                incomingChannels.remove(streamId)
+                incomingStreams.remove(streamId)
+            }
+
             for (message in incoming) {
                 when (message) {
-                    is StreamCancel -> onError(message.cause.cause.deserialize())
-                    is StreamEnd -> return
-                    else -> collector.emit(message)
+                    is StreamCancel -> {
+                        onClose()
+                        onError(message.cause ?: streamCanceled())
+                    }
+
+                    is StreamEnd -> {
+                        onClose()
+                        if (streamKind != StreamKind.Flow) {
+                            onError(streamCanceled())
+                        }
+
+                        return
+                    }
+
+                    else -> {
+                        collector.emit(message)
+                    }
                 }
             }
         }
@@ -169,7 +229,7 @@ public class RPCStreamContext(
     }
 
     public suspend fun cancelStream(message: RPCCallMessage.StreamCancel) {
-        incomingChannelOf(message.streamId).send(StreamCancel(message))
+        incomingChannelOf(message.streamId).send(StreamCancel(message.cause.deserialize()))
     }
 
     public suspend fun send(message: RPCCallMessage.StreamMessage, serialFormat: SerialFormat) {
@@ -182,12 +242,27 @@ public class RPCStreamContext(
         return incomingChannels.getDeferred(streamId).await()
     }
 
-    public fun close() {
+    private var closed = false
+
+    private fun close(cause: Throwable?) {
+        if (closed) {
+            return
+        }
+
+        closed = true
+
         if (incomingChannelsInitialized) {
             for (channel in incomingChannels.values) {
-                if (channel.isCompleted) {
-                    @OptIn(ExperimentalCoroutinesApi::class)
-                    channel.getCompleted().close()
+                if (!channel.isCompleted) {
+                    continue
+                }
+
+                @OptIn(ExperimentalCoroutinesApi::class)
+                channel.getCompleted().apply {
+                    trySend(StreamEnd)
+
+                    // close for sending, but not for receiving our cancel message, if possible.
+                    close(cause)
                 }
             }
 
@@ -195,6 +270,15 @@ public class RPCStreamContext(
         }
 
         if (incomingStreamsInitialized) {
+            incomingStreams.values
+                .mapNotNull { it.getOrNull()?.stream }
+                .filterIsInstance<RPCIncomingHotFlow>()
+                .forEach { stream ->
+                    stream.subscriptionContexts.forEach {
+                        it.cancel(CancellationException("Stream closed", cause))
+                    }
+                }
+
             incomingStreams.clear()
         }
 
@@ -208,17 +292,17 @@ public class RPCStreamContext(
     }
 }
 
+private fun streamCanceled() = NoSuchElementException("Stream canceled")
+
 private object StreamEnd
 
-private class StreamCancel(
-    val cause: RPCCallMessage.StreamCancel
-)
+private class StreamCancel(val cause: Throwable? = null)
 
 private abstract class RPCIncomingHotFlow(
     private val rawFlow: MutableSharedFlow<Any?>,
     private val consume: suspend (FlowCollector<Any?>, onError: (Throwable) -> Unit) -> Unit,
 ) : MutableSharedFlow<Any?> {
-    private val subscriptionContexts by lazy { mutableListOf<CoroutineContext>() }
+    val subscriptionContexts by lazy { mutableSetOf<CoroutineContext>() }
 
     override suspend fun collect(collector: FlowCollector<Any?>): Nothing {
         val context = currentCoroutineContext()
@@ -231,13 +315,19 @@ private abstract class RPCIncomingHotFlow(
             }
         }
 
-        rawFlow.collect(collector)
+        try {
+            rawFlow.collect(collector)
+        } finally {
+            subscriptionContexts.remove(context)
+        }
     }
 
-    // value can be ignored, as actual values are coming from the
+    // value can be ignored, as actual values are coming from the rawFlow
     override suspend fun emit(value: Any?) {
         consume(rawFlow) { e ->
             subscriptionContexts.forEach { it.cancel(CancellationException(e.message, e)) }
+
+            subscriptionContexts.clear()
         }
     }
 }

@@ -10,9 +10,9 @@ public abstract class org/jetbrains/krpc/client/KRPCClient : org/jetbrains/krpc/
 	public synthetic fun getConfig ()Lorg/jetbrains/krpc/RPCConfig;
 	public final fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	protected fun getLogger ()Lorg/jetbrains/krpc/internal/logging/CommonLogger;
-	public final fun registerPlainFlowField (Lorg/jetbrains/krpc/RPCField;)Lkotlinx/coroutines/flow/Flow;
-	public final fun registerSharedFlowField (Lorg/jetbrains/krpc/RPCField;)Lkotlinx/coroutines/flow/SharedFlow;
-	public final fun registerStateFlowField (Lorg/jetbrains/krpc/RPCField;)Lkotlinx/coroutines/flow/StateFlow;
+	public final fun registerPlainFlowField (Lkotlinx/coroutines/CoroutineScope;Lorg/jetbrains/krpc/RPCField;)Lkotlinx/coroutines/flow/Flow;
+	public final fun registerSharedFlowField (Lkotlinx/coroutines/CoroutineScope;Lorg/jetbrains/krpc/RPCField;)Lkotlinx/coroutines/flow/SharedFlow;
+	public final fun registerStateFlowField (Lkotlinx/coroutines/CoroutineScope;Lorg/jetbrains/krpc/RPCField;)Lkotlinx/coroutines/flow/StateFlow;
 }
 
 public final class org/jetbrains/krpc/client/RPCClientUtilsKt {

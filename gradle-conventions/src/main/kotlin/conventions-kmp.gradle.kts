@@ -4,7 +4,7 @@
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import util.configureKotlin
-import util.optInForInternalKRPCApi
+import util.optInForRPCApi
 import util.optionalProperty
 
 plugins {
@@ -13,7 +13,7 @@ plugins {
 }
 
 configure<KotlinMultiplatformExtension> {
-    optInForInternalKRPCApi()
+    optInForRPCApi()
 
     explicitApi()
 }
