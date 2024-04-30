@@ -187,6 +187,12 @@ dependencyResolutionManagement {
 
             extra["kotlinVersion"] = kotlinVersion
 
+            gradle.rootProject {
+                allprojects {
+                    this.extra["kotlinVersion"] = kotlinVersion
+                }
+            }
+
             resolveKrpcVersion(versionCatalog, kotlinVersion)
 
             // Other Kotlin-dependant versions 

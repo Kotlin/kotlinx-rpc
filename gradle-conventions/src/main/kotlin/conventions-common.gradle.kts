@@ -3,14 +3,17 @@
  */
 
 import io.gitlab.arturbosch.detekt.Detekt
-import util.*
 import util.configureJvmPublication
 import util.configureKmpPublication
 import util.configureKrpcPublication
+import util.libs
 
 plugins {
     id("io.gitlab.arturbosch.detekt")
 }
+
+val kotlinVersion: String by extra
+val globalRootDir: String by extra
 
 val publishingExtension = project.extensions.findByType<PublishingExtension>()
 
@@ -30,9 +33,6 @@ if (name.startsWith("krpc")) {
         }
     }
 }
-
-val globalRootDir: String = extra["globalRootDir"] as? String
-    ?: error("Expected 'globalRootDir' property to be present in project's extra")
 
 val globalDetektDir = "$globalRootDir/detekt"
 
@@ -69,5 +69,15 @@ afterEvaluate {
         setDependsOn(dependsOn.filterNot {
             it is TaskProvider<*> && it.name.contains("detekt")
         })
+    }
+}
+
+if (kotlinVersion >= "1.8.0") {
+    apply(plugin = "org.jetbrains.kotlinx.kover")
+
+    val thisProject = project
+
+    rootProject.configurations.matching { it.name == "kover" }.all {
+        rootProject.dependencies.add("kover", thisProject)
     }
 }

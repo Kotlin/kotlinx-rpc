@@ -27,3 +27,6 @@ detekt/reports/**
 *.tmp
 
 .puppeteer
+
+# Ignore kover reports
+/kover
