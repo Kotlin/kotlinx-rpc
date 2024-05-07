@@ -294,7 +294,7 @@ class CancellationTest {
     fun testRequestCancellationCancelsStream() = runCancellationTest {
         streamScoped {
             val job = launch {
-                service.outgoingStreamWithDelayedResponse(delayedFlow(delayMillis = 50))
+                service.outgoingStreamWithDelayedResponse(delayedFlow())
             }
 
             serverInstance().firstIncomingConsumed.await()
