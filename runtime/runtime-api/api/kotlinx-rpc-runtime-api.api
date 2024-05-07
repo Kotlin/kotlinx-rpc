@@ -1,0 +1,3 @@
+public abstract interface annotation class kotlinx/rpc/internal/ExperimentalRPCApi : java/lang/annotation/Annotation {
+}
+
