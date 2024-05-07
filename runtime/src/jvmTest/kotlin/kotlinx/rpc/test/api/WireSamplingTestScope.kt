@@ -28,8 +28,13 @@ import kotlinx.rpc.test.KRPCTestClient
 import kotlinx.rpc.test.KRPCTestServer
 import kotlinx.rpc.test.KRPCTestServiceBackend
 import kotlinx.rpc.test.LocalTransport
-import kotlinx.rpc.test.api.util.*
+import kotlinx.rpc.test.api.util.GoldComparable
+import kotlinx.rpc.test.api.util.GoldComparisonResult
+import kotlinx.rpc.test.api.util.GoldUtils
+import kotlinx.rpc.test.api.util.checkGold
 import kotlinx.serialization.ExperimentalSerializationApi
+import org.jetbrains.krpc.test.api.util.SamplingService
+import org.jetbrains.krpc.test.api.util.SamplingServiceImpl
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.name

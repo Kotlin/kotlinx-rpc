@@ -1,4 +1,4 @@
-org.jetbrains.krpc.StackElement [Declared name: org.jetbrains.krpc.internal.transport.StackElement]
+org.jetbrains.krpc.StackElement [Declared name: kotlinx.rpc.internal.transport.StackElement]
   - clazz: kotlin.String
   - fileName: kotlin.String
     - Nullable

@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 
 @InternalKRPCApi
 @Serializable
+@SerialName("org.jetbrains.krpc.internal.transport.RPCMessage")
 public sealed interface RPCMessage {
     //NOTE: It turned out that the connectionId is not necessary when we have
     //     * 1-to-1 client-server connections.
@@ -35,6 +36,7 @@ public sealed interface RPCMessage {
  */
 @InternalKRPCApi
 @Serializable
+@SerialName("org.jetbrains.krpc.internal.transport.RPCGenericMessage")
 public data class RPCGenericMessage(
     override val connectionId: Long?,
     override val pluginParams: Map<RPCPluginKey, String>?
@@ -47,11 +49,13 @@ public data class RPCGenericMessage(
 
 @InternalKRPCApi
 @Serializable
+@SerialName("org.jetbrains.krpc.internal.transport.RPCProtocolMessage")
 public sealed interface RPCProtocolMessage : RPCMessage {
     override val pluginParams: Map<RPCPluginKey, String>
 
     @InternalKRPCApi
     @Serializable
+    @SerialName("org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake")
     public data class Handshake(
         val supportedPlugins: Set<RPCPlugin>,
         override val connectionId: Long? = null,
@@ -60,6 +64,7 @@ public sealed interface RPCProtocolMessage : RPCMessage {
 
     @InternalKRPCApi
     @Serializable
+    @SerialName("org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Failure")
     public data class Failure(
         val errorMessage: String,
         override val connectionId: Long? = null,

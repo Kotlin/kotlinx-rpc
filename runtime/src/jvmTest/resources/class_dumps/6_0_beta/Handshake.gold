@@ -1,4 +1,4 @@
-org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake
+org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake [Declared name: kotlinx.rpc.internal.transport.RPCProtocolMessage.Handshake]
   - connectionId: kotlin.Long
     - Nullable
   - pluginParams: kotlin.collections.Map

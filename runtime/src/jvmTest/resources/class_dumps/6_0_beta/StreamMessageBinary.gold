@@ -1,4 +1,4 @@
-org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessageBinary [Declared name: org.jetbrains.krpc.internal.transport.RPCCallMessage.StreamMessageBinary]
+org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessageBinary [Declared name: kotlinx.rpc.internal.transport.RPCCallMessage.StreamMessageBinary]
   - callId: kotlin.String
   - connectionId: kotlin.Long
     - Nullable

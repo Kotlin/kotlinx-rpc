@@ -1,10 +1,12 @@
-org.jetbrains.krpc.internal.transport.RPCMessage
+org.jetbrains.krpc.internal.transport.RPCMessage [Declared name: kotlinx.rpc.internal.transport.RPCMessage]
   - connectionId: kotlin.Long
     - Nullable
   - pluginParams: kotlin.collections.Map
     - Nullable
 
   org.jetbrains.krpc.RPCMessage
-  - Declared name: org.jetbrains.krpc.internal.transport.RPCCallMessage
+  - Declared name: kotlinx.rpc.internal.transport.RPCCallMessage
   org.jetbrains.krpc.internal.transport.RPCGenericMessage
+  - Declared name: kotlinx.rpc.internal.transport.RPCGenericMessage
   org.jetbrains.krpc.internal.transport.RPCProtocolMessage
+  - Declared name: kotlinx.rpc.internal.transport.RPCProtocolMessage

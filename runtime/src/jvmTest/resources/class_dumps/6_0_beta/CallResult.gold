@@ -1,4 +1,4 @@
-org.jetbrains.krpc.RPCMessage.CallResult [Declared name: org.jetbrains.krpc.internal.transport.RPCCallMessage.CallResult]
+org.jetbrains.krpc.RPCMessage.CallResult [Declared name: kotlinx.rpc.internal.transport.RPCCallMessage.CallResult]
   - callId: kotlin.String
   - connectionId: kotlin.Long
     - Nullable
@@ -9,6 +9,6 @@ org.jetbrains.krpc.RPCMessage.CallResult [Declared name: org.jetbrains.krpc.inte
   - serviceType: kotlin.String
 
   org.jetbrains.krpc.RPCMessage.CallException
-  - Declared name: org.jetbrains.krpc.internal.transport.RPCCallMessage.CallException
+  - Declared name: kotlinx.rpc.internal.transport.RPCCallMessage.CallException
   org.jetbrains.krpc.internal.transport.RPCMessage.CallSuccess
-  - Declared name: org.jetbrains.krpc.internal.transport.RPCCallMessage.CallSuccess
+  - Declared name: kotlinx.rpc.internal.transport.RPCCallMessage.CallSuccess

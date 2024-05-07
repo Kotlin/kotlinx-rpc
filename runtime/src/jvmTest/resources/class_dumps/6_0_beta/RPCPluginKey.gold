@@ -1,4 +1,4 @@
-org.jetbrains.krpc.internal.transport.RPCPluginKey
+kotlinx.rpc.internal.transport.RPCPluginKey
   UNKNOWN
   GENERIC_MESSAGE_TYPE
   CANCELLATION_TYPE

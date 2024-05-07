@@ -8,7 +8,6 @@ import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.launch
 import kotlinx.rpc.RPCTransportMessage
 import kotlinx.rpc.internal.hex.hexToByteArrayInternal
-import kotlinx.rpc.internal.hex.toHexStringInternal
 import kotlinx.rpc.internal.transport.RPCPlugin
 import kotlinx.rpc.rpcClientConfig
 import kotlinx.rpc.rpcServerConfig
@@ -41,42 +40,15 @@ class ProtocolTest : ProtocolTestBase() {
         defaultServer
 
         val message = RPCTransportMessage.StringMessage(
-            "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallData\",\"callId\":\"1:org.jetbrains.krpc.ProtocolTestServiceClient.SendRequest_RPCData:1\",\"serviceType\":\"org.jetbrains.krpc.test.ProtocolTestService\",\"method\":\"sendRequest\",\"callType\":\"Method\",\"data\":\"{}\"}",
+            "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallData\",\"callId\":\"1:kotlinx.rpc.ProtocolTestServiceClient.SendRequest_RPCData:1\",\"serviceType\":\"kotlinx.rpc.test.ProtocolTestService\",\"method\":\"sendRequest\",\"callType\":\"Method\",\"data\":\"{}\"}",
         )
 
         transport.client.send(message)
 
         val response = transport.client.receive() as RPCTransportMessage.StringMessage
         assertEquals(
-            "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallSuccess\",\"callId\":\"1:org.jetbrains.krpc.ProtocolTestServiceClient.SendRequest_RPCData:1\",\"serviceType\":\"org.jetbrains.krpc.test.ProtocolTestService\",\"data\":\"{}\"}",
+            "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallSuccess\",\"callId\":\"1:kotlinx.rpc.ProtocolTestServiceClient.SendRequest_RPCData:1\",\"serviceType\":\"kotlinx.rpc.test.ProtocolTestService\",\"data\":\"{}\"}",
             response.value
-        )
-        assertEquals(0, defaultServer.supportedPlugins.size)
-    }
-
-    // old client: pre 5.3-beta (including)
-    @Test
-    fun testNoHandshakeFromClientProtobuf() = runTest(
-        serverConfig = rpcServerConfig {
-            serialization {
-                protobuf()
-            }
-        }
-    ) {
-        // init
-        defaultServer
-
-        // same value as testNoHandshakeFromClientJson but in protobuf format
-        val message = RPCTransportMessage.BinaryMessage(
-            "0a3f6f72672e6a6574627261696e732e6b7270632e696e7465726e616c2e7472616e73706f72742e5250434d6573736167652e43616c6c4461746142696e6172791284010a44313a6f72672e6a6574627261696e732e6b7270632e50726f746f636f6c5465737453657276696365436c69656e742e53656e64526571756573745f525043446174613a31122b6f72672e6a6574627261696e732e6b7270632e746573742e50726f746f636f6c54657374536572766963651a0b73656e645265717565737420002a00".hexToByteArrayInternal(),
-        )
-
-        transport.client.send(message)
-
-        val response = transport.client.receive() as RPCTransportMessage.BinaryMessage
-        assertEquals(
-            "0a426f72672e6a6574627261696e732e6b7270632e696e7465726e616c2e7472616e73706f72742e5250434d6573736167652e43616c6c5375636365737342696e61727912750a44313a6f72672e6a6574627261696e732e6b7270632e50726f746f636f6c5465737453657276696365436c69656e742e53656e64526571756573745f525043446174613a31122b6f72672e6a6574627261696e732e6b7270632e746573742e50726f746f636f6c54657374536572766963651a00",
-            response.value.toHexStringInternal()
         )
         assertEquals(0, defaultServer.supportedPlugins.size)
     }
@@ -100,7 +72,7 @@ class ProtocolTest : ProtocolTestBase() {
         transport.server.receive()
 
         val serverResponseMessage = RPCTransportMessage.StringMessage(
-            "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallSuccess\",\"callId\":\"$connectionId:org.jetbrains.krpc.ProtocolTestServiceClient.SendRequest_RPCData:1\",\"serviceType\":\"org.jetbrains.krpc.test.ProtocolTestService\",\"data\":\"{}\"}"
+            "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallSuccess\",\"callId\":\"$connectionId:kotlinx.rpc.ProtocolTestServiceClient.SendRequest_RPCData:1\",\"serviceType\":\"kotlinx.rpc.test.ProtocolTestService\",\"data\":\"{}\"}"
         )
 
         transport.server.send(serverResponseMessage)

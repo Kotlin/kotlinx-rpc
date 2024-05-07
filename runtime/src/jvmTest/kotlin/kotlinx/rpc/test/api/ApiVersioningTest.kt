@@ -13,8 +13,8 @@ import kotlinx.rpc.internal.transport.RPCMessage
 import kotlinx.rpc.internal.transport.RPCPlugin
 import kotlinx.rpc.internal.transport.RPCPluginKey
 import kotlinx.rpc.test.api.util.GoldUtils.NewLine
-import kotlinx.rpc.test.api.util.SamplingData
 import kotlinx.rpc.test.plainFlow
+import org.jetbrains.krpc.test.api.util.SamplingData
 import org.junit.Test
 import java.nio.file.Path
 import kotlin.io.path.Path

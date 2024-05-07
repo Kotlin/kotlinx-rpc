@@ -1,4 +1,4 @@
-org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessage [Declared name: org.jetbrains.krpc.internal.transport.RPCCallMessage.StreamMessage]
+org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessage [Declared name: kotlinx.rpc.internal.transport.RPCCallMessage.StreamMessage]
   - streamId: kotlin.String
   - callId: kotlin.String
   - connectionId: kotlin.Long
@@ -10,6 +10,6 @@ org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessage [Declared name: o
   - serviceType: kotlin.String
 
   org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessageBinary
-  - Declared name: org.jetbrains.krpc.internal.transport.RPCCallMessage.StreamMessageBinary
+  - Declared name: kotlinx.rpc.internal.transport.RPCCallMessage.StreamMessageBinary
   org.jetbrains.krpc.RPCMessage.StreamMessage
-  - Declared name: org.jetbrains.krpc.internal.transport.RPCCallMessage.StreamMessageString
+  - Declared name: kotlinx.rpc.internal.transport.RPCCallMessage.StreamMessageString

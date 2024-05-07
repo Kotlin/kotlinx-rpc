@@ -1,4 +1,4 @@
-org.jetbrains.krpc.RPCMessage.StreamMessage [Declared name: org.jetbrains.krpc.internal.transport.RPCCallMessage.StreamMessageString]
+org.jetbrains.krpc.RPCMessage.StreamMessage [Declared name: kotlinx.rpc.internal.transport.RPCCallMessage.StreamMessageString]
   - callId: kotlin.String
   - connectionId: kotlin.Long
     - Nullable

@@ -1,4 +1,4 @@
-org.jetbrains.krpc.internal.transport.RPCPlugin
+kotlinx.rpc.internal.transport.RPCPlugin
   UNKNOWN
   HANDSHAKE
   CANCELLATION
