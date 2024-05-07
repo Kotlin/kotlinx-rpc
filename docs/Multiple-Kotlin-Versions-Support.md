@@ -11,3 +11,4 @@
 - kotlin-logging: https://github.com/oshai/kotlin-logging/releases
 - gradle-kotlin-dsl: https://plugins.gradle.org/plugin/org.gradle.kotlin.kotlin-dsl
 - binary-compatibility-validator: https://github.com/Kotlin/binary-compatibility-validator/releases
+- kover: https://github.com/Kotlin/kotlinx-kover/releases

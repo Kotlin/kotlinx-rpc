@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.krpc) apply false
     alias(libs.plugins.atomicfu) apply false
     alias(libs.plugins.detekt) apply false
+    alias(libs.plugins.kover.root.project) apply false
     alias(libs.plugins.binary.compatibility.validator)
 }
 
@@ -38,6 +39,12 @@ apiValidation {
     nonPublicMarkers.add(Const.INTERNAL_KRPC_API_ANNOTATION)
 }
 
+val kotlinVersion: String by extra
+
+if (kotlinVersion >= "1.8.0") {
+    apply(plugin = libs.plugins.kover.root.project.get().pluginId)
+}
+
 allprojects {
     group = "org.jetbrains.krpc"
     version = rootProject.libs.versions.krpc.full.get()
@@ -49,9 +56,9 @@ println("kRPC project version: $version")
 // Probably some dependency brings kotlin with higher version.
 // To mitigate so, please refer to `gradle/kotlin-version-lookup.json`
 // and it's usage in `gradle-settings-conventions/src/main/kotlin/settings-conventions.settings.gradle.kts`
-val kotlinVersion = getKotlinPluginVersion()
-if (!version.toString().startsWith(kotlinVersion)) {
-    error("Kotlin gradle plugin version mismatch: kRPC version: $version, Kotlin gradle plugin version: $kotlinVersion")
+val kotlinGPVersion = getKotlinPluginVersion()
+if (!version.toString().startsWith(kotlinGPVersion)) {
+    error("KGP version mismatch. Project version: $version, KGP version: $kotlinGPVersion")
 }
 
 // necessary for CI js tests

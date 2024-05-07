@@ -15,9 +15,15 @@ configurations.configureEach {
     }
 }
 
+val kotlinVersion: String by extra
+
 dependencies {
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.detekt.gradle.plugin)
+
+    if (kotlinVersion >= "1.8.0") {
+        implementation(libs.kover.gradle.plugin)
+    }
 
     // https://stackoverflow.com/questions/76713758/use-version-catalog-inside-precompiled-gradle-plugin
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
