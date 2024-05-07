@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.krpc)
+    alias(libs.plugins.rpc)
 }
 
 kotlin {
@@ -18,10 +18,10 @@ kotlin {
                 implementation(libs.serialization.core)
                 implementation(libs.kotlin.reflect)
 
-                implementation(project(":krpc-utils:krpc-utils-service-loader"))
-                implementation(project(":krpc-runtime::krpc-runtime-logging"))
-                implementation(project(":krpc-runtime:krpc-runtime-client"))
-                implementation(project(":krpc-runtime:krpc-runtime-server"))
+                implementation(project(":kotlinx-rpc-utils:kotlinx-rpc-utils-service-loader"))
+                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-logging"))
+                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-client"))
+                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-server"))
             }
         }
 

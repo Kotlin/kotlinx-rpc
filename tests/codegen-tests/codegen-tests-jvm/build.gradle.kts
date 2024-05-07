@@ -8,12 +8,12 @@ plugins {
     alias(libs.plugins.conventions.jvm)
     alias(libs.plugins.serialization)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.krpc)
+    alias(libs.plugins.rpc)
 }
 
 dependencies {
-    implementation(project(":krpc-runtime:krpc-runtime-client"))
-    implementation(project(":krpc-runtime:krpc-runtime-server"))
+    implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-client"))
+    implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-server"))
 
     implementation(project(":tests:codegen-tests:codegen-tests-mpp"))
 

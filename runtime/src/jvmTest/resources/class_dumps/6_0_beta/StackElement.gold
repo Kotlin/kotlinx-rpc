@@ -1,0 +1,6 @@
+org.jetbrains.krpc.StackElement [Declared name: kotlinx.rpc.internal.transport.StackElement]
+  - clazz: kotlin.String
+  - fileName: kotlin.String
+    - Nullable
+  - lineNumber: kotlin.Int
+  - method: kotlin.String

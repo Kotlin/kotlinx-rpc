@@ -85,4 +85,4 @@ compiler-specific-module = { id = "compiler-specific-module", version.ref = "krp
 kover-root-project = { id = "kover-root-project", version.ref = "krpc-core" }
 
 # gradle-plugin project
-krpc = { id = "org.jetbrains.krpc.plugin", version.ref = "krpc-core" }
+rpc = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "krpc-core" }

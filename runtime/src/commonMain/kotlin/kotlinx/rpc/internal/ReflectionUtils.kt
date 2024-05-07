@@ -1,0 +1,29 @@
+/*
+ * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+package kotlinx.rpc.internal
+
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
+
+@InternalKRPCApi
+@Suppress("UNCHECKED_CAST")
+public fun <T : Any> KType.kClass(): KClass<T> {
+    val classifier = classifier ?: error("Expected denotable type, found $this")
+    val classifierClass = classifier as? KClass<*> ?: error("Expected class type, found $this")
+
+    return classifierClass as KClass<T>
+}
+
+@InternalKRPCApi
+public fun internalError(message: String): Nothing {
+    error("Internal kRPC error: $message")
+}
+
+@InternalKRPCApi
+public expect val KClass<*>.qualifiedClassNameOrNull: String?
+
+@InternalKRPCApi
+public val KClass<*>.qualifiedClassName: String  get() = qualifiedClassNameOrNull
+    ?: error("Expected qualifiedClassName for $this")

@@ -2,9 +2,6 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import org.gradle.kotlin.dsl.extra
-import java.io.File
-
 object CSM {
     const val SETTINGS_FILE = "settings.gradle.kts"
     const val BUILD_FILE = "build.gradle.kts"
@@ -22,7 +19,7 @@ object CSM {
 // It's ok to have version '1'. For example, we may have '1.7' and '1' specific modules.
 // That would mean, that all 1.7.* versions we compile with '1.7' module, and 1.8.+ up to 1.9.22 will be with '1' module
 class KRPCCompilerModuleSemVer(fullName: String, prefix: String) : Comparable<KRPCCompilerModuleSemVer> {
-    // For example, "krpc-compiler-plugin-1_7_10" -> "1.7.10"
+    // For example, "compiler-plugin-1_7_10" -> "1.7.10"
     val version = fullName
         .removePrefix(prefix)
         .replace('_', '.')
@@ -50,27 +47,27 @@ val kotlinVersion = extra[CSM.KOTLIN_VERSION_EXTRA] as? String
 // IMPORTANT: it is expected that the root submodule is already included to the project,
 // otherwise the exception will be thrown
 fun includeCSM(dir: File, files: Array<File>) {
-    val rootModuleName = dir.name
+    val rootProjectDirName = dir.name
 
     val submodules = files.filter {
-        it.isDirectory && it.name.startsWith(rootModuleName)
+        it.isDirectory && it.name.startsWith(rootProjectDirName)
     }.toMutableSet()
 
-    val core = submodules.singleOrNull { it.name == "$rootModuleName-core" }
+    val core = submodules.singleOrNull { it.name == "$rootProjectDirName-core" }
     if (core == null) {
-        error("Compiler Specific Module $rootModuleName should have `-core` module defined")
+        error("Compiler Specific Module $rootProjectDirName should have `-core` module defined")
     }
     val compilerSubmodules = submodules - core
 
     val basePath = dir.absoluteFile
         .relativeTo(settingsDir.absoluteFile).path
-        .replace('/', ':')
+        .replace(File.separator, ":")
 
-    include(":$basePath:$rootModuleName-core")
+    includePublic(":$basePath:$rootProjectDirName-core")
 
-    val prefix = "$rootModuleName-"
+    val prefix = "$rootProjectDirName-"
 
-    val currentCompilerModuleName = compilerSubmodules
+    val currentCompilerModuleDirName = compilerSubmodules
         .map { it.name to KRPCCompilerModuleSemVer(it.name, prefix) }
         // example after sorted: [1.7.0, 1.7.10, 1.7.22, 1.7, 1.8, 1.9.10, 1.9, 1]
         .sortedBy { (_, semVer) -> semVer }
@@ -78,15 +75,16 @@ fun includeCSM(dir: File, files: Array<File>) {
             kotlinVersion.startsWith(semVer.version)
         }?.first
         ?: error("""
-            Unable to find compiler specific submodule for $rootModuleName and Kotlin $kotlinVersion.
+            Unable to find compiler specific submodule for $rootProjectDirName and Kotlin $kotlinVersion.
             Available modules: ${compilerSubmodules.joinToString { it.name }} 
         """.trimIndent())
 
-    include(":$basePath:$currentCompilerModuleName")
+    includePublic(":$basePath:$currentCompilerModuleDirName")
 
+    val rootProjectName = "$KOTLINX_RPC_PREFIX$rootProjectDirName"
     gradle.projectsLoaded {
-        rootProject.subprojects.find { it.name == rootModuleName }
-            ?: error("Expected root project '$rootModuleName' to be include to the build manually")
+        rootProject.subprojects.find { it.name == rootProjectName }
+            ?: error("Expected root project '$rootProjectName' to be included to the build manually")
     }
 }
 
