@@ -6,9 +6,9 @@ package kotlinx.rpc.internal.logging
 
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.rpc.internal.InternalKRPCApi
+import kotlinx.rpc.internal.InternalRPCApi
 
-@InternalKRPCApi
+@InternalRPCApi
 public fun CommonLogger.Companion.initialized(): CommonLogger.Companion = apply {
     CommonLoggerFactoryImpl.init()
 }

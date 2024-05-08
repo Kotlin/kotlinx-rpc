@@ -23,7 +23,7 @@ gradlePlugin {
     plugins {
         named("kover-root-project") {
             id = "kover-root-project"
-            version = libs.versions.krpc.core.get()
+            version = libs.versions.rpc.core.get()
         }
     }
 }

@@ -4,14 +4,14 @@
 
 package kotlinx.rpc
 
-import kotlinx.rpc.KRPCPluginConst.BOM_ARTIFACT_ID
-import kotlinx.rpc.KRPCPluginConst.GROUP_ID
-import kotlinx.rpc.KRPCPluginConst.libraryFullVersion
+import kotlinx.rpc.RPCPluginConst.BOM_ARTIFACT_ID
+import kotlinx.rpc.RPCPluginConst.GROUP_ID
+import kotlinx.rpc.RPCPluginConst.libraryFullVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 
-class KRPCPlatformPlugin : Plugin<Project> {
+class RPCPlatformPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         val bomDependency = "${GROUP_ID}:${BOM_ARTIFACT_ID}:${libraryFullVersion}"
 

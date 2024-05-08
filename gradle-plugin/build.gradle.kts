@@ -12,7 +12,7 @@ plugins {
 
 subprojects {
     group = "org.jetbrains.kotlinx"
-    version = rootProject.libs.versions.krpc.core.get()
+    version = rootProject.libs.versions.rpc.core.get()
 
     // 'pluginMaven' publication already registered by kotlin-dsl plugin, additional 'kotlinJvm' may cause clashes:
     //

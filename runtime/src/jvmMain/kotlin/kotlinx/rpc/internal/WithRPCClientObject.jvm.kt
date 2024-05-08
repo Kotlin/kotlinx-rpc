@@ -9,7 +9,7 @@ package kotlinx.rpc.internal
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
 
-@InternalKRPCApi
+@InternalRPCApi
 public actual fun <R> findRPCProviderInCompanion(kClass: KClass<*>): R {
     @Suppress("UNCHECKED_CAST")
     return kClass.java.classLoader

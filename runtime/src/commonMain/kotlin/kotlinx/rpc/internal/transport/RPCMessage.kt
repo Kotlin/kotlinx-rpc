@@ -4,11 +4,11 @@
 
 package kotlinx.rpc.internal.transport
 
-import kotlinx.rpc.internal.InternalKRPCApi
+import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@InternalKRPCApi
+@InternalRPCApi
 @Serializable
 @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage")
 public sealed interface RPCMessage {
@@ -34,26 +34,26 @@ public sealed interface RPCMessage {
 /**
  * Use this message to add new message types without adding new classes to the protocol hierarchy.
  */
-@InternalKRPCApi
+@InternalRPCApi
 @Serializable
 @SerialName("org.jetbrains.krpc.internal.transport.RPCGenericMessage")
 public data class RPCGenericMessage(
     override val connectionId: Long?,
     override val pluginParams: Map<RPCPluginKey, String>?
 ) : RPCMessage {
-    @InternalKRPCApi
+    @InternalRPCApi
     public companion object {
         public const val CANCELLATION_TYPE: String = "cancellation"
     }
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 @Serializable
 @SerialName("org.jetbrains.krpc.internal.transport.RPCProtocolMessage")
 public sealed interface RPCProtocolMessage : RPCMessage {
     override val pluginParams: Map<RPCPluginKey, String>
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @Serializable
     @SerialName("org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake")
     public data class Handshake(
@@ -62,7 +62,7 @@ public sealed interface RPCProtocolMessage : RPCMessage {
         override val pluginParams: Map<RPCPluginKey, String> = emptyMap(),
     ) : RPCProtocolMessage
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @Serializable
     @SerialName("org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Failure")
     public data class Failure(
@@ -76,7 +76,7 @@ public sealed interface RPCProtocolMessage : RPCMessage {
 /**
  * Only service messages (method calls, streams, etc.), name is kept for easier compatibility.
  */
-@InternalKRPCApi
+@InternalRPCApi
 @Serializable
 @SerialName("org.jetbrains.krpc.RPCMessage")
 public sealed interface RPCCallMessage : RPCMessage {
@@ -84,26 +84,26 @@ public sealed interface RPCCallMessage : RPCMessage {
     public val serviceType: String
     public val serviceId: Long?
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.Data")
     public sealed interface Data {
-        @InternalKRPCApi
+        @InternalRPCApi
         public sealed interface BinaryData : Data {
             public val data: ByteArray
         }
 
-        @InternalKRPCApi
+        @InternalRPCApi
         public sealed interface StringData : Data {
             public val data: String
         }
     }
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @Serializable
     @SerialName("org.jetbrains.krpc.RPCMessage.CallResult")
     public sealed interface CallResult : RPCCallMessage
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @Serializable
     @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.CallData")
     public sealed interface CallData : RPCCallMessage, Data {
@@ -111,14 +111,14 @@ public sealed interface RPCCallMessage : RPCMessage {
         public val callType: CallType?
     }
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @Serializable
     @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.CallType")
     public enum class CallType {
         Method, Field,
     }
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @Serializable
     @SerialName("org.jetbrains.krpc.RPCMessage.CallData")
     public data class CallDataString(
@@ -133,7 +133,7 @@ public sealed interface RPCCallMessage : RPCMessage {
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : CallData, Data.StringData
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @Suppress("ArrayInDataClass")
     @Serializable
     @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.CallDataBinary")
@@ -149,12 +149,12 @@ public sealed interface RPCCallMessage : RPCMessage {
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : CallData, Data.BinaryData
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @Serializable
     @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.CallSuccess")
     public sealed interface CallSuccess : CallResult, Data
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @Serializable
     @SerialName("org.jetbrains.krpc.RPCMessage.CallSuccess")
     public data class CallSuccessString(
@@ -166,7 +166,7 @@ public sealed interface RPCCallMessage : RPCMessage {
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : CallSuccess, Data.StringData
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @Suppress("ArrayInDataClass")
     @Serializable
     @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.CallSuccessBinary")
@@ -182,7 +182,7 @@ public sealed interface RPCCallMessage : RPCMessage {
     /**
      * Both for client and server
      */
-    @InternalKRPCApi
+    @InternalRPCApi
     @Serializable
     @SerialName("org.jetbrains.krpc.RPCMessage.CallException")
     public data class CallException(
@@ -194,14 +194,14 @@ public sealed interface RPCCallMessage : RPCMessage {
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : CallResult
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @Serializable
     @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessage")
     public sealed interface StreamMessage : RPCCallMessage, Data {
         public val streamId: String
     }
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @Serializable
     @SerialName("org.jetbrains.krpc.RPCMessage.StreamMessage")
     public data class StreamMessageString(
@@ -215,7 +215,7 @@ public sealed interface RPCCallMessage : RPCMessage {
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : StreamMessage, Data.StringData
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @Suppress("ArrayInDataClass")
     @Serializable
     @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessageBinary")
@@ -230,7 +230,7 @@ public sealed interface RPCCallMessage : RPCMessage {
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : StreamMessage, Data.BinaryData
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @Serializable
     @SerialName("org.jetbrains.krpc.RPCMessage.StreamCancel")
     public data class StreamCancel(
@@ -244,7 +244,7 @@ public sealed interface RPCCallMessage : RPCMessage {
         override val pluginParams: Map<RPCPluginKey, String>? = emptyMap(),
     ) : RPCCallMessage
 
-    @InternalKRPCApi
+    @InternalRPCApi
     @Serializable
     @SerialName("org.jetbrains.krpc.RPCMessage.StreamFinished")
     public data class StreamFinished(
@@ -258,5 +258,5 @@ public sealed interface RPCCallMessage : RPCMessage {
     ) : RPCCallMessage
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public operator fun RPCMessage.get(key: RPCPluginKey): String? = pluginParams?.get(key)

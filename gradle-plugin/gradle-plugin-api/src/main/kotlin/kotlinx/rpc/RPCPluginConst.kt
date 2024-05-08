@@ -8,7 +8,7 @@ import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 import org.jetbrains.kotlin.gradle.utils.loadPropertyFromResources
 
-object KRPCPluginConst {
+object RPCPluginConst {
     const val COMPILER_PLUGIN_MODULE = "kotlinx-rpc-compiler-plugin"
     const val KSP_PLUGIN_MODULE = "kotlinx-rpc-ksp-plugin"
 
@@ -31,7 +31,7 @@ object KRPCPluginConst {
     /**
      * Same as [getKotlinPluginVersion] but without logger
      *
-     * Cannot use with [Project] because [libraryFullVersion] is called in [KRPCKotlinCompilerPlugin] in -all module
+     * Cannot use with [Project] because [libraryFullVersion] is called in [RPCKotlinCompilerPlugin] in -all module
      */
     private fun loadKotlinVersion(): String {
         return object {}

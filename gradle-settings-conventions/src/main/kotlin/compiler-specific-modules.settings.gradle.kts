@@ -18,13 +18,13 @@ object CSM {
 // will be sorted as [1.7.0, 1.7.10, 1.7.22, 1.7, 1.8, 1.9.10, 1.9, 1]
 // It's ok to have version '1'. For example, we may have '1.7' and '1' specific modules.
 // That would mean, that all 1.7.* versions we compile with '1.7' module, and 1.8.+ up to 1.9.22 will be with '1' module
-class KRPCCompilerModuleSemVer(fullName: String, prefix: String) : Comparable<KRPCCompilerModuleSemVer> {
+class CompilerModuleSemVer(fullName: String, prefix: String) : Comparable<CompilerModuleSemVer> {
     // For example, "compiler-plugin-1_7_10" -> "1.7.10"
     val version = fullName
         .removePrefix(prefix)
         .replace('_', '.')
 
-    override fun compareTo(other: KRPCCompilerModuleSemVer): Int {
+    override fun compareTo(other: CompilerModuleSemVer): Int {
         return when {
             version.length == other.version.length -> version.compareTo(other.version)
             version.length < other.version.length -> 1
@@ -68,7 +68,7 @@ fun includeCSM(dir: File, files: Array<File>) {
     val prefix = "$rootProjectDirName-"
 
     val currentCompilerModuleDirName = compilerSubmodules
-        .map { it.name to KRPCCompilerModuleSemVer(it.name, prefix) }
+        .map { it.name to CompilerModuleSemVer(it.name, prefix) }
         // example after sorted: [1.7.0, 1.7.10, 1.7.22, 1.7, 1.8, 1.9.10, 1.9, 1]
         .sortedBy { (_, semVer) -> semVer }
         .firstOrNull { (_, semVer) ->

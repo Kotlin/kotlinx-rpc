@@ -5,7 +5,7 @@
 package kotlinx.rpc.serialization
 
 /**
- * Special interface to configure serialization for a kRPC service in RPCConfig
+ * Special interface to configure serialization for a kRPC protocol in RPCConfig
  * ```kotlin
  * // this: RPCConfigBuilder
  * serialization { // this: RPCSerialFormatConfiguration
@@ -18,7 +18,7 @@ public interface RPCSerialFormatConfiguration {
      * Register a serialization format in the RPCSerialFormatConfiguration.
      *
      * @param rpcSerialFormatInitializer The serialization format initializer of String type.
-     * It is used to configure the serialization format for a kRPC service.
+     * It is used to configure the serialization format for a kRPC protocol.
      */
     public fun register(rpcSerialFormatInitializer: RPCSerialFormatBuilder.String<*, *>)
 
@@ -26,7 +26,7 @@ public interface RPCSerialFormatConfiguration {
      * Register a serialization format in the RPCSerialFormatConfiguration.
      *
      * @param rpcSerialFormatInitializer The serialization format initializer of Binary type.
-     * It is used to configure the serialization format for a kRPC service.
+     * It is used to configure the serialization format for a kRPC protocol.
      */
     public fun register(rpcSerialFormatInitializer: RPCSerialFormatBuilder.Binary<*, *>)
 }

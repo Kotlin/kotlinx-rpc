@@ -5,7 +5,7 @@
 package kotlinx.rpc.internal.transport
 
 import kotlinx.rpc.internal.IndexedEnum
-import kotlinx.rpc.internal.InternalKRPCApi
+import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.rpc.internal.RPCVersion
 import kotlinx.rpc.internal.ShortEnumKSerializer
 import kotlinx.serialization.Serializable
@@ -18,7 +18,7 @@ import kotlinx.serialization.Serializable
  *
  * Only entries with ordinals from 0 to 65500 are allowed, others are reserved for tests.
  */
-@InternalKRPCApi
+@InternalRPCApi
 @Serializable(with = RPCPluginSerializer::class)
 public enum class RPCPlugin(
     override val uniqueIndex: Int,
@@ -53,7 +53,7 @@ public enum class RPCPlugin(
     CANCELLATION(2, RPCVersion.V_6_0_BETA),
     ;
 
-    @InternalKRPCApi
+    @InternalRPCApi
     public companion object {
         /**
          * A set of all plugins for the current version of the library.

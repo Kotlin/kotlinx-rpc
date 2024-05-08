@@ -16,14 +16,14 @@ plugins {
 }
 
 object Const {
-    const val KRPC_COMPILER_PLUGIN_MODULE_NAME = "kotlinx-rpc-compiler-plugin"
-    const val INTERNAL_KRPC_API_ANNOTATION = "kotlinx.rpc.internal.InternalKRPCApi"
+    const val COMPILER_PLUGIN_MODULE_NAME = "kotlinx-rpc-compiler-plugin"
+    const val INTERNAL_RPC_API_ANNOTATION = "kotlinx.rpc.internal.InternalRPCApi"
 }
 
 apiValidation {
-    val compilerPluginModules = subprojects.single { it.name == Const.KRPC_COMPILER_PLUGIN_MODULE_NAME }.let {
+    val compilerPluginModules = subprojects.single { it.name == Const.COMPILER_PLUGIN_MODULE_NAME }.let {
         it.subprojects.map { sub -> sub.name }
-    } + Const.KRPC_COMPILER_PLUGIN_MODULE_NAME
+    } + Const.COMPILER_PLUGIN_MODULE_NAME
 
     ignoredProjects.addAll(
         listOf(
@@ -36,7 +36,7 @@ apiValidation {
         ) + compilerPluginModules
     )
 
-    nonPublicMarkers.add(Const.INTERNAL_KRPC_API_ANNOTATION)
+    nonPublicMarkers.add(Const.INTERNAL_RPC_API_ANNOTATION)
 }
 
 val kotlinVersion: String by extra
@@ -47,7 +47,7 @@ if (kotlinVersion >= "1.8.0") {
 
 allprojects {
     group = "org.jetbrains.kotlinx"
-    version = rootProject.libs.versions.krpc.full.get()
+    version = rootProject.libs.versions.rpc.full.get()
 }
 
 println("kotlinx.rpc project version: $version")

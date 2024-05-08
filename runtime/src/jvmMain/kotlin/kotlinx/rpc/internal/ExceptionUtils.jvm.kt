@@ -38,7 +38,7 @@ internal actual fun Throwable.stackElements(): List<StackElement> = stackTrace.m
     )
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public actual fun SerializedException.deserialize(): Throwable {
     try {
         val clazz = Class.forName(className)

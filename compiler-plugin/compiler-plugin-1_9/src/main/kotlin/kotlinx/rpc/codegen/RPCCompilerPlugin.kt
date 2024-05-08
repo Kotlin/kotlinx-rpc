@@ -12,14 +12,14 @@ import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
 
 @OptIn(ExperimentalCompilerApi::class)
-class KRPCCommandLineProcessor : CommandLineProcessor {
-    override val pluginId = "kotlinx.rpc.krpc-compiler-plugin"
+class RPCCommandLineProcessor : CommandLineProcessor {
+    override val pluginId = "kotlinx.rpc.compiler-plugin"
 
     override val pluginOptions = emptyList<CliOption>()
 }
 
 @OptIn(ExperimentalCompilerApi::class)
-class KRPCCompilerPlugin : CompilerPluginRegistrar() {
+class RPCCompilerPlugin : CompilerPluginRegistrar() {
     init {
         VersionSpecificApi.upload(VersionSpecificApiImpl)
     }
@@ -27,7 +27,7 @@ class KRPCCompilerPlugin : CompilerPluginRegistrar() {
     override val supportsK2: Boolean = false
 
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-        val extension = KRPCCompilerPluginCore.provideExtension(configuration)
+        val extension = RPCCompilerPluginCore.provideExtension(configuration)
 
         IrGenerationExtension.registerExtension(extension)
     }

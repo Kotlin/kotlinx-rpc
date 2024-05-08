@@ -4,16 +4,16 @@
 
 package kotlinx.rpc.internal.logging
 
-import kotlinx.rpc.internal.InternalKRPCApi
+import kotlinx.rpc.internal.InternalRPCApi
 
-@InternalKRPCApi
+@InternalRPCApi
 public interface DumpLogger {
     public val isEnabled: Boolean
 
     public fun dump(vararg tags: String, message: () -> String)
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public object DumpLoggerContainer {
     private var logger: DumpLogger? = null
 

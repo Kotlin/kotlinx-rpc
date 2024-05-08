@@ -23,7 +23,7 @@ internal object RPCCborSerialFormat : RPCSerialFormat<Cbor, CborBuilder> {
 }
 
 /**
- * Extension function that allows to configure CBOR kRPC serial format
+ * Extension function that allows to configure CBOR kotlinx.rpc serial format
  * Usage:
  * ```kotlin
  * // this: RPCConfig

@@ -6,16 +6,16 @@ package kotlinx.rpc.internal.transport
 
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import kotlinx.rpc.internal.InternalKRPCApi
+import kotlinx.rpc.internal.InternalRPCApi
 
-@InternalKRPCApi
+@InternalRPCApi
 public interface RPCEndpoint {
-    @InternalKRPCApi
+    @InternalRPCApi
     public val sender: RPCMessageSender
-    @InternalKRPCApi
+    @InternalRPCApi
     public val supportedPlugins: Set<RPCPlugin>
 
-    @InternalKRPCApi
+    @InternalRPCApi
     public fun sendCancellation(
         type: CancellationType,
         serviceId: String?,
@@ -51,7 +51,7 @@ public interface RPCEndpoint {
         }
     }
 
-    @InternalKRPCApi
+    @InternalRPCApi
     public suspend fun handleGenericMessage(message: RPCGenericMessage) {
         try {
             when (message.pluginParams?.get(RPCPluginKey.GENERIC_MESSAGE_TYPE)) {
@@ -73,6 +73,6 @@ public interface RPCEndpoint {
         }
     }
 
-    @InternalKRPCApi
+    @InternalRPCApi
     public fun handleCancellation(message: RPCGenericMessage)
 }

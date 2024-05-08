@@ -5,7 +5,7 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import util.configureJvmPublication
 import util.configureKmpPublication
-import util.configureKrpcPublication
+import util.configureLibraryPublication
 import util.libs
 
 plugins {
@@ -22,7 +22,7 @@ val skipJvmPublication: Boolean? by extra
 
 if (name.startsWith("kotlinx-rpc")) {
     if (publishingExtension != null) {
-        publishingExtension.configureKrpcPublication()
+        publishingExtension.configureLibraryPublication()
     } else {
         plugins.withId("org.jetbrains.kotlin.jvm") {
             configureJvmPublication(skipJvmPublication == true)

@@ -6,5 +6,5 @@ package kotlinx.rpc.internal
 
 import kotlin.reflect.KClass
 
-@InternalKRPCApi
+@InternalRPCApi
 public expect fun <R> findRPCProviderInCompanion(kClass: KClass<*>): R

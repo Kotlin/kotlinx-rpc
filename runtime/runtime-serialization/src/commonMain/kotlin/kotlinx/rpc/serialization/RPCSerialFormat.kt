@@ -4,16 +4,16 @@
 
 package kotlinx.rpc.serialization
 
-import kotlinx.rpc.internal.InternalKRPCApi
+import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
 
 /**
- * [RPCSerialFormat] interface defines an object which helps kRPC to work with various serialization formats
+ * [RPCSerialFormat] interface defines an object which helps kRPC protocol to work with various serialization formats
  *
- * Each serialization that can be used in kRPC should define an object of [RPCSerialFormat]
+ * Each serialization that can be used with kRPC protocol should define an object of [RPCSerialFormat]
  */
 public interface RPCSerialFormat<Format : SerialFormat, FormatBuilder : Any> {
     /**
@@ -27,7 +27,7 @@ public interface RPCSerialFormat<Format : SerialFormat, FormatBuilder : Any> {
 
     /**
      * Special extension for [SerialFormat] API, that allows to extend it with additional [SerializersModule].
-     * Required for kRPC to work properly with special argument types like Flows
+     * Required for kRPC protocol properly to work properly with special argument types like Flows
      */
     public fun FormatBuilder.applySerializersModule(serializersModule: SerializersModule)
 }
@@ -56,10 +56,10 @@ public sealed class RPCSerialFormatBuilder<Format : SerialFormat, FormatBuilder 
         }
     }
 
-    @InternalKRPCApi
+    @InternalRPCApi
     public fun build(): SerialFormat = builder(null)
 
-    @InternalKRPCApi
+    @InternalRPCApi
     public fun applySerializersModuleAndBuild(serializersModule: SerializersModule): SerialFormat {
         return builder(serializersModule)
     }

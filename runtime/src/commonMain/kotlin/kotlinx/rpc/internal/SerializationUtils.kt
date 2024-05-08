@@ -27,7 +27,7 @@ internal fun SerializersModule.buildContextual(type: KType): KSerializer<Any?> {
     return result as? KSerializer<Any?> ?: error("No serializer found for $type")
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public fun SerializersModule.rpcSerializerForType(type: KType): KSerializer<Any?> {
     return when (type.classifier) {
         Flow::class, SharedFlow::class, StateFlow::class -> buildContextual(type)
@@ -35,7 +35,7 @@ public fun SerializersModule.rpcSerializerForType(type: KType): KSerializer<Any?
     }
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public fun unsupportedSerialFormatError(serialFormat: SerialFormat): Nothing {
     error("Unsupported serial format ${serialFormat::class}, only StringFormat and BinaryFormats are supported")
 }
@@ -53,7 +53,7 @@ internal fun unexpectedDataFormatForProvidedSerialFormat(
             "message is in $actual format (${data::class}), but provided SerialFormat is $expected")
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public fun decodeMessageData(
     serialFormat: SerialFormat,
     dataSerializer: KSerializer<Any?>,

@@ -9,7 +9,7 @@ import kotlin.reflect.KProperty
 
 class OptionalProperty(private val target: Project) {
     operator fun getValue(thisRef: Any, property: KProperty<*>): Boolean {
-        return getValue("krpc.${property.name}")
+        return getValue("kotlinx.rpc.${property.name}")
     }
 
     fun getValue(propName: String): Boolean {

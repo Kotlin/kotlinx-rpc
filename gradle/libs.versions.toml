@@ -1,11 +1,11 @@
 [versions]
 # kotlin
 kotlin-lang = "1.9.23"
-krpc-core = "6.0-beta" # version for plugins and suffix for krpc-full
+rpc-core = "6.0-beta" # version for plugins and suffix for rpc-full
 
 # kotlin-dependent versions, will be replaced with the actual versions by a settings-conventions plugin
 #   from 'kotlin-versions-lookup.json' lookup table
-krpc-full = "<stub>" # krpc-core prefixed by kotlin-lang
+rpc-full = "<stub>" # rpc-core prefixed by kotlin-lang
 ksp = "<stub>"
 atomicfu = "<stub>"
 serialization = "<stub>"
@@ -78,11 +78,11 @@ gradle-kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version.ref = "gradle
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 
 # gradle-conventions project
-conventions-common = { id = "conventions-common", version.ref = "krpc-core" }
-conventions-jvm = { id = "conventions-jvm", version.ref = "krpc-core" }
-conventions-kmp = { id = "conventions-kmp", version.ref = "krpc-core" }
-compiler-specific-module = { id = "compiler-specific-module", version.ref = "krpc-core" }
-kover-root-project = { id = "kover-root-project", version.ref = "krpc-core" }
+conventions-common = { id = "conventions-common", version.ref = "rpc-core" }
+conventions-jvm = { id = "conventions-jvm", version.ref = "rpc-core" }
+conventions-kmp = { id = "conventions-kmp", version.ref = "rpc-core" }
+compiler-specific-module = { id = "compiler-specific-module", version.ref = "rpc-core" }
+kover-root-project = { id = "kover-root-project", version.ref = "rpc-core" }
 
 # gradle-plugin project
-rpc = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "krpc-core" }
+rpc = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "rpc-core" }

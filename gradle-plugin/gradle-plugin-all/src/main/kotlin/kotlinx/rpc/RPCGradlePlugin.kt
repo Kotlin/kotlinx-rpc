@@ -4,14 +4,14 @@
 
 package kotlinx.rpc
 
-import kotlinx.rpc.KRPCPluginConst.COMPILER_PLUGIN_MODULE
-import kotlinx.rpc.KRPCPluginConst.GROUP_ID
-import kotlinx.rpc.KRPCPluginConst.INTERNAL_DEVELOPMENT_PROPERTY
-import kotlinx.rpc.KRPCPluginConst.KSP_PLUGIN_ARTIFACT_ID
-import kotlinx.rpc.KRPCPluginConst.KSP_PLUGIN_ID
-import kotlinx.rpc.KRPCPluginConst.KSP_PLUGIN_MODULE
-import kotlinx.rpc.KRPCPluginConst.kotlinVersion
-import kotlinx.rpc.KRPCPluginConst.libraryFullVersion
+import kotlinx.rpc.RPCPluginConst.COMPILER_PLUGIN_MODULE
+import kotlinx.rpc.RPCPluginConst.GROUP_ID
+import kotlinx.rpc.RPCPluginConst.INTERNAL_DEVELOPMENT_PROPERTY
+import kotlinx.rpc.RPCPluginConst.KSP_PLUGIN_ARTIFACT_ID
+import kotlinx.rpc.RPCPluginConst.KSP_PLUGIN_ID
+import kotlinx.rpc.RPCPluginConst.KSP_PLUGIN_MODULE
+import kotlinx.rpc.RPCPluginConst.kotlinVersion
+import kotlinx.rpc.RPCPluginConst.libraryFullVersion
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -21,17 +21,17 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
 import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 
-internal data class KRPCConfig(
+internal data class RPCConfig(
     val isInternalDevelopment: Boolean,
 )
 
-class KRPCGradlePlugin : Plugin<Project> {
+class RPCGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         val isInternalDevelopment =
             (target.properties.getOrDefault(INTERNAL_DEVELOPMENT_PROPERTY, null) as String?)
                 ?.toBoolean() ?: false
 
-        val config = KRPCConfig(
+        val config = RPCConfig(
             isInternalDevelopment = isInternalDevelopment,
         )
 
@@ -40,7 +40,7 @@ class KRPCGradlePlugin : Plugin<Project> {
         applyCompilerPlugin(target, config)
     }
 
-    private fun applyCompilerPlugin(target: Project, config: KRPCConfig) {
+    private fun applyCompilerPlugin(target: Project, config: RPCConfig) {
         if (config.isInternalDevelopment) {
             val compilerPlugin = target.rootProject.subprojects
                 .singleOrNull { subproject -> subproject.name == COMPILER_PLUGIN_MODULE }
@@ -56,7 +56,7 @@ class KRPCGradlePlugin : Plugin<Project> {
                 }
             }
         } else {
-            target.plugins.apply(KRPCKotlinCompilerPlugin::class.java)
+            target.plugins.apply(RPCKotlinCompilerPlugin::class.java)
         }
 
         // https://youtrack.jetbrains.com/issue/KT-53477/Native-Gradle-plugin-doesnt-add-compiler-plugin-transitive-dependencies-to-compiler-plugin-classpath
@@ -67,10 +67,10 @@ class KRPCGradlePlugin : Plugin<Project> {
         }
     }
 
-    private fun applyKspPlugin(target: Project, config: KRPCConfig) {
+    private fun applyKspPlugin(target: Project, config: RPCConfig) {
         var kspPluginConfigurationsApplied = false
         withKspPlugin(target) {
-            val krpcKspPlugin = when {
+            val libraryKspPlugin = when {
                 config.isInternalDevelopment -> {
                     target.project(":$KSP_PLUGIN_MODULE")
                 }
@@ -85,7 +85,7 @@ class KRPCGradlePlugin : Plugin<Project> {
             // separate function is needed for different gradle versions
             // in 7.6 `Configuration` argument is `this`, in 8.* it is a first argument (hence `it`)
             val onConfiguration: (Configuration) -> Unit = { kspConfiguration ->
-                target.dependencies.add(kspConfiguration.name, krpcKspPlugin)
+                target.dependencies.add(kspConfiguration.name, libraryKspPlugin)
             }
 
             target.configurations
@@ -135,11 +135,11 @@ class KRPCGradlePlugin : Plugin<Project> {
         target.plugins.withId(KSP_PLUGIN_ID, onPlugin)
     }
 
-    private fun applyPlatformConfiguration(target: Project, config: KRPCConfig) {
+    private fun applyPlatformConfiguration(target: Project, config: RPCConfig) {
         if (config.isInternalDevelopment) {
             return
         }
 
-        target.plugins.apply(KRPCPlatformPlugin::class.java)
+        target.plugins.apply(RPCPlatformPlugin::class.java)
     }
 }

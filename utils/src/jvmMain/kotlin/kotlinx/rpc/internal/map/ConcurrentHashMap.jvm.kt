@@ -4,9 +4,9 @@
 
 package kotlinx.rpc.internal.map
 
-import kotlinx.rpc.internal.InternalKRPCApi
+import kotlinx.rpc.internal.InternalRPCApi
 
-@InternalKRPCApi
+@InternalRPCApi
 actual fun <K : Any, V : Any> ConcurrentHashMap(initialSize: Int): ConcurrentHashMap<K, V> {
     return ConcurrentHashMapJvm(initialSize)
 }

@@ -7,7 +7,7 @@ package kotlinx.rpc.internal
 /**
  * Represents generated client service.
  */
-@InternalKRPCApi
+@InternalRPCApi
 public interface RPCClientService {
     public val id: Long
 }

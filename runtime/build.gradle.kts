@@ -64,7 +64,7 @@ kotlin {
 }
 
 tasks.withType<KotlinJvmTest> {
-    environment("LIBRARY_VERSION", libs.versions.krpc.core.get())
+    environment("LIBRARY_VERSION", libs.versions.rpc.core.get())
 }
 
 tasks.named("clean") {

@@ -54,7 +54,7 @@ public abstract class KRPCClient(
 
     private var connectionId: Long? = null
 
-    @InternalKRPCApi
+    @InternalRPCApi
     final override val sender: RPCMessageSender
         get() = connector
 
@@ -64,7 +64,7 @@ public abstract class KRPCClient(
 
     private val serverSupportedPlugins: CompletableDeferred<Set<RPCPlugin>> = CompletableDeferred()
 
-    @InternalKRPCApi
+    @InternalRPCApi
     final override val supportedPlugins: Set<RPCPlugin>
         get() = serverSupportedPlugins.getOrNull() ?: emptySet()
 
@@ -83,7 +83,7 @@ public abstract class KRPCClient(
     }
 
     @OptIn(InternalCoroutinesApi::class)
-    @InternalKRPCApi
+    @InternalRPCApi
     final override fun provideStubContext(serviceId: Long): CoroutineContext {
         val childContext = SupervisorJob(coroutineContext.job).withClientStreamScope()
 
@@ -339,7 +339,7 @@ public abstract class KRPCClient(
         }
     }
 
-    @InternalKRPCApi
+    @InternalRPCApi
     final override fun handleCancellation(message: RPCGenericMessage) {
         when (val type = message.cancellationType()) {
             CancellationType.ENDPOINT -> {
