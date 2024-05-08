@@ -59,7 +59,7 @@ fun main() {
 ```
 To connect to the server use the following [Ktor Client](https://ktor.io/docs/create-client.html) setup:
 ```kotlin
-val rpcClient = HttpClient { install(RPC) }.rpc {
+val rpcClient = HttpClient { installRPC() }.rpc {
     url("ws://localhost:8080/awesome")
 
     rpcConfig {

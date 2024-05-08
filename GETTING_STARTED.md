@@ -735,7 +735,7 @@ To do that, the following DSL can be used:
 
 ```kotlin
 val ktorClient = HttpClient {
-    install(RPC) { // this: RPCConfigBuilder.Client
+    installRPC { // this: RPCConfigBuilder.Client
         waitForServices = true
     }
 }
@@ -795,9 +795,7 @@ interface ImageService : RPC {
 // ### CLIENT CODE ###
 
 val client = HttpClient {
-    install(WebSockets)
-
-    install(kotlinx.rpc.transport.ktor.client.RPC) {
+    installRPC {
         serialization {
             json()
         }
@@ -822,10 +820,8 @@ class ImageServiceImpl(override val coroutineContext: CoroutineContext) : ImageS
 }
 
 fun main() {
-    embeddedServer(Netty, port = 8080) {
-        install(WebSockets)
-
-        install(kotlinx.rpc.transport.ktor.server.RPC) {
+    embeddedServer(Netty, port = 8080) {  
+        install(RPC) {
             serialization {
                 json()
             }
