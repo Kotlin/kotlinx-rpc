@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.ksp) apply false
-    alias(libs.plugins.krpc) apply false
+    alias(libs.plugins.rpc) apply false
     alias(libs.plugins.atomicfu) apply false
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.kover.root.project) apply false
@@ -16,8 +16,8 @@ plugins {
 }
 
 object Const {
-    const val KRPC_COMPILER_PLUGIN_MODULE_NAME = "krpc-compiler-plugin"
-    const val INTERNAL_KRPC_API_ANNOTATION = "org.jetbrains.krpc.internal.InternalKRPCApi"
+    const val KRPC_COMPILER_PLUGIN_MODULE_NAME = "kotlinx-rpc-compiler-plugin"
+    const val INTERNAL_KRPC_API_ANNOTATION = "kotlinx.rpc.internal.InternalKRPCApi"
 }
 
 apiValidation {
@@ -29,10 +29,10 @@ apiValidation {
         listOf(
             "codegen-tests-jvm",
             "codegen-tests-mpp",
-            "krpc-runtime-test",
-            "krpc-utils",
-            "krpc-utils-service-loader",
-            "krpc-ksp-plugin",
+            "kotlinx-rpc-runtime-test",
+            "kotlinx-rpc-utils",
+            "kotlinx-rpc-utils-service-loader",
+            "kotlinx-rpc-ksp-plugin",
         ) + compilerPluginModules
     )
 
@@ -46,11 +46,11 @@ if (kotlinVersion >= "1.8.0") {
 }
 
 allprojects {
-    group = "org.jetbrains.krpc"
+    group = "org.jetbrains.kotlinx"
     version = rootProject.libs.versions.krpc.full.get()
 }
 
-println("kRPC project version: $version")
+println("kotlinx.rpc project version: $version")
 
 // If the prefix of the kPRC version is not Kotlin gradle plugin version - you have a problem :)
 // Probably some dependency brings kotlin with higher version.

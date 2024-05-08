@@ -20,7 +20,7 @@ val publishingExtension = project.extensions.findByType<PublishingExtension>()
 // for some reason jvm publication will be registered by module itself, for example for gradle plugins
 val skipJvmPublication: Boolean? by extra
 
-if (name.startsWith("krpc")) {
+if (name.startsWith("kotlinx-rpc")) {
     if (publishingExtension != null) {
         publishingExtension.configureKrpcPublication()
     } else {

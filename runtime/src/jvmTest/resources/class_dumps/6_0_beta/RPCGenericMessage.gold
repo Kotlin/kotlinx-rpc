@@ -1,0 +1,5 @@
+org.jetbrains.krpc.internal.transport.RPCGenericMessage [Declared name: kotlinx.rpc.internal.transport.RPCGenericMessage]
+  - connectionId: kotlin.Long
+    - Nullable
+  - pluginParams: kotlin.collections.Map
+    - Nullable

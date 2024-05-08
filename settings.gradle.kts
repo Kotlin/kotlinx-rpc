@@ -6,7 +6,7 @@ pluginManagement {
     includeBuild("gradle-settings-conventions")
     includeBuild("gradle-conventions")
 
-    includeBuild("krpc-gradle-plugin")
+    includeBuild("gradle-plugin")
 
     repositories {
         mavenCentral()
@@ -27,31 +27,32 @@ plugins {
     id("compiler-specific-modules")
 }
 
-rootProject.name = "kRPC"
+rootProject.name = "kotlinx-rpc"
 
-include(":krpc-bom")
+includePublic(":bom")
 
-include(":krpc-utils")
-include(":krpc-utils:krpc-utils-service-loader")
+includePublic(":utils")
+includePublic(":utils:utils-service-loader")
 
-include(":krpc-compiler-plugin")
-include(":krpc-ksp-plugin")
+includePublic(":compiler-plugin")
+includePublic(":ksp-plugin")
 
-include(":krpc-runtime")
-include(":krpc-runtime:krpc-runtime-api")
-include(":krpc-runtime:krpc-runtime-logging")
-include(":krpc-runtime:krpc-runtime-client")
-include(":krpc-runtime:krpc-runtime-server")
-include(":krpc-runtime:krpc-runtime-test")
+includePublic(":runtime")
+includePublic(":runtime:runtime-api")
+includePublic(":runtime:runtime-logging")
+includePublic(":runtime:runtime-client")
+includePublic(":runtime:runtime-server")
+includePublic(":runtime:runtime-test")
 
-include(":krpc-runtime:krpc-runtime-serialization")
-include(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-json")
-include(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-cbor")
-include(":krpc-runtime:krpc-runtime-serialization:krpc-runtime-serialization-protobuf")
+includePublic(":runtime:runtime-serialization")
+includePublic(":runtime:runtime-serialization:runtime-serialization-json")
+includePublic(":runtime:runtime-serialization:runtime-serialization-cbor")
+includePublic(":runtime:runtime-serialization:runtime-serialization-protobuf")
 
-include(":krpc-transport:krpc-transport-ktor")
-include(":krpc-transport:krpc-transport-ktor:krpc-transport-ktor-server")
-include(":krpc-transport:krpc-transport-ktor:krpc-transport-ktor-client")
+includePublic(":transport")
+includePublic(":transport:transport-ktor")
+includePublic(":transport:transport-ktor:transport-ktor-server")
+includePublic(":transport:transport-ktor:transport-ktor-client")
 
 include(":tests:codegen-tests:codegen-tests-mpp")
 include(":tests:codegen-tests:codegen-tests-jvm")

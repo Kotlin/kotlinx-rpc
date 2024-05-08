@@ -1,5 +1,0 @@
-org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake
-  - connectionId: kotlin.Long
-    - Nullable
-  - pluginParams: kotlin.collections.Map
-  - supportedPlugins: kotlin.collections.Set

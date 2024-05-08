@@ -18,7 +18,7 @@ object CSM {
     const val KOTLIN_MULTIPLATFORM_PLUGIN_ID = "org.jetbrains.kotlin.multiplatform"
     const val KOTLIN_JVM_PLUGIN_ID = "org.jetbrains.kotlin.jvm"
 
-    const val KRPC_SERVICE_LOADER_MODULE = ":krpc-utils:krpc-utils-service-loader"
+    const val KRPC_SERVICE_LOADER_MODULE = ":kotlinx-rpc-utils:kotlinx-rpc-utils-service-loader"
 }
 
 val kotlinVersion = getKotlinPluginVersion()
@@ -70,7 +70,7 @@ subprojects {
                 .removePrefix(rootProjectPrefix)
                 .replace('_', '.')
 
-            // resolve compiler specific submodule, for example krpc-compiler-plugin-1_7 for Kotlin version 1.7.22
+            // resolve compiler specific submodule, for example compiler-plugin-1_7 for Kotlin version 1.7.22
             if (kotlinVersion.startsWith(semVer)) {
                 val coreProject = root.subprojects.singleOrNull { it.name == coreProjectName }
                     ?: error("Expected to find subproject with name '$coreProjectName'")

@@ -1,0 +1,33 @@
+/*
+ * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+package kotlinx.rpc.client.internal
+
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.rpc.client.UninitializedRPCFieldException
+import kotlin.reflect.KProperty
+
+internal class RPCFieldProvider<T, R>(
+    private val serviceName: String,
+    private val deferred: CompletableDeferred<T> = CompletableDeferred(),
+    val getter: T.() -> R,
+) {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    operator fun getValue(ref: Any?, property: KProperty<*>): R {
+        if (deferred.isCompleted) {
+            return deferred.getCompleted().getter()
+        }
+
+        throw UninitializedRPCFieldException(serviceName, property)
+    }
+}
+
+@Suppress("unused")
+internal fun <T> RPCFieldProvider(
+    serviceName: String,
+    deferred: CompletableDeferred<T> = CompletableDeferred()
+): RPCFieldProvider<T, T> {
+    return RPCFieldProvider(serviceName, deferred) { this }
+}

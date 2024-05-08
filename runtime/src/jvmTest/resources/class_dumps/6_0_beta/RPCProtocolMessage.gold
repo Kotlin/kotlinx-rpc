@@ -1,0 +1,9 @@
+org.jetbrains.krpc.internal.transport.RPCProtocolMessage [Declared name: kotlinx.rpc.internal.transport.RPCProtocolMessage]
+  - pluginParams: kotlin.collections.Map
+  - connectionId: kotlin.Long
+    - Nullable
+
+  org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Failure
+  - Declared name: kotlinx.rpc.internal.transport.RPCProtocolMessage.Failure
+  org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake
+  - Declared name: kotlinx.rpc.internal.transport.RPCProtocolMessage.Handshake

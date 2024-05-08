@@ -1,0 +1,4 @@
+kotlinx.rpc.internal.transport.RPCPlugin
+  UNKNOWN
+  HANDSHAKE
+  CANCELLATION

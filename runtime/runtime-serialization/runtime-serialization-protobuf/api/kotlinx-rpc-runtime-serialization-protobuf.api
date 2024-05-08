@@ -1,0 +1,5 @@
+public final class kotlinx/rpc/serialization/RPCProtobufSerialFormatKt {
+	public static final fun protobuf (Lkotlinx/rpc/serialization/RPCSerialFormatConfiguration;Lkotlinx/serialization/protobuf/ProtoBuf;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun protobuf$default (Lkotlinx/rpc/serialization/RPCSerialFormatConfiguration;Lkotlinx/serialization/protobuf/ProtoBuf;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
