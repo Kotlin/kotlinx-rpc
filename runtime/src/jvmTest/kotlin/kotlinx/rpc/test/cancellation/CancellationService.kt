@@ -18,7 +18,7 @@ interface CancellationService : RPC {
 
     suspend fun callException()
 
-    suspend fun incomingStream(times: Int = 10, delayMillis: Long = 200): Flow<Int>
+    suspend fun incomingStream(): Flow<Int>
 
     suspend fun outgoingStream(stream: Flow<Int>)
 
@@ -44,6 +44,7 @@ class CancellationServiceImpl(override val coroutineContext: CoroutineContext) :
     val consumedIncomingValues = mutableListOf<Int>()
     val firstIncomingConsumed = CompletableDeferred<Int>()
     val consumedAll = CompletableDeferred<Unit>()
+    val fence = CompletableDeferred<Unit>()
 
     override suspend fun serverDelay(millis: Long) {
         delay(millis)
@@ -54,8 +55,8 @@ class CancellationServiceImpl(override val coroutineContext: CoroutineContext) :
         error("callException")
     }
 
-    override suspend fun incomingStream(times: Int, delayMillis: Long): Flow<Int> {
-        return delayedFlow(times, delayMillis)
+    override suspend fun incomingStream(): Flow<Int> {
+        return resumableFlow(fence)
     }
 
     override suspend fun outgoingStream(stream: Flow<Int>) {
@@ -65,7 +66,7 @@ class CancellationServiceImpl(override val coroutineContext: CoroutineContext) :
     override suspend fun outgoingStreamWithDelayedResponse(stream: Flow<Int>) {
         consume(stream)
 
-        unskippableDelay(2000)
+        unskippableDelay(10000)
     }
 
     override suspend fun outgoingStreamWithException(stream: Flow<Int>) {
@@ -121,11 +122,11 @@ class CancellationServiceImpl(override val coroutineContext: CoroutineContext) :
         return state
     }
 
-    override val fastFieldFlow: Flow<Int> = delayedFlow(delayMillis = -1)
+    override val fastFieldFlow: Flow<Int> = resumableFlow(fence)
 
     val emittedFromSlowField = mutableListOf<Int>()
 
-    override val slowFieldFlow: Flow<Int> = delayedFlow {
+    override val slowFieldFlow: Flow<Int> = resumableFlow(fence) {
         emittedFromSlowField.add(it)
     }
 
@@ -142,28 +143,32 @@ class CancellationServiceImpl(override val coroutineContext: CoroutineContext) :
             streamScopeCallbackResult.complete(cause)
         }
 
-        return delayedFlow(times = 5, delayMillis = 50)
+        return resumableFlow(fence)
     }
 
     private fun consume(stream: Flow<Int>) {
         launch {
-            stream.collect {
-                if (!firstIncomingConsumed.isCompleted) {
-                    firstIncomingConsumed.complete(it)
+            try {
+                stream.collect {
+                    if (!firstIncomingConsumed.isCompleted) {
+                        firstIncomingConsumed.complete(it)
+                    }
+                    consumedIncomingValues.add(it)
                 }
-                consumedIncomingValues.add(it)
+            } finally {
+                consumedAll.complete(Unit)
             }
-
-            consumedAll.complete(Unit)
         }
     }
 }
 
-fun delayedFlow(times: Int = 10, delayMillis: Long = 200, onEmit: (Int) -> Unit = {}): Flow<Int> = flow {
-    repeat(times) {
-        unskippableDelay(delayMillis)
-
-        onEmit(it)
+fun resumableFlow(fence: Deferred<Unit>, onEmit: (Int) -> Unit = {}): Flow<Int> = flow {
+    repeat(2) {
         emit(it)
+        onEmit(it)
+
+        if (it == 0) {
+            fence.await()
+        }
     }
 }
