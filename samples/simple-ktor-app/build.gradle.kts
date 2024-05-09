@@ -5,7 +5,7 @@
 plugins {
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.serialization") version "1.9.22"
-    id("io.ktor.plugin") version "2.3.7"
+    id("io.ktor.plugin") version "2.3.11"
     id("com.google.devtools.ksp") version "1.9.22-1.0.16"
     id("org.jetbrains.krpc.plugin") version "5.2-beta"
 }
