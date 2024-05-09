@@ -13,7 +13,6 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.*
 import kotlinx.rpc.client.withService
-import kotlinx.rpc.internal.RPCClientService
 import kotlinx.rpc.internal.hex.hexToByteArrayInternal
 import kotlinx.rpc.internal.hex.hexToReadableBinary
 import kotlinx.rpc.internal.logging.CommonLogger
@@ -244,7 +243,7 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
         val clazz = this::class.java
         val prop = clazz
             .declaredFields
-            .single { it.name == RPCClientService::id.name }
+            .single { it.name == "__rpc_stub_id" }
             .apply { isAccessible = true }
 
         prop.set(this, 1L)

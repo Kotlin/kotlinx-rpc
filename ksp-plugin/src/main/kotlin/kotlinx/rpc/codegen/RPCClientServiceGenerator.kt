@@ -15,6 +15,10 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         private const val REGISTER_PLAIN_FLOW_FIELD_METHOD = "registerPlainFlowField"
         private const val REGISTER_SHARED_FLOW_FIELD_METHOD = "registerSharedFlowField"
         private const val REGISTER_STATE_FLOW_FIELD_METHOD = "registerStateFlowField"
+
+        private const val ID_PROPERTY_NAME = "__rpc_stub_id"
+        private const val CLIENT_PROPERTY_NAME = "__rpc_client"
+        private const val SCOPE_PROPERTY_NAME = "__rpc_scope"
     }
 
     fun generate(service: RPCServiceDeclaration) {
@@ -49,21 +53,21 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         writer.write("class ${service.simpleName.withClientImplSuffix()}(")
         writer.newLine()
         with(writer.nested()) {
-            write("override val id: Long,")
+            write("private val $ID_PROPERTY_NAME: Long,")
             newLine()
-            write("private val client: RPCClient,")
+            write("private val $CLIENT_PROPERTY_NAME: RPCClient,")
             newLine()
         }
-        writer.write(") : ${service.fullName}, RPCClientService {")
+        writer.write(") : ${service.fullName} {")
         writer.newLine()
 
         val nested = writer.nested()
 
-        nested.write("override val coroutineContext: CoroutineContext = client.provideStubContext(id)")
+        nested.write("override val coroutineContext: CoroutineContext = $CLIENT_PROPERTY_NAME.provideStubContext($ID_PROPERTY_NAME)")
         nested.newLine()
         nested.newLine()
 
-        nested.write("private val scope: CoroutineScope = this")
+        nested.write("private val $SCOPE_PROPERTY_NAME: CoroutineScope = this")
         nested.newLine()
         nested.newLine()
 
@@ -105,7 +109,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         generateFunctionClass(writer)
 
         val returnTypeGenerated = if (returnType.isUnit()) ": Unit" else ": ${returnType.toCode()}"
-        writer.write("override suspend fun ${name}(${argumentTypes.joinToString { it.toCode() }})$returnTypeGenerated = scopedClientCall(scope, id) {")
+        writer.write("override suspend fun ${name}(${argumentTypes.joinToString { it.toCode() }})$returnTypeGenerated = scopedClientCall($SCOPE_PROPERTY_NAME) {")
         writer.newLine()
         generateBody(serviceType, writer.nested())
         writer.write("}")
@@ -132,9 +136,9 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             else -> "by lazy {" to " }"
         }
 
-        val rpcFiled = "RPCField(\"$serviceType\", id, \"$name\", typeOf<$codeType>())"
+        val rpcFiled = "RPCField(\"$serviceType\", $ID_PROPERTY_NAME, \"$name\", typeOf<$codeType>())"
 
-        val codeDeclaration = "override val $name: $codeType $prefix client.$method(scope, $rpcFiled)$suffix"
+        val codeDeclaration = "override val $name: $codeType $prefix $CLIENT_PROPERTY_NAME.$method($SCOPE_PROPERTY_NAME, $rpcFiled)$suffix"
 
         writer.write(codeDeclaration)
         writer.newLine()
@@ -182,8 +186,8 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             })"
         }"
 
-        val rpcCall = "RPCCall(\"$serviceType\", id, \"$name\", RPCCall.Type.Method, $data, dataType, returnType)"
-        writer.write("client.call($rpcCall)")
+        val rpcCall = "RPCCall(\"$serviceType\", $ID_PROPERTY_NAME, \"$name\", RPCCall.Type.Method, $data, dataType, returnType)"
+        writer.write("$CLIENT_PROPERTY_NAME.call($rpcCall)")
         writer.newLine()
     }
 
