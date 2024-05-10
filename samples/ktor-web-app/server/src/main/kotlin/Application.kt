@@ -8,15 +8,15 @@ import io.ktor.server.cio.*
 import io.ktor.server.http.content.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.routing.*
-import io.ktor.server.websocket.*
-import org.jetbrains.krpc.serialization.json
-import org.jetbrains.krpc.transport.ktor.server.rpc
+import kotlinx.rpc.serialization.json
+import kotlinx.rpc.transport.ktor.server.RPC
+import kotlinx.rpc.transport.ktor.server.rpc
 
 fun main(args: Array<String>): Unit = EngineMain.main(args)
 
 @Suppress("unused")
 fun Application.module() {
-    install(WebSockets)
+    install(RPC)
 
     installCORS()
 
@@ -28,7 +28,7 @@ fun Application.module() {
                 }
             }
 
-            registerService<MyService>(MyServiceImpl())
+            registerService<MyService> { ctx -> MyServiceImpl(ctx) }
         }
 
         staticResources("/", "/static") {

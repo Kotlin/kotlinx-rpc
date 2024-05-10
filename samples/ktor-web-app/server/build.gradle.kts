@@ -5,7 +5,7 @@
 plugins {
     kotlin("jvm")
     alias(libs.plugins.kotlin.plugin.serialization)
-    alias(libs.plugins.krpc.platform)
+    alias(libs.plugins.kotlinx.rpc.platform)
     application
     distribution
 }
@@ -28,11 +28,11 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core.jvm)
     implementation(libs.logback.classic)
 
-    implementation(libs.krpc.transport.ktor.server)
-    implementation(libs.krpc.runtime.serialization.json)
+    implementation(libs.kotlinx.rpc.transport.ktor.server)
+    implementation(libs.kotlinx.rpc.runtime.serialization.json)
 
-    testImplementation(libs.krpc.runtime.client)
-    testImplementation(libs.krpc.transport.ktor.client)
+    testImplementation(libs.kotlinx.rpc.runtime.client)
+    testImplementation(libs.kotlinx.rpc.transport.ktor.client)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.ktor.server.test.host)
 }

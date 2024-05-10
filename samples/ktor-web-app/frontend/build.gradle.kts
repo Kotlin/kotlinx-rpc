@@ -5,7 +5,7 @@
 plugins {
     kotlin("multiplatform")
     alias(libs.plugins.kotlin.plugin.serialization)
-    alias(libs.plugins.krpc.platform)
+    alias(libs.plugins.kotlinx.rpc.platform)
 }
 
 kotlin {
@@ -37,8 +37,8 @@ kotlin {
                 implementation(libs.kotlin.stdlib.js)
                 implementation(libs.ktor.client.js)
                 implementation(libs.ktor.client.websockets.js)
-                implementation(libs.krpc.transport.ktor.client)
-                implementation(libs.krpc.runtime.serialization.json)
+                implementation(libs.kotlinx.rpc.transport.ktor.client)
+                implementation(libs.kotlinx.rpc.runtime.serialization.json)
 
                 implementation(project.dependencies.platform(libs.kotlin.wrappers.bom))
                 implementation(libs.react)

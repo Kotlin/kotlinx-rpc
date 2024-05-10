@@ -3,17 +3,17 @@
  */
 
 plugins {
-    kotlin("jvm") version "1.9.22"
-    kotlin("plugin.serialization") version "1.9.22"
-    id("io.ktor.plugin") version "2.3.7"
-    id("com.google.devtools.ksp") version "1.9.22-1.0.16"
-    id("org.jetbrains.krpc.plugin") version "5.2-beta"
+    kotlin("jvm") version "1.9.23"
+    kotlin("plugin.serialization") version "1.9.23"
+    id("io.ktor.plugin") version "2.3.11"
+    id("com.google.devtools.ksp") version "1.9.23-1.0.19"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "6.0-beta"
 }
 
 val kotlin_version: String by project
 val logback_version: String by project
 
-group = "com.example"
+group = "kotlinx.rpc.sample"
 version = "0.0.1"
 
 application {
@@ -33,12 +33,12 @@ kotlin {
 }
 
 dependencies {
-    implementation("org.jetbrains.krpc:krpc-runtime-client")
-    implementation("org.jetbrains.krpc:krpc-runtime-server")
-    implementation("org.jetbrains.krpc:krpc-runtime-serialization-json")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-serialization-json")
 
-    implementation("org.jetbrains.krpc:krpc-transport-ktor-client")
-    implementation("org.jetbrains.krpc:krpc-transport-ktor-server")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-transport-ktor-client")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-transport-ktor-server")
 
     implementation("io.ktor:ktor-client-cio-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")

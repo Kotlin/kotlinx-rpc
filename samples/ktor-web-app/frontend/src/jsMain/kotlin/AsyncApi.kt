@@ -16,18 +16,6 @@ fun launch(scope: CoroutineScope, start: CoroutineStart = CoroutineStart.DEFAULT
     }
 }
 
-fun <T> async(
-    scope: CoroutineScope,
-    start: CoroutineStart = CoroutineStart.DEFAULT,
-    body: suspend () -> T,
-): Deferred<T> {
-    with(scope) {
-        return async(start = start) {
-            body()
-        }
-    }
-}
-
 fun useEffectOnceAsync(effect: suspend EffectBuilder.() -> Unit) {
     useEffectOnce {
         val job = launch(Ui) {

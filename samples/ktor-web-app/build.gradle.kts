@@ -4,8 +4,8 @@
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
-    alias(libs.plugins.krpc) apply false
-    alias(libs.plugins.krpc.platform) apply false
+    alias(libs.plugins.kotlinx.rpc) apply false
+    alias(libs.plugins.kotlinx.rpc.platform) apply false
     alias(libs.plugins.ksp) apply false
 }
 

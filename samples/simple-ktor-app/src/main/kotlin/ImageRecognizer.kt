@@ -2,15 +2,14 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.rpc.RPC
+import kotlinx.rpc.RPCEagerField
 import kotlinx.serialization.Serializable
-import org.jetbrains.krpc.RPC
-import org.jetbrains.krpc.RPCEagerField
 import kotlin.coroutines.CoroutineContext
 
 @Suppress("ArrayInDataClass")
@@ -35,9 +34,7 @@ interface ImageRecognizer : RPC {
     suspend fun recognizeAll(images: Flow<Image>): Flow<Category>
 }
 
-class ImageRecognizerService : ImageRecognizer {
-    override val coroutineContext: CoroutineContext = Job()
-
+class ImageRecognizerService(override val coroutineContext: CoroutineContext) : ImageRecognizer {
     override val currentlyProcessedImage: MutableStateFlow<Image?> = MutableStateFlow(null)
 
     override suspend fun recognize(image: Image): Category {

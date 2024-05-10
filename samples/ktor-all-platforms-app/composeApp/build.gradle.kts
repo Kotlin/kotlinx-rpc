@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
-    alias(libs.plugins.krpc.platform)
+    alias(libs.plugins.kotlinx.rpc.platform)
 }
 
 kotlin {
@@ -48,9 +48,9 @@ kotlin {
             implementation(compose.components.resources)
             implementation(projects.shared)
 
-            implementation(libs.krpc.runtime.client)
-            implementation(libs.krpc.runtime.serialization.json)
-            implementation(libs.krpc.transport.ktor.client)
+            implementation(libs.kotlinx.rpc.runtime.client)
+            implementation(libs.kotlinx.rpc.runtime.serialization.json)
+            implementation(libs.kotlinx.rpc.transport.ktor.client)
             implementation(libs.ktor.client.cio)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.websockets)
@@ -62,7 +62,7 @@ kotlin {
 }
 
 android {
-    namespace = "org.jetbrains.krpc.sample"
+    namespace = "kotlinx.rpc.sample"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -70,7 +70,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "org.jetbrains.krpc.sample"
+        applicationId = "kotlinx.rpc.sample"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -101,7 +101,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "org.jetbrains.krpc.sample"
+            packageName = "kotlinx.rpc.sample"
             packageVersion = "1.0.0"
         }
     }

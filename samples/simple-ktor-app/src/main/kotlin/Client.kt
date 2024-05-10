@@ -9,10 +9,11 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.krpc.client.withService
-import org.jetbrains.krpc.serialization.json
-import org.jetbrains.krpc.transport.ktor.client.rpc
-import org.jetbrains.krpc.transport.ktor.client.rpcConfig
+import kotlinx.rpc.client.withService
+import kotlinx.rpc.internal.streamScoped
+import kotlinx.rpc.serialization.json
+import kotlinx.rpc.transport.ktor.client.rpc
+import kotlinx.rpc.transport.ktor.client.rpcConfig
 
 fun main() = runBlocking {
     val ktorClient = HttpClient {
@@ -51,8 +52,10 @@ fun main() = runBlocking {
         }
     }
 
-    val categories = recognizer.recognizeAll(imageFlow)
-    categories.collect { println("Recognized category: $it") }
+    streamScoped {
+        val categories = recognizer.recognizeAll(imageFlow)
+        categories.collect { println("Recognized category: $it") }
+    }
 
     recognizer.cancel()
     ktorClient.close()
