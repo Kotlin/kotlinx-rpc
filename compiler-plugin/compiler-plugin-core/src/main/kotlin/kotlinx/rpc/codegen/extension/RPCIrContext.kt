@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.util.kotlinFqName
 
-internal class KRPCIrContext(
+internal class RPCIrContext(
     private val pluginContext: IrPluginContext,
     private val versionSpecificApi: VersionSpecificApi,
 ) {
@@ -33,8 +33,8 @@ internal class KRPCIrContext(
         getRpcIrClassSymbol("WithRPCClientObject", "internal")
     }
 
-    val internalKRPCApiAnnotation by lazy {
-        getRpcIrClassSymbol("InternalKRPCApi", "internal")
+    val internalRPCApiAnnotation by lazy {
+        getRpcIrClassSymbol("InternalRPCApi", "internal")
     }
 
     private fun getRpcIrClassSymbol(name: String, subpackage: String? = null): IrClassSymbol {

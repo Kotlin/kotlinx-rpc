@@ -4,11 +4,11 @@
 
 package kotlinx.rpc.internal.transport
 
-import kotlinx.rpc.internal.InternalKRPCApi
+import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@InternalKRPCApi
+@InternalRPCApi
 @Serializable
 @SerialName("org.jetbrains.krpc.StackElement")
 public data class StackElement(
@@ -18,7 +18,7 @@ public data class StackElement(
     val lineNumber: Int
 )
 
-@InternalKRPCApi
+@InternalRPCApi
 @Serializable
 @SerialName("org.jetbrains.krpc.SerializedException")
 public data class SerializedException(

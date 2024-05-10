@@ -23,7 +23,7 @@ internal object RPCProtobufSerialFormat : RPCSerialFormat<ProtoBuf, ProtoBufBuil
 }
 
 /**
- * Extension function that allows to configure ProtoBuf kRPC serial format
+ * Extension function that allows to configure ProtoBuf kotlinx.rpc serial format
  * Usage:
  * ```kotlin
  * // this: RPCConfig

@@ -12,7 +12,7 @@ import kotlin.reflect.ExperimentalAssociatedObjects
 import kotlin.reflect.KClass
 import kotlin.reflect.findAssociatedObject
 
-@InternalKRPCApi
+@InternalRPCApi
 @AssociatedObjectKey
 @OptIn(ExperimentalAssociatedObjects::class)
 @Target(AnnotationTarget.CLASS)
@@ -21,7 +21,7 @@ public annotation class WithRPCClientObject(
     val client: KClass<out RPCClientObject<out RPC>>
 )
 
-@InternalKRPCApi
+@InternalRPCApi
 @OptIn(ExperimentalAssociatedObjects::class)
 public actual fun <R> findRPCProviderInCompanion(kClass: KClass<*>): R {
     @Suppress("UNCHECKED_CAST")

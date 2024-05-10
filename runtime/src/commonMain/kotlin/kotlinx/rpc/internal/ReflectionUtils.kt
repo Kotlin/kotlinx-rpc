@@ -7,7 +7,7 @@ package kotlinx.rpc.internal
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
-@InternalKRPCApi
+@InternalRPCApi
 @Suppress("UNCHECKED_CAST")
 public fun <T : Any> KType.kClass(): KClass<T> {
     val classifier = classifier ?: error("Expected denotable type, found $this")
@@ -16,14 +16,14 @@ public fun <T : Any> KType.kClass(): KClass<T> {
     return classifierClass as KClass<T>
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public fun internalError(message: String): Nothing {
-    error("Internal kRPC error: $message")
+    error("Internal kotlinx.rpc error: $message")
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public expect val KClass<*>.qualifiedClassNameOrNull: String?
 
-@InternalKRPCApi
+@InternalRPCApi
 public val KClass<*>.qualifiedClassName: String  get() = qualifiedClassNameOrNull
     ?: error("Expected qualifiedClassName for $this")

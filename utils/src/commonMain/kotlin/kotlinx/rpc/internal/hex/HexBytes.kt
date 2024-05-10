@@ -6,7 +6,7 @@
 
 package kotlinx.rpc.internal.hex
 
-import kotlinx.rpc.internal.InternalKRPCApi
+import kotlinx.rpc.internal.InternalRPCApi
 
 // Original HexExtensions.kt from stdlib are not available for Kotlin 1.8 and earlier versions
 
@@ -19,7 +19,7 @@ private val HEX_DIGITS_TO_DECIMAL = IntArray(128) { -1 }.apply {
     UPPER_CASE_HEX_DIGITS.forEachIndexed { index, char -> this[char.code] = index }
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 fun ByteArray.toHexStringInternal(lowercase: Boolean = true): String {
     val digits = if (lowercase) LOWER_CASE_HEX_DIGITS else UPPER_CASE_HEX_DIGITS
 
@@ -33,7 +33,7 @@ fun ByteArray.toHexStringInternal(lowercase: Boolean = true): String {
     }
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 fun String.hexToByteArrayInternal(): ByteArray {
     val result = ByteArray(length / 2)
 
@@ -54,7 +54,7 @@ private fun String.decimalFromHexDigitAt(index: Int): Int {
     return HEX_DIGITS_TO_DECIMAL[code]
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 fun String.hexToReadableBinary(): String {
     return hexToByteArrayInternal().joinToString("") { byte ->
         byte.toInt().toChar().display()

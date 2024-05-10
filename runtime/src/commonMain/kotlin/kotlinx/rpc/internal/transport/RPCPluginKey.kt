@@ -5,7 +5,7 @@
 package kotlinx.rpc.internal.transport
 
 import kotlinx.rpc.internal.IndexedEnum
-import kotlinx.rpc.internal.InternalKRPCApi
+import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.rpc.internal.ShortEnumKSerializer
 import kotlinx.serialization.Serializable
 
@@ -19,7 +19,7 @@ import kotlinx.serialization.Serializable
  *
  * Only entries with ordinals from 0 to 65500 are allowed, other are reserved for tests.
  */
-@InternalKRPCApi
+@InternalRPCApi
 @Serializable(with = RPCPluginKeySerializer::class)
 @Suppress("detekt.MagicNumber")
 public enum class RPCPluginKey(override val uniqueIndex: Int, private val associatedPlugin: RPCPlugin): IndexedEnum {
@@ -55,7 +55,7 @@ public enum class RPCPluginKey(override val uniqueIndex: Int, private val associ
         }
     }
 
-    @InternalKRPCApi
+    @InternalRPCApi
     public companion object {
         @Suppress("EnumValuesSoftDeprecate") // cannot use entries in Kotlin 1.8.10 or earlier
         public val ALL: Set<RPCPluginKey> = RPCPluginKey.values().toSet() - UNKNOWN

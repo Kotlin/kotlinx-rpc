@@ -10,7 +10,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.RPCTransport
 import kotlinx.rpc.RPCTransportMessage
-import kotlinx.rpc.internal.InternalKRPCApi
+import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.rpc.internal.hex.toHexStringInternal
 import kotlinx.rpc.internal.logging.CommonLogger
 import kotlinx.rpc.internal.logging.DumpLoggerContainer
@@ -21,7 +21,7 @@ import kotlinx.rpc.internal.unsupportedSerialFormatError
 import kotlinx.serialization.*
 import kotlin.collections.set
 
-@InternalKRPCApi
+@InternalRPCApi
 public interface RPCMessageSender : CoroutineScope {
     public suspend fun sendMessage(message: RPCMessage)
 }
@@ -43,7 +43,7 @@ private typealias RPCMessageHandler = suspend (RPCMessage) -> Unit
  * @param getKey a lambda function that returns the subscription key for a given [RPCCallMessage].
  * DO NOT use actual dumper in production!
  */
-@InternalKRPCApi
+@InternalRPCApi
 public class RPCConnector<SubscriptionKey>(
     private val serialFormat: SerialFormat,
     private val transport: RPCTransport,

@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.internal
 
-@InternalKRPCApi
+@InternalRPCApi
 public interface RPCDeferredField<Self> {
     public suspend fun await(): Self
 }

@@ -9,7 +9,7 @@ import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.*
 
-internal fun PublishingExtension.configureKrpcPublication() {
+internal fun PublishingExtension.configureLibraryPublication() {
     val spaceUser = System.getenv("SPACE_USERNAME")
     val spacePassword = System.getenv("SPACE_PASSWORD")
 
@@ -28,7 +28,7 @@ internal fun PublishingExtension.configureKrpcPublication() {
 internal fun Project.configureKmpPublication() {
     apply(plugin = "maven-publish")
 
-    the<PublishingExtension>().configureKrpcPublication()
+    the<PublishingExtension>().configureLibraryPublication()
 }
 
 internal fun Project.configureJvmPublication(skipJvm: Boolean) {

@@ -8,7 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 
 /**
  * Marker interface for an RPC service.
- * For each service that inherits this interface kRPC will generate an implementation to use it on the client side.
+ * For each service that inherits this interface library will generate an implementation to use it on the client side.
  *
  * [CoroutineScope] defines service lifetime.
  *

@@ -8,6 +8,6 @@ package kotlinx.rpc.internal
 
 import kotlin.reflect.KClass
 
-@InternalKRPCApi
+@InternalRPCApi
 public actual val KClass<*>.qualifiedClassNameOrNull: String?
     get() = qualifiedName

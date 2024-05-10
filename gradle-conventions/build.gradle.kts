@@ -32,19 +32,19 @@ dependencies {
 gradlePlugin {
     plugins {
         named("conventions-common") {
-            version = libs.versions.krpc.core.get()
+            version = libs.versions.rpc.core.get()
         }
     }
 
     plugins {
         named("conventions-jvm") {
-            version = libs.versions.krpc.core.get()
+            version = libs.versions.rpc.core.get()
         }
     }
 
     plugins {
         named("conventions-kmp") {
-            version = libs.versions.krpc.core.get()
+            version = libs.versions.rpc.core.get()
         }
     }
 }

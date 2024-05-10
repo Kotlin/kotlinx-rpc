@@ -7,7 +7,7 @@ package kotlinx.rpc
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.rpc.internal.InternalKRPCApi
+import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.rpc.serialization.RPCSerialFormat
 import kotlinx.rpc.serialization.RPCSerialFormatBuilder
 import kotlinx.rpc.serialization.RPCSerialFormatConfiguration
@@ -22,7 +22,7 @@ public sealed class RPCConfigBuilder private constructor() {
      * This is a temporary solution that hides the problem of transferring these parameters.
      * [SharedFlow] and [MutableSharedFlow] do not define theirs 'replay', 'extraBufferCapacity' and 'onBufferOverflow'
      * parameters, and thus they cannot be encoded and transferred.
-     * So then creating their instance on an endpoint, kRPC should know which parameters to use.
+     * So then creating their instance on an endpoint, the library should know which parameters to use.
      */
     @Suppress("MemberVisibilityCanBePrivate")
     public class SharedFlowParametersBuilder internal constructor() {
@@ -49,7 +49,7 @@ public sealed class RPCConfigBuilder private constructor() {
          */
         public var onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND
 
-        @InternalKRPCApi
+        @InternalRPCApi
         public fun builder(): () -> MutableSharedFlow<Any?> = {
             MutableSharedFlow(replay, extraBufferCapacity, onBufferOverflow)
         }
@@ -149,14 +149,14 @@ public sealed class RPCConfigBuilder private constructor() {
 }
 
 /**
- * Configuration class that is used by kRPC default RPC client and server (KRPCClient and KRPCServer).
+ * Configuration class that is used by kRPC protocol's client and server (KRPCClient and KRPCServer).
  */
 public sealed interface RPCConfig {
-    @InternalKRPCApi
+    @InternalRPCApi
     public val sharedFlowBuilder: () -> MutableSharedFlow<Any?>
-    @InternalKRPCApi
+    @InternalRPCApi
     public val serialFormatInitializer: RPCSerialFormatBuilder<*, *>
-    @InternalKRPCApi
+    @InternalRPCApi
     public val waitForServices: Boolean
 
     /**

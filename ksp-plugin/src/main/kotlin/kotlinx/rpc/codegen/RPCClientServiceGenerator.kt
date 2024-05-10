@@ -34,7 +34,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
     ) {
         writer.write("@file:Suppress(\"RedundantUnitReturnType\", \"RemoveRedundantQualifierName\", \"USELESS_CAST\", \"UNCHECKED_CAST\", \"ClassName\", \"MemberVisibilityCanBePrivate\", \"KotlinRedundantDiagnosticSuppress\", \"UnusedImport\", \"detekt.all\")")
         writer.newLine()
-        writer.write("@file:OptIn(InternalKRPCApi::class)")
+        writer.write("@file:OptIn(InternalRPCApi::class)")
         writer.newLine()
         writer.newLine()
 

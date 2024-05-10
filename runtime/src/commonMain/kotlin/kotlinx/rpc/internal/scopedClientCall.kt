@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
  *
  * Used by code generators.
  */
-@InternalKRPCApi
+@InternalRPCApi
 @OptIn(InternalCoroutinesApi::class)
 @Suppress("unused")
 public suspend inline fun <T> scopedClientCall(serviceScope: CoroutineScope, serviceId: Long, body: () -> T): T {

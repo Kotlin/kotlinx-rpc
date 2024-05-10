@@ -19,7 +19,7 @@ import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
 
-@InternalKRPCApi
+@InternalRPCApi
 public abstract class RPCServiceHandler {
     protected abstract val sender: RPCMessageSender
     protected abstract val config: RPCConfig

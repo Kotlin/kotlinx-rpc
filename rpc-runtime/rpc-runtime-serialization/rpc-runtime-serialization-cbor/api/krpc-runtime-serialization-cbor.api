@@ -1,5 +1,0 @@
-public final class org/jetbrains/krpc/serialization/RPCCborSerialFormatKt {
-	public static final fun cbor (Lorg/jetbrains/krpc/serialization/RPCSerialFormatConfiguration;Lkotlinx/serialization/cbor/Cbor;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun cbor$default (Lorg/jetbrains/krpc/serialization/RPCSerialFormatConfiguration;Lkotlinx/serialization/cbor/Cbor;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-}
-

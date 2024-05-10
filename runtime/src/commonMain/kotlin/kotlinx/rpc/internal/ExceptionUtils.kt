@@ -7,7 +7,7 @@ package kotlinx.rpc.internal
 import kotlinx.rpc.internal.transport.SerializedException
 import kotlinx.rpc.internal.transport.StackElement
 
-@InternalKRPCApi
+@InternalRPCApi
 public fun serializeException(cause: Throwable): SerializedException {
     val message = cause.message ?: "Unknown exception"
     val stacktrace = cause.stackElements()
@@ -19,7 +19,7 @@ public fun serializeException(cause: Throwable): SerializedException {
 
 internal expect fun Throwable.stackElements(): List<StackElement>
 
-@InternalKRPCApi
+@InternalRPCApi
 public expect fun SerializedException.deserialize(): Throwable
 
 internal expect class DeserializedException(

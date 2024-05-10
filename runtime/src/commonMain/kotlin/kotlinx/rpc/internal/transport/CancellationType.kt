@@ -5,9 +5,9 @@
 package kotlinx.rpc.internal.transport
 
 import kotlinx.rpc.internal.IndexedEnum
-import kotlinx.rpc.internal.InternalKRPCApi
+import kotlinx.rpc.internal.InternalRPCApi
 
-@InternalKRPCApi
+@InternalRPCApi
 public enum class CancellationType(override val uniqueIndex: Int) : IndexedEnum {
     ENDPOINT(0),
     SERVICE(1),
@@ -24,7 +24,7 @@ public enum class CancellationType(override val uniqueIndex: Int) : IndexedEnum 
     }
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public fun RPCMessage.cancellationType(): CancellationType {
     return get(RPCPluginKey.CANCELLATION_TYPE)?.let { value ->
         CancellationType.valueOfNull(value)

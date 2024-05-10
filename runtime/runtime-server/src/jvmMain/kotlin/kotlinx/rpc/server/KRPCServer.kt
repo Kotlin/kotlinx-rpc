@@ -9,7 +9,7 @@ import kotlinx.rpc.RPC
 import kotlinx.rpc.RPCConfig
 import kotlinx.rpc.RPCServer
 import kotlinx.rpc.RPCTransport
-import kotlinx.rpc.internal.InternalKRPCApi
+import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.rpc.internal.logging.CommonLogger
 import kotlinx.rpc.internal.logging.initialized
 import kotlinx.rpc.internal.map.ConcurrentHashMap
@@ -57,10 +57,10 @@ public abstract class KRPCServer(
         )
     }
 
-    @InternalKRPCApi
+    @InternalRPCApi
     final override val sender: RPCMessageSender get() = connector
 
-    @InternalKRPCApi
+    @InternalRPCApi
     final override var supportedPlugins: Set<RPCPlugin> = emptySet()
         private set
 
@@ -139,7 +139,7 @@ public abstract class KRPCServer(
         )
     }
 
-    @InternalKRPCApi
+    @InternalRPCApi
     final override fun handleCancellation(message: RPCGenericMessage) {
         when (message.cancellationType()) {
             CancellationType.ENDPOINT -> {

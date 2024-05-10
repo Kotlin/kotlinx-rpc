@@ -10,12 +10,12 @@ import kotlin.contracts.contract
 
 // copied from stdlib, as there it is available only from Kotlin 1.8
 
-@InternalKRPCApi
+@InternalRPCApi
 interface AutoCloseable {
     fun close()
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 @OptIn(ExperimentalContracts::class)
 @Suppress("detekt.TooGenericExceptionCaught")
 inline fun <T : AutoCloseable?, R> T.use(block: (T) -> R): R {
@@ -33,7 +33,7 @@ inline fun <T : AutoCloseable?, R> T.use(block: (T) -> R): R {
     }
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 @PublishedApi
 @Suppress("detekt.TooGenericExceptionCaught")
 internal fun AutoCloseable?.closeFinally(cause: Throwable?) = when {

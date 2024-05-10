@@ -18,7 +18,7 @@ configurations.configureEach {
 gradlePlugin {
     plugins {
         named("settings-conventions") {
-            version = libs.versions.krpc.core.get()
+            version = libs.versions.rpc.core.get()
         }
     }
 }

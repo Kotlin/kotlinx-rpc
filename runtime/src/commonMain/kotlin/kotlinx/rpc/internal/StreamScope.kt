@@ -19,7 +19,7 @@ import kotlin.coroutines.coroutineContext
  * Stream scope is a child of the [CoroutineContext] it was created in.
  * Failure of one request will not cancel all streams in the others.
  */
-@InternalKRPCApi
+@InternalRPCApi
 @OptIn(InternalCoroutinesApi::class)
 public class StreamScope(
     parentContext: CoroutineContext,
@@ -65,16 +65,16 @@ public class StreamScope(
         override val key: CoroutineContext.Key<*> = Key
     }
 
-    @InternalKRPCApi
+    @InternalRPCApi
     public enum class Role {
         Client, Server;
     }
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public fun CoroutineContext.withClientStreamScope(): CoroutineContext = withStreamScope(StreamScope.Role.Client)
 
-@InternalKRPCApi
+@InternalRPCApi
 public fun CoroutineContext.withServerStreamScope(): CoroutineContext = withStreamScope(StreamScope.Role.Server)
 
 @OptIn(InternalCoroutinesApi::class)
@@ -84,12 +84,12 @@ internal fun CoroutineContext.withStreamScope(role: StreamScope.Role): Coroutine
     }
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public suspend fun streamScopeOrNull(): StreamScope? {
     return currentCoroutineContext()[StreamScope.Key]
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public fun streamScopeOrNull(scope: CoroutineScope): StreamScope? {
     return scope.coroutineContext[StreamScope.Key]
 }
@@ -102,7 +102,7 @@ internal fun noStreamScopeError(): Nothing {
     )
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public suspend fun <T> callScoped(callId: String, block: suspend CoroutineScope.() -> T): T {
     val context = currentCoroutineContext()
 

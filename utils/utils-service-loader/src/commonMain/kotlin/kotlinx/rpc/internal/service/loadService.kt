@@ -4,10 +4,10 @@
 
 package kotlinx.rpc.internal.service
 
-import kotlinx.rpc.internal.InternalKRPCApi
+import kotlinx.rpc.internal.InternalRPCApi
 import kotlin.reflect.KClass
 
-@InternalKRPCApi
+@InternalRPCApi
 open class ServiceContainer {
     private val services = mutableSetOf<Any>()
 
@@ -26,7 +26,7 @@ open class ServiceContainer {
     }
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 open class CompanionServiceContainer<DeclaringClass : Any>(
     private val declaringKClass: KClass<DeclaringClass>,
 ) : ServiceContainer() {

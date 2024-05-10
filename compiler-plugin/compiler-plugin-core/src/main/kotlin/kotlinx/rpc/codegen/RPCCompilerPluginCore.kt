@@ -4,17 +4,17 @@
 
 package kotlinx.rpc.codegen
 
-import kotlinx.rpc.codegen.extension.KRPCIrExtension
+import kotlinx.rpc.codegen.extension.RPCIrExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CompilerConfiguration
 
-object KRPCCompilerPluginCore {
+object RPCCompilerPluginCore {
     fun provideExtension(configuration: CompilerConfiguration): IrGenerationExtension {
         val logger = configuration.get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
         val versionSpecificApi = VersionSpecificApi.loadService()
 
-        return KRPCIrExtension(logger, versionSpecificApi)
+        return RPCIrExtension(logger, versionSpecificApi)
     }
 }

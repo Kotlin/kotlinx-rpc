@@ -8,23 +8,23 @@ import kotlinx.rpc.RPC
 import kotlinx.rpc.RPCClient
 import kotlin.reflect.KType
 
-@InternalKRPCApi
+@InternalRPCApi
 public interface RPCClientObject<T : RPC> :
     RPCClientProvider<T>,
     RPCServiceMethodSerializationTypeProvider,
     RPCServiceFieldsProvider<T>
 
-@InternalKRPCApi
+@InternalRPCApi
 public interface RPCClientProvider<T : RPC> {
     public fun withClient(serviceId: Long, client: RPCClient) : T
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public interface RPCServiceMethodSerializationTypeProvider {
     public fun methodTypeOf(methodName: String): KType?
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public interface RPCServiceFieldsProvider<T : RPC> {
     public fun rpcFields(service: T): List<RPCDeferredField<*>>
 }

@@ -35,8 +35,8 @@ object SettingsConventions {
     const val EAP_VERSION_ENV_VAR_NAME = "EAP_VERSION"
 
     const val KSP_VERSION_ALIAS = "ksp"
-    const val KRPC_CORE_VERSION_ALIAS = "krpc-core"
-    const val KRPC_FULL_VERSION_ALIAS = "krpc-full"
+    const val LIBRARY_CORE_VERSION_ALIAS = "rpc-core"
+    const val LIBRARY_FULL_VERSION_ALIAS = "rpc-full"
     const val KOTLIN_VERSION_ALIAS = "kotlin-lang"
 
     const val VERSIONS_SECTION_NAME = "[versions]"
@@ -50,7 +50,8 @@ object SettingsConventions {
 // This sections of the plugin is responsible for setting properer libraries versions in the project
 // according to the current Kotlin version that should be used.
 
-// This plugin can be applied in different subprojects, so we need a way to find global project root for kRPC project
+// This plugin can be applied in different subprojects,
+// so we need a way to find global project root for kotlinx.rpc project
 // to be able to resolve 'gradle/libs.versions.toml' and other files
 fun findGlobalRootDirPath(start: Path, onDir: () -> Unit = {}): Path {
     var path = start
@@ -61,7 +62,7 @@ fun findGlobalRootDirPath(start: Path, onDir: () -> Unit = {}): Path {
             Files.isDirectory(it) && it.fileName.toString() == SettingsConventions.GRADLE_WRAPPER_FOLDER
         }
     ) {
-        path = path.parent ?: error("Unable to find root path for kRPC project")
+        path = path.parent ?: error("Unable to find root path for kotlinx.rpc project")
         onDir()
     }
 
@@ -153,19 +154,19 @@ fun VersionCatalogBuilder.resolveKotlinVersion(versionCatalog: Map<String, Strin
         ?: error("Expected to resolve '${SettingsConventions.KOTLIN_VERSION_ALIAS}' version")
 }
 
-// Resolves core krpc version (without Kotlin version prefix) from Versions Catalog.
+// Resolves core kotlinx.rpc version (without Kotlin version prefix) from Versions Catalog.
 // Updates it with EAP_VERSION suffix of present.
-// Sets krpc full version (with Kotlin version prefix) into Version Catalog.
-fun VersionCatalogBuilder.resolveKrpcVersion(versionCatalog: Map<String, String>, kotlinVersion: String) {
+// Sets kotlinx.rpc full version (with Kotlin version prefix) into Version Catalog.
+fun VersionCatalogBuilder.resolveLibraryVersion(versionCatalog: Map<String, String>, kotlinVersion: String) {
     val eapVersion: String = System.getenv(SettingsConventions.EAP_VERSION_ENV_VAR_NAME)
         ?.let { "-eap-$it" } ?: ""
-    val krpcCatalogVersion = versionCatalog[SettingsConventions.KRPC_CORE_VERSION_ALIAS]
-        ?: error("Expected to resolve '${SettingsConventions.KRPC_CORE_VERSION_ALIAS}' version")
-    val krpcVersion = krpcCatalogVersion + eapVersion
-    val krpcFullVersion = "$kotlinVersion-$krpcVersion"
+    val libraryCatalogVersion = versionCatalog[SettingsConventions.LIBRARY_CORE_VERSION_ALIAS]
+        ?: error("Expected to resolve '${SettingsConventions.LIBRARY_CORE_VERSION_ALIAS}' version")
+    val libraryCoreVersion = libraryCatalogVersion + eapVersion
+    val libraryFullVersion = "$kotlinVersion-$libraryCoreVersion"
 
-    version(SettingsConventions.KRPC_CORE_VERSION_ALIAS, krpcVersion)
-    version(SettingsConventions.KRPC_FULL_VERSION_ALIAS, krpcFullVersion)
+    version(SettingsConventions.LIBRARY_CORE_VERSION_ALIAS, libraryCoreVersion)
+    version(SettingsConventions.LIBRARY_FULL_VERSION_ALIAS, libraryFullVersion)
 }
 
 dependencyResolutionManagement {
@@ -193,7 +194,7 @@ dependencyResolutionManagement {
                 }
             }
 
-            resolveKrpcVersion(versionCatalog, kotlinVersion)
+            resolveLibraryVersion(versionCatalog, kotlinVersion)
 
             // Other Kotlin-dependant versions 
             val lookupTable = loadLookupTable(rootDir, kotlinVersion)

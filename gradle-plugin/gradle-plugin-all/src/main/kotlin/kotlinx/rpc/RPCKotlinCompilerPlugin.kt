@@ -4,17 +4,17 @@
 
 package kotlinx.rpc
 
-import kotlinx.rpc.KRPCPluginConst.COMPILER_PLUGIN_ARTIFACT_ID
-import kotlinx.rpc.KRPCPluginConst.GROUP_ID
-import kotlinx.rpc.KRPCPluginConst.PLUGIN_ID
-import kotlinx.rpc.KRPCPluginConst.libraryFullVersion
+import kotlinx.rpc.RPCPluginConst.COMPILER_PLUGIN_ARTIFACT_ID
+import kotlinx.rpc.RPCPluginConst.GROUP_ID
+import kotlinx.rpc.RPCPluginConst.PLUGIN_ID
+import kotlinx.rpc.RPCPluginConst.libraryFullVersion
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
-class KRPCKotlinCompilerPlugin : KotlinCompilerPluginSupportPlugin {
+class RPCKotlinCompilerPlugin : KotlinCompilerPluginSupportPlugin {
     override fun isApplicable(kotlinCompilation: KotlinCompilation<*>): Boolean {
         return true
     }

@@ -20,7 +20,7 @@ internal object RPCJsonSerialFormat : RPCSerialFormat<Json, JsonBuilder> {
 }
 
 /**
- * Extension function that allows to configure JSON kRPC serial format
+ * Extension function that allows to configure JSON kotlinx.rpc serial format
  * Usage:
  * ```kotlin
  * // this: RPCConfig

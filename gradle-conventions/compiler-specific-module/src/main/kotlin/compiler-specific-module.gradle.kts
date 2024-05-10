@@ -18,7 +18,7 @@ object CSM {
     const val KOTLIN_MULTIPLATFORM_PLUGIN_ID = "org.jetbrains.kotlin.multiplatform"
     const val KOTLIN_JVM_PLUGIN_ID = "org.jetbrains.kotlin.jvm"
 
-    const val KRPC_SERVICE_LOADER_MODULE = ":kotlinx-rpc-utils:kotlinx-rpc-utils-service-loader"
+    const val SERVICE_LOADER_MODULE = ":kotlinx-rpc-utils:kotlinx-rpc-utils-service-loader"
 }
 
 val kotlinVersion = getKotlinPluginVersion()
@@ -60,7 +60,7 @@ val root = project
 subprojects {
     when {
         name == coreProjectName -> {
-            lazyImplementation(project(CSM.KRPC_SERVICE_LOADER_MODULE))
+            lazyImplementation(project(CSM.SERVICE_LOADER_MODULE))
 
             root.lazyApi(this)
         }
@@ -75,7 +75,7 @@ subprojects {
                 val coreProject = root.subprojects.singleOrNull { it.name == coreProjectName }
                     ?: error("Expected to find subproject with name '$coreProjectName'")
 
-                lazyImplementation(project(CSM.KRPC_SERVICE_LOADER_MODULE))
+                lazyImplementation(project(CSM.SERVICE_LOADER_MODULE))
                 lazyApi(coreProject)
 
                 root.lazyApi(this)

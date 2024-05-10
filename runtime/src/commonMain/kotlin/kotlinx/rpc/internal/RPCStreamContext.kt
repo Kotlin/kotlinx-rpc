@@ -18,7 +18,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialFormat
 import kotlin.coroutines.CoroutineContext
 
-@InternalKRPCApi
+@InternalRPCApi
 public class LazyRPCStreamContext(
     public val streamScopeOrNull: StreamScope?,
     private val initializer: (StreamScope) -> RPCStreamContext,
@@ -39,7 +39,7 @@ public class LazyRPCStreamContext(
     public fun initialize(): RPCStreamContext = lazyValue
 }
 
-@InternalKRPCApi
+@InternalRPCApi
 public class RPCStreamContext(
     internal val callId: String,
     private val config: RPCConfig,
@@ -51,7 +51,7 @@ public class RPCStreamContext(
         private const val STREAM_ID_PREFIX = "stream:"
     }
 
-    @InternalKRPCApi
+    @InternalRPCApi
     public inline fun launchIf(
         condition: RPCStreamContext.() -> Boolean,
         noinline block: suspend CoroutineScope.(RPCStreamContext) -> Unit,

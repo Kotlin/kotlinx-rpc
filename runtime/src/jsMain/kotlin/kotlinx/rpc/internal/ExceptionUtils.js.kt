@@ -25,7 +25,7 @@ internal actual class DeserializedException actual constructor(
 
 internal actual fun Throwable.stackElements(): List<StackElement> = emptyList()
 
-@InternalKRPCApi
+@InternalRPCApi
 public actual fun SerializedException.deserialize(): Throwable {
     return DeserializedException(toStringMessage, message, stacktrace, cause, className)
 }
