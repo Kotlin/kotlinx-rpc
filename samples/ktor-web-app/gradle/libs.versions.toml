@@ -1,6 +1,6 @@
 [versions]
 kotlin = "1.9.22"
-kotlin-wrappers-bom = "1.0.0-pre.685"
+kotlin-wrappers-bom = "1.0.0-pre.747"
 ktor = "2.3.7"
 kotlinx-serialization-json = "1.6.1"
 kotlinx-coroutines-core = "1.7.3"
