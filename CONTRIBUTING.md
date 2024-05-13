@@ -1,6 +1,6 @@
 # How to contribute
 
-Before we get started, thank you for considering contributing to kRPC. It's awesome of you!
+Before we get started, thank you for considering contributing to `kotlinx.rpc`. It's awesome of you!
 
 There are two ways you can contribute right now:
 
@@ -16,7 +16,8 @@ Independently of how you'd like to contribute, please make sure you read and com
 
 ### Building the project
 
-kRPC is built with Gradle. Given it is multiplatform, you can build kRPC for the JVM, Native, and JavaScript.
+`kotlinx.rpc` is built with Gradle. 
+Given it is multiplatform, you can build the library for the JVM, Native, and JavaScript.
 
 To build the projects and produce the corresponding artifacts, use
 
@@ -29,15 +30,20 @@ for other platforms, the corresponding tests for these should also be run. To se
 
 `./gradlew tasks`
 
-To check your code for compliance with styleguide - use [Detekt](https://detekt.dev/) task:
+To check your code for compliance with styleguide, use [Detekt](https://detekt.dev/) task:
 
 `./gradlew detekt`
 
-To check to binary compatibility of your changes use [validator](https://github.com/Kotlin/binary-compatibility-validator) task:
+To check the binary compatibility of your changes, use [validator](https://github.com/Kotlin/binary-compatibility-validator) task:
 
 `./gradlew apiCheck` or simply `./gradlew build`
 
-For kRPC to build correctly, a series of additional libraries/tools may need to be installed, based on the operating
+To check code coverage of your changes, use [kover](https://github.com/Kotlin/kotlinx-kover/releases?page=2) task:
+
+`./gradlew koverVerify`
+
+For `kotlinx.rpc` to build correctly, 
+a series of additional libraries/tools may need to be installed, based on the operating
 system you're using for development:
 
 **macOS**
@@ -46,27 +52,30 @@ If targeting macOS and/or iOS, install `Xcode` and `Xcode command line tools` on
 
 #### Referencing artifacts locally
 
-There are two ways to reference artifacts from the development kRPC locally in another project, which is usually
+There are two ways to reference artifacts from the development `kotlinx.rpc` locally in another project, which is usually
 used for debugging purposes. One of these is to publish to [Maven Local](https://docs.gradle.org/current/userguide/publishing_maven.html). The other
-(and somewhat simpler), is to use the `includeBuild` functionality of Gradle. Reference the kRPC project from your sample project
+(and somewhat simpler), is to use the `includeBuild` functionality of Gradle. 
+Reference the `kotlinx.rpc` project from your sample project
 by adding the following line to your `settings.gradle(.kts)` file:
 
 ```groovy
-    includeBuild("/PATH/TO/KRPC")
+    includeBuild("/PATH/TO/LIBRARY")
 ```
 
 #### Importing into IntelliJ IDEA
 
-To import into IntelliJ IDEA, just open up the `krpc` project folder. IntelliJ IDEA should automatically detect
-that it is a Gradle project and import it. It's important that you make sure that all building and test operations
+To import into IntelliJ IDEA, open up the `kotlinx-rpc` project folder. 
+IntelliJ IDEA should automatically detect that it is a Gradle project and import it. 
+It's important that you make sure that all building and test operations
 are delegated to Gradle under [Gradle Settings](https://www.jetbrains.com/help/idea/gradle-settings.html).
 
 ### Pull Requests
 
 Contributions are made using Github [pull requests](https://help.github.com/en/articles/about-pull-requests):
 
-1. Fork the kRPC repository and work on your fork.
-2. [Create](https://github.com/ktorio/krpc/compare) a new PR with a request to merge to the **main** branch.
+[//]: # (TODO change repo link to the repo)
+1. Fork the `kotlinx.rpc` repository and work on your fork.
+2. [Create](https://github.com/kotlin/kotlinx.rpc/compare) a new PR with a request to merge to the **main** branch. 
 3. Ensure that the description is clear and refers to an existing ticket/bug if applicable. 
 4. Make sure any code contributed is covered by tests and no existing tests are broken.
 
@@ -82,7 +91,7 @@ A few things to remember:
 * Every public API (including functions, classes, objects and so on) should be documented,
   every parameter, property, return types and exceptions should be described properly.
 * A Public API that is not intended to be used by end-users that couldn't be made private/internal due to technical reasons,
-  should be marked with `@InternalKRPCApi` annotation.
+  should be marked with `@InternalRPCApi` annotation.
 
 ### Commit messages
 

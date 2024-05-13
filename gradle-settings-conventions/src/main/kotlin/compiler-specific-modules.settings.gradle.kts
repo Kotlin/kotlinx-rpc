@@ -17,7 +17,7 @@ object CSM {
 // So [1.7, 1.7.10, 1.9.10, 1.7.22, 1.9, 1, 1.7.0, 1.8]
 // will be sorted as [1.7.0, 1.7.10, 1.7.22, 1.7, 1.8, 1.9.10, 1.9, 1]
 // It's ok to have version '1'. For example, we may have '1.7' and '1' specific modules.
-// That would mean, that all 1.7.* versions we compile with '1.7' module, and 1.8.+ up to 1.9.22 will be with '1' module
+// That would mean, that all 1.7.* versions we compile with '1.7' module, and 1.8.+ up to 1.9.23 will be with '1' module
 class CompilerModuleSemVer(fullName: String, prefix: String) : Comparable<CompilerModuleSemVer> {
     // For example, "compiler-plugin-1_7_10" -> "1.7.10"
     val version = fullName

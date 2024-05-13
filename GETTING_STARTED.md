@@ -1,8 +1,8 @@
 # Getting Started
 
-kRPC is a multiplatform Kotlin library that provides its users with tools
+`kotlinx.rpc` is a multiplatform Kotlin library that provides its users with tools
 to perform Remote Procedure Calls (RPC) using Kotlin language constructs with as easy setup as possible.
-kRPC is transport agnostic by design,
+The library is transport agnostic by design,
 so most transfer mechanisms can be used under the hood: WebSockets, HTTP Requests, gRPC, etc.
 
 In this document, we will go through all core concepts and abstractions that the library uses 
@@ -18,7 +18,7 @@ It is important to understand that this library
 is a set of tools and APIs gathered in one place
 with a goal of providing a great user experience
 when working with RPC systems in Kotlin multiplatform projects.
-kRPC provides its own in-house new RPC protocol,
+`kotlinx.rpc` provides its own in-house new RPC protocol,
 but it **IS NOT** a library solely focused on this protocol.
 
 The combination of Kotlin Multiplatform technology and RPC concept
@@ -35,21 +35,21 @@ including but not limited to [gRPC](https://grpc.io).
 
 First, you will need to configure your project with [Gradle](https://docs.gradle.org/current/userguide/userguide.html).
 In this section, we will describe Gradle project configuration concepts 
-that are most valuable to know while working with kRPC. 
+that are most valuable to know while working with `kotlinx.rpc`. 
 
 ### Runtime dependencies
 
-kRPC provides you with runtime [dependencies](https://docs.gradle.org/current/userguide/declaring_dependencies.html) 
+`kotlinx.rpc` provides you with runtime [dependencies](https://docs.gradle.org/current/userguide/declaring_dependencies.html) 
 (also called artifacts).
 To use these dependencies, in your project's `build.gradle.kts` file you can define the following:
 ```kotlin
 dependencies {
-    // example kRPC artifacts
-    implementation("org.jetbrains.krpc:krpc-runtime-client:1.9.22-5.3-beta")
-    implementation("org.jetbrains.krpc:krpc-runtime-server:1.9.22-5.3-beta")
+    // example kotlinx.rpc artifacts
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client:1.9.23-0.1.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server:1.9.23-0.1.0")
 }
 ```
-That will add you the APIs needed to work with both client and server using kRPC.
+That will add you the APIs needed to work with both client and server using `kotlinx.rpc`.
 However, this example will work for 
 [simple Kotlin/JVM projects](https://kotlinlang.org/docs/get-started-with-jvm-gradle-project.html#explore-the-build-script) only. 
 To use it with Kotlin Multiplatform projects (KMP), you need to define a slightly different script:
@@ -59,12 +59,12 @@ kotlin {
     sourceSets {
         iosMain {
             // let's say that we have code for the client in iosMain sources set
-            implementation("org.jetbrains.krpc:krpc-runtime-client:1.9.22-5.3-beta")
+            implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client:1.9.23-0.1.0")
         }
         
         jvmMain {
             // let's say that we have code for the server in jvmMain sources set
-            implementation("org.jetbrains.krpc:krpc-runtime-server:1.9.22-5.3-beta")
+            implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server:1.9.23-0.1.0")
         }
     }
 }
@@ -85,27 +85,27 @@ so the dependency declaration may look like this:
 ```toml
 # gradle/libs.versions.toml
 [versions]
-krpc = "1.9.22-5.3-beta"
+kotlinx-rpc = "1.9.23-0.1.0"
 
 [libraries]
-krpc-client = { module = "org.jetbrains.krpc:krpc-runtime-client", version.ref = "krpc" }
+kotlinx-rpc-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-runtime-client", version.ref = "kotlinx-rpc" }
 ```
 ```kotlin
 // build.gradle.kts
 dependecies {
-    implementation(libs.krpc.client)
+    implementation(libs.kotlinx.rpc.client)
 }
 ```
 
 [//]: # (TODO: Link to docs website with features and their artifacts)
 
-Lastly, to be able to add dependencies for kRPC artifacts,
+Lastly, to be able to add dependencies for `kotlinx.rpc` artifacts,
 you will need to define a [repository](https://docs.gradle.org/current/userguide/declaring_repositories.html)
 from which they will be consumed in your `build.gradle.kts`:
 ```kotlin
 repositories {
-    // for kRPC dependencies
-    maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven")
+    // for kotlinx.rpc dependencies
+    maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven") // todo change repo link
     // for other dependencies, like Ktor
     mavenCentral() 
 }
@@ -113,23 +113,23 @@ repositories {
 
 ### Gradle plugins
 
-kRPC also provides Gradle [plugins](https://docs.gradle.org/current/userguide/plugins.html).
+`kotlinx.rpc` also provides Gradle [plugins](https://docs.gradle.org/current/userguide/plugins.html).
 These are needed to simplify your project configuration, 
 as they do some repetitive work by themselves.
 
-kRPC provides two Gradle plugins:
+`kotlinx.rpc` provides two Gradle plugins:
 
-- `org.jetbrains.krpc.platform`
-- `org.jetbrains.krpc.plugin`
+- `org.jetbrains.kotlinx.rpc.platform`
+- `org.jetbrains.kotlinx.rpc.plugin`
 
 To add a plugin to your project, you need to define the following in your `build.gradle.kts`:
 ```kotlin
 plugins {
-    id("org.jetbrains.krpc.plugin") version "5.3-beta"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.1.0"
 }
 ```
 
-> Note that we use version `5.3-beta` here, instead of `1.9.22-5.3-beta` 
+> Note that we use version `0.1.0` here, instead of `1.9.23-0.1.0` 
 that we used in [runtime dependencies](#runtime-dependencies). 
 We will describe why in the [versioning](#library-versioning) section. 
 
@@ -139,8 +139,8 @@ to be consumed from in your `settings.gradle.kts`:
 ```kotlin
 pluginManagement {
     repositories {
-        // kRPC plugins will be downloaded from here
-        maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven")
+        // kotlinx.rpc plugins will be downloaded from here
+        maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven") // todo update repo link
         // other plugins, like Kotlin, will be downloaded from here
         gradlePluginPortal()
     }
@@ -149,23 +149,23 @@ pluginManagement {
 
 Now we will explain the difference between two Gradle plugins we provide.
 
-`org.jetbrains.krpc.platform` is a simple plugin
+`org.jetbrains.kotlinx.rpc.platform` is a simple plugin
 that is particularly useful for versioning project dependencies.
 It adds [BOM](https://docs.gradle.org/current/userguide/platforms.html#sub:bom_import) 
-dependency to your project, that specifies proper versions for kRPC dependencies.
+dependency to your project, that specifies proper versions for `kotlinx.rpc` dependencies.
 So instead of first example in [runtime dependencies](#runtime-dependencies) section
 you can write this:
 
 ```kotlin
 plugins {
-    kotlin("jvm") version "1.9.22"
-    id("org.jetbrains.krpc.platform") version "5.3-beta"
+    kotlin("jvm") version "1.9.23"
+    id("org.jetbrains.kotlinx.rpc.platform") version "0.1.0"
 }
 
 dependencies {
-    // versions are set automatically to 1.9.22-5.3-beta 
-    implementation("org.jetbrains.krpc:krpc-runtime-client")
-    implementation("org.jetbrains.krpc:krpc-runtime-server")
+    // versions are set automatically to 1.9.23-0.1.0 
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server")
 }
 ```
 
@@ -173,43 +173,43 @@ Using this plugin, an example with version catalogs can be rewritten like this:
 ```toml
 # gradle/libs.versions.toml
 [versions]
-krpc-core = "5.3-beta"
+kotlinx-rpc-core = "0.1.0"
 
 [libraries]
-krpc-client = { module = "org.jetbrains.krpc:krpc-runtime-client" }
+kotlinx-rpc-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-runtime-client" }
 
 [plugins]
-krpc-platform = { id = "org.jetbrains.krpc.platform", version.ref = "krpc-core" }
+kotlinx-rpc-platform = { id = "org.jetbrains.kotlinx.rpc.platform", version.ref = "kotlinx-rpc-core" }
 ```
 ```kotlin
 // build.gradle.kts
 plugins {
-    alias(libs.plugins.krpc.platform)
+    alias(libs.plugins.kotlinx.rpc.platform)
 }
 
 dependecies {
-    implementation(libs.krpc.client)
+    implementation(libs.kotlinx.rpc.client)
 }
 ```
 
-`org.jetbrains.krpc.plugin` is the second plugin we provide.
-It has the same BOM functionality as `org.jetbrains.krpc.platform`, and it also sets up code generation configurations.
-For kRPC library to work correctly with user defined [services](#services) 
+`org.jetbrains.kotlinx.rpc.plugin` is the second plugin we provide.
+It has the same BOM functionality as `org.jetbrains.kotlinx.rpc.platform`, and it also sets up code generation configurations.
+For `kotlinx.rpc` library to work correctly with user defined [services](#services) 
 we need to provide two additional configurations: Kotlin compiler plugin and
 [KSP](https://kotlinlang.org/docs/ksp-overview.html) plugin. 
-For you, this means that you only need to add kRPC and KSP Gradle plugins,
+For you, this means that you only need to add `kotlinx.rpc` and KSP Gradle plugins,
 and all the needed configuration will be automatically set up by the plugin:
 
 ```kotlin
 plugins {
-    kotlin("jvm") version "1.9.22"
-    id("com.google.devtools.ksp") version "1.9.22-1.0.17"
-    id("org.jetbrains.krpc.plugin") version "5.3-beta"
+    kotlin("jvm") version "1.9.23"
+    id("com.google.devtools.ksp") version "1.9.23-1.0.17"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.1.0"
 }
 
 dependencies {
-    implementation("org.jetbrains.krpc:krpc-runtime-client")
-    implementation("org.jetbrains.krpc:krpc-runtime-server")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server")
 }
 ```
 
@@ -221,13 +221,13 @@ to save time on building your project.
 
 ### Other
 
-kRPC requires you to add 
+`kotlinx.rpc` requires you to add 
 [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization) 
 Gradle plugin to your project. 
 ```kotlin
 plugins {
-    kotlin("jvm") version "1.9.22"
-    kotlin("plugin.serialization") version "1.9.22"
+    kotlin("jvm") version "1.9.23"
+    kotlin("plugin.serialization") version "1.9.23"
 }
 ```
 More on the serialization in the [dedicated](#serialization-dsl) section.
@@ -238,19 +238,19 @@ As you may have noticed by this time,
 we have a rather unfamiliar versioning scheme.
 We will break it down for you in this section.
 
-kRPC version for all [runtime dependencies](#runtime-dependencies)
+`kotlinx.rpc` version for all [runtime dependencies](#runtime-dependencies)
 consists of two parts: Kotlin version prefix and core (feature) version suffix.
 ```
-1.9.22-5.3-beta
+1.9.23-0.1.0
 ```
-Here `1.9.22` is the version of Kotlin of your project. 
+Here `1.9.23` is the version of Kotlin of your project. 
 It can be found out by looking at Kotlin Gradle Plugin:
 ```kotlin
 plugins {
-    kotlin("jvm") version "1.9.22"
+    kotlin("jvm") version "1.9.23"
 }
 ```
-As kRPC uses Kotlin compiler plugin and KSP plugins, 
+As `kotlinx.rpc` uses Kotlin compiler plugin and KSP plugins, 
 we rely on internal functionality that may change over time with any new Kotlin version.
 To prevent the library from breaking with an incompatible Kotlin version, 
 we use version prefix.
@@ -259,18 +259,18 @@ would require updating the project's Kotlin version, which is not always possibl
 To address that issue, 
 we provide core version updates for all stable versions of
 **the last three** major Kotlin releases. 
-So if the last stable Kotlin version is `1.9.22`, as at the time of writing this guide, 
+So if the last stable Kotlin version is `1.9.23`, as at the time of writing this guide, 
 the following versions of Kotlin are supported:
 
 - 1.7.0, 1.7.10, 1.7.20, 1.7.21, 1.7.22
 - 1.8.0, 1.8.10, 1.8.20, 1.8.21, 1.8.22
-- 1.9.0, 1.9.10, 1.9.20, 1.9.21, 1.9.22
+- 1.9.0, 1.9.10, 1.9.20, 1.9.21, 1.9.22, 1.9.23
 
 So for each of the listed Kotlin versions, 
 you can use `<kotlin_version>-<core_version>` template 
 to get the needed library version. 
-(So, for core version `5.3-beta`, there are `1.7.0-5.3-beta`, 
-`1.7.0-5.3-beta`, ... , `1.9.22-5.3-beta` versions present).
+(So, for core version `0.1.0`, there are `1.7.0-0.1.0`, 
+`1.7.0-0.1.0`, ... , `1.9.23-0.1.0` versions present).
 To simplify project configuration, both our [Gradle plugins](#gradle-plugins)
 are able to set proper runtime dependencies versions automatically based
 on the project's Kotlin version and the Gradle plugin version 
@@ -279,21 +279,21 @@ which is used as a core library version.
 To summarize, we can look at the example:
 ```kotlin
 plugins {
-    kotlin("jvm") version "1.9.22" // project's Kotlin version 
-    id("org.jetbrains.krpc.platform") version "5.3-beta" // kRPC core version
+    kotlin("jvm") version "1.9.23" // project's Kotlin version 
+    id("org.jetbrains.kotlinx.rpc.platform") version "0.1.0" // kotlinx.rpc core version
 }
 
 dependencies {
-    // for kRPC runtime dependencies, Gradle plugin sets version 1.9.22-5.3-beta
-    implementation("org.jetbrains.krpc:krpc-runtime-client") 
-    implementation("org.jetbrains.krpc:krpc-runtime-server")
+    // for kotlinx.rpc runtime dependencies, Gradle plugin sets version 1.9.23-0.1.0
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client") 
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server")
 }
 ```
 
 ## Common concepts
 
 In this section, we will go through the main parts of the API
-that kRPC provides in runtime without a relation to a particular RPC protocol.
+that `kotlinx.rpc` provides in runtime without a relation to a particular RPC protocol.
 Core concepts and terminology will be explained here and demonstrated with examples.
 
 ### Services
@@ -325,7 +325,7 @@ the interface should be placed in the common module
 Now we can implement the service, so server knows how to process incoming requests.
 
 ```kotlin
-class MyServiceImpl : MyService {
+class MyServiceImpl(override val coroutineContext: CoroutineContext) : MyService {
     override suspend fun hello(name: String): String {
         return "Hello, $name! I'm server!"
     }
@@ -336,7 +336,7 @@ The server will use that implementation to answer the client requests.
 
 ### RPC Clients
 
-For each declared service, kRPC will generate an actual client implementation 
+For each declared service, `kotlinx.rpc` will generate an actual client implementation 
 that can be used to send requests to a server.
 You must not use generated code directly.
 Instead, you should use the APIs that will provide you with the instance of your interface.
@@ -358,7 +358,7 @@ val rpcClient: RPCClient
 val myService: MyService = rpcClient.withService<MyService>()
 ```
 
-So now you have your client instance that is able to send RPC requests to your server.
+Now you have your client instance that is able to send RPC requests to your server.
 `RPCClient` can have multiple services that communicate through it.
 Conceptually, `RPCClient` is an abstraction of a client, 
 that is able to convent service requests 
@@ -366,8 +366,8 @@ that is able to convent service requests
 into actual network requests.
 
 You can provide your own implementations of the `RPCClient`.
-But kRPC already provides one out-of-the-box solution that uses
-in-house RPC protocol, and we are working on supporting more protocols 
+But `kotlinx.rpc` already provides one out-of-the-box solution that uses
+in-house RPC protocol (called kRPC), and we are working on supporting more protocols 
 (with priority on gRPC).
 
 ### RPC Servers
@@ -381,17 +381,29 @@ You can provide your own `RPCServer` implementation
 or use the one provided out of the box.
 Note that client and server must use the same RPC protocol to communicate.
 
+Use `registerService` function to add your own factory for implemented RPC services.
+This factory function should accept `CoroutineContext` argument and pass it to the service,
+which should use it to override `coroutineContext` property of parent interface.
+This ensures proper application lifetime for your services.
+
 Example usage:
 
 ```kotlin
 val server: RPCServer
 
-server.registerService<MyService>(MyServiceImpl())
+server.registerService<MyService> { ctx: CoroutineContext -> MyServiceImpl(ctx) } 
 ```
 
-## In-house RPC protocol
+The `registerService` function requires the explicit type of the declared RPC service.
+That means that the code will not work if you provide it with the type of the service implementation:
+```kotlin
+// Wrong! Should be `MyService` as type argument
+server.registerService<MyServiceImpl> { ctx: CoroutineContext -> MyServiceImpl(ctx) } 
+```
 
-In this section, we will focus on APIs and features that are distinctly present in the in-house RPC protocol. 
+## kRPC - In-house RPC protocol
+
+In this section, we will focus on APIs and features that are distinctly present in the kRPC protocol. 
 
 ### Features
 
@@ -413,9 +425,58 @@ interface MyService : RPC {
 }
 ```
 
-Note that flows in classes require
+Note that flows that are declared in classes (like in `StreamResult`) require
 [Contextual](https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/serializers.md#contextual-serialization)
 annotation.
+
+To use flows in your code - you need to use special `streamScoped` function 
+that will provide your flows with their lifetime:
+```kotlin
+interface MyService {
+    suspend fun sendFlow(flow: Flow<Int>)
+}
+
+val myService = rpcClient.withService<MyService>()
+
+streamScoped {
+    val flow = flow { 
+        repeat(10) { i ->
+            emit(i)
+        }
+    }
+    
+    myService.sendFlow(flow)
+}
+```
+In that case all your flows, including incoming and outgoing, 
+will work until the `streamScoped` function completes. 
+After that, all streams that are still live will be closed.
+
+You can have multiple RPC call and flows inside the `streamScoped` function, even from different services.
+
+On server side, you can use `invokeOnStreamScopeCompletion` handler inside your methods
+to execute code after `streamScoped` on client side has closed.
+It might be useful to clean resources, for example:
+```kotlin
+override suspend fun hotFlow(): StateFlow<Int> {
+    val state = MutableStateFlow(-1)
+
+    incomingHotFlowJob = launch {
+        repeat(Int.MAX_VALUE) { value ->
+            state.value = value
+
+            hotFlowMirror.first { it == value }
+        }
+    }
+
+    invokeOnStreamScopeCompletion {
+        incomingHotFlowJob.cancel()
+    }
+
+    return state
+}
+```
+Note that this API is experimental and may be removed in future releases.
 
 #### Service fields
 
@@ -429,7 +490,7 @@ interface MyService : RPC {
 
 // ### Server code ###
 
-class MyServiceImpl : MyService {
+class MyServiceImpl(override val coroutineContext: CoroutineContext) : MyService {
     override val plainFlow: Flow<Int> = flow {
         emit(1)
     }
@@ -440,6 +501,9 @@ class MyServiceImpl : MyService {
 ```
 
 Field declarations are only supported for these three types: `Flow`, `SharedFlow` and `StateFlow`.
+
+You don't need to use `streamScoped` function to work with streams in fields.
+
 To learn more about the limitations of such declarations, 
 see [Field declarations in services](#field-declarations-in-services).
 
@@ -450,15 +514,15 @@ see [Field declarations in services](#field-declarations-in-services).
 [//]: # (TODO #### Connection lifetime)
 
 
-### KRPCClient — in-house RPCClient
+### KRPCClient — RPCClient for kRPC Protocol
 
-`KRPCClient` is an abstract class that implements `RPCClient` and protocol logic. 
+`KRPCClient` is an abstract class that implements `RPCClient` and kRPC protocol logic. 
 The only thing required to be implemented is the transporting of the raw data.
 Abstract transport is represented by `RPCTransport` interface.
 
 To implement your own `RPCTransport` 
 you need to be able to transfer strings and/or raw bytes (Kotlin's `ByteArray`). 
-And also kRPC will provide you with integrations with different 
+And also the library will provide you with integrations with different 
 libraries that are used to work with the network. 
 More on that in the [transports](#transport) section.
 
@@ -476,7 +540,7 @@ class MySimpleRPCTransport : RPCTransport {
     }
 
     override suspend fun receive(): RPCTransportMessage {
-        inChannel.receive()
+        return inChannel.receive()
     }
 }
 
@@ -486,7 +550,7 @@ val client = MySimpleRPCClient()
 val service: MyService = client.withService<MyService>()
 ```
 
-### KRPCServer — in-house RPCServer
+### KRPCServer — RPCServer for kRPC Protocol
 
 `KRPCServer` abstract class implements `RPCServer` 
 and all the logic for processing RPC messages 
@@ -500,7 +564,7 @@ Example usage with custom transport:
 class MySimpleRPCServer : KRPCServer(rpcServerConfig(), MySimpleRPCTransport())
 
 val server = MySimpleRPCServer()
-server.registerService<MyService>(MyServiceImpl())
+server.registerService<MyService> { ctx -> MyServiceImpl(ctx) }
 ```
 
 Note that here we pass explicit `MyService` type parameter to the `registerService` method.
@@ -510,7 +574,7 @@ otherwise the server service will not be found.
 ### Transport
 
 Transport layer exists to abstract from the RPC requests logic and focus on delivering and receiving 
-encoded RPC messages. 
+encoded RPC messages in kRPC Protocol. 
 This layer is represented by `RPCTransport` interface. 
 It supports two message formats — string and binary, 
 and depending on which [serialization](#serialization-dsl) format you choose, 
@@ -659,19 +723,18 @@ interface MyService : RPC {
 
 ### Ktor transport
 
-The kRPC library provides integration with the [Ktor framework](https://ktor.io) with the in-house RPC protocol. 
+The `kotlinx.rpc` library provides integration with the [Ktor framework](https://ktor.io) with the in-house RPC protocol. 
 This includes both server and client APIs.
 Under the hood, the library uses [WebSocket](https://ktor.io/docs/websocket.html) plugin
 to create a `RPCTransport` and send and receive messages through it.
 
 #### Client
 
-kRPC provides a way to plug-in into existing Ktor clients with your RPC services. 
+`kotlinx.rpc` provides a way to plug-in into existing Ktor clients with your RPC services. 
 To do that, the following DSL can be used:
 
 ```kotlin
 val ktorClient = HttpClient {
-    install(WebSockets) // WebSockets plugin is required
     install(RPC) { // this: RPCConfigBuilder.Client
         waitForServices = true
     }
@@ -689,12 +752,11 @@ Note that in this example, only the latter defined `RPCConfig` will be used.
 
 #### Server
 
-kRPC provides a way to plug-in into existing server routing with your RPC services. 
+`kotlinx.rpc` provides a way to plug-in into existing server routing with your RPC services. 
 To do that, the following DSL can be used:
 
 ```kotlin
 fun Application.module() {
-    install(WebSockets) // WebSockets plugin is required
     install(RPC) { // this: RPCConfigBuilder.Server
         waitForServices = true
     }
@@ -705,8 +767,8 @@ fun Application.module() {
                 waitForServices = false
             }
             
-            registerService<MyService>(MyServiceImpl())
-            registerService<MyOtherService>(MyOtherServiceImpl())
+            registerService<MyService> { ctx -> MyServiceImpl(ctx) }
+            registerService<MyOtherService> { ctx - MyOtherServiceImpl(ctx) }
             // etc
         }
     }
@@ -727,15 +789,15 @@ data class ProcessedImage(
 )
 
 interface ImageService : RPC {
-    suspend fun processImage(url: Srting): ProcessedImage 
+    suspend fun processImage(url: Srting): ProcessedImage
 }
 
 // ### CLIENT CODE ###
 
 val client = HttpClient {
     install(WebSockets)
-    
-    install(org.jetbrains.krpc.transport.ktor.client.RPC) {
+
+    install(kotlinx.rpc.transport.ktor.client.RPC) {
         serialization {
             json()
         }
@@ -748,8 +810,8 @@ service.processImage(url = "https://catsanddogs.com/cats/1")
 
 // ### SERVER CODE ###
 
-class ImageServiceImpl : ImageService {
-  // user defined classes
+class ImageServiceImpl(override val coroutineContext: CoroutineContext) : ImageService {
+    // user defined classes
     private val downloader = Downloader()
     private val recognizer = AnimalRecognizer()
 
@@ -760,19 +822,19 @@ class ImageServiceImpl : ImageService {
 }
 
 fun main() {
-    embeddedServer(Netty, port = 8080) {  
-        install(WebSockets)  
-        
-        install(org.jetbrains.krpc.transport.ktor.server.RPC) {
+    embeddedServer(Netty, port = 8080) {
+        install(WebSockets)
+
+        install(kotlinx.rpc.transport.ktor.server.RPC) {
             serialization {
                 json()
             }
         }
-        
-        routing {  
+
+        routing {
             rpc("/image-recognizer") {
-              registerService<ImageService>(ImageServiceImpl())
-            }  
+                registerService<ImageService> { ctx -> ImageServiceImpl(ctx) }
+            }
         }
     }.start(wait = true)
 }

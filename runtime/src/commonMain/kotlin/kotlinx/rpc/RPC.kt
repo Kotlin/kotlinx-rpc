@@ -25,14 +25,14 @@ import kotlinx.coroutines.CoroutineScope
  * val greetingFromServer = myService.sayHello("Alex", "Smith", 35)
  *
  * // server code
- * class MyServiceImpl: MyService {
+ * class MyServiceImpl(override val coroutineContext: CoroutineContext) : MyService {
  *     override suspend fun sayHello(firstName: String, lastName: String, age: Int): String {
  *         return "Hello, $firstName $lastName, of age $age. I am your server!"
  *     }
  * }
  *
  * val server: RPCServer
- * server.registerService<MyService>(MyServiceImpl())
+ * server.registerService<MyService> { ctx -> MyServiceImpl(ctx) }
  * ```
  *
  * @see RPCClient
