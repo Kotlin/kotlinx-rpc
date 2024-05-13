@@ -6,6 +6,9 @@ package kotlinx.rpc.internal
 
 import kotlinx.coroutines.*
 import kotlinx.rpc.internal.map.ConcurrentHashMap
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
@@ -151,7 +154,12 @@ public suspend fun <T> callScoped(callId: String, block: suspend CoroutineScope.
  * }
  * ```
  */
+@OptIn(ExperimentalContracts::class)
 public suspend fun <T> streamScoped(block: suspend CoroutineScope.() -> T): T {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+
     val context = currentCoroutineContext()
 
     if (context[StreamScope.Key] != null) {
