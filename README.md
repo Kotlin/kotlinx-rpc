@@ -7,7 +7,7 @@
 
 [![Kotlin Experimental](https://kotl.in/badges/experimental.svg)](https://kotlinlang.org/docs/components-stability.html)
 [![Official JetBrains project](http://jb.gg/badges/official.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.7.0--1.9.23-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.7.0--1.9.24-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![GitHub License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
 
 [//]: # ([![TeamCity build]&#40;https://img.shields.io/teamcity/build/s/Build_kRPC_All.svg?server=http%3A%2F%2Fkrpc.teamcity.com&#41;]&#40;https://teamcity.jetbrains.com/viewType.html?buildTypeId=Build_kRPC_All&guest=1&#41;)
@@ -97,9 +97,9 @@ Example of plugins setup in a project's `build.gradle.kts`:
 ```kotlin
 // build.gradle.kts
 plugins {
-    kotlin("jvm") version "1.9.23"
-    kotlin("plugin.serialization") version "1.9.23"
-    id("com.google.devtools.ksp") version "1.9.23-1.0.19"
+    kotlin("jvm") version "1.9.24"
+    kotlin("plugin.serialization") version "1.9.24"
+    id("com.google.devtools.ksp") version "1.9.24-1.0.20"
     id("org.jetbrains.kotlinx.rpc.plugin") version "0.1.0"
 }
 ```
@@ -154,18 +154,18 @@ To mitigate inconveniences related to the need to update Kotlin version then one
 `kotlinx.rpc` provides all its feature releases for all stable releases of the 3 last major Kotlin versions. Currently, they are:
 - 1.7.0, 1.7.10, 1.7.20, 1.7.21, 1.7.22
 - 1.8.0, 1.8.10, 1.8.20, 1.8.21, 1.8.22
-- 1.9.0, 1.9.10, 1.9.20, 1.9.21, 1.9.22, 1.9.23
+- 1.9.0, 1.9.10, 1.9.20, 1.9.21, 1.9.22, 1.9.23, 1.9.24
 
 That generates resulting versions `1.7.0-1.0.0`, `1.7.10-1.0.0`, etc.
 To simplify project configuration, our Gradle plugin sets proper library version automatically using BOM, based on the project's Kotlin version:
 ```kotlin
 plugins {
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "1.9.24"
     id("org.jetbrains.kotlinx.rpc.plugin") version "1.0.0"
 }
 
 dependencies {
-    implemntation("org.jetbrains.kotlinx:kotlinx-rpc-runtime") // version is 1.9.23-1.0.0 is set by Gradle plugin
+    implemntation("org.jetbrains.kotlinx:kotlinx-rpc-runtime") // version is 1.9.24-1.0.0 is set by Gradle plugin
 }
 ```
 
