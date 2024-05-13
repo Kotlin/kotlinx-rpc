@@ -4,7 +4,9 @@
 
 package kotlinx.rpc.transport.ktor.client
 
+import io.ktor.client.*
 import io.ktor.client.plugins.api.*
+import io.ktor.client.plugins.websocket.*
 import io.ktor.util.*
 import kotlinx.rpc.RPCConfigBuilder
 
@@ -15,4 +17,14 @@ internal val RPCClientPluginAttributesKey = AttributeKey<RPCConfigBuilder.Client
  */
 public val RPC: ClientPlugin<RPCConfigBuilder.Client> = createClientPlugin("RPC", { RPCConfigBuilder.Client() }) {
     client.attributes.put(RPCClientPluginAttributesKey, pluginConfig)
+}
+
+/**
+ * Installs [WebSockets] and [RPC] client plugins
+ */
+public fun HttpClientConfig<*>.installRPC(
+    configure: RPCConfigBuilder.Client.() -> Unit = {}
+) {
+    install(WebSockets)
+    install(RPC, configure)
 }

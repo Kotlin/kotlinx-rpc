@@ -9,5 +9,7 @@ public final class kotlinx/rpc/transport/ktor/client/KtorClientDslKt {
 
 public final class kotlinx/rpc/transport/ktor/client/RPCKt {
 	public static final fun getRPC ()Lio/ktor/client/plugins/api/ClientPlugin;
+	public static final fun installRPC (Lio/ktor/client/HttpClientConfig;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun installRPC$default (Lio/ktor/client/HttpClientConfig;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 

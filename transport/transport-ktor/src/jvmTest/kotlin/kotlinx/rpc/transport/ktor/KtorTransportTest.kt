@@ -11,12 +11,12 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.routing.*
-import io.ktor.server.websocket.*
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import kotlinx.rpc.RPC
 import kotlinx.rpc.client.withService
 import kotlinx.rpc.serialization.json
+import kotlinx.rpc.transport.ktor.client.installRPC
 import kotlinx.rpc.transport.ktor.client.rpc
 import kotlinx.rpc.transport.ktor.client.rpcConfig
 import kotlinx.rpc.transport.ktor.server.RPC
@@ -39,12 +39,7 @@ class KtorTransportTest {
     @Test
     fun testEcho() = runBlocking {
         val server = embeddedServer(Netty, port = 4242) {
-            install(WebSockets)
-            install(RPC) {
-                serialization {
-                    json()
-                }
-            }
+            install(RPC)
             routing {
                 rpc("/rpc") {
                     rpcConfig {
@@ -63,8 +58,7 @@ class KtorTransportTest {
         }.start()
 
         val clientWithGlobalConfig = HttpClient {
-            install(io.ktor.client.plugins.websocket.WebSockets)
-            install(kotlinx.rpc.transport.ktor.client.RPC) {
+            installRPC {
                 serialization {
                     json()
                 }
@@ -83,8 +77,7 @@ class KtorTransportTest {
         clientWithGlobalConfig.cancel()
 
         val clientWithNoConfig = HttpClient {
-            install(io.ktor.client.plugins.websocket.WebSockets)
-            install(kotlinx.rpc.transport.ktor.client.RPC)
+            installRPC()
         }
 
         val serviceWithLocalConfig = clientWithNoConfig.rpc("ws://localhost:4242/rpc") {

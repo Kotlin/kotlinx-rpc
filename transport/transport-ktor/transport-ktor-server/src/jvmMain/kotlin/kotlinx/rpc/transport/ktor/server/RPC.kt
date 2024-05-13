@@ -5,6 +5,7 @@
 package kotlinx.rpc.transport.ktor.server
 
 import io.ktor.server.application.*
+import io.ktor.server.websocket.*
 import io.ktor.util.*
 import kotlinx.rpc.RPCConfigBuilder
 
@@ -17,5 +18,6 @@ public val RPC: ApplicationPlugin<RPCConfigBuilder.Server> = createApplicationPl
     name = "RPC",
     createConfiguration = { RPCConfigBuilder.Server() },
 ) {
+    application.install(WebSockets)
     application.attributes.put(RPCServerPluginAttributesKey, pluginConfig)
 }
