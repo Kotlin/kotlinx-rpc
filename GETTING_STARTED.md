@@ -45,8 +45,8 @@ To use these dependencies, in your project's `build.gradle.kts` file you can def
 ```kotlin
 dependencies {
     // example kotlinx.rpc artifacts
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client:1.9.23-0.1.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server:1.9.23-0.1.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client:1.9.24-0.1.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server:1.9.24-0.1.0")
 }
 ```
 That will add you the APIs needed to work with both client and server using `kotlinx.rpc`.
@@ -59,12 +59,12 @@ kotlin {
     sourceSets {
         iosMain {
             // let's say that we have code for the client in iosMain sources set
-            implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client:1.9.23-0.1.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client:1.9.24-0.1.0")
         }
         
         jvmMain {
             // let's say that we have code for the server in jvmMain sources set
-            implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server:1.9.23-0.1.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server:1.9.24-0.1.0")
         }
     }
 }
@@ -85,7 +85,7 @@ so the dependency declaration may look like this:
 ```toml
 # gradle/libs.versions.toml
 [versions]
-kotlinx-rpc = "1.9.23-0.1.0"
+kotlinx-rpc = "1.9.24-0.1.0"
 
 [libraries]
 kotlinx-rpc-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-runtime-client", version.ref = "kotlinx-rpc" }
@@ -129,7 +129,7 @@ plugins {
 }
 ```
 
-> Note that we use version `0.1.0` here, instead of `1.9.23-0.1.0` 
+> Note that we use version `0.1.0` here, instead of `1.9.24-0.1.0` 
 that we used in [runtime dependencies](#runtime-dependencies). 
 We will describe why in the [versioning](#library-versioning) section. 
 
@@ -158,12 +158,12 @@ you can write this:
 
 ```kotlin
 plugins {
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "1.9.24"
     id("org.jetbrains.kotlinx.rpc.platform") version "0.1.0"
 }
 
 dependencies {
-    // versions are set automatically to 1.9.23-0.1.0 
+    // versions are set automatically to 1.9.24-0.1.0 
     implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client")
     implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server")
 }
@@ -202,8 +202,8 @@ and all the needed configuration will be automatically set up by the plugin:
 
 ```kotlin
 plugins {
-    kotlin("jvm") version "1.9.23"
-    id("com.google.devtools.ksp") version "1.9.23-1.0.17"
+    kotlin("jvm") version "1.9.24"
+    id("com.google.devtools.ksp") version "1.9.24-1.0.20"
     id("org.jetbrains.kotlinx.rpc.plugin") version "0.1.0"
 }
 
@@ -226,8 +226,8 @@ to save time on building your project.
 Gradle plugin to your project. 
 ```kotlin
 plugins {
-    kotlin("jvm") version "1.9.23"
-    kotlin("plugin.serialization") version "1.9.23"
+    kotlin("jvm") version "1.9.24"
+    kotlin("plugin.serialization") version "1.9.24"
 }
 ```
 More on the serialization in the [dedicated](#serialization-dsl) section.
@@ -241,13 +241,13 @@ We will break it down for you in this section.
 `kotlinx.rpc` version for all [runtime dependencies](#runtime-dependencies)
 consists of two parts: Kotlin version prefix and core (feature) version suffix.
 ```
-1.9.23-0.1.0
+1.9.24-0.1.0
 ```
-Here `1.9.23` is the version of Kotlin of your project. 
+Here `1.9.24` is the version of Kotlin of your project. 
 It can be found out by looking at Kotlin Gradle Plugin:
 ```kotlin
 plugins {
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "1.9.24"
 }
 ```
 As `kotlinx.rpc` uses Kotlin compiler plugin and KSP plugins, 
@@ -259,18 +259,18 @@ would require updating the project's Kotlin version, which is not always possibl
 To address that issue, 
 we provide core version updates for all stable versions of
 **the last three** major Kotlin releases. 
-So if the last stable Kotlin version is `1.9.23`, as at the time of writing this guide, 
+So if the last stable Kotlin version is `1.9.24`, as at the time of writing this guide, 
 the following versions of Kotlin are supported:
 
 - 1.7.0, 1.7.10, 1.7.20, 1.7.21, 1.7.22
 - 1.8.0, 1.8.10, 1.8.20, 1.8.21, 1.8.22
-- 1.9.0, 1.9.10, 1.9.20, 1.9.21, 1.9.22, 1.9.23
+- 1.9.0, 1.9.10, 1.9.20, 1.9.21, 1.9.22, 1.9.23, 1.9.24
 
 So for each of the listed Kotlin versions, 
 you can use `<kotlin_version>-<core_version>` template 
 to get the needed library version. 
 (So, for core version `0.1.0`, there are `1.7.0-0.1.0`, 
-`1.7.0-0.1.0`, ... , `1.9.23-0.1.0` versions present).
+`1.7.0-0.1.0`, ... , `1.9.24-0.1.0` versions present).
 To simplify project configuration, both our [Gradle plugins](#gradle-plugins)
 are able to set proper runtime dependencies versions automatically based
 on the project's Kotlin version and the Gradle plugin version 
@@ -279,12 +279,12 @@ which is used as a core library version.
 To summarize, we can look at the example:
 ```kotlin
 plugins {
-    kotlin("jvm") version "1.9.23" // project's Kotlin version 
+    kotlin("jvm") version "1.9.24" // project's Kotlin version 
     id("org.jetbrains.kotlinx.rpc.platform") version "0.1.0" // kotlinx.rpc core version
 }
 
 dependencies {
-    // for kotlinx.rpc runtime dependencies, Gradle plugin sets version 1.9.23-0.1.0
+    // for kotlinx.rpc runtime dependencies, Gradle plugin sets version 1.9.24-0.1.0
     implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client") 
     implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server")
 }
