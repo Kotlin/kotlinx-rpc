@@ -456,11 +456,11 @@ class CancellationTest {
 
         val job = launch {
             flow.collect {
+                allCollected.add(it)
+
                 if (!firstCollected.isCompleted) {
                     firstCollected.complete(it)
                 }
-
-                allCollected.add(it)
             }
         }
 
