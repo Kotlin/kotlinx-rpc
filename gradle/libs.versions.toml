@@ -1,7 +1,7 @@
 [versions]
 # kotlin
 kotlin-lang = "1.9.24"
-rpc-core = "6.0-beta" # version for plugins and suffix for rpc-full
+rpc-core = "0.1.0" # version for plugins and suffix for rpc-full
 
 # kotlin-dependent versions, will be replaced with the actual versions by a settings-conventions plugin
 #   from 'kotlin-versions-lookup.json' lookup table
