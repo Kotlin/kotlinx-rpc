@@ -164,8 +164,8 @@ class CancellationServiceImpl(override val coroutineContext: CoroutineContext) :
 
 fun resumableFlow(fence: Deferred<Unit>, onEmit: (Int) -> Unit = {}): Flow<Int> = flow {
     repeat(2) {
-        emit(it)
         onEmit(it)
+        emit(it)
 
         if (it == 0) {
             fence.await()
