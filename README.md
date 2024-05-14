@@ -69,7 +69,9 @@ val rpcClient = HttpClient { installRPC() }.rpc {
     }
 }
 
-rpcClient.withService<AwesomeService>().sayHello("Hello from client!")
+rpcClient.withService<AwesomeService>().getNews("KotlinBurg").collect { article -> 
+    println(article)
+}
 ```
 
 Check out our [getting started guide](GETTING_STARTED.md) for a thorough overview of all components and features.
