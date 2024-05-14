@@ -13,22 +13,23 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.ktor.client.*
-import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
+import kotlinx.rpc.client.withService
+import kotlinx.rpc.internal.streamScoped
+import kotlinx.rpc.serialization.json
+import kotlinx.rpc.transport.ktor.client.installRPC
+import kotlinx.rpc.transport.ktor.client.rpc
+import kotlinx.rpc.transport.ktor.client.rpcConfig
 import ktor_all_platforms_app.composeapp.generated.resources.Res
 import ktor_all_platforms_app.composeapp.generated.resources.compose_multiplatform
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.krpc.client.withService
-import org.jetbrains.krpc.serialization.json
-import org.jetbrains.krpc.transport.ktor.client.rpc
-import org.jetbrains.krpc.transport.ktor.client.rpcConfig
 
 expect val DEV_SERVER_HOST: String
 
 val client by lazy {
     HttpClient {
-        install(WebSockets)
+        installRPC()
     }
 }
 
@@ -64,8 +65,10 @@ fun App() {
         }
 
         LaunchedEffect(service) {
-            service.subscribeToNews().collect { article ->
-                news.add(article)
+            streamScoped {
+                service.subscribeToNews().collect { article ->
+                    news.add(article)
+                }
             }
         }
 

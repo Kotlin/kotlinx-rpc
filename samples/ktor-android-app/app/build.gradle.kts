@@ -7,11 +7,11 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kotlinPluginSerialization)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.krpc.platform)
+    alias(libs.plugins.kotlinx.rpc.platform)
 }
 
 android {
-    namespace = "org.jetbrains.ktorapplication"
+    namespace = "kotlinx.rpc.sample"
     compileSdk = 34
 
     packagingOptions {
@@ -22,7 +22,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "org.jetbrains.ktorapplication"
+        applicationId = "kotlinx.rpc.sample"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -65,12 +65,12 @@ android {
 
 dependencies {
     implementation(project(":common"))
-    testImplementation(libs.krpc.runtime.client)
-    testImplementation(libs.krpc.runtime.server)
-    implementation(libs.krpc.runtime.serialization.json)
+    testImplementation(libs.kotlinx.rpc.runtime.client)
+    testImplementation(libs.kotlinx.rpc.runtime.server)
+    implementation(libs.kotlinx.rpc.runtime.serialization.json)
 
-    implementation(libs.krpc.transport.ktor.client)
-    implementation(libs.krpc.transport.ktor.server)
+    implementation(libs.kotlinx.rpc.transport.ktor.client)
+    implementation(libs.kotlinx.rpc.transport.ktor.server)
 
     implementation(libs.ktor.server.cio)
     implementation(libs.ktor.server.core.jvm)

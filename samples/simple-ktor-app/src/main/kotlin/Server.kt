@@ -6,18 +6,19 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.routing.*
-import io.ktor.server.websocket.*
-import org.jetbrains.krpc.serialization.json
-import org.jetbrains.krpc.transport.ktor.server.rpc
+import kotlinx.rpc.serialization.json
+import kotlinx.rpc.transport.ktor.server.RPC
+import kotlinx.rpc.transport.ktor.server.rpc
 
 fun main() {
     embeddedServer(Netty, port = 8080) {
-        install(WebSockets)
-        appRouting()
+        module()
     }.start(wait = true)
 }
 
-fun Application.appRouting() {
+fun Application.module() {
+    install(RPC)
+
     routing {
         rpc("/image-recognizer") {
             rpcConfig {
@@ -26,7 +27,7 @@ fun Application.appRouting() {
                 }
             }
 
-            registerService<ImageRecognizer>(ImageRecognizerService())
+            registerService<ImageRecognizer> { ctx -> ImageRecognizerService(ctx) }
         }
     }
 }

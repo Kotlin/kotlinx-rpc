@@ -75,7 +75,7 @@ Contributions are made using Github [pull requests](https://help.github.com/en/a
 
 [//]: # (TODO change repo link to the repo)
 1. Fork the `kotlinx.rpc` repository and work on your fork.
-2. [Create](https://github.com/kotlin/kotlinx.rpc/compare) a new PR with a request to merge to the **main** branch. 
+2. [Create](https://github.com/kotlin/kotlinx-rpc/compare) a new PR with a request to merge to the **main** branch. 
 3. Ensure that the description is clear and refers to an existing ticket/bug if applicable. 
 4. Make sure any code contributed is covered by tests and no existing tests are broken.
 

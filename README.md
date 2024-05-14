@@ -1,7 +1,7 @@
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/kotlin/kotlinx.rpc/main/.github/images/logo.svg">
-    <img alt="kotlinx.rpc logo" src="https://raw.githubusercontent.com/kotlin/kotlinx.rpc/main/.github/images/logo.svg">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/kotlin/kotlinx-rpc/main/.github/images/logo.svg">
+    <img alt="kotlinx.rpc logo" src="https://raw.githubusercontent.com/kotlin/kotlinx-rpc/main/.github/images/logo.svg">
   </picture>
 </div>
 

@@ -3,8 +3,8 @@
  */
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.rpc.RPC
 import kotlinx.serialization.Serializable
-import org.jetbrains.krpc.RPC
 
 @Serializable
 data class UserData(

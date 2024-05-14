@@ -5,7 +5,7 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.plugin.serialization)
-    alias(libs.plugins.krpc)
+    alias(libs.plugins.kotlinx.rpc)
     alias(libs.plugins.ksp)
 }
 
@@ -22,5 +22,5 @@ dependencies {
     commonMainApi(libs.kotlinx.serialization.json)
     commonMainApi(libs.ktor.client.core)
     commonMainApi(libs.kotlinx.coroutines.core)
-    commonMainApi(libs.krpc.runtime)
+    commonMainApi(libs.kotlinx.rpc.runtime)
 }

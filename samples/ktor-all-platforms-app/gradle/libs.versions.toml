@@ -20,7 +20,7 @@ ktor = "2.3.8"
 logback = "1.4.14"
 kotlinx-serialization-json = "1.6.1"
 kotlinx-coroutines-core = "1.7.3"
-krpc = "5.4-beta"
+kotlinx-rpc = "6.0-beta"
 
 [libraries]
 # kotlin
@@ -57,13 +57,13 @@ ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 
-# krpc
-krpc-runtime = { module = "org.jetbrains.krpc:krpc-runtime" }
-krpc-runtime-client = { module = "org.jetbrains.krpc:krpc-runtime-client" }
-krpc-runtime-server = { module = "org.jetbrains.krpc:krpc-runtime-server" }
-krpc-transport-ktor-client = { module = "org.jetbrains.krpc:krpc-transport-ktor-client" }
-krpc-transport-ktor-server = { module = "org.jetbrains.krpc:krpc-transport-ktor-server" }
-krpc-runtime-serialization-json = { module = "org.jetbrains.krpc:krpc-runtime-serialization-json" }
+# kotlinx-rpc
+kotlinx-rpc-runtime = { module = "org.jetbrains.kotlinx:kotlinx-rpc-runtime" }
+kotlinx-rpc-runtime-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-runtime-client" }
+kotlinx-rpc-runtime-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-runtime-server" }
+kotlinx-rpc-transport-ktor-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-transport-ktor-client" }
+kotlinx-rpc-transport-ktor-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-transport-ktor-server" }
+kotlinx-rpc-runtime-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-rpc-runtime-serialization-json" }
 
 # other
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
@@ -79,6 +79,6 @@ kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", 
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-krpc = { id = "org.jetbrains.krpc.plugin", version.ref = "krpc" }
-krpc-platform = { id = "org.jetbrains.krpc.platform", version.ref = "krpc" }
+kotlinx-rpc = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-platform = { id = "org.jetbrains.kotlinx.rpc.platform", version.ref = "kotlinx-rpc" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

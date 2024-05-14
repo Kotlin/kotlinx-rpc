@@ -2,8 +2,10 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import org.jetbrains.krpc.RPCClient
-import org.jetbrains.krpc.client.withService
+import kotlinx.coroutines.flow.flow
+import kotlinx.rpc.RPCClient
+import kotlinx.rpc.client.withService
+import kotlinx.rpc.internal.streamScoped
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
@@ -36,13 +38,16 @@ val AppContainer = FC<AppContainerProps> { props ->
     var data by useState<WelcomeData?>(null)
 
     useEffectOnceAsync {
-        val greeting = async(Ui) {
-            service.hello("Alex", UserData("Berlin", "Smith"))
-        }
-        val news = async(Ui) { service.subscribeToNews() }
+        val greeting = service.hello("Alex", UserData("Berlin", "Smith"))
         data = WelcomeData(
-            greeting.await(),
-            news.await(),
+            greeting,
+            flow {
+                streamScoped {
+                    service.subscribeToNews().collect {
+                        emit(it)
+                    }
+                }
+            },
         )
     }
 

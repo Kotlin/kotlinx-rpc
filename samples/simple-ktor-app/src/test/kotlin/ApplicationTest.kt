@@ -2,15 +2,17 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import io.ktor.client.plugins.websocket.WebSockets
-import io.ktor.server.application.*
 import io.ktor.server.testing.*
-import kotlinx.coroutines.*
-import org.jetbrains.krpc.client.awaitFieldInitialization
-import org.jetbrains.krpc.client.withService
-import org.jetbrains.krpc.serialization.json
-import org.jetbrains.krpc.transport.ktor.client.rpc
-import org.jetbrains.krpc.transport.ktor.client.rpcConfig
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.rpc.client.awaitFieldInitialization
+import kotlinx.rpc.client.withService
+import kotlinx.rpc.serialization.json
+import kotlinx.rpc.transport.ktor.client.installRPC
+import kotlinx.rpc.transport.ktor.client.rpc
+import kotlinx.rpc.transport.ktor.client.rpcConfig
 import org.junit.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -20,12 +22,11 @@ class ApplicationTest {
     @Test
     fun testRecognizer() = testApplication {
         application {
-            install(io.ktor.server.websocket.WebSockets)
-            appRouting()
+            module()
         }
 
         val rpcClient = createClient {
-            install(WebSockets)
+            installRPC()
         }.rpc("/image-recognizer") {
             rpcConfig {
                 serialization {

@@ -5,14 +5,14 @@
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
-    alias(libs.plugins.krpc.platform)
+    alias(libs.plugins.kotlinx.rpc.platform)
     application
 }
 
-group = "org.jetbrains.krpc.sample"
+group = "kotlinx.rpc.sample"
 version = "1.0.0"
 application {
-    mainClass.set("org.jetbrains.krpc.sample.ApplicationKt")
+    mainClass.set("kotlinx.rpc.sample.ApplicationKt")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${extra["development"] ?: "false"}")
 }
 
@@ -25,11 +25,11 @@ dependencies {
     implementation(libs.ktor.server.cors.jvm)
     implementation(libs.ktor.server.websockets.jvm)
     implementation(libs.ktor.server.host.common.jvm)
-    implementation(libs.krpc.runtime.server)
-    implementation(libs.krpc.runtime.serialization.json)
-    implementation(libs.krpc.transport.ktor.server)
+    implementation(libs.kotlinx.rpc.runtime.server)
+    implementation(libs.kotlinx.rpc.runtime.serialization.json)
+    implementation(libs.kotlinx.rpc.transport.ktor.server)
     testImplementation(libs.ktor.server.tests)
-    testImplementation(libs.krpc.runtime.client)
-    testImplementation(libs.krpc.transport.ktor.client)
+    testImplementation(libs.kotlinx.rpc.runtime.client)
+    testImplementation(libs.kotlinx.rpc.transport.ktor.client)
     testImplementation(libs.kotlin.test.junit)
 }

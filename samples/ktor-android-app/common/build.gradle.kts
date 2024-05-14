@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.kotlinPluginSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.ktor)
-    alias(libs.plugins.krpc)
+    alias(libs.plugins.kotlinx.rpc)
 }
 
 dependencies {
@@ -15,6 +15,6 @@ dependencies {
     implementation(libs.ktor.server.core.jvm)
     implementation(libs.ktor.server.websockets.jvm)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.krpc.transport.ktor.server)
-    implementation(libs.krpc.runtime.serialization.json)
+    implementation(libs.kotlinx.rpc.transport.ktor.server)
+    implementation(libs.kotlinx.rpc.runtime.serialization.json)
 }

@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.krpc)
+    alias(libs.plugins.kotlinx.rpc)
     alias(libs.plugins.kotlinPluginSerialization)
 }
 
@@ -29,14 +29,14 @@ kotlin {
         commonMain.dependencies {
             api(libs.kotlinx.coroutines.core)
 
-            implementation(libs.krpc.runtime)
+            implementation(libs.kotlinx.rpc.runtime)
             implementation(libs.kotlinx.serialization.json)
         }
     }
 }
 
 android {
-    namespace = "org.jetbrains.krpc.sample.shared"
+    namespace = "kotlinx.rpc.sample.shared"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
