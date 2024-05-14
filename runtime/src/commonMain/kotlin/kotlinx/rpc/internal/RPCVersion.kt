@@ -9,7 +9,7 @@ package kotlinx.rpc.internal
  */
 internal enum class RPCVersion {
     /**
-     * Version 6.0-beta.
+     * Version 0.1.0
       */
-    V_6_0_BETA,
+    V_0_1_0_BETA,
 }

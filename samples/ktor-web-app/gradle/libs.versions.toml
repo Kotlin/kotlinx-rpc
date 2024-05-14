@@ -5,7 +5,7 @@ ktor = "2.3.11"
 kotlinx-serialization-json = "1.6.1"
 kotlinx-coroutines-core = "1.7.3"
 logback = "1.4.4"
-krpc = "6.0-beta"
+krpc = "0.1.0"
 ksp = "1.9.24-1.0.20"
 
 [libraries]

@@ -34,7 +34,7 @@ public enum class RPCPlugin(
      *
      * Can be safely ignored. Endpoint must only handle the plugins it knows of.
      */
-    UNKNOWN(0, RPCVersion.V_6_0_BETA),
+    UNKNOWN(0, RPCVersion.V_0_1_0_BETA),
 
     /**
      * Represents the handshake plugin of the kRPC protocol.
@@ -45,12 +45,12 @@ public enum class RPCPlugin(
      * However, servers will be able to communicate with clients that do not support handshake,
      * BUT not the other way around.
      */
-    HANDSHAKE(1, RPCVersion.V_6_0_BETA),
+    HANDSHAKE(1, RPCVersion.V_0_1_0_BETA),
 
     /**
      * This feature adds support for proper service/request cancellation over the network.
      */
-    CANCELLATION(2, RPCVersion.V_6_0_BETA),
+    CANCELLATION(2, RPCVersion.V_0_1_0_BETA),
     ;
 
     @InternalRPCApi
