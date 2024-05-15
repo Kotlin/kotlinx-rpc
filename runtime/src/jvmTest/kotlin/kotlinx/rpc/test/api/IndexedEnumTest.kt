@@ -41,7 +41,13 @@ fun <E> testEnum(
         )
     }
 
-    val log = checkGold(INDEXED_ENUM_DUMPS_DIR, name, EnumGoldContent(values.toSet()), fromText) ?: return
+    val log = checkGold(
+        latestDir = INDEXED_ENUM_DUMPS_DIR,
+        currentDir = INDEXED_ENUM_DUMPS_DIR,
+        filename = name,
+        content = EnumGoldContent(values.toSet()),
+        parseGoldFile = fromText,
+    ) ?: return
 
     fail(log)
 }

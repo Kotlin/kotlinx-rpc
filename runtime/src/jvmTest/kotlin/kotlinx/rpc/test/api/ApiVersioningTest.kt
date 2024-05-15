@@ -18,6 +18,9 @@ import org.jetbrains.krpc.test.api.util.SamplingData
 import org.junit.Test
 import java.nio.file.Path
 import kotlin.io.path.Path
+import kotlin.io.path.isDirectory
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.name
 import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.fail
@@ -158,12 +161,33 @@ class ApiVersioningTest {
         val LIBRARY_VERSION_DIR = System.getenv("LIBRARY_VERSION")?.versionToDirName()
             ?: error("Expected LIBRARY_VERSION env variable")
 
-        val CLASS_DUMPS_DIR: Path = Path("src/jvmTest/resources/class_dumps/$LIBRARY_VERSION_DIR")
+        val CURRENT_CLASS_DUMPS_DIR: Path = Path("src/jvmTest/resources/class_dumps/")
+            .resolve(LIBRARY_VERSION_DIR)
+
+        val LATEST_CLASS_DUMPS_DIR: Path = Path("src/jvmTest/resources/class_dumps/")
+            .latestVersionOrCurrent()
+
         val WIRE_DUMPS_DIR: Path = Path("src/jvmTest/resources/wire_dumps/")
         val INDEXED_ENUM_DUMPS_DIR: Path = Path("src/jvmTest/resources/indexed_enum_dumps/")
 
         private fun String.versionToDirName(): String {
             return replace('.', '_').replace('-', '_')
+        }
+
+        fun Path.latestVersionOrCurrent(): Path {
+            return listDirectoryEntries()
+                .filter { it.isDirectory() }
+                .sortedWith { a, b ->
+                    val aBeta = a.name.contains("beta")
+                    val bBeta = b.name.contains("beta")
+                    when {
+                        aBeta && bBeta -> a.compareTo(b)
+                        aBeta -> -1
+                        bBeta -> 1
+                        else -> a.compareTo(b)
+                    }
+                }.lastOrNull()
+                ?: resolve(LIBRARY_VERSION_DIR)
         }
     }
 }

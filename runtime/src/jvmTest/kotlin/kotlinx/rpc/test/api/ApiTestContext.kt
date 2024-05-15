@@ -4,7 +4,8 @@
 
 package kotlinx.rpc.test.api
 
-import kotlinx.rpc.test.api.ApiVersioningTest.Companion.CLASS_DUMPS_DIR
+import kotlinx.rpc.test.api.ApiVersioningTest.Companion.CURRENT_CLASS_DUMPS_DIR
+import kotlinx.rpc.test.api.ApiVersioningTest.Companion.LATEST_CLASS_DUMPS_DIR
 import kotlinx.rpc.test.api.util.StringGoldContent
 import kotlinx.rpc.test.api.util.checkGold
 import kotlin.reflect.KClass
@@ -26,7 +27,8 @@ class ApiTestContext {
         sampled.add(clazz)
 
         val log = checkGold(
-            fileDir = CLASS_DUMPS_DIR,
+            latestDir = LATEST_CLASS_DUMPS_DIR,
+            currentDir = CURRENT_CLASS_DUMPS_DIR,
             filename = clazz.simpleName!!,
             content = StringGoldContent(currentContent),
             parseGoldFile = { StringGoldContent(it) },

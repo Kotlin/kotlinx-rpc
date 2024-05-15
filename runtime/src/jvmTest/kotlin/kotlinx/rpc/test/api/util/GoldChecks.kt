@@ -44,18 +44,19 @@ class StringGoldContent(private val value: String) : GoldComparable<StringGoldCo
  * Returns log if tmp file was created, null otherwise
  */
 fun <T : GoldComparable<T>> checkGold(
-    fileDir: Path,
+    latestDir: Path,
+    currentDir: Path,
     filename: String,
     content: T,
     parseGoldFile: (String) -> T,
 ): String? {
-    val (gold, goldPath) = loadGold(fileDir, filename, parseGoldFile) ?: (null to null)
+    val (gold, goldPath) = loadGold(latestDir, filename, parseGoldFile) ?: (null to null)
 
     val comparison = gold?.let { content.compare(gold) }
         ?: GoldComparisonResult.Failure("No previous Gold file")
 
     if (comparison is GoldComparisonResult.Failure) {
-        return writeTmp(fileDir, filename, content.dump(), goldPath, comparison.message)
+        return writeTmp(currentDir, filename, content.dump(), goldPath, comparison.message)
     }
 
     return null
@@ -81,7 +82,7 @@ private fun writeTmp(
     reason: String?,
 ): String {
     if (isCI) {
-        return "Attempting to write temp files on CI"
+        return "Attempting to write temp files on CI: $fileDir/$filename, reason: $reason"
     }
 
     val file = fileDir.resolve("$filename.$TMP_EXTENSION").toFile()
