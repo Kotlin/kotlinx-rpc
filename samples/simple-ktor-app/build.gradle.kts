@@ -7,7 +7,7 @@ plugins {
     kotlin("plugin.serialization") version "1.9.24"
     id("io.ktor.plugin") version "2.3.11"
     id("com.google.devtools.ksp") version "1.9.24-1.0.20"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "6.0-beta"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.1.0"
 }
 
 val kotlin_version: String by project
