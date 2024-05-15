@@ -138,6 +138,9 @@ public final class kotlinx/rpc/RPCTransportMessage$StringMessage : kotlinx/rpc/R
 	public final fun getValue ()Ljava/lang/String;
 }
 
+public final class kotlinx/rpc/internal/DevStreamScopeKt {
+}
+
 public final class kotlinx/rpc/internal/ExceptionUtilsKt {
 }
 
@@ -157,6 +160,9 @@ public final class kotlinx/rpc/internal/ScopedClientCallKt {
 }
 
 public final class kotlinx/rpc/internal/SerializationUtilsKt {
+}
+
+public final class kotlinx/rpc/internal/ServiceScopeKt {
 }
 
 public final class kotlinx/rpc/internal/StreamScopeKt {

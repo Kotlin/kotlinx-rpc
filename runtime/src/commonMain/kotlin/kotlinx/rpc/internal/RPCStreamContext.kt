@@ -21,15 +21,18 @@ import kotlin.coroutines.CoroutineContext
 @InternalRPCApi
 public class LazyRPCStreamContext(
     public val streamScopeOrNull: StreamScope?,
+    private val fallbackScope: StreamScope? = null,
     private val initializer: (StreamScope) -> RPCStreamContext,
 ) {
     private val deferred = CompletableDeferred<RPCStreamContext>()
     private val lazyValue by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-        if (streamScopeOrNull == null) {
+        if (streamScopeOrNull == null && (STREAM_SCOPES_ENABLED || fallbackScope == null)) {
             noStreamScopeError()
         }
 
-        initializer(streamScopeOrNull).also { deferred.complete(it) }
+        // null pointer is impossible
+        val streamScope = streamScopeOrNull ?: fallbackScope!!
+        initializer(streamScope).also { deferred.complete(it) }
     }
 
     public suspend fun awaitInitialized(): RPCStreamContext = deferred.await()
@@ -45,7 +48,7 @@ public class RPCStreamContext(
     private val config: RPCConfig,
     private val connectionId: Long?,
     private val serviceId: Long?,
-    private val streamScope: StreamScope,
+    public val streamScope: StreamScope,
 ) {
     private companion object {
         private const val STREAM_ID_PREFIX = "stream:"

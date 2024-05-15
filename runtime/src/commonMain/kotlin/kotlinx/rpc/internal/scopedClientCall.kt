@@ -14,14 +14,16 @@ import kotlinx.coroutines.*
 @InternalRPCApi
 @OptIn(InternalCoroutinesApi::class)
 @Suppress("unused")
-public suspend inline fun <T> scopedClientCall(serviceScope: CoroutineScope, body: () -> T): T {
+public suspend inline fun <T> scopedClientCall(serviceScope: CoroutineScope, crossinline body: suspend () -> T): T {
     val requestJob = currentCoroutineContext().job
     val handle = serviceScope.coroutineContext.job.invokeOnCompletion(onCancelling = true) {
         requestJob.cancel(it as CancellationException)
     }
 
     try {
-        return body()
+        return serviceScoped(serviceScope) {
+            body()
+        }
     } finally {
         handle.dispose()
     }
