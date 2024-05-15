@@ -8,7 +8,6 @@ import kotlinx.rpc.test.api.util.GoldUtils.GOLD_EXTENSION
 import kotlinx.rpc.test.api.util.GoldUtils.TMP_EXTENSION
 import java.io.File
 import java.nio.file.Path
-import java.util.*
 
 interface GoldComparable<T : GoldComparable<T>> {
     fun compare(other: T): GoldComparisonResult
@@ -101,7 +100,7 @@ private fun writeTmp(
         Please, review and commit:
         ${goldFileLine(goldPath)}
         Temp file: file://${file.absolutePath}
-        Move to Gold: file://${createMoveToGoldScript(file.absolutePath)}
+        Run 'moveToGold' Gradle task to update gold files.
     """.trimIndent()
 }
 
@@ -113,30 +112,6 @@ private fun goldFileLine(goldPath: String?): String {
     }
 }
 
-private fun createMoveToGoldScript(tempFile: String): String {
-    val goldFile = tempFile.replace(".$TMP_EXTENSION", ".$GOLD_EXTENSION")
-    return createTempScriptFile {
-        appendText("#!/bin/sh")
-        appendText(GoldUtils.NewLine)
-        val command = "${if (isUnix) "mv -f" else "move /y"} \"$tempFile\" \"$goldFile\""
-        appendText(command)
-    }
-}
-
-private fun createTempScriptFile(write: File.() -> Unit): String {
-    val realExtension = if (isUnix) "sh" else "bat"
-    val tmpExtension = "tmp" // cannot create temp file with .sh extension (too short)
-
-    val tempFile = kotlin.io.path.createTempFile(tmpExtension).toFile().apply(write)
-
-    val realFile = File(tempFile.absolutePath.replace(".$tmpExtension", ".$realExtension"))
-    tempFile.renameTo(realFile)
-    realFile.setExecutable(true)
-
-    return realFile.absolutePath
-}
-
-private val isUnix = !System.getProperty("os.name").lowercase(Locale.getDefault()).contains("win")
 private val isCI = System.getenv("TEAMCITY_VERSION") != null
 
 object GoldUtils {

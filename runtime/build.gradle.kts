@@ -3,10 +3,8 @@
  */
 
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
-
-/*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
- */
+import org.jetbrains.kotlin.utils.fileUtils.withReplacedExtensionOrNull
+import java.nio.file.Files
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -67,10 +65,28 @@ tasks.withType<KotlinJvmTest> {
     environment("LIBRARY_VERSION", libs.versions.rpc.core.get())
 }
 
+val resourcesPath = projectDir.resolve("src/jvmTest/resources")
+val tmpExt = "tmp"
+val goldExt = "gold"
+
 tasks.named("clean") {
     doLast {
-        projectDir.resolve("src/jvmTest/resources").walk().forEach {
-            if (it.isFile && it.extension == "tmp") {
+        resourcesPath.walk().forEach {
+            if (it.isFile && it.extension == tmpExt) {
+                it.delete()
+            }
+        }
+    }
+}
+
+tasks.create("moveToGold") {
+    doLast {
+        resourcesPath.walk().forEach {
+            if (it.isFile && it.extension == tmpExt) {
+                val gold = it.withReplacedExtensionOrNull(tmpExt, goldExt)?.toPath()
+                    ?: error("Expected file with replaced '.$tmpExt' extension to '.$goldExt' extension: $it")
+
+                Files.write(gold, it.readBytes())
                 it.delete()
             }
         }
