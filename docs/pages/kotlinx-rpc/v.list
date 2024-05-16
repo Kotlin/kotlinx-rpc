@@ -2,4 +2,12 @@
 <!DOCTYPE vars SYSTEM "https://resources.jetbrains.com/writerside/1.0/vars.dtd">
 <vars>
     <var name="product" value="kotlinx-rpc"/>
+    <var name="docs-raw-path" value="https://raw.githubusercontent.com/Kotlin/kotlinx-rpc/docs/pages/kotlinx-rpc"/>
+    <var name="docs-root-path" value="https://github.com/Kotlin/kotlinx-rpc/docs/pages/kotlinx-rpc"/>
+    <var name="docs-edit-path" value="https://github.com/Kotlin/kotlinx-rpc/edit/main/docs/pages/kotlinx-rpc"/>
+    <var name="repo-root-path" value="https://github.com/Kotlin/kotlinx-rpc"/>
+    <var name="host" value="https://kotlin.github.io"/>
+
+    <!--  Library versions  -->
+    <var name="kotlinx-rpc-version" value="0.1.0"/>
 </vars>

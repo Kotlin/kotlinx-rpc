@@ -8,19 +8,19 @@
 
     <variables>
         <website-title>%instance% Documentation</website-title>
-        <web-root>https://kotlin.github.io</web-root>
-        <product-web-url>https://github.com/Kotlin/kotlinx-rpc</product-web-url>
+        <web-root>%host%</web-root>
+        <product-web-url>%repo-root-path%</product-web-url>
 
         <primary-color>purple</primary-color>
         <header-logo>logo.svg</header-logo>
         <custom-favicons>icon16.png,icon32.png,icon96.png,icon300.png,icon500.png</custom-favicons>
 
-        <browser-edits-url>https://github.com/Kotlin/kotlinx-rpc/edit/main/docs/pages/Writerside/topics</browser-edits-url>
+        <browser-edits-url>%docs-edit-path%/</browser-edits-url>
         <enable-browser-edits>true</enable-browser-edits>
 
-        <og-image>https://raw.githubusercontent.com/Kotlin/kotlinx-rpc/main/docs/pages/Writerside/preview.png</og-image>
+        <og-image>%docs-raw-path%/preview.png</og-image>
 
-        <versions-switcher>https://kotlin.github.io/kotlinx-rpc/help-versions.json</versions-switcher>
+        <versions-switcher>%host%/kotlinx-rpc/help-versions.json</versions-switcher>
 
         <generate-sitemap-url-prefix>https://www.jetbrains.com/help/</generate-sitemap-url-prefix>
     </variables>
