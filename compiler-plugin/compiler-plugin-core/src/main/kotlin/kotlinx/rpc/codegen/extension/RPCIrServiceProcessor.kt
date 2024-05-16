@@ -19,7 +19,7 @@ internal class RPCIrServiceProcessor(
     @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
     override fun visitClass(declaration: IrClass, context: RPCIrContext): IrStatement {
         if (declaration.isInterface &&
-            // data.rpc is resolved lazily, so first check is rather heuristic
+            // context.rpc is resolved lazily, so first check is rather heuristic
             declaration.maybeRPC() &&
             declaration.superTypes.contains(context.rpc.typeWith())
         ) {
