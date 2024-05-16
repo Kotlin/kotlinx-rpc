@@ -5,7 +5,6 @@
 package kotlinx.rpc.codegen.extension
 
 import kotlinx.rpc.codegen.VersionSpecificApi
-import org.jetbrains.kotlin.backend.common.descriptors.synthesizedString
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.backend.jvm.functionByName
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
@@ -25,8 +24,6 @@ import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
 import org.jetbrains.kotlin.ir.types.*
-import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
-import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
@@ -35,7 +32,8 @@ import org.jetbrains.kotlin.util.OperatorNameConventions
 import kotlin.properties.Delegates
 
 const val STUB_SUFFIX = "Stub"
-private const val CLIENT_PROPERTY = "client"
+private const val CLIENT_PROPERTY = "__rpc_client"
+private const val STUB_ID_PROPERTY = "__rpc_stub_id"
 private const val METHOD_CLASS_SUFFIX_PROPERTY = "RPCData"
 private const val METHOD_NAMES_PROPERTY = "methodNames"
 private const val METHOD_TYPE_OF_FUNCTION = "methodTypeOf"
@@ -76,12 +74,13 @@ internal class RPCStubGenerator(
     }
 
     private var clientValueParameter: IrValueParameter by Delegates.notNull()
+    private var stubIdValueParameter: IrValueParameter by Delegates.notNull()
 
     /**
      * Constructor of a stub service:
      *
      * ```kotlin
-     * class MyServiceStub(private val client: RPCClient) : MyService
+     * class MyServiceStub(private val __rpc_stub_id: Long, private val __rpc_client: RPCClient) : MyService
      * ```
      */
     private fun IrClass.generateStubConstructor() {
@@ -89,6 +88,11 @@ internal class RPCStubGenerator(
             name = this@generateStubConstructor.name
             isPrimary = true
         }.apply {
+            stubIdValueParameter = addValueParameter {
+                name = Name.identifier(STUB_ID_PROPERTY)
+                type = ctx.irBuiltIns.longType
+            }
+
             clientValueParameter = addValueParameter {
                 name = Name.identifier(CLIENT_PROPERTY)
                 type = ctx.rpcClient.defaultType
@@ -118,6 +122,8 @@ internal class RPCStubGenerator(
     }
 
     private fun IrClass.generateProperties() {
+        stubIdProperty()
+
         clientProperty()
 
         coroutineContextProperty()
@@ -127,37 +133,58 @@ internal class RPCStubGenerator(
         }
     }
 
+    private var stubIdProperty: IrProperty by Delegates.notNull()
+
+    /**
+     * __rpc_stub_id property from the constructor
+     *
+     * ```kotlin
+     * class MyServiceStub(private val __rpc_stub_id: Long, private val __rpc_client: RPCClient) : MyService
+     * ```
+     */
+    private fun IrClass.stubIdProperty() {
+        stubIdProperty = constructorProperty(STUB_ID_PROPERTY, ctx.irBuiltIns.longType, stubIdValueParameter)
+    }
+
     private var clientProperty: IrProperty by Delegates.notNull()
 
     /**
-     * Client property from the constructor
+     * __rpc_client property from the constructor
      *
      * ```kotlin
-     * class MyServiceStub(private val client: RPCClient) : MyService
+     * class MyServiceStub(private val __rpc_stub_id: Long, private val __rpc_client: RPCClient) : MyService
      * ```
      */
     private fun IrClass.clientProperty() {
-        clientProperty = addProperty {
-            name = Name.identifier(CLIENT_PROPERTY)
+        clientProperty = constructorProperty(CLIENT_PROPERTY, ctx.rpcClient.defaultType, clientValueParameter)
+    }
+
+    private fun IrClass.constructorProperty(
+        propertyName: String,
+        propertyType: IrType,
+        valueParameter: IrValueParameter,
+    ): IrProperty {
+        return addProperty {
+            name = Name.identifier(propertyName)
             visibility = DescriptorVisibilities.PRIVATE
         }.apply {
             addBackingFieldUtil {
                 visibility = DescriptorVisibilities.PRIVATE
-                type = ctx.rpcClient.defaultType
+                type = propertyType
                 isFinal = true
             }.apply {
                 initializer = factory.createExpressionBody(
                     IrGetValueImpl(
                         startOffset = UNDEFINED_OFFSET,
                         endOffset = UNDEFINED_OFFSET,
-                        type = clientValueParameter.type,
-                        symbol = clientValueParameter.symbol,
+                        type = valueParameter.type,
+                        symbol = valueParameter.symbol,
                         origin = IrStatementOrigin.INITIALIZE_PROPERTY_FROM_PARAMETER,
                     )
                 )
             }
 
-            addDefaultGetter(this@clientProperty, ctx.irBuiltIns) {
+            addDefaultGetter(this@constructorProperty, ctx.irBuiltIns) {
                 visibility = DescriptorVisibilities.PRIVATE
             }
         }
@@ -169,7 +196,7 @@ internal class RPCStubGenerator(
      * `coroutineContext` property from `RPC` interface
      *
      * ```kotlin
-     * final override val coroutineContext: CoroutineContext = client.coroutineContext + Job()
+     * final override val coroutineContext: CoroutineContext = __rpc_client.provideStubContext(__rpc_stub_id)
      * ```
      */
     private fun IrClass.coroutineContextProperty() {
@@ -186,46 +213,19 @@ internal class RPCStubGenerator(
                 isFinal = true
             }.apply {
                 val coroutineContextClass = ctx.coroutineContext.owner
-                val plusFunction = coroutineContextClass.getSimpleFunction(OperatorNameConventions.PLUS.identifier)
-                    ?: error("Expected to find 'plus' function in 'kotlin.coroutines.CoroutineContext'")
 
                 initializer = factory.createExpressionBody(
                     IrCallImpl(
                         startOffset = UNDEFINED_OFFSET,
                         endOffset = UNDEFINED_OFFSET,
                         type = coroutineContextClass.typeWith(),
-                        symbol = plusFunction,
-                        origin = IrStatementOrigin.PLUS,
+                        symbol = ctx.functions.provideStubContext.symbol,
                         valueArgumentsCount = 1,
                         typeArgumentsCount = 0,
                     ).apply {
-                        val contextGetter = ctx.properties.rpcClientCoroutineContext.getter
-                            ?: error("Expected getter for 'coroutineContext' property in RPCClient")
+                        dispatchReceiver = irCallProperty(stubClass, clientProperty)
 
-                        dispatchReceiver = IrCallImpl(
-                            startOffset = UNDEFINED_OFFSET,
-                            endOffset = UNDEFINED_OFFSET,
-                            type = coroutineContextClass.typeWith(),
-                            symbol = contextGetter.symbol,
-                            origin = IrStatementOrigin.GET_PROPERTY,
-                            valueArgumentsCount = contextGetter.valueParameters.size,
-                            typeArgumentsCount = contextGetter.typeParameters.size,
-                        ).apply {
-                            dispatchReceiver = irCallProperty(stubClass, clientProperty)
-                        }
-
-                        val job = IrCallImpl(
-                            startOffset = UNDEFINED_OFFSET,
-                            endOffset = UNDEFINED_OFFSET,
-                            type = ctx.completableJob.defaultType,
-                            symbol = ctx.functions.job,
-                            valueArgumentsCount = 1,
-                            typeArgumentsCount = 0,
-                        ).apply {
-                            putValueArgument(0, null)
-                        }
-
-                        putValueArgument(0, job)
+                        putValueArgument(0, irCallProperty(stubClass, stubIdProperty))
                     }
                 )
             }
@@ -250,7 +250,8 @@ internal class RPCStubGenerator(
      * ``` kotlin
      *  final override val <field-name>: <field-type> by lazy {
      *      client.register<field-kind>FlowField(
-     *          RPCField("<service-name>", "<field-name>", typeOf<<field-type>>())
+     *          this, // CoroutineScope
+     *          RPCField("<service-name>", __rpc_stub_id, "<field-name>", typeOf<<field-type>>())
      *      )
      *  }
      * ```
@@ -260,7 +261,8 @@ internal class RPCStubGenerator(
      * ```kotlin
      *  final override val <field-name>: <field-type> =
      *      client.register<field-kind>FlowField(
-     *          RPCField("<service-name>", "<field-name>", typeOf<<field-type>>())
+     *          this, // CoroutineScope
+     *          RPCField("<service-name>", __rpc_stub_id, "<field-name>", typeOf<<field-type>>())
      *      )
      * ```
      *
@@ -270,7 +272,12 @@ internal class RPCStubGenerator(
      *  - `<field-kind>` - [ServiceDeclaration.FlowField.Kind]
      *  - `<service-name>` - FQ name of the RPC service
      */
-    @Suppress("detekt.NestedBlockDepth", "detekt.LongMethod", "detekt.CyclomaticComplexMethod")
+    @Suppress(
+        "detekt.NestedBlockDepth",
+        "detekt.LongMethod",
+        "detekt.CyclomaticComplexMethod",
+        "detekt.MagicNumber",
+    )
     private fun IrClass.rpcFlowField(field: ServiceDeclaration.FlowField) {
         val isLazy = !field.property.hasAnnotation(ctx.rpcEagerFieldAnnotation)
 
@@ -303,10 +310,20 @@ internal class RPCStubGenerator(
                 type = fieldType,
                 symbol = registerFunction,
                 typeArgumentsCount = 1,
-                valueArgumentsCount = 1,
+                valueArgumentsCount = 2,
             ).apply {
                 dispatchReceiver = irCallProperty(stubClass, clientProperty)
                 putTypeArgument(0, fieldTypeParameter.typeOrFail)
+
+                putValueArgument(
+                    index = 0,
+                    valueArgument = IrGetValueImpl(
+                        startOffset = UNDEFINED_OFFSET,
+                        endOffset = UNDEFINED_OFFSET,
+                        type = ctx.coroutineScope.defaultType,
+                        symbol = stubClassThisReceiver.symbol,
+                    ),
+                )
 
                 val fieldArgument = IrConstructorCallImpl(
                     startOffset = UNDEFINED_OFFSET,
@@ -315,10 +332,11 @@ internal class RPCStubGenerator(
                     symbol = ctx.rpcField.constructors.single(),
                     typeArgumentsCount = 0,
                     constructorTypeArgumentsCount = 0,
-                    valueArgumentsCount = 3,
+                    valueArgumentsCount = 4,
                 ).apply {
                     putValueArgument(0, stringConst(declaration.service.kotlinFqName.asString()))
-                    putValueArgument(1, stringConst(field.property.name.asString()))
+                    putValueArgument(1, irCallProperty(stubClass, stubIdProperty))
+                    putValueArgument(2, stringConst(field.property.name.asString()))
 
                     val typeOfCall = IrCallImpl(
                         startOffset = UNDEFINED_OFFSET,
@@ -331,10 +349,10 @@ internal class RPCStubGenerator(
                         putTypeArgument(0, fieldType)
                     }
 
-                    putValueArgument(2, typeOfCall)
+                    putValueArgument(3, typeOfCall)
                 }
 
-                putValueArgument(0, fieldArgument)
+                putValueArgument(1, fieldArgument)
             }
 
             if (!isLazy) {
@@ -489,9 +507,10 @@ internal class RPCStubGenerator(
      *
      * ```kotlin
      *  final override suspend fun <method-name>(<method-args>): <return-type> {
-     *      return withContext(coroutineContext) {
-     *          client.call(RPCCall(
+     *      return scopedClientCall(this) { // this: CoroutineScope
+     *          __rpc_client.call(RPCCall(
      *              "<service-name>",
+     *              __rpc_stub_id,
      *              "<method-name>",
      *              RPCCall.Type.Method,
      *              (<method-class>(<method-args>)|<method-object>),
@@ -550,41 +569,16 @@ internal class RPCStubGenerator(
             body = irBuilder(symbol).irBlockBody {
                 +irReturn(
                     irCall(
-                        callee = ctx.functions.withContext,
+                        callee = ctx.functions.scopedClientCall,
                         type = method.function.returnType,
                     ).apply {
                         putTypeArgument(0, method.function.returnType)
 
-                        putValueArgument(
-                            index = 0,
-                            valueArgument = irCallProperty(
-                                clazz = stubClass,
-                                property = coroutineContextProperty,
-                                symbol = functionThisReceiver.symbol,
-                            )
-                        )
+                        putValueArgument(0, irGet(ctx.coroutineScope.defaultType, functionThisReceiver.symbol))
 
                         // suspend lambda
                         // it's type is not available at runtime, but in fact exists
-                        val lambdaType = IrSimpleTypeImpl(
-                            ctx.suspendFunction1,
-                            SimpleTypeNullability.NOT_SPECIFIED,
-                            listOf(
-                                makeTypeProjection(ctx.coroutineScope.defaultType, Variance.INVARIANT),
-                                makeTypeProjection(method.function.returnType, Variance.INVARIANT),
-                            ),
-                            listOf(
-                                IrConstructorCallImpl(
-                                    startOffset = UNDEFINED_OFFSET,
-                                    endOffset = UNDEFINED_OFFSET,
-                                    type = ctx.extensionFunctionType.defaultType,
-                                    symbol = ctx.extensionFunctionType.constructors.single(),
-                                    typeArgumentsCount = 0,
-                                    constructorTypeArgumentsCount = 0,
-                                    valueArgumentsCount = 0,
-                                ),
-                            ),
-                        )
+                        val lambdaType = ctx.suspendFunction0.typeWith(method.function.returnType)
 
                         val functionLambda = factory.buildFun {
                             origin = IrDeclarationOrigin.LOCAL_FUNCTION_FOR_LAMBDA
@@ -595,13 +589,6 @@ internal class RPCStubGenerator(
                             isSuspend = true
                         }.apply {
                             parent = declaredFunction
-
-                            vsApi {
-                                addExtensionReceiverVS(ctx.coroutineScope.defaultType)
-                            }.apply {
-                                // this name is picked up from the dump of test data
-                                name = Name.identifier("this".synthesizedString + "withContext".synthesizedString)
-                            }
 
                             body = irBuilder(symbol).irBlockBody {
                                 val call = irRPCMethodClientCall(
@@ -639,8 +626,9 @@ internal class RPCStubGenerator(
      * Part of [generateRpcMethod] that generates next call:
      *
      * ```kotlin
-     * client.call(RPCCall(
+     * __rpc_client.call(RPCCall(
      *     "<service-name>",
+     *     __rpc_stub_id,
      *     "<method-name>",
      *     RPCCall.Type.Method,
      *     (<method-class>(<method-args>)|<method-object>),
@@ -685,11 +673,16 @@ internal class RPCStubGenerator(
 
                 putValueArgument(
                     index = 1,
-                    valueArgument = stringConst(method.function.name.asString()),
+                    valueArgument = irCallProperty(stubClass, stubIdProperty, symbol = functionThisReceiver.symbol),
                 )
 
                 putValueArgument(
                     index = 2,
+                    valueArgument = stringConst(method.function.name.asString()),
+                )
+
+                putValueArgument(
+                    index = 3,
                     valueArgument = IrGetEnumValueImpl(
                         startOffset = UNDEFINED_OFFSET,
                         endOffset = UNDEFINED_OFFSET,
@@ -714,10 +707,10 @@ internal class RPCStubGenerator(
                     }
                 }
 
-                putValueArgument(3, dataParameter)
+                putValueArgument(4, dataParameter)
 
                 putValueArgument(
-                    index = 4,
+                    index = 5,
                     valueArgument = irCall(
                         ctx.functions.typeOf,
                     ).apply {
@@ -726,7 +719,7 @@ internal class RPCStubGenerator(
                 )
 
                 putValueArgument(
-                    index = 5,
+                    index = 6,
                     valueArgument = irCall(
                         ctx.functions.typeOf,
                     ).apply {
@@ -996,8 +989,8 @@ internal class RPCStubGenerator(
      * Factory method for creating a new instance of RPC service
      *
      * ```kotlin
-     *  final override fun withClient(client: RPCClient): MyService {
-     *      return MyServiceStub(client)
+     *  final override fun withClient(serviceId: Long, client: RPCClient): MyService {
+     *      return MyServiceStub(serviceId, client)
      *  }
      * ```
      */
@@ -1014,6 +1007,11 @@ internal class RPCStubGenerator(
                 stubCompanionObjectThisReceiver.copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
             }
 
+            val serviceId = addValueParameter {
+                name = Name.identifier("serviceId")
+                type = ctx.irBuiltIns.longType
+            }
+
             val client = addValueParameter {
                 name = Name.identifier("client")
                 type = ctx.rpcClient.defaultType
@@ -1025,7 +1023,8 @@ internal class RPCStubGenerator(
                         callee = stubClass.constructors.single().symbol,
                         typeArguments = emptyList(),
                     ).apply {
-                        putValueArgument(0, irGet(client))
+                        putValueArgument(0, irGet(serviceId))
+                        putValueArgument(1, irGet(client))
                     }
                 )
             }
@@ -1033,7 +1032,7 @@ internal class RPCStubGenerator(
     }
 
     /**
-     * Function for obtaining a list of all RPC fields in a given service as [RPCDeferredField<*>]
+     * Function for getting a list of all RPC fields in a given service as [RPCDeferredField<*>]
      *
      * ```kotlin
      *  final override fun rpcFields(service: MyService): List<RPCDeferredField<*>> {
