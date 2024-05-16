@@ -76,7 +76,7 @@ streamScoped {
 }
 ```
 
-Check out our [getting started guide](GETTING_STARTED.md) for a thorough overview of all components and features.
+Check out our [getting started guide](https://kotlin.github.io/kotlinx-rpc) for a thorough overview of all components and features.
 
 ## Configure the project
 
