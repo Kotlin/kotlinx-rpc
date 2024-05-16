@@ -28,24 +28,12 @@ internal class RPCIrContext(
         irBuiltIns.anyType.makeNullable()
     }
 
-    val optInAnnotation by lazy {
-        getIrClassSymbol("kotlin", "OptIn")
-    }
-
-    val extensionFunctionType by lazy {
-        getIrClassSymbol("kotlin", "ExtensionFunctionType")
-    }
-
     val coroutineScope by lazy {
         getIrClassSymbol("kotlinx.coroutines", "CoroutineScope")
     }
 
     val coroutineContext by lazy {
         getIrClassSymbol("kotlin.coroutines", "CoroutineContext")
-    }
-
-    val completableJob by lazy {
-        getIrClassSymbol("kotlinx.coroutines", "CompletableJob")
     }
 
     val kTypeClass by lazy {
@@ -60,8 +48,8 @@ internal class RPCIrContext(
         getIrClassSymbol("kotlin", "Function0")
     }
 
-    val suspendFunction1 by lazy {
-        getIrClassSymbol("kotlin.coroutines", "SuspendFunction1")
+    val suspendFunction0 by lazy {
+        getIrClassSymbol("kotlin.coroutines", "SuspendFunction0")
     }
 
     val flow by lazy {
@@ -153,8 +141,16 @@ internal class RPCIrContext(
             rpcClient.namedFunction("call")
         }
 
+        val provideStubContext by lazy {
+            rpcClient.namedFunction("provideStubContext")
+        }
+
         val typeOf by lazy {
             namedFunction("kotlin.reflect", "typeOf")
+        }
+
+        val scopedClientCall by lazy {
+            namedFunction("kotlinx.rpc.internal", "scopedClientCall")
         }
 
         val lazy by lazy {
@@ -195,14 +191,6 @@ internal class RPCIrContext(
 
         val to by lazy {
             namedFunction("kotlin", "to")
-        }
-
-        val withContext by lazy {
-            namedFunction("kotlinx.coroutines", "withContext")
-        }
-
-        val job by lazy {
-            namedFunction("kotlinx.coroutines", "Job")
         }
 
         private fun IrClassSymbol.namedFunction(name: String): IrSimpleFunction {

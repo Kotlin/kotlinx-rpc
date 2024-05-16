@@ -235,13 +235,10 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
             }
             newLine()
 
-            writeLine("override fun withClient(serviceId: Long, client: RPCClient): ${service.fullName} = ${service.simpleName.withClientImplSuffix()}(serviceId, client)")
+            writeLine("override fun withClient(serviceId: Long, client: RPCClient): ${service.fullName} = ${service.simpleName.withStubImplSuffix()}(serviceId, client)")
             newLine()
 
             writeLine("override fun methodTypeOf(methodName: String): kotlin.reflect.KType? = methodNames[methodName]")
-            newLine()
-
-            writeLine("override fun withClient(serviceId: Long, client: RPCClient): ${service.fullName} = ${service.simpleName.withStubImplSuffix()}(client)")
             newLine()
 
             writeLine("override fun rpcFields(service: ${service.fullName}): List<RPCDeferredField<*>> {")
@@ -249,12 +246,10 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
                 if (service.fields.isEmpty()) {
                     writeLine("return emptyList()")
                 } else {
-                    write("return listOf<Any?>(")
-                    newLine()
+                    writeLine("return listOf<Any?>(")
                     with(nested()) {
                         service.fields.forEach {
-                            write("service.${it.name},")
-                            newLine()
+                            writeLine("service.${it.name},")
                         }
                     }
                     writeLine(") as List<RPCDeferredField<*>>")
