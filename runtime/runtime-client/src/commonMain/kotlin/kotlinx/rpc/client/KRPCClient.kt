@@ -21,7 +21,6 @@ import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlin.coroutines.CoroutineContext
-import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 /**
@@ -234,11 +233,7 @@ public abstract class KRPCClient(
 
         val id = callCounter.incrementAndGet()
 
-        val dataTypeString = if (callInfo.data == FieldDataObject) {
-            callInfo.dataType.toString()
-        } else {
-            callInfo.dataType.transformFQNameToCompatible()
-        }
+        val dataTypeString = callInfo.dataType.toString()
 
         val callId = "$connectionId:$dataTypeString:$id"
 
@@ -272,18 +267,6 @@ public abstract class KRPCClient(
         val serialFormat: SerialFormat,
         val callId: String,
     )
-
-    // compatibility transformation
-    // from new: org.jetbrains.krpc.some.other.subpackage.MyServiceStub.Empty_RPCData
-    // to old: org.jetbrains.krpc.MyServiceClient.Empty_RPCData
-    private fun KType.transformFQNameToCompatible(): String {
-        return toString()
-            .split(".")
-            .takeLast(2)
-            .joinToString(".")
-            .replace("Stub.", "Client.")
-            .let { "org.jetbrains.krpc.$it" }
-    }
 
     private suspend fun executeCall(
         callId: String,

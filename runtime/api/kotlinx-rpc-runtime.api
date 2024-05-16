@@ -171,7 +171,7 @@ public final class kotlinx/rpc/internal/StreamScopeKt {
 	public static final fun streamScoped (Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class kotlinx/rpc/internal/WithRPCClientObject_jvmKt {
+public final class kotlinx/rpc/internal/WithRPCStubObject_jvmKt {
 }
 
 public final class kotlinx/rpc/internal/transport/CancellationTypeKt {
