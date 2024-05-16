@@ -72,7 +72,7 @@ class ProtocolTest : ProtocolTestBase() {
         transport.server.receive()
 
         val serverResponseMessage = RPCTransportMessage.StringMessage(
-            "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallSuccess\",\"callId\":\"$connectionId:kotlinx.rpc.ProtocolTestServiceClient.SendRequest_RPCData:1\",\"serviceType\":\"kotlinx.rpc.test.ProtocolTestService\",\"data\":\"{}\"}"
+            "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallSuccess\",\"callId\":\"$connectionId:kotlinx.rpc.test.ProtocolTestServiceStub.SendRequest_RPCData:1\",\"serviceType\":\"kotlinx.rpc.test.ProtocolTestService\",\"data\":\"{}\"}"
         )
 
         transport.server.send(serverResponseMessage)
