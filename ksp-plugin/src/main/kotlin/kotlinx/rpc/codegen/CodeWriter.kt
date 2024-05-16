@@ -9,11 +9,12 @@ import java.io.BufferedWriter
 fun BufferedWriter.codeWriter() = CodeWriter(this)
 
 class CodeWriter(private val bufferedWriter: BufferedWriter, private val depth: Int = 0) {
-    fun write(str: String) {
-        bufferedWriter.write(TAB.repeat(depth) + str)
+    fun newLine() {
+        bufferedWriter.newLine()
     }
 
-    fun newLine() {
+    fun writeLine(str: String) {
+        bufferedWriter.write(TAB.repeat(depth) + str)
         bufferedWriter.newLine()
     }
 
