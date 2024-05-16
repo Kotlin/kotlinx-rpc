@@ -1,8 +1,8 @@
 <div align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/kotlin/kotlinx-rpc/main/.github/images/logo.svg">
-    <img alt="kotlinx.rpc logo" src="https://raw.githubusercontent.com/kotlin/kotlinx-rpc/main/.github/images/logo.svg">
-  </picture>
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/kotlin/kotlinx-rpc/main/.github/images/logo_dark.png">
+        <img alt="kotlinx.rpc logo" src="https://raw.githubusercontent.com/kotlin/kotlinx-rpc/main/.github/images/logo_light.png">
+    </picture>
 </div>
 
 [![Kotlin Experimental](https://kotl.in/badges/experimental.svg)](https://kotlinlang.org/docs/components-stability.html)
@@ -69,8 +69,10 @@ val rpcClient = HttpClient { installRPC() }.rpc {
     }
 }
 
-rpcClient.withService<AwesomeService>().getNews("KotlinBurg").collect { article -> 
-    println(article)
+streamScoped {
+    rpcClient.withService<AwesomeService>().getNews("KotlinBurg").collect { article ->
+        println(article)
+    }
 }
 ```
 
@@ -116,10 +118,13 @@ repositories {
 And now you can add dependencies to your project:
 ```kotlin
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client") // client API
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server") // server API
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-serialization-json") // serialization module, can be other than JSON 
-    
+    // client API
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client")
+    // server API
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server") 
+    // serialization module. also, protobuf and cbor are available
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-serialization-json") 
+
     // transport implementation for Ktor
     implementation("org.jetbrains.kotlinx:kotlinx-rpc-transport-ktor-client")
     implementation("org.jetbrains.kotlinx:kotlinx-rpc-transport-ktor-server")
@@ -179,6 +184,10 @@ contributions from the community.
 [//]: # (## Documentation)
 
 [//]: # (TODO: add docs site and most useful links)
+
+## Support 
+
+Community support is available on the [Kotlin Slack kotlinx-rpc channel](https://kotlinlang.slack.com/archives/C072YJ3Q91V)
 
 ## Reporting Security Vulnerabilities
 
