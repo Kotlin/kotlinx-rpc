@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE instance-profile
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
+
+<instance-profile id="RPC"
+                 name="kotlinx.rpc"
+                 start-page="getting_started.md">
+
+    <toc-element topic="getting_started.md"/>
+</instance-profile>
