@@ -12,4 +12,4 @@ package kotlinx.rpc.internal
  * obtained via [withClientStreamScope].
  */
 @InternalRPCApi
-public const val STREAM_SCOPES_ENABLED: Boolean = true
+public const val STREAM_SCOPES_ENABLED: Boolean = false
