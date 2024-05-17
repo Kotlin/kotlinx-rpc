@@ -6,7 +6,7 @@
 <!DOCTYPE instance-profile
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
 
-<instance-profile id="RPC"
+<instance-profile id="rpc"
                  name="kotlinx.rpc"
                  start-page="getting_started.md">
 
