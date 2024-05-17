@@ -23,6 +23,10 @@
         <versions-switcher>%docs-raw-path%/help-versions.json</versions-switcher>
 
         <generate-sitemap-url-prefix>https://www.jetbrains.com/help/</generate-sitemap-url-prefix>
+
+        <algolia-id>MMA5Z3JT91</algolia-id>
+        <algolia-index>prod_kotlin_rpc</algolia-index>
+        <algolia-api-key>119a138f76e4c043bcbb9f0c16119094</algolia-api-key>
     </variables>
 
     <build-profile instance="rpc">
