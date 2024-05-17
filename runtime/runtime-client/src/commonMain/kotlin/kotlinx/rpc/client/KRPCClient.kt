@@ -201,33 +201,21 @@ public abstract class KRPCClient(
             handleOutgoingStreams(it, rpcCall.serialFormat, call.serviceTypeString)
         }
 
-        var requestCancelled = false
-
-        val streamScope = streamScopeOrNull()
-
-        streamScope?.onScopeCompletion(rpcCall.callId) {
-            connector.unsubscribeFromMessages(call.serviceTypeString, rpcCall.callId)
-
-            if (!requestCancelled) {
-                requestCancelled = true
-
-                sendCancellation(CancellationType.REQUEST, call.serviceId.toString(), rpcCall.callId)
-            }
-        }
-
         callResult.invokeOnCompletion { cause ->
-            // no streams available
-            if (rpcCall.streamContext.valueOrNull == null && streamScope != null) {
-                streamScope.cancelRequestScopeById(rpcCall.callId, "No streams provided", null)
-            }
-
             if (cause != null) {
                 connector.unsubscribeFromMessages(call.serviceTypeString, rpcCall.callId)
 
                 rpcCall.streamContext.valueOrNull?.cancel("Request failed", cause)
 
-                if (!wrappedCallResult.callExceptionOccurred && !requestCancelled) {
-                    requestCancelled = true
+                if (!wrappedCallResult.callExceptionOccurred) {
+                    sendCancellation(CancellationType.REQUEST, call.serviceId.toString(), rpcCall.callId)
+                }
+            } else {
+                val streamScope = rpcCall.streamContext.valueOrNull?.streamScope
+
+                streamScope?.onScopeCompletion(rpcCall.callId) {
+                    connector.unsubscribeFromMessages(call.serviceTypeString, rpcCall.callId)
+
                     sendCancellation(CancellationType.REQUEST, call.serviceId.toString(), rpcCall.callId)
                 }
             }
@@ -248,7 +236,11 @@ public abstract class KRPCClient(
 
         logger.trace { "start a call[$callId] ${callInfo.callableName}" }
 
-        val streamContext = LazyRPCStreamContext(streamScopeOrNull()) {
+        val fallbackScope = serviceScopeOrNull()
+            ?.serviceCoroutineScope
+            ?.let { streamScopeOrNull(it) }
+
+        val streamContext = LazyRPCStreamContext(streamScopeOrNull(), fallbackScope) {
             RPCStreamContext(callId, config, connectionId, callInfo.serviceId, it)
         }
         val serialFormat = prepareSerialFormat(streamContext)

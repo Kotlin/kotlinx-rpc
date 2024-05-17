@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.client.withService
+import kotlinx.rpc.internal.STREAM_SCOPES_ENABLED
 import kotlinx.rpc.internal.invokeOnStreamScopeCompletion
 import kotlinx.rpc.internal.streamScoped
 import kotlin.test.*
@@ -203,7 +204,11 @@ class CancellationTest {
     fun testStreamScopeAbsentForOutgoingStream() = runCancellationTest {
         val fence = CompletableDeferred<Unit>()
 
-        assertFailsWith<IllegalStateException> {
+        if (STREAM_SCOPES_ENABLED) {
+            assertFailsWith<IllegalStateException> {
+                service.outgoingStream(resumableFlow(fence))
+            }
+        } else {
             service.outgoingStream(resumableFlow(fence))
         }
 
@@ -212,7 +217,11 @@ class CancellationTest {
 
     @Test
     fun testStreamScopeAbsentForIncomingStream() = runCancellationTest {
-        assertFailsWith<IllegalStateException> {
+        if (STREAM_SCOPES_ENABLED) {
+            assertFailsWith<IllegalStateException> {
+                service.incomingStream()
+            }
+        } else {
             service.incomingStream()
         }
 
