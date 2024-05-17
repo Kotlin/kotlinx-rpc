@@ -4,6 +4,3 @@ public abstract class kotlinx/rpc/server/KRPCServer : kotlinx/rpc/RPCServer, kot
 	public final fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;)V
 }
 
-public final class kotlinx/rpc/server/internal/RPCServiceUtilsKt {
-}
-
