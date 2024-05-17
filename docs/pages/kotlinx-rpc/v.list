@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<!DOCTYPE vars SYSTEM "https://resources.jetbrains.com/writerside/1.0/vars.dtd">
+<vars>
+    <var name="product" value="kotlinx-rpc"/>
+    <var name="docs-raw-path" value="https://raw.githubusercontent.com/Kotlin/kotlinx-rpc/docs/pages/kotlinx-rpc"/>
+    <var name="docs-root-path" value="https://github.com/Kotlin/kotlinx-rpc/docs/pages/kotlinx-rpc"/>
+    <var name="docs-edit-path" value="https://github.com/Kotlin/kotlinx-rpc/edit/main/docs/pages/kotlinx-rpc"/>
+    <var name="repo-root-path" value="https://github.com/Kotlin/kotlinx-rpc"/>
+    <var name="repo-tree-path" value="https://github.com/Kotlin/kotlinx-rpc/tree/main"/>
+    <var name="host" value="https://kotlin.github.io"/>
+
+    <!--  Library versions  -->
+    <var name="kotlinx-rpc-version" value="0.1.0"/>
+    <var name="kotlin-version" value="1.9.24"/>
+    <var name="ksp-version" value="1.9.24-1.0.20"/>
+</vars>

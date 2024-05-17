@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<buildprofiles xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/build-profiles.xsd"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <variables>
+        <website-title>%instance% Documentation</website-title>
+        <web-root>%host%</web-root>
+        <product-web-url>%repo-root-path%</product-web-url>
+
+        <primary-color>purple</primary-color>
+        <header-logo>logo.svg</header-logo>
+        <custom-favicons>icon16.png,icon32.png,icon96.png,icon300.png,icon500.png</custom-favicons>
+
+        <browser-edits-url>%docs-edit-path%/</browser-edits-url>
+        <enable-browser-edits>true</enable-browser-edits>
+
+        <og-image>%docs-raw-path%/preview.png</og-image>
+
+        <versions-switcher>%host%/kotlinx-rpc/help-versions.json</versions-switcher>
+
+        <generate-sitemap-url-prefix>https://www.jetbrains.com/help/</generate-sitemap-url-prefix>
+    </variables>
+
+    <build-profile instance="RPC">
+        <variables>
+            <noindex-content>false</noindex-content>
+        </variables>
+    </build-profile>
+
+    <sitemap priority="0.35" change-frequency="monthly"/>
+    <footer>
+        <copyright>2000-2024 JetBrains s.r.o.</copyright>
+        <link href="https://github.com/Koltin/kotlinx-rpc/blob/main/CONTRIBUTING.md">Contribute to kotlinx.rpc</link>
+        <link href="https://kotlinlang.slack.com/archives/C072YJ3Q91V">Slack Community</link>
+    </footer>
+</buildprofiles>
