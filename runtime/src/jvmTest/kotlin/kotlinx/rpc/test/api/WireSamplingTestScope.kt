@@ -27,6 +27,7 @@ import kotlinx.rpc.test.KRPCTestClient
 import kotlinx.rpc.test.KRPCTestServer
 import kotlinx.rpc.test.KRPCTestServiceBackend
 import kotlinx.rpc.test.LocalTransport
+import kotlinx.rpc.test.api.ApiVersioningTest.Companion.latestVersionOrCurrent
 import kotlinx.rpc.test.api.util.GoldComparable
 import kotlinx.rpc.test.api.util.GoldComparisonResult
 import kotlinx.rpc.test.api.util.GoldUtils
@@ -73,7 +74,8 @@ class WireSamplingTestScope(private val sampleName: String, scope: TestScope) : 
             }
 
             val log = checkGold(
-                fileDir = CURRENT_WIRE_DUMPS_DIR,
+                latestDir = LATEST_WIRE_DUMPS_DIR,
+                currentDir = CURRENT_WIRE_DUMPS_DIR,
                 filename = "${sampleName}_${format.name.lowercase()}",
                 content = WireContent(finishedToolkit.logs, format.commentBinaryOutput),
                 parseGoldFile = { WireContent.fromText(it) },
@@ -183,6 +185,9 @@ class WireSamplingTestScope(private val sampleName: String, scope: TestScope) : 
     companion object {
         private val CURRENT_WIRE_DUMPS_DIR = ApiVersioningTest.WIRE_DUMPS_DIR
             .resolve(ApiVersioningTest.LIBRARY_VERSION_DIR)
+
+        private val LATEST_WIRE_DUMPS_DIR = ApiVersioningTest.WIRE_DUMPS_DIR
+            .latestVersionOrCurrent()
     }
 }
 
