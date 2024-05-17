@@ -25,7 +25,7 @@
         <generate-sitemap-url-prefix>https://www.jetbrains.com/help/</generate-sitemap-url-prefix>
     </variables>
 
-    <build-profile instance="RPC">
+    <build-profile instance="rpc">
         <variables>
             <noindex-content>false</noindex-content>
         </variables>

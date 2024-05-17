@@ -10,7 +10,7 @@ permissions:
   pages: write
 
 env:
-  INSTANCE: 'Writerside/rpc'
+  INSTANCE: 'kotlinx-rpc/rpc'
   ARTIFACT: 'webHelpRPC2-all.zip'
   DOCKER_VERSION: '241.15989'
 
@@ -29,7 +29,7 @@ jobs:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
-          locations: docs/pages/Writerside/
+          locations: docs/pages/kotlinx-rpc/
 
       - name: Save artifact with build results
         uses: actions/upload-artifact@v4
