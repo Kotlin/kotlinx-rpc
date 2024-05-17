@@ -69,6 +69,17 @@ IntelliJ IDEA should automatically detect that it is a Gradle project and import
 It's important that you make sure that all building and test operations
 are delegated to Gradle under [Gradle Settings](https://www.jetbrains.com/help/idea/gradle-settings.html).
 
+#### Building the documentation website
+
+Our documentation is hosted at GitHub Pages: https://kotlin.github.io/kotlinx-rpc/
+
+We use the [Writerside](https://www.jetbrains.com/writerside/) project to build the website.
+
+The documentation project is located in the [pages](docs/pages) directory in the main repo.
+To update the project, open this directory in your Writerside IDE 
+and follow the [official guidelines](https://www.jetbrains.com/help/writerside/discover-writerside.html) 
+on how to work with the project. 
+
 ### Pull Requests
 
 Contributions are made using Github [pull requests](https://help.github.com/en/articles/about-pull-requests):

@@ -20,7 +20,7 @@
 
         <og-image>%docs-raw-path%/preview.png</og-image>
 
-        <versions-switcher>%host%/kotlinx-rpc/help-versions.json</versions-switcher>
+        <versions-switcher>%docs-raw-path%/help-versions.json</versions-switcher>
 
         <generate-sitemap-url-prefix>https://www.jetbrains.com/help/</generate-sitemap-url-prefix>
     </variables>
@@ -34,7 +34,7 @@
     <sitemap priority="0.35" change-frequency="monthly"/>
     <footer>
         <copyright>2000-2024 JetBrains s.r.o.</copyright>
-        <link href="https://github.com/Koltin/kotlinx-rpc/blob/main/CONTRIBUTING.md">Contribute to kotlinx.rpc</link>
+        <link href="https://github.com/Kotlin/kotlinx-rpc/blob/main/CONTRIBUTING.md">Contribute to kotlinx.rpc</link>
         <link href="https://kotlinlang.slack.com/archives/C072YJ3Q91V">Slack Community</link>
     </footer>
 </buildprofiles>
