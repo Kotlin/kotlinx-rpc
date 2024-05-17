@@ -21,6 +21,8 @@ object Const {
 }
 
 apiValidation {
+    ignoredPackages.add("kotlinx.rpc.internal")
+
     val compilerPluginModules = subprojects.single { it.name == Const.COMPILER_PLUGIN_MODULE_NAME }.let {
         it.subprojects.map { sub -> sub.name }
     } + Const.COMPILER_PLUGIN_MODULE_NAME
