@@ -3,31 +3,32 @@
  */
 
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
+import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
-import kotlinx.kover.gradle.plugin.dsl.KoverReportExtension
-import kotlinx.kover.gradle.plugin.dsl.MetricType
+import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 
 apply(plugin = "org.jetbrains.kotlinx.kover")
 
-the<KoverReportExtension>().apply {
-    defaults {
-        html {
-            onCheck = false
-            charset = "UTF_8"
-            setReportDir(rootDir.resolve("kover"))
-        }
+the<KoverProjectExtension>().apply {
+    reports {
+        total {
+            html {
+                onCheck.set(false)
+                charset.set("UTF_8")
+                htmlDir.set(rootDir.resolve("kover"))
+            }
 
-        verify {
-            onCheck = false
+            verify {
+                onCheck.set(false)
 
-            rule {
-                entity = GroupingEntityType.APPLICATION
-                isEnabled = true
+                rule {
+                    groupBy.set(GroupingEntityType.APPLICATION)
 
-                bound {
-                    metric = MetricType.LINE
-                    aggregation = AggregationType.COVERED_PERCENTAGE
-                    minValue = 70
+                    bound {
+                        coverageUnits.set(CoverageUnit.LINE)
+                        aggregationForGroup.set(AggregationType.COVERED_PERCENTAGE)
+                        minValue.set(70)
+                    }
                 }
             }
         }
