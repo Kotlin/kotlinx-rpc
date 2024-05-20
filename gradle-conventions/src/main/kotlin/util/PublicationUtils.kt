@@ -5,48 +5,57 @@
 package util
 
 import org.gradle.api.Project
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.kotlin.dsl.*
+import org.gradle.api.artifacts.dsl.RepositoryHandler
+import org.gradle.api.provider.Property
+import org.gradle.kotlin.dsl.maven
 
-internal fun PublishingExtension.configureLibraryPublication() {
-    val spaceUser = System.getenv("SPACE_USERNAME")
-    val spacePassword = System.getenv("SPACE_PASSWORD")
-
-    if (spaceUser == null || spacePassword == null) return
-
-    repositories {
-        maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven") {
-            credentials {
-                username = spaceUser
-                password = spacePassword
-            }
-        }
-    }
+infix fun <T> Property<T>.by(value: T) {
+    set(value)
 }
 
-internal fun Project.configureKmpPublication() {
-    apply(plugin = "maven-publish")
-
-    the<PublishingExtension>().configureLibraryPublication()
+class PublicationRepositoryConfig {
+    var url: String? = null
+    var name: String? = null
+    var user: String? = null
+    var password: String? = null
 }
 
-internal fun Project.configureJvmPublication(skipJvm: Boolean) {
-    configureKmpPublication()
+fun RepositoryHandler.configureRepository(
+    project: Project,
+    configBuilder: PublicationRepositoryConfig.() -> Unit,
+) {
+    val config = PublicationRepositoryConfig().apply(configBuilder)
 
-    if (skipJvm) {
+    val userProperty = config.user ?: configError("userPropertyName")
+    val passwordProperty = config.password ?: configError("passwordPropertyName")
+
+    val userValue = project.getSensitiveProperty(userProperty)
+    val passwordValue = project.getSensitiveProperty(passwordProperty)
+
+    if (userValue == null || passwordValue == null) {
         return
     }
 
-    the<PublishingExtension>().apply {
-        publications {
-            create<MavenPublication>("kotlinJvm") {
-                groupId = project.group.toString()
-                artifactId = project.name
-                version = project.version.toString()
+    val url = config.url ?: configError("url")
 
-                from(components["kotlin"])
-            }
+    maven(url = url) {
+        name = config.name ?: configError("name")
+
+        credentials {
+            username = userValue
+            password = passwordValue
         }
     }
+}
+
+fun Project.getSensitiveProperty(name: String?): String? {
+    if (name == null) {
+        error("Expected not null property name for publication repository config")
+    }
+
+    return project.findProperty(name) as? String ?: System.getenv(name)
+}
+
+fun configError(parameterName: String): Nothing {
+    error("Expected not null $parameterName for publication repository config")
 }

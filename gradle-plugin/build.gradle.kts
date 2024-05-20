@@ -14,14 +14,6 @@ subprojects {
     group = "org.jetbrains.kotlinx"
     version = rootProject.libs.versions.rpc.core.get()
 
-    // 'pluginMaven' publication already registered by kotlin-dsl plugin, additional 'kotlinJvm' may cause clashes:
-    //
-    // Multiple publications with coordinates 'org.jetbrains.kotlinx.rpc:kotlinx-rpc-gradle-plugin-all:<version>'
-    // are published to repository 'maven'.
-    // The publications 'kotlinJvm' in project ':gradle-plugin:gradle-plugin-all'
-    // and 'pluginMaven' in project ':gradle-plugin:gradle-plugin-all' will overwrite each other!
-    extra["skipJvmPublication"] = true
-
     fun alias(notation: Provider<PluginDependency>): String {
         return notation.get().pluginId
     }
