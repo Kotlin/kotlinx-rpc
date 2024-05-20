@@ -15,9 +15,16 @@ plugins {
 include(":compiler-specific-module")
 
 val kotlinVersion: String by extra
+val isLatestKotlinVersion: Boolean by extra
 
 if (kotlinVersion >= "1.8.0") {
     include(":kover")
 } else {
     include(":kover-stub")
+}
+
+if (isLatestKotlinVersion) {
+    include(":gradle-publish")
+} else {
+    include(":gradle-publish-stub")
 }

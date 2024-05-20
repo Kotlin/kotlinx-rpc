@@ -10,14 +10,14 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        create("kotlinx-rpc-platform") {
+        create("kotlinxRpcPlatform") {
             id = "org.jetbrains.kotlinx.rpc.platform"
 
             displayName = "kotlinx.rpc Platform Plugin"
             implementationClass = "kotlinx.rpc.RPCPlatformPlugin"
             description = """
                 The plugin enforces proper artifacts versions for your project, depending on your Kotlin version.
-                Resulting versions of the kotlinx.rpc dependencies will be 'kotlinVersion-kotlinxRpcVersion', for example '1.9.10-beta-4.2', where 'beta-4.2' is the kotlinx.rpc version.
+                Resulting versions of the kotlinx.rpc dependencies will be 'kotlinVersion-kotlinxRpcVersion', for example '1.9.24-0.1.0', where '0.1.0' is the kotlinx.rpc version.
             """.trimIndent()
         }
     }

@@ -7,7 +7,9 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 plugins {
     alias(libs.plugins.conventions.jvm) apply false
+    alias(libs.plugins.conventions.gradle.publish) apply false
     alias(libs.plugins.gradle.kotlin.dsl) apply false
+    alias(libs.plugins.gradle.plugin.publish) apply false
 }
 
 subprojects {
@@ -26,6 +28,7 @@ subprojects {
         }
     }
     plugins.apply(alias(rootProject.libs.plugins.gradle.kotlin.dsl))
+    plugins.apply(alias(rootProject.libs.plugins.conventions.gradle.publish))
 
     // This block is needed to show plugin tasks on --dry-run
     //  and to not run task actions on ":plugin:task --dry-run".
@@ -57,7 +60,9 @@ fun Project.configureMetaTasks(vararg taskNames: String) {
 }
 
 configureMetaTasks(
-    "publish", // publish to Space
+    "publishAllPublicationsToBuildRepoRepository", // publish to locally (to the build/repo folder)
+    "publishAllPublicationsToSpaceRepository", // publish to Space
+    "publishPlugins", // publish to Gradle Plugin Portal
     "publishToMavenLocal", // for local plugin development
     "validatePlugins", // plugin validation
     "detekt", // run Detekt tasks
