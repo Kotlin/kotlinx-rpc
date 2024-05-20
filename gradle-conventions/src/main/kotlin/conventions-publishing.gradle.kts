@@ -16,6 +16,9 @@ if (name.startsWith("kotlinx-rpc")) { // only public modules
     apply(plugin = "signing")
 
     the<PublishingExtension>().configurePublication()
+    logger.info("Configured ${project.name} for publication as it is a public module")
+} else {
+    logger.info("Skipping ${project.name} publication configuration as it is not a public module")
 }
 
 fun PublishingExtension.configurePublication() {
@@ -27,11 +30,16 @@ fun PublishingExtension.configurePublication() {
 
     val javadocJar = configureEmptyJavadocArtifact()
 
-    publications.withType(MavenPublication::class).all {
-        pom.configureMavenCentralMetadata()
-        signPublicationIfKeyPresent()
-        artifact(javadocJar)
+    // separate function is needed for different gradle versions
+    // in 7.6 `Configuration` argument is `this`, in 8.* it is a first argument (hence `it`)
+    val onPublication: (MavenPublication) -> Unit = { publication ->
+        publication.pom.configureMavenCentralMetadata()
+        publication.signPublicationIfKeyPresent()
+        publication.artifact(javadocJar)
+        logger.info("Project ${project.name} -> Publication configured: ${publication.name}")
     }
+
+    publications.withType(MavenPublication::class).all(onPublication)
 
     tasks.withType<PublishToMavenRepository>().configureEach {
         dependsOn(tasks.withType<Sign>())
@@ -69,7 +77,7 @@ fun MavenPom.configureMavenCentralMetadata() {
 
 fun RepositoryHandler.configureSpaceRepository() {
     configureRepository(project) {
-        user = "SPACE_USERNAME"
+        username = "SPACE_USERNAME"
         password = "SPACE_PASSWORD"
         name = "space"
         url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven"
@@ -87,21 +95,20 @@ fun RepositoryHandler.configureLocalDevRepository() {
 
 fun RepositoryHandler.configureSonatypeRepository() {
     configureRepository(project) {
-        user = "libs.sonatype.user"
+        username = "libs.sonatype.user"
         password = "libs.sonatype.password"
         name = "sonatype"
         url = sonatypeRepositoryUri
     }
 }
 
-val sonatypeRepositoryUri: String
+val sonatypeRepositoryUri: String?
     get() {
-        val repositoryId: String? = System.getenv("libs.repository.id")
-        return if (repositoryId == null) {
-            "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-        } else {
-            "https://oss.sonatype.org/service/local/staging/deployByRepositoryId/$repositoryId"
-        }
+        val repositoryId: String = project.getSensitiveProperty("libs.repository.id")
+            ?.takeIf { it.isNotBlank() }
+            ?: return null
+
+        return "https://oss.sonatype.org/service/local/staging/deployByRepositoryId/$repositoryId"
     }
 
 fun configureEmptyJavadocArtifact(): org.gradle.jvm.tasks.Jar {
@@ -120,7 +127,7 @@ fun MavenPublication.signPublicationIfKeyPresent() {
 
     if (!signingKey.isNullOrBlank()) {
         the<SigningExtension>().apply {
-            useInMemoryPgpKeys(keyId, signingKey.replace(" ", "\r\n"), signingKeyPassphrase)
+            useInMemoryPgpKeys(keyId, signingKey, signingKeyPassphrase)
 
             sign(this@signPublicationIfKeyPresent)
         }
