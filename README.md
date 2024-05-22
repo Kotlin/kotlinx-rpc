@@ -172,7 +172,7 @@ plugins {
 }
 
 dependencies {
-    implemntation("org.jetbrains.kotlinx:kotlinx-rpc-runtime") // version is 1.9.24-1.0.0 is set by Gradle plugin
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime") // version is 1.9.24-1.0.0 is set by Gradle plugin
 }
 ```
 
