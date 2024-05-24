@@ -81,11 +81,8 @@ private fun KotlinMultiplatformExtension.configureTargets(
     }
 
     if (jvm && isIncluded("jvm", kotlinVersion, targetsLookup)) {
-        jvm {
-            jvmToolchain {
-                languageVersion.set(JavaLanguageVersion.of(8))
-            }
-        }.also { targets.add(it) }
+        jvmToolchain(8)
+        jvm().also { targets.add(it) }
     }
 
     if (js && isIncluded("js", kotlinVersion, targetsLookup)) {
