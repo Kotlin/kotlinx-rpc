@@ -27,7 +27,7 @@ interface AwesomeService : RPC {
 ```
 In your server code define how to respond by simply implementing the service:
 ```kotlin
-class AwesomeServiceImpl : AwesomeService {
+class AwesomeServiceImpl(override val coroutineContext: CoroutineContext) : AwesomeService {
     override suspend fun getNews(city: String): Flow<String> {
         return flow { 
             emit("Today is 23 degrees!")
