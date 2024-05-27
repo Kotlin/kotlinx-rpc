@@ -3,36 +3,15 @@
  */
 
 import io.gitlab.arturbosch.detekt.Detekt
-import util.configureJvmPublication
-import util.configureKmpPublication
-import util.configureLibraryPublication
 import util.libs
 
 plugins {
     id("io.gitlab.arturbosch.detekt")
+    id("conventions-publishing")
 }
 
 val kotlinVersion: String by extra
 val globalRootDir: String by extra
-
-val publishingExtension = project.extensions.findByType<PublishingExtension>()
-
-// for some reason jvm publication will be registered by module itself, for example for gradle plugins
-val skipJvmPublication: Boolean? by extra
-
-if (name.startsWith("kotlinx-rpc")) {
-    if (publishingExtension != null) {
-        publishingExtension.configureLibraryPublication()
-    } else {
-        plugins.withId("org.jetbrains.kotlin.jvm") {
-            configureJvmPublication(skipJvmPublication == true)
-        }
-
-        plugins.withId("org.jetbrains.kotlin.multiplatform") {
-            configureKmpPublication()
-        }
-    }
-}
 
 val globalDetektDir = "$globalRootDir/detekt"
 

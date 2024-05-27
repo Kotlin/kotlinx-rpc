@@ -76,13 +76,15 @@ fun findGlobalRootDirPath(start: Path, onDir: () -> Unit = {}): Path {
 }
 
 // Resolves 'gradle/kotlin-versions-lookup.csv'
-fun loadLookupTable(rootDir: Path, kotlinVersion: String): Map<String, String> {
+fun loadLookupTable(rootDir: Path, kotlinVersion: String): Pair<Map<String, String>, String> {
     val file = rootDir.resolve(SettingsConventions.KOTLIN_VERSIONS_LOOKUP_PATH).toFile()
 
-    return file.readText()
+    var latest = kotlinVersion
+    val table = file.readText()
         .split("\n")
         .takeIf { it.size >= 2 }
         ?.run {
+            latest = get(1).substringBefore(',')
             when (val versionsRow = singleOrNull { it.startsWith(kotlinVersion) }) {
                 null -> null
                 else -> first().asCsvValues() to versionsRow.asCsvValues()
@@ -97,6 +99,8 @@ fun loadLookupTable(rootDir: Path, kotlinVersion: String): Map<String, String> {
                     "should be proper CSV file with horizontal header of version names " +
                     "and vertical headers of Kotlin versions."
         )
+
+    return table to latest
 }
 
 fun String.asCsvValues(): List<String> {
@@ -105,7 +109,7 @@ fun String.asCsvValues(): List<String> {
 
 // Resolves [versions] section from 'gradle/libs.versions.toml' into map
 //
-// NOTE: I would love to use tomlj parser here, but I could import it :(
+// NOTE: I would love to use tomlj parser here, but I could not import it :(
 fun resolveVersionCatalog(rootDir: Path): Map<String, String> {
     var versionsStarted = false
     val map = mutableMapOf<String, String>()
@@ -186,18 +190,22 @@ dependencyResolutionManagement {
 
             val kotlinVersion = resolveKotlinVersion(versionCatalog)
 
+            resolveLibraryVersion(versionCatalog, kotlinVersion)
+
+            // Other Kotlin-dependant versions 
+            val (lookupTable, latestKotlin) = loadLookupTable(rootDir, kotlinVersion)
+
+            val isLatestKotlin = latestKotlin == kotlinVersion
+
             extra["kotlinVersion"] = kotlinVersion
+            extra["isLatestKotlinVersion"] = isLatestKotlin
 
             gradle.rootProject {
                 allprojects {
                     this.extra["kotlinVersion"] = kotlinVersion
+                    this.extra["isLatestKotlinVersion"] = isLatestKotlin
                 }
             }
-
-            resolveLibraryVersion(versionCatalog, kotlinVersion)
-
-            // Other Kotlin-dependant versions 
-            val lookupTable = loadLookupTable(rootDir, kotlinVersion)
 
             logger.info("Resolved compiler specific dependencies versions (Kotlin $kotlinVersion):")
             lookupTable.forEach { (name, version) ->

@@ -5,48 +5,70 @@
 package util
 
 import org.gradle.api.Project
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.kotlin.dsl.*
+import org.gradle.api.artifacts.dsl.RepositoryHandler
+import org.gradle.api.provider.Property
+import org.gradle.kotlin.dsl.maven
 
-internal fun PublishingExtension.configureLibraryPublication() {
-    val spaceUser = System.getenv("SPACE_USERNAME")
-    val spacePassword = System.getenv("SPACE_PASSWORD")
-
-    if (spaceUser == null || spacePassword == null) return
-
-    repositories {
-        maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven") {
-            credentials {
-                username = spaceUser
-                password = spacePassword
-            }
-        }
-    }
+infix fun <T> Property<T>.by(value: T) {
+    set(value)
 }
 
-internal fun Project.configureKmpPublication() {
-    apply(plugin = "maven-publish")
-
-    the<PublishingExtension>().configureLibraryPublication()
+class PublicationRepositoryConfig {
+    var url: String? = null
+    var name: String? = null
+    var username: String? = null
+    var password: String? = null
 }
 
-internal fun Project.configureJvmPublication(skipJvm: Boolean) {
-    configureKmpPublication()
-
-    if (skipJvm) {
+fun RepositoryHandler.configureRepository(
+    project: Project,
+    configBuilder: PublicationRepositoryConfig.() -> Unit,
+) {
+    val config = PublicationRepositoryConfig().apply(configBuilder)
+    val url = config.url ?: run {
+        project.logger.info("No ${config.name} URL provided, skipping repository configuration")
         return
     }
 
-    the<PublishingExtension>().apply {
-        publications {
-            create<MavenPublication>("kotlinJvm") {
-                groupId = project.group.toString()
-                artifactId = project.name
-                version = project.version.toString()
+    val usernameProperty = config.username ?: configError("username")
+    val passwordProperty = config.password ?: configError("password")
 
-                from(components["kotlin"])
-            }
+    val usernameValue = project.getSensitiveProperty(usernameProperty)
+    val passwordValue = project.getSensitiveProperty(passwordProperty)
+
+    if (usernameValue == null || passwordValue == null) {
+        val usernameProvided = usernameValue != null
+        val passwordProvided = passwordValue != null
+        project.logger.info(
+            "No ${config.name} credentials provided " +
+                    "(username: $usernameProvided, password: $passwordProvided), " +
+                    "skipping repository configuration"
+        )
+        return
+    }
+
+    maven(url = url) {
+        name = config.name ?: configError("name")
+
+        credentials {
+            username = usernameValue
+            password = passwordValue
         }
     }
+
+    project.logger.info("Configured ${config.name} repository for publication")
+}
+
+fun Project.getSensitiveProperty(name: String?): String? {
+    if (name == null) {
+        error("Expected not null property 'name' for publication repository config")
+    }
+
+    return project.findProperty(name) as? String
+        ?: System.getenv(name)
+        ?: System.getProperty(name)
+}
+
+fun configError(parameterName: String): Nothing {
+    error("Expected not null $parameterName for publication repository config")
 }

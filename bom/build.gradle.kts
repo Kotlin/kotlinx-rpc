@@ -10,8 +10,8 @@ plugins {
 
 dependencies {
     constraints {
-        rootProject.allprojects.filter {
-            it.name.startsWith("kotlinx-rpc") && it != project
+        rootProject.subprojects.filter {
+            it.plugins.hasPlugin("maven-publish") && it != project
         }.forEach { project ->
             api(project)
         }

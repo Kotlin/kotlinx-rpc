@@ -31,6 +31,12 @@ dependencies {
 
 gradlePlugin {
     plugins {
+        named("conventions-publishing") {
+            version = libs.versions.rpc.core.get()
+        }
+    }
+
+    plugins {
         named("conventions-common") {
             version = libs.versions.rpc.core.get()
         }
