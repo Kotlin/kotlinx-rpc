@@ -6,3 +6,17 @@ plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.compiler.specific.module)
 }
+
+kotlin {
+    sourceSets {
+        commonMain {
+            vsDependencies("latest") {
+                implementation(libs.kotlin.logging)
+            }
+
+            vsDependencies("v_1_7") {
+                implementation(libs.kotlin.logging.legacy)
+            }
+        }
+    }
+}

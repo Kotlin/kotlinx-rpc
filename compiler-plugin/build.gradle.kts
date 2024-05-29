@@ -3,17 +3,16 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
 plugins {
     alias(libs.plugins.conventions.jvm)
     alias(libs.plugins.compiler.specific.module)
 }
 
-subprojects {
-    afterEvaluate {
-        configure<KotlinProjectExtension> {
-            explicitApi = ExplicitApiMode.Disabled
-        }
-    }
+kotlin {
+    explicitApi = ExplicitApiMode.Disabled
+}
+
+dependencies {
+    compileOnly(libs.kotlin.compiler.embeddable)
 }
