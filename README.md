@@ -92,7 +92,7 @@ To use the `kotlinx.rpc` Gradle plugins, you need to add the following repositor
 ```kotlin
 pluginManagement {
     repositories {
-        maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven") // todo update repo link
+        maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven")
         gradlePluginPortal()
     }
 }
@@ -111,7 +111,7 @@ plugins {
 To use `kotlinx.rpc` runtime dependencies, you need to add our Space repository to the list of project repositories: 
 ```kotlin
 repositories {
-    maven("https://maven.pkg.jetbrains.space/public/p/krpc/maven") // todo update repo link
+    maven("https://maven.pkg.jetbrains.space/public/p/krpc/maven")
     mavenCentral() // for other dependencies, e.g. Ktor
 }
 ```

@@ -116,7 +116,7 @@ from which they will be consumed in your `build.gradle.kts`:
 ```kotlin
 repositories {
     // for kotlinx.rpc dependencies
-    maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven") // todo change repo link
+    maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven")
     // for other dependencies, like Ktor
     mavenCentral() 
 }
@@ -153,7 +153,7 @@ to be consumed from in your `settings.gradle.kts`:
 pluginManagement {
     repositories {
         // kotlinx.rpc plugins will be downloaded from here
-        maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven") // todo update repo link
+        maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven")
         // other plugins, like Kotlin, will be downloaded from here
         gradlePluginPortal()
     }
