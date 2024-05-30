@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Releases" id="releases">
+        <p>The <code>kotlinx.rpc</code> version for all <a href="get-started.topic" anchor="add-runtime-dependencies">runtime dependencies</a>
+            consists of two parts: Kotlin version prefix and core (feature) version suffix.</p>
+
+        <code-block>
+            %kotlin-version%-%kotlinx-rpc-version%
+        </code-block>
+        <p>Here <code>%kotlin-version%</code> is the version of Kotlin of your project.
+            It can be found out by looking at Kotlin Gradle Plugin:</p>
+
+        <code-block lang="kotlin">
+            plugins {
+                kotlin(&quot;jvm&quot;) version &quot;%kotlin-version%&quot;
+            }
+        </code-block>
+        <p>As <code>kotlinx.rpc</code> uses Kotlin compiler plugin and KSP plugins,
+            we rely on internal functionality that may change over time with any new Kotlin version.
+            To prevent the library from breaking with an incompatible Kotlin version,
+            we use version prefix.
+            But this may result in a situation when an update to a newer version of the library
+            would require updating the project's Kotlin version, which is not always possible and/or easy.
+            To address that issue,
+            we provide core version updates for all stable versions of
+            <control>the last three</control>
+            major Kotlin releases.
+            So if the last stable Kotlin version is <code>%kotlin-version%</code>, as at the time of writing this guide,
+            the following versions of Kotlin are supported:
+        </p>
+        <list>
+            <li>1.7.0, 1.7.10, 1.7.20, 1.7.21, 1.7.22</li>
+            <li>1.8.0, 1.8.10, 1.8.20, 1.8.21, 1.8.22</li>
+            <li>1.9.0, 1.9.10, 1.9.20, 1.9.21, 1.9.22, 1.9.23, 1.9.24</li>
+        </list>
+        <p>So for each of the listed Kotlin versions,
+            you can use <code>&lt;kotlin_version&gt;-&lt;core_version&gt;</code> template
+            to get the needed library version.
+            (So, for core version <code>%kotlinx-rpc-version%</code>, there are <code>1.7.0-%kotlinx-rpc-version%</code>,
+            <code>1.7.0-%kotlinx-rpc-version%</code>, ... , <code>%kotlin-version%-%kotlinx-rpc-version%</code> versions
+            present).
+            </p>
+    <p>
+        To simplify project configuration, both our <a href="plugins.topic">Gradle plugins</a>
+        are able to set proper runtime dependencies versions automatically based
+        on the project's Kotlin version and the Gradle plugin version
+        which is used as a core library version.</p>
+    <p>To summarize, we can look at the example:
+    </p>
+
+        <code-block lang="kotlin">
+            plugins {
+                kotlin(&quot;jvm&quot;) version &quot;%kotlin-version%&quot; // project's Kotlin version
+                id(&quot;org.jetbrains.kotlinx.rpc.platform&quot;) version &quot;%kotlinx-rpc-version%&quot; // kotlinx.rpc core version
+            }
+
+            dependencies {
+                // for kotlinx.rpc runtime dependencies, Gradle plugin sets version %kotlin-version%-%kotlinx-rpc-version%
+                implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-client&quot;)
+                implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-server&quot;)
+            }
+        </code-block>
+</topic>

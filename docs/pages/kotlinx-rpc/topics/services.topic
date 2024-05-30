@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Services" id="services">
+    <p>Services are the centerpieces of the library.
+                A service is an interface annotated with the <code>RPC</code> annotation,
+                and contains a set of methods and fields
+                that can be executed or accessed remotely.
+                A simple service can be declared as follows:</p>
+
+            <code-block lang="kotlin">
+                interface MyService : RPC {
+                    suspend fun hello(name: String): String
+                }
+            </code-block>
+            <p>Here we declare the method <code>hello</code>, that accepts one argument and returns a string.
+                The method is marked with a <code>suspend</code> modifier, which means that we use
+                <a href="https://kotlinlang.org/docs/coroutines-guide.html">coroutines</a>
+                to send RPC requests.
+                Note that for now, only <code>suspend</code> methods are supported in service interfaces.</p>
+            <tip>
+                <p>Depending on the type of the protocol you use, services may support different features and
+                    declarations.</p>
+            </tip>
+            <p>To be able to use a service both in client and server code,
+                the interface should be placed in the common module
+                — kudos to Kotlin Multiplatform.</p>
+            <p>Now we can implement the service, so server knows how to process incoming requests.</p>
+
+            <code-block lang="kotlin">
+                class MyServiceImpl(override val coroutineContext: CoroutineContext) : MyService {
+                    override suspend fun hello(name: String): String {
+                        return &quot;Hello, $name! I'm server!&quot;
+                    }
+                }
+            </code-block>
+            <p>The server will use that implementation to answer the client requests.</p>
+</topic>
