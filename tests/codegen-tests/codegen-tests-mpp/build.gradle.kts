@@ -3,6 +3,7 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -39,5 +40,8 @@ kotlin {
     }
 
     explicitApi = ExplicitApiMode.Disabled
+    compilerOptions {
+        languageVersion.set(KotlinVersion.KOTLIN_2_0)
+    }
 }
 
