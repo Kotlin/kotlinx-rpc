@@ -3,8 +3,12 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import util.configureMetaTasks
+
+plugins {
+    alias(libs.plugins.conventions.jvm)
+    alias(libs.plugins.compiler.specific.module)
+}
 
 val kotlinVersion: String by extra
 val rpcVersion: String = libs.versions.kotlinx.rpc.get()
@@ -14,17 +18,12 @@ allprojects {
     version = "$kotlinVersion-$rpcVersion"
 }
 
-plugins {
-    alias(libs.plugins.conventions.jvm)
-    alias(libs.plugins.compiler.specific.module)
+kotlin {
+    explicitApi = ExplicitApiMode.Disabled
 }
 
-subprojects {
-    afterEvaluate {
-        configure<KotlinProjectExtension> {
-            explicitApi = ExplicitApiMode.Disabled
-        }
-    }
+dependencies {
+    compileOnly(libs.kotlin.compiler.embeddable)
 }
 
 configureMetaTasks("cleanTest", "test")

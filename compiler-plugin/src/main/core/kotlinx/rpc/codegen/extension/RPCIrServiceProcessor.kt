@@ -33,6 +33,6 @@ internal class RPCIrServiceProcessor(
 
     private fun processService(service: IrClass, context: RPCIrContext) {
         val declaration = RPCDeclarationScanner.scanServiceDeclaration(service, context)
-        RPCStubGenerator(declaration, context).generate()
+        RPCStubGenerator(declaration, context, logger).generate()
     }
 }
