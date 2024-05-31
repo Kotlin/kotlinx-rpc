@@ -7,6 +7,8 @@ package kotlinx.rpc.codegen.extension
 import kotlinx.rpc.codegen.VersionSpecificApi
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.backend.jvm.functionByName
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
@@ -44,6 +46,7 @@ private const val RPC_FIELDS_METHOD = "rpcFields"
 internal class RPCStubGenerator(
     private val declaration: ServiceDeclaration,
     private val ctx: RPCIrContext,
+    private val logger: MessageCollector,
 ) {
     private fun irBuilder(symbol: IrSymbol): DeclarationIrBuilder =
         DeclarationIrBuilder(ctx.pluginContext, symbol, symbol.owner.startOffset, symbol.owner.endOffset)
@@ -55,6 +58,8 @@ internal class RPCStubGenerator(
         generateStubClass()
 
         addAssociatedObjectAnnotationIfPossible()
+
+        logger.report(CompilerMessageSeverity.WARNING, declaration.service.dump())
     }
 
     private fun generateStubClass() {
