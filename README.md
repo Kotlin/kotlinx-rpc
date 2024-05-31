@@ -31,7 +31,7 @@ class AwesomeServiceImpl(override val coroutineContext: CoroutineContext) : Awes
     override suspend fun getNews(city: String): Flow<String> {
         return flow { 
             emit("Today is 23 degrees!")
-            emit("Harry Potter in $city!")
+            emit("Harry Potter is in $city!")
             emit("New dogs cafe has opened doors to all fluffy customers!")
         }
     }
