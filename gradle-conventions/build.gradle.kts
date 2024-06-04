@@ -32,25 +32,25 @@ dependencies {
 gradlePlugin {
     plugins {
         named("conventions-publishing") {
-            version = libs.versions.rpc.core.get()
+            version = libs.versions.kotlinx.rpc.get()
         }
     }
 
     plugins {
         named("conventions-common") {
-            version = libs.versions.rpc.core.get()
+            version = libs.versions.kotlinx.rpc.get()
         }
     }
 
     plugins {
         named("conventions-jvm") {
-            version = libs.versions.rpc.core.get()
+            version = libs.versions.kotlinx.rpc.get()
         }
     }
 
     plugins {
         named("conventions-kmp") {
-            version = libs.versions.rpc.core.get()
+            version = libs.versions.kotlinx.rpc.get()
         }
     }
 }

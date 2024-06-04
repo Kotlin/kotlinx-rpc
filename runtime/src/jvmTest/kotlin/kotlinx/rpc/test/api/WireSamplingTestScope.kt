@@ -18,7 +18,7 @@ import kotlinx.rpc.internal.hex.hexToReadableBinary
 import kotlinx.rpc.internal.logging.CommonLogger
 import kotlinx.rpc.internal.logging.DumpLogger
 import kotlinx.rpc.internal.logging.DumpLoggerContainer
-import kotlinx.rpc.internal.logging.initialized
+import kotlinx.rpc.internal.logging.impl.initialized
 import kotlinx.rpc.internal.transport.RPCConnector
 import kotlinx.rpc.serialization.RPCSerialFormatConfiguration
 import kotlinx.rpc.serialization.json

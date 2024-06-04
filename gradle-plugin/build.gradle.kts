@@ -14,7 +14,7 @@ plugins {
 
 subprojects {
     group = "org.jetbrains.kotlinx"
-    version = rootProject.libs.versions.rpc.core.get()
+    version = rootProject.libs.versions.kotlinx.rpc.get()
 
     fun alias(notation: Provider<PluginDependency>): String {
         return notation.get().pluginId

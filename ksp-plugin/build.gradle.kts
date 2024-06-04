@@ -15,3 +15,7 @@ dependencies {
 kotlin {
     explicitApi = ExplicitApiMode.Disabled
 }
+
+val kotlinVersion: String by extra
+
+version = "$kotlinVersion-$version"

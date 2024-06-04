@@ -2,11 +2,13 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.internal.logging
+package kotlinx.rpc.internal.logging.impl
 
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KLogger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.rpc.internal.InternalRPCApi
+import kotlinx.rpc.internal.logging.CommonLogger
+import kotlinx.rpc.internal.logging.CommonLoggerFactory
 
 @InternalRPCApi
 public fun CommonLogger.Companion.initialized(): CommonLogger.Companion = apply {
@@ -14,9 +16,9 @@ public fun CommonLogger.Companion.initialized(): CommonLogger.Companion = apply 
 }
 
 internal object CommonLoggerFactoryImpl : CommonLoggerFactory {
-    fun init() {
-        CommonLogger.upload(this)
-    }
+    private val upload by lazy { CommonLogger.upload(this) }
+
+    fun init(): Unit = upload
 
     override fun getLogger(name: String): CommonLogger {
         return CommonLoggerImpl(KotlinLogging.logger(name))

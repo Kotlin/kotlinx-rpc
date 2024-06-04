@@ -15,7 +15,7 @@ import kotlinx.rpc.client.internal.RPCClientConnector
 import kotlinx.rpc.client.internal.RPCFlow
 import kotlinx.rpc.internal.*
 import kotlinx.rpc.internal.logging.CommonLogger
-import kotlinx.rpc.internal.logging.initialized
+import kotlinx.rpc.internal.logging.impl.initialized
 import kotlinx.rpc.internal.transport.*
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat

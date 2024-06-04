@@ -23,7 +23,7 @@ gradlePlugin {
     plugins {
         named("conventions-gradle-publish") {
             id = "conventions-gradle-publish"
-            version = libs.versions.rpc.core.get()
+            version = libs.versions.kotlinx.rpc.get()
         }
     }
 }

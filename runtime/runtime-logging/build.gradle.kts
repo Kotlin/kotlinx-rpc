@@ -4,5 +4,16 @@
 
 plugins {
     alias(libs.plugins.conventions.kmp)
-    alias(libs.plugins.compiler.specific.module)
+}
+
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation(libs.kotlin.logging)
+                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-api"))
+                implementation(project(":kotlinx-rpc-utils:kotlinx-rpc-utils-service-loader"))
+            }
+        }
+    }
 }

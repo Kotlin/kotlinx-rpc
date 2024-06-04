@@ -9,7 +9,7 @@ import kotlinx.rpc.RPC
 import kotlinx.rpc.RPCConfig
 import kotlinx.rpc.internal.*
 import kotlinx.rpc.internal.logging.CommonLogger
-import kotlinx.rpc.internal.logging.initialized
+import kotlinx.rpc.internal.logging.impl.initialized
 import kotlinx.rpc.internal.map.ConcurrentHashMap
 import kotlinx.rpc.internal.transport.RPCCallMessage
 import kotlinx.rpc.internal.transport.RPCMessageSender

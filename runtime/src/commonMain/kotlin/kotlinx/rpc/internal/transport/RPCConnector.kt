@@ -14,7 +14,7 @@ import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.rpc.internal.hex.toHexStringInternal
 import kotlinx.rpc.internal.logging.CommonLogger
 import kotlinx.rpc.internal.logging.DumpLoggerContainer
-import kotlinx.rpc.internal.logging.initialized
+import kotlinx.rpc.internal.logging.impl.initialized
 import kotlinx.rpc.internal.objectId
 import kotlinx.rpc.internal.serializeException
 import kotlinx.rpc.internal.unsupportedSerialFormatError

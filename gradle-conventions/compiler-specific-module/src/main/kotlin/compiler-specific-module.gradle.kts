@@ -58,6 +58,9 @@ fun Project.lazyImplementation(notation: Any) {
 val root = project
 
 subprojects {
+    version = "$kotlinVersion-$version"
+    println("Compiler-specific module $name, version: $version")
+
     when {
         name == coreProjectName -> {
             lazyImplementation(project(CSM.SERVICE_LOADER_MODULE))

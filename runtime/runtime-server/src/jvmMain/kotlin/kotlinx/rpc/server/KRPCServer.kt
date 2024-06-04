@@ -11,7 +11,7 @@ import kotlinx.rpc.RPCServer
 import kotlinx.rpc.RPCTransport
 import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.rpc.internal.logging.CommonLogger
-import kotlinx.rpc.internal.logging.initialized
+import kotlinx.rpc.internal.logging.impl.initialized
 import kotlinx.rpc.internal.map.ConcurrentHashMap
 import kotlinx.rpc.internal.objectId
 import kotlinx.rpc.internal.qualifiedClassName

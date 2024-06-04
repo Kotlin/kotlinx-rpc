@@ -6,14 +6,13 @@ package kotlinx.rpc
 
 import kotlinx.rpc.RPCPluginConst.BOM_ARTIFACT_ID
 import kotlinx.rpc.RPCPluginConst.GROUP_ID
-import kotlinx.rpc.RPCPluginConst.libraryFullVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 
 class RPCPlatformPlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        val bomDependency = "${GROUP_ID}:${BOM_ARTIFACT_ID}:${libraryFullVersion}"
+        val bomDependency = "${GROUP_ID}:${BOM_ARTIFACT_ID}:${PLUGIN_VERSION}"
 
         val matcher: (Configuration) -> Boolean = { conf ->
             conf.name in knownConfigurations

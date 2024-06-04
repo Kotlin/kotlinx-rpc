@@ -22,7 +22,7 @@ dependencies {
 gradlePlugin {
     plugins {
         named("compiler-specific-module") {
-            version = libs.versions.rpc.core.get()
+            version = libs.versions.kotlinx.rpc.get()
         }
     }
 }

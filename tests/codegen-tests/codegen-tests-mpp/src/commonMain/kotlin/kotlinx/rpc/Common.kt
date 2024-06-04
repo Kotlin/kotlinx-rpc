@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.job
 import kotlinx.rpc.client.withService
 import kotlinx.rpc.internal.logging.CommonLogger
-import kotlinx.rpc.internal.logging.initialized
+import kotlinx.rpc.internal.logging.impl.initialized
 import kotlinx.rpc.server.internal.rpcServiceMethodSerializationTypeOf
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.typeOf
