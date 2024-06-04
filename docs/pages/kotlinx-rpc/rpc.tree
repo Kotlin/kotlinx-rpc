@@ -16,9 +16,13 @@
         <toc-element topic="services.topic"/>
         <toc-element topic="rpc-clients.topic"/>
         <toc-element topic="rpc-servers.topic"/>
-        <toc-element topic="transport.topic"/>
     </toc-element>
-    <toc-element topic="configuration.topic"/>
-    <toc-element topic="features.topic"/>
+    <toc-element toc-title="Protocols">
+        <toc-element toc-title="kRPC">
+            <toc-element topic="configuration.topic"/>
+            <toc-element topic="features.topic"/>
+            <toc-element topic="transport.topic"/>
+        </toc-element>
+    </toc-element>
     <toc-element topic="releases.topic"/>
 </instance-profile>
