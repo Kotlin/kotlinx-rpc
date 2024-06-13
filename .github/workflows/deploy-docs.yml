@@ -1,4 +1,4 @@
-name: Build documentation
+name: Deploy documentation and indexes
 
 on:
   push:
@@ -21,46 +21,8 @@ env:
   CONFIG_JSON_VERSION: '0.1.0'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Build docs using Writerside Docker builder
-        uses: JetBrains/writerside-github-action@v4
-        with:
-          instance: ${{ env.INSTANCE }}
-          artifact: ${{ env.ARTIFACT }}
-          docker-version: ${{ env.DOCKER_VERSION }}
-          locations: docs/pages/kotlinx-rpc/
-
-      - name: Save artifact with build results
-        uses: actions/upload-artifact@v4
-        with:
-          name: kotlinx-rpc
-          path: |
-            artifacts/${{ env.ARTIFACT }}
-            artifacts/report.json
-            artifacts/${{ env.ALGOLIA_ARTIFACT }}
-          retention-days: 7
-
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: kotlinx-rpc
-          path: artifacts
-
-      - name: Test documentation
-        uses: JetBrains/writerside-checker-action@v1
-        with:
-          instance: ${{ env.INSTANCE }}
+  build-and-test:
+    uses: ./.github/workflows/build-test-docs.yml
 
   deploy:
     environment:
