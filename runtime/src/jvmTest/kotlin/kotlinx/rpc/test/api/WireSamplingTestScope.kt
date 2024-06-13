@@ -357,7 +357,7 @@ private class WireContent(
     companion object {
         fun fromText(text: String): WireContent {
             return WireContent(
-                rawLogs = DumpLog.fromText(text.split('\r', '\n')),
+                rawLogs = DumpLog.fromText(text.lines()),
                 commentBinaryOutput = false,
             )
         }

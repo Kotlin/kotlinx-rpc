@@ -24,7 +24,7 @@ public expect fun SerializedException.deserialize(): Throwable
 
 internal expect class DeserializedException(
     toStringMessage: String,
-    message: String,
+    message: String?,
     stacktrace: List<StackElement>,
     cause: SerializedException?,
     className: String

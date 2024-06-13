@@ -13,7 +13,7 @@ private val throwableFields = Throwable::class.java.fieldsCountOrDefault(-1)
 
 internal actual class DeserializedException actual constructor(
     private val toStringMessage: String,
-    override val message: String,
+    override val message: String?,
     stacktrace: List<StackElement>,
     cause: SerializedException?,
     private val className: String
