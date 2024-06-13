@@ -13,7 +13,7 @@
             encoded RPC messages in kRPC Protocol.
             This layer is represented by <code>RPCTransport</code> interface.
             It supports two message formats — string and binary,
-            and depending on which <a anchor="serialization-dsl">serialization</a> format you choose,
+            and depending on which <a href="configuration.topic" anchor="serialization-dsl">serialization</a> format you choose,
             one or the other will be used.</p>
 
     <chapter title="Ktor transport" id="ktor-transport">
