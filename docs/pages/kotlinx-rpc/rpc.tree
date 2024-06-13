@@ -8,7 +8,21 @@
 
 <instance-profile id="rpc"
                  name="kotlinx.rpc"
-                 start-page="getting_started.md">
+                 start-page="get-started.topic">
 
-    <toc-element topic="getting_started.md"/>
+    <toc-element topic="get-started.topic"/>
+    <toc-element topic="plugins.topic"/>
+    <toc-element toc-title="Core concepts">
+        <toc-element topic="services.topic"/>
+        <toc-element topic="rpc-clients.topic"/>
+        <toc-element topic="rpc-servers.topic"/>
+    </toc-element>
+    <toc-element toc-title="Protocols">
+        <toc-element toc-title="kRPC">
+            <toc-element topic="configuration.topic"/>
+            <toc-element topic="features.topic"/>
+            <toc-element topic="transport.topic"/>
+        </toc-element>
+    </toc-element>
+    <toc-element topic="releases.topic"/>
 </instance-profile>

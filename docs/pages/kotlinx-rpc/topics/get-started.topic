@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       id="get-started" title="Get started">
+    <show-structure depth="3"/>
+
+    <p>
+        <code>kotlinx.rpc</code> is a multiplatform Kotlin library that provides its users with tools
+        to perform Remote Procedure Calls (RPC) using Kotlin language constructs with as easy setup as possible.
+        The library is transport agnostic by design,
+        so most transfer mechanisms can be used under the hood: WebSockets, HTTP Requests, gRPC, etc.
+    </p>
+    <tip>
+        <p>If you are not familiar with RPC, we strongly recommend reading
+            <a href="https://en.wikipedia.org/wiki/Remote_procedure_call">Wikipedia's article on RPC</a>
+            before proceeding with this document.</p>
+    </tip>
+    <chapter title="What this library is and what it is not" id="what-this-library-is-and-what-it-is-not">
+        <p>It is important to understand that this library
+            is a set of tools and APIs gathered in one place
+            with a goal of providing a great user experience
+            when working with RPC systems in Kotlin Multiplatform projects.
+            <code>kotlinx.rpc</code> provides its own in-house new RPC protocol,
+            but it
+            <control>is not</control>
+            a library solely focused on this protocol.
+        </p>
+        <p>
+            The combination of Kotlin Multiplatform technology and RPC concept
+            opens an opportunity to provide exceptional user experience while
+            creating client-server applications, and we will create technologies
+            that will embrace the concept in this library.
+            This will include our own in-house RPC protocol
+            with the focus on KMP projects,
+            as well as integrations with other technologies,
+            including but not limited to <a href="https://grpc.io">gRPC</a>.
+        </p>
+    </chapter>
+    <chapter title="Installation" id="installation">
+        <p>Before adding <code>kotlinx.rpc</code> dependencies, you need to configure your project with <a
+                href="https://docs.gradle.org/current/userguide/userguide.html">Gradle</a>.
+        </p>
+        <chapter title="Configure the repositories" id="configure-the-repositories">
+
+            <p>To be able to add dependencies for <code>kotlinx.rpc</code> artifacts,
+                you need to define a <a
+                        href="https://docs.gradle.org/current/userguide/declaring_repositories.html">repository</a>
+                from which they will be consumed.</p>
+            <p>
+                Add the following repositories in your <path>build.gradle.kts</path> file:
+            </p>
+            <code-block lang="kotlin">
+                repositories {
+                    // for kotlinx.rpc dependencies
+                    maven(url = &quot;https://maven.pkg.jetbrains.space/public/p/krpc/maven&quot;)
+                    // for other dependencies, like Ktor
+                    mavenCentral()
+                }
+            </code-block>
+
+            <p>In your <path>settings.gradle.kts</path> file, specify a
+                <a href="https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_management">repository for
+                    plugins</a>
+                to be consumed from:</p>
+
+            <code-block lang="kotlin">
+                pluginManagement {
+                    repositories {
+                        // kotlinx.rpc plugins will be downloaded from here
+                        maven(url = &quot;https://maven.pkg.jetbrains.space/public/p/krpc/maven&quot;)
+                        // other plugins, like Kotlin, will be downloaded from here
+                        gradlePluginPortal()
+                    }
+                }
+            </code-block>
+        </chapter>
+        <chapter title="Add runtime dependencies" id="add-runtime-dependencies">
+            <p><code>kotlinx.rpc</code> provides you with
+                runtime <a href="https://docs.gradle.org/current/userguide/declaring_dependencies.html">dependencies</a>
+                (also called artifacts).
+                To use these dependencies, you first need to define them in your project's <path>build.gradle.kts</path> file:</p>
+
+            <tabs group="project">
+                <tab id="kotlin-jvm-runtime" title="Kotlin/JVM" group-key="kotlin/jvm">
+                    <code-block lang="kotlin">
+                        dependencies {
+                            // example kotlinx.rpc artifacts
+                            implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-client:%kotlin-version%-%kotlinx-rpc-version%&quot;)
+                            implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-server:%kotlin-version%-%kotlinx-rpc-version%&quot;)
+                        }
+                    </code-block>
+                    <p>This adds the APIs needed to work with both client and server code using <code>kotlinx.rpc</code>.</p>
+                    <p>
+                        For a full example, see <a href="%repo-tree-path%/samples/simple-ktor-app">the single-module Ktor app example</a>.
+                    </p>
+                </tab>
+                <tab id="kmp-runtime" title="Kotlin Multiplatform (KMP)" group-key="kmp">
+                    <code-block lang="kotlin">
+                        kotlin {
+                            // source sets can be any other supported, ios and jvm are chosen just for an example
+                            sourceSets {
+                                iosMain {
+                                    // let's say that we have code for the client in iosMain sources set
+                                    implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-client:%kotlin-version%-%kotlinx-rpc-version%&quot;)
+                                }
+
+                                jvmMain {
+                                    // let's say that we have code for the server in jvmMain sources set
+                                    implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-server:%kotlin-version%-%kotlinx-rpc-version%&quot;)
+                                }
+                            }
+                        }
+                    </code-block>
+                    <p>Here we define dependencies for <code>iosMain</code> and <code>jvmMain</code> source sets,
+                        but it can be <a href="https://kotlinlang.org/docs/multiplatform-discover-project.html">any other source
+                            set</a>
+                        that you may want to have.
+                        Also, you may want to split your application into
+                        <a href="https://docs.gradle.org/current/userguide/intro_multi_project_builds.html">several modules</a>,
+                        so that you have a server in one module and a client in another.</p>
+                    <p>For a full example, see the <a href="%repo-tree-path%/samples/ktor-web-app">Ktor web app example</a>.
+                    In this example you will find usage
+                        of <a href="https://docs.gradle.org/current/userguide/platforms.html">Gradle version catalogs</a>,
+                        so the dependency declaration may look like this:</p>
+
+                    <code-block lang="kotlin">
+                        # gradle / libs.versions.toml
+                        [versions]
+                        kotlinx - rpc = &quot;%kotlin-version%-%kotlinx-rpc-version%&quot;
+
+                        [libraries]
+                        kotlinx - rpc - client = {
+                            module =
+                                &quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-client&quot;, version.ref = &quot;kotlinx-rpc&quot;
+                        }
+                    </code-block>
+
+                    <code-block lang="kotlin">
+                        // build.gradle.kts
+                        dependecies {
+                            implementation(libs.kotlinx.rpc.client)
+                        }
+                    </code-block>
+                </tab>
+            </tabs>
+        </chapter>
+
+        <chapter title="Add plugin dependencies" id="add-gradle-plugin">
+            <p><code>kotlinx.rpc</code> provides <a href="plugins.topic">two Gradle plugins</a>:</p>
+            <list>
+                <li>
+                    <a href="plugins.topic" anchor="rpc-platform">
+                        <code>org.jetbrains.kotlinx.rpc.platform</code>
+                    </a>
+                </li>
+                <li>
+                    <a href="plugins.topic" anchor="rpc-plugin">
+                        <code>org.jetbrains.kotlinx.rpc.plugin</code>
+                    </a>
+                </li>
+            </list>
+            <p>
+                To add a plugin to your project, you need to define the following in your <path>build.gradle.kts</path>:
+            </p>
+
+            <code-block lang="kotlin">
+                plugins {
+                    id(&quot;org.jetbrains.kotlinx.rpc.plugin&quot;) version &quot;%kotlinx-rpc-version%&quot;
+                }
+            </code-block>
+            <tip>
+                <p>Note that we use version <code>%kotlinx-rpc-version%</code> here, instead of <code>%kotlin-version%-%kotlinx-rpc-version%</code>
+                    that we used in <a anchor="add-runtime-dependencies">runtime dependencies</a>.
+                    To learn more about versioning, see <a href="releases.topic"/>.</p>
+            </tip>
+        </chapter>
+
+        <chapter title="Add serialization dependency" id="add-serialization-dependency">
+            <p><code>kotlinx.rpc</code> requires you to add
+                <a href="https://github.com/Kotlin/kotlinx.serialization">kotlinx.serialization</a>
+                Gradle plugin to your project.</p>
+
+            <code-block lang="kotlin">
+                plugins {
+                    kotlin(&quot;jvm&quot;) version &quot;%kotlin-version%&quot;
+                    kotlin(&quot;plugin.serialization&quot;) version &quot;%kotlin-version%&quot;
+                }
+            </code-block>
+            <p>To learn how to configure serialization in <code>kotlinx.rpc</code>, see
+                <a href="configuration.topic" anchor="serialization-dsl"/>.</p>
+        </chapter>
+    </chapter>
+
+</topic>

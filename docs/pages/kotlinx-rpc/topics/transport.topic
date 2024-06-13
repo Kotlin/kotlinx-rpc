@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Transport" id="transport">
+
+        <p>Transport layer exists to abstract from the RPC requests logic and focus on delivering and receiving
+            encoded RPC messages in kRPC Protocol.
+            This layer is represented by <code>RPCTransport</code> interface.
+            It supports two message formats — string and binary,
+            and depending on which <a anchor="serialization-dsl">serialization</a> format you choose,
+            one or the other will be used.</p>
+
+    <chapter title="Ktor transport" id="ktor-transport">
+        <p>The <code>kotlinx.rpc</code> library provides integration with the <a href="https://ktor.io">Ktor
+            framework</a> with the in-house RPC
+            protocol.
+            This includes both server and client APIs.
+            Under the hood, the library uses <a href="https://ktor.io/docs/websocket.html">WebSocket</a> plugin
+            to create a <code>RPCTransport</code> and send and receive messages through it.</p>
+        <chapter title="Client" id="client">
+            <p><code>kotlinx.rpc</code> provides a way to plug-in into existing Ktor clients with your RPC services.
+                To do that, the following DSL can be used:</p>
+
+            <code-block lang="kotlin">
+                val ktorClient = HttpClient {
+                    installRPC { // this: RPCConfigBuilder.Client
+                        waitForServices = true
+                    }
+                }
+
+                val rpcClient: RPCClient =
+                    ktorClient.rpc(&quot;ws://localhost:4242/services&quot;) { // this: HttpRequestBuilder
+                        rpcConfig { // this: RPCConfigBuilder.Client
+                            waitForServices = false
+                        }
+                    }
+                val myService: MyService = rpcClient.withService&lt;MyService&gt;()
+            </code-block>
+            <p>Note that in this example, only the latter defined <code>RPCConfig</code> will be used.</p>
+        </chapter>
+        <chapter title="Server" id="server">
+            <p><code>kotlinx.rpc</code> provides a way to plug-in into existing server routing with your RPC
+                services.
+                To do that, the following DSL can be used:</p>
+
+            <code-block lang="kotlin">
+                fun Application.module() {
+                    install(RPC) { // this: RPCConfigBuilder.Server
+                        waitForServices = true
+                    }
+
+                    routing {
+                        rpc(&quot;/services&quot;) { // this RPCRoute
+                            rpcConfig { // this: RPCConfigBuilder.Server
+                                waitForServices = false
+                            }
+
+                            registerService&lt;MyService&gt; { ctx -&gt; MyServiceImpl(ctx) }
+                            registerService&lt;MyOtherService&gt; { ctx - MyOtherServiceImpl(ctx) }
+                            // etc
+                        }
+                    }
+                }
+            </code-block>
+        </chapter>
+        <chapter title="Ktor application example" id="ktor-application-example">
+            <p>An example code for a Ktor web application may look like this:</p>
+
+            <code-block lang="kotlin">
+                // ### COMMON CODE ###
+                @Serializable
+                data class ProcessedImage(
+                    val url: String,
+                    val numberOfCats: Int,
+                    val numberOfDogs: Int
+                )
+
+                interface ImageService : RPC {
+                    suspend fun processImage(url: Srting): ProcessedImage
+                }
+
+// ### CLIENT CODE ###
+
+                val client = HttpClient {
+                    installRPC {
+                        serialization {
+                            json()
+                        }
+                    }
+                }
+
+                val service = client.rpc(&quot;/image-recognizer&quot;).withService&lt;ImageService&gt;()
+
+                service.processImage(url = &quot;https://catsanddogs.com/cats/1&quot;)
+
+// ### SERVER CODE ###
+
+                class ImageServiceImpl(override val coroutineContext: CoroutineContext) : ImageService {
+                    // user defined classes
+                    private val downloader = Downloader()
+                    private val recognizer = AnimalRecognizer()
+
+                    override suspend fun processImage(url: Srting): ProcessedImage {
+                        val image = downloader.loadImage(url)
+                        return ProcessedImage(
+                            url,
+                            recognizer.getNumberOfCatsOnImage(image),
+                            recognizer.getNumberOfDogsOnImage(image)
+                        )
+                    }
+                }
+
+                fun main() {
+                    embeddedServer(Netty, port = 8080) {
+                        install(RPC) {
+                            serialization {
+                                json()
+                            }
+                        }
+
+                        routing {
+                            rpc(&quot;/image-recognizer&quot;) {
+                                registerService&lt;ImageService&gt; { ctx -&gt; ImageServiceImpl(ctx) }
+                            }
+                        }
+                    }.start(wait = true)
+                }
+            </code-block>
+            <p>For more details and complete examples, see the <a href="%repo-tree-path%/samples">code samples</a>.
+            </p>
+        </chapter>
+    </chapter>
+    <chapter title="Other transports" id="other-transports">
+        <p>Generally, there are no specific guidelines on how RPC should be set up for different transports,
+            but structures and APIs used to develop integration with Ktor should outline the common approach.
+            You can provide your own transport and even your own fully implemented protocols,
+            while the library will take care of code generation.</p>
+    </chapter>
+</topic>
