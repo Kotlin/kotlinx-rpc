@@ -15,7 +15,7 @@ build
 !.idea/copyright/*
 !.idea/codeStyles
 !.idea/codeStyles/*
-!.idea/icon.png
+!.idea/icon.svg
 !.idea/detekt.xml
 
 .DS_Store
