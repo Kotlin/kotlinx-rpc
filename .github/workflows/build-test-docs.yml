@@ -32,7 +32,7 @@ jobs:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
-          locations: docs/pages/kotlinx-rpc/
+          location: docs/pages/kotlinx-rpc/
 
       - name: Save artifact with build results
         uses: actions/upload-artifact@v4
