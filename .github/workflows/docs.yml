@@ -1,8 +1,12 @@
-name: Deploy documentation and indexes
+name: Build docs website
 
 on:
   push:
     branches: ["main"]
+  pull_request:
+    paths:
+      - 'docs/pages/**'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 permissions:
@@ -21,10 +25,49 @@ env:
   CONFIG_JSON_VERSION: '0.1.0'
 
 jobs:
-  build-and-test:
-    uses: ./.github/workflows/build-test-docs.yml
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build docs using Writerside Docker builder
+        uses: JetBrains/writerside-github-action@v4
+        with:
+          instance: ${{ env.INSTANCE }}
+          artifact: ${{ env.ARTIFACT }}
+          docker-version: ${{ env.DOCKER_VERSION }}
+          location: docs/pages/kotlinx-rpc/
+
+      - name: Save artifact with build results
+        uses: actions/upload-artifact@v4
+        with:
+          name: kotlinx-rpc
+          path: |
+            artifacts/${{ env.ARTIFACT }}
+            artifacts/report.json
+            artifacts/${{ env.ALGOLIA_ARTIFACT }}
+          retention-days: 7
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: kotlinx-rpc
+          path: artifacts
+
+      - name: Test documentation
+        uses: JetBrains/writerside-checker-action@v1
+        with:
+          instance: ${{ env.INSTANCE }}
 
   deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -52,6 +95,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
   publish-indexes:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [ build, test, deploy ]
     runs-on: ubuntu-latest
     container:
