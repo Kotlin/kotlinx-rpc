@@ -15,15 +15,16 @@ configurations.configureEach {
     }
 }
 
-dependencies {
-    implementation(libs.kotlin.gradle.plugin)
-}
+val kotlinVersion: String by extra
 
-gradlePlugin {
-    plugins {
-        named("conventions-gradle-publish") {
-            id = "conventions-gradle-publish"
-            version = libs.versions.kotlinx.rpc.get()
-        }
+dependencies {
+    api(libs.kotlin.gradle.plugin)
+    api(libs.detekt.gradle.plugin)
+
+    if (kotlinVersion >= "1.8.0") {
+        api(libs.kover.gradle.plugin)
     }
+
+    // https://stackoverflow.com/questions/76713758/use-version-catalog-inside-precompiled-gradle-plugin
+    api(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 }

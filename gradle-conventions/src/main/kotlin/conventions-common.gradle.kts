@@ -3,6 +3,7 @@
  */
 
 import io.gitlab.arturbosch.detekt.Detekt
+import util.libs
 
 plugins {
     id("io.gitlab.arturbosch.detekt")
@@ -16,6 +17,8 @@ val globalDetektDir = "$globalRootDir/detekt"
 
 // https://detekt.dev/docs/gettingstarted/gradle#options-for-detekt-configuration-closure
 detekt {
+    toolVersion = libs.versions.detekt.analyzer.get()
+
     buildUponDefaultConfig = false
 
     // TC will fail only on Detekt codestyle configuration

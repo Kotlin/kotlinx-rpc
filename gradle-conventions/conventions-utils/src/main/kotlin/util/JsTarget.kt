@@ -4,11 +4,13 @@
 
 package util
 
-import org.gradle.api.*
-import org.gradle.kotlin.dsl.*
-import java.io.*
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.getValue
+import org.gradle.kotlin.dsl.getting
+import org.gradle.kotlin.dsl.invoke
+import java.io.File
 
-internal fun Project.configureJs() {
+fun Project.configureJs() {
     configureJsTasks()
 
     kotlin {

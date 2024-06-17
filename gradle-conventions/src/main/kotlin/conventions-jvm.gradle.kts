@@ -4,16 +4,14 @@
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import util.optInForRPCApi
-import util.projectLanguageVersion
 
 plugins {
     id("conventions-common")
     id("org.jetbrains.kotlin.jvm")
+    id("conventions-kotlin-version-jvm")
 }
 
 configure<KotlinJvmProjectExtension> {
-    compilerOptions(projectLanguageVersion)
-
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(8))
     }

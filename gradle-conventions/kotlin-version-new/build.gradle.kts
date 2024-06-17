@@ -16,13 +16,20 @@ configurations.configureEach {
 }
 
 dependencies {
-    implementation(libs.kotlin.gradle.plugin)
+    implementation(project(":conventions-utils"))
 }
 
 gradlePlugin {
     plugins {
-        named("conventions-gradle-publish") {
-            id = "conventions-gradle-publish"
+        named("conventions-kotlin-version-jvm") {
+            id = "conventions-kotlin-version-jvm"
+            version = libs.versions.kotlinx.rpc.get()
+        }
+    }
+
+    plugins {
+        named("conventions-kotlin-version-kmp") {
+            id = "conventions-kotlin-version-kmp"
             version = libs.versions.kotlinx.rpc.get()
         }
     }

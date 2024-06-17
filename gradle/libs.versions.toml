@@ -1,23 +1,28 @@
 [versions]
+# core library version
+kotlinx-rpc = "0.1.1-SNAPSHOT"
+
 # kotlin
 kotlin-lang = "1.9.24"
-kotlinx-rpc = "0.1.1-SNAPSHOT" # version for plugins and suffix for rpc-full
 
-ksp = "1.9.24-1.0.20"
-atomicfu = "0.22.0"
-serialization = "1.6.1"
+# kotlin independent versions
+detekt-analyzer = "1.23.6"
 coroutines = "1.8.1"
 ktor = "2.3.11"
-detekt = "1.23.6"
 kotlin-logging = "6.0.9"
-binary-compatibility-validator = "0.14.0"
-kover = "0.8.0"
 slf4j = "2.0.13"
 logback = "1.3.14"
 gradle-plugin-publish = "1.2.1"
 
-# stub versions - relpaced based on kotlin
+# stub versions - relpaced based on kotlin, mostly for gradle-related (plugins) dependencies
+#  but also for dependencies for compiler specific modules
+ksp = "<stub>"
+atomicfu = "<stub>"
+serialization = "<stub>"
+detekt-gradle-plugin = "<stub>"
 gradle-kotlin-dsl = "<stub>"
+binary-compatibility-validator = "<stub>"
+kover = "<stub>"
 
 [libraries]
 # kotlin
@@ -59,7 +64,7 @@ kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kot
 kotlin-logging-legacy = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
-detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt-gradle-plugin" }
 kover-gradle-plugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
 
 [plugins]
@@ -68,7 +73,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-lang" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-lang" }
 
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt-gradle-plugin" }
 binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compatibility-validator" }
 atomicfu = { id = "kotlinx-atomicfu", version.ref = "atomicfu" }
 gradle-kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version.ref = "gradle-kotlin-dsl" }
@@ -80,6 +85,7 @@ conventions-common = { id = "conventions-common", version.ref = "kotlinx-rpc" }
 conventions-jvm = { id = "conventions-jvm", version.ref = "kotlinx-rpc" }
 conventions-kmp = { id = "conventions-kmp", version.ref = "kotlinx-rpc" }
 conventions-gradle-publish = { id = "conventions-gradle-publish", version.ref = "kotlinx-rpc" }
+conventions-kotlin-version = { id = "conventions-kotlin-version", version.ref = "kotlinx-rpc" }
 compiler-specific-module = { id = "compiler-specific-module", version.ref = "kotlinx-rpc" }
 kover-root-project = { id = "kover-root-project", version.ref = "kotlinx-rpc" }
 
