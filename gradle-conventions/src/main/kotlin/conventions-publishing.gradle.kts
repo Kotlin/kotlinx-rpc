@@ -6,6 +6,7 @@ import util.by
 import util.configureRepository
 import util.getSensitiveProperty
 
+val isGradlePlugin = project.properties["kotlinx.rpc.gradle.plugin"] == "true"
 val publishingExtension = project.extensions.findByType<PublishingExtension>()
 
 if (name.startsWith("kotlinx-rpc")) { // only public modules
@@ -13,12 +14,14 @@ if (name.startsWith("kotlinx-rpc")) { // only public modules
         apply(plugin = "maven-publish")
     }
 
-    apply(plugin = "signing")
+    if (project.getSensitiveProperty("libs.sign.key.private") != null) {
+        apply(plugin = "signing")
+    }
 
     the<PublishingExtension>().configurePublication()
-    logger.info("Configured ${project.name} for publication as it is a public module")
+    logger.info("Configured ${project.name} for publication")
 } else {
-    logger.info("Skipping ${project.name} publication configuration as it is not a public module")
+    logger.info("Skipping ${project.name} publication configuration, not a public module")
 }
 
 fun PublishingExtension.configurePublication() {
@@ -28,14 +31,22 @@ fun PublishingExtension.configurePublication() {
         configureLocalDevRepository()
     }
 
-    val javadocJar = configureEmptyJavadocArtifact()
+    configureJvmPublicationIfNeeded()
+
+    val javadocJar = if (!isGradlePlugin) {
+        configureEmptyJavadocArtifact()
+    } else {
+        null
+    }
 
     // separate function is needed for different gradle versions
     // in 7.6 `Configuration` argument is `this`, in 8.* it is a first argument (hence `it`)
     val onPublication: (MavenPublication) -> Unit = { publication ->
         publication.pom.configureMavenCentralMetadata()
         publication.signPublicationIfKeyPresent()
-        publication.artifact(javadocJar)
+        if (javadocJar != null) {
+            publication.artifact(javadocJar)
+        }
         logger.info("Project ${project.name} -> Publication configured: ${publication.name}")
     }
 
@@ -43,6 +54,26 @@ fun PublishingExtension.configurePublication() {
 
     tasks.withType<PublishToMavenRepository>().configureEach {
         dependsOn(tasks.withType<Sign>())
+    }
+}
+
+// we need to configure maven publication for kotlin("jvm") projects manually
+fun PublishingExtension.configureJvmPublicationIfNeeded() {
+    if (isGradlePlugin) {
+        return
+    }
+
+    project.plugins.withId("org.jetbrains.kotlin.jvm") {
+        if (publications.isNotEmpty()) {
+            return@withId
+        }
+
+        logger.info("Manually added maven publication to ${project.name}")
+        publications {
+            create<MavenPublication>("maven") {
+                from(components["java"])
+            }
+        }
     }
 }
 
