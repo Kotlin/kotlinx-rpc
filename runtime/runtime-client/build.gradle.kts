@@ -14,7 +14,6 @@ kotlin {
             dependencies {
                 api(project(":kotlinx-rpc-runtime"))
                 implementation(project(":kotlinx-rpc-utils"))
-                implementation(project(":kotlinx-rpc-utils:kotlinx-rpc-utils-service-loader"))
                 implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-serialization"))
 
                 implementation(libs.coroutines.core)

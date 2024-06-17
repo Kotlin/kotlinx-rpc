@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 object RPCCompilerPluginCore {
     fun provideExtension(configuration: CompilerConfiguration): IrGenerationExtension {
         val logger = configuration.get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
-        val versionSpecificApi = VersionSpecificApi.loadService()
+        val versionSpecificApi = VersionSpecificApi.INSTANCE
 
         return RPCIrExtension(logger, versionSpecificApi)
     }

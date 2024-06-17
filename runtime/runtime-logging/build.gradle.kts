@@ -12,7 +12,6 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.logging)
                 implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-api"))
-                implementation(project(":kotlinx-rpc-utils:kotlinx-rpc-utils-service-loader"))
             }
         }
     }

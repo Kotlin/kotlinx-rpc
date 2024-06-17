@@ -8,21 +8,10 @@ plugins {
     alias(libs.plugins.conventions.common)
 }
 
-// skip csm modules, as their versions are prefixed with a Kotlin version
-val csm = setOf(
-    "kotlinx-rpc-compiler-plugin",
-    "kotlinx-rpc-compiler-plugin-core",
-    "kotlinx-rpc-compiler-plugin-1_7",
-    "kotlinx-rpc-compiler-plugin-1_7_2",
-    "kotlinx-rpc-compiler-plugin-1_8",
-    "kotlinx-rpc-compiler-plugin-1_9",
-    "kotlinx-rpc-ksp-plugin",
-)
-
 dependencies {
     constraints {
         rootProject.subprojects.filter {
-            it.name.startsWith(KOTLINX_RPC_PREFIX) && it != project && it.name !in csm
+            it.name.startsWith(KOTLINX_RPC_PREFIX) && it != project
         }.forEach { project ->
             api(project)
         }

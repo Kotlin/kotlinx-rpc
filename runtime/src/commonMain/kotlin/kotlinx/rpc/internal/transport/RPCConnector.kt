@@ -14,7 +14,6 @@ import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.rpc.internal.hex.toHexStringInternal
 import kotlinx.rpc.internal.logging.CommonLogger
 import kotlinx.rpc.internal.logging.DumpLoggerContainer
-import kotlinx.rpc.internal.logging.impl.initialized
 import kotlinx.rpc.internal.objectId
 import kotlinx.rpc.internal.serializeException
 import kotlinx.rpc.internal.unsupportedSerialFormatError
@@ -52,7 +51,7 @@ public class RPCConnector<SubscriptionKey>(
     private val getKey: RPCMessage.() -> SubscriptionKey,
 ) : RPCMessageSender, CoroutineScope by transport {
     private val role = if (isServer) SERVER_ROLE else CLIENT_ROLE
-    private val logger = CommonLogger.initialized().logger(objectId(role))
+    private val logger = CommonLogger.logger(objectId(role))
 
     private val mutex = Mutex()
 

@@ -11,7 +11,6 @@ import kotlinx.rpc.RPCServer
 import kotlinx.rpc.RPCTransport
 import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.rpc.internal.logging.CommonLogger
-import kotlinx.rpc.internal.logging.impl.initialized
 import kotlinx.rpc.internal.map.ConcurrentHashMap
 import kotlinx.rpc.internal.objectId
 import kotlinx.rpc.internal.qualifiedClassName
@@ -47,7 +46,7 @@ public abstract class KRPCServer(
     // we make a child here, so we can send cancellation messages before closing the connection
     final override val coroutineContext: CoroutineContext = SupervisorJob(transport.coroutineContext.job)
 
-    private val logger = CommonLogger.initialized().logger(objectId())
+    private val logger = CommonLogger.logger(objectId())
 
     private val connector by lazy {
         RPCServerConnector(

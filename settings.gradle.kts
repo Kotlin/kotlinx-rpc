@@ -27,15 +27,16 @@ plugins {
     id("compiler-specific-modules")
 }
 
+dependencyResolutionManagement {
+    includeBuild("compiler-plugin")
+    includeBuild("ksp-plugin")
+}
+
 rootProject.name = "kotlinx-rpc"
 
 includePublic(":bom")
 
 includePublic(":utils")
-includePublic(":utils:utils-service-loader")
-
-includePublic(":compiler-plugin")
-includePublic(":ksp-plugin")
 
 includePublic(":runtime")
 includePublic(":runtime:runtime-api")
@@ -56,13 +57,3 @@ includePublic(":transport:transport-ktor:transport-ktor-client")
 
 include(":tests:codegen-tests:codegen-tests-mpp")
 include(":tests:codegen-tests:codegen-tests-jvm")
-
-val isCI = System.getenv("TEAMCITY_VERSION")?.let { true } ?: false
-
-// samples build with CI different configs, but may break core build if gradle/kotlin version mismatch with theirs
-if (!isCI) {
-    includeBuild("samples/ktor-all-platforms-app")
-    includeBuild("samples/ktor-web-app")
-    includeBuild("samples/ktor-android-app")
-    includeBuild("samples/simple-ktor-app")
-}

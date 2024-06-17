@@ -16,7 +16,6 @@ import kotlinx.rpc.internal.hex.hexToReadableBinary
 import kotlinx.rpc.internal.logging.CommonLogger
 import kotlinx.rpc.internal.logging.DumpLogger
 import kotlinx.rpc.internal.logging.DumpLoggerContainer
-import kotlinx.rpc.internal.logging.impl.initialized
 import kotlinx.rpc.serialization.json
 import kotlinx.rpc.server.KRPCServer
 import kotlinx.serialization.BinaryFormat
@@ -50,7 +49,7 @@ abstract class ProtocolTestBase {
         private val scope: TestScope
     ) : CoroutineScope by scope {
         private val logger = object : DumpLogger {
-            private val _log = CommonLogger.initialized().logger("ProtocolTestDump")
+            private val _log = CommonLogger.logger("ProtocolTestDump")
             override val isEnabled: Boolean = true
             private val isBinary = clientConfig.serialFormatInitializer.build() is BinaryFormat
 

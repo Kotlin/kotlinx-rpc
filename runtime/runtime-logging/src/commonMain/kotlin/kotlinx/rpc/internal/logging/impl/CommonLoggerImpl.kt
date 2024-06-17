@@ -6,20 +6,10 @@ package kotlinx.rpc.internal.logging.impl
 
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.rpc.internal.logging.CommonLogger
 import kotlinx.rpc.internal.logging.CommonLoggerFactory
 
-@InternalRPCApi
-public fun CommonLogger.Companion.initialized(): CommonLogger.Companion = apply {
-    CommonLoggerFactoryImpl.init()
-}
-
 internal object CommonLoggerFactoryImpl : CommonLoggerFactory {
-    private val upload by lazy { CommonLogger.upload(this) }
-
-    fun init(): Unit = upload
-
     override fun getLogger(name: String): CommonLogger {
         return CommonLoggerImpl(KotlinLogging.logger(name))
     }

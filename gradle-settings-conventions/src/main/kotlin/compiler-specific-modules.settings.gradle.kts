@@ -62,8 +62,9 @@ fun includeCSM(dir: File, files: Array<File>) {
     val basePath = dir.absoluteFile
         .relativeTo(settingsDir.absoluteFile).path
         .replace(File.separator, ":")
+        .takeIf { it.isNotEmpty() }?.let { ":$it" } ?: ""
 
-    includePublic(":$basePath:$rootProjectDirName-core")
+    includePublic("$basePath:$rootProjectDirName-core")
 
     val prefix = "$rootProjectDirName-"
 
@@ -79,10 +80,14 @@ fun includeCSM(dir: File, files: Array<File>) {
             Available modules: ${compilerSubmodules.joinToString { it.name }} 
         """.trimIndent())
 
-    includePublic(":$basePath:$currentCompilerModuleDirName")
+    includePublic("$basePath:$currentCompilerModuleDirName")
 
     val rootProjectName = "$KOTLINX_RPC_PREFIX$rootProjectDirName"
     gradle.projectsLoaded {
+        if (rootProject.name == rootProjectName) {
+            return@projectsLoaded
+        }
+
         rootProject.subprojects.find { it.name == rootProjectName }
             ?: error("Expected root project '$rootProjectName' to be included to the build manually")
     }
@@ -93,10 +98,6 @@ fun includeCSM(dir: File, files: Array<File>) {
 // IMPORTANT: compiler specific modules MUST NOT have any nested modules other than core and version specific ones,
 // otherwise, they will be skipped
 settingsDir.walkTopDown().onEnter { dir ->
-    if (dir == settingsDir) {
-        return@onEnter true
-    }
-
     val isExcluded = dir.name.run {
         startsWith(".") ||
                 startsWith("build") ||
@@ -116,7 +117,8 @@ settingsDir.walkTopDown().onEnter { dir ->
     val propertiesFile = files.singleOrNull { it.name == CSM.PROPERTIES_FILE }
 
     when {
-        files.any { it.name == CSM.SETTINGS_FILE } -> false // standalone projects are excluded
+        // standalone projects are excluded unless they are root
+        files.any { it.name == CSM.SETTINGS_FILE && dir != settingsDir } -> false
 
         // check if it is a gradle module
         propertiesFile != null && files.find { it.name == CSM.BUILD_FILE } != null -> {

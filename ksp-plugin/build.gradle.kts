@@ -4,6 +4,14 @@
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 
+val kotlinVersion: String by extra
+val rpcVersion: String = libs.versions.kotlinx.rpc.get()
+
+allprojects {
+    group = "org.jetbrains.kotlinx"
+    version = "$kotlinVersion-$rpcVersion"
+}
+
 plugins {
     alias(libs.plugins.conventions.jvm)
 }
@@ -15,7 +23,3 @@ dependencies {
 kotlin {
     explicitApi = ExplicitApiMode.Disabled
 }
-
-val kotlinVersion: String by extra
-
-version = "$kotlinVersion-$version"

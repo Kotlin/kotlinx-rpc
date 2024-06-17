@@ -21,7 +21,7 @@ class RPCCommandLineProcessor : CommandLineProcessor {
 @OptIn(ExperimentalCompilerApi::class)
 class RPCCompilerPlugin : CompilerPluginRegistrar() {
     init {
-        VersionSpecificApi.upload(VersionSpecificApiImpl)
+        VersionSpecificApi.INSTANCE = VersionSpecificApiImpl
     }
 
     override val supportsK2: Boolean = false

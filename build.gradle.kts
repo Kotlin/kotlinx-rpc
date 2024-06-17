@@ -16,16 +16,11 @@ plugins {
 }
 
 object Const {
-    const val COMPILER_PLUGIN_MODULE_NAME = "kotlinx-rpc-compiler-plugin"
     const val INTERNAL_RPC_API_ANNOTATION = "kotlinx.rpc.internal.InternalRPCApi"
 }
 
 apiValidation {
     ignoredPackages.add("kotlinx.rpc.internal")
-
-    val compilerPluginModules = subprojects.single { it.name == Const.COMPILER_PLUGIN_MODULE_NAME }.let {
-        it.subprojects.map { sub -> sub.name }
-    } + Const.COMPILER_PLUGIN_MODULE_NAME
 
     ignoredProjects.addAll(
         listOf(
@@ -33,9 +28,7 @@ apiValidation {
             "codegen-tests-mpp",
             "kotlinx-rpc-runtime-test",
             "kotlinx-rpc-utils",
-            "kotlinx-rpc-utils-service-loader",
-            "kotlinx-rpc-ksp-plugin",
-        ) + compilerPluginModules
+        )
     )
 
     nonPublicMarkers.add(Const.INTERNAL_RPC_API_ANNOTATION)

@@ -12,7 +12,6 @@ import kotlinx.rpc.client.withService
 import kotlinx.rpc.internal.logging.CommonLogger
 import kotlinx.rpc.internal.logging.DumpLogger
 import kotlinx.rpc.internal.logging.DumpLoggerContainer
-import kotlinx.rpc.internal.logging.impl.initialized
 import kotlinx.rpc.registerService
 import kotlinx.rpc.rpcClientConfig
 import kotlinx.rpc.rpcServerConfig
@@ -30,7 +29,7 @@ fun runCancellationTest(body: suspend CancellationToolkit.() -> Unit): TestResul
 }
 
 class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
-    private val logger = CommonLogger.initialized().logger("[CancellationTest]")
+    private val logger = CommonLogger.logger("[CancellationTest]")
 
     init {
         DumpLoggerContainer.set(object : DumpLogger {

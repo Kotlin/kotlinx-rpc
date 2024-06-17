@@ -5,7 +5,7 @@
 package kotlinx.rpc.internal.logging
 
 import kotlinx.rpc.internal.InternalRPCApi
-import kotlinx.rpc.internal.service.CompanionServiceContainer
+import kotlinx.rpc.internal.logging.impl.CommonLoggerFactoryImpl
 import kotlin.reflect.KClass
 
 @InternalRPCApi
@@ -38,8 +38,8 @@ public interface CommonLogger {
     public fun warn(t: Throwable?, msg: () -> Any?)
 
     @InternalRPCApi
-    public companion object : CompanionServiceContainer<CommonLoggerFactory>(CommonLoggerFactory::class) {
-        private val factory by lazy { loadService() }
+    public companion object {
+        private val factory = CommonLoggerFactoryImpl
 
         public fun logger(name: String): CommonLogger {
             return factory.getLogger(name)
