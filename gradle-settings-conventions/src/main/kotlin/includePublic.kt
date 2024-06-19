@@ -5,31 +5,29 @@
 @file:Suppress("unused", "detekt.MissingPackageDeclaration")
 
 import org.gradle.api.initialization.Settings
-import java.io.File
-import java.io.File.separator
-
-const val KOTLINX_RPC_PREFIX = "kotlinx-rpc-"
+import org.gradle.kotlin.dsl.extra
 
 /**
- * Includes a project by the given Gradle path and sets proper public name.
- *
- * Adds mandatory "kotlinx-rpc-" prefix to the project name, keeping the path as is.
- * Example:
- * ```kotlin
- * // this declaration
- * includePublic(":bom")
- *
- * // is the short form for this
- * include(":kotlinx-rpc-bom")
- * project(":kotlinx-rpc-bom").projectDir = file("./bom")
- * ```
+ * Includes a project by the given Gradle path and marks it as a public.
  */
 fun Settings.includePublic(projectPath: String) {
-    require(projectPath.startsWith(":")) { "Project name should start with a colon: $projectPath" }
+    include(projectPath)
 
-    val fullProjectName = projectPath.replace(":", ":$KOTLINX_RPC_PREFIX")
-    val fullProjectPath = "." + projectPath.replace(":", separator)
+    val projectName = projectPath.substringAfterLast(":")
+    gradle.rootProject {
+        allprojects {
+            if (name == projectName) {
+                extra["isPublicModule"] = true
+            }
+        }
+    }
+}
 
-    include(fullProjectName)
-    project(fullProjectName).projectDir = File(fullProjectPath)
+/**
+ * Marks root project as public
+ */
+fun Settings.includeRootAsPublic() {
+    gradle.rootProject {
+        extra["isPublicModule"] = true
+    }
 }

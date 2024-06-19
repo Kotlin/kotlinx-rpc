@@ -13,7 +13,7 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        create("kotlinxRpcPlugin") {
+        create("plugin") {
             id = "org.jetbrains.kotlinx.rpc.plugin"
 
             displayName = "kotlinx.rpc Gradle Plugin"

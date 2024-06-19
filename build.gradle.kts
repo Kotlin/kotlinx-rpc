@@ -26,8 +26,8 @@ apiValidation {
         listOf(
             "codegen-tests-jvm",
             "codegen-tests-mpp",
-            "kotlinx-rpc-runtime-test",
-            "kotlinx-rpc-utils",
+            "runtime-test",
+            "utils",
         )
     )
 

@@ -7,7 +7,16 @@ package util
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.provider.Property
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.maven
+
+const val KOTLINX_RPC_PREFIX = "kotlinx-rpc"
+
+fun MavenPublication.setPublicArtifactId(project: Project) {
+    artifactId = "$KOTLINX_RPC_PREFIX-$artifactId"
+
+    project.logger.info("Altered artifactId for $name publication: $artifactId")
+}
 
 infix fun <T> Property<T>.by(value: T) {
     set(value)
