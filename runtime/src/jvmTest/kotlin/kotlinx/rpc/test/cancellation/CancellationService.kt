@@ -8,7 +8,7 @@ import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.rpc.RPC
-import kotlinx.rpc.internal.invokeOnStreamScopeCompletion
+import kotlinx.rpc.invokeOnStreamScopeCompletion
 import kotlin.coroutines.CoroutineContext
 import kotlin.properties.Delegates
 import kotlin.test.assertIs

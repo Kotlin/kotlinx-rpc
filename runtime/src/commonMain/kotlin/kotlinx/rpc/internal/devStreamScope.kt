@@ -8,8 +8,9 @@ package kotlinx.rpc.internal
  * For legacy internal users ONLY.
  * Special dev builds may set this value to `false`.
  *
- * If the value is `false`, absence of [streamScoped] for a call is replaced with service's [StreamScope]
- * obtained via [withClientStreamScope].
+ * If the value is `false`, absence of [kotlinx.rpc.streamScoped] for a call
+ * is replaced with service's [kotlinx.rpc.StreamScope]
+ * obtained via [kotlinx.rpc.withClientStreamScope].
  */
 @InternalRPCApi
 public const val STREAM_SCOPES_ENABLED: Boolean = true
