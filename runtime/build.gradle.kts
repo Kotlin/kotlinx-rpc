@@ -18,23 +18,23 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-api"))
+                api(projects.runtime.runtimeApi)
 
-                implementation(project(":kotlinx-rpc-utils"))
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-serialization"))
+                implementation(projects.utils)
+                implementation(projects.runtime.runtimeSerialization)
 
                 api(libs.coroutines.core)
                 implementation(libs.serialization.core)
                 implementation(libs.kotlin.reflect)
 
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-logging"))
+                implementation(projects.runtime.runtimeLogging)
             }
         }
         commonTest {
             dependencies {
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-client"))
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-server"))
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-serialization"))
+                implementation(projects.runtime.runtimeClient)
+                implementation(projects.runtime.runtimeServer)
+                implementation(projects.runtime.runtimeSerialization)
 
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
@@ -49,10 +49,10 @@ kotlin {
 
         val jvmTest by getting {
             dependencies {
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-test"))
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-serialization:kotlinx-rpc-runtime-serialization-json"))
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-serialization:kotlinx-rpc-runtime-serialization-cbor"))
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-serialization:kotlinx-rpc-runtime-serialization-protobuf"))
+                implementation(projects.runtime.runtimeTest)
+                implementation(projects.runtime.runtimeSerialization.runtimeSerializationJson)
+                implementation(projects.runtime.runtimeSerialization.runtimeSerializationCbor)
+                implementation(projects.runtime.runtimeSerialization.runtimeSerializationProtobuf)
 
                 implementation(libs.logback.classic)
             }
@@ -92,10 +92,10 @@ tasks.create("moveToGold") {
     }
 }
 
-evaluationDependsOn(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-test")
+evaluationDependsOn(":runtime:runtime-test")
 
 // otherwise it complains and fails the build on 1.8.*
-val jsProductionLibraryCompileSync: TaskProvider<Task> = project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-test")
+val jsProductionLibraryCompileSync: TaskProvider<Task> = project(":runtime:runtime-test")
     .tasks.named("jsProductionLibraryCompileSync")
 
 tasks.named("jsBrowserTest") {

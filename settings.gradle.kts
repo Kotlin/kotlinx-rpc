@@ -2,6 +2,10 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+rootProject.name = "kotlinx-rpc"
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     includeBuild("gradle-settings-conventions")
     includeBuild("gradle-conventions")
@@ -31,8 +35,6 @@ dependencyResolutionManagement {
     includeBuild("compiler-plugin")
     includeBuild("ksp-plugin")
 }
-
-rootProject.name = "kotlinx-rpc"
 
 includePublic(":bom")
 

@@ -4,6 +4,8 @@
 
 rootProject.name = "gradle-plugin"
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     includeBuild("../gradle-conventions")
     includeBuild("../gradle-settings-conventions")

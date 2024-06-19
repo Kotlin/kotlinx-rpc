@@ -12,15 +12,15 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(project(":kotlinx-rpc-runtime"))
-                implementation(project(":kotlinx-rpc-utils"))
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-serialization"))
+                api(projects.runtime)
+                implementation(projects.utils)
+                implementation(projects.runtime.runtimeSerialization)
 
                 implementation(libs.coroutines.core)
                 implementation(libs.serialization.core)
                 implementation(libs.kotlin.reflect)
 
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-logging"))
+                implementation(projects.runtime.runtimeLogging)
             }
         }
     }

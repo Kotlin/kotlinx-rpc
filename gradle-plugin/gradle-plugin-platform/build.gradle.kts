@@ -5,7 +5,7 @@
 description = "kotlinx.rpc Platform Plugin"
 
 dependencies {
-    implementation(project(":kotlinx-rpc-gradle-plugin-api"))
+    implementation(projects.gradlePluginApi)
 }
 
 gradlePlugin {
