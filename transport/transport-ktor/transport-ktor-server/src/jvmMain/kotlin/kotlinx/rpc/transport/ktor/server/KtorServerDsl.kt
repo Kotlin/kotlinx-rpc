@@ -12,7 +12,8 @@ import kotlinx.coroutines.job
 import kotlinx.rpc.rpcServerConfig
 
 /**
- * Adds an RPC route to the specified [Route]. Provides builder to configure [RPCServer] that will be used internally.
+ * Adds an RPC route to the specified [Route].
+ * Provides builder to configure [kotlinx.rpc.RPCServer] that will be used internally.
  * Note that the [WebSockets] plugin is required for such a route to work.
  *
  * @param path The relative path on which RPC server should mount.
@@ -26,7 +27,8 @@ public fun Route.rpc(path: String, builder: RPCRoute.() -> Unit) {
 }
 
 /**
- * Adds an RPC route to the specified [Route]. Provides builder to configure [RPCServer] that will be used internally.
+ * Adds an RPC route to the specified [Route].
+ * Provides builder to configure [kotlinx.rpc.RPCServer] that will be used internally.
  * Note that the [WebSockets] plugin is required for such a route to work.
  *
  * @param builder Builder function to configure RPC server.
