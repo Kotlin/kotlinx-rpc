@@ -12,8 +12,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.rpc.RPCConfig
+import kotlinx.rpc.StreamScope
 import kotlinx.rpc.internal.map.ConcurrentHashMap
 import kotlinx.rpc.internal.transport.RPCCallMessage
+import kotlinx.rpc.noStreamScopeError
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialFormat
 import kotlin.coroutines.CoroutineContext

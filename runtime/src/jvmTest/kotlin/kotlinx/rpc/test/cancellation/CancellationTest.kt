@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.client.withService
 import kotlinx.rpc.internal.STREAM_SCOPES_ENABLED
-import kotlinx.rpc.internal.invokeOnStreamScopeCompletion
-import kotlinx.rpc.internal.streamScoped
+import kotlinx.rpc.invokeOnStreamScopeCompletion
+import kotlinx.rpc.streamScoped
 import kotlin.test.*
 
 class CancellationTest {

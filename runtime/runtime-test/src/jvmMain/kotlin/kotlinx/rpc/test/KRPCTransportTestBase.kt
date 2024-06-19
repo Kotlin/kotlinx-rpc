@@ -9,13 +9,9 @@ package kotlinx.rpc.test
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import kotlinx.rpc.RPCTransport
+import kotlinx.rpc.*
 import kotlinx.rpc.client.awaitFieldInitialization
 import kotlinx.rpc.client.withService
-import kotlinx.rpc.internal.streamScoped
-import kotlinx.rpc.registerService
-import kotlinx.rpc.rpcClientConfig
-import kotlinx.rpc.rpcServerConfig
 import kotlinx.rpc.serialization.RPCSerialFormatConfiguration
 import kotlinx.rpc.server.KRPCServer
 import org.junit.Assert.assertEquals
