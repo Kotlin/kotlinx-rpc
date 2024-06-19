@@ -8,6 +8,7 @@ import util.getSensitiveProperty
 
 val isGradlePlugin = project.properties["kotlinx.rpc.gradle.plugin"] == "true"
 val publishingExtension = project.extensions.findByType<PublishingExtension>()
+val globalRootDir: String by extra
 
 if (name.startsWith("kotlinx-rpc")) { // only public modules
     if (publishingExtension == null) {
@@ -117,9 +118,7 @@ fun RepositoryHandler.configureSpaceRepository() {
 
 fun RepositoryHandler.configureLocalDevRepository() {
     // Something that's straightforward to "clean" for development, not mavenLocal
-    // IMPORTANT: for gradle plugins 'rootProject' is 'gradle-plugin', not 'kotlinx-rpc'
-    val buildDir = rootProject.layout.buildDirectory.get()
-    maven("$buildDir/repo") {
+    maven("$globalRootDir/build/repo") {
         name = "buildRepo"
     }
 }
