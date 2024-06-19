@@ -42,17 +42,13 @@ class RPCGradlePlugin : Plugin<Project> {
 
     private fun applyCompilerPlugin(target: Project, config: RPCConfig) {
         if (config.isInternalDevelopment) {
-            val compilerPlugin = target.rootProject.subprojects
-                .singleOrNull { subproject -> subproject.name == COMPILER_PLUGIN_MODULE }
-                ?: error("Expected compiler plugin module '$COMPILER_PLUGIN_MODULE' to be present")
-
             target.dependencies.apply {
                 if (target.configurations.findByName(PLUGIN_CLASSPATH_CONFIGURATION_NAME) != null) {
-                    add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, compilerPlugin)
+                    add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, COMPILER_PLUGIN_MODULE)
                 }
 
                 if (target.configurations.findByName(NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME) != null) {
-                    add(NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME, compilerPlugin)
+                    add(NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME, COMPILER_PLUGIN_MODULE)
                 }
             }
         } else {
@@ -71,13 +67,9 @@ class RPCGradlePlugin : Plugin<Project> {
         var kspPluginConfigurationsApplied = false
         withKspPlugin(target) {
             val libraryKspPlugin = when {
-                config.isInternalDevelopment -> {
-                    target.project(":$KSP_PLUGIN_MODULE")
-                }
+                config.isInternalDevelopment -> KSP_PLUGIN_MODULE
 
-                else -> {
-                    "$GROUP_ID:$KSP_PLUGIN_ARTIFACT_ID:$libraryFullVersion"
-                }
+                else -> "$GROUP_ID:$KSP_PLUGIN_ARTIFACT_ID:$libraryFullVersion"
             }
 
             val isKmpProject = target.extensions.findByType(KotlinMultiplatformExtension::class.java) != null

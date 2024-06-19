@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.conventions.jvm)
     alias(libs.plugins.serialization)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.rpc)
+    alias(libs.plugins.kotlinx.rpc)
 }
 
 dependencies {

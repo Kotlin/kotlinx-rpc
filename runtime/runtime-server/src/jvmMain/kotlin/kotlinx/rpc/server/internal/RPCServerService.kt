@@ -9,7 +9,6 @@ import kotlinx.rpc.RPC
 import kotlinx.rpc.RPCConfig
 import kotlinx.rpc.internal.*
 import kotlinx.rpc.internal.logging.CommonLogger
-import kotlinx.rpc.internal.logging.initialized
 import kotlinx.rpc.internal.map.ConcurrentHashMap
 import kotlinx.rpc.internal.transport.RPCCallMessage
 import kotlinx.rpc.internal.transport.RPCMessageSender
@@ -31,7 +30,7 @@ internal class RPCServerService<T : RPC>(
     coroutineContext: CoroutineContext,
 ) : RPCServiceHandler(), CoroutineScope {
     private val serviceTypeString = serviceKClass.qualifiedClassName
-    override val logger = CommonLogger.initialized().logger(objectId(serviceTypeString))
+    override val logger = CommonLogger.logger(objectId(serviceTypeString))
     override val sender: RPCMessageSender get() = connector
     private val scope: CoroutineScope = this
 

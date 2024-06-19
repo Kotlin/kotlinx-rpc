@@ -10,7 +10,7 @@ plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.serialization)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.rpc)
+    alias(libs.plugins.kotlinx.rpc)
     alias(libs.plugins.atomicfu)
 }
 
@@ -21,7 +21,6 @@ kotlin {
                 api(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-api"))
 
                 implementation(project(":kotlinx-rpc-utils"))
-                implementation(project(":kotlinx-rpc-utils:kotlinx-rpc-utils-service-loader"))
                 implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-serialization"))
 
                 api(libs.coroutines.core)
@@ -62,7 +61,7 @@ kotlin {
 }
 
 tasks.withType<KotlinJvmTest> {
-    environment("LIBRARY_VERSION", libs.versions.rpc.core.get())
+    environment("LIBRARY_VERSION", libs.versions.kotlinx.rpc.get())
 }
 
 val resourcesPath = projectDir.resolve("src/jvmTest/resources")

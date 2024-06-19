@@ -1,27 +1,28 @@
 [versions]
+# core library version
+kotlinx-rpc = "0.1.1-SNAPSHOT"
+
 # kotlin
 kotlin-lang = "1.9.24"
-rpc-core = "0.1.1-SNAPSHOT" # version for plugins and suffix for rpc-full
 
-# kotlin-dependent versions, will be replaced with the actual versions by a settings-conventions plugin
-#   from 'kotlin-versions-lookup.json' lookup table
-rpc-full = "<stub>" # rpc-core prefixed by kotlin-lang
-ksp = "<stub>"
-atomicfu = "<stub>"
-serialization = "<stub>"
-coroutines = "<stub>"
-ktor = "<stub>"
-detekt-gradle-plugin = "<stub>"
-kotlin-logging = "<stub>"
-gradle-kotlin-dsl = "<stub>"
-binary-compatibility-validator = "<stub>"
-kover = "<stub>"
-
-# other
-detekt-analyzer = "1.23.6" # actual version of the tool, can be different from gradle plugin
+# kotlin independent versions
+detekt-analyzer = "1.23.6"
+coroutines = "1.8.1"
+ktor = "2.3.11"
+kotlin-logging = "6.0.9"
 slf4j = "2.0.13"
 logback = "1.3.14"
 gradle-plugin-publish = "1.2.1"
+
+# stub versions - relpaced based on kotlin, mostly for gradle-related (plugins) dependencies
+#  but also for dependencies for compiler specific modules
+ksp = "<stub>"
+atomicfu = "<stub>"
+serialization = "<stub>"
+detekt-gradle-plugin = "<stub>"
+gradle-kotlin-dsl = "<stub>"
+binary-compatibility-validator = "<stub>"
+kover = "<stub>"
 
 [libraries]
 # kotlin
@@ -80,12 +81,13 @@ kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
 
 # gradle-conventions project
-conventions-common = { id = "conventions-common", version.ref = "rpc-core" }
-conventions-jvm = { id = "conventions-jvm", version.ref = "rpc-core" }
-conventions-kmp = { id = "conventions-kmp", version.ref = "rpc-core" }
-conventions-gradle-publish = { id = "conventions-gradle-publish", version.ref = "rpc-core" }
-compiler-specific-module = { id = "compiler-specific-module", version.ref = "rpc-core" }
-kover-root-project = { id = "kover-root-project", version.ref = "rpc-core" }
+conventions-common = { id = "conventions-common", version.ref = "kotlinx-rpc" }
+conventions-jvm = { id = "conventions-jvm", version.ref = "kotlinx-rpc" }
+conventions-kmp = { id = "conventions-kmp", version.ref = "kotlinx-rpc" }
+conventions-gradle-publish = { id = "conventions-gradle-publish", version.ref = "kotlinx-rpc" }
+conventions-kotlin-version = { id = "conventions-kotlin-version", version.ref = "kotlinx-rpc" }
+compiler-specific-module = { id = "compiler-specific-module", version.ref = "kotlinx-rpc" }
+kover-root-project = { id = "kover-root-project", version.ref = "kotlinx-rpc" }
 
 # gradle-plugin project
-rpc = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "rpc-core" }
+kotlinx-rpc = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "kotlinx-rpc" }

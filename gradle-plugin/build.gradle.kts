@@ -4,6 +4,7 @@
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import util.configureMetaTasks
 
 plugins {
     alias(libs.plugins.conventions.jvm) apply false
@@ -14,7 +15,7 @@ plugins {
 
 subprojects {
     group = "org.jetbrains.kotlinx"
-    version = rootProject.libs.versions.rpc.core.get()
+    version = rootProject.libs.versions.kotlinx.rpc.get()
 
     fun alias(notation: Provider<PluginDependency>): String {
         return notation.get().pluginId
@@ -39,26 +40,6 @@ subprojects {
     }
 }
 
-fun Project.configureMetaTasks(vararg taskNames: String) {
-    val root = this
-    val metaSet = taskNames.toSet()
-
-    subprojects.map {
-        it.tasks.all {
-            val subtask = this
-
-            if (subtask.name in metaSet) {
-                val metaTask = root.tasks.findByName(subtask.name)
-                    ?: root.task(subtask.name)
-
-                metaTask.dependsOn(subtask)
-
-                metaTask.group = "plugins meta"
-            }
-        }
-    }
-}
-
 configureMetaTasks(
     "publishAllPublicationsToBuildRepoRepository", // publish to locally (to the build/repo folder)
     "publishAllPublicationsToSpaceRepository", // publish to Space
@@ -66,4 +47,5 @@ configureMetaTasks(
     "publishToMavenLocal", // for local plugin development
     "validatePlugins", // plugin validation
     "detekt", // run Detekt tasks
+    "clean",
 )

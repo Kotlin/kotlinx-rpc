@@ -27,7 +27,6 @@ public final class kotlinx/rpc/RPCCall {
 public final class kotlinx/rpc/RPCCall$Type : java/lang/Enum {
 	public static final field Field Lkotlinx/rpc/RPCCall$Type;
 	public static final field Method Lkotlinx/rpc/RPCCall$Type;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/RPCCall$Type;
 	public static fun values ()[Lkotlinx/rpc/RPCCall$Type;
 }

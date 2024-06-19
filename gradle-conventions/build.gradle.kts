@@ -18,39 +18,32 @@ configurations.configureEach {
 val kotlinVersion: String by extra
 
 dependencies {
-    implementation(libs.kotlin.gradle.plugin)
-    implementation(libs.detekt.gradle.plugin)
-
-    if (kotlinVersion >= "1.8.0") {
-        implementation(libs.kover.gradle.plugin)
-    }
-
-    // https://stackoverflow.com/questions/76713758/use-version-catalog-inside-precompiled-gradle-plugin
-    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
+    implementation(project(":kotlin-version"))
+    implementation(project(":conventions-utils"))
 }
 
 gradlePlugin {
     plugins {
         named("conventions-publishing") {
-            version = libs.versions.rpc.core.get()
+            version = libs.versions.kotlinx.rpc.get()
         }
     }
 
     plugins {
         named("conventions-common") {
-            version = libs.versions.rpc.core.get()
+            version = libs.versions.kotlinx.rpc.get()
         }
     }
 
     plugins {
         named("conventions-jvm") {
-            version = libs.versions.rpc.core.get()
+            version = libs.versions.kotlinx.rpc.get()
         }
     }
 
     plugins {
         named("conventions-kmp") {
-            version = libs.versions.rpc.core.get()
+            version = libs.versions.kotlinx.rpc.get()
         }
     }
 }

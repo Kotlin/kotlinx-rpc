@@ -4,6 +4,15 @@
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import util.configureMetaTasks
+
+val kotlinVersion: String by extra
+val rpcVersion: String = libs.versions.kotlinx.rpc.get()
+
+allprojects {
+    group = "org.jetbrains.kotlinx"
+    version = "$kotlinVersion-$rpcVersion"
+}
 
 plugins {
     alias(libs.plugins.conventions.jvm)
@@ -17,3 +26,6 @@ subprojects {
         }
     }
 }
+
+configureMetaTasks("cleanTest", "test")
+configureMetaTasks(tasks.matching { it.name.startsWith("publish") }.map { it.name })

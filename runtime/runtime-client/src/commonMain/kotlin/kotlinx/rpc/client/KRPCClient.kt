@@ -15,7 +15,6 @@ import kotlinx.rpc.client.internal.RPCClientConnector
 import kotlinx.rpc.client.internal.RPCFlow
 import kotlinx.rpc.internal.*
 import kotlinx.rpc.internal.logging.CommonLogger
-import kotlinx.rpc.internal.logging.initialized
 import kotlinx.rpc.internal.transport.*
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat
@@ -60,7 +59,7 @@ public abstract class KRPCClient(
 
     private val callCounter = atomic(0L)
 
-    override val logger: CommonLogger = CommonLogger.initialized().logger(objectId())
+    override val logger: CommonLogger = CommonLogger.logger(objectId())
 
     private val serverSupportedPlugins: CompletableDeferred<Set<RPCPlugin>> = CompletableDeferred()
 

@@ -35,8 +35,7 @@ object SettingsConventions {
     const val EAP_VERSION_ENV_VAR_NAME = "EAP_VERSION"
 
     const val KSP_VERSION_ALIAS = "ksp"
-    const val LIBRARY_CORE_VERSION_ALIAS = "rpc-core"
-    const val LIBRARY_FULL_VERSION_ALIAS = "rpc-full"
+    const val LIBRARY_CORE_VERSION_ALIAS = "kotlinx-rpc"
     const val KOTLIN_VERSION_ALIAS = "kotlin-lang"
 
     const val VERSIONS_SECTION_NAME = "[versions]"
@@ -160,17 +159,14 @@ fun VersionCatalogBuilder.resolveKotlinVersion(versionCatalog: Map<String, Strin
 
 // Resolves core kotlinx.rpc version (without Kotlin version prefix) from Versions Catalog.
 // Updates it with EAP_VERSION suffix of present.
-// Sets kotlinx.rpc full version (with Kotlin version prefix) into Version Catalog.
-fun VersionCatalogBuilder.resolveLibraryVersion(versionCatalog: Map<String, String>, kotlinVersion: String) {
+fun VersionCatalogBuilder.resolveLibraryVersion(versionCatalog: Map<String, String>) {
     val eapVersion: String = System.getenv(SettingsConventions.EAP_VERSION_ENV_VAR_NAME)
         ?.let { "-eap-$it" } ?: ""
     val libraryCatalogVersion = versionCatalog[SettingsConventions.LIBRARY_CORE_VERSION_ALIAS]
         ?: error("Expected to resolve '${SettingsConventions.LIBRARY_CORE_VERSION_ALIAS}' version")
     val libraryCoreVersion = libraryCatalogVersion + eapVersion
-    val libraryFullVersion = "$kotlinVersion-$libraryCoreVersion"
 
     version(SettingsConventions.LIBRARY_CORE_VERSION_ALIAS, libraryCoreVersion)
-    version(SettingsConventions.LIBRARY_FULL_VERSION_ALIAS, libraryFullVersion)
 }
 
 dependencyResolutionManagement {
@@ -190,7 +186,7 @@ dependencyResolutionManagement {
 
             val kotlinVersion = resolveKotlinVersion(versionCatalog)
 
-            resolveLibraryVersion(versionCatalog, kotlinVersion)
+            resolveLibraryVersion(versionCatalog)
 
             // Other Kotlin-dependant versions 
             val (lookupTable, latestKotlin) = loadLookupTable(rootDir, kotlinVersion)

@@ -19,7 +19,7 @@ class RPCCommandLineProcessor : CommandLineProcessor {
 
 class RPCCompilerPlugin : ComponentRegistrar {
     init {
-        VersionSpecificApi.upload(VersionSpecificApiImpl)
+        VersionSpecificApi.INSTANCE = VersionSpecificApiImpl
     }
 
     override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
