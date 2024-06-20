@@ -47,15 +47,15 @@ val kotlinVersion = extra[CSM.KOTLIN_VERSION_EXTRA] as? String
 // IMPORTANT: it is expected that the root submodule is already included to the project,
 // otherwise the exception will be thrown
 fun includeCSM(dir: File, files: Array<File>) {
-    val rootProjectDirName = dir.name
+    val rootProjectName = dir.name
 
     val submodules = files.filter {
-        it.isDirectory && it.name.startsWith(rootProjectDirName)
+        it.isDirectory && it.name.startsWith(rootProjectName)
     }.toMutableSet()
 
-    val core = submodules.singleOrNull { it.name == "$rootProjectDirName-core" }
+    val core = submodules.singleOrNull { it.name == "$rootProjectName-core" }
     if (core == null) {
-        error("Compiler Specific Module $rootProjectDirName should have `-core` module defined")
+        error("Compiler Specific Module $rootProjectName should have `-core` module defined")
     }
     val compilerSubmodules = submodules - core
 
@@ -64,9 +64,9 @@ fun includeCSM(dir: File, files: Array<File>) {
         .replace(File.separator, ":")
         .takeIf { it.isNotEmpty() }?.let { ":$it" } ?: ""
 
-    includePublic("$basePath:$rootProjectDirName-core")
+    includePublic("$basePath:$rootProjectName-core")
 
-    val prefix = "$rootProjectDirName-"
+    val prefix = "$rootProjectName-"
 
     val currentCompilerModuleDirName = compilerSubmodules
         .map { it.name to CompilerModuleSemVer(it.name, prefix) }
@@ -76,13 +76,12 @@ fun includeCSM(dir: File, files: Array<File>) {
             kotlinVersion.startsWith(semVer.version)
         }?.first
         ?: error("""
-            Unable to find compiler specific submodule for $rootProjectDirName and Kotlin $kotlinVersion.
+            Unable to find compiler specific submodule for $rootProjectName and Kotlin $kotlinVersion.
             Available modules: ${compilerSubmodules.joinToString { it.name }} 
         """.trimIndent())
 
     includePublic("$basePath:$currentCompilerModuleDirName")
 
-    val rootProjectName = "$KOTLINX_RPC_PREFIX$rootProjectDirName"
     gradle.projectsLoaded {
         if (rootProject.name == rootProjectName) {
             return@projectsLoaded

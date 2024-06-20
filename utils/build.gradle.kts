@@ -13,7 +13,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-api"))
+                api(projects.runtime.runtimeApi)
 
                 implementation(libs.serialization.core)
                 implementation(libs.coroutines.core)

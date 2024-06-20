@@ -12,10 +12,10 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-client"))
-    implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-server"))
+    implementation(projects.runtime.runtimeClient)
+    implementation(projects.runtime.runtimeServer)
 
-    implementation(project(":tests:codegen-tests:codegen-tests-mpp"))
+    implementation(projects.tests.codegenTests.codegenTestsMpp)
 
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlin.reflect)

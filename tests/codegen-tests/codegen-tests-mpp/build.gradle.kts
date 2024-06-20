@@ -18,9 +18,9 @@ kotlin {
                 implementation(libs.serialization.core)
                 implementation(libs.kotlin.reflect)
 
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-logging"))
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-client"))
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-server"))
+                implementation(projects.runtime.runtimeLogging)
+                implementation(projects.runtime.runtimeClient)
+                implementation(projects.runtime.runtimeServer)
             }
         }
 

@@ -5,15 +5,15 @@
 description = "kotlinx.rpc Gradle Plugin"
 
 dependencies {
-    implementation(project(":kotlinx-rpc-gradle-plugin-api"))
-    implementation(project(":kotlinx-rpc-gradle-plugin-platform"))
+    implementation(projects.gradlePluginApi)
+    implementation(projects.gradlePluginPlatform)
 
     compileOnly(libs.kotlin.gradle.plugin)
 }
 
 gradlePlugin {
     plugins {
-        create("kotlinxRpcPlugin") {
+        create("plugin") {
             id = "org.jetbrains.kotlinx.rpc.plugin"
 
             displayName = "kotlinx.rpc Gradle Plugin"

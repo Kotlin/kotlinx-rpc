@@ -2,15 +2,13 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import util.by
-import util.configureRepository
-import util.getSensitiveProperty
+import util.*
 
 val isGradlePlugin = project.properties["kotlinx.rpc.gradle.plugin"] == "true"
 val publishingExtension = project.extensions.findByType<PublishingExtension>()
 val globalRootDir: String by extra
 
-if (name.startsWith("kotlinx-rpc")) { // only public modules
+if (isPublicModule) {
     if (publishingExtension == null) {
         apply(plugin = "maven-publish")
     }
@@ -48,6 +46,9 @@ fun PublishingExtension.configurePublication() {
         if (javadocJar != null) {
             publication.artifact(javadocJar)
         }
+
+        publication.setPublicArtifactId(project)
+
         logger.info("Project ${project.name} -> Publication configured: ${publication.name}")
     }
 

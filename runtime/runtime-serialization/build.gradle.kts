@@ -12,7 +12,7 @@ kotlin {
             dependencies {
                 api(libs.serialization.core)
 
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-api"))
+                implementation(projects.runtime.runtimeApi)
             }
         }
     }

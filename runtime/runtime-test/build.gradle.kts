@@ -15,11 +15,11 @@ kotlin {
     sourceSets {
         val jvmMain by getting {
             dependencies {
-                api(project(":kotlinx-rpc-runtime"))
-                api(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-server"))
-                api(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-client"))
+                api(projects.runtime)
+                api(projects.runtime.runtimeServer)
+                api(projects.runtime.runtimeClient)
 
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-serialization:kotlinx-rpc-runtime-serialization-json"))
+                implementation(projects.runtime.runtimeSerialization.runtimeSerializationJson)
 
                 implementation(libs.coroutines.core)
                 implementation(libs.serialization.core)

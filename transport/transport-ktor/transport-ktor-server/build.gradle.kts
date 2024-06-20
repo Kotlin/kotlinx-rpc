@@ -10,9 +10,9 @@ kotlin {
     sourceSets {
         val jvmMain by getting {
             dependencies {
-                api(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-server"))
-                api(project(":kotlinx-rpc-transport:kotlinx-rpc-transport-ktor"))
-                api(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-serialization"))
+                api(projects.runtime.runtimeServer)
+                api(projects.runtime.runtimeSerialization)
+                api(projects.transport.transportKtor)
 
                 api(libs.ktor.server.core)
                 api(libs.ktor.server.websockets)

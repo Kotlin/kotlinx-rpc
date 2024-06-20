@@ -13,8 +13,8 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-server"))
-                implementation(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-serialization:kotlinx-rpc-runtime-serialization-json"))
+                implementation(projects.runtime.runtimeServer)
+                implementation(projects.runtime.runtimeSerialization.runtimeSerializationJson)
 
                 implementation(libs.ktor.websockets)
                 implementation(libs.coroutines.core)
@@ -24,8 +24,8 @@ kotlin {
         }
         val jvmTest by getting {
             dependencies {
-                implementation(project(":kotlinx-rpc-transport:kotlinx-rpc-transport-ktor:kotlinx-rpc-transport-ktor-server"))
-                implementation(project(":kotlinx-rpc-transport:kotlinx-rpc-transport-ktor:kotlinx-rpc-transport-ktor-client"))
+                implementation(projects.transport.transportKtor.transportKtorServer)
+                implementation(projects.transport.transportKtor.transportKtorClient)
 
                 implementation(libs.kotlin.test)
                 implementation(libs.ktor.server.netty)

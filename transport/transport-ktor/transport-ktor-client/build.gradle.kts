@@ -10,9 +10,9 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-client"))
-                api(project(":kotlinx-rpc-transport:kotlinx-rpc-transport-ktor"))
-                api(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-serialization"))
+                api(projects.runtime.runtimeClient)
+                api(projects.runtime.runtimeSerialization)
+                api(projects.transport.transportKtor)
 
                 api(libs.ktor.client.core)
                 api(libs.ktor.client.websockets)

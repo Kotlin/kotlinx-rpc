@@ -5,12 +5,12 @@
 description = "kotlinx.rpc Platform Plugin"
 
 dependencies {
-    implementation(project(":kotlinx-rpc-gradle-plugin-api"))
+    implementation(projects.gradlePluginApi)
 }
 
 gradlePlugin {
     plugins {
-        create("kotlinxRpcPlatform") {
+        create("platform") {
             id = "org.jetbrains.kotlinx.rpc.platform"
 
             displayName = "kotlinx.rpc Platform Plugin"

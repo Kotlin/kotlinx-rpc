@@ -41,6 +41,7 @@ private fun isIncluded(targetName: String, kotlinVersion: String, lookupTable: M
 }
 
 private fun KotlinMultiplatformExtension.configureTargets(
+    project: Project,
     kotlinVersion: String,
     targetsLookup: Map<String, String>,
     jvm: Boolean = true,
@@ -95,6 +96,12 @@ private fun KotlinMultiplatformExtension.configureTargets(
         }.also { targets.add(it) }
     }
 
+    targets.forEach { target ->
+        target.mavenPublication {
+            setPublicArtifactId(project)
+        }
+    }
+
     return targets
 }
 
@@ -120,7 +127,7 @@ fun Project.configureKotlin(
     }
 
     kotlin {
-        val includedTargets = configureTargets(kotlinVersion, lookupTable, jvm, js, native)
+        val includedTargets = configureTargets(project, kotlinVersion, lookupTable, jvm, js, native)
 
         configureDetekt(includedTargets)
 

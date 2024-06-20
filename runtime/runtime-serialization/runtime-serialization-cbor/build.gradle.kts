@@ -10,7 +10,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(project(":kotlinx-rpc-runtime:kotlinx-rpc-runtime-serialization"))
+                api(projects.runtime.runtimeSerialization)
                 api(libs.serialization.cbor)
             }
         }
