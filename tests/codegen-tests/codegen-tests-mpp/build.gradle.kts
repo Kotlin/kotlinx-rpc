@@ -18,15 +18,22 @@ kotlin {
                 implementation(libs.serialization.core)
                 implementation(libs.kotlin.reflect)
 
-                implementation(projects.runtime.runtimeLogging)
-                implementation(projects.runtime.runtimeClient)
-                implementation(projects.runtime.runtimeServer)
+                implementation(projects.krpc.krpcLogging)
+                implementation(projects.krpc.krpcClient)
+                implementation(projects.krpc.krpcServer)
             }
         }
 
         val commonTest by getting {
             dependencies {
                 implementation(libs.kotlin.test)
+            }
+        }
+
+        val jvmTest by getting {
+            dependencies {
+                implementation(libs.slf4j.api)
+                implementation(libs.logback.classic)
             }
         }
     }

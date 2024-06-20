@@ -12,8 +12,8 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.runtime.runtimeClient)
-    implementation(projects.runtime.runtimeServer)
+    implementation(projects.krpc.krpcClient)
+    implementation(projects.krpc.krpcServer)
 
     implementation(projects.tests.codegenTests.codegenTestsMpp)
 
@@ -23,6 +23,8 @@ dependencies {
     implementation(libs.serialization.core)
 
     testImplementation(libs.kotlin.test)
+    testImplementation(libs.slf4j.api)
+    testImplementation(libs.logback.classic)
 }
 
 kotlin {
