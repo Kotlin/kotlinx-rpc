@@ -34,11 +34,10 @@
             for the oldest supported minor version of Kotlin.
         </p>
         <warning>
-            <code>kotlinx-rpc</code> library is <b>not stable</b>.
-            Until it is, such compatibility will all Kotlin versions is not guarantied for our runtime dependencies.
-            However, we will try our best to maintain it,
-            and it is in our plans to ensure all runtime dependencies are compatible will all supported Kotlin versions
-            during the stable release.
+            The <code>kotlinx-rpc</code> library is currently <b>not stable</b>.
+            As a result, we cannot guarantee compatibility with all Kotlin versions for our runtime dependencies at this time.
+            However, we are committed to maintaining compatibility as much as possible.
+            It is in our plans to ensure that all runtime dependencies are compatible with all supported Kotlin versions by the time of the stable release.
         </warning>
     <chapter title="Project configuration" id="project-configuration">
     <p>
