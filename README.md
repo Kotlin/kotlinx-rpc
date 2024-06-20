@@ -154,27 +154,27 @@ Integrations in progress:
 - Integration with [gRPC](https://grpc.io/)  (in prototype)
 
 ## Kotlin compatibility
-`kotlinx.rpc` heavily relies on Kotlin compiler plugin to be able to generate client service implementations and other needed code.
-That results in the need to be bound to Kotlin compiler version and the versions of library,
-so `kotlinx.rpc` version may look like this: `1.9.10-1.0.0`, where the prefix (`1.9.10`) is the Kotlin version and the suffix (`1.0.0`) is the `kotlinx.rpc` feature (or core) version.
-To mitigate inconveniences related to the need to update Kotlin version then one wants to have newer version of the library
-`kotlinx.rpc` provides all its feature releases for all stable releases of the 3 last major Kotlin versions. Currently, they are:
+We support all stable Kotlin versions starting from 1.7.0:
 - 1.7.0, 1.7.10, 1.7.20, 1.7.21, 1.7.22
 - 1.8.0, 1.8.10, 1.8.20, 1.8.21, 1.8.22
 - 1.9.0, 1.9.10, 1.9.20, 1.9.21, 1.9.22, 1.9.23, 1.9.24
 
-That generates resulting versions `1.7.0-1.0.0`, `1.7.10-1.0.0`, etc.
-To simplify project configuration, our Gradle plugin sets proper library version automatically using BOM, based on the project's Kotlin version:
+To simplify project configuration, our Gradle plugin sets a proper library version automatically using BOM, 
+based on the project's Kotlin version:
 ```kotlin
 plugins {
     kotlin("jvm") version "1.9.24"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "1.0.0"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.1.0"
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime") // version is 1.9.24-1.0.0 is set by Gradle plugin
+    // version is 0.1.0 is set by Gradle plugin
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime") 
 }
 ```
+
+To learn more about compatibility guaranties - 
+check out our [Releases](https://kotlin.github.io/kotlinx-rpc/releases.html) guide.
 
 ## JetBrains Product
 

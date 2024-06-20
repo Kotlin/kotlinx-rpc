@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
 <!DOCTYPE topic SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
@@ -86,8 +90,8 @@
                     <code-block lang="kotlin">
                         dependencies {
                             // example kotlinx.rpc artifacts
-                            implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-client:%kotlin-version%-%kotlinx-rpc-version%&quot;)
-                            implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-server:%kotlin-version%-%kotlinx-rpc-version%&quot;)
+                            implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-client:%kotlinx-rpc-version%&quot;)
+                            implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-server:%kotlinx-rpc-version%&quot;)
                         }
                     </code-block>
                     <p>This adds the APIs needed to work with both client and server code using <code>kotlinx.rpc</code>.</p>
@@ -102,12 +106,12 @@
                             sourceSets {
                                 iosMain {
                                     // let's say that we have code for the client in iosMain sources set
-                                    implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-client:%kotlin-version%-%kotlinx-rpc-version%&quot;)
+                                    implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-client:%kotlinx-rpc-version%&quot;)
                                 }
 
                                 jvmMain {
                                     // let's say that we have code for the server in jvmMain sources set
-                                    implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-server:%kotlin-version%-%kotlinx-rpc-version%&quot;)
+                                    implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-server:%kotlinx-rpc-version%&quot;)
                                 }
                             }
                         }
@@ -119,29 +123,7 @@
                         Also, you may want to split your application into
                         <a href="https://docs.gradle.org/current/userguide/intro_multi_project_builds.html">several modules</a>,
                         so that you have a server in one module and a client in another.</p>
-                    <p>For a full example, see the <a href="%repo-tree-path%/samples/ktor-web-app">Ktor web app example</a>.
-                    In this example you will find usage
-                        of <a href="https://docs.gradle.org/current/userguide/platforms.html">Gradle version catalogs</a>,
-                        so the dependency declaration may look like this:</p>
-
-                    <code-block lang="kotlin">
-                        # gradle / libs.versions.toml
-                        [versions]
-                        kotlinx - rpc = &quot;%kotlin-version%-%kotlinx-rpc-version%&quot;
-
-                        [libraries]
-                        kotlinx - rpc - client = {
-                            module =
-                                &quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-client&quot;, version.ref = &quot;kotlinx-rpc&quot;
-                        }
-                    </code-block>
-
-                    <code-block lang="kotlin">
-                        // build.gradle.kts
-                        dependecies {
-                            implementation(libs.kotlinx.rpc.client)
-                        }
-                    </code-block>
+                    <p>For a full example, see the <a href="%repo-tree-path%/samples/ktor-web-app">Ktor web app example</a></p>
                 </tab>
             </tabs>
         </chapter>
@@ -169,11 +151,7 @@
                     id(&quot;org.jetbrains.kotlinx.rpc.plugin&quot;) version &quot;%kotlinx-rpc-version%&quot;
                 }
             </code-block>
-            <tip>
-                <p>Note that we use version <code>%kotlinx-rpc-version%</code> here, instead of <code>%kotlin-version%-%kotlinx-rpc-version%</code>
-                    that we used in <a anchor="add-runtime-dependencies">runtime dependencies</a>.
-                    To learn more about versioning, see <a href="releases.topic"/>.</p>
-            </tip>
+            <p>To learn more about versioning, see <a href="releases.topic"/>.</p>
         </chapter>
 
         <chapter title="Add serialization dependency" id="add-serialization-dependency">
