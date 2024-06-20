@@ -7,6 +7,7 @@
 package kotlinx.rpc.transport.ktor
 
 import io.ktor.client.*
+import io.ktor.client.plugins.websocket.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -29,8 +30,12 @@ interface NewService : RPC {
     suspend fun echo(value: String): String
 }
 
-class NewServiceImpl(override val coroutineContext: CoroutineContext) : NewService {
+class NewServiceImpl(
+    override val coroutineContext: CoroutineContext,
+    private val call: ApplicationCall,
+) : NewService {
     override suspend fun echo(value: String): String {
+        assertEquals("test-header", call.request.headers["TestHeader"])
         return value
     }
 }
@@ -52,22 +57,30 @@ class KtorTransportTest {
                         waitForServices = true
                     }
 
-                    registerService<NewService> { NewServiceImpl(it) }
+                    registerService<NewService> { NewServiceImpl(it, call) }
                 }
             }
         }.start()
 
         val clientWithGlobalConfig = HttpClient {
-            installRPC {
+            install(WebSockets) {
+                maxFrameSize = Int.MAX_VALUE.toLong() - 42
+            }
+            install(kotlinx.rpc.transport.ktor.client.RPC) {
                 serialization {
                     json()
                 }
             }
         }
 
-        val serviceWithGlobalConfig = clientWithGlobalConfig
-            .rpc("ws://localhost:4242/rpc")
-            .withService<NewService>()
+        val ktorRPCClient = clientWithGlobalConfig
+            .rpc("ws://localhost:4242/rpc") {
+                headers["TestHeader"] = "test-header"
+            }
+
+        assertEquals(Int.MAX_VALUE.toLong() - 42, ktorRPCClient.webSocketSession.maxFrameSize)
+
+        val serviceWithGlobalConfig = ktorRPCClient.withService<NewService>()
 
         val firstActual = serviceWithGlobalConfig.echo("Hello, world!")
 
@@ -81,6 +94,8 @@ class KtorTransportTest {
         }
 
         val serviceWithLocalConfig = clientWithNoConfig.rpc("ws://localhost:4242/rpc") {
+            headers["TestHeader"] = "test-header"
+
             rpcConfig {
                 serialization {
                     json()

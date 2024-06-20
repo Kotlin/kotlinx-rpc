@@ -39,7 +39,7 @@ public fun HttpRequestBuilder.rpcConfig(configBuilder: RPCConfigBuilder.Client.(
 public suspend fun HttpClient.rpc(
     urlString: String,
     block: HttpRequestBuilder.() -> Unit = {},
-): RPCClient {
+): KtorRPCClient {
     return rpc {
         url(urlString)
         block()
@@ -55,7 +55,7 @@ public suspend fun HttpClient.rpc(
  */
 public suspend fun HttpClient.rpc(
     block: HttpRequestBuilder.() -> Unit = {},
-): RPCClient {
+): KtorRPCClient {
     pluginOrNull(WebSockets)
         ?: error("RPC for client requires $WebSockets plugin to be installed firstly")
 
@@ -72,5 +72,5 @@ public suspend fun HttpClient.rpc(
     val rpcConfig = pluginConfigBuilder?.apply(requestConfigBuilder)?.build()
         ?: rpcClientConfig(requestConfigBuilder)
 
-    return KtorRPCClient(session, rpcConfig)
+    return KtorRPCClientImpl(session, rpcConfig)
 }
