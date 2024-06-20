@@ -41,7 +41,7 @@
             }
 
             dependencies {
-                // versions are set automatically to %kotlin-version%-%kotlinx-rpc-version%
+                // versions are set automatically to %kotlinx-rpc-version%
                 implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-client&quot;)
                 implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-server&quot;)
             }
@@ -66,7 +66,7 @@
                 alias(libs.plugins.kotlinx.rpc.platform)
             }
 
-            dependecies {
+            dependencies {
                 implementation(libs.kotlinx.rpc.client)
             }
         </code-block>
@@ -74,7 +74,7 @@
     <chapter title="org.jetbrains.kotlinx.rpc.plugin" id="rpc-plugin">
         <p>
             The <code>org.jetbrains.kotlinx.rpc.plugin</code> plugin
-            has the same BOM functionality as <code>org.jetbrains.kotlinx.rpc.platform</code> and it also sets
+            has the same BOM functionality as <a anchor="rpc-platform"><code>org.jetbrains.kotlinx.rpc.platform</code></a> and it also sets
             up code generation configurations.
         </p>
         <p>It is useful for multi-project setups
