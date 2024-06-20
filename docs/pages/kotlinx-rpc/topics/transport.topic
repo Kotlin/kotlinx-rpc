@@ -34,12 +34,17 @@
                     }
                 }
 
-                val rpcClient: RPCClient =
+                val rpcClient: KtorRPCClient =
                     ktorClient.rpc(&quot;ws://localhost:4242/services&quot;) { // this: HttpRequestBuilder
                         rpcConfig { // this: RPCConfigBuilder.Client
                             waitForServices = false
                         }
                     }
+
+                // access WebSocketSession that created the connection
+                rpcClient.webSocketSession
+
+                // create RPC service
                 val myService: MyService = rpcClient.withService&lt;MyService&gt;()
             </code-block>
             <p>Note that in this example, only the latter defined <code>RPCConfig</code> will be used.</p>
@@ -56,7 +61,7 @@
                     }
 
                     routing {
-                        rpc(&quot;/services&quot;) { // this RPCRoute
+                        rpc(&quot;/services&quot;) { // this RPCRoute, inherits WebSocketSession
                             rpcConfig { // this: RPCConfigBuilder.Server
                                 waitForServices = false
                             }
@@ -85,7 +90,7 @@
                     suspend fun processImage(url: Srting): ProcessedImage
                 }
 
-// ### CLIENT CODE ###
+                // ### CLIENT CODE ###
 
                 val client = HttpClient {
                     installRPC {
@@ -99,7 +104,7 @@
 
                 service.processImage(url = &quot;https://catsanddogs.com/cats/1&quot;)
 
-// ### SERVER CODE ###
+                // ### SERVER CODE ###
 
                 class ImageServiceImpl(override val coroutineContext: CoroutineContext) : ImageService {
                     // user defined classes
