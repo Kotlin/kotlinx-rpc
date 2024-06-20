@@ -1,8 +1,6 @@
 name: Build docs website
 
 on:
-  push:
-    branches: ["main"]
   pull_request:
     paths:
       - 'docs/pages/**'
@@ -67,7 +65,7 @@ jobs:
           instance: ${{ env.INSTANCE }}
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -95,7 +93,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
   publish-indexes:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch'
     needs: [ build, test, deploy ]
     runs-on: ubuntu-latest
     container:
