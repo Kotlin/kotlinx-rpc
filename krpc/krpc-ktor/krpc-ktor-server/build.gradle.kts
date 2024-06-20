@@ -8,14 +8,14 @@ plugins {
 
 kotlin {
     sourceSets {
-        commonMain {
+        val jvmMain by getting {
             dependencies {
-                api(projects.krpc.krpcClient)
+                api(projects.krpc.krpcServer)
                 api(projects.krpc.krpcSerialization)
-                api(projects.krpc.krpcTransport.krpcTransportKtor)
+                api(projects.krpc.krpcKtor.krpcKtorCore)
 
-                api(libs.ktor.client.core)
-                api(libs.ktor.client.websockets)
+                api(libs.ktor.server.core)
+                api(libs.ktor.server.websockets)
 
                 implementation(libs.coroutines.core)
                 implementation(libs.kotlin.reflect)

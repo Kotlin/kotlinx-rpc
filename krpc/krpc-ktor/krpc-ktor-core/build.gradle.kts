@@ -24,8 +24,8 @@ kotlin {
         }
         val jvmTest by getting {
             dependencies {
-                implementation(projects.krpc.krpcTransport.krpcTransportKtor.krpcTransportKtorServer)
-                implementation(projects.krpc.krpcTransport.krpcTransportKtor.krpcTransportKtorClient)
+                implementation(projects.krpc.krpcKtor.krpcKtorServer)
+                implementation(projects.krpc.krpcKtor.krpcKtorClient)
 
                 implementation(libs.kotlin.test)
                 implementation(libs.ktor.server.netty)
