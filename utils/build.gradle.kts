@@ -13,8 +13,6 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.core.coreApi)
-
                 implementation(libs.serialization.core)
                 implementation(libs.coroutines.core)
             }

@@ -11,7 +11,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.logging)
-                implementation(projects.core.coreApi)
+                implementation(projects.utils)
             }
         }
     }

@@ -14,9 +14,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.core.coreApi)
-
-                implementation(projects.utils)
+                api(projects.utils)
                 implementation(projects.krpc.krpcSerialization)
 
                 api(libs.coroutines.core)

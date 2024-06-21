@@ -12,7 +12,7 @@ kotlin {
             dependencies {
                 api(libs.serialization.core)
 
-                implementation(projects.core.coreApi)
+                implementation(projects.utils)
             }
         }
     }

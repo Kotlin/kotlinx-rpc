@@ -41,7 +41,6 @@ includePublic(":bom")
 includePublic(":utils")
 
 includePublic(":core")
-includePublic(":core:core-api")
 
 includePublic(":krpc")
 includePublic(":krpc:krpc-client")
