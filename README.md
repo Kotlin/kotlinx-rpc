@@ -168,13 +168,13 @@ plugins {
 }
 
 dependencies {
-    // version is 0.1.0 is set by Gradle plugin
+    // version 0.1.0 is set by the Gradle plugin
     implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime") 
 }
 ```
 
-To learn more about compatibility guaranties - 
-check out our [Releases](https://kotlin.github.io/kotlinx-rpc/releases.html) guide.
+For a full compatibility checklist, 
+see [Releases](https://kotlin.github.io/kotlinx-rpc/releases.html).
 
 ## JetBrains Product
 
