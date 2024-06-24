@@ -11,7 +11,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 api(projects.krpc.krpcServer)
-                api(projects.krpc.krpcSerialization)
+                api(projects.krpc.krpcSerialization.krpcSerializationCore)
                 api(projects.krpc.krpcKtor.krpcKtorCore)
 
                 api(libs.ktor.server.core)
