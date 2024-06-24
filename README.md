@@ -88,15 +88,6 @@ Check out our [getting started guide](https://kotlin.github.io/kotlinx-rpc) for 
 and some of them will contain service declarations, thus using code generation, while others will only consume them.
 - The `com.google.devtools.ksp` is required by the library. Corresponding configurations will be set up automatically by `org.jetbrains.kotlinx.rpc.plugin` plugin.
 
-To use the `kotlinx.rpc` Gradle plugins, you need to add the following repositories in the `settings.gradle.kts` file:
-```kotlin
-pluginManagement {
-    repositories {
-        maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven")
-        gradlePluginPortal()
-    }
-}
-```
 Example of plugins setup in a project's `build.gradle.kts`:
 ```kotlin
 // build.gradle.kts
@@ -108,26 +99,25 @@ plugins {
 }
 ```
 ### Runtime dependencies
-To use `kotlinx.rpc` runtime dependencies, you need to add our Space repository to the list of project repositories: 
+To use `kotlinx.rpc` runtime dependencies, add Maven Central to the list of your repositories: 
 ```kotlin
 repositories {
-    maven("https://maven.pkg.jetbrains.space/public/p/krpc/maven")
-    mavenCentral() // for other dependencies, e.g. Ktor
+    mavenCentral()
 }
 ```
 And now you can add dependencies to your project:
 ```kotlin
 dependencies {
     // client API
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-client")
     // server API
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server") 
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-server") 
     // serialization module. also, protobuf and cbor are available
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-serialization-json") 
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json") 
 
     // transport implementation for Ktor
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-transport-ktor-client")
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-transport-ktor-server")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server")
 
     // Ktor API
     implementation("io.ktor:ktor-client-cio-jvm:$ktor_version")
@@ -169,7 +159,7 @@ plugins {
 
 dependencies {
     // version 0.1.0 is set by the Gradle plugin
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime") 
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-core") 
 }
 ```
 

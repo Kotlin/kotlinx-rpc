@@ -52,30 +52,11 @@
                         href="https://docs.gradle.org/current/userguide/declaring_repositories.html">repository</a>
                 from which they will be consumed.</p>
             <p>
-                Add the following repositories in your <path>build.gradle.kts</path> file:
+                Add the following repository in your <path>build.gradle.kts</path> file:
             </p>
             <code-block lang="kotlin">
                 repositories {
-                    // for kotlinx.rpc dependencies
-                    maven(url = &quot;https://maven.pkg.jetbrains.space/public/p/krpc/maven&quot;)
-                    // for other dependencies, like Ktor
                     mavenCentral()
-                }
-            </code-block>
-
-            <p>In your <path>settings.gradle.kts</path> file, specify a
-                <a href="https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_management">repository for
-                    plugins</a>
-                to be consumed from:</p>
-
-            <code-block lang="kotlin">
-                pluginManagement {
-                    repositories {
-                        // kotlinx.rpc plugins will be downloaded from here
-                        maven(url = &quot;https://maven.pkg.jetbrains.space/public/p/krpc/maven&quot;)
-                        // other plugins, like Kotlin, will be downloaded from here
-                        gradlePluginPortal()
-                    }
                 }
             </code-block>
         </chapter>
@@ -90,8 +71,8 @@
                     <code-block lang="kotlin">
                         dependencies {
                             // example kotlinx.rpc artifacts
-                            implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-client:%kotlinx-rpc-version%&quot;)
-                            implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-server:%kotlinx-rpc-version%&quot;)
+                            implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-krpc-client:%kotlinx-rpc-version%&quot;)
+                            implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-krpc-server:%kotlinx-rpc-version%&quot;)
                         }
                     </code-block>
                     <p>This adds the APIs needed to work with both client and server code using <code>kotlinx.rpc</code>.</p>
@@ -106,12 +87,12 @@
                             sourceSets {
                                 iosMain {
                                     // let's say that we have code for the client in iosMain sources set
-                                    implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-client:%kotlinx-rpc-version%&quot;)
+                                    implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-krpc-client:%kotlinx-rpc-version%&quot;)
                                 }
 
                                 jvmMain {
                                     // let's say that we have code for the server in jvmMain sources set
-                                    implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-server:%kotlinx-rpc-version%&quot;)
+                                    implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-krpc-server:%kotlinx-rpc-version%&quot;)
                                 }
                             }
                         }
