@@ -132,7 +132,7 @@
                     id(&quot;org.jetbrains.kotlinx.rpc.plugin&quot;) version &quot;%kotlinx-rpc-version%&quot;
                 }
             </code-block>
-            <p>To learn more about versioning, see <a href="releases.topic"/>.</p>
+            <p>To learn more about versioning, see <a href="versions.topic"/>.</p>
         </chapter>
 
         <chapter title="Add serialization dependency" id="add-serialization-dependency">

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Migration to 0.2.0" id="0-2-0">
+
+    <p>
+        <code>0.2.0</code> is not compatible with previous <code>0.1.0</code> release.
+        This guide contains full list of incompatibles changes.
+    </p>
+
+    <chapter title="New artifact names" id="artifacts">
+        Most of the artifacts were renamed and restructured to
+        properly reflect what parts of the library they contain.
+        The full list of new names and changes is present below
+        (only <code>artifactId</code> are shown, <code>groupId</code> stayed the same):
+        <list>
+            <li>
+                <code>kotlinx-rpc-runtime</code>
+                <p>Renamed to <code>kotlinx-rpc-core</code></p>
+            </li>
+            <li>
+                <code>kotlinx-rpc-runtime</code>
+                <p>Declarations <b>moved</b> to <code>kotlinx-rpc-utils</code></p>
+            </li>
+            <li>
+                <code>kotlinx-rpc-runtime-client</code>
+                <p>Renamed to <code>kotlinx-rpc-krpc-client</code></p>
+            </li>
+            <li>
+                <code>kotlinx-rpc-runtime-server</code>
+                <p>Renamed to <code>kotlinx-rpc-krpc-server</code></p>
+            </li>
+            <li>
+                <code>kotlinx-rpc-runtime-logging</code>
+                <p>Renamed to <code>kotlinx-rpc-krpc-logging</code></p>
+            </li>
+            <li>
+                <code>kotlinx-rpc-runtime-test</code>
+                <p>Renamed to <code>kotlinx-rpc-krpc-test</code></p>
+            </li>
+            <li>
+                <code>kotlinx-rpc-runtime-serialization</code>
+                <p>Renamed to <code>kotlinx-rpc-krpc-serialization-core</code></p>
+            </li>
+            <li>
+                <code>kotlinx-rpc-runtime-serialization-json</code>
+                <p>Renamed to <code>kotlinx-rpc-krpc-serialization-json</code></p>
+            </li>
+            <li>
+                <code>kotlinx-rpc-runtime-serialization-cbor</code>
+                <p>Renamed to <code>kotlinx-rpc-krpc-serialization-cbor</code></p>
+            </li>
+            <li>
+                <code>kotlinx-rpc-runtime-serialization-protobuf</code>
+                <p>Renamed to <code>kotlinx-rpc-krpc-serialization-protobuf</code></p>
+            </li>
+            <li>
+                <code>kotlinx-rpc-transport-ktor</code>
+                <p>Renamed to <code>kotlinx-rpc-krpc-ktor-core</code></p>
+            </li>
+            <li>
+                <code>kotlinx-rpc-transport-ktor-client</code>
+                <p>Renamed to <code>kotlinx-rpc-krpc-ktor-client</code></p>
+            </li>
+            <li>
+                <code>kotlinx-rpc-transport-ktor-server</code>
+                <p>Renamed to <code>kotlinx-rpc-krpc-ktor-server</code></p>
+            </li>
+        </list>
+    </chapter>
+
+    <chapter title="Versioning" id="versioning">
+        <p>
+            Our version scheme has changed.
+            Prior to this release, all artifacts were versioned with еру Kotlin prefix for multiple versions of Kotlin:
+        </p>
+        <code-block>
+            org.jetbrains.kotlinx.kotlinx-rpc-runtime:1.9.24-0.1.0
+        </code-block>
+        <p>
+            This approached proved to be hard for the third-party library developers,
+            as it is not obvious which version should they use for their artifacts.
+        </p>
+        <p>
+            From now on, only code-generation artifacts would contain the explicit Kotlin version.
+            All other artifacts will have a simple version like this:
+        </p>
+        <code-block>
+            org.jetbrains.kotlinx.kotlinx-rpc-core:0.2.0
+        </code-block>
+        <p>
+            Our gradle plugin is still capable of including proper versions of artifacts for you.
+            Code-generation artifacts are added automatically and should not be referred to directly.
+        </p>
+        <p>
+            To know more about versioning, see <a href="versions.topic"/>.
+        </p>
+    </chapter>
+
+    <chapter title="Repositories" id="repositories">
+        <p>
+            Version <code>0.2.0</code> is being released to the Maven Central repository instead of Space, like it was previously.
+            In your gradle build scripts (<code>build.gradle.kts</code>) you need to change the repository to consume artifacts from.
+        </p>
+        <p>Old configuration:</p>
+        <code-block lang="kotlin">
+            repositories {
+                maven("https://maven.pkg.jetbrains.space/public/p/krpc/maven")
+            }
+        </code-block>
+        <p>New configuration:</p>
+        <code-block lang="kotlin">
+            repositories {
+                mavenCentral()
+            }
+        </code-block>
+        <p>
+            This also affects Gradle plugins.
+            Now they are being published to the Gradle Plugin Portal.
+            That means that the old configuration block in <code>settings.gradle.kts</code>
+            is no longer needed.
+        </p>
+        <p>You can remove this block:</p>
+        <code-block lang="kotlin">
+            pluginManagement {
+                repositories {
+                    maven("https://maven.pkg.jetbrains.space/public/p/krpc/maven")
+                }
+            }
+        </code-block>
+        <tip>
+            If you also had <code>gradlePluginPortal()</code> defined in <code>pluginManagement</code>
+            repositories, you still can remove the whole block completely, as the plugin portal repository is enabled by default.
+        </tip>
+    </chapter>
+</topic>

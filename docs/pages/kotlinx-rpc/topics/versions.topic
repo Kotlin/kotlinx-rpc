@@ -7,7 +7,7 @@
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
-       title="Releases" id="releases">
+       title="Versions" id="versions">
         <p>As <code>kotlinx.rpc</code> uses Kotlin compiler plugin and KSP plugins,
             we rely on internal functionality that may change over time with any new Kotlin version.
             To prevent the library from breaking with an incompatible Kotlin version,

@@ -24,5 +24,9 @@
             <toc-element topic="transport.topic"/>
         </toc-element>
     </toc-element>
-    <toc-element topic="releases.topic"/>
+    <toc-element topic="versions.topic">
+        <toc-element toc-title="Migrations">
+            <toc-element topic="0-2-0.topic"/>
+        </toc-element>
+    </toc-element>
 </instance-profile>
