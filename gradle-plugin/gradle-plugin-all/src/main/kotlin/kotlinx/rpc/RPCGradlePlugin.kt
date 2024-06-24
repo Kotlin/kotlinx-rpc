@@ -4,22 +4,18 @@
 
 package kotlinx.rpc
 
-import kotlinx.rpc.RPCPluginConst.COMPILER_PLUGIN_MODULE
 import kotlinx.rpc.RPCPluginConst.GROUP_ID
-import kotlinx.rpc.RPCPluginConst.INTERNAL_DEVELOPMENT_PROPERTY
 import kotlinx.rpc.RPCPluginConst.KSP_PLUGIN_ARTIFACT_ID
 import kotlinx.rpc.RPCPluginConst.KSP_PLUGIN_ID
 import kotlinx.rpc.RPCPluginConst.KSP_PLUGIN_MODULE
 import kotlinx.rpc.RPCPluginConst.kotlinVersion
-import kotlinx.rpc.RPCPluginConst.libraryFullVersion
+import kotlinx.rpc.RPCPluginConst.libraryKotlinPrefixedVersion
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
-import org.jetbrains.kotlin.gradle.plugin.NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME
-import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 
 internal data class RPCConfig(
     val isInternalDevelopment: Boolean,
@@ -27,40 +23,16 @@ internal data class RPCConfig(
 
 class RPCGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        val isInternalDevelopment =
-            (target.properties.getOrDefault(INTERNAL_DEVELOPMENT_PROPERTY, null) as String?)
-                ?.toBoolean() ?: false
-
-        val config = RPCConfig(
-            isInternalDevelopment = isInternalDevelopment,
-        )
+        val config = RPCConfig(target.isInternalDevelopment)
 
         applyPlatformConfiguration(target, config)
         applyKspPlugin(target, config)
-        applyCompilerPlugin(target, config)
+        applyCompilerPlugin(target)
     }
 
-    private fun applyCompilerPlugin(target: Project, config: RPCConfig) {
-        if (config.isInternalDevelopment) {
-            target.dependencies.apply {
-                if (target.configurations.findByName(PLUGIN_CLASSPATH_CONFIGURATION_NAME) != null) {
-                    add(PLUGIN_CLASSPATH_CONFIGURATION_NAME, COMPILER_PLUGIN_MODULE)
-                }
-
-                if (target.configurations.findByName(NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME) != null) {
-                    add(NATIVE_COMPILER_PLUGIN_CLASSPATH_CONFIGURATION_NAME, COMPILER_PLUGIN_MODULE)
-                }
-            }
-        } else {
-            target.plugins.apply(RPCKotlinCompilerPlugin::class.java)
-        }
-
-        // https://youtrack.jetbrains.com/issue/KT-53477/Native-Gradle-plugin-doesnt-add-compiler-plugin-transitive-dependencies-to-compiler-plugin-classpath
-        target.configurations.matching {
-            it.name.startsWith("kotlin") && it.name.contains("CompilerPluginClasspath")
-        }.all {
-            isTransitive = true
-        }
+    private fun applyCompilerPlugin(target: Project) {
+        target.plugins.apply(CompilerPluginCore::class.java)
+        target.plugins.apply(compilerPluginForKotlin(kotlinVersion))
     }
 
     private fun applyKspPlugin(target: Project, config: RPCConfig) {
@@ -69,7 +41,7 @@ class RPCGradlePlugin : Plugin<Project> {
             val libraryKspPlugin = when {
                 config.isInternalDevelopment -> KSP_PLUGIN_MODULE
 
-                else -> "$GROUP_ID:$KSP_PLUGIN_ARTIFACT_ID:$libraryFullVersion"
+                else -> "$GROUP_ID:$KSP_PLUGIN_ARTIFACT_ID:$libraryKotlinPrefixedVersion"
             }
 
             val isKmpProject = target.extensions.findByType(KotlinMultiplatformExtension::class.java) != null
