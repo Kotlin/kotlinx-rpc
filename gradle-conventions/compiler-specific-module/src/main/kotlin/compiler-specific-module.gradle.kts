@@ -62,15 +62,17 @@ fun KotlinSourceSet.configureResources(sourceSetPath: Path, vararg versionNames:
 
     // 'resources' property does not work alone in gradle 7.5.1 with kotlin 1.7.0 (no idea why),
     // so we adjust task contents as well
-    tasks.withType<ProcessResources>().configureEach {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-        from(versionNames.map { vsResources.resolve(it) })
-        include { it.file.parentInAllowList(versionNames) }
-    }
+    // todo duplicate (or to many resources are copied, should update the algo)
+//    tasks.withType<ProcessResources>().configureEach {
+//        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+//
+//        from(versionNames.map { vsResources.resolve(it) })
+//        include { it.file.parentInAllowList(versionNames) }
+//    }
 }
 
 fun File.parentInAllowList(allowList: Array<out String>): Boolean {
+//    println("decide: $absolutePath")
     val parent = toPath().parent?.toFile()
     // will skip v_1_7 for 1.7.0, as it's parent is resources
     // but will allow META-INF, as it's parent is v_1_7

@@ -4,9 +4,7 @@
 
 plugins {
     alias(libs.plugins.conventions.kmp)
-    alias(libs.plugins.serialization)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.kotlinx.rpc)
     alias(libs.plugins.atomicfu)
 }
 
