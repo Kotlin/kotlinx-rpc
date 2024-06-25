@@ -13,7 +13,7 @@ import kotlin.reflect.full.companionObjectInstance
 public actual fun <R> findRPCProviderInCompanion(kClass: KClass<*>): R {
     @Suppress("UNCHECKED_CAST")
     return kClass.java.classLoader
-        .loadClass("${kClass.qualifiedName}Stub")
+        .loadClass("${kClass.qualifiedName}\$\$rpcServiceStub")
         ?.kotlin
         ?.companionObjectInstance as? R
         ?: internalError("unable to find $kClass rpc client object")

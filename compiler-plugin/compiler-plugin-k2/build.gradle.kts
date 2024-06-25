@@ -3,19 +3,11 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import util.configureMetaTasks
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.conventions.jvm)
     alias(libs.plugins.compiler.specific.module)
-}
-
-val kotlinVersion: String by extra
-val rpcVersion: String = libs.versions.kotlinx.rpc.get()
-
-allprojects {
-    group = "org.jetbrains.kotlinx"
-    version = "$kotlinVersion-$rpcVersion"
 }
 
 kotlin {
@@ -24,9 +16,12 @@ kotlin {
 
 dependencies {
     compileOnly(libs.kotlin.compiler.embeddable)
-    implementation(projects.compilerPluginK2)
+    compileOnly("org.jetbrains.kotlin:kotlin-serialization-compiler-plugin:1.9.24")
     implementation(projects.compilerPluginCommon)
 }
 
-configureMetaTasks("cleanTest", "test")
-configureMetaTasks(tasks.matching { it.name.startsWith("publish") }.map { it.name })
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+        freeCompilerArgs += "-Xcontext-receivers"
+    }
+}

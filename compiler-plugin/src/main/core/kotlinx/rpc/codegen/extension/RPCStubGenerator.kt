@@ -5,6 +5,7 @@
 package kotlinx.rpc.codegen.extension
 
 import kotlinx.rpc.codegen.VersionSpecificApi
+import kotlinx.rpc.codegen.common.rpcMethodClassName
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.backend.jvm.functionByName
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
@@ -33,10 +34,8 @@ import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.util.OperatorNameConventions
 import kotlin.properties.Delegates
 
-const val STUB_SUFFIX = "Stub"
 private const val CLIENT_PROPERTY = "__rpc_client"
 private const val STUB_ID_PROPERTY = "__rpc_stub_id"
-private const val METHOD_CLASS_SUFFIX_PROPERTY = "RPCData"
 private const val METHOD_NAMES_PROPERTY = "methodNames"
 private const val METHOD_TYPE_OF_FUNCTION = "methodTypeOf"
 private const val WITH_CLIENT_METHOD = "withClient"
@@ -539,10 +538,13 @@ internal class RPCStubGenerator(
     )
     private fun IrClass.generateRpcMethod(method: ServiceDeclaration.Method) {
         val isMethodObject = method.argumentTypes.isEmpty()
-        val methodClassName = "${method.function.name.asString().capitalized()}_" + METHOD_CLASS_SUFFIX_PROPERTY
 
-        val methodClass: IrClass = findDeclaration<IrClass> { it.name.asString() == methodClassName }
-            ?: error("Expected $methodClassName class to be present in stub class ${declaration.simpleName}")
+        val methodClassName = method.function.name.rpcMethodClassName
+        val methodClass: IrClass = findDeclaration<IrClass> { it.name == methodClassName }
+            ?: error(
+                "Expected $methodClassName class to be present in stub class " +
+                        "${declaration.service.name}${declaration.stubClass.name}"
+            )
 
         methodClasses.add(methodClass)
 
@@ -596,7 +598,7 @@ internal class RPCStubGenerator(
                             parent = declaredFunction
 
                             body = irBuilder(symbol).irBlockBody {
-                                val call = irRPCMethodClientCall(
+                                val call = irRpcMethodClientCall(
                                     method = method,
                                     functionThisReceiver = functionThisReceiver,
                                     isMethodObject = isMethodObject,
@@ -646,7 +648,7 @@ internal class RPCStubGenerator(
         "detekt.NestedBlockDepth",
         "detekt.MagicNumber",
     )
-    private fun IrBlockBodyBuilder.irRPCMethodClientCall(
+    private fun IrBlockBodyBuilder.irRpcMethodClientCall(
         method: ServiceDeclaration.Method,
         functionThisReceiver: IrValueParameter,
         isMethodObject: Boolean,

@@ -4,13 +4,13 @@
 
 package kotlinx.rpc.codegen.extension
 
+import kotlinx.rpc.codegen.common.RpcNames
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.util.dumpKotlinLike
-import org.jetbrains.kotlin.ir.util.packageFqName
 
 /**
  * This class scans user declared RPC service
@@ -21,6 +21,8 @@ import org.jetbrains.kotlin.ir.util.packageFqName
  */
 internal object RPCDeclarationScanner {
     fun scanServiceDeclaration(service: IrClass, ctx: RPCIrContext): ServiceDeclaration {
+        var stubClass: IrClass? = null
+
         val declarations = service.declarations.memoryOptimizedMap { declaration ->
             when (declaration) {
                 is IrSimpleFunction -> {
@@ -53,20 +55,27 @@ internal object RPCDeclarationScanner {
                     ServiceDeclaration.FlowField(declaration, flowType)
                 }
 
+                is IrClass -> {
+                    if (declaration.name == RpcNames.SERVICE_STUB_NAME) {
+                        stubClass = declaration
+                        return@memoryOptimizedMap null
+                    }
+
+                    unsupportedDeclaration(service, declaration)
+                }
+
                 else -> {
                     unsupportedDeclaration(service, declaration)
                 }
             }
         }
 
-        val stubClass = ctx.getIrClassSymbol(
-            packageName = service.packageFqName!!.asString(),
-            name = "${service.name.asString()}$STUB_SUFFIX",
-        )
+        val stubClassNotNull = stubClass
+            ?: error("Expected ${RpcNames.SERVICE_STUB_NAME} nested declaration in ${service.name}")
 
         return ServiceDeclaration(
             service = service,
-            stubClass = stubClass.owner,
+            stubClass = stubClassNotNull,
             methods = declarations.filterIsInstance<ServiceDeclaration.Method>(),
             fields = declarations.filterIsInstance<ServiceDeclaration.FlowField>(),
         )

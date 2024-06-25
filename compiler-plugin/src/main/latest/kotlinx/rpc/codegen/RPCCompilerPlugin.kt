@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
 
 @OptIn(ExperimentalCompilerApi::class)
 class RPCCommandLineProcessor : CommandLineProcessor {
@@ -30,5 +31,6 @@ class RPCCompilerPlugin : CompilerPluginRegistrar() {
         val extension = RPCCompilerPluginCore.provideExtension(configuration)
 
         IrGenerationExtension.registerExtension(extension)
+        FirExtensionRegistrarAdapter.registerExtension(FirRPCExtensionRegistrar(configuration))
     }
 }

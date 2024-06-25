@@ -35,6 +35,7 @@ kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-lang" }
 
 kotlin-compiler-embeddable = { group = "org.jetbrains.kotlin", name = "kotlin-compiler-embeddable" }
+serialization-plugin = { module = "org.jetbrains.kotlin:kotlin-serialization-compiler-plugin", version.ref = "kotlin-lang" }
 
 # serialization
 serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "serialization" }

@@ -16,3 +16,6 @@ plugins {
 }
 
 includeRootAsPublic()
+
+includePublic(":compiler-plugin-k2")
+includePublic(":compiler-plugin-common")
