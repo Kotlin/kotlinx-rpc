@@ -32,7 +32,7 @@ internal object RPCDeclarationScanner {
 
                     ServiceDeclaration.Method(
                         function = declaration,
-                        argumentTypes = declaration.valueParameters.memoryOptimizedMap { param ->
+                        arguments = declaration.valueParameters.memoryOptimizedMap { param ->
                             ServiceDeclaration.Method.Argument(param, param.type)
                         },
                     )

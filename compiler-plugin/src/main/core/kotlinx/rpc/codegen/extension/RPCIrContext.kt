@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.isVararg
 import org.jetbrains.kotlin.ir.util.properties
 import org.jetbrains.kotlin.platform.konan.isNative
+import org.jetbrains.kotlin.types.Variance
 
 internal class RPCIrContext(
     val pluginContext: IrPluginContext,
@@ -26,6 +27,10 @@ internal class RPCIrContext(
 
     val anyNullable by lazy {
         irBuiltIns.anyType.makeNullable()
+    }
+
+    val arrayOfAnyNullable by lazy {
+        irBuiltIns.arrayClass.typeWith(anyNullable, Variance.OUT_VARIANCE)
     }
 
     val coroutineScope by lazy {
@@ -114,6 +119,10 @@ internal class RPCIrContext(
         getRpcIrClassSymbol("RPCDeferredField", "internal")
     }
 
+    val rpcMethodClassArguments by lazy {
+        getRpcIrClassSymbol("RPCMethodClassArguments", "internal")
+    }
+
     fun isJsTarget(): Boolean {
         return versionSpecificApi.isJs(pluginContext.platform)
     }
@@ -145,8 +154,16 @@ internal class RPCIrContext(
             rpcClient.namedFunction("provideStubContext")
         }
 
+        val asArray by lazy {
+            rpcMethodClassArguments.namedFunction("asArray")
+        }
+
         val typeOf by lazy {
             namedFunction("kotlin.reflect", "typeOf")
+        }
+
+        val emptyArray by lazy {
+            namedFunction("kotlin", "emptyArray")
         }
 
         val scopedClientCall by lazy {

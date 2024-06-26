@@ -6,6 +6,7 @@ package kotlinx.rpc.codegen
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.ir.addExtensionReceiver
+import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrFunction
@@ -30,9 +31,9 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     }
 
     override var IrFieldBuilder.isFinalVS: Boolean
-        get() = isFinal
+        get() = modality == Modality.FINAL
         set(value) {
-            isFinal = value
+            modality = if (value) Modality.FINAL else Modality.OPEN
         }
 
     override var IrCall.originVS: IrStatementOrigin?
