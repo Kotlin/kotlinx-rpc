@@ -22,8 +22,8 @@ object ClassDeclarations {
 object RpcNames {
     val SERVICE_STUB_NAME: Name = Name.identifier("\$rpcServiceStub")
 
-    const val METHOD_NAME_SUFFIX = "\$rpcMethod"
+    const val METHOD_CLASS_NAME_SUFFIX = "\$rpcMethod"
 }
 
-val Name.rpcMethodClassName: Name get() = Name.identifier("$identifier${RpcNames.METHOD_NAME_SUFFIX}")
-val Name.rpcMethodName: Name get() = Name.identifier(identifier.removeSuffix(RpcNames.METHOD_NAME_SUFFIX))
+val Name.rpcMethodClassName: Name get() = Name.identifier("$identifier${RpcNames.METHOD_CLASS_NAME_SUFFIX}")
+val Name.rpcMethodName: Name get() = Name.identifier(identifier.removeSuffix(RpcNames.METHOD_CLASS_NAME_SUFFIX))

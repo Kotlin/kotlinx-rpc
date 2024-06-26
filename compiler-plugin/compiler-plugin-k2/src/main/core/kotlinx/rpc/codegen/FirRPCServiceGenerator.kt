@@ -59,11 +59,10 @@ import org.jetbrains.kotlinx.serialization.compiler.resolve.SerializationPackage
  * And then, in [generateNestedClassLikeDeclaration] we do the actual check with the resolved supertypes
  * and generate a class if needed.
  *
- * TODO explain serialization
+ * TODO
+ *   explain serialization
  *   add inspections
  *   check that @Contextual is working
- *   generate getter body and backing field for method classes' fields
- *   and supertype RPCMethodClassArguments to generated method classes
  */
 class FirRPCServiceGenerator(
     session: FirSession,

@@ -22,7 +22,7 @@ class ServiceDeclaration(
 
     class Method(
         val function: IrSimpleFunction,
-        val argumentTypes: List<Argument>,
+        val arguments: List<Argument>,
     ) {
         class Argument(
             val value: IrValueParameter,
