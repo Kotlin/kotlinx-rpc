@@ -10,15 +10,15 @@
        title="Migration to 0.2.0" id="0-2-0">
 
     <p>
-        <code>0.2.0</code> is not compatible with previous <code>0.1.0</code> release.
-        This guide contains full list of incompatibles changes.
+        Version <code>0.2.0</code> introduces changes that are not compatible with the previous <code>0.1.0</code> release.
+        This guide contains a full list of all incompatible changes.
     </p>
 
     <chapter title="New artifact names" id="artifacts">
         Most of the artifacts were renamed and restructured to
         properly reflect what parts of the library they contain.
-        The full list of new names and changes is present below
-        (only <code>artifactId</code> are shown, <code>groupId</code> stayed the same):
+        Below is the complete list of new names and changes.
+        Note that only <code>artifactId</code> is shown; the <code>groupId</code> remains unchanged:
         <list>
             <li>
                 <code>kotlinx-rpc-runtime</code>
@@ -78,18 +78,18 @@
     <chapter title="Versioning" id="versioning">
         <p>
             Our version scheme has changed.
-            Prior to this release, all artifacts were versioned with еру Kotlin prefix for multiple versions of Kotlin:
+            Prior to this release, all artifacts were versioned with the Kotlin prefix for multiple versions of Kotlin:
         </p>
         <code-block>
             org.jetbrains.kotlinx.kotlinx-rpc-runtime:1.9.24-0.1.0
         </code-block>
         <p>
-            This approached proved to be hard for the third-party library developers,
-            as it is not obvious which version should they use for their artifacts.
+            This approach proved challenging for the third-party library developers,
+            as it was not clear which version they should use for their artifacts.
         </p>
         <p>
-            From now on, only code-generation artifacts would contain the explicit Kotlin version.
-            All other artifacts will have a simple version like this:
+            From now on, only code-generation artifacts will contain the explicit Kotlin version.
+            All other artifacts will use a simplified versioning format like this:
         </p>
         <code-block>
             org.jetbrains.kotlinx.kotlinx-rpc-core:0.2.0
@@ -106,7 +106,7 @@
     <chapter title="Repositories" id="repositories">
         <p>
             Version <code>0.2.0</code> is being released to the Maven Central repository instead of Space, like it was previously.
-            In your gradle build scripts (<code>build.gradle.kts</code>) you need to change the repository to consume artifacts from.
+            In your gradle build scripts (<code>build.gradle.kts</code>) you need to update the repository to ensure you consume the correct artifacts.
         </p>
         <p>Old configuration:</p>
         <code-block lang="kotlin">
