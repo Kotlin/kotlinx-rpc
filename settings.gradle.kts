@@ -49,6 +49,7 @@ includePublic(":krpc:krpc-logging")
 includePublic(":krpc:krpc-test")
 
 includePublic(":krpc:krpc-serialization")
+includePublic(":krpc:krpc-serialization:krpc-serialization-core")
 includePublic(":krpc:krpc-serialization:krpc-serialization-json")
 includePublic(":krpc:krpc-serialization:krpc-serialization-cbor")
 includePublic(":krpc:krpc-serialization:krpc-serialization-protobuf")

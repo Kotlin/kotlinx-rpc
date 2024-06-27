@@ -15,7 +15,7 @@ kotlin {
                 api(projects.core)
 
                 implementation(projects.utils)
-                implementation(projects.krpc.krpcSerialization)
+                implementation(projects.krpc.krpcSerialization.krpcSerializationCore)
                 implementation(projects.krpc.krpcLogging)
 
                 implementation(libs.coroutines.core)

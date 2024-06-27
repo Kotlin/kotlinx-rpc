@@ -14,7 +14,7 @@ kotlin {
             dependencies {
                 api(projects.core)
                 implementation(projects.utils)
-                implementation(projects.krpc.krpcSerialization)
+                implementation(projects.krpc.krpcSerialization.krpcSerializationCore)
 
                 implementation(libs.coroutines.core)
                 implementation(libs.serialization.core)

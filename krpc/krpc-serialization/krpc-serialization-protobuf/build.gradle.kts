@@ -10,7 +10,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.krpc.krpcSerialization)
+                api(projects.krpc.krpcSerialization.krpcSerializationCore)
                 api(libs.serialization.protobuf)
             }
         }
