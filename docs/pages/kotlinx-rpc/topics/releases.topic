@@ -56,8 +56,8 @@
             dependencies {
                 // for kotlinx.rpc runtime dependencies,
                 //  Gradle plugin sets version %kotlinx-rpc-version%
-                implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-client&quot;)
-                implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-runtime-server&quot;)
+                implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-krpc-client&quot;)
+                implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-krpc-server&quot;)
             }
         </code-block>
     </chapter>
