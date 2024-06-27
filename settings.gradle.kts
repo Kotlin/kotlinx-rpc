@@ -42,19 +42,19 @@ includePublic(":utils")
 
 includePublic(":core")
 
-includePublic(":krpc")
+include(":krpc")
 includePublic(":krpc:krpc-client")
 includePublic(":krpc:krpc-server")
 includePublic(":krpc:krpc-logging")
 includePublic(":krpc:krpc-test")
 
-includePublic(":krpc:krpc-serialization")
+include(":krpc:krpc-serialization")
 includePublic(":krpc:krpc-serialization:krpc-serialization-core")
 includePublic(":krpc:krpc-serialization:krpc-serialization-json")
 includePublic(":krpc:krpc-serialization:krpc-serialization-cbor")
 includePublic(":krpc:krpc-serialization:krpc-serialization-protobuf")
 
-includePublic(":krpc:krpc-ktor")
+include(":krpc:krpc-ktor")
 includePublic(":krpc:krpc-ktor:krpc-ktor-core")
 includePublic(":krpc:krpc-ktor:krpc-ktor-server")
 includePublic(":krpc:krpc-ktor:krpc-ktor-client")

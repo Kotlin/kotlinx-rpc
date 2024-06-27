@@ -13,13 +13,8 @@ import org.gradle.kotlin.dsl.extra
 fun Settings.includePublic(projectPath: String) {
     include(projectPath)
 
-    val projectName = projectPath.substringAfterLast(":")
     gradle.rootProject {
-        allprojects {
-            if (name == projectName) {
-                extra["isPublicModule"] = true
-            }
-        }
+        project(projectPath).extra["isPublicModule"] = true
     }
 }
 

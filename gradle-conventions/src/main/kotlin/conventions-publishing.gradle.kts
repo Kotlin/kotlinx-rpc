@@ -49,6 +49,10 @@ fun PublishingExtension.configurePublication() {
 
         publication.setPublicArtifactId(project)
 
+        if (!isGradlePlugin) {
+            publication.fixModuleMetadata(project)
+        }
+
         logger.info("Project ${project.name} -> Publication configured: ${publication.name}")
     }
 
