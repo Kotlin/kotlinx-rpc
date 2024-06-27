@@ -164,7 +164,7 @@ dependencies {
 ```
 
 For a full compatibility checklist, 
-see [Releases](https://kotlin.github.io/kotlinx-rpc/releases.html).
+see [Versions](https://kotlin.github.io/kotlinx-rpc/versions.html).
 
 ## JetBrains Product
 
