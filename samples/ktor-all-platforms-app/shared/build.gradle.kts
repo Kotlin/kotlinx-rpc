@@ -29,7 +29,7 @@ kotlin {
         commonMain.dependencies {
             api(libs.kotlinx.coroutines.core)
 
-            implementation(libs.kotlinx.rpc.runtime)
+            implementation(libs.kotlinx.rpc.core)
             implementation(libs.kotlinx.serialization.json)
         }
     }

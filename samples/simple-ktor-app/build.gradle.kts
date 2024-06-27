@@ -7,7 +7,7 @@ plugins {
     kotlin("plugin.serialization") version "1.9.24"
     id("io.ktor.plugin") version "2.3.11"
     id("com.google.devtools.ksp") version "1.9.24-1.0.20"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "0.1.0"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.0"
 }
 
 val kotlin_version: String by project
@@ -24,7 +24,6 @@ application {
 }
 
 repositories {
-    maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven")
     mavenCentral()
 }
 
@@ -33,12 +32,12 @@ kotlin {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-client")
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-server")
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-runtime-serialization-json")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-client")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-server")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-transport-ktor-client")
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-transport-ktor-server")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server")
 
     implementation("io.ktor:ktor-client-cio-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")

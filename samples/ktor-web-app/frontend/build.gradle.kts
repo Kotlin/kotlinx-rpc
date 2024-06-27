@@ -37,8 +37,8 @@ kotlin {
                 implementation(libs.kotlin.stdlib.js)
                 implementation(libs.ktor.client.js)
                 implementation(libs.ktor.client.websockets.js)
-                implementation(libs.kotlinx.rpc.transport.ktor.client)
-                implementation(libs.kotlinx.rpc.runtime.serialization.json)
+                implementation(libs.kotlinx.rpc.krpc.ktor.client)
+                implementation(libs.kotlinx.rpc.krpc.serialization.json)
 
                 implementation(project.dependencies.platform(libs.kotlin.wrappers.bom))
                 implementation(libs.react)

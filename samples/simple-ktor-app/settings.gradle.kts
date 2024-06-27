@@ -3,10 +3,3 @@
  */
 
 rootProject.name = "simple-ktor-app"
-
-pluginManagement {
-    repositories {
-        maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven")
-        gradlePluginPortal()
-    }
-}

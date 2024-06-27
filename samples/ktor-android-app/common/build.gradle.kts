@@ -15,6 +15,6 @@ dependencies {
     implementation(libs.ktor.server.core.jvm)
     implementation(libs.ktor.server.websockets.jvm)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.kotlinx.rpc.transport.ktor.server)
-    implementation(libs.kotlinx.rpc.runtime.serialization.json)
+    implementation(libs.kotlinx.rpc.krpc.ktor.server)
+    implementation(libs.kotlinx.rpc.krpc.serialization.json)
 }

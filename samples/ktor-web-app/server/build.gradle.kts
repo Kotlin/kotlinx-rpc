@@ -28,11 +28,11 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core.jvm)
     implementation(libs.logback.classic)
 
-    implementation(libs.kotlinx.rpc.transport.ktor.server)
-    implementation(libs.kotlinx.rpc.runtime.serialization.json)
+    implementation(libs.kotlinx.rpc.krpc.ktor.server)
+    implementation(libs.kotlinx.rpc.krpc.serialization.json)
 
-    testImplementation(libs.kotlinx.rpc.runtime.client)
-    testImplementation(libs.kotlinx.rpc.transport.ktor.client)
+    testImplementation(libs.kotlinx.rpc.krpc.client)
+    testImplementation(libs.kotlinx.rpc.krpc.ktor.client)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.ktor.server.test.host)
 }
