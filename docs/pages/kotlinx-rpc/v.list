@@ -14,7 +14,7 @@
     <var name="host" value="https://kotlin.github.io"/>
 
     <!--  Library versions  -->
-    <var name="kotlinx-rpc-version" value="0.1.0"/>
+    <var name="kotlinx-rpc-version" value="0.2.0"/>
     <var name="kotlin-version" value="1.9.24"/>
     <var name="ksp-version" value="1.9.24-1.0.20"/>
 </vars>
