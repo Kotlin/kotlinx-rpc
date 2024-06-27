@@ -8,6 +8,7 @@ import kotlinx.rpc.codegen.VersionSpecificApi
 import kotlinx.rpc.codegen.common.rpcMethodClassName
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.backend.jvm.functionByName
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
 import org.jetbrains.kotlin.descriptors.DescriptorVisibility
@@ -55,6 +56,8 @@ internal class RPCStubGenerator(
         generateStubClass()
 
         addAssociatedObjectAnnotationIfPossible()
+
+        logger.report(CompilerMessageSeverity.WARNING, declaration.service.dump())
     }
 
     private fun generateStubClass() {
