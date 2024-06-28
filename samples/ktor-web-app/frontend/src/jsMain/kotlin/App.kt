@@ -5,7 +5,7 @@
 import kotlinx.coroutines.flow.flow
 import kotlinx.rpc.RPCClient
 import kotlinx.rpc.client.withService
-import kotlinx.rpc.internal.streamScoped
+import kotlinx.rpc.streamScoped
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div

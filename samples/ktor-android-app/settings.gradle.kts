@@ -6,14 +6,12 @@ pluginManagement {
     repositories {
         google()
         mavenCentral()
-        maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven")
         gradlePluginPortal()
     }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        maven(url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven")
         google()
         mavenCentral()
     }

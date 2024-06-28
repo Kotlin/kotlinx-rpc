@@ -22,5 +22,5 @@ dependencies {
     commonMainApi(libs.kotlinx.serialization.json)
     commonMainApi(libs.ktor.client.core)
     commonMainApi(libs.kotlinx.coroutines.core)
-    commonMainApi(libs.kotlinx.rpc.runtime)
+    commonMainApi(libs.kotlinx.rpc.core)
 }

@@ -1,6 +1,6 @@
 [versions]
-kotlin = "1.9.23"
-ksp = "1.9.23-1.0.19"
+kotlin = "1.9.24"
+ksp = "1.9.24-1.0.20"
 
 agp = "8.2.0"
 android-compileSdk = "34"
@@ -13,14 +13,14 @@ androidx-core-ktx = "1.12.0"
 androidx-espresso-core = "3.5.1"
 androidx-material = "1.11.0"
 androidx-test-junit = "1.1.5"
-compose = "1.6.1"
-compose-plugin = "1.6.1"
+compose = "1.6.8"
+compose-plugin = "1.6.11"
 junit = "4.13.2"
 ktor = "2.3.11"
 logback = "1.5.6"
 kotlinx-serialization-json = "1.6.3"
 kotlinx-coroutines-core = "1.8.1"
-kotlinx-rpc = "0.1.0"
+kotlinx-rpc = "0.2.0"
 
 [libraries]
 # kotlin
@@ -58,12 +58,12 @@ ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.re
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 
 # kotlinx-rpc
-kotlinx-rpc-runtime = { module = "org.jetbrains.kotlinx:kotlinx-rpc-runtime" }
-kotlinx-rpc-runtime-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-runtime-client" }
-kotlinx-rpc-runtime-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-runtime-server" }
-kotlinx-rpc-transport-ktor-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-transport-ktor-client" }
-kotlinx-rpc-transport-ktor-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-transport-ktor-server" }
-kotlinx-rpc-runtime-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-rpc-runtime-serialization-json" }
+kotlinx-rpc-core = { module = "org.jetbrains.kotlinx:kotlinx-rpc-core" }
+kotlinx-rpc-krpc-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-client" }
+kotlinx-rpc-krpc-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-server" }
+kotlinx-rpc-krpc-ktor-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client" }
+kotlinx-rpc-krpc-ktor-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server" }
+kotlinx-rpc-krpc-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json" }
 
 # other
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }

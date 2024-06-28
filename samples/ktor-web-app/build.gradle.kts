@@ -13,7 +13,6 @@ allprojects {
     version = "0.1"
 
     repositories {
-        maven("https://maven.pkg.jetbrains.space/public/p/krpc/maven")
         mavenCentral()
     }
 }
