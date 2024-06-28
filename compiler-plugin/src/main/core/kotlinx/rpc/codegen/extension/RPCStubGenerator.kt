@@ -5,17 +5,18 @@
 package kotlinx.rpc.codegen.extension
 
 import kotlinx.rpc.codegen.VersionSpecificApi
+import kotlinx.rpc.codegen.common.rpcMethodClassName
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.backend.jvm.functionByName
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
+import org.jetbrains.kotlin.descriptors.DescriptorVisibility
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.builders.declarations.*
-import org.jetbrains.kotlin.ir.declarations.IrClass
-import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
-import org.jetbrains.kotlin.ir.declarations.IrProperty
-import org.jetbrains.kotlin.ir.declarations.IrValueParameter
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
@@ -31,10 +32,8 @@ import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.util.OperatorNameConventions
 import kotlin.properties.Delegates
 
-const val STUB_SUFFIX = "Stub"
 private const val CLIENT_PROPERTY = "__rpc_client"
 private const val STUB_ID_PROPERTY = "__rpc_stub_id"
-private const val METHOD_CLASS_SUFFIX_PROPERTY = "RPCData"
 private const val METHOD_NAMES_PROPERTY = "methodNames"
 private const val METHOD_TYPE_OF_FUNCTION = "methodTypeOf"
 private const val WITH_CLIENT_METHOD = "withClient"
@@ -44,6 +43,8 @@ private const val RPC_FIELDS_METHOD = "rpcFields"
 internal class RPCStubGenerator(
     private val declaration: ServiceDeclaration,
     private val ctx: RPCIrContext,
+    @Suppress("unused")
+    private val logger: MessageCollector,
 ) {
     private fun irBuilder(symbol: IrSymbol): DeclarationIrBuilder =
         DeclarationIrBuilder(ctx.pluginContext, symbol, symbol.owner.startOffset, symbol.owner.endOffset)
@@ -55,6 +56,8 @@ internal class RPCStubGenerator(
         generateStubClass()
 
         addAssociatedObjectAnnotationIfPossible()
+
+        logger.report(CompilerMessageSeverity.WARNING, declaration.service.dump())
     }
 
     private fun generateStubClass() {
@@ -98,16 +101,7 @@ internal class RPCStubGenerator(
                 type = ctx.rpcClient.defaultType
             }
 
-            // default constructor implementation
-            body = irBuilder(symbol).irBlockBody {
-                +irDelegatingConstructorCall(context.irBuiltIns.anyClass.owner.constructors.single())
-                +IrInstanceInitializerCallImpl(
-                    startOffset = startOffset,
-                    endOffset = endOffset,
-                    classSymbol = this@generateStubConstructor.symbol,
-                    type = context.irBuiltIns.unitType,
-                )
-            }
+            addDefaultConstructor(this)
         }
     }
 
@@ -163,10 +157,20 @@ internal class RPCStubGenerator(
         propertyName: String,
         propertyType: IrType,
         valueParameter: IrValueParameter,
+        propertyVisibility: DescriptorVisibility = DescriptorVisibilities.PRIVATE
+    ): IrProperty {
+        return constructorProperty(Name.identifier(propertyName), propertyType, valueParameter, propertyVisibility)
+    }
+
+    private fun IrClass.constructorProperty(
+        propertyName: Name,
+        propertyType: IrType,
+        valueParameter: IrValueParameter,
+        propertyVisibility: DescriptorVisibility = DescriptorVisibilities.PRIVATE
     ): IrProperty {
         return addProperty {
-            name = Name.identifier(propertyName)
-            visibility = DescriptorVisibilities.PRIVATE
+            name = propertyName
+            visibility = propertyVisibility
         }.apply {
             addBackingFieldUtil {
                 visibility = DescriptorVisibilities.PRIVATE
@@ -185,7 +189,7 @@ internal class RPCStubGenerator(
             }
 
             addDefaultGetter(this@constructorProperty, ctx.irBuiltIns) {
-                visibility = DescriptorVisibilities.PRIVATE
+                visibility = propertyVisibility
             }
         }
     }
@@ -281,8 +285,7 @@ internal class RPCStubGenerator(
     private fun IrClass.rpcFlowField(field: ServiceDeclaration.FlowField) {
         val isLazy = !field.property.hasAnnotation(ctx.rpcEagerFieldAnnotation)
 
-        val servicePropertyGetter = field.property.getter
-            ?: error("RPC field declared in service interface expected to have getters: ${field.property.dump()}")
+        val servicePropertyGetter = field.property.getterOrFail
 
         addProperty {
             name = field.property.name
@@ -533,13 +536,10 @@ internal class RPCStubGenerator(
         "detekt.LongMethod",
     )
     private fun IrClass.generateRpcMethod(method: ServiceDeclaration.Method) {
-        val isMethodObject = method.argumentTypes.isEmpty()
-        val methodClassName = "${method.function.name.asString().capitalized()}_" + METHOD_CLASS_SUFFIX_PROPERTY
+        val isMethodObject = method.arguments.isEmpty()
 
-        val methodClass: IrClass = findDeclaration<IrClass> { it.name.asString() == methodClassName }
-            ?: error("Expected $methodClassName class to be present in stub class ${declaration.simpleName}")
-
-        methodClasses.add(methodClass)
+        val methodClassName = method.function.name.rpcMethodClassName
+        val methodClass: IrClass = initiateAndGetMethodClass(methodClassName, method)
 
         addFunction {
             name = method.function.name
@@ -557,7 +557,7 @@ internal class RPCStubGenerator(
 
             val declaredFunction = this
 
-            val arguments = method.argumentTypes.memoryOptimizedMap { arg ->
+            val arguments = method.arguments.memoryOptimizedMap { arg ->
                 addValueParameter {
                     name = arg.value.name
                     type = arg.type
@@ -591,7 +591,7 @@ internal class RPCStubGenerator(
                             parent = declaredFunction
 
                             body = irBuilder(symbol).irBlockBody {
-                                val call = irRPCMethodClientCall(
+                                val call = irRpcMethodClientCall(
                                     method = method,
                                     functionThisReceiver = functionThisReceiver,
                                     isMethodObject = isMethodObject,
@@ -623,6 +623,122 @@ internal class RPCStubGenerator(
     }
 
     /**
+     * Frontend plugins generate the following:
+     * ```kotlin
+     * // Given rpc method:
+     * suspend fun hello(arg1: String, arg2: Int)
+     *
+     * // Frontend generates:
+     * @Serializable
+     * class hello$rpcMethod {
+     *    constructor(arg1: String, arg2: String)
+     *
+     *    val arg1: String
+     *    val arg2: Int
+     * }
+     * ```
+     *
+     * This method generates missing getters and backing fields' values.
+     * And adds RPCMethodClassArguments supertype with `asArray` method implemented.
+     *
+     * Resulting class:
+     * ```kotlin
+     * @Serializable
+     * class hello$rpcMethod(
+     *    val arg1: String,
+     *    val arg2: Int,
+     * ) : RPCMethodClassArguments {
+     *    // or emptyArray when no arguments
+     *    override fun asArray(): Array<Any?> = arrayOf(arg1, arg2)
+     * }
+     * ```
+     */
+    private fun IrClass.initiateAndGetMethodClass(methodClassName: Name, method: ServiceDeclaration.Method): IrClass {
+        val methodClass = findDeclaration<IrClass> { it.name == methodClassName }
+            ?: error(
+                "Expected $methodClassName class to be present in stub class " +
+                        "${declaration.service.name}${declaration.stubClass.name}"
+            )
+
+        methodClasses.add(methodClass)
+
+        val methodClassThisReceiver = methodClass.thisReceiver
+            ?: error("Expected $methodClassName of ${declaration.stubClass.name} to have a thisReceiver")
+
+        val properties = if (methodClass.isClass) {
+            val argNames = method.arguments.memoryOptimizedMap { it.value.name }.toSet()
+
+            // remove frontend generated properties
+            // new ones will be used instead
+            methodClass.declarations.removeAll { it is IrProperty && it.name in argNames }
+
+            // primary constructor, serialization may add another
+            val constructor = methodClass.constructors.single {
+                method.arguments.size == it.valueParameters.size
+            }
+
+            methodClass.addDefaultConstructor(constructor)
+
+            constructor.valueParameters.memoryOptimizedMap { valueParam ->
+                methodClass.constructorProperty(
+                    propertyName = valueParam.name,
+                    propertyType = valueParam.type,
+                    valueParameter = valueParam,
+                    propertyVisibility = DescriptorVisibilities.PUBLIC,
+                )
+            }
+        } else {
+            emptyList()
+        }
+
+        methodClass.superTypes = listOf(ctx.rpcMethodClassArguments.defaultType)
+
+        methodClass.addFunction {
+            name = ctx.functions.asArray.name
+            visibility = DescriptorVisibilities.PUBLIC
+            returnType = ctx.arrayOfAnyNullable
+            modality = Modality.OPEN
+        }.apply {
+            overriddenSymbols = listOf(ctx.functions.asArray.symbol)
+
+            val asArrayThisReceiver = vsApi {
+                methodClassThisReceiver.copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
+            }.also {
+                dispatchReceiverParameter = it
+            }
+
+            body = irBuilder(symbol).irBlockBody {
+                val callee = if (methodClass.isObject) {
+                    ctx.functions.emptyArray
+                } else {
+                    ctx.irBuiltIns.arrayOf
+                }
+
+                val arrayOfCall = irCall(callee, type = ctx.arrayOfAnyNullable).apply arrayOfCall@{
+                    putTypeArgument(0, ctx.anyNullable)
+
+                    if (methodClass.isObject) {
+                        return@arrayOfCall
+                    }
+
+                    val vararg = irVararg(
+                        elementType = ctx.anyNullable,
+                        values = properties.memoryOptimizedMap { property ->
+                            irCallProperty(methodClass, property, symbol = asArrayThisReceiver.symbol)
+                        },
+                    )
+
+                    putValueArgument(0, vararg)
+                }
+
+                +irReturn(arrayOfCall)
+            }
+        }
+
+        return methodClass
+    }
+
+    /**
      * Part of [generateRpcMethod] that generates next call:
      *
      * ```kotlin
@@ -641,7 +757,7 @@ internal class RPCStubGenerator(
         "detekt.NestedBlockDepth",
         "detekt.MagicNumber",
     )
-    private fun IrBlockBodyBuilder.irRPCMethodClientCall(
+    private fun IrBlockBodyBuilder.irRpcMethodClientCall(
         method: ServiceDeclaration.Method,
         functionThisReceiver: IrValueParameter,
         isMethodObject: Boolean,
@@ -697,7 +813,7 @@ internal class RPCStubGenerator(
                     irCallConstructor(
                         // serialization plugin adds additional constructor with more arguments
                         callee = methodClass.constructors.single {
-                            it.valueParameters.size == method.argumentTypes.size
+                            it.valueParameters.size == method.arguments.size
                         }.symbol,
                         typeArguments = emptyList(),
                     ).apply {
@@ -753,8 +869,7 @@ internal class RPCStubGenerator(
     }
 
     private fun irCallProperty(receiver: IrExpression, property: IrProperty): IrCall {
-        val getter = property.getter
-            ?: error("Expected property getter to call it: ${property.dump()}")
+        val getter = property.getterOrFail
 
         return IrCallImpl(
             startOffset = UNDEFINED_OFFSET,
@@ -806,15 +921,7 @@ internal class RPCStubGenerator(
             isPrimary = true
             visibility = DescriptorVisibilities.PRIVATE
         }.apply {
-            body = irBuilder(symbol).irBlockBody {
-                +irDelegatingConstructorCall(context.irBuiltIns.anyClass.owner.constructors.single())
-                +IrInstanceInitializerCallImpl(
-                    startOffset = startOffset,
-                    endOffset = endOffset,
-                    classSymbol = this@generateCompanionObjectConstructor.symbol,
-                    type = context.irBuiltIns.unitType,
-                )
-            }
+            addDefaultConstructor(this)
         }
     }
 
@@ -1083,12 +1190,10 @@ internal class RPCStubGenerator(
                         return@listApply
                     }
 
-                    val anyArrayType = ctx.irBuiltIns.arrayClass.typeWith(ctx.anyNullable, Variance.OUT_VARIANCE)
-
                     val vararg = IrVarargImpl(
                         startOffset = UNDEFINED_OFFSET,
                         endOffset = UNDEFINED_OFFSET,
-                        type = anyArrayType,
+                        type = ctx.arrayOfAnyNullable,
                         varargElementType = ctx.anyNullable,
                         elements = declaration.fields.memoryOptimizedMap {
                             irCallProperty(irGet(service), it.property)
@@ -1137,10 +1242,23 @@ internal class RPCStubGenerator(
         }
     }
 
+    // default constructor implementation
+    private fun IrClass.addDefaultConstructor(constructor: IrConstructor) {
+        constructor.body = irBuilder(constructor.symbol).irBlockBody {
+            +irDelegatingConstructorCall(context.irBuiltIns.anyClass.owner.constructors.single())
+            +IrInstanceInitializerCallImpl(
+                startOffset = startOffset,
+                endOffset = endOffset,
+                classSymbol = this@addDefaultConstructor.symbol,
+                type = context.irBuiltIns.unitType,
+            )
+        }
+    }
+
     // adds fake overrides for toString(), equals(), hashCode() for a class
     private fun IrClass.addAnyOverrides(parent: IrClass? = null) {
         val anyClass = ctx.irBuiltIns.anyClass.owner
-        val overridenClass = parent ?: anyClass
+        val overriddenClass = parent ?: anyClass
 
         addFunction {
             name = OperatorNameConventions.EQUALS
@@ -1152,7 +1270,9 @@ internal class RPCStubGenerator(
             isFakeOverride = true
             returnType = ctx.irBuiltIns.booleanType
         }.apply {
-            overriddenSymbols += overridenClass.functions.single { it.name == OperatorNameConventions.EQUALS }.symbol
+            overriddenSymbols += overriddenClass.functions.single {
+                it.name == OperatorNameConventions.EQUALS
+            }.symbol
 
             dispatchReceiverParameter = anyClass.thisReceiver
 
@@ -1171,7 +1291,9 @@ internal class RPCStubGenerator(
             isFakeOverride = true
             returnType = ctx.irBuiltIns.intType
         }.apply {
-            overriddenSymbols += overridenClass.functions.single { it.name == OperatorNameConventions.HASH_CODE }.symbol
+            overriddenSymbols += overriddenClass.functions.single {
+                it.name == OperatorNameConventions.HASH_CODE
+            }.symbol
 
             dispatchReceiverParameter = anyClass.thisReceiver
         }
@@ -1185,7 +1307,9 @@ internal class RPCStubGenerator(
             isFakeOverride = true
             returnType = ctx.irBuiltIns.stringType
         }.apply {
-            overriddenSymbols += overridenClass.functions.single { it.name == OperatorNameConventions.TO_STRING }.symbol
+            overriddenSymbols += overriddenClass.functions.single {
+                it.name == OperatorNameConventions.TO_STRING
+            }.symbol
 
             dispatchReceiverParameter = anyClass.thisReceiver
         }

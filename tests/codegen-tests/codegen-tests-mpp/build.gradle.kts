@@ -3,11 +3,13 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinx.rpc)
+    alias(libs.plugins.serialization)
 }
 
 kotlin {
@@ -36,6 +38,10 @@ kotlin {
                 implementation(libs.logback.classic)
             }
         }
+    }
+
+    compilerOptions {
+        languageVersion.set(KotlinVersion.KOTLIN_2_0)
     }
 
     explicitApi = ExplicitApiMode.Disabled
