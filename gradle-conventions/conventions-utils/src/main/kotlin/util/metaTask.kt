@@ -6,15 +6,19 @@ package util
 
 import org.gradle.api.Project
 
-fun Project.configureMetaTasks(vararg taskNames: String) {
-    configureMetaTasks(taskNames.toList())
+fun Project.configureMetaTasks(vararg taskNames: String, excludeSubprojects: List<String> = emptyList()) {
+    configureMetaTasks(taskNames.toList(), excludeSubprojects)
 }
 
-fun Project.configureMetaTasks(taskNames: List<String>) {
+fun Project.configureMetaTasks(taskNames: List<String>, excludeSubprojects: List<String> = emptyList()) {
     val root = this
     val metaSet = taskNames.toSet()
 
     subprojects.forEach {
+        if (it.name in excludeSubprojects) {
+            return@forEach
+        }
+
         it.tasks.all {
             val subtask = this
 
