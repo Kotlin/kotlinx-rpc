@@ -65,12 +65,12 @@ android {
 
 dependencies {
     implementation(project(":common"))
-    testImplementation(libs.kotlinx.rpc.runtime.client)
-    testImplementation(libs.kotlinx.rpc.runtime.server)
-    implementation(libs.kotlinx.rpc.runtime.serialization.json)
+    testImplementation(libs.kotlinx.rpc.krpc.client)
+    testImplementation(libs.kotlinx.rpc.krpc.server)
+    implementation(libs.kotlinx.rpc.krpc.serialization.json)
 
-    implementation(libs.kotlinx.rpc.transport.ktor.client)
-    implementation(libs.kotlinx.rpc.transport.ktor.server)
+    implementation(libs.kotlinx.rpc.krpc.ktor.client)
+    implementation(libs.kotlinx.rpc.krpc.ktor.server)
 
     implementation(libs.ktor.server.cio)
     implementation(libs.ktor.server.core.jvm)

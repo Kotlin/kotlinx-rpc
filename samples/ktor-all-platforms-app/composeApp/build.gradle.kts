@@ -48,9 +48,9 @@ kotlin {
             implementation(compose.components.resources)
             implementation(projects.shared)
 
-            implementation(libs.kotlinx.rpc.runtime.client)
-            implementation(libs.kotlinx.rpc.runtime.serialization.json)
-            implementation(libs.kotlinx.rpc.transport.ktor.client)
+            implementation(libs.kotlinx.rpc.krpc.client)
+            implementation(libs.kotlinx.rpc.krpc.serialization.json)
+            implementation(libs.kotlinx.rpc.krpc.ktor.client)
             implementation(libs.ktor.client.cio)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.websockets)
