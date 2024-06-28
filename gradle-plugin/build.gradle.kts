@@ -46,6 +46,10 @@ configureMetaTasks(
     "publishPlugins", // publish to Gradle Plugin Portal
     "publishToMavenLocal", // for local plugin development
     "validatePlugins", // plugin validation
+    excludeSubprojects = listOf("gradle-plugin-api"),
+)
+
+configureMetaTasks(
     "detekt", // run Detekt tasks
     "clean",
 )
