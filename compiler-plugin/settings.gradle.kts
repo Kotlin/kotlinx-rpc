@@ -13,7 +13,6 @@ pluginManagement {
 
 plugins {
     id("settings-conventions")
-    id("compiler-specific-modules")
 }
 
 includeRootAsPublic()

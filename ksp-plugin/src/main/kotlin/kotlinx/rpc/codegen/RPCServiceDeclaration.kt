@@ -12,6 +12,7 @@ class RPCServiceDeclaration(
     private val declaration: KSDeclaration,
     val simpleName: String,
     val fullName: String,
+    val packageName: String,
     val functions: List<Function>,
     val fields: List<FlowField>,
     val file: KSFile,
