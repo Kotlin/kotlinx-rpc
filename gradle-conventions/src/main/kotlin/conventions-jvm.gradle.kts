@@ -11,6 +11,10 @@ plugins {
     id("conventions-kotlin-version-jvm")
 }
 
+java {
+    withSourcesJar()
+}
+
 configure<KotlinJvmProjectExtension> {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(8))
