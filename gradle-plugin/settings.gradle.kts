@@ -14,7 +14,3 @@ pluginManagement {
 plugins {
     id("settings-conventions")
 }
-
-includePublic(":gradle-plugin-api")
-includePublic(":gradle-plugin-all")
-includePublic(":gradle-plugin-platform")

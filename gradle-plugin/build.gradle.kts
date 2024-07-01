@@ -3,53 +3,91 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
-import util.configureMetaTasks
 
 plugins {
-    alias(libs.plugins.conventions.jvm) apply false
-    alias(libs.plugins.conventions.gradle.publish) apply false
-    alias(libs.plugins.gradle.kotlin.dsl) apply false
-    alias(libs.plugins.gradle.plugin.publish) apply false
+    alias(libs.plugins.conventions.jvm)
+    alias(libs.plugins.conventions.gradle.publish)
+    alias(libs.plugins.gradle.kotlin.dsl)
+    alias(libs.plugins.gradle.plugin.publish)
 }
 
-subprojects {
-    group = "org.jetbrains.kotlinx"
-    version = rootProject.libs.versions.kotlinx.rpc.get()
+group = "org.jetbrains.kotlinx"
+version = rootProject.libs.versions.kotlinx.rpc.get()
 
-    fun alias(notation: Provider<PluginDependency>): String {
-        return notation.get().pluginId
-    }
+kotlin {
+    explicitApi = ExplicitApiMode.Disabled
+}
 
-    afterEvaluate {
-        plugins.apply(alias(rootProject.libs.plugins.conventions.jvm))
+dependencies {
+    compileOnly(libs.kotlin.gradle.plugin)
+}
 
-        configure<KotlinJvmProjectExtension> {
-            explicitApi = ExplicitApiMode.Disabled
+// This block is needed to show plugin tasks on --dry-run
+//  and to not run task actions on ":plugin:task --dry-run".
+//  The bug is known since June 2017 and still not fixed.
+//  The workaround used below is described here: https://github.com/gradle/gradle/issues/2517#issuecomment-437490287
+if (gradle.parent != null && gradle.parent!!.startParameter.isDryRun) {
+    gradle.startParameter.isDryRun = true
+}
+
+gradlePlugin {
+    plugins {
+        create("plugin") {
+            id = "org.jetbrains.kotlinx.rpc.plugin"
+
+            displayName = "kotlinx.rpc Gradle Plugin"
+            implementationClass = "kotlinx.rpc.RPCGradlePlugin"
+            description = """
+                The plugin ensures correct RPC configurations for your project, that will allow proper code generation. 
+                
+                Additionally, it enforces proper artifacts versions for your project, depending on your Kotlin version.
+                Resulting versions of the kotlinx.rpc dependencies will be 'kotlinVersion-kotlinxRpcVersion', for example '1.9.24-0.2.0', where '0.2.0' is the kotlinx.rpc version.
+            """.trimIndent()
         }
     }
-    plugins.apply(alias(rootProject.libs.plugins.gradle.kotlin.dsl))
-    plugins.apply(alias(rootProject.libs.plugins.conventions.gradle.publish))
 
-    // This block is needed to show plugin tasks on --dry-run
-    //  and to not run task actions on ":plugin:task --dry-run".
-    //  The bug is known since June 2017 and still not fixed.
-    //  The workaround used below is described here: https://github.com/gradle/gradle/issues/2517#issuecomment-437490287
-    if (gradle.parent != null && gradle.parent!!.startParameter.isDryRun) {
-        gradle.startParameter.isDryRun = true
+    plugins {
+        create("platform") {
+            id = "org.jetbrains.kotlinx.rpc.platform"
+
+            displayName = "kotlinx.rpc Platform Plugin"
+            implementationClass = "kotlinx.rpc.RPCPlatformPlugin"
+            description = """
+                The plugin enforces proper artifacts versions for your project, depending on your Kotlin version.
+                Resulting versions of the kotlinx.rpc dependencies will be 'kotlinVersion-kotlinxRpcVersion', for example '1.9.24-0.2.0', where '0.2.0' is the kotlinx.rpc version.
+            """.trimIndent()
+        }
     }
 }
 
-configureMetaTasks(
-    "publishAllPublicationsToBuildRepoRepository", // publish to locally (to the build/repo folder)
-    "publishAllPublicationsToSpaceRepository", // publish to Space
-    "publishPlugins", // publish to Gradle Plugin Portal
-    "publishToMavenLocal", // for local plugin development
-    "validatePlugins", // plugin validation
-    excludeSubprojects = listOf("gradle-plugin-api"),
-)
+abstract class GeneratePluginVersionTask @Inject constructor(
+    @get:Input val pluginVersion: String,
+    @get:OutputDirectory val sourcesDir: File
+) : DefaultTask() {
+    @TaskAction
+    fun generate() {
+        val sourceFile = File(sourcesDir, "PluginVersion.kt")
 
-configureMetaTasks(
-    "detekt", // run Detekt tasks
-    "clean",
-)
+        sourceFile.writeText(
+            """
+            package kotlinx.rpc
+
+            const val PLUGIN_VERSION = "$pluginVersion"
+            
+            """.trimIndent()
+        )
+    }
+}
+
+val sourcesDir = File(project.layout.buildDirectory.asFile.get(), "generated-sources/pluginVersion")
+
+val generatePluginVersionTask =
+    tasks.register<GeneratePluginVersionTask>("generatePluginVersion", version.toString(), sourcesDir)
+
+kotlin {
+    sourceSets {
+        main {
+            kotlin.srcDir(generatePluginVersionTask.map { it.sourcesDir })
+        }
+    }
+}
