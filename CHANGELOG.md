@@ -1,5 +1,5 @@
-# 0.2.0
-> Published 28 June 2024
+# 0.2.1
+> Published 1 July 2024
 
 ### Breaking changes
 Release contains breaking changes, see the [migration guide](https://kotlin.github.io/kotlinx-rpc/0-2-0.html)
@@ -47,4 +47,4 @@ Release contains breaking changes, see the [migration guide](https://kotlin.gith
 * @turansky made their first contribution in https://github.com/Kotlin/kotlinx-rpc/pull/96
 * @vnikolova made their first contribution in https://github.com/Kotlin/kotlinx-rpc/pull/86
 
-**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.1.0...0.2.0
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.1.0...0.2.1

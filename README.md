@@ -95,7 +95,7 @@ plugins {
     kotlin("jvm") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
     id("com.google.devtools.ksp") version "1.9.24-1.0.20"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.0"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.1"
 }
 ```
 ### Runtime dependencies
@@ -154,11 +154,11 @@ based on the project's Kotlin version:
 ```kotlin
 plugins {
     kotlin("jvm") version "1.9.24"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.0"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.1"
 }
 
 dependencies {
-    // version 0.2.0 is set by the Gradle plugin
+    // version 0.2.1 is set by the Gradle plugin
     implementation("org.jetbrains.kotlinx:kotlinx-rpc-core") 
 }
 ```
