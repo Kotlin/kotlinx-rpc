@@ -5,7 +5,7 @@ ktor = "2.3.11"
 kotlinx-serialization-json = "1.6.1"
 kotlinx-coroutines-core = "1.8.1"
 logback = "1.5.6"
-krpc = "0.2.0"
+kotlinx-rpc = "0.2.1"
 ksp = "1.9.24-1.0.20"
 
 [libraries]
@@ -53,6 +53,6 @@ kotlinx-rpc-krpc-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlinx-rpc = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "krpc" }
-kotlinx-rpc-platform = { id = "org.jetbrains.kotlinx.rpc.platform", version.ref = "krpc" }
+kotlinx-rpc = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-platform = { id = "org.jetbrains.kotlinx.rpc.platform", version.ref = "kotlinx-rpc" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

@@ -7,10 +7,10 @@
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
-       title="Migration to 0.2.0" id="0-2-0">
+       title="Migration to 0.2.1" id="0-2-1" help-id="0-2-0">
 
     <p>
-        Version <code>0.2.0</code> introduces changes that are not compatible with the previous <code>0.1.0</code> release.
+        Version <code>0.2.1</code> introduces changes that are not compatible with the previous <code>0.1.0</code> release.
         This guide contains a full list of all incompatible changes.
     </p>
 
@@ -92,7 +92,7 @@
             All other artifacts will use a simplified versioning format like this:
         </p>
         <code-block>
-            org.jetbrains.kotlinx.kotlinx-rpc-core:0.2.0
+            org.jetbrains.kotlinx.kotlinx-rpc-core:0.2.1
         </code-block>
         <p>
             Our gradle plugin is still capable of including proper versions of artifacts for you.
@@ -105,7 +105,7 @@
 
     <chapter title="Repositories" id="repositories">
         <p>
-            Version <code>0.2.0</code> is being released to the Maven Central repository instead of Space, like it was previously.
+            Version <code>0.2.1</code> is being released to the Maven Central repository instead of Space, like it was previously.
             In your gradle build scripts (<code>build.gradle.kts</code>) you need to update the repository to ensure you consume the correct artifacts.
         </p>
         <p>Old configuration:</p>
