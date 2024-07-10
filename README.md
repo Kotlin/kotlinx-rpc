@@ -42,6 +42,7 @@ Then, choose how do you want your service to communicate. For example, you can u
 ```kotlin
 fun main() {
     embeddedServer(Netty, 8080) {
+        install(WebSockets)
         install(RPC)
         routing {
             rpc("/awesome") {
