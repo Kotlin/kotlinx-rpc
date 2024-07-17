@@ -152,7 +152,7 @@ public abstract class KRPCServer(
                 val serviceId = message[RPCPluginKey.CLIENT_SERVICE_ID]?.toLongOrNull()
                     ?: error("Expected CLIENT_SERVICE_ID for cancellation of type 'service' as Long value")
 
-                rpcServices[serviceId]?.cancel("Sevice cancelled by client")
+                rpcServices[serviceId]?.cancel("Service cancelled by client")
             }
 
             CancellationType.REQUEST -> {
