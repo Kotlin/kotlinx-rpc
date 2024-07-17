@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.internal.transport
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -166,9 +167,12 @@ public class RPCConnector<SubscriptionKey>(
                 return
             }
 
+            val initialCause = (result as? HandlerResult.Failure)?.cause
+
             val cause = IllegalStateException(
                 "Failed to process call ${message.callId} for service ${message.serviceType}, " +
-                        "${subscriptions.size} attempts failed"
+                        "${subscriptions.size} attempts failed",
+                initialCause,
             )
 
             val callException = RPCCallMessage.CallException(
@@ -196,8 +200,11 @@ public class RPCConnector<SubscriptionKey>(
 
         return when {
             result.isFailure -> {
-                logger.error(result.exceptionOrNull()) { "Failed to handle message with key $key" }
-                HandlerResult.Failure(result.exceptionOrNull())
+                val exception = result.exceptionOrNull()
+                if (exception !is CancellationException) {
+                    logger.error(exception) { "Failed to handle message with key $key" }
+                }
+                HandlerResult.Failure(exception)
             }
 
             else -> {
