@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.internal.transport
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -56,6 +57,9 @@ public abstract class RPCServiceHandler {
                             )
                         }
                     }
+                } catch (e : CancellationException) {
+                    // canceled by a streamScope
+                    throw e
                 } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
                     mutex.withLock {
                         val serializedReason = serializeException(cause)
