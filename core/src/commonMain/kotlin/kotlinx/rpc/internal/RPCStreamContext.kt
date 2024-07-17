@@ -56,6 +56,9 @@ public class RPCStreamContext(
         private const val STREAM_ID_PREFIX = "stream:"
     }
 
+    // thread-safe set
+    private val closedStreams = ConcurrentHashMap<String, Unit>()
+
     @InternalRPCApi
     public inline fun launchIf(
         condition: RPCStreamContext.() -> Boolean,
@@ -97,7 +100,7 @@ public class RPCStreamContext(
     private var incomingChannelsInitialized: Boolean = false
     private val incomingChannels by lazy {
         incomingChannelsInitialized = true
-        ConcurrentHashMap<String, CompletableDeferred<Channel<Any?>>>()
+        ConcurrentHashMap<String, CompletableDeferred<Channel<Any?>?>>()
     }
 
     private var outgoingStreamsInitialized: Boolean = false
@@ -165,7 +168,8 @@ public class RPCStreamContext(
             fun onClose() {
                 incoming.cancel()
 
-                incomingChannels.remove(streamId)
+                closedStreams.put(streamId, Unit)
+                incomingChannels.remove(streamId)?.complete(null)
                 incomingStreams.remove(streamId)
             }
 
@@ -230,20 +234,24 @@ public class RPCStreamContext(
     }
 
     public suspend fun closeStream(message: RPCCallMessage.StreamFinished) {
-        incomingChannelOf(message.streamId).send(StreamEnd)
+        incomingChannelOf(message.streamId)?.send(StreamEnd)
     }
 
     public suspend fun cancelStream(message: RPCCallMessage.StreamCancel) {
-        incomingChannelOf(message.streamId).send(StreamCancel(message.cause.deserialize()))
+        incomingChannelOf(message.streamId)?.send(StreamCancel(message.cause.deserialize()))
     }
 
     public suspend fun send(message: RPCCallMessage.StreamMessage, serialFormat: SerialFormat) {
         val info = incomingStreams.getDeferred(message.streamId).await()
         val result = decodeMessageData(serialFormat, info.elementSerializer, message)
-        incomingChannelOf(message.streamId).send(result)
+        incomingChannelOf(message.streamId)?.send(result)
     }
 
-    private suspend fun incomingChannelOf(streamId: String): Channel<Any?> {
+    private suspend fun incomingChannelOf(streamId: String): Channel<Any?>? {
+        if (closedStreams.containsKey(streamId)) {
+            return null
+        }
+
         return incomingChannels.getDeferred(streamId).await()
     }
 
@@ -263,7 +271,7 @@ public class RPCStreamContext(
                 }
 
                 @OptIn(ExperimentalCoroutinesApi::class)
-                channel.getCompleted().apply {
+                channel.getCompleted()?.apply {
                     trySend(StreamEnd)
 
                     // close for sending, but not for receiving our cancel message, if possible.
