@@ -140,7 +140,7 @@ public abstract class KRPCServer(
 
     @InternalRPCApi
     final override fun handleCancellation(message: RPCGenericMessage) {
-        when (message.cancellationType()) {
+        when (val type = message.cancellationType()) {
             CancellationType.ENDPOINT -> {
                 cancelledByClient = true
 
@@ -163,6 +163,13 @@ public abstract class KRPCServer(
                     ?: error("Expected CANCELLATION_ID for cancellation of type 'request'")
 
                 rpcServices[serviceId]?.cancelRequest(callId, "Request cancelled by client")
+            }
+
+            else -> {
+                logger.warn {
+                    "Unsupported ${RPCPluginKey.CANCELLATION_TYPE} $type for server, " +
+                            "only 'endpoint' type may be sent by a server"
+                }
             }
         }
     }

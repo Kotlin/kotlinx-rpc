@@ -69,6 +69,9 @@ public abstract class KRPCClient(
 
     private var clientCancelled = false
 
+    // callId to serviceTypeString
+    private val cancellingRequests = mutableMapOf<String, String>()
+
     init {
         coroutineContext.job.invokeOnCompletion(onCancelling = true) {
             clientCancelled = true
@@ -202,7 +205,7 @@ public abstract class KRPCClient(
 
         callResult.invokeOnCompletion { cause ->
             if (cause != null) {
-                connector.unsubscribeFromMessages(call.serviceTypeString, rpcCall.callId)
+                cancellingRequests[rpcCall.callId] = call.serviceTypeString
 
                 rpcCall.streamContext.valueOrNull?.cancel("Request failed", cause)
 
@@ -213,7 +216,7 @@ public abstract class KRPCClient(
                 val streamScope = rpcCall.streamContext.valueOrNull?.streamScope
 
                 streamScope?.onScopeCompletion(rpcCall.callId) {
-                    connector.unsubscribeFromMessages(call.serviceTypeString, rpcCall.callId)
+                    cancellingRequests[rpcCall.callId] = call.serviceTypeString
 
                     sendCancellation(CancellationType.REQUEST, call.serviceId.toString(), rpcCall.callId)
                 }
@@ -273,6 +276,10 @@ public abstract class KRPCClient(
         callResult: RequestCompletableDeferred<Any?>,
     ) {
         connector.subscribeToCallResponse(call.serviceTypeString, callId) { message ->
+            if (callId in cancellingRequests) {
+                return@subscribeToCallResponse
+            }
+
             handleMessage(message, streamContext, call, serialFormat, callResult)
         }
 
@@ -337,11 +344,19 @@ public abstract class KRPCClient(
                 cancel("Closing client after server cancellation") // we cancel this client
             }
 
+            CancellationType.CANCELLATION_ACK -> {
+                val callId = message[RPCPluginKey.CANCELLATION_ID]
+                    ?: error("Expected CANCELLATION_ID for cancellation of type 'request'")
+
+                val serviceTypeString = cancellingRequests.remove(callId) ?: return
+                connector.unsubscribeFromMessages(serviceTypeString, callId)
+            }
+
             else -> {
-                error(
+                logger.warn {
                     "Unsupported ${RPCPluginKey.CANCELLATION_TYPE} $type for client, " +
                             "only 'endpoint' type may be sent by a server"
-                )
+                }
             }
         }
     }

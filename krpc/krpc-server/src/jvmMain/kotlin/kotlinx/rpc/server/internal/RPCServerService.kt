@@ -9,9 +9,7 @@ import kotlinx.rpc.*
 import kotlinx.rpc.internal.*
 import kotlinx.rpc.internal.logging.CommonLogger
 import kotlinx.rpc.internal.map.ConcurrentHashMap
-import kotlinx.rpc.internal.transport.RPCCallMessage
-import kotlinx.rpc.internal.transport.RPCMessageSender
-import kotlinx.rpc.internal.transport.RPCServiceHandler
+import kotlinx.rpc.internal.transport.*
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.StringFormat
 import java.lang.reflect.InvocationTargetException
@@ -264,6 +262,20 @@ internal class RPCServerService<T : RPC>(
 
     fun cancelRequest(callId: String, message: String? = null, cause: Throwable? = null, fromJob: Boolean = false) {
         requestMap.remove(callId)?.cancelAndClose(callId, message, cause, fromJob)
+
+        launch {
+            // acknowledge the cancellation
+            sender.sendMessage(
+                RPCGenericMessage(
+                    connectionId = null,
+                    pluginParams = mapOf(
+                        RPCPluginKey.GENERIC_MESSAGE_TYPE to RPCGenericMessage.CANCELLATION_TYPE,
+                        RPCPluginKey.CANCELLATION_TYPE to CancellationType.CANCELLATION_ACK.toString(),
+                        RPCPluginKey.CANCELLATION_ID to callId,
+                    )
+                )
+            )
+        }
     }
 }
 
