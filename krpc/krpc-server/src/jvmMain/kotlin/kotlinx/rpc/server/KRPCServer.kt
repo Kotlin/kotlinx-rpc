@@ -135,12 +135,16 @@ public abstract class KRPCServer(
             config = config,
             connector = connector,
             coroutineContext = serviceInstanceContext,
-        )
+        ).apply {
+            coroutineContext.job.invokeOnCompletion {
+                connector.unsubscribeFromServiceMessages(serviceKClass.qualifiedClassName)
+            }
+        }
     }
 
     @InternalRPCApi
-    final override fun handleCancellation(message: RPCGenericMessage) {
-        when (message.cancellationType()) {
+    final override suspend fun handleCancellation(message: RPCGenericMessage) {
+        when (val type = message.cancellationType()) {
             CancellationType.ENDPOINT -> {
                 cancelledByClient = true
 
@@ -152,7 +156,7 @@ public abstract class KRPCServer(
                 val serviceId = message[RPCPluginKey.CLIENT_SERVICE_ID]?.toLongOrNull()
                     ?: error("Expected CLIENT_SERVICE_ID for cancellation of type 'service' as Long value")
 
-                rpcServices[serviceId]?.cancel("Sevice cancelled by client")
+                rpcServices[serviceId]?.cancel("Service cancelled by client")
             }
 
             CancellationType.REQUEST -> {
@@ -163,6 +167,13 @@ public abstract class KRPCServer(
                     ?: error("Expected CANCELLATION_ID for cancellation of type 'request'")
 
                 rpcServices[serviceId]?.cancelRequest(callId, "Request cancelled by client")
+            }
+
+            else -> {
+                logger.warn {
+                    "Unsupported ${RPCPluginKey.CANCELLATION_TYPE} $type for server, " +
+                            "only 'endpoint' type may be sent by a server"
+                }
             }
         }
     }

@@ -8,10 +8,12 @@ import kotlinx.rpc.internal.IndexedEnum
 import kotlinx.rpc.internal.InternalRPCApi
 
 @InternalRPCApi
+@Suppress("detekt.MagicNumber")
 public enum class CancellationType(override val uniqueIndex: Int) : IndexedEnum {
     ENDPOINT(0),
     SERVICE(1),
     REQUEST(2),
+    CANCELLATION_ACK(3),
     ;
 
     internal companion object {
@@ -25,9 +27,8 @@ public enum class CancellationType(override val uniqueIndex: Int) : IndexedEnum 
 }
 
 @InternalRPCApi
-public fun RPCMessage.cancellationType(): CancellationType {
+public fun RPCMessage.cancellationType(): CancellationType? {
     return get(RPCPluginKey.CANCELLATION_TYPE)?.let { value ->
         CancellationType.valueOfNull(value)
-            ?: error("Unknown ${RPCPluginKey.CANCELLATION_TYPE} value: $value")
-    } ?: error("Expected ${RPCPluginKey.CANCELLATION_TYPE} field")
+    }
 }

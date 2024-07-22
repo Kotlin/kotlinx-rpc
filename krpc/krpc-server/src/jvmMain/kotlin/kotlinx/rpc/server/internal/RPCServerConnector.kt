@@ -35,6 +35,10 @@ internal class RPCServerConnector private constructor(
         }
     )
 
+    fun unsubscribeFromServiceMessages(serviceTypeString: String) {
+        connector.unsubscribeFromMessages(MessageKey.Service(serviceTypeString))
+    }
+
     suspend fun subscribeToServiceMessages(
         serviceTypeString: String,
         subscription: suspend (RPCCallMessage) -> Unit,

@@ -72,8 +72,8 @@ public class RPCStreamContext(
         }
     }
 
-    public fun cancel(message: String, cause: Throwable?) {
-        streamScope.cancelRequestScopeById(callId, message, cause)
+    public fun cancel(message: String, cause: Throwable?): Job? {
+        return streamScope.cancelRequestScopeById(callId, message, cause)
     }
 
     init {

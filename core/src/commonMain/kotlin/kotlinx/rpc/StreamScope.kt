@@ -48,8 +48,8 @@ public class StreamScope(
         getRequestScope(callId).coroutineContext.job.invokeOnCompletion(onCancelling = true, handler = handler)
     }
 
-    public fun cancelRequestScopeById(callId: String, message: String, cause: Throwable?) {
-        requests.remove(callId)?.cancel(message, cause)
+    public fun cancelRequestScopeById(callId: String, message: String, cause: Throwable?): Job? {
+        return requests.remove(callId)?.apply { cancel(message, cause) }?.coroutineContext?.job
     }
 
     // Group stream launches by callId. In case one fails, so do others

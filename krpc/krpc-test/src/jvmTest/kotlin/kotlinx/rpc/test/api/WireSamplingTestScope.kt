@@ -234,8 +234,8 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
     }
 
     suspend fun stop() {
-        DumpLoggerContainer.set(null)
         transport.coroutineContext.job.cancelAndJoin()
+        DumpLoggerContainer.set(null)
     }
 
     init {
@@ -335,7 +335,15 @@ private class WireContent(
     }
 
     override fun compare(other: WireContent): GoldComparisonResult {
-        return if (transformed == other.transformed) GoldComparisonResult.Ok else GoldComparisonResult.Failure()
+        return if (transformed == other.transformed) {
+            GoldComparisonResult.Ok
+        } else {
+            GoldComparisonResult.Failure(
+                "Wire comparison failed:\n" +
+                        "Gold:\n ${other.dump()}\n\n" +
+                        "Actual:\n ${dump()}"
+            )
+        }
     }
 
     override fun dump(): String {
