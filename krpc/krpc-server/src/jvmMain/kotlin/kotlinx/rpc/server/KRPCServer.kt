@@ -135,11 +135,15 @@ public abstract class KRPCServer(
             config = config,
             connector = connector,
             coroutineContext = serviceInstanceContext,
-        )
+        ).apply {
+            coroutineContext.job.invokeOnCompletion {
+                connector.unsubscribeFromServiceMessages(serviceKClass.qualifiedClassName)
+            }
+        }
     }
 
     @InternalRPCApi
-    final override fun handleCancellation(message: RPCGenericMessage) {
+    final override suspend fun handleCancellation(message: RPCGenericMessage) {
         when (val type = message.cancellationType()) {
             CancellationType.ENDPOINT -> {
                 cancelledByClient = true

@@ -15,6 +15,7 @@ import kotlinx.rpc.client.internal.RPCClientConnector
 import kotlinx.rpc.client.internal.RPCFlow
 import kotlinx.rpc.internal.*
 import kotlinx.rpc.internal.logging.CommonLogger
+import kotlinx.rpc.internal.map.ConcurrentHashMap
 import kotlinx.rpc.internal.transport.*
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat
@@ -70,7 +71,7 @@ public abstract class KRPCClient(
     private var clientCancelled = false
 
     // callId to serviceTypeString
-    private val cancellingRequests = mutableMapOf<String, String>()
+    private val cancellingRequests = ConcurrentHashMap<String, String>()
 
     init {
         coroutineContext.job.invokeOnCompletion(onCancelling = true) {
@@ -215,6 +216,10 @@ public abstract class KRPCClient(
             } else {
                 val streamScope = rpcCall.streamContext.valueOrNull?.streamScope
 
+                if (streamScope == null) {
+                    connector.unsubscribeFromMessages(call.serviceTypeString, rpcCall.callId)
+                }
+
                 streamScope?.onScopeCompletion(rpcCall.callId) {
                     cancellingRequests[rpcCall.callId] = call.serviceTypeString
 
@@ -276,7 +281,7 @@ public abstract class KRPCClient(
         callResult: RequestCompletableDeferred<Any?>,
     ) {
         connector.subscribeToCallResponse(call.serviceTypeString, callId) { message ->
-            if (callId in cancellingRequests) {
+            if (cancellingRequests.containsKey(callId)) {
                 return@subscribeToCallResponse
             }
 
@@ -338,7 +343,7 @@ public abstract class KRPCClient(
     }
 
     @InternalRPCApi
-    final override fun handleCancellation(message: RPCGenericMessage) {
+    final override suspend fun handleCancellation(message: RPCGenericMessage) {
         when (val type = message.cancellationType()) {
             CancellationType.ENDPOINT -> {
                 cancel("Closing client after server cancellation") // we cancel this client

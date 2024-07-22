@@ -260,27 +260,30 @@ internal class RPCServerService<T : RPC>(
         requestJob.start()
     }
 
-    fun cancelRequest(callId: String, message: String? = null, cause: Throwable? = null, fromJob: Boolean = false) {
+    suspend fun cancelRequest(
+        callId: String,
+        message: String? = null,
+        cause: Throwable? = null,
+        fromJob: Boolean = false,
+    ) {
         requestMap.remove(callId)?.cancelAndClose(callId, message, cause, fromJob)
 
-        launch {
-            // acknowledge the cancellation
-            sender.sendMessage(
-                RPCGenericMessage(
-                    connectionId = null,
-                    pluginParams = mapOf(
-                        RPCPluginKey.GENERIC_MESSAGE_TYPE to RPCGenericMessage.CANCELLATION_TYPE,
-                        RPCPluginKey.CANCELLATION_TYPE to CancellationType.CANCELLATION_ACK.toString(),
-                        RPCPluginKey.CANCELLATION_ID to callId,
-                    )
+        // acknowledge the cancellation
+        sender.sendMessage(
+            RPCGenericMessage(
+                connectionId = null,
+                pluginParams = mapOf(
+                    RPCPluginKey.GENERIC_MESSAGE_TYPE to RPCGenericMessage.CANCELLATION_TYPE,
+                    RPCPluginKey.CANCELLATION_TYPE to CancellationType.CANCELLATION_ACK.toString(),
+                    RPCPluginKey.CANCELLATION_ID to callId,
                 )
             )
-        }
+        )
     }
 }
 
 private class RPCRequest(val handlerJob: Job, val streamContext: LazyRPCStreamContext) {
-    fun cancelAndClose(
+    suspend fun cancelAndClose(
         callId: String,
         message: String? = null,
         cause: Throwable? = null,
@@ -292,13 +295,17 @@ private class RPCRequest(val handlerJob: Job, val streamContext: LazyRPCStreamCo
                 message != null -> handlerJob.cancel(message)
                 else -> handlerJob.cancel()
             }
+
+            handlerJob.join()
         }
 
         val ctx = streamContext.valueOrNull
         if (ctx == null) {
-            streamContext.streamScopeOrNull?.cancelRequestScopeById(callId, message ?: "Scope cancelled", cause)
+            streamContext.streamScopeOrNull
+                ?.cancelRequestScopeById(callId, message ?: "Scope cancelled", cause)
+                ?.join()
         } else {
-            ctx.cancel(message ?: "Request cancelled", cause)
+            ctx.cancel(message ?: "Request cancelled", cause)?.join()
         }
     }
 }

@@ -74,5 +74,5 @@ public interface RPCEndpoint {
     }
 
     @InternalRPCApi
-    public fun handleCancellation(message: RPCGenericMessage)
+    public suspend fun handleCancellation(message: RPCGenericMessage)
 }

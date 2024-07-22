@@ -19,14 +19,18 @@ interface GoldComparable<T : GoldComparable<T>> {
 sealed interface GoldComparisonResult {
     object Ok : GoldComparisonResult
 
-    class Failure(val message: String? = null) : GoldComparisonResult
+    class Failure(val message: String) : GoldComparisonResult
 }
 
 class StringGoldContent(private val value: String) : GoldComparable<StringGoldContent> {
     override fun compare(other: StringGoldContent): GoldComparisonResult {
         return when {
             value.removeLineSeparators() == other.value.removeLineSeparators() -> GoldComparisonResult.Ok
-            else -> GoldComparisonResult.Failure()
+            else -> GoldComparisonResult.Failure(
+                "Gold comparison failed\n" +
+                        "Gold:\n ${other.value.removeLineSeparators()}\n\n" +
+                        "Actual:\n ${value.removeLineSeparators()}"
+            )
         }
     }
 
@@ -96,7 +100,6 @@ private fun writeTmp(
     file.writeText(content, Charsets.UTF_8)
 
     return """
-        ${reason?.let { "Failure reason: $it" } ?: ""}
         Please, review and commit:
         ${goldFileLine(goldPath)}
         Temp file: file://${file.absolutePath}
