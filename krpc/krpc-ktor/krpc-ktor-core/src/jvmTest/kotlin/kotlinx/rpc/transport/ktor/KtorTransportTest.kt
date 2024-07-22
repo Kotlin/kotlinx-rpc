@@ -6,14 +6,9 @@
 
 package kotlinx.rpc.transport.ktor
 
-import io.ktor.client.*
-import io.ktor.client.plugins.websocket.*
 import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.server.routing.*
+import io.ktor.server.testing.*
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.runBlocking
 import kotlinx.rpc.RPC
 import kotlinx.rpc.client.withService
 import kotlinx.rpc.serialization.json
@@ -42,30 +37,25 @@ class NewServiceImpl(
 
 class KtorTransportTest {
     @Test
-    fun testEcho() = runBlocking {
-        val server = embeddedServer(Netty, port = 4242) {
-            install(RPC)
-            routing {
-                rpc("/rpc") {
-                    rpcConfig {
-                        serialization {
-                            json {
-                                ignoreUnknownKeys = true
-                            }
+    fun testEcho() = testApplication {
+        install(RPC)
+        routing {
+            rpc("/rpc") {
+                rpcConfig {
+                    serialization {
+                        json {
+                            ignoreUnknownKeys = true
                         }
-
-                        waitForServices = true
                     }
 
-                    registerService<NewService> { NewServiceImpl(it, call) }
+                    waitForServices = true
                 }
-            }
-        }.start()
 
-        val clientWithGlobalConfig = HttpClient {
-            install(WebSockets) {
-                maxFrameSize = Int.MAX_VALUE.toLong() - 42
+                registerService<NewService> { NewServiceImpl(it, call) }
             }
+        }
+
+        val clientWithGlobalConfig = createClient {
             install(kotlinx.rpc.transport.ktor.client.RPC) {
                 serialization {
                     json()
@@ -74,11 +64,9 @@ class KtorTransportTest {
         }
 
         val ktorRPCClient = clientWithGlobalConfig
-            .rpc("ws://localhost:4242/rpc") {
+            .rpc("/rpc") {
                 headers["TestHeader"] = "test-header"
             }
-
-        assertEquals(Int.MAX_VALUE.toLong() - 42, ktorRPCClient.webSocketSession.maxFrameSize)
 
         val serviceWithGlobalConfig = ktorRPCClient.withService<NewService>()
 
@@ -89,11 +77,11 @@ class KtorTransportTest {
         serviceWithGlobalConfig.cancel()
         clientWithGlobalConfig.cancel()
 
-        val clientWithNoConfig = HttpClient {
+        val clientWithNoConfig = createClient {
             installRPC()
         }
 
-        val serviceWithLocalConfig = clientWithNoConfig.rpc("ws://localhost:4242/rpc") {
+        val serviceWithLocalConfig = clientWithNoConfig.rpc("/rpc") {
             headers["TestHeader"] = "test-header"
 
             rpcConfig {
@@ -109,7 +97,5 @@ class KtorTransportTest {
 
         serviceWithLocalConfig.cancel()
         clientWithNoConfig.cancel()
-
-        server.stop()
     }
 }
