@@ -56,7 +56,7 @@ class KtorTransportTest {
         }
 
         val clientWithGlobalConfig = createClient {
-            install(kotlinx.rpc.transport.ktor.client.RPC) {
+            installRPC {
                 serialization {
                     json()
                 }

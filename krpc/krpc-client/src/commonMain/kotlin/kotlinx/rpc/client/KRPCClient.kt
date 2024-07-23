@@ -21,6 +21,7 @@ import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.reflect.typeOf
 
 /**
@@ -204,6 +205,15 @@ public abstract class KRPCClient(
             handleOutgoingStreams(it, rpcCall.serialFormat, call.serviceTypeString)
         }
 
+        val handle = serviceScopeOrNull()?.run {
+            serviceCoroutineScope.coroutineContext.job.invokeOnCompletion(onCancelling = true) { cause ->
+                // service can only be canceled, it cannot complete successfully
+                callResult.completeExceptionally(CancellationException(cause))
+
+                rpcCall.streamContext.valueOrNull?.cancel("Service cancelled", cause)
+            }
+        }
+
         callResult.invokeOnCompletion { cause ->
             if (cause != null) {
                 cancellingRequests[rpcCall.callId] = call.serviceTypeString
@@ -213,14 +223,20 @@ public abstract class KRPCClient(
                 if (!wrappedCallResult.callExceptionOccurred) {
                     sendCancellation(CancellationType.REQUEST, call.serviceId.toString(), rpcCall.callId)
                 }
+
+                handle?.dispose()
             } else {
                 val streamScope = rpcCall.streamContext.valueOrNull?.streamScope
 
                 if (streamScope == null) {
+                    handle?.dispose()
+
                     connector.unsubscribeFromMessages(call.serviceTypeString, rpcCall.callId)
                 }
 
                 streamScope?.onScopeCompletion(rpcCall.callId) {
+                    handle?.dispose()
+
                     cancellingRequests[rpcCall.callId] = call.serviceTypeString
 
                     sendCancellation(CancellationType.REQUEST, call.serviceId.toString(), rpcCall.callId)

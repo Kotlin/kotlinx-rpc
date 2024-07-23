@@ -14,6 +14,8 @@ import kotlin.properties.Delegates
 import kotlin.test.assertIs
 
 interface CancellationService : RPC {
+    suspend fun longRequest()
+
     suspend fun serverDelay(millis: Long)
 
     suspend fun callException()
@@ -45,6 +47,11 @@ class CancellationServiceImpl(override val coroutineContext: CoroutineContext) :
     val firstIncomingConsumed = CompletableDeferred<Int>()
     val consumedAll = CompletableDeferred<Unit>()
     val fence = CompletableDeferred<Unit>()
+
+    override suspend fun longRequest() {
+        firstIncomingConsumed.complete(0)
+        fence.await()
+    }
 
     override suspend fun serverDelay(millis: Long) {
         delay(millis)

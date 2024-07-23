@@ -46,6 +46,7 @@ kotlin {
                 implementation(libs.logback.classic)
 
                 implementation(libs.coroutines.test)
+                implementation(libs.coroutines.debug)
                 implementation(libs.kotlin.reflect)
             }
         }

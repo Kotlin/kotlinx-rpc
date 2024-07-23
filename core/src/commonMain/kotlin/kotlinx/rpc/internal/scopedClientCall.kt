@@ -4,27 +4,17 @@
 
 package kotlinx.rpc.internal
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
 
 /**
- * Bounds coroutine scopes of the request and provided RPC service.
+ * Scopes client RPC call from a service with [serviceScope].
  *
  * Used by code generators.
  */
 @InternalRPCApi
-@OptIn(InternalCoroutinesApi::class)
 @Suppress("unused")
 public suspend inline fun <T> scopedClientCall(serviceScope: CoroutineScope, crossinline body: suspend () -> T): T {
-    val requestJob = currentCoroutineContext().job
-    val handle = serviceScope.coroutineContext.job.invokeOnCompletion(onCancelling = true) {
-        requestJob.cancel(it as CancellationException)
-    }
-
-    try {
-        return serviceScoped(serviceScope) {
-            body()
-        }
-    } finally {
-        handle.dispose()
+    return serviceScoped(serviceScope) {
+        body()
     }
 }
