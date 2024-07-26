@@ -1,3 +1,14 @@
+# 0.2.2
+> Published 5 August 2024
+
+### Bug fixes
+* Fix log error messages by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/139
+* KRPC-97 Race condition in stream cancellation locks the transport by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/138
+* Fix call cancellation by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/141
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.2.1...0.2.2
+
+
 # 0.2.1
 > Published 1 July 2024
 
