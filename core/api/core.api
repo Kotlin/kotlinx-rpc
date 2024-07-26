@@ -121,7 +121,12 @@ public abstract interface class kotlinx/rpc/RPCServer : kotlinx/coroutines/Corou
 
 public abstract interface class kotlinx/rpc/RPCTransport : kotlinx/coroutines/CoroutineScope {
 	public abstract fun receive (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun receiveCatching-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun send (Lkotlinx/rpc/RPCTransportMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class kotlinx/rpc/RPCTransport$DefaultImpls {
+	public static fun receiveCatching-IoAF18A (Lkotlinx/rpc/RPCTransport;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class kotlinx/rpc/RPCTransportMessage {

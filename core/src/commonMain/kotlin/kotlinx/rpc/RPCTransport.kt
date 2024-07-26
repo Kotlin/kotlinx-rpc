@@ -43,4 +43,13 @@ public interface RPCTransport : CoroutineScope {
      * @return received RPC message.
      */
     public suspend fun receive(): RPCTransportMessage
+
+    /**
+     * Suspends until next RPC message from a peer endpoint is received and then returns it.
+     *
+     * @return received RPC message as a [Result].
+     */
+    public suspend fun receiveCatching(): Result<RPCTransportMessage> {
+        return runCatching { receive() }
+    }
 }

@@ -97,7 +97,7 @@ public class RPCConnector<SubscriptionKey>(
     init {
         launch {
             while (true) {
-                processMessage(transport.receive())
+                processMessage(transport.receiveCatching().getOrNull() ?: break)
             }
         }
     }

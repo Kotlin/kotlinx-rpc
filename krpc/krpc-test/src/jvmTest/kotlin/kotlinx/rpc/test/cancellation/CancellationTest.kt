@@ -571,6 +571,55 @@ class CancellationTest {
         stopAllAndJoin()
     }
 
+    @Test
+    fun testCancelledClientCancelsFlows() = runCancellationTest {
+        streamScoped {
+            val flow = service.incomingStream()
+
+            assertEquals(0, flow.first())
+            client.cancel()
+            val rest = flow.toList()
+
+            assertTrue("Rest must be empty, as flow was closed") { rest.isEmpty() }
+        }
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testCancelledClientCancelsRequest() = runCancellationTest {
+        launch {
+            serverInstance().firstIncomingConsumed.await()
+            client.cancel("Cancelled by test")
+        }
+
+        try {
+            service.longRequest()
+            fail("Expected the request to fail with cancellation of the client")
+        } catch (_: CancellationException) {
+            // success
+        }
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testCancelledServiceCancelsRequest() = runCancellationTest {
+        launch {
+            serverInstance().firstIncomingConsumed.await()
+            service.cancel("Cancelled by test")
+        }
+
+        try {
+            service.longRequest()
+            fail("Expected the request to fail to cancellation")
+        } catch (_: CancellationException) {
+            // success
+        }
+
+        stopAllAndJoin()
+    }
+
     private fun CancellationToolkit.checkAlive(
         serviceAlive: Boolean = true,
         clientAlive: Boolean = true,

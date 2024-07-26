@@ -29,7 +29,7 @@ kotlin {
 
                 implementation(libs.kotlin.test)
                 implementation(libs.ktor.server.netty)
-                implementation(libs.ktor.client.cio)
+                implementation(libs.ktor.server.test.host)
             }
         }
     }
