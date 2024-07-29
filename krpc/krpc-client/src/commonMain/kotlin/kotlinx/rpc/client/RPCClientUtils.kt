@@ -8,8 +8,9 @@ import kotlinx.atomicfu.atomic
 import kotlinx.rpc.RPC
 import kotlinx.rpc.RPCClient
 import kotlinx.rpc.internal.RPCStubServiceProvider
-import kotlinx.rpc.internal.findRPCProviderInCompanion
+import kotlinx.rpc.internal.findRPCStubProvider
 import kotlinx.rpc.internal.kClass
+import kotlinx.rpc.internal.safeCast
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -54,7 +55,11 @@ private val SERVICE_ID = atomic(0L)
  * @return instance of the generated service.
  */
 public fun <T : RPC> RPCClient.withService(serviceKClass: KClass<T>): T {
-    val provider = findRPCProviderInCompanion<RPCStubServiceProvider<T>>(serviceKClass)
+    val provider = findRPCStubProvider<RPCStubServiceProvider<T>>(
+        kClass = serviceKClass,
+        resultKClass = RPCStubServiceProvider::class.safeCast(),
+    )
+
     val id = SERVICE_ID.incrementAndGet()
 
     return provider.withClient(id, this)

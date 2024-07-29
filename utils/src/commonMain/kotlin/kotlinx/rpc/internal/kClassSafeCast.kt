@@ -6,5 +6,5 @@ package kotlinx.rpc.internal
 
 import kotlin.reflect.KClass
 
-@InternalRPCApi
-public expect fun <R : Any> findRPCStubProvider(kClass: KClass<*>, resultKClass: KClass<R>): R
+@Suppress("UNCHECKED_CAST")
+fun <R> KClass<*>.safeCast() = this as R
