@@ -3,8 +3,11 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import util.optionalProperty
 import util.projectLanguageVersion
 
+val useK2Plugin: Boolean by optionalProperty()
+
 configure<KotlinJvmProjectExtension> {
-    compilerOptions(projectLanguageVersion)
+    compilerOptions(projectLanguageVersion(useK2Plugin))
 }
