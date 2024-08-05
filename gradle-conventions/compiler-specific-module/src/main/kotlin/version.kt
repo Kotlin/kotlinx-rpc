@@ -3,6 +3,14 @@
  */
 
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
+
+fun filterSourceDirs(sourceSetPath: Path): List<File> {
+    return Files.newDirectoryStream(sourceSetPath).use { it.toList() }.filter {
+        Files.isDirectory(it) && it.name().matches(directoryNameRegex)
+    }.map { it.toFile() }
+}
 
 // Versioning is used to sort version-specific source sets in the 'first comes more specific' order
 // By 'more specific' we mean that '1.7.10' is more specific than '1.7'.
@@ -27,7 +35,12 @@ class CompilerModuleVersion(fullName: String, prefix: String) : Comparable<Compi
     }
 }
 
-fun Collection<File>.mostSpecificByVersionOrNull(kotlinVersion: String): File? {
+fun Collection<File>.mostSpecificVersionOrLatest(kotlinVersion: String): File? {
+    return mostSpecificByVersionOrNull(kotlinVersion)
+        ?: singleOrNull { it.name == LATEST_SOURCE_DIR }
+}
+
+private fun Collection<File>.mostSpecificByVersionOrNull(kotlinVersion: String): File? {
     return map { it to CompilerModuleVersion(it.name, "v_") }
         .sortedBy { (_, semVer) -> semVer }
         .firstOrNull { (_, semVer) ->
