@@ -5,7 +5,6 @@
 
 <SmellBaseline>
   <ManuallySuppressedIssues>
-    <ID>ReturnCount:ExceptionUtils.jvm.kt$@InternalRPCApi public actual fun SerializedException.deserialize(): Throwable</ID>
     <ID>CyclomaticComplexMethod:RPCServerService.kt$RPCServerService$@Suppress("detekt.ThrowsCount", "detekt.LongMethod") private fun handleCall(callData: RPCCallMessage.CallData)</ID>
     <ID>LongMethod:RPCServerService.kt$RPCServerService$@OptIn(InternalCoroutinesApi::class) private fun handleCall(callData: RPCCallMessage.CallData)</ID>
     <ID>RethrowCaughtException:KRPCTransportTestBase.kt$KRPCTransportTestBase$throw e</ID>

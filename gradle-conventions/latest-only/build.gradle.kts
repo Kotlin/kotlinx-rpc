@@ -3,8 +3,6 @@
  */
 
 import util.defaultConventionConfiguration
-import util.otherwise
-import util.whenKotlinLatest
 
 plugins {
     alias(libs.plugins.gradle.kotlin.dsl)
@@ -14,10 +12,6 @@ defaultConventionConfiguration()
 
 dependencies {
     implementation(":gradle-conventions-settings")
-
-    project.whenKotlinLatest {
-        implementation(project(":latest-only"))
-    } otherwise {
-        implementation(project(":empty"))
-    }
+    implementation(libs.kotlin.gradle.plugin)
+    implementation(libs.kover.gradle.plugin)
 }

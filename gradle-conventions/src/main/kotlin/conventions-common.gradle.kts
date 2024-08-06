@@ -4,13 +4,13 @@
 
 import io.gitlab.arturbosch.detekt.Detekt
 import util.libs
+import util.whenKotlinLatest
 
 plugins {
     id("io.gitlab.arturbosch.detekt")
     id("conventions-publishing")
 }
 
-val kotlinVersion: String by extra
 val globalRootDir: String by extra
 
 val globalDetektDir = "$globalRootDir/detekt"
@@ -51,7 +51,7 @@ afterEvaluate {
     }
 }
 
-if (kotlinVersion >= "1.8.0") {
+whenKotlinLatest {
     apply(plugin = "org.jetbrains.kotlinx.kover")
 
     val thisProject = project

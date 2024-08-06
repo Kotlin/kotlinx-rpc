@@ -69,9 +69,9 @@ fun PublishingExtension.configureJvmPublicationIfNeeded() {
         return
     }
 
-    project.plugins.withId("org.jetbrains.kotlin.jvm") {
+    project.withKotlinJvmExtension {
         if (publications.isNotEmpty()) {
-            return@withId
+            return@withKotlinJvmExtension
         }
 
         logger.info("Manually added maven publication to ${project.name}")

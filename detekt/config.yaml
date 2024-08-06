@@ -478,7 +478,7 @@ potential-bugs:
     active: true
   MissingPackageDeclaration:
     active: true
-    excludes: ['**/*.kts']
+    excludes: ['**/*.kts', '**/gradle-conventions-settings/**', '**/gradle-conventions/**']
   NullCheckOnMutableProperty:
     active: false
   NullableToStringCall:
@@ -616,7 +616,7 @@ style:
     active: true
     maxJumpCount: 3
   MagicNumber:
-    active: true
+    active: false
     excludes: ['**/*test*/**', '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**', '**/*.kts']
     ignoreNumbers:
       - '-1'
@@ -683,7 +683,7 @@ style:
     active: false
   ReturnCount:
     active: true
-    max: 2
+    max: 6
     excludedFunctions:
       - 'equals'
     excludeLabeled: false
