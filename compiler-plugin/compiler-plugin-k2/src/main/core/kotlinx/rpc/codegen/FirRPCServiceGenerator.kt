@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.containingClassForStaticMemberAttr
+import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.declarations.utils.visibility
 import org.jetbrains.kotlin.fir.extensions.FirDeclarationGenerationExtension
@@ -24,8 +24,7 @@ import org.jetbrains.kotlin.fir.extensions.MemberGenerationContext
 import org.jetbrains.kotlin.fir.extensions.NestedClassGenerationContext
 import org.jetbrains.kotlin.fir.moduleData
 import org.jetbrains.kotlin.fir.plugin.*
-import org.jetbrains.kotlin.fir.scopes.impl.declaredMemberScope
-import org.jetbrains.kotlin.fir.scopes.processAllFunctions
+import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.name.CallableId
@@ -133,7 +132,7 @@ class FirRPCServiceGenerator(
 
                     // otherwise an object is generated instead of a class
                     // serialization plugin has other logic for such declarations
-                    else -> setOf()
+                    else -> emptySet()
                 }
             }
 
@@ -277,10 +276,10 @@ class FirRPCServiceGenerator(
             it.classId == ClassDeclarations.rpcInterface
         } ?: return null
 
-        val functions = mutableListOf<FirFunctionSymbol<*>>()
-        owner.declaredMemberScope(session, null).processAllFunctions {
-            functions.add(it)
-        }
+        @OptIn(SymbolInternals::class)
+        val functions = owner.fir.declarations
+            .filterIsInstance<FirFunction>()
+            .map { it.symbol }
 
         return createNestedClass(owner, RpcNames.SERVICE_STUB_NAME, RPCGeneratedStubKey(owner.name, functions)) {
             visibility = owner.visibility
@@ -301,7 +300,7 @@ class FirRPCServiceGenerator(
             }
 
             else -> {
-                super.getCallableNamesForClass(classSymbol, context)
+                emptySet()
             }
         }
     }
@@ -331,7 +330,7 @@ class FirRPCServiceGenerator(
         return when {
             rpcMethodClassKey != null -> generateConstructorsForRpcMethodClass(context, rpcMethodClassKey)
             context.owner.isFromSerializationPlugin -> serializationExtension.generateConstructors(context)
-            else -> super.generateConstructors(context)
+            else -> emptyList()
         }
     }
 
@@ -357,8 +356,6 @@ class FirRPCServiceGenerator(
                     type = valueParam.resolvedReturnType,
                 )
             }
-        }.also {
-            it.containingClassForStaticMemberAttr = ConeClassLikeLookupTagImpl(context.owner.classId)
         }.symbol.let(::listOf)
     }
 
@@ -366,7 +363,7 @@ class FirRPCServiceGenerator(
         callableId: CallableId,
         context: MemberGenerationContext?
     ): List<FirPropertySymbol> {
-        context ?: return super.generateProperties(callableId, null)
+        context ?: return emptyList()
 
         val owner = context.owner
         val rpcMethodClassKey = owner.generatedRpcMethodClassKey
@@ -381,7 +378,7 @@ class FirRPCServiceGenerator(
             }
 
             else -> {
-                super.generateProperties(callableId, context)
+                emptyList()
             }
         }
     }
@@ -421,7 +418,7 @@ class FirRPCServiceGenerator(
         callableId: CallableId,
         context: MemberGenerationContext?
     ): List<FirNamedFunctionSymbol> {
-        val owner = context?.owner ?: return super.generateFunctions(callableId, null)
+        val owner = context?.owner ?: return emptyList()
 
         return when {
             owner.isFromSerializationPlugin || owner.generatedRpcMethodClassKey?.isObject == true -> {
@@ -429,7 +426,7 @@ class FirRPCServiceGenerator(
             }
 
             else -> {
-                super.generateFunctions(callableId, context)
+                emptyList()
             }
         }
     }
