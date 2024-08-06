@@ -6,7 +6,6 @@ package kotlinx.rpc.codegen
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.ir.addExtensionReceiver
-import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrFunction
@@ -17,7 +16,6 @@ import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.ir.types.impl.IrErrorClassImpl.modality
 import org.jetbrains.kotlin.ir.util.copyTo
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
@@ -31,9 +29,11 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         return platform.isJs()
     }
 
-    override var IrFieldBuilder.modalityVS: Modality
-        get() = modality
-        set(value) { modality = value }
+    override var IrFieldBuilder.isFinalVS: Boolean
+        get() = isFinal
+        set(value) {
+            isFinal = value
+        }
 
     override var IrCall.originVS: IrStatementOrigin?
         get() = origin

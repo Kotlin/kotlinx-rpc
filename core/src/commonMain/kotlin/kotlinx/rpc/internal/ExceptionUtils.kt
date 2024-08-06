@@ -28,4 +28,6 @@ internal expect class DeserializedException(
     stacktrace: List<StackElement>,
     cause: SerializedException?,
     className: String
-) : Throwable
+) : Throwable {
+    override val message: String
+}

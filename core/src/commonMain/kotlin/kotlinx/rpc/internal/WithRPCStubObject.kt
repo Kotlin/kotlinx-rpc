@@ -7,4 +7,4 @@ package kotlinx.rpc.internal
 import kotlin.reflect.KClass
 
 @InternalRPCApi
-public expect fun <R> findRPCProviderInCompanion(kClass: KClass<*>): R
+public expect fun <R : Any> findRPCStubProvider(kClass: KClass<*>, resultKClass: KClass<R>): R

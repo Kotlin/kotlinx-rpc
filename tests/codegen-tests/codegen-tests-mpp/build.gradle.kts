@@ -3,12 +3,12 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinx.rpc)
+    alias(libs.plugins.serialization)
 }
 
 kotlin {
@@ -39,9 +39,15 @@ kotlin {
         }
     }
 
-    explicitApi = ExplicitApiMode.Disabled
-    compilerOptions {
-        languageVersion.set(KotlinVersion.KOTLIN_2_0)
+    js {
+        binaries.executable()
+        browser {
+            commonWebpackConfig {
+                this.sourceMaps = true
+            }
+        }
     }
+
+    explicitApi = ExplicitApiMode.Disabled
 }
 
