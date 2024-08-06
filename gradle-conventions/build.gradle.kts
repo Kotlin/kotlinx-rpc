@@ -10,6 +10,9 @@ plugins {
     alias(libs.plugins.gradle.kotlin.dsl)
 }
 
+// chicken-egg
+apply(from = "src/main/kotlin/compiler-specific-module.gradle.kts")
+
 defaultConventionConfiguration()
 
 dependencies {

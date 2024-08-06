@@ -9,6 +9,7 @@ import java.nio.file.Path
 import kotlin.text.lowercase
 
 val kotlinVersion: KotlinVersion by extra
+val preserveDefaultSourceDirectories by optionalProperty()
 
 fun NamedDomainObjectContainer<KotlinSourceSet>.applyCompilerSpecificSourceSets() {
     forEach { set ->
@@ -31,19 +32,20 @@ fun NamedDomainObjectContainer<KotlinSourceSet>.applyCompilerSpecificSourceSets(
 
         // choose 'latest' if there are no more specific ones
         val mostSpecificApplicable = vsSets.mostSpecificVersionOrLatest(kotlinVersion)
-            ?: run {
-                logger.info("No version specific sources sets, but '${core.name}'")
-                set.kotlin.setSrcDirs(listOf(core)) // 'core' source set instead of 'kotlin'
-                set.configureResources(sourceSetPath)
-                return@forEach
-            }
 
         logger.info(
             "${project.name}: included version specific source sets: " +
-                    "${core.name}, ${mostSpecificApplicable.name}"
+                    "${core.name}${mostSpecificApplicable?.let { ", $name" } ?: ""}"
         )
 
-        set.kotlin.setSrcDirs(listOf(core, mostSpecificApplicable)) // 'core' source set instead of 'kotlin'
+        val newSourceDirectories = listOfNotNull(core, mostSpecificApplicable)
+
+        if (preserveDefaultSourceDirectories) {
+            set.kotlin.srcDirs(newSourceDirectories)
+        } else {
+            set.kotlin.setSrcDirs(newSourceDirectories) // 'core' source set instead of 'kotlin'
+        }
+
         set.configureResources(sourceSetPath)
 
         val excluded = vsSets.filter { it != mostSpecificApplicable }

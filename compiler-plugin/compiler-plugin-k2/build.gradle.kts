@@ -3,6 +3,8 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import util.enableContextReceivers
+import util.whenKotlinIsAtLeast
 
 plugins {
     alias(libs.plugins.conventions.jvm)
@@ -12,13 +14,13 @@ plugins {
 kotlin {
     explicitApi = ExplicitApiMode.Disabled
 
-    compilerOptions {
-        freeCompilerArgs.add("-Xcontext-receivers")
-    }
+    enableContextReceivers()
 }
 
 dependencies {
     compileOnly(libs.kotlin.compiler.embeddable)
-    compileOnly(libs.serialization.plugin)
+    project.whenKotlinIsAtLeast(2, 0) {
+        compileOnly(libs.serialization.plugin)
+    }
     implementation(projects.compilerPluginCommon)
 }
