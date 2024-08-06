@@ -23,8 +23,18 @@ public annotation class WithRPCStubObject(
 
 @InternalRPCApi
 @OptIn(ExperimentalAssociatedObjects::class)
-public actual fun <R> findRPCProviderInCompanion(kClass: KClass<*>): R {
+public actual fun <R : Any> findRPCStubProvider(kClass: KClass<*>, resultKClass: KClass<R>): R {
+    val associatedObject = kClass.findAssociatedObject<WithRPCStubObject>()
+        ?: internalError("Unable to find $kClass associated object")
+
     @Suppress("UNCHECKED_CAST")
-    return kClass.findAssociatedObject<WithRPCStubObject>() as? R
-        ?: internalError("unable to find $kClass rpc stub object")
+    if (resultKClass.isInstance(associatedObject)) {
+        return associatedObject as R
+    }
+
+    internalError(
+        "Located associated object is not of desired type $resultKClass, " +
+                "instead found $associatedObject of class " +
+                (associatedObject::class.qualifiedClassNameOrNull ?: associatedObject::class.simpleName)
+    )
 }

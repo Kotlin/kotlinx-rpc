@@ -51,7 +51,7 @@ public enum class RPCPluginKey(override val uniqueIndex: Int, private val associ
     init {
         require(ordinal == 0 || associatedPlugin != RPCPlugin.UNKNOWN) {
             error("associatedPlugin must not be $RPCPlugin.${RPCPlugin.UNKNOWN} " +
-                    "for anything other than $RPCPluginKey.${UNKNOWN}")
+                    "for anything other than $RPCPluginKey.UNKNOWN")
         }
     }
 
