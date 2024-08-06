@@ -86,6 +86,7 @@ kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
 
 # gradle-conventions project
+conventions-utils = { id = "conventions-utils", version.ref = "kotlinx-rpc" }
 conventions-common = { id = "conventions-common", version.ref = "kotlinx-rpc" }
 conventions-jvm = { id = "conventions-jvm", version.ref = "kotlinx-rpc" }
 conventions-kmp = { id = "conventions-kmp", version.ref = "kotlinx-rpc" }
