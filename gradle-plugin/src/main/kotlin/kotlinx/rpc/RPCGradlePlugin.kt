@@ -26,13 +26,20 @@ class RPCGradlePlugin : Plugin<Project> {
         val config = RPCConfig(target.isInternalDevelopment)
 
         applyPlatformConfiguration(target, config)
-        applyKspPlugin(target, config)
+
+        // TODO languageVersion parameter check
+        if (kotlinVersion.first() < '2') { // for 1.*.* versions
+            applyKspPlugin(target, config)
+        }
+
         applyCompilerPlugin(target)
     }
 
     private fun applyCompilerPlugin(target: Project) {
-        target.plugins.apply(CompilerPluginCore::class.java)
-        target.plugins.apply(compilerPluginForKotlin(kotlinVersion))
+        target.plugins.apply(CompilerPluginK2::class.java)
+        target.plugins.apply(CompilerPluginCommon::class.java)
+        target.plugins.apply(CompilerPluginBackend::class.java)
+        target.plugins.apply(CompilerPluginCli::class.java)
     }
 
     private fun applyKspPlugin(target: Project, config: RPCConfig) {

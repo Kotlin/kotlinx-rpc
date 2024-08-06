@@ -7,7 +7,7 @@ package kotlinx.rpc.server.internal
 import kotlinx.rpc.RPC
 import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.rpc.internal.RPCServiceMethodSerializationTypeProvider
-import kotlinx.rpc.internal.findRPCProviderInCompanion
+import kotlinx.rpc.internal.findRPCStubProvider
 import kotlinx.rpc.internal.kClass
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -33,5 +33,6 @@ public fun rpcServiceMethodSerializationTypeOf(serviceType: KType, methodName: S
  */
 @InternalRPCApi
 public fun rpcServiceMethodSerializationTypeOf(serviceKClass: KClass<*>, methodName: String): KType? {
-    return findRPCProviderInCompanion<RPCServiceMethodSerializationTypeProvider>(serviceKClass).methodTypeOf(methodName)
+    return findRPCStubProvider(serviceKClass, RPCServiceMethodSerializationTypeProvider::class)
+        .methodTypeOf(methodName)
 }

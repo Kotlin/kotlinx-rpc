@@ -68,6 +68,7 @@ class RPCSymbolProcessor(
             simpleName = serviceDeclaration.simpleName.asString(),
             fullName = serviceDeclaration.qualifiedName?.asString()
                 ?: codegenError<AbsentQualifiedNameCodeGenerationException>(serviceDeclaration),
+            packageName = serviceDeclaration.packageName.asString(),
             functions = processedFunctions,
             fields = processedProperties,
             file = file,

@@ -15,6 +15,13 @@ plugins {
     alias(libs.plugins.binary.compatibility.validator)
 }
 
+// useful for dependencies introspection
+// run ./gradlew htmlDependencyReport
+// Report can normally be found in build/reports/project/dependencies/index.html
+allprojects {
+    plugins.apply("project-report")
+}
+
 object Const {
     const val INTERNAL_RPC_API_ANNOTATION = "kotlinx.rpc.internal.InternalRPCApi"
 }

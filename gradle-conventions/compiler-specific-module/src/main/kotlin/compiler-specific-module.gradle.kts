@@ -2,77 +2,101 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import java.nio.file.Files
+import java.nio.file.Path
 
-//  ### Utils ###
+val kotlinVersion: String by extra
 
-fun capitalize(string: String): String {
-    if (string.isEmpty()) {
-        return ""
-    }
-    val firstChar = string[0]
-    return string.replaceFirst(firstChar, Character.toTitleCase(firstChar))
-}
+fun NamedDomainObjectContainer<KotlinSourceSet>.applyCompilerSpecificSourceSets() {
+    forEach { set ->
+        val sourceDirs = set.kotlin.sourceDirectories.toList()
+        val path = sourceDirs.firstOrNull() // one is ok in most cases because we need its parent directory
+            ?: error(
+                "Expected at least one source set dir for '${set.name}' source set (kotlin dir). " +
+                        "Review the case and adjust the script"
+            )
 
-object CSM {
-    const val KOTLIN_MULTIPLATFORM_PLUGIN_ID = "org.jetbrains.kotlin.multiplatform"
-    const val KOTLIN_JVM_PLUGIN_ID = "org.jetbrains.kotlin.jvm"
-}
-
-val kotlinVersion = getKotlinPluginVersion()
-
-// ### Plugin Logic ###
-// What happens here, is that root module is being made a complete compile specific module for current version of Kotlin
-// We take -core submodule that contains compiler version independent code, add to it version specific module
-// and the summary is presented to the outer world as a complete module,
-// which is the root module for these two submodules.
-// Root module takes its submodules as `api` gradle configurations, and root's jar will consist of
-// two submodules' artifacts and will be presented to the world as it was always a one complete module.
-
-val rootProjectPrefix = "$name-"
-val coreProjectName = "${rootProjectPrefix}core"
-
-// configurations are available only when kotlin plugin is applied, so we use lazy resolving
-fun Project.lazyDependency(baseConfigurationName: String, notation: Any) {
-    val kmpConfigurationName = "commonMain${capitalize(baseConfigurationName)}"
-    this.configurations.matching { it.name == kmpConfigurationName }.all {
-        this@lazyDependency.dependencies.add(kmpConfigurationName, notation)
-    }
-
-    this.configurations.matching { it.name == baseConfigurationName }.all {
-        this@lazyDependency.dependencies.add(baseConfigurationName, notation)
-    }
-}
-
-fun Project.lazyApi(notation: Any) {
-    lazyDependency("api", notation)
-}
-
-val root = project
-
-subprojects {
-    afterEvaluate {
-        println("Compiler-specific module $name, version: $version")
-    }
-
-    when {
-        name == coreProjectName -> {
-            root.lazyApi(this)
+        val sourceSetPath = path.toPath().parent
+        if (!Files.exists(sourceSetPath)) {
+            return@forEach
         }
 
-        name.startsWith(rootProjectPrefix) -> {
-            val semVer = name
-                .removePrefix(rootProjectPrefix)
-                .replace('_', '.')
+        val core = sourceSetPath.resolve(CORE_SOURCE_DIR).toFile()
 
-            // resolve compiler specific submodule, for example compiler-plugin-1_7 for Kotlin version 1.7.22
-            if (kotlinVersion.startsWith(semVer)) {
-                val coreProject = root.subprojects.singleOrNull { it.name == coreProjectName }
-                    ?: error("Expected to find subproject with name '$coreProjectName'")
-                lazyApi(coreProject)
+        // version-specific source sets
+        val vsSets = filterSourceDirs(sourceSetPath)
 
-                root.lazyApi(this)
+        // choose 'latest' if there are no more specific ones
+        val mostSpecificApplicable = vsSets.mostSpecificVersionOrLatest(kotlinVersion)
+            ?: run {
+                logger.info("No version specific sources sets, but '${core.name}'")
+                set.kotlin.setSrcDirs(listOf(core)) // 'core' source set instead of 'kotlin'
+                set.configureResources(sourceSetPath)
+                return@forEach
+            }
+
+        logger.info(
+            "${project.name}: included version specific source sets: " +
+                    "${core.name}, ${mostSpecificApplicable.name}"
+        )
+
+        set.kotlin.setSrcDirs(listOf(core, mostSpecificApplicable)) // 'core' source set instead of 'kotlin'
+        set.configureResources(sourceSetPath)
+
+        val excluded = vsSets.filter { it != mostSpecificApplicable }
+        logger.info("${project.name}: excluded version specific source sets: [${excluded.joinToString { it.name }}]")
+    }
+}
+
+fun KotlinSourceSet.configureResources(sourceSetPath: Path) {
+    val parent = sourceSetPath.parent.toAbsolutePath()
+    if (!Files.exists(parent)) {
+        error("Expected parent dir for ${sourceSetPath.toAbsolutePath()}")
+    }
+
+    // only works for jvm projects
+    val resourcesName = if (name.lowercase().contains(MAIN_SOURCE_SET)) MAIN_RESOURCES else TEST_RESOURCES
+    val resourcesDir = parent.resolve(resourcesName)
+
+    if (!Files.exists(resourcesDir)) {
+        return
+    }
+
+    val mostSpecificApplicable = filterSourceDirs(resourcesDir)
+        .mostSpecificVersionOrLatest(kotlinVersion)
+
+    val versionNames = listOfNotNull(CORE_SOURCE_DIR, mostSpecificApplicable?.name)
+
+    resources.srcDirs(versionNames.map { resourcesDir.resolve(it).toFile() })
+
+    // 'resources' property does not work alone in gradle 7.5.1 with kotlin 1.7.* and 1.8.* (no idea why),
+    // so we adjust task contents as well
+    if (kotlinVersion.startsWith("1.8") || kotlinVersion.startsWith("1.7")) {
+        // only works for jvm projects
+        val resourcesTaskName = if (name == MAIN_SOURCE_SET) PROCESS_RESOURCES else PROCESS_TEST_RESOURCES
+        tasks.withType<ProcessResources>().configureEach {
+            if (name != resourcesTaskName) {
+                return@configureEach
+            }
+
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+            from(versionNames.map { resourcesDir.resolve(it) })
+            include {
+                // double check if the files are the right ones
+                it.file.toPath().toAbsolutePath().startsWith(parent)
             }
         }
     }
+}
+
+plugins.withId(KOTLIN_JVM_PLUGIN_ID) {
+    the<KotlinJvmProjectExtension>().sourceSets.applyCompilerSpecificSourceSets()
+}
+
+plugins.withId(KOTLIN_MULTIPLATFORM_PLUGIN_ID) {
+    the<KotlinMultiplatformExtension>().sourceSets.applyCompilerSpecificSourceSets()
 }

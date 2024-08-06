@@ -6,5 +6,5 @@ package kotlinx.rpc.internal
 
 @InternalRPCApi
 public interface RPCMethodClassArguments {
-    public fun asArray(): Array<Any?>
+    public fun asArray(): Array<out Any?>
 }

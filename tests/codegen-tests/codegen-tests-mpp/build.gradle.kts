@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinx.rpc)
+    alias(libs.plugins.serialization)
 }
 
 kotlin {
@@ -34,6 +35,15 @@ kotlin {
             dependencies {
                 implementation(libs.slf4j.api)
                 implementation(libs.logback.classic)
+            }
+        }
+    }
+
+    js {
+        binaries.executable()
+        browser {
+            commonWebpackConfig {
+                this.sourceMaps = true
             }
         }
     }

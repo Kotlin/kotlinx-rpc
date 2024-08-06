@@ -81,24 +81,26 @@
             where you define your <a href="services.topic">RPC services</a> in one set of subprojects and use in the
             other. In such a setup, you can add the plugin only to modules with service definitions
             to save time on building your project.</p>
-        <p>
-            For <code>kotlinx.rpc</code> library to work correctly with user-defined <a
-                    href="services.topic">services</a>,
-            two additional configurations are required: the Kotlin compiler plugin and the
-            <a href="https://kotlinlang.org/docs/ksp-overview.html">KSP</a> plugin.
-            By adding the <code>kotlinx.rpc</code> and KSP Gradle plugins, all necessary configurations will be automatically set up:</p>
 
         <code-block lang="kotlin">
             plugins {
                 kotlin("jvm") version "%kotlin-version%"
-                id("com.google.devtools.ksp") version "%ksp-version%"
                 id("org.jetbrains.kotlinx.rpc.plugin") version "%kotlinx-rpc-version%"
             }
-
-            dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-client")
-                implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-server")
-            }
         </code-block>
+
+        <chapter title="Kotlin versions earlier than 2.0" id="pre-kotlin-2-0">
+            <p>
+                If you are using a version of Kotlin prior to 2.0,
+                you must also add the KSP (Kotlin Symbol Processing) Gradle plugin:
+            </p>
+            <code-block lang="kotlin">
+                plugins {
+                    kotlin("jvm") version "1.9.24"
+                    id("org.jetbrains.kotlinx.rpc.plugin") version "%kotlinx-rpc-version%"
+                    id("com.google.devtools.ksp") version "1.9.24-1.0.20"
+                }
+            </code-block>
+        </chapter>
     </chapter>
 </topic>

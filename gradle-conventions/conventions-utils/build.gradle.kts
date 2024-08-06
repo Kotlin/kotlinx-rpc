@@ -28,3 +28,11 @@ dependencies {
     // https://stackoverflow.com/questions/76713758/use-version-catalog-inside-precompiled-gradle-plugin
     api(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 }
+
+gradlePlugin {
+    plugins {
+        named("conventions-utils") {
+            version = libs.versions.kotlinx.rpc.get()
+        }
+    }
+}

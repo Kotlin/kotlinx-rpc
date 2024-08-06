@@ -255,7 +255,10 @@ public abstract class KRPCClient(
         awaitHandshakeCompletion()
 
         val id = callCounter.incrementAndGet()
-        val callId = "$connectionId:${callInfo.dataType}:$id"
+
+        val dataTypeString = callInfo.dataType.toString()
+
+        val callId = "$connectionId:$dataTypeString:$id"
 
         logger.trace { "start a call[$callId] ${callInfo.callableName}" }
 

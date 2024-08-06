@@ -3,6 +3,7 @@
 
 # Ignore Gradle build output directory
 build
+.kotlin
 
 # idea files
 .idea/*

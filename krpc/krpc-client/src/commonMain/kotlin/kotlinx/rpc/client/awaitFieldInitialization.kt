@@ -7,7 +7,8 @@ package kotlinx.rpc.client
 import kotlinx.rpc.RPC
 import kotlinx.rpc.internal.RPCDeferredField
 import kotlinx.rpc.internal.RPCServiceFieldsProvider
-import kotlinx.rpc.internal.findRPCProviderInCompanion
+import kotlinx.rpc.internal.findRPCStubProvider
+import kotlinx.rpc.internal.safeCast
 import kotlin.reflect.KClass
 
 /**
@@ -78,7 +79,7 @@ public suspend inline fun <reified T : RPC> T.awaitFieldInitialization(): T {
  * @return specified service, after all of it's field were initialized.
  */
 public suspend fun <T : RPC> T.awaitFieldInitialization(kClass: KClass<T>): T {
-    findRPCProviderInCompanion<RPCServiceFieldsProvider<T>>(kClass)
+    findRPCStubProvider<RPCServiceFieldsProvider<T>>(kClass, RPCServiceFieldsProvider::class.safeCast())
         .rpcFields(this)
         .forEach { field ->
             field.await()

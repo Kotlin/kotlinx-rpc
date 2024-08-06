@@ -8,7 +8,6 @@ import groovy.json.JsonSlurper
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.api.Action
 import org.gradle.api.Project
-import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
@@ -82,11 +81,7 @@ private fun KotlinMultiplatformExtension.configureTargets(
     }
 
     if (jvm && isIncluded("jvm", kotlinVersion, targetsLookup)) {
-        jvm {
-            jvmToolchain {
-                languageVersion.set(JavaLanguageVersion.of(8))
-            }
-        }.also { targets.add(it) }
+        jvm().also { targets.add(it) }
     }
 
     if (js && isIncluded("js", kotlinVersion, targetsLookup)) {
@@ -130,6 +125,8 @@ fun Project.configureKotlin(
         val includedTargets = configureTargets(project, kotlinVersion, lookupTable, jvm, js, native)
 
         configureDetekt(includedTargets)
+
+        jvmToolchain(8)
 
         action.execute(this)
     }
