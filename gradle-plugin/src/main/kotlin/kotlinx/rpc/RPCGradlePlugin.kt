@@ -36,9 +36,10 @@ class RPCGradlePlugin : Plugin<Project> {
     }
 
     private fun applyCompilerPlugin(target: Project) {
-        target.plugins.apply(CompilerPlugin::class.java)
         target.plugins.apply(CompilerPluginK2::class.java)
         target.plugins.apply(CompilerPluginCommon::class.java)
+        target.plugins.apply(CompilerPluginBackend::class.java)
+        target.plugins.apply(CompilerPluginCli::class.java)
     }
 
     private fun applyKspPlugin(target: Project, config: RPCConfig) {

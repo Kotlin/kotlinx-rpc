@@ -19,3 +19,5 @@ includeRootAsPublic()
 
 includePublic(":compiler-plugin-k2")
 includePublic(":compiler-plugin-common")
+includePublic(":compiler-plugin-backend")
+includePublic(":compiler-plugin-cli")

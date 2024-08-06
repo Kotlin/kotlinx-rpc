@@ -8,12 +8,18 @@ package kotlinx.rpc
 
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
 
-class CompilerPlugin : KotlinCompilerPluginSupportPlugin by compilerPlugin()
-
 class CompilerPluginK2 : KotlinCompilerPluginSupportPlugin by compilerPlugin({
     pluginSuffix = "-k2"
 })
 
 class CompilerPluginCommon : KotlinCompilerPluginSupportPlugin by compilerPlugin({
     pluginSuffix = "-common"
+})
+
+class CompilerPluginBackend : KotlinCompilerPluginSupportPlugin by compilerPlugin({
+    pluginSuffix = "-backend"
+})
+
+class CompilerPluginCli : KotlinCompilerPluginSupportPlugin by compilerPlugin({
+    pluginSuffix = "-cli"
 })
