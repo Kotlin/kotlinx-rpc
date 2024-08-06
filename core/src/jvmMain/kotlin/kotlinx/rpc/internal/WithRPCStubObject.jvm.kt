@@ -10,11 +10,16 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
 
 @InternalRPCApi
-public actual fun <R> findRPCProviderInCompanion(kClass: KClass<*>): R {
-    @Suppress("UNCHECKED_CAST")
-    return kClass.java.classLoader
-        .loadClass("${kClass.qualifiedName}Stub")
+public actual fun <R : Any> findRPCStubProvider(kClass: KClass<*>, resultKClass: KClass<R>): R {
+    val candidate = kClass.java.classLoader
+        .loadClass("${kClass.qualifiedName}\$\$rpcServiceStub")
         ?.kotlin
-        ?.companionObjectInstance as? R
-        ?: internalError("unable to find $kClass rpc client object")
+        ?.companionObjectInstance
+
+    @Suppress("UNCHECKED_CAST")
+    if (resultKClass.isInstance(candidate)) {
+        return candidate as R
+    }
+
+    internalError("unable to find $kClass rpc client object")
 }

@@ -26,7 +26,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     override fun isJs(platform: TargetPlatform?): Boolean {
         return platform.isJs()
     }
-    override var IrFieldBuilder.modalityVS: Modality
+    override var IrFieldBuilder.isFinalVS: Boolean
         get() = undefinedAPI()
         set(_) {}
 

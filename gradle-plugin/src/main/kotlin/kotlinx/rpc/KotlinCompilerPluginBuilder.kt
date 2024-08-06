@@ -63,6 +63,6 @@ class KotlinCompilerPluginBuilder {
     }
 }
 
-fun compilerPlugin(builder: KotlinCompilerPluginBuilder.() -> Unit): KotlinCompilerPluginSupportPlugin {
+fun compilerPlugin(builder: KotlinCompilerPluginBuilder.() -> Unit = {}): KotlinCompilerPluginSupportPlugin {
     return KotlinCompilerPluginBuilder().apply(builder).build()
 }

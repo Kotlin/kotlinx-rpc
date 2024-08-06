@@ -12,7 +12,12 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
  *
  * This should be lined up with the minimal supported compiler plugin version
  */
-val projectLanguageVersion: KotlinCommonCompilerOptions.() -> Unit = {
-    languageVersion.set(KotlinVersion.KOTLIN_1_7)
-    apiVersion.set(KotlinVersion.KOTLIN_1_7)
+fun projectLanguageVersion(useK2Plugin: Boolean): KotlinCommonCompilerOptions.() -> Unit = {
+    val kotlinVersion = when {
+        useK2Plugin -> KotlinVersion.KOTLIN_2_0
+        else -> KotlinVersion.KOTLIN_1_7
+    }
+
+    languageVersion.set(kotlinVersion)
+    apiVersion.set(kotlinVersion)
 }

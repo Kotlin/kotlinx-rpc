@@ -5,7 +5,6 @@
 package kotlinx.rpc.codegen
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrFunction
@@ -39,7 +38,7 @@ interface VersionSpecificApi {
         origin: IrDeclarationOrigin = IrDeclarationOrigin.DEFINED,
     ): IrValueParameter
 
-    var IrFieldBuilder.modalityVS: Modality
+    var IrFieldBuilder.isFinalVS: Boolean
 
     var IrCall.originVS: IrStatementOrigin?
 
