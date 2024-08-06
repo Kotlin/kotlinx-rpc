@@ -11,7 +11,7 @@ import kotlinx.rpc.internal.transport.StackElement
 
 internal actual class DeserializedException actual constructor(
     private val toStringMessage: String,
-    override val message: String,
+    actual override val message: String,
     stacktrace: List<StackElement>,
     cause: SerializedException?,
     className: String

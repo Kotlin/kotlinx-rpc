@@ -4,10 +4,9 @@
 
 plugins {
     alias(libs.plugins.conventions.kmp)
-    alias(libs.plugins.serialization)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.kotlinx.rpc)
     alias(libs.plugins.atomicfu)
+    alias(libs.plugins.serialization)
 }
 
 kotlin {
@@ -22,6 +21,12 @@ kotlin {
                 implementation(libs.kotlin.reflect)
 
                 implementation(projects.krpc.krpcLogging)
+            }
+        }
+
+        jsMain {
+            dependencies {
+                implementation(libs.kotlin.js.wrappers)
             }
         }
     }

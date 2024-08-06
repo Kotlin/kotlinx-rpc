@@ -24,6 +24,8 @@ kotlin {
 
 dependencies {
     compileOnly(libs.kotlin.compiler.embeddable)
+    implementation(projects.compilerPluginK2)
+    implementation(projects.compilerPluginCommon)
 }
 
 configureMetaTasks("cleanTest", "test")
