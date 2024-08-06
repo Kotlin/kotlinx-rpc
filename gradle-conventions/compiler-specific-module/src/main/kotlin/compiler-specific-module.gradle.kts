@@ -24,20 +24,17 @@ fun NamedDomainObjectContainer<KotlinSourceSet>.applyCompilerSpecificSourceSets(
             return@forEach
         }
 
-        val core = sourceSetPath.resolve(Const.CORE_SOURCE_SET).toFile()
+        val core = sourceSetPath.resolve(CORE_SOURCE_DIR).toFile()
 
         // version-specific source sets
-        val vsSets = Files.newDirectoryStream(sourceSetPath).use { it.toList() }.filter {
-            Files.isDirectory(it) && it.name().matches(directoryNameRegex)
-        }.map { it.toFile() }
+        val vsSets = filterSourceDirs(sourceSetPath)
 
         // choose 'latest' if there are no more specific ones
-        val mostSpecificApplicable = vsSets.mostSpecificByVersionOrNull(kotlinVersion)
-            ?: vsSets.singleOrNull { it.name == Const.LATEST_SOURCE_SET }
+        val mostSpecificApplicable = vsSets.mostSpecificVersionOrLatest(kotlinVersion)
             ?: run {
                 logger.info("No version specific sources sets, but '${core.name}'")
                 set.kotlin.setSrcDirs(listOf(core)) // 'core' source set instead of 'kotlin'
-                set.configureResources(sourceSetPath, core.name)
+                set.configureResources(sourceSetPath)
                 return@forEach
             }
 
@@ -47,57 +44,59 @@ fun NamedDomainObjectContainer<KotlinSourceSet>.applyCompilerSpecificSourceSets(
         )
 
         set.kotlin.setSrcDirs(listOf(core, mostSpecificApplicable)) // 'core' source set instead of 'kotlin'
-        set.configureResources(sourceSetPath, core.name, mostSpecificApplicable.name)
+        set.configureResources(sourceSetPath)
 
         val excluded = vsSets.filter { it != mostSpecificApplicable }
         logger.info("${project.name}: excluded version specific source sets: [${excluded.joinToString { it.name }}]")
     }
 }
 
-fun KotlinSourceSet.configureResources(sourceSetPath: Path, vararg versionNames: String) {
-    val vsResources = sourceSetPath.resolve(Const.RESOURCES).toFile()
-    resources.setSrcDirs(
-        versionNames.map { vsResources.resolve(it) }
-    )
+fun KotlinSourceSet.configureResources(sourceSetPath: Path) {
+    val parent = sourceSetPath.parent.toAbsolutePath()
+    if (!Files.exists(parent)) {
+        error("Expected parent dir for ${sourceSetPath.toAbsolutePath()}")
+    }
 
-    // 'resources' property does not work alone in gradle 7.5.1 with kotlin 1.7.0 (no idea why),
+    // only works for jvm projects
+    val resourcesName = if (name.lowercase().contains(MAIN_SOURCE_SET)) MAIN_RESOURCES else TEST_RESOURCES
+    val resourcesDir = parent.resolve(resourcesName)
+
+    if (!Files.exists(resourcesDir)) {
+        return
+    }
+
+    val mostSpecificApplicable = filterSourceDirs(resourcesDir)
+        .mostSpecificVersionOrLatest(kotlinVersion)
+
+    val versionNames = listOfNotNull(CORE_SOURCE_DIR, mostSpecificApplicable?.name)
+
+    resources.srcDirs(versionNames.map { resourcesDir.resolve(it).toFile() })
+
+    // 'resources' property does not work alone in gradle 7.5.1 with kotlin 1.7.* and 1.8.* (no idea why),
     // so we adjust task contents as well
-    // todo duplicate (or to many resources are copied, should update the algo)
-//    tasks.withType<ProcessResources>().configureEach {
-//        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-//
-//        from(versionNames.map { vsResources.resolve(it) })
-//        include { it.file.parentInAllowList(versionNames) }
-//    }
-}
+    if (kotlinVersion.startsWith("1.8") || kotlinVersion.startsWith("1.7")) {
+        // only works for jvm projects
+        val resourcesTaskName = if (name == MAIN_SOURCE_SET) PROCESS_RESOURCES else PROCESS_TEST_RESOURCES
+        tasks.withType<ProcessResources>().configureEach {
+            if (name != resourcesTaskName) {
+                return@configureEach
+            }
 
-fun File.parentInAllowList(allowList: Array<out String>): Boolean {
-//    println("decide: $absolutePath")
-    val parent = toPath().parent?.toFile()
-    // will skip v_1_7 for 1.7.0, as it's parent is resources
-    // but will allow META-INF, as it's parent is v_1_7
-    if (parent?.name in allowList) {
-        return true
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+            from(versionNames.map { resourcesDir.resolve(it) })
+            include {
+                // double check if the files are the right ones
+                it.file.toPath().toAbsolutePath().startsWith(parent)
+            }
+        }
     }
-
-    // allow META-INF contents
-    return untilAllowedParentOrNull(allowList) != null
 }
 
-tailrec fun File.untilAllowedParentOrNull(allowList: Array<out String>): File? {
-    if (name in allowList) {
-        return null
-    }
-
-    val parent = toPath().parent?.toFile()
-    return if (parent?.name in allowList) this else parent?.untilAllowedParentOrNull(allowList)
-}
-
-plugins.withId(Const.KOTLIN_JVM_PLUGIN_ID) {
+plugins.withId(KOTLIN_JVM_PLUGIN_ID) {
     the<KotlinJvmProjectExtension>().sourceSets.applyCompilerSpecificSourceSets()
 }
 
-plugins.withId(Const.KOTLIN_MULTIPLATFORM_PLUGIN_ID) {
+plugins.withId(KOTLIN_MULTIPLATFORM_PLUGIN_ID) {
     the<KotlinMultiplatformExtension>().sourceSets.applyCompilerSpecificSourceSets()
 }
-
