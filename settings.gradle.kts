@@ -58,5 +58,5 @@ includePublic(":krpc:krpc-ktor:krpc-ktor-core")
 includePublic(":krpc:krpc-ktor:krpc-ktor-server")
 includePublic(":krpc:krpc-ktor:krpc-ktor-client")
 
-include(":tests:codegen-tests:codegen-tests-mpp")
-include(":tests:codegen-tests:codegen-tests-jvm")
+include(":tests")
+include(":tests:compiler-plugin-tests")

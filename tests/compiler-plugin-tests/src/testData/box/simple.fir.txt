@@ -1,0 +1,23 @@
+FILE: simple.kt
+    public abstract interface MyService : R|kotlinx/rpc/RPC| {
+        public abstract suspend fun simple(): R|kotlin/Unit|
+
+        public final class $rpcServiceStub : R|kotlin/Any| {
+            @R|kotlinx/serialization/Serializable|() public final object simple$rpcMethod : R|kotlin/Any| {
+                public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.simple$rpcMethod>|
+
+                private constructor(): R|MyService.$rpcServiceStub.simple$rpcMethod| {
+                    super<R|kotlin/Any|>()
+                }
+
+            }
+
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+    public final fun box(): R|kotlin/String| {
+        ^box String(OK)
+    }

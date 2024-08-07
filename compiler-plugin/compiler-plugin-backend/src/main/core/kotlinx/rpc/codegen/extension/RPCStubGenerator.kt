@@ -5,6 +5,7 @@
 package kotlinx.rpc.codegen.extension
 
 import kotlinx.rpc.codegen.VersionSpecificApi
+import kotlinx.rpc.codegen.VersionSpecificApiImpl.copyToVS
 import kotlinx.rpc.codegen.common.rpcMethodClassName
 import kotlinx.rpc.codegen.common.rpcMethodClassNameKsp
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
@@ -1274,7 +1275,7 @@ internal class RPCStubGenerator(
                 it.name == OperatorNameConventions.EQUALS
             }.symbol
 
-            dispatchReceiverParameter = anyClass.thisReceiver
+            dispatchReceiverParameter = anyClass.copyThisReceiver(this@apply)
 
             addValueParameter {
                 name = Name.identifier("other")
@@ -1295,7 +1296,7 @@ internal class RPCStubGenerator(
                 it.name == OperatorNameConventions.HASH_CODE
             }.symbol
 
-            dispatchReceiverParameter = anyClass.thisReceiver
+            dispatchReceiverParameter = anyClass.copyThisReceiver(this@apply)
         }
 
         addFunction {
@@ -1311,9 +1312,12 @@ internal class RPCStubGenerator(
                 it.name == OperatorNameConventions.TO_STRING
             }.symbol
 
-            dispatchReceiverParameter = anyClass.thisReceiver
+            dispatchReceiverParameter = anyClass.copyThisReceiver(this@apply)
         }
     }
+
+    private fun IrClass.copyThisReceiver(function: IrFunction) =
+        thisReceiver?.copyToVS(function, origin = IrDeclarationOrigin.DEFINED)
 
     private fun stringConst(value: String) = IrConstImpl.string(
         startOffset = UNDEFINED_OFFSET,
