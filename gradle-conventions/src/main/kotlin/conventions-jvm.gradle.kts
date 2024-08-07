@@ -8,7 +8,6 @@ import util.optInForRPCApi
 plugins {
     id("conventions-common")
     id("org.jetbrains.kotlin.jvm")
-    id("conventions-kotlin-version-jvm")
 }
 
 java {

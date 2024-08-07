@@ -12,5 +12,5 @@ allprojects {
     version = "$kotlinVersion-$rpcVersion"
 }
 
-configureMetaTasks("cleanTest", "test")
+configureMetaTasks("clean", "cleanTest", "test")
 configureMetaTasks(tasks.matching { it.name.startsWith("publish") }.map { it.name })

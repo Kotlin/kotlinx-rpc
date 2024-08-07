@@ -10,7 +10,6 @@ import util.optionalProperty
 plugins {
     id("conventions-common")
     id("org.jetbrains.kotlin.multiplatform")
-    id("conventions-kotlin-version-kmp")
 }
 
 configure<KotlinMultiplatformExtension> {
