@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.selects.select
 import kotlinx.rpc.RPCConfig
 import kotlinx.rpc.StreamScope
 import kotlinx.rpc.internal.map.ConcurrentHashMap
@@ -243,7 +244,7 @@ public class RPCStreamContext(
     }
 
     public suspend fun send(message: RPCCallMessage.StreamMessage, serialFormat: SerialFormat) {
-        val info = select<RPCStreamCall?> {
+        val info: RPCStreamCall? = select {
             incomingStreams.getDeferred(message.streamId).onAwait { it }
             closedStreams.getDeferred(message.streamId).onAwait { null }
             closed.onAwait { null }
