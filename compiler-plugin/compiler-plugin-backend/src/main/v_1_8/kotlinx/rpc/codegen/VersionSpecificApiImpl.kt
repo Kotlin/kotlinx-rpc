@@ -8,10 +8,7 @@ import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.ir.addExtensionReceiver
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
-import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
-import org.jetbrains.kotlin.ir.declarations.IrFunction
-import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
-import org.jetbrains.kotlin.ir.declarations.IrValueParameter
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
@@ -35,6 +32,10 @@ object VersionSpecificApiImpl : VersionSpecificApi {
 
     override var IrCall.originVS: IrStatementOrigin?
         get() = origin
+        set(_) {}
+
+    override var IrConstructor.isPrimaryVS: Boolean
+        get() = isPrimary
         set(_) {}
 
     override fun referenceClass(context: IrPluginContext, packageName: String, name: String): IrClassSymbol? {

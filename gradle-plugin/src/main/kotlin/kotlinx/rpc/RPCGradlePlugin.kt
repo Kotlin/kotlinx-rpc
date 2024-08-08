@@ -18,19 +18,20 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
 
 internal data class RPCConfig(
-    val isInternalDevelopment: Boolean,
+    val kotlinLanguageVersion: KotlinVersion,
 )
 
 class RPCGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        val config = RPCConfig(target.isInternalDevelopment)
-
-        applyPlatformConfiguration(target, config)
-
-        // TODO languageVersion parameter check
-        if (kotlinVersion.first() < '2') { // for 1.*.* versions
-            applyKspPlugin(target, config)
+        if (!target.isInternalDevelopment) {
+            target.plugins.apply(RPCPlatformPlugin::class.java)
         }
+
+        // Will apply only if the KSP plugin is present.
+        // While K1 plugin is not present, it's alright to leave it this way.
+        // It will generate redundant code, but it's not critical,
+        // since that code will not be used, and K1 will shortly remove KSP altogether
+        applyKspPlugin(target, target.isInternalDevelopment)
 
         applyCompilerPlugin(target)
     }
@@ -42,11 +43,10 @@ class RPCGradlePlugin : Plugin<Project> {
         target.plugins.apply(CompilerPluginCli::class.java)
     }
 
-    private fun applyKspPlugin(target: Project, config: RPCConfig) {
-        var kspPluginConfigurationsApplied = false
+    private fun applyKspPlugin(target: Project, isInternalDevelopment: Boolean) {
         withKspPlugin(target) {
             val libraryKspPlugin = when {
-                config.isInternalDevelopment -> KSP_PLUGIN_MODULE
+                isInternalDevelopment -> KSP_PLUGIN_MODULE
 
                 else -> "$GROUP_ID:$KSP_PLUGIN_ARTIFACT_ID:$libraryKotlinPrefixedVersion"
             }
@@ -76,15 +76,6 @@ class RPCGradlePlugin : Plugin<Project> {
                             !(isKmpProject && (name == "ksp" || name == "kspTest"))
                 }
                 .all(onConfiguration)
-
-            kspPluginConfigurationsApplied = true
-        }
-
-        target.afterEvaluate {
-            if (!kspPluginConfigurationsApplied) {
-                error("Expected KSP Gradle Plugin to be present in the project's configuration. " +
-                        "Please, add `id(\"$KSP_PLUGIN_ID\")` plugin to the project.")
-            }
         }
     }
 
@@ -104,13 +95,5 @@ class RPCGradlePlugin : Plugin<Project> {
 
         // `withId` is live, so order of plugins can be arbitrary
         target.plugins.withId(KSP_PLUGIN_ID, onPlugin)
-    }
-
-    private fun applyPlatformConfiguration(target: Project, config: RPCConfig) {
-        if (config.isInternalDevelopment) {
-            return
-        }
-
-        target.plugins.apply(RPCPlatformPlugin::class.java)
     }
 }

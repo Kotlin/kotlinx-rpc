@@ -36,6 +36,13 @@ class CompilerModuleVersion(fullName: String, prefix: String) : Comparable<Compi
         .removePrefix(prefix)
         .replace('_', '.')
 
+    val kotlin by lazy {
+        val parts = version.split('.')
+            .map { it.toInt() }
+
+        KotlinVersion(parts[0], parts.getOrNull(1) ?: 0, parts.getOrNull(2) ?: 0)
+    }
+
     override fun compareTo(other: CompilerModuleVersion): Int {
         return when {
             version.length == other.version.length -> version.compareTo(other.version)
@@ -45,17 +52,30 @@ class CompilerModuleVersion(fullName: String, prefix: String) : Comparable<Compi
     }
 }
 
+private fun Collection<File>.sortAndSelectBySemVer(
+    prefix: String,
+    selector: (CompilerModuleVersion) -> Boolean,
+): File? {
+    return filter { it.name.startsWith(prefix) }
+        .map { it to CompilerModuleVersion(it.name, prefix) }
+        .sortedBy { (_, semVer) -> semVer }
+        .firstOrNull { (_, semVer) -> selector(semVer) }
+        ?.first
+}
+
 fun Collection<File>.mostSpecificVersionOrLatest(kotlinVersion: KotlinVersion): File? {
     return mostSpecificByVersionOrNull(kotlinVersion)
         ?: singleOrNull { it.name == Dir.LATEST_SOURCE_DIR }
 }
 
 private fun Collection<File>.mostSpecificByVersionOrNull(kotlinVersion: KotlinVersion): File? {
-    return map { it to CompilerModuleVersion(it.name, "v_") }
-        .sortedBy { (_, semVer) -> semVer }
-        .firstOrNull { (_, semVer) ->
-            kotlinVersion.toString().startsWith(semVer.version)
-        }?.first
+    val (vPrefixed, prePrefixed) = partition { it.name.startsWith("v_") }
+
+    return vPrefixed.sortAndSelectBySemVer("v_") { semVer ->
+        kotlinVersion.toString().startsWith(semVer.version)
+    } ?: prePrefixed.sortAndSelectBySemVer("pre_") { semVer ->
+        kotlinVersion <= semVer.kotlin
+    }
 }
 
 // matches:
@@ -64,21 +84,40 @@ private fun Collection<File>.mostSpecificByVersionOrNull(kotlinVersion: KotlinVe
 // - v_1_9
 // - v_1_9_2
 // - v_1_9_24
-private val directoryNameRegex = "^(latest|v(_\\d){1,3}\\d?)$".toRegex()
+// - pre_1_9_20
+// etc.
+private val directoryNameRegex = "^(latest|(v|pre)(_\\d){1,3}\\d?)$".toRegex()
 
-data class KotlinLatestApplied(val applied: Boolean)
+data class ActionApplied(val applied: Boolean)
 
-inline fun ExtensionAware.whenKotlinLatest(body: () -> Unit): KotlinLatestApplied {
+inline fun ExtensionAware.whenKotlinIsAtLeast(
+    major: Int,
+    minor: Int,
+    patch: Int = 0,
+    action: () -> Unit,
+): ActionApplied {
+    val kotlinVersion: KotlinVersion by extra
+
+    if (kotlinVersion.isAtLeast(major, minor, patch)) {
+        action()
+
+        return ActionApplied(true)
+    }
+
+    return ActionApplied(false)
+}
+
+inline fun ExtensionAware.whenKotlinLatest(action: () -> Unit): ActionApplied {
     val isLatestKotlinVersion: Boolean by extra
 
     if (isLatestKotlinVersion) {
-        body()
+        action()
     }
 
-    return KotlinLatestApplied(isLatestKotlinVersion)
+    return ActionApplied(isLatestKotlinVersion)
 }
 
-infix fun KotlinLatestApplied.otherwise(body: () -> Unit) {
+infix fun ActionApplied.otherwise(body: () -> Unit) {
     if (!applied) {
         body()
     }

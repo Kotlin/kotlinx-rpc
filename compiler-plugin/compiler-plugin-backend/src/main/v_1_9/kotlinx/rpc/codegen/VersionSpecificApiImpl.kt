@@ -8,15 +8,13 @@ import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.ir.addExtensionReceiver
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
-import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
-import org.jetbrains.kotlin.ir.declarations.IrFunction
-import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
-import org.jetbrains.kotlin.ir.declarations.IrValueParameter
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.types.impl.IrErrorClassImpl.modality
 import org.jetbrains.kotlin.ir.util.copyTo
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
@@ -39,6 +37,12 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     override var IrCall.originVS: IrStatementOrigin?
         get() = origin
         set(value) { origin = value }
+
+    override var IrConstructor.isPrimaryVS: Boolean
+        get() = isPrimary
+        set(value) {
+            isPrimary = value
+        }
 
     override fun referenceClass(context: IrPluginContext, packageName: String, name: String): IrClassSymbol? {
         return context.referenceClass(
