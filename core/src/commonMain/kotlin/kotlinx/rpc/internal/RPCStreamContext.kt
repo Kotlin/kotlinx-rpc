@@ -55,9 +55,10 @@ public class RPCStreamContext(
     private companion object {
         private const val STREAM_ID_PREFIX = "stream:"
     }
+    private val closed = CompletableDeferred<Unit>()
 
     // thread-safe set
-    private val closedStreams = ConcurrentHashMap<String, Unit>()
+    private val closedStreams = ConcurrentHashMap<String, CompletableDeferred<Unit>>()
 
     @InternalRPCApi
     public inline fun launchIf(
@@ -168,7 +169,7 @@ public class RPCStreamContext(
             fun onClose() {
                 incoming.cancel()
 
-                closedStreams.put(streamId, Unit)
+                closedStreams[streamId] = Unit
                 incomingChannels.remove(streamId)?.complete(null)
                 incomingStreams.remove(streamId)
             }
@@ -242,27 +243,31 @@ public class RPCStreamContext(
     }
 
     public suspend fun send(message: RPCCallMessage.StreamMessage, serialFormat: SerialFormat) {
-        val info = incomingStreams.getDeferred(message.streamId).await()
+        val info = select<RPCStreamCall?> {
+            incomingStreams.getDeferred(message.streamId).onAwait { it }
+            closedStreams.getDeferred(message.streamId).onAwait { null }
+            closed.onAwait { null }
+        }
+        if (info == null) return
         val result = decodeMessageData(serialFormat, info.elementSerializer, message)
-        incomingChannelOf(message.streamId)?.send(result)
+        val channel = incomingChannelOf(message.streamId)
+        channel?.send(result)
     }
 
     private suspend fun incomingChannelOf(streamId: String): Channel<Any?>? {
-        if (closedStreams.containsKey(streamId)) {
-            return null
+        return select {
+            incomingChannels.getDeferred(streamId).onAwait { it }
+            closedStreams.getDeferred(streamId).onAwait { null }
+            closed.onAwait { null }
         }
-
-        return incomingChannels.getDeferred(streamId).await()
     }
 
-    private var closed = false
-
     private fun close(cause: Throwable?) {
-        if (closed) {
+        if (closed.isCompleted) {
             return
         }
 
-        closed = true
+        closed.complete(Unit)
 
         if (incomingChannelsInitialized) {
             for (channel in incomingChannels.values) {
