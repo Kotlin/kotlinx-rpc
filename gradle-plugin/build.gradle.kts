@@ -39,9 +39,7 @@ gradlePlugin {
             implementationClass = "kotlinx.rpc.RPCGradlePlugin"
             description = """
                 The plugin ensures correct RPC configurations for your project, that will allow proper code generation. 
-                
-                Additionally, it enforces proper artifacts versions for your project, depending on your Kotlin version.
-                Resulting versions of the kotlinx.rpc dependencies will be 'kotlinVersion-kotlinxRpcVersion', for example '1.9.24-0.2.1', where '0.2.1' is the kotlinx.rpc version.
+                Additionally, it applies the kotlinx.rpc BOM file for the project.
             """.trimIndent()
         }
     }
@@ -53,8 +51,7 @@ gradlePlugin {
             displayName = "kotlinx.rpc Platform Plugin"
             implementationClass = "kotlinx.rpc.RPCPlatformPlugin"
             description = """
-                The plugin enforces proper artifacts versions for your project, depending on your Kotlin version.
-                Resulting versions of the kotlinx.rpc dependencies will be 'kotlinVersion-kotlinxRpcVersion', for example '1.9.24-0.2.1', where '0.2.1' is the kotlinx.rpc version.
+                Applies the kotlinx.rpc BOM file for the project. 
             """.trimIndent()
         }
     }

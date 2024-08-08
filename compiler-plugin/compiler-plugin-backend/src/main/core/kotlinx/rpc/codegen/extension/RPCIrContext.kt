@@ -242,7 +242,7 @@ internal class RPCIrContext(
         return getIrClassSymbol("kotlinx.rpc$suffix", name)
     }
 
-    private fun getIrClassSymbol(packageName: String, name: String): IrClassSymbol {
+    fun getIrClassSymbol(packageName: String, name: String): IrClassSymbol {
         return versionSpecificApi.referenceClass(pluginContext, packageName, name)
             ?: error("Unable to find symbol. Package: $packageName, name: $name")
     }

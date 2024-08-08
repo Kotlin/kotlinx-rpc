@@ -11,6 +11,10 @@ plugins {
 
 kotlin {
     explicitApi = ExplicitApiMode.Disabled
+
+    sourceSets.all {
+        languageSettings.optIn("org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI")
+    }
 }
 
 dependencies {

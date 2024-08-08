@@ -2,8 +2,6 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(UnsafeDuringIrConstructionAPI::class)
-
 package kotlinx.rpc.codegen.extension
 
 import kotlinx.rpc.codegen.common.RpcNames
@@ -11,9 +9,9 @@ import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
-import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.util.dumpKotlinLike
+import org.jetbrains.kotlin.ir.util.packageFqName
 
 /**
  * This class scans user declared RPC service
@@ -73,8 +71,15 @@ internal object RPCDeclarationScanner {
             }
         }
 
+        val packageName = service.packageFqName?.asString()
+            ?: error("Expected package name of the ${service.name.asString()}")
+
         val stubClassNotNull = stubClass
-            ?: error("Expected ${RpcNames.SERVICE_STUB_NAME} nested declaration in ${service.name}")
+            // only for KSP generation
+            ?: ctx.getIrClassSymbol(
+                packageName = packageName,
+                name = "${service.name.asString()}${RpcNames.SERVICE_STUB_NAME_KSP.asString()}"
+            ).owner
 
         return ServiceDeclaration(
             service = service,
