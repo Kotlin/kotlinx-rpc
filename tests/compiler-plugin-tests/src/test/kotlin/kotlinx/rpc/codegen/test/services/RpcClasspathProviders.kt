@@ -17,11 +17,19 @@ import java.io.FilenameFilter
 private val globalRootDir: String = System.getProperty("kotlinx.rpc.globalRootDir")
     ?: error("Global root dir is not specified")
 
-object RpcClasspathProvider {
-    private val CORE_JVM_JAR_DIR = "$globalRootDir/core/build/libs/"
-    private val CORE_JVM_JAR_FILTER = FilenameFilter { _, name ->
-        name.startsWith("core-jvm") && name.endsWith(".jar")
+private class RuntimeDependency(
+    val dir: String,
+    val name: String,
+) {
+    val filter = FilenameFilter { _, filename ->
+        filename.startsWith(name) && filename.endsWith(".jar")
     }
+}
+
+private object RpcClasspathProvider {
+    private val TEST_RUNTIME = RuntimeDependency("build/libs/", "compiler-plugin-test")
+    private val CORE_JVM = RuntimeDependency("$globalRootDir/core/build/libs/", "core-jvm")
+    private val UTILS_JVM = RuntimeDependency("$globalRootDir/utils/build/libs/", "utils-jvm")
 
     private const val RUNTIME_DEPENDENCIES_PROPERTY = "kotlinx.rpc.test.data.classpath.dependencies"
     private val runtimeDependenciesPaths = System.getProperty(RUNTIME_DEPENDENCIES_PROPERTY)
@@ -30,14 +38,28 @@ object RpcClasspathProvider {
         ?: error("Runtime dependencies are not specified")
 
     fun provideClasspath(testServices: TestServices): List<File> {
-        val libDir = File(CORE_JVM_JAR_DIR)
-        testServices.assertions.assertTrue(libDir.exists() && libDir.isDirectory, failMessage)
-        val coreJar = libDir.listFiles(CORE_JVM_JAR_FILTER)?.firstOrNull() ?: testServices.assertions.fail(failMessage)
+        val additionalDependencies = listOf(
+            TEST_RUNTIME,
+            CORE_JVM,
+            UTILS_JVM,
+        ).map { it.getFile(testServices) }
 
-        return runtimeDependenciesPaths + coreJar
+        return runtimeDependenciesPaths + additionalDependencies
     }
 
-    private val failMessage = { "Jar with runtime API does not exist. Please run :core:jvmJar" }
+    private fun RuntimeDependency.getFile(testServices: TestServices): File {
+        fun failMessage(): String {
+            return "Jar file with '$name' runtime API does not exist. " +
+                    "Please run corresponding gradle :jar (or :<platform>Jar) task"
+        }
+
+        val libDir = File(dir)
+        testServices.assertions.assertTrue(libDir.exists() && libDir.isDirectory, ::failMessage)
+        val jar = libDir.listFiles(filter)?.firstOrNull()
+            ?: testServices.assertions.fail(::failMessage)
+
+        return jar
+    }
 }
 
 class RpcCompileClasspathProvider(testServices: TestServices) : EnvironmentConfigurator(testServices) {
