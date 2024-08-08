@@ -7,7 +7,7 @@ package kotlinx.rpc.test.api
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
-import kotlinx.rpc.client.awaitFieldInitialization
+import kotlinx.rpc.awaitFieldInitialization
 import kotlinx.rpc.internal.transport.CancellationType
 import kotlinx.rpc.internal.transport.RPCMessage
 import kotlinx.rpc.internal.transport.RPCPlugin

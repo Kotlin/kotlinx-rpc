@@ -6,7 +6,6 @@ package kotlinx.rpc.client.internal
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.rpc.client.UninitializedRPCFieldException
 import kotlin.reflect.KProperty
 
 internal class RPCFieldProvider<T, R>(

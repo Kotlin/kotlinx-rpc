@@ -7,7 +7,6 @@ package kotlinx.rpc.test
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.*
 import kotlinx.rpc.*
-import kotlinx.rpc.client.withService
 import kotlinx.rpc.serialization.json
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext

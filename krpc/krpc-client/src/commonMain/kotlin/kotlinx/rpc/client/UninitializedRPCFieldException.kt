@@ -4,13 +4,20 @@
 
 package kotlinx.rpc.client
 
+import kotlinx.rpc.UninitializedRPCFieldException
 import kotlin.reflect.KProperty
 
-/**
- * Thrown when an uninitialized field of an RPC interface is accessed.
- *
- * Use [awaitFieldInitialization] to await for the field initialization
- */
+@Deprecated(
+    message = "UninitializedRPCFieldException was moved to kotlinx-rpc-core, to kotlinx.rpc package",
+    level = DeprecationLevel.WARNING,
+    replaceWith = ReplaceWith(
+        "UninitializedRPCFieldException(serviceName, property)",
+        "kotlinx.rpc.UninitializedRPCFieldException",
+    )
+)
 public class UninitializedRPCFieldException(serviceName: String, property: KProperty<*>): Exception() {
-    override val message: String = "${property.name} field of RPC service \"$serviceName\" in not initialized"
+    private val inner = UninitializedRPCFieldException(serviceName, property)
+
+    override val message: String = inner.message
+    override val cause: Throwable? = inner.cause
 }

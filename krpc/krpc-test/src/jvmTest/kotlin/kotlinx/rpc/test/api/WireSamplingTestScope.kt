@@ -12,7 +12,6 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.*
-import kotlinx.rpc.client.withService
 import kotlinx.rpc.internal.hex.hexToByteArrayInternal
 import kotlinx.rpc.internal.hex.hexToReadableBinary
 import kotlinx.rpc.internal.logging.CommonLogger

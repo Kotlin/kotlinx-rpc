@@ -7,14 +7,10 @@ package kotlinx.rpc.test.cancellation
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlinx.rpc.RPCConfigBuilder
-import kotlinx.rpc.client.withService
+import kotlinx.rpc.*
 import kotlinx.rpc.internal.logging.CommonLogger
 import kotlinx.rpc.internal.logging.DumpLogger
 import kotlinx.rpc.internal.logging.DumpLoggerContainer
-import kotlinx.rpc.registerService
-import kotlinx.rpc.rpcClientConfig
-import kotlinx.rpc.rpcServerConfig
 import kotlinx.rpc.serialization.json
 import kotlinx.rpc.test.KRPCTestClient
 import kotlinx.rpc.test.KRPCTestServer
