@@ -11,7 +11,6 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.rpc.*
 import kotlinx.rpc.client.KRPCClient
-import kotlinx.rpc.client.withService
 import kotlinx.rpc.internal.hex.hexToReadableBinary
 import kotlinx.rpc.internal.logging.CommonLogger
 import kotlinx.rpc.internal.logging.DumpLogger
