@@ -14,6 +14,12 @@ fun Project.configureMetaTasks(taskNames: List<String>, excludeSubprojects: List
     val root = this
     val metaSet = taskNames.toSet()
 
+    metaSet.forEach { taskName ->
+        root.tasks.maybeCreate(taskName).apply {
+            group = "meta"
+        }
+    }
+
     subprojects.forEach {
         if (it.name in excludeSubprojects) {
             return@forEach
@@ -23,12 +29,9 @@ fun Project.configureMetaTasks(taskNames: List<String>, excludeSubprojects: List
             val subtask = this
 
             if (subtask.name in metaSet) {
-                val metaTask = root.tasks.findByName(subtask.name)
-                    ?: root.task(subtask.name)
+                val metaTask = root.tasks.named(subtask.name).get()
 
                 metaTask.dependsOn(subtask)
-
-                metaTask.group = "meta"
             }
         }
     }

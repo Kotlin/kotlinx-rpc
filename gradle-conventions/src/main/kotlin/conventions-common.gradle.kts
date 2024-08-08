@@ -9,6 +9,7 @@ import util.whenKotlinLatest
 plugins {
     id("io.gitlab.arturbosch.detekt")
     id("conventions-publishing")
+    id("conventions-kotlin-version")
 }
 
 val globalRootDir: String by extra
