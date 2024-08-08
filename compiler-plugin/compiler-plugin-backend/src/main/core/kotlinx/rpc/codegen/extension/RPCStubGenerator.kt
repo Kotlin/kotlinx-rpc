@@ -2,12 +2,11 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(UnsafeDuringIrConstructionAPI::class)
-
 package kotlinx.rpc.codegen.extension
 
 import kotlinx.rpc.codegen.VersionSpecificApi
 import kotlinx.rpc.codegen.common.rpcMethodClassName
+import kotlinx.rpc.codegen.common.rpcMethodClassNameKsp
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.backend.jvm.functionByName
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -25,7 +24,6 @@ import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
-import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.Name
@@ -175,7 +173,7 @@ internal class RPCStubGenerator(
             addBackingFieldUtil {
                 visibility = DescriptorVisibilities.PRIVATE
                 type = propertyType
-                isFinal = true
+                vsApi { isFinalVS = true }
             }.apply {
                 initializer = factory.createExpressionBody(
                     IrGetValueImpl(
@@ -214,7 +212,7 @@ internal class RPCStubGenerator(
             addBackingFieldUtil {
                 visibility = DescriptorVisibilities.PRIVATE
                 type = ctx.coroutineContext.defaultType
-                isFinal = true
+                vsApi { isFinalVS = true }
             }.apply {
                 val coroutineContextClass = ctx.coroutineContext.owner
 
@@ -280,7 +278,6 @@ internal class RPCStubGenerator(
         "detekt.NestedBlockDepth",
         "detekt.LongMethod",
         "detekt.CyclomaticComplexMethod",
-        "detekt.MagicNumber",
     )
     private fun IrClass.rpcFlowField(field: ServiceDeclaration.FlowField) {
         val isLazy = !field.property.hasAnnotation(ctx.rpcEagerFieldAnnotation)
@@ -362,7 +359,7 @@ internal class RPCStubGenerator(
                 addBackingFieldUtil {
                     type = fieldType
                     visibility = DescriptorVisibilities.PRIVATE
-                    isFinal = true
+                    vsApi { isFinalVS = true }
                 }.apply {
                     initializer = factory.createExpressionBody(registerCall)
                 }
@@ -379,7 +376,7 @@ internal class RPCStubGenerator(
                     name = propertyDelegateName(this@apply.name)
                     visibility = DescriptorVisibilities.PRIVATE
                     type = lazyFieldType
-                    isFinal = true
+                    vsApi { isFinalVS = true }
                 }.apply {
                     val propertyDelegate = this
 
@@ -539,7 +536,8 @@ internal class RPCStubGenerator(
         val isMethodObject = method.arguments.isEmpty()
 
         val methodClassName = method.function.name.rpcMethodClassName
-        val methodClass: IrClass = initiateAndGetMethodClass(methodClassName, method)
+        val methodClassNameKsp = method.function.name.rpcMethodClassNameKsp
+        val methodClass: IrClass = initiateAndGetMethodClass(methodClassName, methodClassNameKsp, method)
 
         addFunction {
             name = method.function.name
@@ -653,17 +651,22 @@ internal class RPCStubGenerator(
      * }
      * ```
      */
-    private fun IrClass.initiateAndGetMethodClass(methodClassName: Name, method: ServiceDeclaration.Method): IrClass {
-        val methodClass = findDeclaration<IrClass> { it.name == methodClassName }
-            ?: error(
-                "Expected $methodClassName class to be present in stub class " +
-                        "${declaration.service.name}${declaration.stubClass.name}"
-            )
+    private fun IrClass.initiateAndGetMethodClass(
+        methodClassName: Name,
+        methodClassNameKsp: Name,
+        method: ServiceDeclaration.Method
+    ): IrClass {
+        val methodClass = findDeclaration<IrClass> {
+            it.name == methodClassName || it.name == methodClassNameKsp
+        } ?: error(
+            "Expected $methodClassName or $methodClassNameKsp class to be present in stub class " +
+                    "${declaration.service.name}${declaration.stubClass.name}"
+        )
 
         methodClasses.add(methodClass)
 
         val methodClassThisReceiver = methodClass.thisReceiver
-            ?: error("Expected $methodClassName of ${declaration.stubClass.name} to have a thisReceiver")
+            ?: error("Expected ${methodClass.name} of ${declaration.stubClass.name} to have a thisReceiver")
 
         val properties = if (methodClass.isClass) {
             val argNames = method.arguments.memoryOptimizedMap { it.value.name }.toSet()
@@ -677,7 +680,7 @@ internal class RPCStubGenerator(
                 method.arguments.size == it.valueParameters.size
             }
 
-            constructor.isPrimary = true
+            vsApi { constructor.isPrimaryVS = true }
             methodClass.addDefaultConstructor(constructor)
 
             constructor.valueParameters.memoryOptimizedMap { valueParam ->
@@ -754,10 +757,7 @@ internal class RPCStubGenerator(
      * ))
      * ```
      */
-    @Suppress(
-        "detekt.NestedBlockDepth",
-        "detekt.MagicNumber",
-    )
+    @Suppress("detekt.NestedBlockDepth")
     private fun IrBlockBodyBuilder.irRpcMethodClientCall(
         method: ServiceDeclaration.Method,
         functionThisReceiver: IrValueParameter,
@@ -970,7 +970,6 @@ internal class RPCStubGenerator(
 
             addBackingFieldUtil {
                 type = mapType
-                isFinal = true
                 vsApi { isFinalVS = true }
                 visibility = DescriptorVisibilities.PRIVATE
             }.apply {

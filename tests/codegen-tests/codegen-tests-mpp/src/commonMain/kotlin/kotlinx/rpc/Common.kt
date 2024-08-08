@@ -6,9 +6,7 @@ package kotlinx.rpc
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.job
 import kotlinx.rpc.client.withService
 import kotlinx.rpc.internal.logging.CommonLogger
 import kotlinx.rpc.server.internal.rpcServiceMethodSerializationTypeOf
@@ -55,7 +53,7 @@ val stubEngine = object : RPCClient {
     }
 
     override fun provideStubContext(serviceId: Long): CoroutineContext {
-        return SupervisorJob(coroutineContext.job)
+        return coroutineContext
     }
 }
 

@@ -6,10 +6,7 @@ package kotlinx.rpc.codegen
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
-import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
-import org.jetbrains.kotlin.ir.declarations.IrFunction
-import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
-import org.jetbrains.kotlin.ir.declarations.IrValueParameter
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
@@ -41,6 +38,8 @@ interface VersionSpecificApi {
     var IrFieldBuilder.isFinalVS: Boolean
 
     var IrCall.originVS: IrStatementOrigin?
+
+    var IrConstructor.isPrimaryVS: Boolean
 
     companion object {
         lateinit var INSTANCE: VersionSpecificApi
