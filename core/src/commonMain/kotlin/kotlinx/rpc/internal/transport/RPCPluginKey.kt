@@ -21,7 +21,6 @@ import kotlinx.serialization.Serializable
  */
 @InternalRPCApi
 @Serializable(with = RPCPluginKeySerializer::class)
-@Suppress("detekt.MagicNumber")
 public enum class RPCPluginKey(override val uniqueIndex: Int, private val associatedPlugin: RPCPlugin): IndexedEnum {
     /**
      * Failed to decode key, possible due to different endpoint versions.

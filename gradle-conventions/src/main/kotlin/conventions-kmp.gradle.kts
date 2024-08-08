@@ -23,7 +23,10 @@ val excludeJs: Boolean by optionalProperty()
 val excludeJvm: Boolean by optionalProperty()
 val excludeNative: Boolean by optionalProperty()
 
+val kotlinVersion: KotlinVersion by extra
+
 configureKotlin(
+    kotlinVersion = kotlinVersion,
     jvm = !excludeJvm,
     js = !excludeJs,
     native = !excludeNative,

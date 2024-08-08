@@ -4,7 +4,7 @@
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 
-val kotlinVersion: String by extra
+val kotlinVersion: KotlinVersion by extra
 val rpcVersion: String = libs.versions.kotlinx.rpc.get()
 
 allprojects {

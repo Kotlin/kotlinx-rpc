@@ -4,11 +4,7 @@
 
 import util.configureMetaTasks
 
-plugins {
-    alias(libs.plugins.conventions.utils)
-}
-
-val kotlinVersion: String by extra
+val kotlinVersion: KotlinVersion by extra
 val rpcVersion: String = libs.versions.kotlinx.rpc.get()
 
 allprojects {

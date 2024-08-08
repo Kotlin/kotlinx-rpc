@@ -3,15 +3,14 @@
  */
 
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
+import util.kotlinVersionParsed
 
 plugins {
-    alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.kotlinx.rpc) apply false
     alias(libs.plugins.atomicfu) apply false
-    alias(libs.plugins.detekt) apply false
-    alias(libs.plugins.kover.root.project) apply false
+    alias(libs.plugins.conventions.kover)
     alias(libs.plugins.binary.compatibility.validator)
 }
 
@@ -41,11 +40,7 @@ apiValidation {
     nonPublicMarkers.add(Const.INTERNAL_RPC_API_ANNOTATION)
 }
 
-val kotlinVersion: String by extra
-
-if (kotlinVersion >= "1.8.0") {
-    apply(plugin = libs.plugins.kover.root.project.get().pluginId)
-}
+val kotlinVersion: KotlinVersion by extra
 
 allprojects {
     group = "org.jetbrains.kotlinx"
@@ -57,8 +52,8 @@ println("kotlinx.rpc project version: $version, Kotlin version: $kotlinVersion")
 // If the prefix of the kPRC version is not Kotlin gradle plugin version - you have a problem :)
 // Probably some dependency brings kotlin with higher version.
 // To mitigate so, please refer to `gradle/kotlin-version-lookup.json`
-// and it's usage in `gradle-settings-conventions/src/main/kotlin/settings-conventions.settings.gradle.kts`
-val kotlinGPVersion = getKotlinPluginVersion()
+// and it's usage in `gradle-conventions-settings/src/main/kotlin/settings-conventions.settings.gradle.kts`
+val kotlinGPVersion = getKotlinPluginVersion().kotlinVersionParsed()
 if (kotlinVersion != kotlinGPVersion) {
     error("KGP version mismatch. Project version: $kotlinVersion, KGP version: $kotlinGPVersion")
 }
