@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="TestDataPluginSettings">
+    <option name="relatedFilesSearchPaths">
+      <map>
+        <entry key="$PROJECT_DIR$/tests/compiler-plugin-tests/src/testData/box">
+          <value>
+            <array />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="testDataFiles">
+      <array>
+        <option value="$PROJECT_DIR$/tests/compiler-plugin-tests/src/testData" />
+      </array>
+    </option>
+  </component>
+</project>

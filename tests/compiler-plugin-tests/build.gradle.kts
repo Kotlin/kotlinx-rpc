@@ -2,6 +2,7 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -21,14 +22,19 @@ sourceSets {
     }
 }
 
+kotlin {
+    explicitApi = ExplicitApiMode.Disabled
+}
+
 dependencies {
+    implementation(projects.core)
+
     testRuntimeOnly(libs.kotlin.test)
     testRuntimeOnly(libs.kotlin.script.runtime)
     testRuntimeOnly(libs.kotlin.annotations.jvm)
 
     testImplementation(libs.serialization.plugin)
-    testImplementation(libs.compiler.plugin.backend)
-    testImplementation(libs.compiler.plugin.k2)
+    testImplementation(libs.compiler.plugin.cli)
 
     testImplementation(libs.kotlin.reflect)
     testImplementation(libs.kotlin.compiler)
@@ -53,6 +59,7 @@ testDataRuntimeDependencies(
 
 tasks.test {
     dependsOn(project(":core").tasks.getByName("jvmJar"))
+    dependsOn(project(":utils").tasks.getByName("jvmJar"))
 
     useJUnitPlatform()
 
@@ -89,7 +96,7 @@ tasks.named<KotlinCompile>("compileTestKotlin").configure {
 
 fun testDataRuntimeDependencies(vararg dependencyNotations: Provider<MinimalExternalModuleDependency>) {
     dependencyNotations.forEach {
-        dependencies.runtimeClasspath(it)
+        dependencies.implementation(it)
     }
 
     tasks.test {

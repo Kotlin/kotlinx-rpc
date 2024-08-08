@@ -1,6 +1,6 @@
 FILE: simple.kt
     public abstract interface MyService : R|kotlinx/rpc/RPC| {
-        public abstract suspend fun simple(): R|kotlin/Unit|
+        public abstract suspend fun simple(): R|kotlin/String|
 
         public final class $rpcServiceStub : R|kotlin/Any| {
             @R|kotlinx/serialization/Serializable|() public final object simple$rpcMethod : R|kotlin/Any| {
@@ -19,5 +19,17 @@ FILE: simple.kt
 
     }
     public final fun box(): R|kotlin/String| {
-        ^box String(OK)
+        ^box R|kotlinx/coroutines/runBlocking|<R|kotlin/String|>(<L> = runBlocking@fun R|kotlinx/coroutines/CoroutineScope|.<anonymous>(): R|kotlin/String| <inline=NoInline, kind=EXACTLY_ONCE>  {
+            lval result: R|kotlin/String| = Q|kotlinx/rpc/codegen/test/TestRpcClient|.R|kotlinx/rpc/withService|<R|MyService|>().R|/MyService.simple|()
+            ^ when () {
+                ==(R|<local>/result|, String(call_42)) ->  {
+                    String(OK)
+                }
+                else ->  {
+                    <strcat>(String(Fail: ), R|<local>/result|)
+                }
+            }
+
+        }
+        )
     }

@@ -7,18 +7,19 @@ package kotlinx.rpc.codegen.extension
 import kotlinx.rpc.codegen.VersionSpecificApi
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 
-internal class RPCIrExtension(
-    private val logger: MessageCollector,
-    private val versionSpecificApi: VersionSpecificApi,
-) : IrGenerationExtension {
+class RPCIrExtension(configuration: CompilerConfiguration) : IrGenerationExtension {
+    private val logger = configuration.get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
+
     override fun generate(
         moduleFragment: IrModuleFragment,
         pluginContext: IrPluginContext,
     ) {
-        val context = RPCIrContext(pluginContext, versionSpecificApi)
+        val context = RPCIrContext(pluginContext, VersionSpecificApi.INSTANCE)
 
         val processor = RPCIrServiceProcessor(logger)
         moduleFragment.transform(processor, context)

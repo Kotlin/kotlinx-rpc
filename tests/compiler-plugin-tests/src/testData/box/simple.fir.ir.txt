@@ -197,33 +197,34 @@ FILE fqName:<root> fileName:/simple.kt
         overridden:
           public open fun toString (): kotlin.String declared in <root>.MyService
         $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-      FUN name:simple visibility:public modality:OPEN <> ($this:<root>.MyService.$rpcServiceStub) returnType:kotlin.Unit [suspend]
+      FUN name:simple visibility:public modality:OPEN <> ($this:<root>.MyService.$rpcServiceStub) returnType:kotlin.String [suspend]
         overridden:
-          public abstract fun simple (): kotlin.Unit declared in <root>.MyService
+          public abstract fun simple (): kotlin.String declared in <root>.MyService
         $this: VALUE_PARAMETER name:<this> type:<root>.MyService.$rpcServiceStub
         BLOCK_BODY
-          RETURN type=kotlin.Nothing from='public open fun simple (): kotlin.Unit declared in <root>.MyService.$rpcServiceStub'
-            CALL 'public final fun scopedClientCall <T> (serviceScope: kotlinx.coroutines.CoroutineScope, body: kotlin.coroutines.SuspendFunction0<T of kotlinx.rpc.internal.scopedClientCall>): T of kotlinx.rpc.internal.scopedClientCall declared in kotlinx.rpc.internal' type=kotlin.Unit origin=null
-              <T>: kotlin.Unit
+          RETURN type=kotlin.Nothing from='public open fun simple (): kotlin.String declared in <root>.MyService.$rpcServiceStub'
+            CALL 'public final fun scopedClientCall <T> (serviceScope: kotlinx.coroutines.CoroutineScope, body: kotlin.coroutines.SuspendFunction0<T of kotlinx.rpc.internal.scopedClientCall>): T of kotlinx.rpc.internal.scopedClientCall declared in kotlinx.rpc.internal' type=kotlin.String origin=null
+              <T>: kotlin.String
               serviceScope: GET_VAR '<this>: <root>.MyService.$rpcServiceStub declared in <root>.MyService.$rpcServiceStub.simple' type=kotlinx.coroutines.CoroutineScope origin=null
-              body: FUN_EXPR type=kotlin.coroutines.SuspendFunction0<kotlin.Unit> origin=LAMBDA
-                FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL <> () returnType:kotlin.Unit [suspend]
+              body: FUN_EXPR type=kotlin.coroutines.SuspendFunction0<kotlin.String> origin=LAMBDA
+                FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL <> () returnType:kotlin.String [suspend]
                   BLOCK_BODY
-                    CALL 'public abstract fun call <T> (call: kotlinx.rpc.RPCCall): T of kotlinx.rpc.RPCClient.call declared in kotlinx.rpc.RPCClient' type=kotlin.Unit origin=null
-                      <T>: kotlin.Unit
-                      $this: CALL 'private final fun <get-__rpc_client> (): kotlinx.rpc.RPCClient declared in <root>.MyService.$rpcServiceStub' type=kotlinx.rpc.RPCClient origin=GET_PROPERTY
-                        $this: GET_VAR '<this>: <root>.MyService.$rpcServiceStub declared in <root>.MyService.$rpcServiceStub.simple' type=<root>.MyService.$rpcServiceStub origin=null
-                      call: CONSTRUCTOR_CALL 'public constructor <init> (serviceTypeString: kotlin.String, serviceId: kotlin.Long, callableName: kotlin.String, type: kotlinx.rpc.RPCCall.Type, data: kotlin.Any, dataType: kotlin.reflect.KType, returnType: kotlin.reflect.KType) declared in kotlinx.rpc.RPCCall' type=kotlinx.rpc.RPCCall origin=null
-                        serviceTypeString: CONST String type=kotlin.String value="MyService"
-                        serviceId: CALL 'private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.MyService.$rpcServiceStub' type=kotlin.Long origin=GET_PROPERTY
+                    RETURN type=kotlin.Nothing from='local final fun <anonymous> (): kotlin.String declared in <root>.MyService.$rpcServiceStub.simple'
+                      CALL 'public abstract fun call <T> (call: kotlinx.rpc.RPCCall): T of kotlinx.rpc.RPCClient.call declared in kotlinx.rpc.RPCClient' type=kotlin.String origin=null
+                        <T>: kotlin.String
+                        $this: CALL 'private final fun <get-__rpc_client> (): kotlinx.rpc.RPCClient declared in <root>.MyService.$rpcServiceStub' type=kotlinx.rpc.RPCClient origin=GET_PROPERTY
                           $this: GET_VAR '<this>: <root>.MyService.$rpcServiceStub declared in <root>.MyService.$rpcServiceStub.simple' type=<root>.MyService.$rpcServiceStub origin=null
-                        callableName: CONST String type=kotlin.String value="simple"
-                        type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:Method' type=kotlinx.rpc.RPCCall.Type
-                        data: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.RPCGeneratedRpcMethodClassKey] OBJECT name:simple$rpcMethod modality:FINAL visibility:public superTypes:[kotlinx.rpc.internal.RPCMethodClassArguments]' type=<root>.MyService.$rpcServiceStub.simple$rpcMethod
-                        dataType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                          <T>: <root>.MyService.$rpcServiceStub.simple$rpcMethod
-                        returnType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                          <T>: kotlin.Unit
+                        call: CONSTRUCTOR_CALL 'public constructor <init> (serviceTypeString: kotlin.String, serviceId: kotlin.Long, callableName: kotlin.String, type: kotlinx.rpc.RPCCall.Type, data: kotlin.Any, dataType: kotlin.reflect.KType, returnType: kotlin.reflect.KType) declared in kotlinx.rpc.RPCCall' type=kotlinx.rpc.RPCCall origin=null
+                          serviceTypeString: CONST String type=kotlin.String value="MyService"
+                          serviceId: CALL 'private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.MyService.$rpcServiceStub' type=kotlin.Long origin=GET_PROPERTY
+                            $this: GET_VAR '<this>: <root>.MyService.$rpcServiceStub declared in <root>.MyService.$rpcServiceStub.simple' type=<root>.MyService.$rpcServiceStub origin=null
+                          callableName: CONST String type=kotlin.String value="simple"
+                          type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:Method' type=kotlinx.rpc.RPCCall.Type
+                          data: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.RPCGeneratedRpcMethodClassKey] OBJECT name:simple$rpcMethod modality:FINAL visibility:public superTypes:[kotlinx.rpc.internal.RPCMethodClassArguments]' type=<root>.MyService.$rpcServiceStub.simple$rpcMethod
+                          dataType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                            <T>: <root>.MyService.$rpcServiceStub.simple$rpcMethod
+                          returnType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                            <T>: kotlin.String
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean [fake_override,operator]
       overridden:
         public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlinx.rpc.RPC
@@ -237,7 +238,7 @@ FILE fqName:<root> fileName:/simple.kt
       overridden:
         public open fun toString (): kotlin.String declared in kotlinx.rpc.RPC
       $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-    FUN name:simple visibility:public modality:ABSTRACT <> ($this:<root>.MyService) returnType:kotlin.Unit [suspend]
+    FUN name:simple visibility:public modality:ABSTRACT <> ($this:<root>.MyService) returnType:kotlin.String [suspend]
       $this: VALUE_PARAMETER name:<this> type:<root>.MyService
     PROPERTY FAKE_OVERRIDE name:coroutineContext visibility:public modality:ABSTRACT [fake_override,val]
       overridden:
@@ -250,4 +251,26 @@ FILE fqName:<root> fileName:/simple.kt
   FUN name:box visibility:public modality:FINAL <> () returnType:kotlin.String
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='public final fun box (): kotlin.String declared in <root>'
-        CONST String type=kotlin.String value="OK"
+        CALL 'public final fun runBlocking <T> (context: kotlin.coroutines.CoroutineContext, block: @[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.CoroutineScope, T of kotlinx.coroutines.runBlocking>): T of kotlinx.coroutines.runBlocking declared in kotlinx.coroutines' type=kotlin.String origin=null
+          <T>: kotlin.String
+          block: FUN_EXPR type=@[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.CoroutineScope, kotlin.String> origin=LAMBDA
+            FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL <> ($receiver:kotlinx.coroutines.CoroutineScope) returnType:kotlin.String [suspend]
+              $receiver: VALUE_PARAMETER name:$this$runBlocking type:kotlinx.coroutines.CoroutineScope
+              BLOCK_BODY
+                VAR name:result type:kotlin.String [val]
+                  CALL 'public abstract fun simple (): kotlin.String declared in <root>.MyService' type=kotlin.String origin=null
+                    $this: CALL 'public final fun withService <T> (): T of kotlinx.rpc.withService declared in kotlinx.rpc' type=<root>.MyService origin=null
+                      <T>: <root>.MyService
+                      $receiver: GET_OBJECT 'CLASS IR_EXTERNAL_DECLARATION_STUB OBJECT name:TestRpcClient modality:FINAL visibility:public superTypes:[kotlinx.rpc.RPCClient]' type=kotlinx.rpc.codegen.test.TestRpcClient
+                RETURN type=kotlin.Nothing from='local final fun <anonymous> (): kotlin.String declared in <root>.box'
+                  WHEN type=kotlin.String origin=IF
+                    BRANCH
+                      if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                        arg0: GET_VAR 'val result: kotlin.String declared in <root>.box.<anonymous>' type=kotlin.String origin=null
+                        arg1: CONST String type=kotlin.String value="call_42"
+                      then: CONST String type=kotlin.String value="OK"
+                    BRANCH
+                      if: CONST Boolean type=kotlin.Boolean value=true
+                      then: STRING_CONCATENATION type=kotlin.String
+                        CONST String type=kotlin.String value="Fail: "
+                        GET_VAR 'val result: kotlin.String declared in <root>.box.<anonymous>' type=kotlin.String origin=null
