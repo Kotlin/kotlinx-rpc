@@ -7,7 +7,7 @@ rootProject.name = "kotlinx-rpc"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
-    includeBuild("gradle-settings-conventions")
+    includeBuild("gradle-conventions-settings")
     includeBuild("gradle-conventions")
 
     includeBuild("gradle-plugin")

@@ -47,7 +47,6 @@ private val KClass<*>.jClass get(): JsClass<*> = asDynamic().jClass_1.unsafeCast
  *
  * This function uses std-lib's implementation and accounts for the bug in the compiler
  */
-@Suppress("detekt.ReturnCount")
 internal fun <T : Annotation, R : Any> KClass<*>.findAssociatedObjectImpl(
     annotationClass: KClass<T>,
     resultKClass: KClass<R>,

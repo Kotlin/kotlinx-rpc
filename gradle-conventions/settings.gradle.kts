@@ -2,36 +2,29 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import util.otherwise
+import util.whenKotlinLatest
+
+/*
+ * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 rootProject.name = "gradle-conventions"
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
-    includeBuild("../gradle-settings-conventions")
+    includeBuild("../gradle-conventions-settings")
 }
+
+includeBuild("../gradle-conventions-settings")
 
 plugins {
     id("settings-conventions")
 }
 
-include(":compiler-specific-module")
-include(":conventions-utils")
-
-val kotlinVersion: String by extra
-val isLatestKotlinVersion: Boolean by extra
-
-if (isLatestKotlinVersion) {
-    include(":kover")
-    include(":gradle-publish")
-} else {
-    include(":kover-stub")
-    include(":gradle-publish-stub")
+whenKotlinLatest {
+    include(":latest-only")
+} otherwise {
+    include(":empty")
 }
-
-val kotlinVersionProject = include(":kotlin-version")
-
-val kotlinVersionModuleDirName = if (kotlinVersion <= "1.9.20") {
-    "kotlin-version-old"
-} else {
-    "kotlin-version-new"
-}
-
-project(":kotlin-version").projectDir = file(kotlinVersionModuleDirName)
