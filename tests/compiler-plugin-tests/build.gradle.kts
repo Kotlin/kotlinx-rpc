@@ -14,6 +14,8 @@ plugins {
 
 repositories {
     maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap")
+    maven("https://www.jetbrains.com/intellij-repository/releases")
+    maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
 }
 
 sourceSets {
@@ -26,7 +28,44 @@ kotlin {
     explicitApi = ExplicitApiMode.Disabled
 }
 
+/**
+ * I should probably explain this.
+ *
+ * `kotlin-compiler` dependency has its inner dependency on `libs.intellij.util`.
+ * In fact, it packs all necessary classes inside its jar (making it fat in some sense).
+ * Amongst these packed classes there is `com.intellij.openapi.util.io.NioFiles`, which is used by the tests' runtime.
+ *
+ * `NioFiles` is problematic.
+ * It was packed with kotlin-compiler jar, but Proguard which excluded `deleteRecursively` method from it.
+ * It this method is called.
+ * So tests fail with:
+ * ```
+ * java.lang.NoSuchMethodError: com.intellij.openapi.util.io.NioFiles.deleteRecursively(Ljava/nio/file/Path;)V
+ * ```
+ *
+ * To mitigate, we need to load the proper `NioFiles` with all methods from the jar,
+ * which wasn't striped by the Proguard.
+ * This jar is `libs.intellij.util`.
+ * But to load the class from it, we need to guarantee
+ * that this jar is present earlier in the classloader's list, than the `kotlin-compiler` jar.
+ *
+ * `kotlin-compiler-embeddable` does pack the class inside its jar.
+ * But if you try to use it, you would eventually get `java.lang.VerifyError: Bad type on operand stack`
+ * and you don't want to fix it.
+ *
+ * So here we are.
+ * This is bad, but hey, it is working!
+ */
+val testPriorityRuntimeClasspath: Configuration = configurations.create("testPriorityRuntimeClasspath")
+
+sourceSets.test.configure {
+    runtimeClasspath = testPriorityRuntimeClasspath + sourceSets.test.get().runtimeClasspath
+}
+
 dependencies {
+    @Suppress("UnstableApiUsage")
+    testPriorityRuntimeClasspath(libs.intellij.util) { isTransitive = false }
+
     implementation(projects.core)
 
     testRuntimeOnly(libs.kotlin.test)

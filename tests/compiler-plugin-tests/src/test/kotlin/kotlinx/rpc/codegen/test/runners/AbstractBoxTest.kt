@@ -37,13 +37,7 @@ open class AbstractBoxTest : BaseTestRunner(), RunnerWithTargetBackendForTestGen
         get() = TargetBackend.JVM_IR
 
     override fun TestConfigurationBuilder.configuration() {
-        globalDefaults {
-            targetBackend = TargetBackend.JVM_IR
-            targetPlatform = JvmPlatforms.defaultJvmPlatform
-            dependencyKind = DependencyKind.Binary
-        }
-
-        configureFirParser(FirParser.Psi)
+        configureFirParser(FirParser.LightTree)
 
         defaultDirectives {
             +DUMP_IR
@@ -52,6 +46,13 @@ open class AbstractBoxTest : BaseTestRunner(), RunnerWithTargetBackendForTestGen
         }
 
         commonFirWithPluginFrontendConfiguration()
+
+        globalDefaults {
+            targetBackend = TargetBackend.JVM_IR
+            targetPlatform = JvmPlatforms.defaultJvmPlatform
+            dependencyKind = DependencyKind.Binary
+        }
+
         fir2IrStep()
         irHandlersStep {
             useHandlers(

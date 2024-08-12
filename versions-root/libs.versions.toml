@@ -16,6 +16,7 @@ gradle-plugin-publish = "1.2.1"
 kotlin-wrappers = "1.0.0-pre.781"
 junit4 = "4.13.2"
 junit5 = "5.10.3"
+intellij = "213.7172.53"
 
 # stub versions – relpaced based on kotlin, mostly for gradle-related (plugins) dependencies
 #  but also for dependencies for compiler specific modules
@@ -89,6 +90,7 @@ detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plu
 kover-gradle-plugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
 kotlin-js-wrappers = { module = "org.jetbrains.kotlin-wrappers:kotlin-js", version.ref = "kotlin-wrappers" }
 gradle-kotlin-dsl-pluigns = { module = "org.gradle.kotlin:gradle-kotlin-dsl-plugins", version.ref = "gradle-kotlin-dsl" }
+intellij-util = { module = "com.jetbrains.intellij.platform:util", version.ref = "intellij" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-lang" }

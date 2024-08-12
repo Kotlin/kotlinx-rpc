@@ -32,6 +32,12 @@ public class BoxTestGenerated extends AbstractBoxTest {
   }
 
   @Test
+  @TestMetadata("multiModule.kt")
+  public void testMultiModule() {
+    runTest("src/testData/box/multiModule.kt");
+  }
+
+  @Test
   @TestMetadata("simple.kt")
   public void testSimple() {
     runTest("src/testData/box/simple.kt");
