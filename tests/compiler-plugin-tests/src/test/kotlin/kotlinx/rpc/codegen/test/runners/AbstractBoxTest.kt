@@ -17,6 +17,8 @@ import org.jetbrains.kotlin.test.builders.fir2IrStep
 import org.jetbrains.kotlin.test.builders.irHandlersStep
 import org.jetbrains.kotlin.test.builders.jvmArtifactsHandlersStep
 import org.jetbrains.kotlin.test.directives.CodegenTestDirectives.DUMP_IR
+import org.jetbrains.kotlin.test.directives.ConfigurationDirectives.WITH_STDLIB
+import org.jetbrains.kotlin.test.directives.JvmEnvironmentConfigurationDirectives.WITH_REFLECT
 import org.jetbrains.kotlin.test.directives.configureFirParser
 import org.jetbrains.kotlin.test.model.DependencyKind
 import org.jetbrains.kotlin.test.runners.RunnerWithTargetBackendForTestGeneratorMarker
@@ -45,6 +47,8 @@ open class AbstractBoxTest : BaseTestRunner(), RunnerWithTargetBackendForTestGen
 
         defaultDirectives {
             +DUMP_IR
+            +WITH_STDLIB
+            +WITH_REFLECT
         }
 
         commonFirWithPluginFrontendConfiguration()

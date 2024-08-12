@@ -4,8 +4,7 @@
 
 package kotlinx.rpc.codegen.test
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.rpc.RPCCall
 import kotlinx.rpc.RPCClient
@@ -24,8 +23,12 @@ object TestRpcClient : RPCClient {
         return flow { emit("registerPlainFlowField_42") } as Flow<T>
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
+    @Suppress("detekt.GlobalCoroutineUsage")
     override fun <T> registerSharedFlowField(serviceScope: CoroutineScope, field: RPCField): SharedFlow<T> {
-        return MutableStateFlow("registerSharedFlowField_42") as SharedFlow<T>
+        return MutableSharedFlow<String>(1).also {
+            GlobalScope.launch { it.emit("registerSharedFlowField_42") }
+        } as SharedFlow<T>
     }
 
     override fun <T> registerStateFlowField(serviceScope: CoroutineScope, field: RPCField): StateFlow<T> {

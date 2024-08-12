@@ -50,7 +50,7 @@ private object RpcClasspathProvider {
     private fun RuntimeDependency.getFile(testServices: TestServices): File {
         fun failMessage(): String {
             return "Jar file with '$name' runtime API does not exist. " +
-                    "Please run corresponding gradle :jar (or :<platform>Jar) task"
+                    "Please run corresponding gradle :jar (or :jvmJar) task"
         }
 
         val libDir = File(dir)

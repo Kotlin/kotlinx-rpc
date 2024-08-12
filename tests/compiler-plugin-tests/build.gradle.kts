@@ -58,6 +58,7 @@ testDataRuntimeDependencies(
 )
 
 tasks.test {
+    dependsOn(tasks.getByName("jar"))
     dependsOn(project(":core").tasks.getByName("jvmJar"))
     dependsOn(project(":utils").tasks.getByName("jvmJar"))
 
