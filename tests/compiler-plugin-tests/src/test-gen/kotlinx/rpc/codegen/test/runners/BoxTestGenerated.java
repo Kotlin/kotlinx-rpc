@@ -26,9 +26,21 @@ public class BoxTestGenerated extends AbstractBoxTest {
   }
 
   @Test
+  @TestMetadata("customParameterTypes.kt")
+  public void testCustomParameterTypes() {
+    runTest("src/testData/box/customParameterTypes.kt");
+  }
+
+  @Test
   @TestMetadata("fields.kt")
   public void testFields() {
     runTest("src/testData/box/fields.kt");
+  }
+
+  @Test
+  @TestMetadata("flowParameter.kt")
+  public void testFlowParameter() {
+    runTest("src/testData/box/flowParameter.kt");
   }
 
   @Test
