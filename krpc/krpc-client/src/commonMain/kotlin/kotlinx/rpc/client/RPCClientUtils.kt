@@ -4,63 +4,35 @@
 
 package kotlinx.rpc.client
 
-import kotlinx.atomicfu.atomic
 import kotlinx.rpc.RPC
 import kotlinx.rpc.RPCClient
-import kotlinx.rpc.internal.RPCStubServiceProvider
-import kotlinx.rpc.internal.findRPCStubProvider
-import kotlinx.rpc.internal.kClass
-import kotlinx.rpc.internal.safeCast
+import kotlinx.rpc.withService
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
-/**
- * Creates instance of the generated service [T], that is able to communicate with server using RPCClient.
- *
- * [awaitFieldInitialization] method can be used on that instance.
- *
- * @param T exact type of the service to be created.
- * @return instance of the generated service.
- */
+@Deprecated(
+    message = "withService was moved to kotlinx-rpc-core, to kotlinx.rpc package",
+    level = DeprecationLevel.WARNING,
+    replaceWith = ReplaceWith("withService()", "kotlinx.rpc.withService")
+)
 public inline fun <reified T : RPC> RPCClient.withService(): T {
-    return withService(T::class)
+    return withService()
 }
 
-/**
- * Creates instance of the generated service [T], that is able to communicate with server using RPCClient.
- *
- * [awaitFieldInitialization] method can be used on that instance.
- *
- * @param T exact type of the service to be created.
- * @param serviceKType [KType] of the service to be created.
- * @return instance of the generated service.
- */
+@Deprecated(
+    message = "withService was moved to kotlinx-rpc-core, to kotlinx.rpc package",
+    level = DeprecationLevel.WARNING,
+    replaceWith = ReplaceWith("withService(serviceKType)", "kotlinx.rpc.withService")
+)
 public fun <T : RPC> RPCClient.withService(serviceKType: KType): T {
-    return withService(serviceKType.kClass())
+    return withService(serviceKType)
 }
 
-/**
- * Counter for locally added services.
- * Used to differentiate uniques local services, regardless of their type.
- */
-private val SERVICE_ID = atomic(0L)
-
-/**
- * Creates instance of the generated service [T], that is able to communicate with server using RPCClient.
- *
- * [awaitFieldInitialization] method can be used on that instance.
- *
- * @param T exact type of the service to be created.
- * @param serviceKClass [KClass] of the service to be created.
- * @return instance of the generated service.
- */
+@Deprecated(
+    message = "withService was moved to kotlinx-rpc-core, to kotlinx.rpc package",
+    level = DeprecationLevel.WARNING,
+    replaceWith = ReplaceWith("withService(serviceKClass)", "kotlinx.rpc.withService")
+)
 public fun <T : RPC> RPCClient.withService(serviceKClass: KClass<T>): T {
-    val provider = findRPCStubProvider<RPCStubServiceProvider<T>>(
-        kClass = serviceKClass,
-        resultKClass = RPCStubServiceProvider::class.safeCast(),
-    )
-
-    val id = SERVICE_ID.incrementAndGet()
-
-    return provider.withClient(id, this)
+    return withService(serviceKClass)
 }

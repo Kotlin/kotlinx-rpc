@@ -10,13 +10,13 @@ import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.cancel
 import kotlinx.rpc.RPC
-import kotlinx.rpc.client.withService
 import kotlinx.rpc.serialization.json
 import kotlinx.rpc.transport.ktor.client.installRPC
 import kotlinx.rpc.transport.ktor.client.rpc
 import kotlinx.rpc.transport.ktor.client.rpcConfig
 import kotlinx.rpc.transport.ktor.server.RPC
 import kotlinx.rpc.transport.ktor.server.rpc
+import kotlinx.rpc.withService
 import org.junit.Assert.assertEquals
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.Test

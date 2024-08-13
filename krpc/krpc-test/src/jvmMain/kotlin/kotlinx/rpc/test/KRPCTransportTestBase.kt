@@ -10,8 +10,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.rpc.*
-import kotlinx.rpc.client.awaitFieldInitialization
-import kotlinx.rpc.client.withService
 import kotlinx.rpc.serialization.RPCSerialFormatConfiguration
 import kotlinx.rpc.server.KRPCServer
 import org.junit.Assert.assertEquals

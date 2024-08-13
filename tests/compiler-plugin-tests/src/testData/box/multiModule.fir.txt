@@ -1,0 +1,38 @@
+Module: lib
+FILE: module_lib_multiModule.kt
+    public abstract interface BoxService : R|kotlinx/rpc/RPC| {
+        public abstract suspend fun simple(): R|kotlin/String|
+
+        public final class $rpcServiceStub : R|kotlin/Any| {
+            @R|kotlinx/serialization/Serializable|() public final object simple$rpcMethod : R|kotlin/Any| {
+                public final fun serializer(): R|kotlinx/serialization/KSerializer<BoxService.$rpcServiceStub.simple$rpcMethod>|
+
+                private constructor(): R|BoxService.$rpcServiceStub.simple$rpcMethod| {
+                    super<R|kotlin/Any|>()
+                }
+
+            }
+
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+Module: main
+FILE: module_main_multiModule.kt
+    public final fun box(): R|kotlin/String| {
+        ^box R|kotlinx/coroutines/runBlocking|<R|kotlin/String|>(<L> = runBlocking@fun R|kotlinx/coroutines/CoroutineScope|.<anonymous>(): R|kotlin/String| <inline=NoInline, kind=EXACTLY_ONCE>  {
+            lval result: R|kotlin/String| = Q|kotlinx/rpc/codegen/test/TestRpcClient|.R|kotlinx/rpc/withService|<R|BoxService|>().R|/BoxService.simple|()
+            ^ when () {
+                ==(R|<local>/result|, String(call_42)) ->  {
+                    String(OK)
+                }
+                else ->  {
+                    <strcat>(String(Fail: ), R|<local>/result|)
+                }
+            }
+
+        }
+        )
+    }
