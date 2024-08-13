@@ -1,0 +1,55 @@
+FILE: fields.kt
+    public abstract interface BoxService : R|kotlinx/rpc/RPC| {
+        public abstract val plainFlow: R|kotlinx/coroutines/flow/Flow<kotlin/String>|
+            public get(): R|kotlinx/coroutines/flow/Flow<kotlin/String>|
+
+        public abstract val sharedFlow: R|kotlinx/coroutines/flow/SharedFlow<kotlin/String>|
+            public get(): R|kotlinx/coroutines/flow/SharedFlow<kotlin/String>|
+
+        public abstract val stateFlow: R|kotlinx/coroutines/flow/StateFlow<kotlin/String>|
+            public get(): R|kotlinx/coroutines/flow/StateFlow<kotlin/String>|
+
+        public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+    public final fun box(): R|kotlin/String| {
+        ^box R|kotlinx/coroutines/runBlocking|<R|kotlin/String|>(<L> = runBlocking@fun R|kotlinx/coroutines/CoroutineScope|.<anonymous>(): R|kotlin/String| <inline=NoInline, kind=EXACTLY_ONCE>  {
+            ^ R|kotlinx/coroutines/withTimeoutOrNull|<R|kotlin/String|>(Long(1000), <L> = withTimeoutOrNull@fun R|kotlinx/coroutines/CoroutineScope|.<anonymous>(): R|kotlin/String| <inline=NoInline>  {
+                lval plainFlow: R|kotlin/collections/List<kotlin/String>| = Q|kotlinx/rpc/codegen/test/TestRpcClient|.R|kotlinx/rpc/withService|<R|BoxService|>().R|/BoxService.plainFlow|.R|kotlinx/coroutines/flow/toList|<R|kotlin/String|>()
+                lval sharedFlow: R|kotlin/collections/List<kotlin/String>| = Q|kotlinx/rpc/codegen/test/TestRpcClient|.R|kotlinx/rpc/withService|<R|BoxService|>().R|/BoxService.sharedFlow|.R|kotlinx/coroutines/flow/take|<R|kotlin/String|>(Int(1)).R|kotlinx/coroutines/flow/toList|<R|kotlin/String|>()
+                lval stateFlow: R|kotlin/String| = Q|kotlinx/rpc/codegen/test/TestRpcClient|.R|kotlinx/rpc/withService|<R|BoxService|>().R|/BoxService.stateFlow|.R|SubstitutionOverride<kotlinx/coroutines/flow/StateFlow.value: R|kotlin/String|>|
+                lval failures: R|kotlin/collections/MutableList<kotlin/String>| = R|kotlin/collections/mutableListOf|<R|kotlin/String|>()
+                when () {
+                    !=(R|<local>/plainFlow|.R|SubstitutionOverride<kotlin/collections/List.size: R|kotlin/Int|>|, Int(1)) || !=(R|<local>/plainFlow|.R|SubstitutionOverride<kotlin/collections/List.get: R|kotlin/String|>|(Int(0)), String(registerPlainFlowField_42)) ->  {
+                        R|<local>/failures|.R|SubstitutionOverride<kotlin/collections/MutableList.add: R|kotlin/Boolean|>|(<strcat>(String(plainFlow.size = ), R|<local>/plainFlow|.R|SubstitutionOverride<kotlin/collections/List.size: R|kotlin/Int|>|, String( (expected 1), )).R|kotlin/String.plus|(<strcat>(String(plainFlow[0] = ), Char("), R|<local>/plainFlow|.R|kotlin/collections/getOrNull|<R|kotlin/String|>(Int(0)), Char("), String( (expected ), Char("), String(registerPlainFlowField_42), Char("), String()))))
+                    }
+                }
+
+                when () {
+                    !=(R|<local>/sharedFlow|.R|SubstitutionOverride<kotlin/collections/List.size: R|kotlin/Int|>|, Int(1)) || !=(R|<local>/sharedFlow|.R|SubstitutionOverride<kotlin/collections/List.get: R|kotlin/String|>|(Int(0)), String(registerSharedFlowField_42)) ->  {
+                        R|<local>/failures|.R|SubstitutionOverride<kotlin/collections/MutableList.add: R|kotlin/Boolean|>|(<strcat>(String(sharedFlow.size = ), R|<local>/sharedFlow|.R|SubstitutionOverride<kotlin/collections/List.size: R|kotlin/Int|>|, String( (expected 1), )).R|kotlin/String.plus|(<strcat>(String(sharedFlow[0] = ), Char("), R|<local>/sharedFlow|.R|kotlin/collections/getOrNull|<R|kotlin/String|>(Int(0)), Char("), String( (expected ), Char("), String(registerSharedFlowField_42), Char("), String()))))
+                    }
+                }
+
+                when () {
+                    !=(R|<local>/stateFlow|, String(registerStateFlowField_42)) ->  {
+                        R|<local>/failures|.R|SubstitutionOverride<kotlin/collections/MutableList.add: R|kotlin/Boolean|>|(<strcat>(String(stateFlow = ), Char("), R|<local>/stateFlow|, Char("), String( (expected ), Char("), String(registerStateFlowField_42), Char("), String())))
+                    }
+                }
+
+                ^ R|<local>/failures|.R|kotlin/takeIf|<R|kotlin/collections/MutableList<kotlin/String>|>(<L> = takeIf@fun <anonymous>(it: R|kotlin/collections/MutableList<kotlin/String>|): R|kotlin/Boolean| <inline=Inline, kind=EXACTLY_ONCE>  {
+                    ^ R|<local>/it|.R|kotlin/collections/isNotEmpty|<R|kotlin/String|>()
+                }
+                )?.{ $subj$.R|kotlin/collections/joinToString|<R|kotlin/String|>(String(;)) }?.{ $subj$.R|kotlin/let|<R|kotlin/String|, R|kotlin/String|>(<L> = let@fun <anonymous>(it: R|kotlin/String|): R|kotlin/String| <inline=Inline, kind=EXACTLY_ONCE>  {
+                    ^ <strcat>(String(Fail: ), R|<local>/it|)
+                }
+                ) } ?: String(OK)
+            }
+            ) ?: String(Fail: test timed out)
+        }
+        )
+    }

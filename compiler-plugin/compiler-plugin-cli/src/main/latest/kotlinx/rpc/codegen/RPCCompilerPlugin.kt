@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen
 
+import kotlinx.rpc.codegen.extension.RPCIrExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
@@ -21,16 +22,17 @@ class RPCCommandLineProcessor : CommandLineProcessor {
 
 @OptIn(ExperimentalCompilerApi::class)
 class RPCCompilerPlugin : CompilerPluginRegistrar() {
-    init {
-        VersionSpecificApi.INSTANCE = VersionSpecificApiImpl
-    }
-
     override val supportsK2: Boolean = true
 
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-        val irExtension = RPCIrPlugin.provideExtension(configuration)
-
-        IrGenerationExtension.registerExtension(irExtension)
-        FirExtensionRegistrarAdapter.registerExtension(FirRPCExtensionRegistrar(configuration))
+        registerRpcExtensions(configuration)
     }
+}
+
+@OptIn(ExperimentalCompilerApi::class)
+fun CompilerPluginRegistrar.ExtensionStorage.registerRpcExtensions(configuration: CompilerConfiguration) {
+    VersionSpecificApi.INSTANCE = VersionSpecificApiImpl
+
+    IrGenerationExtension.registerExtension(RPCIrExtension(configuration))
+    FirExtensionRegistrarAdapter.registerExtension(FirRPCExtensionRegistrar(configuration))
 }

@@ -18,6 +18,7 @@ build
 !.idea/codeStyles/*
 !.idea/icon.svg
 !.idea/detekt.xml
+!.idea/kotlinTestDataPluginTestDataPaths.xml
 
 .DS_Store
 
