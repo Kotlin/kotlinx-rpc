@@ -64,15 +64,16 @@ class ProtocolTest : ProtocolTestBase() {
         val connectionId = 1
 
         val serverHandshakeMessage = RPCTransportMessage.StringMessage(
-            "{\"type\":\"org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake\",\"connectionId\":$connectionId,\"supportedPlugins\":[-32767, 32766, 32767]}" // 32766 and 32767 are is unknown to client
+            "{\"type\":\"org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake\",\"connectionId\":$connectionId,\"supportedPlugins\":[-32767, 32766, 32767]}" // 32766 and 32767 are unknown to the client
         )
 
         transport.server.send(serverHandshakeMessage)
 
         transport.server.receive()
 
+        // callId changes here are always compatible
         val serverResponseMessage = RPCTransportMessage.StringMessage(
-            "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallSuccess\",\"callId\":\"$connectionId:kotlinx.rpc.test.ProtocolTestServiceStub.SendRequest_RPCData:1\",\"serviceType\":\"kotlinx.rpc.test.ProtocolTestService\",\"data\":\"{}\"}"
+            "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallSuccess\",\"callId\":\"$connectionId:kotlinx.rpc.test.ProtocolTestService.`\$rpcServiceStub`.`sendRequest\$rpcMethod`:1\",\"serviceType\":\"kotlinx.rpc.test.ProtocolTestService\",\"data\":\"{}\"}"
         )
 
         transport.server.send(serverResponseMessage)

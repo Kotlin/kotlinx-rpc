@@ -15,12 +15,13 @@ import kotlinx.rpc.client.internal.RPCClientConnector
 import kotlinx.rpc.client.internal.RPCFlow
 import kotlinx.rpc.internal.*
 import kotlinx.rpc.internal.logging.CommonLogger
+import kotlinx.rpc.internal.map.ConcurrentHashMap
 import kotlinx.rpc.internal.transport.*
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlin.coroutines.CoroutineContext
-import kotlin.reflect.KType
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.reflect.typeOf
 
 /**
@@ -206,7 +207,7 @@ public abstract class KRPCClient(
 
         val handle = serviceScopeOrNull()?.run {
             serviceCoroutineScope.coroutineContext.job.invokeOnCompletion(onCancelling = true) { cause ->
-                // service can only be canceled, it cannot complete successfully
+                // service can only be canceled, it can't complete successfully
                 callResult.completeExceptionally(CancellationException(cause))
 
                 rpcCall.streamContext.valueOrNull?.cancel("Service cancelled", cause)
