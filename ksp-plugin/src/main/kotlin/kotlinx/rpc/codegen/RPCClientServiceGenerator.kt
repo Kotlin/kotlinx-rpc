@@ -64,7 +64,7 @@ class RPCClientServiceGenerator(private val codegen: CodeGenerator) {
         writer.writeLine("import kotlinx.rpc.*")
         writer.writeLine("import kotlin.reflect.typeOf")
         writer.writeLine("import kotlin.coroutines.CoroutineContext")
-        service.collectRootImports().forEach {
+        service.collectRootImports().distinctBy { it.simpleName.asString() }.forEach {
             writer.writeLine("import ${it.simpleName.asString()}")
         }
         writer.newLine()
