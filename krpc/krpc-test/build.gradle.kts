@@ -10,7 +10,6 @@ import java.nio.file.Files
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.serialization)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinx.rpc)
     alias(libs.plugins.atomicfu)
 }
@@ -63,14 +62,8 @@ val resourcesPath = projectDir.resolve("src/jvmTest/resources")
 val tmpExt = "tmp"
 val goldExt = "gold"
 
-tasks.named("clean") {
-    doLast {
-        resourcesPath.walk().forEach {
-            if (it.isFile && it.extension == tmpExt) {
-                it.delete()
-            }
-        }
-    }
+tasks.named<Delete>("clean") {
+    delete(resourcesPath.walk().filter { it.isFile && it.extension == tmpExt }.toList())
 }
 
 tasks.create("moveToGold") {

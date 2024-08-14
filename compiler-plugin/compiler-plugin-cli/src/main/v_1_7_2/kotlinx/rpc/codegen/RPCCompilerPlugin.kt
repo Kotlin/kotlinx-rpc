@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen
 
+import kotlinx.rpc.codegen.extension.RPCIrExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.CliOption
@@ -25,8 +26,6 @@ class RPCCompilerPlugin : ComponentRegistrar {
     override val supportsK2: Boolean = false
 
     override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
-        val irExtension = RPCIrPlugin.provideExtension(configuration)
-
-        IrGenerationExtension.registerExtension(project, irExtension)
+        IrGenerationExtension.registerExtension(project, RPCIrExtension(configuration))
     }
 }

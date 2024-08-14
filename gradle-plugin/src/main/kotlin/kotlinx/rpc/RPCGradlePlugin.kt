@@ -28,8 +28,8 @@ class RPCGradlePlugin : Plugin<Project> {
         }
 
         // Will apply only if the KSP plugin is present.
-        // While K1 plugin is not present, it's alright to leave it this way.
-        // It will generate redundant code, but it's not critical,
+        // While the K1 plugin is not present, it is alright to leave it this way.
+        // It will generate redundant code, but it is not critical,
         // since that code will not be used, and K1 will shortly remove KSP altogether
         applyKspPlugin(target, target.isInternalDevelopment)
 

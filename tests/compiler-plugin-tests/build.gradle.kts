@@ -28,6 +28,9 @@ kotlin {
     explicitApi = ExplicitApiMode.Disabled
 }
 
+val testDataClasspath: Configuration by configurations.creating
+val testRuntimeClasspath: Configuration by project.configurations.getting
+
 /**
  * I should probably explain this.
  *
@@ -56,7 +59,7 @@ kotlin {
  * So here we are.
  * This is bad, but hey, it is working!
  */
-val testPriorityRuntimeClasspath: Configuration = configurations.create("testPriorityRuntimeClasspath")
+val testPriorityRuntimeClasspath: Configuration by configurations.creating
 
 sourceSets.test.configure {
     runtimeClasspath = testPriorityRuntimeClasspath + sourceSets.test.get().runtimeClasspath
@@ -87,14 +90,14 @@ dependencies {
     testImplementation(libs.junit5.platform.launcher)
     testImplementation(libs.junit5.platform.runner)
     testImplementation(libs.junit5.platform.suite.api)
+
+    testDataClasspath(libs.coroutines.core)
+    testDataClasspath(libs.serialization.core)
 }
 
 val globalRootDir: String by extra
 
-testDataRuntimeDependencies(
-    libs.coroutines.core,
-    libs.serialization.core,
-)
+val updateTestData = (project.findProperty("kotlin.test.update.test.data") as? String) ?: "false"
 
 tasks.test {
     dependsOn(tasks.getByName("jar"))
@@ -103,19 +106,20 @@ tasks.test {
 
     useJUnitPlatform()
 
-    doFirst {
-        systemProperty("kotlinx.rpc.globalRootDir", globalRootDir)
+    systemPropertyLogged("kotlinx.rpc.globalRootDir", globalRootDir)
+    systemPropertyLogged("kotlin.test.update.test.data", updateTestData)
 
-        val updateData = (project.findProperty("kotlin.test.update.test.data") as? String) ?: "false"
-        systemProperty("kotlin.test.update.test.data", updateData)
+    setJarPathAsProperty("org.jetbrains.kotlin.test.kotlin-stdlib", "kotlin-stdlib")
+    setJarPathAsProperty("org.jetbrains.kotlin.test.kotlin-stdlib-jdk8", "kotlin-stdlib-jdk8")
+    setJarPathAsProperty("org.jetbrains.kotlin.test.kotlin-reflect", "kotlin-reflect")
+    setJarPathAsProperty("org.jetbrains.kotlin.test.kotlin-test", "kotlin-test")
+    setJarPathAsProperty("org.jetbrains.kotlin.test.kotlin-script-runtime", "kotlin-script-runtime")
+    setJarPathAsProperty("org.jetbrains.kotlin.test.kotlin-annotations-jvm", "kotlin-annotations-jvm")
 
-        setJarPathAsProperty("org.jetbrains.kotlin.test.kotlin-stdlib", "kotlin-stdlib")
-        setJarPathAsProperty("org.jetbrains.kotlin.test.kotlin-stdlib-jdk8", "kotlin-stdlib-jdk8")
-        setJarPathAsProperty("org.jetbrains.kotlin.test.kotlin-reflect", "kotlin-reflect")
-        setJarPathAsProperty("org.jetbrains.kotlin.test.kotlin-test", "kotlin-test")
-        setJarPathAsProperty("org.jetbrains.kotlin.test.kotlin-script-runtime", "kotlin-script-runtime")
-        setJarPathAsProperty("org.jetbrains.kotlin.test.kotlin-annotations-jvm", "kotlin-annotations-jvm")
-    }
+    systemPropertyLogged(
+        name = "kotlinx.rpc.test.data.classpath.dependencies",
+        value = testDataClasspath.files.joinToString(File.pathSeparator) { it.absolutePath },
+    )
 }
 
 tasks.withType<KotlinCompile>().configureEach {
@@ -130,45 +134,32 @@ val generateTests by tasks.creating(JavaExec::class) {
     mainClass.set("kotlinx.rpc.codegen.test.GenerateTestsKt")
 }
 
+val isCI = System.getenv("TEAMCITY_VERSION") != null
+
 tasks.named<KotlinCompile>("compileTestKotlin").configure {
-    finalizedBy(generateTests)
-}
-
-fun testDataRuntimeDependencies(vararg dependencyNotations: Provider<MinimalExternalModuleDependency>) {
-    dependencyNotations.forEach {
-        dependencies.implementation(it)
-    }
-
-    tasks.test {
-        doFirst {
-            setJarPathAsProperty(
-                propName = "kotlinx.rpc.test.data.classpath.dependencies",
-                jarNames = dependencyNotations.map { it.get().name + "-jvm" }.toTypedArray(),
-                searchIn = project.configurations.runtimeClasspath,
-            )
-        }
+    if (!isCI) {
+        finalizedBy(generateTests)
     }
 }
 
 fun Test.setJarPathAsProperty(
     propName: String,
-    vararg jarNames: String,
-    searchIn: NamedDomainObjectProvider<Configuration> = project.configurations.testRuntimeClasspath,
+    jarName: String,
 ) {
-    val includedRegex = jarNames.toSet().joinToString("|", "(", ")") { jarName ->
-        "$jarName-\\d.*jar"
-    }.toRegex()
+    val includedRegex = "$jarName-\\d.*jar".toRegex()
 
-    val path = searchIn.get()
+    val path = testRuntimeClasspath
         .files
-        .filter { includedRegex.matches(it.name) }
-        .takeIf { it.isNotEmpty() }
-        ?.joinToString(File.pathSeparator) { it.absolutePath }
+        .first { includedRegex.matches(it.name) }
         ?: run {
-            logger.warn("Can't find any of ${jarNames.joinToString()} in ${searchIn.get().name}")
+            logger.warn("Can't find $jarName in testRuntimeClasspath configuration")
             return
         }
 
-    logger.info("Setting prop $propName=$path")
-    systemProperty(propName, path)
+    systemPropertyLogged(propName, path)
+}
+
+fun Test.systemPropertyLogged(name: String, value: Any) {
+    logger.info("Setting prop $name=$value")
+    systemProperty(name, value)
 }

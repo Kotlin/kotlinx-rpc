@@ -92,6 +92,14 @@ abstract class KRPCTransportTestBase {
     }
 
     @Test
+    @Ignore // works on my machine issue – timeouts on TC
+    fun simpleWithParams100000() = runBlocking {
+        repeat(100000) {
+            assertEquals("name".reversed(), client.simpleWithParams("name"))
+        }
+    }
+
+    @Test
     fun genericReturnType() {
         runBlocking {
             assertEquals(listOf("hello", "world"), client.genericReturnType())

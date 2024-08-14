@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen
 
+import kotlinx.rpc.codegen.extension.RPCIrExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
@@ -27,8 +28,6 @@ class RPCCompilerPlugin : CompilerPluginRegistrar() {
     override val supportsK2: Boolean = false
 
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-        val irExtension = RPCIrPlugin.provideExtension(configuration)
-
-        IrGenerationExtension.registerExtension(irExtension)
+        IrGenerationExtension.registerExtension(RPCIrExtension(configuration))
     }
 }
