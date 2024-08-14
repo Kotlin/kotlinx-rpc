@@ -1,3 +1,8 @@
+public final class kotlinx/rpc/AwaitFieldInitializationKt {
+	public static final fun awaitFieldInitialization (Lkotlinx/rpc/RPC;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun awaitFieldInitialization (Lkotlinx/rpc/RPC;Lkotlin/reflect/KClass;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
 public abstract interface class kotlinx/rpc/RPC : kotlinx/coroutines/CoroutineScope {
 }
 
@@ -27,6 +32,7 @@ public final class kotlinx/rpc/RPCCall {
 public final class kotlinx/rpc/RPCCall$Type : java/lang/Enum {
 	public static final field Field Lkotlinx/rpc/RPCCall$Type;
 	public static final field Method Lkotlinx/rpc/RPCCall$Type;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/RPCCall$Type;
 	public static fun values ()[Lkotlinx/rpc/RPCCall$Type;
 }
@@ -146,5 +152,15 @@ public final class kotlinx/rpc/StreamScopeKt {
 	public static final fun invokeOnStreamScopeCompletion (ZLkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun invokeOnStreamScopeCompletion$default (ZLkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static final fun streamScoped (Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class kotlinx/rpc/UninitializedRPCFieldException : java/lang/Exception {
+	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KProperty;)V
+	public fun getMessage ()Ljava/lang/String;
+}
+
+public final class kotlinx/rpc/WithServiceKt {
+	public static final fun withService (Lkotlinx/rpc/RPCClient;Lkotlin/reflect/KClass;)Lkotlinx/rpc/RPC;
+	public static final fun withService (Lkotlinx/rpc/RPCClient;Lkotlin/reflect/KType;)Lkotlinx/rpc/RPC;
 }
 

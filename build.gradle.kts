@@ -48,10 +48,10 @@ allprojects {
 
 println("kotlinx.rpc project version: $version, Kotlin version: $kotlinVersion")
 
-// If the prefix of the kPRC version is not Kotlin gradle plugin version - you have a problem :)
-// Probably some dependency brings kotlin with higher version.
-// To mitigate so, please refer to `gradle/kotlin-version-lookup.json`
-// and it's usage in `gradle-conventions-settings/src/main/kotlin/settings-conventions.settings.gradle.kts`
+// If the prefix of the kPRC version is not Kotlin gradle plugin version – you have a problem :)
+// Probably some dependency brings kotlin with the later version.
+// To mitigate so, refer to `versions-root/kotlin-version-lookup.json`
+// and its usage in `gradle-conventions-settings/src/main/kotlin/settings-conventions.settings.gradle.kts`
 val kotlinGPVersion = getKotlinPluginVersion().kotlinVersionParsed()
 if (kotlinVersion != kotlinGPVersion) {
     error("KGP version mismatch. Project version: $kotlinVersion, KGP version: $kotlinGPVersion")
