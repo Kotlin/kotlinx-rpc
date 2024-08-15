@@ -8,7 +8,7 @@ kotlin-lang = "2.0.0"
 # kotlin independent versions
 detekt-analyzer = "1.23.6"
 coroutines = "1.8.1"
-ktor = "2.3.11"
+ktor = "2.3.12"
 kotlin-logging = "6.0.9"
 slf4j = "2.0.13"
 logback = "1.3.14"
