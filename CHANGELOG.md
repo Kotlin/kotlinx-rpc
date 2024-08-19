@@ -1,3 +1,22 @@
+# 0.2.3
+> Published 19 August 2024
+
+### Features
+* KRPC-18 Add K2 and IR code generation plugins, preserve KSP for K1 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/105
+* Added 1.9.25 and 2.0.10 Kotlin Versions by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/168
+
+### Bug fixes
+* KRPC-101 Check if the entire stream is not already closed. by @pikinier20 in https://github.com/Kotlin/kotlinx-rpc/pull/158
+* KRPC-119 Exception Deserialization by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/170
+
+### Infra
+* Add issue templates by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/167
+
+## New Contributors
+* @pikinier20 made their first contribution in https://github.com/Kotlin/kotlinx-rpc/pull/158
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.2.2...0.2.3
+
 # 0.2.2
 > Published 5 August 2024
 
