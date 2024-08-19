@@ -7,7 +7,7 @@
 
 [![Kotlin Experimental](https://kotl.in/badges/experimental.svg)](https://kotlinlang.org/docs/components-stability.html)
 [![Official JetBrains project](http://jb.gg/badges/official.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.7.0--1.9.24-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.7.0--2.0.10-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![GitHub License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
 
 [//]: # ([![TeamCity build]&#40;https://img.shields.io/teamcity/build/s/Build_kRPC_All.svg?server=http%3A%2F%2Fkrpc.teamcity.com&#41;]&#40;https://teamcity.jetbrains.com/viewType.html?buildTypeId=Build_kRPC_All&guest=1&#41;)
@@ -86,15 +86,26 @@ Check out our [getting started guide](https://kotlin.github.io/kotlinx-rpc) for 
 - The `org.jetbrains.kotlinx.rpc.plugin` will set up BOM and code generation for targets in the project.
 - The `org.jetbrains.kotlinx.rpc.platform` will only set up BOM. It is useful when you want to split your app into modules, 
 and some of them will contain service declarations, thus using code generation, while others will only consume them.
-- The `com.google.devtools.ksp` is required by the library. Corresponding configurations will be set up automatically by `org.jetbrains.kotlinx.rpc.plugin` plugin.
 
 Example of plugins setup in a project's `build.gradle.kts`:
 ```kotlin
+plugins {
+    kotlin("jvm") version "2.0.10"
+    kotlin("plugin.serialization") version "2.0.10"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.2"
+}
+```
+
+For Kotlin versions prior to 2.0, 
+KSP plugin is required 
+(Corresponding configurations will be set up automatically by `org.jetbrains.kotlinx.rpc.plugin` plugin):
+
+```kotlin
 // build.gradle.kts
 plugins {
-    kotlin("jvm") version "1.9.24"
-    kotlin("plugin.serialization") version "1.9.24"
-    id("com.google.devtools.ksp") version "1.9.24-1.0.20"
+    kotlin("jvm") version "1.9.25"
+    kotlin("plugin.serialization") version "1.9.25"
+    id("com.google.devtools.ksp") version "1.9.25-1.0.20"
     id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.2"
 }
 ```
@@ -147,13 +158,14 @@ Integrations in progress:
 We support all stable Kotlin versions starting from 1.7.0:
 - 1.7.0, 1.7.10, 1.7.20, 1.7.21, 1.7.22
 - 1.8.0, 1.8.10, 1.8.20, 1.8.21, 1.8.22
-- 1.9.0, 1.9.10, 1.9.20, 1.9.21, 1.9.22, 1.9.23, 1.9.24
+- 1.9.0, 1.9.10, 1.9.20, 1.9.21, 1.9.22, 1.9.23, 1.9.24, 1.9.25
+- 2.0.0, 2.0.10
 
 To simplify project configuration, our Gradle plugin sets a proper library version automatically using BOM, 
 based on the project's Kotlin version:
 ```kotlin
 plugins {
-    kotlin("jvm") version "1.9.24"
+    kotlin("jvm") version "2.0.10"
     id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.2"
 }
 

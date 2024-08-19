@@ -3,7 +3,7 @@
 kotlinx-rpc = "0.2.2"
 
 # kotlin
-kotlin-lang = "2.0.0"
+kotlin-lang = "2.0.10"
 
 # kotlin independent versions
 detekt-analyzer = "1.23.6"
