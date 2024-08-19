@@ -11,3 +11,7 @@ import kotlin.reflect.KClass
 @InternalRPCApi
 public actual val KClass<*>.qualifiedClassNameOrNull: String?
     get() = toString()
+
+@InternalRPCApi
+public actual val KClass<*>.typeName: String?
+    get() = qualifiedClassNameOrNull

@@ -34,17 +34,19 @@ fun MavenPublication.fixModuleMetadata(project: Project) {
     val upperCaseName = Character.toUpperCase(publicationName.first()) + publicationName.drop(1)
     val patchTaskName = "patchModuleJsonFor$upperCaseName"
     val generateMetadataTaskName = "generateMetadataFileFor${upperCaseName}Publication"
+    val projectName = project.name
+    val projectVersion = project.version.toString()
+    val moduleJsonFile = project.layout.buildDirectory.file("publications/$publicationName/module.json").get().asFile
 
     val patch = project.tasks.register(patchTaskName) {
         group = "patch"
 
         doLast {
-            val file = project.layout.buildDirectory.file("publications/$publicationName/module.json").get().asFile
-            if (!file.exists()) {
+            if (!moduleJsonFile.exists()) {
                 return@doLast
             }
 
-            file.fixMetadata(project)
+            moduleJsonFile.fixMetadata(projectName, projectVersion)
 
             logger.info("Updated metadata for $publicationName publication")
         }
@@ -55,13 +57,13 @@ fun MavenPublication.fixModuleMetadata(project: Project) {
     }
 }
 
-private fun File.fixMetadata(project: Project) {
+private fun File.fixMetadata(projectName: String, projectVersion: String) {
     val text = readText()
 
     val newText = text
-        .updateFilesNameField(project.name)
-        .updateAvailableAtModuleField(project.name)
-        .updateAvailableAtUrlField(project.name, project.version.toString())
+        .updateFilesNameField(projectName)
+        .updateAvailableAtModuleField(projectName)
+        .updateAvailableAtUrlField(projectName, projectVersion)
 
     writeText(newText)
 }

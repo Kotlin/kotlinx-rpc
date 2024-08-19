@@ -55,6 +55,7 @@ interface KRPCTestService : RPC {
     suspend fun nullableBytes(byteArray: ByteArray?)
 
     suspend fun throwsIllegalArgument(message: String)
+    suspend fun throwsSerializableWithMessageAndCause(message: String)
     suspend fun throwsThrowable(message: String)
     suspend fun throwsUNSTOPPABLEThrowable(message: String)
 

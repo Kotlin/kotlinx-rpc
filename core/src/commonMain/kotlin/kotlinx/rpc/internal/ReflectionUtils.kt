@@ -22,6 +22,9 @@ public fun internalError(message: String): Nothing {
 }
 
 @InternalRPCApi
+public expect val KClass<*>.typeName: String?
+
+@InternalRPCApi
 public expect val KClass<*>.qualifiedClassNameOrNull: String?
 
 @InternalRPCApi

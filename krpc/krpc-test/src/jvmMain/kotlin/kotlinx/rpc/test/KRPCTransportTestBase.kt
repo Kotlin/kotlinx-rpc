@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.rpc.*
 import kotlinx.rpc.serialization.RPCSerialFormatConfiguration
 import kotlinx.rpc.server.KRPCServer
+import kotlinx.rpc.test.KRPCTestServiceBackend.SerializableTestException
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.rules.Timeout
@@ -370,15 +371,20 @@ abstract class KRPCTransportTestBase {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     @Suppress("detekt.TooGenericExceptionCaught")
-    fun testException() {
+    fun testExceptionSerializationAndPropagating() {
         runBlocking {
             try {
                 client.throwsIllegalArgument("me")
             } catch (e: IllegalArgumentException) {
                 assertEquals("me", e.message)
+            }
+            try {
+                client.throwsSerializableWithMessageAndCause("me")
+            } catch (e: SerializableTestException) {
+                assertEquals("me", e.message)
+                assertEquals("cause: me", e.cause?.message)
             }
             try {
                 client.throwsThrowable("me")
