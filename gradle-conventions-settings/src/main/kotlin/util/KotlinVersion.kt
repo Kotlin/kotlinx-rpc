@@ -29,7 +29,7 @@ fun filterSourceDirsForCSM(sourceSetPath: Path): List<File> {
 // It's ok to have version '1'.
 // For example, we may have '1.7' and '1' specific source sets.
 // That would mean that all 1.7.* versions we compile with the '1.7' source set,
-// and 1.8.+ up to 1.9.24 will be with the '1' source set
+// and 1.8.+ up to 1.9.25 will be with the '1' source set
 class CompilerModuleVersion(fullName: String, prefix: String) : Comparable<CompilerModuleVersion> {
     // For example, "v_1_7_10" -> "1.7.10"
     val version = fullName
