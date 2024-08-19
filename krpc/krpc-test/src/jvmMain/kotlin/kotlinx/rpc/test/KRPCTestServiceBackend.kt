@@ -6,6 +6,7 @@ package kotlinx.rpc.test
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import kotlinx.serialization.Serializable
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertEquals
@@ -182,6 +183,16 @@ class KRPCTestServiceBackend(override val coroutineContext: CoroutineContext) : 
     @Suppress("detekt.TooGenericExceptionThrown")
     override suspend fun throwsIllegalArgument(message: String) {
         throw IllegalArgumentException(message)
+    }
+
+    @Serializable
+    class SerializableTestException(
+        override val message: String?,
+        override val cause: SerializableTestException? = null,
+    ) : Exception()
+
+    override suspend fun throwsSerializableWithMessageAndCause(message: String) {
+        throw SerializableTestException(message, SerializableTestException("cause: $message"))
     }
 
     @Suppress("detekt.TooGenericExceptionThrown")

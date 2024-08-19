@@ -62,21 +62,44 @@ public actual fun SerializedException.deserialize(): Throwable {
 private fun Class<*>.fieldsCountOrDefault(defaultValue: Int) =
     kotlin.runCatching { fieldsCount() }.getOrDefault(defaultValue)
 
-private tailrec fun Class<*>.fieldsCount(accumulator: Int = 0): Int {
-    val fieldsCount = declaredFields.count { !Modifier.isStatic(it.modifiers) }
-    val totalFields = accumulator + fieldsCount
-    val superClass = superclass ?: return totalFields
+private tailrec fun Class<*>.fieldsCount(accumulator: Set<String> = emptySet()): Int {
+    val fields = declaredFields
+        .filter { !Modifier.isStatic(it.modifiers) }
+        .map { it.name }
+    val totalFields = (accumulator + fields)
+    val superClass = superclass ?: run {
+        var messageField = false
+        return totalFields.count {
+            // Throwable has a private field 'detailMessage', but a public open `getMessage`,
+            // which are the same in custom Kotlin exceptions
+            if (it == "message" || it == "detailMessage") {
+                if (messageField) {
+                    return@count false
+                }
+                messageField = true
+            }
+            true
+        }
+    }
     return superClass.fieldsCount(totalFields)
 }
+
+private fun Class<*>.isExceptionClass(): Boolean = Throwable::class.java.isAssignableFrom(this)
 
 private fun tryCreateException(constructor: Constructor<*>, serialized: SerializedException): Throwable? {
     val parameters = constructor.parameterTypes
 
     val result = when (parameters.size) {
-        2 -> constructor.newInstance(serialized.message, serialized.cause?.deserialize())
-        1 -> when (parameters[0]) {
-            Throwable::class.java -> constructor.newInstance(serialized.cause?.deserialize())
-            String::class.java -> constructor.newInstance(serialized.message)
+        2 -> when {
+            parameters[0] == String::class.java && parameters[1].isExceptionClass() ->
+                constructor.newInstance(serialized.message, serialized.cause?.deserialize())
+
+            else -> null
+        }
+
+        1 -> when {
+            parameters[0].isExceptionClass() -> constructor.newInstance(serialized.cause?.deserialize())
+            parameters[0] == String::class.java -> constructor.newInstance(serialized.message)
             else -> null
         }
 
