@@ -373,7 +373,7 @@ abstract class KRPCTransportTestBase {
 
     @Test
     @Suppress("detekt.TooGenericExceptionCaught")
-    fun testException() {
+    fun testExceptionSerializationAndPropagating() {
         runBlocking {
             try {
                 client.throwsIllegalArgument("me")

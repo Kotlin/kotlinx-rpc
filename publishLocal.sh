@@ -6,7 +6,7 @@
 
 set -euxo pipefail
 
-./gradlew publishAllPublicationsToBuildRepoRepository \
-  :compiler-plugin:publishAllPublicationsToBuildRepoRepository \
-  :ksp-plugin:publishAllPublicationsToBuildRepoRepository \
-  :gradle-plugin:publishAllPublicationsToBuildRepoRepository
+./gradlew publishAllPublicationsToBuildRepoRepository
+./gradlew -p compiler-plugin publishAllPublicationsToBuildRepoRepository
+./gradlew -p ksp-plugin publishAllPublicationsToBuildRepoRepository
+./gradlew -p gradle-plugin publishAllPublicationsToBuildRepoRepository
