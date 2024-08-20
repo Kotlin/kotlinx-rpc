@@ -53,7 +53,7 @@
                 <td><code>kotlinx.rpc.UninitializedRPCFieldException</code></td>
             </tr>
         </table>
-        Old declaration and marked with <code>@Deprecated(WARNING)</code>
-        and will be removed in 2 minor releases.
+        Old declarations are marked with <code>@Deprecated(WARNING)</code>
+        and will be removed during the next two minor releases.
     </chapter>
 </topic>

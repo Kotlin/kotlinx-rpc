@@ -1,5 +1,5 @@
 # Ktor Android App
-Sample Android application and Kotlin/Jvm on backend,that uses kRPC with Ktor to communicate.
+Sample Android application and Kotlin/Jvm on backend, that uses kRPC protocol with Ktor to communicate.
 
 ### Running server
 To run server, run `main` function in [Application.kt](/server/src/main/kotlin/Application.kt) from IDEA UI.
