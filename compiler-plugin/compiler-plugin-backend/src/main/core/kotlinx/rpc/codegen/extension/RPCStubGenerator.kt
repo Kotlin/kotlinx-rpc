@@ -696,7 +696,7 @@ internal class RPCStubGenerator(
             emptyList()
         }
 
-        methodClass.superTypes = listOf(ctx.rpcMethodClassArguments.defaultType)
+        methodClass.superTypes += ctx.rpcMethodClassArguments.defaultType
 
         methodClass.addFunction {
             name = ctx.functions.asArray.name
