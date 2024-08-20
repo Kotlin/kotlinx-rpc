@@ -1,6 +1,5 @@
 [versions]
-kotlin = "1.9.24"
-ksp = "1.9.24-1.0.20"
+kotlin = "2.0.10"
 
 agp = "8.2.0"
 android-compileSdk = "34"
@@ -20,7 +19,7 @@ ktor = "2.3.11"
 logback = "1.5.6"
 kotlinx-serialization-json = "1.6.3"
 kotlinx-coroutines-core = "1.8.1"
-kotlinx-rpc = "0.2.2"
+kotlinx-rpc = "0.2.4"
 
 [libraries]
 # kotlin
@@ -75,10 +74,10 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinx-rpc = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "kotlinx-rpc" }
 kotlinx-rpc-platform = { id = "org.jetbrains.kotlinx.rpc.platform", version.ref = "kotlinx-rpc" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

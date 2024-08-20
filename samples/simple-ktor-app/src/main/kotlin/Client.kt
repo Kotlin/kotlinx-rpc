@@ -9,7 +9,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.rpc.client.withService
+import kotlinx.rpc.withService
 import kotlinx.rpc.serialization.json
 import kotlinx.rpc.streamScoped
 import kotlinx.rpc.transport.ktor.client.rpc

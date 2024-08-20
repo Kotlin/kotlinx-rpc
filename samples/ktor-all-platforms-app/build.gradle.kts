@@ -13,5 +13,5 @@ plugins {
     alias(libs.plugins.kotlinPluginSerialization) apply false
     alias(libs.plugins.kotlinx.rpc) apply false
     alias(libs.plugins.kotlinx.rpc.platform) apply false
-    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.compose.compiler) apply false
 }

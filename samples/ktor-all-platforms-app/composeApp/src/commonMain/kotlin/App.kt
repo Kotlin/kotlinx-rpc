@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.ktor.client.*
 import io.ktor.http.*
-import kotlinx.rpc.client.withService
+import kotlinx.rpc.withService
 import kotlinx.rpc.serialization.json
 import kotlinx.rpc.streamScoped
 import kotlinx.rpc.transport.ktor.client.installRPC

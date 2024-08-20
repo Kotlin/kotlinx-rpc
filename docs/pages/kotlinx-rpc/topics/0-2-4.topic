@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
 <!DOCTYPE topic
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
-       title="Migration to 0.2.3" id="0-2-3">
+       title="Migration to 0.2.4" id="0-2-4">
 
     <p>
-        Version <code>0.2.3</code> does introduce any breaking changes.
+        Version <code>0.2.4</code> does introduce any breaking changes.
         However, it includes some updates that may require additional modifications in user projects.
     </p>
     <chapter title="Removal of KSP plugin for Kotlin 2.0" id="removal-of-ksp-plugin-for-kotlin-2-0">
@@ -16,7 +20,7 @@
             plugins {
                 kotlin("jvm") version "2.0.10"
                 kotlin("plugin.serialization") version "2.0.10"
-                id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.3"
+                id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.4"
 
                 // KSP can be removed
                 // id("com.google.devtools.ksp") version "2.0.10-1.0.24"
@@ -34,7 +38,7 @@
         <table>
             <tr>
                 <td><code>0.2.2</code></td>
-                <td><code>0.2.3</code></td>
+                <td><code>0.2.4</code></td>
             </tr>
             <tr>
                 <td><code>kotlinx.rpc.client.withService</code></td>

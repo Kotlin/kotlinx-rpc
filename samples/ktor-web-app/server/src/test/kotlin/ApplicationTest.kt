@@ -4,7 +4,7 @@
 
 import io.ktor.server.testing.*
 import kotlinx.coroutines.flow.toList
-import kotlinx.rpc.client.withService
+import kotlinx.rpc.withService
 import kotlinx.rpc.serialization.json
 import kotlinx.rpc.streamScoped
 import kotlinx.rpc.transport.ktor.client.installRPC

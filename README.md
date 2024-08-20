@@ -92,7 +92,7 @@ Example of plugins setup in a project's `build.gradle.kts`:
 plugins {
     kotlin("jvm") version "2.0.10"
     kotlin("plugin.serialization") version "2.0.10"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.3"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.4"
 }
 ```
 
@@ -106,7 +106,7 @@ plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.serialization") version "1.9.25"
     id("com.google.devtools.ksp") version "1.9.25-1.0.20"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.3"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.4"
 }
 ```
 ### Runtime dependencies
@@ -166,11 +166,11 @@ based on the project's Kotlin version:
 ```kotlin
 plugins {
     kotlin("jvm") version "2.0.10"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.3"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.4"
 }
 
 dependencies {
-    // version 0.2.3 is set by the Gradle plugin
+    // version 0.2.4 is set by the Gradle plugin
     implementation("org.jetbrains.kotlinx:kotlinx-rpc-core") 
 }
 ```
