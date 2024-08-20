@@ -10,7 +10,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.flow.toList
-import kotlinx.rpc.client.withService
+import kotlinx.rpc.withService
 import kotlinx.rpc.sample.MyService
 import kotlinx.rpc.sample.UserData
 import kotlinx.rpc.serialization.json

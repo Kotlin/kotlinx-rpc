@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Migration to 0.2.4" id="0-2-4">
+
+    <p>
+        Version <code>0.2.4</code> does introduce any breaking changes.
+        However, it includes some updates that may require additional modifications in user projects.
+    </p>
+    <chapter title="Removal of KSP plugin for Kotlin 2.0" id="removal-of-ksp-plugin-for-kotlin-2-0">
+        If your project uses Kotlin 2.0,
+        you are no longer required to add KSP Gradle plugin to your build files:
+        <code-block lang="kotlin">
+            plugins {
+                kotlin("jvm") version "2.0.10"
+                kotlin("plugin.serialization") version "2.0.10"
+                id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.4"
+
+                // KSP can be removed
+                // id("com.google.devtools.ksp") version "2.0.10-1.0.24"
+            }
+        </code-block>
+        This change brings one more benefit:
+        without KSP, projects that use <code>kotlinx.rpc</code>
+        can now use <a href="https://docs.gradle.org/current/userguide/configuration_cache.html">Gradle configuration
+        caches</a>.
+    </chapter>
+    <chapter title="Moving of client APIs" id="moving-of-client-apis">
+        Some client APIs were moved from <code>kotlinx-rpc-krpc-client</code> artifact (and package)
+        into <code>kotlinx-rpc-core</code> module (and package). These APIs are not kRPC specific hence the move.
+        <p>List of API changes:</p>
+        <table>
+            <tr>
+                <td><code>0.2.2</code></td>
+                <td><code>0.2.4</code></td>
+            </tr>
+            <tr>
+                <td><code>kotlinx.rpc.client.withService</code></td>
+                <td><code>kotlinx.rpc.withService</code></td>
+            </tr>
+            <tr>
+                <td><code>kotlinx.rpc.client.awaitFieldInitialization</code></td>
+                <td><code>kotlinx.rpc.awaitFieldInitialization</code></td>
+            </tr>
+            <tr>
+                <td><code>kotlinx.rpc.client.UninitializedRPCFieldException</code></td>
+                <td><code>kotlinx.rpc.UninitializedRPCFieldException</code></td>
+            </tr>
+        </table>
+        Old declaration and marked with <code>@Deprecated(WARNING)</code>
+        and will be removed in 2 minor releases.
+    </chapter>
+</topic>

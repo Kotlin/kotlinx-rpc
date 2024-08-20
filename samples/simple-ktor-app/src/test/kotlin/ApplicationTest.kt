@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.rpc.client.awaitFieldInitialization
-import kotlinx.rpc.client.withService
+import kotlinx.rpc.withService
 import kotlinx.rpc.serialization.json
 import kotlinx.rpc.transport.ktor.client.installRPC
 import kotlinx.rpc.transport.ktor.client.rpc

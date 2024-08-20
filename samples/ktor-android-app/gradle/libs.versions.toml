@@ -1,6 +1,6 @@
 [versions]
 agp = "8.1.3"
-kotlin = "1.9.24"
+kotlin = "2.0.10"
 androidx-activityCompose = "1.8.2"
 androidx-appcompat = "1.6.1"
 androidx-constraintlayout = "2.1.4"
@@ -14,8 +14,7 @@ ktor = "2.3.11"
 kotlinx-serialization-json = "1.6.1"
 kotlinx-coroutines-core = "1.8.1"
 logback = "1.5.6"
-kotlinx-rpc = "0.2.2"
-ksp = "1.9.24-1.0.20"
+kotlinx-rpc = "0.2.4"
 
 [libraries]
 # kotlin
@@ -77,7 +76,7 @@ androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinx-rpc = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "kotlinx-rpc" }
 kotlinx-rpc-platform = { id = "org.jetbrains.kotlinx.rpc.platform", version.ref = "kotlinx-rpc" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }

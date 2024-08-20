@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.rpc.RPCClient
 import kotlinx.rpc.streamScoped
-import kotlinx.rpc.client.withService
+import kotlinx.rpc.withService
 import kotlinx.rpc.sample.MyService
 import kotlinx.rpc.sample.UserData
 
