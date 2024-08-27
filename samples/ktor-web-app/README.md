@@ -13,6 +13,6 @@ To run server without compiling frontend, simply run `main` function in [Applica
 
 To Run server with latest frontend use this command:
 ```bash
-./gradlew server:run
+./gradlew server:runApp
 ```
 Note that this configuration uses production distribution of frontend app, which makes each build slower, as it takes more time to compile production webpack.

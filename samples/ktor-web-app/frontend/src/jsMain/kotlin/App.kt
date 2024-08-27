@@ -2,10 +2,8 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import kotlinx.coroutines.flow.flow
 import kotlinx.rpc.RPCClient
 import kotlinx.rpc.withService
-import kotlinx.rpc.streamScoped
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
@@ -39,21 +37,13 @@ val AppContainer = FC<AppContainerProps> { props ->
 
     useEffectOnceAsync {
         val greeting = service.hello("Alex", UserData("Berlin", "Smith"))
-        data = WelcomeData(
-            greeting,
-            flow {
-                streamScoped {
-                    service.subscribeToNews().collect {
-                        emit(it)
-                    }
-                }
-            },
-        )
+        data = WelcomeData(greeting)
     }
 
     data?.also { welcomeData ->
         Welcome {
             this.data = welcomeData
+            this.service = service
         }
     } ?: run {
         div {

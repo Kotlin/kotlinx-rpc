@@ -4,6 +4,7 @@
 
 import emotion.react.css
 import kotlinx.coroutines.flow.Flow
+import kotlinx.rpc.streamScoped
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
@@ -16,22 +17,24 @@ import web.cssom.px
 
 data class WelcomeData(
     val serverGreeting: String,
-    val news: Flow<String>,
 )
 
 external interface WelcomeProps : Props {
+    var service: MyService
     var data: WelcomeData
 }
 
-fun useArticles(data: WelcomeData): List<String> {
+fun useArticles(service: MyService): List<String> {
     var articles by useState(emptyList<String>())
 
     useEffectOnceAsync {
         var localArticles = articles
-        data.news.collect {
-            @Suppress("SuspiciousCollectionReassignment")
-            localArticles += it
-            articles = localArticles
+        streamScoped {
+            service.subscribeToNews().collect {
+                @Suppress("SuspiciousCollectionReassignment")
+                localArticles += it
+                articles = localArticles
+            }
         }
     }
 
@@ -39,7 +42,7 @@ fun useArticles(data: WelcomeData): List<String> {
 }
 
 val Welcome = FC<WelcomeProps> { props ->
-    val articles = useArticles(props.data)
+    val articles = useArticles(props.service)
 
     div {
         css {

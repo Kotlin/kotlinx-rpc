@@ -51,10 +51,11 @@ val prepareAppResources = tasks.register("prepareAppResources") {
 
 val buildApp = tasks.register("buildApp") {
     dependsOn(prepareAppResources)
-    finalizedBy("build")
+    finalizedBy("assemble")
 }
 
 tasks.create("runApp") {
+    group = "application"
     dependsOn(buildApp)
     finalizedBy(tasks.named("run"))
 }
