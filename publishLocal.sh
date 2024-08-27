@@ -8,5 +8,10 @@ set -euxo pipefail
 
 ./gradlew publishAllPublicationsToBuildRepoRepository
 ./gradlew -p compiler-plugin publishAllPublicationsToBuildRepoRepository
-./gradlew -p ksp-plugin publishAllPublicationsToBuildRepoRepository
 ./gradlew -p gradle-plugin publishAllPublicationsToBuildRepoRepository
+
+if [ -x "./gradlew -p ksp-plugin publishAllPublicationsToBuildRepoRepository" ]; then
+  echo "KSP is on"
+else
+  echo "KSP is off"
+fi;

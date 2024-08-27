@@ -94,7 +94,7 @@ inline fun ExtensionAware.whenKotlinIsAtLeast(
     major: Int,
     minor: Int,
     patch: Int = 0,
-    action: () -> Unit,
+    action: () -> Unit = {},
 ): ActionApplied {
     val kotlinVersion: KotlinVersion by extra
 
