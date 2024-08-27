@@ -5,6 +5,8 @@
 package kotlinx.rpc.codegen.extension
 
 import kotlinx.rpc.codegen.common.RpcNames
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrProperty
@@ -21,7 +23,7 @@ import org.jetbrains.kotlin.ir.util.packageFqName
  * but all user-friendly errors are expected to be thrown by frontend plugins
  */
 internal object RPCDeclarationScanner {
-    fun scanServiceDeclaration(service: IrClass, ctx: RPCIrContext): ServiceDeclaration {
+    fun scanServiceDeclaration(service: IrClass, ctx: RPCIrContext, logger: MessageCollector): ServiceDeclaration {
         var stubClass: IrClass? = null
 
         val declarations = service.declarations.memoryOptimizedMap { declaration ->
@@ -50,7 +52,7 @@ internal object RPCDeclarationScanner {
                         ctx.flow -> ServiceDeclaration.FlowField.Kind.Plain
                         ctx.sharedFlow -> ServiceDeclaration.FlowField.Kind.Shared
                         ctx.stateFlow -> ServiceDeclaration.FlowField.Kind.State
-                        else -> unsupportedDeclaration(service, declaration)
+                        else -> return@memoryOptimizedMap unsupportedDeclaration(service, declaration, logger)
                     }
 
                     ServiceDeclaration.FlowField(declaration, flowType)
@@ -62,11 +64,11 @@ internal object RPCDeclarationScanner {
                         return@memoryOptimizedMap null
                     }
 
-                    unsupportedDeclaration(service, declaration)
+                    unsupportedDeclaration(service, declaration, logger)
                 }
 
                 else -> {
-                    unsupportedDeclaration(service, declaration)
+                    unsupportedDeclaration(service, declaration, logger)
                 }
             }
         }
@@ -75,7 +77,7 @@ internal object RPCDeclarationScanner {
             ?: error("Expected package name of the ${service.name.asString()}")
 
         val stubClassNotNull = stubClass
-            // only for KSP generation
+        // only for KSP generation
             ?: ctx.getIrClassSymbol(
                 packageName = packageName,
                 name = "${service.name.asString()}${RpcNames.SERVICE_STUB_NAME_KSP.asString()}"
@@ -90,6 +92,11 @@ internal object RPCDeclarationScanner {
     }
 }
 
-private fun unsupportedDeclaration(service: IrClass, declaration: IrDeclaration): Nothing {
-    error("Unsupported declaration in RPC interface ${service.name}: ${declaration.dumpKotlinLike()}")
+private fun unsupportedDeclaration(service: IrClass, declaration: IrDeclaration, logger: MessageCollector): Nothing? {
+    logger.report(
+        severity = CompilerMessageSeverity.WARNING,
+        message = "Unsupported declaration in RPC interface ${service.name}: ${declaration.dumpKotlinLike()}",
+    )
+
+    return null
 }

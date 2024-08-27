@@ -25,7 +25,7 @@ internal class RPCIrServiceProcessor(
     }
 
     private fun processService(service: IrClass, context: RPCIrContext) {
-        val declaration = RPCDeclarationScanner.scanServiceDeclaration(service, context)
+        val declaration = RPCDeclarationScanner.scanServiceDeclaration(service, context, logger)
         RPCStubGenerator(declaration, context, logger).generate()
     }
 }
