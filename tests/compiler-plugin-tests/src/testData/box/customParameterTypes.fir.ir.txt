@@ -433,7 +433,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
               CONSTRUCTOR_CALL 'public constructor <init> (__rpc_stub_id: kotlin.Long, __rpc_client: kotlinx.rpc.RPCClient) declared in <root>.BoxService.$rpcServiceStub' type=<root>.BoxService.$rpcServiceStub origin=null
                 __rpc_stub_id: GET_VAR 'serviceId: kotlin.Long declared in <root>.BoxService.$rpcServiceStub.Companion.withClient' type=kotlin.Long origin=null
                 __rpc_client: GET_VAR 'client: kotlinx.rpc.RPCClient declared in <root>.BoxService.$rpcServiceStub.Companion.withClient' type=kotlinx.rpc.RPCClient origin=null
-      CLASS GENERATED[kotlinx.rpc.codegen.RPCGeneratedRpcMethodClassKey] CLASS name:test1$rpcMethod modality:FINAL visibility:public superTypes:[kotlinx.rpc.internal.RPCMethodClassArguments]
+      CLASS GENERATED[kotlinx.rpc.codegen.RPCGeneratedRpcMethodClassKey] CLASS name:test1$rpcMethod modality:FINAL visibility:public superTypes:[kotlin.Any; kotlinx.rpc.internal.RPCMethodClassArguments]
         annotations:
           Serializable(with = <null>)
         $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod
@@ -644,7 +644,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
           VALUE_PARAMETER GENERATED[kotlinx.rpc.codegen.RPCGeneratedRpcMethodClassKey] name:testData index:0 type:<root>.TestData
           BLOCK_BODY
             DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-            INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.RPCGeneratedRpcMethodClassKey] CLASS name:test1$rpcMethod modality:FINAL visibility:public superTypes:[kotlinx.rpc.internal.RPCMethodClassArguments]'
+            INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.RPCGeneratedRpcMethodClassKey] CLASS name:test1$rpcMethod modality:FINAL visibility:public superTypes:[kotlin.Any; kotlinx.rpc.internal.RPCMethodClassArguments]'
         CONSTRUCTOR KOTLINX_SERIALIZATION visibility:internal <> (seen0:kotlin.Int, testData:<root>.TestData?, serializationConstructorMarker:kotlinx.serialization.internal.SerializationConstructorMarker?) returnType:<root>.BoxService.$rpcServiceStub.test1$rpcMethod
           VALUE_PARAMETER KOTLINX_SERIALIZATION name:seen0 index:0 type:kotlin.Int
           VALUE_PARAMETER KOTLINX_SERIALIZATION name:testData index:1 type:<root>.TestData?
@@ -706,7 +706,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                 elements: VARARG type=kotlin.Array<kotlin.Any?> varargElementType=kotlin.Any?
                   CALL 'public final fun <get-testData> (): <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod' type=<root>.TestData origin=GET_PROPERTY
                     $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test1$rpcMethod declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.asArray' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod origin=null
-      CLASS GENERATED[kotlinx.rpc.codegen.RPCGeneratedRpcMethodClassKey] CLASS name:test2$rpcMethod modality:FINAL visibility:public superTypes:[kotlinx.rpc.internal.RPCMethodClassArguments]
+      CLASS GENERATED[kotlinx.rpc.codegen.RPCGeneratedRpcMethodClassKey] CLASS name:test2$rpcMethod modality:FINAL visibility:public superTypes:[kotlin.Any; kotlinx.rpc.internal.RPCMethodClassArguments]
         annotations:
           Serializable(with = <null>)
         $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod
@@ -917,7 +917,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
           VALUE_PARAMETER GENERATED[kotlinx.rpc.codegen.RPCGeneratedRpcMethodClassKey] name:testData index:0 type:<root>.TestData
           BLOCK_BODY
             DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-            INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.RPCGeneratedRpcMethodClassKey] CLASS name:test2$rpcMethod modality:FINAL visibility:public superTypes:[kotlinx.rpc.internal.RPCMethodClassArguments]'
+            INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.RPCGeneratedRpcMethodClassKey] CLASS name:test2$rpcMethod modality:FINAL visibility:public superTypes:[kotlin.Any; kotlinx.rpc.internal.RPCMethodClassArguments]'
         CONSTRUCTOR KOTLINX_SERIALIZATION visibility:internal <> (seen0:kotlin.Int, testData:<root>.TestData?, serializationConstructorMarker:kotlinx.serialization.internal.SerializationConstructorMarker?) returnType:<root>.BoxService.$rpcServiceStub.test2$rpcMethod
           VALUE_PARAMETER KOTLINX_SERIALIZATION name:seen0 index:0 type:kotlin.Int
           VALUE_PARAMETER KOTLINX_SERIALIZATION name:testData index:1 type:<root>.TestData?
