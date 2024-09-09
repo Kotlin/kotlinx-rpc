@@ -22,7 +22,6 @@ import kotlinx.rpc.transport.ktor.client.rpc
 import kotlinx.rpc.transport.ktor.client.rpcConfig
 import ktor_all_platforms_app.composeapp.generated.resources.Res
 import ktor_all_platforms_app.composeapp.generated.resources.compose_multiplatform
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
 expect val DEV_SERVER_HOST: String
@@ -33,7 +32,6 @@ val client by lazy {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun App() {
     var serviceOrNull: UserService? by remember { mutableStateOf(null) }
@@ -61,7 +59,10 @@ fun App() {
         val news = remember { mutableStateListOf<String>() }
 
         LaunchedEffect(service) {
-            greeting = service.hello("User from ${getPlatform().name} platform", UserData("Berlin", "Smith"))
+            greeting = service.hello(
+                "User from ${getPlatform().name} platform",
+                UserData("Berlin", "Smith")
+            )
         }
 
         LaunchedEffect(service) {
@@ -91,7 +92,10 @@ fun App() {
                 }
 
                 AnimatedVisibility(showIcon) {
-                    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(
+                        Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Image(painterResource(Res.drawable.compose_multiplatform), null)
                     }
                 }
