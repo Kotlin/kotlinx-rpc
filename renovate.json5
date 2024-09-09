@@ -1,0 +1,76 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommitsDisabled",
+    ":label(dependencies)",
+    ":automergeStableNonMajor",
+    ":reviewer(Mr3zee)",
+  ],
+  "packageRules": [
+    {
+      "description": "Update Core minor and patch dependencies in batch",
+      "matchUpdateTypes": [
+        "patch",
+        "minor",
+      ],
+      "matchPackageNames": [
+        "*",
+      ],
+      matchFileNames: [
+        "!samples/**",
+        // Samples have separate config
+        "**/*.gradle.kts",
+        "**/gradle.properties",
+        "versions-root/libs.versions.toml",
+      ],
+      "groupName": "Core dependencies (non-major)",
+      "groupSlug": "core-non-major",
+    },
+    {
+      "description": "Update Sample dependencies in batch",
+      "matchUpdateTypes": [
+        "patch",
+        "minor",
+        "minor",
+      ],
+      "matchFileNames": [
+        "samples/**",
+      ],
+      "matchPackageNames": [
+        "*",
+      ],
+      "groupName": "Sample dependencies",
+      "groupSlug": "sample"
+    },
+    {
+      // Reason: Kotlin updates require additional work on compiler plugins
+      "description": "Ignore Kotlin updates",
+      "matchDepNames": [
+        "org.jetbrains.kotlin(:|.)*",
+      ],
+      "enabled": false,
+    },
+    {
+      // Reason: May break compiler plugin tests, manual updates are just fine
+      "description": "Ignore Intellij Platform ",
+      "matchDepNames": [
+        "com.jetbrains.intellij.platform*",
+      ],
+      "enabled": false,
+    },
+    {
+      // Reason: Gradle version updates may break existing configurations
+      "description": "Ignore Gradle updates in Core",
+      "matchFileNames": [
+        "gradle/wrapper/gradle-wrapper.properties",
+      ],
+      "enabled": false,
+    },
+    {
+      "description": "Ignore 0.0.0 version in Kotlin-specific versions",
+      "matchCurrentVersion": "0.0.0",
+      "enabled": false,
+    },
+  ]
+}
