@@ -18,9 +18,26 @@ import org.slf4j.helpers.NOPLogger
 class RPCProtobufPlugin {
     companion object {
         private const val DEBUG_OUTPUT_OPTION = "debugOutput"
+        private const val MESSAGE_MODE_OPTION = "messageMode"
+    }
+
+    enum class MessageMode {
+        Interface, Class;
+
+        companion object {
+            fun of(value: String?): MessageMode {
+                return when (value) {
+                    "interface" -> Interface
+                    "class" -> Class
+                    null -> error("Message mode is not specified, use --messageMode=interface or --messageMode=class")
+                    else -> error("Unknown message mode: $value")
+                }
+            }
+        }
     }
 
     private var debugOutput: String? = null
+    private lateinit var messageGenerationMode: MessageMode
     private val logger: Logger by lazy {
         val debugOutput = debugOutput ?: return@lazy NOPLogger.NOP_LOGGER
 
@@ -40,10 +57,12 @@ class RPCProtobufPlugin {
     }
 
     fun run(input: CodeGeneratorRequest): CodeGeneratorResponse {
-        val parameters = input.parameter.split(",")
-        parameters.singleOrNull { it.startsWith(DEBUG_OUTPUT_OPTION) }?.let {
-            debugOutput = it.removePrefix("$DEBUG_OUTPUT_OPTION=")
+        val parameters = input.parameter.split(",").associate {
+            it.split("=").let { (key, value) -> key to value }
         }
+
+        debugOutput = parameters[DEBUG_OUTPUT_OPTION]
+        messageGenerationMode = MessageMode.of(parameters[MESSAGE_MODE_OPTION])
 
         val files = input.generateKotlinFiles()
             .map { file ->
@@ -71,7 +90,7 @@ class RPCProtobufPlugin {
     private fun CodeGeneratorRequest.generateKotlinFiles(): List<FileGenerator> {
         val interpreter = ProtoToModelInterpreter(logger)
         val model = interpreter.interpretProtocRequest(this)
-        val fileGenerator = ModelToKotlinGenerator(model, logger)
+        val fileGenerator = ModelToKotlinGenerator(model, logger, CodeGenerationParameters(messageGenerationMode))
         return fileGenerator.generateKotlinFiles()
     }
 }

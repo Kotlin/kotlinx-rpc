@@ -11,13 +11,14 @@ import org.slf4j.Logger
 class ModelToKotlinGenerator(
     private val model: Model,
     private val logger: Logger,
+    private val codeGenerationParameters: CodeGenerationParameters,
 ) {
     fun generateKotlinFiles(): List<FileGenerator> {
         return model.files.map { it.generateKotlinFile() }
     }
 
     private fun FileDeclaration.generateKotlinFile(): FileGenerator {
-        return file(logger = logger) {
+        return file(codeGenerationParameters, logger = logger) {
             filename = name.simpleName
             packageName = name.packageName
 
@@ -41,20 +42,37 @@ class ModelToKotlinGenerator(
     }
 
     private fun CodeGenerator.generateMessage(declaration: MessageDeclaration) {
-        val fields = declaration.actualFields.map { "val ${it.generateFieldDeclaration()}" }
+        val fields = declaration.actualFields.map { it.generateFieldDeclaration() to it.type.defaultValue }
 
-        val (declarationType, modifiers) = if (fields.isEmpty()) {
-            DeclarationType.Object to ""
-        } else {
-            DeclarationType.Class to "data"
+        val isInterfaceMode = parameters.messageMode == RPCProtobufPlugin.MessageMode.Interface
+
+        val (declarationType, modifiers) = when {
+            isInterfaceMode -> {
+                DeclarationType.Interface to ""
+            }
+
+            fields.isEmpty() -> {
+                DeclarationType.Object to ""
+            }
+
+            else -> {
+                DeclarationType.Class to "data"
+            }
         }
 
         clazz(
             name = declaration.name.simpleName,
             modifiers = modifiers,
-            constructorArgs = fields,
-            declarationType = declarationType
+            constructorArgs = if (isInterfaceMode) emptyList() else fields.map { "val ${it.first}" to it.second },
+            declarationType = declarationType,
         ) {
+            if (isInterfaceMode) {
+                fields.forEach {
+                    code("val ${it.first}")
+                    newLine()
+                }
+            }
+
             declaration.oneOfDeclarations.forEach { oneOf ->
                 generateOneOf(oneOf)
             }
@@ -65,6 +83,33 @@ class ModelToKotlinGenerator(
 
             declaration.enumDeclarations.forEach { enum ->
                 generateEnum(enum)
+            }
+
+            if (isInterfaceMode) {
+                clazz("", modifiers = "companion", declarationType = DeclarationType.Object)
+            }
+        }
+
+        if (isInterfaceMode) {
+            clazz(
+                name = "${declaration.name.simpleName}Builder",
+                declarationType = DeclarationType.Class,
+                superTypes = listOf(declaration.name.simpleName),
+            ) {
+                fields.forEach {
+                    code("override var ${it.first} = ${it.second}")
+                    newLine()
+                }
+            }
+
+            function(
+                name = "invoke",
+                modifiers = "operator",
+                args = "body: ${declaration.name.simpleName}.() -> Unit",
+                contextReceiver = "${declaration.name.simpleName}.Companion",
+                returnType = declaration.name.simpleName,
+            ) {
+                code("return ${declaration.name.simpleName}Builder().apply(body)")
             }
         }
     }
@@ -77,6 +122,10 @@ class ModelToKotlinGenerator(
         return when (type) {
             is FieldType.Reference -> {
                 type.value.simpleName
+            }
+
+            is FieldType.IntegralType -> {
+                type.fqName.simpleName
             }
 
             is FieldType.List -> {
@@ -118,7 +167,10 @@ class ModelToKotlinGenerator(
 
                 clazz("", modifiers = "companion", declarationType = DeclarationType.Object) {
                     declaration.aliases.forEach { alias: EnumDeclaration.Alias ->
-                        code("val ${alias.name.simpleName}: ${declaration.name.simpleName} = ${alias.original.name.simpleName}")
+                        code(
+                            "val ${alias.name.simpleName}: ${declaration.name.simpleName} " +
+                                    "= ${alias.original.name.simpleName}"
+                        )
                     }
                 }
             }
