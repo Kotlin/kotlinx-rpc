@@ -8,6 +8,7 @@ import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest
 import kotlinx.rpc.protobuf.model.*
+import kotlinx.rpc.protobuf.model.FieldType.IntegralType
 import org.slf4j.Logger
 import kotlin.properties.Delegates
 
@@ -91,9 +92,8 @@ class ProtoToModelInterpreter(
                 }
 
                 oneOfFieldMembers[oneofIndex] == null -> {
-                    oneOfFieldMembers[oneofIndex] = mutableListOf<DescriptorProtos.FieldDescriptorProto>().also {
-                        it.add(this)
-                    }
+                    oneOfFieldMembers[oneofIndex] = mutableListOf<DescriptorProtos.FieldDescriptorProto>()
+                        .also { list -> list.add(this) }
 
                     FieldType.Reference(oneOfName.fullProtoNameToKotlin(firstLetterUpper = true).toFqName())
                 }
@@ -131,16 +131,17 @@ class ProtoToModelInterpreter(
                     .substringAfter('.')
                     .fullProtoNameToKotlin(firstLetterUpper = true)
                     .toFqName()
+                    .let { wrapWithLabel(it) }
             }
 
             else -> {
                 primitiveType()
             }
-        }.let { wrapWithLabel(it) }
+        }
     }
 
     @Suppress("detekt.CyclomaticComplexMethod")
-    private fun DescriptorProtos.FieldDescriptorProto.primitiveType(): FqName {
+    private fun DescriptorProtos.FieldDescriptorProto.primitiveType(): FieldType {
         return when (type) {
             Type.TYPE_STRING -> IntegralType.STRING
             Type.TYPE_BYTES -> IntegralType.BYTES
