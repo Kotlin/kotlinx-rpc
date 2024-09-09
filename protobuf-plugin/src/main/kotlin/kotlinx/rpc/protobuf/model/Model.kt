@@ -5,5 +5,5 @@
 package kotlinx.rpc.protobuf.model
 
 data class Model(
-    val files: List<FileDeclaration>
+    val files: List<FileDeclaration>,
 )

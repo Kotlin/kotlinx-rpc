@@ -5,7 +5,7 @@ package kotlinx.rpc.protobuf.test;
 message AllPrimitives {
   double double = 1;
   float float = 2;
-  double int32 = 3;
+  int32 int32 = 3;
   int64 int64 = 4;
   uint32 uint32 = 5;
   uint64 uint64 = 6;
