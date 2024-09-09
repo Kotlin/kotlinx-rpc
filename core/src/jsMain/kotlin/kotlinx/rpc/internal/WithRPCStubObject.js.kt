@@ -40,19 +40,6 @@ public actual fun <R : Any> findRPCStubProvider(kClass: KClass<*>, resultKClass:
 }
 
 /**
- * [KClassImpl] is internal in kjs stdlib, and it's jClass property is obfuscated by the webpack.
- * Hence, we need to find it manually.
- */
-private val KClass<*>.jClass get(): JsClass<*> {
-    return Object.entries(this)
-        // key (_) is obfuscated here
-        .firstOrNull { (_, value) -> value != null && Object.hasOwn(value,"\$metadata\$") }
-        ?.component2()
-        ?.unsafeCast<JsClass<*>>()
-        ?: error("jClass property was not found")
-}
-
-/**
  * Workaround for bugs in [findAssociatedObject]
  * See KT-70132 for more info.
  *
@@ -62,8 +49,8 @@ internal fun <T : Annotation, R : Any> KClass<*>.findAssociatedObjectImpl(
     annotationClass: KClass<T>,
     resultKClass: KClass<R>,
 ): Any? {
-    val key = annotationClass.jClass.asDynamic().`$metadata$`?.associatedObjectKey?.unsafeCast<Int>() ?: return null
-    val map = jClass.asDynamic().`$metadata$`?.associatedObjects ?: return null
+    val key = annotationClass.js.asDynamic().`$metadata$`?.associatedObjectKey?.unsafeCast<Int>() ?: return null
+    val map = js.asDynamic().`$metadata$`?.associatedObjects ?: return null
     val factory = map[key] ?: return fallbackFindAssociatedObjectImpl(map, resultKClass)
     return factory()
 }
