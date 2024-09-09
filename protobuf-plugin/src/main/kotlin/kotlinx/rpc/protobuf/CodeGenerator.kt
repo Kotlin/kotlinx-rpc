@@ -7,7 +7,12 @@ package kotlinx.rpc.protobuf
 import org.slf4j.Logger
 import org.slf4j.helpers.NOPLogger
 
+data class CodeGenerationParameters(
+    val messageMode: RPCProtobufPlugin.MessageMode,
+)
+
 open class CodeGenerator(
+    val parameters: CodeGenerationParameters,
     private val indent: String,
     private val builder: StringBuilder = StringBuilder(),
     private val logger: Logger = NOPLogger.NOP_LOGGER,
@@ -63,7 +68,7 @@ open class CodeGenerator(
     }
 
     private fun withNextIndent(block: CodeGenerator.() -> Unit) {
-        CodeGenerator("$indent$ONE_INDENT", builder, logger).block()
+        CodeGenerator(parameters, "$indent$ONE_INDENT", builder, logger).block()
     }
 
     private fun scope(prefix: String, block: (CodeGenerator.() -> Unit)? = null) {
@@ -78,7 +83,7 @@ open class CodeGenerator(
             return
         }
 
-        val nested = CodeGenerator("$indent$ONE_INDENT", logger = logger).apply(block)
+        val nested = CodeGenerator(parameters, "$indent$ONE_INDENT", logger = logger).apply(block)
 
         if (nested.isEmpty) {
             newLine()
@@ -98,9 +103,18 @@ open class CodeGenerator(
         code.lines().forEach { addLine(it) }
     }
 
-    fun function(name: String, modifiers: String = "", args: String = "", block: CodeGenerator.() -> Unit) {
+    fun function(
+        name: String,
+        modifiers: String = "",
+        args: String = "",
+        contextReceiver: String = "",
+        returnType: String = "",
+        block: CodeGenerator.() -> Unit,
+    ) {
         val modifiersString = if (modifiers.isEmpty()) "" else "$modifiers "
-        scope("${modifiersString}fun $name($args)") {
+        val contextString = if (contextReceiver.isEmpty()) "" else "$contextReceiver."
+        val returnTypeString = if (returnType.isEmpty()) "" else ": $returnType"
+        scope("${modifiersString}fun $contextString$name($args)$returnTypeString") {
             block()
         }
     }
@@ -109,10 +123,51 @@ open class CodeGenerator(
         Class("class"), Interface("interface"), Object("object");
     }
 
+    @JvmName("clazz_no_constructorArgs")
+    fun clazz(
+        name: String,
+        modifiers: String = "",
+        superTypes: List<String> = emptyList(),
+        annotations: List<String> = emptyList(),
+        declarationType: DeclarationType = DeclarationType.Class,
+        block: (CodeGenerator.() -> Unit)? = null,
+    ) {
+        clazz(
+            name = name,
+            modifiers = modifiers,
+            constructorArgs = emptyList<String>(),
+            superTypes = superTypes,
+            annotations = annotations,
+            declarationType = declarationType,
+            block = block,
+        )
+    }
+
+    @JvmName("clazz_constructorArgs_no_default")
     fun clazz(
         name: String,
         modifiers: String = "",
         constructorArgs: List<String> = emptyList(),
+        superTypes: List<String> = emptyList(),
+        annotations: List<String> = emptyList(),
+        declarationType: DeclarationType = DeclarationType.Class,
+        block: (CodeGenerator.() -> Unit)? = null,
+    ) {
+        clazz(
+            name = name,
+            modifiers = modifiers,
+            constructorArgs = constructorArgs.map { it to null },
+            superTypes = superTypes,
+            annotations = annotations,
+            declarationType = declarationType,
+            block = block,
+        )
+    }
+
+    fun clazz(
+        name: String,
+        modifiers: String = "",
+        constructorArgs: List<Pair<String, String?>> = emptyList(),
         superTypes: List<String> = emptyList(),
         annotations: List<String> = emptyList(),
         declarationType: DeclarationType = DeclarationType.Class,
@@ -124,27 +179,34 @@ open class CodeGenerator(
 
         val modifiersString = if (modifiers.isEmpty()) "" else "$modifiers "
 
-        val firstLine = "$modifiersString${declarationType.strValue} $name"
+        val firstLine = "$modifiersString${declarationType.strValue}${if (name.isNotEmpty()) " " else ""}$name"
         addLine(firstLine)
 
         val shouldPutArgsOnNewLines =
-            firstLine.length + constructorArgs.sumOf { it.length + 2 } + indent.length > 80
+            firstLine.length + constructorArgs.sumOf {
+                it.first.length + (it.second?.length?.plus(3) ?: 0) + 2
+            } + indent.length > 80
+
+        val constructorArgsTransformed = constructorArgs.map { (arg, default) ->
+            val defaultString = default?.let { " = $it" } ?: ""
+            "$arg$defaultString"
+        }
 
         when {
-            shouldPutArgsOnNewLines && constructorArgs.isNotEmpty() -> {
+            shouldPutArgsOnNewLines && constructorArgsTransformed.isNotEmpty() -> {
                 append("(")
                 newLine()
                 withNextIndent {
-                    for (arg in constructorArgs) {
+                    for (arg in constructorArgsTransformed) {
                         addLine("$arg,")
                     }
                 }
                 addLine(")")
             }
 
-            constructorArgs.isNotEmpty() -> {
+            constructorArgsTransformed.isNotEmpty() -> {
                 append("(")
-                append(constructorArgs.joinToString(", "))
+                append(constructorArgsTransformed.joinToString(", "))
                 append(")")
             }
         }
@@ -174,10 +236,11 @@ open class CodeGenerator(
 }
 
 class FileGenerator(
+    codeGenerationParameters: CodeGenerationParameters,
     var filename: String? = null,
     var packageName: String? = null,
     logger: Logger = NOPLogger.NOP_LOGGER,
-) : CodeGenerator("", logger = logger) {
+) : CodeGenerator(codeGenerationParameters, "", logger = logger) {
     private val imports = mutableListOf<String>()
 
     fun importPackage(name: String) {
@@ -213,8 +276,9 @@ class FileGenerator(
 }
 
 fun file(
+    codeGenerationParameters: CodeGenerationParameters,
     name: String? = null,
     packageName: String? = null,
     logger: Logger = NOPLogger.NOP_LOGGER,
     block: FileGenerator.() -> Unit,
-): FileGenerator = FileGenerator(name, packageName, logger).apply(block)
+): FileGenerator = FileGenerator(codeGenerationParameters, name, packageName, logger).apply(block)
