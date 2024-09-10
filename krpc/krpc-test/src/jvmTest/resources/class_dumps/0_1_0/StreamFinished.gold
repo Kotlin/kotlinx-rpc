@@ -1,4 +1,4 @@
-org.jetbrains.krpc.RPCMessage.StreamFinished [Declared name: kotlinx.rpc.internal.transport.RPCCallMessage.StreamFinished]
+org.jetbrains.krpc.RPCMessage.StreamFinished [Declared name: kotlinx.rpc.krpc.internal.RPCCallMessage.StreamFinished]
   - callId: kotlin.String
   - connectionId: kotlin.Long
     - Nullable

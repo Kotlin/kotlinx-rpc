@@ -18,7 +18,7 @@ import kotlin.test.assertContentEquals
 
 @Suppress("detekt.MaxLineLength")
 @OptIn(ExperimentalSerializationApi::class)
-class ProtocolTest : kotlinx.rpc.krpc.test.ProtocolTestBase() {
+class ProtocolTest : ProtocolTestBase() {
     @Test
     fun testHandshakeWithUpToDateEndpoints() = runTest {
         // the client sends the handshake message first,
