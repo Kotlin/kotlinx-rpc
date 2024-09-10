@@ -26,6 +26,7 @@ object Const {
 
 apiValidation {
     ignoredPackages.add("kotlinx.rpc.internal")
+    ignoredPackages.add("kotlinx.rpc.krpc.internal")
 
     ignoredProjects.addAll(
         listOf(

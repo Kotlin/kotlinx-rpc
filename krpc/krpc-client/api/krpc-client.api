@@ -1,28 +1,17 @@
-public final class kotlinx/rpc/client/AwaitFieldInitializationKt {
-	public static final fun awaitFieldInitialization (Lkotlinx/rpc/RPC;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static final fun awaitFieldInitialization (Lkotlinx/rpc/RPC;Lkotlin/reflect/KClass;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public abstract class kotlinx/rpc/client/KRPCClient : kotlinx/rpc/internal/transport/RPCServiceHandler, kotlinx/rpc/RPCClient, kotlinx/rpc/internal/transport/RPCEndpoint {
-	public fun <init> (Lkotlinx/rpc/RPCConfig$Client;Lkotlinx/rpc/RPCTransport;)V
+public abstract class kotlinx/rpc/krpc/client/KRPCClient : kotlinx/rpc/krpc/internal/RPCServiceHandler, kotlinx/rpc/RPCClient, kotlinx/rpc/krpc/internal/RPCEndpoint {
+	public fun <init> (Lkotlinx/rpc/krpc/RPCConfig$Client;Lkotlinx/rpc/krpc/RPCTransport;)V
 	public final fun call (Lkotlinx/rpc/RPCCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	protected final fun getConfig ()Lkotlinx/rpc/RPCConfig$Client;
-	public synthetic fun getConfig ()Lkotlinx/rpc/RPCConfig;
+	protected final fun getConfig ()Lkotlinx/rpc/krpc/RPCConfig$Client;
+	public synthetic fun getConfig ()Lkotlinx/rpc/krpc/RPCConfig;
 	public final fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
-	protected fun getLogger ()Lkotlinx/rpc/internal/logging/CommonLogger;
+	protected fun getLogger ()Lkotlinx/rpc/krpc/internal/logging/CommonLogger;
 	public final fun registerPlainFlowField (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RPCField;)Lkotlinx/coroutines/flow/Flow;
 	public final fun registerSharedFlowField (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RPCField;)Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun registerStateFlowField (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RPCField;)Lkotlinx/coroutines/flow/StateFlow;
 }
 
-public final class kotlinx/rpc/client/RPCClientUtilsKt {
+public final class kotlinx/rpc/krpc/client/RPCClientUtilsKt {
 	public static final fun withService (Lkotlinx/rpc/RPCClient;Lkotlin/reflect/KClass;)Lkotlinx/rpc/RPC;
 	public static final fun withService (Lkotlinx/rpc/RPCClient;Lkotlin/reflect/KType;)Lkotlinx/rpc/RPC;
-}
-
-public final class kotlinx/rpc/client/UninitializedRPCFieldException : java/lang/Exception {
-	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KProperty;)V
-	public fun getCause ()Ljava/lang/Throwable;
-	public fun getMessage ()Ljava/lang/String;
 }
 
