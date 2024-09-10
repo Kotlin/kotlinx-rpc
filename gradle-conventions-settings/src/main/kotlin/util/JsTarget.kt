@@ -5,8 +5,6 @@
 package util
 
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.getting
 import org.gradle.kotlin.dsl.invoke
 import java.io.File
 
@@ -15,7 +13,7 @@ fun Project.configureJs() {
 
     kotlin {
         sourceSets {
-            val jsTest by getting {
+            jsTest {
                 dependencies {
                     implementation(npm("puppeteer", "*"))
                 }
