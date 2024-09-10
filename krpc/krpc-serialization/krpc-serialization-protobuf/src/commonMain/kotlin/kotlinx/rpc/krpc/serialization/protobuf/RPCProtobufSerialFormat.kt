@@ -4,8 +4,11 @@
 
 @file:OptIn(ExperimentalSerializationApi::class)
 
-package kotlinx.rpc.krpc.serialization
+package kotlinx.rpc.krpc.serialization.protobuf
 
+import kotlinx.rpc.krpc.serialization.RPCSerialFormat
+import kotlinx.rpc.krpc.serialization.RPCSerialFormatBuilder
+import kotlinx.rpc.krpc.serialization.RPCSerialFormatConfiguration
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus

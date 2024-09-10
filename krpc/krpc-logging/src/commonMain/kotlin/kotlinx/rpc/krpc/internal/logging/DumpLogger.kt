@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.krpc.internal.logging
 
-import kotlinx.rpc.internal.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRPCApi
 
 @InternalRPCApi
 public interface DumpLogger {

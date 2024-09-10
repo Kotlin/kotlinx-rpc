@@ -6,9 +6,9 @@ package kotlinx.rpc.krpc.test
 
 import kotlinx.rpc.krpc.RPCTransport
 import kotlinx.rpc.krpc.serialization.RPCSerialFormatConfiguration
-import kotlinx.rpc.krpc.serialization.cbor
-import kotlinx.rpc.krpc.serialization.json
-import kotlinx.rpc.krpc.serialization.protobuf
+import kotlinx.rpc.krpc.serialization.cbor.cbor
+import kotlinx.rpc.krpc.serialization.json.json
+import kotlinx.rpc.krpc.serialization.protobuf.protobuf
 import kotlinx.serialization.ExperimentalSerializationApi
 
 abstract class LocalTransportTest : KRPCTransportTestBase() {

@@ -7,7 +7,7 @@ package kotlinx.rpc.krpc
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.rpc.internal.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlinx.rpc.krpc.serialization.RPCSerialFormat
 import kotlinx.rpc.krpc.serialization.RPCSerialFormatBuilder
 import kotlinx.rpc.krpc.serialization.RPCSerialFormatConfiguration

@@ -7,6 +7,7 @@
 package kotlinx.rpc.internal
 
 import kotlinx.rpc.RPC
+import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlin.reflect.AssociatedObjectKey
 import kotlin.reflect.ExperimentalAssociatedObjects
 import kotlin.reflect.KClass

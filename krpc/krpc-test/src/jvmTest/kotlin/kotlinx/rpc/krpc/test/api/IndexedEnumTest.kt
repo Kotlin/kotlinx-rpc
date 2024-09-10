@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.krpc.test.api
 
-import kotlinx.rpc.internal.IndexedEnum
+import kotlinx.rpc.internal.utils.IndexedEnum
 import kotlinx.rpc.krpc.test.api.ApiVersioningTest.Companion.INDEXED_ENUM_DUMPS_DIR
 import kotlinx.rpc.krpc.test.api.util.GoldComparable
 import kotlinx.rpc.krpc.test.api.util.GoldComparisonResult

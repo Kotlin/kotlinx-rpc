@@ -7,7 +7,7 @@ package kotlinx.rpc.krpc.internal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.rpc.internal.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlinx.serialization.*
 import kotlinx.serialization.modules.SerializersModule
 import kotlin.reflect.KClass

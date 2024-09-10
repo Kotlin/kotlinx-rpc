@@ -10,7 +10,7 @@ import kotlinx.coroutines.job
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.rpc.RPC
-import kotlinx.rpc.internal.hex.hexToReadableBinary
+import kotlinx.rpc.internal.utils.hex.hexToReadableBinary
 import kotlinx.rpc.krpc.RPCConfig
 import kotlinx.rpc.krpc.client.KRPCClient
 import kotlinx.rpc.krpc.internal.logging.CommonLogger
@@ -18,7 +18,7 @@ import kotlinx.rpc.krpc.internal.logging.DumpLogger
 import kotlinx.rpc.krpc.internal.logging.DumpLoggerContainer
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
-import kotlinx.rpc.krpc.serialization.json
+import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.krpc.server.KRPCServer
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService

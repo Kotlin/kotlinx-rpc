@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.rpc.internal.RPCDeferredField
-import kotlinx.rpc.internal.SupervisedCompletableDeferred
+import kotlinx.rpc.internal.utils.SupervisedCompletableDeferred
 
 internal sealed class RPCFlow<T, FlowT : Flow<T>>(private val serviceName: String, parent: Job) :
     RPCDeferredField<FlowT> {

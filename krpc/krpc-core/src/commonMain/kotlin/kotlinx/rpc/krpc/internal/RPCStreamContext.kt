@@ -12,11 +12,11 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.selects.select
-import kotlinx.rpc.internal.InternalRPCApi
-import kotlinx.rpc.internal.getDeferred
-import kotlinx.rpc.internal.getOrNull
-import kotlinx.rpc.internal.map.ConcurrentHashMap
-import kotlinx.rpc.internal.set
+import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.getDeferred
+import kotlinx.rpc.internal.utils.getOrNull
+import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
+import kotlinx.rpc.internal.utils.set
 import kotlinx.rpc.krpc.RPCConfig
 import kotlinx.rpc.krpc.StreamScope
 import kotlinx.rpc.krpc.noStreamScopeError

@@ -71,3 +71,5 @@ includePublic(":krpc:krpc-ktor:krpc-ktor-client")
 
 include(":tests")
 include(":tests:compiler-plugin-tests")
+
+include(":jpms-check")

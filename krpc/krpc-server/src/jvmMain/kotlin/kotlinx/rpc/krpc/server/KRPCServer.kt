@@ -7,9 +7,9 @@ package kotlinx.rpc.krpc.server
 import kotlinx.coroutines.*
 import kotlinx.rpc.RPC
 import kotlinx.rpc.RPCServer
-import kotlinx.rpc.internal.InternalRPCApi
-import kotlinx.rpc.internal.map.ConcurrentHashMap
 import kotlinx.rpc.internal.qualifiedClassName
+import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
 import kotlinx.rpc.krpc.RPCConfig
 import kotlinx.rpc.krpc.RPCTransport
 import kotlinx.rpc.krpc.internal.*

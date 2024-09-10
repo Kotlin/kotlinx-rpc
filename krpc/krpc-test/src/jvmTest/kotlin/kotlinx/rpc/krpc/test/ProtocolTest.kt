@@ -6,12 +6,12 @@ package kotlinx.rpc.krpc.test
 
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.launch
-import kotlinx.rpc.internal.hex.hexToByteArrayInternal
+import kotlinx.rpc.internal.utils.hex.hexToByteArrayInternal
 import kotlinx.rpc.krpc.RPCTransportMessage
 import kotlinx.rpc.krpc.internal.RPCPlugin
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
-import kotlinx.rpc.krpc.serialization.protobuf
+import kotlinx.rpc.krpc.serialization.protobuf.protobuf
 import kotlinx.serialization.ExperimentalSerializationApi
 import org.junit.Test
 import kotlin.test.assertContentEquals
