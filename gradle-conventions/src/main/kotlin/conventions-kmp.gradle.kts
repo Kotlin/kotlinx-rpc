@@ -3,10 +3,7 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import util.configureJvm
-import util.configureKotlin
-import util.optInForRPCApi
-import util.withKotlinConfig
+import util.*
 
 plugins {
     id("conventions-common")
@@ -21,6 +18,7 @@ configure<KotlinMultiplatformExtension> {
 
 withKotlinConfig {
     configureKotlin()
+    configureWasm()
 }
 
 configureJvm(isKmp = true)
