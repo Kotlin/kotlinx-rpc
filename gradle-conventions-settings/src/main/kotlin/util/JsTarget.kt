@@ -4,27 +4,50 @@
 
 package util
 
-import org.gradle.api.Project
+import org.gradle.api.Action
 import org.gradle.kotlin.dsl.invoke
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import java.io.File
 
-fun Project.configureJs() {
-    configureJsTasks()
+fun ProjectKotlinConfig.configureJsAndWasmJs() {
+    configureJsAndWasmJsTasks()
 
     kotlin {
         sourceSets {
-            jsTest {
-                dependencies {
-                    implementation(npm("puppeteer", "*"))
+            if (js) {
+                jsTest {
+                    puppeteer()
+                }
+            }
+
+            if (wasmJs) {
+                wasmJsMain {
+                    dependencies {
+                        implementation(libs.kotlinx.browser)
+                    }
+                }
+
+                wasmJsTest {
+                    puppeteer()
                 }
             }
         }
     }
 }
 
-private fun Project.configureJsTasks() {
+private fun KotlinSourceSet.puppeteer() {
+    dependencies {
+        implementation(npm("puppeteer", "*"))
+    }
+}
+
+private fun ProjectKotlinConfig.configureJsAndWasmJsTasks() {
     kotlin {
-        js(IR) {
+        jsAnsWasmJs(this@configureJsAndWasmJsTasks) {
             nodejs {
                 testTask {
                     useMocha {
@@ -33,7 +56,7 @@ private fun Project.configureJsTasks() {
                 }
             }
 
-            browser {
+            (this as KotlinJsIrTarget).whenBrowserConfigured {
                 testTask {
                     useKarma {
                         useChromeHeadless()
@@ -41,8 +64,17 @@ private fun Project.configureJsTasks() {
                     }
                 }
             }
-
-            binaries.library()
         }
     }
+}
+
+@OptIn(ExperimentalWasmDsl::class)
+private fun KotlinMultiplatformExtension.jsAnsWasmJs(
+    config: ProjectKotlinConfig,
+    configure: Action<KotlinJsTargetDsl>,
+) {
+    listOfNotNull(
+        if (config.js) js(IR) else null,
+        if (config.wasmJs) wasmJs() else null,
+    ).forEach { configure(it) }
 }

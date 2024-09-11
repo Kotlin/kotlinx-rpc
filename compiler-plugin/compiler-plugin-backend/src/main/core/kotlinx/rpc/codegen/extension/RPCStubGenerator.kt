@@ -1209,10 +1209,10 @@ internal class RPCStubGenerator(
         }
     }
 
-    // Associated object annotation works on JS and Native platforms.
+    // Associated object annotation works on JS, WASM, and Native platforms.
     // See https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/find-associated-object.html
     private fun addAssociatedObjectAnnotationIfPossible() {
-        if (ctx.isJsTarget() || ctx.isNativeTarget()) {
+        if (ctx.isJsTarget() || ctx.isNativeTarget() || ctx.isWasmTarget()) {
             addAssociatedObjectAnnotation()
         }
     }

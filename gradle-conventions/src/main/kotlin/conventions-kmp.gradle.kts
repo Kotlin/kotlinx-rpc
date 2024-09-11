@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import util.configureJvm
 import util.configureKotlin
 import util.optInForRPCApi
-import util.optionalProperty
+import util.withKotlinConfig
 
 plugins {
     id("conventions-common")
@@ -19,17 +19,8 @@ configure<KotlinMultiplatformExtension> {
     explicitApi()
 }
 
-val excludeJs: Boolean by optionalProperty()
-val excludeJvm: Boolean by optionalProperty()
-val excludeNative: Boolean by optionalProperty()
-
-val kotlinVersion: KotlinVersion by extra
-
-configureKotlin(
-    kotlinVersion = kotlinVersion,
-    jvm = !excludeJvm,
-    js = !excludeJs,
-    native = !excludeNative,
-)
+withKotlinConfig {
+    configureKotlin()
+}
 
 configureJvm(isKmp = true)
