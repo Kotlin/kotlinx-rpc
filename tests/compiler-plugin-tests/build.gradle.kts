@@ -12,12 +12,6 @@ plugins {
 
 // this setup – courtesy of https://github.com/demiurg906/kotlin-compiler-plugin-template/tree/master
 
-repositories {
-    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap")
-    maven("https://www.jetbrains.com/intellij-repository/releases")
-    maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
-}
-
 sourceSets {
     test {
         java.srcDir("src/test-gen")

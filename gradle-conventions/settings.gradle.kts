@@ -20,7 +20,8 @@ pluginManagement {
 includeBuild("../gradle-conventions-settings")
 
 plugins {
-    id("settings-conventions")
+    id("conventions-repositories")
+    id("conventions-version-resolution")
 }
 
 whenKotlinLatest {

@@ -9,13 +9,6 @@ import java.nio.file.Files
 import java.nio.file.OpenOption
 import java.nio.file.Path
 
-pluginManagement {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
-
 fun Path.bufferedReader(
     charset: Charset = Charsets.UTF_8,
     bufferSize: Int = DEFAULT_BUFFER_SIZE,
@@ -223,23 +216,6 @@ dependencyResolutionManagement {
                 logger.info("$name -> $version")
                 version(name, version)
             }
-        }
-    }
-}
-
-// ### OTHER SETTINGS SECTION ###
-
-gradle.rootProject {
-    allprojects {
-        buildscript {
-            repositories {
-                gradlePluginPortal()
-                mavenCentral()
-            }
-        }
-
-        repositories {
-            mavenCentral()
         }
     }
 }
