@@ -16,7 +16,6 @@ import org.jetbrains.kotlin.ir.types.makeNullable
 import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.isVararg
 import org.jetbrains.kotlin.ir.util.properties
-import org.jetbrains.kotlin.platform.isWasm
 import org.jetbrains.kotlin.platform.konan.isNative
 import org.jetbrains.kotlin.types.Variance
 
@@ -133,7 +132,7 @@ internal class RPCIrContext(
     }
 
     fun isWasmTarget(): Boolean {
-        return pluginContext.platform.isWasm()
+        return versionSpecificApi.isWasm(pluginContext.platform)
     }
 
     val functions = Functions()

@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.platform.TargetPlatform
 
 interface VersionSpecificApi {
     fun isJs(platform: TargetPlatform?): Boolean
+    fun isWasm(platform: TargetPlatform?): Boolean
 
     fun referenceClass(context: IrPluginContext, packageName: String, name: String): IrClassSymbol?
 
