@@ -3,6 +3,7 @@
  */
 
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
+import util.kotlinVersionParsed
 import util.libs
 
 plugins {
@@ -58,7 +59,57 @@ if (kotlinVersionFull != kotlinGPVersion) {
     error("KGP version mismatch. Project version: $kotlinVersionFull, KGP version: $kotlinGPVersion")
 }
 
+val executeNpmLogin by tasks.registering {
+    val registryUrl = "https://packages.jetbrains.team/npm/p/krpc/build-deps/"
+
+    // To prevent leaking of credentials in VCS on dev machine use the build directory config file
+    val buildYarnConfigFile = File(project.rootDir, "build/js/.yarnrc")
+    val buildYarnYmlConfigFile = File(project.rootDir, "build/js/.yarnrc.yml")
+
+    val spaceUsername: String? = getSpaceUsername()
+    val spacePassword: String? = getSpacePassword()
+
+    doLast {
+        if (spaceUsername == null || spacePassword == null) {
+            return@doLast
+        }
+
+        if (spacePassword.split(".").size != 3) {
+            error("Unexpected Space Token format")
+        }
+
+        val outputYarnYmlText = """       
+            npmRegistryServer: "$registryUrl"
+            npmAlwaysAuth: true
+            npmAuthToken: "$spacePassword"
+        """.trimIndent()
+
+        buildYarnConfigFile.createNewFile()
+        buildYarnConfigFile.writeText("registry: $registryUrl")
+        buildYarnYmlConfigFile.createNewFile()
+        buildYarnYmlConfigFile.writeText(outputYarnYmlText)
+    }
+
+    outputs.file(buildYarnConfigFile).withPropertyName("buildOutputYarnFile")
+    outputs.file(buildYarnYmlConfigFile).withPropertyName("buildOutputYarnYmlFile")
+}
+
+plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class.java).configureEach {
+    rootProject.extensions.configure(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension::class.java) {
+        download = true
+        downloadBaseUrl = "https://packages.jetbrains.team/files/p/krpc/build-deps/"
+    }
+
+    tasks.named("kotlinNpmInstall").configure {
+        dependsOn(executeNpmLogin)
+    }
+}
+
 // necessary for CI js tests
 rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
-    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().ignoreScripts = false
+    rootProject.extensions.configure<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension> {
+        ignoreScripts = false
+        download = true
+        downloadBaseUrl = "https://packages.jetbrains.team/files/p/krpc/build-deps/"
+    }
 }
