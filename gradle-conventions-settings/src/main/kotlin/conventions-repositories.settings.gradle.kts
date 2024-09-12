@@ -2,9 +2,7 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:Suppress("DuplicatedCode", "MISSING_DEPENDENCY_CLASS")
-
-import java.util.*
+@file:Suppress("DuplicatedCode")
 
 pluginManagement {
     fun logAbsentProperty(name: String): Nothing? {
@@ -13,36 +11,16 @@ pluginManagement {
         return null
     }
 
-    @Suppress("RemoveRedundantQualifierName")
-    fun getLocalProperties(): java.util.Properties {
-        return java.util.Properties().apply {
-            val propertiesDir = File(
-                rootDir.path
-                    .removeSuffix("/gradle-conventions")
-                    .removeSuffix("/gradle-conventions-settings")
-                    .removeSuffix("/ksp-plugin")
-                    .removeSuffix("/compiler-plugin")
-                    .removeSuffix("/gradle-plugin")
-            )
-            val localFile = File(propertiesDir, "local.properties")
-            if (localFile.exists()) {
-                localFile.inputStream().use { load(it) }
-            }
-        }
-    }
-
     fun getSpaceUsername(): String? {
         val username = "kotlinx.rpc.team.space.username"
-        return getLocalProperties()[username] as String?
-            ?: settings.providers.gradleProperty(username).orNull
+        return settings.providers.gradleProperty(username).orNull
             ?: System.getenv(username)?.ifEmpty { null }
             ?: logAbsentProperty(username)
     }
 
     fun getSpacePassword(): String? {
         val password = "kotlinx.rpc.team.space.password"
-        return getLocalProperties()[password] as String?
-            ?: settings.providers.gradleProperty(password).orNull
+        return settings.providers.gradleProperty(password).orNull
             ?: System.getenv(password)?.ifEmpty { null }
             ?: logAbsentProperty(password)
     }
@@ -56,9 +34,15 @@ pluginManagement {
         maven {
             name = repoName.split("-").joinToString("") { it.replaceFirstChar { c -> c.titlecase() } }
             url = uri("https://packages.jetbrains.team/maven/p/krpc/$repoName")
-            credentials {
-                username = getSpaceUsername()
-                password = getSpacePassword()
+
+            val spaceUsername = getSpaceUsername()
+            val spacePassword = getSpacePassword()
+
+            if (spaceUsername != null && spacePassword != null) {
+                credentials {
+                    username = spaceUsername
+                    password = spacePassword
+                }
             }
         }
     }
@@ -79,35 +63,16 @@ gradle.rootProject {
         return null
     }
 
-    fun getLocalProperties(): Properties {
-        return Properties().apply {
-            val propertiesDir = File(
-                rootDir.path
-                    .removeSuffix("/gradle-conventions")
-                    .removeSuffix("/gradle-conventions-settings")
-                    .removeSuffix("/ksp-plugin")
-                    .removeSuffix("/compiler-plugin")
-                    .removeSuffix("/gradle-plugin")
-            )
-            val localFile = File(propertiesDir, "local.properties")
-            if (localFile.exists()) {
-                localFile.inputStream().use { load(it) }
-            }
-        }
-    }
-
     fun getSpaceUsername(): String? {
         val username = "kotlinx.rpc.team.space.username"
-        return getLocalProperties()[username] as String?
-            ?: settings.providers.gradleProperty(username).orNull
+        return settings.providers.gradleProperty(username).orNull
             ?: System.getenv(username)?.ifEmpty { null }
             ?: logAbsentProperty(username)
     }
 
     fun getSpacePassword(): String? {
         val password = "kotlinx.rpc.team.space.password"
-        return getLocalProperties()[password] as String?
-            ?: settings.providers.gradleProperty(password).orNull
+        return settings.providers.gradleProperty(password).orNull
             ?: System.getenv(password)?.ifEmpty { null }
             ?: logAbsentProperty(password)
     }
@@ -122,9 +87,15 @@ gradle.rootProject {
             name = repoName.split("-").joinToString("") { it.replaceFirstChar { c -> c.titlecase() } }
 
             url = uri("https://packages.jetbrains.team/maven/p/krpc/$repoName")
-            credentials {
-                username = getSpaceUsername()
-                password = getSpacePassword()
+
+            val spaceUsername = getSpaceUsername()
+            val spacePassword = getSpacePassword()
+
+            if (spaceUsername != null && spacePassword != null) {
+                credentials {
+                    username = spaceUsername
+                    password = spacePassword
+                }
             }
         }
     }
