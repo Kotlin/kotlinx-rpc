@@ -3,7 +3,7 @@
  */
 
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
-import util.kotlinVersionParsed
+import util.getSpacePassword
 import util.libs
 
 plugins {
@@ -64,34 +64,38 @@ val executeNpmLogin by tasks.registering {
 
     // To prevent leaking of credentials in VCS on dev machine use the build directory config file
     val buildYarnConfigFile = File(project.rootDir, "build/js/.yarnrc")
-    val buildYarnYmlConfigFile = File(project.rootDir, "build/js/.yarnrc.yml")
+    val buildNpmConfigFile = File(project.rootDir, "build/js/.npmrc")
 
-    val spaceUsername: String? = getSpaceUsername()
     val spacePassword: String? = getSpacePassword()
 
     doLast {
-        if (spaceUsername == null || spacePassword == null) {
-            return@doLast
-        }
-
-        if (spacePassword.split(".").size != 3) {
-            error("Unexpected Space Token format")
-        }
-
-        val outputYarnYmlText = """       
-            npmRegistryServer: "$registryUrl"
-            npmAlwaysAuth: true
-            npmAuthToken: "$spacePassword"
+        val outputYarnText = """
+            registry: "$registryUrl"
         """.trimIndent()
 
+        var outputNpmText = """
+            registry: "$registryUrl"
+        """.trimIndent()
+
+        if (spacePassword != null) {
+            if (spacePassword.split(".").size != 3) {
+                throw GradleException("Unexpected Space Token format")
+            }
+
+            outputNpmText += System.lineSeparator() + """
+                always-auth: true
+                ${registryUrl.removePrefix("https:")}:_authToken=$spacePassword
+            """.trimIndent()
+        }
+
         buildYarnConfigFile.createNewFile()
-        buildYarnConfigFile.writeText("registry: $registryUrl")
-        buildYarnYmlConfigFile.createNewFile()
-        buildYarnYmlConfigFile.writeText(outputYarnYmlText)
+        buildYarnConfigFile.writeText(outputYarnText)
+        buildNpmConfigFile.createNewFile()
+        buildNpmConfigFile.writeText(outputNpmText)
     }
 
     outputs.file(buildYarnConfigFile).withPropertyName("buildOutputYarnFile")
-    outputs.file(buildYarnYmlConfigFile).withPropertyName("buildOutputYarnYmlFile")
+    outputs.file(buildNpmConfigFile).withPropertyName("buildOutputNpmFile")
 }
 
 plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class.java).configureEach {

@@ -11,6 +11,8 @@ pluginManagement {
 
     includeBuild("gradle-plugin")
 
+    apply(from = "gradle-conventions-settings/src/main/kotlin/conventions-repositories.settings.gradle.kts")
+
     resolutionStrategy {
         eachPlugin {
             if (requested.id.id == "kotlinx-atomicfu") {

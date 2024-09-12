@@ -96,6 +96,7 @@ kotlin-js-wrappers = { module = "org.jetbrains.kotlin-wrappers:kotlin-js", versi
 gradle-kotlin-dsl-pluigns = { module = "org.gradle.kotlin:gradle-kotlin-dsl-plugins", version.ref = "gradle-kotlin-dsl" }
 intellij-util = { module = "com.jetbrains.intellij.platform:util", version.ref = "intellij" }
 gradle-doctor-plugin = { module = "com.osacky.doctor:doctor-plugin", version.ref = "gradle-doctor" }
+atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-lang" }
