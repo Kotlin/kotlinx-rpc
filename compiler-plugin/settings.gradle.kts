@@ -13,6 +13,7 @@ pluginManagement {
 
 plugins {
     id("settings-conventions")
+    id("conventions-develocity")
 }
 
 includeRootAsPublic()
