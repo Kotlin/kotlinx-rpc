@@ -6,10 +6,10 @@ plugins {
     alias(libs.plugins.conventions.gradle.doctor)
 }
 
-val kotlinVersion: KotlinVersion by extra
+val kotlinVersionFull: String by extra
 val rpcVersion: String = libs.versions.kotlinx.rpc.get()
 
 allprojects {
     group = "org.jetbrains.kotlinx"
-    version = "$kotlinVersion-$rpcVersion"
+    version = "$kotlinVersionFull-$rpcVersion"
 }

@@ -19,7 +19,7 @@ pluginManagement {
 fun Path.bufferedReader(
     charset: Charset = Charsets.UTF_8,
     bufferSize: Int = DEFAULT_BUFFER_SIZE,
-    vararg options: OpenOption
+    vararg options: OpenOption,
 ): BufferedReader {
     return BufferedReader(
         InputStreamReader(
@@ -32,6 +32,7 @@ fun Path.bufferedReader(
 
 object SettingsConventions {
     const val KOTLIN_VERSION_ENV_VAR_NAME = "KOTLIN_VERSION"
+    const val LIBRARY_VERSION_ENV_VAR_NAME = "LIBRARY_VERSION"
     const val EAP_VERSION_ENV_VAR_NAME = "EAP_VERSION"
 
     const val KSP_VERSION_ALIAS = "ksp"
@@ -82,10 +83,18 @@ fun loadLookupTable(rootDir: Path, kotlinVersion: String): Pair<Map<String, Stri
         .split("\n")
         .takeIf { it.size >= 2 }
         ?.run {
-            latest = get(1).substringBefore(',')
-            when (val versionsRow = singleOrNull { it.startsWith(kotlinVersion) }) {
-                null -> null
-                else -> first().asCsvValues() to versionsRow.asCsvValues()
+            first().asCsvValues() to when (val versionsRow = singleOrNull { it.startsWith(kotlinVersion) }) {
+                // resolve latest for an unknown version
+                // considers that unknown versions are too new and not yet added
+                null -> {
+                    latest = kotlinVersion
+                    get(1).asCsvValues()
+                }
+
+                else -> {
+                    latest = get(1).substringBefore(',')
+                    versionsRow.asCsvValues()
+                }
             }
         }
         ?.takeIf { (keys, values) -> keys.size == values.size }
@@ -156,16 +165,22 @@ fun VersionCatalogBuilder.resolveKotlinVersion(versionCatalog: Map<String, Strin
         ?: error("Expected to resolve '${SettingsConventions.KOTLIN_VERSION_ALIAS}' version")
 }
 
-// Resolves core kotlinx.rpc version (without Kotlin version prefix) from Versions Catalog.
-// Updates it with EAP_VERSION suffix of present.
+// Resolves a core kotlinx.rpc version (without a Kotlin version prefix) from the Version Catalog.
+// Uses LIBRARY_VERSION_ENV_VAR_NAME instead if present
 fun VersionCatalogBuilder.resolveLibraryVersion(versionCatalog: Map<String, String>) {
-    val eapVersion: String = System.getenv(SettingsConventions.EAP_VERSION_ENV_VAR_NAME)
-        ?.let { "-eap-$it" } ?: ""
-    val libraryCatalogVersion = versionCatalog[SettingsConventions.LIBRARY_CORE_VERSION_ALIAS]
+    val libraryCoreVersion: String = System.getenv(SettingsConventions.LIBRARY_VERSION_ENV_VAR_NAME)
+        ?: versionCatalog[SettingsConventions.LIBRARY_CORE_VERSION_ALIAS]
         ?: error("Expected to resolve '${SettingsConventions.LIBRARY_CORE_VERSION_ALIAS}' version")
-    val libraryCoreVersion = libraryCatalogVersion + eapVersion
 
-    version(SettingsConventions.LIBRARY_CORE_VERSION_ALIAS, libraryCoreVersion)
+    val eapVersion: String = System.getenv(SettingsConventions.EAP_VERSION_ENV_VAR_NAME)
+        ?.let {
+            when (it){
+                "SNAPSHOT" -> "-$it"
+                else -> "-eap-$it"
+            }
+        } ?: ""
+
+    version(SettingsConventions.LIBRARY_CORE_VERSION_ALIAS, libraryCoreVersion + eapVersion)
 }
 
 fun String.kotlinVersionParsed(): KotlinVersion {
@@ -193,11 +208,13 @@ dependencyResolutionManagement {
             val isLatestKotlin = latestKotlin == kotlinVersion
 
             extra["kotlinVersion"] = kotlinVersion.kotlinVersionParsed()
+            extra["kotlinVersionFull"] = kotlinVersion
             extra["isLatestKotlinVersion"] = isLatestKotlin
 
             gradle.rootProject {
                 allprojects {
                     this.extra["kotlinVersion"] = kotlinVersion.kotlinVersionParsed()
+                    this.extra["kotlinVersionFull"] = kotlinVersion
                     this.extra["isLatestKotlinVersion"] = isLatestKotlin
                 }
             }
