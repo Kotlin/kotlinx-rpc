@@ -29,7 +29,7 @@ ksp = "0.0.0"
 atomicfu = "0.22.0"
 serialization = "1.6.1"
 detekt-gradle-plugin = "1.23.6"
-gradle-kotlin-dsl = "4.3.0"
+gradle-kotlin-dsl = "5.1.1"
 binary-compatibility-validator = "0.14.0"
 kover = "0.8.0"
 
