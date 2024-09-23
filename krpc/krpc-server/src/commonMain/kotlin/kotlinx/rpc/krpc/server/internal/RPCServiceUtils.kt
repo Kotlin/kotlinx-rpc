@@ -5,10 +5,10 @@
 package kotlinx.rpc.krpc.server.internal
 
 import kotlinx.rpc.RPC
-import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.rpc.internal.RPCServiceMethodSerializationTypeProvider
 import kotlinx.rpc.internal.findRPCStubProvider
 import kotlinx.rpc.internal.kClass
+import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 

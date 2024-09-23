@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.krpc.internal.logging
 
-import kotlinx.rpc.internal.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlinx.rpc.krpc.internal.logging.impl.CommonLoggerFactoryImpl
 import kotlin.reflect.KClass
 

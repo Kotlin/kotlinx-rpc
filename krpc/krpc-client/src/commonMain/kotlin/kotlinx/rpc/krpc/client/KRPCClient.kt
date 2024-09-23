@@ -12,11 +12,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.rpc.RPCCall
 import kotlinx.rpc.RPCClient
 import kotlinx.rpc.RPCField
-import kotlinx.rpc.internal.InternalRPCApi
-import kotlinx.rpc.internal.SupervisedCompletableDeferred
-import kotlinx.rpc.internal.getOrNull
-import kotlinx.rpc.internal.map.ConcurrentHashMap
 import kotlinx.rpc.internal.serviceScopeOrNull
+import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.SupervisedCompletableDeferred
+import kotlinx.rpc.internal.utils.getOrNull
+import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
 import kotlinx.rpc.krpc.*
 import kotlinx.rpc.krpc.client.internal.FieldDataObject
 import kotlinx.rpc.krpc.client.internal.RPCClientConnector

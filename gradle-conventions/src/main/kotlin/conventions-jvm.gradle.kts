@@ -3,6 +3,7 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import util.configureJvm
 import util.optInForRPCApi
 
 plugins {
@@ -23,3 +24,5 @@ configure<KotlinJvmProjectExtension> {
 
     explicitApi()
 }
+
+configureJvm(isKmp = false)

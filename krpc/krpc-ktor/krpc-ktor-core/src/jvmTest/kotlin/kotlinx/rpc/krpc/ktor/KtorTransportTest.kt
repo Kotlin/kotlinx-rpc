@@ -15,7 +15,7 @@ import kotlinx.rpc.krpc.ktor.client.rpc
 import kotlinx.rpc.krpc.ktor.client.rpcConfig
 import kotlinx.rpc.krpc.ktor.server.RPC
 import kotlinx.rpc.krpc.ktor.server.rpc
-import kotlinx.rpc.krpc.serialization.json
+import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.withService
 import org.junit.Assert.assertEquals
 import kotlin.coroutines.CoroutineContext

@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.krpc.internal
 
-import kotlinx.rpc.internal.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRPCApi
 
 /**
  * For legacy internal users ONLY.

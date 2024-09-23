@@ -6,7 +6,7 @@ package kotlinx.rpc.krpc.ktor
 
 import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.rpc.internal.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlinx.rpc.krpc.RPCTransport
 import kotlinx.rpc.krpc.RPCTransportMessage
 

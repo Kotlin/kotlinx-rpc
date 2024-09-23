@@ -8,7 +8,7 @@ import kotlinx.atomicfu.atomic
 import kotlinx.rpc.internal.RPCStubServiceProvider
 import kotlinx.rpc.internal.findRPCStubProvider
 import kotlinx.rpc.internal.kClass
-import kotlinx.rpc.internal.safeCast
+import kotlinx.rpc.internal.utils.safeCast
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 

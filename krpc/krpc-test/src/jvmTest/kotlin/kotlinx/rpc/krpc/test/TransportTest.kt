@@ -10,7 +10,7 @@ import kotlinx.rpc.*
 import kotlinx.rpc.krpc.RPCConfigBuilder
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
-import kotlinx.rpc.krpc.serialization.json
+import kotlinx.rpc.krpc.serialization.json.json
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.Ignore

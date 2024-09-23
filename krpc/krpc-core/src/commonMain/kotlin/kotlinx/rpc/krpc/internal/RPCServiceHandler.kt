@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.RPCCall
-import kotlinx.rpc.internal.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlinx.rpc.krpc.RPCConfig
 import kotlinx.rpc.krpc.internal.logging.CommonLogger
 import kotlinx.serialization.BinaryFormat

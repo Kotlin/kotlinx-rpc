@@ -4,8 +4,8 @@
 
 package kotlinx.rpc.krpc.internal
 
-import kotlinx.rpc.internal.IndexedEnum
-import kotlinx.rpc.internal.InternalRPCApi
+import kotlinx.rpc.internal.utils.IndexedEnum
+import kotlinx.rpc.internal.utils.InternalRPCApi
 
 @InternalRPCApi
 @Suppress("detekt.MagicNumber")

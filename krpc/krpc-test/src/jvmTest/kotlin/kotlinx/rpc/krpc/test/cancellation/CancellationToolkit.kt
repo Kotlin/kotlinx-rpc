@@ -13,7 +13,7 @@ import kotlinx.rpc.krpc.internal.logging.DumpLogger
 import kotlinx.rpc.krpc.internal.logging.DumpLoggerContainer
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
-import kotlinx.rpc.krpc.serialization.json
+import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.krpc.test.KRPCTestClient
 import kotlinx.rpc.krpc.test.KRPCTestServer
 import kotlinx.rpc.krpc.test.KRPCTestServiceBackend

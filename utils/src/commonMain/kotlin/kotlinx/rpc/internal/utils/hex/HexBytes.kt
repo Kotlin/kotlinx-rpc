@@ -2,9 +2,9 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.internal.hex
+package kotlinx.rpc.internal.utils.hex
 
-import kotlinx.rpc.internal.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRPCApi
 
 // Original HexExtensions.kt from stdlib are not available for Kotlin 1.8 and earlier versions
 

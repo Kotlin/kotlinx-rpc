@@ -3,6 +3,7 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import util.configureJvm
 import util.configureKotlin
 import util.optInForRPCApi
 import util.optionalProperty
@@ -30,3 +31,5 @@ configureKotlin(
     js = !excludeJs,
     native = !excludeNative,
 )
+
+configureJvm(isKmp = true)

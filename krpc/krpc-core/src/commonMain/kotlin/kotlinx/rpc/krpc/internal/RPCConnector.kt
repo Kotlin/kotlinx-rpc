@@ -9,8 +9,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.rpc.internal.InternalRPCApi
-import kotlinx.rpc.internal.hex.toHexStringInternal
+import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.hex.toHexStringInternal
 import kotlinx.rpc.krpc.RPCTransport
 import kotlinx.rpc.krpc.RPCTransportMessage
 import kotlinx.rpc.krpc.internal.logging.CommonLogger

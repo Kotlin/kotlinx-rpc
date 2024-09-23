@@ -4,8 +4,8 @@
 
 package kotlinx.rpc.krpc.internal
 
-import kotlinx.rpc.internal.InternalRPCApi
 import kotlinx.rpc.internal.typeName
+import kotlinx.rpc.internal.utils.InternalRPCApi
 
 @InternalRPCApi
 public fun serializeException(cause: Throwable): SerializedException {

@@ -1,4 +1,4 @@
-public final class kotlinx/rpc/krpc/serialization/RPCCborSerialFormatKt {
+public final class kotlinx/rpc/krpc/serialization/cbor/RPCCborSerialFormatKt {
 	public static final fun cbor (Lkotlinx/rpc/krpc/serialization/RPCSerialFormatConfiguration;Lkotlinx/serialization/cbor/Cbor;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun cbor$default (Lkotlinx/rpc/krpc/serialization/RPCSerialFormatConfiguration;Lkotlinx/serialization/cbor/Cbor;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }

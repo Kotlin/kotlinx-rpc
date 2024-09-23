@@ -6,7 +6,7 @@ package kotlinx.rpc.krpc.internal
 
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import kotlinx.rpc.internal.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRPCApi
 
 @InternalRPCApi
 public interface RPCEndpoint {

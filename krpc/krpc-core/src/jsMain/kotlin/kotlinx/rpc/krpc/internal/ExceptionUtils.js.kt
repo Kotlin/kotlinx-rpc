@@ -6,7 +6,7 @@
 
 package kotlinx.rpc.krpc.internal
 
-import kotlinx.rpc.internal.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRPCApi
 
 internal actual class DeserializedException actual constructor(
     private val toStringMessage: String,

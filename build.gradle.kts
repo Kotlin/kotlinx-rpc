@@ -21,7 +21,7 @@ allprojects {
 }
 
 object Const {
-    const val INTERNAL_RPC_API_ANNOTATION = "kotlinx.rpc.internal.InternalRPCApi"
+    const val INTERNAL_RPC_API_ANNOTATION = "kotlinx.rpc.internal.utils.InternalRPCApi"
 }
 
 apiValidation {
