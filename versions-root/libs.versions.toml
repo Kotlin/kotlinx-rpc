@@ -17,6 +17,7 @@ kotlin-wrappers = "1.0.0-pre.781"
 junit4 = "4.13.2"
 junit5 = "5.10.3"
 intellij = "213.7172.53"
+gradle-doctor = "0.10.0"
 
 # Stub versions – relpaced based on kotlin, mostly for gradle-related (plugins) dependencies
 #  but also for dependencies for compiler-specific modules.
@@ -97,6 +98,7 @@ kover-gradle-plugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", ve
 kotlin-js-wrappers = { module = "org.jetbrains.kotlin-wrappers:kotlin-js", version.ref = "kotlin-wrappers" }
 gradle-kotlin-dsl-pluigns = { module = "org.gradle.kotlin:gradle-kotlin-dsl-plugins", version.ref = "gradle-kotlin-dsl" }
 intellij-util = { module = "com.jetbrains.intellij.platform:util", version.ref = "intellij" }
+gradle-doctor-plugin = { module = "com.osacky.doctor:doctor-plugin", version.ref = "gradle-doctor" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-lang" }
@@ -117,6 +119,7 @@ conventions-jvm = { id = "conventions-jvm", version.ref = "kotlinx-rpc" }
 conventions-kmp = { id = "conventions-kmp", version.ref = "kotlinx-rpc" }
 conventions-gradle-publish = { id = "conventions-gradle-publish", version.ref = "kotlinx-rpc" }
 conventions-kover = { id = "conventions-kover", version.ref = "kotlinx-rpc" }
+conventions-gradle-doctor = { id = "conventions-gradle-doctor", version.ref = "kotlinx-rpc" }
 compiler-specific-module = { id = "compiler-specific-module", version.ref = "kotlinx-rpc" }
 
 # gradle-plugin project

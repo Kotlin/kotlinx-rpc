@@ -14,4 +14,5 @@ dependencies {
     implementation(":gradle-conventions-settings")
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.kover.gradle.plugin)
+    implementation(libs.gradle.doctor.plugin)
 }
