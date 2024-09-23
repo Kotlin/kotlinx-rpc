@@ -8,10 +8,9 @@ plugins {
 
 kotlin {
     sourceSets {
-        val jvmMain by getting {
+        jvmMain {
             dependencies {
                 api(projects.krpc.krpcServer)
-                api(projects.krpc.krpcSerialization.krpcSerializationCore)
                 api(projects.krpc.krpcKtor.krpcKtorCore)
 
                 api(libs.ktor.server.core)

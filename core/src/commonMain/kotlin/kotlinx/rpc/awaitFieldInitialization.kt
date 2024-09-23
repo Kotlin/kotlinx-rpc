@@ -7,7 +7,7 @@ package kotlinx.rpc
 import kotlinx.rpc.internal.RPCDeferredField
 import kotlinx.rpc.internal.RPCServiceFieldsProvider
 import kotlinx.rpc.internal.findRPCStubProvider
-import kotlinx.rpc.internal.safeCast
+import kotlinx.rpc.internal.utils.safeCast
 import kotlin.reflect.KClass
 
 /**

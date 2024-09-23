@@ -5,6 +5,7 @@
 package kotlinx.rpc.internal
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.rpc.internal.utils.InternalRPCApi
 
 /**
  * Scopes client RPC call from a service with [serviceScope].

@@ -5,7 +5,6 @@
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.atomicfu)
-    alias(libs.plugins.serialization)
 }
 
 kotlin {
@@ -13,13 +12,10 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.utils)
-                implementation(projects.krpc.krpcSerialization.krpcSerializationCore)
-
                 api(libs.coroutines.core)
+
                 implementation(libs.serialization.core)
                 implementation(libs.kotlin.reflect)
-
-                implementation(projects.krpc.krpcLogging)
             }
         }
 

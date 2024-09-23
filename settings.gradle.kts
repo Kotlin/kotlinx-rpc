@@ -34,6 +34,7 @@ pluginManagement {
 }
 
 plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
     id("settings-conventions")
 }
 
@@ -52,6 +53,7 @@ includePublic(":utils")
 includePublic(":core")
 
 include(":krpc")
+includePublic(":krpc:krpc-core")
 includePublic(":krpc:krpc-client")
 includePublic(":krpc:krpc-server")
 includePublic(":krpc:krpc-logging")
@@ -70,3 +72,5 @@ includePublic(":krpc:krpc-ktor:krpc-ktor-client")
 
 include(":tests")
 include(":tests:compiler-plugin-tests")
+
+include(":jpms-check")

@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.internal
 
+import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 

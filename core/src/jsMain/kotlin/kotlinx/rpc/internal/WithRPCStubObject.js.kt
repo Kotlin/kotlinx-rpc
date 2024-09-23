@@ -8,6 +8,7 @@ package kotlinx.rpc.internal
 
 import js.objects.Object
 import kotlinx.rpc.RPC
+import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlin.reflect.AssociatedObjectKey
 import kotlin.reflect.ExperimentalAssociatedObjects
 import kotlin.reflect.KClass

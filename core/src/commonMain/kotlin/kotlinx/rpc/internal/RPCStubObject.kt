@@ -6,6 +6,7 @@ package kotlinx.rpc.internal
 
 import kotlinx.rpc.RPC
 import kotlinx.rpc.RPCClient
+import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlin.reflect.KType
 
 @InternalRPCApi

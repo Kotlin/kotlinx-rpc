@@ -45,62 +45,6 @@ public abstract interface class kotlinx/rpc/RPCClient : kotlinx/coroutines/Corou
 	public abstract fun registerStateFlowField (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RPCField;)Lkotlinx/coroutines/flow/StateFlow;
 }
 
-public abstract interface class kotlinx/rpc/RPCConfig {
-	public abstract fun getSerialFormatInitializer ()Lkotlinx/rpc/serialization/RPCSerialFormatBuilder;
-	public abstract fun getSharedFlowBuilder ()Lkotlin/jvm/functions/Function0;
-	public abstract fun getWaitForServices ()Z
-}
-
-public final class kotlinx/rpc/RPCConfig$Client : kotlinx/rpc/RPCConfig {
-	public fun getSerialFormatInitializer ()Lkotlinx/rpc/serialization/RPCSerialFormatBuilder;
-	public fun getSharedFlowBuilder ()Lkotlin/jvm/functions/Function0;
-	public fun getWaitForServices ()Z
-}
-
-public final class kotlinx/rpc/RPCConfig$Server : kotlinx/rpc/RPCConfig {
-	public fun getSerialFormatInitializer ()Lkotlinx/rpc/serialization/RPCSerialFormatBuilder;
-	public fun getSharedFlowBuilder ()Lkotlin/jvm/functions/Function0;
-	public fun getWaitForServices ()Z
-}
-
-public abstract class kotlinx/rpc/RPCConfigBuilder {
-	protected final fun getSharedFlowBuilder ()Lkotlin/jvm/functions/Function0;
-	public final fun getWaitForServices ()Z
-	protected final fun rpcSerialFormat ()Lkotlinx/rpc/serialization/RPCSerialFormatBuilder;
-	public final fun serialization (Lkotlin/jvm/functions/Function1;)V
-	protected final fun setSharedFlowBuilder (Lkotlin/jvm/functions/Function0;)V
-	public final fun setWaitForServices (Z)V
-	public final fun sharedFlowParameters (Lkotlin/jvm/functions/Function1;)V
-}
-
-public final class kotlinx/rpc/RPCConfigBuilder$Client : kotlinx/rpc/RPCConfigBuilder {
-	public fun <init> ()V
-	public final fun build ()Lkotlinx/rpc/RPCConfig$Client;
-}
-
-public final class kotlinx/rpc/RPCConfigBuilder$Server : kotlinx/rpc/RPCConfigBuilder {
-	public fun <init> ()V
-	public final fun build ()Lkotlinx/rpc/RPCConfig$Server;
-}
-
-public final class kotlinx/rpc/RPCConfigBuilder$SharedFlowParametersBuilder {
-	public static final field DEFAULT_EXTRA_BUFFER_CAPACITY I
-	public static final field DEFAULT_REPLAY I
-	public final fun getExtraBufferCapacity ()I
-	public final fun getOnBufferOverflow ()Lkotlinx/coroutines/channels/BufferOverflow;
-	public final fun getReplay ()I
-	public final fun setExtraBufferCapacity (I)V
-	public final fun setOnBufferOverflow (Lkotlinx/coroutines/channels/BufferOverflow;)V
-	public final fun setReplay (I)V
-}
-
-public final class kotlinx/rpc/RPCConfigKt {
-	public static final fun rpcClientConfig (Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/RPCConfig$Client;
-	public static synthetic fun rpcClientConfig$default (Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/RPCConfig$Client;
-	public static final fun rpcServerConfig (Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/RPCConfig$Server;
-	public static synthetic fun rpcServerConfig$default (Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/RPCConfig$Server;
-}
-
 public abstract interface annotation class kotlinx/rpc/RPCEagerField : java/lang/annotation/Annotation {
 }
 
@@ -123,35 +67,6 @@ public final class kotlinx/rpc/RPCField {
 
 public abstract interface class kotlinx/rpc/RPCServer : kotlinx/coroutines/CoroutineScope {
 	public abstract fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;)V
-}
-
-public abstract interface class kotlinx/rpc/RPCTransport : kotlinx/coroutines/CoroutineScope {
-	public abstract fun receive (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun receiveCatching-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun send (Lkotlinx/rpc/RPCTransportMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class kotlinx/rpc/RPCTransport$DefaultImpls {
-	public static fun receiveCatching-IoAF18A (Lkotlinx/rpc/RPCTransport;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public abstract interface class kotlinx/rpc/RPCTransportMessage {
-}
-
-public final class kotlinx/rpc/RPCTransportMessage$BinaryMessage : kotlinx/rpc/RPCTransportMessage {
-	public fun <init> ([B)V
-	public final fun getValue ()[B
-}
-
-public final class kotlinx/rpc/RPCTransportMessage$StringMessage : kotlinx/rpc/RPCTransportMessage {
-	public fun <init> (Ljava/lang/String;)V
-	public final fun getValue ()Ljava/lang/String;
-}
-
-public final class kotlinx/rpc/StreamScopeKt {
-	public static final fun invokeOnStreamScopeCompletion (ZLkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun invokeOnStreamScopeCompletion$default (ZLkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static final fun streamScoped (Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class kotlinx/rpc/UninitializedRPCFieldException : java/lang/Exception {

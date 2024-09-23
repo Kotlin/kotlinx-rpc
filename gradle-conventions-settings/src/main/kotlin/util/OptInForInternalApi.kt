@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
 fun KotlinProjectExtension.optInForRPCApi() {
     sourceSets.all {
-        languageSettings.optIn("kotlinx.rpc.internal.InternalRPCApi")
-        languageSettings.optIn("kotlinx.rpc.internal.ExperimentalRPCApi")
+        languageSettings.optIn("kotlinx.rpc.internal.utils.InternalRPCApi")
+        languageSettings.optIn("kotlinx.rpc.internal.utils.ExperimentalRPCApi")
     }
 }

@@ -1,5 +1,5 @@
-public abstract class kotlinx/rpc/server/KRPCServer : kotlinx/rpc/RPCServer, kotlinx/rpc/internal/transport/RPCEndpoint {
-	public fun <init> (Lkotlinx/rpc/RPCConfig$Server;Lkotlinx/rpc/RPCTransport;)V
+public abstract class kotlinx/rpc/krpc/server/KRPCServer : kotlinx/rpc/RPCServer, kotlinx/rpc/krpc/internal/RPCEndpoint {
+	public fun <init> (Lkotlinx/rpc/krpc/RPCConfig$Server;Lkotlinx/rpc/krpc/RPCTransport;)V
 	public final fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;)V
 }
