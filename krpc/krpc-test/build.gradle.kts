@@ -16,30 +16,27 @@ plugins {
 
 kotlin {
     sourceSets {
-        val jvmMain by getting {
+        jvmMain {
             dependencies {
-                api(projects.core)
+                api(projects.krpc.krpcCore)
                 api(projects.krpc.krpcServer)
                 api(projects.krpc.krpcClient)
 
                 implementation(projects.krpc.krpcSerialization.krpcSerializationJson)
 
-                implementation(libs.coroutines.core)
                 implementation(libs.serialization.core)
                 implementation(libs.kotlin.test)
                 implementation(libs.kotlin.test.junit)
             }
         }
 
-        val jvmTest by getting {
+        jvmTest {
             dependencies {
                 implementation(projects.krpc.krpcTest)
                 implementation(projects.krpc.krpcSerialization.krpcSerializationJson)
                 implementation(projects.krpc.krpcSerialization.krpcSerializationCbor)
                 implementation(projects.krpc.krpcSerialization.krpcSerializationProtobuf)
                 implementation(projects.krpc.krpcLogging)
-
-                implementation(projects.utils)
 
                 implementation(libs.slf4j.api)
                 implementation(libs.logback.classic)

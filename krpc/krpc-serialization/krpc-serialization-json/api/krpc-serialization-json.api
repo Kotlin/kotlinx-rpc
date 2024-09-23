@@ -1,5 +1,5 @@
-public final class kotlinx/rpc/serialization/RPCJsonSerialFormatKt {
-	public static final fun json (Lkotlinx/rpc/serialization/RPCSerialFormatConfiguration;Lkotlinx/serialization/json/Json;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun json$default (Lkotlinx/rpc/serialization/RPCSerialFormatConfiguration;Lkotlinx/serialization/json/Json;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+public final class kotlinx/rpc/krpc/serialization/RPCJsonSerialFormatKt {
+	public static final fun json (Lkotlinx/rpc/krpc/serialization/RPCSerialFormatConfiguration;Lkotlinx/serialization/json/Json;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun json$default (Lkotlinx/rpc/krpc/serialization/RPCSerialFormatConfiguration;Lkotlinx/serialization/json/Json;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 

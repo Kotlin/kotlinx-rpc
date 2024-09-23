@@ -52,6 +52,7 @@ includePublic(":utils")
 includePublic(":core")
 
 include(":krpc")
+includePublic(":krpc:krpc-core")
 includePublic(":krpc:krpc-client")
 includePublic(":krpc:krpc-server")
 includePublic(":krpc:krpc-logging")

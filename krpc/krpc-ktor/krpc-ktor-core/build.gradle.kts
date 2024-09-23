@@ -12,8 +12,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(projects.krpc.krpcServer)
-                implementation(projects.krpc.krpcSerialization.krpcSerializationJson)
+                api(projects.krpc.krpcCore)
 
                 implementation(libs.ktor.websockets)
                 implementation(libs.coroutines.core)
@@ -21,8 +20,10 @@ kotlin {
                 implementation(libs.kotlin.reflect)
             }
         }
-        val jvmTest by getting {
+
+        jvmTest {
             dependencies {
+                implementation(projects.krpc.krpcSerialization.krpcSerializationJson)
                 implementation(projects.krpc.krpcKtor.krpcKtorServer)
                 implementation(projects.krpc.krpcKtor.krpcKtorClient)
 
