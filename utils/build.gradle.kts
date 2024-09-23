@@ -3,11 +3,13 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import util.applyAtomicfuPlugin
 
 plugins {
     alias(libs.plugins.conventions.kmp)
-    alias(libs.plugins.atomicfu)
 }
+
+applyAtomicfuPlugin()
 
 kotlin {
     sourceSets {

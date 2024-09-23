@@ -20,10 +20,15 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.platform.TargetPlatform
 import org.jetbrains.kotlin.platform.isJs
+import org.jetbrains.kotlin.platform.isWasm
 
 object VersionSpecificApiImpl : VersionSpecificApi {
     override fun isJs(platform: TargetPlatform?): Boolean {
         return platform.isJs()
+    }
+
+    override fun isWasm(platform: TargetPlatform?): Boolean {
+        return platform.isWasm()
     }
 
     override var IrFieldBuilder.isFinalVS: Boolean

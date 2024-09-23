@@ -131,6 +131,10 @@ internal class RPCIrContext(
         return pluginContext.platform.isNative()
     }
 
+    fun isWasmTarget(): Boolean {
+        return versionSpecificApi.isWasm(pluginContext.platform)
+    }
+
     val functions = Functions()
 
     inner class Functions {

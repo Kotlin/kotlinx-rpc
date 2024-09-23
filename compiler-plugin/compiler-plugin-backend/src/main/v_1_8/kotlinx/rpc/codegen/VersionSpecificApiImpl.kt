@@ -26,6 +26,9 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     override fun isJs(platform: TargetPlatform?): Boolean {
         return platform.isJs()
     }
+
+    override fun isWasm(platform: TargetPlatform?): Boolean = false
+
     override var IrFieldBuilder.isFinalVS: Boolean
         get() = undefinedAPI()
         set(_) {}

@@ -5,14 +5,16 @@
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
 import org.jetbrains.kotlin.utils.fileUtils.withReplacedExtensionOrNull
+import util.applyAtomicfuPlugin
 import java.nio.file.Files
 
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.serialization)
     alias(libs.plugins.kotlinx.rpc)
-    alias(libs.plugins.atomicfu)
 }
+
+applyAtomicfuPlugin()
 
 kotlin {
     sourceSets {

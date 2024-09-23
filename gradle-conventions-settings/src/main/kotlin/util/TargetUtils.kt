@@ -4,7 +4,6 @@
 
 package util
 
-import groovy.json.JsonSlurper
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.api.Action
 import org.gradle.api.Project
@@ -12,60 +11,18 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
-import java.io.File
-import kotlin.reflect.full.memberFunctions
 
-const val UNSUPPORTED_TARGET = "-"
-const val FULLY_SUPPORTED_TARGET = "*"
-const val TARGETS_SINCE_KOTLIN_LOOKUP_PATH = "versions-root/targets-since-kotlin-lookup.json"
-
-/**
- * In the lookup table:
- * "*" - target supported any Kotlin compiler version
- * "-" - target supported  none of Kotlin compiler versions
- * "<some_version>" - target supported since <some_version> kotlin version including that version
- */
-@Suppress("UNCHECKED_CAST")
-private fun loadTargetsSinceKotlinLookupTable(rootDir: String): Map<String, String> {
-    val file = File("$rootDir/$TARGETS_SINCE_KOTLIN_LOOKUP_PATH")
-    val table = JsonSlurper()
-        .parseText(file.readText(Charsets.UTF_8)) as Map<String, String>
-
-    return table.filterValues { value -> value != UNSUPPORTED_TARGET }
-}
-
-private fun isIncluded(targetName: String, kotlinVersion: KotlinVersion, lookupTable: Map<String, String>): Boolean {
-    return lookupTable[targetName]?.let { sinceKotlin ->
-        sinceKotlin == FULLY_SUPPORTED_TARGET || sinceKotlin.kotlinVersionParsed() <= kotlinVersion
-    } ?: false
-}
-
-private fun KotlinMultiplatformExtension.configureTargets(
-    project: Project,
-    kotlinVersion: KotlinVersion,
-    targetsLookup: Map<String, String>,
-    jvm: Boolean = true,
-    js: Boolean = true,
-    native: Boolean = true,
-): List<KotlinTarget> {
+private fun KotlinMultiplatformExtension.configureTargets(config: ProjectKotlinConfig): List<KotlinTarget> {
     val targets = mutableListOf<KotlinTarget>()
 
-    if (native) {
-        val nativeLookup = targetsLookup.filterKeys { key -> key != "jvm" && key != "js" }
-
-        val nativeTargets = this::class.memberFunctions
-            .filter { targetFunction ->
-                targetFunction.parameters.size == 1 && isIncluded(targetFunction.name, kotlinVersion, nativeLookup)
-            }.map { function ->
-                function.call(this) as KotlinTarget
-            }
-
+    if (config.native) {
+        val nativeTargets = config.nativeTargets(this)
         targets.addAll(nativeTargets)
 
         // TLDR: Default hierarchy template is enabled by default since 1.9.20
         //
         // https://kotlinlang.org/docs/multiplatform-hierarchy.html#default-hierarchy-template
-        if (nativeTargets.isNotEmpty() && !kotlinVersion.isAtLeast(1, 9, 20)) {
+        if (nativeTargets.isNotEmpty() && !config.kotlinVersion.isAtLeast(1, 9, 20)) {
             val commonMain = sourceSets.findByName("commonMain")!!
             val commonTest = sourceSets.findByName("commonTest")!!
             val nativeMain = sourceSets.create("nativeMain")
@@ -81,20 +38,22 @@ private fun KotlinMultiplatformExtension.configureTargets(
         }
     }
 
-    if (jvm && isIncluded("jvm", kotlinVersion, targetsLookup)) {
+    if (config.jvm) {
         jvm().also { targets.add(it) }
     }
 
-    if (js && isIncluded("js", kotlinVersion, targetsLookup)) {
+    if (config.js) {
         js(IR) {
             nodejs()
             browser()
+
+            binaries.library()
         }.also { targets.add(it) }
     }
 
     targets.forEach { target ->
         target.mavenPublication {
-            setPublicArtifactId(project)
+            setPublicArtifactId(config.project)
         }
     }
 
@@ -102,28 +61,18 @@ private fun KotlinMultiplatformExtension.configureTargets(
 }
 
 private fun Project.configureDetekt(targets: List<KotlinTarget>) {
-    val sources = (targets.map { it.name} + "common" + "native").flatMap { name ->
+    val sources = (targets.map { it.name } + "common" + "native").flatMap { name ->
         listOf("src/${name}Main/kotlin", "src/${name}Test/kotlin")
     }
 
     the<DetektExtension>().source.from(sources)
 }
 
-fun Project.configureKotlin(
-    kotlinVersion: KotlinVersion,
-    jvm: Boolean = true,
-    js: Boolean = true,
-    native: Boolean = true,
-    action: Action<KotlinMultiplatformExtension> = Action { },
-) {
-    val lookupTable = loadTargetsSinceKotlinLookupTable(rootProject.rootDir.absolutePath)
-
-    if (js) {
-        configureJs()
-    }
+fun ProjectKotlinConfig.configureKotlin(action: Action<KotlinMultiplatformExtension> = Action { }) {
+    configureJsAndWasmJs()
 
     kotlin {
-        val includedTargets = configureTargets(project, kotlinVersion, lookupTable, jvm, js, native)
+        val includedTargets = configureTargets(this@configureKotlin)
 
         configureDetekt(includedTargets)
 

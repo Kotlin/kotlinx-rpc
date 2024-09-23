@@ -4,45 +4,53 @@
 
 package util
 
-import org.gradle.api.Project
+import org.gradle.kotlin.dsl.getValue
+import org.gradle.kotlin.dsl.getting
 import org.gradle.kotlin.dsl.invoke
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import java.io.File
 
-fun Project.configureJs() {
-    configureJsTasks()
+fun ProjectKotlinConfig.configureJsAndWasmJs() {
+    if (!js) {
+        return
+    }
 
     kotlin {
+        js(IR) {
+            configureJsAndWasmJsTasks()
+        }
+
         sourceSets {
-            jsTest {
-                dependencies {
-                    implementation(npm("puppeteer", "*"))
-                }
+            val jsTest by getting {
+                puppeteer()
             }
         }
     }
 }
 
-private fun Project.configureJsTasks() {
-    kotlin {
-        js(IR) {
-            nodejs {
-                testTask {
-                    useMocha {
-                        timeout = "10000"
-                    }
-                }
-            }
+fun KotlinSourceSet.puppeteer() {
+    dependencies {
+        implementation(npm("puppeteer", "*"))
+    }
+}
 
-            browser {
-                testTask {
-                    useKarma {
-                        useChromeHeadless()
-                        useConfigDirectory(File(project.rootProject.projectDir, "karma"))
-                    }
-                }
+fun KotlinJsTargetDsl.configureJsAndWasmJsTasks() {
+    nodejs {
+        testTask {
+            useMocha {
+                timeout = "10000"
             }
+        }
+    }
 
-            binaries.library()
+    (this as KotlinJsIrTarget).whenBrowserConfigured {
+        testTask {
+            useKarma {
+                useChromeHeadless()
+                useConfigDirectory(File(project.rootProject.projectDir, "karma"))
+            }
         }
     }
 }
