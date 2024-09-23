@@ -25,12 +25,12 @@ kotlinx-browser = "0.1"
 #
 # The current version is the one that is used with the latest Kotlin.
 #
-# NOTE: When updating kotlin-versions-lookup.csv, update renovate configs for the latest version here
+# NOTE: When updating kotlin-versions-lookup.csv, update the latest version here for the Renovate configs
 ksp = "0.0.0"
-atomicfu = "0.22.0"
-serialization = "1.6.1"
+atomicfu = "0.25.0"
+serialization = "1.7.1"
 detekt-gradle-plugin = "1.23.6"
-gradle-kotlin-dsl = "4.3.0"
+gradle-kotlin-dsl = "5.1.1"
 binary-compatibility-validator = "0.14.0"
 kover = "0.8.0"
 

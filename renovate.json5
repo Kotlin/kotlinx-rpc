@@ -4,7 +4,6 @@
     "config:recommended",
     ":semanticCommitsDisabled",
     ":label(dependencies)",
-    ":automergeStableNonMajor",
     ":reviewer(Mr3zee)",
   ],
   "packageRules": [
@@ -28,11 +27,11 @@
       "groupSlug": "core-non-major",
     },
     {
-      "description": "Update Sample dependencies in batch",
+      "description": "Update Samples dependencies in batch",
       "matchUpdateTypes": [
         "patch",
         "minor",
-        "minor",
+        "major",
       ],
       "matchFileNames": [
         "samples/**",
@@ -40,22 +39,62 @@
       "matchPackageNames": [
         "*",
       ],
-      "groupName": "Sample dependencies",
-      "groupSlug": "sample"
+      "matchDepNames": [
+        "!/org.jetbrains.kotlin(:|\\.).*/",
+      ],
+      "groupName": "Samples dependencies",
+      "groupSlug": "samples"
     },
     {
       // Reason: Kotlin updates require additional work on compiler plugins
       "description": "Ignore Kotlin updates",
       "matchDepNames": [
-        "org.jetbrains.kotlin(:|.)*",
+        "/org.jetbrains.kotlin(:|\\.).*/",
+      ],
+      "enabled": false,
+    },
+    {
+      // Reason: we support java 8, logback 1.4 or later switched to java 11
+      "description": "Ignore logback in Core",
+      matchFileNames: [
+        "!samples/**",
+      ],
+      "matchDepNames": [
+        "ch.qos.logback:logback-classic*",
+      ],
+      "allowedVersions": "<1.4.0",
+      "enabled": false,
+    },
+    {
+      // Reason: internal deps
+      "description": "Ignore conventions plugins",
+      "matchDepNames": [
+        "/^conventions-.*/",
+        "/^compiler-specific-module-.*/",
+      ],
+      "enabled": false,
+    },
+    {
+      // Reason: old versioning
+      "description": "Ignore old kotlinx-atomicfu",
+      "matchDepNames": [
+        "/^kotlinx-atomicfu.*/",
       ],
       "enabled": false,
     },
     {
       // Reason: May break compiler plugin tests, manual updates are just fine
-      "description": "Ignore Intellij Platform ",
+      "description": "Ignore Intellij Platform",
       "matchDepNames": [
         "com.jetbrains.intellij.platform*",
+      ],
+      "enabled": false,
+    },
+    {
+      // Reason: Server may not support a newer version
+      "description": "Ignore Develocity updates",
+      "matchDepNames": [
+        "com.gradle:develocity-gradle-plugin*",
       ],
       "enabled": false,
     },
