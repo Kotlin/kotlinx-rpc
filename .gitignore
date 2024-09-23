@@ -32,3 +32,5 @@ detekt/reports/**
 
 # Ignore kover reports
 /kover
+
+scan-journal.log
