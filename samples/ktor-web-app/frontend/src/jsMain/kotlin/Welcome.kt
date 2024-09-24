@@ -9,6 +9,7 @@ import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.p
+import react.useEffectOnce
 import react.useState
 import web.cssom.Display
 import web.cssom.FlexDirection
@@ -27,7 +28,7 @@ external interface WelcomeProps : Props {
 fun useArticles(service: MyService): List<String> {
     var articles by useState(emptyList<String>())
 
-    useEffectOnceAsync {
+    useEffectOnce {
         var localArticles = articles
         streamScoped {
             service.subscribeToNews().collect {
