@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.0.10"
+kotlin = "2.0.20"
 
 agp = "8.6.1"
 android-compileSdk = "34"
@@ -17,7 +17,7 @@ compose-plugin = "1.6.11"
 junit = "4.13.2"
 ktor = "2.3.12"
 logback = "1.5.8"
-kotlinx-serialization-json = "1.7.1"
+kotlinx-serialization-json = "1.7.3"
 kotlinx-coroutines-core = "1.9.0"
 kotlinx-rpc = "0.2.4"
 
