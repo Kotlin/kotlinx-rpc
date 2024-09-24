@@ -21,7 +21,7 @@ tasks.test {
 }
 
 dependencies {
-    implementation(project(":common"))
+    implementation(projects.common)
 
     implementation(libs.ktor.server.cio)
     implementation(libs.ktor.server.core.jvm)

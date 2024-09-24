@@ -14,10 +14,10 @@ android {
     namespace = "kotlinx.rpc.sample"
     compileSdk = 34
 
-    packagingOptions {
+    packaging {
         resources {
-            exclude("META-INF/INDEX.LIST")
-            exclude("META-INF/io.netty.versions.properties")
+            excludes.add("META-INF/INDEX.LIST")
+            excludes.add("META-INF/io.netty.versions.properties")
         }
     }
 
@@ -64,7 +64,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":common"))
+    implementation(projects.common)
     testImplementation(libs.kotlinx.rpc.krpc.client)
     testImplementation(libs.kotlinx.rpc.krpc.server)
     implementation(libs.kotlinx.rpc.krpc.serialization.json)
@@ -85,7 +85,7 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
 
-    implementation(platform("androidx.compose:compose-bom:2023.10.01"))
+    implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.graphics)
     implementation(libs.compose.ui.tooling.preview)
@@ -98,7 +98,7 @@ dependencies {
 
     implementation(libs.androidx.test.junit)
     testImplementation(libs.junit)
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.10.01"))
+    androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)

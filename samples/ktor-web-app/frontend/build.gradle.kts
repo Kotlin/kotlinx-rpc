@@ -32,7 +32,7 @@ kotlin {
     sourceSets {
         jsMain {
             dependencies {
-                implementation(project(":common"))
+                implementation(projects.common)
 
                 implementation(libs.kotlin.stdlib.js)
                 implementation(libs.ktor.client.js)

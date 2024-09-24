@@ -7,12 +7,13 @@ import kotlinx.rpc.withService
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
+import react.useEffectOnce
 import react.useState
 
 val App = FC<Props> {
     var rpcClient by useState<RPCClient?>(null)
 
-    useEffectOnceAsync {
+    useEffectOnce {
         rpcClient = initRpcClient()
     }
 
@@ -35,7 +36,7 @@ val AppContainer = FC<AppContainerProps> { props ->
     val service by useState(props.apiService)
     var data by useState<WelcomeData?>(null)
 
-    useEffectOnceAsync {
+    useEffectOnce {
         val greeting = service.hello("Alex", UserData("Berlin", "Smith"))
         data = WelcomeData(greeting)
     }
