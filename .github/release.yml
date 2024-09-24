@@ -1,0 +1,26 @@
+changelog:
+  exclude:
+    authors:
+      - renovate[bot]
+  categories:
+    - title: Features 🎉
+      labels:
+        - feature
+    - title: Breaking Changes 🔴
+      labels:
+        - breaking
+    - title: Deprecations ⚠️
+      labels:
+        - deprecation
+    - title: Bug fixes 🐛
+      labels:
+        - bug
+    - title: Documentation 📗
+      labels:
+        - docs
+    - title: Infra 🚧
+      labels:
+        - infra
+    - title: Other Changes 🧹
+      labels:
+        - "*"
