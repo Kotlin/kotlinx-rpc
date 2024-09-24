@@ -91,6 +91,7 @@ dependencies {
     testImplementation(libs.junit5.platform.runner)
     testImplementation(libs.junit5.platform.suite.api)
 
+    testDataClasspath(projects.utils)
     testDataClasspath(libs.coroutines.core)
     testDataClasspath(libs.serialization.core)
 }
