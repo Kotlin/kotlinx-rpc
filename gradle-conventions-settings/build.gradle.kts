@@ -15,7 +15,6 @@ configurations.configureEach {
     }
 }
 
-val kotlinVersion: KotlinVersion by extra
 val isLatestKotlinVersion: Boolean by extra
 
 dependencies {
