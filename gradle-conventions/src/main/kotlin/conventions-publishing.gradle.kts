@@ -4,7 +4,7 @@
 
 import util.*
 
-val isGradlePlugin = project.properties["kotlinx.rpc.gradle.plugin"] == "true"
+val isGradlePlugin = project.name == "gradle-plugin"
 val publishingExtension = project.extensions.findByType<PublishingExtension>()
 val globalRootDir: String by extra
 
