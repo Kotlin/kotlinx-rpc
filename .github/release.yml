@@ -1,5 +1,7 @@
 changelog:
   exclude:
+    labels:
+      - release
     authors:
       - renovate[bot]
   categories:
