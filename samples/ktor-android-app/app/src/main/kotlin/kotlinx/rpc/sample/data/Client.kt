@@ -6,13 +6,12 @@ package kotlinx.rpc.sample.data
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.request.url
 import kotlinx.rpc.RPCClient
-import kotlinx.rpc.serialization.json
-import kotlinx.rpc.transport.ktor.client.rpc
-import kotlinx.rpc.transport.ktor.client.rpcConfig
-import kotlinx.rpc.transport.ktor.client.installRPC
+import kotlinx.rpc.krpc.ktor.client.installRPC
+import kotlinx.rpc.krpc.ktor.client.rpc
+import kotlinx.rpc.krpc.ktor.client.rpcConfig
+import kotlinx.rpc.krpc.serialization.json.json
 
 suspend fun createRpcClient(): RPCClient {
     return HttpClient(OkHttp) {

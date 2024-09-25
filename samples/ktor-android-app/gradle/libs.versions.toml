@@ -15,7 +15,7 @@ ktor = "2.3.12"
 kotlinx-serialization-json = "1.7.3"
 kotlinx-coroutines-core = "1.9.0"
 logback = "1.5.8"
-kotlinx-rpc = "0.2.4"
+kotlinx-rpc = "0.3.0"
 
 [libraries]
 # kotlin

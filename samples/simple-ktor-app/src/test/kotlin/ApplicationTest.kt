@@ -7,12 +7,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import kotlinx.rpc.client.awaitFieldInitialization
+import kotlinx.rpc.awaitFieldInitialization
+import kotlinx.rpc.krpc.ktor.client.installRPC
+import kotlinx.rpc.krpc.ktor.client.rpc
+import kotlinx.rpc.krpc.ktor.client.rpcConfig
+import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.withService
-import kotlinx.rpc.serialization.json
-import kotlinx.rpc.transport.ktor.client.installRPC
-import kotlinx.rpc.transport.ktor.client.rpc
-import kotlinx.rpc.transport.ktor.client.rpcConfig
 import org.junit.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

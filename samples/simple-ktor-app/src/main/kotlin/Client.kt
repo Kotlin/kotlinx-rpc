@@ -9,11 +9,11 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.rpc.krpc.ktor.client.rpc
+import kotlinx.rpc.krpc.ktor.client.rpcConfig
+import kotlinx.rpc.krpc.serialization.json.json
+import kotlinx.rpc.krpc.streamScoped
 import kotlinx.rpc.withService
-import kotlinx.rpc.serialization.json
-import kotlinx.rpc.streamScoped
-import kotlinx.rpc.transport.ktor.client.rpc
-import kotlinx.rpc.transport.ktor.client.rpcConfig
 
 fun main() = runBlocking {
     val ktorClient = HttpClient {
