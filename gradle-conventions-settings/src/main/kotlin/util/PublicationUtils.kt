@@ -9,17 +9,26 @@ package util
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.provider.Property
+import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.maven
+import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import java.io.File
 
 const val KOTLINX_RPC_PREFIX = "kotlinx-rpc"
 
+/**
+ * Important to configure inside [KotlinTarget.mavenPublication]
+ * AND in [PublishingExtension.configurePublication] in the conventions-publishing.gradle.kts file.
+ */
+@Suppress("KDocUnresolvedReference")
 fun MavenPublication.setPublicArtifactId(project: Project) {
     val publication = this
 
-    publication.artifactId = "$KOTLINX_RPC_PREFIX-$artifactId"
-    project.logger.info("Altered artifactId for $name publication: $artifactId")
+    if (!publication.artifactId.startsWith(KOTLINX_RPC_PREFIX)) {
+        publication.artifactId = "$KOTLINX_RPC_PREFIX-$artifactId"
+        project.logger.info("Altered artifactId for $name publication: $artifactId")
+    }
 }
 
 /**

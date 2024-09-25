@@ -33,7 +33,7 @@ fun NamedDomainObjectContainer<KotlinSourceSet>.applyCompilerSpecificSourceSets(
         // choose 'latest' if there are no more specific ones
         val mostSpecificApplicable = vsSets.mostSpecificVersionOrLatest(kotlinVersion)
 
-        logger.info(
+        logger.lifecycle(
             "${project.name}: included version specific source sets: " +
                     "${core.name}${mostSpecificApplicable?.let { ", $name" } ?: ""}"
         )
@@ -49,7 +49,9 @@ fun NamedDomainObjectContainer<KotlinSourceSet>.applyCompilerSpecificSourceSets(
         set.configureResources(sourceSetPath)
 
         val excluded = vsSets.filter { it != mostSpecificApplicable }
-        logger.info("${project.name}: excluded version specific source sets: [${excluded.joinToString { it.name }}]")
+        logger.lifecycle(
+            "${project.name}: excluded version specific source sets: [${excluded.joinToString { it.name }}]"
+        )
     }
 }
 

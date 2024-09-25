@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import java.io.File
 
-fun ProjectKotlinConfig.configureJsAndWasmJs() {
+fun ProjectKotlinConfig.configureJs() {
     if (!js) {
         return
     }

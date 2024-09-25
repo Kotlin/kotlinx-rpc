@@ -47,6 +47,7 @@ fun PublishingExtension.configurePublication() {
             publication.artifact(javadocJar)
         }
 
+        // mainly for kotlinMultiplatform publication
         publication.setPublicArtifactId(project)
 
         if (!isGradlePlugin) {
