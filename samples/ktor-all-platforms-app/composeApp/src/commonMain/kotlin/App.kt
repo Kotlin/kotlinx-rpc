@@ -14,12 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.ktor.client.*
 import io.ktor.http.*
+import kotlinx.rpc.krpc.ktor.client.installRPC
+import kotlinx.rpc.krpc.ktor.client.rpc
+import kotlinx.rpc.krpc.ktor.client.rpcConfig
+import kotlinx.rpc.krpc.serialization.json.json
+import kotlinx.rpc.krpc.streamScoped
 import kotlinx.rpc.withService
-import kotlinx.rpc.serialization.json
-import kotlinx.rpc.streamScoped
-import kotlinx.rpc.transport.ktor.client.installRPC
-import kotlinx.rpc.transport.ktor.client.rpc
-import kotlinx.rpc.transport.ktor.client.rpcConfig
 import ktor_all_platforms_app.composeapp.generated.resources.Res
 import ktor_all_platforms_app.composeapp.generated.resources.compose_multiplatform
 import org.jetbrains.compose.resources.painterResource

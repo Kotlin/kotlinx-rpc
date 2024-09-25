@@ -20,6 +20,8 @@ build
 !.idea/detekt.xml
 !.idea/kotlinTestDataPluginTestDataPaths.xml
 
+samples/**/.idea/*
+
 .DS_Store
 
 # Ignore generated Detekt reports

@@ -3,8 +3,7 @@
  */
 
 import emotion.react.css
-import kotlinx.coroutines.flow.Flow
-import kotlinx.rpc.streamScoped
+import kotlinx.rpc.krpc.streamScoped
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div

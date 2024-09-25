@@ -6,7 +6,7 @@ plugins {
     kotlin("jvm") version "2.0.10"
     kotlin("plugin.serialization") version "2.0.10"
     id("io.ktor.plugin") version "2.3.12"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "0.2.4"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.3.0"
 }
 
 group = "kotlinx.rpc.sample"

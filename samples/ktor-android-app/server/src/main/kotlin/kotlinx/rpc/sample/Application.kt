@@ -7,8 +7,8 @@ import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
-import kotlinx.rpc.serialization.json
-import kotlinx.rpc.transport.ktor.server.rpc
+import kotlinx.rpc.krpc.ktor.server.rpc
+import kotlinx.rpc.krpc.serialization.json.json
 
 fun main(args: Array<String>): Unit = EngineMain.main(args)
 

@@ -17,14 +17,6 @@ kotlin {
                 cssSupport {
                     enabled.set(true)
                 }
-
-                val proxies = devServer?.proxy ?: mutableMapOf()
-                proxies["/api"] = "http://localhost:8080"
-
-                devServer = devServer?.copy(
-                    port = 3000,
-                    proxy = proxies
-                )
             }
         }
     }
