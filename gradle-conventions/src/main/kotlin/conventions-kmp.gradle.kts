@@ -18,6 +18,7 @@ configure<KotlinMultiplatformExtension> {
 
 withKotlinConfig {
     configureKotlin()
+    configureJs()
     configureWasm()
 }
 

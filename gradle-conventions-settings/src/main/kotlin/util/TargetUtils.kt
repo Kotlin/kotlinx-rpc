@@ -69,8 +69,6 @@ private fun Project.configureDetekt(targets: List<KotlinTarget>) {
 }
 
 fun ProjectKotlinConfig.configureKotlin(action: Action<KotlinMultiplatformExtension> = Action { }) {
-    configureJsAndWasmJs()
-
     kotlin {
         val includedTargets = configureTargets(this@configureKotlin)
 

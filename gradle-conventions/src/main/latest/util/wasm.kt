@@ -5,10 +5,17 @@
 package util
 
 import org.gradle.kotlin.dsl.invoke
+import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 @OptIn(ExperimentalWasmDsl::class)
 fun ProjectKotlinConfig.configureWasm() {
+    fun KotlinTarget.configurePublication() {
+        mavenPublication {
+            setPublicArtifactId(project)
+        }
+    }
+
     kotlin {
         if (wasmJs) {
             wasmJs {
@@ -19,7 +26,7 @@ fun ProjectKotlinConfig.configureWasm() {
                 d8()
 
                 binaries.library()
-            }
+            }.configurePublication()
 
             sourceSets {
                 wasmJsMain {
@@ -39,7 +46,7 @@ fun ProjectKotlinConfig.configureWasm() {
                 nodejs()
 
                 binaries.library()
-            }
+            }.configurePublication()
         }
     }
 }
