@@ -13,10 +13,10 @@ develocity {
     val startParameter = gradle.startParameter
     val scanJournal = File(settingsDir, "scan-journal.log")
 
-    server = DEVELOCITY_SERVER
+    server.set(DEVELOCITY_SERVER)
 
     buildScan {
-        uploadInBackground = !isCIRun
+        uploadInBackground.set(!isCIRun)
 
         // obfuscate NIC since we don't want to expose user real IP (will be relevant without VPN)
         obfuscation {
@@ -24,7 +24,7 @@ develocity {
         }
 
         capture {
-            fileFingerprints = true
+            fileFingerprints.set(true)
         }
 
         buildScanPublished {
