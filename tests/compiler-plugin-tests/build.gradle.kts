@@ -161,6 +161,6 @@ fun Test.setJarPathAsProperty(
 }
 
 fun Test.systemPropertyLogged(name: String, value: Any) {
-    logger.lifecycle("Setting test prop $name=$value")
+    logger.info("Setting test prop $name=$value")
     systemProperty(name, value)
 }

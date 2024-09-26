@@ -14,7 +14,7 @@ the<KoverProjectExtension>().apply {
         total {
             html {
                 onCheck.set(false)
-                charset.set("UTF_8")
+                charset.set("UTF-8")
                 htmlDir.set(rootDir.resolve("kover"))
             }
 

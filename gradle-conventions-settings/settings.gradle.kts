@@ -7,4 +7,10 @@ rootProject.name = "gradle-conventions-settings"
 // Code below is a hack because a chicken-egg problem, I can't use myself as a settings-plugin
 apply(from = "src/main/kotlin/settings-conventions.settings.gradle.kts")
 
-include(":develocity")
+val kotlinVersion: KotlinVersion by extra
+
+if (kotlinVersion.isAtLeast(1, 9, 0)) {
+    include(":develocity")
+} else {
+    include(":empty")
+}
