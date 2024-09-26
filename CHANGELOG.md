@@ -1,3 +1,45 @@
+# 0.3.0
+> Published 27 September 2024
+
+### Features 🎉
+* Wasm Support by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/190
+
+### Breaking Changes 🔴
+* Move kRPC declarations from core by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/186
+
+### Bug fixes 🐛
+* Fix kotlin/js code and samples by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/179
+* Fix regression of nested declarations in RPC interfaces by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/181
+
+### Documentation 📗
+* Wording fixes by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/175
+
+### Infra 🚧
+* Infra enhancements by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/206
+* Fixed Wasm Publication by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/208
+* Update renovate configs by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/185
+* Configure JPMS checks by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/187
+* Update some ide configs by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/188
+* Added Gradle Doctor to the build by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/189
+* Added build cache and develocity plugin by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/192
+* Support variable Kotlin and project versions by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/201
+* Update renovate and some deps by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/198
+
+### Other Changes 🧹
+* Bump version to 0.3.0-SNAPSHOT by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/174
+* Fix compiler tests after #172 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/180
+* Remove unused and inactive annotation by @kez-lab in https://github.com/Kotlin/kotlinx-rpc/pull/182
+* Use built-in JsClass getter by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/184
+* Update actions/configure-pages action to v5 by @renovate in https://github.com/Kotlin/kotlinx-rpc/pull/200
+* Update Samples dependencies by @renovate in https://github.com/Kotlin/kotlinx-rpc/pull/199
+* Update Core dependencies (non-major) by @renovate in https://github.com/Kotlin/kotlinx-rpc/pull/194
+* Update Core dependencies (non-major) by @renovate in https://github.com/Kotlin/kotlinx-rpc/pull/205
+
+## New Contributors
+* @kez-lab made their first contribution in https://github.com/Kotlin/kotlinx-rpc/pull/182
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.2.4...0.3.0
+
 # 0.2.4
 > Published 20 August 2024
 
