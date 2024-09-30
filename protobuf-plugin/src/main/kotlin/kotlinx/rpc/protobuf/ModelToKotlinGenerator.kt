@@ -39,6 +39,7 @@ class ModelToKotlinGenerator(
     private fun CodeGenerator.generateDeclaredEntities(fileDeclaration: FileDeclaration) {
         fileDeclaration.messageDeclarations.forEach { generateMessage(it) }
         fileDeclaration.enumDeclarations.forEach { generateEnum(it) }
+        fileDeclaration.serviceDeclarations.forEach { generateService(it) }
     }
 
     private fun CodeGenerator.generateMessage(declaration: MessageDeclaration) {
@@ -173,6 +174,20 @@ class ModelToKotlinGenerator(
                         )
                     }
                 }
+            }
+        }
+    }
+
+    private fun CodeGenerator.generateService(service: ServiceDeclaration) {
+        clazz(service.name.simpleName, declarationType = DeclarationType.Interface) {
+            service.methods.forEach { method ->
+                // no streaming for now
+                function(
+                    name = method.name.simpleName,
+                    modifiers = "suspend",
+                    args = "input: ${method.inputType.simpleName}",
+                    returnType = method.outputType.simpleName,
+                )
             }
         }
     }
