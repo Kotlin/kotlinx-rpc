@@ -16,13 +16,33 @@ dependencies {
     implementation(libs.slf4j.api)
     implementation(libs.logback.classic)
 
+    testImplementation(projects.grpc.grpcCore)
     testImplementation(libs.coroutines.core)
     testImplementation("io.grpc:grpc-stub:1.57.2")
     testImplementation("io.grpc:grpc-protobuf:1.57.2")
-    testImplementation("com.google.protobuf:protobuf-java-util:3.24.1")
     testImplementation("io.grpc:grpc-kotlin-stub:1.3.1")
+    testImplementation("com.google.protobuf:protobuf-java-util:3.24.1")
     testImplementation("com.google.protobuf:protobuf-javalite:3.24.1")
     testImplementation("com.google.protobuf:protobuf-kotlin:3.24.1")
+}
+
+sourceSets {
+    test {
+        proto {
+            exclude(
+                "**/empty_deprecated.proto",
+                "**/enum.proto",
+                "**/example.proto",
+                "**/funny_types.proto",
+                "**/map.proto",
+                "**/multiple_files.proto",
+                "**/nested.proto",
+                "**/one_of.proto",
+                "**/options.proto",
+                "**/with_comments.proto",
+            )
+        }
+    }
 }
 
 tasks.jar {
