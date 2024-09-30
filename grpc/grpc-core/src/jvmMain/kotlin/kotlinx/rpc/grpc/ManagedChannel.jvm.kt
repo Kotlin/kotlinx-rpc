@@ -1,0 +1,53 @@
+/*
+ * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+@file:Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+
+package kotlinx.rpc.grpc
+
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlin.time.Duration
+
+public actual typealias ManagedChannelBuilder<T> = io.grpc.ManagedChannelBuilder<T>
+
+public actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
+    return build().toKotlin()
+}
+
+public actual fun ManagedChannelBuilder(name: String, port: Int): ManagedChannelBuilder<*> {
+    return io.grpc.ManagedChannelBuilder.forAddress(name, port)
+}
+
+public actual fun ManagedChannelBuilder(target: String): ManagedChannelBuilder<*> {
+    return io.grpc.ManagedChannelBuilder.forTarget(target)
+}
+
+public fun io.grpc.ManagedChannel.toKotlin(): ManagedChannel {
+    return JvmManagedChannel(this)
+}
+
+private class JvmManagedChannel(private val channel: io.grpc.ManagedChannel) : ManagedChannel {
+    override val isShutdown: Boolean
+        get() = channel.isShutdown
+
+    override val isTerminated: Boolean
+        get() = channel.isTerminated
+
+    override suspend fun awaitTermination(duration: Duration): Boolean {
+        return withContext(Dispatchers.IO) {
+            channel.awaitTermination(duration.inWholeNanoseconds, java.util.concurrent.TimeUnit.NANOSECONDS)
+        }
+    }
+
+    override fun shutdown(): ManagedChannel {
+        channel.shutdown()
+        return this
+    }
+
+    override fun shutdownNow(): ManagedChannel {
+        channel.shutdownNow()
+        return this
+    }
+}
