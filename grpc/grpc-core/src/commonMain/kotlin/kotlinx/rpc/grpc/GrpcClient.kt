@@ -5,20 +5,24 @@
 package kotlinx.rpc.grpc
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.job
 import kotlinx.rpc.RPCCall
 import kotlinx.rpc.RPCClient
 import kotlinx.rpc.RPCField
 import kotlin.coroutines.CoroutineContext
 
-public class GrpcClient : RPCClient {
-    override val coroutineContext: CoroutineContext
-        get() = TODO("Not yet implemented")
+public class GrpcClient(
+    private val channel: ManagedChannel,
+) : RPCClient {
+    override val coroutineContext: CoroutineContext = SupervisorJob()
 
     override suspend fun <T> call(call: RPCCall): T {
-        TODO("Not yet implemented")
+        // todo perform call
+        error("not implemented")
     }
 
     override fun <T> registerPlainFlowField(serviceScope: CoroutineScope, field: RPCField): Flow<T> {
@@ -34,6 +38,24 @@ public class GrpcClient : RPCClient {
     }
 
     override fun provideStubContext(serviceId: Long): CoroutineContext {
-        TODO("Not yet implemented")
+        // todo create lifetime hierarchy if possible
+        return SupervisorJob(coroutineContext.job)
     }
+}
+
+public fun grpcClient(
+    name: String,
+    port: Int,
+    configure: ManagedChannelBuilder<*>.() -> Unit = {},
+): GrpcClient {
+    val channel = ManagedChannelBuilder(name, port).apply(configure).buildChannel()
+    return GrpcClient(channel)
+}
+
+public fun grpcClient(
+    target: String,
+    configure: ManagedChannelBuilder<*>.() -> Unit = {},
+): GrpcClient {
+    val channel = ManagedChannelBuilder(target).apply(configure).buildChannel()
+    return GrpcClient(channel)
 }
