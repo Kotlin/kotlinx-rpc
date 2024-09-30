@@ -9,6 +9,7 @@ data class FileDeclaration(
     val dependencies: List<FileDeclaration>,
     val messageDeclarations: List<MessageDeclaration>,
     val enumDeclarations: List<EnumDeclaration>,
+    val serviceDeclarations: List<ServiceDeclaration>,
     val deprecated: Boolean,
     val doc: String?,
 )

@@ -42,6 +42,7 @@ class ProtoToModelInterpreter(
             dependencies = dependencies,
             messageDeclarations = messageTypeList.map { it.toModel() },
             enumDeclarations = enumTypeList.map { it.toModel() },
+            serviceDeclarations = serviceList.map { it.toModel() },
             deprecated = options.deprecated,
             doc = null,
         ).also {
@@ -234,6 +235,27 @@ class ProtoToModelInterpreter(
             aliases = aliases,
             deprecated = options.deprecated,
             doc = null,
+        )
+    }
+
+    private fun DescriptorProtos.ServiceDescriptorProto.toModel(): ServiceDeclaration {
+        return ServiceDeclaration(
+            name = name.fullProtoNameToKotlin(firstLetterUpper = true).toFqName(),
+            methods = methodList.map { it.toModel() }
+        )
+    }
+
+    private fun DescriptorProtos.MethodDescriptorProto.toModel(): MethodDeclaration {
+        return MethodDeclaration(
+            name = name.fullProtoNameToKotlin(firstLetterUpper = false).toFqName(),
+            inputType = inputType
+                .substringAfter('.') // see typeName resolution
+                .fullProtoNameToKotlin(firstLetterUpper = true).toFqName(), // no resolution for now
+            outputType = outputType
+                .substringAfter('.') // see typeName resolution
+                .fullProtoNameToKotlin(firstLetterUpper = true).toFqName(), // no resolution for now
+            clientStreaming = clientStreaming,
+            serverStreaming = serverStreaming,
         )
     }
 
