@@ -109,14 +109,12 @@ open class CodeGenerator(
         args: String = "",
         contextReceiver: String = "",
         returnType: String = "",
-        block: CodeGenerator.() -> Unit,
+        block: (CodeGenerator.() -> Unit)? = null,
     ) {
         val modifiersString = if (modifiers.isEmpty()) "" else "$modifiers "
         val contextString = if (contextReceiver.isEmpty()) "" else "$contextReceiver."
         val returnTypeString = if (returnType.isEmpty()) "" else ": $returnType"
-        scope("${modifiersString}fun $contextString$name($args)$returnTypeString") {
-            block()
-        }
+        scope("${modifiersString}fun $contextString$name($args)$returnTypeString", block)
     }
 
     enum class DeclarationType(val strValue: String) {
