@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Migration to 0.3.0" id="0-3-0">
+
+    <p>
+        Version <code>0.3.0</code> introduces breaking changes.
+    </p>
+    <chapter title="Packages and artifacts changes" id="package-and-artifacts-changes">
+        This release resolves the issue of kRPC declarations being incorrectly included in non-kRPC artifacts.
+        All package names have been reviewed and updated to match artifact names and ensure uniqueness across the project.
+        All APIs were moved permanently without a deprecation cycle due to the size of the change.
+        The table below contains the full list of the changes.
+        <p>Removed declarations</p>
+        <table>
+            <tr>
+                <td><code>0.2.4</code></td>
+                <td><code>0.3.0</code></td>
+            </tr>
+            <tr>
+                <td><code>kotlinx.rpc.client.withService</code></td>
+                <td>Removed (was deprecated in 0.2.4)</td>
+            </tr>
+            <tr>
+                <td><code>kotlinx.rpc.client.awaitFieldInitialization</code></td>
+                <td>Removed (was deprecated in 0.2.4)</td>
+            </tr>
+            <tr>
+                <td><code>kotlinx.rpc.client.UninitializedRPCFieldException</code></td>
+                <td>Removed (was deprecated in 0.2.4)</td>
+            </tr>
+        </table>
+        <p>Declarations that changed the artifact location and package</p>
+        <table>
+            <tr>
+                <td><code>0.2.4</code></td>
+                <td><code>0.3.0</code></td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.RPCConfig</code>
+                    <p>Artifact: <code>kotlinx-rpc-core</code></p>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.RPCConfig</code>
+                    <p>Artifact: <code>kotlinx-rpc-krpc-core</code></p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.RPCConfigBuilder</code>
+                    <p>Artifact: <code>kotlinx-rpc-core</code></p>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.RPCConfigBuilder</code>
+                    <p>Artifact: <code>kotlinx-rpc-krpc-core</code></p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.rpcClientConfig</code>
+                    <p>Artifact: <code>kotlinx-rpc-core</code></p>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.rpcClientConfig</code>
+                    <p>Artifact: <code>kotlinx-rpc-krpc-core</code></p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.rpcServerConfig</code>
+                    <p>Artifact: <code>kotlinx-rpc-core</code></p>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.rpcServerConfig</code>
+                    <p>Artifact: <code>kotlinx-rpc-krpc-core</code></p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.RPCTransport</code>
+                    <p>Artifact: <code>kotlinx-rpc-core</code></p>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.RPCTransport</code>
+                    <p>Artifact: <code>kotlinx-rpc-krpc-core</code></p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.RPCTransportMessage</code>
+                    <p>Artifact: <code>kotlinx-rpc-core</code></p>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.RPCTransportMessage</code>
+                    <p>Artifact: <code>kotlinx-rpc-krpc-core</code></p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.invokeOnStreamScopeCompletion</code>
+                    <p>Artifact: <code>kotlinx-rpc-core</code></p>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.invokeOnStreamScopeCompletion</code>
+                    <p>Artifact: <code>kotlinx-rpc-krpc-core</code></p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.streamScoped</code>
+                    <p>Artifact: <code>kotlinx-rpc-core</code></p>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.streamScoped</code>
+                    <p>Artifact: <code>kotlinx-rpc-krpc-core</code></p>
+                </td>
+            </tr>
+        </table>
+        <p>Declarations that only changed the package</p>
+        <table>
+            <tr>
+                <td><code>0.2.4</code></td>
+                <td><code>0.3.0</code></td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.client.KRPCClient</code>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.client.KRPCClient</code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.client.withService</code>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.client.withService</code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.transport.ktor.client.rpc</code>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.ktor.client.rpc</code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.transport.ktor.client.KtorRPCClient</code>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.ktor.client.KtorRPCClient</code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.transport.ktor.client.RPC</code>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.ktor.client.RPC</code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.transport.ktor.server.RPC</code>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.ktor.server.RPC</code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.transport.ktor.server.rpc</code>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.ktor.server.rpc</code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.transport.ktor.server.RPCRoute</code>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.ktor.server.RPCRoute</code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.serialization.cbor</code>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.serialization.cbor.cbor</code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.serialization.json</code>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.serialization.json.json</code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.serialization.protobuf</code>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.serialization.protobuf.protobuf</code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.serialization.RPCSerialFormat</code>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.serialization.RPCSerialFormat</code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.serialization.RPCSerialFormatBuilder</code>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.serialization.RPCSerialFormatBuilder</code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.serialization.RPCSerialFormatConfiguration</code>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.serialization.RPCSerialFormatConfiguration</code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>kotlinx.rpc.server.KRPCServer</code>
+                </td>
+                <td>
+                    <code>kotlinx.rpc.krpc.server.KRPCServer</code>
+                </td>
+            </tr>
+        </table>
+    </chapter>
+</topic>
