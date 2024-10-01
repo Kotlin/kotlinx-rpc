@@ -5,7 +5,7 @@
 plugins {
     kotlin("jvm") version "2.0.10"
     kotlin("plugin.serialization") version "2.0.10"
-    id("io.ktor.plugin") version "2.3.12"
+    id("io.ktor.plugin") version "3.0.0-rc-1"
     id("org.jetbrains.kotlinx.rpc.plugin") version "0.3.0"
 }
 
@@ -35,10 +35,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client")
     implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server")
 
-    implementation("io.ktor:ktor-client-cio-jvm")
+    implementation("io.ktor:ktor-client-cio")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("ch.qos.logback:logback-classic:1.5.8")
 
-    testImplementation("io.ktor:ktor-server-tests-jvm")
+    testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.0.10")
 }
