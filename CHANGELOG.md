@@ -1,5 +1,5 @@
 # 0.3.0
-> Published 27 September 2024
+> Published 1 October 2024
 
 ### Features 🎉
 * Wasm Support by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/190
