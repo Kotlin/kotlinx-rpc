@@ -26,6 +26,7 @@
     </toc-element>
     <toc-element topic="versions.topic"/>
     <toc-element toc-title="Migration guides">
+        <toc-element topic="0-3-0.topic"/>
         <toc-element topic="0-2-4.topic"/>
         <toc-element topic="0-2-1.topic"/>
     </toc-element>

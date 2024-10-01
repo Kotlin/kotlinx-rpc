@@ -10,7 +10,7 @@
        title="Migration to 0.2.4" id="0-2-4">
 
     <p>
-        Version <code>0.2.4</code> does introduce any breaking changes.
+        Version <code>0.2.4</code> does not introduce any breaking changes.
         However, it includes some updates that may require additional modifications in user projects.
     </p>
     <chapter title="Removal of KSP plugin for Kotlin 2.0" id="removal-of-ksp-plugin-for-kotlin-2-0">
