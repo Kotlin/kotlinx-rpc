@@ -43,7 +43,7 @@ public class GrpcClient(
     }
 }
 
-public fun grpcClient(
+public fun GrpcClient(
     name: String,
     port: Int,
     configure: ManagedChannelBuilder<*>.() -> Unit = {},
@@ -52,7 +52,7 @@ public fun grpcClient(
     return GrpcClient(channel)
 }
 
-public fun grpcClient(
+public fun GrpcClient(
     target: String,
     configure: ManagedChannelBuilder<*>.() -> Unit = {},
 ): GrpcClient {

@@ -85,7 +85,7 @@ public class GrpcServer internal constructor(
     }
 }
 
-public fun grpcServer(
+public fun GrpcServer(
     port: Int,
     configure: ServerBuilder<*>.() -> Unit = {},
     builder: RPCServer.() -> Unit = {},
