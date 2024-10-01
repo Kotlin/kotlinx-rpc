@@ -18,7 +18,7 @@ public interface ManagedChannel {
     public fun shutdownNow(): ManagedChannel
 }
 
-public expect abstract class ManagedChannelBuilder<T : io.grpc.ManagedChannelBuilder<T>>
+public expect abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
 
 public expect fun ManagedChannelBuilder(name: String, port: Int): ManagedChannelBuilder<*>
 public expect fun ManagedChannelBuilder(target: String): ManagedChannelBuilder<*>

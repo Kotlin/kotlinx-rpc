@@ -4,6 +4,9 @@
 
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 import util.libs
+import util.configureProjectReport
+import util.configureNpm
+import util.configureApiValidation
 
 plugins {
     alias(libs.plugins.serialization) apply false

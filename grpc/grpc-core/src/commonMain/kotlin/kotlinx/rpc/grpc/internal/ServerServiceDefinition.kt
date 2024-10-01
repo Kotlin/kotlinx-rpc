@@ -6,7 +6,7 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
-@InternalRPCApi
+@InternalRpcApi
 public expect class ServerServiceDefinition
