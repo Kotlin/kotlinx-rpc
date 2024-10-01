@@ -16,6 +16,10 @@ import kotlin.test.assertEquals
 class ApplicationTest {
     @Test
     fun testRoot() = testApplication {
+        application {
+            module()
+        }
+
         val service = createClient {
             installRPC()
         }.rpc("/api") {
