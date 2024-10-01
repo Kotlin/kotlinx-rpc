@@ -4,37 +4,37 @@
 
 package kotlinx.rpc.grpc
 
+import io.grpc.stub.AbstractStub
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.job
-import kotlinx.rpc.RPCCall
-import kotlinx.rpc.RPCClient
-import kotlinx.rpc.RPCField
+import kotlinx.rpc.RpcCall
+import kotlinx.rpc.RpcClient
+import kotlinx.rpc.descriptor.RpcServiceDescriptor
 import kotlin.coroutines.CoroutineContext
 
-public class GrpcClient(
-    private val channel: ManagedChannel,
-) : RPCClient {
+public class GrpcClient(private val channel: ManagedChannel) : RpcClient {
     override val coroutineContext: CoroutineContext = SupervisorJob()
 
-    override suspend fun <T> call(call: RPCCall): T {
-        // todo perform call
-        error("not implemented")
+    override suspend fun <T> call(call: RpcCall): T {
+        val stub = grpcStubByServiceDescriptor(call.descriptor)
+        return invokeRpcMethodOnGrpcStub(stub, call)
     }
 
-    override fun <T> registerPlainFlowField(serviceScope: CoroutineScope, field: RPCField): Flow<T> {
-        error("gRPC client does not support field declarations")
+    private fun grpcStubByServiceDescriptor(descriptor: RpcServiceDescriptor<*>): AbstractStub<*> {
+        error("Not yet implemented")
     }
 
-    override fun <T> registerSharedFlowField(serviceScope: CoroutineScope, field: RPCField): SharedFlow<T> {
-        error("gRPC client does not support field declarations")
+    private suspend fun <T> invokeRpcMethodOnGrpcStub(stub: AbstractStub<*>, call: RpcCall): T {
+        error("Not yet implemented")
     }
 
-    override fun <T> registerStateFlowField(serviceScope: CoroutineScope, field: RPCField): StateFlow<T> {
-        error("gRPC client does not support field declarations")
+    override fun <T> callAsync(
+        serviceScope: CoroutineScope,
+        call: RpcCall,
+    ): Deferred<T> {
+        TODO("Not yet implemented")
     }
 
     override fun provideStubContext(serviceId: Long): CoroutineContext {
@@ -43,7 +43,7 @@ public class GrpcClient(
     }
 }
 
-public fun grpcClient(
+public fun GrpcClient(
     name: String,
     port: Int,
     configure: ManagedChannelBuilder<*>.() -> Unit = {},
@@ -52,7 +52,7 @@ public fun grpcClient(
     return GrpcClient(channel)
 }
 
-public fun grpcClient(
+public fun GrpcClient(
     target: String,
     configure: ManagedChannelBuilder<*>.() -> Unit = {},
 ): GrpcClient {
