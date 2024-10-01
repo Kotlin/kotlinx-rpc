@@ -6,8 +6,8 @@ package kotlinx.rpc.grpc
 
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.job
-import kotlinx.rpc.RPC
-import kotlinx.rpc.RPCServer
+import kotlinx.rpc.RemoteService
+import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.internal.MutableHandlerRegistry
 import kotlinx.rpc.grpc.internal.ServerServiceDefinition
 import kotlin.coroutines.CoroutineContext
@@ -17,7 +17,7 @@ import kotlin.time.Duration
 public class GrpcServer internal constructor(
     override val port: Int = 8080,
     builder: ServerBuilder<*>.() -> Unit,
-) : RPCServer, Server {
+) : RpcServer, Server {
     private var isBuilt = false
     private lateinit var internalServer: Server
 
@@ -29,7 +29,7 @@ public class GrpcServer internal constructor(
     override val coroutineContext: CoroutineContext
         get() = error("coroutineContext is not available for gRPC server builder")
 
-    override fun <Service : RPC> registerService(
+    override fun <Service : RemoteService> registerService(
         serviceKClass: KClass<Service>,
         serviceFactory: (CoroutineContext) -> Service,
     ) {
@@ -45,7 +45,7 @@ public class GrpcServer internal constructor(
         }
     }
 
-    private fun <Service : RPC> getDefinition(
+    private fun <Service : RemoteService> getDefinition(
         service: Service,
         serviceKClass: KClass<Service>,
     ): ServerServiceDefinition {
@@ -85,10 +85,10 @@ public class GrpcServer internal constructor(
     }
 }
 
-public fun grpcServer(
+public fun GrpcServer(
     port: Int,
     configure: ServerBuilder<*>.() -> Unit = {},
-    builder: RPCServer.() -> Unit = {},
+    builder: RpcServer.() -> Unit = {},
 ): GrpcServer {
     return GrpcServer(port, configure).apply(builder).apply { build() }
 }

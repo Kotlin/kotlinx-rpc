@@ -6,12 +6,12 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
-@InternalRPCApi
+@InternalRpcApi
 public expect abstract class HandlerRegistry
 
-@InternalRPCApi
+@InternalRpcApi
 public expect class MutableHandlerRegistry constructor() : HandlerRegistry {
     internal fun addService(service: ServerServiceDefinition): ServerServiceDefinition?
 }
