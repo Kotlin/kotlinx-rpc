@@ -14,11 +14,15 @@ fun Project.logAbsentProperty(name: String): Nothing? {
     return null
 }
 
+fun getEnv(propertyName: String): String? = System.getenv(
+    propertyName.replace(".", "_").uppercase()
+)?.ifEmpty { null }
+
 private const val SPACE_USERNAME = "kotlinx.rpc.team.space.username"
 
 fun Project.getSpaceUsername(): String? {
     return providers.gradleProperty(SPACE_USERNAME).orNull
-        ?: System.getenv(SPACE_USERNAME)?.ifEmpty { null }
+        ?: getEnv(SPACE_USERNAME)
         ?: logAbsentProperty(SPACE_USERNAME)
 }
 
@@ -26,6 +30,6 @@ private const val SPACE_PASSWORD = "kotlinx.rpc.team.space.password"
 
 fun Project.getSpacePassword(): String? {
     return providers.gradleProperty(SPACE_PASSWORD).orNull
-        ?: System.getenv(SPACE_PASSWORD)?.ifEmpty { null }
+        ?: getEnv(SPACE_PASSWORD)
         ?: logAbsentProperty(SPACE_USERNAME)
 }

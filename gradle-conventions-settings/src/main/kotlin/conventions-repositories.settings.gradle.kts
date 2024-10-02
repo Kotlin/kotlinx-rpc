@@ -11,17 +11,21 @@ pluginManagement {
         return null
     }
 
+    fun getEnv(propertyName: String): String? = System.getenv(
+        propertyName.replace(".", "_").uppercase()
+    )?.ifEmpty { null }
+
     fun getSpaceUsername(): String? {
         val username = "kotlinx.rpc.team.space.username"
         return settings.providers.gradleProperty(username).orNull
-            ?: System.getenv(username)?.ifEmpty { null }
+            ?: getEnv(username)
             ?: logAbsentProperty(username)
     }
 
     fun getSpacePassword(): String? {
         val password = "kotlinx.rpc.team.space.password"
         return settings.providers.gradleProperty(password).orNull
-            ?: System.getenv(password)?.ifEmpty { null }
+            ?: getEnv(password)
             ?: logAbsentProperty(password)
     }
 
@@ -43,6 +47,8 @@ pluginManagement {
                     username = spaceUsername
                     password = spacePassword
                 }
+            } else {
+                logger.info("Skipping adding credentials for Space repository '$repoName'")
             }
         }
     }
@@ -63,17 +69,21 @@ gradle.rootProject {
         return null
     }
 
+    fun getEnv(propertyName: String): String? = System.getenv(
+        propertyName.replace(".", "_").uppercase()
+    )?.ifEmpty { null }
+
     fun getSpaceUsername(): String? {
         val username = "kotlinx.rpc.team.space.username"
         return settings.providers.gradleProperty(username).orNull
-            ?: System.getenv(username)?.ifEmpty { null }
+            ?: getEnv(username)
             ?: logAbsentProperty(username)
     }
 
     fun getSpacePassword(): String? {
         val password = "kotlinx.rpc.team.space.password"
         return settings.providers.gradleProperty(password).orNull
-            ?: System.getenv(password)?.ifEmpty { null }
+            ?: getEnv(password)
             ?: logAbsentProperty(password)
     }
 
@@ -96,6 +106,8 @@ gradle.rootProject {
                     username = spaceUsername
                     password = spacePassword
                 }
+            } else {
+                logger.info("Skipping adding credentials for Space repository '$repoName'")
             }
         }
     }

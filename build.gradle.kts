@@ -11,35 +11,12 @@ plugins {
     alias(libs.plugins.kotlinx.rpc) apply false
     alias(libs.plugins.conventions.kover)
     alias(libs.plugins.conventions.gradle.doctor)
-    alias(libs.plugins.binary.compatibility.validator)
     alias(libs.plugins.atomicfu)
 }
 
-// useful for dependencies introspection
-// run ./gradlew htmlDependencyReport
-// Report can normally be found in build/reports/project/dependencies/index.html
-allprojects {
-    plugins.apply("project-report")
-}
-
-object Const {
-    const val INTERNAL_RPC_API_ANNOTATION = "kotlinx.rpc.internal.utils.InternalRPCApi"
-}
-
-apiValidation {
-    ignoredPackages.add("kotlinx.rpc.internal")
-    ignoredPackages.add("kotlinx.rpc.krpc.internal")
-
-    ignoredProjects.addAll(
-        listOf(
-            "compiler-plugin-tests",
-            "krpc-test",
-            "utils",
-        )
-    )
-
-    nonPublicMarkers.add(Const.INTERNAL_RPC_API_ANNOTATION)
-}
+configureProjectReport()
+configureNpm()
+configureApiValidation()
 
 val kotlinVersionFull: String by extra
 
@@ -57,63 +34,4 @@ println("kotlinx.rpc project version: $version, Kotlin version: $kotlinVersionFu
 val kotlinGPVersion = getKotlinPluginVersion()
 if (kotlinVersionFull != kotlinGPVersion) {
     error("KGP version mismatch. Project version: $kotlinVersionFull, KGP version: $kotlinGPVersion")
-}
-
-val executeNpmLogin by tasks.registering {
-    val registryUrl = "https://packages.jetbrains.team/npm/p/krpc/build-deps/"
-
-    // To prevent leaking of credentials in VCS on dev machine use the build directory config file
-    val buildYarnConfigFile = File(project.rootDir, "build/js/.yarnrc")
-    val buildNpmConfigFile = File(project.rootDir, "build/js/.npmrc")
-
-    val spacePassword: String? = getSpacePassword()
-
-    doLast {
-        val outputYarnText = """
-            registry: "$registryUrl"
-        """.trimIndent()
-
-        var outputNpmText = """
-            registry: "$registryUrl"
-        """.trimIndent()
-
-        if (spacePassword != null) {
-            if (spacePassword.split(".").size != 3) {
-                throw GradleException("Unexpected Space Token format")
-            }
-
-            outputNpmText += System.lineSeparator() + """
-                always-auth: true
-                ${registryUrl.removePrefix("https:")}:_authToken=$spacePassword
-            """.trimIndent()
-        }
-
-        buildYarnConfigFile.createNewFile()
-        buildYarnConfigFile.writeText(outputYarnText)
-        buildNpmConfigFile.createNewFile()
-        buildNpmConfigFile.writeText(outputNpmText)
-    }
-
-    outputs.file(buildYarnConfigFile).withPropertyName("buildOutputYarnFile")
-    outputs.file(buildNpmConfigFile).withPropertyName("buildOutputNpmFile")
-}
-
-plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class.java).configureEach {
-    rootProject.extensions.configure(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension::class.java) {
-        download = true
-        downloadBaseUrl = "https://packages.jetbrains.team/files/p/krpc/build-deps/"
-    }
-
-    tasks.named("kotlinNpmInstall").configure {
-        dependsOn(executeNpmLogin)
-    }
-}
-
-// necessary for CI js tests
-rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
-    rootProject.extensions.configure<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension> {
-        ignoreScripts = false
-        download = true
-        downloadBaseUrl = "https://packages.jetbrains.team/files/p/krpc/build-deps/"
-    }
 }

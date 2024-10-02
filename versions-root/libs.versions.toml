@@ -92,6 +92,7 @@ coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", ve
 coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "coroutines" }
 detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt-gradle-plugin" }
 kover-gradle-plugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
+binary-compatibility-validator-gradle-plugin = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "binary-compatibility-validator" }
 kotlin-js-wrappers = { module = "org.jetbrains.kotlin-wrappers:kotlin-js", version.ref = "kotlin-wrappers" }
 gradle-kotlin-dsl-pluigns = { module = "org.gradle.kotlin:gradle-kotlin-dsl-plugins", version.ref = "gradle-kotlin-dsl" }
 intellij-util = { module = "com.jetbrains.intellij.platform:util", version.ref = "intellij" }
@@ -117,6 +118,7 @@ conventions-kmp = { id = "conventions-kmp", version.ref = "kotlinx-rpc" }
 conventions-gradle-publish = { id = "conventions-gradle-publish", version.ref = "kotlinx-rpc" }
 conventions-kover = { id = "conventions-kover", version.ref = "kotlinx-rpc" }
 conventions-gradle-doctor = { id = "conventions-gradle-doctor", version.ref = "kotlinx-rpc" }
+conventions-npm = { id = "conventions-npm", version.ref = "kotlinx-rpc" }
 compiler-specific-module = { id = "compiler-specific-module", version.ref = "kotlinx-rpc" }
 
 # gradle-plugin project
