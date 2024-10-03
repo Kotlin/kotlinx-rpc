@@ -51,7 +51,7 @@ private fun Project.configureDetekt(targets: List<KotlinTarget>) {
 }
 
 fun ProjectKotlinConfig.configureKotlin(action: Action<KotlinMultiplatformExtension> = Action { }) {
-    kotlin {
+    kmp {
         val includedTargets = configureTargets(this@configureKotlin)
 
         configureDetekt(includedTargets)

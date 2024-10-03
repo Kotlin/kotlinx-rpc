@@ -25,11 +25,13 @@ fun Path.bufferedReader(
 
 object SettingsConventions {
     const val KOTLIN_VERSION_ENV_VAR_NAME = "KOTLIN_VERSION"
+    const val KOTLIN_COMPILER_VERSION_ENV_VAR_NAME = "KOTLIN_COMPILER_VERSION"
     const val LIBRARY_VERSION_ENV_VAR_NAME = "LIBRARY_VERSION"
     const val EAP_VERSION_ENV_VAR_NAME = "EAP_VERSION"
 
     const val LIBRARY_CORE_VERSION_ALIAS = "kotlinx-rpc"
     const val KOTLIN_VERSION_ALIAS = "kotlin-lang"
+    const val KOTLIN_COMPILER_VERSION_ALIAS = "kotlin-compiler"
 
     const val VERSIONS_SECTION_NAME = "[versions]"
 
@@ -146,11 +148,18 @@ fun resolveVersionCatalog(rootDir: Path): Map<String, String> {
 // Otherwise uses version from catalog.
 fun VersionCatalogBuilder.resolveKotlinVersion(versionCatalog: Map<String, String>): String {
     var kotlinCatalogVersion: String? = System.getenv(SettingsConventions.KOTLIN_VERSION_ENV_VAR_NAME)
+    val kotlinCompilerVersion: String? = System.getenv(SettingsConventions.KOTLIN_COMPILER_VERSION_ENV_VAR_NAME)
 
     if (kotlinCatalogVersion != null) {
         version(SettingsConventions.KOTLIN_VERSION_ALIAS, kotlinCatalogVersion)
     } else {
         kotlinCatalogVersion = versionCatalog[SettingsConventions.KOTLIN_VERSION_ALIAS]
+    }
+
+    if (kotlinCompilerVersion != null) {
+        version(SettingsConventions.KOTLIN_COMPILER_VERSION_ALIAS, kotlinCompilerVersion)
+    } else {
+        version(SettingsConventions.KOTLIN_COMPILER_VERSION_ALIAS, kotlinCatalogVersion!!)
     }
 
     return kotlinCatalogVersion

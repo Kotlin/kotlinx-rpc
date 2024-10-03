@@ -3,7 +3,8 @@
 kotlinx-rpc = "0.3.0"
 
 # kotlin
-kotlin-lang = "2.0.21"
+kotlin-lang = "2.0.21" # or env.KOTLIN_VERSION
+kotlin-compiler = "0.0.0" # default to kotlin-lang or env.KOTLIN_COMPILER_VERSION
 
 # kotlin independent versions
 detekt-analyzer = "1.23.6"
@@ -49,10 +50,11 @@ kotlin-script-runtime = { module = "org.jetbrains.kotlin:kotlin-script-runtime",
 kotlin-annotations-jvm = { module = "org.jetbrains.kotlin:kotlin-annotations-jvm", version.ref = "kotlin-lang" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-lang" }
 
-kotlin-compiler = { module = "org.jetbrains.kotlin:kotlin-compiler", version.ref = "kotlin-lang" }
+kotlin-compiler = { module = "org.jetbrains.kotlin:kotlin-compiler", version.ref = "kotlin-compiler" }
 kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable" }
 kotlin-compiler-test-framework = { module = "org.jetbrains.kotlin:kotlin-compiler-internal-test-framework", version.ref = "kotlin-lang" }
-serialization-plugin = { module = "org.jetbrains.kotlin:kotlin-serialization-compiler-plugin", version.ref = "kotlin-lang" }
+serialization-plugin = { module = "org.jetbrains.kotlin:kotlin-serialization-compiler-plugin", version.ref = "kotlin-compiler" }
+serialization-plugin-forIde = { module = "org.jetbrains.kotlin:kotlinx-serialization-compiler-plugin-for-ide", version.ref = "kotlin-compiler" }
 kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
 
 # serialization

@@ -16,7 +16,7 @@ fun ProjectKotlinConfig.configureWasm() {
         }
     }
 
-    kotlin {
+    kmp {
         if (wasmJs) {
             wasmJs {
                 configureJsAndWasmJsTasks()

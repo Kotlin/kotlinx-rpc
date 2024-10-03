@@ -4,6 +4,8 @@
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import util.enableContextReceivers
+import util.otherwise
+import util.whenForIde
 
 plugins {
     alias(libs.plugins.conventions.jvm)
@@ -19,6 +21,12 @@ kotlin {
 dependencies {
     compileOnly(libs.kotlin.reflect)
     compileOnly(libs.kotlin.compiler.embeddable)
-    compileOnly(libs.serialization.plugin)
+    whenForIde {
+        compileOnly(libs.serialization.plugin.forIde) {
+            isTransitive = false
+        }
+    } otherwise {
+        compileOnly(libs.serialization.plugin)
+    }
     implementation(projects.compilerPluginCommon)
 }
