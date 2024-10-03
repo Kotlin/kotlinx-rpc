@@ -3,8 +3,7 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import util.enableContextReceivers
-import util.whenKotlinIsAtLeast
+import util.*
 
 plugins {
     alias(libs.plugins.conventions.jvm)
@@ -20,7 +19,13 @@ kotlin {
 dependencies {
     compileOnly(libs.kotlin.compiler.embeddable)
     project.whenKotlinIsAtLeast(2, 0) {
-        compileOnly(libs.serialization.plugin)
+        whenForIde {
+            compileOnly(libs.serialization.plugin.forIde) {
+                isTransitive = false
+            }
+        } otherwise {
+            compileOnly(libs.serialization.plugin)
+        }
     }
     implementation(projects.compilerPluginCommon)
 }

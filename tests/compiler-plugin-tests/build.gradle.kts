@@ -4,6 +4,8 @@
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import util.otherwise
+import util.whenForIde
 
 plugins {
     java
@@ -69,7 +71,14 @@ dependencies {
     testRuntimeOnly(libs.kotlin.script.runtime)
     testRuntimeOnly(libs.kotlin.annotations.jvm)
 
-    testImplementation(libs.serialization.plugin)
+    whenForIde {
+        testImplementation(libs.serialization.plugin.forIde) {
+            isTransitive = false
+        }
+    } otherwise {
+        testImplementation(libs.serialization.plugin)
+    }
+
     testImplementation(libs.compiler.plugin.cli)
 
     testImplementation(libs.kotlin.reflect)

@@ -17,7 +17,7 @@ fun ProjectKotlinConfig.configureJs() {
         return
     }
 
-    kotlin {
+    kmp {
         js(IR) {
             configureJsAndWasmJsTasks()
         }
