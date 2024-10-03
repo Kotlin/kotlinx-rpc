@@ -3,6 +3,9 @@
  */
 
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
+import util.configureApiValidation
+import util.configureNpm
+import util.configureProjectReport
 import util.libs
 
 plugins {
@@ -10,7 +13,6 @@ plugins {
     alias(libs.plugins.kotlinx.rpc) apply false
     alias(libs.plugins.conventions.kover)
     alias(libs.plugins.conventions.gradle.doctor)
-    alias(libs.plugins.binary.compatibility.validator)
 
     if (libs.versions.atomicfu.get() >= "0.24.0") {
         alias(libs.plugins.atomicfu.new)
@@ -19,31 +21,9 @@ plugins {
     }
 }
 
-// useful for dependencies introspection
-// run ./gradlew htmlDependencyReport
-// Report can normally be found in build/reports/project/dependencies/index.html
-allprojects {
-    plugins.apply("project-report")
-}
-
-object Const {
-    const val INTERNAL_RPC_API_ANNOTATION = "kotlinx.rpc.internal.utils.InternalRPCApi"
-}
-
-apiValidation {
-    ignoredPackages.add("kotlinx.rpc.internal")
-    ignoredPackages.add("kotlinx.rpc.krpc.internal")
-
-    ignoredProjects.addAll(
-        listOf(
-            "compiler-plugin-tests",
-            "krpc-test",
-            "utils",
-        )
-    )
-
-    nonPublicMarkers.add(Const.INTERNAL_RPC_API_ANNOTATION)
-}
+configureProjectReport()
+configureNpm()
+configureApiValidation()
 
 val kotlinVersionFull: String by extra
 
@@ -61,9 +41,4 @@ println("kotlinx.rpc project version: $version, Kotlin version: $kotlinVersionFu
 val kotlinGPVersion = getKotlinPluginVersion()
 if (kotlinVersionFull != kotlinGPVersion) {
     error("KGP version mismatch. Project version: $kotlinVersionFull, KGP version: $kotlinGPVersion")
-}
-
-// necessary for CI js tests
-rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
-    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().ignoreScripts = false
 }

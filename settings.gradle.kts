@@ -5,10 +5,6 @@
 import util.otherwise
 import util.whenKotlinIsAtLeast
 
-/*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
- */
-
 rootProject.name = "kotlinx-rpc"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
@@ -19,10 +15,7 @@ pluginManagement {
 
     includeBuild("gradle-plugin")
 
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
-    }
+    apply(from = "gradle-conventions-settings/src/main/kotlin/conventions-repositories.settings.gradle.kts")
 
     resolutionStrategy {
         eachPlugin {
@@ -34,9 +27,10 @@ pluginManagement {
 }
 
 plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
-    id("settings-conventions")
+    id("conventions-repositories")
+    id("conventions-version-resolution")
     id("conventions-develocity")
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
 dependencyResolutionManagement {

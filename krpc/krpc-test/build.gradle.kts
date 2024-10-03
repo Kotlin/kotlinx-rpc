@@ -18,6 +18,14 @@ applyAtomicfuPlugin()
 
 kotlin {
     sourceSets {
+        commonMain {
+            dependencies {
+                // Workaround for
+                // KLIB resolver: Could not find "org.jetbrains.kotlinx:atomicfu"
+                api(libs.atomicfu)
+            }
+        }
+
         jvmMain {
             dependencies {
                 api(projects.krpc.krpcCore)

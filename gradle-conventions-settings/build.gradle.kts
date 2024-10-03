@@ -20,6 +20,7 @@ val isLatestKotlinVersion: Boolean by extra
 dependencies {
     api(libs.kotlin.gradle.plugin)
     api(libs.detekt.gradle.plugin)
+    api(libs.binary.compatibility.validator.gradle.plugin)
 
     if (isLatestKotlinVersion) {
         api(libs.kover.gradle.plugin)

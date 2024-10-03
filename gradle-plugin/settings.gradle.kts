@@ -12,7 +12,8 @@ pluginManagement {
 }
 
 plugins {
-    id("settings-conventions")
+    id("conventions-repositories")
+    id("conventions-version-resolution")
 }
 
 includeRootAsPublic()
