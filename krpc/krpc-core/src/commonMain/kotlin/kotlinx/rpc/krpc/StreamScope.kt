@@ -15,6 +15,7 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
+import kotlin.js.JsName
 
 /**
  * Stream scope handles all RPC streams that are launched inside it.
@@ -26,33 +27,46 @@ import kotlin.coroutines.coroutineContext
  * Stream scope is a child of the [CoroutineContext] it was created in.
  * Failure of one request will not cancel all streams in the others.
  */
-@InternalRPCApi
 @OptIn(InternalCoroutinesApi::class)
-public class StreamScope(
+public class StreamScope internal constructor(
     parentContext: CoroutineContext,
     internal val role: Role,
-) : CoroutineContext.Element, AutoCloseable {
-    internal companion object Key : CoroutineContext.Key<StreamScope>
+): AutoCloseable {
+    internal class Element(internal val scope: StreamScope) : CoroutineContext.Element {
+        override val key: CoroutineContext.Key<Element> = Key
 
-    override val key: CoroutineContext.Key<StreamScope> = Key
+        internal companion object Key : CoroutineContext.Key<Element>
+    }
+
+    internal val contextElement = Element(this)
 
     private val scopeJob = SupervisorJob(parentContext.job)
 
     private val requests = ConcurrentHashMap<String, CoroutineScope>()
 
+    init {
+        scopeJob.invokeOnCompletion {
+            close()
+        }
+    }
+
+    @InternalRPCApi
     public fun onScopeCompletion(handler: (Throwable?) -> Unit) {
         scopeJob.invokeOnCompletion(handler)
     }
 
+    @InternalRPCApi
     public fun onScopeCompletion(callId: String, handler: (Throwable?) -> Unit) {
         getRequestScope(callId).coroutineContext.job.invokeOnCompletion(onCancelling = true, handler = handler)
     }
 
+    @InternalRPCApi
     public fun cancelRequestScopeById(callId: String, message: String, cause: Throwable?): Job? {
         return requests.remove(callId)?.apply { cancel(message, cause) }?.coroutineContext?.job
     }
 
     // Group stream launches by callId. In case one fails, so do others
+    @InternalRPCApi
     public fun launch(callId: String, block: suspend CoroutineScope.() -> Unit): Job {
         return getRequestScope(callId).launch(block = block)
     }
@@ -86,19 +100,19 @@ public fun CoroutineContext.withServerStreamScope(): CoroutineContext = withStre
 
 @OptIn(InternalCoroutinesApi::class)
 internal fun CoroutineContext.withStreamScope(role: StreamScope.Role): CoroutineContext {
-    return this + StreamScope(this, role).apply {
-        this@withStreamScope.job.invokeOnCompletion(onCancelling = true) { close() }
+    return this + StreamScope(this, role).contextElement.apply {
+        this@withStreamScope.job.invokeOnCompletion(onCancelling = true) { scope.close() }
     }
 }
 
 @InternalRPCApi
 public suspend fun streamScopeOrNull(): StreamScope? {
-    return currentCoroutineContext()[StreamScope.Key]
+    return currentCoroutineContext()[StreamScope.Element.Key]?.scope
 }
 
 @InternalRPCApi
 public fun streamScopeOrNull(scope: CoroutineScope): StreamScope? {
-    return scope.coroutineContext[StreamScope.Key]
+    return scope.coroutineContext[StreamScope.Element.Key]?.scope
 }
 
 internal fun noStreamScopeError(): Nothing {
@@ -165,22 +179,53 @@ public suspend fun <T> streamScoped(block: suspend CoroutineScope.() -> T): T {
     }
 
     val context = currentCoroutineContext()
-
-    if (context[StreamScope.Key] != null) {
-        error(
-            "One of the following caused a failure: \n" +
-                    "- nested 'streamScoped' calls are not allowed.\n" +
-                    "- 'streamScoped' calls are not allowed in server RPC services."
-        )
-    }
+        .apply {
+            checkContextForStreamScope()
+        }
 
     val streamScope = StreamScope(context, StreamScope.Role.Client)
 
-    return withContext(streamScope) {
+    return withContext(streamScope.contextElement) {
         streamScope.use {
             block()
         }
     }
+}
+
+private fun CoroutineContext.checkContextForStreamScope() {
+    if (this[StreamScope.Element] != null) {
+        error(
+            "One of the following caused a failure: \n" +
+                    "- nested 'streamScoped' or `withStreamScope` calls are not allowed.\n" +
+                    "- 'streamScoped' or `withStreamScope` calls are not allowed in server RPC services."
+        )
+    }
+}
+
+/**
+ * Creates a [StreamScope] entity for manual stream management.
+ */
+@JsName("StreamScope_fun")
+@ExperimentalRPCApi
+public fun StreamScope(parent: CoroutineContext): StreamScope {
+    parent.checkContextForStreamScope()
+
+    return StreamScope(parent, StreamScope.Role.Client)
+}
+
+/**
+ * Adds manually managed [StreamScope] to the current context.
+ */
+@OptIn(ExperimentalContracts::class)
+@ExperimentalRPCApi
+public suspend fun <T> withStreamScope(scope: StreamScope, block: suspend CoroutineScope.() -> T): T {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+
+    currentCoroutineContext().checkContextForStreamScope()
+
+    return withContext(scope.contextElement, block)
 }
 
 /**

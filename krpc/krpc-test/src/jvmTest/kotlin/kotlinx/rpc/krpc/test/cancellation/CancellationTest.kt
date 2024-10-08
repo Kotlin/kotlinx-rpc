@@ -8,9 +8,11 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
+import kotlinx.rpc.krpc.StreamScope
 import kotlinx.rpc.krpc.internal.STREAM_SCOPES_ENABLED
 import kotlinx.rpc.krpc.invokeOnStreamScopeCompletion
 import kotlinx.rpc.krpc.streamScoped
+import kotlinx.rpc.krpc.withStreamScope
 import kotlinx.rpc.withService
 import kotlin.test.*
 
@@ -582,6 +584,55 @@ class CancellationTest {
 
             assertTrue("Rest must be empty, as flow was closed") { rest.isEmpty() }
         }
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun manualStreamScopeNoCancel() = runCancellationTest {
+        val myJob = Job()
+        val streamScope = StreamScope(myJob)
+
+        val unrelatedJob = Job()
+
+        var first: Int = -1
+        val deferredFlow = CoroutineScope(unrelatedJob).async {
+            withStreamScope(streamScope) {
+                service.incomingStream().apply { first = first() }
+            }
+        }
+        val flow= deferredFlow.await()
+
+        serverInstance().fence.complete(Unit)
+        val consumed = flow.toList()
+
+        assertEquals(0, first)
+        assertContentEquals(listOf(1), consumed)
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun manualStreamScopeWithCancel() = runCancellationTest {
+        val myJob = Job()
+        val streamScope = StreamScope(myJob)
+
+        val unrelatedJob = Job()
+
+        var first: Int = -1
+        val deferredFlow = CoroutineScope(unrelatedJob).async {
+            withStreamScope(streamScope) {
+                service.incomingStream().apply { first = first() }
+            }
+        }
+        val flow= deferredFlow.await()
+
+        streamScope.close()
+        serverInstance().fence.complete(Unit)
+        val consumed = flow.toList()
+
+        assertEquals(0, first)
+        assertContentEquals(emptyList(), consumed)
 
         stopAllAndJoin()
     }
