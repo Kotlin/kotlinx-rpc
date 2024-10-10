@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.codegen
 
-import kotlinx.rpc.codegen.common.ClassDeclarations
+import kotlinx.rpc.codegen.common.RpcClassId
 import kotlinx.rpc.codegen.common.RpcNames
 import kotlinx.rpc.codegen.common.rpcMethodClassName
 import kotlinx.rpc.codegen.common.rpcMethodName
@@ -19,9 +19,7 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.declarations.utils.visibility
-import org.jetbrains.kotlin.fir.extensions.FirDeclarationGenerationExtension
-import org.jetbrains.kotlin.fir.extensions.MemberGenerationContext
-import org.jetbrains.kotlin.fir.extensions.NestedClassGenerationContext
+import org.jetbrains.kotlin.fir.extensions.*
 import org.jetbrains.kotlin.fir.moduleData
 import org.jetbrains.kotlin.fir.plugin.*
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
@@ -44,22 +42,7 @@ import org.jetbrains.kotlinx.serialization.compiler.resolve.SerializationPackage
  *
  * ## General idea
  *
- * [getNestedClassifiersNames] should return a set of [Name]s to generate for.
- * For these names [generateNestedClassLikeDeclaration] can generate some nested classes,
- * which is what we need.
- *
- * But the catch is that we cannot say for sure, if we need to generate a class
- * while in [getNestedClassifiersNames], but if we do not return anything
- * [generateNestedClassLikeDeclaration] will not be called.
- * We need to generate a class if only the current declaration is an RPC interface
- * (inherits kotlinx.rpc.RPC). There is no resolved supertypes in [getNestedClassifiersNames],
- * But, if the potentially generated class is not referenced anywhere,
- * then [generateNestedClassLikeDeclaration] will already have supertypes resolved,
- * so we can use this info to check the actual supertypes for RPC interface.
- *
- * So we always return a class name that may be generated.
- * And then, in [generateNestedClassLikeDeclaration] we do the actual check with the resolved supertypes
- * and generate a class if needed, otherwise returning null.
+ * Detect `@Rpc` annotation - generate stub classes.
  *
  * ## Usage of kotlinx.serialization plugin
  *
@@ -68,7 +51,7 @@ import org.jetbrains.kotlinx.serialization.compiler.resolve.SerializationPackage
  * We generate classes that are marked `@Serializable`.
  * In that case, the serialization plugin will not be able to pick up those classes and process them accordingly.
  *
- * That's why we have an instance of this plugin, which we call only on our generated classes - [serializationExtension]
+ * That is why we have an instance of this plugin, which we call only on our generated classes - [serializationExtension]
  *
  * Not all the methods that we would like to call are public, so we access them via reflection:
  * - [generateCompanionDeclaration]
@@ -76,7 +59,7 @@ import org.jetbrains.kotlinx.serialization.compiler.resolve.SerializationPackage
  *
  * This is basically copying the behavior of the actual plugin but isolated only for our generated classes.
  */
-class FirRPCServiceGenerator(
+class FirRpcServiceGenerator(
     session: FirSession,
     @Suppress("unused")
     private val logger: MessageCollector,
@@ -84,22 +67,22 @@ class FirRPCServiceGenerator(
     private val serializationExtension = SerializationFirResolveExtension(session)
     private val isJvmOrMetadata = !session.moduleData.platform.run { isJs() || isWasm() || isNative() }
 
+    override fun FirDeclarationPredicateRegistrar.registerPredicates() {
+        register(FirRpcPredicates.rpc)
+    }
+
     /**
      * Generates nested classifiers.
      *
      * They can be of three kinds:
      * - Nested Service Stub class.
      * In that case [classSymbol] will not have any RPC-generated [FirClassSymbol.origin].
-     * Rge only check we do - is we check that the declaration is an interface,
-     * and return [RpcNames.SERVICE_STUB_NAME].
-     * We cannot be sure if the declaration is actually an RPC service,
-     * because superTypes are not resolved during that stage.
-     * We postpone this check until [generateNestedClassLikeDeclaration].
+     * The only check we do - presence of the `@Rpc` annotation and return [RpcNames.SERVICE_STUB_NAME].
      *
      * - Companion object of the service stub and method classes.
      * If we generate this companion object, we will have [FirClassSymbol.origin]
      * of [classSymbol] be set to [RPCGeneratedStubKey],
-     * because we are inside the previously generated service stub class.
+     * because we're inside the previously generated service stub class.
      * The same goes for method classes too.
      * So we return [SpecialNames.DEFAULT_NAME_FOR_COMPANION_OBJECT]
      * and a list of method class names.
@@ -141,7 +124,7 @@ class FirRPCServiceGenerator(
                         SpecialNames.DEFAULT_NAME_FOR_COMPANION_OBJECT
             }
 
-            classSymbol.isInterface -> {
+            classSymbol.isInterface && session.predicateBasedProvider.matches(FirRpcPredicates.rpc, classSymbol) -> {
                 setOf(RpcNames.SERVICE_STUB_NAME)
             }
 
@@ -158,7 +141,7 @@ class FirRPCServiceGenerator(
     override fun generateNestedClassLikeDeclaration(
         owner: FirClassSymbol<*>,
         name: Name,
-        context: NestedClassGenerationContext
+        context: NestedClassGenerationContext,
     ): FirClassLikeSymbol<*>? {
         val rpcServiceStubKey = owner.generatedRpcServiceStubKey
         return when {
@@ -214,7 +197,7 @@ class FirRPCServiceGenerator(
             modality = Modality.FINAL
         }
 
-        rpcMethodClass.addAnnotation(ClassDeclarations.serializableAnnotation, session)
+        rpcMethodClass.addAnnotation(RpcClassId.serializableAnnotation, session)
 
         /**
          * Required to pass isSerializableObjectAndNeedsFactory check
@@ -264,18 +247,10 @@ class FirRPCServiceGenerator(
     }
 
     /**
-     * Checks whether the [owner] class is actually an RPC service
-     * (the supertypes are resolved at this stage,
-     * as the [RpcNames.SERVICE_STUB_NAME] is not references anywhere)
-     *
-     * If the [owner] is an RPC service - generates its service stub.
+     * Generates [owner]'s service stub.
      * Scrapes the functions from the [owner] to generate method classes.
      */
     private fun generateRpcServiceStubClass(owner: FirClassSymbol<*>): FirRegularClassSymbol? {
-        owner.resolvedSuperTypes.find {
-            it.classId == ClassDeclarations.rpcInterface
-        } ?: return null
-
         @OptIn(SymbolInternals::class)
         val functions = owner.fir.declarations
             .filterIsInstance<FirFunction>()
@@ -306,7 +281,7 @@ class FirRPCServiceGenerator(
     }
 
     /**
-     * If the method does not have any parameters, it is an object,
+     * If the method doesn't have any parameters, it is an object,
      * and its only callable names are constructor, and the ones provided by the [serializationExtension].
      * Otherwise, the callable names are the names of the method parameters and the constructor.
      */
@@ -322,7 +297,7 @@ class FirRPCServiceGenerator(
             rpcMethodClassKey.rpcMethod.valueParameterSymbols.map { it.name }.toSet()
         } + SpecialNames.INIT
 
-        // ^ init is necessary either way, as serialization does not add it for a serializable object
+        // ^ init is necessary either way, as serialization doesn't add it for a serializable object
     }
 
     override fun generateConstructors(context: MemberGenerationContext): List<FirConstructorSymbol> {
@@ -361,7 +336,7 @@ class FirRPCServiceGenerator(
 
     override fun generateProperties(
         callableId: CallableId,
-        context: MemberGenerationContext?
+        context: MemberGenerationContext?,
     ): List<FirPropertySymbol> {
         context ?: return emptyList()
 
@@ -399,14 +374,14 @@ class FirRPCServiceGenerator(
             returnType = valueParam.resolvedReturnType,
         ).apply {
             if (valueParam.resolvedReturnType.requiresContextual()) {
-                addAnnotation(ClassDeclarations.contextualAnnotation, session)
+                addAnnotation(RpcClassId.contextualAnnotation, session)
             }
         }.symbol.let(::listOf)
     }
 
     private fun ConeKotlinType.requiresContextual(): Boolean {
         return when (classId) {
-            ClassDeclarations.flow, ClassDeclarations.sharedFlow, ClassDeclarations.stateFlow -> true
+            RpcClassId.flow, RpcClassId.sharedFlow, RpcClassId.stateFlow -> true
             else -> false
         }
     }
@@ -416,7 +391,7 @@ class FirRPCServiceGenerator(
      */
     override fun generateFunctions(
         callableId: CallableId,
-        context: MemberGenerationContext?
+        context: MemberGenerationContext?,
     ): List<FirNamedFunctionSymbol> {
         val owner = context?.owner ?: return emptyList()
 

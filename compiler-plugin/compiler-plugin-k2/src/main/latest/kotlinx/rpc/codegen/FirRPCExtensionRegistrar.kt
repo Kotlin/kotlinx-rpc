@@ -8,12 +8,16 @@ import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
+import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension.Factory as CFactory
 import org.jetbrains.kotlin.fir.extensions.FirDeclarationGenerationExtension.Factory as GFactory
+import org.jetbrains.kotlin.fir.extensions.FirSupertypeGenerationExtension.Factory as SFactory
 
-class FirRPCExtensionRegistrar(private val configuration: CompilerConfiguration) : FirExtensionRegistrar() {
+class FirRpcExtensionRegistrar(private val configuration: CompilerConfiguration) : FirExtensionRegistrar() {
     override fun ExtensionRegistrarContext.configurePlugin() {
         val logger = configuration.get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
 
-        +GFactory { FirRPCServiceGenerator(it, logger) }
+        +CFactory { FirRpcCheckers(it)  }
+        +GFactory { FirRpcServiceGenerator(it, logger) }
+        +SFactory { FirRpcSupertypeGenerator(it, logger) }
     }
 }
