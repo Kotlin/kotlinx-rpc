@@ -34,5 +34,5 @@ fun CompilerPluginRegistrar.ExtensionStorage.registerRpcExtensions(configuration
     VersionSpecificApi.INSTANCE = VersionSpecificApiImpl
 
     IrGenerationExtension.registerExtension(RPCIrExtension(configuration))
-    FirExtensionRegistrarAdapter.registerExtension(FirRPCExtensionRegistrar(configuration))
+    FirExtensionRegistrarAdapter.registerExtension(FirRpcExtensionRegistrar(configuration))
 }

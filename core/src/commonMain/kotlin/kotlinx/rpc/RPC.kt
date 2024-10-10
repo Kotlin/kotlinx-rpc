@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
  * Example usage:
  * ```kotlin
  * // common code
+ * @Rpc
  * interface MyService : RPC {
  *    suspend fun sayHello(firstName: String, lastName: String, age: Int): String
  * }
@@ -35,7 +36,24 @@ import kotlinx.coroutines.CoroutineScope
  * server.registerService<MyService> { ctx -> MyServiceImpl(ctx) }
  * ```
  *
+ * Every [RPC] service MUST be annotated with [Rpc] annotation.
+ *
  * @see RPCClient
  * @see RPCServer
  */
 public interface RPC : CoroutineScope
+
+/**
+ * Every [Rpc] annotated interface will have a code generation process run on it,
+ * making the interface effectively usable for RPC calls.
+ *
+ * Every [Rpc] annotated interface MAY inherit from the [RPC] interface.
+ * If it is not done explicitly, the supertype will be added during the compilation process.
+ * In that case an IDE will highlight false-positive type mismatch errors,
+ * so it is recommended to add the [RPC] parent explicitly, until proper IDE support is provided.
+ *
+ * @see [RPC]
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.SOURCE)
+public annotation class Rpc
