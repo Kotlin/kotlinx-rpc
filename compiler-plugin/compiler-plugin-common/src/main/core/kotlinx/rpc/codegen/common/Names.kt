@@ -8,8 +8,9 @@ import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
-object ClassDeclarations {
+object RpcClassId {
     val rpcInterface = ClassId(FqName("kotlinx.rpc"), Name.identifier("RPC"))
+    val rpcAnnotation = ClassId(FqName("kotlinx.rpc"), Name.identifier("Rpc"))
 
     val serializableAnnotation = ClassId(FqName("kotlinx.serialization"), Name.identifier("Serializable"))
     val contextualAnnotation = ClassId(FqName("kotlinx.serialization"), Name.identifier("Contextual"))
