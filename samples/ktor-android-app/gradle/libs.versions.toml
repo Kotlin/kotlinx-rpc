@@ -1,20 +1,20 @@
 [versions]
-agp = "8.6.1"
+agp = "8.7.1"
 kotlin = "2.0.10"
-androidx-activityCompose = "1.9.2"
+androidx-activityCompose = "1.9.3"
 androidx-appcompat = "1.7.0"
 androidx-constraintlayout = "2.1.4"
 androidx-core-ktx = "1.13.1"
 androidx-test-junit = "1.2.1"
-compose = "1.7.2"
+compose = "1.7.4"
 compose-plugin = "1.5.14" # https://mvnrepository.com/artifact/androidx.compose.compiler/compiler
-compose-bom = "2024.09.02"
+compose-bom = "2024.10.00"
 material3 = "1.3.0"
 junit = "4.13.2"
-ktor = "3.0.0-rc-1"
+ktor = "3.0.0"
 kotlinx-serialization-json = "1.7.3"
 kotlinx-coroutines-core = "1.9.0"
-logback = "1.5.8"
+logback = "1.5.11"
 kotlinx-rpc = "0.3.0"
 
 [libraries]
