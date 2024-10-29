@@ -10,8 +10,3 @@ public abstract class kotlinx/rpc/krpc/client/KRPCClient : kotlinx/rpc/krpc/inte
 	public final fun registerStateFlowField (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RPCField;)Lkotlinx/coroutines/flow/StateFlow;
 }
 
-public final class kotlinx/rpc/krpc/client/RPCClientUtilsKt {
-	public static final fun withService (Lkotlinx/rpc/RPCClient;Lkotlin/reflect/KClass;)Lkotlinx/rpc/RPC;
-	public static final fun withService (Lkotlinx/rpc/RPCClient;Lkotlin/reflect/KType;)Lkotlinx/rpc/RPC;
-}
-
