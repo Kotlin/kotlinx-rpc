@@ -40,11 +40,11 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
             GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>]' type=<root>.TestData.$serializer
     CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>]
       annotations:
-        Deprecated(message = "This synthesized declaration should not be used directly", replaceWith = <null>, level = GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:HIDDEN' type=kotlin.DeprecationLevel)
+        Deprecated(message = "This synthesized declaration should not be used directly", replaceWith = <null>, level = GET_ENUM 'ENUM_ENTRY name:HIDDEN' type=kotlin.DeprecationLevel)
       $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.TestData.$serializer
       PROPERTY GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:descriptor visibility:public modality:FINAL [val]
         overridden:
-          public abstract descriptor: kotlinx.serialization.descriptors.SerialDescriptor
+          public abstract descriptor: kotlinx.serialization.descriptors.SerialDescriptor declared in kotlinx.serialization.internal.GeneratedSerializer
         FIELD PROPERTY_BACKING_FIELD name:descriptor type:kotlinx.serialization.descriptors.SerialDescriptor visibility:private [final]
         FUN DEFAULT_PROPERTY_ACCESSOR name:<get-descriptor> visibility:public modality:FINAL <> ($this:<root>.TestData.$serializer) returnType:kotlinx.serialization.descriptors.SerialDescriptor
           correspondingProperty: PROPERTY GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:descriptor visibility:public modality:FINAL [val]
@@ -99,7 +99,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
             CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<kotlinx.serialization.KSerializer<*>> origin=null
               <T>: kotlinx.serialization.KSerializer<*>
               elements: VARARG type=kotlin.Array<kotlinx.serialization.KSerializer<*>> varargElementType=kotlinx.serialization.KSerializer<*>
-                GET_OBJECT 'CLASS IR_EXTERNAL_DECLARATION_STUB OBJECT name:StringSerializer modality:FINAL visibility:internal superTypes:[kotlinx.serialization.KSerializer<kotlin.String>]' type=kotlinx.serialization.internal.StringSerializer
+                GET_OBJECT 'CLASS OBJECT name:StringSerializer modality:FINAL visibility:internal superTypes:[kotlinx.serialization.KSerializer<kotlin.String>]' type=kotlinx.serialization.internal.StringSerializer
       FUN GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:deserialize visibility:public modality:FINAL <> ($this:<root>.TestData.$serializer, decoder:kotlinx.serialization.encoding.Decoder) returnType:<root>.TestData
         overridden:
           public abstract fun deserialize (decoder: kotlinx.serialization.encoding.Decoder): T of kotlinx.serialization.internal.GeneratedSerializer declared in kotlinx.serialization.internal.GeneratedSerializer
@@ -341,7 +341,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                 receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.<get-__rpc_client>' type=<root>.BoxService.$rpcServiceStub origin=null
       PROPERTY name:coroutineContext visibility:public modality:FINAL [val]
         overridden:
-          public abstract coroutineContext: kotlin.coroutines.CoroutineContext
+          public abstract coroutineContext: kotlin.coroutines.CoroutineContext declared in kotlinx.rpc.RPCClient
         FIELD PROPERTY_BACKING_FIELD name:coroutineContext type:kotlin.coroutines.CoroutineContext visibility:private [final]
           EXPRESSION_BODY
             CALL 'public abstract fun provideStubContext (serviceId: kotlin.Long): kotlin.coroutines.CoroutineContext declared in kotlinx.rpc.RPCClient' type=kotlin.coroutines.CoroutineContext origin=null
@@ -476,11 +476,11 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                 GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test1$rpcMethod>]' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer
         CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test1$rpcMethod>]
           annotations:
-            Deprecated(message = "This synthesized declaration should not be used directly", replaceWith = <null>, level = GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:HIDDEN' type=kotlin.DeprecationLevel)
+            Deprecated(message = "This synthesized declaration should not be used directly", replaceWith = <null>, level = GET_ENUM 'ENUM_ENTRY name:HIDDEN' type=kotlin.DeprecationLevel)
           $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer
           PROPERTY GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:descriptor visibility:public modality:FINAL [val]
             overridden:
-              public abstract descriptor: kotlinx.serialization.descriptors.SerialDescriptor
+              public abstract descriptor: kotlinx.serialization.descriptors.SerialDescriptor declared in kotlinx.serialization.internal.GeneratedSerializer
             FIELD PROPERTY_BACKING_FIELD name:descriptor type:kotlinx.serialization.descriptors.SerialDescriptor visibility:private [final]
             FUN DEFAULT_PROPERTY_ACCESSOR name:<get-descriptor> visibility:public modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer) returnType:kotlinx.serialization.descriptors.SerialDescriptor
               correspondingProperty: PROPERTY GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:descriptor visibility:public modality:FINAL [val]
@@ -749,11 +749,11 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                 GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test2$rpcMethod>]' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer
         CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test2$rpcMethod>]
           annotations:
-            Deprecated(message = "This synthesized declaration should not be used directly", replaceWith = <null>, level = GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:HIDDEN' type=kotlin.DeprecationLevel)
+            Deprecated(message = "This synthesized declaration should not be used directly", replaceWith = <null>, level = GET_ENUM 'ENUM_ENTRY name:HIDDEN' type=kotlin.DeprecationLevel)
           $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer
           PROPERTY GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:descriptor visibility:public modality:FINAL [val]
             overridden:
-              public abstract descriptor: kotlinx.serialization.descriptors.SerialDescriptor
+              public abstract descriptor: kotlinx.serialization.descriptors.SerialDescriptor declared in kotlinx.serialization.internal.GeneratedSerializer
             FIELD PROPERTY_BACKING_FIELD name:descriptor type:kotlinx.serialization.descriptors.SerialDescriptor visibility:private [final]
             FUN DEFAULT_PROPERTY_ACCESSOR name:<get-descriptor> visibility:public modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer) returnType:kotlinx.serialization.descriptors.SerialDescriptor
               correspondingProperty: PROPERTY GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:descriptor visibility:public modality:FINAL [val]
@@ -1023,7 +1023,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                           serviceId: CALL 'private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.BoxService.$rpcServiceStub' type=kotlin.Long origin=GET_PROPERTY
                             $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.test1' type=<root>.BoxService.$rpcServiceStub origin=null
                           callableName: CONST String type=kotlin.String value="test1"
-                          type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:Method' type=kotlinx.rpc.RPCCall.Type
+                          type: GET_ENUM 'ENUM_ENTRY name:Method' type=kotlinx.rpc.RPCCall.Type
                           data: CONSTRUCTOR_CALL 'public constructor <init> (testData: <root>.TestData) declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod origin=null
                             testData: GET_VAR 'testData: <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test1' type=<root>.TestData origin=null
                           dataType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
@@ -1053,7 +1053,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                           serviceId: CALL 'private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.BoxService.$rpcServiceStub' type=kotlin.Long origin=GET_PROPERTY
                             $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.test2' type=<root>.BoxService.$rpcServiceStub origin=null
                           callableName: CONST String type=kotlin.String value="test2"
-                          type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:Method' type=kotlinx.rpc.RPCCall.Type
+                          type: GET_ENUM 'ENUM_ENTRY name:Method' type=kotlinx.rpc.RPCCall.Type
                           data: CONSTRUCTOR_CALL 'public constructor <init> (testData: <root>.TestData) declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod origin=null
                             testData: GET_VAR 'testData: <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test2' type=<root>.TestData origin=null
                           dataType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
@@ -1081,7 +1081,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
       VALUE_PARAMETER name:testData index:0 type:<root>.TestData
     PROPERTY FAKE_OVERRIDE name:coroutineContext visibility:public modality:ABSTRACT [fake_override,val]
       overridden:
-        public abstract coroutineContext: kotlin.coroutines.CoroutineContext
+        public abstract coroutineContext: kotlin.coroutines.CoroutineContext declared in kotlinx.rpc.RemoteService
       FUN FAKE_OVERRIDE name:<get-coroutineContext> visibility:public modality:ABSTRACT <> ($this:kotlinx.rpc.RemoteService) returnType:kotlin.coroutines.CoroutineContext [fake_override]
         correspondingProperty: PROPERTY FAKE_OVERRIDE name:coroutineContext visibility:public modality:ABSTRACT [fake_override,val]
         overridden:
@@ -1100,14 +1100,14 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                   CALL 'public abstract fun test1 (testData: <root>.TestData): kotlin.String declared in <root>.BoxService' type=kotlin.String origin=null
                     $this: CALL 'public final fun withService <T> (): T of kotlinx.rpc.withService declared in kotlinx.rpc' type=<root>.BoxService origin=null
                       <T>: <root>.BoxService
-                      $receiver: GET_OBJECT 'CLASS IR_EXTERNAL_DECLARATION_STUB OBJECT name:TestRpcClient modality:FINAL visibility:public superTypes:[kotlinx.rpc.RPCClient]' type=kotlinx.rpc.codegen.test.TestRpcClient
+                      $receiver: GET_OBJECT 'CLASS OBJECT name:TestRpcClient modality:FINAL visibility:public superTypes:[kotlinx.rpc.RPCClient]' type=kotlinx.rpc.codegen.test.TestRpcClient
                     testData: CONSTRUCTOR_CALL 'public constructor <init> (value: kotlin.String) declared in <root>.TestData' type=<root>.TestData origin=null
                       value: CONST String type=kotlin.String value="value"
                 VAR name:test2 type:kotlin.String [val]
                   CALL 'public abstract fun test2 (testData: <root>.TestData): kotlin.String declared in <root>.BoxService' type=kotlin.String origin=null
                     $this: CALL 'public final fun withService <T> (): T of kotlinx.rpc.withService declared in kotlinx.rpc' type=<root>.BoxService origin=null
                       <T>: <root>.BoxService
-                      $receiver: GET_OBJECT 'CLASS IR_EXTERNAL_DECLARATION_STUB OBJECT name:TestRpcClient modality:FINAL visibility:public superTypes:[kotlinx.rpc.RPCClient]' type=kotlinx.rpc.codegen.test.TestRpcClient
+                      $receiver: GET_OBJECT 'CLASS OBJECT name:TestRpcClient modality:FINAL visibility:public superTypes:[kotlinx.rpc.RPCClient]' type=kotlinx.rpc.codegen.test.TestRpcClient
                     testData: CONSTRUCTOR_CALL 'public constructor <init> (value: kotlin.String) declared in <root>.TestData' type=<root>.TestData origin=null
                       value: CONST String type=kotlin.String value="value"
                 RETURN type=kotlin.Nothing from='local final fun <anonymous> (): kotlin.String declared in <root>.box'

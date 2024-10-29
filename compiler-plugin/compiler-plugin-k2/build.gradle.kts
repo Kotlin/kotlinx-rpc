@@ -18,6 +18,7 @@ kotlin {
 }
 
 dependencies {
+    compileOnly(libs.kotlin.reflect)
     compileOnly(libs.kotlin.compiler.embeddable)
     project.whenKotlinIsAtLeast(2, 0) {
         compileOnly(libs.serialization.plugin)

@@ -13,7 +13,6 @@ import org.jetbrains.kotlin.fir.extensions.FirSupertypeGenerationExtension
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.constructClassLikeType
-import org.jetbrains.kotlin.fir.types.toFirResolvedTypeRef
 
 class FirRpcSupertypeGenerator(
     session: FirSession,
@@ -37,9 +36,11 @@ class FirRpcSupertypeGenerator(
         }
 
         return listOf(
-            RpcClassId.remoteServiceInterface
-                .constructClassLikeType(emptyArray(), isNullable = false)
-                .toFirResolvedTypeRef()
+            vsApi {
+                RpcClassId.remoteServiceInterface
+                    .constructClassLikeType(emptyArray(), isNullable = false)
+                    .toFirResolvedTypeRefVS()
+            }
         )
     }
 }

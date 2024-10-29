@@ -29,7 +29,7 @@ FILE fqName:<root> fileName:/flowParameter.kt
                 receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.<get-__rpc_client>' type=<root>.BoxService.$rpcServiceStub origin=null
       PROPERTY name:coroutineContext visibility:public modality:FINAL [val]
         overridden:
-          public abstract coroutineContext: kotlin.coroutines.CoroutineContext
+          public abstract coroutineContext: kotlin.coroutines.CoroutineContext declared in kotlinx.rpc.RPCClient
         FIELD PROPERTY_BACKING_FIELD name:coroutineContext type:kotlin.coroutines.CoroutineContext visibility:private [final]
           EXPRESSION_BODY
             CALL 'public abstract fun provideStubContext (serviceId: kotlin.Long): kotlin.coroutines.CoroutineContext declared in kotlinx.rpc.RPCClient' type=kotlin.coroutines.CoroutineContext origin=null
@@ -144,7 +144,7 @@ FILE fqName:<root> fileName:/flowParameter.kt
                   elements: VARARG type=kotlin.Array<kotlinx.serialization.KSerializer<kotlin.Any>> varargElementType=kotlinx.serialization.KSerializer<kotlin.Any>
                     CONSTRUCTOR_CALL 'internal constructor <init> (baseClass: kotlin.reflect.KClass<T of kotlinx.serialization.PolymorphicSerializer>, classAnnotations: kotlin.Array<kotlin.Annotation>) declared in kotlinx.serialization.PolymorphicSerializer' type=kotlinx.serialization.PolymorphicSerializer<kotlinx.coroutines.flow.Flow<kotlin.String>> origin=null
                       <class: T>: <none>
-                      baseClass: CLASS_REFERENCE 'CLASS IR_EXTERNAL_DECLARATION_STUB INTERFACE name:Flow modality:ABSTRACT visibility:public superTypes:[kotlin.Any]' type=kotlin.reflect.KClass<*>
+                      baseClass: CLASS_REFERENCE 'CLASS INTERFACE name:Flow modality:ABSTRACT visibility:public superTypes:[kotlin.Any]' type=kotlin.reflect.KClass<*>
                       classAnnotations: CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<kotlin.Annotation> origin=null
                         <T>: kotlin.Annotation
                         elements: VARARG type=kotlin.Array<kotlin.Annotation> varargElementType=kotlin.Annotation
@@ -153,7 +153,7 @@ FILE fqName:<root> fileName:/flowParameter.kt
               $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.BoxService.$rpcServiceStub.stream$rpcMethod.Companion
               BLOCK_BODY
                 RETURN type=kotlin.Nothing from='private final fun <get-$childSerializers> (): kotlin.Array<kotlinx.serialization.KSerializer<kotlin.Any>> declared in <root>.BoxService.$rpcServiceStub.stream$rpcMethod.Companion'
-                  GET_FIELD 'FIELD KOTLINX_SERIALIZATION name:$childSerializers type:kotlin.Array<kotlinx.serialization.KSerializer<kotlin.Any>> visibility:private [final]' type=kotlin.Array<kotlinx.serialization.KSerializer<kotlin.Any>> origin=null
+                  GET_FIELD 'FIELD KOTLINX_SERIALIZATION name:$childSerializers type:kotlin.Array<kotlinx.serialization.KSerializer<kotlin.Any>> visibility:private [final] declared in <root>.BoxService.$rpcServiceStub.stream$rpcMethod.Companion' type=kotlin.Array<kotlinx.serialization.KSerializer<kotlin.Any>> origin=null
                     receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.stream$rpcMethod.Companion declared in <root>.BoxService.$rpcServiceStub.stream$rpcMethod.Companion.<get-$childSerializers>' type=<root>.BoxService.$rpcServiceStub.stream$rpcMethod.Companion origin=null
           CONSTRUCTOR GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] visibility:private <> () returnType:<root>.BoxService.$rpcServiceStub.stream$rpcMethod.Companion [primary]
             BLOCK_BODY
@@ -179,11 +179,11 @@ FILE fqName:<root> fileName:/flowParameter.kt
                 GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.stream$rpcMethod>]' type=<root>.BoxService.$rpcServiceStub.stream$rpcMethod.$serializer
         CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.stream$rpcMethod>]
           annotations:
-            Deprecated(message = "This synthesized declaration should not be used directly", replaceWith = <null>, level = GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:HIDDEN' type=kotlin.DeprecationLevel)
+            Deprecated(message = "This synthesized declaration should not be used directly", replaceWith = <null>, level = GET_ENUM 'ENUM_ENTRY name:HIDDEN' type=kotlin.DeprecationLevel)
           $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.BoxService.$rpcServiceStub.stream$rpcMethod.$serializer
           PROPERTY GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:descriptor visibility:public modality:FINAL [val]
             overridden:
-              public abstract descriptor: kotlinx.serialization.descriptors.SerialDescriptor
+              public abstract descriptor: kotlinx.serialization.descriptors.SerialDescriptor declared in kotlinx.serialization.internal.GeneratedSerializer
             FIELD PROPERTY_BACKING_FIELD name:descriptor type:kotlinx.serialization.descriptors.SerialDescriptor visibility:private [final]
             FUN DEFAULT_PROPERTY_ACCESSOR name:<get-descriptor> visibility:public modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.stream$rpcMethod.$serializer) returnType:kotlinx.serialization.descriptors.SerialDescriptor
               correspondingProperty: PROPERTY GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:descriptor visibility:public modality:FINAL [val]
@@ -470,7 +470,7 @@ FILE fqName:<root> fileName:/flowParameter.kt
                           serviceId: CALL 'private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.BoxService.$rpcServiceStub' type=kotlin.Long origin=GET_PROPERTY
                             $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.stream' type=<root>.BoxService.$rpcServiceStub origin=null
                           callableName: CONST String type=kotlin.String value="stream"
-                          type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:Method' type=kotlinx.rpc.RPCCall.Type
+                          type: GET_ENUM 'ENUM_ENTRY name:Method' type=kotlinx.rpc.RPCCall.Type
                           data: CONSTRUCTOR_CALL 'public constructor <init> (flow: kotlinx.coroutines.flow.Flow<kotlin.String>) declared in <root>.BoxService.$rpcServiceStub.stream$rpcMethod' type=<root>.BoxService.$rpcServiceStub.stream$rpcMethod origin=null
                             flow: GET_VAR 'flow: kotlinx.coroutines.flow.Flow<kotlin.String> declared in <root>.BoxService.$rpcServiceStub.stream' type=kotlinx.coroutines.flow.Flow<kotlin.String> origin=null
                           dataType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
@@ -495,7 +495,7 @@ FILE fqName:<root> fileName:/flowParameter.kt
       VALUE_PARAMETER name:flow index:0 type:kotlinx.coroutines.flow.Flow<kotlin.String>
     PROPERTY FAKE_OVERRIDE name:coroutineContext visibility:public modality:ABSTRACT [fake_override,val]
       overridden:
-        public abstract coroutineContext: kotlin.coroutines.CoroutineContext
+        public abstract coroutineContext: kotlin.coroutines.CoroutineContext declared in kotlinx.rpc.RemoteService
       FUN FAKE_OVERRIDE name:<get-coroutineContext> visibility:public modality:ABSTRACT <> ($this:kotlinx.rpc.RemoteService) returnType:kotlin.coroutines.CoroutineContext [fake_override]
         correspondingProperty: PROPERTY FAKE_OVERRIDE name:coroutineContext visibility:public modality:ABSTRACT [fake_override,val]
         overridden:
@@ -514,7 +514,7 @@ FILE fqName:<root> fileName:/flowParameter.kt
                   CALL 'public abstract fun stream (flow: kotlinx.coroutines.flow.Flow<kotlin.String>): kotlin.String declared in <root>.BoxService' type=kotlin.String origin=null
                     $this: CALL 'public final fun withService <T> (): T of kotlinx.rpc.withService declared in kotlinx.rpc' type=<root>.BoxService origin=null
                       <T>: <root>.BoxService
-                      $receiver: GET_OBJECT 'CLASS IR_EXTERNAL_DECLARATION_STUB OBJECT name:TestRpcClient modality:FINAL visibility:public superTypes:[kotlinx.rpc.RPCClient]' type=kotlinx.rpc.codegen.test.TestRpcClient
+                      $receiver: GET_OBJECT 'CLASS OBJECT name:TestRpcClient modality:FINAL visibility:public superTypes:[kotlinx.rpc.RPCClient]' type=kotlinx.rpc.codegen.test.TestRpcClient
                     flow: CALL 'public final fun flow <T> (block: @[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.flow.FlowCollector<T of kotlinx.coroutines.flow.flow>, kotlin.Unit>): kotlinx.coroutines.flow.Flow<T of kotlinx.coroutines.flow.flow> declared in kotlinx.coroutines.flow' type=kotlinx.coroutines.flow.Flow<kotlin.String> origin=null
                       <T>: kotlin.String
                       block: FUN_EXPR type=@[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.flow.FlowCollector<kotlin.String>, kotlin.Unit> origin=LAMBDA
@@ -522,7 +522,7 @@ FILE fqName:<root> fileName:/flowParameter.kt
                           $receiver: VALUE_PARAMETER name:$this$flow type:kotlinx.coroutines.flow.FlowCollector<kotlin.String>
                           BLOCK_BODY
                             RETURN type=kotlin.Nothing from='local final fun <anonymous> (): kotlin.Unit declared in <root>.box.<anonymous>'
-                              GET_OBJECT 'CLASS IR_EXTERNAL_DECLARATION_STUB OBJECT name:Unit modality:FINAL visibility:public superTypes:[kotlin.Any]' type=kotlin.Unit
+                              GET_OBJECT 'CLASS OBJECT name:Unit modality:FINAL visibility:public superTypes:[kotlin.Any]' type=kotlin.Unit
                 RETURN type=kotlin.Nothing from='local final fun <anonymous> (): kotlin.String declared in <root>.box'
                   WHEN type=kotlin.String origin=IF
                     BRANCH

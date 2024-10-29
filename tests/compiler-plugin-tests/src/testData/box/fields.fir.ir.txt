@@ -29,7 +29,7 @@ FILE fqName:<root> fileName:/fields.kt
                 receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.<get-__rpc_client>' type=<root>.BoxService.$rpcServiceStub origin=null
       PROPERTY name:coroutineContext visibility:public modality:FINAL [val]
         overridden:
-          public abstract coroutineContext: kotlin.coroutines.CoroutineContext
+          public abstract coroutineContext: kotlin.coroutines.CoroutineContext declared in kotlinx.rpc.RPCClient
         FIELD PROPERTY_BACKING_FIELD name:coroutineContext type:kotlin.coroutines.CoroutineContext visibility:private [final]
           EXPRESSION_BODY
             CALL 'public abstract fun provideStubContext (serviceId: kotlin.Long): kotlin.coroutines.CoroutineContext declared in kotlinx.rpc.RPCClient' type=kotlin.coroutines.CoroutineContext origin=null
@@ -48,7 +48,7 @@ FILE fqName:<root> fileName:/fields.kt
                 receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.<get-coroutineContext>' type=<root>.BoxService.$rpcServiceStub origin=null
       PROPERTY name:plainFlow visibility:public modality:FINAL [delegated,val]
         overridden:
-          public abstract plainFlow: kotlinx.coroutines.flow.Flow<kotlin.String>
+          public abstract plainFlow: kotlinx.coroutines.flow.Flow<kotlin.String> declared in <root>.BoxService
         FIELD PROPERTY_DELEGATE name:plainFlow$delegate type:kotlin.Lazy<kotlinx.coroutines.flow.Flow<kotlin.String>> visibility:private [final]
           EXPRESSION_BODY
             CALL 'public final fun lazy <T> (initializer: kotlin.Function0<T of kotlin.lazy>): kotlin.Lazy<T of kotlin.lazy> declared in kotlin' type=kotlin.Lazy<kotlinx.coroutines.flow.Flow<kotlin.String>> origin=null
@@ -78,13 +78,13 @@ FILE fqName:<root> fileName:/fields.kt
             RETURN type=kotlin.Nothing from='public final fun <get-plainFlow> (): kotlinx.coroutines.flow.Flow<kotlin.String> declared in <root>.BoxService.$rpcServiceStub'
               CALL 'public final fun getValue <T> (thisRef: kotlin.Any?, property: kotlin.reflect.KProperty<*>): T of kotlin.getValue declared in kotlin' type=kotlinx.coroutines.flow.Flow<kotlin.String> origin=null
                 <T>: kotlinx.coroutines.flow.Flow<kotlin.String>
-                $receiver: GET_FIELD 'FIELD PROPERTY_DELEGATE name:plainFlow$delegate type:kotlin.Lazy<kotlinx.coroutines.flow.Flow<kotlin.String>> visibility:private [final]' type=kotlin.Lazy<kotlinx.coroutines.flow.Flow<kotlin.String>> origin=null
+                $receiver: GET_FIELD 'FIELD PROPERTY_DELEGATE name:plainFlow$delegate type:kotlin.Lazy<kotlinx.coroutines.flow.Flow<kotlin.String>> visibility:private [final] declared in <root>.BoxService.$rpcServiceStub' type=kotlin.Lazy<kotlinx.coroutines.flow.Flow<kotlin.String>> origin=null
                   receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.<get-plainFlow>' type=<root>.BoxService.$rpcServiceStub origin=null
                 thisRef: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.<get-plainFlow>' type=<root>.BoxService.$rpcServiceStub origin=null
-                property: PROPERTY_REFERENCE 'public final plainFlow: kotlinx.coroutines.flow.Flow<kotlin.String>' field=null getter='public final fun <get-plainFlow> (): kotlinx.coroutines.flow.Flow<kotlin.String> declared in <root>.BoxService.$rpcServiceStub' setter=null type=kotlin.reflect.KProperty1<<root>.BoxService.$rpcServiceStub, kotlinx.coroutines.flow.Flow<kotlin.String>> origin=PROPERTY_REFERENCE_FOR_DELEGATE
+                property: PROPERTY_REFERENCE 'public final plainFlow: kotlinx.coroutines.flow.Flow<kotlin.String> declared in <root>.BoxService.$rpcServiceStub' field=null getter='public final fun <get-plainFlow> (): kotlinx.coroutines.flow.Flow<kotlin.String> declared in <root>.BoxService.$rpcServiceStub' setter=null type=kotlin.reflect.KProperty1<<root>.BoxService.$rpcServiceStub, kotlinx.coroutines.flow.Flow<kotlin.String>> origin=PROPERTY_REFERENCE_FOR_DELEGATE
       PROPERTY name:sharedFlow visibility:public modality:FINAL [delegated,val]
         overridden:
-          public abstract sharedFlow: kotlinx.coroutines.flow.SharedFlow<kotlin.String>
+          public abstract sharedFlow: kotlinx.coroutines.flow.SharedFlow<kotlin.String> declared in <root>.BoxService
         FIELD PROPERTY_DELEGATE name:sharedFlow$delegate type:kotlin.Lazy<kotlinx.coroutines.flow.SharedFlow<kotlin.String>> visibility:private [final]
           EXPRESSION_BODY
             CALL 'public final fun lazy <T> (initializer: kotlin.Function0<T of kotlin.lazy>): kotlin.Lazy<T of kotlin.lazy> declared in kotlin' type=kotlin.Lazy<kotlinx.coroutines.flow.SharedFlow<kotlin.String>> origin=null
@@ -114,13 +114,13 @@ FILE fqName:<root> fileName:/fields.kt
             RETURN type=kotlin.Nothing from='public final fun <get-sharedFlow> (): kotlinx.coroutines.flow.SharedFlow<kotlin.String> declared in <root>.BoxService.$rpcServiceStub'
               CALL 'public final fun getValue <T> (thisRef: kotlin.Any?, property: kotlin.reflect.KProperty<*>): T of kotlin.getValue declared in kotlin' type=kotlinx.coroutines.flow.SharedFlow<kotlin.String> origin=null
                 <T>: kotlinx.coroutines.flow.SharedFlow<kotlin.String>
-                $receiver: GET_FIELD 'FIELD PROPERTY_DELEGATE name:sharedFlow$delegate type:kotlin.Lazy<kotlinx.coroutines.flow.SharedFlow<kotlin.String>> visibility:private [final]' type=kotlin.Lazy<kotlinx.coroutines.flow.SharedFlow<kotlin.String>> origin=null
+                $receiver: GET_FIELD 'FIELD PROPERTY_DELEGATE name:sharedFlow$delegate type:kotlin.Lazy<kotlinx.coroutines.flow.SharedFlow<kotlin.String>> visibility:private [final] declared in <root>.BoxService.$rpcServiceStub' type=kotlin.Lazy<kotlinx.coroutines.flow.SharedFlow<kotlin.String>> origin=null
                   receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.<get-sharedFlow>' type=<root>.BoxService.$rpcServiceStub origin=null
                 thisRef: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.<get-sharedFlow>' type=<root>.BoxService.$rpcServiceStub origin=null
-                property: PROPERTY_REFERENCE 'public final sharedFlow: kotlinx.coroutines.flow.SharedFlow<kotlin.String>' field=null getter='public final fun <get-sharedFlow> (): kotlinx.coroutines.flow.SharedFlow<kotlin.String> declared in <root>.BoxService.$rpcServiceStub' setter=null type=kotlin.reflect.KProperty1<<root>.BoxService.$rpcServiceStub, kotlinx.coroutines.flow.SharedFlow<kotlin.String>> origin=PROPERTY_REFERENCE_FOR_DELEGATE
+                property: PROPERTY_REFERENCE 'public final sharedFlow: kotlinx.coroutines.flow.SharedFlow<kotlin.String> declared in <root>.BoxService.$rpcServiceStub' field=null getter='public final fun <get-sharedFlow> (): kotlinx.coroutines.flow.SharedFlow<kotlin.String> declared in <root>.BoxService.$rpcServiceStub' setter=null type=kotlin.reflect.KProperty1<<root>.BoxService.$rpcServiceStub, kotlinx.coroutines.flow.SharedFlow<kotlin.String>> origin=PROPERTY_REFERENCE_FOR_DELEGATE
       PROPERTY name:stateFlow visibility:public modality:FINAL [delegated,val]
         overridden:
-          public abstract stateFlow: kotlinx.coroutines.flow.StateFlow<kotlin.String>
+          public abstract stateFlow: kotlinx.coroutines.flow.StateFlow<kotlin.String> declared in <root>.BoxService
         FIELD PROPERTY_DELEGATE name:stateFlow$delegate type:kotlin.Lazy<kotlinx.coroutines.flow.StateFlow<kotlin.String>> visibility:private [final]
           EXPRESSION_BODY
             CALL 'public final fun lazy <T> (initializer: kotlin.Function0<T of kotlin.lazy>): kotlin.Lazy<T of kotlin.lazy> declared in kotlin' type=kotlin.Lazy<kotlinx.coroutines.flow.StateFlow<kotlin.String>> origin=null
@@ -150,10 +150,10 @@ FILE fqName:<root> fileName:/fields.kt
             RETURN type=kotlin.Nothing from='public final fun <get-stateFlow> (): kotlinx.coroutines.flow.StateFlow<kotlin.String> declared in <root>.BoxService.$rpcServiceStub'
               CALL 'public final fun getValue <T> (thisRef: kotlin.Any?, property: kotlin.reflect.KProperty<*>): T of kotlin.getValue declared in kotlin' type=kotlinx.coroutines.flow.StateFlow<kotlin.String> origin=null
                 <T>: kotlinx.coroutines.flow.StateFlow<kotlin.String>
-                $receiver: GET_FIELD 'FIELD PROPERTY_DELEGATE name:stateFlow$delegate type:kotlin.Lazy<kotlinx.coroutines.flow.StateFlow<kotlin.String>> visibility:private [final]' type=kotlin.Lazy<kotlinx.coroutines.flow.StateFlow<kotlin.String>> origin=null
+                $receiver: GET_FIELD 'FIELD PROPERTY_DELEGATE name:stateFlow$delegate type:kotlin.Lazy<kotlinx.coroutines.flow.StateFlow<kotlin.String>> visibility:private [final] declared in <root>.BoxService.$rpcServiceStub' type=kotlin.Lazy<kotlinx.coroutines.flow.StateFlow<kotlin.String>> origin=null
                   receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.<get-stateFlow>' type=<root>.BoxService.$rpcServiceStub origin=null
                 thisRef: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.<get-stateFlow>' type=<root>.BoxService.$rpcServiceStub origin=null
-                property: PROPERTY_REFERENCE 'public final stateFlow: kotlinx.coroutines.flow.StateFlow<kotlin.String>' field=null getter='public final fun <get-stateFlow> (): kotlinx.coroutines.flow.StateFlow<kotlin.String> declared in <root>.BoxService.$rpcServiceStub' setter=null type=kotlin.reflect.KProperty1<<root>.BoxService.$rpcServiceStub, kotlinx.coroutines.flow.StateFlow<kotlin.String>> origin=PROPERTY_REFERENCE_FOR_DELEGATE
+                property: PROPERTY_REFERENCE 'public final stateFlow: kotlinx.coroutines.flow.StateFlow<kotlin.String> declared in <root>.BoxService.$rpcServiceStub' field=null getter='public final fun <get-stateFlow> (): kotlinx.coroutines.flow.StateFlow<kotlin.String> declared in <root>.BoxService.$rpcServiceStub' setter=null type=kotlin.reflect.KProperty1<<root>.BoxService.$rpcServiceStub, kotlinx.coroutines.flow.StateFlow<kotlin.String>> origin=PROPERTY_REFERENCE_FOR_DELEGATE
       CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.internal.RPCStubObject<<root>.BoxService>]
         $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.BoxService.$rpcServiceStub.Companion
         PROPERTY name:methodNames visibility:private modality:FINAL [val]
@@ -259,7 +259,7 @@ FILE fqName:<root> fileName:/fields.kt
       $this: VALUE_PARAMETER name:<this> type:kotlin.Any
     PROPERTY FAKE_OVERRIDE name:coroutineContext visibility:public modality:ABSTRACT [fake_override,val]
       overridden:
-        public abstract coroutineContext: kotlin.coroutines.CoroutineContext
+        public abstract coroutineContext: kotlin.coroutines.CoroutineContext declared in kotlinx.rpc.RemoteService
       FUN FAKE_OVERRIDE name:<get-coroutineContext> visibility:public modality:ABSTRACT <> ($this:kotlinx.rpc.RemoteService) returnType:kotlin.coroutines.CoroutineContext [fake_override]
         correspondingProperty: PROPERTY FAKE_OVERRIDE name:coroutineContext visibility:public modality:ABSTRACT [fake_override,val]
         overridden:
@@ -302,7 +302,7 @@ FILE fqName:<root> fileName:/fields.kt
                                   $receiver: CALL 'public abstract fun <get-plainFlow> (): kotlinx.coroutines.flow.Flow<kotlin.String> declared in <root>.BoxService' type=kotlinx.coroutines.flow.Flow<kotlin.String> origin=GET_PROPERTY
                                     $this: CALL 'public final fun withService <T> (): T of kotlinx.rpc.withService declared in kotlinx.rpc' type=<root>.BoxService origin=null
                                       <T>: <root>.BoxService
-                                      $receiver: GET_OBJECT 'CLASS IR_EXTERNAL_DECLARATION_STUB OBJECT name:TestRpcClient modality:FINAL visibility:public superTypes:[kotlinx.rpc.RPCClient]' type=kotlinx.rpc.codegen.test.TestRpcClient
+                                      $receiver: GET_OBJECT 'CLASS OBJECT name:TestRpcClient modality:FINAL visibility:public superTypes:[kotlinx.rpc.RPCClient]' type=kotlinx.rpc.codegen.test.TestRpcClient
                               VAR name:sharedFlow type:kotlin.collections.List<kotlin.String> [val]
                                 CALL 'public final fun toList <T> (destination: kotlin.collections.MutableList<T of kotlinx.coroutines.flow.toList>): kotlin.collections.List<T of kotlinx.coroutines.flow.toList> declared in kotlinx.coroutines.flow' type=kotlin.collections.List<kotlin.String> origin=null
                                   <T>: kotlin.String
@@ -311,14 +311,14 @@ FILE fqName:<root> fileName:/fields.kt
                                     $receiver: CALL 'public abstract fun <get-sharedFlow> (): kotlinx.coroutines.flow.SharedFlow<kotlin.String> declared in <root>.BoxService' type=kotlinx.coroutines.flow.SharedFlow<kotlin.String> origin=GET_PROPERTY
                                       $this: CALL 'public final fun withService <T> (): T of kotlinx.rpc.withService declared in kotlinx.rpc' type=<root>.BoxService origin=null
                                         <T>: <root>.BoxService
-                                        $receiver: GET_OBJECT 'CLASS IR_EXTERNAL_DECLARATION_STUB OBJECT name:TestRpcClient modality:FINAL visibility:public superTypes:[kotlinx.rpc.RPCClient]' type=kotlinx.rpc.codegen.test.TestRpcClient
+                                        $receiver: GET_OBJECT 'CLASS OBJECT name:TestRpcClient modality:FINAL visibility:public superTypes:[kotlinx.rpc.RPCClient]' type=kotlinx.rpc.codegen.test.TestRpcClient
                                     count: CONST Int type=kotlin.Int value=1
                               VAR name:stateFlow type:kotlin.String [val]
                                 CALL 'public abstract fun <get-value> (): T of kotlinx.coroutines.flow.StateFlow declared in kotlinx.coroutines.flow.StateFlow' type=kotlin.String origin=GET_PROPERTY
                                   $this: CALL 'public abstract fun <get-stateFlow> (): kotlinx.coroutines.flow.StateFlow<kotlin.String> declared in <root>.BoxService' type=kotlinx.coroutines.flow.StateFlow<kotlin.String> origin=GET_PROPERTY
                                     $this: CALL 'public final fun withService <T> (): T of kotlinx.rpc.withService declared in kotlinx.rpc' type=<root>.BoxService origin=null
                                       <T>: <root>.BoxService
-                                      $receiver: GET_OBJECT 'CLASS IR_EXTERNAL_DECLARATION_STUB OBJECT name:TestRpcClient modality:FINAL visibility:public superTypes:[kotlinx.rpc.RPCClient]' type=kotlinx.rpc.codegen.test.TestRpcClient
+                                      $receiver: GET_OBJECT 'CLASS OBJECT name:TestRpcClient modality:FINAL visibility:public superTypes:[kotlinx.rpc.RPCClient]' type=kotlinx.rpc.codegen.test.TestRpcClient
                               VAR name:failures type:kotlin.collections.MutableList<kotlin.String> [val]
                                 CALL 'public final fun mutableListOf <T> (): kotlin.collections.MutableList<T of kotlin.collections.mutableListOf> declared in kotlin.collections' type=kotlin.collections.MutableList<kotlin.String> origin=null
                                   <T>: kotlin.String
