@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import kotlinx.rpc.RPC
+import kotlinx.rpc.RemoteService
 import kotlinx.rpc.internal.utils.hex.hexToByteArrayInternal
 import kotlinx.rpc.internal.utils.hex.hexToReadableBinary
 import kotlinx.rpc.krpc.RPCTransportMessage
@@ -246,7 +246,7 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
         DumpLoggerContainer.set(dumpLogger)
     }
 
-    private inline fun <reified Service : RPC> Service.withConsistentServiceId(): Service = apply {
+    private inline fun <reified Service : RemoteService> Service.withConsistentServiceId(): Service = apply {
         val clazz = this::class.java
         val prop = clazz
             .declaredFields

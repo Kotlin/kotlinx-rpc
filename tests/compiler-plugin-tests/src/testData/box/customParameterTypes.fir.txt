@@ -37,7 +37,7 @@ FILE: customParameterTypes.kt
         }
 
     }
-    public abstract interface BoxService : R|kotlinx/rpc/RPC| {
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface BoxService : R|kotlinx/rpc/RemoteService| {
         public abstract suspend fun test1(testData: R|TestData|): R|kotlin/String|
 
         public abstract suspend fun test2(testData: R|TestData|): R|kotlin/String|

@@ -29,7 +29,7 @@ class FieldExtensionReceiverCodeGenerationException(declaration: KSDeclaration? 
     ACodeGenerationException("RPC Service field can not have extension receiver", declaration)
 
 class ForbiddenFieldTypeCodeGenerationException(declaration: KSDeclaration? = null) : ACodeGenerationException(
-    initMessage = "Only Flow, SharedFlow and StateFlow fields are allowed in RPC Service interfaces",
+    initMessage = "Only Flow, SharedFlow and StateFlow fields are allowed in a RemoteService",
     declaration = declaration
 )
 

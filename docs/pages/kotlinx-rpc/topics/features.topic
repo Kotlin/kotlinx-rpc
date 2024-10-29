@@ -24,7 +24,8 @@
                     val innerFlow: StateFlow&lt;Int&gt;
                 }
 
-                interface MyService : RPC {
+                @Rpc
+                interface MyService : RemoteService {
                     suspend fun sendStream(stream: Flow&lt;Flow&lt;Int&gt;&gt;): Flow&lt;StreamResult&gt;
                 }
             </code-block>
@@ -85,7 +86,8 @@
             <p>Our protocol provides you with an ability to declare service fields:</p>
 
             <code-block lang="kotlin">
-                interface MyService : RPC {
+                @Rpc
+                interface MyService : RemoteService {
                     val plainFlow: Flow&lt;Int&gt;
                     val sharedFlow: SharedFlow&lt;Int&gt;
                     val stateFlow: StateFlow&lt;Int&gt;
@@ -142,7 +144,8 @@
         </p>
 
         <code-block lang="kotlin">
-            interface MyService : RPC {
+            @Rpc
+            interface MyService : RemoteService {
                 val flow: StateFlow&lt;Int&gt;
             }
 
@@ -163,7 +166,8 @@
             (when <code>withService</code> method is called):</p>
 
         <code-block lang="kotlin">
-            interface MyService : RPC {
+            @Rpc
+            interface MyService : RemoteService {
                 val lazyFlow: Flow&lt;Int&gt; // initialized on first access
 
                 @RPCEagerField

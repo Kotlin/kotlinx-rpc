@@ -63,9 +63,9 @@ public interface RPCClient : CoroutineScope {
     public fun <T> registerStateFlowField(serviceScope: CoroutineScope, field: RPCField): StateFlow<T>
 
     /**
-     * Provides child [CoroutineContext] for a new [RPC] service stub.
+     * Provides child [CoroutineContext] for a new [RemoteService] service stub.
      *
-     * This function should not be called directly.
+     * This function shouldn't be called directly.
      *
      * @param serviceId id of the new service. Used for service cancellation messages.
      */

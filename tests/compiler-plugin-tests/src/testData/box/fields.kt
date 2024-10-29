@@ -4,11 +4,13 @@
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.rpc.RPC
+import kotlinx.rpc.RemoteService
 import kotlinx.rpc.withService
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.codegen.test.TestRpcClient
 
-interface BoxService : RPC {
+@Rpc
+interface BoxService : RemoteService {
     val plainFlow: Flow<String>
 
     val sharedFlow: SharedFlow<String>

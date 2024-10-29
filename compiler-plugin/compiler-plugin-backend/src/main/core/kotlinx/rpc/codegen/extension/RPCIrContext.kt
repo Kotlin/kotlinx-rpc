@@ -77,10 +77,6 @@ internal class RPCIrContext(
         getIrClassSymbol("kotlin", "Pair")
     }
 
-    val rpc by lazy {
-        getRpcIrClassSymbol("RPC")
-    }
-
     val rpcClient by lazy {
         getRpcIrClassSymbol("RPCClient")
     }

@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.krpc.server.internal
 
-import kotlinx.rpc.RPC
+import kotlinx.rpc.RemoteService
 import kotlinx.rpc.internal.RPCServiceMethodSerializationTypeProvider
 import kotlinx.rpc.internal.findRPCStubProvider
 import kotlinx.rpc.internal.kClass
@@ -16,7 +16,7 @@ import kotlin.reflect.KType
  * Utility method that returns [KType] for the class which is used to serialize method request with the [methodName]
  */
 @InternalRPCApi
-public inline fun <reified T : RPC> rpcServiceMethodSerializationTypeOf(methodName: String): KType? {
+public inline fun <reified T : RemoteService> rpcServiceMethodSerializationTypeOf(methodName: String): KType? {
     return rpcServiceMethodSerializationTypeOf(T::class, methodName)
 }
 

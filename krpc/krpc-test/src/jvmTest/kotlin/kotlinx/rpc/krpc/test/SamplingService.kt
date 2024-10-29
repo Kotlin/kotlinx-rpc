@@ -9,7 +9,8 @@ package org.jetbrains.krpc.test.api.util
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.rpc.RPC
+import kotlinx.rpc.RemoteService
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.test.plainFlow
 import kotlinx.rpc.krpc.test.sharedFlowOfT
 import kotlinx.rpc.krpc.test.stateFlowOfT
@@ -21,7 +22,8 @@ data class SamplingData(
     val data: String,
 )
 
-interface SamplingService : RPC {
+@Rpc
+interface SamplingService : RemoteService {
     suspend fun echo(arg1: String, data: SamplingData): SamplingData
 
     suspend fun clientStream(flow: Flow<Int>): List<Int>

@@ -6,7 +6,8 @@ package kotlinx.rpc.codegen.checkers
 
 import kotlinx.rpc.codegen.FirRpcPredicates
 import kotlinx.rpc.codegen.checkers.diagnostics.FirRpcDiagnostics
-import kotlinx.rpc.codegen.isRpc
+import kotlinx.rpc.codegen.isRemoteService
+import kotlinx.rpc.codegen.remoteServiceSupertypeSource
 import kotlinx.rpc.codegen.rpcAnnotationSource
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
@@ -33,9 +34,9 @@ object FirRpcAnnotationChecker : FirRegularClassChecker(MppCheckerKind.Common) {
             )
         }
 
-        if (declaration.symbol.isRpc() && !rpcAnnotated) {
+        if (declaration.symbol.isRemoteService(context.session) && !rpcAnnotated) {
             reporter.reportOn(
-                source = declaration.symbol.rpcAnnotationSource(context.session),
+                source = declaration.symbol.remoteServiceSupertypeSource(context.session),
                 factory = FirRpcDiagnostics.MISSING_RPC_ANNOTATION,
                 context = context,
             )

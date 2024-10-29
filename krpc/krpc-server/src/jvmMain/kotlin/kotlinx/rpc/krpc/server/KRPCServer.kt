@@ -5,8 +5,8 @@
 package kotlinx.rpc.krpc.server
 
 import kotlinx.coroutines.*
-import kotlinx.rpc.RPC
 import kotlinx.rpc.RPCServer
+import kotlinx.rpc.RemoteService
 import kotlinx.rpc.internal.qualifiedClassName
 import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
@@ -99,7 +99,7 @@ public abstract class KRPCServer(
         }
     }
 
-    final override fun <Service : RPC> registerService(
+    final override fun <Service : RemoteService> registerService(
         serviceKClass: KClass<Service>,
         serviceFactory: (CoroutineContext) -> Service,
     ) {
@@ -122,7 +122,7 @@ public abstract class KRPCServer(
         }
     }
 
-    private fun <Service : RPC> createNewServiceInstance(
+    private fun <Service : RemoteService> createNewServiceInstance(
         serviceKClass: KClass<Service>,
         serviceFactory: (CoroutineContext) -> Service,
     ): RPCServerService<Service> {

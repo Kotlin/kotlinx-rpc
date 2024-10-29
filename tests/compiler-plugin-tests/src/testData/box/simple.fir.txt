@@ -1,5 +1,5 @@
 FILE: simple.kt
-    public abstract interface BoxService : R|kotlinx/rpc/RPC| {
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface BoxService : R|kotlinx/rpc/RemoteService| {
         public abstract suspend fun simple(): R|kotlin/String|
 
         public final class $rpcServiceStub : R|kotlin/Any| {

@@ -4,24 +4,23 @@
 
 package kotlinx.rpc.codegen.extension
 
+import kotlinx.rpc.codegen.common.RpcClassId
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.IrClass
-import org.jetbrains.kotlin.ir.types.defaultType
-import org.jetbrains.kotlin.ir.util.isInterface
+import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
 
 internal class RPCIrServiceProcessor(
     @Suppress("unused")
     private val logger: MessageCollector,
 ) : IrElementTransformer<RPCIrContext> {
-    @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
-    override fun visitClass(declaration: IrClass, context: RPCIrContext): IrStatement {
-        if (declaration.isInterface && declaration.superTypes.contains(context.rpc.defaultType)) {
-            processService(declaration, context)
+    override fun visitClass(declaration: IrClass, data: RPCIrContext): IrStatement {
+        if (declaration.hasAnnotation(RpcClassId.rpcAnnotation)) {
+            processService(declaration, data)
         }
 
-        return super.visitClass(declaration, context)
+        return super.visitClass(declaration, data)
     }
 
     private fun processService(service: IrClass, context: RPCIrContext) {

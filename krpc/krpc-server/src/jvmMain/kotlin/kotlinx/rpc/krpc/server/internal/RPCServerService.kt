@@ -5,7 +5,7 @@
 package kotlinx.rpc.krpc.server.internal
 
 import kotlinx.coroutines.*
-import kotlinx.rpc.RPC
+import kotlinx.rpc.RemoteService
 import kotlinx.rpc.internal.RPCMethodClassArguments
 import kotlinx.rpc.internal.qualifiedClassName
 import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
@@ -24,7 +24,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.callSuspend
 
-internal class RPCServerService<T : RPC>(
+internal class RPCServerService<T : RemoteService>(
     private val service: T,
     private val serviceKClass: KClass<T>,
     override val config: RPCConfig.Server,
