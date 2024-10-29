@@ -7,17 +7,22 @@ package util
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import java.io.File
 
 fun Project.configureNpm() {
     val executeNpmLogin by tasks.registering {
+        if (!useProxyRepositories) {
+            return@registering
+        }
+
         val registryUrl = "https://packages.jetbrains.team/npm/p/krpc/build-deps/"
 
         // To prevent leaking of credentials in VCS on dev machine use the build directory config file
         val buildYarnConfigFile = File(project.rootDir, "build/js/.yarnrc")
         val buildNpmConfigFile = File(project.rootDir, "build/js/.npmrc")
 
-        val spacePassword: String? = getSpacePassword()
+        val spacePassword: String? = spacePassword
 
         doLast {
             val outputYarnText = """
@@ -50,10 +55,14 @@ fun Project.configureNpm() {
         outputs.file(buildNpmConfigFile).withPropertyName("buildOutputNpmFile")
     }
 
+    val useProxy = useProxyRepositories
+
     plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class.java).configureEach {
         rootProject.extensions.configure<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension> {
             download = true
-            downloadBaseUrl = "https://packages.jetbrains.team/files/p/krpc/build-deps/"
+            if (useProxy) {
+                downloadBaseUrl = "https://packages.jetbrains.team/files/p/krpc/build-deps/"
+            }
         }
 
         tasks.named("kotlinNpmInstall").configure {
@@ -66,7 +75,15 @@ fun Project.configureNpm() {
         rootProject.extensions.configure<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension> {
             ignoreScripts = false
             download = true
-            downloadBaseUrl = "https://packages.jetbrains.team/files/p/krpc/build-deps/"
+
+            yarnLockMismatchReport = when (useProxy) {
+                true -> YarnLockMismatchReport.FAIL
+                false -> YarnLockMismatchReport.WARNING
+            }
+
+            if (useProxy) {
+                downloadBaseUrl = "https://packages.jetbrains.team/files/p/krpc/build-deps/"
+            }
         }
     }
 }

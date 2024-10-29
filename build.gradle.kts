@@ -3,7 +3,9 @@
  */
 
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
-import util.getSpacePassword
+import util.configureApiValidation
+import util.configureNpm
+import util.configureProjectReport
 import util.libs
 
 plugins {
@@ -30,7 +32,7 @@ println("kotlinx.rpc project version: $version, Kotlin version: $kotlinVersionFu
 // If the prefix of the kPRC version is not Kotlin gradle plugin version – you have a problem :)
 // Probably some dependency brings kotlin with the later version.
 // To mitigate so, refer to `versions-root/kotlin-version-lookup.json`
-// and its usage in `gradle-conventions-settings/src/main/kotlin/settings-conventions.settings.gradle.kts`
+// and its usage in `gradle-conventions-settings/src/main/kotlin/conventions-version-resolution.settings.gradle.kts`
 val kotlinGPVersion = getKotlinPluginVersion()
 if (kotlinVersionFull != kotlinGPVersion) {
     error("KGP version mismatch. Project version: $kotlinVersionFull, KGP version: $kotlinGPVersion")

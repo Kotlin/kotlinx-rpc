@@ -7,29 +7,16 @@
 package util
 
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.extra
 
-fun Project.logAbsentProperty(name: String): Nothing? {
-    logger.info("Property '$name' is not present.")
-
-    return null
+val Project.spacePassword get(): String? {
+    return (this.extra["spacePassword"] as String?)
 }
 
-fun getEnv(propertyName: String): String? = System.getenv(
-    propertyName.replace(".", "_").uppercase()
-)?.ifEmpty { null }
-
-private const val SPACE_USERNAME = "kotlinx.rpc.team.space.username"
-
-fun Project.getSpaceUsername(): String? {
-    return providers.gradleProperty(SPACE_USERNAME).orNull
-        ?: getEnv(SPACE_USERNAME)
-        ?: logAbsentProperty(SPACE_USERNAME)
+val Project.localProperties get(): java.util.Properties {
+    return (this.extra["localProperties"] as java.util.Properties)
 }
 
-private const val SPACE_PASSWORD = "kotlinx.rpc.team.space.password"
-
-fun Project.getSpacePassword(): String? {
-    return providers.gradleProperty(SPACE_PASSWORD).orNull
-        ?: getEnv(SPACE_PASSWORD)
-        ?: logAbsentProperty(SPACE_USERNAME)
+val Project.useProxyRepositories get(): Boolean {
+    return (this.extra["useProxyRepositories"] as Boolean)
 }
