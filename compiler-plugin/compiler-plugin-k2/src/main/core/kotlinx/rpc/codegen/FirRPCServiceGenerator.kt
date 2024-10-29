@@ -24,7 +24,10 @@ import org.jetbrains.kotlin.fir.moduleData
 import org.jetbrains.kotlin.fir.plugin.*
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.*
-import org.jetbrains.kotlin.fir.types.*
+import org.jetbrains.kotlin.fir.types.ConeKotlinType
+import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
+import org.jetbrains.kotlin.fir.types.classId
+import org.jetbrains.kotlin.fir.types.constructClassLikeType
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
@@ -221,9 +224,11 @@ class FirRpcServiceGenerator(
             SerialEntityNames.SERIALIZER_FACTORY_INTERFACE_NAME,
         )
 
-        val ref = serializerFactoryClassId
-            .constructClassLikeType(emptyArray(), false)
-            .toFirResolvedTypeRef()
+        val ref = vsApi {
+            serializerFactoryClassId
+                .constructClassLikeType(emptyArray(), false)
+                .toFirResolvedTypeRefVS()
+        }
 
         return listOf(ref)
     }
@@ -257,7 +262,7 @@ class FirRpcServiceGenerator(
             .map { it.symbol }
 
         return createNestedClass(owner, RpcNames.SERVICE_STUB_NAME, RPCGeneratedStubKey(owner.name, functions)) {
-            visibility = owner.visibility
+            visibility = Visibilities.Public
             modality = Modality.FINAL
         }.symbol
     }
