@@ -9,7 +9,8 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.job
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
-import kotlinx.rpc.RPC
+import kotlinx.rpc.RemoteService
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.internal.utils.hex.hexToReadableBinary
 import kotlinx.rpc.krpc.RPCConfig
 import kotlinx.rpc.krpc.client.KRPCClient
@@ -90,7 +91,8 @@ abstract class ProtocolTestBase {
     }
 }
 
-interface ProtocolTestService : RPC {
+@Rpc
+interface ProtocolTestService : RemoteService {
     suspend fun sendRequest()
 }
 

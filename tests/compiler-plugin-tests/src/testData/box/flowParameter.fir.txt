@@ -1,5 +1,5 @@
 FILE: flowParameter.kt
-    public abstract interface BoxService : R|kotlinx/rpc/RPC| {
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface BoxService : R|kotlinx/rpc/RemoteService| {
         public abstract suspend fun stream(flow: R|kotlinx/coroutines/flow/Flow<kotlin/String>|): R|kotlin/String|
 
         public final class $rpcServiceStub : R|kotlin/Any| {

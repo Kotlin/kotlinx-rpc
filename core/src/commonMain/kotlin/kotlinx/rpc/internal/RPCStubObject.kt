@@ -4,19 +4,19 @@
 
 package kotlinx.rpc.internal
 
-import kotlinx.rpc.RPC
 import kotlinx.rpc.RPCClient
+import kotlinx.rpc.RemoteService
 import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlin.reflect.KType
 
 @InternalRPCApi
-public interface RPCStubObject<T : RPC> :
+public interface RPCStubObject<T : RemoteService> :
     RPCStubServiceProvider<T>,
     RPCServiceMethodSerializationTypeProvider,
     RPCServiceFieldsProvider<T>
 
 @InternalRPCApi
-public interface RPCStubServiceProvider<T : RPC> {
+public interface RPCStubServiceProvider<T : RemoteService> {
     public fun withClient(serviceId: Long, client: RPCClient) : T
 }
 
@@ -26,6 +26,6 @@ public interface RPCServiceMethodSerializationTypeProvider {
 }
 
 @InternalRPCApi
-public interface RPCServiceFieldsProvider<T : RPC> {
+public interface RPCServiceFieldsProvider<T : RemoteService> {
     public fun rpcFields(service: T): List<RPCDeferredField<*>>
 }

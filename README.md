@@ -17,11 +17,13 @@ Build your RPC with already known language constructs and nothing more!
 
 ## Quick start
 
-First, create your `RPC` service and define some methods:
+First, create your RPC service and define some methods:
 ```kotlin
-import kotlinx.rpc.RPC
+import kotlinx.rpc.RemoteService
+import kotlinx.rpc.annotations.Rpc
 
-interface AwesomeService : RPC {
+@Rpc
+interface AwesomeService : RemoteService {
     suspend fun getNews(city: String): Flow<String>
 }
 ```

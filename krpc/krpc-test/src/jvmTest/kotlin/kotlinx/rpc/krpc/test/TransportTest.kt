@@ -7,6 +7,7 @@ package kotlinx.rpc.krpc.test
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.*
 import kotlinx.rpc.*
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.RPCConfigBuilder
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
@@ -18,11 +19,13 @@ import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
-interface Echo : RPC {
+@Rpc
+interface Echo : RemoteService {
     suspend fun echo(message: String): String
 }
 
-interface Second : RPC {
+@Rpc
+interface Second : RemoteService {
     suspend fun second(message: String): String
 }
 
@@ -232,7 +235,7 @@ class TransportTest {
         assertTrue(echoServices.single().coroutineContext.job.isCancelled)
     }
 
-    private inline fun <reified Service : RPC, reified Impl : Service> RPCServer.registerServiceAndReturn(
+    private inline fun <reified Service : RemoteService, reified Impl : Service> RPCServer.registerServiceAndReturn(
         crossinline body: (CoroutineContext) -> Impl,
     ): List<Impl> {
         val instances = mutableListOf<Impl>()

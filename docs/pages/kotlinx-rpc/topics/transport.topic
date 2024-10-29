@@ -86,7 +86,8 @@
                     val numberOfDogs: Int
                 )
 
-                interface ImageService : RPC {
+                @Rpc
+                interface ImageService : RemoteService {
                     suspend fun processImage(url: Srting): ProcessedImage
                 }
 

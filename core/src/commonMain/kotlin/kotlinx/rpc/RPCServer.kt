@@ -24,7 +24,7 @@ public interface RPCServer : CoroutineScope {
      * @param serviceKClass [KClass] of the [Service].
      * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
      */
-    public fun <Service : RPC> registerService(
+    public fun <Service : RemoteService> registerService(
         serviceKClass: KClass<Service>,
         serviceFactory: (CoroutineContext) -> Service,
     )
@@ -39,7 +39,7 @@ public interface RPCServer : CoroutineScope {
  * type `MyService` should be specified explicitly.
  * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
  */
-public inline fun <reified Service : RPC> RPCServer.registerService(
+public inline fun <reified Service : RemoteService> RPCServer.registerService(
     noinline serviceFactory: (CoroutineContext) -> Service,
 ) {
     registerService(Service::class, serviceFactory)

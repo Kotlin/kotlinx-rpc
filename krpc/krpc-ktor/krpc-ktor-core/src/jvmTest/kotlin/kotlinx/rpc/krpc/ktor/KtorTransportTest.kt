@@ -9,7 +9,8 @@ package kotlinx.rpc.krpc.ktor
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.cancel
-import kotlinx.rpc.RPC
+import kotlinx.rpc.RemoteService
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.ktor.client.installRPC
 import kotlinx.rpc.krpc.ktor.client.rpc
 import kotlinx.rpc.krpc.ktor.client.rpcConfig
@@ -21,7 +22,8 @@ import org.junit.Assert.assertEquals
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.Test
 
-interface NewService : RPC {
+@Rpc
+interface NewService : RemoteService {
     suspend fun echo(value: String): String
 }
 

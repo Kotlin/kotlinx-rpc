@@ -15,7 +15,8 @@
                 A simple service can be declared as follows:</p>
 
             <code-block lang="kotlin">
-                interface MyService : RPC {
+                @Rpc
+                interface MyService : RemoteService {
                     suspend fun hello(name: String): String
                 }
             </code-block>

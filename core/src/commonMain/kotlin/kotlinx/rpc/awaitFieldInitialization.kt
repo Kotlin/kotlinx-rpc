@@ -14,7 +14,8 @@ import kotlin.reflect.KClass
  * Waits for the initialization of an RPC field in the generated client:
  *
  * ```kotlin
- * interface MyService : RPC {
+ * @Rpc
+ * interface MyService : RemoteService {
  *     val stateFlow: StateFlow<Int>
  * }
  *
@@ -27,7 +28,7 @@ import kotlin.reflect.KClass
  * @param getter function that returns the field of the context service to wait for.
  * @return service filed after it was initialized.
  */
-public suspend fun <T : RPC, R> T.awaitFieldInitialization(getter: T.() -> R): R {
+public suspend fun <T : RemoteService, R> T.awaitFieldInitialization(getter: T.() -> R): R {
     val field = getter()
 
     if (field is RPCDeferredField<*>) {
@@ -42,7 +43,8 @@ public suspend fun <T : RPC, R> T.awaitFieldInitialization(getter: T.() -> R): R
  * Waits for the initialization of all RPC fields in the generated client:
  *
  * ```kotlin
- * interface MyService : RPC {
+ * @Rpc
+ * interface MyService : RemoteService {
  *     val stateFlow1: StateFlow<Int>
  *     val stateFlow2: StateFlow<Int>
  * }
@@ -55,7 +57,7 @@ public suspend fun <T : RPC, R> T.awaitFieldInitialization(getter: T.() -> R): R
  * @param T service type
  * @return specified service, after all of it's field were initialized.
  */
-public suspend inline fun <reified T : RPC> T.awaitFieldInitialization(): T {
+public suspend inline fun <reified T : RemoteService> T.awaitFieldInitialization(): T {
     return awaitFieldInitialization(T::class)
 }
 
@@ -63,7 +65,8 @@ public suspend inline fun <reified T : RPC> T.awaitFieldInitialization(): T {
  * Waits for the initialization of all RPC fields in the generated client:
  *
  * ```kotlin
- * interface MyService : RPC {
+ * @Rpc
+ * interface MyService : RemoteService {
  *     val stateFlow1: StateFlow<Int>
  *     val stateFlow2: StateFlow<Int>
  * }
@@ -77,7 +80,7 @@ public suspend inline fun <reified T : RPC> T.awaitFieldInitialization(): T {
  * @param kClass [KClass] of the [T] type.
  * @return specified service, after all of it's field were initialized.
  */
-public suspend fun <T : RPC> T.awaitFieldInitialization(kClass: KClass<T>): T {
+public suspend fun <T : RemoteService> T.awaitFieldInitialization(kClass: KClass<T>): T {
     findRPCStubProvider<RPCServiceFieldsProvider<T>>(kClass, RPCServiceFieldsProvider::class.safeCast())
         .rpcFields(this)
         .forEach { field ->

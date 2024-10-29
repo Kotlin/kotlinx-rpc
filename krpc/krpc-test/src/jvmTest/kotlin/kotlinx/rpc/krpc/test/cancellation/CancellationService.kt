@@ -7,13 +7,15 @@ package kotlinx.rpc.krpc.test.cancellation
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.rpc.RPC
+import kotlinx.rpc.RemoteService
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.invokeOnStreamScopeCompletion
 import kotlin.coroutines.CoroutineContext
 import kotlin.properties.Delegates
 import kotlin.test.assertIs
 
-interface CancellationService : RPC {
+@Rpc
+interface CancellationService : RemoteService {
     suspend fun longRequest()
 
     suspend fun serverDelay(millis: Long)

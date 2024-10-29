@@ -196,7 +196,7 @@ internal class RPCStubGenerator(
     private var coroutineContextProperty: IrProperty by Delegates.notNull()
 
     /**
-     * `coroutineContext` property from `RPC` interface
+     * `coroutineContext` property from `RemoteService` interface
      *
      * ```kotlin
      * final override val coroutineContext: CoroutineContext = __rpc_client.provideStubContext(__rpc_stub_id)

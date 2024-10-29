@@ -7,10 +7,12 @@ package kotlinx.rpc.krpc.test
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.rpc.RPC
+import kotlinx.rpc.RemoteService
+import kotlinx.rpc.annotations.Rpc
 
 @Suppress("detekt.TooManyFunctions")
-interface KRPCTestService : RPC {
+@Rpc
+interface KRPCTestService : RemoteService {
     suspend fun empty()
     suspend fun returnType(): String
     suspend fun simpleWithParams(name: String): String

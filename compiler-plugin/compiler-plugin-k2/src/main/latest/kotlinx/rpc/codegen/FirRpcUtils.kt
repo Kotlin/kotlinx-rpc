@@ -9,12 +9,17 @@ import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.getAnnotationByClassId
 import org.jetbrains.kotlin.fir.expressions.FirAnnotation
+import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
-import org.jetbrains.kotlin.fir.types.classId
+import org.jetbrains.kotlin.fir.types.ConeClassLikeType
+import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
+import org.jetbrains.kotlin.fir.types.FirTypeRef
+import org.jetbrains.kotlin.fir.types.coneTypeSafe
+import org.jetbrains.kotlin.name.ClassId
 
-fun FirClassSymbol<*>.isRpc(): Boolean = resolvedSuperTypes.any {
-    it.classId == RpcClassId.rpcInterface
+fun FirClassSymbol<*>.isRemoteService(session: FirSession): Boolean = resolvedSuperTypeRefs.any {
+    it.doesMatchesClassId(session, RpcClassId.remoteServiceInterface)
 }
 
 fun FirBasedSymbol<*>.rpcAnnotationSource(session: FirSession): KtSourceElement? {
@@ -27,4 +32,16 @@ fun FirBasedSymbol<*>.rpcAnnotation(session: FirSession): FirAnnotation? {
 
 fun List<FirAnnotation>.rpcAnnotation(session: FirSession): FirAnnotation? {
     return getAnnotationByClassId(RpcClassId.rpcAnnotation, session)
+}
+
+fun FirClassSymbol<*>.remoteServiceSupertypeSource(session: FirSession): KtSourceElement? {
+    return remoteServiceSupertype(session)?.source
+}
+
+fun FirClassSymbol<*>.remoteServiceSupertype(session: FirSession): FirResolvedTypeRef? {
+    return resolvedSuperTypeRefs.find { it.doesMatchesClassId(session, RpcClassId.remoteServiceInterface) }
+}
+
+internal fun FirTypeRef.doesMatchesClassId(session: FirSession, classId: ClassId): Boolean {
+    return coneTypeSafe<ConeClassLikeType>()?.fullyExpandedType(session)?.lookupTag?.classId == classId
 }

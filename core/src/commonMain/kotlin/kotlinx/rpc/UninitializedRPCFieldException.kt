@@ -7,7 +7,7 @@ package kotlinx.rpc
 import kotlin.reflect.KProperty
 
 /**
- * Thrown when an uninitialized field of an RPC interface is accessed.
+ * Thrown when an uninitialized field of an RPC service is accessed.
  *
  * Use [awaitFieldInitialization] to await for the field initialization
  */

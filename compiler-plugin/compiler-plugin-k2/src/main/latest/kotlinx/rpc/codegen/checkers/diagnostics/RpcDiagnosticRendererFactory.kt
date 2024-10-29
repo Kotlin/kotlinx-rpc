@@ -12,8 +12,10 @@ object RpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
         put(
             factory = FirRpcDiagnostics.MISSING_RPC_ANNOTATION,
             message = "Missing @Rpc annotation. " +
-                    "All services children of kotlinx.rpc.RPC must be annotated with @Rpc (from kotlinx.rpc package).",
+                    "All services children of kotlinx.rpc.RemoteService " +
+                    "must be annotated with kotlinx.rpc.annotations.Rpc",
         )
+
         put(
             factory = FirRpcDiagnostics.WRONG_RPC_ANNOTATION_TARGET,
             message = "@Rpc annotation is only applicable to interfaces.",

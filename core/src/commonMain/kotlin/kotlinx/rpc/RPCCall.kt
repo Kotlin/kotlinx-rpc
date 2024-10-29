@@ -7,7 +7,7 @@ package kotlinx.rpc
 import kotlin.reflect.KType
 
 /**
- * Represents a method or field call of the RPC interface.
+ * Represents a method or field call of an RPC service.
  * Contains all types and values information for the call, so it can be passed to a server.
  *
  * @property serviceTypeString The service type as a string.

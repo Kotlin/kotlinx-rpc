@@ -7,7 +7,7 @@
 package kotlinx.rpc.internal
 
 import js.objects.Object
-import kotlinx.rpc.RPC
+import kotlinx.rpc.RemoteService
 import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlin.reflect.AssociatedObjectKey
 import kotlin.reflect.ExperimentalAssociatedObjects
@@ -20,7 +20,7 @@ import kotlin.reflect.findAssociatedObject
 @Target(AnnotationTarget.CLASS)
 public annotation class WithRPCStubObject(
     @Suppress("unused")
-    val stub: KClass<out RPCStubObject<out RPC>>
+    val stub: KClass<out RPCStubObject<out RemoteService>>,
 )
 
 @InternalRPCApi
