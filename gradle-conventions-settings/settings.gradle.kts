@@ -9,8 +9,4 @@ apply(from = "src/main/kotlin/settings-conventions.settings.gradle.kts")
 
 val kotlinVersion: KotlinVersion by extra
 
-if (kotlinVersion.isAtLeast(1, 9, 0)) {
-    include(":develocity")
-} else {
-    include(":empty")
-}
+include(":develocity")

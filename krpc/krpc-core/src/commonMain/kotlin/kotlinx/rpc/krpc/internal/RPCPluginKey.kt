@@ -56,8 +56,7 @@ public enum class RPCPluginKey(override val uniqueIndex: Int, private val associ
 
     @InternalRPCApi
     public companion object {
-        @Suppress("EnumValuesSoftDeprecate") // cannot use entries in Kotlin 1.8.10 or earlier
-        public val ALL: Set<RPCPluginKey> = RPCPluginKey.values().toSet() - UNKNOWN
+        public val ALL: Set<RPCPluginKey> = RPCPluginKey.entries.toSet() - UNKNOWN
     }
 }
 

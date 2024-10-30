@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.internal.utils.InternalRPCApi
-import kotlinx.rpc.internal.utils.hex.toHexStringInternal
 import kotlinx.rpc.krpc.RPCTransport
 import kotlinx.rpc.krpc.RPCTransportMessage
 import kotlinx.rpc.krpc.internal.logging.CommonLogger
@@ -230,21 +229,20 @@ public class RPCConnector<SubscriptionKey>(
         const val SERVER_ROLE = "Server"
         const val CLIENT_ROLE = "Client"
 
+        @OptIn(ExperimentalStdlibApi::class)
         private fun RPCTransportMessage.dump(): String {
             return when (this) {
                 is RPCTransportMessage.StringMessage -> value
-                is RPCTransportMessage.BinaryMessage -> value.toHexStringInternal()
+                is RPCTransportMessage.BinaryMessage -> value.toHexString()
             }
         }
     }
 }
 
-
-@Suppress("ConvertObjectToDataObject") // not supported in 1.8.22 or earlier
 private sealed interface HandlerResult {
-    object Success : HandlerResult
+    data object Success : HandlerResult
 
-    object NoSubscription : HandlerResult
+    data object NoSubscription : HandlerResult
 
     data class Failure(val cause: Throwable?) : HandlerResult
 }

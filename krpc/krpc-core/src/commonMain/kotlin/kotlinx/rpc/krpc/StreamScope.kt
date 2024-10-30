@@ -5,11 +5,9 @@
 package kotlinx.rpc.krpc
 
 import kotlinx.coroutines.*
-import kotlinx.rpc.internal.utils.AutoCloseable
 import kotlinx.rpc.internal.utils.ExperimentalRPCApi
 import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
-import kotlinx.rpc.internal.utils.use
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract

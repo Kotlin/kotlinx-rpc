@@ -2,7 +2,6 @@
 
 
 ### Compiler specific dependencies releases:
-- ksp: https://github.com/google/ksp/releases
 - atomicfu: https://github.com/Kotlin/kotlinx-atomicfu/releases
 - serialization: https://github.com/Kotlin/kotlinx.serialization/releases
 - coroutines: https://github.com/Kotlin/kotlinx.coroutines/releases

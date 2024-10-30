@@ -7,9 +7,5 @@ package util
 import org.gradle.api.Project
 
 fun Project.applyAtomicfuPlugin() {
-    if (libs.versions.atomicfu.get() >= "0.24.0") {
-        plugins.apply(libs.plugins.atomicfu.new.get().pluginId)
-    } else {
-        plugins.apply(libs.plugins.atomicfu.old.get().pluginId)
-    }
+    plugins.apply(libs.plugins.atomicfu.get().pluginId)
 }

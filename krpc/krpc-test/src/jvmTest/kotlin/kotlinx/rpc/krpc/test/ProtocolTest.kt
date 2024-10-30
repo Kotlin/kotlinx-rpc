@@ -6,7 +6,6 @@ package kotlinx.rpc.krpc.test
 
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.launch
-import kotlinx.rpc.internal.utils.hex.hexToByteArrayInternal
 import kotlinx.rpc.krpc.RPCTransportMessage
 import kotlinx.rpc.krpc.internal.RPCPlugin
 import kotlinx.rpc.krpc.rpcClientConfig
@@ -114,6 +113,7 @@ class ProtocolTest : ProtocolTestBase() {
         // no checks here, we just make sure that test does not fail on double UNKNOWN key values
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     @Test
     fun testMultipleUnknownPluginParamEntriesForServerProtobuf() = runTest(
         serverConfig = rpcServerConfig {
@@ -132,7 +132,7 @@ class ProtocolTest : ProtocolTestBase() {
 
         // same value as testMultipleUnknownPluginParamEntriesForServer but in protobuf format
         val clientHandshakeMessage = RPCTransportMessage.BinaryMessage(
-            "0a426f72672e6a6574627261696e732e6b7270632e696e7465726e616c2e7472616e73706f72742e52504350726f746f636f6c4d6573736167652e48616e647368616b6512310801108180feffffffffffff011a1008feff01120a66726f6d2033323736361a1008ffff01120a66726f6d203332373637".hexToByteArrayInternal() // 32766 and 32767 are unknown to server
+            "0a426f72672e6a6574627261696e732e6b7270632e696e7465726e616c2e7472616e73706f72742e52504350726f746f636f6c4d6573736167652e48616e647368616b6512310801108180feffffffffffff011a1008feff01120a66726f6d2033323736361a1008ffff01120a66726f6d203332373637".hexToByteArray() // 32766 and 32767 are unknown to server
         )
 
         transport.client.send(clientHandshakeMessage)

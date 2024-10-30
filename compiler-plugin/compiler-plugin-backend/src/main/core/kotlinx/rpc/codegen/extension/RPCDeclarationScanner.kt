@@ -13,7 +13,6 @@ import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.util.dumpKotlinLike
-import org.jetbrains.kotlin.ir.util.packageFqName
 
 /**
  * This class scans user declared RPC service
@@ -73,15 +72,8 @@ internal object RPCDeclarationScanner {
             }
         }
 
-        val packageName = service.packageFqName?.asString()
-            ?: error("Expected package name of the ${service.name.asString()}")
-
         val stubClassNotNull = stubClass
-        // only for KSP generation
-            ?: ctx.getIrClassSymbol(
-                packageName = packageName,
-                name = "${service.name.asString()}${RpcNames.SERVICE_STUB_NAME_KSP.asString()}"
-            ).owner
+            ?: error("Expected generated stub class to be present in ${service.name.asString()}. FIR failed to do so.")
 
         return ServiceDeclaration(
             service = service,

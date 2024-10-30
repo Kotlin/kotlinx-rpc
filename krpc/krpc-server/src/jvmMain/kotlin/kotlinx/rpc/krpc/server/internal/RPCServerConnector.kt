@@ -11,11 +11,9 @@ import kotlinx.serialization.SerialFormat
 internal sealed interface MessageKey {
     data class Service(val serviceTypeString: String): MessageKey
 
-    @Suppress("ConvertObjectToDataObject") // not supported in 1.8.22 or earlier
-    object Protocol: MessageKey
+    data object Protocol: MessageKey
 
-    @Suppress("ConvertObjectToDataObject") // not supported in 1.8.22 or earlier
-    object Generic: MessageKey
+    data object Generic: MessageKey
 }
 
 internal class RPCServerConnector private constructor(

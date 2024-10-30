@@ -35,7 +35,6 @@ object SettingsConventions {
     const val LIBRARY_VERSION_ENV_VAR_NAME = "LIBRARY_VERSION"
     const val EAP_VERSION_ENV_VAR_NAME = "EAP_VERSION"
 
-    const val KSP_VERSION_ALIAS = "ksp"
     const val LIBRARY_CORE_VERSION_ALIAS = "kotlinx-rpc"
     const val KOTLIN_VERSION_ALIAS = "kotlin-lang"
 
@@ -221,18 +220,8 @@ dependencyResolutionManagement {
 
             logger.info("Resolved compiler specific dependencies versions (Kotlin $kotlinVersion):")
             lookupTable.forEach { (name, version) ->
-                val fullVersion = when (name) {
-                    SettingsConventions.KSP_VERSION_ALIAS -> {
-                        "$kotlinVersion-${version}"
-                    }
-
-                    else -> {
-                        version
-                    }
-                }
-
-                logger.info("$name -> $fullVersion")
-                version(name, fullVersion)
+                logger.info("$name -> $version")
+                version(name, version)
             }
         }
     }

@@ -77,7 +77,7 @@ public final class kotlinx/rpc/krpc/RPCTransportMessage$StringMessage : kotlinx/
 	public final fun getValue ()Ljava/lang/String;
 }
 
-public final class kotlinx/rpc/krpc/StreamScope : kotlinx/rpc/internal/utils/AutoCloseable {
+public final class kotlinx/rpc/krpc/StreamScope : java/lang/AutoCloseable {
 	public fun close ()V
 }
 

@@ -17,11 +17,8 @@ public enum class CancellationType(override val uniqueIndex: Int) : IndexedEnum 
     ;
 
     internal companion object {
-        @Suppress("EnumValuesSoftDeprecate") // cannot use entries in Kotlin 1.8.10 or earlier
-        private val values = values()
-
         fun valueOfNull(value: String): CancellationType? {
-            return values.find { it.name == value }
+            return entries.find { it.name == value }
         }
     }
 }

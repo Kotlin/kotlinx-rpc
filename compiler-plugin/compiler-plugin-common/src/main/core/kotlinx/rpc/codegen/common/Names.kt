@@ -22,12 +22,9 @@ object RpcClassId {
 
 object RpcNames {
     val SERVICE_STUB_NAME: Name = Name.identifier("\$rpcServiceStub")
-    val SERVICE_STUB_NAME_KSP: Name = Name.identifier("_rpcServiceStub")
 
     const val METHOD_CLASS_NAME_SUFFIX = "\$rpcMethod"
-    const val METHOD_CLASS_NAME_SUFFIX_KSP = "_rpcMethod"
 }
 
 val Name.rpcMethodClassName: Name get() = Name.identifier("$identifier${RpcNames.METHOD_CLASS_NAME_SUFFIX}")
-val Name.rpcMethodClassNameKsp: Name get() = Name.identifier("$identifier${RpcNames.METHOD_CLASS_NAME_SUFFIX_KSP}")
 val Name.rpcMethodName: Name get() = Name.identifier(identifier.removeSuffix(RpcNames.METHOD_CLASS_NAME_SUFFIX))

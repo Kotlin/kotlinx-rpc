@@ -157,11 +157,8 @@ Integrations in progress:
 - Integration with [gRPC](https://grpc.io/)  (in prototype)
 
 ## Kotlin compatibility
-We support all stable Kotlin versions starting from 1.7.0:
-- 1.7.0, 1.7.10, 1.7.20, 1.7.21, 1.7.22
-- 1.8.0, 1.8.10, 1.8.20, 1.8.21, 1.8.22
-- 1.9.0, 1.9.10, 1.9.20, 1.9.21, 1.9.22, 1.9.23, 1.9.24, 1.9.25
-- 2.0.0, 2.0.10
+We support all stable Kotlin versions starting from 2.0.0:
+- 2.0.0, 2.0.10, 2.0.20, 2.0.21
 
 To simplify project configuration, our Gradle plugin sets a proper library version automatically using BOM, 
 based on the project's Kotlin version:
