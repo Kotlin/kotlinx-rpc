@@ -14,11 +14,9 @@ internal sealed interface CallSubscriptionId {
         val callId: String,
     ) : CallSubscriptionId
 
-    @Suppress("ConvertObjectToDataObject") // not supported in 1.8.22 or earlier
-    object Protocol : CallSubscriptionId
+    data object Protocol : CallSubscriptionId
 
-    @Suppress("ConvertObjectToDataObject") // not supported in 1.8.22 or earlier
-    object Generic : CallSubscriptionId
+    data object Generic : CallSubscriptionId
 }
 
 internal class RPCClientConnector private constructor(

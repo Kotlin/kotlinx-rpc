@@ -75,26 +75,6 @@ fun KotlinSourceSet.configureResources(sourceSetPath: Path) {
     val versionNames = listOfNotNull(Dir.CORE_SOURCE_DIR, mostSpecificApplicable?.name)
 
     resources.srcDirs(versionNames.map { resourcesDir.resolve(it).toFile() })
-
-    // 'resources' property does not work alone in gradle 7.5.1 with kotlin 1.7.* and 1.8.* (no idea why),
-    // so we adjust task contents as well
-    if (!kotlinVersion.isAtLeast(1, 9)) {
-        // only works for jvm projects
-        val resourcesTaskName = if (name == Dir.MAIN_SOURCE_SET) Dir.PROCESS_RESOURCES else Dir.PROCESS_TEST_RESOURCES
-        tasks.withType<ProcessResources>().configureEach {
-            if (name != resourcesTaskName) {
-                return@configureEach
-            }
-
-            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-            from(versionNames.map { resourcesDir.resolve(it) })
-            include {
-                // double check if the files are the right ones
-                it.file.toPath().toAbsolutePath().startsWith(parent)
-            }
-        }
-    }
 }
 
 withKotlinJvmExtension {

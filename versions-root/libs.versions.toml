@@ -26,7 +26,6 @@ kotlinx-browser = "0.1"
 # The current version is the one that is used with the latest Kotlin.
 #
 # NOTE: When updating kotlin-versions-lookup.csv, update the latest version here for the Renovate configs
-ksp = "0.0.0"
 atomicfu = "0.25.0"
 serialization = "1.7.3"
 detekt-gradle-plugin = "1.23.7"
@@ -61,10 +60,6 @@ serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-cor
 serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 serialization-cbor = { module = "org.jetbrains.kotlinx:kotlinx-serialization-cbor", version.ref = "serialization" }
 serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "serialization" }
-
-# ksp, version will be inherited from kotlin-lang and kotlin-versions-lookup.json lookup table
-ksp-runtime-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
-ksp-gradle-plugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 
 # ktor
 ktor-websockets = { module = "io.ktor:ktor-websockets", version.ref = "ktor" }
@@ -107,11 +102,9 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-lang" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-lang" }
 
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt-gradle-plugin" }
 binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compatibility-validator" }
-atomicfu-old = { id = "kotlinx-atomicfu", version.ref = "atomicfu" }
-atomicfu-new = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
+atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
 gradle-kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version.ref = "gradle-kotlin-dsl" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }

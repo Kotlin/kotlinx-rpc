@@ -38,26 +38,22 @@ fun PublishingExtension.configurePublication() {
         null
     }
 
-    // separate function is needed for different gradle versions
-    // in 7.6 `Configuration` argument is `this`, in 8.* it is a first argument (hence `it`)
-    val onPublication: (MavenPublication) -> Unit = { publication ->
-        publication.pom.configureMavenCentralMetadata()
-        publication.signPublicationIfKeyPresent()
+    publications.withType(MavenPublication::class).all {
+        pom.configureMavenCentralMetadata()
+        signPublicationIfKeyPresent()
         if (javadocJar != null) {
-            publication.artifact(javadocJar)
+            artifact(javadocJar)
         }
 
         // mainly for kotlinMultiplatform publication
-        publication.setPublicArtifactId(project)
+        setPublicArtifactId(project)
 
         if (!isGradlePlugin) {
-            publication.fixModuleMetadata(project)
+            fixModuleMetadata(project)
         }
 
-        logger.info("Project ${project.name} -> Publication configured: ${publication.name}")
+        logger.info("Project ${project.name} -> Publication configured: $name")
     }
-
-    publications.withType(MavenPublication::class).all(onPublication)
 
     tasks.withType<PublishToMavenRepository>().configureEach {
         dependsOn(tasks.withType<Sign>())

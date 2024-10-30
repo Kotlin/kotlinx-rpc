@@ -2,28 +2,28 @@
   "jvm": "*",
   "js": "*",
 
-  "wasmJs": "2.0.0",
-  "wasmWasi": "2.0.0",
+  "wasmJs": "*",
+  "wasmWasi": "*",
 
   "mingwX64": "-",
 
-  "linuxX64": "1.9.10",
-  "linuxArm64": "1.9.10",
+  "linuxX64": "*",
+  "linuxArm64": "*",
 
-  "iosX64": "1.9.10",
-  "iosArm64": "1.9.10",
-  "iosSimulatorArm64": "1.9.10",
+  "iosX64": "*",
+  "iosArm64": "*",
+  "iosSimulatorArm64": "*",
 
-  "watchosX64": "1.9.10",
+  "watchosX64": "*",
   "watchosArm32": "-",
-  "watchosArm64": "1.9.10",
-  "watchosSimulatorArm64": "1.9.10",
+  "watchosArm64": "*",
+  "watchosSimulatorArm64": "*",
   "watchosDeviceArm64": "-",
 
-  "tvosX64": "1.9.10",
-  "tvosArm64": "1.9.10",
+  "tvosX64": "*",
+  "tvosArm64": "*",
   "tvosSimulatorArm64": "-",
 
-  "macosX64": "1.9.10",
-  "macosArm64": "1.9.10"
+  "macosX64": "*",
+  "macosArm64": "*"
 }

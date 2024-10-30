@@ -18,24 +18,6 @@ private fun KotlinMultiplatformExtension.configureTargets(config: ProjectKotlinC
     if (config.native) {
         val nativeTargets = config.nativeTargets(this)
         targets.addAll(nativeTargets)
-
-        // TLDR: Default hierarchy template is enabled by default since 1.9.20
-        //
-        // https://kotlinlang.org/docs/multiplatform-hierarchy.html#default-hierarchy-template
-        if (nativeTargets.isNotEmpty() && !config.kotlinVersion.isAtLeast(1, 9, 20)) {
-            val commonMain = sourceSets.findByName("commonMain")!!
-            val commonTest = sourceSets.findByName("commonTest")!!
-            val nativeMain = sourceSets.create("nativeMain")
-            val nativeTest = sourceSets.create("nativeTest")
-
-            nativeMain.dependsOn(commonMain)
-            nativeTest.dependsOn(commonTest)
-
-            nativeTargets.forEach { target ->
-                sourceSets.findByName("${target.name}Main")?.dependsOn(nativeMain)
-                sourceSets.findByName("${target.name}Test")?.dependsOn(nativeTest)
-            }
-        }
     }
 
     if (config.jvm) {

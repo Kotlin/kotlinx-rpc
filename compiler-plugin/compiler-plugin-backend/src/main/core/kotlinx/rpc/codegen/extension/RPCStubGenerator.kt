@@ -7,7 +7,6 @@ package kotlinx.rpc.codegen.extension
 import kotlinx.rpc.codegen.VersionSpecificApi
 import kotlinx.rpc.codegen.VersionSpecificApiImpl.copyToVS
 import kotlinx.rpc.codegen.common.rpcMethodClassName
-import kotlinx.rpc.codegen.common.rpcMethodClassNameKsp
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.backend.jvm.functionByName
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -156,7 +155,7 @@ internal class RPCStubGenerator(
         propertyName: String,
         propertyType: IrType,
         valueParameter: IrValueParameter,
-        propertyVisibility: DescriptorVisibility = DescriptorVisibilities.PRIVATE
+        propertyVisibility: DescriptorVisibility = DescriptorVisibilities.PRIVATE,
     ): IrProperty {
         return addConstructorProperty(Name.identifier(propertyName), propertyType, valueParameter, propertyVisibility)
     }
@@ -165,7 +164,7 @@ internal class RPCStubGenerator(
         propertyName: Name,
         propertyType: IrType,
         valueParameter: IrValueParameter,
-        propertyVisibility: DescriptorVisibility = DescriptorVisibilities.PRIVATE
+        propertyVisibility: DescriptorVisibility = DescriptorVisibilities.PRIVATE,
     ): IrProperty {
         return addProperty {
             name = propertyName
@@ -537,8 +536,7 @@ internal class RPCStubGenerator(
         val isMethodObject = method.arguments.isEmpty()
 
         val methodClassName = method.function.name.rpcMethodClassName
-        val methodClassNameKsp = method.function.name.rpcMethodClassNameKsp
-        val methodClass: IrClass = initiateAndGetMethodClass(methodClassName, methodClassNameKsp, method)
+        val methodClass: IrClass = initiateAndGetMethodClass(methodClassName, method)
 
         addFunction {
             name = method.function.name
@@ -652,17 +650,12 @@ internal class RPCStubGenerator(
      * }
      * ```
      */
-    private fun IrClass.initiateAndGetMethodClass(
-        methodClassName: Name,
-        methodClassNameKsp: Name,
-        method: ServiceDeclaration.Method
-    ): IrClass {
-        val methodClass = findDeclaration<IrClass> {
-            it.name == methodClassName || it.name == methodClassNameKsp
-        } ?: error(
-            "Expected $methodClassName or $methodClassNameKsp class to be present in stub class " +
-                    "${declaration.service.name}${declaration.stubClass.name}"
-        )
+    private fun IrClass.initiateAndGetMethodClass(methodClassName: Name, method: ServiceDeclaration.Method): IrClass {
+        val methodClass = findDeclaration<IrClass> { it.name == methodClassName }
+            ?: error(
+                "Expected $methodClassName class to be present in stub class " +
+                        "${declaration.service.name}${declaration.stubClass.name}"
+            )
 
         methodClasses.add(methodClass)
 
@@ -764,7 +757,7 @@ internal class RPCStubGenerator(
         functionThisReceiver: IrValueParameter,
         isMethodObject: Boolean,
         methodClass: IrClass,
-        arguments: List<IrValueParameter>
+        arguments: List<IrValueParameter>,
     ): IrCall {
         val call = irCall(
             callee = ctx.functions.rpcClientCall.symbol,

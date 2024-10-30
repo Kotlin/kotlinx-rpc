@@ -40,19 +40,6 @@ gradlePlugin {
             implementationClass = "kotlinx.rpc.RPCGradlePlugin"
             description = """
                 The plugin ensures correct RPC configurations for your project, that will allow proper code generation. 
-                Additionally, it applies the kotlinx.rpc BOM file for the project.
-            """.trimIndent()
-        }
-    }
-
-    plugins {
-        create("platform") {
-            id = "org.jetbrains.kotlinx.rpc.platform"
-
-            displayName = "kotlinx.rpc Platform Plugin"
-            implementationClass = "kotlinx.rpc.RPCPlatformPlugin"
-            description = """
-                Applies the kotlinx.rpc BOM file for the project. 
             """.trimIndent()
         }
     }

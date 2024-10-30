@@ -12,7 +12,6 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RemoteService
-import kotlinx.rpc.internal.utils.hex.hexToByteArrayInternal
 import kotlinx.rpc.internal.utils.hex.hexToReadableBinary
 import kotlinx.rpc.krpc.RPCTransportMessage
 import kotlinx.rpc.krpc.internal.logging.CommonLogger
@@ -173,10 +172,11 @@ class WireSamplingTestScope(private val sampleName: String, scope: TestScope) : 
         oldServerToolkit.stop()
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     private fun String.toTransportMessage(format: SamplingFormat): RPCTransportMessage {
         return when (format) {
             SamplingFormat.Json -> RPCTransportMessage.StringMessage(this)
-            SamplingFormat.Protobuf -> RPCTransportMessage.BinaryMessage(hexToByteArrayInternal())
+            SamplingFormat.Protobuf -> RPCTransportMessage.BinaryMessage(hexToByteArray())
         }
     }
 
@@ -269,8 +269,7 @@ enum class SamplingFormat(val commentBinaryOutput: Boolean, val init: RPCSerialF
     ;
 
     companion object {
-        @Suppress("EnumValuesSoftDeprecate") // .entries dont work on Kotlin pre 1.8.20
-        val ALL = SamplingFormat.values()
+        val ALL: Array<SamplingFormat> = SamplingFormat.entries.toTypedArray()
     }
 }
 

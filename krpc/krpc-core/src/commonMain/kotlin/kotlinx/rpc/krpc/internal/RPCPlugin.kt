@@ -57,8 +57,7 @@ public enum class RPCPlugin(
         /**
          * A set of all plugins for the current version of the library.
          */
-        @Suppress("EnumValuesSoftDeprecate") // cannot use entries in Kotlin 1.8.10 or earlier
-        public val ALL: Set<RPCPlugin> = RPCPlugin.values().toSet() - UNKNOWN
+        public val ALL: Set<RPCPlugin> = RPCPlugin.entries.toSet() - UNKNOWN
     }
 }
 

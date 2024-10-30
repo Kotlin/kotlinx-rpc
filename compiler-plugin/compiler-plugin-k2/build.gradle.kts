@@ -4,7 +4,6 @@
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import util.enableContextReceivers
-import util.whenKotlinIsAtLeast
 
 plugins {
     alias(libs.plugins.conventions.jvm)
@@ -20,8 +19,6 @@ kotlin {
 dependencies {
     compileOnly(libs.kotlin.reflect)
     compileOnly(libs.kotlin.compiler.embeddable)
-    project.whenKotlinIsAtLeast(2, 0) {
-        compileOnly(libs.serialization.plugin)
-    }
+    compileOnly(libs.serialization.plugin)
     implementation(projects.compilerPluginCommon)
 }

@@ -90,6 +90,7 @@ private val directoryNameRegex = "^(latest|(v|pre)(_\\d){1,3}\\d?)$".toRegex()
 
 data class ActionApplied(val applied: Boolean)
 
+@Suppress("unused")
 inline fun ExtensionAware.whenKotlinIsAtLeast(
     major: Int,
     minor: Int,
