@@ -9,9 +9,12 @@
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
        title="Services" id="services">
     <p>Services are the centerpieces of the library.
-                A service is an interface annotated with the <code>RPC</code> annotation,
+                A service is an interface annotated with the <code>@Rpc</code> annotation,
                 and contains a set of methods and fields
                 that can be executed or accessed remotely.
+                Additionally, a service always has a type of <code>RemoteService</code>,
+                which can be specified explicitly, or assumed implicitly and added by a compiler
+                (the latter option does not work in IDE right now, but WIP).
                 A simple service can be declared as follows:</p>
 
             <code-block lang="kotlin">

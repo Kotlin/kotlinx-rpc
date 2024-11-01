@@ -110,21 +110,8 @@
         </chapter>
 
         <chapter title="Add plugin dependencies" id="add-gradle-plugin">
-            <p><code>kotlinx.rpc</code> provides <a href="plugins.topic">two Gradle plugins</a>:</p>
-            <list>
-                <li>
-                    <a href="plugins.topic" anchor="rpc-platform">
-                        <code>org.jetbrains.kotlinx.rpc.platform</code>
-                    </a>
-                </li>
-                <li>
-                    <a href="plugins.topic" anchor="rpc-plugin">
-                        <code>org.jetbrains.kotlinx.rpc.plugin</code>
-                    </a>
-                </li>
-            </list>
             <p>
-                To add a plugin to your project, you need to define the following in your <path>build.gradle.kts</path>:
+                To add a <a href="plugins.topic">Gradle plugin</a> to your project, you need to define the following in your <path>build.gradle.kts</path>:
             </p>
 
             <code-block lang="kotlin">
@@ -132,11 +119,14 @@
                     id(&quot;org.jetbrains.kotlinx.rpc.plugin&quot;) version &quot;%kotlinx-rpc-version%&quot;
                 }
             </code-block>
-            <p>To learn more about versioning, see <a href="versions.topic"/>.</p>
+
+            <p>
+                This will configure code generation for your project.
+            </p>
         </chapter>
 
         <chapter title="Add serialization dependency" id="add-serialization-dependency">
-            <p><code>kotlinx.rpc</code> requires you to add
+            <p><code>kotlinx.rpc</code> requires you to add the
                 <a href="https://github.com/Kotlin/kotlinx.serialization">kotlinx.serialization</a>
                 Gradle plugin to your project.</p>
 

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Migration to 0.4.0" id="0-4-0">
+    <p>
+        Version <code>0.4.0</code> introduces breaking changes.
+    </p>
+    <chapter title="@Rpc Annotation and RemoteService Interface" id="rpc_annotation_and_remote_service_interface">
+        <p>
+            This version brings changes to service definitions.
+            Prior to <code>0.4.0</code> a service was defined as following:
+        </p>
+        <code-block lang="kotlin">
+            interface MyService : RPC
+        </code-block>
+        <p>
+            Starting from <code>0.4.0</code> new service definition is required:
+        </p>
+        <code-block lang="kotlin">
+            @Rpc
+            interface MyService
+        </code-block>
+        <p>
+            This definition will be enough for the project to build, but it is not sufficient for use in IDE.
+            All interfaces annotated with <code>@Rpc</code> are inherently <code>RemoteService</code>.
+            This supertype is added by our compiler plugin.
+            However, IDE can't resolve it yet, so for the code to be highlighted properly,
+            explicit typing is required:
+        </p>
+        <code-block lang="kotlin">
+            @Rpc
+            interface MyService : RemoteService
+        </code-block>
+        <note>
+            The reasoning behind this change is that Kotlin Compiler Plugin API has changed.
+            Versions <code>2.0.0</code> and <code>2.0.10</code> allowed our plugin to resolve marker interfaces (which <code>RPC</code> was)
+            before the code generation phase. Starting from <code>2.0.20</code> this doesn't work,
+            and we are forced to use annotations to reliably detect RPC services.
+            To track changes in this regard, we created an <a href="https://youtrack.jetbrains.com/issue/KT-72654">issue</a> for the compiler team.
+            This change is not the final API design decision, and it may be changed before the stable release.
+        </note>
+    </chapter>
+    <chapter title="Removal of Kotlin versions prior to 2.0" id="removal_of_kotlin_versions_prior_to_2_0">
+        <p>
+            We stopped publishing compiler plugin artifacts for Kotlin versions prior to 2.0.
+            The reason for this is high maintenance cost with little to no usage.
+            We encourage the migration to Kotlin 2.0, where all stable versions are now supported.
+            <br/>
+            List of Kotlin versions that are currently supported: <code>2.0.0</code>, <code>2.0.10</code>, <code>2.0.20</code>, <code>2.0.21</code>
+        </p>
+    </chapter>
+    <chapter title="Removal of org.jetbrains.kotlinx.rpc.platform Gradle plugin"
+             id="removal_of_org_jetbrains_kotlinx_rpc_platform_gradle_plugin">
+        <p>
+            Gradle plugin with id <code>org.jetbrains.kotlinx.rpc.platform</code> is not being published anymore.
+            The reason is that it's sole role was to set BOM in the project, which is now considered unnecessary.
+            <a href="https://docs.gradle.org/current/userguide/platforms.html#sub:conventional-dependencies-toml">Gradle version catalogs</a>
+            can be used instead.
+        </p>
+    </chapter>
+    <chapter title="Removal of BOM from the Gradle plugin" id="removal_of_bom_from_the_gradle_plugin">
+        <p>
+            The Gradle plugin that is left (<code>org.jetbrains.kotlinx.rpc.plugin</code>)
+            does not set BOM for the project anymore. Instead, manual dependency can be set:
+        </p>
+        <code-block lang="kotlin">
+            dependencies {
+                implementation(platform("org.jetbrains.kotlinx:kotlinx-rpc-bom:%kotlinx-rpc-version%"))
+            }
+        </code-block>
+    </chapter>
+</topic>
