@@ -9,17 +9,17 @@ kotlin-compiler = "0.0.0" # default to kotlin-lang or env.KOTLIN_COMPILER_VERSIO
 # kotlin independent versions
 detekt-analyzer = "1.23.6"
 coroutines = "1.9.0"
-ktor = "3.0.0"
+ktor = "3.0.1"
 kotlin-logging = "7.0.0"
 slf4j = "2.0.16"
 logback = "1.3.14"
 gradle-plugin-publish = "1.3.0"
-kotlin-wrappers = "1.0.0-pre.812"
+kotlin-wrappers = "1.0.0-pre.823"
 junit4 = "4.13.2"
-junit5 = "5.11.1"
+junit5 = "5.11.3"
 intellij = "233.13135.128"
 gradle-doctor = "0.10.0"
-kotlinx-browser = "0.1"
+kotlinx-browser = "0.2"
 
 # Stub versions – relpaced based on kotlin, mostly for gradle-related (plugins) dependencies
 #  but also for dependencies for compiler-specific modules.
@@ -27,10 +27,10 @@ kotlinx-browser = "0.1"
 # The current version is the one that is used with the latest Kotlin.
 #
 # NOTE: When updating kotlin-versions-lookup.csv, update the latest version here for the Renovate configs
-atomicfu = "0.25.0"
+atomicfu = "0.26.0"
 serialization = "1.7.3"
 detekt-gradle-plugin = "1.23.7"
-gradle-kotlin-dsl = "5.1.1"
+gradle-kotlin-dsl = "5.1.2"
 binary-compatibility-validator = "0.16.3"
 kover = "0.8.3"
 
