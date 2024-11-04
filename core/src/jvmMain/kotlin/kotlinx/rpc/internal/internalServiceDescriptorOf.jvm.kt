@@ -1,0 +1,20 @@
+/*
+ * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+package kotlinx.rpc.internal
+
+import kotlinx.rpc.RemoteService
+import kotlin.reflect.KClass
+import kotlin.reflect.full.companionObjectInstance
+
+private const val RPC_SERVICE_STUB_SIMPLE_NAME = "\$rpcServiceStub"
+
+internal actual fun <T : RemoteService> internalServiceDescriptorOf(kClass: KClass<T>): Any? {
+    val className = "${kClass.qualifiedName}\$$RPC_SERVICE_STUB_SIMPLE_NAME"
+
+    return kClass.java.classLoader
+        .loadClass(className)
+        ?.kotlin
+        ?.companionObjectInstance
+}

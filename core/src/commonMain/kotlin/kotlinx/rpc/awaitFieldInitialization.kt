@@ -4,10 +4,8 @@
 
 package kotlinx.rpc
 
+import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.internal.RPCDeferredField
-import kotlinx.rpc.internal.RPCServiceFieldsProvider
-import kotlinx.rpc.internal.findRPCStubProvider
-import kotlinx.rpc.internal.utils.safeCast
 import kotlin.reflect.KClass
 
 /**
@@ -81,8 +79,8 @@ public suspend inline fun <reified T : RemoteService> T.awaitFieldInitialization
  * @return specified service, after all of it's field were initialized.
  */
 public suspend fun <T : RemoteService> T.awaitFieldInitialization(kClass: KClass<T>): T {
-    findRPCStubProvider<RPCServiceFieldsProvider<T>>(kClass, RPCServiceFieldsProvider::class.safeCast())
-        .rpcFields(this)
+    serviceDescriptorOf(kClass)
+        .getFields(this)
         .forEach { field ->
             field.await()
         }

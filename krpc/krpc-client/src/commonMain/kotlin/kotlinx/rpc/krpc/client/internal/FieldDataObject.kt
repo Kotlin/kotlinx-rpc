@@ -4,13 +4,10 @@
 
 package kotlinx.rpc.krpc.client.internal
 
-import kotlinx.rpc.internal.RPCMethodClassArguments
 import kotlinx.serialization.Serializable
 
 /**
  * Used for field initialization call
  */
 @Serializable
-internal object FieldDataObject : RPCMethodClassArguments {
-    override fun asArray(): Array<Any?> = emptyArray()
-}
+internal object FieldDataObject

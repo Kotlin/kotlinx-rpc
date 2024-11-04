@@ -4,9 +4,7 @@
 
 package kotlinx.rpc.internal
 
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.RemoteService
+import kotlin.reflect.KClass
 
-@InternalRPCApi
-public interface RPCMethodClassArguments {
-    public fun asArray(): Array<out Any?>
-}
+internal expect fun <T : RemoteService> internalServiceDescriptorOf(kClass: KClass<T>): Any?
