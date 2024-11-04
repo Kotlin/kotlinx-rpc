@@ -12,17 +12,5 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kotlinPluginSerialization) apply false
     alias(libs.plugins.kotlinx.rpc) apply false
-    alias(libs.plugins.kotlinx.rpc.platform) apply false
     alias(libs.plugins.compose.compiler) apply false
-}
-
-allprojects {
-    configurations.all {
-        resolutionStrategy {
-            // Workaround for https://youtrack.jetbrains.com/issue/CMP-6658
-            force(libs.kotlinx.serialization.core)
-            force(libs.kotlinx.serialization.json)
-            force(libs.kotlin.stdlib)
-        }
-    }
 }

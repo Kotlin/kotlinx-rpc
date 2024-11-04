@@ -7,8 +7,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.rpc.RPC
+import kotlinx.rpc.RemoteService
 import kotlinx.rpc.RPCEagerField
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.serialization.Serializable
 import kotlin.coroutines.CoroutineContext
 
@@ -25,7 +26,8 @@ enum class Category {
     CAT, DOG
 }
 
-interface ImageRecognizer : RPC {
+@Rpc
+interface ImageRecognizer : RemoteService {
     @RPCEagerField
     val currentlyProcessedImage: StateFlow<Image?>
 

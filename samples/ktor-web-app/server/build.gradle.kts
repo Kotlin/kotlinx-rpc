@@ -5,7 +5,6 @@
 plugins {
     kotlin("jvm")
     alias(libs.plugins.kotlin.plugin.serialization)
-    alias(libs.plugins.kotlinx.rpc.platform)
     application
     distribution
 }
