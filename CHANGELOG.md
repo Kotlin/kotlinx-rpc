@@ -1,3 +1,27 @@
+# 0.4.0
+> Published 5 November 2024
+
+### Features 🎉
+* Experimental support for: KRPC-125 Manual stream scope management by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/214
+* Introduce @Rpc annotation by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/216
+* Support Kotlin 2.0.21 and 2.0.20 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/217
+
+### Breaking Changes 🔴
+* Introduce @Rpc annotation by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/216
+* Remove support for Kotlin versions prior to 2.0 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/218
+
+### Infra 🚧
+* Added proxy repository settings by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/191
+* Added Kotlin for ide configs to project by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/219
+
+### Bug fixes 🐛
+* Fix for KT-41082 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/225
+
+### Other Changes 🧹
+* Bump core deps by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/220
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.3.0...0.4.0
+
 # 0.3.0
 > Published 1 October 2024
 
