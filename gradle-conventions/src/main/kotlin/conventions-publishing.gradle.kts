@@ -27,6 +27,7 @@ fun PublishingExtension.configurePublication() {
     repositories {
         configureSonatypeRepository()
         configureSpaceRepository()
+        configureForIdeRepository()
         configureLocalDevRepository()
     }
 
@@ -115,6 +116,15 @@ fun RepositoryHandler.configureSpaceRepository() {
         password = "SPACE_PASSWORD"
         name = "space"
         url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven"
+    }
+}
+
+fun RepositoryHandler.configureForIdeRepository() {
+    configureRepository(project) {
+        username = "SPACE_USERNAME"
+        password = "SPACE_PASSWORD"
+        name = "forIde"
+        url = "https://maven.pkg.jetbrains.space/public/p/krpc/for-ide"
     }
 }
 

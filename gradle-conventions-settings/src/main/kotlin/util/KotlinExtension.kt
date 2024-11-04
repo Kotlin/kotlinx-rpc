@@ -11,7 +11,7 @@ import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
-fun Project.kotlin(block: KotlinMultiplatformExtension.() -> Unit) {
+fun Project.kmp(block: KotlinMultiplatformExtension.() -> Unit) {
     configure(block)
 }
 
