@@ -15,11 +15,6 @@ configurations.configureEach {
     }
 }
 
-repositories {
-    mavenCentral()
-    gradlePluginPortal()
-}
-
 dependencies {
     implementation("com.gradle:develocity-gradle-plugin:3.17")
     implementation("com.gradle:common-custom-user-data-gradle-plugin:2.0.2")

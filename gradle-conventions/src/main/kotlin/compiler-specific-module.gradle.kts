@@ -35,7 +35,7 @@ fun NamedDomainObjectContainer<KotlinSourceSet>.applyCompilerSpecificSourceSets(
 
         logger.lifecycle(
             "${project.name}: included version specific source sets: " +
-                    "${core.name}${mostSpecificApplicable?.let { ", $name" } ?: ""}"
+                    "[${core.name}${mostSpecificApplicable?.let { ", $name" } ?: ""}]"
         )
 
         val newSourceDirectories = listOfNotNull(core, mostSpecificApplicable)
