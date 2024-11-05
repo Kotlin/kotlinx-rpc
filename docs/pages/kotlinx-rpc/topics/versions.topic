@@ -8,7 +8,7 @@
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
        title="Versions" id="versions">
-        <p>As <code>kotlinx.rpc</code> uses Kotlin compiler plugin and KSP plugins,
+        <p>As <code>kotlinx.rpc</code> uses Kotlin compiler plugin,
             we rely on internal functionality that may change over time with any new Kotlin version.
             To prevent the library from breaking with an incompatible Kotlin version,
             we use version prefix for artifacts with code generating functionality.
@@ -69,9 +69,12 @@
             id(&quot;org.jetbrains.kotlinx.rpc.plugin&quot;) version &quot;%kotlinx-rpc-version%&quot;
         }
         </code-block>
-        Our Gradle plugin will add this dependency to all applicable configurations:
+        Our Gradle plugin will add these dependencies to all applicable configurations:
         <code-block>
-            org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin:%kotlin-version%-%kotlinx-rpc-version%
+            org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-cli:%kotlin-version%-%kotlinx-rpc-version%
+            org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-common:%kotlin-version%-%kotlinx-rpc-version%
+            org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-k2:%kotlin-version%-%kotlinx-rpc-version%
+            org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-backend:%kotlin-version%-%kotlinx-rpc-version%
         </code-block>
         Such dependencies are managed automatically, and should not be used explicitly.
     </chapter>

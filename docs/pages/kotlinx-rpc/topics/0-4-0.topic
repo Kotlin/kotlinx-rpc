@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Migration to 0.4.0" id="0-4-0">
+    <p>
+        Version <code>0.4.0</code> introduces breaking changes.
+    </p>
+    <chapter title="@Rpc Annotation and RemoteService Interface" id="rpc_annotation_and_remote_service_interface">
+        <p>
+            This version brings changes to service definitions. Starting with this version, service definitions require
+            the <code>@Rpc</code> annotation.
+        </p>
+        <p>
+            Prior to <code>0.4.0</code>, a service was defined as follows:
+        </p>
+        <code-block lang="kotlin">
+            interface MyService : RPC
+        </code-block>
+        <p>
+            Starting from <code>0.4.0</code>, the new service definition should be:
+        </p>
+        <code-block lang="kotlin">
+            @Rpc
+            interface MyService
+        </code-block>
+        <p>
+            This definition is sufficient for the project to build. However, it will not fully support IDE features,
+            such as code highlighting.
+            All interfaces annotated with <code>@Rpc</code> are inherently of type <code>RemoteService</code>, which is
+            added by the compiler plugin, but IDEs won't be able to resolve it.
+        </p>
+        <p>
+            To ensure proper IDE support, add explicit typing:
+        </p>
+        <code-block lang="kotlin">
+            @Rpc
+            interface MyService : RemoteService
+        </code-block>
+        <note>
+            <p>
+                The reasoning behind this update is that the Kotlin Compiler Plugin API has changed.
+                Versions <code>2.0.0</code> and <code>2.0.10</code> allowed our plugin to resolve marker interfaces (like <code>RPC</code>)
+                before the code generation phase. Starting from version <code>2.0.20</code>, this behaviour changed,
+                making annotations the only reliable way to detect RPC services.
+            </p>
+            <p>
+                To track changes in this regard, we raised an <a href="https://youtrack.jetbrains.com/issue/KT-72654">issue</a>
+                with the compiler team.
+                Note that this approach is subject to change, and the final API design may be updated before the stable
+                release.
+            </p>
+        </note>
+    </chapter>
+    <chapter title="Removal of Kotlin versions prior to 2.0" id="removal_of_kotlin_versions_prior_to_2_0">
+        <p>
+            We stopped publishing compiler plugin artifacts for Kotlin versions prior to <code>2.0.0</code>.
+            The reason being its high maintenance cost with little to no usage.
+            We encourage the migration to Kotlin 2.0, where all stable versions are now supported.
+            <br/>
+        </p>
+        <p>
+            Currently supported Kotlin versions: <code>2.0.0</code>, <code>2.0.10</code>, <code>2.0.20</code>, <code>2.0.21</code>
+        </p>
+    </chapter>
+    <chapter title="Removal of org.jetbrains.kotlinx.rpc.platform Gradle plugin"
+             id="removal_of_org_jetbrains_kotlinx_rpc_platform_gradle_plugin">
+        <p>
+            The Gradle plugin with id <code>org.jetbrains.kotlinx.rpc.platform</code> is not being published anymore.
+            The reason is that it's sole role was to set BOM in the project, which is now considered unnecessary.
+            <a href="https://docs.gradle.org/current/userguide/platforms.html#sub:conventional-dependencies-toml">Gradle version catalogs</a>
+            can be used instead.
+        </p>
+    </chapter>
+    <chapter title="Removal of BOM from the Gradle plugin" id="removal_of_bom_from_the_gradle_plugin">
+        <p>
+            The Gradle plugin with id <code>org.jetbrains.kotlinx.rpc.plugin</code>
+            does not set BOM for the project anymore.
+        </p>
+        <p>
+            To configure BOM manually, add the following dependency:
+        </p>
+        <code-block lang="kotlin">
+            dependencies {
+                implementation(platform("org.jetbrains.kotlinx:kotlinx-rpc-bom:%kotlinx-rpc-version%"))
+            }
+        </code-block>
+    </chapter>
+</topic>

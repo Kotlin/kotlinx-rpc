@@ -9,98 +9,24 @@
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
        title="Plugins" id="plugins">
     <p>
-        The <code>kotlinx.rpc</code> library offers plugins that simplify project configuration by automating repetitive
-        tasks.
-        Specifically, <code>kotlinx.rpc</code> provides two Gradle <a
-            href="https://docs.gradle.org/current/userguide/plugins.html">plugins</a>:
+        The <code>kotlinx.rpc</code> library offers a <a href="https://docs.gradle.org/current/userguide/plugins.html">Gradle plugin</a>
+        that simplifies project configuration by automating repetitive tasks: `org.jetbrains.kotlinx.rpc.plugin`
     </p>
-    <list>
-        <li>
-            <a anchor="rpc-platform">
-                <code>org.jetbrains.kotlinx.rpc.platform</code>
-            </a>
-        </li>
-        <li>
-            <a anchor="rpc-plugin">
-                <code>org.jetbrains.kotlinx.rpc.plugin</code>
-            </a>
-        </li>
-    </list>
 
-    <chapter title="org.jetbrains.kotlinx.rpc.platform" id="rpc-platform">
-        <p>The <code>org.jetbrains.kotlinx.rpc.platform</code> plugin
-            is particularly useful for versioning project dependencies.
-            It adds <a href="https://docs.gradle.org/current/userguide/platforms.html#sub:bom_import">BOM</a>
-            dependency to your project, that specifies proper versions for <code>kotlinx.rpc</code> dependencies.
-            With this, you can skip specifying versions for each runtime dependency:</p>
-
-        <code-block lang="kotlin">
-            plugins {
-                kotlin("jvm") version "%kotlin-version%"
-                id("org.jetbrains.kotlinx.rpc.platform") version "%kotlinx-rpc-version%"
-            }
-
-            dependencies {
-                // versions are set automatically to %kotlinx-rpc-version%
-                implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-krpc-client&quot;)
-                implementation(&quot;org.jetbrains.kotlinx:kotlinx-rpc-krpc-server&quot;)
-            }
-        </code-block>
-        <p>Using this plugin with version catalogs, your code can be rewritten like this:</p>
-
-        <code-block lang="yaml">
-            # gradle / libs.versions.toml
-            [versions]
-            kotlinx-rpc-core = "%kotlinx-rpc-version%";
-
-            [libraries]
-            kotlinx-rpc-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-client" }
-
-            [plugins]
-            kotlinx-rpc-platform = { id = "org.jetbrains.kotlinx.rpc.platform"; version.ref = "kotlinx-rpc-core"; }
-        </code-block>
-
-        <code-block lang="kotlin">
-            // build.gradle.kts
-            plugins {
-                alias(libs.plugins.kotlinx.rpc.platform)
-            }
-
-            dependencies {
-                implementation(libs.kotlinx.rpc.client)
-            }
-        </code-block>
-    </chapter>
     <chapter title="org.jetbrains.kotlinx.rpc.plugin" id="rpc-plugin">
         <p>
-            The <code>org.jetbrains.kotlinx.rpc.plugin</code> plugin
-            has the same BOM functionality as <a anchor="rpc-platform"><code>org.jetbrains.kotlinx.rpc.platform</code></a> and it also sets
-            up code generation configurations.
+            The <code>org.jetbrains.kotlinx.rpc.plugin</code> plugin sets up code generation configurations.
         </p>
-        <p>It is useful for multi-project setups
-            where you define your <a href="services.topic">RPC services</a> in one set of subprojects and use in the
-            other. In such a setup, you can add the plugin only to modules with service definitions
-            to save time on building your project.</p>
-
         <code-block lang="kotlin">
             plugins {
                 kotlin("jvm") version "%kotlin-version%"
                 id("org.jetbrains.kotlinx.rpc.plugin") version "%kotlinx-rpc-version%"
             }
         </code-block>
-
-        <chapter title="Kotlin versions earlier than 2.0" id="pre-kotlin-2-0">
-            <p>
-                If you are using a version of Kotlin prior to 2.0,
-                you must also add the KSP (Kotlin Symbol Processing) Gradle plugin:
-            </p>
-            <code-block lang="kotlin">
-                plugins {
-                    kotlin("jvm") version "1.9.25"
-                    id("org.jetbrains.kotlinx.rpc.plugin") version "%kotlinx-rpc-version%"
-                    id("com.google.devtools.ksp") version "1.9.25-1.0.20"
-                }
-            </code-block>
-        </chapter>
+        <p>
+            For multi-project setups
+            where you define your <a href="services.topic">RPC services</a> in one set of subprojects and use them in
+            another, you can add the plugin only to modules with service definitions.
+        </p>
     </chapter>
 </topic>
