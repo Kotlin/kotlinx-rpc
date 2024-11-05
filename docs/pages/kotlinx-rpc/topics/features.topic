@@ -36,7 +36,8 @@
                 that will provide your flows with their lifetime:</p>
 
             <code-block lang="kotlin">
-                interface MyService {
+                @Rpc
+                interface MyService : RemoteService {
                     suspend fun sendFlow(flow: Flow&lt;Int&gt;)
                 }
 
@@ -81,6 +82,17 @@
                 }
             </code-block>
             <p>Note that this API is experimental and may be removed in future releases.</p>
+            <p>
+                Another way of managing streams is to do it manually.
+                For this, you can use the <code>StreamScope</code> constructor function together with
+                <code>withStreamScope</code>:
+            </p>
+            <code-block lang="kotlin">
+                val streamScope = StreamScope(myJob)
+                withStreamScope(streamScope) {
+                    // use streams here
+                }
+            </code-block>
         </chapter>
     <chapter title="Service fields" id="service-fields">
             <p>Our protocol provides you with an ability to declare service fields:</p>
