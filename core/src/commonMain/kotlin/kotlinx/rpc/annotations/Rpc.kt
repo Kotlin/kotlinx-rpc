@@ -39,5 +39,5 @@ import kotlinx.rpc.RemoteService
  * @see [RemoteService]
  */
 @Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
+//@Retention(AnnotationRetention.RUNTIME) // Runtime is the default retention, also see KT-41082
 public annotation class Rpc
