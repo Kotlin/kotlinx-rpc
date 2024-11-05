@@ -1,11 +1,11 @@
 [versions]
-kotlin = "2.0.10"
-kotlin-wrappers-bom = "1.0.0-pre.812"
-ktor = "3.0.0-rc-1"
+kotlin = "2.0.21"
+kotlin-wrappers-bom = "1.0.0-pre.823"
+ktor = "3.0.1"
 kotlinx-serialization-json = "1.7.3"
 kotlinx-coroutines-core = "1.9.0"
-logback = "1.5.8"
-kotlinx-rpc = "0.3.0"
+logback = "1.5.12"
+kotlinx-rpc = "0.4.0"
 
 [libraries]
 # kotlin
@@ -41,16 +41,15 @@ ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 
 # krpc
-kotlinx-rpc-core = { module = "org.jetbrains.kotlinx:kotlinx-rpc-core" }
-kotlinx-rpc-krpc-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-client" }
-kotlinx-rpc-krpc-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-server" }
-kotlinx-rpc-krpc-ktor-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client" }
-kotlinx-rpc-krpc-ktor-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server" }
-kotlinx-rpc-krpc-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json" }
+kotlinx-rpc-core = { module = "org.jetbrains.kotlinx:kotlinx-rpc-core", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-krpc-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-client", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-krpc-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-server", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-krpc-ktor-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-krpc-ktor-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-krpc-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json", version.ref = "kotlinx-rpc" }
 
 [plugins]
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinx-rpc = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "kotlinx-rpc" }
-kotlinx-rpc-platform = { id = "org.jetbrains.kotlinx.rpc.platform", version.ref = "kotlinx-rpc" }
