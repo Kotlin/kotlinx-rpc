@@ -6,21 +6,16 @@ package kotlinx.rpc.krpc.client
 
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.rpc.RPCCall
-import kotlinx.rpc.RPCClient
-import kotlinx.rpc.RPCField
+import kotlinx.rpc.RpcCall
+import kotlinx.rpc.RpcClient
+import kotlinx.rpc.descriptor.RpcCallable
 import kotlinx.rpc.internal.serviceScopeOrNull
 import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlinx.rpc.internal.utils.SupervisedCompletableDeferred
 import kotlinx.rpc.internal.utils.getOrNull
 import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
 import kotlinx.rpc.krpc.*
-import kotlinx.rpc.krpc.client.internal.FieldDataObject
 import kotlinx.rpc.krpc.client.internal.RPCClientConnector
-import kotlinx.rpc.krpc.client.internal.RPCFlow
 import kotlinx.rpc.krpc.internal.*
 import kotlinx.rpc.krpc.internal.logging.CommonLogger
 import kotlinx.serialization.BinaryFormat
@@ -28,10 +23,9 @@ import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.reflect.typeOf
 
 /**
- * Default implementation of [RPCClient].
+ * Default implementation of [RpcClient].
  * Takes care of tracking requests and responses,
  * serializing data, tracking streams, processing exceptions, and other protocol responsibilities.
  * Leaves out the delivery of encoded messages to the specific implementations.
@@ -51,7 +45,7 @@ import kotlin.reflect.typeOf
 public abstract class KRPCClient(
     final override val config: RPCConfig.Client,
     transport: RPCTransport,
-) : RPCServiceHandler(), RPCClient, RPCEndpoint {
+) : RPCServiceHandler(), RpcClient, RPCEndpoint {
     // we make a child here, so we can send cancellation messages before closing the connection
     final override val coroutineContext: CoroutineContext = SupervisorJob(transport.coroutineContext.job)
 
@@ -143,44 +137,24 @@ public abstract class KRPCClient(
         }
     }
 
-    final override fun <T> registerPlainFlowField(serviceScope: CoroutineScope, field: RPCField): Flow<T> {
-        return RPCFlow.Plain<T>(field.serviceTypeString, serviceScope.coroutineContext.job).also { rpcFlow ->
-            serviceScope.initializeFlowField(rpcFlow, field)
-        }
-    }
+    override fun <T> callSync(
+        serviceScope: CoroutineScope,
+        call: RpcCall,
+    ): Deferred<T> {
+        val callable = call.descriptor.getCallable(call.callableName)
+            ?: error("Unexpected callable '${call.callableName}' for ${call.descriptor.fqName} service")
 
-    final override fun <T> registerSharedFlowField(serviceScope: CoroutineScope, field: RPCField): SharedFlow<T> {
-        return RPCFlow.Shared<T>(field.serviceTypeString, serviceScope.coroutineContext.job).also { rpcFlow ->
-            serviceScope.initializeFlowField(rpcFlow, field)
-        }
-    }
-
-    final override fun <T> registerStateFlowField(serviceScope: CoroutineScope, field: RPCField): StateFlow<T> {
-        return RPCFlow.State<T>(field.serviceTypeString, serviceScope.coroutineContext.job).also { rpcFlow ->
-            serviceScope.initializeFlowField(rpcFlow, field)
-        }
-    }
-
-    private fun <T, FlowT : Flow<T>> CoroutineScope.initializeFlowField(rpcFlow: RPCFlow<T, FlowT>, field: RPCField) {
-        val call = RPCCall(
-            serviceTypeString = field.serviceTypeString,
-            serviceId = field.serviceId,
-            callableName = field.name,
-            type = RPCCall.Type.Field,
-            data = FieldDataObject,
-            dataType = typeOf<FieldDataObject>(),
-            returnType = field.type,
-        )
+        val deferred = SupervisedCompletableDeferred<T>(serviceScope.coroutineContext.job)
 
         /**
          * Launched on the service scope (receiver)
          * Moreover, this scope has [StreamScope] that is used to handle field streams.
          * [StreamScope] is provided to a service via [provideStubContext].
          */
-        launch {
-            val rpcCall = call(call, rpcFlow.deferred)
+        serviceScope.launch {
+            val rpcCall = call(call, callable, deferred)
 
-            rpcFlow.deferred.invokeOnCompletion { cause ->
+            deferred.invokeOnCompletion { cause ->
                 if (cause == null) {
                     rpcCall.streamContext.valueOrNull?.launchIf({ incomingHotFlowsAvailable }) {
                         handleIncomingHotFlows(it)
@@ -188,11 +162,16 @@ public abstract class KRPCClient(
                 }
             }
         }
+
+        return deferred
     }
 
-    final override suspend fun <T> call(call: RPCCall): T {
+    final override suspend fun <T> call(call: RpcCall): T {
+        val callable = call.descriptor.getCallable(call.callableName)
+            ?: error("Unexpected callable '${call.callableName}' for ${call.descriptor.fqName} service")
+
         val callCompletableResult = SupervisedCompletableDeferred<T>()
-        val rpcCall = call(call, callCompletableResult)
+        val rpcCall = call(call, callable, callCompletableResult)
         val result = callCompletableResult.await()
 
         // incomingHotFlowsAvailable value is known after await
@@ -203,12 +182,16 @@ public abstract class KRPCClient(
         return result
     }
 
-    private suspend fun <T> call(call: RPCCall, callResult: CompletableDeferred<T>): RPCCallStreamContextFormatAndId {
+    private suspend fun <T> call(
+        call: RpcCall,
+        callable: RpcCallable<*>,
+        callResult: CompletableDeferred<T>,
+    ): RPCCallStreamContextFormatAndId {
         val wrappedCallResult = RequestCompletableDeferred(callResult)
-        val rpcCall = prepareAndExecuteCall(call, wrappedCallResult)
+        val rpcCall = prepareAndExecuteCall(call, callable, wrappedCallResult)
 
         rpcCall.streamContext.valueOrNull?.launchIf({ outgoingStreamsAvailable }) {
-            handleOutgoingStreams(it, rpcCall.serialFormat, call.serviceTypeString)
+            handleOutgoingStreams(it, rpcCall.serialFormat, call.descriptor.fqName)
         }
 
         val handle = serviceScopeOrNull()?.run {
@@ -222,7 +205,7 @@ public abstract class KRPCClient(
 
         callResult.invokeOnCompletion { cause ->
             if (cause != null) {
-                cancellingRequests[rpcCall.callId] = call.serviceTypeString
+                cancellingRequests[rpcCall.callId] = call.descriptor.fqName
 
                 rpcCall.streamContext.valueOrNull?.cancel("Request failed", cause)
 
@@ -237,13 +220,13 @@ public abstract class KRPCClient(
                 if (streamScope == null) {
                     handle?.dispose()
 
-                    connector.unsubscribeFromMessages(call.serviceTypeString, rpcCall.callId)
+                    connector.unsubscribeFromMessages(call.descriptor.fqName, rpcCall.callId)
                 }
 
                 streamScope?.onScopeCompletion(rpcCall.callId) {
                     handle?.dispose()
 
-                    cancellingRequests[rpcCall.callId] = call.serviceTypeString
+                    cancellingRequests[rpcCall.callId] = call.descriptor.fqName
 
                     sendCancellation(CancellationType.REQUEST, call.serviceId.toString(), rpcCall.callId)
                 }
@@ -254,7 +237,8 @@ public abstract class KRPCClient(
     }
 
     private suspend fun prepareAndExecuteCall(
-        callInfo: RPCCall,
+        call: RpcCall,
+        callable: RpcCallable<*>,
         callResult: RequestCompletableDeferred<*>,
     ): RPCCallStreamContextFormatAndId {
         // we should wait for the handshake to finish
@@ -262,27 +246,28 @@ public abstract class KRPCClient(
 
         val id = callCounter.incrementAndGet()
 
-        val dataTypeString = callInfo.dataType.toString()
+        val dataTypeString = callable.dataType.toString()
 
         val callId = "$connectionId:$dataTypeString:$id"
 
-        logger.trace { "start a call[$callId] ${callInfo.callableName}" }
+        logger.trace { "start a call[$callId] ${callable.name}" }
 
         val fallbackScope = serviceScopeOrNull()
             ?.serviceCoroutineScope
             ?.let { streamScopeOrNull(it) }
 
         val streamContext = LazyRPCStreamContext(streamScopeOrNull(), fallbackScope) {
-            RPCStreamContext(callId, config, connectionId, callInfo.serviceId, it)
+            RPCStreamContext(callId, config, connectionId, call.serviceId, it)
         }
         val serialFormat = prepareSerialFormat(streamContext)
-        val firstMessage = serializeRequest(callId, callInfo, serialFormat)
+        val firstMessage = serializeRequest(callId, call, callable, serialFormat)
 
         @Suppress("UNCHECKED_CAST")
         executeCall(
             callId = callId,
             streamContext = streamContext,
-            call = callInfo,
+            call = call,
+            callable = callable,
             firstMessage = firstMessage,
             serialFormat = serialFormat,
             callResult = callResult as RequestCompletableDeferred<Any?>
@@ -300,17 +285,18 @@ public abstract class KRPCClient(
     private suspend fun executeCall(
         callId: String,
         streamContext: LazyRPCStreamContext,
-        call: RPCCall,
+        call: RpcCall,
+        callable: RpcCallable<*>,
         firstMessage: RPCCallMessage,
         serialFormat: SerialFormat,
         callResult: RequestCompletableDeferred<Any?>,
     ) {
-        connector.subscribeToCallResponse(call.serviceTypeString, callId) { message ->
+        connector.subscribeToCallResponse(call.descriptor.fqName, callId) { message ->
             if (cancellingRequests.containsKey(callId)) {
                 return@subscribeToCallResponse
             }
 
-            handleMessage(message, streamContext, call, serialFormat, callResult)
+            handleMessage(message, streamContext, callable, serialFormat, callResult)
         }
 
         connector.sendMessage(firstMessage)
@@ -319,7 +305,7 @@ public abstract class KRPCClient(
     private suspend fun handleMessage(
         message: RPCCallMessage,
         streamContext: LazyRPCStreamContext,
-        callInfo: RPCCall,
+        callable: RpcCallable<*>,
         serialFormat: SerialFormat,
         callResult: RequestCompletableDeferred<Any?>,
     ) {
@@ -345,7 +331,7 @@ public abstract class KRPCClient(
 
             is RPCCallMessage.CallSuccess -> {
                 val value = runCatching {
-                    val serializerResult = serialFormat.serializersModule.rpcSerializerForType(callInfo.returnType)
+                    val serializerResult = serialFormat.serializersModule.rpcSerializerForType(callable.returnType)
 
                     decodeMessageData(serialFormat, serializerResult, message)
                 }
@@ -391,16 +377,21 @@ public abstract class KRPCClient(
         }
     }
 
-    private fun serializeRequest(callId: String, call: RPCCall, serialFormat: SerialFormat): RPCCallMessage {
-        val serializerData = serialFormat.serializersModule.rpcSerializerForType(call.dataType)
+    private fun serializeRequest(
+        callId: String,
+        call: RpcCall,
+        callable: RpcCallable<*>,
+        serialFormat: SerialFormat,
+    ): RPCCallMessage {
+        val serializerData = serialFormat.serializersModule.rpcSerializerForType(callable.dataType)
         return when (serialFormat) {
             is StringFormat -> {
                 val stringValue = serialFormat.encodeToString(serializerData, call.data)
                 RPCCallMessage.CallDataString(
                     callId = callId,
-                    serviceType = call.serviceTypeString,
+                    serviceType = call.descriptor.fqName,
                     callableName = call.callableName,
-                    callType = call.type.toMessageCallType(),
+                    callType = callable.toMessageCallType(),
                     data = stringValue,
                     connectionId = connectionId,
                     serviceId = call.serviceId,
@@ -411,9 +402,9 @@ public abstract class KRPCClient(
                 val binaryValue = serialFormat.encodeToByteArray(serializerData, call.data)
                 RPCCallMessage.CallDataBinary(
                     callId = callId,
-                    serviceType = call.serviceTypeString,
+                    serviceType = call.descriptor.fqName,
                     callableName = call.callableName,
-                    callType = call.type.toMessageCallType(),
+                    callType = callable.toMessageCallType(),
                     data = binaryValue,
                     connectionId = connectionId,
                     serviceId = call.serviceId,

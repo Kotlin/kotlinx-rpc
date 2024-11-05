@@ -5,16 +5,16 @@
 package kotlinx.rpc.krpc.ktor.client
 
 import io.ktor.websocket.*
-import kotlinx.rpc.RPCClient
+import kotlinx.rpc.RpcClient
 import kotlinx.rpc.krpc.RPCConfig
 import kotlinx.rpc.krpc.client.KRPCClient
 import kotlinx.rpc.krpc.ktor.KtorTransport
 
 /**
- * [RPCClient] implementation for Ktor, containing [webSocketSession] object,
+ * [RpcClient] implementation for Ktor, containing [webSocketSession] object,
  * that is used to maintain connection.
  */
-public interface KtorRPCClient : RPCClient {
+public interface KtorRPCClient : RpcClient {
     public val webSocketSession: WebSocketSession
 }
 
