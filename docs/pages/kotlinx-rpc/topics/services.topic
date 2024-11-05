@@ -13,9 +13,12 @@
                 and contains a set of methods and fields
                 that can be executed or accessed remotely.
                 Additionally, a service always has a type of <code>RemoteService</code>,
-                which can be specified explicitly, or assumed implicitly and added by a compiler
-                (the latter option does not work in IDE right now, but WIP).
-                A simple service can be declared as follows:</p>
+                which can be specified explicitly, or assumed implicitly by the compiler.
+    </p>
+    <note>
+        Note that implicit typing is currently not supported in IDEs, but is a work in progress.
+    </note>
+    <p>A simple service can be declared as follows:</p>
 
             <code-block lang="kotlin">
                 @Rpc

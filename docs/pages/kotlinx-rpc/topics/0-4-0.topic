@@ -9,52 +9,65 @@
     </p>
     <chapter title="@Rpc Annotation and RemoteService Interface" id="rpc_annotation_and_remote_service_interface">
         <p>
-            This version brings changes to service definitions.
-            Prior to <code>0.4.0</code> a service was defined as following:
+            This version brings changes to service definitions. Starting with this version, service definitions require
+            the <code>@Rpc</code> annotation.
+        </p>
+        <p>
+            Prior to <code>0.4.0</code>, a service was defined as follows:
         </p>
         <code-block lang="kotlin">
             interface MyService : RPC
         </code-block>
         <p>
-            Starting from <code>0.4.0</code> new service definition is required:
+            Starting from <code>0.4.0</code>, the new service definition should be:
         </p>
         <code-block lang="kotlin">
             @Rpc
             interface MyService
         </code-block>
         <p>
-            This definition will be enough for the project to build, but it is not sufficient for use in IDE.
-            All interfaces annotated with <code>@Rpc</code> are inherently <code>RemoteService</code>.
-            This supertype is added by our compiler plugin.
-            However, IDE can't resolve it yet, so for the code to be highlighted properly,
-            explicit typing is required:
+            This definition is sufficient for the project to build. However, it will not fully support IDE features,
+            such as code highlighting.
+            All interfaces annotated with <code>@Rpc</code> are inherently of type <code>RemoteService</code>, which is
+            added by the compiler plugin, but IDEs won't be able to resolve it.
+        </p>
+        <p>
+            To ensure proper IDE support, add explicit typing:
         </p>
         <code-block lang="kotlin">
             @Rpc
             interface MyService : RemoteService
         </code-block>
         <note>
-            The reasoning behind this change is that Kotlin Compiler Plugin API has changed.
-            Versions <code>2.0.0</code> and <code>2.0.10</code> allowed our plugin to resolve marker interfaces (which <code>RPC</code> was)
-            before the code generation phase. Starting from <code>2.0.20</code> this doesn't work,
-            and we are forced to use annotations to reliably detect RPC services.
-            To track changes in this regard, we created an <a href="https://youtrack.jetbrains.com/issue/KT-72654">issue</a> for the compiler team.
-            This change is not the final API design decision, and it may be changed before the stable release.
+            <p>
+                The reasoning behind this update is that the Kotlin Compiler Plugin API has changed.
+                Versions <code>2.0.0</code> and <code>2.0.10</code> allowed our plugin to resolve marker interfaces (like <code>RPC</code>)
+                before the code generation phase. Starting from version <code>2.0.20</code>, this behaviour changed,
+                making annotations the only reliable way to detect RPC services.
+            </p>
+            <p>
+                To track changes in this regard, we raised an <a href="https://youtrack.jetbrains.com/issue/KT-72654">issue</a>
+                with the compiler team.
+                Note that this approach is subject to change, and the final API design may be updated before the stable
+                release.
+            </p>
         </note>
     </chapter>
     <chapter title="Removal of Kotlin versions prior to 2.0" id="removal_of_kotlin_versions_prior_to_2_0">
         <p>
-            We stopped publishing compiler plugin artifacts for Kotlin versions prior to 2.0.
-            The reason for this is high maintenance cost with little to no usage.
+            We stopped publishing compiler plugin artifacts for Kotlin versions prior to <code>2.0.0</code>.
+            The reason being its high maintenance cost with little to no usage.
             We encourage the migration to Kotlin 2.0, where all stable versions are now supported.
             <br/>
-            List of Kotlin versions that are currently supported: <code>2.0.0</code>, <code>2.0.10</code>, <code>2.0.20</code>, <code>2.0.21</code>
+        </p>
+        <p>
+            Currently supported Kotlin versions: <code>2.0.0</code>, <code>2.0.10</code>, <code>2.0.20</code>, <code>2.0.21</code>
         </p>
     </chapter>
     <chapter title="Removal of org.jetbrains.kotlinx.rpc.platform Gradle plugin"
              id="removal_of_org_jetbrains_kotlinx_rpc_platform_gradle_plugin">
         <p>
-            Gradle plugin with id <code>org.jetbrains.kotlinx.rpc.platform</code> is not being published anymore.
+            The Gradle plugin with id <code>org.jetbrains.kotlinx.rpc.platform</code> is not being published anymore.
             The reason is that it's sole role was to set BOM in the project, which is now considered unnecessary.
             <a href="https://docs.gradle.org/current/userguide/platforms.html#sub:conventional-dependencies-toml">Gradle version catalogs</a>
             can be used instead.
@@ -62,8 +75,11 @@
     </chapter>
     <chapter title="Removal of BOM from the Gradle plugin" id="removal_of_bom_from_the_gradle_plugin">
         <p>
-            The Gradle plugin that is left (<code>org.jetbrains.kotlinx.rpc.plugin</code>)
-            does not set BOM for the project anymore. Instead, manual dependency can be set:
+            The Gradle plugin with id <code>org.jetbrains.kotlinx.rpc.plugin</code>
+            does not set BOM for the project anymore.
+        </p>
+        <p>
+            To configure BOM manually, add the following dependency:
         </p>
         <code-block lang="kotlin">
             dependencies {

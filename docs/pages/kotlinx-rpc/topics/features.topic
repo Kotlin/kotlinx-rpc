@@ -83,8 +83,9 @@
             </code-block>
             <p>Note that this API is experimental and may be removed in future releases.</p>
             <p>
-                Another way of managing streams - is to do it manually.
-                For this, <code>StreamScope</code> constructor function can be used on pair with <code>withStreamScope</code>:
+                Another way of managing streams is to do it manually.
+                For this, you can use the <code>StreamScope</code> constructor function together with
+                <code>withStreamScope</code>:
             </p>
             <code-block lang="kotlin">
                 val streamScope = StreamScope(myJob)
