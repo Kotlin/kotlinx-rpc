@@ -6,8 +6,8 @@ package kotlinx.rpc.codegen
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.ir.addExtensionReceiver
+import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
@@ -82,5 +82,5 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     }
 
     override val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
-        get() = CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY
+        get() = CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY
 }

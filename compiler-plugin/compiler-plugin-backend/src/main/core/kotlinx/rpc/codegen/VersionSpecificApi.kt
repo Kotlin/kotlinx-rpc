@@ -5,6 +5,8 @@
 package kotlinx.rpc.codegen
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.config.CompilerConfigurationKey
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
@@ -41,6 +43,8 @@ interface VersionSpecificApi {
     var IrCall.originVS: IrStatementOrigin?
 
     var IrConstructor.isPrimaryVS: Boolean
+
+    val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
 
     companion object {
         lateinit var INSTANCE: VersionSpecificApi
