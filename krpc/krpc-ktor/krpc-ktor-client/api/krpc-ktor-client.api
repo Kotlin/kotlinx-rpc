@@ -7,7 +7,7 @@ public final class kotlinx/rpc/krpc/ktor/client/KtorClientDslKt {
 	public static synthetic fun rpcConfig$default (Lio/ktor/client/request/HttpRequestBuilder;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
-public abstract interface class kotlinx/rpc/krpc/ktor/client/KtorRPCClient : kotlinx/rpc/RPCClient {
+public abstract interface class kotlinx/rpc/krpc/ktor/client/KtorRPCClient : kotlinx/rpc/RpcClient {
 	public abstract fun getWebSocketSession ()Lio/ktor/websocket/WebSocketSession;
 }
 

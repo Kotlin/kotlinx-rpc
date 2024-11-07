@@ -6,70 +6,43 @@ public final class kotlinx/rpc/AwaitFieldInitializationKt {
 public abstract interface class kotlinx/rpc/RPC : kotlinx/coroutines/CoroutineScope {
 }
 
-public final class kotlinx/rpc/RPCCall {
-	public fun <init> (Ljava/lang/String;JLjava/lang/String;Lkotlinx/rpc/RPCCall$Type;Ljava/lang/Object;Lkotlin/reflect/KType;Lkotlin/reflect/KType;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()J
-	public final fun component3 ()Ljava/lang/String;
-	public final fun component4 ()Lkotlinx/rpc/RPCCall$Type;
-	public final fun component5 ()Ljava/lang/Object;
-	public final fun component6 ()Lkotlin/reflect/KType;
-	public final fun component7 ()Lkotlin/reflect/KType;
-	public final fun copy (Ljava/lang/String;JLjava/lang/String;Lkotlinx/rpc/RPCCall$Type;Ljava/lang/Object;Lkotlin/reflect/KType;Lkotlin/reflect/KType;)Lkotlinx/rpc/RPCCall;
-	public static synthetic fun copy$default (Lkotlinx/rpc/RPCCall;Ljava/lang/String;JLjava/lang/String;Lkotlinx/rpc/RPCCall$Type;Ljava/lang/Object;Lkotlin/reflect/KType;Lkotlin/reflect/KType;ILjava/lang/Object;)Lkotlinx/rpc/RPCCall;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getCallableName ()Ljava/lang/String;
-	public final fun getData ()Ljava/lang/Object;
-	public final fun getDataType ()Lkotlin/reflect/KType;
-	public final fun getReturnType ()Lkotlin/reflect/KType;
-	public final fun getServiceId ()J
-	public final fun getServiceTypeString ()Ljava/lang/String;
-	public final fun getType ()Lkotlinx/rpc/RPCCall$Type;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class kotlinx/rpc/RPCCall$Type : java/lang/Enum {
-	public static final field Field Lkotlinx/rpc/RPCCall$Type;
-	public static final field Method Lkotlinx/rpc/RPCCall$Type;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/RPCCall$Type;
-	public static fun values ()[Lkotlinx/rpc/RPCCall$Type;
-}
-
-public abstract interface class kotlinx/rpc/RPCClient : kotlinx/coroutines/CoroutineScope {
-	public abstract fun call (Lkotlinx/rpc/RPCCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun provideStubContext (J)Lkotlin/coroutines/CoroutineContext;
-	public abstract fun registerPlainFlowField (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RPCField;)Lkotlinx/coroutines/flow/Flow;
-	public abstract fun registerSharedFlowField (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RPCField;)Lkotlinx/coroutines/flow/SharedFlow;
-	public abstract fun registerStateFlowField (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RPCField;)Lkotlinx/coroutines/flow/StateFlow;
-}
-
 public abstract interface annotation class kotlinx/rpc/RPCEagerField : java/lang/annotation/Annotation {
-}
-
-public final class kotlinx/rpc/RPCField {
-	public fun <init> (Ljava/lang/String;JLjava/lang/String;Lkotlin/reflect/KType;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()J
-	public final fun component3 ()Ljava/lang/String;
-	public final fun component4 ()Lkotlin/reflect/KType;
-	public final fun copy (Ljava/lang/String;JLjava/lang/String;Lkotlin/reflect/KType;)Lkotlinx/rpc/RPCField;
-	public static synthetic fun copy$default (Lkotlinx/rpc/RPCField;Ljava/lang/String;JLjava/lang/String;Lkotlin/reflect/KType;ILjava/lang/Object;)Lkotlinx/rpc/RPCField;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getName ()Ljava/lang/String;
-	public final fun getServiceId ()J
-	public final fun getServiceTypeString ()Ljava/lang/String;
-	public final fun getType ()Lkotlin/reflect/KType;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class kotlinx/rpc/RPCServer : kotlinx/coroutines/CoroutineScope {
 	public abstract fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;)V
 }
 
+public final class kotlinx/rpc/RegisterFieldKt {
+	public static final fun registerPlainFlowField (Lkotlinx/rpc/RpcClient;Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;J)Lkotlinx/coroutines/flow/Flow;
+	public static final fun registerSharedFlowField (Lkotlinx/rpc/RpcClient;Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;J)Lkotlinx/coroutines/flow/SharedFlow;
+	public static final fun registerStateFlowField (Lkotlinx/rpc/RpcClient;Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;J)Lkotlinx/coroutines/flow/StateFlow;
+}
+
 public abstract interface class kotlinx/rpc/RemoteService : kotlinx/coroutines/CoroutineScope {
+}
+
+public final class kotlinx/rpc/RpcCall {
+	public fun <init> (Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;Ljava/lang/Object;J)V
+	public final fun component1 ()Lkotlinx/rpc/descriptor/RpcServiceDescriptor;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Object;
+	public final fun component4 ()J
+	public final fun copy (Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;Ljava/lang/Object;J)Lkotlinx/rpc/RpcCall;
+	public static synthetic fun copy$default (Lkotlinx/rpc/RpcCall;Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;Ljava/lang/Object;JILjava/lang/Object;)Lkotlinx/rpc/RpcCall;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCallableName ()Ljava/lang/String;
+	public final fun getData ()Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/rpc/descriptor/RpcServiceDescriptor;
+	public final fun getServiceId ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class kotlinx/rpc/RpcClient : kotlinx/coroutines/CoroutineScope {
+	public abstract fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun callSync (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/Deferred;
+	public abstract fun provideStubContext (J)Lkotlin/coroutines/CoroutineContext;
 }
 
 public final class kotlinx/rpc/UninitializedRPCFieldException : java/lang/Exception {
@@ -78,10 +51,48 @@ public final class kotlinx/rpc/UninitializedRPCFieldException : java/lang/Except
 }
 
 public final class kotlinx/rpc/WithServiceKt {
-	public static final fun withService (Lkotlinx/rpc/RPCClient;Lkotlin/reflect/KClass;)Lkotlinx/rpc/RemoteService;
-	public static final fun withService (Lkotlinx/rpc/RPCClient;Lkotlin/reflect/KType;)Lkotlinx/rpc/RemoteService;
+	public static final fun withService (Lkotlinx/rpc/RpcClient;Lkotlin/reflect/KClass;)Lkotlinx/rpc/RemoteService;
+	public static final fun withService (Lkotlinx/rpc/RpcClient;Lkotlin/reflect/KType;)Lkotlinx/rpc/RemoteService;
 }
 
 public abstract interface annotation class kotlinx/rpc/annotations/Rpc : java/lang/annotation/Annotation {
+}
+
+public final class kotlinx/rpc/descriptor/RpcCallable {
+	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KType;Lkotlin/reflect/KType;Lkotlinx/rpc/descriptor/RpcInvokator;[Lkotlinx/rpc/descriptor/RpcParameter;)V
+	public final fun getDataType ()Lkotlin/reflect/KType;
+	public final fun getInvokator ()Lkotlinx/rpc/descriptor/RpcInvokator;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getParameters ()[Lkotlinx/rpc/descriptor/RpcParameter;
+	public final fun getReturnType ()Lkotlin/reflect/KType;
+}
+
+public abstract interface class kotlinx/rpc/descriptor/RpcInvokator {
+}
+
+public abstract interface class kotlinx/rpc/descriptor/RpcInvokator$Field : kotlinx/rpc/descriptor/RpcInvokator {
+	public abstract fun call (Lkotlinx/rpc/RemoteService;)Ljava/lang/Object;
+}
+
+public abstract interface class kotlinx/rpc/descriptor/RpcInvokator$Method : kotlinx/rpc/descriptor/RpcInvokator {
+	public abstract fun call (Lkotlinx/rpc/RemoteService;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class kotlinx/rpc/descriptor/RpcParameter {
+	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KType;)V
+	public final fun getName ()Ljava/lang/String;
+	public final fun getType ()Lkotlin/reflect/KType;
+}
+
+public abstract interface class kotlinx/rpc/descriptor/RpcServiceDescriptor {
+	public abstract fun createInstance (JLkotlinx/rpc/RpcClient;)Lkotlinx/rpc/RemoteService;
+	public abstract fun getCallable (Ljava/lang/String;)Lkotlinx/rpc/descriptor/RpcCallable;
+	public abstract fun getFields (Lkotlinx/rpc/RemoteService;)Ljava/util/List;
+	public abstract fun getFqName ()Ljava/lang/String;
+}
+
+public final class kotlinx/rpc/descriptor/RpcServiceDescriptorKt {
+	public static final fun serviceDescriptorOf (Lkotlin/reflect/KClass;)Lkotlinx/rpc/descriptor/RpcServiceDescriptor;
+	public static final fun serviceDescriptorOf (Lkotlin/reflect/KType;)Lkotlinx/rpc/descriptor/RpcServiceDescriptor;
 }
 
