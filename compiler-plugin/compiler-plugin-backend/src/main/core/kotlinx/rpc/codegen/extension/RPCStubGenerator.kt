@@ -17,9 +17,7 @@ import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.builders.declarations.*
 import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.expressions.IrCall
-import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
+import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
@@ -30,14 +28,21 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.util.OperatorNameConventions
+import org.jetbrains.kotlin.utils.memoryOptimizedPlus
 import kotlin.properties.Delegates
 
-private const val CLIENT_PROPERTY = "__rpc_client"
-private const val STUB_ID_PROPERTY = "__rpc_stub_id"
-private const val METHOD_NAMES_PROPERTY = "methodNames"
-private const val METHOD_TYPE_OF_FUNCTION = "methodTypeOf"
-private const val WITH_CLIENT_METHOD = "withClient"
-private const val RPC_FIELDS_METHOD = "rpcFields"
+private object Stub {
+    const val CLIENT = "__rpc_client"
+    const val STUB_ID = "__rpc_stub_id"
+}
+
+private object Descriptor {
+    const val CALLABLE_MAP = "callableMap"
+    const val FQ_NAME = "fqName"
+    const val GET_FIELDS = "getFields"
+    const val GET_CALLABLE = "getCallable"
+    const val CREATE_INSTANCE = "createInstance"
+}
 
 @Suppress("detekt.LargeClass", "detekt.TooManyFunctions")
 internal class RPCStubGenerator(
@@ -81,7 +86,7 @@ internal class RPCStubGenerator(
      * Constructor of a stub service:
      *
      * ```kotlin
-     * class MyServiceStub(private val __rpc_stub_id: Long, private val __rpc_client: RPCClient) : MyService
+     * class `$rpcServiceStub`(private val __rpc_stub_id: Long, private val __rpc_client: RpcClient) : MyService
      * ```
      */
     private fun IrClass.generateStubConstructor() {
@@ -90,12 +95,12 @@ internal class RPCStubGenerator(
             isPrimary = true
         }.apply {
             stubIdValueParameter = addValueParameter {
-                name = Name.identifier(STUB_ID_PROPERTY)
+                name = Name.identifier(Stub.STUB_ID)
                 type = ctx.irBuiltIns.longType
             }
 
             clientValueParameter = addValueParameter {
-                name = Name.identifier(CLIENT_PROPERTY)
+                name = Name.identifier(Stub.CLIENT)
                 type = ctx.rpcClient.defaultType
             }
 
@@ -131,11 +136,11 @@ internal class RPCStubGenerator(
      * __rpc_stub_id property from the constructor
      *
      * ```kotlin
-     * class MyServiceStub(private val __rpc_stub_id: Long, private val __rpc_client: RPCClient) : MyService
+     * class `$rpcServiceStub`(private val __rpc_stub_id: Long, private val __rpc_client: RpcClient) : MyService
      * ```
      */
     private fun IrClass.stubIdProperty() {
-        stubIdProperty = addConstructorProperty(STUB_ID_PROPERTY, ctx.irBuiltIns.longType, stubIdValueParameter)
+        stubIdProperty = addConstructorProperty(Stub.STUB_ID, ctx.irBuiltIns.longType, stubIdValueParameter)
     }
 
     private var clientProperty: IrProperty by Delegates.notNull()
@@ -144,11 +149,11 @@ internal class RPCStubGenerator(
      * __rpc_client property from the constructor
      *
      * ```kotlin
-     * class MyServiceStub(private val __rpc_stub_id: Long, private val __rpc_client: RPCClient) : MyService
+     * class `$rpcServiceStub`(private val __rpc_stub_id: Long, private val __rpc_client: RpcClient) : MyService
      * ```
      */
     private fun IrClass.clientProperty() {
-        clientProperty = addConstructorProperty(CLIENT_PROPERTY, ctx.rpcClient.defaultType, clientValueParameter)
+        clientProperty = addConstructorProperty(Stub.CLIENT, ctx.rpcClient.defaultType, clientValueParameter)
     }
 
     private fun IrClass.addConstructorProperty(
@@ -207,7 +212,7 @@ internal class RPCStubGenerator(
             visibility = DescriptorVisibilities.PUBLIC
             modality = Modality.FINAL
         }.apply {
-            overriddenSymbols = listOf(ctx.properties.rpcClientCoroutineContext.symbol)
+            overriddenSymbols = listOf(ctx.properties.rpcClientCoroutineContext)
 
             addBackingFieldUtil {
                 visibility = DescriptorVisibilities.PRIVATE
@@ -252,8 +257,10 @@ internal class RPCStubGenerator(
      * ``` kotlin
      *  final override val <field-name>: <field-type> by lazy {
      *      client.register<field-kind>FlowField(
-     *          this, // CoroutineScope
-     *          RPCField("<service-name>", __rpc_stub_id, "<field-name>", typeOf<<field-type>>())
+     *          serviceScope = this, // CoroutineScope
+     *          descriptor = Companion,
+     *          fieldName = "<field-name>",
+     *          serviceId = __rpc_stub_id,
      *      )
      *  }
      * ```
@@ -263,8 +270,10 @@ internal class RPCStubGenerator(
      * ```kotlin
      *  final override val <field-name>: <field-type> =
      *      client.register<field-kind>FlowField(
-     *          this, // CoroutineScope
-     *          RPCField("<service-name>", __rpc_stub_id, "<field-name>", typeOf<<field-type>>())
+     *          serviceScope = this, // CoroutineScope
+     *          descriptor = Companion,
+     *          fieldName = "<field-name>",
+     *          serviceId = __rpc_stub_id,
      *      )
      * ```
      *
@@ -272,7 +281,6 @@ internal class RPCStubGenerator(
      *  - `<field-name>` - the name of the RPC field
      *  - `<field-type>` - actual type of the field. Can be either Flot<T>, SharedFlow<T> or StateFlow<T>
      *  - `<field-kind>` - [ServiceDeclaration.FlowField.Kind]
-     *  - `<service-name>` - FQ name of the RPC service
      */
     @Suppress(
         "detekt.NestedBlockDepth",
@@ -302,7 +310,7 @@ internal class RPCStubGenerator(
                 ServiceDeclaration.FlowField.Kind.Plain -> ctx.functions.registerPlainFlowField
                 ServiceDeclaration.FlowField.Kind.Shared -> ctx.functions.registerSharedFlowField
                 ServiceDeclaration.FlowField.Kind.State -> ctx.functions.registerStateFlowField
-            }.symbol
+            }
 
             val registerCall = IrCallImpl(
                 startOffset = UNDEFINED_OFFSET,
@@ -310,9 +318,9 @@ internal class RPCStubGenerator(
                 type = fieldType,
                 symbol = registerFunction,
                 typeArgumentsCount = 1,
-                valueArgumentsCount = 2,
+                valueArgumentsCount = 4,
             ).apply {
-                dispatchReceiver = irCallProperty(stubClass, clientProperty)
+                extensionReceiver = irCallProperty(stubClass, clientProperty)
                 putTypeArgument(0, fieldTypeParameter.typeOrFail)
 
                 putValueArgument(
@@ -325,34 +333,11 @@ internal class RPCStubGenerator(
                     ),
                 )
 
-                val fieldArgument = IrConstructorCallImpl(
-                    startOffset = UNDEFINED_OFFSET,
-                    endOffset = UNDEFINED_OFFSET,
-                    type = ctx.rpcField.defaultType,
-                    symbol = ctx.rpcField.constructors.single(),
-                    typeArgumentsCount = 0,
-                    constructorTypeArgumentsCount = 0,
-                    valueArgumentsCount = 4,
-                ).apply {
-                    putValueArgument(0, stringConst(declaration.service.kotlinFqName.asString()))
-                    putValueArgument(1, irCallProperty(stubClass, stubIdProperty))
-                    putValueArgument(2, stringConst(field.property.name.asString()))
+                putValueArgument(1, irGetDescriptor())
 
-                    val typeOfCall = IrCallImpl(
-                        startOffset = UNDEFINED_OFFSET,
-                        endOffset = UNDEFINED_OFFSET,
-                        type = ctx.kTypeClass.defaultType,
-                        symbol = ctx.functions.typeOf,
-                        typeArgumentsCount = 1,
-                        valueArgumentsCount = 0,
-                    ).apply {
-                        putTypeArgument(0, fieldType)
-                    }
+                putValueArgument(2, stringConst(field.property.name.asString()))
 
-                    putValueArgument(3, typeOfCall)
-                }
-
-                putValueArgument(1, fieldArgument)
+                putValueArgument(3, irCallProperty(stubClass, stubIdProperty))
             }
 
             if (!isLazy) {
@@ -508,14 +493,11 @@ internal class RPCStubGenerator(
      * ```kotlin
      *  final override suspend fun <method-name>(<method-args>): <return-type> {
      *      return scopedClientCall(this) { // this: CoroutineScope
-     *          __rpc_client.call(RPCCall(
-     *              "<service-name>",
-     *              __rpc_stub_id,
-     *              "<method-name>",
-     *              RPCCall.Type.Method,
-     *              (<method-class>(<method-args>)|<method-object>),
-     *              typeOf<<method-class>>(),
-     *              typeOf<<return-type>>(),
+     *          __rpc_client.call(RpcCall(
+     *              descriptor = Companion,
+     *              callableName = "<method-name>",
+     *              data = (<method-class>(<method-args>)|<method-object>),
+     *              serviceId = __rpc_stub_id,
      *          ))
      *      }
      *  }
@@ -525,8 +507,7 @@ internal class RPCStubGenerator(
      *  - `<method-name>` - the name of the RPC method
      *  - `<method-args>` - array of arguments for the method
      *  - `<return-type>` - the return type of the method
-     *  - `<service-name>` - FQ name of the RPC service
-     *  - `<method-class>`/`<method-object>` - generated class or object for this method
+     *  - `<method-class>` or `<method-object>` - generated class or object for this method
      */
     @Suppress(
         "detekt.NestedBlockDepth",
@@ -654,13 +635,13 @@ internal class RPCStubGenerator(
         val methodClass = findDeclaration<IrClass> { it.name == methodClassName }
             ?: error(
                 "Expected $methodClassName class to be present in stub class " +
-                        "${declaration.service.name}${declaration.stubClass.name}"
+                        "${declaration.service.name}${stubClass.name}"
             )
 
         methodClasses.add(methodClass)
 
         val methodClassThisReceiver = methodClass.thisReceiver
-            ?: error("Expected ${methodClass.name} of ${declaration.stubClass.name} to have a thisReceiver")
+            ?: error("Expected ${methodClass.name} of ${stubClass.name} to have a thisReceiver")
 
         val properties = if (methodClass.isClass) {
             val argNames = method.arguments.memoryOptimizedMap { it.value.name }.toSet()
@@ -689,7 +670,7 @@ internal class RPCStubGenerator(
             emptyList()
         }
 
-        methodClass.superTypes += ctx.rpcMethodClassArguments.defaultType
+        methodClass.superTypes += ctx.rpcMethodClass.defaultType
 
         methodClass.addFunction {
             name = ctx.functions.asArray.name
@@ -740,14 +721,11 @@ internal class RPCStubGenerator(
      * Part of [generateRpcMethod] that generates next call:
      *
      * ```kotlin
-     * __rpc_client.call(RPCCall(
-     *     "<service-name>",
-     *     __rpc_stub_id,
-     *     "<method-name>",
-     *     RPCCall.Type.Method,
-     *     (<method-class>(<method-args>)|<method-object>),
-     *     typeOf<<method-class>>(),
-     *     typeOf<<return-type>>(),
+     * __rpc_client.call(RpcCall(
+     *     descriptor = Companion,
+     *     callableName = "<method-name>",
+     *     data = (<method-class>(<method-args>)|<method-object>),
+     *     serviceId = __rpc_stub_id,
      * ))
      * ```
      */
@@ -779,27 +757,12 @@ internal class RPCStubGenerator(
             ).apply {
                 putValueArgument(
                     index = 0,
-                    valueArgument = stringConst(declaration.service.kotlinFqName.asString()),
+                    valueArgument = irGetDescriptor(),
                 )
 
                 putValueArgument(
                     index = 1,
-                    valueArgument = irCallProperty(stubClass, stubIdProperty, symbol = functionThisReceiver.symbol),
-                )
-
-                putValueArgument(
-                    index = 2,
                     valueArgument = stringConst(method.function.name.asString()),
-                )
-
-                putValueArgument(
-                    index = 3,
-                    valueArgument = IrGetEnumValueImpl(
-                        startOffset = UNDEFINED_OFFSET,
-                        endOffset = UNDEFINED_OFFSET,
-                        type = ctx.rpcCallType.defaultType,
-                        symbol = ctx.rpcCallTypeMethod,
-                    ),
                 )
 
                 val dataParameter = if (isMethodObject) {
@@ -818,30 +781,30 @@ internal class RPCStubGenerator(
                     }
                 }
 
-                putValueArgument(4, dataParameter)
+                putValueArgument(2, dataParameter)
 
                 putValueArgument(
-                    index = 5,
-                    valueArgument = irCall(
-                        ctx.functions.typeOf,
-                    ).apply {
-                        putTypeArgument(0, methodClass.defaultType)
-                    },
-                )
-
-                putValueArgument(
-                    index = 6,
-                    valueArgument = irCall(
-                        ctx.functions.typeOf,
-                    ).apply {
-                        putTypeArgument(0, method.function.returnType)
-                    },
+                    index = 3,
+                    valueArgument = irCallProperty(stubClass, stubIdProperty, symbol = functionThisReceiver.symbol),
                 )
             }
 
             putValueArgument(0, rpcCallConstructor)
         }
+
         return call
+    }
+
+    private fun irGetDescriptor(): IrExpression {
+        val companion = stubClass.companionObject()
+            ?: error("Expected companion object in ${stubClass.name}")
+
+        return IrGetObjectValueImpl(
+            startOffset = UNDEFINED_OFFSET,
+            endOffset = UNDEFINED_OFFSET,
+            type = companion.symbol.defaultType,
+            symbol = companion.symbol,
+        )
     }
 
     private fun irCallProperty(
@@ -887,7 +850,7 @@ internal class RPCStubGenerator(
      * The empty object should already be generated
      *
      * ```kotlin
-     *  companion object : RPCStubObject<MyServiceStub>
+     *  companion object : RpcServiceDescriptor<MyService>
      * ```
      */
     private fun IrClass.generateCompanionObject() {
@@ -899,13 +862,13 @@ internal class RPCStubGenerator(
             stubCompanionObjectThisReceiver = thisReceiver
                 ?: error("Stub companion object expected to have thisReceiver: ${name.asString()}")
 
-            superTypes = listOf(ctx.rpcStubObject.typeWith(declaration.serviceType))
+            superTypes = listOf(ctx.rpcServiceDescriptor.typeWith(declaration.serviceType))
 
             generateCompanionObjectConstructor()
 
             generateCompanionObjectContent()
 
-            addAnyOverrides(ctx.rpcStubObject.owner)
+            addAnyOverrides(ctx.rpcServiceDescriptor.owner)
         } ?: error("Expected companion object to be present")
     }
 
@@ -921,53 +884,251 @@ internal class RPCStubGenerator(
     }
 
     private fun IrClass.generateCompanionObjectContent() {
-        generateMethodNamesProperty()
+        generateFqName()
 
-        generateMethodTypeOfFunction()
+        generateInvokators()
 
-        generateWithClientFunction()
+        generateCallableMapProperty()
 
-        generateRpcFieldsFunction()
+        generateGetCallableFunction()
+
+        generateCreateInstanceFunction()
+
+        generateGetFieldsFunction()
     }
 
-    private var methodNamesMap: IrProperty by Delegates.notNull()
-
     /**
-     * Method names property.
-     * A map that holds a KType of the method class by method string name
+     * `fqName` property of the descriptor.
      *
      * ```kotlin
-     *  private val methodNames: Map<String, KType> = mapOf(
-     *      Pair("<method-name-1>", typeOf<<method-class-1>>()),
-     *      ...
-     *      Pair("<method-name-n>", typeOf<<method-class-n>>()),
-     *  )
+     * override val fqName = "MyService"
+     * ```
+     */
+    private fun IrClass.generateFqName() {
+        addProperty {
+            name = Name.identifier(Descriptor.FQ_NAME)
+            visibility = DescriptorVisibilities.PUBLIC
+        }.apply {
+            overriddenSymbols = listOf(ctx.properties.rpcServiceDescriptorFqName)
+
+            addBackingFieldUtil {
+                visibility = DescriptorVisibilities.PRIVATE
+                type = ctx.irBuiltIns.stringType
+                vsApi { isFinalVS = true }
+            }.apply {
+                initializer = factory.createExpressionBody(
+                    stringConst(declaration.fqName)
+                )
+            }
+
+            addDefaultGetter(this@generateFqName, ctx.irBuiltIns) {
+                visibility = DescriptorVisibilities.PUBLIC
+                overriddenSymbols = listOf(ctx.properties.rpcServiceDescriptorFqName.owner.getterOrFail.symbol)
+            }
+        }
+    }
+
+    private val invokators = mutableMapOf<String, IrProperty>()
+
+    private fun IrClass.generateInvokators() {
+        (declaration.methods memoryOptimizedPlus declaration.fields).forEachIndexed { i, callable ->
+            generateInvokator(i, callable)
+        }
+    }
+
+    /**
+     * Generates an invokator (`RpcInvokator`) for this callable.
      *
-     *  // when n=0:
-     *  private val methodNames: Map<String, KType> = emptyMap()
+     * For methods:
+     * ```kotlin
+     * private val <method-name>Invokator = RpcInvokator.Method<MyService> {
+     *     service: MyService, data: Any? ->
+     *
+     *     val dataCasted = data.dataCast<<method-class-type>>(
+     *         "<method-name>",
+     *         "<service-name>",
+     *     )
+     *
+     *     service.<method-name>(dataCasted.<parameter-1>, ..., $completion)
+     * }
      * ```
      *
      * Where:
-     *  - `<method-name-k>` - the name of the k-th method in the service
-     *  - `<method-class-k>` - the method class for the k-th method in the service
+     *  - `<method-name>` - the name of the method
+     *  - `<method-class-type>` - type of the corresponding method class
+     *  - `<service-name>` - name of the service
+     *  - `$completion` - Continuation<Any?> parameter
+     *
+     * For fields:
+     * ```kotlin
+     * private val <field-name>Invokator = RpcInvokator.Field<MyService> { service: MyService ->
+     *     service.<field-name>
+     * }
+     * ```
+     * Where:
+     *  - `<field-name>` - the name of the field
      */
-    private fun IrClass.generateMethodNamesProperty() {
-        methodNamesMap = addProperty {
-            name = Name.identifier(METHOD_NAMES_PROPERTY)
+    private fun IrClass.generateInvokator(i: Int, callable: ServiceDeclaration.Callable) {
+        invokators[callable.name] = addProperty {
+            name = Name.identifier("${callable.name}Invokator")
+            visibility = DescriptorVisibilities.PRIVATE
+        }.apply {
+            val propertyTypeSymbol = when (callable) {
+                is ServiceDeclaration.Method -> ctx.rpcInvokatorMethod
+                is ServiceDeclaration.FlowField -> ctx.rpcInvokatorField
+            }
+
+            val propertyType = propertyTypeSymbol.typeWith(declaration.serviceType)
+
+            addBackingFieldUtil {
+                visibility = DescriptorVisibilities.PRIVATE
+                type = propertyType
+                vsApi { isFinalVS = true }
+            }.apply backingField@{
+                val functionLambda = factory.buildFun {
+                    origin = IrDeclarationOrigin.LOCAL_FUNCTION_FOR_LAMBDA
+                    name = SpecialNames.ANONYMOUS
+                    visibility = DescriptorVisibilities.LOCAL
+                    modality = Modality.FINAL
+                    returnType = ctx.anyNullable
+                    if (callable is ServiceDeclaration.Method) {
+                        isSuspend = true
+                    }
+                }.apply {
+                    parent = this@backingField
+
+                    val serviceParameter = addValueParameter {
+                        name = Name.identifier("service")
+                        type = declaration.serviceType
+                    }
+
+                    val dataParameter = if (callable is ServiceDeclaration.Method) {
+                        addValueParameter {
+                            name = Name.identifier("data")
+                            type = ctx.anyNullable
+                        }
+                    } else {
+                        null
+                    }
+
+                    body = irBuilder(symbol).irBlockBody {
+                        val call = when (callable) {
+                            is ServiceDeclaration.Method -> {
+                                val methodClass = methodClasses[i]
+                                val dataCasted = irTemporary(
+                                    value = irCall(ctx.functions.dataCast, type = methodClass.defaultType).apply {
+                                        dataParameter ?: error("unreachable")
+                                        extensionReceiver = irGet(dataParameter)
+
+                                        putTypeArgument(0, methodClass.defaultType)
+
+                                        putValueArgument(0, stringConst(callable.name))
+                                        putValueArgument(1, stringConst(declaration.fqName))
+                                    },
+                                    nameHint = "dataCasted",
+                                    irType = methodClass.defaultType,
+                                )
+
+                                irCall(callable.function).apply {
+                                    dispatchReceiver = irGet(serviceParameter)
+
+                                    callable.arguments.forEachIndexed { i, arg ->
+                                        putValueArgument(
+                                            index = i,
+                                            valueArgument = irCallProperty(
+                                                receiver = irGet(dataCasted),
+                                                property = methodClass.properties.single { it.name == arg.value.name },
+                                            ),
+                                        )
+                                    }
+                                }
+                            }
+
+                            is ServiceDeclaration.FlowField -> {
+                                irCall(callable.property.getterOrFail).apply {
+                                    dispatchReceiver = irGet(serviceParameter)
+                                }
+                            }
+                        }
+
+                        +irReturn(call)
+                    }
+                }
+
+                val lambdaType = when (callable) {
+                    is ServiceDeclaration.Method -> ctx.suspendFunction2.typeWith(
+                        declaration.serviceType, // service
+                        ctx.anyNullable, // data
+                        ctx.anyNullable, // returnType
+                    )
+
+                    is ServiceDeclaration.FlowField -> ctx.function1.typeWith(
+                        declaration.serviceType, // service
+                        ctx.anyNullable, // returnType
+                    )
+                }
+
+                val lambda = IrFunctionExpressionImpl(
+                    startOffset = UNDEFINED_OFFSET,
+                    endOffset = UNDEFINED_OFFSET,
+                    type = lambdaType,
+                    origin = IrStatementOrigin.LAMBDA,
+                    function = functionLambda,
+                )
+
+                initializer = factory.createExpressionBody(
+                    IrTypeOperatorCallImpl(
+                        startOffset = UNDEFINED_OFFSET,
+                        endOffset = UNDEFINED_OFFSET,
+                        type = propertyType,
+                        operator = IrTypeOperator.SAM_CONVERSION,
+                        typeOperand = propertyType,
+                        argument = lambda,
+                    )
+                )
+            }
+
+            addDefaultGetter(this@generateInvokator, ctx.irBuiltIns) {
+                visibility = DescriptorVisibilities.PRIVATE
+            }
+        }
+    }
+
+    private var callableMap: IrProperty by Delegates.notNull()
+
+    /**
+     * Callable names map.
+     * A map that holds an RpcCallable that describes it.
+     *
+     * ```kotlin
+     *  private val callableMap: Map<String, RpcCallable<MyService>> = mapOf(
+     *      Pair("<callable-name-1>", RpcCallable(...)),
+     *      ...
+     *      Pair("<callable-name-n>", RpcCallable(...)),
+     *  )
+     *
+     *  // when n=0:
+     *  private val callableMap: Map<String, RpcCallable<MyService>> = emptyMap()
+     * ```
+     *
+     * Where:
+     *  - `<callable-name-k>` - the name of the k-th callable in the service
+     */
+    private fun IrClass.generateCallableMapProperty() {
+        callableMap = addProperty {
+            name = Name.identifier(Descriptor.CALLABLE_MAP)
             visibility = DescriptorVisibilities.PRIVATE
             modality = Modality.FINAL
         }.apply {
-            val mapType = ctx.irBuiltIns.mapClass.typeWith(
-                ctx.irBuiltIns.stringType,
-                ctx.kTypeClass.defaultType,
-            )
+            val rpcCallableType = ctx.rpcCallable.typeWith(declaration.serviceType)
+            val mapType = ctx.irBuiltIns.mapClass.typeWith(ctx.irBuiltIns.stringType, rpcCallableType)
 
             addBackingFieldUtil {
                 type = mapType
                 vsApi { isFinalVS = true }
                 visibility = DescriptorVisibilities.PRIVATE
             }.apply {
-                val isEmpty = declaration.methods.isEmpty()
+                val isEmpty = declaration.methods.isEmpty() && declaration.fields.isEmpty()
 
                 initializer = factory.createExpressionBody(
                     IrCallImpl(
@@ -979,25 +1140,24 @@ internal class RPCStubGenerator(
                         typeArgumentsCount = 2,
                     ).apply mapApply@{
                         putTypeArgument(0, ctx.irBuiltIns.stringType)
-                        putTypeArgument(1, ctx.kTypeClass.defaultType)
+                        putTypeArgument(1, rpcCallableType)
 
                         if (isEmpty) {
                             return@mapApply
                         }
 
-                        val pairType = ctx.pair.typeWith(
-                            ctx.irBuiltIns.stringType,
-                            ctx.kTypeClass.defaultType,
-                        )
+                        val pairType = ctx.pair.typeWith(ctx.irBuiltIns.stringType, rpcCallableType)
 
                         val varargType = ctx.irBuiltIns.arrayClass.typeWith(pairType, Variance.OUT_VARIANCE)
+
+                        val callables = declaration.methods memoryOptimizedPlus declaration.fields
 
                         val vararg = IrVarargImpl(
                             startOffset = UNDEFINED_OFFSET,
                             endOffset = UNDEFINED_OFFSET,
                             type = varargType,
                             varargElementType = pairType,
-                            elements = declaration.methods.memoryOptimizedMapIndexed { i, method ->
+                            elements = callables.memoryOptimizedMapIndexed { i, callable ->
                                 IrCallImpl(
                                     startOffset = UNDEFINED_OFFSET,
                                     endOffset = UNDEFINED_OFFSET,
@@ -1007,22 +1167,11 @@ internal class RPCStubGenerator(
                                     valueArgumentsCount = 1,
                                 ).apply {
                                     putTypeArgument(0, ctx.irBuiltIns.stringType)
-                                    putTypeArgument(1, ctx.kTypeClass.defaultType)
+                                    putTypeArgument(1, rpcCallableType)
 
-                                    extensionReceiver = stringConst(method.function.name.asString())
+                                    extensionReceiver = stringConst(callable.name)
 
-                                    val type = IrCallImpl(
-                                        startOffset = UNDEFINED_OFFSET,
-                                        endOffset = UNDEFINED_OFFSET,
-                                        type = ctx.kTypeClass.defaultType,
-                                        symbol = ctx.functions.typeOf,
-                                        typeArgumentsCount = 1,
-                                        valueArgumentsCount = 0,
-                                    ).apply {
-                                        putTypeArgument(0, methodClasses[i].defaultType)
-                                    }
-
-                                    putValueArgument(0, type)
+                                    putValueArgument(0, irRpcCallable(i, callable))
                                 }
                             },
                         )
@@ -1032,30 +1181,146 @@ internal class RPCStubGenerator(
                 )
             }
 
-            addDefaultGetter(this@generateMethodNamesProperty, ctx.irBuiltIns) {
+            addDefaultGetter(this@generateCallableMapProperty, ctx.irBuiltIns) {
                 visibility = DescriptorVisibilities.PRIVATE
             }
         }
     }
 
     /**
-     * Accessor function for `methodNames` map
-     * Defined in `RPCStubObject`
+     * A call to constructor of the RpcCallable.
      *
      * ```kotlin
-     *  final override fun methodTypeOf(methodName: String): KType? = methodNames[methodName]
+     * RpcCallable<MyService>(
+     *     name = "<callable-name>",
+     *     dataType = typeOf<<callable-data-type>>(),
+     *     returnType = typeOf<<callable-return-type>>(),
+     *     invokator = <callable-invokator>,
+     *     parameters = arrayOf( // or emptyArray()
+     *         RpcParameter(
+     *             "<method-parameter-name-1>",
+     *             typeOf<<method-parameter-type-1>>(),
+     *         ),
+     *         ...
+     *     ),
+     * )
+     *```
+     *
+     * Where:
+     *  - `<callable-name>` - the name of the method (field)
+     *  - `<callable-data-type>` - a method class for a method and `FieldDataObject` for fields
+     *  - `<callable-return-type>` - the return type for the method and the field type for a field
+     *  - `<callable-invokator>` - an invokator, previously generated by [generateInvokators]
+     *  - `<method-parameter-name-k>` - if a method, its k-th parameter name
+     *  - `<method-parameter-type-k>` - if a method, its k-th parameter type
+     */
+    private fun irRpcCallable(i: Int, callable: ServiceDeclaration.Callable): IrExpression {
+        return IrConstructorCallImpl(
+            startOffset = UNDEFINED_OFFSET,
+            endOffset = UNDEFINED_OFFSET,
+            type = ctx.rpcCallable.typeWith(declaration.serviceType),
+            symbol = ctx.rpcCallable.constructors.single(),
+            typeArgumentsCount = 1,
+            valueArgumentsCount = 5,
+            constructorTypeArgumentsCount = 1,
+        ).apply {
+            putConstructorTypeArgument(0, declaration.serviceType)
+
+            putValueArgument(0, stringConst(callable.name))
+
+            val dataType = when (callable) {
+                is ServiceDeclaration.Method -> methodClasses[i].defaultType
+                is ServiceDeclaration.FlowField -> ctx.fieldDataObject.defaultType
+            }
+
+            putValueArgument(1, irTypeOfCall(dataType))
+
+            val returnType = when (callable) {
+                is ServiceDeclaration.Method -> callable.function.returnType
+                is ServiceDeclaration.FlowField -> callable.property.getterOrFail.returnType
+            }
+
+            putValueArgument(2, irTypeOfCall(returnType))
+
+            val invokator = invokators[callable.name]
+                ?: error("Expected invokator for ${callable.name} in ${declaration.service.name}")
+
+            putValueArgument(3, irCallProperty(stubCompanionObject.owner, invokator))
+
+            val parameters = (callable as? ServiceDeclaration.Method)?.arguments
+                ?: emptyList()
+
+            val callee = if (parameters.isEmpty()) {
+                ctx.functions.emptyArray
+            } else {
+                ctx.irBuiltIns.arrayOf
+            }
+
+            val arrayParametersType = ctx.irBuiltIns.arrayClass.typeWith(
+                ctx.rpcParameter.defaultType,
+                Variance.OUT_VARIANCE,
+            )
+
+            val arrayOfCall = IrCallImpl(
+                startOffset = UNDEFINED_OFFSET,
+                endOffset = UNDEFINED_OFFSET,
+                type = arrayParametersType,
+                symbol = callee,
+                typeArgumentsCount = 1,
+                valueArgumentsCount = if (parameters.isEmpty()) 0 else 1,
+            ).apply arrayOfCall@{
+                putTypeArgument(0, ctx.rpcParameter.defaultType)
+
+                if (parameters.isEmpty()) {
+                    return@arrayOfCall
+                }
+
+                val vararg = IrVarargImpl(
+                    startOffset = UNDEFINED_OFFSET,
+                    endOffset = UNDEFINED_OFFSET,
+                    type = arrayParametersType,
+                    varargElementType = ctx.rpcParameter.defaultType,
+                    elements = parameters.memoryOptimizedMap { parameter ->
+                        IrConstructorCallImpl(
+                            startOffset = UNDEFINED_OFFSET,
+                            endOffset = UNDEFINED_OFFSET,
+                            type = ctx.rpcParameter.defaultType,
+                            symbol = ctx.rpcParameter.constructors.single(),
+                            typeArgumentsCount = 0,
+                            constructorTypeArgumentsCount = 0,
+                            valueArgumentsCount = 2,
+                        ).apply {
+                            putValueArgument(0, stringConst(parameter.value.name.asString()))
+                            putValueArgument(1, irTypeOfCall(parameter.type))
+                        }
+                    },
+                )
+
+                putValueArgument(0, vararg)
+            }
+
+            putValueArgument(4, arrayOfCall)
+        }
+    }
+
+    /**
+     * Accessor function for the `callableMap` property
+     * Defined in `RpcServiceDescriptor`
+     *
+     * ```kotlin
+     *  final override fun getCallable(name: String): RpcCallable<MyService>? = callableMap[name]
      * ```
      */
-    private fun IrClass.generateMethodTypeOfFunction() {
-        val kTypeNullable = ctx.kTypeClass.createType(hasQuestionMark = true, emptyList())
+    private fun IrClass.generateGetCallableFunction() {
+        val resultType = ctx.rpcCallable.createType(hasQuestionMark = true, emptyList())
 
         addFunction {
-            name = Name.identifier(METHOD_TYPE_OF_FUNCTION)
+            name = Name.identifier(Descriptor.GET_CALLABLE)
             visibility = DescriptorVisibilities.PUBLIC
             modality = Modality.OPEN
-            returnType = kTypeNullable
+            returnType = resultType
         }.apply {
-            overriddenSymbols = listOf(ctx.rpcStubObject.functionByName(METHOD_TYPE_OF_FUNCTION))
+            overriddenSymbols = listOf(ctx.rpcServiceDescriptor.functionByName(Descriptor.GET_CALLABLE))
 
             val functionThisReceiver = vsApi {
                 stubCompanionObjectThisReceiver.copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
@@ -1063,23 +1328,23 @@ internal class RPCStubGenerator(
                 dispatchReceiverParameter = it
             }
 
-            val methodName = addValueParameter {
-                name = Name.identifier("methodName")
+            val parameter = addValueParameter {
+                name = Name.identifier("name")
                 type = ctx.irBuiltIns.stringType
             }
 
             body = irBuilder(symbol).irBlockBody {
                 +irReturn(
-                    irCall(ctx.functions.mapGet.symbol, kTypeNullable).apply {
+                    irCall(ctx.functions.mapGet.symbol, resultType).apply {
                         vsApi { originVS = IrStatementOrigin.GET_ARRAY_ELEMENT }
 
                         dispatchReceiver = irCallProperty(
-                            clazz = this@generateMethodTypeOfFunction,
-                            property = methodNamesMap,
+                            clazz = this@generateGetCallableFunction,
+                            property = callableMap,
                             symbol = functionThisReceiver.symbol,
                         )
 
-                        putValueArgument(0, irGet(methodName))
+                        putValueArgument(0, irGet(parameter))
                     }
                 )
             }
@@ -1090,19 +1355,19 @@ internal class RPCStubGenerator(
      * Factory method for creating a new instance of RPC service
      *
      * ```kotlin
-     *  final override fun withClient(serviceId: Long, client: RPCClient): MyService {
-     *      return MyServiceStub(serviceId, client)
+     *  final override fun createInstance(serviceId: Long, client: RpcClient): MyService {
+     *      return `$rpcServiceStub`(serviceId, client)
      *  }
      * ```
      */
-    private fun IrClass.generateWithClientFunction() {
+    private fun IrClass.generateCreateInstanceFunction() {
         addFunction {
-            name = Name.identifier(WITH_CLIENT_METHOD)
+            name = Name.identifier(Descriptor.CREATE_INSTANCE)
             visibility = DescriptorVisibilities.PUBLIC
             modality = Modality.OPEN
             returnType = declaration.serviceType
         }.apply {
-            overriddenSymbols = listOf(ctx.rpcStubObject.functionByName(WITH_CLIENT_METHOD))
+            overriddenSymbols = listOf(ctx.rpcServiceDescriptor.functionByName(Descriptor.CREATE_INSTANCE))
 
             dispatchReceiverParameter = vsApi {
                 stubCompanionObjectThisReceiver.copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
@@ -1133,32 +1398,32 @@ internal class RPCStubGenerator(
     }
 
     /**
-     * Function for getting a list of all RPC fields in a given service as [RPCDeferredField<*>]
+     * Function for getting a list of all RPC fields in a given service as [RpcDeferredField<*>]
      *
      * ```kotlin
-     *  final override fun rpcFields(service: MyService): List<RPCDeferredField<*>> {
+     *  final override fun getFields(service: MyService): List<RpcDeferredField<*>> {
      *      return listOf( // or emptyList() if no fields
      *          service.<field-1>,
      *          ...
      *          service.<field-n>,
-     *      ) as List<RPCDeferredField<*>>
+     *      ) as List<RpcDeferredField<*>>
      *  }
      * ```
      *
      * Where:
-     *  - `<field-k>` - k-th field of a given service
+     *  - `<field-k>` - the k-th field of a given service
      */
-    private fun IrClass.generateRpcFieldsFunction() {
+    private fun IrClass.generateGetFieldsFunction() {
         val listType = ctx.irBuiltIns.listClass.typeWith(ctx.rpcDeferredField.starProjectedType)
 
         addFunction {
-            name = Name.identifier(RPC_FIELDS_METHOD)
+            name = Name.identifier(Descriptor.GET_FIELDS)
             visibility = DescriptorVisibilities.PUBLIC
             modality = Modality.OPEN
 
             returnType = listType
         }.apply {
-            overriddenSymbols = listOf(ctx.rpcStubObject.functionByName(RPC_FIELDS_METHOD))
+            overriddenSymbols = listOf(ctx.rpcServiceDescriptor.functionByName(Descriptor.GET_FIELDS))
 
             dispatchReceiverParameter = vsApi {
                 stubCompanionObjectThisReceiver.copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
@@ -1216,8 +1481,8 @@ internal class RPCStubGenerator(
         service.annotations += IrConstructorCallImpl(
             startOffset = service.startOffset,
             endOffset = service.endOffset,
-            type = ctx.withRPCStubObjectAnnotation.defaultType,
-            symbol = ctx.withRPCStubObjectAnnotation.constructors.single(),
+            type = ctx.withServiceDescriptor.defaultType,
+            symbol = ctx.withServiceDescriptor.constructors.single(),
             typeArgumentsCount = 0,
             constructorTypeArgumentsCount = 0,
             valueArgumentsCount = 1,
@@ -1233,6 +1498,22 @@ internal class RPCStubGenerator(
                     classType = companionObjectType,
                 )
             )
+        }
+    }
+
+    /**
+     * IR call of the `typeOf<...>()` function
+     */
+    private fun irTypeOfCall(type: IrType): IrCall {
+        return IrCallImpl(
+            startOffset = UNDEFINED_OFFSET,
+            endOffset = UNDEFINED_OFFSET,
+            type = ctx.kTypeClass.defaultType,
+            symbol = ctx.functions.typeOf,
+            typeArgumentsCount = 1,
+            valueArgumentsCount = 0,
+        ).apply {
+            putTypeArgument(0, type)
         }
     }
 
