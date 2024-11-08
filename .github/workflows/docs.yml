@@ -32,7 +32,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build docs using Writerside Docker builder
-        uses: JetBrains/writerside-github-action@v4
+        uses: JetBrains/writerside-github-action@v5
         with:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
