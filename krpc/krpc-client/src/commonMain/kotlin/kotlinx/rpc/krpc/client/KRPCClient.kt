@@ -137,7 +137,7 @@ public abstract class KRPCClient(
         }
     }
 
-    override fun <T> callSync(
+    override fun <T> callAsync(
         serviceScope: CoroutineScope,
         call: RpcCall,
     ): Deferred<T> {

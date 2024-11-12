@@ -82,5 +82,5 @@ private fun <T, FlowT : Flow<T>> RpcClient.initializeFlowField(
     fieldName: String,
     serviceId: Long,
 ): Deferred<FlowT> {
-    return callSync(serviceScope, RpcCall(descriptor, fieldName, FieldDataObject, serviceId))
+    return callAsync(serviceScope, RpcCall(descriptor, fieldName, FieldDataObject, serviceId))
 }

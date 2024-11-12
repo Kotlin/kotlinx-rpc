@@ -153,10 +153,11 @@ internal class RPCServerService<T : RemoteService>(
 
         val requestJob = launch(start = CoroutineStart.LAZY) {
             val result = try {
-                @Suppress("detekt.SpreadOperator")
                 val value = when (val invokator = callable.invokator) {
-                    is RpcInvokator.Method -> callScoped(callId) {
-                        invokator.call(service, data)
+                    is RpcInvokator.Method -> {
+                        callScoped(callId) {
+                            invokator.call(service, data)
+                        }
                     }
 
                     is RpcInvokator.Field -> {

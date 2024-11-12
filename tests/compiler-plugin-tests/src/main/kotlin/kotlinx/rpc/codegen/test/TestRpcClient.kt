@@ -22,7 +22,7 @@ object TestRpcClient : RpcClient {
 
     @OptIn(DelicateCoroutinesApi::class)
     @Suppress("detekt.GlobalCoroutineUsage")
-    override fun <T> callSync(serviceScope: CoroutineScope, call: RpcCall): Deferred<T> {
+    override fun <T> callAsync(serviceScope: CoroutineScope, call: RpcCall): Deferred<T> {
         val callable = call.descriptor.getCallable(call.callableName)
             ?: error("No callable found for ${call.callableName}")
 

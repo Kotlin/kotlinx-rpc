@@ -41,7 +41,7 @@ public final class kotlinx/rpc/RpcCall {
 
 public abstract interface class kotlinx/rpc/RpcClient : kotlinx/coroutines/CoroutineScope {
 	public abstract fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun callSync (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/Deferred;
+	public abstract fun callAsync (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/Deferred;
 	public abstract fun provideStubContext (J)Lkotlin/coroutines/CoroutineContext;
 }
 

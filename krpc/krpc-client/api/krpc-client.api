@@ -1,7 +1,7 @@
 public abstract class kotlinx/rpc/krpc/client/KRPCClient : kotlinx/rpc/krpc/internal/RPCServiceHandler, kotlinx/rpc/RpcClient, kotlinx/rpc/krpc/internal/RPCEndpoint {
 	public fun <init> (Lkotlinx/rpc/krpc/RPCConfig$Client;Lkotlinx/rpc/krpc/RPCTransport;)V
 	public final fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun callSync (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/Deferred;
+	public fun callAsync (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/Deferred;
 	protected final fun getConfig ()Lkotlinx/rpc/krpc/RPCConfig$Client;
 	public synthetic fun getConfig ()Lkotlinx/rpc/krpc/RPCConfig;
 	public final fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;

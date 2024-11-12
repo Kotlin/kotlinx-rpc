@@ -33,7 +33,7 @@ public interface RpcClient : CoroutineScope {
      * that is needed to route it properly to the server.
      * @return actual result of the call, for example, data from the server
      */
-    public fun <T> callSync(serviceScope: CoroutineScope, call: RpcCall): Deferred<T>
+    public fun <T> callAsync(serviceScope: CoroutineScope, call: RpcCall): Deferred<T>
 
     /**
      * Provides child [CoroutineContext] for a new [RemoteService] service stub.
