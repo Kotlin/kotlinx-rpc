@@ -8,6 +8,7 @@ import kotlinx.rpc.RemoteService
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.internal.*
 import kotlinx.rpc.internal.utils.ExperimentalRPCApi
+import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -26,7 +27,7 @@ public fun <T : RemoteService> serviceDescriptorOf(kClass: KClass<T>): RpcServic
     val maybeDescriptor = internalServiceDescriptorOf(kClass)
         ?: internalError("Unable to find a service descriptor of the $kClass")
 
-    if (RpcServiceDescriptor::class.isInstance(maybeDescriptor)) {
+    if (maybeDescriptor is RpcServiceDescriptor<*>) {
         @Suppress("UNCHECKED_CAST")
         return maybeDescriptor as RpcServiceDescriptor<T>
     }
@@ -42,6 +43,7 @@ public fun <T : RemoteService> serviceDescriptorOf(kClass: KClass<T>): RpcServic
 public interface RpcServiceDescriptor<T : RemoteService> {
     public val fqName: String
 
+    @InternalRPCApi
     public fun getFields(service: T): List<RpcDeferredField<*>>
 
     public fun getCallable(name: String): RpcCallable<T>?
