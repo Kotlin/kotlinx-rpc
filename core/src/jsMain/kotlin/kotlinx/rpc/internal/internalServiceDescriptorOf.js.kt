@@ -8,6 +8,7 @@ package kotlinx.rpc.internal
 
 import js.objects.Object
 import kotlinx.rpc.RemoteService
+import kotlinx.rpc.descriptor.RpcServiceDescriptor
 import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlin.reflect.AssociatedObjectKey
 import kotlin.reflect.ExperimentalAssociatedObjects
@@ -18,26 +19,13 @@ import kotlin.reflect.findAssociatedObject
 @AssociatedObjectKey
 @OptIn(ExperimentalAssociatedObjects::class)
 @Target(AnnotationTarget.CLASS)
-public annotation class WithRPCStubObject(
+public annotation class WithServiceDescriptor(
     @Suppress("unused")
-    val stub: KClass<out RPCStubObject<out RemoteService>>,
+    val stub: KClass<out RpcServiceDescriptor<out RemoteService>>,
 )
 
-@InternalRPCApi
-public actual fun <R : Any> findRPCStubProvider(kClass: KClass<*>, resultKClass: KClass<R>): R {
-    val associatedObject = kClass.findAssociatedObjectImpl(WithRPCStubObject::class, resultKClass)
-        ?: internalError("Unable to find $kClass associated object")
-
-    if (resultKClass.isInstance(associatedObject)) {
-        @Suppress("UNCHECKED_CAST")
-        return associatedObject as R
-    }
-
-    internalError(
-        "Located associated object is not of desired type $resultKClass, " +
-                "instead found $associatedObject of class " +
-                (associatedObject::class.qualifiedClassNameOrNull ?: associatedObject::class.js.name)
-    )
+internal actual fun <T : RemoteService> internalServiceDescriptorOf(kClass: KClass<T>): Any? {
+    return kClass.findAssociatedObjectImpl(WithServiceDescriptor::class)
 }
 
 /**
@@ -46,22 +34,19 @@ public actual fun <R : Any> findRPCStubProvider(kClass: KClass<*>, resultKClass:
  *
  * This function uses std-lib's implementation and accounts for the bug in the compiler
  */
-internal fun <T : Annotation, R : Any> KClass<*>.findAssociatedObjectImpl(
-    annotationClass: KClass<T>,
-    resultKClass: KClass<R>,
-): Any? {
+internal fun <T : Annotation> KClass<*>.findAssociatedObjectImpl(annotationClass: KClass<T>): Any? {
     val key = annotationClass.js.asDynamic().`$metadata$`?.associatedObjectKey?.unsafeCast<Int>() ?: return null
     val map = js.asDynamic().`$metadata$`?.associatedObjects ?: return null
-    val factory = map[key] ?: return fallbackFindAssociatedObjectImpl(map, resultKClass)
+    val factory = map[key] ?: return fallbackFindAssociatedObjectImpl(map)
     return factory()
 }
 
-private fun <R : Any> fallbackFindAssociatedObjectImpl(map: dynamic, resultKClass: KClass<R>): R? {
+private fun <R : Any> fallbackFindAssociatedObjectImpl(map: dynamic): R? {
     return Object.entries(map as Any)
         .mapNotNull { (_, factory) ->
             val unsafeFactory = factory.asDynamic()
             val maybeObject = unsafeFactory()
-            if (resultKClass.isInstance(maybeObject)) {
+            if (RpcServiceDescriptor::class.isInstance(maybeObject)) {
                 maybeObject.unsafeCast<R>()
             } else {
                 null

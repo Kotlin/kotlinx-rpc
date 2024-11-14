@@ -2,34 +2,35 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.krpc.client.internal
+package kotlinx.rpc.internal
 
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.rpc.internal.RPCDeferredField
-import kotlinx.rpc.internal.utils.SupervisedCompletableDeferred
 
-internal sealed class RPCFlow<T, FlowT : Flow<T>>(private val serviceName: String, parent: Job) :
-    RPCDeferredField<FlowT> {
-    val deferred: CompletableDeferred<FlowT> = SupervisedCompletableDeferred(parent)
-
+internal sealed class RpcFlow<T, FlowT : Flow<T>>(
+    private val serviceName: String,
+    protected val deferred: Deferred<FlowT>,
+) : RpcDeferredField<FlowT> {
     override suspend fun await(): FlowT {
         return deferred.await()
     }
 
-    internal class Plain<T>(serviceName: String, parent: Job) : RPCFlow<T, Flow<T>>(serviceName, parent),
-        Flow<T> {
+    internal class Plain<T>(
+        serviceName: String,
+        deferred: Deferred<Flow<T>>,
+    ) : RpcFlow<T, Flow<T>>(serviceName, deferred), Flow<T> {
         override suspend fun collect(collector: FlowCollector<T>) {
             deferred.await().collect(collector)
         }
     }
 
-    internal class Shared<T>(serviceName: String, parent: Job) : RPCFlow<T, SharedFlow<T>>(serviceName, parent),
-        SharedFlow<T> {
+    internal class Shared<T>(
+        serviceName: String,
+        deferred: Deferred<SharedFlow<T>>,
+    ) : RpcFlow<T, SharedFlow<T>>(serviceName, deferred), SharedFlow<T> {
         override val replayCache: List<T> by rpcProperty { replayCache }
 
         override suspend fun collect(collector: FlowCollector<T>): Nothing {
@@ -37,8 +38,10 @@ internal sealed class RPCFlow<T, FlowT : Flow<T>>(private val serviceName: Strin
         }
     }
 
-    internal class State<T>(serviceName: String, parent: Job) : RPCFlow<T, StateFlow<T>>(serviceName, parent),
-        StateFlow<T> {
+    internal class State<T>(
+        serviceName: String,
+        deferred: Deferred<StateFlow<T>>,
+    ) : RpcFlow<T, StateFlow<T>>(serviceName, deferred), StateFlow<T> {
         override val value: T by rpcProperty { value }
 
         override val replayCache: List<T> by rpcProperty { replayCache }
@@ -48,7 +51,7 @@ internal sealed class RPCFlow<T, FlowT : Flow<T>>(private val serviceName: Strin
         }
     }
 
-    protected fun <R> rpcProperty(getter: FlowT.() -> R): RPCFieldProvider<FlowT, R> {
-        return RPCFieldProvider(serviceName, deferred, getter)
+    protected fun <R> rpcProperty(getter: FlowT.() -> R): RpcFieldProvider<FlowT, R> {
+        return RpcFieldProvider(serviceName, deferred, getter)
     }
 }

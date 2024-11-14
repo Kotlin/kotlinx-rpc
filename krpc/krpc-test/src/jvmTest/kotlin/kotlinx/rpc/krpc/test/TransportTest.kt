@@ -60,7 +60,7 @@ class TransportTest {
         }
     }
 
-    private fun clientOf(localTransport: LocalTransport): RPCClient {
+    private fun clientOf(localTransport: LocalTransport): RpcClient {
         return KRPCTestClient(clientConfig, localTransport.client)
     }
 

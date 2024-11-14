@@ -10,7 +10,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.rpc.RPCCall
+import kotlinx.rpc.descriptor.RpcCallable
+import kotlinx.rpc.descriptor.RpcInvokator
 import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlinx.rpc.krpc.RPCConfig
 import kotlinx.rpc.krpc.internal.logging.CommonLogger
@@ -159,10 +160,10 @@ public abstract class RPCServiceHandler {
         return config.serialFormatInitializer.applySerializersModuleAndBuild(module)
     }
 
-    protected fun RPCCall.Type.toMessageCallType(): RPCCallMessage.CallType {
-        return when (this) {
-            RPCCall.Type.Method -> RPCCallMessage.CallType.Method
-            RPCCall.Type.Field -> RPCCallMessage.CallType.Field
+    protected fun RpcCallable<*>.toMessageCallType(): RPCCallMessage.CallType {
+        return when (invokator) {
+            is RpcInvokator.Method -> RPCCallMessage.CallType.Method
+            is RpcInvokator.Field -> RPCCallMessage.CallType.Field
         }
     }
 }

@@ -5,34 +5,40 @@
 package kotlinx.rpc.codegen.test
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import kotlinx.rpc.RPCCall
-import kotlinx.rpc.RPCClient
-import kotlinx.rpc.RPCField
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.rpc.RpcCall
+import kotlinx.rpc.RpcClient
 import kotlin.coroutines.CoroutineContext
 
 @Suppress("UNCHECKED_CAST", "unused")
-object TestRpcClient : RPCClient {
+object TestRpcClient : RpcClient {
     override val coroutineContext: CoroutineContext = Job()
 
-    override suspend fun <T> call(call: RPCCall): T {
+    override suspend fun <T> call(call: RpcCall): T {
         return "call_42" as T
-    }
-
-    override fun <T> registerPlainFlowField(serviceScope: CoroutineScope, field: RPCField): Flow<T> {
-        return flow { emit("registerPlainFlowField_42") } as Flow<T>
     }
 
     @OptIn(DelicateCoroutinesApi::class)
     @Suppress("detekt.GlobalCoroutineUsage")
-    override fun <T> registerSharedFlowField(serviceScope: CoroutineScope, field: RPCField): SharedFlow<T> {
-        return MutableSharedFlow<String>(1).also {
-            GlobalScope.launch { it.emit("registerSharedFlowField_42") }
-        } as SharedFlow<T>
-    }
+    override fun <T> callAsync(serviceScope: CoroutineScope, call: RpcCall): Deferred<T> {
+        val callable = call.descriptor.getCallable(call.callableName)
+            ?: error("No callable found for ${call.callableName}")
 
-    override fun <T> registerStateFlowField(serviceScope: CoroutineScope, field: RPCField): StateFlow<T> {
-        return MutableStateFlow("registerStateFlowField_42") as StateFlow<T>
+        val value = when (callable.name) {
+            "plainFlow" -> flow { emit("registerPlainFlowField_42") }
+
+            "sharedFlow" -> MutableSharedFlow<String>(1).also {
+                GlobalScope.launch { it.emit("registerSharedFlowField_42") }
+            }
+
+            "stateFlow" -> MutableStateFlow("registerStateFlowField_42")
+
+            else -> error("Unknown callable name: ${call.callableName}")
+        }
+
+        return CompletableDeferred(value as T)
     }
 
     override fun provideStubContext(serviceId: Long): CoroutineContext {

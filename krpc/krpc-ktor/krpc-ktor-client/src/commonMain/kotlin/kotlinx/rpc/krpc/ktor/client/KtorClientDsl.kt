@@ -9,7 +9,7 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.util.*
-import kotlinx.rpc.RPCClient
+import kotlinx.rpc.RpcClient
 import kotlinx.rpc.krpc.RPCConfigBuilder
 import kotlinx.rpc.krpc.rpcClientConfig
 
@@ -29,12 +29,12 @@ public fun HttpRequestBuilder.rpcConfig(configBuilder: RPCConfigBuilder.Client.(
 }
 
 /**
- * Configures [RPCClient] for the following path. Provides means for additional configuration via [block].
+ * Configures [RpcClient] for the following path. Provides means for additional configuration via [block].
  * Note that the [WebSockets] plugin is required for these calls.
  *
  * @param urlString The URL to use for the request.
  * @param block Optional configuration for the
- * @return An instance of [RPCClient] that is configured to send messages to the server.
+ * @return An instance of [RpcClient] that is configured to send messages to the server.
  */
 public suspend fun HttpClient.rpc(
     urlString: String,
@@ -47,11 +47,11 @@ public suspend fun HttpClient.rpc(
 }
 
 /**
- * Configures [RPCClient] for the following path. Provides means for additional configuration via [block].
+ * Configures [RpcClient] for the following path. Provides means for additional configuration via [block].
  * Note that the [WebSockets] plugin is required for these calls.
  *
  * @param block Optional configuration for the
- * @return An instance of [RPCClient] that is configured to send messages to the server.
+ * @return An instance of [RpcClient] that is configured to send messages to the server.
  */
 public suspend fun HttpClient.rpc(
     block: HttpRequestBuilder.() -> Unit = {},

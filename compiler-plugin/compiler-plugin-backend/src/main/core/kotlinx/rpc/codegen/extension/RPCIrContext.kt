@@ -6,15 +6,15 @@ package kotlinx.rpc.codegen.extension
 
 import kotlinx.rpc.codegen.VersionSpecificApi
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.ir.declarations.IrEnumEntry
-import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
+import org.jetbrains.kotlin.ir.symbols.IrPropertySymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.types.makeNullable
 import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.isVararg
+import org.jetbrains.kotlin.ir.util.nestedClasses
 import org.jetbrains.kotlin.ir.util.properties
 import org.jetbrains.kotlin.platform.konan.isNative
 import org.jetbrains.kotlin.types.Variance
@@ -53,8 +53,16 @@ internal class RPCIrContext(
         getIrClassSymbol("kotlin", "Function0")
     }
 
+    val function1 by lazy {
+        getIrClassSymbol("kotlin", "Function1")
+    }
+
     val suspendFunction0 by lazy {
         getIrClassSymbol("kotlin.coroutines", "SuspendFunction0")
+    }
+
+    val suspendFunction2 by lazy {
+        getIrClassSymbol("kotlin.coroutines", "SuspendFunction2")
     }
 
     val flow by lazy {
@@ -78,45 +86,55 @@ internal class RPCIrContext(
     }
 
     val rpcClient by lazy {
-        getRpcIrClassSymbol("RPCClient")
+        getRpcIrClassSymbol("RpcClient")
     }
 
     val rpcCall by lazy {
-        getRpcIrClassSymbol("RPCCall")
+        getRpcIrClassSymbol("RpcCall")
     }
 
-    val rpcCallType by lazy {
-        getRpcIrClassSymbol("RPCCall.Type")
-    }
-
-    val rpcCallTypeMethod by lazy {
-        rpcCallType.owner.declarations.filterIsInstance<IrEnumEntry>().single {
-            it.name.asString() == "Method"
-        }.symbol
-    }
-
-    val rpcField by lazy {
-        getRpcIrClassSymbol("RPCField")
-    }
-
-    val withRPCStubObjectAnnotation by lazy {
-        getRpcIrClassSymbol("WithRPCStubObject", "internal")
+    val withServiceDescriptor by lazy {
+        getRpcIrClassSymbol("WithServiceDescriptor", "internal")
     }
 
     val rpcEagerFieldAnnotation by lazy {
         getRpcIrClassSymbol("RPCEagerField")
     }
 
-    val rpcStubObject by lazy {
-        getRpcIrClassSymbol("RPCStubObject", "internal")
+    val rpcServiceDescriptor by lazy {
+        getRpcIrClassSymbol("RpcServiceDescriptor", "descriptor")
+    }
+
+    val rpcCallable by lazy {
+        getRpcIrClassSymbol("RpcCallable", "descriptor")
+    }
+
+    private val rpcInvokator by lazy {
+        getRpcIrClassSymbol("RpcInvokator", "descriptor")
+    }
+
+    val rpcInvokatorMethod by lazy {
+        rpcInvokator.subClass("Method")
+    }
+
+    val rpcInvokatorField by lazy {
+        rpcInvokator.subClass("Field")
+    }
+
+    val rpcParameter by lazy {
+        getRpcIrClassSymbol("RpcParameter", "descriptor")
     }
 
     val rpcDeferredField by lazy {
-        getRpcIrClassSymbol("RPCDeferredField", "internal")
+        getRpcIrClassSymbol("RpcDeferredField", "internal")
     }
 
-    val rpcMethodClassArguments by lazy {
-        getRpcIrClassSymbol("RPCMethodClassArguments", "internal")
+    val fieldDataObject by lazy {
+        getRpcIrClassSymbol("FieldDataObject", "internal")
+    }
+
+    val rpcMethodClass by lazy {
+        getRpcIrClassSymbol("RpcMethodClass", "internal")
     }
 
     fun isJsTarget(): Boolean {
@@ -135,15 +153,19 @@ internal class RPCIrContext(
 
     inner class Functions {
         val registerPlainFlowField by lazy {
-            rpcClient.namedFunction("registerPlainFlowField")
+            namedFunction("kotlinx.rpc", "registerPlainFlowField")
         }
 
         val registerSharedFlowField by lazy {
-            rpcClient.namedFunction("registerSharedFlowField")
+            namedFunction("kotlinx.rpc", "registerSharedFlowField")
         }
 
         val registerStateFlowField by lazy {
-            rpcClient.namedFunction("registerStateFlowField")
+            namedFunction("kotlinx.rpc", "registerStateFlowField")
+        }
+
+        val dataCast by lazy {
+            namedFunction("kotlinx.rpc.internal", "dataCast")
         }
 
         val rpcClientCall by lazy {
@@ -155,7 +177,7 @@ internal class RPCIrContext(
         }
 
         val asArray by lazy {
-            rpcMethodClassArguments.namedFunction("asArray")
+            rpcMethodClass.namedFunction("asArray")
         }
 
         val typeOf by lazy {
@@ -217,7 +239,7 @@ internal class RPCIrContext(
         private fun namedFunction(
             packageName: String,
             name: String,
-            filterOverloads: ((IrSimpleFunctionSymbol) -> Boolean)? = null
+            filterOverloads: ((IrSimpleFunctionSymbol) -> Boolean)? = null,
         ): IrSimpleFunctionSymbol {
             val found = versionSpecificApi.referenceFunctions(pluginContext, packageName, name)
 
@@ -232,9 +254,17 @@ internal class RPCIrContext(
             rpcClient.namedProperty("coroutineContext")
         }
 
-        private fun IrClassSymbol.namedProperty(name: String): IrProperty {
-            return owner.properties.single { it.name.asString() == name }
+        val rpcServiceDescriptorFqName by lazy {
+            rpcServiceDescriptor.namedProperty("fqName")
         }
+
+        private fun IrClassSymbol.namedProperty(name: String): IrPropertySymbol {
+            return owner.properties.single { it.name.asString() == name }.symbol
+        }
+    }
+
+    private fun IrClassSymbol.subClass(name: String): IrClassSymbol {
+        return owner.nestedClasses.single { it.name.asString() == name }.symbol
     }
 
     private fun getRpcIrClassSymbol(name: String, subpackage: String? = null): IrClassSymbol {
@@ -242,7 +272,7 @@ internal class RPCIrContext(
         return getIrClassSymbol("kotlinx.rpc$suffix", name)
     }
 
-    fun getIrClassSymbol(packageName: String, name: String): IrClassSymbol {
+    private fun getIrClassSymbol(packageName: String, name: String): IrClassSymbol {
         return versionSpecificApi.referenceClass(pluginContext, packageName, name)
             ?: error("Unable to find symbol. Package: $packageName, name: $name")
     }

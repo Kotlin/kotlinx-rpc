@@ -7,7 +7,8 @@ package kotlinx.rpc.krpc.server
 import kotlinx.coroutines.*
 import kotlinx.rpc.RPCServer
 import kotlinx.rpc.RemoteService
-import kotlinx.rpc.internal.qualifiedClassName
+import kotlinx.rpc.descriptor.RpcServiceDescriptor
+import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.internal.utils.InternalRPCApi
 import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
 import kotlinx.rpc.krpc.RPCConfig
@@ -103,17 +104,17 @@ public abstract class KRPCServer(
         serviceKClass: KClass<Service>,
         serviceFactory: (CoroutineContext) -> Service,
     ) {
-        val fqServiceName = serviceKClass.qualifiedClassName
+        val descriptor = serviceDescriptorOf(serviceKClass)
 
         launch {
-            connector.subscribeToServiceMessages(fqServiceName) { message ->
+            connector.subscribeToServiceMessages(descriptor.fqName) { message ->
                 val rpcServerService = when (val id = message.serviceId) {
-                    null -> nullRpcServices.computeIfAbsent(fqServiceName) {
-                        createNewServiceInstance(serviceKClass, serviceFactory)
+                    null -> nullRpcServices.computeIfAbsent(descriptor.fqName) {
+                        createNewServiceInstance(descriptor, serviceFactory)
                     }
 
                     else -> rpcServices.computeIfAbsent(id) {
-                        createNewServiceInstance(serviceKClass, serviceFactory)
+                        createNewServiceInstance(descriptor, serviceFactory)
                     }
                 }
 
@@ -123,20 +124,20 @@ public abstract class KRPCServer(
     }
 
     private fun <Service : RemoteService> createNewServiceInstance(
-        serviceKClass: KClass<Service>,
+        descriptor: RpcServiceDescriptor<Service>,
         serviceFactory: (CoroutineContext) -> Service,
     ): RPCServerService<Service> {
         val serviceInstanceContext = SupervisorJob(coroutineContext.job)
 
         return RPCServerService(
             service = serviceFactory(serviceInstanceContext),
-            serviceKClass = serviceKClass,
+            descriptor = descriptor,
             config = config,
             connector = connector,
             coroutineContext = serviceInstanceContext,
         ).apply {
             coroutineContext.job.invokeOnCompletion {
-                connector.unsubscribeFromServiceMessages(serviceKClass.qualifiedClassName)
+                connector.unsubscribeFromServiceMessages(descriptor.fqName)
             }
         }
     }

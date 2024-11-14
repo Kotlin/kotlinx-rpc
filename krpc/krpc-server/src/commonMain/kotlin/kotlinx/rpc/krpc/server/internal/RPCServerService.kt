@@ -6,8 +6,8 @@ package kotlinx.rpc.krpc.server.internal
 
 import kotlinx.coroutines.*
 import kotlinx.rpc.RemoteService
-import kotlinx.rpc.internal.RPCMethodClassArguments
-import kotlinx.rpc.internal.qualifiedClassName
+import kotlinx.rpc.descriptor.RpcInvokator
+import kotlinx.rpc.descriptor.RpcServiceDescriptor
 import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
 import kotlinx.rpc.krpc.RPCConfig
 import kotlinx.rpc.krpc.callScoped
@@ -17,40 +17,24 @@ import kotlinx.rpc.krpc.streamScopeOrNull
 import kotlinx.rpc.krpc.withServerStreamScope
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.StringFormat
-import java.lang.reflect.InvocationTargetException
 import kotlin.coroutines.CoroutineContext
-import kotlin.reflect.KCallable
-import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
-import kotlin.reflect.full.callSuspend
 
 internal class RPCServerService<T : RemoteService>(
     private val service: T,
-    private val serviceKClass: KClass<T>,
+    private val descriptor: RpcServiceDescriptor<T>,
     override val config: RPCConfig.Server,
     private val connector: RPCServerConnector,
     coroutineContext: CoroutineContext,
 ) : RPCServiceHandler(), CoroutineScope {
-    private val serviceTypeString = serviceKClass.qualifiedClassName
-    override val logger = CommonLogger.logger(objectId(serviceTypeString))
+    override val logger = CommonLogger.logger(objectId(descriptor.fqName))
     override val sender: RPCMessageSender get() = connector
     private val scope: CoroutineScope = this
 
     override val coroutineContext: CoroutineContext = coroutineContext.withServerStreamScope()
 
-    private val methods: Map<String, KCallable<*>>
-    private val fields: Map<String, KCallable<*>>
-
     private val requestMap = ConcurrentHashMap<String, RPCRequest>()
 
     init {
-        val (fieldsMap, methodsMap) = serviceKClass.members
-            .filter { it.name != "toString" && it.name != "hashCode" && it.name != "equals" }
-            .partition { it is KProperty<*> }
-
-        fields = fieldsMap.associateBy { it.name }
-        methods = methodsMap.associateBy { it.name }
-
         coroutineContext.job.invokeOnCompletion {
             logger.trace { "Service completed with $it" }
         }
@@ -150,22 +134,17 @@ internal class RPCServerService<T : RemoteService>(
         val callableName = callData.callableName
             .substringBefore('$') // compatibility with beta-4.2 clients
 
-        val callable = (if (isMethod) methods else fields)[callableName]
+        val callable = descriptor.getCallable(callableName)
 
-        if (callable == null) {
+        if (callable == null || callable.invokator is RpcInvokator.Method && !isMethod) {
             val callType = if (isMethod) "method" else "field"
-            throw NoSuchMethodException("Service $serviceTypeString has no $callType $callableName")
+            error("Service ${descriptor.fqName} has no $callType '$callableName'")
         }
 
-        val argsArray = if (isMethod) {
-            val type = rpcServiceMethodSerializationTypeOf(serviceKClass, callableName)
-                ?: error("Unknown method $callableName")
-
+        val data = if (isMethod) {
             val serializerModule = serialFormat.serializersModule
-            val paramsSerializer = serializerModule.rpcSerializerForType(type)
-            val args = decodeMessageData(serialFormat, paramsSerializer, callData) as RPCMethodClassArguments
-
-            args.asArray()
+            val paramsSerializer = serializerModule.rpcSerializerForType(callable.dataType)
+            decodeMessageData(serialFormat, paramsSerializer, callData)
         } else {
             null
         }
@@ -174,13 +153,16 @@ internal class RPCServerService<T : RemoteService>(
 
         val requestJob = launch(start = CoroutineStart.LAZY) {
             val result = try {
-                @Suppress("detekt.SpreadOperator")
-                val value = when {
-                    isMethod -> callScoped(callId) {
-                        callable.callSuspend(service, *argsArray!!)
+                val value = when (val invokator = callable.invokator) {
+                    is RpcInvokator.Method -> {
+                        callScoped(callId) {
+                            invokator.call(service, data)
+                        }
                     }
 
-                    else -> callable.call(service)
+                    is RpcInvokator.Field -> {
+                        invokator.call(service)
+                    }
                 }
 
                 val returnType = callable.returnType
@@ -190,7 +172,7 @@ internal class RPCServerService<T : RemoteService>(
                         val stringValue = serialFormat.encodeToString(returnSerializer, value)
                         RPCCallMessage.CallSuccessString(
                             callId = callData.callId,
-                            serviceType = serviceTypeString,
+                            serviceType = descriptor.fqName,
                             data = stringValue,
                             connectionId = callData.connectionId,
                             serviceId = callData.serviceId,
@@ -201,7 +183,7 @@ internal class RPCServerService<T : RemoteService>(
                         val binaryValue = serialFormat.encodeToByteArray(returnSerializer, value)
                         RPCCallMessage.CallSuccessBinary(
                             callId = callData.callId,
-                            serviceType = serviceTypeString,
+                            serviceType = descriptor.fqName,
                             data = binaryValue,
                             connectionId = callData.connectionId,
                             serviceId = callData.serviceId,
@@ -212,20 +194,6 @@ internal class RPCServerService<T : RemoteService>(
                         unsupportedSerialFormatError(serialFormat)
                     }
                 }
-            } catch (cause: InvocationTargetException) {
-                if (cause.cause is CancellationException) {
-                    throw cause.cause!!
-                }
-
-                failure = cause.cause ?: cause
-                val serializedCause = serializeException(cause.cause ?: cause)
-                RPCCallMessage.CallException(
-                    callId = callId,
-                    serviceType = serviceTypeString,
-                    cause = serializedCause,
-                    connectionId = callData.connectionId,
-                    serviceId = callData.serviceId,
-                )
             } catch (cause: CancellationException) {
                 throw cause
             } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
@@ -234,7 +202,7 @@ internal class RPCServerService<T : RemoteService>(
                 val serializedCause = serializeException(cause)
                 RPCCallMessage.CallException(
                     callId = callId,
-                    serviceType = serviceTypeString,
+                    serviceType = descriptor.fqName,
                     cause = serializedCause,
                     connectionId = callData.connectionId,
                     serviceId = callData.serviceId,
@@ -250,7 +218,7 @@ internal class RPCServerService<T : RemoteService>(
                     }
 
                     launchIf({ outgoingStreamsAvailable }) {
-                        handleOutgoingStreams(it, serialFormat, serviceTypeString)
+                        handleOutgoingStreams(it, serialFormat, descriptor.fqName)
                     }
                 } ?: run {
                     cancelRequest(callId, fromJob = true)

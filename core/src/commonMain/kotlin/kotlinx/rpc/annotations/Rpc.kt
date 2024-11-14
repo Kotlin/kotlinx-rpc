@@ -23,7 +23,7 @@ import kotlinx.rpc.RemoteService
  *    suspend fun sayHello(firstName: String, lastName: String, age: Int): String
  * }
  * // client code
- * val rpcClient: RPCClient
+ * val rpcClient: RpcClient
  * val myService = rpcClient.withService<MyService>()
  * val greetingFromServer = myService.sayHello("Alex", "Smith", 35)
  * // server code

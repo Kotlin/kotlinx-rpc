@@ -1,12 +1,10 @@
-public abstract class kotlinx/rpc/krpc/client/KRPCClient : kotlinx/rpc/krpc/internal/RPCServiceHandler, kotlinx/rpc/RPCClient, kotlinx/rpc/krpc/internal/RPCEndpoint {
+public abstract class kotlinx/rpc/krpc/client/KRPCClient : kotlinx/rpc/krpc/internal/RPCServiceHandler, kotlinx/rpc/RpcClient, kotlinx/rpc/krpc/internal/RPCEndpoint {
 	public fun <init> (Lkotlinx/rpc/krpc/RPCConfig$Client;Lkotlinx/rpc/krpc/RPCTransport;)V
-	public final fun call (Lkotlinx/rpc/RPCCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun callAsync (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/Deferred;
 	protected final fun getConfig ()Lkotlinx/rpc/krpc/RPCConfig$Client;
 	public synthetic fun getConfig ()Lkotlinx/rpc/krpc/RPCConfig;
 	public final fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	protected fun getLogger ()Lkotlinx/rpc/krpc/internal/logging/CommonLogger;
-	public final fun registerPlainFlowField (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RPCField;)Lkotlinx/coroutines/flow/Flow;
-	public final fun registerSharedFlowField (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RPCField;)Lkotlinx/coroutines/flow/SharedFlow;
-	public final fun registerStateFlowField (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RPCField;)Lkotlinx/coroutines/flow/StateFlow;
 }
 

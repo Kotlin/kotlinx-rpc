@@ -5,7 +5,8 @@
 package kotlinx.rpc.internal
 
 import kotlinx.rpc.internal.utils.InternalRPCApi
-import kotlin.reflect.KClass
 
 @InternalRPCApi
-public expect fun <R : Any> findRPCStubProvider(kClass: KClass<*>, resultKClass: KClass<R>): R
+public interface RpcDeferredField<Self> {
+    public suspend fun await(): Self
+}
