@@ -46,9 +46,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
 
     override var IrCall.originVS: IrStatementOrigin?
         get() = origin
-        set(value) {
-            origin = value
-        }
+        set(value) { origin = value }
 
     override var IrConstructor.isPrimaryVS: Boolean
         get() = isPrimary
@@ -106,6 +104,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
             type = type,
             symbol = symbol,
             typeArgumentsCount = typeArgumentsCount,
+            valueArgumentsCount = valueArgumentsCount,
             origin = origin,
             superQualifierSymbol = superQualifierSymbol,
         )
@@ -128,6 +127,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
             type = type,
             symbol = symbol,
             typeArgumentsCount = typeArgumentsCount,
+            valueArgumentsCount = valueArgumentsCount,
             constructorTypeArgumentsCount = constructorTypeArgumentsCount,
             origin = origin,
             source = source,

@@ -222,14 +222,16 @@ internal class RPCStubGenerator(
                 val coroutineContextClass = ctx.coroutineContext.owner
 
                 initializer = factory.createExpressionBody(
-                    IrCallImpl(
-                        startOffset = UNDEFINED_OFFSET,
-                        endOffset = UNDEFINED_OFFSET,
-                        type = coroutineContextClass.typeWith(),
-                        symbol = ctx.functions.provideStubContext.symbol,
-                        valueArgumentsCount = 1,
-                        typeArgumentsCount = 0,
-                    ).apply {
+                    vsApi {
+                        IrCallImplVS(
+                            startOffset = UNDEFINED_OFFSET,
+                            endOffset = UNDEFINED_OFFSET,
+                            type = coroutineContextClass.typeWith(),
+                            symbol = ctx.functions.provideStubContext.symbol,
+                            valueArgumentsCount = 1,
+                            typeArgumentsCount = 0,
+                        )
+                    }.apply {
                         dispatchReceiver = irCallProperty(stubClass, clientProperty)
 
                         putValueArgument(0, irCallProperty(stubClass, stubIdProperty))
@@ -312,14 +314,16 @@ internal class RPCStubGenerator(
                 ServiceDeclaration.FlowField.Kind.State -> ctx.functions.registerStateFlowField
             }
 
-            val registerCall = IrCallImpl(
-                startOffset = UNDEFINED_OFFSET,
-                endOffset = UNDEFINED_OFFSET,
-                type = fieldType,
-                symbol = registerFunction,
-                typeArgumentsCount = 1,
-                valueArgumentsCount = 4,
-            ).apply {
+            val registerCall = vsApi {
+                IrCallImplVS(
+                    startOffset = UNDEFINED_OFFSET,
+                    endOffset = UNDEFINED_OFFSET,
+                    type = fieldType,
+                    symbol = registerFunction,
+                    typeArgumentsCount = 1,
+                    valueArgumentsCount = 4,
+                )
+            }.apply {
                 extensionReceiver = irCallProperty(stubClass, clientProperty)
                 putTypeArgument(0, fieldTypeParameter.typeOrFail)
 
@@ -368,14 +372,16 @@ internal class RPCStubGenerator(
                     // initializer for Lazy delegate with lambda
                     // inside lambda - 'registerCall' expression is used
                     initializer = factory.createExpressionBody(
-                        IrCallImpl(
-                            startOffset = UNDEFINED_OFFSET,
-                            endOffset = UNDEFINED_OFFSET,
-                            type = lazyFieldType,
-                            symbol = ctx.functions.lazy,
-                            typeArgumentsCount = 1,
-                            valueArgumentsCount = 1,
-                        ).apply {
+                        vsApi {
+                            IrCallImplVS(
+                                startOffset = UNDEFINED_OFFSET,
+                                endOffset = UNDEFINED_OFFSET,
+                                type = lazyFieldType,
+                                symbol = ctx.functions.lazy,
+                                typeArgumentsCount = 1,
+                                valueArgumentsCount = 1,
+                            )
+                        }.apply {
                             putTypeArgument(0, fieldType)
 
                             val lambdaType = ctx.function0.typeWith(fieldType)
@@ -829,15 +835,17 @@ internal class RPCStubGenerator(
     private fun irCallProperty(receiver: IrExpression, property: IrProperty): IrCall {
         val getter = property.getterOrFail
 
-        return IrCallImpl(
-            startOffset = UNDEFINED_OFFSET,
-            endOffset = UNDEFINED_OFFSET,
-            type = getter.returnType,
-            symbol = getter.symbol,
-            origin = IrStatementOrigin.GET_PROPERTY,
-            valueArgumentsCount = getter.valueParameters.size,
-            typeArgumentsCount = getter.typeParameters.size,
-        ).apply {
+        return vsApi {
+            IrCallImplVS(
+                startOffset = UNDEFINED_OFFSET,
+                endOffset = UNDEFINED_OFFSET,
+                type = getter.returnType,
+                symbol = getter.symbol,
+                origin = IrStatementOrigin.GET_PROPERTY,
+                valueArgumentsCount = getter.valueParameters.size,
+                typeArgumentsCount = getter.typeParameters.size,
+            )
+        }.apply {
             dispatchReceiver = receiver
         }
     }
@@ -1131,14 +1139,16 @@ internal class RPCStubGenerator(
                 val isEmpty = declaration.methods.isEmpty() && declaration.fields.isEmpty()
 
                 initializer = factory.createExpressionBody(
-                    IrCallImpl(
-                        startOffset = UNDEFINED_OFFSET,
-                        endOffset = UNDEFINED_OFFSET,
-                        type = mapType,
-                        symbol = if (isEmpty) ctx.functions.emptyMap else ctx.functions.mapOf,
-                        valueArgumentsCount = if (isEmpty) 0 else 1,
-                        typeArgumentsCount = 2,
-                    ).apply mapApply@{
+                    vsApi {
+                        IrCallImplVS(
+                            startOffset = UNDEFINED_OFFSET,
+                            endOffset = UNDEFINED_OFFSET,
+                            type = mapType,
+                            symbol = if (isEmpty) ctx.functions.emptyMap else ctx.functions.mapOf,
+                            valueArgumentsCount = if (isEmpty) 0 else 1,
+                            typeArgumentsCount = 2,
+                        )
+                    }.apply mapApply@{
                         putTypeArgument(0, ctx.irBuiltIns.stringType)
                         putTypeArgument(1, rpcCallableType)
 
@@ -1158,14 +1168,16 @@ internal class RPCStubGenerator(
                             type = varargType,
                             varargElementType = pairType,
                             elements = callables.memoryOptimizedMapIndexed { i, callable ->
-                                IrCallImpl(
-                                    startOffset = UNDEFINED_OFFSET,
-                                    endOffset = UNDEFINED_OFFSET,
-                                    type = pairType,
-                                    symbol = ctx.functions.to,
-                                    typeArgumentsCount = 2,
-                                    valueArgumentsCount = 1,
-                                ).apply {
+                                vsApi {
+                                    IrCallImplVS(
+                                        startOffset = UNDEFINED_OFFSET,
+                                        endOffset = UNDEFINED_OFFSET,
+                                        type = pairType,
+                                        symbol = ctx.functions.to,
+                                        typeArgumentsCount = 2,
+                                        valueArgumentsCount = 1,
+                                    )
+                                }.apply {
                                     putTypeArgument(0, ctx.irBuiltIns.stringType)
                                     putTypeArgument(1, rpcCallableType)
 
@@ -1215,15 +1227,17 @@ internal class RPCStubGenerator(
      *  - `<method-parameter-type-k>` - if a method, its k-th parameter type
      */
     private fun irRpcCallable(i: Int, callable: ServiceDeclaration.Callable): IrExpression {
-        return IrConstructorCallImpl(
-            startOffset = UNDEFINED_OFFSET,
-            endOffset = UNDEFINED_OFFSET,
-            type = ctx.rpcCallable.typeWith(declaration.serviceType),
-            symbol = ctx.rpcCallable.constructors.single(),
-            typeArgumentsCount = 1,
-            valueArgumentsCount = 5,
-            constructorTypeArgumentsCount = 1,
-        ).apply {
+        return vsApi {
+            IrConstructorCallImplVS(
+                startOffset = UNDEFINED_OFFSET,
+                endOffset = UNDEFINED_OFFSET,
+                type = ctx.rpcCallable.typeWith(declaration.serviceType),
+                symbol = ctx.rpcCallable.constructors.single(),
+                typeArgumentsCount = 1,
+                valueArgumentsCount = 5,
+                constructorTypeArgumentsCount = 1,
+            )
+        }.apply {
             putConstructorTypeArgument(0, declaration.serviceType)
 
             putValueArgument(0, stringConst(callable.name))
@@ -1261,14 +1275,16 @@ internal class RPCStubGenerator(
                 Variance.OUT_VARIANCE,
             )
 
-            val arrayOfCall = IrCallImpl(
-                startOffset = UNDEFINED_OFFSET,
-                endOffset = UNDEFINED_OFFSET,
-                type = arrayParametersType,
-                symbol = callee,
-                typeArgumentsCount = 1,
-                valueArgumentsCount = if (parameters.isEmpty()) 0 else 1,
-            ).apply arrayOfCall@{
+            val arrayOfCall = vsApi {
+                IrCallImplVS(
+                    startOffset = UNDEFINED_OFFSET,
+                    endOffset = UNDEFINED_OFFSET,
+                    type = arrayParametersType,
+                    symbol = callee,
+                    typeArgumentsCount = 1,
+                    valueArgumentsCount = if (parameters.isEmpty()) 0 else 1,
+                )
+            }.apply arrayOfCall@{
                 putTypeArgument(0, ctx.rpcParameter.defaultType)
 
                 if (parameters.isEmpty()) {
@@ -1281,15 +1297,17 @@ internal class RPCStubGenerator(
                     type = arrayParametersType,
                     varargElementType = ctx.rpcParameter.defaultType,
                     elements = parameters.memoryOptimizedMap { parameter ->
-                        IrConstructorCallImpl(
-                            startOffset = UNDEFINED_OFFSET,
-                            endOffset = UNDEFINED_OFFSET,
-                            type = ctx.rpcParameter.defaultType,
-                            symbol = ctx.rpcParameter.constructors.single(),
-                            typeArgumentsCount = 0,
-                            constructorTypeArgumentsCount = 0,
-                            valueArgumentsCount = 2,
-                        ).apply {
+                        vsApi {
+                            IrConstructorCallImplVS(
+                                startOffset = UNDEFINED_OFFSET,
+                                endOffset = UNDEFINED_OFFSET,
+                                type = ctx.rpcParameter.defaultType,
+                                symbol = ctx.rpcParameter.constructors.single(),
+                                typeArgumentsCount = 0,
+                                constructorTypeArgumentsCount = 0,
+                                valueArgumentsCount = 2,
+                            )
+                        }.apply {
                             putValueArgument(0, stringConst(parameter.value.name.asString()))
                             putValueArgument(1, irTypeOfCall(parameter.type))
                         }
@@ -1478,15 +1496,17 @@ internal class RPCStubGenerator(
     private fun addAssociatedObjectAnnotation() {
         val service = declaration.service
 
-        service.annotations += IrConstructorCallImpl(
-            startOffset = service.startOffset,
-            endOffset = service.endOffset,
-            type = ctx.withServiceDescriptor.defaultType,
-            symbol = ctx.withServiceDescriptor.constructors.single(),
-            typeArgumentsCount = 0,
-            constructorTypeArgumentsCount = 0,
-            valueArgumentsCount = 1,
-        ).apply {
+        service.annotations += vsApi {
+            IrConstructorCallImplVS(
+                startOffset = service.startOffset,
+                endOffset = service.endOffset,
+                type = ctx.withServiceDescriptor.defaultType,
+                symbol = ctx.withServiceDescriptor.constructors.single(),
+                typeArgumentsCount = 0,
+                constructorTypeArgumentsCount = 0,
+                valueArgumentsCount = 1,
+            )
+        }.apply {
             val companionObjectType = stubCompanionObject.defaultType
             putValueArgument(
                 index = 0,
@@ -1505,14 +1525,16 @@ internal class RPCStubGenerator(
      * IR call of the `typeOf<...>()` function
      */
     private fun irTypeOfCall(type: IrType): IrCall {
-        return IrCallImpl(
-            startOffset = UNDEFINED_OFFSET,
-            endOffset = UNDEFINED_OFFSET,
-            type = ctx.kTypeClass.defaultType,
-            symbol = ctx.functions.typeOf,
-            typeArgumentsCount = 1,
-            valueArgumentsCount = 0,
-        ).apply {
+        return vsApi {
+            IrCallImplVS(
+                startOffset = UNDEFINED_OFFSET,
+                endOffset = UNDEFINED_OFFSET,
+                type = ctx.kTypeClass.defaultType,
+                symbol = ctx.functions.typeOf,
+                typeArgumentsCount = 1,
+                valueArgumentsCount = 0,
+            )
+        }.apply {
             putTypeArgument(0, type)
         }
     }

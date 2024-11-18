@@ -12,9 +12,9 @@ import org.jetbrains.kotlin.fir.extensions.FirDeclarationPredicateRegistrar
 import org.jetbrains.kotlin.fir.extensions.FirSupertypeGenerationExtension
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
-import org.jetbrains.kotlin.fir.types.constructClassLikeType
+import org.jetbrains.kotlin.name.ClassId
 
-class FirRpcSupertypeGenerator(
+abstract class FirRpcSupertypeGeneratorAbstract(
     session: FirSession,
     @Suppress("unused") private val logger: MessageCollector,
 ) : FirSupertypeGenerationExtension(session) {
@@ -26,21 +26,14 @@ class FirRpcSupertypeGenerator(
         return session.predicateBasedProvider.matches(FirRpcPredicates.rpc, declaration)
     }
 
-    override fun computeAdditionalSupertypes(
-        classLikeDeclaration: FirClassLikeDeclaration,
+    protected fun computeAdditionalSupertypesAbstract(
         resolvedSupertypes: List<FirResolvedTypeRef>,
-        typeResolver: TypeResolveService,
-    ): List<FirResolvedTypeRef> {
+    ): List<ClassId> {
         if (resolvedSupertypes.any { it.doesMatchesClassId(session, RpcClassId.remoteServiceInterface) }) {
             return emptyList()
         }
 
-        return listOf(
-            vsApi {
-                RpcClassId.remoteServiceInterface
-                    .constructClassLikeType(emptyArray(), isNullable = false)
-                    .toFirResolvedTypeRefVS()
-            }
-        )
+        return listOf(RpcClassId.remoteServiceInterface)
     }
 }
+

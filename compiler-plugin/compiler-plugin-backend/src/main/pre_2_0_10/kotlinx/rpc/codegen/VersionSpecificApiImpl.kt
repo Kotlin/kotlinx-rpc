@@ -9,11 +9,15 @@ import org.jetbrains.kotlin.backend.common.ir.addExtensionReceiver
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
+import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
+import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
+import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.copyTo
@@ -83,4 +87,50 @@ object VersionSpecificApiImpl : VersionSpecificApi {
 
     override val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
         get() = CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY
+
+    override fun IrCallImplVS(
+        startOffset: Int,
+        endOffset: Int,
+        type: IrType,
+        symbol: IrSimpleFunctionSymbol,
+        typeArgumentsCount: Int,
+        valueArgumentsCount: Int,
+        origin: IrStatementOrigin?,
+        superQualifierSymbol: IrClassSymbol?,
+    ): IrCallImpl {
+        return IrCallImpl(
+            startOffset = startOffset,
+            endOffset = endOffset,
+            type = type,
+            symbol = symbol,
+            typeArgumentsCount = typeArgumentsCount,
+            valueArgumentsCount = valueArgumentsCount,
+            origin = origin,
+            superQualifierSymbol = superQualifierSymbol,
+        )
+    }
+
+    override fun IrConstructorCallImplVS(
+        startOffset: Int,
+        endOffset: Int,
+        type: IrType,
+        symbol: IrConstructorSymbol,
+        typeArgumentsCount: Int,
+        valueArgumentsCount: Int,
+        constructorTypeArgumentsCount: Int,
+        origin: IrStatementOrigin?,
+        source: SourceElement,
+    ): IrConstructorCallImpl {
+        return IrConstructorCallImpl(
+            startOffset = startOffset,
+            endOffset = endOffset,
+            type = type,
+            symbol = symbol,
+            typeArgumentsCount = typeArgumentsCount,
+            valueArgumentsCount = valueArgumentsCount,
+            constructorTypeArgumentsCount = constructorTypeArgumentsCount,
+            origin = origin,
+            source = source,
+        )
+    }
 }
