@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.fir.declarations.getAnnotationByClassId
 import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.types.ConeClassLikeType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
@@ -42,6 +43,7 @@ fun FirClassSymbol<*>.remoteServiceSupertype(session: FirSession): FirResolvedTy
     return resolvedSuperTypeRefs.find { it.doesMatchesClassId(session, RpcClassId.remoteServiceInterface) }
 }
 
+@OptIn(SymbolInternals::class)
 internal fun FirTypeRef.doesMatchesClassId(session: FirSession, classId: ClassId): Boolean {
     return coneTypeSafe<ConeClassLikeType>()?.fullyExpandedType(session)?.lookupTag?.classId == classId
 }

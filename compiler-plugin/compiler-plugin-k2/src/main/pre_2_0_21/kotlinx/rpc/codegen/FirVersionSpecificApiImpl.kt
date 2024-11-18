@@ -5,10 +5,10 @@
 package kotlinx.rpc.codegen
 
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
-import org.jetbrains.kotlin.fir.types.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.builder.FirResolvedTypeRefBuilder
 
 @Suppress("unused")

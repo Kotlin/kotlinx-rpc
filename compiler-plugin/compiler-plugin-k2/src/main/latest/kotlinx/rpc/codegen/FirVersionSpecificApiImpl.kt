@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
+import org.jetbrains.kotlin.fir.types.builder.FirResolvedTypeRefBuilder
 
 @Suppress("unused")
 object FirVersionSpecificApiImpl : FirVersionSpecificApi {
@@ -18,4 +19,10 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
     ): FirResolvedTypeRef {
         return toFirResolvedTypeRef(source, delegatedTypeRef)
     }
+
+    override var FirResolvedTypeRefBuilder.coneTypeVS: ConeKotlinType
+        get() = coneType
+        set(value) {
+            coneType = value
+        }
 }

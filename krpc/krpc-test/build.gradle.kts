@@ -4,7 +4,6 @@
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
-import org.jetbrains.kotlin.utils.fileUtils.withReplacedExtensionOrNull
 import util.applyAtomicfuPlugin
 import java.nio.file.Files
 
@@ -77,7 +76,7 @@ tasks.create("moveToGold") {
     doLast {
         resourcesPath.walk().forEach {
             if (it.isFile && it.extension == tmpExt) {
-                val gold = it.withReplacedExtensionOrNull(tmpExt, goldExt)?.toPath()
+                val gold = File(it.absolutePath.replace(".$tmpExt", ".$goldExt")).toPath()
                     ?: error("Expected file with replaced '.$tmpExt' extension to '.$goldExt' extension: $it")
 
                 Files.write(gold, it.readBytes())

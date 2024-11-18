@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen.serialization
 
+import kotlinx.rpc.codegen.vsApi
 import org.jetbrains.kotlin.fir.FirAnnotationContainer
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.expressions.buildResolvedArgumentList
@@ -30,7 +31,9 @@ fun FirAnnotationContainer.addAnnotation(annotationId: ClassId, session: FirSess
     val annotationCall = buildAnnotationCall {
         argumentList = buildResolvedArgumentList(null, linkedMapOf())
         annotationTypeRef = buildResolvedTypeRef {
-            type = annotation.defaultType()
+            vsApi {
+                coneTypeVS = annotation.defaultType()
+            }
         }
         calleeReference = buildResolvedNamedReference {
             name = annotation.name
