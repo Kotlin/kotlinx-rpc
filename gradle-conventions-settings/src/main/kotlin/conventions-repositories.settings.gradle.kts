@@ -5,6 +5,21 @@
 @file:Suppress("DuplicatedCode")
 
 pluginManagement {
+    fun findGlobalRootDirPath(): java.nio.file.Path {
+        var path = file(".").toPath().toAbsolutePath()
+
+        // we assume that the 'versions-root' folder can only be present in the root folder
+        while (
+            java.nio.file.Files.newDirectoryStream(path).use { it.toList() }.none {
+                java.nio.file.Files.isDirectory(it) && it.fileName.toString() == "versions-root"
+            }
+        ) {
+            path = path.parent ?: error("Unable to find root path for kotlinx.rpc project")
+        }
+
+        return path
+    }
+
     fun logAbsentProperty(name: String): Nothing? {
         logger.info("Property '$name' is not present for repository credentials.")
 
@@ -80,10 +95,27 @@ pluginManagement {
             mavenCentral()
             gradlePluginPortal()
         }
+
+        maven("${findGlobalRootDirPath()}/lib-kotlin/")
     }
 }
 
 gradle.rootProject {
+    fun findGlobalRootDirPath(): java.nio.file.Path {
+        var path = file(".").toPath().toAbsolutePath()
+
+        // we assume that the 'versions-root' folder can only be present in the root folder
+        while (
+            java.nio.file.Files.newDirectoryStream(path).use { it.toList() }.none {
+                java.nio.file.Files.isDirectory(it) && it.fileName.toString() == "versions-root"
+            }
+        ) {
+            path = path.parent ?: error("Unable to find root path for kotlinx.rpc project")
+        }
+
+        return path
+    }
+
     fun logAbsentProperty(name: String): Nothing? {
         logger.info("Property '$name' is not present for repository credentials.")
 
@@ -162,6 +194,8 @@ gradle.rootProject {
 
         val useProxy = localProps.isUsingProxyRepositories()
 
+        val globalRootDir = findGlobalRootDirPath()
+
         buildscript {
             repositories {
                 if (useProxy) {
@@ -171,6 +205,8 @@ gradle.rootProject {
                     mavenCentral()
                     gradlePluginPortal()
                 }
+
+                maven("$globalRootDir/lib-kotlin/")
             }
         }
         repositories {
@@ -189,6 +225,8 @@ gradle.rootProject {
 
                 maven("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
             }
+
+            maven("$globalRootDir/lib-kotlin/")
         }
     }
 }
