@@ -4,8 +4,6 @@
 
 package util
 
-import org.gradle.api.plugins.ExtensionAware
-import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.provideDelegate
 import java.io.File
 import java.nio.file.Files
@@ -87,39 +85,3 @@ private fun Collection<File>.mostSpecificByVersionOrNull(kotlinVersion: KotlinVe
 // - pre_1_9_20
 // etc.
 private val directoryNameRegex = "^(latest|(v|pre)(_\\d){1,3}\\d?)$".toRegex()
-
-data class ActionApplied(val applied: Boolean)
-
-@Suppress("unused")
-inline fun ExtensionAware.whenKotlinIsAtLeast(
-    major: Int,
-    minor: Int,
-    patch: Int = 0,
-    action: () -> Unit = {},
-): ActionApplied {
-    val kotlinVersion: KotlinVersion by extra
-
-    if (kotlinVersion.isAtLeast(major, minor, patch)) {
-        action()
-
-        return ActionApplied(true)
-    }
-
-    return ActionApplied(false)
-}
-
-inline fun ExtensionAware.whenKotlinLatest(action: () -> Unit): ActionApplied {
-    val isLatestKotlinVersion: Boolean by extra
-
-    if (isLatestKotlinVersion) {
-        action()
-    }
-
-    return ActionApplied(isLatestKotlinVersion)
-}
-
-infix fun ActionApplied.otherwise(body: () -> Unit) {
-    if (!applied) {
-        body()
-    }
-}

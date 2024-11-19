@@ -4,7 +4,7 @@
 # Ignore Gradle build output directory
 build
 .kotlin
-
+lib-kotlin
 # idea files
 .idea/*
 !.idea/runConfigurations

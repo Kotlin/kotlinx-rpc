@@ -11,7 +11,8 @@ fun Project.whenForIde(block: () -> Unit): ActionApplied {
 
     if (forIdeBuild) {
         block()
+        return ActionApplied.Applied
     }
 
-    return ActionApplied(forIdeBuild)
+    return ActionApplied.NotApplied
 }
