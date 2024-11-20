@@ -170,13 +170,15 @@ fun VersionCatalogBuilder.resolveKotlinVersion(versionCatalog: Map<String, Strin
 // Uses LIBRARY_VERSION_ENV_VAR_NAME instead if present
 fun VersionCatalogBuilder.resolveLibraryVersion(versionCatalog: Map<String, String>) {
     val libraryCoreVersion: String = System.getenv(SettingsConventions.LIBRARY_VERSION_ENV_VAR_NAME)
+        ?.takeIf { it.isNotBlank() }
         ?: versionCatalog[SettingsConventions.LIBRARY_CORE_VERSION_ALIAS]
         ?: error("Expected to resolve '${SettingsConventions.LIBRARY_CORE_VERSION_ALIAS}' version")
 
     val eapVersion: String = System.getenv(SettingsConventions.EAP_VERSION_ENV_VAR_NAME)
         ?.let {
-            when (it){
-                "SNAPSHOT" -> "-$it"
+            when {
+                it.isBlank() -> ""
+                it == "SNAPSHOT" -> "-$it"
                 else -> "-eap-$it"
             }
         } ?: ""
@@ -203,19 +205,17 @@ dependencyResolutionManagement {
 
             resolveLibraryVersion(versionCatalog)
 
-            // Other Kotlin-dependant versions 
+            // Other Kotlin-dependant versions
             val (lookupTable, latestKotlin) = loadLookupTable(rootDir, kotlinVersion)
 
             val isLatestKotlin = latestKotlin == kotlinVersion
 
             extra["kotlinVersion"] = kotlinVersion.kotlinVersionParsed()
-            extra["kotlinVersionFull"] = kotlinVersion
             extra["isLatestKotlinVersion"] = isLatestKotlin
 
             gradle.rootProject {
                 allprojects {
                     this.extra["kotlinVersion"] = kotlinVersion.kotlinVersionParsed()
-                    this.extra["kotlinVersionFull"] = kotlinVersion
                     this.extra["isLatestKotlinVersion"] = isLatestKotlin
                 }
             }
