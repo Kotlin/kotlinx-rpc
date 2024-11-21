@@ -1,7 +1,10 @@
 public final class kotlinx/rpc/krpc/ktor/client/KrpcKt {
 	public static final fun getKrpc ()Lio/ktor/client/plugins/api/ClientPlugin;
+	public static final fun getRPC ()Lio/ktor/client/plugins/api/ClientPlugin;
 	public static final fun installKrpc (Lio/ktor/client/HttpClientConfig;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun installKrpc$default (Lio/ktor/client/HttpClientConfig;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static final fun installRPC (Lio/ktor/client/HttpClientConfig;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun installRPC$default (Lio/ktor/client/HttpClientConfig;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
 public final class kotlinx/rpc/krpc/ktor/client/KtorClientDslKt {
