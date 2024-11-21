@@ -10,6 +10,9 @@ import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
 
+@Deprecated("Use KrpcSerialFormat instead", ReplaceWith("KrpcSerialFormat"), level = DeprecationLevel.ERROR)
+public typealias RPCSerialFormat<Format, FormatBuilder> = KrpcSerialFormat<Format, FormatBuilder>
+
 /**
  * [KrpcSerialFormat] interface defines an object which helps kRPC protocol to work with various serialization formats
  *
@@ -31,6 +34,13 @@ public interface KrpcSerialFormat<Format : SerialFormat, FormatBuilder : Any> {
      */
     public fun FormatBuilder.applySerializersModule(serializersModule: SerializersModule)
 }
+
+@Deprecated(
+    "Use KrpcSerialFormatBuilder instead",
+    ReplaceWith("KrpcSerialFormatBuilder"),
+    level = DeprecationLevel.ERROR,
+)
+public typealias RPCSerialFormatBuilder<Format, FormatBuilder> = KrpcSerialFormatBuilder<Format, FormatBuilder>
 
 /**
  * Special wrapper class that is used to register serialization format in [KrpcSerialFormatConfiguration]
@@ -71,7 +81,7 @@ public sealed class KrpcSerialFormatBuilder<Format : SerialFormat, FormatBuilder
         rpcSerialFormat: KrpcSerialFormat<Format, FormatBuilder>,
         from: Format? = null,
         builder: FormatBuilder.() -> Unit,
-    ): KrpcSerialFormatBuilder<Format, FormatBuilder>(rpcSerialFormat, from, builder)
+    ) : KrpcSerialFormatBuilder<Format, FormatBuilder>(rpcSerialFormat, from, builder)
 
     /**
      * @see KrpcSerialFormatBuilder
@@ -80,5 +90,5 @@ public sealed class KrpcSerialFormatBuilder<Format : SerialFormat, FormatBuilder
         rpcSerialFormat: KrpcSerialFormat<Format, FormatBuilder>,
         from: Format? = null,
         builder: FormatBuilder.() -> Unit,
-    ): KrpcSerialFormatBuilder<Format, FormatBuilder>(rpcSerialFormat, from, builder)
+    ) : KrpcSerialFormatBuilder<Format, FormatBuilder>(rpcSerialFormat, from, builder)
 }

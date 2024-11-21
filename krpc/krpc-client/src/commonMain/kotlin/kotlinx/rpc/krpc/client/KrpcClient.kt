@@ -24,6 +24,9 @@ import kotlinx.serialization.StringFormat
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
 
+@Deprecated("Use KrpcClient instead", ReplaceWith("KrpcClient"), level = DeprecationLevel.ERROR)
+public typealias KRPCClient = KrpcClient
+
 /**
  * Default implementation of [RpcClient].
  * Takes care of tracking requests and responses,

@@ -20,6 +20,9 @@ import kotlinx.rpc.krpc.server.internal.KrpcServerService
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 
+@Deprecated("Use KrpcServer instead", ReplaceWith("KrpcServer"), level = DeprecationLevel.ERROR)
+public typealias KRPCServer = KrpcServer
+
 /**
  * Default implementation of [RpcServer].
  * Takes care of tracking requests and responses,

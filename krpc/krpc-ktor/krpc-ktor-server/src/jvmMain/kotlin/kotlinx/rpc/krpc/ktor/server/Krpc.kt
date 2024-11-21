@@ -11,6 +11,9 @@ import kotlinx.rpc.krpc.KrpcConfigBuilder
 
 internal val KrpcServerPluginAttributesKey = AttributeKey<KrpcConfigBuilder.Server>("KrpcServerPluginAttributesKey")
 
+@Deprecated("Use Krpc instead", ReplaceWith("Krpc"), level = DeprecationLevel.ERROR)
+public val RPC: ApplicationPlugin<KrpcConfigBuilder.Server> get() = Krpc
+
 /**
  * Ktor server plugin that allows to configure RPC globally for all mounted servers.
  */

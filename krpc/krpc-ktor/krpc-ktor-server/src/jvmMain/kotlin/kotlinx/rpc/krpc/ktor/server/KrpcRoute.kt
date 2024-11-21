@@ -11,6 +11,9 @@ import kotlinx.rpc.krpc.KrpcConfigBuilder
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 
+@Deprecated("Use KrpcRoute instead", ReplaceWith("KrpcRoute"), level = DeprecationLevel.ERROR)
+public typealias RPCRoute = KrpcRoute
+
 /**
  * RpcRoute class represents an RPC server that is mounted in Ktor routing.
  * This class provides API to register services and optionally setup configuration.

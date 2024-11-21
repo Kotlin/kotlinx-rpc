@@ -4,6 +4,13 @@
 
 package kotlinx.rpc.krpc.serialization
 
+@Deprecated(
+    "Use KrpcSerialFormatConfiguration instead",
+    ReplaceWith("KrpcSerialFormatConfiguration"),
+    level = DeprecationLevel.ERROR,
+)
+public typealias RPCSerialFormatConfiguration = KrpcSerialFormatConfiguration
+
 /**
  * Special interface to configure serialization for a kRPC protocol in KrpcConfig
  * ```kotlin
