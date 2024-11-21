@@ -11,6 +11,8 @@ plugins {
 defaultConventionConfiguration()
 
 dependencies {
+    implementation(project(":common"))
+
     implementation(":gradle-conventions-settings")
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.kover.gradle.plugin)
