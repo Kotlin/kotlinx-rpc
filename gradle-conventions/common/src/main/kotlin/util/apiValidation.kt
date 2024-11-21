@@ -18,6 +18,7 @@ fun Project.configureApiValidation() {
         ignoredProjects.addAll(
             listOf(
                 "compiler-plugin-tests",
+                "krpc-test",
                 "utils",
             )
         )

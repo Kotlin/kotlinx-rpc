@@ -1,9 +1,9 @@
-public abstract class kotlinx/rpc/krpc/client/KRPCClient : kotlinx/rpc/krpc/internal/RPCServiceHandler, kotlinx/rpc/RpcClient, kotlinx/rpc/krpc/internal/RPCEndpoint {
-	public fun <init> (Lkotlinx/rpc/krpc/RPCConfig$Client;Lkotlinx/rpc/krpc/RPCTransport;)V
+public abstract class kotlinx/rpc/krpc/client/KrpcClient : kotlinx/rpc/krpc/internal/KrpcServiceHandler, kotlinx/rpc/RpcClient, kotlinx/rpc/krpc/internal/KrpcEndpoint {
+	public fun <init> (Lkotlinx/rpc/krpc/KrpcConfig$Client;Lkotlinx/rpc/krpc/KrpcTransport;)V
 	public final fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun callAsync (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/Deferred;
-	protected final fun getConfig ()Lkotlinx/rpc/krpc/RPCConfig$Client;
-	public synthetic fun getConfig ()Lkotlinx/rpc/krpc/RPCConfig;
+	protected final fun getConfig ()Lkotlinx/rpc/krpc/KrpcConfig$Client;
+	public synthetic fun getConfig ()Lkotlinx/rpc/krpc/KrpcConfig;
 	public final fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	protected fun getLogger ()Lkotlinx/rpc/krpc/internal/logging/CommonLogger;
 }
