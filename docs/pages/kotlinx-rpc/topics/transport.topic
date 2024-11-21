@@ -11,7 +11,7 @@
 
         <p>Transport layer exists to abstract from the RPC requests logic and focus on delivering and receiving
             encoded RPC messages in kRPC Protocol.
-            This layer is represented by <code>RPCTransport</code> interface.
+            This layer is represented by <code>KrpcTransport</code> interface.
             It supports two message formats — string and binary,
             and depending on which <a href="configuration.topic" anchor="serialization-dsl">serialization</a> format you choose,
             one or the other will be used.</p>
@@ -22,21 +22,21 @@
             protocol.
             This includes both server and client APIs.
             Under the hood, the library uses <a href="https://ktor.io/docs/websocket.html">WebSocket</a> plugin
-            to create a <code>RPCTransport</code> and send and receive messages through it.</p>
+            to create a <code>KrpcTransport</code> and send and receive messages through it.</p>
         <chapter title="Client" id="client">
             <p><code>kotlinx.rpc</code> provides a way to plug-in into existing Ktor clients with your RPC services.
                 To do that, the following DSL can be used:</p>
 
             <code-block lang="kotlin">
                 val ktorClient = HttpClient {
-                    installRPC { // this: RPCConfigBuilder.Client
+                    installKrpc { // this: KrpcConfigBuilder.Client
                         waitForServices = true
                     }
                 }
 
-                val rpcClient: KtorRPCClient =
+                val rpcClient: KtorKrpcClient =
                     ktorClient.rpc(&quot;ws://localhost:4242/services&quot;) { // this: HttpRequestBuilder
-                        rpcConfig { // this: RPCConfigBuilder.Client
+                        rpcConfig { // this: KrpcConfigBuilder.Client
                             waitForServices = false
                         }
                     }
@@ -47,7 +47,7 @@
                 // create RPC service
                 val myService: MyService = rpcClient.withService&lt;MyService&gt;()
             </code-block>
-            <p>Note that in this example, only the latter defined <code>RPCConfig</code> will be used.</p>
+            <p>Note that in this example, only the latter defined <code>KrpcConfig</code> will be used.</p>
         </chapter>
         <chapter title="Server" id="server">
             <p><code>kotlinx.rpc</code> provides a way to plug-in into existing server routing with your RPC
@@ -56,13 +56,13 @@
 
             <code-block lang="kotlin">
                 fun Application.module() {
-                    install(RPC) { // this: RPCConfigBuilder.Server
+                    install(Krpc) { // this: KrpcConfigBuilder.Server
                         waitForServices = true
                     }
 
                     routing {
-                        rpc(&quot;/services&quot;) { // this RPCRoute, inherits WebSocketSession
-                            rpcConfig { // this: RPCConfigBuilder.Server
+                        rpc(&quot;/services&quot;) { // this KrpcRoute, inherits WebSocketSession
+                            rpcConfig { // this: KrpcConfigBuilder.Server
                                 waitForServices = false
                             }
 
@@ -94,7 +94,7 @@
                 // ### CLIENT CODE ###
 
                 val client = HttpClient {
-                    installRPC {
+                    installKrpc {
                         serialization {
                             json()
                         }
@@ -124,7 +124,7 @@
 
                 fun main() {
                     embeddedServer(Netty, port = 8080) {
-                        install(RPC) {
+                        install(Krpc) {
                             serialization {
                                 json()
                             }

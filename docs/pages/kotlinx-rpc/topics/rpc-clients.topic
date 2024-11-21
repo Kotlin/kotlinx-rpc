@@ -23,35 +23,35 @@
             In this case, you can use the generated code.
     </tip>
     <p>
-        To be able to obtain an instance of your service, you need to have an <code>RPCClient</code>.
+        To be able to obtain an instance of your service, you need to have an <code>RpcClient</code>.
         You can call the <code>withService()</code> method on your client:
     </p>
     <code-block lang="kotlin">
-        val rpcClient: RPCClient
+        val rpcClient: RpcClient
 
         val myService: MyService = rpcClient.withService&lt;MyService&gt;()
     </code-block>
     <p>
         Now you have your client instance that is able to send RPC requests to your server.
-        <code>RPCClient</code> can have multiple services that communicate through it.
-        Conceptually, <code>RPCClient</code> is an abstraction of a client,
+        <code>RpcClient</code> can have multiple services that communicate through it.
+        Conceptually, <code>RpcClient</code> is an abstraction of a client,
         that is able to convent service requests
-        (represented by <code>RPCCall</code> and <code>RPCField</code> classes)
+        (represented by the <code>RpcCall</code> class)
         into actual network requests.
     </p>
     <p>
-        You can provide your own implementations of the <code>RPCClient</code>.
+        You can provide your own implementations of the <code>RpcClient</code>.
         But <code>kotlinx.rpc</code> already provides one out-of-the-box solution that uses
         in-house RPC protocol (called kRPC), and we are working on supporting more protocols
         (with priority on gRPC).
     </p>
 
-    <chapter title="KRPCClient — RPCClient for kRPC Protocol" id="krpcclient-rpcclient-for-krpc-protocol">
-        <p><code>KRPCClient</code> is an abstract class that implements <code>RPCClient</code> and kRPC protocol
+    <chapter title="KrpcClient — RpcClient for kRPC Protocol" id="krpcclient-rpcclient-for-krpc-protocol">
+        <p><code>KrpcClient</code> is an abstract class that implements <code>RpcClient</code> and kRPC protocol
             logic.
             The only thing required to be implemented is the transporting of the raw data.
-            Abstract transport is represented by <code>RPCTransport</code> interface.</p>
-        <p>To implement your own <code>RPCTransport</code>
+            Abstract transport is represented by <code>KrpcTransport</code> interface.</p>
+        <p>To implement your own <code>KrpcTransport</code>
             you need to be able to transfer strings and/or raw bytes (Kotlin's <code>ByteArray</code>).
             Additionally, the library will provide you with <a href="transport.topic">integrations with different
             libraries</a> that are used to work with the network.
@@ -59,24 +59,24 @@
         <p>See below an example usage of kRPC with a custom transport:</p>
 
         <code-block lang="kotlin">
-            class MySimpleRPCTransport : RPCTransport {
-                val outChannel = Channel&lt;RPCTransportMessage&gt;()
-                val inChannel = Channel&lt;RPCTransportMessage&gt;()
+            class MySimpleRpcTransport : KrpcTransport {
+                val outChannel = Channel&lt;KrpcTransportMessage&gt;()
+                val inChannel = Channel&lt;KrpcTransportMessage&gt;()
 
                 override val coroutineContext: CoroutineContext = Job()
 
-                override suspend fun send(message: RPCTransportMessage) {
+                override suspend fun send(message: KrpcTransportMessage) {
                     outChannel.send(message)
                 }
 
-                override suspend fun receive(): RPCTransportMessage {
+                override suspend fun receive(): KrpcTransportMessage {
                     return inChannel.receive()
                 }
             }
 
-            class MySimpleRPCClient : KRPCClient(rpcClientConfig(), MySimpleRPCTransport())
+            class MySimpleRpcClient : KrpcClient(rpcClientConfig(), MySimpleRpcTransport())
 
-            val client = MySimpleRPCClient()
+            val client = MySimpleRpcClient()
             val service: MyService = client.withService&lt;MyService&gt;()
         </code-block>
     </chapter>
