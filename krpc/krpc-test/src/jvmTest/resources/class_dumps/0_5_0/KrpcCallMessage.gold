@@ -1,0 +1,20 @@
+org.jetbrains.krpc.RPCMessage [Declared name: kotlinx.rpc.krpc.internal.KrpcCallMessage]
+  - callId: kotlin.String
+  - serviceId: kotlin.Long
+    - Nullable
+  - serviceType: kotlin.String
+  - connectionId: kotlin.Long
+    - Nullable
+  - pluginParams: kotlin.collections.Map
+    - Nullable
+
+  org.jetbrains.krpc.internal.transport.RPCMessage.CallData
+  - Declared name: kotlinx.rpc.krpc.internal.KrpcCallMessage.CallData
+  org.jetbrains.krpc.RPCMessage.CallResult
+  - Declared name: kotlinx.rpc.krpc.internal.KrpcCallMessage.CallResult
+  org.jetbrains.krpc.RPCMessage.StreamCancel
+  - Declared name: kotlinx.rpc.krpc.internal.KrpcCallMessage.StreamCancel
+  org.jetbrains.krpc.RPCMessage.StreamFinished
+  - Declared name: kotlinx.rpc.krpc.internal.KrpcCallMessage.StreamFinished
+  org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessage
+  - Declared name: kotlinx.rpc.krpc.internal.KrpcCallMessage.StreamMessage

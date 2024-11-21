@@ -1,0 +1,11 @@
+org.jetbrains.krpc.RPCMessage.StreamFinished [Declared name: kotlinx.rpc.krpc.internal.KrpcCallMessage.StreamFinished]
+  - callId: kotlin.String
+  - connectionId: kotlin.Long
+    - Nullable
+  - pluginParams: kotlin.collections.Map
+    - Nullable
+  - serviceId: kotlin.Long
+    - Nullable
+  - serviceType: kotlin.String
+  - flowId: kotlin.String
+    - Declared name: streamId

@@ -171,7 +171,7 @@ class ApiVersioningTest {
         val INDEXED_ENUM_DUMPS_DIR: Path = Path("src/jvmTest/resources/indexed_enum_dumps/")
 
         private fun String.versionToDirName(): String {
-            return replace('.', '_').replace('-', '_')
+            return replace('.', '_').replace('-', '_').substringBefore("-")
         }
 
         fun Path.latestVersionOrCurrent(): Path {
@@ -184,7 +184,7 @@ class ApiVersioningTest {
                         aBeta && bBeta -> a.compareTo(b)
                         aBeta -> -1
                         bBeta -> 1
-                        else -> a.compareTo(b)
+                        else -> a.name.substringBefore("-").compareTo(b.name.substringBefore("-"))
                     }
                 }.lastOrNull()
                 ?: resolve(LIBRARY_VERSION_DIR)
