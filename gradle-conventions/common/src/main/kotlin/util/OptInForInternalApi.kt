@@ -6,9 +6,9 @@ package util
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
-fun KotlinProjectExtension.optInForRPCApi() {
+fun KotlinProjectExtension.optInForRpcApi() {
     sourceSets.all {
-        languageSettings.optIn("kotlinx.rpc.internal.utils.InternalRPCApi")
-        languageSettings.optIn("kotlinx.rpc.internal.utils.ExperimentalRPCApi")
+        languageSettings.optIn("kotlinx.rpc.internal.utils.InternalRpcApi")
+        languageSettings.optIn("kotlinx.rpc.internal.utils.ExperimentalRpcApi")
     }
 }

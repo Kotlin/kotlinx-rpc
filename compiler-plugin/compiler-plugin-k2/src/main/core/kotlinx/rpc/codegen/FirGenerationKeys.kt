@@ -12,30 +12,30 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey
 
-internal class RPCGeneratedStubKey(
+internal class RpcGeneratedStubKey(
     private val serviceName: Name,
     val functions: List<FirFunctionSymbol<*>>,
 ) : GeneratedDeclarationKey() {
     override fun toString(): String {
-        return "RPCGeneratedStubKey.$serviceName"
+        return "RpcGeneratedStubKey.$serviceName"
     }
 }
 
-internal val FirBasedSymbol<*>.generatedRpcServiceStubKey: RPCGeneratedStubKey? get() =
-    (origin as? FirDeclarationOrigin.Plugin)?.key as? RPCGeneratedStubKey
+internal val FirBasedSymbol<*>.generatedRpcServiceStubKey: RpcGeneratedStubKey? get() =
+    (origin as? FirDeclarationOrigin.Plugin)?.key as? RpcGeneratedStubKey
 
-internal class RPCGeneratedRpcMethodClassKey(
+internal class RpcGeneratedRpcMethodClassKey(
     val rpcMethod: FirFunctionSymbol<*>,
 ) : GeneratedDeclarationKey() {
     val isObject = rpcMethod.valueParameterSymbols.isEmpty()
 
     override fun toString(): String {
-        return "RPCGeneratedRpcMethodClassKey.${rpcMethod.name}"
+        return "RpcGeneratedRpcMethodClassKey.${rpcMethod.name}"
     }
 }
 
-internal val FirBasedSymbol<*>.generatedRpcMethodClassKey: RPCGeneratedRpcMethodClassKey? get() =
-    (origin as? FirDeclarationOrigin.Plugin)?.key as? RPCGeneratedRpcMethodClassKey
+internal val FirBasedSymbol<*>.generatedRpcMethodClassKey: RpcGeneratedRpcMethodClassKey? get() =
+    (origin as? FirDeclarationOrigin.Plugin)?.key as? RpcGeneratedRpcMethodClassKey
 
 internal object FirRpcServiceStubCompanionObject : GeneratedDeclarationKey() {
     override fun toString(): String {

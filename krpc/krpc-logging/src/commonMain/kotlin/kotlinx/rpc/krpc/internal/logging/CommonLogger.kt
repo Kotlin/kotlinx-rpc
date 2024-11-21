@@ -4,18 +4,18 @@
 
 package kotlinx.rpc.krpc.internal.logging
 
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.krpc.internal.logging.impl.CommonLoggerFactoryImpl
 import kotlin.reflect.KClass
 
-@InternalRPCApi
+@InternalRpcApi
 public interface CommonLoggerFactory {
     public fun getLogger(name: String): CommonLogger
 
     public fun getLogger(func: () -> Unit): CommonLogger
 }
 
-@InternalRPCApi
+@InternalRpcApi
 public interface CommonLogger {
     public fun debug(msg: () -> Any?)
 
@@ -37,7 +37,7 @@ public interface CommonLogger {
 
     public fun warn(t: Throwable?, msg: () -> Any?)
 
-    @InternalRPCApi
+    @InternalRpcApi
     public companion object {
         private val factory = CommonLoggerFactoryImpl
 

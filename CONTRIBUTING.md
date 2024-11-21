@@ -102,7 +102,7 @@ A few things to remember:
 * Every public API (including functions, classes, objects and so on) should be documented,
   every parameter, property, return types and exceptions should be described properly.
 * A Public API that is not intended to be used by end-users that couldn't be made private/internal due to technical reasons,
-  should be marked with `@InternalRPCApi` annotation.
+  should be marked with `@InternalRpcApi` annotation.
 
 ### Commit messages
 

@@ -11,10 +11,10 @@ import io.ktor.server.testing.*
 import kotlinx.coroutines.cancel
 import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
-import kotlinx.rpc.krpc.ktor.client.installRPC
+import kotlinx.rpc.krpc.ktor.client.installKrpc
 import kotlinx.rpc.krpc.ktor.client.rpc
 import kotlinx.rpc.krpc.ktor.client.rpcConfig
-import kotlinx.rpc.krpc.ktor.server.RPC
+import kotlinx.rpc.krpc.ktor.server.Krpc
 import kotlinx.rpc.krpc.ktor.server.rpc
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.withService
@@ -40,7 +40,7 @@ class NewServiceImpl(
 class KtorTransportTest {
     @Test
     fun testEcho() = testApplication {
-        install(RPC)
+        install(Krpc)
         routing {
             rpc("/rpc") {
                 rpcConfig {
@@ -58,19 +58,19 @@ class KtorTransportTest {
         }
 
         val clientWithGlobalConfig = createClient {
-            installRPC {
+            installKrpc {
                 serialization {
                     json()
                 }
             }
         }
 
-        val ktorRPCClient = clientWithGlobalConfig
+        val ktorRpcClient = clientWithGlobalConfig
             .rpc("/rpc") {
                 headers["TestHeader"] = "test-header"
             }
 
-        val serviceWithGlobalConfig = ktorRPCClient.withService<NewService>()
+        val serviceWithGlobalConfig = ktorRpcClient.withService<NewService>()
 
         val firstActual = serviceWithGlobalConfig.echo("Hello, world!")
 
@@ -80,7 +80,7 @@ class KtorTransportTest {
         clientWithGlobalConfig.cancel()
 
         val clientWithNoConfig = createClient {
-            installRPC()
+            installKrpc()
         }
 
         val serviceWithLocalConfig = clientWithNoConfig.rpc("/rpc") {

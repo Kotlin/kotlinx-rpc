@@ -58,7 +58,7 @@ fun <T> plainFlow(count: Int = 5, get: (Int) -> T): Flow<T> {
 
 private fun <T, FlowT : MutableSharedFlow<T>> CoroutineScope.runSharedFlow(
     flow: FlowT,
-    count: Int = KRPCTestServiceBackend.SHARED_FLOW_REPLAY,
+    count: Int = KrpcTestServiceBackend.SHARED_FLOW_REPLAY,
     getter: (Int) -> T,
 ) = apply {
     launch {
@@ -69,7 +69,7 @@ private fun <T, FlowT : MutableSharedFlow<T>> CoroutineScope.runSharedFlow(
 }
 
 fun <T> CoroutineScope.sharedFlowOfT(getter: (Int) -> T): MutableSharedFlow<T> {
-    return MutableSharedFlow<T>(KRPCTestServiceBackend.SHARED_FLOW_REPLAY).also { flow ->
+    return MutableSharedFlow<T>(KrpcTestServiceBackend.SHARED_FLOW_REPLAY).also { flow ->
         runSharedFlow(flow) { getter(it) }
     }
 }

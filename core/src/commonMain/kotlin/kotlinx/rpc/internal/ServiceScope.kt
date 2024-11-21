@@ -7,20 +7,20 @@ package kotlinx.rpc.internal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.withContext
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.coroutines.CoroutineContext
 
-@InternalRPCApi
+@InternalRpcApi
 public class ServiceScope(public val serviceCoroutineScope: CoroutineScope) : CoroutineContext.Element {
     internal companion object Key : CoroutineContext.Key<ServiceScope>
 
     override val key: CoroutineContext.Key<*> = Key
 }
 
-@InternalRPCApi
+@InternalRpcApi
 public suspend fun createServiceScope(serviceCoroutineScope: CoroutineScope): ServiceScope {
     val context = currentCoroutineContext()
 
@@ -31,12 +31,12 @@ public suspend fun createServiceScope(serviceCoroutineScope: CoroutineScope): Se
     return ServiceScope(serviceCoroutineScope)
 }
 
-@InternalRPCApi
+@InternalRpcApi
 public suspend fun serviceScopeOrNull(): ServiceScope? {
     return currentCoroutineContext()[ServiceScope.Key]
 }
 
-@InternalRPCApi
+@InternalRpcApi
 @OptIn(ExperimentalContracts::class)
 public suspend inline fun <T> serviceScoped(
     serviceCoroutineScope: CoroutineScope,

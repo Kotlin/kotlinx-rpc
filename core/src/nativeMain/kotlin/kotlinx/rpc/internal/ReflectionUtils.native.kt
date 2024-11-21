@@ -6,13 +6,13 @@
 
 package kotlinx.rpc.internal
 
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KClass
 
-@InternalRPCApi
+@InternalRpcApi
 public actual val KClass<*>.qualifiedClassNameOrNull: String?
     get() = qualifiedName
 
-@InternalRPCApi
+@InternalRpcApi
 public actual val KClass<*>.typeName: String?
     get() = qualifiedClassNameOrNull

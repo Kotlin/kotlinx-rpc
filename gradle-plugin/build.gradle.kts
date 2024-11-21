@@ -37,7 +37,7 @@ gradlePlugin {
             id = "org.jetbrains.kotlinx.rpc.plugin"
 
             displayName = "kotlinx.rpc Gradle Plugin"
-            implementationClass = "kotlinx.rpc.RPCGradlePlugin"
+            implementationClass = "kotlinx.rpc.RpcGradlePlugin"
             description = """
                 The plugin ensures correct RPC configurations for your project, that will allow proper code generation. 
             """.trimIndent()

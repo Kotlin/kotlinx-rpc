@@ -7,7 +7,7 @@ package kotlinx.rpc.krpc.internal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.serialization.*
 import kotlinx.serialization.modules.SerializersModule
 import kotlin.reflect.KClass
@@ -27,7 +27,7 @@ internal fun SerializersModule.buildContextual(type: KType): KSerializer<Any?> {
     return result as? KSerializer<Any?> ?: error("No serializer found for $type")
 }
 
-@InternalRPCApi
+@InternalRpcApi
 public fun SerializersModule.rpcSerializerForType(type: KType): KSerializer<Any?> {
     return when (type.classifier) {
         Flow::class, SharedFlow::class, StateFlow::class -> buildContextual(type)
@@ -35,13 +35,13 @@ public fun SerializersModule.rpcSerializerForType(type: KType): KSerializer<Any?
     }
 }
 
-@InternalRPCApi
+@InternalRpcApi
 public fun unsupportedSerialFormatError(serialFormat: SerialFormat): Nothing {
     error("Unsupported serial format ${serialFormat::class}, only StringFormat and BinaryFormats are supported")
 }
 
 internal fun unexpectedDataFormatForProvidedSerialFormat(
-    data: RPCCallMessage.Data,
+    data: KrpcCallMessage.Data,
     shouldBeBinary: Boolean,
 ): Nothing {
     val (expected, actual) = when {
@@ -53,15 +53,15 @@ internal fun unexpectedDataFormatForProvidedSerialFormat(
             "message is in $actual format (${data::class}), but provided SerialFormat is $expected")
 }
 
-@InternalRPCApi
+@InternalRpcApi
 public fun decodeMessageData(
     serialFormat: SerialFormat,
     dataSerializer: KSerializer<Any?>,
-    data: RPCCallMessage.Data,
+    data: KrpcCallMessage.Data,
 ): Any? {
     return when (serialFormat) {
         is StringFormat -> {
-            if (data !is RPCCallMessage.Data.StringData) {
+            if (data !is KrpcCallMessage.Data.StringData) {
                 unexpectedDataFormatForProvidedSerialFormat(data, shouldBeBinary = false)
             }
 
@@ -69,7 +69,7 @@ public fun decodeMessageData(
         }
 
         is BinaryFormat -> {
-            if (data !is RPCCallMessage.Data.BinaryData) {
+            if (data !is KrpcCallMessage.Data.BinaryData) {
                 unexpectedDataFormatForProvidedSerialFormat(data, shouldBeBinary = true)
             }
 

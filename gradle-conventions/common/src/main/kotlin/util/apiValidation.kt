@@ -18,11 +18,10 @@ fun Project.configureApiValidation() {
         ignoredProjects.addAll(
             listOf(
                 "compiler-plugin-tests",
-                "krpc-test",
                 "utils",
             )
         )
 
-        nonPublicMarkers.add("kotlinx.rpc.internal.utils.InternalRPCApi")
+        nonPublicMarkers.add("kotlinx.rpc.internal.utils.InternalRpcApi")
     }
 }

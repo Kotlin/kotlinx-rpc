@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.awaitFieldInitialization
 import kotlinx.rpc.krpc.internal.CancellationType
-import kotlinx.rpc.krpc.internal.RPCMessage
-import kotlinx.rpc.krpc.internal.RPCPlugin
-import kotlinx.rpc.krpc.internal.RPCPluginKey
+import kotlinx.rpc.krpc.internal.KrpcMessage
+import kotlinx.rpc.krpc.internal.KrpcPlugin
+import kotlinx.rpc.krpc.internal.KrpcPluginKey
 import kotlinx.rpc.krpc.test.api.util.GoldUtils.NewLine
 import kotlinx.rpc.krpc.test.plainFlow
 import org.jetbrains.krpc.test.api.util.SamplingData
@@ -28,19 +28,19 @@ import kotlin.test.fail
 class ApiVersioningTest {
     @Test
     fun testProtocolApiVersion() {
-        val context = checkProtocolApi<RPCMessage>()
+        val context = checkProtocolApi<KrpcMessage>()
 
         context.fails.failIfAnyCauses()
     }
 
     @Test
-    fun testRPCPluginEnum() {
-        testEnum<RPCPlugin>()
+    fun testRpcPluginEnum() {
+        testEnum<KrpcPlugin>()
     }
 
     @Test
-    fun testRPCPluginKeyEnum() {
-        testEnum<RPCPluginKey>()
+    fun testRpcPluginKeyEnum() {
+        testEnum<KrpcPluginKey>()
     }
 
     @Test

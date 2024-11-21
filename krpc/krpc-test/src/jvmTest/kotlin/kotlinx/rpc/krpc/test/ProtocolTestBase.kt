@@ -12,15 +12,15 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.internal.utils.hex.hexToReadableBinary
-import kotlinx.rpc.krpc.RPCConfig
-import kotlinx.rpc.krpc.client.KRPCClient
+import kotlinx.rpc.krpc.KrpcConfig
+import kotlinx.rpc.krpc.client.KrpcClient
 import kotlinx.rpc.krpc.internal.logging.CommonLogger
 import kotlinx.rpc.krpc.internal.logging.DumpLogger
 import kotlinx.rpc.krpc.internal.logging.DumpLoggerContainer
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
-import kotlinx.rpc.krpc.server.KRPCServer
+import kotlinx.rpc.krpc.server.KrpcServer
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlinx.serialization.BinaryFormat
@@ -29,12 +29,12 @@ import kotlin.coroutines.CoroutineContext
 abstract class ProtocolTestBase {
     @Suppress("RedundantUnitReturnType")
     protected fun runTest(
-        clientConfig: RPCConfig.Client = rpcClientConfig {
+        clientConfig: KrpcConfig.Client = rpcClientConfig {
             serialization {
                 json()
             }
         },
-        serverConfig: RPCConfig.Server = rpcServerConfig {
+        serverConfig: KrpcConfig.Server = rpcServerConfig {
             serialization {
                 json()
             }
@@ -49,8 +49,8 @@ abstract class ProtocolTestBase {
     }
 
     class TestBody(
-        clientConfig: RPCConfig.Client,
-        serverConfig: RPCConfig.Server,
+        clientConfig: KrpcConfig.Client,
+        serverConfig: KrpcConfig.Server,
         private val scope: TestScope
     ) : CoroutineScope by scope {
         private val logger = object : DumpLogger {
@@ -105,11 +105,11 @@ private class ProtocolTestServiceImpl(
 }
 
 class ProtocolTestServer(
-    config: RPCConfig.Server,
+    config: KrpcConfig.Server,
     transport: LocalTransport,
-) : KRPCServer(config, transport.server)
+) : KrpcServer(config, transport.server)
 
 class ProtocolTestClient(
-    config: RPCConfig.Client,
+    config: KrpcConfig.Client,
     transport: LocalTransport,
-) : KRPCClient(config, transport.client)
+) : KrpcClient(config, transport.client)

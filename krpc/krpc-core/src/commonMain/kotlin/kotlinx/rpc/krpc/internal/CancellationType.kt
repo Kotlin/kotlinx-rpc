@@ -5,9 +5,10 @@
 package kotlinx.rpc.krpc.internal
 
 import kotlinx.rpc.internal.utils.IndexedEnum
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.krpc.internal.CancellationType.entries
 
-@InternalRPCApi
+@InternalRpcApi
 @Suppress("detekt.MagicNumber")
 public enum class CancellationType(override val uniqueIndex: Int) : IndexedEnum {
     ENDPOINT(0),
@@ -23,9 +24,9 @@ public enum class CancellationType(override val uniqueIndex: Int) : IndexedEnum 
     }
 }
 
-@InternalRPCApi
-public fun RPCMessage.cancellationType(): CancellationType? {
-    return get(RPCPluginKey.CANCELLATION_TYPE)?.let { value ->
+@InternalRpcApi
+public fun KrpcMessage.cancellationType(): CancellationType? {
+    return get(KrpcPluginKey.CANCELLATION_TYPE)?.let { value ->
         CancellationType.valueOfNull(value)
     }
 }

@@ -32,7 +32,7 @@ import kotlinx.rpc.RemoteService
  *         return "Hello, $firstName $lastName, of age $age. I am your server!"
  *     }
  * }
- * val server: RPCServer
+ * val server: RpcServer
  * server.registerService<MyService> { ctx -> MyServiceImpl(ctx) }
  * ```
  *

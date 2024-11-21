@@ -9,37 +9,37 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.job
-import kotlinx.rpc.krpc.RPCTransport
-import kotlinx.rpc.krpc.RPCTransportMessage
+import kotlinx.rpc.krpc.KrpcTransport
+import kotlinx.rpc.krpc.KrpcTransportMessage
 import kotlin.coroutines.CoroutineContext
 
 class LocalTransport(parentScope: CoroutineScope? = null) : CoroutineScope {
     override val coroutineContext = parentScope?.run { SupervisorJob(coroutineContext.job) }
         ?: SupervisorJob()
 
-    private val clientIncoming = Channel<RPCTransportMessage>()
-    private val serverIncoming = Channel<RPCTransportMessage>()
+    private val clientIncoming = Channel<KrpcTransportMessage>()
+    private val serverIncoming = Channel<KrpcTransportMessage>()
 
-    val client: RPCTransport = object : RPCTransport {
+    val client: KrpcTransport = object : KrpcTransport {
         override val coroutineContext: CoroutineContext = Job(this@LocalTransport.coroutineContext.job)
 
-        override suspend fun send(message: RPCTransportMessage) {
+        override suspend fun send(message: KrpcTransportMessage) {
             serverIncoming.send(message)
         }
 
-        override suspend fun receive(): RPCTransportMessage {
+        override suspend fun receive(): KrpcTransportMessage {
             return clientIncoming.receive()
         }
     }
 
-    val server: RPCTransport = object : RPCTransport {
+    val server: KrpcTransport = object : KrpcTransport {
         override val coroutineContext: CoroutineContext = Job(this@LocalTransport.coroutineContext)
 
-        override suspend fun send(message: RPCTransportMessage) {
+        override suspend fun send(message: KrpcTransportMessage) {
             clientIncoming.send(message)
         }
 
-        override suspend fun receive(): RPCTransportMessage {
+        override suspend fun receive(): KrpcTransportMessage {
             return serverIncoming.receive()
         }
     }

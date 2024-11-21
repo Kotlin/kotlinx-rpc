@@ -15,7 +15,7 @@ import kotlin.reflect.KClass
 /**
  * Better unique value holder than ordinal. Easier for testing and maintaining.
  */
-@InternalRPCApi
+@InternalRpcApi
 interface IndexedEnum {
     /**
      * Values between 0 and 65500 are allowed, other are reserved for testing.
@@ -23,7 +23,7 @@ interface IndexedEnum {
     val uniqueIndex: Int
 }
 
-@InternalRPCApi
+@InternalRpcApi
 abstract class ShortEnumKSerializer<E>(
     kClass: KClass<E>,
     val unknownValue: E,

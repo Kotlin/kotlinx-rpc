@@ -44,7 +44,7 @@ Then, choose how do you want your service to communicate. For example, you can u
 ```kotlin
 fun main() {
     embeddedServer(Netty, 8080) {
-        install(RPC)
+        install(Krpc)
         routing {
             rpc("/awesome") {
                 rpcConfig {
@@ -61,7 +61,7 @@ fun main() {
 ```
 To connect to the server use the following [Ktor Client](https://ktor.io/docs/create-client.html) setup:
 ```kotlin
-val rpcClient = HttpClient { installRPC() }.rpc {
+val rpcClient = HttpClient { installKrpc() }.rpc {
     url("ws://localhost:8080/awesome")
 
     rpcConfig {

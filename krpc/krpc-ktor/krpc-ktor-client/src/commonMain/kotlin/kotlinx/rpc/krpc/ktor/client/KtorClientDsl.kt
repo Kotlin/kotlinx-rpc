@@ -10,22 +10,22 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.util.*
 import kotlinx.rpc.RpcClient
-import kotlinx.rpc.krpc.RPCConfigBuilder
+import kotlinx.rpc.krpc.KrpcConfigBuilder
 import kotlinx.rpc.krpc.rpcClientConfig
 
-private val RPCRequestConfigAttributeKey = AttributeKey<RPCConfigBuilder.Client.() -> Unit>(
-    name = "RPCRequestConfigAttributeKey"
+private val KrpcRequestConfigAttributeKey = AttributeKey<KrpcConfigBuilder.Client.() -> Unit>(
+    name = "KrpcRequestConfigAttributeKey"
 )
 
 /**
  * Extension function for the [HttpRequestBuilder] that allows to configure RPC for the call.
  * Usually used with the [rpc] functions.
- * Overrides [RPC] plugin configuration.
+ * Overrides [Krpc] plugin configuration.
  *
  * @param configBuilder The function that configures RPC.
  */
-public fun HttpRequestBuilder.rpcConfig(configBuilder: RPCConfigBuilder.Client.() -> Unit = {}) {
-    attributes.put(RPCRequestConfigAttributeKey, configBuilder)
+public fun HttpRequestBuilder.rpcConfig(configBuilder: KrpcConfigBuilder.Client.() -> Unit = {}) {
+    attributes.put(KrpcRequestConfigAttributeKey, configBuilder)
 }
 
 /**
@@ -39,7 +39,7 @@ public fun HttpRequestBuilder.rpcConfig(configBuilder: RPCConfigBuilder.Client.(
 public suspend fun HttpClient.rpc(
     urlString: String,
     block: HttpRequestBuilder.() -> Unit = {},
-): KtorRPCClient {
+): KtorRpcClient {
     return rpc {
         url(urlString)
         block()
@@ -55,22 +55,22 @@ public suspend fun HttpClient.rpc(
  */
 public suspend fun HttpClient.rpc(
     block: HttpRequestBuilder.() -> Unit = {},
-): KtorRPCClient {
+): KtorRpcClient {
     pluginOrNull(WebSockets)
         ?: error("RPC for client requires $WebSockets plugin to be installed firstly")
 
-    var requestConfigBuilder: RPCConfigBuilder.Client.() -> Unit = {}
+    var requestConfigBuilder: KrpcConfigBuilder.Client.() -> Unit = {}
     val session = webSocketSession {
         block()
 
-        attributes.getOrNull(RPCRequestConfigAttributeKey)?.let {
+        attributes.getOrNull(KrpcRequestConfigAttributeKey)?.let {
             requestConfigBuilder = it
         }
     }
 
-    val pluginConfigBuilder = attributes.getOrNull(RPCClientPluginAttributesKey)
+    val pluginConfigBuilder = attributes.getOrNull(KrpcClientPluginAttributesKey)
     val rpcConfig = pluginConfigBuilder?.apply(requestConfigBuilder)?.build()
         ?: rpcClientConfig(requestConfigBuilder)
 
-    return KtorRPCClientImpl(session, rpcConfig)
+    return KtorKrpcClientImpl(session, rpcConfig)
 }

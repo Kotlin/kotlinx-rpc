@@ -13,18 +13,18 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RemoteService
 import kotlinx.rpc.internal.utils.hex.hexToReadableBinary
-import kotlinx.rpc.krpc.RPCTransportMessage
+import kotlinx.rpc.krpc.KrpcTransportMessage
 import kotlinx.rpc.krpc.internal.logging.CommonLogger
 import kotlinx.rpc.krpc.internal.logging.DumpLogger
 import kotlinx.rpc.krpc.internal.logging.DumpLoggerContainer
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
-import kotlinx.rpc.krpc.serialization.RPCSerialFormatConfiguration
+import kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.krpc.serialization.protobuf.protobuf
-import kotlinx.rpc.krpc.test.KRPCTestClient
-import kotlinx.rpc.krpc.test.KRPCTestServer
-import kotlinx.rpc.krpc.test.KRPCTestServiceBackend
+import kotlinx.rpc.krpc.test.KrpcTestClient
+import kotlinx.rpc.krpc.test.KrpcTestServer
+import kotlinx.rpc.krpc.test.KrpcTestServiceBackend
 import kotlinx.rpc.krpc.test.LocalTransport
 import kotlinx.rpc.krpc.test.api.ApiVersioningTest.Companion.latestVersionOrCurrent
 import kotlinx.rpc.krpc.test.api.util.GoldComparable
@@ -173,10 +173,10 @@ class WireSamplingTestScope(private val sampleName: String, scope: TestScope) : 
     }
 
     @OptIn(ExperimentalStdlibApi::class)
-    private fun String.toTransportMessage(format: SamplingFormat): RPCTransportMessage {
+    private fun String.toTransportMessage(format: SamplingFormat): KrpcTransportMessage {
         return when (format) {
-            SamplingFormat.Json -> RPCTransportMessage.StringMessage(this)
-            SamplingFormat.Protobuf -> RPCTransportMessage.BinaryMessage(hexToByteArray())
+            SamplingFormat.Json -> KrpcTransportMessage.StringMessage(this)
+            SamplingFormat.Protobuf -> KrpcTransportMessage.BinaryMessage(hexToByteArray())
         }
     }
 
@@ -197,13 +197,13 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
     val transport = LocalTransport(scope)
 
     val client by lazy {
-        KRPCTestClient(rpcClientConfig {
+        KrpcTestClient(rpcClientConfig {
             serialization {
                 format.init(this)
             }
 
             sharedFlowParameters {
-                replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
+                replay = KrpcTestServiceBackend.SHARED_FLOW_REPLAY
             }
         }, transport.client)
     }
@@ -213,7 +213,7 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
     }
 
     val server by lazy {
-        KRPCTestServer(rpcServerConfig { serialization { format.init(this) } }, transport.server).apply {
+        KrpcTestServer(rpcServerConfig { serialization { format.init(this) } }, transport.server).apply {
             registerService<SamplingService> { SamplingServiceImpl(it) }
         }
     }
@@ -258,7 +258,7 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
 }
 
 @OptIn(ExperimentalSerializationApi::class)
-enum class SamplingFormat(val commentBinaryOutput: Boolean, val init: RPCSerialFormatConfiguration.() -> Unit) {
+enum class SamplingFormat(val commentBinaryOutput: Boolean, val init: KrpcSerialFormatConfiguration.() -> Unit) {
     Json(false, {
         json()
     }),

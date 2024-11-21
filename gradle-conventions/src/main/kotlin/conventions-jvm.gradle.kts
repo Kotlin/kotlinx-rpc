@@ -4,7 +4,7 @@
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import util.configureJvm
-import util.optInForRPCApi
+import util.optInForRpcApi
 
 plugins {
     id("conventions-common")
@@ -20,7 +20,7 @@ configure<KotlinJvmProjectExtension> {
         languageVersion.set(JavaLanguageVersion.of(8))
     }
 
-    optInForRPCApi()
+    optInForRpcApi()
 
     explicitApi()
 }

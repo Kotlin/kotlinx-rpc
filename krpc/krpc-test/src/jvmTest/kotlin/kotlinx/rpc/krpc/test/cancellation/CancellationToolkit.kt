@@ -7,16 +7,16 @@ package kotlinx.rpc.krpc.test.cancellation
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
-import kotlinx.rpc.krpc.RPCConfigBuilder
+import kotlinx.rpc.krpc.KrpcConfigBuilder
 import kotlinx.rpc.krpc.internal.logging.CommonLogger
 import kotlinx.rpc.krpc.internal.logging.DumpLogger
 import kotlinx.rpc.krpc.internal.logging.DumpLoggerContainer
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
-import kotlinx.rpc.krpc.test.KRPCTestClient
-import kotlinx.rpc.krpc.test.KRPCTestServer
-import kotlinx.rpc.krpc.test.KRPCTestServiceBackend
+import kotlinx.rpc.krpc.test.KrpcTestClient
+import kotlinx.rpc.krpc.test.KrpcTestServer
+import kotlinx.rpc.krpc.test.KrpcTestServiceBackend
 import kotlinx.rpc.krpc.test.LocalTransport
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
@@ -41,7 +41,7 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
         })
     }
 
-    private val serializationConfig: RPCConfigBuilder.() -> Unit = {
+    private val serializationConfig: KrpcConfigBuilder.() -> Unit = {
         serialization {
             json()
         }
@@ -50,11 +50,11 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
     val transport = LocalTransport(this)
 
     val client by lazy {
-        KRPCTestClient(rpcClientConfig {
+        KrpcTestClient(rpcClientConfig {
             serializationConfig()
 
             sharedFlowParameters {
-                replay = KRPCTestServiceBackend.SHARED_FLOW_REPLAY
+                replay = KrpcTestServiceBackend.SHARED_FLOW_REPLAY
             }
         }, transport.client)
     }
@@ -65,7 +65,7 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
     private val firstServerInstance = CompletableDeferred<CancellationServiceImpl>()
     suspend fun serverInstance(): CancellationServiceImpl = firstServerInstance.await()
 
-    val server = KRPCTestServer(rpcServerConfig { serializationConfig() }, transport.server).apply {
+    val server = KrpcTestServer(rpcServerConfig { serializationConfig() }, transport.server).apply {
         registerService<CancellationService> {
             CancellationServiceImpl(it).also { impl ->
                 if (!firstServerInstance.isCompleted) {

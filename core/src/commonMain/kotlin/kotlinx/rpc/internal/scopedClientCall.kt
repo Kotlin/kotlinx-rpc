@@ -5,14 +5,14 @@
 package kotlinx.rpc.internal
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
  * Scopes client RPC call from a service with [serviceScope].
  *
  * Used by code generators.
  */
-@InternalRPCApi
+@InternalRpcApi
 @Suppress("unused")
 public suspend inline fun <T> scopedClientCall(serviceScope: CoroutineScope, crossinline body: suspend () -> T): T {
     return serviceScoped(serviceScope) {

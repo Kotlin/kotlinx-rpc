@@ -8,16 +8,16 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
 
-@InternalRPCApi
+@InternalRpcApi
 fun <K : Any, V> ConcurrentHashMap<K, CompletableDeferred<V>>.getDeferred(key: K): CompletableDeferred<V> {
     return computeIfAbsent(key) { CompletableDeferred() }
 }
 
-@InternalRPCApi
+@InternalRpcApi
 operator fun <K : Any, V> ConcurrentHashMap<K, CompletableDeferred<V>>.set(key: K, value: V) {
     getDeferred(key).complete(value)
 }
 
-@InternalRPCApi
+@InternalRpcApi
 @OptIn(ExperimentalCoroutinesApi::class)
 fun <T> CompletableDeferred<T>?.getOrNull() = if (this != null && isCompleted) this.getCompleted() else null

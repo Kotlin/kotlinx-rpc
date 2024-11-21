@@ -16,10 +16,3 @@ import kotlinx.rpc.annotations.Rpc
  * @see Rpc
  */
 public interface RemoteService : CoroutineScope
-
-@Deprecated(
-    message = "Deprecated in favor of RemoteService. Will be removed in 0.5.0",
-    replaceWith = ReplaceWith("RemoteService", "kotlinx.rpc.RemoteService"),
-    level = DeprecationLevel.ERROR,
-)
-public interface RPC : CoroutineScope

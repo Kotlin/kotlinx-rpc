@@ -4,10 +4,10 @@
 
 package kotlinx.rpc
 
-import kotlinx.rpc.RPCPluginConst.COMPILER_PLUGIN_ARTIFACT_ID
-import kotlinx.rpc.RPCPluginConst.GROUP_ID
-import kotlinx.rpc.RPCPluginConst.PLUGIN_ID
-import kotlinx.rpc.RPCPluginConst.libraryKotlinPrefixedVersion
+import kotlinx.rpc.RpcPluginConst.COMPILER_PLUGIN_ARTIFACT_ID
+import kotlinx.rpc.RpcPluginConst.GROUP_ID
+import kotlinx.rpc.RpcPluginConst.PLUGIN_ID
+import kotlinx.rpc.RpcPluginConst.libraryKotlinPrefixedVersion
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation

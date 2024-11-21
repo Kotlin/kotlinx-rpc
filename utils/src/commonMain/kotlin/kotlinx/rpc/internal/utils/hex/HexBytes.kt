@@ -4,10 +4,10 @@
 
 package kotlinx.rpc.internal.utils.hex
 
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @OptIn(ExperimentalStdlibApi::class)
-@InternalRPCApi
+@InternalRpcApi
 fun String.hexToReadableBinary(): String {
     return hexToByteArray().joinToString("") { byte ->
         byte.toInt().toChar().display()

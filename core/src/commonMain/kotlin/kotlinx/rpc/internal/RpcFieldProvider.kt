@@ -7,7 +7,7 @@ package kotlinx.rpc.internal
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.rpc.UninitializedRPCFieldException
+import kotlinx.rpc.UninitializedRpcFieldException
 import kotlin.reflect.KProperty
 
 internal class RpcFieldProvider<T, R>(
@@ -21,7 +21,7 @@ internal class RpcFieldProvider<T, R>(
             return deferred.getCompleted().getter()
         }
 
-        throw UninitializedRPCFieldException(serviceName, property)
+        throw UninitializedRpcFieldException(serviceName, property)
     }
 }
 

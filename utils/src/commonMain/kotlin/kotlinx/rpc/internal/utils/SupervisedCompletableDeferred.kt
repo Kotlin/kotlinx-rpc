@@ -12,7 +12,7 @@ import kotlinx.coroutines.job
 /**
  * Cancels when parent is canceled, but not otherwise
  */
-@InternalRPCApi
+@InternalRpcApi
 class SupervisedCompletableDeferred<T>(parent: Job) : CompletableDeferred<T> by CompletableDeferred() {
     init {
         val handle = parent.invokeOnCompletion { cause ->
@@ -27,7 +27,7 @@ class SupervisedCompletableDeferred<T>(parent: Job) : CompletableDeferred<T> by 
     }
 }
 
-@InternalRPCApi
+@InternalRpcApi
 suspend fun <T> SupervisedCompletableDeferred(): SupervisedCompletableDeferred<T> {
     return SupervisedCompletableDeferred(currentCoroutineContext().job)
 }
