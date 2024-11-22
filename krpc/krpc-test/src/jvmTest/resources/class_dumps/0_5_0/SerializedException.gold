@@ -1,0 +1,8 @@
+org.jetbrains.krpc.SerializedException [Declared name: kotlinx.rpc.krpc.internal.SerializedException]
+  - cause: org.jetbrains.krpc.SerializedException
+    - Nullable
+    - Declared name: kotlinx.rpc.krpc.internal.SerializedException
+  - className: kotlin.String
+  - message: kotlin.String
+  - stacktrace: kotlin.collections.List
+  - toStringMessage: kotlin.String

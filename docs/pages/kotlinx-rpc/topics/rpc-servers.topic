@@ -8,12 +8,12 @@
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
        title="RPC Servers" id="rpc-servers">
-        <p><code>RPCServer</code> interface represents an RPC server,
+        <p><code>RpcServer</code> interface represents an RPC server,
             that accepts RPC messages and may contain multiple services to route to.
-            <code>RPCServer</code> uses data from incoming RPC messages
+            <code>RpcServer</code> uses data from incoming RPC messages
             and routes it to the designated service and sends service's response back to the corresponding client.
         </p>
-        <p>You can provide your own <code>RPCServer</code> implementation
+        <p>You can provide your own <code>RpcServer</code> implementation
             or use the one provided out of the box.
             Note that client and server must use the same RPC protocol to communicate.</p>
         <p>Use <code>registerService</code> function to add your own factory for implemented RPC services.
@@ -23,7 +23,7 @@
         <p>Example usage:</p>
 
         <code-block lang="kotlin">
-            val server: RPCServer
+            val server: RpcServer
 
             server.registerService&lt;MyService&gt; { ctx: CoroutineContext -&gt; MyServiceImpl(ctx) }
         </code-block>
@@ -36,18 +36,18 @@
             server.registerService&lt;MyServiceImpl&gt; { ctx: CoroutineContext -&gt; MyServiceImpl(ctx) }
         </code-block>
 
-    <chapter title="KRPCServer — RPCServer for kRPC Protocol" id="krpcserver-rpcserver-for-krpc-protocol">
-        <p><code>KRPCServer</code> abstract class implements <code>RPCServer</code>
+    <chapter title="KrpcServer — RpcServer for kRPC Protocol" id="krpcserver-rpcserver-for-krpc-protocol">
+        <p><code>KrpcServer</code> abstract class implements <code>RpcServer</code>
             and all the logic for processing RPC messages
-            and again leaves <code>RPCTransport</code> methods for the specific implementations
+            and again leaves <code>RpcTransport</code> methods for the specific implementations
             (see <a href="transport.topic">transports</a>).</p>
         <p>Example usage with custom transport:</p>
 
         <code-block lang="kotlin">
-            // same MySimpleRPCTransport as in the client example above
-            class MySimpleRPCServer : KRPCServer(rpcServerConfig(), MySimpleRPCTransport())
+            // same MySimpleRpcTransport as in the client example above
+            class MySimpleRpcServer : KrpcServer(rpcServerConfig(), MySimpleRpcTransport())
 
-            val server = MySimpleRPCServer()
+            val server = MySimpleRpcServer()
             server.registerService&lt;MyService&gt; { ctx -&gt; MyServiceImpl(ctx) }
         </code-block>
         <p>Note that here we pass explicit <code>MyService</code> type parameter to the <code>registerService</code>

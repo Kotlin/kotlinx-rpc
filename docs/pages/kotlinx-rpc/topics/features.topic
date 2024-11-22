@@ -145,7 +145,7 @@
             <control>fields</control>
             (<code>replayCache</code> for <code>SharedFlow</code> and <code>StateFlow</code>, and <code>value</code>
             for <code>StateFlow</code>)
-            you will get a <code>UninitializedRPCFieldException</code>.
+            you will get a <code>UninitializedRpcFieldException</code>.
             If you call a suspend <code>collect</code> method on them,
             execution will suspend until the state is
             <emphasis>initialized</emphasis>
@@ -164,7 +164,7 @@
             // ### Somewhere in client code ###
             val myService: MyService = rpcClient.withService&lt;MyService&gt;()
 
-            val value = myService.flow.value // throws UninitializedRPCFieldException
+            val value = myService.flow.value // throws UninitializedRpcFieldException
             val value = myService.awaitFieldInitialization { flow }.value // OK
             // or
             val value = myService.awaitFieldInitialization().flow.value // OK
@@ -173,7 +173,7 @@
         </code-block>
         <p>Secondly, we provide you with an instrument to make initialization faster.
             By default, all fields are lazy.
-            By adding <code>@RPCEagerField</code> annotation, you can change this behavior,
+            By adding <code>@RpcEagerField</code> annotation, you can change this behavior,
             so that fields will be initialized when the service in created
             (when <code>withService</code> method is called):</p>
 
@@ -182,7 +182,7 @@
             interface MyService : RemoteService {
                 val lazyFlow: Flow&lt;Int&gt; // initialized on first access
 
-                @RPCEagerField
+                @RpcEagerField
                 val eagerFlow: Flow&lt;Int&gt; // initialized on service creation
             }
         </code-block>

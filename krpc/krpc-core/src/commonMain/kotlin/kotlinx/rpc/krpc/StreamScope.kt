@@ -5,8 +5,8 @@
 package kotlinx.rpc.krpc
 
 import kotlinx.coroutines.*
-import kotlinx.rpc.internal.utils.ExperimentalRPCApi
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -48,23 +48,23 @@ public class StreamScope internal constructor(
         }
     }
 
-    @InternalRPCApi
+    @InternalRpcApi
     public fun onScopeCompletion(handler: (Throwable?) -> Unit) {
         scopeJob.invokeOnCompletion(handler)
     }
 
-    @InternalRPCApi
+    @InternalRpcApi
     public fun onScopeCompletion(callId: String, handler: (Throwable?) -> Unit) {
         getRequestScope(callId).coroutineContext.job.invokeOnCompletion(onCancelling = true, handler = handler)
     }
 
-    @InternalRPCApi
+    @InternalRpcApi
     public fun cancelRequestScopeById(callId: String, message: String, cause: Throwable?): Job? {
         return requests.remove(callId)?.apply { cancel(message, cause) }?.coroutineContext?.job
     }
 
     // Group stream launches by callId. In case one fails, so do others
-    @InternalRPCApi
+    @InternalRpcApi
     public fun launch(callId: String, block: suspend CoroutineScope.() -> Unit): Job {
         return getRequestScope(callId).launch(block = block)
     }
@@ -84,16 +84,16 @@ public class StreamScope internal constructor(
         override val key: CoroutineContext.Key<*> = Key
     }
 
-    @InternalRPCApi
+    @InternalRpcApi
     public enum class Role {
         Client, Server;
     }
 }
 
-@InternalRPCApi
+@InternalRpcApi
 public fun CoroutineContext.withClientStreamScope(): CoroutineContext = withStreamScope(StreamScope.Role.Client)
 
-@InternalRPCApi
+@InternalRpcApi
 public fun CoroutineContext.withServerStreamScope(): CoroutineContext = withStreamScope(StreamScope.Role.Server)
 
 @OptIn(InternalCoroutinesApi::class)
@@ -103,12 +103,12 @@ internal fun CoroutineContext.withStreamScope(role: StreamScope.Role): Coroutine
     }
 }
 
-@InternalRPCApi
+@InternalRpcApi
 public suspend fun streamScopeOrNull(): StreamScope? {
     return currentCoroutineContext()[StreamScope.Element.Key]?.scope
 }
 
-@InternalRPCApi
+@InternalRpcApi
 public fun streamScopeOrNull(scope: CoroutineScope): StreamScope? {
     return scope.coroutineContext[StreamScope.Element.Key]?.scope
 }
@@ -121,7 +121,7 @@ internal fun noStreamScopeError(): Nothing {
     )
 }
 
-@InternalRPCApi
+@InternalRpcApi
 public suspend fun <T> callScoped(callId: String, block: suspend CoroutineScope.() -> T): T {
     val context = currentCoroutineContext()
 
@@ -204,7 +204,7 @@ private fun CoroutineContext.checkContextForStreamScope() {
  * Creates a [StreamScope] entity for manual stream management.
  */
 @JsName("StreamScope_fun")
-@ExperimentalRPCApi
+@ExperimentalRpcApi
 public fun StreamScope(parent: CoroutineContext): StreamScope {
     parent.checkContextForStreamScope()
 
@@ -215,7 +215,7 @@ public fun StreamScope(parent: CoroutineContext): StreamScope {
  * Adds manually managed [StreamScope] to the current context.
  */
 @OptIn(ExperimentalContracts::class)
-@ExperimentalRPCApi
+@ExperimentalRpcApi
 public suspend fun <T> withStreamScope(scope: StreamScope, block: suspend CoroutineScope.() -> T): T {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
@@ -251,7 +251,7 @@ public suspend fun <T> withStreamScope(scope: StreamScope, block: suspend Corout
  * }
  * ```
  */
-@ExperimentalRPCApi
+@ExperimentalRpcApi
 public suspend fun invokeOnStreamScopeCompletion(throwIfNoScope: Boolean = true, block: (Throwable?) -> Unit) {
     val streamScope = streamScopeOrNull() ?: noStreamScopeError()
 

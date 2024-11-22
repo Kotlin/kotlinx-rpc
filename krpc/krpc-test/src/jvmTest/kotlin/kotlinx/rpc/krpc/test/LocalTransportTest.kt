@@ -4,32 +4,32 @@
 
 package kotlinx.rpc.krpc.test
 
-import kotlinx.rpc.krpc.RPCTransport
-import kotlinx.rpc.krpc.serialization.RPCSerialFormatConfiguration
+import kotlinx.rpc.krpc.KrpcTransport
+import kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration
 import kotlinx.rpc.krpc.serialization.cbor.cbor
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.krpc.serialization.protobuf.protobuf
 import kotlinx.serialization.ExperimentalSerializationApi
 
-abstract class LocalTransportTest : KRPCTransportTestBase() {
+abstract class LocalTransportTest : KrpcTransportTestBase() {
     private val transport = LocalTransport()
 
-    override val clientTransport: RPCTransport
+    override val clientTransport: KrpcTransport
         get() = transport.client
 
-    override val serverTransport: RPCTransport
+    override val serverTransport: KrpcTransport
         get() = transport.server
 }
 
 class JsonLocalTransportTest : LocalTransportTest() {
-    override val serializationConfig: RPCSerialFormatConfiguration.() -> Unit = {
+    override val serializationConfig: KrpcSerialFormatConfiguration.() -> Unit = {
         json()
     }
 }
 
 class CborLocalTransportTest : LocalTransportTest() {
     @OptIn(ExperimentalSerializationApi::class)
-    override val serializationConfig: RPCSerialFormatConfiguration.() -> Unit = {
+    override val serializationConfig: KrpcSerialFormatConfiguration.() -> Unit = {
         cbor()
     }
 }
@@ -37,7 +37,7 @@ class CborLocalTransportTest : LocalTransportTest() {
 @Suppress("detekt.EmptyFunctionBlock")
 class ProtoBufLocalTransportTest : LocalTransportTest() {
     @OptIn(ExperimentalSerializationApi::class)
-    override val serializationConfig: RPCSerialFormatConfiguration.() -> Unit = {
+    override val serializationConfig: KrpcSerialFormatConfiguration.() -> Unit = {
         protobuf()
     }
 

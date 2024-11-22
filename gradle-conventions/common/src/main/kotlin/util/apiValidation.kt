@@ -23,6 +23,6 @@ fun Project.configureApiValidation() {
             )
         )
 
-        nonPublicMarkers.add("kotlinx.rpc.internal.utils.InternalRPCApi")
+        nonPublicMarkers.add("kotlinx.rpc.internal.utils.InternalRpcApi")
     }
 }

@@ -11,7 +11,7 @@ plugins {
 }
 
 configure<KotlinMultiplatformExtension> {
-    optInForRPCApi()
+    optInForRpcApi()
 
     explicitApi()
 }

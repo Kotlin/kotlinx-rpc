@@ -1,42 +1,42 @@
-public abstract interface class kotlinx/rpc/krpc/RPCConfig {
-	public abstract fun getSerialFormatInitializer ()Lkotlinx/rpc/krpc/serialization/RPCSerialFormatBuilder;
+public abstract interface class kotlinx/rpc/krpc/KrpcConfig {
+	public abstract fun getSerialFormatInitializer ()Lkotlinx/rpc/krpc/serialization/KrpcSerialFormatBuilder;
 	public abstract fun getSharedFlowBuilder ()Lkotlin/jvm/functions/Function0;
 	public abstract fun getWaitForServices ()Z
 }
 
-public final class kotlinx/rpc/krpc/RPCConfig$Client : kotlinx/rpc/krpc/RPCConfig {
-	public fun getSerialFormatInitializer ()Lkotlinx/rpc/krpc/serialization/RPCSerialFormatBuilder;
+public final class kotlinx/rpc/krpc/KrpcConfig$Client : kotlinx/rpc/krpc/KrpcConfig {
+	public fun getSerialFormatInitializer ()Lkotlinx/rpc/krpc/serialization/KrpcSerialFormatBuilder;
 	public fun getSharedFlowBuilder ()Lkotlin/jvm/functions/Function0;
 	public fun getWaitForServices ()Z
 }
 
-public final class kotlinx/rpc/krpc/RPCConfig$Server : kotlinx/rpc/krpc/RPCConfig {
-	public fun getSerialFormatInitializer ()Lkotlinx/rpc/krpc/serialization/RPCSerialFormatBuilder;
+public final class kotlinx/rpc/krpc/KrpcConfig$Server : kotlinx/rpc/krpc/KrpcConfig {
+	public fun getSerialFormatInitializer ()Lkotlinx/rpc/krpc/serialization/KrpcSerialFormatBuilder;
 	public fun getSharedFlowBuilder ()Lkotlin/jvm/functions/Function0;
 	public fun getWaitForServices ()Z
 }
 
-public abstract class kotlinx/rpc/krpc/RPCConfigBuilder {
+public abstract class kotlinx/rpc/krpc/KrpcConfigBuilder {
 	protected final fun getSharedFlowBuilder ()Lkotlin/jvm/functions/Function0;
 	public final fun getWaitForServices ()Z
-	protected final fun rpcSerialFormat ()Lkotlinx/rpc/krpc/serialization/RPCSerialFormatBuilder;
+	protected final fun rpcSerialFormat ()Lkotlinx/rpc/krpc/serialization/KrpcSerialFormatBuilder;
 	public final fun serialization (Lkotlin/jvm/functions/Function1;)V
 	protected final fun setSharedFlowBuilder (Lkotlin/jvm/functions/Function0;)V
 	public final fun setWaitForServices (Z)V
 	public final fun sharedFlowParameters (Lkotlin/jvm/functions/Function1;)V
 }
 
-public final class kotlinx/rpc/krpc/RPCConfigBuilder$Client : kotlinx/rpc/krpc/RPCConfigBuilder {
+public final class kotlinx/rpc/krpc/KrpcConfigBuilder$Client : kotlinx/rpc/krpc/KrpcConfigBuilder {
 	public fun <init> ()V
-	public final fun build ()Lkotlinx/rpc/krpc/RPCConfig$Client;
+	public final fun build ()Lkotlinx/rpc/krpc/KrpcConfig$Client;
 }
 
-public final class kotlinx/rpc/krpc/RPCConfigBuilder$Server : kotlinx/rpc/krpc/RPCConfigBuilder {
+public final class kotlinx/rpc/krpc/KrpcConfigBuilder$Server : kotlinx/rpc/krpc/KrpcConfigBuilder {
 	public fun <init> ()V
-	public final fun build ()Lkotlinx/rpc/krpc/RPCConfig$Server;
+	public final fun build ()Lkotlinx/rpc/krpc/KrpcConfig$Server;
 }
 
-public final class kotlinx/rpc/krpc/RPCConfigBuilder$SharedFlowParametersBuilder {
+public final class kotlinx/rpc/krpc/KrpcConfigBuilder$SharedFlowParametersBuilder {
 	public static final field DEFAULT_EXTRA_BUFFER_CAPACITY I
 	public static final field DEFAULT_REPLAY I
 	public final fun getExtraBufferCapacity ()I
@@ -47,32 +47,32 @@ public final class kotlinx/rpc/krpc/RPCConfigBuilder$SharedFlowParametersBuilder
 	public final fun setReplay (I)V
 }
 
-public final class kotlinx/rpc/krpc/RPCConfigKt {
-	public static final fun rpcClientConfig (Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/krpc/RPCConfig$Client;
-	public static synthetic fun rpcClientConfig$default (Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/krpc/RPCConfig$Client;
-	public static final fun rpcServerConfig (Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/krpc/RPCConfig$Server;
-	public static synthetic fun rpcServerConfig$default (Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/krpc/RPCConfig$Server;
+public final class kotlinx/rpc/krpc/KrpcConfigKt {
+	public static final fun rpcClientConfig (Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/krpc/KrpcConfig$Client;
+	public static synthetic fun rpcClientConfig$default (Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/krpc/KrpcConfig$Client;
+	public static final fun rpcServerConfig (Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/krpc/KrpcConfig$Server;
+	public static synthetic fun rpcServerConfig$default (Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/krpc/KrpcConfig$Server;
 }
 
-public abstract interface class kotlinx/rpc/krpc/RPCTransport : kotlinx/coroutines/CoroutineScope {
+public abstract interface class kotlinx/rpc/krpc/KrpcTransport : kotlinx/coroutines/CoroutineScope {
 	public abstract fun receive (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun receiveCatching-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun send (Lkotlinx/rpc/krpc/RPCTransportMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun send (Lkotlinx/rpc/krpc/KrpcTransportMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class kotlinx/rpc/krpc/RPCTransport$DefaultImpls {
-	public static fun receiveCatching-IoAF18A (Lkotlinx/rpc/krpc/RPCTransport;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+public final class kotlinx/rpc/krpc/KrpcTransport$DefaultImpls {
+	public static fun receiveCatching-IoAF18A (Lkotlinx/rpc/krpc/KrpcTransport;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public abstract interface class kotlinx/rpc/krpc/RPCTransportMessage {
+public abstract interface class kotlinx/rpc/krpc/KrpcTransportMessage {
 }
 
-public final class kotlinx/rpc/krpc/RPCTransportMessage$BinaryMessage : kotlinx/rpc/krpc/RPCTransportMessage {
+public final class kotlinx/rpc/krpc/KrpcTransportMessage$BinaryMessage : kotlinx/rpc/krpc/KrpcTransportMessage {
 	public fun <init> ([B)V
 	public final fun getValue ()[B
 }
 
-public final class kotlinx/rpc/krpc/RPCTransportMessage$StringMessage : kotlinx/rpc/krpc/RPCTransportMessage {
+public final class kotlinx/rpc/krpc/KrpcTransportMessage$StringMessage : kotlinx/rpc/krpc/KrpcTransportMessage {
 	public fun <init> (Ljava/lang/String;)V
 	public final fun getValue ()Ljava/lang/String;
 }

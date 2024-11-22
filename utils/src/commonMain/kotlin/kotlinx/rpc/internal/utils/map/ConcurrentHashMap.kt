@@ -4,9 +4,9 @@
 
 package kotlinx.rpc.internal.utils.map
 
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
-@InternalRPCApi
+@InternalRpcApi
 interface ConcurrentHashMap<K : Any, V : Any> {
     fun put(key: K, value: V): V?
 
@@ -36,5 +36,5 @@ interface ConcurrentHashMap<K : Any, V : Any> {
     )
 }
 
-@InternalRPCApi
+@InternalRpcApi
 expect fun <K : Any, V : Any> ConcurrentHashMap(initialSize: Int = 32): ConcurrentHashMap<K, V>

@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.krpc.internal
 
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
 
@@ -37,7 +37,7 @@ internal actual fun Throwable.stackElements(): List<StackElement> = stackTrace.m
     )
 }
 
-@InternalRPCApi
+@InternalRpcApi
 public actual fun SerializedException.deserialize(): Throwable {
     try {
         val clazz = Class.forName(className)

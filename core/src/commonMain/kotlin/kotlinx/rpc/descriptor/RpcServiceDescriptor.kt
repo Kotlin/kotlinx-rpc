@@ -7,22 +7,22 @@ package kotlinx.rpc.descriptor
 import kotlinx.rpc.RemoteService
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.internal.*
-import kotlinx.rpc.internal.utils.ExperimentalRPCApi
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
-@ExperimentalRPCApi
+@ExperimentalRpcApi
 public inline fun <reified T : RemoteService> serviceDescriptorOf(): RpcServiceDescriptor<T> {
     return serviceDescriptorOf(T::class)
 }
 
-@ExperimentalRPCApi
+@ExperimentalRpcApi
 public fun <T : RemoteService> serviceDescriptorOf(kType: KType): RpcServiceDescriptor<T> {
     return serviceDescriptorOf(kType.kClass())
 }
 
-@ExperimentalRPCApi
+@ExperimentalRpcApi
 public fun <T : RemoteService> serviceDescriptorOf(kClass: KClass<T>): RpcServiceDescriptor<T> {
     val maybeDescriptor = internalServiceDescriptorOf(kClass)
         ?: internalError("Unable to find a service descriptor of the $kClass")
@@ -39,11 +39,11 @@ public fun <T : RemoteService> serviceDescriptorOf(kClass: KClass<T>): RpcServic
     )
 }
 
-@ExperimentalRPCApi
+@ExperimentalRpcApi
 public interface RpcServiceDescriptor<T : RemoteService> {
     public val fqName: String
 
-    @InternalRPCApi
+    @InternalRpcApi
     public fun getFields(service: T): List<RpcDeferredField<*>>
 
     public fun getCallable(name: String): RpcCallable<T>?
@@ -51,7 +51,7 @@ public interface RpcServiceDescriptor<T : RemoteService> {
     public fun createInstance(serviceId: Long, client: RpcClient): T
 }
 
-@ExperimentalRPCApi
+@ExperimentalRpcApi
 public class RpcCallable<T : RemoteService>(
     public val name: String,
     public val dataType: KType,
@@ -60,18 +60,18 @@ public class RpcCallable<T : RemoteService>(
     public val parameters: Array<RpcParameter>,
 )
 
-@ExperimentalRPCApi
+@ExperimentalRpcApi
 public sealed interface RpcInvokator<T : RemoteService> {
-    @ExperimentalRPCApi
+    @ExperimentalRpcApi
     public fun interface Method<T : RemoteService> : RpcInvokator<T> {
         public suspend fun call(service: T, data: Any?): Any?
     }
 
-    @ExperimentalRPCApi
+    @ExperimentalRpcApi
     public fun interface Field<T : RemoteService> : RpcInvokator<T> {
         public fun call(service: T): Any?
     }
 }
 
-@ExperimentalRPCApi
+@ExperimentalRpcApi
 public class RpcParameter(public val name: String, public val type: KType)

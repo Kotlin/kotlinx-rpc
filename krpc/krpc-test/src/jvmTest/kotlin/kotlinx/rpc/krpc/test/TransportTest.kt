@@ -8,7 +8,7 @@ import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.*
 import kotlinx.rpc.*
 import kotlinx.rpc.annotations.Rpc
-import kotlinx.rpc.krpc.RPCConfigBuilder
+import kotlinx.rpc.krpc.KrpcConfigBuilder
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
@@ -61,22 +61,22 @@ class TransportTest {
     }
 
     private fun clientOf(localTransport: LocalTransport): RpcClient {
-        return KRPCTestClient(clientConfig, localTransport.client)
+        return KrpcTestClient(clientConfig, localTransport.client)
     }
 
     private fun serverOf(
         localTransport: LocalTransport,
-        config: (RPCConfigBuilder.Server.() -> Unit)? = null
-    ): RPCServer {
+        config: (KrpcConfigBuilder.Server.() -> Unit)? = null
+    ): RpcServer {
         val serverConfig = config?.let { rpcServerConfig(it) } ?: serverConfig
-        return KRPCTestServer(serverConfig, localTransport.server)
+        return KrpcTestServer(serverConfig, localTransport.server)
     }
 
     @Test
     fun testUsingWrongService(): Unit = runBlocking {
         val transports = LocalTransport()
 
-        val client = clientOf(transports).withService<KRPCTestService>()
+        val client = clientOf(transports).withService<KrpcTestService>()
         val result = async {
             assertFailsWith<IllegalStateException> {
                 client.simpleWithParams("foo")
@@ -225,7 +225,7 @@ class TransportTest {
     fun testCancelFromClientToServer() = runBlocking {
         val transports = LocalTransport()
 
-        val client = clientOf(transports).withService<KRPCTestService>()
+        val client = clientOf(transports).withService<KrpcTestService>()
 
         val server = serverOf(transports)
         val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
@@ -235,7 +235,7 @@ class TransportTest {
         assertTrue(echoServices.single().coroutineContext.job.isCancelled)
     }
 
-    private inline fun <reified Service : RemoteService, reified Impl : Service> RPCServer.registerServiceAndReturn(
+    private inline fun <reified Service : RemoteService, reified Impl : Service> RpcServer.registerServiceAndReturn(
         crossinline body: (CoroutineContext) -> Impl,
     ): List<Impl> {
         val instances = mutableListOf<Impl>()

@@ -1,13 +1,9 @@
-public final class kotlinx/rpc/krpc/ktor/server/KtorServerDslKt {
-	public static final fun rpc (Lio/ktor/server/routing/Route;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static final fun rpc (Lio/ktor/server/routing/Route;Lkotlin/jvm/functions/Function1;)V
-}
-
-public final class kotlinx/rpc/krpc/ktor/server/RPCKt {
+public final class kotlinx/rpc/krpc/ktor/server/KrpcKt {
+	public static final fun getKrpc ()Lio/ktor/server/application/ApplicationPlugin;
 	public static final fun getRPC ()Lio/ktor/server/application/ApplicationPlugin;
 }
 
-public final class kotlinx/rpc/krpc/ktor/server/RPCRoute : io/ktor/server/websocket/DefaultWebSocketServerSession {
+public final class kotlinx/rpc/krpc/ktor/server/KrpcRoute : io/ktor/server/websocket/DefaultWebSocketServerSession {
 	public fun <init> (Lio/ktor/server/websocket/DefaultWebSocketServerSession;)V
 	public fun flush (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getCall ()Lio/ktor/server/application/ApplicationCall;
@@ -29,5 +25,10 @@ public final class kotlinx/rpc/krpc/ktor/server/RPCRoute : io/ktor/server/websoc
 	public fun setTimeoutMillis (J)V
 	public fun start (Ljava/util/List;)V
 	public fun terminate ()V
+}
+
+public final class kotlinx/rpc/krpc/ktor/server/KtorServerDslKt {
+	public static final fun rpc (Lio/ktor/server/routing/Route;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static final fun rpc (Lio/ktor/server/routing/Route;Lkotlin/jvm/functions/Function1;)V
 }
 

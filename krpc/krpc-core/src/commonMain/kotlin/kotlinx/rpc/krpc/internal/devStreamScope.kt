@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.krpc.internal
 
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
  * For legacy internal users ONLY.
@@ -14,5 +14,5 @@ import kotlinx.rpc.internal.utils.InternalRPCApi
  * is replaced with service's [kotlinx.rpc.krpc.StreamScope]
  * obtained via [kotlinx.rpc.krpc.withClientStreamScope].
  */
-@InternalRPCApi
+@InternalRpcApi
 public const val STREAM_SCOPES_ENABLED: Boolean = true

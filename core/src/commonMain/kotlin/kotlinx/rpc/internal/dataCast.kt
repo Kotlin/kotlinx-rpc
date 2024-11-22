@@ -4,9 +4,9 @@
 
 package kotlinx.rpc.internal
 
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
-@InternalRPCApi
+@InternalRpcApi
 public inline fun <reified T> Any?.dataCast(methodName: String, serviceName: String): T {
     return this as? T
         ?: throw IllegalArgumentException(

@@ -1,3 +1,12 @@
+public final class kotlinx/rpc/krpc/ktor/client/KrpcKt {
+	public static final fun getKrpc ()Lio/ktor/client/plugins/api/ClientPlugin;
+	public static final fun getRPC ()Lio/ktor/client/plugins/api/ClientPlugin;
+	public static final fun installKrpc (Lio/ktor/client/HttpClientConfig;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun installKrpc$default (Lio/ktor/client/HttpClientConfig;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static final fun installRPC (Lio/ktor/client/HttpClientConfig;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun installRPC$default (Lio/ktor/client/HttpClientConfig;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
 public final class kotlinx/rpc/krpc/ktor/client/KtorClientDslKt {
 	public static final fun rpc (Lio/ktor/client/HttpClient;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static final fun rpc (Lio/ktor/client/HttpClient;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -7,13 +16,7 @@ public final class kotlinx/rpc/krpc/ktor/client/KtorClientDslKt {
 	public static synthetic fun rpcConfig$default (Lio/ktor/client/request/HttpRequestBuilder;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
-public abstract interface class kotlinx/rpc/krpc/ktor/client/KtorRPCClient : kotlinx/rpc/RpcClient {
+public abstract interface class kotlinx/rpc/krpc/ktor/client/KtorRpcClient : kotlinx/rpc/RpcClient {
 	public abstract fun getWebSocketSession ()Lio/ktor/websocket/WebSocketSession;
-}
-
-public final class kotlinx/rpc/krpc/ktor/client/RPCKt {
-	public static final fun getRPC ()Lio/ktor/client/plugins/api/ClientPlugin;
-	public static final fun installRPC (Lio/ktor/client/HttpClientConfig;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun installRPC$default (Lio/ktor/client/HttpClientConfig;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 

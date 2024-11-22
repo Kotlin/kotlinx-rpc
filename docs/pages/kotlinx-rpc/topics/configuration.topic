@@ -8,17 +8,17 @@
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
        title="Configuration" id="configuration">
-     <p><code>RPCConfig</code> is a class used to configure <code>KRPCClient</code> and <code>KRPCServer</code>
-            (not to be confused with <code>RPCClient</code> and <code>RPCServer</code>).
-            It has two children: <code>RPCConfig.Client</code> and <code>RPCConfig.Server</code>.
+     <p><code>KrpcConfig</code> is a class used to configure <code>KrpcClient</code> and <code>KrpcServer</code>
+            (not to be confused with <code>KrpcClient</code> and <code>KrpcServer</code>).
+            It has two children: <code>KrpcConfig.Client</code> and <code>KrpcConfig.Server</code>.
             <code>Client</code> and <code>Server</code> may have shared properties as well as distinct ones.
             To create instances of these configurations, DSL builders are provided
-            (<code>RPCConfigBuilder.Client</code> class with <code>rpcClientConfig</code> function
-            and <code>RPCConfigBuilder.Server</code> class with <code>rpcServerConfig</code> function respectively):
+            (<code>KrpcConfigBuilder.Client</code> class with <code>rpcClientConfig</code> function
+            and <code>KrpcConfigBuilder.Server</code> class with <code>rpcServerConfig</code> function respectively):
         </p>
 
         <code-block lang="kotlin">
-            val config: RPCConfig.Client = rpcClientConfig { // same for RPCConfig.Server with rpcServerConfig
+            val config: KrpcConfig.Client = rpcClientConfig { // same for KrpcConfig.Server with rpcServerConfig
                 waitForServices = true // default parameter
             }
         </code-block>
@@ -81,7 +81,7 @@
                 But instances of these flows when deserialized should be created somehow,
                 so to overcome this - configuration parameter is created.
                 Configuration builder allows defining these parameters
-                and produces a builder function that is then placed into the <code>RPCConfig</code>.</p>
+                and produces a builder function that is then placed into the <code>KrpcConfig</code>.</p>
         </chapter>
         <chapter id="waitforservices-dsl">
             <title>
@@ -90,7 +90,7 @@
             <p><code>waitForServices</code> parameter is available for both client and server.
                 It specifies the behavior for an endpoint in situations
                 when the message for a service is received,
-                but the service is not present in <code>RPCClient</code> or <code>RPCServer</code>.
+                but the service is not present in <code>KrpcClient</code> or <code>KrpcServer</code>.
                 If set to <code>true</code>, the message will be stored in memory,
                 otherwise, the error will be sent to a peer endpoint,
                 saying that the message was not handled.

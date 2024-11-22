@@ -6,27 +6,27 @@ package kotlinx.rpc.krpc.ktor
 
 import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.rpc.internal.utils.InternalRPCApi
-import kotlinx.rpc.krpc.RPCTransport
-import kotlinx.rpc.krpc.RPCTransportMessage
+import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.krpc.KrpcTransport
+import kotlinx.rpc.krpc.KrpcTransportMessage
 
-@InternalRPCApi
+@InternalRpcApi
 public class KtorTransport(
     private val webSocketSession: WebSocketSession,
-) : RPCTransport, CoroutineScope by webSocketSession {
+) : KrpcTransport, CoroutineScope by webSocketSession {
 
     /**
      * Sends a single encoded RPC message over network (or any other medium) to a peer endpoint.
      *
      * @param message a message to send. Either of string or binary type.
      */
-    override suspend fun send(message: RPCTransportMessage) {
+    override suspend fun send(message: KrpcTransportMessage) {
         when (message) {
-            is RPCTransportMessage.StringMessage -> {
+            is KrpcTransportMessage.StringMessage -> {
                 webSocketSession.send(message.value)
             }
 
-            is RPCTransportMessage.BinaryMessage -> {
+            is KrpcTransportMessage.BinaryMessage -> {
                 webSocketSession.send(message.value)
             }
         }
@@ -37,14 +37,14 @@ public class KtorTransport(
      *
      * @return received RPC message.
      */
-    override suspend fun receive(): RPCTransportMessage {
+    override suspend fun receive(): KrpcTransportMessage {
         return when (val message = webSocketSession.incoming.receive()) {
             is Frame.Text -> {
-                RPCTransportMessage.StringMessage(message.readText())
+                KrpcTransportMessage.StringMessage(message.readText())
             }
 
             is Frame.Binary -> {
-                RPCTransportMessage.BinaryMessage(message.readBytes())
+                KrpcTransportMessage.BinaryMessage(message.readBytes())
             }
 
             else -> {

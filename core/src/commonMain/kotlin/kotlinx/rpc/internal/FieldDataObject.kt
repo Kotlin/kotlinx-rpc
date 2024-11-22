@@ -4,12 +4,12 @@
 
 package kotlinx.rpc.internal
 
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.serialization.Serializable
 
 /**
  * Used for field initialization call
  */
 @Serializable
-@InternalRPCApi
+@InternalRpcApi
 public object FieldDataObject

@@ -3,16 +3,6 @@ public final class kotlinx/rpc/AwaitFieldInitializationKt {
 	public static final fun awaitFieldInitialization (Lkotlinx/rpc/RemoteService;Lkotlin/reflect/KClass;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public abstract interface class kotlinx/rpc/RPC : kotlinx/coroutines/CoroutineScope {
-}
-
-public abstract interface annotation class kotlinx/rpc/RPCEagerField : java/lang/annotation/Annotation {
-}
-
-public abstract interface class kotlinx/rpc/RPCServer : kotlinx/coroutines/CoroutineScope {
-	public abstract fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;)V
-}
-
 public final class kotlinx/rpc/RegisterFieldKt {
 	public static final fun registerPlainFlowField (Lkotlinx/rpc/RpcClient;Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;J)Lkotlinx/coroutines/flow/Flow;
 	public static final fun registerSharedFlowField (Lkotlinx/rpc/RpcClient;Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;J)Lkotlinx/coroutines/flow/SharedFlow;
@@ -45,7 +35,14 @@ public abstract interface class kotlinx/rpc/RpcClient : kotlinx/coroutines/Corou
 	public abstract fun provideStubContext (J)Lkotlin/coroutines/CoroutineContext;
 }
 
-public final class kotlinx/rpc/UninitializedRPCFieldException : java/lang/Exception {
+public abstract interface annotation class kotlinx/rpc/RpcEagerField : java/lang/annotation/Annotation {
+}
+
+public abstract interface class kotlinx/rpc/RpcServer : kotlinx/coroutines/CoroutineScope {
+	public abstract fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;)V
+}
+
+public final class kotlinx/rpc/UninitializedRpcFieldException : java/lang/Exception {
 	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KProperty;)V
 	public fun getMessage ()Ljava/lang/String;
 }
@@ -87,7 +84,6 @@ public final class kotlinx/rpc/descriptor/RpcParameter {
 public abstract interface class kotlinx/rpc/descriptor/RpcServiceDescriptor {
 	public abstract fun createInstance (JLkotlinx/rpc/RpcClient;)Lkotlinx/rpc/RemoteService;
 	public abstract fun getCallable (Ljava/lang/String;)Lkotlinx/rpc/descriptor/RpcCallable;
-	public abstract fun getFields (Lkotlinx/rpc/RemoteService;)Ljava/util/List;
 	public abstract fun getFqName ()Ljava/lang/String;
 }
 

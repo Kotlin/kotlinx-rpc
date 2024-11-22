@@ -9,13 +9,13 @@ package kotlinx.rpc.internal
 import js.objects.Object
 import kotlinx.rpc.RemoteService
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.AssociatedObjectKey
 import kotlin.reflect.ExperimentalAssociatedObjects
 import kotlin.reflect.KClass
 import kotlin.reflect.findAssociatedObject
 
-@InternalRPCApi
+@InternalRpcApi
 @AssociatedObjectKey
 @OptIn(ExperimentalAssociatedObjects::class)
 @Target(AnnotationTarget.CLASS)

@@ -4,9 +4,9 @@
 
 package kotlinx.rpc.internal
 
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
-@InternalRPCApi
+@InternalRpcApi
 public interface RpcMethodClass {
     public fun asArray(): Array<out Any?>
 }

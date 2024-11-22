@@ -6,7 +6,7 @@
 
 package kotlinx.rpc.krpc.internal
 
-import kotlinx.rpc.internal.utils.InternalRPCApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 internal actual class DeserializedException actual constructor(
     private val toStringMessage: String,
@@ -24,7 +24,7 @@ internal actual class DeserializedException actual constructor(
 
 internal actual fun Throwable.stackElements(): List<StackElement> = emptyList()
 
-@InternalRPCApi
+@InternalRpcApi
 public actual fun SerializedException.deserialize(): Throwable {
     return DeserializedException(toStringMessage, message, stacktrace, cause, className)
 }

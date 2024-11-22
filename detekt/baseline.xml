@@ -5,10 +5,10 @@
 
 <SmellBaseline>
   <ManuallySuppressedIssues>
-    <ID>CyclomaticComplexMethod:RPCServerService.kt$RPCServerService$@Suppress("detekt.ThrowsCount", "detekt.LongMethod") private fun handleCall(callData: RPCCallMessage.CallData)</ID>
-    <ID>LongMethod:RPCServerService.kt$RPCServerService$@OptIn(InternalCoroutinesApi::class) private fun handleCall(callData: RPCCallMessage.CallData)</ID>
-    <ID>RethrowCaughtException:KRPCTransportTestBase.kt$KRPCTransportTestBase$throw e</ID>
-    <ID>GlobalCoroutineUsage:Broadcast.kt$&lt;no name provided>$GlobalScope.launch { val job = receiver.coroutineContext.job job.join() val cause = if (!job.isActive) job.getCancellationException() else null mutex.withLock { if (cause == null) return@withLock if (waiting.isEmpty()) return@withLock logger.warn { "Cancelling service with unprocessed messages. Cause: $cause" } for (call in waiting) { val message = RPCMessage.CallException(call.callId, call.serviceType, serializeException(cause)) runCatching { send(message) } } } }</ID>
+    <ID>CyclomaticComplexMethod:KrpcServerService.kt$KrpcServerService$@Suppress("detekt.ThrowsCount", "detekt.LongMethod") private fun handleCall(callData: KrpcCallMessage.CallData)</ID>
+    <ID>LongMethod:KrpcServerService.kt$KrpcServerService$@OptIn(InternalCoroutinesApi::class) private fun handleCall(callData: KrpcCallMessage.CallData)</ID>
+    <ID>RethrowCaughtException:KrpcTransportTestBase.kt$KrpcTransportTestBase$throw e</ID>
+    <ID>GlobalCoroutineUsage:Broadcast.kt$&lt;no name provided>$GlobalScope.launch { val job = receiver.coroutineContext.job job.join() val cause = if (!job.isActive) job.getCancellationException() else null mutex.withLock { if (cause == null) return@withLock if (waiting.isEmpty()) return@withLock logger.warn { "Cancelling service with unprocessed messages. Cause: $cause" } for (call in waiting) { val message = KrpcMessage.CallException(call.callId, call.serviceType, serializeException(cause)) runCatching { send(message) } } } }</ID>
     <ID>GlobalCoroutineUsage:KtorTransport.kt$KtorTransport$GlobalScope.launch { webSocketSession.close() }</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues/>

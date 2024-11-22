@@ -20,7 +20,7 @@ internal sealed class StreamSerializer<StreamT : Any>(private val streamKind: St
         private const val STATE_FLOW_INITIAL_VALUE_SERIAL_NAME = "stateFlowInitialValue"
     }
 
-    protected abstract val context: RPCStreamContext
+    protected abstract val context: KrpcStreamContext
     protected abstract val elementType: KSerializer<Any?>
 
     protected open fun ClassSerialDescriptorBuilder.descriptorExtension() { }
@@ -53,17 +53,17 @@ internal sealed class StreamSerializer<StreamT : Any>(private val streamKind: St
     }
 
     class Flow(
-        override val context: RPCStreamContext,
+        override val context: KrpcStreamContext,
         override val elementType: KSerializer<Any?>,
     ) : StreamSerializer<kotlinx.coroutines.flow.Flow<Any?>>(StreamKind.Flow)
 
     class SharedFlow(
-        override val context: RPCStreamContext,
+        override val context: KrpcStreamContext,
         override val elementType: KSerializer<Any?>,
     ) : StreamSerializer<kotlinx.coroutines.flow.SharedFlow<Any?>>(StreamKind.SharedFlow)
 
     class StateFlow(
-        override val context: RPCStreamContext,
+        override val context: KrpcStreamContext,
         override val elementType: KSerializer<Any?>,
     ) : StreamSerializer<kotlinx.coroutines.flow.StateFlow<Any?>>(StreamKind.StateFlow) {
         override fun ClassSerialDescriptorBuilder.descriptorExtension() {

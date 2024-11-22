@@ -6,8 +6,8 @@ package kotlinx.rpc.krpc.test
 
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.launch
-import kotlinx.rpc.krpc.RPCTransportMessage
-import kotlinx.rpc.krpc.internal.RPCPlugin
+import kotlinx.rpc.krpc.KrpcTransportMessage
+import kotlinx.rpc.krpc.internal.KrpcPlugin
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.protobuf.protobuf
@@ -28,8 +28,8 @@ class ProtocolTest : ProtocolTestBase() {
         service.sendRequest()
 
         // after a call is finished - all handshake data should be exchanged
-        assertEquals(RPCPlugin.ALL, defaultClient.supportedPlugins)
-        assertEquals(RPCPlugin.ALL, defaultServer.supportedPlugins)
+        assertEquals(KrpcPlugin.ALL, defaultClient.supportedPlugins)
+        assertEquals(KrpcPlugin.ALL, defaultServer.supportedPlugins)
     }
 
     // old client: pre 5.3-beta (including)
@@ -38,13 +38,13 @@ class ProtocolTest : ProtocolTestBase() {
         // init
         defaultServer
 
-        val message = RPCTransportMessage.StringMessage(
+        val message = KrpcTransportMessage.StringMessage(
             "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallData\",\"callId\":\"1:kotlinx.rpc.ProtocolTestServiceClient.SendRequest_RPCData:1\",\"serviceType\":\"kotlinx.rpc.krpc.test.ProtocolTestService\",\"method\":\"sendRequest\",\"callType\":\"Method\",\"data\":\"{}\"}",
         )
 
         transport.client.send(message)
 
-        val response = transport.client.receive() as RPCTransportMessage.StringMessage
+        val response = transport.client.receive() as KrpcTransportMessage.StringMessage
         assertEquals(
             "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallSuccess\",\"callId\":\"1:kotlinx.rpc.ProtocolTestServiceClient.SendRequest_RPCData:1\",\"serviceType\":\"kotlinx.rpc.krpc.test.ProtocolTestService\",\"data\":\"{}\"}",
             response.value
@@ -62,7 +62,7 @@ class ProtocolTest : ProtocolTestBase() {
 
         val connectionId = 1
 
-        val serverHandshakeMessage = RPCTransportMessage.StringMessage(
+        val serverHandshakeMessage = KrpcTransportMessage.StringMessage(
             "{\"type\":\"org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake\",\"connectionId\":$connectionId,\"supportedPlugins\":[-32767, 32766, 32767]}" // 32766 and 32767 are unknown to the client
         )
 
@@ -71,7 +71,7 @@ class ProtocolTest : ProtocolTestBase() {
         transport.server.receive()
 
         // callId changes here are always compatible
-        val serverResponseMessage = RPCTransportMessage.StringMessage(
+        val serverResponseMessage = KrpcTransportMessage.StringMessage(
             "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallSuccess\",\"callId\":\"$connectionId:kotlinx.rpc.krpc.test.ProtocolTestService.`\$rpcServiceStub`.`sendRequest\$rpcMethod`:1\",\"serviceType\":\"kotlinx.rpc.krpc.test.ProtocolTestService\",\"data\":\"{}\"}"
         )
 
@@ -79,7 +79,7 @@ class ProtocolTest : ProtocolTestBase() {
 
         job.join()
 
-        assertContentEquals(listOf(RPCPlugin.HANDSHAKE, RPCPlugin.UNKNOWN), defaultClient.supportedPlugins)
+        assertContentEquals(listOf(KrpcPlugin.HANDSHAKE, KrpcPlugin.UNKNOWN), defaultClient.supportedPlugins)
     }
 
     @Test
@@ -87,7 +87,7 @@ class ProtocolTest : ProtocolTestBase() {
         // init
         defaultServer
 
-        val clientHandshakeMessage = RPCTransportMessage.StringMessage(
+        val clientHandshakeMessage = KrpcTransportMessage.StringMessage(
             "{\"type\":\"org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake\",\"connectionId\":null,\"supportedPlugins\":[-32767, 32766, 32767]}" // 32766 and 32767 are unknown to server
         )
 
@@ -95,7 +95,7 @@ class ProtocolTest : ProtocolTestBase() {
 
         transport.client.receive()
 
-        assertContentEquals(listOf(RPCPlugin.HANDSHAKE, RPCPlugin.UNKNOWN), defaultServer.supportedPlugins)
+        assertContentEquals(listOf(KrpcPlugin.HANDSHAKE, KrpcPlugin.UNKNOWN), defaultServer.supportedPlugins)
     }
 
     @Test
@@ -103,7 +103,7 @@ class ProtocolTest : ProtocolTestBase() {
         // init
         defaultServer
 
-        val clientHandshakeMessage = RPCTransportMessage.StringMessage(
+        val clientHandshakeMessage = KrpcTransportMessage.StringMessage(
             "{\"type\":\"org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Handshake\",\"connectionId\":null,\"supportedPlugins\":[-32767],\"pluginParams\":{32766:\"from 32766\", 32767:\"from 32767\"}}" // 32766 and 32767 are unknown to server
         )
 
@@ -131,7 +131,7 @@ class ProtocolTest : ProtocolTestBase() {
         defaultServer
 
         // same value as testMultipleUnknownPluginParamEntriesForServer but in protobuf format
-        val clientHandshakeMessage = RPCTransportMessage.BinaryMessage(
+        val clientHandshakeMessage = KrpcTransportMessage.BinaryMessage(
             "0a426f72672e6a6574627261696e732e6b7270632e696e7465726e616c2e7472616e73706f72742e52504350726f746f636f6c4d6573736167652e48616e647368616b6512310801108180feffffffffffff011a1008feff01120a66726f6d2033323736361a1008ffff01120a66726f6d203332373637".hexToByteArray() // 32766 and 32767 are unknown to server
         )
 
