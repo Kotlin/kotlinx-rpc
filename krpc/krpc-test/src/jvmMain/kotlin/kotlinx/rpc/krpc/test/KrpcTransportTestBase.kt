@@ -18,16 +18,60 @@ import kotlinx.rpc.krpc.server.KrpcServer
 import kotlinx.rpc.krpc.streamScoped
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.modules.SerializersModule
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.rules.Timeout
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.*
 
+internal object LocalDateSerializer : KSerializer<LocalDate> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalDate", PrimitiveKind.STRING)
+
+    override fun serialize(
+        encoder: Encoder,
+        value: LocalDate,
+    ) {
+        encoder.encodeString(value.format(DateTimeFormatter.ISO_DATE))
+    }
+
+    override fun deserialize(decoder: Decoder): LocalDate {
+        return LocalDate.parse(decoder.decodeString(), DateTimeFormatter.ISO_DATE)
+    }
+}
+
+internal object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalDateTime", PrimitiveKind.STRING)
+
+    override fun serialize(
+        encoder: Encoder,
+        value: LocalDateTime,
+    ) {
+        encoder.encodeString(value.format(DateTimeFormatter.ISO_DATE_TIME))
+    }
+
+    override fun deserialize(decoder: Decoder): LocalDateTime {
+        return LocalDateTime.parse(decoder.decodeString(), DateTimeFormatter.ISO_DATE_TIME)
+    }
+}
+
 abstract class KrpcTransportTestBase {
+    protected val serializersModule = SerializersModule {
+        contextual(LocalDate::class) { LocalDateSerializer }
+    }
+
     protected abstract val serializationConfig: KrpcSerialFormatConfiguration.() -> Unit
 
     private val serverConfig by lazy {
@@ -109,6 +153,20 @@ abstract class KrpcTransportTestBase {
     fun genericReturnType() {
         runBlocking {
             assertEquals(listOf("hello", "world"), client.genericReturnType())
+        }
+    }
+
+    @Test
+    @Ignore // todo will fix in next PR
+    fun nonSerializableParameter() {
+        runBlocking {
+            val localDate = LocalDate.of(2001, 8, 23)
+            val resultDate = client.nonSerializableClass(localDate)
+            assertEquals(localDate.plusDays(1), resultDate)
+
+            val localDateTime = LocalDateTime.of(2001, 8, 23, 0, 0)
+            val resultDateTime = client.nonSerializableClassWithSerializer(localDateTime)
+            assertEquals(localDateTime.plusDays(1).format(DateTimeFormatter.ISO_DATE_TIME), resultDateTime)
         }
     }
 

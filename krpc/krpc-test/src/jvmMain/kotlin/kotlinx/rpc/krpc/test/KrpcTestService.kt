@@ -9,6 +9,10 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Suppress("detekt.TooManyFunctions")
 @Rpc
@@ -27,6 +31,11 @@ interface KrpcTestService : RemoteService {
     suspend fun customType(arg1: TestClass): TestClass
     suspend fun nullable(arg1: String?): TestClass?
     suspend fun variance(arg2: TestList<in TestClass>, arg3: TestList2<*>): TestList<out TestClass>?
+
+    suspend fun nonSerializableClass(localDate: @Contextual LocalDate): LocalDate
+    suspend fun nonSerializableClassWithSerializer(
+        localDateTime: @Serializable(LocalDateTimeSerializer::class) LocalDateTime,
+    ): @Serializable(LocalDateTimeSerializer::class) LocalDateTime
 
     suspend fun incomingStreamSyncCollect(arg1: Flow<String>): Int
     suspend fun incomingStreamAsyncCollect(arg1: Flow<String>): Int

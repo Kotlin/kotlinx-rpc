@@ -7,6 +7,9 @@ package kotlinx.rpc.krpc.test
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.Serializable
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertEquals
@@ -77,6 +80,14 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
     ): TestList<out TestClass> {
         println("variance: $arg2 $arg3")
         return TestList(3)
+    }
+
+    override suspend fun nonSerializableClass(localDate: LocalDate): LocalDate {
+        return localDate.plusDays(1)
+    }
+
+    override suspend fun nonSerializableClassWithSerializer(localDateTime: LocalDateTime): String {
+        return localDateTime.plusDays(1).format(DateTimeFormatter.ISO_DATE_TIME)
     }
 
     override suspend fun incomingStreamSyncCollect(arg1: Flow<String>): Int {

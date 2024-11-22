@@ -23,14 +23,18 @@ abstract class LocalTransportTest : KrpcTransportTestBase() {
 
 class JsonLocalTransportTest : LocalTransportTest() {
     override val serializationConfig: KrpcSerialFormatConfiguration.() -> Unit = {
-        json()
+        json {
+            serializersModule = this@JsonLocalTransportTest.serializersModule
+        }
     }
 }
 
 class CborLocalTransportTest : LocalTransportTest() {
     @OptIn(ExperimentalSerializationApi::class)
     override val serializationConfig: KrpcSerialFormatConfiguration.() -> Unit = {
-        cbor()
+        cbor {
+            serializersModule = this@CborLocalTransportTest.serializersModule
+        }
     }
 }
 
@@ -38,7 +42,9 @@ class CborLocalTransportTest : LocalTransportTest() {
 class ProtoBufLocalTransportTest : LocalTransportTest() {
     @OptIn(ExperimentalSerializationApi::class)
     override val serializationConfig: KrpcSerialFormatConfiguration.() -> Unit = {
-        protobuf()
+        protobuf {
+            serializersModule = this@ProtoBufLocalTransportTest.serializersModule
+        }
     }
 
     // 'null' is not supported in ProtoBuf
