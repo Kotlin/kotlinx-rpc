@@ -15,10 +15,10 @@ jobs:
   check-labels:
     name: Check labels
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.draft == false && !contains(github.event.pull_request.labels.*.name, 'release') && !contains(github.event.pull_request.labels.*.name, 'feature') && !contains(github.event.pull_request.labels.*.name, 'bug') && !contains(github.event.pull_request.labels.*.name, 'breaking') && !contains(github.event.pull_request.labels.*.name, 'infra') && !contains(github.event.pull_request.labels.*.name, 'docs') && !contains(github.event.pull_request.labels.*.name, 'deprecation') && !contains(github.event.pull_request.labels.*.name, 'dependencies') }}
+    if: ${{ github.event.pull_request.draft == false && !contains(github.event.pull_request.labels.*.name, 'release') && !contains(github.event.pull_request.labels.*.name, 'feature') && !contains(github.event.pull_request.labels.*.name, 'bug') && !contains(github.event.pull_request.labels.*.name, 'breaking') && !contains(github.event.pull_request.labels.*.name, 'infra') && !contains(github.event.pull_request.labels.*.name, 'docs') && !contains(github.event.pull_request.labels.*.name, 'deprecation') && !contains(github.event.pull_request.labels.*.name, 'dependencies') && !contains(github.event.pull_request.labels.*.name, 'housekeeping') }}
     steps:
       - name: Fail build after no labels present
         run: |
           echo "Pull request does not contain any required labels"
-          echo "Please use at least one of 'feature', 'bug', 'breaking', 'infra', 'docs', 'deprecation', 'release' or 'dependencies' labels"
+          echo "Please use at least one of 'feature', 'bug', 'breaking', 'infra', 'docs', 'deprecation', 'release', 'housekeeping' or 'dependencies' labels"
           exit 1
