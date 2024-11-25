@@ -7,6 +7,7 @@ package kotlinx.rpc.krpc.internal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.rpc.descriptor.RpcType
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.serialization.*
 import kotlinx.serialization.modules.SerializersModule
@@ -28,12 +29,18 @@ internal fun SerializersModule.buildContextual(type: KType): KSerializer<Any?> {
 }
 
 @InternalRpcApi
+public fun SerializersModule.rpcSerializerForType(type: RpcType): KSerializer<Any?> {
+    return rpcSerializerForType(type.kType)
+}
+
+@InternalRpcApi
 public fun SerializersModule.rpcSerializerForType(type: KType): KSerializer<Any?> {
     return when (type.classifier) {
         Flow::class, SharedFlow::class, StateFlow::class -> buildContextual(type)
         else -> serializer(type)
     }
 }
+
 
 @InternalRpcApi
 public fun unsupportedSerialFormatError(serialFormat: SerialFormat): Nothing {

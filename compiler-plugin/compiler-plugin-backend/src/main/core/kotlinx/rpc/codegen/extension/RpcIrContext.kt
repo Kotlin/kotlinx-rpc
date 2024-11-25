@@ -105,6 +105,10 @@ internal class RpcIrContext(
         getRpcIrClassSymbol("RpcServiceDescriptor", "descriptor")
     }
 
+    val rpcType by lazy {
+        getRpcIrClassSymbol("RpcType", "descriptor")
+    }
+
     val rpcCallable by lazy {
         getRpcIrClassSymbol("RpcCallable", "descriptor")
     }
