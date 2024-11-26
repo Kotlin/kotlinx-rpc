@@ -10,6 +10,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.time.Duration
 
+public actual typealias ManagedChannelPlatform = io.grpc.ManagedChannel
+
 public actual typealias ManagedChannelBuilder<T> = io.grpc.ManagedChannelBuilder<T>
 
 public actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
@@ -50,4 +52,7 @@ private class JvmManagedChannel(private val channel: io.grpc.ManagedChannel) : M
         channel.shutdownNow()
         return this
     }
+
+    override val platformApi: ManagedChannelPlatform
+        get() = channel
 }

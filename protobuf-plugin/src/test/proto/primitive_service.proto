@@ -3,9 +3,7 @@ syntax = "proto3";
 package kotlinx.rpc.protobuf.test;
 
 import "all_primitives.proto";
-import "google/protobuf/empty.proto";
 
 service PrimitiveService {
   rpc Echo(AllPrimitives) returns (AllPrimitives);
-  rpc Empty(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
