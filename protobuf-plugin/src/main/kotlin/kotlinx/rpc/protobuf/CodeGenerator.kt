@@ -8,7 +8,7 @@ import org.slf4j.Logger
 import org.slf4j.helpers.NOPLogger
 
 data class CodeGenerationParameters(
-    val messageMode: RPCProtobufPlugin.MessageMode,
+    val messageMode: RpcProtobufPlugin.MessageMode,
 )
 
 open class CodeGenerator(
@@ -71,12 +71,12 @@ open class CodeGenerator(
         CodeGenerator(parameters, "$indent$ONE_INDENT", builder, logger).block()
     }
 
-    private fun scope(prefix: String, block: (CodeGenerator.() -> Unit)? = null) {
+    internal fun scope(prefix: String, suffix: String = "", block: (CodeGenerator.() -> Unit)? = null) {
         addLine(prefix)
-        scope(block)
+        scopeWithSuffix(suffix, block)
     }
 
-    private fun scope(block: (CodeGenerator.() -> Unit)? = null) {
+    private fun scopeWithSuffix(suffix: String = "", block: (CodeGenerator.() -> Unit)? = null) {
         if (block == null) {
             newLine()
             lastIsDeclaration = true
@@ -94,7 +94,7 @@ open class CodeGenerator(
         append(" {")
         newLine()
         append(nested.build().trimEnd())
-        addLine("}")
+        addLine("}$suffix")
         newLine()
         lastIsDeclaration = true
     }
@@ -103,9 +103,26 @@ open class CodeGenerator(
         code.lines().forEach { addLine(it) }
     }
 
+    fun property(
+        name: String,
+        modifiers: String = "",
+        contextReceiver: String = "",
+        type: String = "",
+        delegate: Boolean = false,
+        value: String = "",
+        block: (CodeGenerator.() -> Unit)? = null,
+    ) {
+        val modifiersString = if (modifiers.isEmpty()) "" else "$modifiers "
+        val contextString = if (contextReceiver.isEmpty()) "" else "$contextReceiver."
+        val typeString = if (type.isEmpty()) "" else ": $type"
+        val delegateString = if (delegate) " by " else " = "
+        scope("${modifiersString}val $contextString$name$typeString$delegateString$value", block = block)
+    }
+
     fun function(
         name: String,
         modifiers: String = "",
+        typeParameters: String = "",
         args: String = "",
         contextReceiver: String = "",
         returnType: String = "",
@@ -114,7 +131,8 @@ open class CodeGenerator(
         val modifiersString = if (modifiers.isEmpty()) "" else "$modifiers "
         val contextString = if (contextReceiver.isEmpty()) "" else "$contextReceiver."
         val returnTypeString = if (returnType.isEmpty()) "" else ": $returnType"
-        scope("${modifiersString}fun $contextString$name($args)$returnTypeString", block)
+        val typeParametersString = if (typeParameters.isEmpty()) "" else " <$typeParameters>"
+        scope("${modifiersString}fun$typeParametersString $contextString$name($args)$returnTypeString", block = block)
     }
 
     enum class DeclarationType(val strValue: String) {
@@ -217,7 +235,7 @@ open class CodeGenerator(
 
         append(superString)
 
-        scope(block)
+        scopeWithSuffix(block = block)
     }
 
     open fun build(): String {

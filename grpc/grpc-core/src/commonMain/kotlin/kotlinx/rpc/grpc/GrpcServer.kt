@@ -6,8 +6,10 @@ package kotlinx.rpc.grpc
 
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.job
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.descriptor.serviceDescriptorOf
+import kotlinx.rpc.grpc.annotations.Grpc
+import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlinx.rpc.grpc.internal.MutableHandlerRegistry
 import kotlinx.rpc.grpc.internal.ServerServiceDefinition
 import kotlin.coroutines.CoroutineContext
@@ -29,7 +31,7 @@ public class GrpcServer internal constructor(
     override val coroutineContext: CoroutineContext
         get() = error("coroutineContext is not available for gRPC server builder")
 
-    override fun <Service : RemoteService> registerService(
+    override fun <@Grpc Service : Any> registerService(
         serviceKClass: KClass<Service>,
         serviceFactory: (CoroutineContext) -> Service,
     ) {
@@ -45,12 +47,15 @@ public class GrpcServer internal constructor(
         }
     }
 
-    private fun <Service : RemoteService> getDefinition(
+    private fun <@Grpc Service : Any> getDefinition(
         service: Service,
         serviceKClass: KClass<Service>,
     ): ServerServiceDefinition {
-        // generated locator
-        TODO("Not yet implemented")
+        val descriptor = serviceDescriptorOf<Service>(serviceKClass)
+        val grpc = (descriptor as? GrpcServiceDescriptor<Service>)
+            ?: error("Service ${descriptor.fqName} is not a gRPC service")
+
+        return grpc.delegate.definitionFor(service)
     }
 
     internal fun build() {

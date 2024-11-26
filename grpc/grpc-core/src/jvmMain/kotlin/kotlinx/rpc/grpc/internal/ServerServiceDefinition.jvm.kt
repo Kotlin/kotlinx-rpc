@@ -6,4 +6,7 @@
 
 package kotlinx.rpc.grpc.internal
 
-internal actual typealias ServerServiceDefinition = io.grpc.ServerServiceDefinition
+import kotlinx.rpc.internal.utils.InternalRpcApi
+
+@InternalRpcApi
+public actual typealias ServerServiceDefinition = io.grpc.ServerServiceDefinition

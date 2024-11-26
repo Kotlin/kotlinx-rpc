@@ -26,7 +26,7 @@ import com.google.protobuf.compiler.PluginProtos
 fun main() {
     val inputBytes = System.`in`.readBytes()
     val request = PluginProtos.CodeGeneratorRequest.parseFrom(inputBytes)
-    val plugin = RPCProtobufPlugin()
+    val plugin = RpcProtobufPlugin()
     val output: PluginProtos.CodeGeneratorResponse = plugin.run(request)
     output.writeTo(System.out)
 }
