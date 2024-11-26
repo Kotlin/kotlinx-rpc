@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.test.services.KotlinStandardLibrariesPathProvider
 abstract class AbstractDiagnosticTest : BaseTestRunner() {
     override fun TestConfigurationBuilder.configuration() {
         commonFirWithPluginFrontendConfiguration()
-        configureFirParser(FirParser.Psi)
+        configureFirParser(FirParser.LightTree)
     }
 
     override fun createKotlinStandardLibrariesPathProvider(): KotlinStandardLibrariesPathProvider {
