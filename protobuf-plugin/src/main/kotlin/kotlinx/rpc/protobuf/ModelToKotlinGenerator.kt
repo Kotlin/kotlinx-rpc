@@ -38,14 +38,15 @@ class ModelToKotlinGenerator(
 
     private fun CodeGenerator.generateDeclaredEntities(fileDeclaration: FileDeclaration) {
         fileDeclaration.messageDeclarations.forEach { generateMessage(it) }
-        fileDeclaration.enumDeclarations.forEach { generateEnum(it) }
+//        fileDeclaration.enumDeclarations.forEach { generateEnum(it) }
         fileDeclaration.serviceDeclarations.forEach { generateService(it) }
     }
 
+    @Suppress("detekt.CyclomaticComplexMethod")
     private fun CodeGenerator.generateMessage(declaration: MessageDeclaration) {
         val fields = declaration.actualFields.map { it.generateFieldDeclaration() to it.type.defaultValue }
 
-        val isInterfaceMode = parameters.messageMode == RPCProtobufPlugin.MessageMode.Interface
+        val isInterfaceMode = parameters.messageMode == RpcProtobufPlugin.MessageMode.Interface
 
         val (declarationType, modifiers) = when {
             isInterfaceMode -> {
@@ -74,17 +75,17 @@ class ModelToKotlinGenerator(
                 }
             }
 
-            declaration.oneOfDeclarations.forEach { oneOf ->
-                generateOneOf(oneOf)
-            }
-
-            declaration.nestedDeclarations.forEach { nested ->
-                generateMessage(nested)
-            }
-
-            declaration.enumDeclarations.forEach { enum ->
-                generateEnum(enum)
-            }
+//            declaration.oneOfDeclarations.forEach { oneOf ->
+//                generateOneOf(oneOf)
+//            }
+//
+//            declaration.nestedDeclarations.forEach { nested ->
+//                generateMessage(nested)
+//            }
+//
+//            declaration.enumDeclarations.forEach { enum ->
+//                generateEnum(enum)
+//            }
 
             if (isInterfaceMode) {
                 clazz("", modifiers = "companion", declarationType = DeclarationType.Object)
@@ -106,12 +107,66 @@ class ModelToKotlinGenerator(
             function(
                 name = "invoke",
                 modifiers = "operator",
-                args = "body: ${declaration.name.simpleName}.() -> Unit",
+                args = "body: ${declaration.name.simpleName}Builder.() -> Unit",
                 contextReceiver = "${declaration.name.simpleName}.Companion",
                 returnType = declaration.name.simpleName,
             ) {
                 code("return ${declaration.name.simpleName}Builder().apply(body)")
             }
+        }
+
+        val platformType = "${declaration.name.packageName}.${declaration.name.simpleName}OuterClass." +
+                declaration.name.simpleName
+
+        function(
+            name = "toPlatform",
+            contextReceiver = declaration.name.simpleName,
+            returnType = platformType,
+        ) {
+            scope("return $platformType.newBuilder().apply", ".build()") {
+                declaration.actualFields.forEach { field ->
+                    val call = "this@toPlatform.${field.name}${field.toPlatformCast()}"
+                    code("set${field.name.replaceFirstChar { ch -> ch.uppercase() }}($call)")
+                }
+            }
+        }
+
+        function(
+            name = "toKotlin",
+            contextReceiver = platformType,
+            returnType = declaration.name.simpleName,
+        ) {
+            scope("return ${declaration.name.simpleName}") {
+                declaration.actualFields.forEach { field ->
+                    code("${field.name} = this@toKotlin.${field.name}${field.toKotlinCast()}")
+                }
+            }
+        }
+    }
+
+    private fun FieldDeclaration.toPlatformCast(): String {
+        val type = type as? FieldType.IntegralType ?: return ""
+
+        return when (type) {
+            FieldType.IntegralType.FIXED32 -> ".toInt()"
+            FieldType.IntegralType.FIXED64 -> ".toLong()"
+            FieldType.IntegralType.UINT32 -> ".toInt()"
+            FieldType.IntegralType.UINT64 -> ".toLong()"
+            FieldType.IntegralType.BYTES -> ".let { bytes -> com.google.protobuf.ByteString.copyFrom(bytes) }"
+            else -> ""
+        }
+    }
+
+    private fun FieldDeclaration.toKotlinCast(): String {
+        val type = type as? FieldType.IntegralType ?: return ""
+
+        return when (type) {
+            FieldType.IntegralType.FIXED32 -> ".toUInt()"
+            FieldType.IntegralType.FIXED64 -> ".toULong()"
+            FieldType.IntegralType.UINT32 -> ".toUInt()"
+            FieldType.IntegralType.UINT64 -> ".toULong()"
+            FieldType.IntegralType.BYTES -> ".toByteArray()"
+            else -> ""
         }
     }
 
@@ -121,24 +176,28 @@ class ModelToKotlinGenerator(
 
     private fun FieldDeclaration.typeFqName(): String {
         return when (type) {
-            is FieldType.Reference -> {
-                type.value.simpleName
-            }
+//            is FieldType.Reference -> {
+//                type.value.simpleName
+//            }
 
             is FieldType.IntegralType -> {
                 type.fqName.simpleName
             }
 
-            is FieldType.List -> {
-                "List<${type.valueName.simpleName}>"
-            }
-
-            is FieldType.Map -> {
-                "Map<${type.keyName.simpleName}, ${type.valueName.simpleName}>"
+//            is FieldType.List -> {
+//                "List<${type.valueName.simpleName}>"
+//            }
+//
+//            is FieldType.Map -> {
+//                "Map<${type.keyName.simpleName}, ${type.valueName.simpleName}>"
+//            }
+            else -> {
+                error("Unsupported type: $type")
             }
         }
     }
 
+    @Suppress("unused")
     private fun CodeGenerator.generateOneOf(declaration: OneOfDeclaration) {
         val interfaceName = declaration.name.simpleName
 
@@ -157,6 +216,7 @@ class ModelToKotlinGenerator(
         }
     }
 
+    @Suppress("unused")
     private fun CodeGenerator.generateEnum(declaration: EnumDeclaration) {
         clazz(declaration.name.simpleName, "enum") {
             code(declaration.originalEntries.joinToString(", ", postfix = ";") { enumEntry ->
@@ -178,17 +238,124 @@ class ModelToKotlinGenerator(
         }
     }
 
+    @Suppress("detekt.LongMethod")
     private fun CodeGenerator.generateService(service: ServiceDeclaration) {
+        code("@kotlinx.rpc.grpc.annotations.Grpc")
         clazz(service.name.simpleName, declarationType = DeclarationType.Interface) {
             service.methods.forEach { method ->
                 // no streaming for now
                 function(
                     name = method.name.simpleName,
                     modifiers = "suspend",
-                    args = "input: ${method.inputType.simpleName}",
+                    args = "message: ${method.inputType.simpleName}",
                     returnType = method.outputType.simpleName,
                 )
             }
         }
+
+        newLine()
+
+        code("@Suppress(\"unused\", \"all\")")
+        clazz(
+            modifiers = "private",
+            name = "${service.name.simpleName}Delegate",
+            declarationType = DeclarationType.Object,
+            superTypes = listOf("kotlinx.rpc.grpc.descriptor.GrpcDelegate<${service.name.simpleName}>"),
+        ) {
+            function(
+                name = "clientProvider",
+                modifiers = "override",
+                args = "channel: kotlinx.rpc.grpc.ManagedChannel",
+                returnType = "kotlinx.rpc.grpc.descriptor.GrpcClientDelegate",
+            ) {
+                code("return ${service.name.simpleName}ClientDelegate(channel)")
+            }
+
+            function(
+                name = "definitionFor",
+                modifiers = "override",
+                args = "impl: ${service.name.simpleName}",
+                returnType = "kotlinx.rpc.grpc.internal.ServerServiceDefinition",
+            ) {
+                scope("return ${service.name.simpleName}ServerDelegate(impl).bindService()")
+            }
+        }
+
+        code("@Suppress(\"unused\", \"all\")")
+        clazz(
+            modifiers = "private",
+            name = "${service.name.simpleName}ServerDelegate",
+            declarationType = DeclarationType.Class,
+            superTypes = listOf("${service.name.simpleName}GrpcKt.${service.name.simpleName}CoroutineImplBase()"),
+            constructorArgs = listOf("private val impl: ${service.name.simpleName}"),
+        ) {
+            service.methods.forEach { method ->
+                val grpcName = method.name.simpleName.replaceFirstChar { it.lowercase() }
+
+                function(
+                    name = grpcName,
+                    modifiers = "override suspend",
+                    args = "request: ${method.inputType.toPlatformMessageType()}",
+                    returnType = method.outputType.toPlatformMessageType(),
+                ) {
+                    code("return impl.${method.name.simpleName}(request.toKotlin()).toPlatform()")
+                }
+            }
+        }
+
+        code("@Suppress(\"unused\", \"all\")")
+        clazz(
+            modifiers = "private",
+            name = "${service.name.simpleName}ClientDelegate",
+            declarationType = DeclarationType.Class,
+            superTypes = listOf("kotlinx.rpc.grpc.descriptor.GrpcClientDelegate"),
+            constructorArgs = listOf("private val channel: kotlinx.rpc.grpc.ManagedChannel"),
+        ) {
+            val stubType = "${service.name.simpleName}GrpcKt.${service.name.simpleName}CoroutineStub"
+
+            property(
+                name = "stub",
+                modifiers = "private",
+                type = stubType,
+                delegate = true,
+                value = "lazy",
+            ) {
+                code("$stubType(channel.platformApi)")
+            }
+
+            function(
+                name = "call",
+                modifiers = "override suspend",
+                args = "call: kotlinx.rpc.RpcCall",
+                typeParameters = "R",
+                returnType = "R",
+            ) {
+                code("val message = (call.data as kotlinx.rpc.internal.RpcMethodClass).asArray()[0]")
+                code("@Suppress(\"UNCHECKED_CAST\")")
+                scope("return when (call.callableName)") {
+                    service.methods.forEach { method ->
+                        val grpcName = method.name.simpleName.replaceFirstChar { it.lowercase() }
+                        val result = "stub.$grpcName((message as ${method.inputType.simpleName}).toPlatform())"
+                        code("\"${method.name.simpleName}\" -> $result.toKotlin() as R")
+                    }
+
+                    code("else -> error(\"Illegal call: \${call.callableName}\")")
+                }
+            }
+
+            function(
+                name = "callAsync",
+                modifiers = "override",
+                args = "call: kotlinx.rpc.RpcCall",
+                typeParameters = "R",
+                returnType = "kotlinx.coroutines.Deferred<R>",
+            ) {
+                code("error(\"Async calls are not supported\")")
+            }
+        }
+    }
+
+    private fun FqName.toPlatformMessageType(): String {
+        return "${simpleName}OuterClass.${simpleName.removePrefix("$packageName.")}"
     }
 }
