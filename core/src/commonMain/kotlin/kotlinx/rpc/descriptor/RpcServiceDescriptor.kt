@@ -54,8 +54,8 @@ public interface RpcServiceDescriptor<T : RemoteService> {
 @ExperimentalRpcApi
 public class RpcCallable<T : RemoteService>(
     public val name: String,
-    public val dataType: KType,
-    public val returnType: KType,
+    public val dataType: RpcType,
+    public val returnType: RpcType,
     public val invokator: RpcInvokator<T>,
     public val parameters: Array<RpcParameter>,
 )
@@ -74,4 +74,11 @@ public sealed interface RpcInvokator<T : RemoteService> {
 }
 
 @ExperimentalRpcApi
-public class RpcParameter(public val name: String, public val type: KType)
+public class RpcParameter(public val name: String, public val type: RpcType)
+
+@ExperimentalRpcApi
+public class RpcType(public val kType: KType) {
+    override fun toString(): String {
+        return return kType.toString()
+    }
+}

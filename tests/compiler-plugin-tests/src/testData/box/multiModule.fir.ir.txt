@@ -100,13 +100,15 @@ FILE fqName:<root> fileName:/module_lib_multiModule.kt
                     <A>: kotlin.String
                     <B>: kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>
                     $receiver: CONST String type=kotlin.String value="simple"
-                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, dataType: kotlin.reflect.KType, returnType: kotlin.reflect.KType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallable>, parameters: kotlin.Array<kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallable' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
+                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, dataType: kotlinx.rpc.descriptor.RpcType, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallable>, parameters: kotlin.Array<kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallable' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
                       <T>: <root>.BoxService
                       name: CONST String type=kotlin.String value="simple"
-                      dataType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                        <T>: <root>.BoxService.$rpcServiceStub.simple$rpcMethod
-                      returnType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                        <T>: kotlin.String
+                      dataType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType) declared in kotlinx.rpc.descriptor.RpcType' type=kotlinx.rpc.descriptor.RpcType origin=null
+                        kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                          <T>: <root>.BoxService.$rpcServiceStub.simple$rpcMethod
+                      returnType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType) declared in kotlinx.rpc.descriptor.RpcType' type=kotlinx.rpc.descriptor.RpcType origin=null
+                        kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                          <T>: kotlin.String
                       invokator: CALL 'private final fun <get-simpleInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.Method<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.Method<<root>.BoxService> origin=GET_PROPERTY
                         $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                       parameters: CALL 'public final fun emptyArray <T> (): kotlin.Array<T of kotlin.emptyArray> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null

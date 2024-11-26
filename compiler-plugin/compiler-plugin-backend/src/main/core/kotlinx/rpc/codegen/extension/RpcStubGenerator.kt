@@ -976,6 +976,11 @@ internal class RpcStubGenerator(
      * Where:
      *  - `<field-name>` - the name of the field
      */
+    @Suppress(
+        "detekt.NestedBlockDepth",
+        "detekt.LongMethod",
+        "detekt.CyclomaticComplexMethod",
+    )
     private fun IrClass.generateInvokator(i: Int, callable: ServiceDeclaration.Callable) {
         invokators[callable.name] = addProperty {
             name = Name.identifier("${callable.name}Invokator")
@@ -1205,13 +1210,13 @@ internal class RpcStubGenerator(
      * ```kotlin
      * RpcCallable<MyService>(
      *     name = "<callable-name>",
-     *     dataType = typeOf<<callable-data-type>>(),
-     *     returnType = typeOf<<callable-return-type>>(),
+     *     dataType = RpcCall(typeOf<<callable-data-type>>()),
+     *     returnType = RpcCall(typeOf<<callable-return-type>>()),
      *     invokator = <callable-invokator>,
      *     parameters = arrayOf( // or emptyArray()
      *         RpcParameter(
      *             "<method-parameter-name-1>",
-     *             typeOf<<method-parameter-type-1>>(),
+     *             RpcCall(typeOf<<method-parameter-type-1>>())
      *         ),
      *         ...
      *     ),
@@ -1247,14 +1252,14 @@ internal class RpcStubGenerator(
                 is ServiceDeclaration.FlowField -> ctx.fieldDataObject.defaultType
             }
 
-            putValueArgument(1, irTypeOfCall(dataType))
+            putValueArgument(1, irRpcTypeCall(dataType))
 
             val returnType = when (callable) {
                 is ServiceDeclaration.Method -> callable.function.returnType
                 is ServiceDeclaration.FlowField -> callable.property.getterOrFail.returnType
             }
 
-            putValueArgument(2, irTypeOfCall(returnType))
+            putValueArgument(2, irRpcTypeCall(returnType))
 
             val invokator = invokators[callable.name]
                 ?: error("Expected invokator for ${callable.name} in ${declaration.service.name}")
@@ -1309,7 +1314,7 @@ internal class RpcStubGenerator(
                             )
                         }.apply {
                             putValueArgument(0, stringConst(parameter.value.name.asString()))
-                            putValueArgument(1, irTypeOfCall(parameter.type))
+                            putValueArgument(1, irRpcTypeCall(parameter.type))
                         }
                     },
                 )
@@ -1518,6 +1523,25 @@ internal class RpcStubGenerator(
                     classType = companionObjectType,
                 )
             )
+        }
+    }
+
+    /**
+     * IR call of the `RpcType(KType, Array<Annotation>)` function
+     */
+    private fun irRpcTypeCall(type: IrType): IrConstructorCallImpl {
+        return vsApi {
+            IrConstructorCallImplVS(
+                startOffset = UNDEFINED_OFFSET,
+                endOffset = UNDEFINED_OFFSET,
+                type = ctx.rpcType.defaultType,
+                symbol = ctx.rpcType.constructors.single(),
+                typeArgumentsCount = 0,
+                valueArgumentsCount = 1,
+                constructorTypeArgumentsCount = 0,
+            )
+        }.apply {
+            putValueArgument(0, irTypeOfCall(type))
         }
     }
 

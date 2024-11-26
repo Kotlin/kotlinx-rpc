@@ -56,12 +56,12 @@ public abstract interface annotation class kotlinx/rpc/annotations/Rpc : java/la
 }
 
 public final class kotlinx/rpc/descriptor/RpcCallable {
-	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KType;Lkotlin/reflect/KType;Lkotlinx/rpc/descriptor/RpcInvokator;[Lkotlinx/rpc/descriptor/RpcParameter;)V
-	public final fun getDataType ()Lkotlin/reflect/KType;
+	public fun <init> (Ljava/lang/String;Lkotlinx/rpc/descriptor/RpcType;Lkotlinx/rpc/descriptor/RpcType;Lkotlinx/rpc/descriptor/RpcInvokator;[Lkotlinx/rpc/descriptor/RpcParameter;)V
+	public final fun getDataType ()Lkotlinx/rpc/descriptor/RpcType;
 	public final fun getInvokator ()Lkotlinx/rpc/descriptor/RpcInvokator;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getParameters ()[Lkotlinx/rpc/descriptor/RpcParameter;
-	public final fun getReturnType ()Lkotlin/reflect/KType;
+	public final fun getReturnType ()Lkotlinx/rpc/descriptor/RpcType;
 }
 
 public abstract interface class kotlinx/rpc/descriptor/RpcInvokator {
@@ -76,9 +76,9 @@ public abstract interface class kotlinx/rpc/descriptor/RpcInvokator$Method : kot
 }
 
 public final class kotlinx/rpc/descriptor/RpcParameter {
-	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KType;)V
+	public fun <init> (Ljava/lang/String;Lkotlinx/rpc/descriptor/RpcType;)V
 	public final fun getName ()Ljava/lang/String;
-	public final fun getType ()Lkotlin/reflect/KType;
+	public final fun getType ()Lkotlinx/rpc/descriptor/RpcType;
 }
 
 public abstract interface class kotlinx/rpc/descriptor/RpcServiceDescriptor {
@@ -90,5 +90,11 @@ public abstract interface class kotlinx/rpc/descriptor/RpcServiceDescriptor {
 public final class kotlinx/rpc/descriptor/RpcServiceDescriptorKt {
 	public static final fun serviceDescriptorOf (Lkotlin/reflect/KClass;)Lkotlinx/rpc/descriptor/RpcServiceDescriptor;
 	public static final fun serviceDescriptorOf (Lkotlin/reflect/KType;)Lkotlinx/rpc/descriptor/RpcServiceDescriptor;
+}
+
+public final class kotlinx/rpc/descriptor/RpcType {
+	public fun <init> (Lkotlin/reflect/KType;)V
+	public final fun getKType ()Lkotlin/reflect/KType;
+	public fun toString ()Ljava/lang/String;
 }
 

@@ -157,7 +157,6 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    @Ignore // todo will fix in next PR
     fun nonSerializableParameter() {
         runBlocking {
             val localDate = LocalDate.of(2001, 8, 23)
