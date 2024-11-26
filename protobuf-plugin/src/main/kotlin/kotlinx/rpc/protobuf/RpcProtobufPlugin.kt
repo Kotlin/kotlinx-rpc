@@ -15,7 +15,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.helpers.NOPLogger
 
-class RPCProtobufPlugin {
+class RpcProtobufPlugin {
     companion object {
         private const val DEBUG_OUTPUT_OPTION = "debugOutput"
         private const val MESSAGE_MODE_OPTION = "messageMode"
@@ -41,7 +41,7 @@ class RPCProtobufPlugin {
     private val logger: Logger by lazy {
         val debugOutput = debugOutput ?: return@lazy NOPLogger.NOP_LOGGER
 
-        (LoggerFactory.getILoggerFactory().getLogger("RPCProtobufPlugin") as ch.qos.logback.classic.Logger).apply {
+        (LoggerFactory.getILoggerFactory().getLogger("RpcProtobufPlugin") as ch.qos.logback.classic.Logger).apply {
             val appender = FileAppender<ILoggingEvent>().apply {
                 isAppend = true
                 file = debugOutput

@@ -61,7 +61,7 @@ tasks.jar {
     )
 }
 
-val buildDir: String = project.layout.buildDirectory.get().asFile.absolutePath
+val buildDirPath: String = project.layout.buildDirectory.get().asFile.absolutePath
 
 protobuf {
     protoc {
@@ -70,7 +70,7 @@ protobuf {
 
     plugins {
         create("kotlinx-rpc") {
-            path = "$buildDir/libs/protobuf-plugin-$version.jar"
+            path = "$buildDirPath/libs/protobuf-plugin-$version.jar"
         }
 
         create("grpc") {
@@ -80,17 +80,13 @@ protobuf {
         create("grpckt") {
             artifact = "io.grpc:protoc-gen-grpc-kotlin:1.3.1:jdk8@jar"
         }
-
-        create("javalite") {
-            artifact = "com.google.protobuf:protoc:3.24.1"
-        }
     }
 
     generateProtoTasks {
         all().matching { it.isTest }.all {
             plugins {
                 create("kotlinx-rpc") {
-                    option("debugOutput=$buildDir/protobuf-plugin.log")
+                    option("debugOutput=$buildDirPath/protobuf-plugin.log")
                     option("messageMode=interface")
                 }
                 create("grpc")
@@ -98,9 +94,6 @@ protobuf {
             }
 
             builtins {
-                named("java") {
-                    option("lite")
-                }
                 id("kotlin")
             }
 

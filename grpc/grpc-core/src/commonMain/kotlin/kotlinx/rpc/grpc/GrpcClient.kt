@@ -4,37 +4,35 @@
 
 package kotlinx.rpc.grpc
 
-import io.grpc.stub.AbstractStub
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.job
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
-import kotlinx.rpc.descriptor.RpcServiceDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcClientDelegate
+import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
+import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
 
 public class GrpcClient(private val channel: ManagedChannel) : RpcClient {
     override val coroutineContext: CoroutineContext = SupervisorJob()
 
+    private val stubs = ConcurrentHashMap<Long, GrpcClientDelegate>()
+
     override suspend fun <T> call(call: RpcCall): T {
-        val stub = grpcStubByServiceDescriptor(call.descriptor)
-        return invokeRpcMethodOnGrpcStub(stub, call)
+        return call.delegate().call(call)
     }
 
-    private fun grpcStubByServiceDescriptor(descriptor: RpcServiceDescriptor<*>): AbstractStub<*> {
-        error("Not yet implemented")
+    override fun <T> callAsync(serviceScope: CoroutineScope, call: RpcCall): Deferred<T> {
+        return call.delegate().callAsync(call)
     }
 
-    private suspend fun <T> invokeRpcMethodOnGrpcStub(stub: AbstractStub<*>, call: RpcCall): T {
-        error("Not yet implemented")
-    }
+    private fun RpcCall.delegate(): GrpcClientDelegate {
+        val grpc = (descriptor as? GrpcServiceDescriptor<*>)
+            ?: error("Service ${descriptor.fqName} is not a gRPC service")
 
-    override fun <T> callAsync(
-        serviceScope: CoroutineScope,
-        call: RpcCall,
-    ): Deferred<T> {
-        TODO("Not yet implemented")
+        return stubs.computeIfAbsent(serviceId) { grpc.delegate.clientProvider(channel) }
     }
 
     override fun provideStubContext(serviceId: Long): CoroutineContext {

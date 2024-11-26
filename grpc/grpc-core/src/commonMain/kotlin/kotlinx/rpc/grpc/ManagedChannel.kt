@@ -8,6 +8,8 @@ package kotlinx.rpc.grpc
 
 import kotlin.time.Duration
 
+public expect abstract class ManagedChannelPlatform
+
 public interface ManagedChannel {
     public val isShutdown: Boolean
     public val isTerminated: Boolean
@@ -16,6 +18,8 @@ public interface ManagedChannel {
 
     public fun shutdown(): ManagedChannel
     public fun shutdownNow(): ManagedChannel
+
+    public val platformApi: ManagedChannelPlatform
 }
 
 public expect abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
