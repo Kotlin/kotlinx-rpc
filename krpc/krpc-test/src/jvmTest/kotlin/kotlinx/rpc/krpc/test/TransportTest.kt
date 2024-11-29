@@ -235,7 +235,7 @@ class TransportTest {
         assertTrue(echoServices.single().coroutineContext.job.isCancelled)
     }
 
-    private inline fun <reified Service : RemoteService, reified Impl : Service> RpcServer.registerServiceAndReturn(
+    private inline fun <@Rpc reified Service : Any, reified Impl : Service> RpcServer.registerServiceAndReturn(
         crossinline body: (CoroutineContext) -> Impl,
     ): List<Impl> {
         val instances = mutableListOf<Impl>()

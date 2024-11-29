@@ -18,6 +18,13 @@ object RpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
         )
 
         put(
+            factory = FirRpcDiagnostics.MISSING_SERIALIZATION_MODULE,
+            message = "Missing kotlinx.serialization plugin in the module. " +
+                    "Service generation will not be available. " +
+                    "Add kotlin(\"plugin.serialization\") to your build.gradle.kts plugins section."
+        )
+
+        put(
             factory = FirRpcDiagnostics.WRONG_RPC_ANNOTATION_TARGET,
             message = "@Rpc annotation is only applicable to interfaces.",
         )

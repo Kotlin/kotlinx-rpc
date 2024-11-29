@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChec
 
 class FirRpcDeclarationCheckers(ctx: FirCheckersContext) : DeclarationCheckers() {
     override val regularClassCheckers: Set<FirRegularClassChecker> = setOf(
-        FirRpcAnnotationChecker,
+        FirRpcAnnotationChecker(ctx),
     )
 
     override val classCheckers: Set<FirClassChecker> = setOf(

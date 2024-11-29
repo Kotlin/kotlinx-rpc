@@ -16,19 +16,19 @@ import org.jetbrains.kotlin.fir.caches.firCachesFactory
 import org.jetbrains.kotlin.fir.extensions.FirDeclarationPredicateRegistrar
 import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
 
-class FirRpcCheckers(session: FirSession) : FirAdditionalCheckersExtension(session) {
+class FirRpcCheckers(session: FirSession, serializationIsPresent: Boolean) : FirAdditionalCheckersExtension(session) {
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
         register(FirRpcPredicates.rpc)
         register(FirRpcPredicates.checkedAnnotationMeta)
     }
 
-    private val ctx = FirCheckersContext(session)
+    private val ctx = FirCheckersContext(session, serializationIsPresent)
 
     override val declarationCheckers: DeclarationCheckers = FirRpcDeclarationCheckers(ctx)
     override val expressionCheckers: ExpressionCheckers = FirRpcExpressionCheckers(ctx)
 }
 
-class FirCheckersContext(private val session: FirSession) {
+class FirCheckersContext(private val session: FirSession, val serializationIsPresent: Boolean) {
     val typeParametersCache = session.firCachesFactory.createCache { typeParameter: FirTypeParameterSymbol ->
         FirCheckedAnnotationHelper.checkedAnnotations(session, typeParameter)
     }

@@ -7,7 +7,7 @@
 package kotlinx.rpc.internal
 
 import js.objects.Object
-import kotlinx.rpc.RemoteService
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.AssociatedObjectKey
@@ -21,10 +21,10 @@ import kotlin.reflect.findAssociatedObject
 @Target(AnnotationTarget.CLASS)
 public annotation class WithServiceDescriptor(
     @Suppress("unused")
-    val stub: KClass<out RpcServiceDescriptor<out RemoteService>>,
+    val stub: KClass<out RpcServiceDescriptor<*>>,
 )
 
-internal actual fun <T : RemoteService> internalServiceDescriptorOf(kClass: KClass<T>): Any? {
+internal actual fun <@Rpc T : Any> internalServiceDescriptorOf(kClass: KClass<T>): Any? {
     return kClass.findAssociatedObjectImpl(WithServiceDescriptor::class)
 }
 
@@ -34,7 +34,7 @@ internal actual fun <T : RemoteService> internalServiceDescriptorOf(kClass: KCla
  *
  * This function uses std-lib's implementation and accounts for the bug in the compiler
  */
-internal fun <T : Annotation> KClass<*>.findAssociatedObjectImpl(annotationClass: KClass<T>): Any? {
+internal fun KClass<*>.findAssociatedObjectImpl(annotationClass: KClass<*>): Any? {
     val key = annotationClass.js.asDynamic().`$metadata$`?.associatedObjectKey?.unsafeCast<Int>() ?: return null
     val map = js.asDynamic().`$metadata$`?.associatedObjects ?: return null
     val factory = map[key] ?: return fallbackFindAssociatedObjectImpl(map)

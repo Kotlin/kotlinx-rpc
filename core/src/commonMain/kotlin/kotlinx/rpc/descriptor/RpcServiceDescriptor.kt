@@ -4,8 +4,8 @@
 
 package kotlinx.rpc.descriptor
 
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.RpcClient
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.internal.*
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -13,17 +13,17 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
 @ExperimentalRpcApi
-public inline fun <reified T : RemoteService> serviceDescriptorOf(): RpcServiceDescriptor<T> {
+public inline fun <@Rpc reified T : Any> serviceDescriptorOf(): RpcServiceDescriptor<T> {
     return serviceDescriptorOf(T::class)
 }
 
 @ExperimentalRpcApi
-public fun <T : RemoteService> serviceDescriptorOf(kType: KType): RpcServiceDescriptor<T> {
+public fun <@Rpc T : Any> serviceDescriptorOf(kType: KType): RpcServiceDescriptor<T> {
     return serviceDescriptorOf(kType.kClass())
 }
 
 @ExperimentalRpcApi
-public fun <T : RemoteService> serviceDescriptorOf(kClass: KClass<T>): RpcServiceDescriptor<T> {
+public fun <@Rpc T : Any> serviceDescriptorOf(kClass: KClass<T>): RpcServiceDescriptor<T> {
     val maybeDescriptor = internalServiceDescriptorOf(kClass)
         ?: internalError("Unable to find a service descriptor of the $kClass")
 
@@ -40,7 +40,7 @@ public fun <T : RemoteService> serviceDescriptorOf(kClass: KClass<T>): RpcServic
 }
 
 @ExperimentalRpcApi
-public interface RpcServiceDescriptor<T : RemoteService> {
+public interface RpcServiceDescriptor<@Rpc T : Any> {
     public val fqName: String
 
     @InternalRpcApi
@@ -52,7 +52,7 @@ public interface RpcServiceDescriptor<T : RemoteService> {
 }
 
 @ExperimentalRpcApi
-public class RpcCallable<T : RemoteService>(
+public class RpcCallable<@Rpc T : Any>(
     public val name: String,
     public val dataType: RpcType,
     public val returnType: RpcType,
@@ -61,14 +61,14 @@ public class RpcCallable<T : RemoteService>(
 )
 
 @ExperimentalRpcApi
-public sealed interface RpcInvokator<T : RemoteService> {
+public sealed interface RpcInvokator<@Rpc T : Any> {
     @ExperimentalRpcApi
-    public fun interface Method<T : RemoteService> : RpcInvokator<T> {
+    public fun interface Method<@Rpc T : Any> : RpcInvokator<T> {
         public suspend fun call(service: T, data: Any?): Any?
     }
 
     @ExperimentalRpcApi
-    public fun interface Field<T : RemoteService> : RpcInvokator<T> {
+    public fun interface Field<@Rpc T : Any> : RpcInvokator<T> {
         public fun call(service: T): Any?
     }
 }

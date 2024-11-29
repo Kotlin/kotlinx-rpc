@@ -7,6 +7,7 @@ import util.applyAtomicfuPlugin
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.serialization)
+    alias(libs.plugins.kotlinx.rpc)
 }
 
 applyAtomicfuPlugin()
