@@ -5,11 +5,14 @@
 package kotlinx.rpc.codegen
 
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.builder.FirResolvedTypeRefBuilder
+import org.jetbrains.kotlin.fir.types.toClassSymbol
 
 @Suppress("unused")
 object FirVersionSpecificApiImpl : FirVersionSpecificApi {
@@ -18,6 +21,10 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
         delegatedTypeRef: FirTypeRef?,
     ): FirResolvedTypeRef {
         return toFirResolvedTypeRef(source, delegatedTypeRef)
+    }
+
+    override fun ConeKotlinType.toClassSymbolVS(session: FirSession): FirClassSymbol<*>? {
+        return toClassSymbol(session)
     }
 
     override var FirResolvedTypeRefBuilder.coneTypeVS: ConeKotlinType

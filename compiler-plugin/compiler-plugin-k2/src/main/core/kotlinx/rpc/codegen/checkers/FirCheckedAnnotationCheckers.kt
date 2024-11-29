@@ -9,6 +9,7 @@ import kotlinx.rpc.codegen.FirRpcPredicates
 import kotlinx.rpc.codegen.checkers.FirCheckedAnnotationHelper.checkTypeArguments
 import kotlinx.rpc.codegen.checkers.diagnostics.FirRpcDiagnostics
 import kotlinx.rpc.codegen.common.RpcClassId
+import kotlinx.rpc.codegen.vsApi
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
@@ -76,7 +77,7 @@ class FirCheckedAnnotationTypeParameterChecker(
                 ctx = ctx,
                 origin = bound,
                 originMapper = { it.coneType },
-                symbolProvider = { it.toClassSymbol(context.session) },
+                symbolProvider = { vsApi { it.toClassSymbolVS(context.session) } },
                 typeParameterSymbolsProvider = { it.typeParameterSymbols },
                 typeArgumentsProvider = { it.typeArguments.toList() },
                 typeArgumentsMapper = { it },
@@ -102,7 +103,7 @@ class FirCheckedAnnotationFirClassChecker(
                 ctx = ctx,
                 origin = superType,
                 originMapper = { it.coneType },
-                symbolProvider = { it.toClassSymbol(context.session) },
+                symbolProvider = { vsApi { it.toClassSymbolVS(context.session) } },
                 typeParameterSymbolsProvider = { it.typeParameterSymbols },
                 typeArgumentsProvider = { it.typeArguments.toList() },
                 typeArgumentsMapper = { it },
@@ -127,7 +128,7 @@ class FirCheckedAnnotationFirFunctionChecker(
                 ctx = ctx,
                 origin = valueParameter.returnTypeRef,
                 originMapper = { it.coneType },
-                symbolProvider = { it.toClassSymbol(context.session) },
+                symbolProvider = { vsApi { it.toClassSymbolVS(context.session) } },
                 typeParameterSymbolsProvider = { it.typeParameterSymbols },
                 typeArgumentsProvider = { it.typeArguments.toList() },
                 typeArgumentsMapper = { it },
@@ -172,7 +173,7 @@ object FirCheckedAnnotationHelper {
         parametersWithAnnotations.forEach { (i, annotations) ->
             val typeArgument = typeArguments[i]
             val type = typeArgumentsMapper(typeArgument)?.type
-            val classSymbol = type?.toClassSymbol(context.session)
+            val classSymbol = vsApi { type?.toClassSymbolVS(context.session) }
 
             val symbol = when {
                 classSymbol != null -> {
@@ -247,7 +248,7 @@ object FirCheckedAnnotationHelper {
                     }?.type
                 },
                 originTypeRefSource = extractedOriginSources.getOrNull(i) ?: nextOriginSource ?: originTypeRefSource,
-                symbolProvider = { it.toClassSymbol(context.session) },
+                symbolProvider = { vsApi { it.toClassSymbolVS(context.session) } },
                 typeParameterSymbolsProvider = { it.typeParameterSymbols },
                 typeArgumentsProvider = { it.typeArguments.toList() },
                 typeArgumentsMapper = { it },
@@ -283,7 +284,7 @@ object FirCheckedAnnotationHelper {
         visited: Set<FirBasedSymbol<*>> = emptySet(),
     ): List<FirClassSymbol<*>> {
         return symbol.annotations.mapNotNull {
-            it.resolvedType.toClassSymbol(session)
+            vsApi { it.resolvedType.toClassSymbolVS(session) }
         }.filter { annotation ->
             when {
                 annotation in visited -> false
@@ -328,7 +329,7 @@ object FirCheckedAnnotationHelper {
             symbol in visited -> false
             symbol.hasAnnotation(annotationId, session) -> true
             else -> symbol.annotations.any { annotation ->
-                annotation.resolvedType.toClassSymbol(session)?.let {
+                vsApi { annotation.resolvedType.toClassSymbolVS(session) }?.let {
                     hasCheckedAnnotation(session, it, annotationId, visited + symbol)
                 } == true
             }
