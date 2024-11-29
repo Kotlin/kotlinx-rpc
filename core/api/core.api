@@ -1,6 +1,6 @@
 public final class kotlinx/rpc/AwaitFieldInitializationKt {
-	public static final fun awaitFieldInitialization (Lkotlinx/rpc/RemoteService;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static final fun awaitFieldInitialization (Lkotlinx/rpc/RemoteService;Lkotlin/reflect/KClass;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun awaitFieldInitialization (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun awaitFieldInitialization (Ljava/lang/Object;Lkotlin/reflect/KClass;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class kotlinx/rpc/RegisterFieldKt {
@@ -48,8 +48,11 @@ public final class kotlinx/rpc/UninitializedRpcFieldException : java/lang/Except
 }
 
 public final class kotlinx/rpc/WithServiceKt {
-	public static final fun withService (Lkotlinx/rpc/RpcClient;Lkotlin/reflect/KClass;)Lkotlinx/rpc/RemoteService;
-	public static final fun withService (Lkotlinx/rpc/RpcClient;Lkotlin/reflect/KType;)Lkotlinx/rpc/RemoteService;
+	public static final fun withService (Lkotlinx/rpc/RpcClient;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public static final fun withService (Lkotlinx/rpc/RpcClient;Lkotlin/reflect/KType;)Ljava/lang/Object;
+}
+
+public abstract interface annotation class kotlinx/rpc/annotations/CheckedTypeAnnotation : java/lang/annotation/Annotation {
 }
 
 public abstract interface annotation class kotlinx/rpc/annotations/Rpc : java/lang/annotation/Annotation {
@@ -68,11 +71,11 @@ public abstract interface class kotlinx/rpc/descriptor/RpcInvokator {
 }
 
 public abstract interface class kotlinx/rpc/descriptor/RpcInvokator$Field : kotlinx/rpc/descriptor/RpcInvokator {
-	public abstract fun call (Lkotlinx/rpc/RemoteService;)Ljava/lang/Object;
+	public abstract fun call (Ljava/lang/Object;)Ljava/lang/Object;
 }
 
 public abstract interface class kotlinx/rpc/descriptor/RpcInvokator$Method : kotlinx/rpc/descriptor/RpcInvokator {
-	public abstract fun call (Lkotlinx/rpc/RemoteService;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun call (Ljava/lang/Object;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class kotlinx/rpc/descriptor/RpcParameter {
@@ -82,7 +85,7 @@ public final class kotlinx/rpc/descriptor/RpcParameter {
 }
 
 public abstract interface class kotlinx/rpc/descriptor/RpcServiceDescriptor {
-	public abstract fun createInstance (JLkotlinx/rpc/RpcClient;)Lkotlinx/rpc/RemoteService;
+	public abstract fun createInstance (JLkotlinx/rpc/RpcClient;)Ljava/lang/Object;
 	public abstract fun getCallable (Ljava/lang/String;)Lkotlinx/rpc/descriptor/RpcCallable;
 	public abstract fun getFqName ()Ljava/lang/String;
 }
