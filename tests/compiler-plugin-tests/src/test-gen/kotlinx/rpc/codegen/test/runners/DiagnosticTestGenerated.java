@@ -29,4 +29,10 @@ public class DiagnosticTestGenerated extends AbstractDiagnosticTest {
   public void testCheckedAnnotation() {
     runTest("src/testData/diagnostics/checkedAnnotation.kt");
   }
+
+  @Test
+  @TestMetadata("rpcChecked.kt")
+  public void testRpcChecked() {
+    runTest("src/testData/diagnostics/rpcChecked.kt");
+  }
 }
