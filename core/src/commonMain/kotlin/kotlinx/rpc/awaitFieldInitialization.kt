@@ -4,6 +4,7 @@
 
 package kotlinx.rpc
 
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.internal.RpcDeferredField
 import kotlin.reflect.KClass
@@ -26,7 +27,7 @@ import kotlin.reflect.KClass
  * @param getter function that returns the field of the context service to wait for.
  * @return service filed after it was initialized.
  */
-public suspend fun <T : RemoteService, R> T.awaitFieldInitialization(getter: T.() -> R): R {
+public suspend fun <@Rpc T : Any, R> T.awaitFieldInitialization(getter: T.() -> R): R {
     val field = getter()
 
     if (field is RpcDeferredField<*>) {
@@ -55,7 +56,7 @@ public suspend fun <T : RemoteService, R> T.awaitFieldInitialization(getter: T.(
  * @param T service type
  * @return specified service, after all of it's field were initialized.
  */
-public suspend inline fun <reified T : RemoteService> T.awaitFieldInitialization(): T {
+public suspend inline fun <@Rpc reified T : Any> T.awaitFieldInitialization(): T {
     return awaitFieldInitialization(T::class)
 }
 
@@ -78,7 +79,7 @@ public suspend inline fun <reified T : RemoteService> T.awaitFieldInitialization
  * @param kClass [KClass] of the [T] type.
  * @return specified service, after all of it's field were initialized.
  */
-public suspend fun <T : RemoteService> T.awaitFieldInitialization(kClass: KClass<T>): T {
+public suspend fun <@Rpc T : Any> T.awaitFieldInitialization(kClass: KClass<T>): T {
     serviceDescriptorOf(kClass)
         .getFields(this)
         .forEach { field ->

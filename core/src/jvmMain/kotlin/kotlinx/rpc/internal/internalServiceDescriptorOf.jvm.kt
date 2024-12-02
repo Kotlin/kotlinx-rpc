@@ -4,13 +4,13 @@
 
 package kotlinx.rpc.internal
 
-import kotlinx.rpc.RemoteService
+import kotlinx.rpc.annotations.Rpc
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
 
 private const val RPC_SERVICE_STUB_SIMPLE_NAME = "\$rpcServiceStub"
 
-internal actual fun <T : RemoteService> internalServiceDescriptorOf(kClass: KClass<T>): Any? {
+internal actual fun <@Rpc T : Any> internalServiceDescriptorOf(kClass: KClass<T>): Any? {
     val className = "${kClass.qualifiedName}\$$RPC_SERVICE_STUB_SIMPLE_NAME"
 
     return kClass.java.classLoader

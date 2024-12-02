@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.name.Name
 object RpcClassId {
     val remoteServiceInterface = ClassId(FqName("kotlinx.rpc"), Name.identifier("RemoteService"))
     val rpcAnnotation = ClassId(FqName("kotlinx.rpc.annotations"), Name.identifier("Rpc"))
+    val checkedTypeAnnotation = ClassId(FqName("kotlinx.rpc.annotations"), Name.identifier("CheckedTypeAnnotation"))
 
     val serializableAnnotation = ClassId(FqName("kotlinx.serialization"), Name.identifier("Serializable"))
     val contextualAnnotation = ClassId(FqName("kotlinx.serialization"), Name.identifier("Contextual"))

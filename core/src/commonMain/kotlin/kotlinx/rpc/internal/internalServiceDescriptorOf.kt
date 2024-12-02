@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.internal
 
-import kotlinx.rpc.RemoteService
+import kotlinx.rpc.annotations.Rpc
 import kotlin.reflect.KClass
 
-internal expect fun <T : RemoteService> internalServiceDescriptorOf(kClass: KClass<T>): Any?
+internal expect fun <@Rpc T : Any> internalServiceDescriptorOf(kClass: KClass<T>): Any?

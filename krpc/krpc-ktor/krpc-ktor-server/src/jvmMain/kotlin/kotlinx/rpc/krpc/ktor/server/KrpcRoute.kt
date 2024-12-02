@@ -5,8 +5,8 @@
 package kotlinx.rpc.krpc.ktor.server
 
 import io.ktor.server.websocket.*
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.KrpcConfigBuilder
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
@@ -45,7 +45,7 @@ public class KrpcRoute(
      * @param serviceKClass [KClass] of the [Service].
      * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
      */
-    public fun <Service : RemoteService> registerService(
+    public fun <@Rpc Service : Any> registerService(
         serviceKClass: KClass<Service>,
         serviceFactory: (CoroutineContext) -> Service,
     ) {
@@ -63,7 +63,7 @@ public class KrpcRoute(
      * type `MyService` should be specified explicitly.
      * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
      */
-    public inline fun <reified Service : RemoteService> registerService(
+    public inline fun <@Rpc reified Service : Any> registerService(
         noinline serviceFactory: (CoroutineContext) -> Service,
     ) {
         registerService(Service::class, serviceFactory)

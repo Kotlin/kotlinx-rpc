@@ -4,6 +4,7 @@
 
 plugins {
     alias(libs.plugins.conventions.kmp)
+    alias(libs.plugins.kotlinx.rpc)
 }
 
 kotlin {

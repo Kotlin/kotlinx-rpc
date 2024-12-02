@@ -67,7 +67,10 @@ class FirRpcServiceGenerator(
     @Suppress("unused")
     private val logger: MessageCollector,
 ) : FirDeclarationGenerationExtension(session) {
-    private val serializationExtension = SerializationFirResolveExtension(session)
+    private val serializationExtension by lazy {
+        SerializationFirResolveExtension(session)
+    }
+
     private val isJvmOrMetadata = !session.moduleData.platform.run { isJs() || isWasm() || isNative() }
 
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {

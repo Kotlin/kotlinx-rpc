@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.internal
 
-import kotlinx.rpc.RemoteService
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.AssociatedObjectKey
@@ -18,10 +18,10 @@ import kotlin.reflect.findAssociatedObject
 @Target(AnnotationTarget.CLASS)
 public annotation class WithServiceDescriptor(
     @Suppress("unused")
-    val stub: KClass<out RpcServiceDescriptor<out RemoteService>>,
+    val stub: KClass<out RpcServiceDescriptor<*>>,
 )
 
 @OptIn(ExperimentalAssociatedObjects::class)
-internal actual fun <T : RemoteService> internalServiceDescriptorOf(kClass: KClass<T>): Any? {
+internal actual fun <@Rpc T : Any> internalServiceDescriptorOf(kClass: KClass<T>): Any? {
     return kClass.findAssociatedObject<WithServiceDescriptor>()
 }

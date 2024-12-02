@@ -5,12 +5,17 @@
 package kotlinx.rpc.codegen.checkers.diagnostics
 
 import org.jetbrains.kotlin.diagnostics.error0
+import org.jetbrains.kotlin.diagnostics.error1
 import org.jetbrains.kotlin.diagnostics.rendering.RootDiagnosticRendererFactory
+import org.jetbrains.kotlin.diagnostics.warning0
+import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 
 object FirRpcDiagnostics {
     val MISSING_RPC_ANNOTATION by error0<KtAnnotationEntry>()
+    val MISSING_SERIALIZATION_MODULE by warning0<KtAnnotationEntry>()
     val WRONG_RPC_ANNOTATION_TARGET by error0<KtAnnotationEntry>()
+    val CHECKED_ANNOTATION_VIOLATION by error1<KtAnnotationEntry, ConeKotlinType>()
 
     init {
         RootDiagnosticRendererFactory.registerFactory(RpcDiagnosticRendererFactory)

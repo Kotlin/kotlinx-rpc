@@ -1,0 +1,368 @@
+FILE: checkedAnnotation.kt
+    @R|kotlinx/rpc/annotations/CheckedTypeAnnotation|() @R|kotlin/annotation/Target|(allowedTargets = vararg(Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.ANNOTATION_CLASS|, Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.TYPE_PARAMETER|, Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.CLASS|)) public final annotation class Checked : R|kotlin/Annotation| {
+        public constructor(): R|Checked| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|Checked|() @R|kotlin/annotation/Target|(allowedTargets = vararg(Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.ANNOTATION_CLASS|, Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.TYPE_PARAMETER|, Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.CLASS|)) public final annotation class SubChecked : R|kotlin/Annotation| {
+        public constructor(): R|SubChecked| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|SubChecked|() @R|kotlin/annotation/Target|(allowedTargets = vararg(Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.ANNOTATION_CLASS|, Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.TYPE_PARAMETER|, Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.CLASS|)) public final annotation class SubSubChecked : R|kotlin/Annotation| {
+        public constructor(): R|SubSubChecked| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|kotlinx/rpc/annotations/CheckedTypeAnnotation|() @R|kotlin/annotation/Target|(allowedTargets = vararg(Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.ANNOTATION_CLASS|, Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.TYPE_PARAMETER|, Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.CLASS|)) public final annotation class Checked2 : R|kotlin/Annotation| {
+        public constructor(): R|Checked2| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|Checked|() public open class AnnotatedChecked : R|kotlin/Any| {
+        public constructor(): R|AnnotatedChecked| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class AnnotatedCheckedImpl : R|AnnotatedChecked| {
+        public constructor(): R|AnnotatedCheckedImpl| {
+            super<R|AnnotatedChecked|>()
+        }
+
+    }
+    @R|SubChecked|() public final class AnnotatedSubChecked : R|kotlin/Any| {
+        public constructor(): R|AnnotatedSubChecked| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|SubSubChecked|() public final class AnnotatedSubSubChecked : R|kotlin/Any| {
+        public constructor(): R|AnnotatedSubSubChecked| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|Checked2|() public final class AnnotatedChecked2 : R|kotlin/Any| {
+        public constructor(): R|AnnotatedChecked2| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|Checked|() @R|Checked2|() public final class AnnotatedCheckedMulti : R|kotlin/Any| {
+        public constructor(): R|AnnotatedCheckedMulti| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final fun <@R|Checked|() T> checked(arg: R|T|): R|kotlin/Unit| {
+    }
+    public final fun <@R|SubChecked|() T> subChecked(arg: R|T|): R|kotlin/Unit| {
+    }
+    public final fun <@R|SubSubChecked|() T> subSubChecked(arg: R|T|): R|kotlin/Unit| {
+    }
+    public final fun <@R|Checked2|() T> checked2(arg: R|T|): R|kotlin/Unit| {
+    }
+    public final fun <@R|Checked|() @R|Checked2|() T> checkedMulti(arg: R|T|): R|kotlin/Unit| {
+    }
+    public final fun <@R|Checked|() T1, @R|Checked2|() T2> checkedTwoParams(arg1: R|T1|, arg2: R|T2|): R|kotlin/Unit| {
+    }
+    public final fun <@R|Checked|() T1, T2> checkedTwoParamsSingleAnnotation(arg1: R|T1|, arg2: R|T2|): R|kotlin/Unit| {
+    }
+    public open class CheckedClass<@R|Checked|() T> : R|kotlin/Any| {
+        public constructor<@R|Checked|() T>(arg: R|T|): R|CheckedClass<T>| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|Checked|() public final class CheckedClassChild<@R|Checked|() T> : R|CheckedClass<CheckedClassChild<T>>| {
+        public constructor<@R|Checked|() T>(arg: R|T|): R|CheckedClassChild<T>| {
+            super<R|CheckedClass<CheckedClassChild<T>>|>(R|/CheckedClassChild.CheckedClassChild|<R|T|>(R|<local>/arg|))
+        }
+
+    }
+    public final class CheckedClassChildFail<@R|Checked|() T> : R|CheckedClass<CheckedClassChildFail<T>>| {
+        public constructor<@R|Checked|() T>(arg: R|T|): R|CheckedClassChildFail<T>| {
+            super<R|CheckedClass<CheckedClassChildFail<T>>|>(R|/CheckedClassChildFail.CheckedClassChildFail|<R|T|>(R|<local>/arg|))
+        }
+
+    }
+    public final class CheckedClassChildFail2<T> : R|CheckedClass<CheckedClassChildFail2<T>>| {
+        public constructor<T>(arg: R|T|): R|CheckedClassChildFail2<T>| {
+            super<R|CheckedClass<CheckedClassChildFail2<T>>|>(R|/CheckedClassChildFail2.CheckedClassChildFail2|<R|T|>(R|<local>/arg|))
+        }
+
+    }
+    public final class CheckedClassChildFail3<T> : R|CheckedClass<T>| {
+        public constructor<T>(arg: R|T|): R|CheckedClassChildFail3<T>| {
+            super<R|CheckedClass<T>|>(R|<local>/arg|)
+        }
+
+    }
+    public final class CheckedClassChildOk<@R|Checked|() T> : R|CheckedClass<T>| {
+        public constructor<@R|Checked|() T>(arg: R|T|): R|CheckedClassChildOk<T>| {
+            super<R|CheckedClass<T>|>(R|<local>/arg|)
+        }
+
+    }
+    @R|Checked|() public final class CheckedClassChildOk2<T> : R|CheckedClass<CheckedClassChildOk2<T>>| {
+        public constructor<T>(arg: R|T|): R|CheckedClassChildOk2<T>| {
+            super<R|CheckedClass<CheckedClassChildOk2<T>>|>(R|/CheckedClassChildOk2.CheckedClassChildOk2|<R|T|>(R|<local>/arg|))
+        }
+
+    }
+    public final class SubCheckedClass<@R|SubChecked|() T> : R|kotlin/Any| {
+        public constructor<@R|SubChecked|() T>(arg: R|T|): R|SubCheckedClass<T>| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class SubSubCheckedClass<@R|SubSubChecked|() T> : R|kotlin/Any| {
+        public constructor<@R|SubSubChecked|() T>(arg: R|T|): R|SubSubCheckedClass<T>| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class Checked2Class<@R|Checked2|() T> : R|kotlin/Any| {
+        public constructor<@R|Checked2|() T>(arg: R|T|): R|Checked2Class<T>| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class CheckedMultiClass<@R|Checked|() @R|Checked2|() T> : R|kotlin/Any| {
+        public constructor<@R|Checked|() @R|Checked2|() T>(arg: R|T|): R|CheckedMultiClass<T>| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class CheckedTwoParamsClass<@R|Checked|() T1, @R|Checked2|() T2> : R|kotlin/Any| {
+        public constructor<@R|Checked|() T1, @R|Checked2|() T2>(arg1: R|T1|, arg2: R|T2|): R|CheckedTwoParamsClass<T1, T2>| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class CheckedTwoParamsSingleAnnotationClass<@R|Checked|() T1, T2> : R|kotlin/Any| {
+        public constructor<@R|Checked|() T1, T2>(arg1: R|T1|, arg2: R|T2|): R|CheckedTwoParamsSingleAnnotationClass<T1, T2>| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class GenericClass<T> : R|kotlin/Any| {
+        public constructor<T>(arg: R|T|): R|GenericClass<T>| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final fun <@R|Checked|() T : R|CheckedClass<T>|> nestedCheckedOk(): R|kotlin/Unit| {
+    }
+    public final fun <@R|Checked|() T : R|CheckedTwoParamsClass<T, *>|> nestedCheckedThoParamsOk(): R|kotlin/Unit| {
+    }
+    public final fun <@R|SubChecked|() T : R|CheckedClass<T>|> nestedSubCheckedOk(): R|kotlin/Unit| {
+    }
+    public final fun <@R|SubSubChecked|() T : R|CheckedClass<T>|> nestedSubSubCheckedOk(): R|kotlin/Unit| {
+    }
+    public final fun <@R|Checked|() T, C : R|CheckedClass<T>|> nestedTwoCheckedOk(): R|kotlin/Unit| {
+    }
+    public final fun <@R|Checked|() T, C : R|GenericClass<GenericClass<CheckedClass<T>>>|> deeplyNestedTwoCheckedOk(): R|kotlin/Unit| {
+    }
+    public final fun <T, C : R|CheckedClass<T>|> nestedTwoCheckedFail(): R|kotlin/Unit| {
+    }
+    public final fun <@R|Checked2|() T : R|CheckedClass<T>|> nestedChecked2Fail(): R|kotlin/Unit| {
+    }
+    public final fun <T : R|CheckedClass<T>|> nestedCheckedFail(): R|kotlin/Unit| {
+    }
+    public final fun <@R|Checked|() T> nestedArgumetTypeCheckedOk(arg: R|CheckedClass<T>|): R|kotlin/Unit| {
+    }
+    public final fun <T> nestedArgumetTypeCheckedFail(arg: R|CheckedClass<T>|): R|kotlin/Unit| {
+    }
+    public final fun <@R|Checked|() T> doubleNestedArgumetTypeCheckedOk(arg: R|GenericClass<CheckedClass<T>>|): R|kotlin/Unit| {
+    }
+    public final fun <T> doubleNestedArgumetTypeCheckedFail(arg: R|GenericClass<CheckedClass<T>>|): R|kotlin/Unit| {
+    }
+    public final class NestedArgumetTypeCheckedOk<@R|Checked|() T> : R|kotlin/Any| {
+        public constructor<@R|Checked|() T>(arg: R|CheckedClass<T>|): R|NestedArgumetTypeCheckedOk<T>| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class NestedArgumetTypeCheckedFail<T> : R|kotlin/Any| {
+        public constructor<T>(arg: R|CheckedClass<T>|): R|NestedArgumetTypeCheckedFail<T>| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class DoubleNestedArgumetTypeCheckedOk<@R|Checked|() T> : R|kotlin/Any| {
+        public constructor<@R|Checked|() T>(arg: R|GenericClass<CheckedClass<T>>|): R|DoubleNestedArgumetTypeCheckedOk<T>| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class DoubleNestedArgumetTypeCheckedFail<T> : R|kotlin/Any| {
+        public constructor<T>(arg: R|GenericClass<CheckedClass<T>>|): R|DoubleNestedArgumetTypeCheckedFail<T>| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class CheckedNestedClass<@R|Checked|() T : R|CheckedClass<T>|> : R|kotlin/Any| {
+        public constructor<@R|Checked|() T : R|CheckedClass<T>|>(): R|CheckedNestedClass<T>| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class CheckedNestedClassFail<T : R|CheckedClass<T>|> : R|kotlin/Any| {
+        public constructor<T : R|CheckedClass<T>|>(): R|CheckedNestedClassFail<T>| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final fun <@R|Checked|() T : R|CheckedNestedClass<T>|> doubleNestedCheckedOk(): R|kotlin/Unit| {
+    }
+    public final fun <T : R|CheckedNestedClass<T>|> doubleNestedCheckedFail(): R|kotlin/Unit| {
+    }
+    public final fun <@R|Checked|() T : R|GenericClass<CheckedClass<T>>|> tripleNestedCheckedOk(): R|kotlin/Unit| {
+    }
+    public final fun <T : R|GenericClass<CheckedClass<T>>|> tripleNestedCheckedFail(): R|kotlin/Unit| {
+    }
+    public final fun <@R|Checked|() T : R|GenericClass<GenericClass<CheckedClass<T>>>|> quadrupleNestedCheckedOk(): R|kotlin/Unit| {
+    }
+    public final fun <T : R|GenericClass<GenericClass<CheckedClass<T>>>|> quadrupleNestedCheckedFail(): R|kotlin/Unit| {
+    }
+    public final fun <@R|SubSubChecked|() T : R|GenericClass<GenericClass<GenericClass<CheckedClass<T>>>>|> quintupleNestedCheckedOk(): R|kotlin/Unit| {
+    }
+    public final fun <T : R|GenericClass<GenericClass<GenericClass<CheckedClass<T>>>>|> quintupleNestedCheckedFail(): R|kotlin/Unit| {
+    }
+    public final fun main(): R|kotlin/Unit| {
+        R|/checked|<R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/checked|<R|AnnotatedCheckedImpl|>(R|/AnnotatedCheckedImpl.AnnotatedCheckedImpl|())
+        R|/checked|<R|AnnotatedSubChecked|>(R|/AnnotatedSubChecked.AnnotatedSubChecked|())
+        R|/checked|<R|AnnotatedSubSubChecked|>(R|/AnnotatedSubSubChecked.AnnotatedSubSubChecked|())
+        R|/checked|<R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/subChecked|<R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/subChecked|<R|AnnotatedSubChecked|>(R|/AnnotatedSubChecked.AnnotatedSubChecked|())
+        R|/subChecked|<R|AnnotatedSubSubChecked|>(R|/AnnotatedSubSubChecked.AnnotatedSubSubChecked|())
+        R|/subChecked|<R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/subSubChecked|<R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/subSubChecked|<R|AnnotatedSubChecked|>(R|/AnnotatedSubChecked.AnnotatedSubChecked|())
+        R|/subSubChecked|<R|AnnotatedSubSubChecked|>(R|/AnnotatedSubSubChecked.AnnotatedSubSubChecked|())
+        R|/subSubChecked|<R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/checked2|<R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/checked2|<R|AnnotatedSubChecked|>(R|/AnnotatedSubChecked.AnnotatedSubChecked|())
+        R|/checked2|<R|AnnotatedSubSubChecked|>(R|/AnnotatedSubSubChecked.AnnotatedSubSubChecked|())
+        R|/checked2|<R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/checkedMulti|<R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/checkedMulti|<R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/checkedMulti|<R|AnnotatedCheckedMulti|>(R|/AnnotatedCheckedMulti.AnnotatedCheckedMulti|())
+        R|/checkedTwoParams|<R|AnnotatedChecked|, R|AnnotatedChecked2|>(R|/AnnotatedChecked.AnnotatedChecked|(), R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/checkedTwoParams|<R|AnnotatedChecked2|, R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|(), R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/checkedTwoParams|<R|AnnotatedChecked|, R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|(), R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/checkedTwoParams|<R|AnnotatedChecked2|, R|AnnotatedChecked|>(R|/AnnotatedChecked2.AnnotatedChecked2|(), R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/checkedTwoParamsSingleAnnotation|<R|AnnotatedChecked|, R|AnnotatedChecked2|>(R|/AnnotatedChecked.AnnotatedChecked|(), R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/checkedTwoParamsSingleAnnotation|<R|AnnotatedChecked2|, R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|(), R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/checkedTwoParamsSingleAnnotation|<R|AnnotatedChecked|, R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|(), R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/checkedTwoParamsSingleAnnotation|<R|AnnotatedChecked2|, R|AnnotatedChecked|>(R|/AnnotatedChecked2.AnnotatedChecked2|(), R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/nestedCheckedOk|<R|CheckedClassChild<AnnotatedChecked>|>()
+        R|/nestedCheckedOk|<R|CheckedClassChild<AnnotatedCheckedImpl>|>()
+        R|/nestedTwoCheckedOk|<R|AnnotatedChecked|, R|CheckedClass<AnnotatedChecked>|>()
+        R|/nestedTwoCheckedOk|<R|AnnotatedCheckedImpl|, R|CheckedClass<AnnotatedCheckedImpl>|>()
+        R|/deeplyNestedTwoCheckedOk|<R|AnnotatedChecked|, R|GenericClass<GenericClass<CheckedClass<AnnotatedChecked>>>|>()
+        R|/deeplyNestedTwoCheckedOk|<R|AnnotatedCheckedImpl|, R|GenericClass<GenericClass<CheckedClass<AnnotatedCheckedImpl>>>|>()
+        R|/CheckedClass.CheckedClass|<R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/CheckedClass.CheckedClass|<R|AnnotatedChecked|>(R|/AnnotatedCheckedImpl.AnnotatedCheckedImpl|())
+        R|/CheckedClass.CheckedClass|<R|AnnotatedCheckedImpl|>(R|/AnnotatedCheckedImpl.AnnotatedCheckedImpl|())
+        R|/CheckedClass.CheckedClass|<R|AnnotatedSubChecked|>(R|/AnnotatedSubChecked.AnnotatedSubChecked|())
+        R|/CheckedClass.CheckedClass|<R|AnnotatedSubSubChecked|>(R|/AnnotatedSubSubChecked.AnnotatedSubSubChecked|())
+        R|/CheckedClass.CheckedClass|<R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/SubCheckedClass.SubCheckedClass|<R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/SubCheckedClass.SubCheckedClass|<R|AnnotatedSubChecked|>(R|/AnnotatedSubChecked.AnnotatedSubChecked|())
+        R|/SubCheckedClass.SubCheckedClass|<R|AnnotatedSubSubChecked|>(R|/AnnotatedSubSubChecked.AnnotatedSubSubChecked|())
+        R|/SubCheckedClass.SubCheckedClass|<R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/SubSubCheckedClass.SubSubCheckedClass|<R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/SubSubCheckedClass.SubSubCheckedClass|<R|AnnotatedSubChecked|>(R|/AnnotatedSubChecked.AnnotatedSubChecked|())
+        R|/SubSubCheckedClass.SubSubCheckedClass|<R|AnnotatedSubSubChecked|>(R|/AnnotatedSubSubChecked.AnnotatedSubSubChecked|())
+        R|/SubSubCheckedClass.SubSubCheckedClass|<R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/Checked2Class.Checked2Class|<R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/Checked2Class.Checked2Class|<R|AnnotatedSubChecked|>(R|/AnnotatedSubChecked.AnnotatedSubChecked|())
+        R|/Checked2Class.Checked2Class|<R|AnnotatedSubSubChecked|>(R|/AnnotatedSubSubChecked.AnnotatedSubSubChecked|())
+        R|/Checked2Class.Checked2Class|<R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/CheckedMultiClass.CheckedMultiClass|<R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/CheckedMultiClass.CheckedMultiClass|<R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/CheckedMultiClass.CheckedMultiClass|<R|AnnotatedCheckedMulti|>(R|/AnnotatedCheckedMulti.AnnotatedCheckedMulti|())
+        R|/CheckedTwoParamsClass.CheckedTwoParamsClass|<R|AnnotatedChecked|, R|AnnotatedChecked2|>(R|/AnnotatedChecked.AnnotatedChecked|(), R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/CheckedTwoParamsClass.CheckedTwoParamsClass|<R|AnnotatedChecked2|, R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|(), R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/CheckedTwoParamsClass.CheckedTwoParamsClass|<R|AnnotatedChecked|, R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|(), R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/CheckedTwoParamsClass.CheckedTwoParamsClass|<R|AnnotatedChecked2|, R|AnnotatedChecked|>(R|/AnnotatedChecked2.AnnotatedChecked2|(), R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/CheckedTwoParamsSingleAnnotationClass.CheckedTwoParamsSingleAnnotationClass|<R|AnnotatedChecked|, R|AnnotatedChecked2|>(R|/AnnotatedChecked.AnnotatedChecked|(), R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/CheckedTwoParamsSingleAnnotationClass.CheckedTwoParamsSingleAnnotationClass|<R|AnnotatedChecked2|, R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|(), R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/CheckedTwoParamsSingleAnnotationClass.CheckedTwoParamsSingleAnnotationClass|<R|AnnotatedChecked|, R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|(), R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/CheckedTwoParamsSingleAnnotationClass.CheckedTwoParamsSingleAnnotationClass|<R|AnnotatedChecked2|, R|AnnotatedChecked|>(R|/AnnotatedChecked2.AnnotatedChecked2|(), R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/checked|<R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/checked|<R|AnnotatedCheckedImpl|>(R|/AnnotatedCheckedImpl.AnnotatedCheckedImpl|())
+        R|/checked|<R|AnnotatedSubChecked|>(R|/AnnotatedSubChecked.AnnotatedSubChecked|())
+        R|/checked|<R|AnnotatedSubSubChecked|>(R|/AnnotatedSubSubChecked.AnnotatedSubSubChecked|())
+        R|/checked|<R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/CheckedClass.CheckedClass|<R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/CheckedClass.CheckedClass|<R|AnnotatedCheckedImpl|>(R|/AnnotatedCheckedImpl.AnnotatedCheckedImpl|())
+        R|/CheckedClass.CheckedClass|<R|AnnotatedSubChecked|>(R|/AnnotatedSubChecked.AnnotatedSubChecked|())
+        R|/CheckedClass.CheckedClass|<R|AnnotatedSubSubChecked|>(R|/AnnotatedSubSubChecked.AnnotatedSubSubChecked|())
+        R|/CheckedClass.CheckedClass|<R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/checkedTwoParams|<R|AnnotatedChecked|, R|AnnotatedChecked2|>(R|/AnnotatedChecked.AnnotatedChecked|(), R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/checkedTwoParams|<R|AnnotatedChecked|, R|AnnotatedChecked2|>(R|/AnnotatedChecked.AnnotatedChecked|(), R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/checkedTwoParams|<R|AnnotatedChecked2|, R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|(), R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/checkedTwoParams|<R|AnnotatedChecked|, R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|(), R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/checkedTwoParams|<R|AnnotatedChecked2|, R|AnnotatedChecked|>(R|/AnnotatedChecked2.AnnotatedChecked2|(), R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/CheckedTwoParamsClass.CheckedTwoParamsClass|<R|AnnotatedChecked|, R|AnnotatedChecked2|>(R|/AnnotatedChecked.AnnotatedChecked|(), R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/CheckedTwoParamsClass.CheckedTwoParamsClass|<R|AnnotatedChecked|, R|AnnotatedChecked2|>(R|/AnnotatedChecked.AnnotatedChecked|(), R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/CheckedTwoParamsClass.CheckedTwoParamsClass|<R|AnnotatedChecked2|, R|AnnotatedChecked2|>(R|/AnnotatedChecked2.AnnotatedChecked2|(), R|/AnnotatedChecked2.AnnotatedChecked2|())
+        R|/CheckedTwoParamsClass.CheckedTwoParamsClass|<R|AnnotatedChecked|, R|AnnotatedChecked|>(R|/AnnotatedChecked.AnnotatedChecked|(), R|/AnnotatedChecked.AnnotatedChecked|())
+        R|/CheckedTwoParamsClass.CheckedTwoParamsClass|<R|AnnotatedChecked2|, R|AnnotatedChecked|>(R|/AnnotatedChecked2.AnnotatedChecked2|(), R|/AnnotatedChecked.AnnotatedChecked|())
+    }
+    public final fun <@R|Checked|() T, C : R|CheckedClass<T>|> nestedTwoWithArgCheckedOk(arg: R|C|): R|kotlin/Unit| {
+    }
+    public final fun <@R|Checked|() T, C : R|GenericClass<GenericClass<CheckedClass<T>>>|> deeplyNestedTwoWithArgCheckedOk(arg: R|C|): R|kotlin/Unit| {
+    }
+    public final fun <@R|Checked|() T> unknownTypeOk(arg: R|T|): R|kotlin/Unit| {
+        R|/checked|<R|T|>(R|<local>/arg|)
+        R|/checked|<R|T|>(R|<local>/arg|)
+        R|/CheckedClass.CheckedClass|<R|T|>(R|<local>/arg|)
+        R|/CheckedClass.CheckedClass|<R|T|>(R|<local>/arg|)
+        R|/nestedTwoCheckedOk|<R|T|, R|CheckedClass<T>|>()
+        R|/nestedTwoCheckedOk|<R|T|, R|CheckedClass<T>|>()
+        R|/deeplyNestedTwoCheckedOk|<R|T|, R|GenericClass<GenericClass<CheckedClass<T>>>|>()
+        R|/deeplyNestedTwoCheckedOk|<R|T|, R|GenericClass<GenericClass<CheckedClass<T>>>|>()
+        R|/nestedTwoWithArgCheckedOk|<R|T|, R|CheckedClass<T>|>(R|/CheckedClass.CheckedClass|<R|T|>(R|<local>/arg|))
+        R|/deeplyNestedTwoWithArgCheckedOk|<R|T|, R|GenericClass<GenericClass<CheckedClass<T>>>|>(R|/GenericClass.GenericClass|<R|GenericClass<CheckedClass<T>>|>(R|/GenericClass.GenericClass|<R|CheckedClass<T>|>(R|/CheckedClass.CheckedClass|<R|T|>(R|<local>/arg|))))
+    }
+    public final fun <T> unknownTypeFail(arg: R|T|): R|kotlin/Unit| {
+        R|/checked|<R|T|>(R|<local>/arg|)
+    }
+    public final fun <T> unknownTypeFail2(arg: R|T|): R|kotlin/Unit| {
+        R|/checked|<R|T|>(R|<local>/arg|)
+    }
+    public final fun <T> unknownTypeFail3(arg: R|T|): R|kotlin/Unit| {
+        R|/CheckedClass.CheckedClass|<R|T|>(R|<local>/arg|)
+    }
+    public final fun <T> unknownTypeFail4(arg: R|T|): R|kotlin/Unit| {
+        R|/CheckedClass.CheckedClass|<R|T|>(R|<local>/arg|)
+    }
+    public final fun <T> unknownTypeFail5(arg: R|T|): R|kotlin/Unit| {
+        R|/nestedTwoCheckedOk|<R|T|, R|CheckedClass<T>|>()
+    }
+    public final fun <T> unknownTypeFail6(arg: R|T|): R|kotlin/Unit| {
+        R|/nestedTwoCheckedOk|<R|T|, R|CheckedClass<T>|>()
+    }
+    public final fun <T> unknownTypeFail7(arg: R|T|): R|kotlin/Unit| {
+        R|/nestedTwoWithArgCheckedOk|<R|T|, R|CheckedClass<T>|>(R|/CheckedClass.CheckedClass|<R|T|>(R|<local>/arg|))
+    }
+    public final fun <T> unknownTypeFail8(arg: R|T|): R|kotlin/Unit| {
+        R|/deeplyNestedTwoCheckedOk|<R|T|, R|GenericClass<GenericClass<CheckedClass<T>>>|>()
+    }
+    public final fun <T> unknownTypeFail9(arg: R|T|): R|kotlin/Unit| {
+        R|/deeplyNestedTwoCheckedOk|<R|T|, R|GenericClass<GenericClass<CheckedClass<T>>>|>()
+    }
+    public final fun <T> unknownTypeFail10(arg: R|T|): R|kotlin/Unit| {
+        R|/deeplyNestedTwoWithArgCheckedOk|<R|T|, R|GenericClass<GenericClass<CheckedClass<T>>>|>(R|/GenericClass.GenericClass|<R|GenericClass<CheckedClass<T>>|>(R|/GenericClass.GenericClass|<R|CheckedClass<T>|>(R|/CheckedClass.CheckedClass|<R|T|>(R|<local>/arg|))))
+    }

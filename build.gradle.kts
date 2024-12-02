@@ -14,6 +14,7 @@ plugins {
     alias(libs.plugins.conventions.kover)
     alias(libs.plugins.conventions.gradle.doctor)
     alias(libs.plugins.atomicfu)
+    id("build-util")
 }
 
 configureProjectReport()

@@ -5,8 +5,8 @@
 package kotlinx.rpc.krpc.server
 
 import kotlinx.coroutines.*
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -103,7 +103,7 @@ public abstract class KrpcServer(
         }
     }
 
-    final override fun <Service : RemoteService> registerService(
+    final override fun <@Rpc Service : Any> registerService(
         serviceKClass: KClass<Service>,
         serviceFactory: (CoroutineContext) -> Service,
     ) {
@@ -126,7 +126,7 @@ public abstract class KrpcServer(
         }
     }
 
-    private fun <Service : RemoteService> createNewServiceInstance(
+    private fun <@Rpc Service : Any> createNewServiceInstance(
         descriptor: RpcServiceDescriptor<Service>,
         serviceFactory: (CoroutineContext) -> Service,
     ): KrpcServerService<Service> {

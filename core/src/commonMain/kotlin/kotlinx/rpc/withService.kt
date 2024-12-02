@@ -5,6 +5,7 @@
 package kotlinx.rpc
 
 import kotlinx.atomicfu.atomic
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.internal.kClass
 import kotlin.reflect.KClass
@@ -18,7 +19,7 @@ import kotlin.reflect.KType
  * @param T the exact type of the service to be created.
  * @return instance of the generated service.
  */
-public inline fun <reified T : RemoteService> RpcClient.withService(): T {
+public inline fun <@Rpc reified T : Any> RpcClient.withService(): T {
     return withService(T::class)
 }
 
@@ -31,7 +32,7 @@ public inline fun <reified T : RemoteService> RpcClient.withService(): T {
  * @param serviceKType [KType] of the service to be created.
  * @return instance of the generated service.
  */
-public fun <T : RemoteService> RpcClient.withService(serviceKType: KType): T {
+public fun <@Rpc T : Any> RpcClient.withService(serviceKType: KType): T {
     return withService(serviceKType.kClass())
 }
 
@@ -50,7 +51,7 @@ private val SERVICE_ID = atomic(0L)
  * @param serviceKClass [KClass] of the service to be created.
  * @return instance of the generated service.
  */
-public fun <T : RemoteService> RpcClient.withService(serviceKClass: KClass<T>): T {
+public fun <@Rpc T : Any> RpcClient.withService(serviceKClass: KClass<T>): T {
     val descriptor = serviceDescriptorOf(serviceKClass)
 
     val id = SERVICE_ID.incrementAndGet()

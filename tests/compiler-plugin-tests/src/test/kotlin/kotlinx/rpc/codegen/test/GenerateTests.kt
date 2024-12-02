@@ -5,15 +5,15 @@
 package kotlinx.rpc.codegen.test
 
 import kotlinx.rpc.codegen.test.runners.AbstractBoxTest
+import kotlinx.rpc.codegen.test.runners.AbstractDiagnosticTest
 import org.jetbrains.kotlin.generators.generateTestGroupSuiteWithJUnit5
 
 fun main() {
     generateTestGroupSuiteWithJUnit5 {
         testGroup(testDataRoot = "src/testData", testsRoot = "src/test-gen") {
-            // todo enable after diagnostics are done
-//            testClass<AbstractDiagnosticTest> {
-//                model("diagnostics")
-//            }
+            testClass<AbstractDiagnosticTest> {
+                model("diagnostics")
+            }
 
             testClass<AbstractBoxTest> {
                 model("box")

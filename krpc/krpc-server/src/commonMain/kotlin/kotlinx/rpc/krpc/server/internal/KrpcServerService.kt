@@ -5,7 +5,7 @@
 package kotlinx.rpc.krpc.server.internal
 
 import kotlinx.coroutines.*
-import kotlinx.rpc.RemoteService
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.descriptor.RpcInvokator
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
 import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
@@ -19,7 +19,7 @@ import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.StringFormat
 import kotlin.coroutines.CoroutineContext
 
-internal class KrpcServerService<T : RemoteService>(
+internal class KrpcServerService<@Rpc T : Any>(
     private val service: T,
     private val descriptor: RpcServiceDescriptor<T>,
     override val config: KrpcConfig.Server,

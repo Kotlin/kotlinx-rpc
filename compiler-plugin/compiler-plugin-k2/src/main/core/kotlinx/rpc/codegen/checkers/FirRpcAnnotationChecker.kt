@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen.checkers
 
+import kotlinx.rpc.codegen.FirCheckersContext
 import kotlinx.rpc.codegen.FirRpcPredicates
 import kotlinx.rpc.codegen.checkers.diagnostics.FirRpcDiagnostics
 import kotlinx.rpc.codegen.isRemoteService
@@ -18,7 +19,7 @@ import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 
-object FirRpcAnnotationChecker : FirRegularClassChecker(MppCheckerKind.Common) {
+class FirRpcAnnotationChecker(private val ctx: FirCheckersContext) : FirRegularClassChecker(MppCheckerKind.Common) {
     override fun check(
         declaration: FirRegularClass,
         context: CheckerContext,
@@ -38,6 +39,14 @@ object FirRpcAnnotationChecker : FirRegularClassChecker(MppCheckerKind.Common) {
             reporter.reportOn(
                 source = declaration.symbol.remoteServiceSupertypeSource(context.session),
                 factory = FirRpcDiagnostics.MISSING_RPC_ANNOTATION,
+                context = context,
+            )
+        }
+
+        if (rpcAnnotated && !ctx.serializationIsPresent) {
+            reporter.reportOn(
+                source = declaration.symbol.rpcAnnotationSource(context.session),
+                factory = FirRpcDiagnostics.MISSING_SERIALIZATION_MODULE,
                 context = context,
             )
         }
