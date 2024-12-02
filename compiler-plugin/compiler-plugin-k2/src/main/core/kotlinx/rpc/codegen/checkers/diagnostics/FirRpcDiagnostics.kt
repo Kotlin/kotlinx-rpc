@@ -37,7 +37,7 @@ class FirRpcStrictModeDiagnostics(val modes: StrictModeAggregator) {
     val STATE_FLOW_IN_RPC_SERVICE by modded0<PsiElement>(modes.stateFlow)
     val SHARED_FLOW_IN_RPC_SERVICE by modded0<PsiElement>(modes.sharedFlow)
     val NESTED_STREAMING_IN_RPC_SERVICE by modded0<PsiElement>(modes.nestedFlow)
-    val STREAM_SCOPE_ENTITY_IN_RPC by modded0<PsiElement>(modes.streamScopedFunctions)
+    val STREAM_SCOPE_FUNCTION_IN_RPC by modded0<PsiElement>(modes.streamScopedFunctions)
     val SUSPENDING_SERVER_STREAMING_IN_RPC_SERVICE by modded0<PsiElement>(modes.suspendingServerStreaming)
     val NON_TOP_LEVEL_SERVER_STREAMING_IN_RPC_SERVICE by modded0<PsiElement>(modes.notTopLevelServerFlow)
     val FIELD_IN_RPC_SERVICE by modded0<PsiElement>(modes.fields)

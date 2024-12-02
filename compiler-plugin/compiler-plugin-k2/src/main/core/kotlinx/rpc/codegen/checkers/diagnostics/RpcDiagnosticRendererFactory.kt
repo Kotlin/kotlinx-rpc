@@ -65,10 +65,10 @@ class RpcStrictModeDiagnosticRendererFactory(
             )
         }
 
-        diagnostics.STREAM_SCOPE_ENTITY_IN_RPC?.let {
+        diagnostics.STREAM_SCOPE_FUNCTION_IN_RPC?.let {
             put(
                 factory = it,
-                message = message("Stream Scope usage") { streamScopedFunctions },
+                message = message("Stream scope usage") { streamScopedFunctions },
             )
         }
 
