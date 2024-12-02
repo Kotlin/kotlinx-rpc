@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.fir.extensions.FirSupertypeGenerationExtension.Facto
 class FirRpcExtensionRegistrar(private val configuration: CompilerConfiguration) : FirExtensionRegistrar() {
     override fun ExtensionRegistrarContext.configurePlugin() {
         val logger = configuration.get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
+        val modes = configuration.strictModeAggregator()
 
         val serializationIsPresent = try {
             Class.forName("org.jetbrains.kotlinx.serialization.compiler.fir.SerializationFirResolveExtension")
@@ -29,7 +30,7 @@ class FirRpcExtensionRegistrar(private val configuration: CompilerConfiguration)
             false
         }
 
-        +CFactory { FirRpcCheckers(it, serializationIsPresent) }
+        +CFactory { FirRpcAdditionalCheckers(it, serializationIsPresent, modes) }
 
         +SFactory { FirRpcSupertypeGenerator(it, logger) }
     }

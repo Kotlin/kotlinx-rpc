@@ -6,7 +6,7 @@ package kotlinx.rpc.codegen
 
 import kotlinx.rpc.codegen.extension.RpcIrExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
-import org.jetbrains.kotlin.compiler.plugin.CliOption
+import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
@@ -15,9 +15,25 @@ import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
 
 @OptIn(ExperimentalCompilerApi::class)
 class RpcCommandLineProcessor : CommandLineProcessor {
-    override val pluginId = "kotlinx.rpc.compiler-plugin"
+    override val pluginId = "kotlinx-rpc"
 
-    override val pluginOptions = emptyList<CliOption>()
+    override val pluginOptions = listOf(
+        StrictModeCliOptions.STATE_FLOW,
+        StrictModeCliOptions.SHARED_FLOW,
+        StrictModeCliOptions.NESTED_FLOW,
+        StrictModeCliOptions.STREAM_SCOPED_FUNCTIONS,
+        StrictModeCliOptions.SUSPENDING_SERVER_STREAMING,
+        StrictModeCliOptions.NOT_TOP_LEVEL_SERVER_FLOW,
+        StrictModeCliOptions.FIELDS,
+    )
+
+    override fun processOption(
+        option: AbstractCliOption,
+        value: String,
+        configuration: CompilerConfiguration,
+    ) {
+        option.processAsStrictModeOption(value, configuration)
+    }
 }
 
 @OptIn(ExperimentalCompilerApi::class)

@@ -20,6 +20,7 @@ class KotlinCompilerPluginBuilder {
     var applyToCompilation: (kotlinCompilation: KotlinCompilation<*>) -> Provider<List<SubpluginOption>> = {
         it.target.project.provider { emptyList() }
     }
+
     var pluginId: String = PLUGIN_ID
     var groupId = GROUP_ID
     var artifactId: String? = null
@@ -43,7 +44,7 @@ class KotlinCompilerPluginBuilder {
             }
 
             override fun getCompilerPluginId(): String {
-                return pluginId + pluginSuffix
+                return pluginId
             }
 
             override fun getPluginArtifact(): SubpluginArtifact {

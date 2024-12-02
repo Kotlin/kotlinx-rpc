@@ -6,10 +6,13 @@ package kotlinx.rpc
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.create
 
 @Suppress("unused")
 class RpcGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
+        target.extensions.create<RpcExtension>("rpc")
+
         applyCompilerPlugin(target)
     }
 

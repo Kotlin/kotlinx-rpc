@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.codegen.checkers.diagnostics
 
+import kotlinx.rpc.codegen.StrictMode
+import kotlinx.rpc.codegen.StrictModeAggregator
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
 import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
@@ -35,5 +37,70 @@ object RpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
                     "must be annotated with {0} or an annotation annotated with {0}.",
             rendererA = FirDiagnosticRenderers.RENDER_TYPE,
         )
+    }
+}
+
+class RpcStrictModeDiagnosticRendererFactory(
+    private val diagnostics: FirRpcStrictModeDiagnostics,
+) : BaseDiagnosticRendererFactory() {
+    override val MAP = KtDiagnosticFactoryToRendererMap("Rpc").apply {
+        diagnostics.STATE_FLOW_IN_RPC_SERVICE?.let {
+            put(
+                factory = it,
+                message = message("StateFlow") { stateFlow },
+            )
+        }
+
+        diagnostics.SHARED_FLOW_IN_RPC_SERVICE?.let {
+            put(
+                factory = it,
+                message = message("SharedFlow") { sharedFlow },
+            )
+        }
+
+        diagnostics.NESTED_STREAMING_IN_RPC_SERVICE?.let {
+            put(
+                factory = it,
+                message = message("Nested streaming") { nestedFlow },
+            )
+        }
+
+        diagnostics.STREAM_SCOPE_ENTITY_IN_RPC?.let {
+            put(
+                factory = it,
+                message = message("Stream Scope usage") { streamScopedFunctions },
+            )
+        }
+
+        diagnostics.SUSPENDING_SERVER_STREAMING_IN_RPC_SERVICE?.let {
+            put(
+                factory = it,
+                message = message("Suspend function declaration with server streaming") { suspendingServerStreaming },
+            )
+        }
+
+        diagnostics.NON_TOP_LEVEL_SERVER_STREAMING_IN_RPC_SERVICE?.let {
+            put(
+                factory = it,
+                message = message("Not top-level server-side streaming") { sharedFlow },
+            )
+        }
+
+        diagnostics.FIELD_IN_RPC_SERVICE?.let {
+            put(
+                factory = it,
+                message = message("Field declaration") { fields },
+            )
+        }
+    }
+
+    private fun message(entityName: String, selector: StrictModeAggregator.() -> StrictMode): String {
+        val actionWord = when (diagnostics.modes.selector()) {
+            StrictMode.NONE -> ""
+            StrictMode.WARNING -> "deprecated"
+            StrictMode.ERROR -> "prohibited"
+        }
+
+        return "$entityName is $actionWord in @Rpc services in strict mode."
     }
 }
