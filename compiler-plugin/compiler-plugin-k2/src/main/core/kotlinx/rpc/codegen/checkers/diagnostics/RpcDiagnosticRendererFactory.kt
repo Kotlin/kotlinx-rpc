@@ -8,6 +8,7 @@ import kotlinx.rpc.codegen.StrictMode
 import kotlinx.rpc.codegen.StrictModeAggregator
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
 import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
+import org.jetbrains.kotlin.diagnostics.rendering.Renderer
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
 
 object RpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
@@ -36,6 +37,28 @@ object RpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
             message = "Type argument marked with {0} annotation " +
                     "must be annotated with {0} or an annotation annotated with {0}.",
             rendererA = FirDiagnosticRenderers.RENDER_TYPE,
+        )
+
+        put(
+            factory = FirRpcDiagnostics.NON_SUSPENDING_REQUEST_WITHOUT_STREAMING_RETURN_TYPE,
+            message = "Non suspending request function is not allowed for functions that doesn't return Flow.",
+        )
+
+        put(
+            factory = FirRpcDiagnostics.AD_HOC_POLYMORPHISM_IN_RPC_SERVICE,
+            message = "Ad-hoc polymorphism is not allowed in @Rpc services. Found {0} '{1}' functions.",
+            rendererA = Renderer { it.toString() },
+            rendererB = Renderer { it.asString() },
+        )
+
+        put(
+            factory = FirRpcDiagnostics.TYPE_PARAMETERS_IN_RPC_FUNCTION,
+            message = "Type parameters are not allowed in Rpc functions.",
+        )
+
+        put(
+            factory = FirRpcDiagnostics.TYPE_PARAMETERS_IN_RPC_INTERFACE,
+            message = "Type parameters are not allowed in @Rpc interfaces.",
         )
     }
 }

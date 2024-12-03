@@ -4,28 +4,27 @@
 
 package kotlinx.rpc.codegen.checkers.diagnostics
 
-import kotlinx.rpc.codegen.StrictMode
 import kotlinx.rpc.codegen.StrictModeAggregator
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory0
-import org.jetbrains.kotlin.diagnostics.Severity
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
 import org.jetbrains.kotlin.diagnostics.error0
 import org.jetbrains.kotlin.diagnostics.error1
+import org.jetbrains.kotlin.diagnostics.error2
 import org.jetbrains.kotlin.diagnostics.rendering.RootDiagnosticRendererFactory
 import org.jetbrains.kotlin.diagnostics.warning0
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
+import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
-import org.jetbrains.kotlin.utils.DummyDelegate
-import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
 
 object FirRpcDiagnostics {
     val MISSING_RPC_ANNOTATION by error0<KtAnnotationEntry>()
     val MISSING_SERIALIZATION_MODULE by warning0<KtAnnotationEntry>()
     val WRONG_RPC_ANNOTATION_TARGET by error0<KtAnnotationEntry>()
     val CHECKED_ANNOTATION_VIOLATION by error1<KtAnnotationEntry, ConeKotlinType>()
+    val NON_SUSPENDING_REQUEST_WITHOUT_STREAMING_RETURN_TYPE by error0<PsiElement>()
+    val AD_HOC_POLYMORPHISM_IN_RPC_SERVICE by error2<PsiElement, Int, Name>()
+    val TYPE_PARAMETERS_IN_RPC_FUNCTION by error0<PsiElement>(SourceElementPositioningStrategies.TYPE_PARAMETERS_LIST)
+    val TYPE_PARAMETERS_IN_RPC_INTERFACE by error0<PsiElement>(SourceElementPositioningStrategies.TYPE_PARAMETERS_LIST)
 
     init {
         RootDiagnosticRendererFactory.registerFactory(RpcDiagnosticRendererFactory)
@@ -44,35 +43,5 @@ class FirRpcStrictModeDiagnostics(val modes: StrictModeAggregator) {
 
     init {
         RootDiagnosticRendererFactory.registerFactory(RpcStrictModeDiagnosticRendererFactory(this))
-    }
-}
-
-private inline fun <reified T> modded0(mode: StrictMode): DiagnosticFactory0DelegateProviderOnNull {
-    return DiagnosticFactory0DelegateProviderOnNull(mode, T::class)
-}
-
-class DiagnosticFactory0DelegateProviderOnNull(
-    private val mode: StrictMode,
-    private val psiType: KClass<*>,
-) {
-    operator fun provideDelegate(
-        @Suppress("unused")
-        thisRef: Any?,
-        prop: KProperty<*>,
-    ): ReadOnlyProperty<Any?, KtDiagnosticFactory0?> {
-        val severity = when (mode) {
-            StrictMode.ERROR -> Severity.ERROR
-            StrictMode.WARNING -> Severity.WARNING
-            StrictMode.NONE -> null
-        } ?: return DummyDelegate(null)
-
-        return DummyDelegate(
-            KtDiagnosticFactory0(
-                name = prop.name,
-                severity = severity,
-                defaultPositioningStrategy = SourceElementPositioningStrategies.DEFAULT,
-                psiType = psiType,
-            ),
-        )
     }
 }

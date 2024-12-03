@@ -23,7 +23,7 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
 
     override fun CompilerPluginRegistrar.ExtensionStorage.registerCompilerExtensions(
         module: TestModule,
-        configuration: CompilerConfiguration
+        configuration: CompilerConfiguration,
     ) {
         val strictMode = module.directives[RpcDirectives.RPC_STRICT_MODE]
         if (strictMode.isNotEmpty()) {

@@ -17,6 +17,7 @@ class FirRpcDeclarationCheckers(ctx: FirCheckersContext) : DeclarationCheckers()
     override val regularClassCheckers: Set<FirRegularClassChecker> = setOfNotNull(
         FirRpcAnnotationChecker(ctx),
         if (ctx.serializationIsPresent) FirRpcStrictModeClassChecker(ctx) else null,
+        FirRpcServiceDeclarationChecker(ctx),
     )
 
     override val classCheckers: Set<FirClassChecker> = setOf(
