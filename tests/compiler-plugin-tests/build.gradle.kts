@@ -27,6 +27,8 @@ kotlin {
 val testDataClasspath: Configuration by configurations.creating
 val testRuntimeClasspath: Configuration by project.configurations.getting
 
+val globalRootDir: String by extra
+
 /**
  * I should probably explain this.
  *
@@ -36,7 +38,7 @@ val testRuntimeClasspath: Configuration by project.configurations.getting
  *
  * `NioFiles` is problematic.
  * It was packed with kotlin-compiler jar, but Proguard which excluded `deleteRecursively` method from it.
- * It this method is called.
+ * And this method is called.
  * So tests fail with:
  * ```
  * java.lang.NoSuchMethodError: com.intellij.openapi.util.io.NioFiles.deleteRecursively(Ljava/nio/file/Path;)V
@@ -62,7 +64,6 @@ sourceSets.test.configure {
 }
 
 dependencies {
-    @Suppress("UnstableApiUsage")
     testPriorityRuntimeClasspath(libs.intellij.util) { isTransitive = false }
 
     implementation(projects.core)
@@ -79,7 +80,10 @@ dependencies {
         testImplementation(libs.serialization.plugin)
     }
 
-    testImplementation(libs.compiler.plugin.cli)
+    testImplementation(libs.compiler.plugin.cli) {
+        exclude(group = "org.jetbrains.kotlinx", module = "compiler-plugin-k2")
+    }
+    testImplementation(files("$globalRootDir/compiler-plugin/compiler-plugin-k2/build/libs/plugin-k2-for-tests.jar"))
 
     testImplementation(libs.kotlin.reflect)
     testImplementation(libs.kotlin.compiler)
@@ -98,8 +102,6 @@ dependencies {
     testDataClasspath(libs.coroutines.core)
     testDataClasspath(libs.serialization.core)
 }
-
-val globalRootDir: String by extra
 
 val updateTestData = (project.findProperty("kotlin.test.update.test.data") as? String) ?: "false"
 
@@ -154,7 +156,7 @@ fun Test.setJarPathAsProperty(
 
     val path = testRuntimeClasspath
         .files
-        .first { includedRegex.matches(it.name) }
+        .firstOrNull { includedRegex.matches(it.name) }
         ?: run {
             logger.warn("Can't find $jarName in testRuntimeClasspath configuration")
             return
