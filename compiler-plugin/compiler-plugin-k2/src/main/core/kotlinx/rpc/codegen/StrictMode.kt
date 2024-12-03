@@ -8,9 +8,21 @@ import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
+import kotlin.text.lowercase
 
 enum class StrictMode {
     NONE, WARNING, ERROR;
+
+    companion object {
+        fun fromCli(value: String): StrictMode? {
+            return when (value.lowercase()) {
+                "none" -> NONE
+                "warning" -> WARNING
+                "error" -> ERROR
+                else -> null
+            }
+        }
+    }
 }
 
 data class StrictModeAggregator(
@@ -123,20 +135,11 @@ object StrictModeCliOptions {
 
 fun AbstractCliOption.processAsStrictModeOption(value: String, configuration: CompilerConfiguration): Boolean {
     StrictModeCliOptions.configurationMapper[this]?.let { key ->
-        value.toStrictMode()?.let { mode ->
+        StrictMode.fromCli(value)?.let { mode ->
             configuration.put(key, mode)
             return true
         }
     }
 
     return false
-}
-
-private fun String.toStrictMode(): StrictMode? {
-    return when (lowercase()) {
-        "none" -> StrictMode.NONE
-        "warning" -> StrictMode.WARNING
-        "error" -> StrictMode.ERROR
-        else -> null
-    }
 }

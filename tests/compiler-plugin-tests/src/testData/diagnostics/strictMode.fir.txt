@@ -1,0 +1,742 @@
+Module: none
+FILE: a.kt
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyServiceWithStateFlow : R|kotlin/Any|, R|kotlinx/rpc/RemoteService| {
+        public abstract suspend fun hello(flow: R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|): R|kotlin/Unit|
+
+        public final class $rpcServiceStub : R|kotlin/Any| {
+            @R|kotlinx/serialization/Serializable|() public final class hello$rpcMethod : R|kotlin/Any| {
+                @R|kotlinx/serialization/Contextual|() public final val flow: R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|
+                    public get(): R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|
+
+                public constructor(flow: R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|): R|MyServiceWithStateFlow.$rpcServiceStub.hello$rpcMethod|
+
+                public final companion object Companion : R|kotlin/Any| {
+                    public final fun serializer(): R|kotlinx/serialization/KSerializer<MyServiceWithStateFlow.$rpcServiceStub.hello$rpcMethod>|
+
+                    private constructor(): R|MyServiceWithStateFlow.$rpcServiceStub.hello$rpcMethod.Companion| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+                @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<MyServiceWithStateFlow.$rpcServiceStub.hello$rpcMethod>| {
+                    public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|MyServiceWithStateFlow.$rpcServiceStub.hello$rpcMethod|): R|kotlin/Unit|
+
+                    public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|MyServiceWithStateFlow.$rpcServiceStub.hello$rpcMethod|
+
+                    public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                        public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+                    public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+                    private constructor(): R|MyServiceWithStateFlow.$rpcServiceStub.hello$rpcMethod.$serializer| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+            }
+
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+Module: main
+FILE: module_main_strictMode.kt
+    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)))
+    @R|kotlinx/serialization/Serializable|() public final data class InnerFlow : R|kotlin/Any| {
+        public constructor(flow: R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>|): R|InnerFlow| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val flow: R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>| = R|<local>/flow|
+            public get(): R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final operator fun component1(): R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final fun copy(flow: R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>| = this@R|/InnerFlow|.R|/InnerFlow.flow|): R|InnerFlow|
+
+        public final companion object Companion : R|kotlin/Any| {
+            public final fun serializer(): R|kotlinx/serialization/KSerializer<InnerFlow>|
+
+            private constructor(): R|InnerFlow.Companion| {
+                super<R|kotlin/Any|>()
+            }
+
+        }
+
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<InnerFlow>| {
+            public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|InnerFlow|): R|kotlin/Unit|
+
+            public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|InnerFlow|
+
+            public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+            public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+            private constructor(): R|InnerFlow.$serializer| {
+                super<R|kotlin/Any|>()
+            }
+
+        }
+
+    }
+    @R|kotlinx/serialization/Serializable|() public final data class Wrapper<T> : R|kotlin/Any| {
+        public constructor<T>(inner: R|T|): R|Wrapper<T>| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val inner: R|T| = R|<local>/inner|
+            public get(): R|T|
+
+        public final operator fun component1(): R|T|
+
+        public final fun copy(inner: R|T| = this@R|/Wrapper|.R|/Wrapper.inner|): R|Wrapper<T>|
+
+        public final companion object Companion : R|kotlin/Any| {
+            public final fun <T> serializer(typeSerial0: R|kotlinx/serialization/KSerializer<T>|): R|kotlinx/serialization/KSerializer<Wrapper<T>>|
+
+            private constructor(): R|Wrapper.Companion| {
+                super<R|kotlin/Any|>()
+            }
+
+        }
+
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $serializer<T> : R|kotlinx/serialization/internal/GeneratedSerializer<Wrapper<T>>| {
+            public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|Wrapper<T>|): R|kotlin/Unit|
+
+            public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|Wrapper<T>|
+
+            public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+            public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+            public final override fun typeParametersSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+            private constructor<T>(): R|Wrapper.$serializer<T>| {
+                super<R|kotlin/Any|>()
+            }
+
+            public constructor<T>(typeSerial0: R|kotlinx/serialization/KSerializer<T>|): R|Wrapper.$serializer<T>|
+
+        }
+
+    }
+    @R|kotlinx/serialization/Serializable|() public final data class MultiFlow : R|kotlin/Any| {
+        public constructor(flow1: R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>|, flow2: R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>|, flow3: R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>|): R|MultiFlow| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val flow1: R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>| = R|<local>/flow1|
+            public get(): R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final val flow2: R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>| = R|<local>/flow2|
+            public get(): R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final val flow3: R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>| = R|<local>/flow3|
+            public get(): R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final operator fun component1(): R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final operator fun component2(): R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final operator fun component3(): R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final fun copy(flow1: R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>| = this@R|/MultiFlow|.R|/MultiFlow.flow1|, flow2: R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>| = this@R|/MultiFlow|.R|/MultiFlow.flow2|, flow3: R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>| = this@R|/MultiFlow|.R|/MultiFlow.flow3|): R|MultiFlow|
+
+        public final companion object Companion : R|kotlin/Any| {
+            public final fun serializer(): R|kotlinx/serialization/KSerializer<MultiFlow>|
+
+            private constructor(): R|MultiFlow.Companion| {
+                super<R|kotlin/Any|>()
+            }
+
+        }
+
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<MultiFlow>| {
+            public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|MultiFlow|): R|kotlin/Unit|
+
+            public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|MultiFlow|
+
+            public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+            public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+            private constructor(): R|MultiFlow.$serializer| {
+                super<R|kotlin/Any|>()
+            }
+
+        }
+
+    }
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyService : R|kotlin/Any|, R|kotlinx/rpc/RemoteService| {
+        public abstract val flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+            public get(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public abstract val stateFlow: R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|
+            public get(): R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|
+
+        public abstract val sharedFlow: R|kotlinx/coroutines/flow/SharedFlow<kotlin/Int>|
+            public get(): R|kotlinx/coroutines/flow/SharedFlow<kotlin/Int>|
+
+        public abstract suspend fun state(flow: R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|): R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|
+
+        public abstract suspend fun shared(flow: R|kotlinx/coroutines/flow/SharedFlow<kotlin/Int>|): R|kotlinx/coroutines/flow/SharedFlow<kotlin/Int>|
+
+        public abstract suspend fun deepState(flow: R|Wrapper<kotlinx/coroutines/flow/StateFlow<kotlin/Int>>|): R|kotlin/Unit|
+
+        public abstract suspend fun deepShared(flow: R|Wrapper<kotlinx/coroutines/flow/SharedFlow<kotlin/Int>>|): R|kotlin/Unit|
+
+        public abstract suspend fun flowOk(flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|): R|kotlin/Int|
+
+        public abstract fun serverFlowOk(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public abstract suspend fun serverFlowFail(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public abstract fun notTopLevelServerFlow(): R|InnerFlow|
+
+        public abstract fun wrappedNotTopLevelServerFlow(): R|Wrapper<kotlinx/coroutines/flow/Flow<kotlin/Int>>|
+
+        public abstract suspend fun wrappedALot(): R|Wrapper<Wrapper<Wrapper<Wrapper<kotlin/Int>>>>|
+
+        public abstract fun wrappedALotFlow(): R|Wrapper<Wrapper<Wrapper<kotlinx/coroutines/flow/Flow<kotlin/Int>>>>|
+
+        public abstract suspend fun notTopLevelClientFlow(flow: R|InnerFlow|): R|kotlin/Unit|
+
+        public abstract fun nestedServerFlow(): R|kotlinx/coroutines/flow/Flow<kotlinx/coroutines/flow/Flow<kotlin/Int>>|
+
+        public abstract fun nestedServerTrickyFlow(): R|kotlinx/coroutines/flow/Flow<Wrapper<kotlinx/coroutines/flow/Flow<kotlin/Int>>>|
+
+        public abstract fun serverMultiFlow(): R|MultiFlow|
+
+        public abstract suspend fun clientMultiFlow(flow: R|MultiFlow|): R|kotlin/Unit|
+
+        public abstract suspend fun clientMultiFlowMany(flow: R|MultiFlow|, flow2: R|MultiFlow|, flow3: R|MultiFlow|): R|kotlin/Unit|
+
+        public abstract suspend fun clientMultiFlowPlain(flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|, flow2: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|, flow3: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|): R|kotlin/Unit|
+
+        public abstract suspend fun clientInnerFlow(inner: R|InnerFlow|): R|kotlin/Unit|
+
+        public abstract suspend fun clientNestedFlow(inner: R|kotlinx/coroutines/flow/Flow<kotlinx/coroutines/flow/Flow<kotlin/Int>>|): R|kotlin/Unit|
+
+        public abstract suspend fun clientNestedTrickyFlow(inner: R|Wrapper<kotlinx/coroutines/flow/Flow<Wrapper<kotlinx/coroutines/flow/Flow<kotlin/Int>>>>|): R|kotlin/Unit|
+
+        public final class $rpcServiceStub : R|kotlin/Any| {
+            @R|kotlinx/serialization/Serializable|() public final class state$rpcMethod : R|kotlin/Any| {
+                @R|kotlinx/serialization/Contextual|() public final val flow: R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|
+                    public get(): R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|
+
+                public constructor(flow: R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|): R|MyService.$rpcServiceStub.state$rpcMethod|
+
+                public final companion object Companion : R|kotlin/Any| {
+                    public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.state$rpcMethod>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.state$rpcMethod.Companion| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+                @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<MyService.$rpcServiceStub.state$rpcMethod>| {
+                    public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|MyService.$rpcServiceStub.state$rpcMethod|): R|kotlin/Unit|
+
+                    public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|MyService.$rpcServiceStub.state$rpcMethod|
+
+                    public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                        public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+                    public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.state$rpcMethod.$serializer| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final class shared$rpcMethod : R|kotlin/Any| {
+                @R|kotlinx/serialization/Contextual|() public final val flow: R|kotlinx/coroutines/flow/SharedFlow<kotlin/Int>|
+                    public get(): R|kotlinx/coroutines/flow/SharedFlow<kotlin/Int>|
+
+                public constructor(flow: R|kotlinx/coroutines/flow/SharedFlow<kotlin/Int>|): R|MyService.$rpcServiceStub.shared$rpcMethod|
+
+                public final companion object Companion : R|kotlin/Any| {
+                    public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.shared$rpcMethod>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.shared$rpcMethod.Companion| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+                @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<MyService.$rpcServiceStub.shared$rpcMethod>| {
+                    public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|MyService.$rpcServiceStub.shared$rpcMethod|): R|kotlin/Unit|
+
+                    public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|MyService.$rpcServiceStub.shared$rpcMethod|
+
+                    public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                        public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+                    public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.shared$rpcMethod.$serializer| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final class deepState$rpcMethod : R|kotlin/Any| {
+                public final val flow: R|Wrapper<kotlinx/coroutines/flow/StateFlow<kotlin/Int>>|
+                    public get(): R|Wrapper<kotlinx/coroutines/flow/StateFlow<kotlin/Int>>|
+
+                public constructor(flow: R|Wrapper<kotlinx/coroutines/flow/StateFlow<kotlin/Int>>|): R|MyService.$rpcServiceStub.deepState$rpcMethod|
+
+                public final companion object Companion : R|kotlin/Any| {
+                    public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.deepState$rpcMethod>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.deepState$rpcMethod.Companion| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+                @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<MyService.$rpcServiceStub.deepState$rpcMethod>| {
+                    public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|MyService.$rpcServiceStub.deepState$rpcMethod|): R|kotlin/Unit|
+
+                    public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|MyService.$rpcServiceStub.deepState$rpcMethod|
+
+                    public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                        public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+                    public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.deepState$rpcMethod.$serializer| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final class deepShared$rpcMethod : R|kotlin/Any| {
+                public final val flow: R|Wrapper<kotlinx/coroutines/flow/SharedFlow<kotlin/Int>>|
+                    public get(): R|Wrapper<kotlinx/coroutines/flow/SharedFlow<kotlin/Int>>|
+
+                public constructor(flow: R|Wrapper<kotlinx/coroutines/flow/SharedFlow<kotlin/Int>>|): R|MyService.$rpcServiceStub.deepShared$rpcMethod|
+
+                public final companion object Companion : R|kotlin/Any| {
+                    public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.deepShared$rpcMethod>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.deepShared$rpcMethod.Companion| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+                @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<MyService.$rpcServiceStub.deepShared$rpcMethod>| {
+                    public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|MyService.$rpcServiceStub.deepShared$rpcMethod|): R|kotlin/Unit|
+
+                    public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|MyService.$rpcServiceStub.deepShared$rpcMethod|
+
+                    public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                        public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+                    public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.deepShared$rpcMethod.$serializer| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final class flowOk$rpcMethod : R|kotlin/Any| {
+                @R|kotlinx/serialization/Contextual|() public final val flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+                    public get(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+                public constructor(flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|): R|MyService.$rpcServiceStub.flowOk$rpcMethod|
+
+                public final companion object Companion : R|kotlin/Any| {
+                    public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.flowOk$rpcMethod>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.flowOk$rpcMethod.Companion| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+                @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<MyService.$rpcServiceStub.flowOk$rpcMethod>| {
+                    public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|MyService.$rpcServiceStub.flowOk$rpcMethod|): R|kotlin/Unit|
+
+                    public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|MyService.$rpcServiceStub.flowOk$rpcMethod|
+
+                    public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                        public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+                    public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.flowOk$rpcMethod.$serializer| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final object serverFlowOk$rpcMethod : R|kotlin/Any| {
+                public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.serverFlowOk$rpcMethod>|
+
+                private constructor(): R|MyService.$rpcServiceStub.serverFlowOk$rpcMethod| {
+                    super<R|kotlin/Any|>()
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final object serverFlowFail$rpcMethod : R|kotlin/Any| {
+                public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.serverFlowFail$rpcMethod>|
+
+                private constructor(): R|MyService.$rpcServiceStub.serverFlowFail$rpcMethod| {
+                    super<R|kotlin/Any|>()
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final object notTopLevelServerFlow$rpcMethod : R|kotlin/Any| {
+                public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.notTopLevelServerFlow$rpcMethod>|
+
+                private constructor(): R|MyService.$rpcServiceStub.notTopLevelServerFlow$rpcMethod| {
+                    super<R|kotlin/Any|>()
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final object wrappedNotTopLevelServerFlow$rpcMethod : R|kotlin/Any| {
+                public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.wrappedNotTopLevelServerFlow$rpcMethod>|
+
+                private constructor(): R|MyService.$rpcServiceStub.wrappedNotTopLevelServerFlow$rpcMethod| {
+                    super<R|kotlin/Any|>()
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final object wrappedALot$rpcMethod : R|kotlin/Any| {
+                public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.wrappedALot$rpcMethod>|
+
+                private constructor(): R|MyService.$rpcServiceStub.wrappedALot$rpcMethod| {
+                    super<R|kotlin/Any|>()
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final object wrappedALotFlow$rpcMethod : R|kotlin/Any| {
+                public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.wrappedALotFlow$rpcMethod>|
+
+                private constructor(): R|MyService.$rpcServiceStub.wrappedALotFlow$rpcMethod| {
+                    super<R|kotlin/Any|>()
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final class notTopLevelClientFlow$rpcMethod : R|kotlin/Any| {
+                public final val flow: R|InnerFlow|
+                    public get(): R|InnerFlow|
+
+                public constructor(flow: R|InnerFlow|): R|MyService.$rpcServiceStub.notTopLevelClientFlow$rpcMethod|
+
+                public final companion object Companion : R|kotlin/Any| {
+                    public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.notTopLevelClientFlow$rpcMethod>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.notTopLevelClientFlow$rpcMethod.Companion| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+                @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<MyService.$rpcServiceStub.notTopLevelClientFlow$rpcMethod>| {
+                    public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|MyService.$rpcServiceStub.notTopLevelClientFlow$rpcMethod|): R|kotlin/Unit|
+
+                    public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|MyService.$rpcServiceStub.notTopLevelClientFlow$rpcMethod|
+
+                    public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                        public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+                    public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.notTopLevelClientFlow$rpcMethod.$serializer| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final object nestedServerFlow$rpcMethod : R|kotlin/Any| {
+                public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.nestedServerFlow$rpcMethod>|
+
+                private constructor(): R|MyService.$rpcServiceStub.nestedServerFlow$rpcMethod| {
+                    super<R|kotlin/Any|>()
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final object nestedServerTrickyFlow$rpcMethod : R|kotlin/Any| {
+                public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.nestedServerTrickyFlow$rpcMethod>|
+
+                private constructor(): R|MyService.$rpcServiceStub.nestedServerTrickyFlow$rpcMethod| {
+                    super<R|kotlin/Any|>()
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final object serverMultiFlow$rpcMethod : R|kotlin/Any| {
+                public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.serverMultiFlow$rpcMethod>|
+
+                private constructor(): R|MyService.$rpcServiceStub.serverMultiFlow$rpcMethod| {
+                    super<R|kotlin/Any|>()
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final class clientMultiFlow$rpcMethod : R|kotlin/Any| {
+                public final val flow: R|MultiFlow|
+                    public get(): R|MultiFlow|
+
+                public constructor(flow: R|MultiFlow|): R|MyService.$rpcServiceStub.clientMultiFlow$rpcMethod|
+
+                public final companion object Companion : R|kotlin/Any| {
+                    public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.clientMultiFlow$rpcMethod>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.clientMultiFlow$rpcMethod.Companion| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+                @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<MyService.$rpcServiceStub.clientMultiFlow$rpcMethod>| {
+                    public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|MyService.$rpcServiceStub.clientMultiFlow$rpcMethod|): R|kotlin/Unit|
+
+                    public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|MyService.$rpcServiceStub.clientMultiFlow$rpcMethod|
+
+                    public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                        public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+                    public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.clientMultiFlow$rpcMethod.$serializer| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final class clientMultiFlowMany$rpcMethod : R|kotlin/Any| {
+                public final val flow: R|MultiFlow|
+                    public get(): R|MultiFlow|
+
+                public final val flow2: R|MultiFlow|
+                    public get(): R|MultiFlow|
+
+                public final val flow3: R|MultiFlow|
+                    public get(): R|MultiFlow|
+
+                public constructor(flow: R|MultiFlow|, flow2: R|MultiFlow|, flow3: R|MultiFlow|): R|MyService.$rpcServiceStub.clientMultiFlowMany$rpcMethod|
+
+                public final companion object Companion : R|kotlin/Any| {
+                    public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.clientMultiFlowMany$rpcMethod>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.clientMultiFlowMany$rpcMethod.Companion| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+                @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<MyService.$rpcServiceStub.clientMultiFlowMany$rpcMethod>| {
+                    public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|MyService.$rpcServiceStub.clientMultiFlowMany$rpcMethod|): R|kotlin/Unit|
+
+                    public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|MyService.$rpcServiceStub.clientMultiFlowMany$rpcMethod|
+
+                    public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                        public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+                    public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.clientMultiFlowMany$rpcMethod.$serializer| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final class clientMultiFlowPlain$rpcMethod : R|kotlin/Any| {
+                @R|kotlinx/serialization/Contextual|() public final val flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+                    public get(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+                @R|kotlinx/serialization/Contextual|() public final val flow2: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+                    public get(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+                @R|kotlinx/serialization/Contextual|() public final val flow3: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+                    public get(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+                public constructor(flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|, flow2: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|, flow3: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|): R|MyService.$rpcServiceStub.clientMultiFlowPlain$rpcMethod|
+
+                public final companion object Companion : R|kotlin/Any| {
+                    public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.clientMultiFlowPlain$rpcMethod>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.clientMultiFlowPlain$rpcMethod.Companion| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+                @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<MyService.$rpcServiceStub.clientMultiFlowPlain$rpcMethod>| {
+                    public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|MyService.$rpcServiceStub.clientMultiFlowPlain$rpcMethod|): R|kotlin/Unit|
+
+                    public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|MyService.$rpcServiceStub.clientMultiFlowPlain$rpcMethod|
+
+                    public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                        public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+                    public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.clientMultiFlowPlain$rpcMethod.$serializer| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final class clientInnerFlow$rpcMethod : R|kotlin/Any| {
+                public final val inner: R|InnerFlow|
+                    public get(): R|InnerFlow|
+
+                public constructor(inner: R|InnerFlow|): R|MyService.$rpcServiceStub.clientInnerFlow$rpcMethod|
+
+                public final companion object Companion : R|kotlin/Any| {
+                    public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.clientInnerFlow$rpcMethod>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.clientInnerFlow$rpcMethod.Companion| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+                @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<MyService.$rpcServiceStub.clientInnerFlow$rpcMethod>| {
+                    public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|MyService.$rpcServiceStub.clientInnerFlow$rpcMethod|): R|kotlin/Unit|
+
+                    public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|MyService.$rpcServiceStub.clientInnerFlow$rpcMethod|
+
+                    public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                        public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+                    public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.clientInnerFlow$rpcMethod.$serializer| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final class clientNestedFlow$rpcMethod : R|kotlin/Any| {
+                @R|kotlinx/serialization/Contextual|() public final val inner: R|kotlinx/coroutines/flow/Flow<kotlinx/coroutines/flow/Flow<kotlin/Int>>|
+                    public get(): R|kotlinx/coroutines/flow/Flow<kotlinx/coroutines/flow/Flow<kotlin/Int>>|
+
+                public constructor(inner: R|kotlinx/coroutines/flow/Flow<kotlinx/coroutines/flow/Flow<kotlin/Int>>|): R|MyService.$rpcServiceStub.clientNestedFlow$rpcMethod|
+
+                public final companion object Companion : R|kotlin/Any| {
+                    public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.clientNestedFlow$rpcMethod>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.clientNestedFlow$rpcMethod.Companion| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+                @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<MyService.$rpcServiceStub.clientNestedFlow$rpcMethod>| {
+                    public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|MyService.$rpcServiceStub.clientNestedFlow$rpcMethod|): R|kotlin/Unit|
+
+                    public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|MyService.$rpcServiceStub.clientNestedFlow$rpcMethod|
+
+                    public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                        public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+                    public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.clientNestedFlow$rpcMethod.$serializer| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final class clientNestedTrickyFlow$rpcMethod : R|kotlin/Any| {
+                public final val inner: R|Wrapper<kotlinx/coroutines/flow/Flow<Wrapper<kotlinx/coroutines/flow/Flow<kotlin/Int>>>>|
+                    public get(): R|Wrapper<kotlinx/coroutines/flow/Flow<Wrapper<kotlinx/coroutines/flow/Flow<kotlin/Int>>>>|
+
+                public constructor(inner: R|Wrapper<kotlinx/coroutines/flow/Flow<Wrapper<kotlinx/coroutines/flow/Flow<kotlin/Int>>>>|): R|MyService.$rpcServiceStub.clientNestedTrickyFlow$rpcMethod|
+
+                public final companion object Companion : R|kotlin/Any| {
+                    public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.clientNestedTrickyFlow$rpcMethod>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.clientNestedTrickyFlow$rpcMethod.Companion| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+                @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<MyService.$rpcServiceStub.clientNestedTrickyFlow$rpcMethod>| {
+                    public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|MyService.$rpcServiceStub.clientNestedTrickyFlow$rpcMethod|): R|kotlin/Unit|
+
+                    public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|MyService.$rpcServiceStub.clientNestedTrickyFlow$rpcMethod|
+
+                    public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
+                        public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
+
+                    public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
+
+                    private constructor(): R|MyService.$rpcServiceStub.clientNestedTrickyFlow$rpcMethod.$serializer| {
+                        super<R|kotlin/Any|>()
+                    }
+
+                }
+
+            }
+
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+    public final fun main(): R|kotlin/Unit| {
+        ^main R|kotlinx/coroutines/runBlocking|<R|kotlin/Unit|>(<L> = runBlocking@fun R|kotlinx/coroutines/CoroutineScope|.<anonymous>(): R|kotlin/Unit| <inline=NoInline, kind=EXACTLY_ONCE>  {
+            R|kotlinx/rpc/krpc/streamScoped|<R|kotlin/Unit|>(<L> = streamScoped@fun R|kotlinx/coroutines/CoroutineScope|.<anonymous>(): R|kotlin/Unit| <inline=NoInline, kind=EXACTLY_ONCE>  {
+                ^@streamScoped Unit
+            }
+            )
+            lval scope: R|kotlinx/rpc/krpc/StreamScope| = R|kotlinx/rpc/krpc/StreamScope|(R|kotlinx/coroutines/Job|())
+            R|kotlinx/rpc/krpc/withStreamScope|<R|kotlin/Unit|>(R|<local>/scope|, <L> = withStreamScope@fun R|kotlinx/coroutines/CoroutineScope|.<anonymous>(): R|kotlin/Unit| <inline=NoInline, kind=EXACTLY_ONCE>  {
+                ^@withStreamScope Unit
+            }
+            )
+            R|kotlinx/rpc/krpc/invokeOnStreamScopeCompletion|(<L> = invokeOnStreamScopeCompletion@fun <anonymous>(it: R|kotlin/Throwable?|): R|kotlin/Unit| <inline=NoInline>  {
+                ^@invokeOnStreamScopeCompletion Unit
+            }
+            )
+        }
+        )
+    }

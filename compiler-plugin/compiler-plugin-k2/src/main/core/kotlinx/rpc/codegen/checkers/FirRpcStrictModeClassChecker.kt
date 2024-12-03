@@ -18,6 +18,8 @@ import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirClassChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.extractArgumentsTypeRefAndSource
+import org.jetbrains.kotlin.fir.analysis.checkers.toClassLikeSymbol
 import org.jetbrains.kotlin.fir.declarations.FirClass
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
@@ -25,7 +27,10 @@ import org.jetbrains.kotlin.fir.declarations.utils.isSuspend
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.references.toResolvedCallableSymbol
+import org.jetbrains.kotlin.fir.scopes.impl.toConeType
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.utils.memoryOptimizedMap
 import org.jetbrains.kotlin.utils.memoryOptimizedPlus
@@ -101,16 +106,14 @@ class FirRpcStrictModeClassChecker(private val ctx: FirCheckersContext) : FirCla
 
         val types = function.valueParameters.memoryOptimizedMap { parameter ->
             parameter.source to vsApi {
-                parameter.returnTypeRef.coneType.toClassSymbolVS(context.session)
+                parameter.returnTypeRef
             }
-        } memoryOptimizedPlus (function.returnTypeRef.source to returnClassSymbol)
+        } memoryOptimizedPlus (function.returnTypeRef.source to function.returnTypeRef)
 
-        types.filter { (_, symbol) ->
-            symbol != null
-        }.forEach { (source, symbol) ->
-            checkSerializableTypes<FirClassSymbol<*>>(
+        types.forEach { (source, symbol) ->
+            checkSerializableTypes<FirClassLikeSymbol<*>>(
                 context = context,
-                clazz = symbol!!,
+                typeRef = symbol,
                 serializablePropertiesProvider = serializablePropertiesProvider,
             ) { symbol, parents ->
                 when (symbol.classId) {
@@ -142,28 +145,54 @@ class FirRpcStrictModeClassChecker(private val ctx: FirCheckersContext) : FirCla
 
     private fun <ContextElement> checkSerializableTypes(
         context: CheckerContext,
-        clazz: FirClassSymbol<*>,
+        typeRef: FirTypeRef,
         serializablePropertiesProvider: FirSerializablePropertiesProvider,
         parentContext: List<ContextElement> = emptyList(),
-        checker: (FirClassSymbol<*>, List<ContextElement>) -> ContextElement?,
+        checker: (FirClassLikeSymbol<*>, List<ContextElement>) -> ContextElement?,
     ) {
-        val newElement = checker(clazz, parentContext)
+        val symbol = typeRef.toClassLikeSymbol(context.session) ?: return
+        val newElement = checker(symbol, parentContext)
         val nextContext = if (newElement != null) {
             parentContext memoryOptimizedPlus newElement
         } else {
             parentContext
         }
 
-        serializablePropertiesProvider.getSerializablePropertiesForClass(clazz)
+        if (symbol !is FirClassSymbol<*>) {
+            return
+        }
+
+        val extracted = extractArgumentsTypeRefAndSource(typeRef)
+            .orEmpty()
+            .withIndex()
+            .associate { (i, refSource) ->
+                symbol.typeParameterSymbols[i].toConeType() to refSource.typeRef
+            }
+
+        val flowProps: List<FirTypeRef> = if (symbol.classId == RpcClassId.flow) {
+            listOf<FirTypeRef>(extracted.values.toList()[0]!!)
+        } else {
+            emptyList()
+        }
+
+        serializablePropertiesProvider.getSerializablePropertiesForClass(symbol)
             .serializableProperties
             .mapNotNull { property ->
-                vsApi {
-                    property.propertySymbol.resolvedReturnType.toClassSymbolVS(context.session)
+                val resolvedTypeRef = property.propertySymbol.resolvedReturnTypeRef
+                val result = if (resolvedTypeRef.toClassLikeSymbol(context.session) != null) {
+                    resolvedTypeRef
+                } else {
+                    extracted[property.propertySymbol.resolvedReturnType]
                 }
-            }.forEach { symbol ->
+                if (result == null) {
+                    print(1)
+                }
+                result
+            }.memoryOptimizedPlus(flowProps)
+            .forEach { symbol ->
                 checkSerializableTypes(
                     context = context,
-                    clazz = symbol,
+                    typeRef = symbol,
                     serializablePropertiesProvider = serializablePropertiesProvider,
                     parentContext = nextContext,
                     checker = checker,
