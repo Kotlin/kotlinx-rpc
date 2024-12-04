@@ -7,7 +7,6 @@ package kotlinx.rpc.codegen.test.services
 import kotlinx.rpc.codegen.StrictMode
 import kotlinx.rpc.codegen.StrictModeConfigurationKeys
 import kotlinx.rpc.codegen.registerRpcExtensions
-import kotlinx.rpc.codegen.toStrictMode
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.test.directives.model.DirectiveApplicability

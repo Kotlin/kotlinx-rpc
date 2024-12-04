@@ -44,7 +44,7 @@ FILE: a.kt
 
     }
 Module: main
-FILE: module_main_strictMode.kt
+FILE: b.kt
     @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)))
     @R|kotlinx/serialization/Serializable|() public final data class InnerFlow : R|kotlin/Any| {
         public constructor(flow: R|@R|kotlinx/serialization/Contextual|()  kotlinx/coroutines/flow/Flow<kotlin/Int>|): R|InnerFlow| {

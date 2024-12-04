@@ -16,6 +16,8 @@ interface MyServiceWithStateFlow {
 }
 
 // MODULE: main
+// RPC_STRICT_MODE: warning
+// FILE: b.kt
 
 @file:OptIn(ExperimentalRpcApi::class)
 
