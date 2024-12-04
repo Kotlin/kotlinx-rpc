@@ -10,9 +10,19 @@ import org.gradle.api.Action
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.property
 import javax.inject.Inject
 
 open class RpcExtension @Inject constructor(objects: ObjectFactory) {
+    /**
+     * Controls `@Rpc` [annotation type-safety](https://github.com/Kotlin/kotlinx-rpc/pull/240) compile-time checkers.
+     *
+     * CAUTION: Disabling is considered unsafe.
+     * This option is only needed to prevent cases where type-safety analysis fails and valid code can't be compiled.
+     */
+    @RpcDangerousApi
+    val annotationTypeSafetyEnabled = objects.property<Boolean>().convention(true)
+
     /**
      * Strict mode settings.
      * Allows configuring the reporting state of deprecated features.
