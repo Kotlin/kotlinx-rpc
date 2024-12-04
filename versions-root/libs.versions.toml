@@ -3,7 +3,7 @@
 kotlinx-rpc = "0.5.0-SNAPSHOT"
 
 # kotlin
-kotlin-lang = "2.0.21" # or env.KOTLIN_VERSION
+kotlin-lang = "2.1.0" # or env.KOTLIN_VERSION
 kotlin-compiler = "0.0.0" # default to kotlin-lang or env.KOTLIN_COMPILER_VERSION
 
 # kotlin independent versions
