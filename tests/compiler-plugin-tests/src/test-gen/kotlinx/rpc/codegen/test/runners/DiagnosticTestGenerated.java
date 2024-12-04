@@ -37,6 +37,12 @@ public class DiagnosticTestGenerated extends AbstractDiagnosticTest {
   }
 
   @Test
+  @TestMetadata("rpcService.kt")
+  public void testRpcService() {
+    runTest("src/testData/diagnostics/rpcService.kt");
+  }
+
+  @Test
   @TestMetadata("strictMode.kt")
   public void testStrictMode() {
     runTest("src/testData/diagnostics/strictMode.kt");
