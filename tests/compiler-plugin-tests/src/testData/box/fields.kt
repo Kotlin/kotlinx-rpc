@@ -11,11 +11,11 @@ import kotlinx.rpc.codegen.test.TestRpcClient
 
 @Rpc
 interface BoxService : RemoteService {
-    val plainFlow: Flow<String>
+    <!FIELD_IN_RPC_SERVICE!>val plainFlow: Flow<String><!>
 
-    val sharedFlow: SharedFlow<String>
+    <!FIELD_IN_RPC_SERVICE!>val sharedFlow: SharedFlow<String><!>
 
-    val stateFlow: StateFlow<String>
+    <!FIELD_IN_RPC_SERVICE!>val stateFlow: StateFlow<String><!>
 }
 
 fun box(): String = runBlocking {
