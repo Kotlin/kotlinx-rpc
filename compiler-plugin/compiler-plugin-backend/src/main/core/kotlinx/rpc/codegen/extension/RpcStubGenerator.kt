@@ -434,7 +434,6 @@ internal class RpcStubGenerator(
                                 type = fieldType,
                                 callee = ctx.functions.lazyGetValue,
                                 typeArgumentsCount = 1,
-                                valueArgumentsCount = 2,
                             ).apply {
                                 putTypeArgument(0, fieldType)
 
@@ -747,7 +746,6 @@ internal class RpcStubGenerator(
             callee = ctx.functions.rpcClientCall.symbol,
             type = method.function.returnType,
             typeArgumentsCount = 1,
-            valueArgumentsCount = 1,
         ).apply {
             dispatchReceiver = irCallProperty(
                 clazz = stubClass,

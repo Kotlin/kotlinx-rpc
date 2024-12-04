@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.platform.TargetPlatform
 
+@Suppress("detekt.LongParameterList")
 interface VersionSpecificApi {
     fun isJs(platform: TargetPlatform?): Boolean
     fun isWasm(platform: TargetPlatform?): Boolean
