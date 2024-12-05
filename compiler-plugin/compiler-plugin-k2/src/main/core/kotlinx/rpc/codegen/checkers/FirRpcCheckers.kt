@@ -14,8 +14,10 @@ import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
 
 class FirRpcDeclarationCheckers(ctx: FirCheckersContext) : DeclarationCheckers() {
-    override val regularClassCheckers: Set<FirRegularClassChecker> = setOf(
+    override val regularClassCheckers: Set<FirRegularClassChecker> = setOfNotNull(
         FirRpcAnnotationChecker(ctx),
+        if (ctx.serializationIsPresent) FirRpcStrictModeClassChecker(ctx) else null,
+        FirRpcServiceDeclarationChecker(ctx),
     )
 
     override val classCheckers: Set<FirClassChecker> = setOf(
@@ -34,5 +36,6 @@ class FirRpcDeclarationCheckers(ctx: FirCheckersContext) : DeclarationCheckers()
 class FirRpcExpressionCheckers(ctx: FirCheckersContext) : ExpressionCheckers() {
     override val functionCallCheckers: Set<FirFunctionCallChecker> = setOf(
         FirCheckedAnnotationFunctionCallChecker(ctx),
+        FirRpcStrictModeExpressionChecker(ctx),
     )
 }

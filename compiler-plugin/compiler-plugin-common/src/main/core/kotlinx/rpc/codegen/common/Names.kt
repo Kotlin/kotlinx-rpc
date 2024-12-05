@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen.common
 
+import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
@@ -19,6 +20,16 @@ object RpcClassId {
     val flow = ClassId(FqName("kotlinx.coroutines.flow"), Name.identifier("Flow"))
     val sharedFlow = ClassId(FqName("kotlinx.coroutines.flow"), Name.identifier("SharedFlow"))
     val stateFlow = ClassId(FqName("kotlinx.coroutines.flow"), Name.identifier("StateFlow"))
+}
+
+object RpcCallableId {
+    val streamScoped = CallableId(FqName("kotlinx.rpc.krpc"), Name.identifier("streamScoped"))
+    val withStreamScope = CallableId(FqName("kotlinx.rpc.krpc"), Name.identifier("withStreamScope"))
+    val StreamScope = CallableId(FqName("kotlinx.rpc.krpc"), Name.identifier("StreamScope"))
+    val invokeOnStreamScopeCompletion = CallableId(
+        FqName("kotlinx.rpc.krpc"),
+        Name.identifier("invokeOnStreamScopeCompletion"),
+    )
 }
 
 object RpcNames {

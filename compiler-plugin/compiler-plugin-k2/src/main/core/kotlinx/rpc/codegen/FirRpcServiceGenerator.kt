@@ -187,9 +187,10 @@ class FirRpcServiceGenerator(
         owner: FirClassSymbol<*>,
         name: Name,
         rpcServiceStubKey: RpcGeneratedStubKey,
-    ): FirClassLikeSymbol<*> {
+    ): FirClassLikeSymbol<*>? {
         val methodName = name.rpcMethodName
-        val rpcMethod = rpcServiceStubKey.functions.single { it.name == methodName }
+        val rpcMethod = rpcServiceStubKey.functions.singleOrNull { it.name == methodName }
+            ?: return null
         val rpcMethodClassKey = RpcGeneratedRpcMethodClassKey(rpcMethod)
         val classKind = if (rpcMethodClassKey.isObject) ClassKind.OBJECT else ClassKind.CLASS
 

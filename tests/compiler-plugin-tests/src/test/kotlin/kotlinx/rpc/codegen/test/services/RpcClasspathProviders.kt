@@ -28,6 +28,7 @@ private class RuntimeDependency(
 
 private object RpcClasspathProvider {
     private val TEST_RUNTIME = RuntimeDependency("build/libs/", "compiler-plugin-test")
+    private val KRPC_CORE_JVM = RuntimeDependency("$globalRootDir/krpc/krpc-core/build/libs/", "krpc-core-jvm")
     private val CORE_JVM = RuntimeDependency("$globalRootDir/core/build/libs/", "core-jvm")
     private val UTILS_JVM = RuntimeDependency("$globalRootDir/utils/build/libs/", "utils-jvm")
 
@@ -41,6 +42,7 @@ private object RpcClasspathProvider {
         val additionalDependencies = listOf(
             TEST_RUNTIME,
             CORE_JVM,
+            KRPC_CORE_JVM,
             UTILS_JVM,
         ).map { it.getFile(testServices) }
 
