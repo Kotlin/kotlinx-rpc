@@ -134,12 +134,9 @@ object StrictModeCliOptions {
 }
 
 fun AbstractCliOption.processAsStrictModeOption(value: String, configuration: CompilerConfiguration): Boolean {
-    StrictModeCliOptions.configurationMapper[this]?.let { key ->
-        StrictMode.fromCli(value)?.let { mode ->
-            configuration.put(key, mode)
-            return true
-        }
-    }
+    val key = StrictModeCliOptions.configurationMapper[this] ?: return false
+    val mode = StrictMode.fromCli(value) ?: return false
 
-    return false
+    configuration.put(key, mode)
+    return true
 }

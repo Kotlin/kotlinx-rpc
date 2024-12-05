@@ -54,13 +54,13 @@ open class RpcStrictModeExtension @Inject constructor(objects: ObjectFactory) {
     val nestedFlow: Property<RpcStrictMode> = objects.strictModeProperty()
 
     /**
-     * WIP
+     * WIP: https://youtrack.jetbrains.com/issue/KRPC-133
      * Will be enabled later, when an alternative is ready.
      */
     private val streamScopedFunctions: Property<RpcStrictMode> = objects.strictModeProperty(RpcStrictMode.NONE)
 
     /**
-     * WIP
+     * WIP: https://youtrack.jetbrains.com/issue/KRPC-133
      * Will be enabled later, when an alternative is ready.
      */
     private val suspendingServerStreaming: Property<RpcStrictMode> = objects.strictModeProperty(RpcStrictMode.NONE)

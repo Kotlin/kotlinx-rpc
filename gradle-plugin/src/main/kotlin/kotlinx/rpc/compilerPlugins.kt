@@ -36,6 +36,7 @@ class CompilerPluginCli : KotlinCompilerPluginSupportPlugin by compilerPlugin({
                 SubpluginOption("strict-stateFlow", strict.stateFlow.get().toCompilerArg()),
                 SubpluginOption("strict-sharedFlow", strict.sharedFlow.get().toCompilerArg()),
                 SubpluginOption("strict-nested-flow", strict.nestedFlow.get().toCompilerArg()),
+                // WIP: https://youtrack.jetbrains.com/issue/KRPC-133
 //                SubpluginOption("strict-stream-scope", strict.streamScopedFunctions.get().toCompilerArg()),
 //                SubpluginOption(
 //                    "strict-suspending-server-streaming",

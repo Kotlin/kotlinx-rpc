@@ -179,15 +179,11 @@ class FirRpcStrictModeClassChecker(private val ctx: FirCheckersContext) : FirCla
             .serializableProperties
             .mapNotNull { property ->
                 val resolvedTypeRef = property.propertySymbol.resolvedReturnTypeRef
-                val result = if (resolvedTypeRef.toClassLikeSymbol(context.session) != null) {
+                if (resolvedTypeRef.toClassLikeSymbol(context.session) != null) {
                     resolvedTypeRef
                 } else {
                     extracted[property.propertySymbol.resolvedReturnType]
                 }
-                if (result == null) {
-                    print(1)
-                }
-                result
             }.memoryOptimizedPlus(flowProps)
             .forEach { symbol ->
                 checkSerializableTypes(
