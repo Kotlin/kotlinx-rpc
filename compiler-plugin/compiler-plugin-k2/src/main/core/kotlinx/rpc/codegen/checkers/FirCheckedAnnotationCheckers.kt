@@ -153,6 +153,10 @@ object FirCheckedAnnotationHelper {
         typeArgumentsMapper: (TypeArgument) -> ConeTypeProjection?,
         sourceProvider: (Origin, TypeArgument) -> KtSourceElement?,
     ) {
+        if (!ctx.annotationTypeSafetyEnabled) {
+            return
+        }
+
         val originTransformed = originMapper(origin) ?: return
         val symbol = symbolProvider(originTransformed) ?: return
 

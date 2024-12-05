@@ -2,6 +2,24 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+// MODULE: disabled
+// ANNOTATION_TYPE_SAFETY: false
+// FILE: a.kt
+
+import kotlinx.rpc.annotations.CheckedTypeAnnotation
+
+@CheckedTypeAnnotation
+@Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.TYPE_PARAMETER, AnnotationTarget.CLASS)
+private annotation class NotWorkingChecked
+
+private fun <@NotWorkingChecked T> checked() {}
+
+fun test() {
+    checked<Int>()
+}
+
+// MODULE: main
+
 import kotlinx.rpc.annotations.CheckedTypeAnnotation
 
 // annotations

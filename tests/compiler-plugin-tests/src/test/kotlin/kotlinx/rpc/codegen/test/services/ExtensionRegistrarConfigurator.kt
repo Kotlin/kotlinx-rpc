@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen.test.services
 
+import kotlinx.rpc.codegen.RpcFirConfigurationKeys
 import kotlinx.rpc.codegen.StrictMode
 import kotlinx.rpc.codegen.StrictModeConfigurationKeys
 import kotlinx.rpc.codegen.registerRpcExtensions
@@ -36,6 +37,14 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
             configuration.put(StrictModeConfigurationKeys.FIELDS, mode)
         }
 
+        val annotationTypeSafety = module.directives[RpcDirectives.ANNOTATION_TYPE_SAFETY]
+        if (annotationTypeSafety.isNotEmpty()) {
+            configuration.put(
+                RpcFirConfigurationKeys.ANNOTATION_TYPE_SAFETY,
+                annotationTypeSafety.single().toBooleanStrict(),
+            )
+        }
+
         registerRpcExtensions(configuration)
 
         // libs
@@ -45,4 +54,5 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
 
 object RpcDirectives : SimpleDirectivesContainer() {
     val RPC_STRICT_MODE by stringDirective("none, warning or error", DirectiveApplicability.Module)
+    val ANNOTATION_TYPE_SAFETY by stringDirective("true or false", DirectiveApplicability.Module)
 }

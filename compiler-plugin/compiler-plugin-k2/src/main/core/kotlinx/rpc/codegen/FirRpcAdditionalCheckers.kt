@@ -8,6 +8,7 @@ import kotlinx.rpc.codegen.checkers.FirCheckedAnnotationHelper
 import kotlinx.rpc.codegen.checkers.FirRpcDeclarationCheckers
 import kotlinx.rpc.codegen.checkers.FirRpcExpressionCheckers
 import kotlinx.rpc.codegen.checkers.diagnostics.FirRpcStrictModeDiagnostics
+import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.DeclarationCheckers
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
@@ -20,14 +21,19 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
 class FirRpcAdditionalCheckers(
     session: FirSession,
     serializationIsPresent: Boolean,
-    modes: StrictModeAggregator,
+    configuration: CompilerConfiguration,
 ) : FirAdditionalCheckersExtension(session) {
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
         register(FirRpcPredicates.rpc)
         register(FirRpcPredicates.checkedAnnotationMeta)
     }
 
-    private val ctx = FirCheckersContext(session, serializationIsPresent, modes)
+    private val ctx = FirCheckersContext(
+        session = session,
+        serializationIsPresent = serializationIsPresent,
+        annotationTypeSafetyEnabled = configuration.get(RpcFirConfigurationKeys.ANNOTATION_TYPE_SAFETY, true),
+        modes = configuration.strictModeAggregator(),
+    )
 
     override val declarationCheckers: DeclarationCheckers = FirRpcDeclarationCheckers(ctx)
     override val expressionCheckers: ExpressionCheckers = FirRpcExpressionCheckers(ctx)
@@ -36,6 +42,7 @@ class FirRpcAdditionalCheckers(
 class FirCheckersContext(
     private val session: FirSession,
     val serializationIsPresent: Boolean,
+    val annotationTypeSafetyEnabled: Boolean,
     modes: StrictModeAggregator,
 ) {
     val strictModeDiagnostics = FirRpcStrictModeDiagnostics(modes)

@@ -25,6 +25,7 @@ class RpcCommandLineProcessor : CommandLineProcessor {
         StrictModeCliOptions.SUSPENDING_SERVER_STREAMING,
         StrictModeCliOptions.NOT_TOP_LEVEL_SERVER_FLOW,
         StrictModeCliOptions.FIELDS,
+        RpcFirCliOptions.ANNOTATION_TYPE_SAFETY,
     )
 
     override fun processOption(
@@ -32,7 +33,19 @@ class RpcCommandLineProcessor : CommandLineProcessor {
         value: String,
         configuration: CompilerConfiguration,
     ) {
-        option.processAsStrictModeOption(value, configuration)
+        if (option.processAsStrictModeOption(value, configuration)) {
+            return
+        }
+
+        when (option) {
+            RpcFirCliOptions.ANNOTATION_TYPE_SAFETY -> {
+                @Suppress("NullableBooleanElvis")
+                configuration.put(
+                    RpcFirConfigurationKeys.ANNOTATION_TYPE_SAFETY,
+                    value.toBooleanStrictOrNull() ?: true,
+                )
+            }
+        }
     }
 }
 

@@ -44,6 +44,8 @@ class CompilerPluginCli : KotlinCompilerPluginSupportPlugin by compilerPlugin({
 //                ),
                 SubpluginOption("strict-not-top-level-server-flow", strict.notTopLevelServerFlow.get().toCompilerArg()),
                 SubpluginOption("strict-fields", strict.fields.get().toCompilerArg()),
+                @OptIn(RpcDangerousApi::class)
+                SubpluginOption("annotation-type-safety", extension.annotationTypeSafetyEnabled.get().toString()),
             )
         }
     }

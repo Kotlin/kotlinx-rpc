@@ -1,4 +1,18 @@
-FILE: checkedAnnotation.kt
+Module: disabled
+FILE: a.kt
+    @R|kotlinx/rpc/annotations/CheckedTypeAnnotation|() @R|kotlin/annotation/Target|(allowedTargets = vararg(Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.ANNOTATION_CLASS|, Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.TYPE_PARAMETER|, Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.CLASS|)) private final annotation class NotWorkingChecked : R|kotlin/Annotation| {
+        public constructor(): R|NotWorkingChecked| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    private final fun <@R|NotWorkingChecked|() T> checked(): R|kotlin/Unit| {
+    }
+    public final fun test(): R|kotlin/Unit| {
+        R|/checked|<R|kotlin/Int|>()
+    }
+Module: main
+FILE: module_main_checkedAnnotation.kt
     @R|kotlinx/rpc/annotations/CheckedTypeAnnotation|() @R|kotlin/annotation/Target|(allowedTargets = vararg(Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.ANNOTATION_CLASS|, Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.TYPE_PARAMETER|, Q|kotlin/annotation/AnnotationTarget|.R|kotlin/annotation/AnnotationTarget.CLASS|)) public final annotation class Checked : R|kotlin/Annotation| {
         public constructor(): R|Checked| {
             super<R|kotlin/Any|>()
