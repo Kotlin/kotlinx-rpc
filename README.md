@@ -90,8 +90,8 @@ that will set up code generation in a project.
 Example of a setup in a project's `build.gradle.kts`:
 ```kotlin
 plugins {
-    kotlin("multiplatform") version "2.0.21"
-    kotlin("plugin.serialization") version "2.0.21"
+    kotlin("multiplatform") version "2.1.0"
+    kotlin("plugin.serialization") version "2.1.0"
     id("org.jetbrains.kotlinx.rpc.plugin") version "0.4.0"
 }
 ```
@@ -143,7 +143,7 @@ Integrations in progress:
 
 ## Kotlin compatibility
 We support all stable Kotlin versions starting from 2.0.0:
-- 2.0.0, 2.0.10, 2.0.20, 2.0.21
+- 2.0.0, 2.0.10, 2.0.20, 2.0.21, 2.1.0
 
 For a full compatibility checklist, 
 see [Versions](https://kotlin.github.io/kotlinx-rpc/versions.html).
