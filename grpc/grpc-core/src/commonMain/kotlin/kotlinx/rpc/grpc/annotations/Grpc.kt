@@ -6,5 +6,6 @@ package kotlinx.rpc.grpc.annotations
 
 import kotlinx.rpc.annotations.Rpc
 
+@Target(AnnotationTarget.CLASS, AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.TYPE_PARAMETER)
 @Rpc
 public annotation class Grpc

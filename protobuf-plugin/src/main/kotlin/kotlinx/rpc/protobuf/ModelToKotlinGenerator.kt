@@ -38,7 +38,7 @@ class ModelToKotlinGenerator(
 
     private fun CodeGenerator.generateDeclaredEntities(fileDeclaration: FileDeclaration) {
         fileDeclaration.messageDeclarations.forEach { generateMessage(it) }
-        fileDeclaration.enumDeclarations.forEach { generateEnum(it) }
+//        fileDeclaration.enumDeclarations.forEach { generateEnum(it) }
         fileDeclaration.serviceDeclarations.forEach { generateService(it) }
     }
 
@@ -75,17 +75,17 @@ class ModelToKotlinGenerator(
                 }
             }
 
-            declaration.oneOfDeclarations.forEach { oneOf ->
-                generateOneOf(oneOf)
-            }
-
-            declaration.nestedDeclarations.forEach { nested ->
-                generateMessage(nested)
-            }
-
-            declaration.enumDeclarations.forEach { enum ->
-                generateEnum(enum)
-            }
+//            declaration.oneOfDeclarations.forEach { oneOf ->
+//                generateOneOf(oneOf)
+//            }
+//
+//            declaration.nestedDeclarations.forEach { nested ->
+//                generateMessage(nested)
+//            }
+//
+//            declaration.enumDeclarations.forEach { enum ->
+//                generateEnum(enum)
+//            }
 
             if (isInterfaceMode) {
                 clazz("", modifiers = "companion", declarationType = DeclarationType.Object)
@@ -176,24 +176,28 @@ class ModelToKotlinGenerator(
 
     private fun FieldDeclaration.typeFqName(): String {
         return when (type) {
-            is FieldType.Reference -> {
-                type.value.simpleName
-            }
+//            is FieldType.Reference -> {
+//                type.value.simpleName
+//            }
 
             is FieldType.IntegralType -> {
                 type.fqName.simpleName
             }
 
-            is FieldType.List -> {
-                "List<${type.valueName.simpleName}>"
-            }
-
-            is FieldType.Map -> {
-                "Map<${type.keyName.simpleName}, ${type.valueName.simpleName}>"
+//            is FieldType.List -> {
+//                "List<${type.valueName.simpleName}>"
+//            }
+//
+//            is FieldType.Map -> {
+//                "Map<${type.keyName.simpleName}, ${type.valueName.simpleName}>"
+//            }
+            else -> {
+                error("Unsupported type: $type")
             }
         }
     }
 
+    @Suppress("unused")
     private fun CodeGenerator.generateOneOf(declaration: OneOfDeclaration) {
         val interfaceName = declaration.name.simpleName
 
@@ -212,6 +216,7 @@ class ModelToKotlinGenerator(
         }
     }
 
+    @Suppress("unused")
     private fun CodeGenerator.generateEnum(declaration: EnumDeclaration) {
         clazz(declaration.name.simpleName, "enum") {
             code(declaration.originalEntries.joinToString(", ", postfix = ";") { enumEntry ->
