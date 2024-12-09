@@ -22,7 +22,8 @@ internal actual fun Server(builder: ServerBuilder<*>): Server {
 
 private fun io.grpc.Server.toKotlin(): Server {
     return object : Server {
-        override val port: Int = this@toKotlin.port
+        override val port: Int
+            get() = this@toKotlin.port
 
         override val isShutdown: Boolean
             get() = this@toKotlin.isShutdown

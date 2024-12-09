@@ -35,7 +35,7 @@ public class GrpcServer internal constructor(
         serviceKClass: KClass<Service>,
         serviceFactory: (CoroutineContext) -> Service,
     ) {
-        val childJob = SupervisorJob(coroutineContext.job)
+        val childJob = SupervisorJob()
         val service = serviceFactory(childJob)
 
         val definition: ServerServiceDefinition = getDefinition(service, serviceKClass)
