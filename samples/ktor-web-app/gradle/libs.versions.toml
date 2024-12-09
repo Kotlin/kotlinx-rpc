@@ -1,7 +1,7 @@
 [versions]
 kotlin = "2.0.21"
-kotlin-wrappers-bom = "1.0.0-pre.823"
-ktor = "3.0.1"
+kotlin-wrappers-bom = "1.0.0-pre.850"
+ktor = "3.0.2"
 kotlinx-serialization-json = "1.7.3"
 kotlinx-coroutines-core = "1.9.0"
 logback = "1.5.12"
