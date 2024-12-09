@@ -13,8 +13,12 @@ private const val RPC_SERVICE_STUB_SIMPLE_NAME = "\$rpcServiceStub"
 internal actual fun <@Rpc T : Any> internalServiceDescriptorOf(kClass: KClass<T>): Any? {
     val className = "${kClass.qualifiedName}\$$RPC_SERVICE_STUB_SIMPLE_NAME"
 
-    return kClass.java.classLoader
-        .loadClass(className)
-        ?.kotlin
-        ?.companionObjectInstance
+    return try {
+        kClass.java.classLoader
+            .loadClass(className)
+            ?.kotlin
+            ?.companionObjectInstance
+    } catch (_ : ClassNotFoundException) {
+        null
+    }
 }

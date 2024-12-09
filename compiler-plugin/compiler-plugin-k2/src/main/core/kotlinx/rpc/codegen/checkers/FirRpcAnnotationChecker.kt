@@ -26,8 +26,9 @@ class FirRpcAnnotationChecker(private val ctx: FirCheckersContext) : FirRegularC
         reporter: DiagnosticReporter,
     ) {
         val rpcAnnotated = context.session.predicateBasedProvider.matches(FirRpcPredicates.rpc, declaration)
+        val grpcAnnotated = context.session.predicateBasedProvider.matches(FirRpcPredicates.grpc, declaration)
 
-        if (!declaration.isInterface && rpcAnnotated) {
+        if (!declaration.isInterface && (rpcAnnotated || grpcAnnotated)) {
             reporter.reportOn(
                 source = declaration.symbol.rpcAnnotationSource(context.session),
                 factory = FirRpcDiagnostics.WRONG_RPC_ANNOTATION_TARGET,
@@ -43,7 +44,7 @@ class FirRpcAnnotationChecker(private val ctx: FirCheckersContext) : FirRegularC
             )
         }
 
-        if (rpcAnnotated && !ctx.serializationIsPresent) {
+        if ((rpcAnnotated || grpcAnnotated) && !ctx.serializationIsPresent) {
             reporter.reportOn(
                 source = declaration.symbol.rpcAnnotationSource(context.session),
                 factory = FirRpcDiagnostics.MISSING_SERIALIZATION_MODULE,

@@ -20,6 +20,7 @@ abstract class FirRpcSupertypeGeneratorAbstract(
 ) : FirSupertypeGenerationExtension(session) {
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
         register(FirRpcPredicates.rpc)
+        register(FirRpcPredicates.grpc)
     }
 
     override fun needTransformSupertypes(declaration: FirClassLikeDeclaration): Boolean {

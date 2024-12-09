@@ -9,4 +9,5 @@ package kotlinx.rpc.internal.utils
     level = RequiresOptIn.Level.ERROR,
 )
 @InternalRpcApi
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.TYPEALIAS, AnnotationTarget.PROPERTY)
 public annotation class InternalRpcApi
