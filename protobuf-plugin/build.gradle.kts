@@ -2,11 +2,12 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import com.google.protobuf.gradle.id
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 
 plugins {
     alias(libs.plugins.conventions.jvm)
+    alias(libs.plugins.kotlinx.rpc)
+    alias(libs.plugins.serialization)
     id("com.google.protobuf")
 }
 
@@ -18,12 +19,13 @@ dependencies {
 
     testImplementation(projects.grpc.grpcCore)
     testImplementation(libs.coroutines.core)
-    testImplementation("io.grpc:grpc-stub:1.57.2")
-    testImplementation("io.grpc:grpc-protobuf:1.57.2")
-    testImplementation("io.grpc:grpc-kotlin-stub:1.3.1")
-    testImplementation("com.google.protobuf:protobuf-java-util:3.24.1")
-    testImplementation("com.google.protobuf:protobuf-javalite:3.24.1")
-    testImplementation("com.google.protobuf:protobuf-kotlin:3.24.1")
+    testImplementation(libs.kotlin.test)
+    testImplementation("io.grpc:grpc-stub:1.68.2")
+    testImplementation("io.grpc:grpc-netty:1.68.2")
+    testImplementation("io.grpc:grpc-protobuf:1.68.2")
+    testImplementation("io.grpc:grpc-kotlin-stub:1.4.1")
+    testImplementation("com.google.protobuf:protobuf-java-util:4.28.2")
+    testImplementation("com.google.protobuf:protobuf-kotlin:4.28.2")
 }
 
 sourceSets {
@@ -93,10 +95,6 @@ protobuf {
                 create("grpckt")
             }
 
-            builtins {
-                id("kotlin")
-            }
-
             dependsOn(tasks.jar)
         }
     }
@@ -104,4 +102,8 @@ protobuf {
 
 kotlin {
     explicitApi = ExplicitApiMode.Disabled
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

@@ -16,7 +16,9 @@ internal class RpcIrServiceProcessor(
     private val logger: MessageCollector,
 ) : IrElementTransformer<RpcIrContext> {
     override fun visitClass(declaration: IrClass, data: RpcIrContext): IrStatement {
-        if (declaration.hasAnnotation(RpcClassId.rpcAnnotation)) {
+        if (declaration.hasAnnotation(RpcClassId.rpcAnnotation)
+            || declaration.hasAnnotation(RpcClassId.grpcAnnotation)
+        ) {
             processService(declaration, data)
         }
 

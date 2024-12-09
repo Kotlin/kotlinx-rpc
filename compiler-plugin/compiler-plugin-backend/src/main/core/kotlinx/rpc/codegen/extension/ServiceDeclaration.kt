@@ -4,12 +4,14 @@
 
 package kotlinx.rpc.codegen.extension
 
+import kotlinx.rpc.codegen.common.RpcClassId
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.defaultType
+import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.kotlinFqName
 
 class ServiceDeclaration(
@@ -18,6 +20,7 @@ class ServiceDeclaration(
     val methods: List<Method>,
     val fields: List<FlowField>,
 ) {
+    val isGrpc = service.hasAnnotation(RpcClassId.grpcAnnotation)
     val fqName = service.kotlinFqName.asString()
 
     val serviceType = service.defaultType
