@@ -1,3 +1,33 @@
+# 0.5.0
+> Published 11 December 2024
+
+### Features 🎉
+* Update Service Descriptors Generation by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/227
+* Kotlin 2.1.0 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/244
+* Added basic CheckedTypeAnnotation impl with compiler plugin check by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/240
+* Strict mode by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/243
+
+### Breaking Changes 🔴
+* Api naming by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/236
+* Update Service Descriptors Generation by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/227
+* Added basic CheckedTypeAnnotation impl with compiler plugin check by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/240
+
+### Deprecations ⚠️
+* Api naming by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/236
+* Strict mode by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/243
+
+### Infra 🚧
+* Update the project structure to work with kotlin-master by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/234
+* Fixed version formatting with ENV vars by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/235
+* Fix Kotlin master compilation by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/245
+* Opt-out from annotations type safety analysis by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/246
+
+### Other Changes 🧹
+* Added test for non-serializable params by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/237
+* Updated descriptor to use `RpcType` instead of `KType` directly by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/239
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.4.0...0.5.0
+
 # 0.4.0
 > Published 5 November 2024
 
