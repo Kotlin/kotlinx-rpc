@@ -1,10 +1,10 @@
 [versions]
 kotlin = "2.0.21"
-kotlin-wrappers-bom = "1.0.0-pre.823"
-ktor = "3.0.1"
+kotlin-wrappers-bom = "1.0.0-pre.853"
+ktor = "3.0.3"
 kotlinx-serialization-json = "1.7.3"
 kotlinx-coroutines-core = "1.9.0"
-logback = "1.5.12"
+logback = "1.5.13"
 kotlinx-rpc = "0.4.0"
 
 [libraries]
