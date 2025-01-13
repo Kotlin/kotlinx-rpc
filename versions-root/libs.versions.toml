@@ -126,4 +126,4 @@ conventions-npm = { id = "conventions-npm", version.ref = "kotlinx-rpc" }
 compiler-specific-module = { id = "compiler-specific-module", version.ref = "kotlinx-rpc" }
 
 # gradle-plugin project
-kotlinx-rpc = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "kotlinx-rpc" }
+kotlinx-rpc = { id = "org.jetbrains.kotlinx.rpc.plugin" }
