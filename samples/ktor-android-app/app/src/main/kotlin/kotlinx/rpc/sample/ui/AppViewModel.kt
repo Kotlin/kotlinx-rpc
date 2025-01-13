@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.sample.ui
@@ -14,14 +14,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.rpc.RPCClient
+import kotlinx.rpc.RpcClient
 import kotlinx.rpc.krpc.streamScoped
 import kotlinx.rpc.withService
 import kotlinx.rpc.sample.MyService
 import kotlinx.rpc.sample.UserData
 
 class AppViewModel : ViewModel() {
-    private var rpcClient: RPCClient? = null
+    private var rpcClient: RpcClient? = null
     private var apiService: MyService? = null
 
     private val _uiState = MutableStateFlow<WelcomeData?>(null)
