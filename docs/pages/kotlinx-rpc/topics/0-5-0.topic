@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Migration to 0.5.0" id="0-5-0">
+
+    <p>
+        Version <code>0.5.0</code> introduces breaking changes.
+    </p>
+
+    <chapter title="Annotation type-safety" id="annotation-type-safety">
+        <p>
+            This release brings <a href="annotation-type-safety.topic">annotation type-safety</a>.
+            This means that some green code technically can become red:
+        </p>
+        <code-block lang="Kotlin">
+            @Rpc
+            interface MyService : RemoteService
+
+            class MyServiceImpl : MyService
+
+            fun &lt;@Rpc T : Any&gt; withService() {}
+        </code-block>
+
+        <code-block lang="Kotlin">
+            withService&lt;MyService&gt;() // ok
+            withService&lt;MyServiceImpl&gt;() // ok in 0.4.0, error in 0.5.0
+        </code-block>
+        <p>
+            Thar should not be a problem, as this code was wrong in both releases anyway and would fail in runtime in <code>0.4.0</code>.
+        </p>
+    </chapter>
+
+    <chapter title="Strict Mode and Service API deprecations" id="strict-mode">
+        <p>
+            This release introduces <a href="strict-mode.topic">Strict Mode</a>.
+            Some service declarations are now deprecated, currently with a warning.
+            In the following releases it will change to an error.
+        </p>
+        <p>
+            Deprecated service APIs:
+        </p>
+        <list>
+            <li><code>StateFlow</code> and <code>SharedFlow</code> usage</li>
+            <li>Fields in services</li>
+            <li>Nested Flows</li>
+            <li>Not top-level server side flows</li>
+        </list>
+        <p>
+            More info on the <a href="strict-mode.topic">Strict Mode page</a>.
+        </p>
+    </chapter>
+
+    <chapter title="API Renaming" id="api-renaming">
+        The following APIs were renamed to satisfy Kotlin style guides and bring even more consistency to the library:
+        <table>
+            <tr>
+                <td>Old</td>
+                <td>New</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.RPCClient</td>
+                <td>kotlinx.rpc.RpcClient</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.RPCServer</td>
+                <td>kotlinx.rpc.RpcServer</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.UninitializedRPCFieldException</td>
+                <td>kotlinx.rpc.UninitializedRpcFieldException</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.RPCEagerField</td>
+                <td>kotlinx.rpc.RpcEagerField</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.RPCEagerField</td>
+                <td>kotlinx.rpc.RpcEagerField</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.internal.utils.InternalRPCApi</td>
+                <td>kotlinx.rpc.internal.utils.InternalRpcApi</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.internal.utils.ExperimentalRPCApi</td>
+                <td>kotlinx.rpc.internal.utils.ExperimentalRpcApi</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.RPCConfig</td>
+                <td>kotlinx.rpc.krpc.KrpcConfig</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.RPCConfigBuilder</td>
+                <td>kotlinx.rpc.krpc.KrpcConfigBuilder</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.RPCTransport</td>
+                <td>kotlinx.rpc.krpc.KrpcTransport</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.RPCTransportMessage</td>
+                <td>kotlinx.rpc.krpc.KrpcTransportMessage</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.client.KRPCClient</td>
+                <td>kotlinx.rpc.krpc.client.KrpcClient</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.server.KRPCServer</td>
+                <td>kotlinx.rpc.krpc.server.KrpcServer</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.ktor.client.installRPC</td>
+                <td>kotlinx.rpc.krpc.ktor.client.installKrpc</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.ktor.client.RPC</td>
+                <td>kotlinx.rpc.krpc.ktor.client.Krpc</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.ktor.client.KtorRPCClient</td>
+                <td>kotlinx.rpc.krpc.ktor.client.KtorRpcClient</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.ktor.server.RPC</td>
+                <td>kotlinx.rpc.krpc.ktor.server.Krpc</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.ktor.server.RPCRoute</td>
+                <td>kotlinx.rpc.krpc.ktor.server.KrpcRoute</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.serialization.RPCSerialFormat</td>
+                <td>kotlinx.rpc.krpc.serialization.KrpcSerialFormat</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.serialization.RPCSerialFormatBuilder</td>
+                <td>kotlinx.rpc.krpc.serialization.KrpcSerialFormatBuilder</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.serialization.RPCSerialFormatConfiguration</td>
+                <td>kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.serialization.cbor.RPCCborSerialFormat</td>
+                <td>kotlinx.rpc.krpc.serialization.cbor.KrpcCborSerialFormat</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.serialization.json.RPCJsonSerialFormat</td>
+                <td>kotlinx.rpc.krpc.serialization.json.KrpcJsonSerialFormat</td>
+            </tr>
+            <tr>
+                <td>kotlinx.rpc.krpc.serialization.protobuf.RPCProtobufSerialFormat</td>
+                <td>kotlinx.rpc.krpc.serialization.protobuf.KrpcProtobufSerialFormat</td>
+            </tr>
+        </table>
+    </chapter>
+
+    <chapter title="Service Descriptors" id="service-descriptors">
+        <p>
+            New API is introduced to access compiler generated code - <a href="service-descriptors.topic"/>.
+        </p>
+    </chapter>
+</topic>

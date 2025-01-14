@@ -8,182 +8,103 @@
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
        title="Features" id="features">
-     <chapter title="Send and receive Flows" id="send-and-receive-flows">
-            <p>You can send and receive <a href="https://kotlinlang.org/docs/flow.html">Kotlin Flows</a> in RPC
-                methods.
-                That includes <code>Flow</code>, <code>SharedFlow</code>, and <code>StateFlow</code>, but
-                <control>NOT</control>
-                their mutable versions.
-                Flows can be nested and can be included in other classes, like this:
-            </p>
+    <chapter title="Send and receive Flows" id="send-and-receive-flows">
+        <p>
+            You can send and receive <a href="https://kotlinlang.org/docs/flow.html">Kotlin Flows</a> in RPC
+            methods.
+            This is only applied to <code>Flow</code> type, <code>StateFlow</code> and <code>SharedFlow</code>
+            are not supported and there are no plans to do so.
+        </p>
 
-            <code-block lang="kotlin">
-                @Serializable
-                data class StreamResult {
-                    @Contextual
-                    val innerFlow: StateFlow&lt;Int&gt;
-                }
+        <code-block lang="kotlin">
+            @Serializable
+            data class StreamRequest(
+                @Contextual
+                val innerFlow: Flow&lt;Int&gt;
+            )
 
-                @Rpc
-                interface MyService : RemoteService {
-                    suspend fun sendStream(stream: Flow&lt;Flow&lt;Int&gt;&gt;): Flow&lt;StreamResult&gt;
-                }
-            </code-block>
-            <p>Note that flows that are declared in classes (like in <code>StreamResult</code>) require
-                <a href="https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/serializers.md#contextual-serialization">Contextual</a>
-                annotation.</p>
-            <p>To use flows in your code - you need to use special <code>streamScoped</code> function
-                that will provide your flows with their lifetime:</p>
+            @Rpc
+            interface MyService : RemoteService {
+                suspend fun sendStream(stream: Flow&lt;Int&gt;): Flow&lt;String&gt;
 
-            <code-block lang="kotlin">
-                @Rpc
-                interface MyService : RemoteService {
-                    suspend fun sendFlow(flow: Flow&lt;Int&gt;)
-                }
+                suspend fun streamRequest(request: StreamRequest)
+            }
+        </code-block>
 
-                val myService = rpcClient.withService&lt;MyService&gt;()
+        <p>
+            Another limitation is that server-side steaming (flows that are returned from a function),
+            must be the top-level type:
+        </p>
 
-                streamScoped {
-                    val flow = flow {
-                        repeat(10) { i -&gt;
-                            emit(i)
-                        }
-                    }
+        <code-block lang="kotlin">
+            @Serializable
+            data class StreamResult(
+                @Contextual
+                val innerFlow: Flow&lt;Int&gt;
+            )
 
-                    myService.sendFlow(flow)
-                }
-            </code-block>
-            <p>In that case all your flows, including incoming and outgoing,
-                will work until the <code>streamScoped</code> function completes.
-                After that, all streams that are still live will be closed.</p>
-            <p>You can have multiple RPC call and flows inside the <code>streamScoped</code> function, even from
-                different services.</p>
-            <p>On server side, you can use <code>invokeOnStreamScopeCompletion</code> handler inside your methods
-                to execute code after <code>streamScoped</code> on client side has closed.
-                It might be useful to clean resources, for example:</p>
+            @Rpc
+            interface MyService : RemoteService {
+                suspend fun serverStream(): Flow&lt;String&gt; // ok
+                suspend fun serverStream(): StreamResult // not ok
+            }
+        </code-block>
 
-            <code-block lang="kotlin">
-                override suspend fun hotFlow(): StateFlow&lt;Int&gt; {
-                    val state = MutableStateFlow(-1)
+        <note>
+            Note that flows that are declared in classes (like in <code>StreamResult</code>) require
+            <a href="https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/serializers.md#contextual-serialization">Contextual</a>
+            annotation.
+        </note>
 
-                    incomingHotFlowJob = launch {
-                        repeat(Int.MAX_VALUE) { value -&gt;
-                            state.value = value
-
-                            hotFlowMirror.first { it == value }
-                        }
-                    }
-
-                    invokeOnStreamScopeCompletion {
-                        incomingHotFlowJob.cancel()
-                    }
-
-                    return state
-                }
-            </code-block>
-            <p>Note that this API is experimental and may be removed in future releases.</p>
-            <p>
-                Another way of managing streams is to do it manually.
-                For this, you can use the <code>StreamScope</code> constructor function together with
-                <code>withStreamScope</code>:
-            </p>
-            <code-block lang="kotlin">
-                val streamScope = StreamScope(myJob)
-                withStreamScope(streamScope) {
-                    // use streams here
-                }
-            </code-block>
-        </chapter>
-    <chapter title="Service fields" id="service-fields">
-            <p>Our protocol provides you with an ability to declare service fields:</p>
-
-            <code-block lang="kotlin">
-                @Rpc
-                interface MyService : RemoteService {
-                    val plainFlow: Flow&lt;Int&gt;
-                    val sharedFlow: SharedFlow&lt;Int&gt;
-                    val stateFlow: StateFlow&lt;Int&gt;
-                }
-
-                // ### Server code ###
-
-                class MyServiceImpl(override val coroutineContext: CoroutineContext) : MyService {
-                    override val plainFlow: Flow&lt;Int&gt; = flow {
-                        emit(1)
-                    }
-
-                    override val sharedFlow: SharedFlow&lt;Int&gt; = MutableSharedFlow(replay = 1)
-                    override val stateFlow: StateFlow&lt;Int&gt; = MutableStateFlow(value = 1)
-                }
-            </code-block>
-            <p>Field declarations are only supported for these three types: <code>Flow</code>,
-                <code>SharedFlow</code> and <code>StateFlow</code>.</p>
-            <p>You don't need to use <code>streamScoped</code> function to work with streams in fields.</p>
-            <p>To learn more about the limitations of such declarations,
-                see <a anchor="field-declarations-in-services">Field declarations in services</a>.</p>
-    </chapter>
-    <chapter title="Field declarations in services" id="field-declarations-in-services">
-        <p>Fields are supported in the in-house RPC protocol,
-            but the support comes with its limitations.
-            There always will be a considerable time gap between the
-            initial access to a field and the moment information about this field arrives from a server.
-            This makes it hard to provide good uniform API for all possible field types,
-            so now will limit supported types to <code>Flow</code>, <code>SharedFlow</code> and
-            <code>StateFlow</code>
-            (excluding mutable versions of them).
-            To work with these fields, you may use additional provided APIs:</p>
-        <p>Firstly, we define two possible states of a flow field:
-            <emphasis>uninitialized</emphasis>
-            and
-            <emphasis>initialized</emphasis>
-            .
-            Before the first information about this flow has arrived from a server,
-            the flow is in
-            <emphasis>uninitialized</emphasis>
-            state.
-            In this state, if you access any of its
-            <control>fields</control>
-            (<code>replayCache</code> for <code>SharedFlow</code> and <code>StateFlow</code>, and <code>value</code>
-            for <code>StateFlow</code>)
-            you will get a <code>UninitializedRpcFieldException</code>.
-            If you call a suspend <code>collect</code> method on them,
-            execution will suspend until the state is
-            <emphasis>initialized</emphasis>
-            and then the actual <code>collect</code> method will be executed.
-            The same ability to suspend execution until the state is
-            <emphasis>initialized</emphasis>
-            can be achieved by using <code>awaitFieldInitialization</code> function:
+        <p>
+            To use flows in your code - you need to use special <code>streamScoped</code> function
+            that will provide your flows with their lifetime:
         </p>
 
         <code-block lang="kotlin">
             @Rpc
             interface MyService : RemoteService {
-                val flow: StateFlow&lt;Int&gt;
+                suspend fun sendFlow(flow: Flow&lt;Int&gt;)
             }
 
-            // ### Somewhere in client code ###
-            val myService: MyService = rpcClient.withService&lt;MyService&gt;()
+            val myService = rpcClient.withService&lt;MyService&gt;()
 
-            val value = myService.flow.value // throws UninitializedRpcFieldException
-            val value = myService.awaitFieldInitialization { flow }.value // OK
-            // or
-            val value = myService.awaitFieldInitialization().flow.value // OK
-            // or
-            val firstFive = myService.flow.take(5).toList() // OK
+            streamScoped {
+                val flow = flow {
+                    repeat(10) { i -&gt;
+                        emit(i)
+                    }
+                }
+
+                myService.sendFlow(flow)
+            }
         </code-block>
-        <p>Secondly, we provide you with an instrument to make initialization faster.
-            By default, all fields are lazy.
-            By adding <code>@RpcEagerField</code> annotation, you can change this behavior,
-            so that fields will be initialized when the service in created
-            (when <code>withService</code> method is called):</p>
-
+        <p>
+            In that case all your flows, including incoming and outgoing,
+            will work until the <code>streamScoped</code> function completes.
+            After that, all streams that are still live will be closed.
+        </p>
+        <p>
+            You can have multiple RPC call and flows inside the <code>streamScoped</code> function, even from
+            different services.
+        </p>
+        <p>
+            On server side, you can use <code>invokeOnStreamScopeCompletion</code> handler inside your methods
+            to execute code after <code>streamScoped</code> on client side has closed.
+            It might be useful to clean resources, for example.
+        </p>
+        <note>
+            Note that this API is experimental and may be removed in future releases.
+        </note>
+        <p>
+            Another way of managing streams is to do it manually.
+            For this, you can use the <code>StreamScope</code> constructor function together with
+            <code>withStreamScope</code>:
+        </p>
         <code-block lang="kotlin">
-            @Rpc
-            interface MyService : RemoteService {
-                val lazyFlow: Flow&lt;Int&gt; // initialized on first access
-
-                @RpcEagerField
-                val eagerFlow: Flow&lt;Int&gt; // initialized on service creation
+            val streamScope = StreamScope(myJob)
+            withStreamScope(streamScope) {
+                // use streams here
             }
         </code-block>
     </chapter>

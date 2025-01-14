@@ -25,11 +25,16 @@ import kotlinx.rpc.annotations.Rpc
 @Rpc
 interface AwesomeService : RemoteService {
     suspend fun getNews(city: String): Flow<String>
+    
+    suspend fun daysUntilStableRelese(): Int
 }
 ```
 In your server code define how to respond by simply implementing the service:
 ```kotlin
-class AwesomeServiceImpl(override val coroutineContext: CoroutineContext) : AwesomeService {
+class AwesomeServiceImpl(
+    val parameters: AwesomeParameters,
+    override val coroutineContext: CoroutineContext,
+) : AwesomeService {
     override suspend fun getNews(city: String): Flow<String> {
         return flow { 
             emit("Today is 23 degrees!")
@@ -37,11 +42,19 @@ class AwesomeServiceImpl(override val coroutineContext: CoroutineContext) : Awes
             emit("New dogs cafe has opened doors to all fluffy customers!")
         }
     }
+    
+    override suspend fun daysUntilStableRelese(): Int {
+        retuen if (parameters.stable) 0 else {
+            parameters.daysUntilStable ?: error("Who says it will be stable?")
+        }
+    }
 }
 ```
 Then, choose how do you want your service to communicate. For example, you can use integration with [Ktor](https://ktor.io/):
 
 ```kotlin
+data class AwesomeParameters(val stable: Boolean, val daysUntilStable: Int?)
+
 fun main() {
     embeddedServer(Netty, 8080) {
         install(Krpc)
@@ -53,7 +66,9 @@ fun main() {
                     }
                 }
 
-                registerService<AwesomeService> { ctx -> AwesomeServiceImpl(ctx) }
+                registerService<AwesomeService> { ctx -> 
+                    AwesomeServiceImpl(AwesomeParameters(false, null), ctx) 
+                }
             }
         }
     }.start(wait = true)
@@ -71,8 +86,12 @@ val rpcClient = HttpClient { installKrpc() }.rpc {
     }
 }
 
+val service = rpcClient.withService<AwesomeService>()
+
+service.daysUntilStableRelese()
+
 streamScoped {
-    rpcClient.withService<AwesomeService>().getNews("KotlinBurg").collect { article ->
+    service.getNews("KotlinBurg").collect { article ->
         println(article)
     }
 }
@@ -92,7 +111,7 @@ Example of a setup in a project's `build.gradle.kts`:
 plugins {
     kotlin("multiplatform") version "2.1.0"
     kotlin("plugin.serialization") version "2.1.0"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "0.4.0"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.5.0"
 }
 ```
 
@@ -107,15 +126,15 @@ And now you can add dependencies to your project:
 ```kotlin
 dependencies {
     // Client API
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-client:0.4.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-client:0.5.0")
     // Server API
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-server:0.4.0") 
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-server:0.5.0") 
     // Serialization module. Also, protobuf and cbor are provided
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json:0.4.0") 
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json:0.5.0") 
 
     // Transport implementation for Ktor
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client:0.4.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server:0.4.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client:0.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server:0.5.0")
 
     // Ktor API
     implementation("io.ktor:ktor-client-cio-jvm:$ktor_version")
