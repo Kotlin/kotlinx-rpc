@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc
@@ -27,6 +27,10 @@ import kotlin.reflect.KClass
  * @param getter function that returns the field of the context service to wait for.
  * @return service filed after it was initialized.
  */
+@Deprecated(
+    "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
+    level = DeprecationLevel.WARNING,
+)
 public suspend fun <@Rpc T : Any, R> T.awaitFieldInitialization(getter: T.() -> R): R {
     val field = getter()
 
@@ -56,6 +60,10 @@ public suspend fun <@Rpc T : Any, R> T.awaitFieldInitialization(getter: T.() -> 
  * @param T service type
  * @return specified service, after all of it's field were initialized.
  */
+@Deprecated(
+    "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
+    level = DeprecationLevel.WARNING,
+)
 public suspend inline fun <@Rpc reified T : Any> T.awaitFieldInitialization(): T {
     return awaitFieldInitialization(T::class)
 }
@@ -79,6 +87,10 @@ public suspend inline fun <@Rpc reified T : Any> T.awaitFieldInitialization(): T
  * @param kClass [KClass] of the [T] type.
  * @return specified service, after all of it's field were initialized.
  */
+@Deprecated(
+    "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
+    level = DeprecationLevel.WARNING,
+)
 public suspend fun <@Rpc T : Any> T.awaitFieldInitialization(kClass: KClass<T>): T {
     serviceDescriptorOf(kClass)
         .getFields(this)

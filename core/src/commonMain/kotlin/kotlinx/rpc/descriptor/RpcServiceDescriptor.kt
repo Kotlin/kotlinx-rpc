@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.descriptor
@@ -44,6 +44,10 @@ public interface RpcServiceDescriptor<@Rpc T : Any> {
     public val fqName: String
 
     @InternalRpcApi
+    @Deprecated(
+        "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
+        level = DeprecationLevel.WARNING,
+    )
     public fun getFields(service: T): List<RpcDeferredField<*>>
 
     public fun getCallable(name: String): RpcCallable<T>?
@@ -68,6 +72,10 @@ public sealed interface RpcInvokator<@Rpc T : Any> {
     }
 
     @ExperimentalRpcApi
+    @Deprecated(
+        "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
+        level = DeprecationLevel.WARNING,
+    )
     public fun interface Field<@Rpc T : Any> : RpcInvokator<T> {
         public fun call(service: T): Any?
     }
