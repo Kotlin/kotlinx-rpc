@@ -21,6 +21,10 @@ intellij = "233.13135.128"
 gradle-doctor = "0.10.0"
 kotlinx-browser = "0.3"
 shadow-jar = "9.0.0-beta4"
+grpc = "1.69.0"
+grpc-kotlin = "1.4.1"
+protobuf = "4.29.3"
+protobuf-gradle = "0.9.4"
 
 # Stub versions – relpaced based on kotlin, mostly for gradle-related (plugins) dependencies
 #  but also for dependencies for compiler-specific modules.
@@ -87,6 +91,19 @@ junit5-platform-launcher = { module = "org.junit.platform:junit-platform-launche
 junit5-platform-runner = { module = "org.junit.platform:junit-platform-runner" }
 junit5-platform-suite-api = { module = "org.junit.platform:junit-platform-suite-api" }
 
+# grpc and protobuf
+protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
+protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
+protobuf-java-util = { module = "com.google.protobuf:protobuf-java-util", version.ref = "protobuf" }
+protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin", version.ref = "protobuf" }
+grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
+grpc-util = { module = "io.grpc:grpc-util", version.ref = "grpc" }
+grpc-netty = { module = "io.grpc:grpc-netty", version.ref = "grpc" }
+grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
+grpc-kotlin-stub = { module = "io.grpc:grpc-protobuf", version.ref = "grpc-kotlin" }
+grpc-protoc-gen-java = { module = "io.grpc:protoc-gen-grpc-java", version.ref = "grpc" }
+grpc-protoc-gen-kotlin = { module = "io.grpc:protoc-gen-grpc-kotlin", version.ref = "grpc-kotlin" }
+
 # other
 kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
 kotlin-logging-legacy = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
@@ -114,6 +131,7 @@ gradle-kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version.ref = "gradle
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
 shadow-jar = { id = "com.gradleup.shadow", version.ref = "shadow-jar" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobuf-gradle" }
 
 # gradle-conventions project
 conventions-common = { id = "conventions-common", version.ref = "kotlinx-rpc" }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
@@ -8,11 +8,11 @@ plugins {
     alias(libs.plugins.conventions.jvm)
     alias(libs.plugins.kotlinx.rpc)
     alias(libs.plugins.serialization)
-    id("com.google.protobuf")
+    alias(libs.plugins.protobuf)
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-java:3.24.1")
+    implementation(libs.protobuf.java)
 
     implementation(libs.slf4j.api)
     implementation(libs.logback.classic)
@@ -20,12 +20,13 @@ dependencies {
     testImplementation(projects.grpc.grpcCore)
     testImplementation(libs.coroutines.core)
     testImplementation(libs.kotlin.test)
-    testImplementation("io.grpc:grpc-stub:1.68.2")
-    testImplementation("io.grpc:grpc-netty:1.68.2")
-    testImplementation("io.grpc:grpc-protobuf:1.68.2")
-    testImplementation("io.grpc:grpc-kotlin-stub:1.4.1")
-    testImplementation("com.google.protobuf:protobuf-java-util:4.28.2")
-    testImplementation("com.google.protobuf:protobuf-kotlin:4.28.2")
+
+    testImplementation(libs.grpc.stub)
+    testImplementation(libs.grpc.netty)
+    testImplementation(libs.grpc.protobuf)
+    testImplementation(libs.grpc.kotlin.stub)
+    testImplementation(libs.protobuf.java.util)
+    testImplementation(libs.protobuf.kotlin)
 }
 
 sourceSets {
@@ -67,7 +68,7 @@ val buildDirPath: String = project.layout.buildDirectory.get().asFile.absolutePa
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.24.1"
+        artifact = libs.protoc.get().toString()
     }
 
     plugins {
@@ -76,11 +77,11 @@ protobuf {
         }
 
         create("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.57.2"
+            artifact = libs.grpc.protoc.gen.java.get().toString()
         }
 
         create("grpckt") {
-            artifact = "io.grpc:protoc-gen-grpc-kotlin:1.3.1:jdk8@jar"
+            artifact = libs.grpc.protoc.gen.kotlin.get().toString() + ":jdk8@jar"
         }
     }
 

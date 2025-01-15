@@ -19,12 +19,12 @@ kotlin {
 
         jvmMain {
             dependencies {
-                implementation("io.grpc:grpc-util:1.68.2")
-                implementation("io.grpc:grpc-stub:1.68.2")
-                implementation("io.grpc:grpc-protobuf:1.68.2")
-                implementation("io.grpc:grpc-kotlin-stub:1.4.1")
-                implementation("com.google.protobuf:protobuf-java-util:4.28.2")
-                implementation("com.google.protobuf:protobuf-kotlin:4.28.2")
+                implementation(libs.grpc.util)
+                implementation(libs.grpc.stub)
+                implementation(libs.grpc.protobuf)
+                implementation(libs.grpc.kotlin.stub)
+                implementation(libs.protobuf.java.util)
+                implementation(libs.protobuf.kotlin)
             }
         }
     }
