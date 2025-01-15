@@ -1,17 +1,14 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.grpc
 
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.job
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
-import kotlinx.rpc.grpc.internal.MutableHandlerRegistry
-import kotlinx.rpc.grpc.internal.ServerServiceDefinition
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 import kotlin.time.Duration

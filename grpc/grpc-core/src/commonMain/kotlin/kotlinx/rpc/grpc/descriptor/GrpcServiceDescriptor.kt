@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.grpc.descriptor
@@ -8,8 +8,8 @@ import kotlinx.coroutines.Deferred
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
 import kotlinx.rpc.grpc.ManagedChannel
+import kotlinx.rpc.grpc.ServerServiceDefinition
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.internal.ServerServiceDefinition
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 
 @ExperimentalRpcApi
