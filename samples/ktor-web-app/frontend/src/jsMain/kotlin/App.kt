@@ -2,7 +2,7 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import kotlinx.rpc.RPCClient
+import kotlinx.rpc.RpcClient
 import kotlinx.rpc.withService
 import react.FC
 import react.Props
@@ -11,7 +11,7 @@ import react.useEffectOnce
 import react.useState
 
 val App = FC<Props> {
-    var rpcClient by useState<RPCClient?>(null)
+    var rpcClient by useState<RpcClient?>(null)
 
     useEffectOnce {
         rpcClient = initRpcClient()

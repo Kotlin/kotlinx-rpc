@@ -3,12 +3,12 @@
  */
 
 import io.ktor.client.*
-import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.rpc.krpc.ktor.client.installKrpc
 import kotlinx.rpc.krpc.ktor.client.rpc
 import kotlinx.rpc.krpc.ktor.client.rpcConfig
 import kotlinx.rpc.krpc.serialization.json.json
@@ -17,7 +17,7 @@ import kotlinx.rpc.withService
 
 fun main() = runBlocking {
     val ktorClient = HttpClient {
-        install(WebSockets)
+        installKrpc()
     }
 
     val client = ktorClient.rpc {
@@ -37,8 +37,10 @@ fun main() = runBlocking {
     val recognizer: ImageRecognizer = client.withService<ImageRecognizer>()
 
     val stateJob = launch {
-        recognizer.currentlyProcessedImage.collect {
-            println("New state, current image: $it")
+        streamScoped {
+            recognizer.currentlyProcessedImage().collect {
+                println("New state, current image: $it")
+            }
         }
     }
 

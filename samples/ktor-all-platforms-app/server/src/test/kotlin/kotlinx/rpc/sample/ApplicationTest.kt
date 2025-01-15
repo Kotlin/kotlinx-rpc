@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.sample
@@ -8,7 +8,7 @@ import UserData
 import UserService
 import io.ktor.server.testing.*
 import kotlinx.coroutines.flow.toList
-import kotlinx.rpc.krpc.ktor.client.installRPC
+import kotlinx.rpc.krpc.ktor.client.installKrpc
 import kotlinx.rpc.krpc.ktor.client.rpc
 import kotlinx.rpc.krpc.ktor.client.rpcConfig
 import kotlinx.rpc.krpc.serialization.json.json
@@ -21,7 +21,7 @@ class ApplicationTest {
     @Test
     fun testRoot() = testApplication {
         val service = createClient {
-            installRPC()
+            installKrpc()
         }.rpc("/api") {
             rpcConfig {
                 serialization {

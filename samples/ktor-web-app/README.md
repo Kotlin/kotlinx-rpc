@@ -1,9 +1,6 @@
 # Ktor Web App
 Sample application with Kotlin/Js on frontend and Kotlin/Jvm on backend,that uses kRPC with Ktor to communicate.
 
-> Warning: the code is broken due to https://youtrack.jetbrains.com/issue/KT-71757/
-> No workarounds for now
-
 ### Running frontend
 To run frontend in development mode, run this command:
 ```bash
