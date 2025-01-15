@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:OptIn(ExperimentalRpcApi::class)
@@ -61,3 +61,15 @@ inline suspend fun <reified T : Any> fail(client: RpcClient, server: RpcServer, 
     serviceDescriptorOf<<!CHECKED_ANNOTATION_VIOLATION!>NotAService<!>>()
     serviceDescriptorOf<<!CHECKED_ANNOTATION_VIOLATION!>T<!>>()
 }
+
+@Rpc
+annotation class Grpc
+
+@Grpc
+interface MyGrpcService
+
+@Grpc
+class WrongGrpcTarget
+
+@Rpc
+class WrongRpcTarget
