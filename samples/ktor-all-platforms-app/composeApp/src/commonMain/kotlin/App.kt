@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 import androidx.compose.animation.AnimatedVisibility
@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.ktor.client.*
 import io.ktor.http.*
-import kotlinx.rpc.krpc.ktor.client.installRPC
+import kotlinx.rpc.krpc.ktor.client.installKrpc
 import kotlinx.rpc.krpc.ktor.client.rpc
 import kotlinx.rpc.krpc.ktor.client.rpcConfig
 import kotlinx.rpc.krpc.serialization.json.json
@@ -28,7 +28,7 @@ expect val DEV_SERVER_HOST: String
 
 val client by lazy {
     HttpClient {
-        installRPC()
+        installKrpc()
     }
 }
 
