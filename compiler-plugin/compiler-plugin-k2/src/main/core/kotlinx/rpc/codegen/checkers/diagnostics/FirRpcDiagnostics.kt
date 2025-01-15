@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.codegen.checkers.diagnostics
@@ -19,7 +19,7 @@ import org.jetbrains.kotlin.psi.KtAnnotationEntry
 object FirRpcDiagnostics {
     val MISSING_RPC_ANNOTATION by error0<KtAnnotationEntry>()
     val MISSING_SERIALIZATION_MODULE by warning0<KtAnnotationEntry>()
-    val WRONG_RPC_ANNOTATION_TARGET by error0<KtAnnotationEntry>()
+    val WRONG_RPC_ANNOTATION_TARGET by error1<KtAnnotationEntry, ConeKotlinType>()
     val CHECKED_ANNOTATION_VIOLATION by error1<KtAnnotationEntry, ConeKotlinType>()
     val NON_SUSPENDING_REQUEST_WITHOUT_STREAMING_RETURN_TYPE by error0<PsiElement>()
     val AD_HOC_POLYMORPHISM_IN_RPC_SERVICE by error2<PsiElement, Int, Name>()
