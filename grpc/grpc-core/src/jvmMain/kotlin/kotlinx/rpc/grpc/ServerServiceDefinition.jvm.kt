@@ -6,4 +6,4 @@
 
 package kotlinx.rpc.grpc
 
-internal actual typealias ServerServiceDefinition = io.grpc.ServerServiceDefinition
+public actual typealias ServerServiceDefinition = io.grpc.ServerServiceDefinition

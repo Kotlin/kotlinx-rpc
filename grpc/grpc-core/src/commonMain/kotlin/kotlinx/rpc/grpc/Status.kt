@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:Suppress("MemberVisibilityCanBePrivate")
@@ -30,6 +30,6 @@ public interface Status {
         DATA_LOSS(15),
         UNAUTHENTICATED(16);
 
-        public val valueAscii: ByteArray = value.toString().toByteArray(Charsets.US_ASCII)
+        public val valueAscii: ByteArray = value.toString().encodeToByteArray()
     }
 }
