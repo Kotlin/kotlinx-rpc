@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.codegen.extension
@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.util.hasAnnotation
+import org.jetbrains.kotlin.ir.util.isInterface
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
 
 internal class RpcIrServiceProcessor(
@@ -16,7 +17,9 @@ internal class RpcIrServiceProcessor(
     private val logger: MessageCollector,
 ) : IrElementTransformer<RpcIrContext> {
     override fun visitClass(declaration: IrClass, data: RpcIrContext): IrStatement {
-        if (declaration.hasAnnotation(RpcClassId.rpcAnnotation)) {
+        if ((declaration.hasAnnotation(RpcClassId.rpcAnnotation)
+            || declaration.hasAnnotation(RpcClassId.grpcAnnotation)) && declaration.isInterface
+        ) {
             processService(declaration, data)
         }
 
