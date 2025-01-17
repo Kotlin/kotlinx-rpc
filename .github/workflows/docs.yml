@@ -14,7 +14,7 @@ permissions:
 env:
   INSTANCE: 'kotlinx-rpc/rpc'
   ARTIFACT: 'webHelpRPC2-all.zip'
-  DOCKER_VERSION: '241.15989'
+  DOCKER_VERSION: '243.22562'
   ALGOLIA_ARTIFACT: 'algolia-indexes-RPC.zip'
   ALGOLIA_APP_NAME: 'MMA5Z3JT91'
   ALGOLIA_INDEX_NAME: 'prod_kotlin_rpc'
