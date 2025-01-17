@@ -18,6 +18,7 @@ class ProtoToModelInterpreter(
     private val logger: Logger,
 ) {
     private val fileDependencies = mutableMapOf<String, FileDeclaration>()
+    private val messages = mutableMapOf<FqName, MessageDeclaration>()
 
     fun interpretProtocRequest(message: CodeGeneratorRequest): Model {
         return Model(message.protoFileList.map { it.toModel() })
@@ -40,7 +41,7 @@ class ProtoToModelInterpreter(
                 simpleName = kotlinFileName(name)
             ),
             dependencies = dependencies,
-            messageDeclarations = messageTypeList.map { it.toModel() },
+            messageDeclarations = messageTypeList.map { it.toModel(fqOuterClass()) },
             enumDeclarations = enumTypeList.map { it.toModel() },
             serviceDeclarations = serviceList.map { it.toModel() },
             deprecated = options.deprecated,
@@ -48,6 +49,10 @@ class ProtoToModelInterpreter(
         ).also {
             fileDependencies[name] = it
         }
+    }
+
+    private fun DescriptorProtos.FileDescriptorProto.fqOuterClass(): FqName {
+        return "${name.removeSuffix(".proto").fullProtoNameToKotlin(firstLetterUpper = true)}OuterClass".toFqName()
     }
 
     private fun kotlinFileName(originalName: String): String {
@@ -59,7 +64,7 @@ class ProtoToModelInterpreter(
         return originalPackage
     }
 
-    private fun DescriptorProtos.DescriptorProto.toModel(): MessageDeclaration {
+    private fun DescriptorProtos.DescriptorProto.toModel(outerClass: FqName): MessageDeclaration {
         val fields = fieldList.mapNotNull {
             val oneOfName = if (it.hasOneofIndex()) {
                 oneofDeclList[it.oneofIndex].name
@@ -71,14 +76,22 @@ class ProtoToModelInterpreter(
         }
 
         return MessageDeclaration(
+            outerClassName = outerClass,
             name = name.fullProtoNameToKotlin(firstLetterUpper = true).toFqName(),
             actualFields = fields,
             oneOfDeclarations = oneofDeclList.mapIndexedNotNull { i, desc -> desc.toModel(i) },
             enumDeclarations = enumTypeList.map { it.toModel() },
-            nestedDeclarations = nestedTypeList.map { it.toModel() },
+            nestedDeclarations = nestedTypeList.map { it.toModel(outerClass) },
             deprecated = options.deprecated,
             doc = null,
-        )
+        ).apply {
+            val name = if (packageName.isEmpty()) {
+                name
+            } else {
+                "$packageName.$name".toFqName()
+            }
+            messages[name] = this
+        }
     }
 
     private val oneOfFieldMembers = mutableMapOf<Int, MutableList<DescriptorProtos.FieldDescriptorProto>>()
@@ -250,10 +263,12 @@ class ProtoToModelInterpreter(
             name = name.fullProtoNameToKotlin(firstLetterUpper = false).toFqName(),
             inputType = inputType
                 .substringAfter('.') // see typeName resolution
-                .fullProtoNameToKotlin(firstLetterUpper = true).toFqName(), // no resolution for now
+                .fullProtoNameToKotlin(firstLetterUpper = true).toFqName()
+                .let { lazy { messages[it] ?: error("Unknown message type $it, available: ${messages.keys.joinToString(",")}") } },
             outputType = outputType
                 .substringAfter('.') // see typeName resolution
-                .fullProtoNameToKotlin(firstLetterUpper = true).toFqName(), // no resolution for now
+                .fullProtoNameToKotlin(firstLetterUpper = true).toFqName()
+                .let { lazy { messages[it] ?: error("Unknown message type $it, available: ${messages.keys.joinToString(",")}") } },
             clientStreaming = clientStreaming,
             serverStreaming = serverStreaming,
         )
@@ -271,7 +286,7 @@ class ProtoToModelInterpreter(
         }
     }
 
-    private val snakeRegExp = "_[a-z]".toRegex()
+    private val snakeRegExp = "(_[a-z]|-[a-z])".toRegex()
 
     private fun String.snakeToCamelCase(): String {
         return replace(snakeRegExp) { it.value.last().uppercase() }

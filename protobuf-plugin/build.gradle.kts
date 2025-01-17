@@ -51,9 +51,10 @@ sourceSets {
 tasks.jar {
     manifest {
         attributes["Main-Class"] = "kotlinx.rpc.protobuf.MainKt"
-
     }
+
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveClassifier = "all"
 
     // Protoc plugins are all fat jars basically (the ones built on jvm)
     // be really careful of what you put in the classpath here
@@ -73,7 +74,7 @@ protobuf {
 
     plugins {
         create("kotlinx-rpc") {
-            path = "$buildDirPath/libs/protobuf-plugin-$version.jar"
+            path = "$buildDirPath/libs/protobuf-plugin-$version-all.jar"
         }
 
         create("grpc") {

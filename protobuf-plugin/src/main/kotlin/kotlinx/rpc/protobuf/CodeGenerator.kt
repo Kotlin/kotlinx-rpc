@@ -255,6 +255,7 @@ class FileGenerator(
     codeGenerationParameters: CodeGenerationParameters,
     var filename: String? = null,
     var packageName: String? = null,
+    var fileOptIns: List<String> = emptyList(),
     logger: Logger = NOPLogger.NOP_LOGGER,
 ) : CodeGenerator(codeGenerationParameters, "", logger = logger) {
     private val imports = mutableListOf<String>()
@@ -272,7 +273,13 @@ class FileGenerator(
     override fun build(): String {
         val sortedImports = imports.toSortedSet()
         val prefix = buildString {
-            if (packageName != null) {
+            if (fileOptIns.isNotEmpty()) {
+                appendLine("@file:OptIn(${fileOptIns.joinToString(", ")})")
+                newLine()
+            }
+
+            var packageName = packageName
+            if (packageName != null && packageName.isNotEmpty()) {
                 appendLine("package $packageName")
             }
 
@@ -297,4 +304,4 @@ fun file(
     packageName: String? = null,
     logger: Logger = NOPLogger.NOP_LOGGER,
     block: FileGenerator.() -> Unit,
-): FileGenerator = FileGenerator(codeGenerationParameters, name, packageName, logger).apply(block)
+): FileGenerator = FileGenerator(codeGenerationParameters, name, packageName, emptyList(), logger).apply(block)

@@ -8,6 +8,6 @@ data class MethodDeclaration(
     val name: FqName,
     val clientStreaming: Boolean,
     val serverStreaming: Boolean,
-    val inputType: FqName,
-    val outputType: FqName,
+    val inputType: Lazy<MessageDeclaration>,
+    val outputType: Lazy<MessageDeclaration>,
 )

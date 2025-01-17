@@ -5,6 +5,7 @@
 package kotlinx.rpc.protobuf.model
 
 data class MessageDeclaration(
+    val outerClassName: FqName,
     val name: FqName,
     val actualFields: List<FieldDeclaration>, // excludes oneOf fields, but includes oneOf itself
     val oneOfDeclarations: List<OneOfDeclaration>,

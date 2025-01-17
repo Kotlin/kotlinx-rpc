@@ -21,6 +21,7 @@ class ModelToKotlinGenerator(
         return file(codeGenerationParameters, logger = logger) {
             filename = name.simpleName
             packageName = name.packageName
+            fileOptIns = listOf("ExperimentalRpcApi::class", "InternalRpcApi::class")
 
             dependencies.forEach { dependency ->
                 importPackage(dependency.name.packageName)
@@ -31,6 +32,7 @@ class ModelToKotlinGenerator(
             additionalImports.forEach {
                 import(it)
             }
+            import("kotlinx.rpc.internal.utils.*")
         }
     }
 
@@ -115,8 +117,7 @@ class ModelToKotlinGenerator(
             }
         }
 
-        val platformType = "${declaration.name.packageName}.${declaration.name.simpleName}OuterClass." +
-                declaration.name.simpleName
+        val platformType = "${declaration.outerClassName.simpleName}.${declaration.name.simpleName}"
 
         function(
             name = "toPlatform",
@@ -244,11 +245,13 @@ class ModelToKotlinGenerator(
         clazz(service.name.simpleName, declarationType = DeclarationType.Interface) {
             service.methods.forEach { method ->
                 // no streaming for now
+                val inputType by method.inputType
+                val outputType by method.outputType
                 function(
                     name = method.name.simpleName,
                     modifiers = "suspend",
-                    args = "message: ${method.inputType.simpleName}",
-                    returnType = method.outputType.simpleName,
+                    args = "message: ${inputType.name.simpleName}",
+                    returnType = outputType.name.simpleName,
                 )
             }
         }
@@ -292,11 +295,14 @@ class ModelToKotlinGenerator(
             service.methods.forEach { method ->
                 val grpcName = method.name.simpleName.replaceFirstChar { it.lowercase() }
 
+                val inputType by method.inputType
+                val outputType by method.outputType
+
                 function(
                     name = grpcName,
                     modifiers = "override suspend",
-                    args = "request: ${method.inputType.toPlatformMessageType()}",
-                    returnType = method.outputType.toPlatformMessageType(),
+                    args = "request: ${inputType.toPlatformMessageType()}",
+                    returnType = outputType.toPlatformMessageType(),
                 ) {
                     code("return impl.${method.name.simpleName}(request.toKotlin()).toPlatform()")
                 }
@@ -334,8 +340,9 @@ class ModelToKotlinGenerator(
                 code("@Suppress(\"UNCHECKED_CAST\")")
                 scope("return when (call.callableName)") {
                     service.methods.forEach { method ->
+                        val inputType by method.inputType
                         val grpcName = method.name.simpleName.replaceFirstChar { it.lowercase() }
-                        val result = "stub.$grpcName((message as ${method.inputType.simpleName}).toPlatform())"
+                        val result = "stub.$grpcName((message as ${inputType.name.simpleName}).toPlatform())"
                         code("\"${method.name.simpleName}\" -> $result.toKotlin() as R")
                     }
 
@@ -355,7 +362,7 @@ class ModelToKotlinGenerator(
         }
     }
 
-    private fun FqName.toPlatformMessageType(): String {
-        return "${simpleName}OuterClass.${simpleName.removePrefix("$packageName.")}"
+    private fun MessageDeclaration.toPlatformMessageType(): String {
+        return "${outerClassName.simpleName}.${name.simpleName.removePrefix(name.parentNameAsPrefix)}"
     }
 }
