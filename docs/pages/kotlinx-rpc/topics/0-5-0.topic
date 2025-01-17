@@ -11,8 +11,8 @@
 
     <chapter title="Annotation type-safety" id="annotation-type-safety">
         <p>
-            This release brings <a href="annotation-type-safety.topic">annotation type-safety</a>.
-            This means that some green code technically can become red:
+            This release introduces <a href="annotation-type-safety.topic">annotation type-safety</a>.
+            As a result, some code that previously compiled successfully may now produce errors:
         </p>
         <code-block lang="Kotlin">
             @Rpc
@@ -28,15 +28,16 @@
             withService&lt;MyServiceImpl&gt;() // ok in 0.4.0, error in 0.5.0
         </code-block>
         <p>
-            Thar should not be a problem, as this code was wrong in both releases anyway and would fail in runtime in <code>0.4.0</code>.
+            This should not cause any major issues, as the affected code was already incorrect
+            in previous releases and would have failed at runtime in <code>0.4.0</code>.
         </p>
     </chapter>
 
     <chapter title="Strict Mode and Service API deprecations" id="strict-mode">
         <p>
             This release introduces <a href="strict-mode.topic">Strict Mode</a>.
-            Some service declarations are now deprecated, currently with a warning.
-            In the following releases it will change to an error.
+            Some service declarations are now deprecated with a warning.
+            In upcoming releases, these warnings will be replaced with errors.
         </p>
         <p>
             Deprecated service APIs:
@@ -48,7 +49,7 @@
             <li>Not top-level server side flows</li>
         </list>
         <p>
-            More info on the <a href="strict-mode.topic">Strict Mode page</a>.
+            For more information, see the <a href="strict-mode.topic">Strict Mode</a> documentation.
         </p>
     </chapter>
 

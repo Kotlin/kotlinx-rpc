@@ -6,12 +6,12 @@
        title="Strict mode" id="strict-mode">
 
     <p>
-        Starting with version <code>0.5.0</code> library undergoes major change in supported service APIs.
+        Starting with version <code>0.5.0</code>, the library introduces major changes to the service APIs.
         The following declarations will be gradually restricted:
     </p>
     <list>
         <li>
-            <b>StateFlow and SharedFlow</b>
+            <b><code>StateFlow</code> and <code>SharedFlow</code></b>
             <p>Deprecation level: <code>WARNING</code></p>
             <code-block lang="kotlin">
                 @Rpc
@@ -66,7 +66,7 @@
     </list>
 
     <p>
-        Deprecation levels are controlled by the Gradle `rpc` extension:
+        Deprecation levels are controlled by the Gradle <code>rpc</code> extension:
     </p>
     <code-block lang="Kotlin">
         // build.gradle.kts
@@ -88,9 +88,9 @@
         Modes <code>RpcStrictMode.NONE</code> and <code>RpcStrictMode.ERROR</code> are available.
     </p>
 
-    <note>
+    <warning>
         Note that setting <code>RpcStrictMode.NONE</code> should not be done permanently.
         All deprecated APIs will become errors in future without an option to suppress it.
         Consider your migration path in advance.
-    </note>
+    </warning>
 </topic>

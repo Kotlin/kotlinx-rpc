@@ -12,8 +12,8 @@
         <p>
             You can send and receive <a href="https://kotlinlang.org/docs/flow.html">Kotlin Flows</a> in RPC
             methods.
-            This is only applied to <code>Flow</code> type, <code>StateFlow</code> and <code>SharedFlow</code>
-            are not supported and there are no plans to do so.
+            However, this only applies to the <code>Flow</code> type. <code>StateFlow</code> and <code>SharedFlow</code>
+            are not supported, and there are no plans to add support for them.
         </p>
 
         <code-block lang="kotlin">
@@ -32,7 +32,7 @@
         </code-block>
 
         <p>
-            Another limitation is that server-side steaming (flows that are returned from a function),
+            Another requirement is that server-side steaming (flows that are returned from a function),
             must be the top-level type:
         </p>
 
@@ -51,13 +51,13 @@
         </code-block>
 
         <note>
-            Note that flows that are declared in classes (like in <code>StreamResult</code>) require
+            Note that flows that are declared in classes (like in <code>StreamResult</code>) require a
             <a href="https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/serializers.md#contextual-serialization">Contextual</a>
             annotation.
         </note>
 
         <p>
-            To use flows in your code - you need to use special <code>streamScoped</code> function
+            To use flows in your code, use the <code>streamScoped</code> function
             that will provide your flows with their lifetime:
         </p>
 
@@ -85,17 +85,17 @@
             After that, all streams that are still live will be closed.
         </p>
         <p>
-            You can have multiple RPC call and flows inside the <code>streamScoped</code> function, even from
+            You can have multiple RPC calls and flows inside the <code>streamScoped</code> function, including those from
             different services.
         </p>
         <p>
-            On server side, you can use <code>invokeOnStreamScopeCompletion</code> handler inside your methods
-            to execute code after <code>streamScoped</code> on client side has closed.
+            On the server side, you can use the <code>invokeOnStreamScopeCompletion</code> handler inside your methods
+            to execute code after <code>streamScoped</code> on the client side has closed.
             It might be useful to clean resources, for example.
         </p>
-        <note>
+        <warning>
             Note that this API is experimental and may be removed in future releases.
-        </note>
+        </warning>
         <p>
             Another way of managing streams is to do it manually.
             For this, you can use the <code>StreamScope</code> constructor function together with

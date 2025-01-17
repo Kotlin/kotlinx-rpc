@@ -54,7 +54,8 @@
             </title>
 
             <warning>
-                These parameters are deprecated since <code>0.5.0</code>, see the <a href="0-5-0.topic">migration guide</a>.
+                These parameters are deprecated since <code>0.5.0</code>. For more information,
+                see the <a href="0-5-0.topic">migration guide</a>.
             </warning>
 
             <code-block lang="kotlin">

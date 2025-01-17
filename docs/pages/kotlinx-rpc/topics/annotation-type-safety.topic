@@ -6,7 +6,7 @@
        title="Annotation type-safety" id="annotation-type-safety">
 
     <p>
-        Library introduces a concept of annotation type-safety. Consider the following example:
+        The library introduces a concept of annotation type-safety. Consider the following example:
     </p>
     <code-block lang="Kotlin">
         @Rpc
@@ -17,14 +17,15 @@
         fun &lt;T : RemoteService&gt; withService() {}
     </code-block>
     <p>
-        Compiler can not guarantee, that the passed type is the one for which the code generation was run:
+        The compiler can't guarantee that the passed type parameter is the one for which the code generation was run:
     </p>
     <code-block lang="Kotlin">
         withService&lt;MyService&gt;() // ok
         withService&lt;MyServiceImpl&gt;() // compile time ok, runtime throws
     </code-block>
     <p>
-        Our compiler plugin, however, can make this code behave as expected.
+        The compiler plugin enforces annotation type-safety by requiring type parameters to have specific annotations,
+        like <code>@Rpc</code>.
     </p>
     <code-block lang="Kotlin">
         @Rpc
@@ -41,27 +42,27 @@
     </code-block>
 
     <note>
-        Annotation type safety only ensures that the resolved type parameters are annotated with the required annotation.
+        Annotation type safety only ensures that the resolved type parameters are annotated with the required
+        annotation.
         The actual type of the passed argument may differ:
         <code-block lang="Kotlin">
             fun &lt;@Rpc T : Any&gt; registerService(body: () -> T) {}
 
-            // ok, T is resolved to MyService,
-            // but 'body' parameter returns MyServiceImpl
+            // T is resolved to MyService,
+            // but 'body' returns MyServiceImpl
             registerService&lt;MyService&gt; { ctx -> MyServiceImpl(ctx) }
 
-            // error, T is resolved to MyServiceImpl
+            // Error: T is resolved to MyServiceImpl
             registerService { ctx -> MyServiceImpl(ctx) }
         </code-block>
     </note>
 
     <warning>
-        The feature is highly experimental.
-        The concept will stay, however due to the complexity of the implementation,
-        our compiler plugin may behave unexpectedly when performing type-safety checks.
-        Please, <a href="https://github.com/Kotlin/kotlinx-rpc/issues/new?template=bug_report.md">report</a> any encountered bugs.
+        This feature is highly experimental and may lead to unexpected behaviour. If you encounter any issues,
+        please <a href="https://github.com/Kotlin/kotlinx-rpc/issues/new?template=bug_report.md">report</a> them.
 
-        To ensure critical bugs don't paralyze your app, there is a kill-switch present for the feature:
+        To prevent critical bugs from affecting your app, you can disable this feature using the following
+        configuration:
         <code-block lang="Kotlin">
             // build.gradle.kts
             rpc {
