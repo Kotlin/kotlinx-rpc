@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package kotlinx.rpc.protobuf.test;
+
+import "with_comments.proto";
+import "funny_types.proto";
+import "all_primitives.proto";
+
+message OneOf {
+  oneof primitives {
+    string string = 1;
+    int32 int32 = 2;
+    bool bool = 3;
+  }
+
+  oneof references {
+    WithComments withComments = 4;
+    FunnyTypes funnyTypes = 5;
+  }
+
+  oneof mixed {
+    int64 int64 = 6;
+    AllPrimitives allPrimitives = 7;
+  }
+
+  oneof single {
+    bytes bytes = 8;
+  }
+}
