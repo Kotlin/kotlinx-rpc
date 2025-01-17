@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package util
@@ -14,12 +14,14 @@ fun Project.configureApiValidation() {
     the<ApiValidationExtension>().apply {
         ignoredPackages.add("kotlinx.rpc.internal")
         ignoredPackages.add("kotlinx.rpc.krpc.internal")
+        ignoredPackages.add("kotlinx.rpc.grpc.internal")
 
         ignoredProjects.addAll(
             listOf(
                 "compiler-plugin-tests",
                 "krpc-test",
                 "utils",
+                "protobuf-plugin",
             )
         )
 
