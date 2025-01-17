@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Configuration" id="grpc-configuration">
+
+    <tldr>
+        <p>
+            Artifacts for gRPC integration are published <a href="">separately</a>
+            and updated frequently not in sync with main releases.
+        </p>
+        <p>
+            <a href="https://maven.pkg.jetbrains.space/public/p/krpc/grpc">
+                <img alt="Latest dev version"
+                     src="https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fmaven.pkg.jetbrains.space%2Fpublic%2Fp%2Fkrpc%2Fgrpc%2Forg%2Fjetbrains%2Fkotlinx%2Fkotlinx-rpc-core%2Fmaven-metadata.xml&amp;query=%2F%2Fmetadata%2Fversioning%2Flatest&amp;label=Latest%20dev%20version&amp;color=forest-green&amp;cacheSeconds=60"/>
+            </a>
+        </p>
+    </tldr>
+
+    <p>
+        <a href="https://grpc.io">gRPC</a> integration is available in an experimental state.
+        The artifacts are published separately in our <a
+            href="https://public.jetbrains.space/p/krpc/packages/maven/grpc">Space repository</a>.
+        Current latest version can be seen in the badge on top of the page.
+    </p>
+    <chapter title="Dependencies configuration" id="dependencies-configuration">
+        <p>Below is an example of a project setup.</p>
+        <code>settings.gradle.kts</code>:
+        <code-block lang="Kotlin">
+            pluginManagement {
+                repositories {
+                    gradlePluginPortal()
+                    mavenCentral()
+                    maven("https://maven.pkg.jetbrains.space/public/p/krpc/grpc")
+                }
+            }
+        </code-block>
+        <p>
+            <code>build.gradle.kts</code>:
+        </p>
+        <code-block lang="Kotlin">
+           plugins {
+               kotlin("jvm") version "2.1.0"
+               kotlin("plugin.serialization") version "2.1.0"
+               id("org.jetbrains.kotlinx.rpc.plugin") version "&lt;version&gt;"
+               id("com.google.protobuf") version "0.9.4"
+           }
+
+           repositories {
+               mavenCentral()
+               maven("https://maven.pkg.jetbrains.space/public/p/krpc/grpc")
+           }
+
+           dependencies {
+               implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core:&lt;version&gt;")
+               implementation("ch.qos.logback:logback-classic:1.5.16")
+               implementation("io.grpc:grpc-netty:1.69.0")
+           }
+        </code-block>
+        <p>Here <code>&lt;version&gt;</code> comes from the badge above.</p>
+        <warning>
+            The setup has only been tested on <code>Kotlin/JVM</code> projects.
+        </warning>
+    </chapter>
+    <chapter title="Protoc setup" id="protoc-setup">
+        <p>
+            gRPC requires additional code generation from the <a href="https://github.com/google/protobuf-gradle-plugin">protoc</a>
+            compiler.
+            This can be setup up in the following way:
+        </p>
+        <code-block lang="Kotlin">
+            protobuf {
+                protoc {
+                    artifact = "com.google.protobuf:protoc:4.29.3"
+                }
+
+                plugins {
+                    create("kotlinx-rpc") {
+                        artifact = "org.jetbrains.kotlinx:kotlinx-rpc-protobuf-plugin:&lt;version&gt;:all@jar"
+                    }
+
+                    create("grpc") {
+                        artifact = "io.grpc:protoc-gen-grpc-java:1.69.0"
+                    }
+
+                    create("grpckt") {
+                        artifact = "io.grpc:protoc-gen-grpc-kotlin:1.4.1:jdk8@jar"
+                    }
+                }
+
+                generateProtoTasks {
+                    all().all {
+                        plugins {
+                            create("kotlinx-rpc") {
+                                option("debugOutput=protobuf-plugin.log")
+                                option("messageMode=interface")
+                            }
+                            create("grpc")
+                            create("grpckt")
+                        }
+                    }
+                }
+            }
+        </code-block>
+    </chapter>
+</topic>

@@ -156,9 +156,17 @@ When using kRPC you only need to provide a transport or choose from the official
 
 Besides that, one can even provide their own protocol or integration with one to use with services and `kotlinx.rpc` API with it.
 Though possible, it is much more complicated way to use the library and generally not needed. 
-`kotlinx.rpc` aims to provide most common protocols integrations as well as the in-house one called kRPC.  
-Integrations in progress:
-- Integration with [gRPC](https://grpc.io/) (in prototype)
+`kotlinx.rpc` aims to provide most common protocols integrations as well as the in-house one called kRPC.
+
+## gRPC integration
+Library provides experimental support for the [gRPC](https://grop.io) protocol.
+The artifacts are published separately in our [Space repository](https://public.jetbrains.space/p/krpc/packages/maven/grpc)
+Current latest version: 
+
+![Dynamic XML Badge](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fmaven.pkg.jetbrains.space%2Fpublic%2Fp%2Fkrpc%2Fgrpc%2Forg%2Fjetbrains%2Fkotlinx%2Fkotlinx-rpc-core%2Fmaven-metadata.xml&query=%2F%2Fmetadata%2Fversioning%2Flatest&label=Latest%20dev%20version&color=forest-green&cacheSeconds=60)
+
+See more on gRPC usage in the [docs](https://kotlin.github.io/kotlinx-rpc/grpc-configuration.html).
+See also [sample gRPC project](/samples/grpc-app).
 
 ## Kotlin compatibility
 We support all stable Kotlin versions starting from 2.0.0:
