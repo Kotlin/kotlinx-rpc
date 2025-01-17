@@ -34,10 +34,10 @@ class FirRpcAnnotationChecker(private val ctx: FirCheckersContext) : FirRegularC
 
         if (!declaration.isInterface && declaration.classKind != ClassKind.ANNOTATION_CLASS && rpcMetaAnnotated) {
             reporter.reportOn(
-                source = declaration.symbol.rpcAnnotationSource(context.session),
+                source = declaration.symbol.rpcAnnotationSource(context.session, FirRpcPredicates.rpcMeta),
                 factory = FirRpcDiagnostics.WRONG_RPC_ANNOTATION_TARGET,
                 context = context,
-                a = declaration.symbol.rpcAnnotation(context.session)?.resolvedType
+                a = declaration.symbol.rpcAnnotation(context.session, FirRpcPredicates.rpc)?.resolvedType
                     ?: error("Unexpected unresolved annotation type for declaration: ${declaration.symbol.classId.asSingleFqName()}"),
             )
         }
@@ -51,8 +51,9 @@ class FirRpcAnnotationChecker(private val ctx: FirCheckersContext) : FirRegularC
         }
 
         if ((rpcAnnotated || grpcAnnotated) && !ctx.serializationIsPresent) {
+//            error("Serialization plugin is not present")
             reporter.reportOn(
-                source = declaration.symbol.rpcAnnotationSource(context.session),
+                source = declaration.symbol.rpcAnnotationSource(context.session, FirRpcPredicates.rpcMeta),
                 factory = FirRpcDiagnostics.MISSING_SERIALIZATION_MODULE,
                 context = context,
             )

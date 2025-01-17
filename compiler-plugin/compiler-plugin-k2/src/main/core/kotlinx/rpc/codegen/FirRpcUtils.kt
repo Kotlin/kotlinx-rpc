@@ -7,9 +7,12 @@ package kotlinx.rpc.codegen
 import kotlinx.rpc.codegen.common.RpcClassId
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.declarations.getAnnotationByClassId
 import org.jetbrains.kotlin.fir.expressions.FirAnnotation
+import org.jetbrains.kotlin.fir.expressions.UnresolvedExpressionTypeAccess
+import org.jetbrains.kotlin.fir.extensions.predicate.DeclarationPredicate
+import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
+import org.jetbrains.kotlin.fir.resolve.toClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
@@ -23,16 +26,21 @@ fun FirClassSymbol<*>.isRemoteService(session: FirSession): Boolean = resolvedSu
     it.doesMatchesClassId(session, RpcClassId.remoteServiceInterface)
 }
 
-fun FirBasedSymbol<*>.rpcAnnotationSource(session: FirSession): KtSourceElement? {
-    return rpcAnnotation(session)?.source
+fun FirBasedSymbol<*>.rpcAnnotationSource(session: FirSession, predicate: DeclarationPredicate): KtSourceElement? {
+    return rpcAnnotation(session, predicate)?.source
 }
 
-fun FirBasedSymbol<*>.rpcAnnotation(session: FirSession): FirAnnotation? {
-    return resolvedCompilerAnnotationsWithClassIds.rpcAnnotation(session)
+fun FirBasedSymbol<*>.rpcAnnotation(session: FirSession, predicate: DeclarationPredicate): FirAnnotation? {
+    return resolvedCompilerAnnotationsWithClassIds.rpcAnnotation(session, predicate)
 }
 
-fun List<FirAnnotation>.rpcAnnotation(session: FirSession): FirAnnotation? {
-    return getAnnotationByClassId(RpcClassId.rpcAnnotation, session)
+@OptIn(UnresolvedExpressionTypeAccess::class)
+fun List<FirAnnotation>.rpcAnnotation(session: FirSession, predicate: DeclarationPredicate): FirAnnotation? {
+    return find {
+        it.coneTypeOrNull?.toClassLikeSymbol(session)?.let { declaration ->
+            session.predicateBasedProvider.matches(predicate, declaration)
+        } == true
+    }
 }
 
 fun FirClassSymbol<*>.remoteServiceSupertypeSource(session: FirSession): KtSourceElement? {
