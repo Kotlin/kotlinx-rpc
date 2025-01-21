@@ -7,8 +7,8 @@
 
     <tldr>
         <p>
-            Artifacts for gRPC integration are published <a href="">separately</a>
-            and updated frequently not in sync with main releases.
+            Artifacts for gRPC integration are published <a href="https://public.jetbrains.space/p/krpc/packages/maven/grpc">separately</a>
+            and updated frequently, independent of the main releases.
         </p>
         <p>
             <a href="https://maven.pkg.jetbrains.space/public/p/krpc/grpc">
@@ -22,7 +22,6 @@
         <a href="https://grpc.io">gRPC</a> integration is available in an experimental state.
         The artifacts are published separately in our <a
             href="https://public.jetbrains.space/p/krpc/packages/maven/grpc">Space repository</a>.
-        Current latest version can be seen in the badge on top of the page.
     </p>
     <chapter title="Dependencies configuration" id="dependencies-configuration">
         <p>Below is an example of a project setup.</p>
@@ -103,5 +102,29 @@
                 }
             }
         </code-block>
+        <list>
+            <li>
+                Four source sets will be generated:
+                <list>
+                    <li><code>java</code> - protobuf Java declarations</li>
+                    <li><code>grpc</code> - gRPC Java declarations</li>
+                    <li><code>grpckt</code> - gRPC Kotlin wrappers for Java</li>
+                    <li><code>kotlinx-rpc</code> - pur wrappers for all of the above</li>
+                </list>
+                <p>
+                    You won't need to use the first three directly, only the declarations from the <code>kotlinx-rpc</code>
+                    source set are intended to be used.
+                </p>
+                Source sets are generated into <code>$BUILD_DIR/generated/source/proto/main</code> directory
+                unless specified otherwise.
+            </li>
+            <li>
+                <code>option("debugOutput=protobuf-plugin.log")</code> lets you specify the file
+                for the <code>protoc</code> plugin debug output.
+            </li>
+            <li>
+                <code>option("messageMode=interface")</code> is intended to be like so. Don't change it.
+            </li>
+        </list>
     </chapter>
 </topic>

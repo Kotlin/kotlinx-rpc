@@ -16,4 +16,14 @@
         grpcServer.start()
         grpcServer.awaitTermination()
     </code-block>
+    <list>
+        <li>
+            <code>GrpcServer</code> allows to register multiple services, like regular <code>RpcServer</code>.
+            However, <code>CoroutineContext</code> parameter is not needed and should not be used.
+        </li>
+        <li>
+            <code>GrpcServer</code> does <b>not</b> bind to Java gRPC <code>Server</code>,
+            but provides some functions to cover for that.
+        </li>
+    </list>
 </topic>

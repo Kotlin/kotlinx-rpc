@@ -23,4 +23,9 @@
 
         grpcClient.cancel()
     </code-block>
+    <list>
+        <li>
+            <code>usePlaintext()</code> - is a JVM binding to Java gRPC runtime. Other bindings are also present.
+        </li>
+    </list>
 </topic>

@@ -6,7 +6,7 @@
        title="Services" id="grpc-services">
 
     <p>
-        Define a service in the <code>proto</code> folder next to your source sets:
+        To define a service, create a new <code>.proto</code> file in the <code>proto</code> folder next to your source sets:
     </p>
     <code-block>
         ├── build.gradle.kts
@@ -24,7 +24,7 @@
     </code-block>
 
     <p>
-        Inside the file define a service:
+        Inside the <code>.proto</code> file define your service:
     </p>
     <code-block lang="protobuf">
         syntax = "proto3";
@@ -42,8 +42,8 @@
         }
     </code-block>
     <p>
-        Some code will be generated. The most important ones are <code>interface ImageRecognizer</code>,
-        <code>interface Image</code> and <code>interface RecogniseResult</code>:
+        This will generate the necessary code, including the most important interfaces:
+        <code>ImageRecognizer</code>, <code>Image</code>, <code>RecogniseResult</code>:
     </p>
     <code-block lang="Kotlin">
         @Grpc
@@ -79,8 +79,8 @@
         }
     </code-block>
     <p>
-        Here you can also see the usage of <code>interface RecogniseResult</code>.
-        To create an instance simple use its <code>invoke</code> extension function:
+        Here you can also see the usage of the <code>RecogniseResult</code> interface.
+        To create an instance, use its <code>.invoke()</code> extension function:
     </p>
     <code-block lang="Kotlin">
         RecogniseResult {
@@ -88,15 +88,17 @@
         }
     </code-block>
 
-    <warning>
-        Current known limitations:
+    <chapter title="Limitations" id="limitations">
+        <p>Current known limitations:</p>
         <list>
             <li>No streaming</li>
             <li>Only primitive types in messages</li>
             <li>Mandatory java and kotlin protoc generation in addition to our codegen</li>
             <li>Kotlin/JVM project only</li>
         </list>
-        If you encounter other unexpected limitations or bugs,
-        please <a href="https://github.com/Kotlin/kotlinx-rpc/issues/new?template=bug_report.md">report</a> them
-    </warning>
+        <p>
+            If you encounter other unexpected limitations or bugs,
+            please <a href="https://github.com/Kotlin/kotlinx-rpc/issues/new?template=bug_report.md">report</a> them
+        </p>
+    </chapter>
 </topic>
