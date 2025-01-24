@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc
@@ -25,6 +25,10 @@ import kotlinx.rpc.internal.RpcFlow
  * @param serviceId id of the service, that made the call
  * @return Flow instance to be consumed.
  */
+@Deprecated(
+    "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
+    level = DeprecationLevel.WARNING,
+)
 public fun <T> RpcClient.registerPlainFlowField(
     serviceScope: CoroutineScope,
     descriptor: RpcServiceDescriptor<*>,
@@ -46,6 +50,10 @@ public fun <T> RpcClient.registerPlainFlowField(
  * @param serviceId id of the service, that made the call
  * @return SharedFlow instance to be consumed.
  */
+@Deprecated(
+    "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
+    level = DeprecationLevel.WARNING,
+)
 public fun <T> RpcClient.registerSharedFlowField(
     serviceScope: CoroutineScope,
     descriptor: RpcServiceDescriptor<*>,
@@ -67,6 +75,10 @@ public fun <T> RpcClient.registerSharedFlowField(
  * @param serviceId id of the service, that made the call
  * @return StateFlow instance to be consumed.
  */
+@Deprecated(
+    "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
+    level = DeprecationLevel.WARNING,
+)
 public fun <T> RpcClient.registerStateFlowField(
     serviceScope: CoroutineScope,
     descriptor: RpcServiceDescriptor<*>,

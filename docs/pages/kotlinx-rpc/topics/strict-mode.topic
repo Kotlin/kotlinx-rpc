@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Strict mode" id="strict-mode">
+
+    <p>
+        Starting with version <code>0.5.0</code>, the library introduces major changes to the service APIs.
+        The following declarations will be gradually restricted:
+    </p>
+    <list>
+        <li>
+            <b><code>StateFlow</code> and <code>SharedFlow</code></b>
+            <p>Deprecation level: <code>WARNING</code></p>
+            <code-block lang="kotlin">
+                @Rpc
+                interface Service : RemoteService {
+                    suspend fun old(): StateFlow&lt;Int&gt; // deprecated
+
+                    suspend fun new(): Flow&lt;Int&gt; // use .stateIn on the client side
+                }
+            </code-block>
+        </li>
+        <li>
+            <b>Fields</b>
+            <p>Deprecation level: <code>WARNING</code></p>
+            <code-block lang="kotlin">
+                @Rpc
+                interface Service : RemoteService {
+                    val old: Flow&lt;Int&gt; // deprecated
+
+                    suspend fun new(): Flow&lt;Int&gt; // store flow locally
+                }
+            </code-block>
+        </li>
+        <li>
+            <b>Nested Flows</b>
+            <p>Deprecation level: <code>WARNING</code></p>
+            <code-block lang="kotlin">
+                @Rpc
+                interface Service : RemoteService {
+                    suspend fun old(): Flow&lt;Flow&lt;Int&gt;&gt; // deprecated
+
+                    // no particular alternative, depends on the use case
+                }
+            </code-block>
+        </li>
+        <li>
+            <b>Not top-level server flows</b>
+            <p>Deprecation level: <code>WARNING</code></p>
+
+            <code-block lang="kotlin">
+                data class SpotifyWrapped(val myMusicFlow: Flow&lt;Rap&gt;, val extra: Data)
+
+                @Rpc
+                interface Service : RemoteService {
+                    suspend fun old(): SpotifyWrapped // deprecated
+
+                    // one should consider message delivery order when calling these
+                    suspend fun new(): Flow&lt;Rap&gt;
+                    suspend fun getData(): Data
+                }
+            </code-block>
+        </li>
+    </list>
+
+    <p>
+        Deprecation levels are controlled by the Gradle <code>rpc</code> extension:
+    </p>
+    <code-block lang="Kotlin">
+        // build.gradle.kts
+        plugins {
+            id("org.jetbrains.kotlinx.rpc.plugin")
+        }
+
+        rpc {
+            strict {
+                stateFlow = RpcStrictMode.WARNING
+                sharedFlow = RpcStrictMode.WARNING
+                nestedFlow = RpcStrictMode.WARNING
+                notTopLevelServerFlow = RpcStrictMode.WARNING
+                fields = RpcStrictMode.WARNING
+            }
+        }
+    </code-block>
+    <p>
+        Modes <code>RpcStrictMode.NONE</code> and <code>RpcStrictMode.ERROR</code> are available.
+    </p>
+
+    <warning>
+        Note that setting <code>RpcStrictMode.NONE</code> should not be done permanently.
+        All deprecated APIs will become errors in future without an option to suppress it.
+        Consider your migration path in advance.
+    </warning>
+</topic>
