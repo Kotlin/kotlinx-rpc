@@ -4,6 +4,9 @@
 
 package kotlinx.rpc.grpc
 
+/**
+ * Constructor function for the [StatusRuntimeException] class.
+ */
 public actual fun StatusRuntimeException(status: Status): StatusRuntimeException {
     return io.grpc.StatusRuntimeException(status.toJvm()).toKotlin()
 }

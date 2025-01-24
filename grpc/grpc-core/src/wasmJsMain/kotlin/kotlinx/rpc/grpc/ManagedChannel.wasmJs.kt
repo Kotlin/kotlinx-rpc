@@ -6,18 +6,24 @@
 
 package kotlinx.rpc.grpc
 
+/**
+ * Same as [ManagedChannel], but is platform-exposed.
+ */
 public actual abstract class ManagedChannelPlatform
 
+/**
+ * Builder class for [ManagedChannel].
+ */
 public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
 
-public actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
+internal actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
     error("WasmJS target is not supported in gRPC")
 }
 
-public actual fun ManagedChannelBuilder(name: String, port: Int): ManagedChannelBuilder<*> {
+internal actual fun ManagedChannelBuilder(name: String, port: Int): ManagedChannelBuilder<*> {
     error("WasmJS target is not supported in gRPC")
 }
 
-public actual fun ManagedChannelBuilder(target: String): ManagedChannelBuilder<*> {
+internal actual fun ManagedChannelBuilder(target: String): ManagedChannelBuilder<*> {
     error("WasmJS target is not supported in gRPC")
 }

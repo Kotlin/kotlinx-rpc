@@ -6,6 +6,9 @@
 
 package kotlinx.rpc.grpc
 
-internal actual typealias HandlerRegistry = io.grpc.HandlerRegistry
+/**
+ * Registry of services and their methods used by servers to dispatching incoming calls.
+ */
+public actual typealias HandlerRegistry = io.grpc.HandlerRegistry
 
 internal actual typealias MutableHandlerRegistry = io.grpc.util.MutableHandlerRegistry

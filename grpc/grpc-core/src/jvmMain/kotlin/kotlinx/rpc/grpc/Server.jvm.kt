@@ -9,12 +9,14 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 
+/**
+ * Platform-specific gRPC server builder.
+ */
 public actual typealias ServerBuilder<T> = io.grpc.ServerBuilder<T>
 
 internal actual fun ServerBuilder(port: Int): ServerBuilder<*> {
     return io.grpc.ServerBuilder.forPort(port)
 }
-
 
 internal actual fun Server(builder: ServerBuilder<*>): Server {
     return builder.build().toKotlin()

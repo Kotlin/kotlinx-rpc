@@ -40,6 +40,7 @@ class ModelToKotlinGenerator(
 
     private fun CodeGenerator.generateDeclaredEntities(fileDeclaration: FileDeclaration) {
         fileDeclaration.messageDeclarations.forEach { generateMessage(it) }
+        // KRPC-141 Enum Types
 //        fileDeclaration.enumDeclarations.forEach { generateEnum(it) }
         fileDeclaration.serviceDeclarations.forEach { generateService(it) }
     }
@@ -77,14 +78,17 @@ class ModelToKotlinGenerator(
                 }
             }
 
+            // KRPC-147 OneOf Types
 //            declaration.oneOfDeclarations.forEach { oneOf ->
 //                generateOneOf(oneOf)
 //            }
 //
+            // KRPC-146 Nested Types
 //            declaration.nestedDeclarations.forEach { nested ->
 //                generateMessage(nested)
 //            }
 //
+            // KRPC-141 Enum Types
 //            declaration.enumDeclarations.forEach { enum ->
 //                generateEnum(enum)
 //            }
@@ -177,6 +181,7 @@ class ModelToKotlinGenerator(
 
     private fun FieldDeclaration.typeFqName(): String {
         return when (type) {
+            // KRPC-156 Reference Types
 //            is FieldType.Reference -> {
 //                type.value.simpleName
 //            }
@@ -185,10 +190,12 @@ class ModelToKotlinGenerator(
                 type.fqName.simpleName
             }
 
+            // KRPC-143 Repeated Types
 //            is FieldType.List -> {
 //                "List<${type.valueName.simpleName}>"
 //            }
 //
+            // KRPC-145 Map Types
 //            is FieldType.Map -> {
 //                "Map<${type.keyName.simpleName}, ${type.valueName.simpleName}>"
 //            }

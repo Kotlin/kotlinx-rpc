@@ -6,7 +6,7 @@
 
 package kotlinx.rpc.grpc
 
-import kotlinx.rpc.internal.utils.InternalRpcApi
-
-@InternalRpcApi
+/**
+ * Definition of a service to be exposed via a Server.
+ */
 public actual class ServerServiceDefinition

@@ -13,6 +13,13 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 
+/**
+ * GrpcServer is an implementation of both [RpcServer] and [Server] interfaces,
+ * providing the ability to host gRPC services.
+ *
+ * @property port Specifies the port used by the server to listen for incoming connections.
+ * @param builder exposes platform-specific Server builder.
+ */
 public class GrpcServer internal constructor(
     override val port: Int = 8080,
     builder: ServerBuilder<*>.() -> Unit,
@@ -26,7 +33,7 @@ public class GrpcServer internal constructor(
     }
 
     override val coroutineContext: CoroutineContext
-        get() = error("coroutineContext is not available for gRPC server builder")
+        get() = error("coroutineContext is not available for gRPC server")
 
     override fun <@Grpc Service : Any> registerService(
         serviceKClass: KClass<Service>,
@@ -87,6 +94,9 @@ public class GrpcServer internal constructor(
     }
 }
 
+/**
+ * Constructor function for the [GrpcServer] class.
+ */
 public fun GrpcServer(
     port: Int,
     configure: ServerBuilder<*>.() -> Unit = {},

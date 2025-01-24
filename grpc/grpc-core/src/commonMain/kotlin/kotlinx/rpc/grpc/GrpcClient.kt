@@ -15,7 +15,12 @@ import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
 
-public class GrpcClient(private val channel: ManagedChannel) : RpcClient {
+/**
+ * GrpcClient manages gRPC communication by providing implementation for making asynchronous RPC calls.
+ *
+ * @property channel The [ManagedChannel] used to communicate with remote gRPC services.
+ */
+public class GrpcClient internal constructor(private val channel: ManagedChannel) : RpcClient {
     override val coroutineContext: CoroutineContext = SupervisorJob()
 
     private val stubs = ConcurrentHashMap<Long, GrpcClientDelegate>()
@@ -36,11 +41,13 @@ public class GrpcClient(private val channel: ManagedChannel) : RpcClient {
     }
 
     override fun provideStubContext(serviceId: Long): CoroutineContext {
-        // todo create lifetime hierarchy if possible
         return SupervisorJob(coroutineContext.job)
     }
 }
 
+/**
+ * Constructor function for the [GrpcClient] class.
+ */
 public fun GrpcClient(
     name: String,
     port: Int,
@@ -50,6 +57,9 @@ public fun GrpcClient(
     return GrpcClient(channel)
 }
 
+/**
+ * Constructor function for the [GrpcClient] class.
+ */
 public fun GrpcClient(
     target: String,
     configure: ManagedChannelBuilder<*>.() -> Unit = {},

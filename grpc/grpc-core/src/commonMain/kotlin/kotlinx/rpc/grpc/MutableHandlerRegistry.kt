@@ -6,9 +6,12 @@
 
 package kotlinx.rpc.grpc
 
+/**
+ * Registry of services and their methods used by servers to dispatching incoming calls.
+ */
 public expect abstract class HandlerRegistry
 
 @Suppress("RedundantConstructorKeyword")
-public expect class MutableHandlerRegistry constructor() : HandlerRegistry {
+internal expect class MutableHandlerRegistry constructor() : HandlerRegistry {
     internal fun addService(@Suppress("unused") service: ServerServiceDefinition): ServerServiceDefinition?
 }

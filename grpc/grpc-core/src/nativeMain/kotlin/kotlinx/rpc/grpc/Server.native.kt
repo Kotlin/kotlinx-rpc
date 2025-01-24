@@ -4,6 +4,9 @@
 
 package kotlinx.rpc.grpc
 
+/**
+ * Platform-specific gRPC server builder.
+ */
 public actual abstract class ServerBuilder<T : ServerBuilder<T>> {
     public actual abstract fun addService(service: ServerServiceDefinition): T
 

@@ -6,4 +6,7 @@
 
 package kotlinx.rpc.grpc
 
+/**
+ * Definition of a service to be exposed via a Server.
+ */
 public expect class ServerServiceDefinition

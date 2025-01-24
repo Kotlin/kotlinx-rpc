@@ -4,8 +4,17 @@
 
 package kotlinx.rpc.grpc
 
+/**
+ * [Status] in RuntimeException form, for propagating [Status] information via exceptions.
+ */
 public interface StatusRuntimeException {
+    /**
+     * The status code as a [Status] object.
+     */
     public val status: Status
 }
 
+/**
+ * Constructor function for the [StatusRuntimeException] class.
+ */
 public expect fun StatusRuntimeException(status: Status) : StatusRuntimeException

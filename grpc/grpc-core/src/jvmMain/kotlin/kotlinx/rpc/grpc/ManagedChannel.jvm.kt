@@ -10,19 +10,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.time.Duration
 
+/**
+ * Same as [ManagedChannel], but is platform-exposed.
+ */
 public actual typealias ManagedChannelPlatform = io.grpc.ManagedChannel
 
+/**
+ * Builder class for [ManagedChannel].
+ */
 public actual typealias ManagedChannelBuilder<T> = io.grpc.ManagedChannelBuilder<T>
 
-public actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
+internal actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
     return build().toKotlin()
 }
 
-public actual fun ManagedChannelBuilder(name: String, port: Int): ManagedChannelBuilder<*> {
+internal actual fun ManagedChannelBuilder(name: String, port: Int): ManagedChannelBuilder<*> {
     return io.grpc.ManagedChannelBuilder.forAddress(name, port)
 }
 
-public actual fun ManagedChannelBuilder(target: String): ManagedChannelBuilder<*> {
+internal actual fun ManagedChannelBuilder(target: String): ManagedChannelBuilder<*> {
     return io.grpc.ManagedChannelBuilder.forTarget(target)
 }
 

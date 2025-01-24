@@ -12,7 +12,6 @@ import kotlinx.rpc.protobuf.model.FieldType.IntegralType
 import org.slf4j.Logger
 import kotlin.properties.Delegates
 
-// todo parent types are broken a bit now
 class ProtoToModelInterpreter(
     @Suppress("unused")
     private val logger: Logger,

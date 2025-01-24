@@ -6,14 +6,13 @@
 
 package kotlinx.rpc.grpc
 
-import kotlinx.rpc.internal.utils.InternalRpcApi
-
-@InternalRpcApi
+/**
+ * Registry of services and their methods used by servers to dispatching incoming calls.
+ */
 public actual abstract class HandlerRegistry
 
-@InternalRpcApi
-public actual class MutableHandlerRegistry : HandlerRegistry() {
-    public actual fun addService(service: ServerServiceDefinition): ServerServiceDefinition? {
+internal actual class MutableHandlerRegistry : HandlerRegistry() {
+    actual fun addService(service: ServerServiceDefinition): ServerServiceDefinition? {
         error("WasmJS target is not supported in gRPC")
     }
 }
