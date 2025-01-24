@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc
@@ -27,11 +27,19 @@ public sealed class KrpcConfigBuilder private constructor() {
      * parameters, and thus they cannot be encoded and transferred.
      * So then creating their instance on an endpoint, the library should know which parameters to use.
      */
+    @Deprecated(
+        "SharedFlow support is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
+        level = DeprecationLevel.WARNING,
+    )
     @Suppress("MemberVisibilityCanBePrivate")
     public class SharedFlowParametersBuilder internal constructor() {
         /**
          * The number of values replayed to new subscribers (cannot be negative, defaults to zero).
          */
+        @Deprecated(
+            "SharedFlow support is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
+            level = DeprecationLevel.WARNING,
+        )
         public var replay: Int = DEFAULT_REPLAY
 
         /**
@@ -39,6 +47,10 @@ public sealed class KrpcConfigBuilder private constructor() {
          * emit does not suspend while there is a buffer space remaining
          * (optional, cannot be negative, defaults to zero).
          */
+        @Deprecated(
+            "SharedFlow support is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
+            level = DeprecationLevel.WARNING,
+        )
         public var extraBufferCapacity: Int = DEFAULT_EXTRA_BUFFER_CAPACITY
 
         /**
@@ -50,10 +62,15 @@ public sealed class KrpcConfigBuilder private constructor() {
          * In the absence of subscribers only the most recent replay values are stored
          * and the buffer overflow behavior is never triggered and has no effect.
          */
+        @Deprecated(
+            "SharedFlow support is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
+            level = DeprecationLevel.WARNING,
+        )
         public var onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND
 
         @InternalRpcApi
         public fun builder(): () -> MutableSharedFlow<Any?> = {
+            @Suppress("DEPRECATION")
             MutableSharedFlow(replay, extraBufferCapacity, onBufferOverflow)
         }
 
@@ -69,12 +86,18 @@ public sealed class KrpcConfigBuilder private constructor() {
         }
     }
 
+    @Suppress("DEPRECATION")
     protected var sharedFlowBuilder: () -> MutableSharedFlow<Any?> = SharedFlowParametersBuilder().builder()
 
     /**
      * @see SharedFlowParametersBuilder
      */
-    public fun sharedFlowParameters(builder: SharedFlowParametersBuilder.() -> Unit) {
+    @Deprecated(
+        "SharedFlow support is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
+        level = DeprecationLevel.WARNING,
+    )
+    public fun sharedFlowParameters(builder: @Suppress("DEPRECATION") SharedFlowParametersBuilder.() -> Unit) {
+        @Suppress("DEPRECATION")
         sharedFlowBuilder = SharedFlowParametersBuilder().apply(builder).builder()
     }
 

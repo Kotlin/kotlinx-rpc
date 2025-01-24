@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Annotation type-safety" id="annotation-type-safety">
+
+    <p>
+        The library introduces a concept of annotation type-safety. Consider the following example:
+    </p>
+    <code-block lang="Kotlin">
+        @Rpc
+        interface MyService : RemoteService
+
+        class MyServiceImpl : MyService
+
+        fun &lt;T : RemoteService&gt; withService() {}
+    </code-block>
+    <p>
+        The compiler can't guarantee that the passed type parameter is the one for which the code generation was run:
+    </p>
+    <code-block lang="Kotlin">
+        withService&lt;MyService&gt;() // ok
+        withService&lt;MyServiceImpl&gt;() // compile time ok, runtime throws
+    </code-block>
+    <p>
+        The compiler plugin enforces annotation type-safety by requiring type parameters to have specific annotations,
+        like <code>@Rpc</code>.
+    </p>
+    <code-block lang="Kotlin">
+        @Rpc
+        interface MyService : RemoteService
+
+        class MyServiceImpl : MyService
+
+        fun &lt;@Rpc T : Any&gt; withService() {}
+    </code-block>
+
+    <code-block lang="Kotlin">
+        withService&lt;MyService&gt;() // ok
+        withService&lt;MyServiceImpl&gt;() // compile time error
+    </code-block>
+
+    <note>
+        Annotation type safety only ensures that the resolved type parameters are annotated with the required
+        annotation.
+        The actual type of the passed argument may differ:
+        <code-block lang="Kotlin">
+            fun &lt;@Rpc T : Any&gt; registerService(body: () -> T) {}
+
+            // T is resolved to MyService,
+            // but 'body' returns MyServiceImpl
+            registerService&lt;MyService&gt; { ctx -> MyServiceImpl(ctx) }
+
+            // Error: T is resolved to MyServiceImpl
+            registerService { ctx -> MyServiceImpl(ctx) }
+        </code-block>
+    </note>
+
+    <warning>
+        This feature is highly experimental and may lead to unexpected behaviour. If you encounter any issues,
+        please <a href="https://github.com/Kotlin/kotlinx-rpc/issues/new?template=bug_report.md">report</a> them.
+
+        To prevent critical bugs from affecting your app, you can disable this feature using the following
+        configuration:
+        <code-block lang="Kotlin">
+            // build.gradle.kts
+            rpc {
+                annotationTypeSafetyEnabled = false // true by default
+            }
+        </code-block>
+    </warning>
+</topic>

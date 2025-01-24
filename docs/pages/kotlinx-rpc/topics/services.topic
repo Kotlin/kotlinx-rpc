@@ -41,7 +41,9 @@
             <p>Now we can implement the service, so server knows how to process incoming requests.</p>
 
             <code-block lang="kotlin">
-                class MyServiceImpl(override val coroutineContext: CoroutineContext) : MyService {
+                class MyServiceImpl(
+                    override val coroutineContext: CoroutineContext,
+                ) : MyService {
                     override suspend fun hello(name: String): String {
                         return &quot;Hello, $name! I'm server!&quot;
                     }
