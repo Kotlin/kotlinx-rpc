@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Server" id="grpc-server">
+
+    <p>
+        Example of using a gRPC server:
+    </p>
+    <code-block lang="Kotlin">
+        val grpcServer = GrpcServer(8080) {
+            registerService&lt;ImageRecognizer&gt; { ImageRecognizerImpl() }
+        }
+
+        grpcServer.start()
+        grpcServer.awaitTermination()
+    </code-block>
+    <list>
+        <li>
+            <code>GrpcServer</code> allows to register multiple services, like regular <code>RpcServer</code>.
+            However, <code>CoroutineContext</code> parameter is not needed and should not be used.
+        </li>
+        <li>
+            <code>GrpcServer</code> does <b>not</b> bind to Java gRPC <code>Server</code>,
+            but provides some functions to cover for that.
+        </li>
+    </list>
+</topic>

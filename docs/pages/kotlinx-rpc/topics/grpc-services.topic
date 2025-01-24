@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Services" id="grpc-services">
+
+    <p>
+        To define a service, create a new <code>.proto</code> file in the <code>proto</code> folder next to your source sets:
+    </p>
+    <code-block>
+        ├── build.gradle.kts
+        ├── settings.gradle.kts
+        └── src
+            ├── main
+            │   ├── kotlin
+            │   │   ├── Client.kt
+            │   │   ├── ImageRecognizer.kt
+            │   │   └── Server.kt
+            │   └── resources
+            │       └── logback.xml
+            └── proto
+                └── image-recognizer.proto
+    </code-block>
+
+    <p>
+        Inside the <code>.proto</code> file define your service:
+    </p>
+    <code-block lang="protobuf">
+        syntax = "proto3";
+
+        message Image {
+          bytes data = 1;
+        }
+
+        message RecogniseResult {
+          int32 category = 1;
+        }
+
+        service ImageRecognizer {
+          rpc recognize(Image) returns (RecogniseResult);
+        }
+    </code-block>
+    <p>
+        This will generate the necessary code, including the most important interfaces:
+        <code>ImageRecognizer</code>, <code>Image</code>, <code>RecogniseResult</code>:
+    </p>
+    <code-block lang="Kotlin">
+        @Grpc
+        interface ImageRecognizer {
+            suspend fun recognize(image: Image): RecogniseResult
+        }
+
+        interface RecogniseResult {
+            val category: Int
+
+            companion object
+        }
+
+        interface Image {
+            val data: ByteArray
+
+            companion object
+        }
+    </code-block>
+    <p>
+        You can implement the <code>ImageRecognizer</code>:
+    </p>
+    <code-block lang="Kotlin">
+        class ImageRecognizerImpl : ImageRecognizer {
+            override suspend fun recognize(image: Image): RecogniseResult {
+                val byte = image.data[0].toInt()
+                delay(100) // heavy processing
+                val result = RecogniseResult {
+                    category = if (byte == 0) 0 else 1
+                }
+                return result
+            }
+        }
+    </code-block>
+    <p>
+        Here you can also see the usage of the <code>RecogniseResult</code> interface.
+        To create an instance, use its <code>.invoke()</code> extension function:
+    </p>
+    <code-block lang="Kotlin">
+        RecogniseResult {
+            category = 0
+        }
+    </code-block>
+
+    <chapter title="Limitations" id="limitations">
+        <p>Current known limitations:</p>
+        <list>
+            <li>No streaming</li>
+            <li>Only primitive types in messages</li>
+            <li>Mandatory java and kotlin protoc generation in addition to our codegen</li>
+            <li>Kotlin/JVM project only</li>
+        </list>
+        <p>
+            If you encounter other unexpected limitations or bugs,
+            please <a href="https://github.com/Kotlin/kotlinx-rpc/issues/new?template=bug_report.md">report</a> them
+        </p>
+    </chapter>
+</topic>
