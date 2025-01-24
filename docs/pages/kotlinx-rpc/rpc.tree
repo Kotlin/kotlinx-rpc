@@ -25,6 +25,12 @@
             <toc-element topic="features.topic"/>
             <toc-element topic="transport.topic"/>
         </toc-element>
+        <toc-element toc-title="gRPC">
+            <toc-element topic="grpc-configuration.topic"/>
+            <toc-element topic="grpc-services.topic"/>
+            <toc-element topic="grpc-client.topic"/>
+            <toc-element topic="grpc-server.topic"/>
+        </toc-element>
     </toc-element>
     <toc-element topic="strict-mode.topic"/>
     <toc-element topic="versions.topic"/>
