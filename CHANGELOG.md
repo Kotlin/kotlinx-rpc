@@ -1,5 +1,5 @@
 # 0.5.0
-> Published 11 December 2024
+> Published 27 January 2024
 
 ### Features 🎉
 * Update Service Descriptors Generation by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/227
