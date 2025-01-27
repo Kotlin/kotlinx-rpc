@@ -34,6 +34,11 @@ dependencyResolutionManagement {
     includeBuild("compiler-plugin")
 }
 
+includePublic(":protobuf-plugin")
+
+include(":grpc")
+includePublic(":grpc:grpc-core")
+
 includePublic(":bom")
 
 includePublic(":utils")

@@ -44,6 +44,10 @@ private object Descriptor {
     const val CREATE_INSTANCE = "createInstance"
 }
 
+private object GrpcDescriptor {
+    const val DELEGATE = "delegate"
+}
+
 @Suppress("detekt.LargeClass", "detekt.TooManyFunctions")
 internal class RpcStubGenerator(
     private val declaration: ServiceDeclaration,
@@ -123,7 +127,10 @@ internal class RpcStubGenerator(
 
         clientProperty()
 
-        coroutineContextProperty()
+        // not for gRPC
+        if (!declaration.isGrpc) {
+            coroutineContextProperty()
+        }
 
         declaration.fields.forEach {
             rpcFlowField(it)
@@ -564,7 +571,15 @@ internal class RpcStubGenerator(
                     return@irBlockBody
                 }
 
-                +irReturn(
+                val call = if (declaration.isGrpc) {
+                    irRpcMethodClientCall(
+                        method = method,
+                        functionThisReceiver = functionThisReceiver,
+                        isMethodObject = isMethodObject,
+                        methodClass = methodClass,
+                        arguments = arguments,
+                    )
+                } else {
                     irCall(
                         callee = ctx.functions.scopedClientCall,
                         type = method.function.returnType,
@@ -614,7 +629,9 @@ internal class RpcStubGenerator(
 
                         putValueArgument(1, lambda)
                     }
-                )
+                }
+
+                +irReturn(call)
             }
         }
     }
@@ -888,7 +905,10 @@ internal class RpcStubGenerator(
             stubCompanionObjectThisReceiver = thisReceiver
                 ?: error("Stub companion object expected to have thisReceiver: ${name.asString()}")
 
-            superTypes = listOf(ctx.rpcServiceDescriptor.typeWith(declaration.serviceType))
+            superTypes = listOfNotNull(
+                ctx.rpcServiceDescriptor.typeWith(declaration.serviceType),
+                if (declaration.isGrpc) ctx.grpcServiceDescriptor.typeWith(declaration.serviceType) else null,
+            )
 
             generateCompanionObjectConstructor()
 
@@ -921,6 +941,10 @@ internal class RpcStubGenerator(
         generateCreateInstanceFunction()
 
         generateGetFieldsFunction()
+
+        if (declaration.isGrpc) {
+            generateGrpcDelegateProperty()
+        }
     }
 
     /**
@@ -1523,6 +1547,43 @@ internal class RpcStubGenerator(
             }
         }
     }
+
+    /**
+     * override val delegate: GrpcDelegate = MyServiceDelegate
+     */
+    private fun IrClass.generateGrpcDelegateProperty() {
+        addProperty {
+            name = Name.identifier(GrpcDescriptor.DELEGATE)
+            visibility = DescriptorVisibilities.PUBLIC
+        }.apply {
+            overriddenSymbols = listOf(ctx.properties.grpcServiceDescriptorDelegate)
+
+            addBackingFieldUtil {
+                visibility = DescriptorVisibilities.PRIVATE
+                type = ctx.grpcDelegate.defaultType
+                vsApi { isFinalVS = true }
+            }.apply {
+                initializer = factory.createExpressionBody(
+                    IrGetObjectValueImpl(
+                        startOffset = UNDEFINED_OFFSET,
+                        endOffset = UNDEFINED_OFFSET,
+                        type = ctx.grpcDelegate.defaultType,
+                        symbol = ctx.getIrClassSymbol(
+                            declaration.service.packageFqName?.asString()
+                                ?: error("Expected package name fro service ${declaration.service.name}"),
+                            "${declaration.service.name.asString()}Delegate",
+                        ),
+                    )
+                )
+            }
+
+            addDefaultGetter(this@generateGrpcDelegateProperty, ctx.irBuiltIns) {
+                visibility = DescriptorVisibilities.PUBLIC
+                overriddenSymbols = listOf(ctx.properties.grpcServiceDescriptorDelegate.owner.getterOrFail.symbol)
+            }
+        }
+    }
+
 
     // Associated object annotation works on JS, WASM, and Native platforms.
     // See https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/find-associated-object.html
