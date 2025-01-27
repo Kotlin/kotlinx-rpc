@@ -23,6 +23,7 @@ class FirRpcServiceGenerator(
 ) : FirDeclarationGenerationExtension(session) {
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
         register(FirRpcPredicates.rpc)
+        register(FirRpcPredicates.grpc)
     }
 
     /**
@@ -51,7 +52,10 @@ class FirRpcServiceGenerator(
                 setOf(SpecialNames.DEFAULT_NAME_FOR_COMPANION_OBJECT)
             }
 
-            classSymbol.isInterface && session.predicateBasedProvider.matches(FirRpcPredicates.rpc, classSymbol) -> {
+            classSymbol.isInterface && (
+                    session.predicateBasedProvider.matches(FirRpcPredicates.rpc, classSymbol) ||
+                            session.predicateBasedProvider.matches(FirRpcPredicates.grpc, classSymbol)
+                    ) -> {
                 setOf(RpcNames.SERVICE_STUB_NAME)
             }
 
