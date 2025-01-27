@@ -28,6 +28,10 @@ detekt-gradle-plugin = "1.23.8"
 kover = "0.9.1"
 develocity = "3.19.2"
 common-custom-user-data = "2.3"
+grpc = "1.69.0"
+grpc-kotlin = "1.4.1"
+protobuf = "4.29.3"
+protobuf-gradle = "0.9.4"
 
 [libraries]
 # kotlinx.rpc – references to the included builds
@@ -92,6 +96,19 @@ dokka-base-test-utils = { module = "org.jetbrains.dokka:dokka-base-test-utils", 
 dokka-analysis-kotlin-symbols = { module = "org.jetbrains.dokka:analysis-kotlin-symbols", version.ref = "dokka" }
 dokka-rpc-plugin = { module = "org.jetbrains.kotlinx:dokka-rpc-plugin", version.ref = "kotlinx-rpc" }
 
+# grpc and protobuf
+protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
+protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
+protobuf-java-util = { module = "com.google.protobuf:protobuf-java-util", version.ref = "protobuf" }
+protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin", version.ref = "protobuf" }
+grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
+grpc-util = { module = "io.grpc:grpc-util", version.ref = "grpc" }
+grpc-netty = { module = "io.grpc:grpc-netty", version.ref = "grpc" }
+grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
+grpc-kotlin-stub = { module = "io.grpc:grpc-kotlin-stub", version.ref = "grpc-kotlin" }
+grpc-protoc-gen-java = { module = "io.grpc:protoc-gen-grpc-java", version.ref = "grpc" }
+grpc-protoc-gen-kotlin = { module = "io.grpc:protoc-gen-grpc-kotlin", version.ref = "grpc-kotlin" }
+
 # other
 kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
 kotlin-logging-legacy = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
@@ -121,6 +138,7 @@ atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobuf-gradle" }
 
 # gradle-conventions project
 conventions-common = { id = "conventions-common" }
