@@ -73,6 +73,14 @@ internal class RpcIrContext(
         getRpcIrClassSymbol("RpcServiceDescriptor", "descriptor")
     }
 
+    val grpcServiceDescriptor by lazy {
+        getIrClassSymbol("kotlinx.rpc.grpc.descriptor", "GrpcServiceDescriptor")
+    }
+
+    val grpcDelegate by lazy {
+        getIrClassSymbol("kotlinx.rpc.grpc.descriptor", "GrpcDelegate")
+    }
+
     val rpcType by lazy {
         getRpcIrClassSymbol("RpcType", "descriptor")
     }
@@ -210,6 +218,10 @@ internal class RpcIrContext(
             rpcServiceDescriptor.namedProperty("fqName")
         }
 
+        val grpcServiceDescriptorDelegate by lazy {
+            grpcServiceDescriptor.namedProperty("delegate")
+        }
+
         private fun IrClassSymbol.namedProperty(name: String): IrPropertySymbol {
             return owner.properties.single { it.name.asString() == name }.symbol
         }
@@ -224,7 +236,7 @@ internal class RpcIrContext(
         return getIrClassSymbol("kotlinx.rpc$suffix", name)
     }
 
-    private fun getIrClassSymbol(packageName: String, name: String): IrClassSymbol {
+    fun getIrClassSymbol(packageName: String, name: String): IrClassSymbol {
         return versionSpecificApi.referenceClass(pluginContext, packageName, name)
             ?: error("Unable to find symbol. Package: $packageName, name: $name")
     }
