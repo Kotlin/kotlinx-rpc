@@ -89,6 +89,10 @@ private object Descriptor {
     const val CREATE_INSTANCE = "createInstance"
 }
 
+private object GrpcDescriptor {
+    const val DELEGATE = "delegate"
+}
+
 @Suppress("detekt.LargeClass", "detekt.TooManyFunctions")
 internal class RpcStubGenerator(
     private val declaration: ServiceDeclaration,
@@ -498,7 +502,10 @@ internal class RpcStubGenerator(
             stubCompanionObjectThisReceiver = thisReceiver
                 ?: error("Stub companion object expected to have thisReceiver: ${name.asString()}")
 
-            superTypes = listOf(ctx.rpcServiceDescriptor.typeWith(declaration.serviceType))
+            superTypes = listOfNotNull(
+                ctx.rpcServiceDescriptor.typeWith(declaration.serviceType),
+                if (declaration.isGrpc) ctx.grpcServiceDescriptor.typeWith(declaration.serviceType) else null,
+            )
 
             generateCompanionObjectConstructor()
 
@@ -529,6 +536,10 @@ internal class RpcStubGenerator(
         generateGetCallableFunction()
 
         generateCreateInstanceFunction()
+
+        if (declaration.isGrpc) {
+            generateGrpcDelegateProperty()
+        }
     }
 
     /**
@@ -1042,6 +1053,42 @@ internal class RpcStubGenerator(
                         }
                     }
                 )
+            }
+        }
+    }
+
+    /**
+     * override val delegate: GrpcDelegate = MyServiceDelegate
+     */
+    private fun IrClass.generateGrpcDelegateProperty() {
+        addProperty {
+            name = Name.identifier(GrpcDescriptor.DELEGATE)
+            visibility = DescriptorVisibilities.PUBLIC
+        }.apply {
+            overriddenSymbols = listOf(ctx.properties.grpcServiceDescriptorDelegate)
+
+            addBackingFieldUtil {
+                visibility = DescriptorVisibilities.PRIVATE
+                type = ctx.grpcDelegate.defaultType
+                vsApi { isFinalVS = true }
+            }.apply {
+                initializer = factory.createExpressionBody(
+                    IrGetObjectValueImpl(
+                        startOffset = UNDEFINED_OFFSET,
+                        endOffset = UNDEFINED_OFFSET,
+                        type = ctx.grpcDelegate.defaultType,
+                        symbol = ctx.getIrClassSymbol(
+                            declaration.service.packageFqName?.asString()
+                                ?: error("Expected package name fro service ${declaration.service.name}"),
+                            "${declaration.service.name.asString()}Delegate",
+                        ),
+                    )
+                )
+            }
+
+            addDefaultGetter(this@generateGrpcDelegateProperty, ctx.irBuiltIns) {
+                visibility = DescriptorVisibilities.PUBLIC
+                overriddenSymbols = listOf(ctx.properties.grpcServiceDescriptorDelegate.owner.getterOrFail.symbol)
             }
         }
     }

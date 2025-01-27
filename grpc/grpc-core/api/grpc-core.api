@@ -1,0 +1,116 @@
+public final class kotlinx/rpc/grpc/GrpcClient : kotlinx/rpc/RpcClient {
+	public fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun callAsync (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/Deferred;
+	public fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
+	public fun provideStubContext (J)Lkotlin/coroutines/CoroutineContext;
+}
+
+public final class kotlinx/rpc/grpc/GrpcClientKt {
+	public static final fun GrpcClient (Ljava/lang/String;ILkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/GrpcClient;
+	public static final fun GrpcClient (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/GrpcClient;
+	public static synthetic fun GrpcClient$default (Ljava/lang/String;ILkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/GrpcClient;
+	public static synthetic fun GrpcClient$default (Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/GrpcClient;
+}
+
+public final class kotlinx/rpc/grpc/GrpcServer : kotlinx/rpc/RpcServer, kotlinx/rpc/grpc/Server {
+	public fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
+	public fun getPort ()I
+	public fun isShutdown ()Z
+	public fun isTerminated ()Z
+	public fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;)V
+	public fun shutdown ()Lkotlinx/rpc/grpc/GrpcServer;
+	public synthetic fun shutdown ()Lkotlinx/rpc/grpc/Server;
+	public fun shutdownNow ()Lkotlinx/rpc/grpc/GrpcServer;
+	public synthetic fun shutdownNow ()Lkotlinx/rpc/grpc/Server;
+	public fun start ()Lkotlinx/rpc/grpc/GrpcServer;
+	public synthetic fun start ()Lkotlinx/rpc/grpc/Server;
+}
+
+public final class kotlinx/rpc/grpc/GrpcServerKt {
+	public static final fun GrpcServer (ILkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/GrpcServer;
+	public static synthetic fun GrpcServer$default (ILkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/GrpcServer;
+}
+
+public abstract interface class kotlinx/rpc/grpc/ManagedChannel {
+	public abstract fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getPlatformApi ()Lio/grpc/ManagedChannel;
+	public abstract fun isShutdown ()Z
+	public abstract fun isTerminated ()Z
+	public abstract fun shutdown ()Lkotlinx/rpc/grpc/ManagedChannel;
+	public abstract fun shutdownNow ()Lkotlinx/rpc/grpc/ManagedChannel;
+}
+
+public final class kotlinx/rpc/grpc/ManagedChannel_jvmKt {
+	public static final fun toKotlin (Lio/grpc/ManagedChannel;)Lkotlinx/rpc/grpc/ManagedChannel;
+}
+
+public abstract interface class kotlinx/rpc/grpc/Server {
+	public abstract fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getPort ()I
+	public abstract fun isShutdown ()Z
+	public abstract fun isTerminated ()Z
+	public abstract fun shutdown ()Lkotlinx/rpc/grpc/Server;
+	public abstract fun shutdownNow ()Lkotlinx/rpc/grpc/Server;
+	public abstract fun start ()Lkotlinx/rpc/grpc/Server;
+}
+
+public final class kotlinx/rpc/grpc/Server$DefaultImpls {
+	public static synthetic fun awaitTermination-VtjQ1oo$default (Lkotlinx/rpc/grpc/Server;JLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public abstract interface class kotlinx/rpc/grpc/Status {
+	public abstract fun getCause ()Ljava/lang/Throwable;
+	public abstract fun getCode ()Lkotlinx/rpc/grpc/Status$Code;
+	public abstract fun getDescription ()Ljava/lang/String;
+}
+
+public final class kotlinx/rpc/grpc/Status$Code : java/lang/Enum {
+	public static final field ABORTED Lkotlinx/rpc/grpc/Status$Code;
+	public static final field ALREADY_EXISTS Lkotlinx/rpc/grpc/Status$Code;
+	public static final field CANCELLED Lkotlinx/rpc/grpc/Status$Code;
+	public static final field DATA_LOSS Lkotlinx/rpc/grpc/Status$Code;
+	public static final field DEADLINE_EXCEEDED Lkotlinx/rpc/grpc/Status$Code;
+	public static final field FAILED_PRECONDITION Lkotlinx/rpc/grpc/Status$Code;
+	public static final field INTERNAL Lkotlinx/rpc/grpc/Status$Code;
+	public static final field INVALID_ARGUMENT Lkotlinx/rpc/grpc/Status$Code;
+	public static final field NOT_FOUND Lkotlinx/rpc/grpc/Status$Code;
+	public static final field OK Lkotlinx/rpc/grpc/Status$Code;
+	public static final field OUT_OF_RANGE Lkotlinx/rpc/grpc/Status$Code;
+	public static final field PERMISSION_DENIED Lkotlinx/rpc/grpc/Status$Code;
+	public static final field RESOURCE_EXHAUSTED Lkotlinx/rpc/grpc/Status$Code;
+	public static final field UNAUTHENTICATED Lkotlinx/rpc/grpc/Status$Code;
+	public static final field UNAVAILABLE Lkotlinx/rpc/grpc/Status$Code;
+	public static final field UNIMPLEMENTED Lkotlinx/rpc/grpc/Status$Code;
+	public static final field UNKNOWN Lkotlinx/rpc/grpc/Status$Code;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getValue ()I
+	public final fun getValueAscii ()[B
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/grpc/Status$Code;
+	public static fun values ()[Lkotlinx/rpc/grpc/Status$Code;
+}
+
+public abstract interface class kotlinx/rpc/grpc/StatusRuntimeException {
+	public abstract fun getStatus ()Lkotlinx/rpc/grpc/Status;
+}
+
+public final class kotlinx/rpc/grpc/StatusRuntimeException_jvmKt {
+	public static final fun StatusRuntimeException (Lkotlinx/rpc/grpc/Status;)Lkotlinx/rpc/grpc/StatusRuntimeException;
+	public static final fun toJvm (Lkotlinx/rpc/grpc/StatusRuntimeException;)Lio/grpc/StatusRuntimeException;
+	public static final fun toKotlin (Lio/grpc/StatusRuntimeException;)Lkotlinx/rpc/grpc/StatusRuntimeException;
+}
+
+public abstract interface class kotlinx/rpc/grpc/descriptor/GrpcClientDelegate {
+	public abstract fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun callAsync (Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/Deferred;
+}
+
+public abstract interface class kotlinx/rpc/grpc/descriptor/GrpcDelegate {
+	public abstract fun clientProvider (Lkotlinx/rpc/grpc/ManagedChannel;)Lkotlinx/rpc/grpc/descriptor/GrpcClientDelegate;
+	public abstract fun definitionFor (Ljava/lang/Object;)Lio/grpc/ServerServiceDefinition;
+}
+
+public abstract interface class kotlinx/rpc/grpc/descriptor/GrpcServiceDescriptor : kotlinx/rpc/descriptor/RpcServiceDescriptor {
+	public abstract fun getDelegate ()Lkotlinx/rpc/grpc/descriptor/GrpcDelegate;
+}
+
