@@ -30,6 +30,7 @@ object FirRpcAnnotationChecker {
     ) {
         val rpcAnnotated = context.session.predicateBasedProvider.matches(FirRpcPredicates.rpc, declaration)
         val rpcMetaAnnotated = context.session.predicateBasedProvider.matches(FirRpcPredicates.rpcMeta, declaration)
+        val grpcAnnotated = context.session.predicateBasedProvider.matches(FirRpcPredicates.grpc, declaration)
 
         val isMetaAnnotated = declaration.classKind != ClassKind.ANNOTATION_CLASS
 
@@ -59,7 +60,7 @@ object FirRpcAnnotationChecker {
             )
         }
 
-        if (rpcAnnotated && !ctx.serializationIsPresent && isMetaAnnotated) {
+        if ((rpcAnnotated || grpcAnnotated) && !ctx.serializationIsPresent && isMetaAnnotated) {
             reporter.reportOn(
                 source = declaration.symbol.rpcAnnotationSource(
                     session = context.session,
