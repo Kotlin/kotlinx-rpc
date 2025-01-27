@@ -16,12 +16,14 @@ fun Project.configureApiValidation() {
     the<ApiValidationExtension>().apply {
         ignoredPackages.add("kotlinx.rpc.internal")
         ignoredPackages.add("kotlinx.rpc.krpc.internal")
+        ignoredPackages.add("kotlinx.rpc.grpc.internal")
 
         ignoredProjects.addAll(
             listOfNotNull(
                 if (kotlinMasterBuild) null else "compiler-plugin-tests",
                 "krpc-test",
                 "utils",
+                "protobuf-plugin",
             )
         )
 
