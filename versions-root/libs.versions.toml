@@ -1,6 +1,6 @@
 [versions]
 # core library version
-kotlinx-rpc = "0.5.0-SNAPSHOT"
+kotlinx-rpc = "0.5.0"
 
 # kotlin
 kotlin-lang = "2.1.0" # or env.KOTLIN_VERSION
