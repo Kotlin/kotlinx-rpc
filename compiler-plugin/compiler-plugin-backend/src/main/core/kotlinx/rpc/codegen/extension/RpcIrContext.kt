@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.codegen.extension
@@ -103,6 +103,14 @@ internal class RpcIrContext(
 
     val rpcServiceDescriptor by lazy {
         getRpcIrClassSymbol("RpcServiceDescriptor", "descriptor")
+    }
+
+    val grpcServiceDescriptor by lazy {
+        getIrClassSymbol("kotlinx.rpc.grpc.descriptor", "GrpcServiceDescriptor")
+    }
+
+    val grpcDelegate by lazy {
+        getIrClassSymbol("kotlinx.rpc.grpc.descriptor", "GrpcDelegate")
     }
 
     val rpcType by lazy {
@@ -262,6 +270,10 @@ internal class RpcIrContext(
             rpcServiceDescriptor.namedProperty("fqName")
         }
 
+        val grpcServiceDescriptorDelegate by lazy {
+            grpcServiceDescriptor.namedProperty("delegate")
+        }
+
         private fun IrClassSymbol.namedProperty(name: String): IrPropertySymbol {
             return owner.properties.single { it.name.asString() == name }.symbol
         }
@@ -276,7 +288,7 @@ internal class RpcIrContext(
         return getIrClassSymbol("kotlinx.rpc$suffix", name)
     }
 
-    private fun getIrClassSymbol(packageName: String, name: String): IrClassSymbol {
+    fun getIrClassSymbol(packageName: String, name: String): IrClassSymbol {
         return versionSpecificApi.referenceClass(pluginContext, packageName, name)
             ?: error("Unable to find symbol. Package: $packageName, name: $name")
     }

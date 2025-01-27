@@ -16,6 +16,10 @@ object FirRpcPredicates {
         metaAnnotated(RpcClassId.rpcAnnotation.asSingleFqName(), includeItself = true)
     }
 
+    internal val grpc = DeclarationPredicate.create {
+        annotated(RpcClassId.grpcAnnotation.asSingleFqName()) // @Grpc
+    }
+
     internal val checkedAnnotationMeta = DeclarationPredicate.create {
         metaAnnotated(RpcClassId.checkedTypeAnnotation.asSingleFqName(), includeItself = false)
     }
