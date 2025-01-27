@@ -73,6 +73,7 @@ class FirRpcServiceGenerator(
 
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
         register(FirRpcPredicates.rpc)
+        register(FirRpcPredicates.grpc)
     }
 
     /**
@@ -110,7 +111,7 @@ class FirRpcServiceGenerator(
         val rpcMethodClassKey = classSymbol.generatedRpcMethodClassKey
 
         return when {
-            rpcMethodClassKey != null -> {
+            rpcMethodClassKey != null && !rpcMethodClassKey.isGrpc -> {
                 when {
                     !rpcMethodClassKey.isObject -> setOf(
                         SpecialNames.DEFAULT_NAME_FOR_COMPANION_OBJECT,
@@ -128,7 +129,10 @@ class FirRpcServiceGenerator(
                         SpecialNames.DEFAULT_NAME_FOR_COMPANION_OBJECT
             }
 
-            classSymbol.isInterface && session.predicateBasedProvider.matches(FirRpcPredicates.rpc, classSymbol) -> {
+            classSymbol.isInterface && (
+                    session.predicateBasedProvider.matches(FirRpcPredicates.rpc, classSymbol) ||
+                            session.predicateBasedProvider.matches(FirRpcPredicates.grpc, classSymbol)
+                    ) -> {
                 setOf(RpcNames.SERVICE_STUB_NAME)
             }
 
@@ -157,7 +161,7 @@ class FirRpcServiceGenerator(
                 generateRpcMethodClass(owner, name, rpcServiceStubKey)
             }
 
-            owner.generatedRpcMethodClassKey != null -> {
+            owner.generatedRpcMethodClassKey != null && owner.generatedRpcMethodClassKey?.isGrpc == false -> {
                 generateNestedClassLikeDeclarationWithSerialization(owner, name)
             }
 
@@ -189,7 +193,7 @@ class FirRpcServiceGenerator(
         val methodName = name.rpcMethodName
         val rpcMethod = rpcServiceStubKey.functions.singleOrNull { it.name == methodName }
             ?: return null
-        val rpcMethodClassKey = RpcGeneratedRpcMethodClassKey(rpcMethod)
+        val rpcMethodClassKey = RpcGeneratedRpcMethodClassKey(rpcServiceStubKey.isGrpc, rpcMethod)
         val classKind = if (rpcMethodClassKey.isObject) ClassKind.OBJECT else ClassKind.CLASS
 
         val rpcMethodClass = createNestedClass(
@@ -202,13 +206,15 @@ class FirRpcServiceGenerator(
             modality = Modality.FINAL
         }
 
-        rpcMethodClass.addAnnotation(RpcClassId.serializableAnnotation, session)
+        if (!session.predicateBasedProvider.matches(FirRpcPredicates.grpc, owner)) {
+            rpcMethodClass.addAnnotation(RpcClassId.serializableAnnotation, session)
+        }
 
         /**
          * Required to pass isSerializableObjectAndNeedsFactory check
          * from [SerializationFirSupertypesExtension].
          */
-        if (!isJvmOrMetadata && rpcMethodClassKey.isObject) {
+        if (!isJvmOrMetadata && rpcMethodClassKey.isObject && !rpcMethodClassKey.isGrpc) {
             rpcMethodClass.replaceSuperTypeRefs(createSerializationFactorySupertype())
         }
 
@@ -260,7 +266,13 @@ class FirRpcServiceGenerator(
     private fun generateRpcServiceStubClass(owner: FirClassSymbol<*>): FirRegularClassSymbol? {
         val functions = vsApi { owner.declaredFunctionsVS(session) }
 
-        return createNestedClass(owner, RpcNames.SERVICE_STUB_NAME, RpcGeneratedStubKey(owner.name, functions)) {
+        val key = RpcGeneratedStubKey(
+            isGrpc = session.predicateBasedProvider.matches(FirRpcPredicates.grpc, owner),
+            serviceName = owner.name,
+            functions = functions,
+        )
+
+        return createNestedClass(owner, RpcNames.SERVICE_STUB_NAME, key) {
             visibility = Visibilities.Public
             modality = Modality.FINAL
         }.symbol
@@ -294,7 +306,7 @@ class FirRpcServiceGenerator(
         context: MemberGenerationContext,
         rpcMethodClassKey: RpcGeneratedRpcMethodClassKey,
     ): Set<Name> {
-        return if (rpcMethodClassKey.isObject) {
+        return if (rpcMethodClassKey.isObject && !rpcMethodClassKey.isGrpc) {
             // add .serializer() method for a serializable object
             serializationExtension.getCallableNamesForClass(classSymbol, context)
         } else {
