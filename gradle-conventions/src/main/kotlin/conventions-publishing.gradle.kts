@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 import util.*
@@ -26,7 +26,8 @@ if (isPublicModule) {
 fun PublishingExtension.configurePublication() {
     repositories {
         configureSonatypeRepository()
-        configureSpaceRepository()
+        configureSpaceEapRepository()
+        configureSpaceGrpcRepository()
         configureForIdeRepository()
         configureLocalDevRepository()
     }
@@ -110,12 +111,21 @@ fun MavenPom.configureMavenCentralMetadata() {
     }
 }
 
-fun RepositoryHandler.configureSpaceRepository() {
+fun RepositoryHandler.configureSpaceEapRepository() {
     configureRepository(project) {
         username = "SPACE_USERNAME"
         password = "SPACE_PASSWORD"
         name = "space"
-        url = "https://maven.pkg.jetbrains.space/public/p/krpc/maven"
+        url = "https://maven.pkg.jetbrains.space/public/p/krpc/eap"
+    }
+}
+
+fun RepositoryHandler.configureSpaceGrpcRepository() {
+    configureRepository(project) {
+        username = "SPACE_USERNAME"
+        password = "SPACE_PASSWORD"
+        name = "grpc"
+        url = "https://maven.pkg.jetbrains.space/public/p/krpc/grpc"
     }
 }
 

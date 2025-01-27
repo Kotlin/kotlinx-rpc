@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.psi.KtAnnotationEntry
 
 object FirRpcDiagnostics {
     val MISSING_RPC_ANNOTATION by error0<KtAnnotationEntry>()
-    val MISSING_SERIALIZATION_MODULE by warning0<KtAnnotationEntry>()
+    val MISSING_SERIALIZATION_MODULE by error0<KtAnnotationEntry>()
     val WRONG_RPC_ANNOTATION_TARGET by error1<KtAnnotationEntry, ConeKotlinType>()
     val CHECKED_ANNOTATION_VIOLATION by error1<KtAnnotationEntry, ConeKotlinType>()
     val NON_SUSPENDING_REQUEST_WITHOUT_STREAMING_RETURN_TYPE by error0<PsiElement>()
