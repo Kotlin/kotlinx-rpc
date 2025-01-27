@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.fir.expressions.UnresolvedExpressionTypeAccess
 import org.jetbrains.kotlin.fir.extensions.predicate.DeclarationPredicate
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
-import org.jetbrains.kotlin.fir.resolve.toClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
@@ -37,9 +36,11 @@ fun FirBasedSymbol<*>.rpcAnnotation(session: FirSession, predicate: DeclarationP
 @OptIn(UnresolvedExpressionTypeAccess::class)
 fun List<FirAnnotation>.rpcAnnotation(session: FirSession, predicate: DeclarationPredicate): FirAnnotation? {
     return find {
-        it.coneTypeOrNull?.toClassLikeSymbol(session)?.let { declaration ->
-            session.predicateBasedProvider.matches(predicate, declaration)
-        } == true
+        vsApi {
+            it.coneTypeOrNull?.toClassSymbolVS(session)?.let { declaration ->
+                session.predicateBasedProvider.matches(predicate, declaration)
+            } == true
+        }
     }
 }
 
