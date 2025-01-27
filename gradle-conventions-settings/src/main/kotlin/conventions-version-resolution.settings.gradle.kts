@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 import java.io.BufferedReader
@@ -178,12 +178,16 @@ fun VersionCatalogBuilder.resolveLibraryVersion(versionCatalog: Map<String, Stri
         ?.let {
             when {
                 it.isBlank() -> ""
-                it == "SNAPSHOT" -> "-$it"
-                else -> "-eap-$it"
+                else -> "-$it"
             }
         } ?: ""
 
-    version(SettingsConventions.LIBRARY_CORE_VERSION_ALIAS, libraryCoreVersion + eapVersion)
+    val resultingVersion = when (eapVersion) {
+        "" -> libraryCoreVersion
+        else -> libraryCoreVersion.substringBefore('-') + eapVersion
+    }
+
+    version(SettingsConventions.LIBRARY_CORE_VERSION_ALIAS, resultingVersion)
 }
 
 fun String.kotlinVersionParsed(): KotlinVersion {
