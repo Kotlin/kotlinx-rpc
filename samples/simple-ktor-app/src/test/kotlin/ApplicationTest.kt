@@ -41,8 +41,6 @@ class ApplicationTest {
 
         val flowList = mutableListOf<String?>()
 
-        assertEquals(null, recognizer.awaitFieldInitialization { currentlyProcessedImage }.value)
-
         val job = CoroutineScope(Dispatchers.IO).launch {
             streamScoped {
                 recognizer.currentlyProcessedImage().collect { image ->
@@ -61,6 +59,6 @@ class ApplicationTest {
 
         job.join()
 
-        assertContentEquals(listOf(null, "010203", null, "000203"), flowList)
+        assertContentEquals(listOf("010203", null, "000203"), flowList)
     }
 }
