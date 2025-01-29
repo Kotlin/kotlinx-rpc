@@ -44,7 +44,7 @@ class AwesomeServiceImpl(
     }
     
     override suspend fun daysUntilStableRelese(): Int {
-        retuen if (parameters.stable) 0 else {
+        return if (parameters.stable) 0 else {
             parameters.daysUntilStable ?: error("Who says it will be stable?")
         }
     }
