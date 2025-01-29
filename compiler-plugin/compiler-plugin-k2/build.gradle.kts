@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
@@ -50,6 +50,15 @@ val shadowJar = tasks.named<ShadowJar>("shadowJar") {
     exclude("org/**")
 
     archiveFileName.set("plugin-k2-for-tests.jar")
+
+    /**
+     * Same problem as above, but in IDE
+     */
+    whenForIde {
+        archiveClassifier.set("for-ide")
+    } otherwise {
+        archiveClassifier.set("tests")
+    }
 }
 
 tasks.jar {
