@@ -159,7 +159,7 @@ Though possible, it is much more complicated way to use the library and generall
 `kotlinx.rpc` aims to provide support for the most common protocol integrations, as well as the in-house protocol called kRPC.
 
 ## gRPC integration
-The library provides experimental support for the [gRPC](https://grop.io) protocol.
+The library provides experimental support for the [gRPC](https://grpc.io) protocol.
 The artifacts are published separately in our [Space repository](https://public.jetbrains.space/p/krpc/packages/maven/grpc).
 Current latest version: 
 
