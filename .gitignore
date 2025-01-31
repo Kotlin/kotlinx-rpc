@@ -37,3 +37,6 @@ detekt/reports/**
 
 local.properties
 scan-journal.log
+
+monitor/.venv
+monitor/.idea
