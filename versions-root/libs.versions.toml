@@ -13,14 +13,14 @@ ktor = "3.0.3"
 kotlin-logging = "7.0.3"
 slf4j = "2.0.16"
 logback = "1.3.14"
-gradle-plugin-publish = "1.3.0"
-kotlin-wrappers = "2025.1.2"
+gradle-plugin-publish = "1.3.1"
+kotlin-wrappers = "2025.2.1"
 junit4 = "4.13.2"
 junit5 = "5.11.4"
 intellij = "233.13135.128"
 gradle-doctor = "0.10.0"
 kotlinx-browser = "0.3"
-shadow-jar = "9.0.0-beta4"
+shadow-jar = "9.0.0-beta6"
 
 # Stub versions – relpaced based on kotlin, mostly for gradle-related (plugins) dependencies
 #  but also for dependencies for compiler-specific modules.
