@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.codegen.test.services
@@ -22,12 +22,12 @@ private class RuntimeDependency(
     val name: String,
 ) {
     val filter = FilenameFilter { _, filename ->
-        filename.startsWith(name) && filename.endsWith(".jar")
+        filename.startsWith(name) && filename.endsWith(".jar") && !filename.contains("sources")
     }
 }
 
 private object RpcClasspathProvider {
-    private val TEST_RUNTIME = RuntimeDependency("build/libs/", "compiler-plugin-test")
+    private val TEST_RUNTIME = RuntimeDependency("build/libs/", "compiler-plugin-tests")
     private val KRPC_CORE_JVM = RuntimeDependency("$globalRootDir/krpc/krpc-core/build/libs/", "krpc-core-jvm")
     private val CORE_JVM = RuntimeDependency("$globalRootDir/core/build/libs/", "core-jvm")
     private val UTILS_JVM = RuntimeDependency("$globalRootDir/utils/build/libs/", "utils-jvm")

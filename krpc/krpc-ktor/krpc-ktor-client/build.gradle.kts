@@ -14,10 +14,6 @@ kotlin {
                 api(projects.krpc.krpcClient)
                 api(projects.krpc.krpcKtor.krpcKtorCore)
 
-                // KRPC-137 Remove temporary explicit dependencies in 2.1.10 and unmute compiler tests
-                implementation(projects.krpc.krpcCore)
-                implementation(projects.core)
-
                 api(libs.ktor.client.core)
                 api(libs.ktor.client.websockets)
 

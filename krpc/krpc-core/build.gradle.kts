@@ -20,9 +20,6 @@ kotlin {
                 api(projects.krpc.krpcSerialization.krpcSerializationCore)
                 implementation(projects.krpc.krpcLogging)
 
-                // KRPC-137 Remove temporary explicit dependencies in 2.1.10 and unmute compiler tests
-                implementation(projects.utils)
-
                 api(libs.coroutines.core)
                 implementation(libs.serialization.core)
                 implementation(libs.kotlin.reflect)

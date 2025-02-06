@@ -85,3 +85,23 @@ FILE: rpcChecked.kt
         R|kotlinx/rpc/descriptor/serviceDescriptorOf|<R|NotAService|>()
         R|kotlinx/rpc/descriptor/serviceDescriptorOf|<R|T|>()
     }
+    @R|kotlinx/rpc/annotations/Rpc|() public final annotation class Grpc : R|kotlin/Annotation| {
+        public constructor(): R|Grpc| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|Grpc|() public abstract interface MyGrpcService : R|kotlin/Any| {
+    }
+    @R|Grpc|() public final class WrongGrpcTarget : R|kotlin/Any| {
+        public constructor(): R|WrongGrpcTarget| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|kotlinx/rpc/annotations/Rpc|() public final class WrongRpcTarget : R|kotlin/Any| {
+        public constructor(): R|WrongRpcTarget| {
+            super<R|kotlin/Any|>()
+        }
+
+    }

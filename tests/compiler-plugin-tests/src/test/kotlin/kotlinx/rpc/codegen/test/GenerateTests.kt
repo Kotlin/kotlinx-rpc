@@ -4,19 +4,20 @@
 
 package kotlinx.rpc.codegen.test
 
+import kotlinx.rpc.codegen.test.runners.AbstractBoxTest
+import kotlinx.rpc.codegen.test.runners.AbstractDiagnosticTest
 import org.jetbrains.kotlin.generators.generateTestGroupSuiteWithJUnit5
 
 fun main() {
     generateTestGroupSuiteWithJUnit5 {
         testGroup(testDataRoot = "src/testData", testsRoot = "src/test-gen") {
-            // KRPC-137 Remove temporary explicit dependencies in 2.1.10 and unmute compiler tests
-//            testClass<AbstractDiagnosticTest> {
-//                model("diagnostics")
-//            }
+            testClass<AbstractDiagnosticTest> {
+                model("diagnostics")
+            }
 
-//            testClass<AbstractBoxTest> {
-//                model("box")
-//            }
+            testClass<AbstractBoxTest> {
+                model("box")
+            }
         }
     }
 }

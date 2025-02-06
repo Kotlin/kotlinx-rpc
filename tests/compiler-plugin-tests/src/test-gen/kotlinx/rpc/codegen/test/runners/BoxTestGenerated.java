@@ -10,8 +10,6 @@ import com.intellij.testFramework.TestDataPath;
 import org.jetbrains.kotlin.test.util.KtTestUtil;
 import org.jetbrains.kotlin.test.TargetBackend;
 import org.jetbrains.kotlin.test.TestMetadata;
-import org.junit.Ignore;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -21,7 +19,6 @@ import java.util.regex.Pattern;
 @SuppressWarnings("all")
 @TestMetadata("src/testData/box")
 @TestDataPath("$PROJECT_ROOT")
-@Disabled("KRPC-137")
 public class BoxTestGenerated extends AbstractBoxTest {
   @Test
   public void testAllFilesPresentInBox() {
