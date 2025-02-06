@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.internal
@@ -13,8 +13,12 @@ private const val RPC_SERVICE_STUB_SIMPLE_NAME = "\$rpcServiceStub"
 internal actual fun <@Rpc T : Any> internalServiceDescriptorOf(kClass: KClass<T>): Any? {
     val className = "${kClass.qualifiedName}\$$RPC_SERVICE_STUB_SIMPLE_NAME"
 
-    return kClass.java.classLoader
-        .loadClass(className)
-        ?.kotlin
-        ?.companionObjectInstance
+    return try {
+        return kClass.java.classLoader
+            .loadClass(className)
+            ?.kotlin
+            ?.companionObjectInstance
+    } catch (_: ClassNotFoundException) {
+        null
+    }
 }
