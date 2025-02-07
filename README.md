@@ -26,7 +26,7 @@ import kotlinx.rpc.annotations.Rpc
 interface AwesomeService : RemoteService {
     suspend fun getNews(city: String): Flow<String>
     
-    suspend fun daysUntilStableRelese(): Int
+    suspend fun daysUntilStableRelease(): Int
 }
 ```
 In your server code define how to respond by simply implementing the service:
@@ -43,7 +43,7 @@ class AwesomeServiceImpl(
         }
     }
     
-    override suspend fun daysUntilStableRelese(): Int {
+    override suspend fun daysUntilStableRelease(): Int {
         return if (parameters.stable) 0 else {
             parameters.daysUntilStable ?: error("Who says it will be stable?")
         }
@@ -88,7 +88,7 @@ val rpcClient = HttpClient { installKrpc() }.rpc {
 
 val service = rpcClient.withService<AwesomeService>()
 
-service.daysUntilStableRelese()
+service.daysUntilStableRelease()
 
 streamScoped {
     service.getNews("KotlinBurg").collect { article ->
@@ -114,8 +114,8 @@ that will set up code generation in a project.
 Example of a setup in a project's `build.gradle.kts`:
 ```kotlin
 plugins {
-    kotlin("multiplatform") version "2.1.0"
-    kotlin("plugin.serialization") version "2.1.0"
+    kotlin("multiplatform") version "2.1.10"
+    kotlin("plugin.serialization") version "2.1.10"
     id("org.jetbrains.kotlinx.rpc.plugin") version "0.5.0"
 }
 ```
@@ -176,7 +176,8 @@ For a working example, see the [sample gRPC project](/samples/grpc-app).
 
 ## Kotlin compatibility
 We support all stable Kotlin versions starting from 2.0.0:
-- 2.0.0, 2.0.10, 2.0.20, 2.0.21, 2.1.0
+- 2.0.0, 2.0.10, 2.0.20, 2.0.21
+- 2.1.0, 2.1.10
 
 For a full compatibility checklist, 
 see [Versions](https://kotlin.github.io/kotlinx-rpc/versions.html).
