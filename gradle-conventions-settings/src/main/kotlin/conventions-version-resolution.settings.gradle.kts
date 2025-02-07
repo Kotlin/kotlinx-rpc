@@ -157,6 +157,7 @@ fun VersionCatalogBuilder.resolveKotlinVersion(versionCatalog: Map<String, Strin
     }
 
     if (kotlinCompilerVersion != null) {
+        logger.info("Resolved Kotlin compiler version: $kotlinCompilerVersion")
         version(SettingsConventions.KOTLIN_COMPILER_VERSION_ALIAS, kotlinCompilerVersion)
     } else {
         version(SettingsConventions.KOTLIN_COMPILER_VERSION_ALIAS, kotlinCatalogVersion!!)

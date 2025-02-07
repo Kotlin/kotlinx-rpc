@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
@@ -22,13 +22,14 @@ configureNpm()
 configureApiValidation()
 
 val kotlinVersion = rootProject.libs.versions.kotlin.lang.get()
+val kotlinCompiler = rootProject.libs.versions.kotlin.compiler.get()
 
 allprojects {
     group = "org.jetbrains.kotlinx"
     version = rootProject.libs.versions.kotlinx.rpc.get()
 }
 
-println("kotlinx.rpc project version: $version, Kotlin version: $kotlinVersion")
+println("[Core] kotlinx.rpc project version: $version, Kotlin version: $kotlinVersion, Compiler: $kotlinCompiler")
 
 // If the prefix of the kPRC version is not Kotlin gradle plugin version – you have a problem :)
 // Probably some dependency brings kotlin with the later version.
