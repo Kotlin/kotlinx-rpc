@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="IDE Plugin" id="ide-plugin">
+
+    <p>
+        Library uses a Kotlin compiler plugin to generate declarations.
+        To make this work in Intellij-based IDEs,
+        we provide <a href="https://plugins.jetbrains.com/plugin/26480-kotlin-external-fir-support?noRedirect=true">Kotlin External FIR Support</a> plugin.
+    </p>
+    <p>
+        No additional steps to configure the plugin are required.
+    </p>
+    <p>
+        If you encounter other unexpected limitations or bugs,
+        please <a href="https://github.com/Mr3zee/kotlin-plugins/issues">report</a> them
+    </p>
+    <note>
+        Please note, that the plugin is based on <b>experimental</b> IDE functionality,
+        which means that only newer IDE versions are supported.
+        For full compatibility guides, see the plugin page on the
+        <a href="https://plugins.jetbrains.com/plugin/26480-kotlin-external-fir-support?noRedirect=true">Marketplace</a>.
+    </note>
+</topic>

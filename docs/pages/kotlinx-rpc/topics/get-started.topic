@@ -41,6 +41,16 @@
             including but not limited to <a href="https://grpc.io">gRPC</a>.
         </p>
     </chapter>
+    <chapter title="IDE Plugin" id="install-ide-plugin">
+        <p>
+            Library uses a Kotlin compiler plugin to generate declarations.
+            To make this work in Intellij-based IDEs,
+            we provide <a href="https://plugins.jetbrains.com/plugin/26480-kotlin-external-fir-support?noRedirect=true">Kotlin External FIR Support</a> plugin.
+        </p>
+        <p>
+            To learn more, see <a href="ide-plugin.topic"/> page
+        </p>
+    </chapter>
     <chapter title="Installation" id="installation">
         <p>Before adding <code>kotlinx.rpc</code> dependencies, you need to configure your project with <a
                 href="https://docs.gradle.org/current/userguide/userguide.html">Gradle</a>.
