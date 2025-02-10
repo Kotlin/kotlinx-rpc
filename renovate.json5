@@ -111,5 +111,22 @@
       "matchCurrentVersion": "0.0.0",
       "enabled": false,
     },
+    {
+      "description": "Update Python Monitor Dependencies",
+      "matchUpdateTypes": [
+        "patch",
+        "minor",
+        "major",
+      ],
+      "matchPackageNames": [
+        "*",
+      ],
+      matchFileNames: [
+        "monitor/**",
+      ],
+      "groupName": "Python Monitor Dependencies",
+      "groupSlug": "python-monitor-deps",
+      "automerge": true,
+    }
   ]
 }
