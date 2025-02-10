@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 rootProject.name = "kotlinx-rpc"
@@ -59,6 +59,11 @@ includePublic(":krpc:krpc-ktor:krpc-ktor-server")
 includePublic(":krpc:krpc-ktor:krpc-ktor-client")
 
 include(":tests")
-include(":tests:compiler-plugin-tests")
+
+val kotlinMasterBuild = providers.gradleProperty("kotlinx.rpc.kotlinMasterBuild").orNull == "true"
+
+if (!kotlinMasterBuild) {
+    include(":tests:compiler-plugin-tests")
+}
 
 include(":jpms-check")
