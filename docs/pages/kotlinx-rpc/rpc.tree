@@ -11,6 +11,7 @@
                  start-page="get-started.topic">
 
     <toc-element topic="get-started.topic"/>
+    <toc-element topic="ide-plugin.topic"/>
     <toc-element topic="plugins.topic"/>
     <toc-element toc-title="Core concepts">
         <toc-element topic="services.topic"/>

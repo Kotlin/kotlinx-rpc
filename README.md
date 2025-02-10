@@ -101,7 +101,12 @@ Check out our [getting started guide](https://kotlin.github.io/kotlinx-rpc) for 
 
 ## Configure the project
 
-### Plugin dependencies
+### Plugin for IntelliJ-based IDEs
+
+To ensure that all IDE features of our compiler plugin work properly on IntelliJ-based IDEs, install the
+[Kotlin External FIR Support](https://plugins.jetbrains.com/plugin/26480-kotlin-external-fir-support?noRedirect=true) plugin.
+
+### Gradle plugins
 
 `kotlinx.rpc` provides Gradle plugin `org.jetbrains.kotlinx.rpc.plugin` 
 that will set up code generation in a project.

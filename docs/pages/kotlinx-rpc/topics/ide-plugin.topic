@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="IDE Plugin" id="ide-plugin">
+
+    <p>
+        The <code>kotlinx.rpc</code> library uses an external Kotlin compiler plugin to generate declarations.
+        To ensure compatibility with IntelliJ-based IDEs, we provide the
+        <a href="https://plugins.jetbrains.com/plugin/26480-kotlin-external-fir-support?noRedirect=true">
+            Kotlin External FIR Support
+        </a>
+        plugin.
+    </p>
+    <chapter title="Supported versions" id="supported-versions">
+        <p>
+            The plugin is based on experimental IDE functionality,
+            which means that only newer IDE versions are supported.
+            For full compatibility guidelines, refer to the
+            <a href="https://plugins.jetbrains.com/plugin/26480-kotlin-external-fir-support?noRedirect=true">
+                the plugin documentation on the JetBrains Marketplace
+            </a>
+            .
+        </p>
+    </chapter>
+    <chapter title="Configuration" id="config">
+        <p>
+            No additional configuration is required. The plugin works automatically upon installation.
+        </p>
+    </chapter>
+    <chapter title="Limitations" id="limitations">
+        <p>
+            There are currently no known limitations when using the plugin on supported IDE versions.
+        </p>
+        <p>
+            If you encounter issues, unexpected limitations, or bugs,
+            please report them by creating a new issue on
+            <a href="https://github.com/Mr3zee/kotlin-plugins/issues">
+                GitHub
+            </a>
+            .
+        </p>
+    </chapter>
+
+</topic>
