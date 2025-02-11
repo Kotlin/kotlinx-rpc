@@ -1,5 +1,32 @@
+# 0.5.1
+> Published 12 February 2025
+
+### Features 🎉
+* 2.1.10 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/271
+
+### Documentation 📗
+* Fix typo in README.md by @SebastianAigner in https://github.com/Kotlin/kotlinx-rpc/pull/266
+* Added IDE plugin docs by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/273
+
+### Infra 🚧
+* Update for IDE configs by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/272
+* Added python deps automerge by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/276
+
+### Other Changes 🧹
+* Update README.md by @pambrose in https://github.com/Kotlin/kotlinx-rpc/pull/268
+* Added monitor app for deps publication by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/265
+* Fix kotlin master by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/274
+* Fix println tests by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/277
+* Update Python Monitor Dependencies by @renovate in https://github.com/Kotlin/kotlinx-rpc/pull/278
+
+## New Contributors
+* @SebastianAigner made their first contribution in https://github.com/Kotlin/kotlinx-rpc/pull/266
+* @pambrose made their first contribution in https://github.com/Kotlin/kotlinx-rpc/pull/268
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.5.0...0.5.1
+
 # 0.5.0
-> Published 27 January 2024
+> Published 27 January 2025
 
 ### Features 🎉
 * Update Service Descriptors Generation by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/227
