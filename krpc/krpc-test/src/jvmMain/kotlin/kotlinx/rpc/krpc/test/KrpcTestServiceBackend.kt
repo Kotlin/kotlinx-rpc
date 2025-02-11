@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.test
@@ -12,6 +12,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resumeWithException
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -20,9 +21,7 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
         const val SHARED_FLOW_REPLAY = 5
     }
 
-    override suspend fun empty() {
-        println("empty")
-    }
+    override suspend fun empty() {}
 
     override suspend fun returnType(): String {
         return "test"
@@ -41,28 +40,36 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
     }
 
     override suspend fun paramsSingle(arg1: String) {
-        println("SINGLE: $arg1")
+        assertEquals("test", arg1)
     }
 
     override suspend fun paramsDouble(arg1: String, arg2: String) {
-        println("double $arg1 $arg2")
+        assertEquals("test", arg1)
+        assertEquals("test2", arg2)
     }
 
     override suspend fun varargParams(arg1: String, vararg arg2: String) {
-        println("vararg $arg1 ${arg2.joinToString()}")
+        assertEquals("test", arg1)
+        assertEquals("test2", arg2[0])
+        assertEquals("test3", arg2[1])
+        assertEquals(emptyList(), arg2.drop(2))
     }
 
     override suspend fun genericParams(arg1: List<String>) {
-        println("Received list: ${arg1.joinToString()}")
+        assertEquals(listOf("test", "test2", "test3"), arg1)
     }
 
     override suspend fun doubleGenericParams(arg1: List<List<String>>) {
-        println("Received list of lists: ${arg1.joinToString { it.joinToString() }} }}")
+        assertContentEquals(listOf(listOf("test", "test2", "test3")), arg1)
     }
 
     @Suppress("detekt.MaxLineLength")
     override suspend fun mapParams(arg1: Map<String, Map<Int, List<String>>>) {
-        println("Received map: ${arg1.entries.joinToString { "${it.key} -> ${it.value.entries.joinToString { (key, value) -> "$key -> ${value.joinToString()}" }}" }}")
+        assertEquals(arg1.size, 1)
+        assertContentEquals(arg1.keys, listOf("key"))
+        assertEquals(arg1["key"]?.size, 1)
+        assertContentEquals(arg1["key"]?.keys, listOf(1))
+        assertContentEquals(arg1["key"]?.get(1), listOf("test", "test2", "test3"))
     }
 
     override suspend fun customType(arg1: TestClass): TestClass {
@@ -70,7 +77,6 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
     }
 
     override suspend fun nullable(arg1: String?): TestClass? {
-        println("nullable $arg1")
         return if (arg1 == null) null else TestClass()
     }
 
@@ -78,7 +84,8 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
         arg2: TestList<in TestClass>,
         arg3: TestList2<*>
     ): TestList<out TestClass> {
-        println("variance: $arg2 $arg3")
+        assertEquals(arg2.value, 42)
+        assertEquals(arg3.value, 42)
         return TestList(3)
     }
 
@@ -98,7 +105,7 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
     override suspend fun incomingStreamAsyncCollect(arg1: Flow<String>): Int {
         @Suppress("detekt.GlobalCoroutineUsage")
         GlobalScope.launch {
-            arg1.collect { println("incomingStreamAsyncCollect item $it") }
+            assertContentEquals(listOf("test1", "test2", "test3"), arg1.toList())
         }
         return 5
     }
@@ -144,13 +151,13 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
     }
 
     override suspend fun streamInDataClassWithStream(payloadWithPayload: PayloadWithPayload): Int {
-        payloadWithPayload.collectAndPrint()
+        assertContentEquals(KrpcTransportTestBase.expectedPayloadWithPayload(10), payloadWithPayload.collect())
         return 5
     }
 
     override suspend fun streamInStreamWithStream(payloadWithPayload: Flow<PayloadWithPayload>): Int {
-        payloadWithPayload.collect {
-            it.collectAndPrint()
+        payloadWithPayload.collectIndexed { index, it ->
+            assertContentEquals(KrpcTransportTestBase.expectedPayloadWithPayload(index), it.collect())
         }
         return 5
     }
@@ -228,7 +235,6 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
     }
 
     override suspend fun answerToAnything(arg: String): Int {
-        println("Return 42")
         return 42
     }
 
@@ -276,9 +282,7 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
 
         launch {
             assertEquals(listOf(0, 1, 2, 3, 4), sharedFlow.take(5).toList())
-            println("hello 1")
             state.emit(1)
-            println("hello 2")
         }
 
         return state

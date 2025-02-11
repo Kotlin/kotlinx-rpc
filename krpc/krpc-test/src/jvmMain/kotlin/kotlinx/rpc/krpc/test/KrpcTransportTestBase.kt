@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:Suppress("FunctionName")
@@ -244,6 +244,16 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
+    fun incomingStreamAsyncCollect() {
+        val result = runBlocking {
+            streamScoped {
+                client.incomingStreamAsyncCollect(flowOf("test1", "test2", "test3"))
+            }
+        }
+        assertEquals(5, result)
+    }
+
+    @Test
     fun outgoingStream() {
         runBlocking {
             streamScoped {
@@ -349,7 +359,7 @@ abstract class KrpcTransportTestBase {
     fun returnPayloadWithPayload() {
         runBlocking {
             streamScoped {
-                client.returnPayloadWithPayload().collectAndPrint()
+                assertContentEquals(expectedPayloadWithPayload(10), client.returnPayloadWithPayload().collect())
             }
         }
     }
@@ -358,8 +368,8 @@ abstract class KrpcTransportTestBase {
     fun returnFlowPayloadWithPayload() {
         runBlocking {
             streamScoped {
-                client.returnFlowPayloadWithPayload().collect {
-                    it.collectAndPrint()
+                client.returnFlowPayloadWithPayload().collectIndexed { index, payloadWithPayload ->
+                    assertContentEquals(expectedPayloadWithPayload(index), payloadWithPayload.collect())
                 }
             }
         }
@@ -377,9 +387,11 @@ abstract class KrpcTransportTestBase {
                     },
                 )
 
-                result.collect {
-                    it.collectAndPrint()
-                }
+                val all = result.toList().onEach {
+                    assertContentEquals(expectedPayloadWithPayload(10), it.collect())
+                }.size
+
+                assertEquals(5, all)
             }
         }
     }
@@ -667,10 +679,8 @@ abstract class KrpcTransportTestBase {
         runBlocking {
             streamScoped {
                 val flow = sharedFlowOfT { it }
-                println("hello 1.1")
 
                 val state = client.sharedFlowInFunction(flow)
-                println("hello 1.2")
 
                 assertEquals(1, state.first { it == 1 })
             }
@@ -701,5 +711,9 @@ abstract class KrpcTransportTestBase {
                 assertEquals(-1, stateFlowOfFlowsOfFlowsOfInts.value.value.value)
             }
         }
+    }
+
+    companion object {
+        fun expectedPayloadWithPayload(size: Int) = List(size) { listOf("a$it", "b$it", "c$it") }
     }
 }
