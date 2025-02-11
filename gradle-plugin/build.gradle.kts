@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
@@ -20,6 +20,7 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.protobuf.gradle.plugin)
     compileOnly(libs.kotlin.gradle.plugin)
 }
 
@@ -46,18 +47,28 @@ gradlePlugin {
 }
 
 abstract class GeneratePluginVersionTask @Inject constructor(
-    @get:Input val pluginVersion: String,
+    @get:Input val libraryVersion: String,
+    @get:Input val protobufVersion: String,
+    @get:Input val grpcVersion: String,
+    @get:Input val grpcKotlinVersion: String,
     @get:OutputDirectory val sourcesDir: File
 ) : DefaultTask() {
     @TaskAction
     fun generate() {
-        val sourceFile = File(sourcesDir, "PluginVersion.kt")
+        val sourceFile = File(sourcesDir, "Versions.kt")
 
         sourceFile.writeText(
             """
             package kotlinx.rpc
 
-            const val PLUGIN_VERSION = "$pluginVersion"
+            const val LIBRARY_VERSION = "$libraryVersion"
+
+            @Deprecated("Use kotlinx.rpc.LIBRARY_VERSION instead", ReplaceWith("kotlinx.rpc.LIBRARY_VERSION"))
+            const val PLUGIN_VERSION = LIBRARY_VERSION
+
+            const val PROTOBUF_VERSION = "$protobufVersion"
+            const val GRPC_VERSION = "$grpcVersion"
+            const val GRPC_KOTLIN_VERSION = "$grpcKotlinVersion"
             
             """.trimIndent()
         )
@@ -66,8 +77,14 @@ abstract class GeneratePluginVersionTask @Inject constructor(
 
 val sourcesDir = File(project.layout.buildDirectory.asFile.get(), "generated-sources/pluginVersion")
 
-val generatePluginVersionTask =
-    tasks.register<GeneratePluginVersionTask>("generatePluginVersion", version.toString(), sourcesDir)
+val generatePluginVersionTask = tasks.register<GeneratePluginVersionTask>(
+    "generatePluginVersion",
+    version.toString(),
+    libs.versions.protobuf.asProvider().get().toString(),
+    libs.versions.grpc.asProvider().get().toString(),
+    libs.versions.grpc.kotlin.get().toString(),
+    sourcesDir,
+)
 
 kotlin {
     sourceSets {

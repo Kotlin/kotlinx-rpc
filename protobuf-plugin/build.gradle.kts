@@ -67,36 +67,17 @@ tasks.jar {
 
 val buildDirPath: String = project.layout.buildDirectory.get().asFile.absolutePath
 
-protobuf {
-    protoc {
-        artifact = libs.protoc.get().toString()
-    }
+rpc {
+    grpc {
+        enabled = true
 
-    plugins {
-        create("kotlinx-rpc") {
-            path = "$buildDirPath/libs/protobuf-plugin-$version-all.jar"
-        }
-
-        create("grpc") {
-            artifact = libs.grpc.protoc.gen.java.get().toString()
-        }
-
-        create("grpckt") {
-            artifact = libs.grpc.protoc.gen.kotlin.get().toString() + ":jdk8@jar"
-        }
-    }
-
-    generateProtoTasks {
-        all().matching { it.isTest }.all {
-            plugins {
-                create("kotlinx-rpc") {
-                    option("debugOutput=$buildDirPath/protobuf-plugin.log")
-                    option("messageMode=interface")
-                }
-                create("grpc")
-                create("grpckt")
+        plugin {
+            locator {
+                path = "$buildDirPath/libs/protobuf-plugin-$version-all.jar"
             }
+        }
 
+        tasksMatching { it.isTest }.all {
             dependsOn(tasks.jar)
         }
     }
