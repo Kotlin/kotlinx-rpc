@@ -31,6 +31,7 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 dependencies {
+    implementation(libs.protobuf.gradle.plugin)
     compileOnly(libs.kotlin.gradle.plugin)
 }
 
@@ -60,9 +61,15 @@ generateSource(
     name = "Versions",
     text = """
         package kotlinx.rpc
-    
-        public const val PLUGIN_VERSION: String = "$version"
-        
+
+        public const val LIBRARY_VERSION: String = "$version"
+
+        @Deprecated("Use kotlinx.rpc.LIBRARY_VERSION instead", ReplaceWith("kotlinx.rpc.LIBRARY_VERSION"))
+        public const val PLUGIN_VERSION: String = LIBRARY_VERSION
+
+        public const val PROTOBUF_VERSION: String = "${libs.versions.protobuf.asProvider().get()}"
+        public const val GRPC_VERSION: String = "${libs.versions.grpc.asProvider().get()}"
+        public const val GRPC_KOTLIN_VERSION: String = "${libs.versions.grpc.kotlin.get()}"
     """.trimIndent(),
     chooseSourceSet = { main }
 )

@@ -7,12 +7,16 @@
 package kotlinx.rpc
 
 import org.gradle.api.Action
+import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.kotlin.dsl.findByType
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.property
 import javax.inject.Inject
+
+public fun Project.rpcExtension(): RpcExtension = extensions.findByType<RpcExtension>() ?: RpcExtension(objects)
 
 public open class RpcExtension @Inject constructor(objects: ObjectFactory) {
     /**
@@ -36,6 +40,18 @@ public open class RpcExtension @Inject constructor(objects: ObjectFactory) {
     @Deprecated("Strict mode enabled irreversibly. This option can't change it.", level = DeprecationLevel.ERROR)
     public fun strict(configure: Action<RpcStrictModeExtension>) {
         configure.execute(strict)
+    }
+
+    /**
+     * Grpc settings.
+     */
+    public val grpc: GrpcExtension = objects.newInstance<GrpcExtension>()
+
+    /**
+     * Grpc settings.
+     */
+    public fun grpc(configure: Action<GrpcExtension>) {
+        configure.execute(grpc)
     }
 }
 
