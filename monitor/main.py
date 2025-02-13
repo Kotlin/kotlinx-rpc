@@ -18,6 +18,7 @@ def read_publications(version, path):
     files = [[x[0], list(filter(lambda file: file.endswith(".pom"), x[2]))[0]] for x in os.walk(path) if
              version in x[0]]
     paths = list(map(lambda tpl: Path(f"{tpl[0].removeprefix(path)}/{tpl[1]}"), files))
+    paths.sort(key=lambda path: path.base)
     return paths
 
 
@@ -121,17 +122,21 @@ class MonitoringApp(App):
         url = f"{REPO_URL}/{path.full}"
         async with httpx.AsyncClient() as client:
             response = await client.get(url)
-            if response.status_code == 200:
-                weather_widget = self.query_one(f"#{path.calculated_id}", Static)
-                weather_widget.add_class("found")
-                if self.hidden:
-                    weather_widget.add_class("hidden")
-                weather_widget.update(f"{path.base} - UPLOADED")
-                await self.lock.acquire()
-                self.progress += 1
-                self.query_one("#progress-bar", ProgressBar).update(progress=self.progress)
-                self.lock.release()
-            else:
+            try:
+                if response.status_code == 200:
+                    weather_widget = self.query_one(f"#{path.calculated_id}", Static)
+                    weather_widget.add_class("found")
+                    if self.hidden:
+                        weather_widget.add_class("hidden")
+                    weather_widget.update(f"{path.base} - UPLOADED")
+                    await self.lock.acquire()
+                    self.progress += 1
+                    self.query_one("#progress-bar", ProgressBar).update(progress=self.progress)
+                    self.lock.release()
+                else:
+                    await asyncio.sleep(1)
+                    await self.update_weather(path)
+            except:
                 await asyncio.sleep(1)
                 await self.update_weather(path)
 
