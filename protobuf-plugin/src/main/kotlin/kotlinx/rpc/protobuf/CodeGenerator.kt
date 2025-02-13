@@ -255,13 +255,14 @@ class FileGenerator(
     codeGenerationParameters: CodeGenerationParameters,
     var filename: String? = null,
     var packageName: String? = null,
+    var packagePath: String? = packageName,
     var fileOptIns: List<String> = emptyList(),
     logger: Logger = NOPLogger.NOP_LOGGER,
 ) : CodeGenerator(codeGenerationParameters, "", logger = logger) {
     private val imports = mutableListOf<String>()
 
     fun importPackage(name: String) {
-        if (name != packageName) {
+        if (name != packageName && name.isNotEmpty()) {
             imports.add("$name.*")
         }
     }
@@ -304,4 +305,5 @@ fun file(
     packageName: String? = null,
     logger: Logger = NOPLogger.NOP_LOGGER,
     block: FileGenerator.() -> Unit,
-): FileGenerator = FileGenerator(codeGenerationParameters, name, packageName, emptyList(), logger).apply(block)
+): FileGenerator = FileGenerator(codeGenerationParameters, name, packageName, packageName, emptyList(), logger)
+    .apply(block)
