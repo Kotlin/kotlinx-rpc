@@ -16,7 +16,7 @@ group = "org.jetbrains.kotlinx"
 version = rootProject.libs.versions.kotlinx.rpc.get()
 
 kotlin {
-    explicitApi = ExplicitApiMode.Disabled
+    explicitApi = ExplicitApiMode.Strict
 }
 
 dependencies {
@@ -61,14 +61,14 @@ abstract class GeneratePluginVersionTask @Inject constructor(
             """
             package kotlinx.rpc
 
-            const val LIBRARY_VERSION = "$libraryVersion"
+            public const val LIBRARY_VERSION: String = "$libraryVersion"
 
             @Deprecated("Use kotlinx.rpc.LIBRARY_VERSION instead", ReplaceWith("kotlinx.rpc.LIBRARY_VERSION"))
-            const val PLUGIN_VERSION = LIBRARY_VERSION
+            public const val PLUGIN_VERSION: String = LIBRARY_VERSION
 
-            const val PROTOBUF_VERSION = "$protobufVersion"
-            const val GRPC_VERSION = "$grpcVersion"
-            const val GRPC_KOTLIN_VERSION = "$grpcKotlinVersion"
+            public const val PROTOBUF_VERSION: String = "$protobufVersion"
+            public const val GRPC_VERSION: String = "$grpcVersion"
+            public const val GRPC_KOTLIN_VERSION: String = "$grpcKotlinVersion"
             
             """.trimIndent()
         )
