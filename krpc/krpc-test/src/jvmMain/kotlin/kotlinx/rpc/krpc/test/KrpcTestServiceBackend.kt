@@ -21,6 +21,7 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
         const val SHARED_FLOW_REPLAY = 5
     }
 
+    @Suppress("detekt.EmptyFunctionBlock")
     override suspend fun empty() {}
 
     override suspend fun returnType(): String {
@@ -156,8 +157,8 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
     }
 
     override suspend fun streamInStreamWithStream(payloadWithPayload: Flow<PayloadWithPayload>): Int {
-        payloadWithPayload.collectIndexed { index, it ->
-            assertContentEquals(KrpcTransportTestBase.expectedPayloadWithPayload(index), it.collect())
+        payloadWithPayload.collectIndexed { index, payload ->
+            assertContentEquals(KrpcTransportTestBase.expectedPayloadWithPayload(index), payload.collect())
         }
         return 5
     }

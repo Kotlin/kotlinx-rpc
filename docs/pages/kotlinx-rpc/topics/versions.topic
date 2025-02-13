@@ -21,7 +21,8 @@
             the following versions of Kotlin are supported:
         </p>
         <list>
-            <li>2.0.0, 2.0.10, 2.0.20, 2.0.21, 2.1.0</li>
+            <li>2.0.0, 2.0.10, 2.0.20, 2.0.21</li>
+            <li>2.1.0, 2.1.10</li>
         </list>
         <p>
             Our code generation will support these versions (See more on <a anchor="code-generation-artifacts">code generation artifacts</a>).
