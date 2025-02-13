@@ -262,7 +262,7 @@ class FileGenerator(
     private val imports = mutableListOf<String>()
 
     fun importPackage(name: String) {
-        if (name != packageName && name.isNotEmpty()) {
+        if (name != packageName && name.isNotBlank()) {
             imports.add("$name.*")
         }
     }
