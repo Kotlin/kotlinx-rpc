@@ -19,6 +19,7 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.protobuf.gradle.plugin)
     compileOnly(libs.kotlin.gradle.plugin)
 }
 
@@ -45,7 +46,10 @@ gradlePlugin {
 }
 
 abstract class GeneratePluginVersionTask @Inject constructor(
-    @get:Input val pluginVersion: String,
+    @get:Input val libraryVersion: String,
+    @get:Input val protobufVersion: String,
+    @get:Input val grpcVersion: String,
+    @get:Input val grpcKotlinVersion: String,
     @get:OutputDirectory val sourcesDir: File
 ) : DefaultTask() {
     @TaskAction
@@ -56,7 +60,14 @@ abstract class GeneratePluginVersionTask @Inject constructor(
             """
             package kotlinx.rpc
 
-            public const val PLUGIN_VERSION: String = "$pluginVersion"
+            public const val LIBRARY_VERSION: String = "$libraryVersion"
+
+            @Deprecated("Use kotlinx.rpc.LIBRARY_VERSION instead", ReplaceWith("kotlinx.rpc.LIBRARY_VERSION"))
+            public const val PLUGIN_VERSION: String = LIBRARY_VERSION
+
+            public const val PROTOBUF_VERSION: String = "$protobufVersion"
+            public const val GRPC_VERSION: String = "$grpcVersion"
+            public const val GRPC_KOTLIN_VERSION: String = "$grpcKotlinVersion"
             
             """.trimIndent()
         )
@@ -65,8 +76,14 @@ abstract class GeneratePluginVersionTask @Inject constructor(
 
 val sourcesDir = File(project.layout.buildDirectory.asFile.get(), "generated-sources/pluginVersion")
 
-val generatePluginVersionTask =
-    tasks.register<GeneratePluginVersionTask>("generatePluginVersion", version.toString(), sourcesDir)
+val generatePluginVersionTask = tasks.register<GeneratePluginVersionTask>(
+    "generatePluginVersion",
+    version.toString(),
+    libs.versions.protobuf.asProvider().get().toString(),
+    libs.versions.grpc.asProvider().get().toString(),
+    libs.versions.grpc.kotlin.get().toString(),
+    sourcesDir,
+)
 
 kotlin {
     sourceSets {
