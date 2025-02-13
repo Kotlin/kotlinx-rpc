@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc
@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
-class KotlinCompilerPluginBuilder {
+internal class KotlinCompilerPluginBuilder {
     var applicable : (kotlinCompilation: KotlinCompilation<*>) -> Boolean = { true }
     var applyToCompilation: (kotlinCompilation: KotlinCompilation<*>) -> Provider<List<SubpluginOption>> = {
         it.target.project.provider { emptyList() }
@@ -64,6 +64,6 @@ class KotlinCompilerPluginBuilder {
     }
 }
 
-fun compilerPlugin(builder: KotlinCompilerPluginBuilder.() -> Unit = {}): KotlinCompilerPluginSupportPlugin {
+internal fun compilerPlugin(builder: KotlinCompilerPluginBuilder.() -> Unit = {}): KotlinCompilerPluginSupportPlugin {
     return KotlinCompilerPluginBuilder().apply(builder).build()
 }
