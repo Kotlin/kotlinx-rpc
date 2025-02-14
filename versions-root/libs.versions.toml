@@ -39,6 +39,9 @@ kover = "0.9.1"
 # kotlinx.rpc – references to the included builds
 # as they're local to the project, kotlinx-rpc- prefix is omitted
 compiler-plugin-cli = { module = "org.jetbrains.kotlinx:compiler-plugin-cli" }
+compiler-plugin-k2 = { module = "org.jetbrains.kotlinx:compiler-plugin-k2" }
+compiler-plugin-backend = { module = "org.jetbrains.kotlinx:compiler-plugin-backend" }
+compiler-plugin-common = { module = "org.jetbrains.kotlinx:compiler-plugin-common" }
 
 # kotlin
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin-lang" }

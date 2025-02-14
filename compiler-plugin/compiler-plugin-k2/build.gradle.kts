@@ -72,13 +72,13 @@ kotlin {
 }
 
 dependencies {
-    compileOnly(libs.kotlin.reflect)
-    compileOnly(libs.kotlin.compiler.embeddable)
     whenForIde {
+        compileOnly(libs.kotlin.compiler)
         compileOnly(libs.serialization.plugin.forIde) {
             isTransitive = false
         }
     } otherwise {
+        compileOnly(libs.kotlin.compiler.embeddable)
         compileOnly(libs.serialization.plugin)
     }
     implementation(projects.compilerPluginCommon)
