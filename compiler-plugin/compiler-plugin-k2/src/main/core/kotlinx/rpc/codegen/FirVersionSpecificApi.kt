@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.codegen
@@ -25,13 +25,6 @@ interface FirVersionSpecificApi {
     var FirResolvedTypeRefBuilder.coneTypeVS: ConeKotlinType
 }
 
-val vsApiClass by lazy {
-    runCatching {
-        Class.forName("kotlinx.rpc.codegen.FirVersionSpecificApiImpl")
-    }.getOrNull()
-}
-
 inline fun <T> vsApi(body: FirVersionSpecificApi.() -> T): T {
-    val kClass = vsApiClass?.kotlin ?: error("FirVersionSpecificApi is not present")
-    return (kClass.objectInstance as FirVersionSpecificApi).body()
+    return FirVersionSpecificApiImpl.body()
 }

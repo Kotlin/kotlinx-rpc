@@ -146,9 +146,9 @@ fun resolveVersionCatalog(rootDir: Path): Map<String, String> {
 
 // Uses KOTLIN_VERSION env var if present for project's Kotlin version and sets it into Version Catalog.
 // Otherwise uses version from catalog.
-fun VersionCatalogBuilder.resolveKotlinVersion(versionCatalog: Map<String, String>): String {
+fun VersionCatalogBuilder.resolveKotlinVersion(versionCatalog: Map<String, String>): Pair<String, String> {
     var kotlinCatalogVersion: String? = System.getenv(SettingsConventions.KOTLIN_VERSION_ENV_VAR_NAME)
-    val kotlinCompilerVersion: String? = System.getenv(SettingsConventions.KOTLIN_COMPILER_VERSION_ENV_VAR_NAME)
+    var kotlinCompilerVersion: String? = System.getenv(SettingsConventions.KOTLIN_COMPILER_VERSION_ENV_VAR_NAME)
 
     if (kotlinCatalogVersion != null) {
         version(SettingsConventions.KOTLIN_VERSION_ALIAS, kotlinCatalogVersion)
@@ -156,15 +156,24 @@ fun VersionCatalogBuilder.resolveKotlinVersion(versionCatalog: Map<String, Strin
         kotlinCatalogVersion = versionCatalog[SettingsConventions.KOTLIN_VERSION_ALIAS]
     }
 
+    var catalogCompilerVersion = versionCatalog[SettingsConventions.KOTLIN_COMPILER_VERSION_ALIAS]
     if (kotlinCompilerVersion != null) {
         logger.info("Resolved Kotlin compiler version: $kotlinCompilerVersion")
         version(SettingsConventions.KOTLIN_COMPILER_VERSION_ALIAS, kotlinCompilerVersion)
+    } else if (catalogCompilerVersion == "0.0.0") {
+        kotlinCompilerVersion = kotlinCatalogVersion!!
+        version(SettingsConventions.KOTLIN_COMPILER_VERSION_ALIAS, kotlinCompilerVersion)
     } else {
-        version(SettingsConventions.KOTLIN_COMPILER_VERSION_ALIAS, kotlinCatalogVersion!!)
+        kotlinCompilerVersion = catalogCompilerVersion
     }
 
-    return kotlinCatalogVersion
+    val resolvedLang = kotlinCatalogVersion
         ?: error("Expected to resolve '${SettingsConventions.KOTLIN_VERSION_ALIAS}' version")
+
+    val resolvedCompiler = kotlinCompilerVersion
+        ?: error("Expected to resolve '${SettingsConventions.KOTLIN_COMPILER_VERSION_ALIAS}' version")
+
+    return resolvedLang to resolvedCompiler
 }
 
 // Resolves a core kotlinx.rpc version (without a Kotlin version prefix) from the Version Catalog.
@@ -206,7 +215,7 @@ dependencyResolutionManagement {
 
             val versionCatalog = resolveVersionCatalog(rootDir)
 
-            val kotlinVersion = resolveKotlinVersion(versionCatalog)
+            val (kotlinVersion, compilerVersion) = resolveKotlinVersion(versionCatalog)
 
             resolveLibraryVersion(versionCatalog)
 
@@ -216,11 +225,13 @@ dependencyResolutionManagement {
             val isLatestKotlin = latestKotlin == kotlinVersion
 
             extra["kotlinVersion"] = kotlinVersion.kotlinVersionParsed()
+            extra["kotlinCompilerVersion"] = compilerVersion.kotlinVersionParsed()
             extra["isLatestKotlinVersion"] = isLatestKotlin
 
             gradle.rootProject {
                 allprojects {
                     this.extra["kotlinVersion"] = kotlinVersion.kotlinVersionParsed()
+                    this.extra["kotlinCompilerVersion"] = compilerVersion.kotlinVersionParsed()
                     this.extra["isLatestKotlinVersion"] = isLatestKotlin
                 }
             }

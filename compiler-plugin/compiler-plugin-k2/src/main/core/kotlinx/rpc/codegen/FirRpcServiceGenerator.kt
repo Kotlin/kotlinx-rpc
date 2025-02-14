@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.codegen
@@ -11,6 +11,7 @@ import kotlinx.rpc.codegen.common.rpcMethodName
 import kotlinx.rpc.codegen.serialization.addAnnotation
 import kotlinx.rpc.codegen.serialization.generateCompanionDeclaration
 import kotlinx.rpc.codegen.serialization.generateSerializerImplClass
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.Modality

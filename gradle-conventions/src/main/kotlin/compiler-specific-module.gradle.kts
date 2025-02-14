@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
@@ -8,7 +8,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.text.lowercase
 
-val kotlinVersion: KotlinVersion by extra
+val kotlinCompilerVersion: KotlinVersion by extra
 val preserveDefaultSourceDirectories by optionalProperty()
 
 fun NamedDomainObjectContainer<KotlinSourceSet>.applyCompilerSpecificSourceSets() {
@@ -31,11 +31,11 @@ fun NamedDomainObjectContainer<KotlinSourceSet>.applyCompilerSpecificSourceSets(
         val vsSets = filterSourceDirsForCSM(sourceSetPath)
 
         // choose 'latest' if there are no more specific ones
-        val mostSpecificApplicable = vsSets.mostSpecificVersionOrLatest(kotlinVersion)
+        val mostSpecificApplicable = vsSets.mostSpecificVersionOrLatest(kotlinCompilerVersion)
 
         logger.lifecycle(
             "${project.name}: included version specific source sets: " +
-                    "[${core.name}${mostSpecificApplicable?.let { ", $name" } ?: ""}]"
+                    "[${core.name}${mostSpecificApplicable?.let { ", ${it.name}" } ?: ""}]"
         )
 
         val newSourceDirectories = listOfNotNull(core, mostSpecificApplicable)
@@ -70,7 +70,7 @@ fun KotlinSourceSet.configureResources(sourceSetPath: Path) {
     }
 
     val mostSpecificApplicable = filterSourceDirsForCSM(resourcesDir)
-        .mostSpecificVersionOrLatest(kotlinVersion)
+        .mostSpecificVersionOrLatest(kotlinCompilerVersion)
 
     val versionNames = listOfNotNull(Dir.CORE_SOURCE_DIR, mostSpecificApplicable?.name)
 

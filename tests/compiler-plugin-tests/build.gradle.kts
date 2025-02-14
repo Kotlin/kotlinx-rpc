@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
@@ -80,10 +80,10 @@ dependencies {
         testImplementation(libs.serialization.plugin)
     }
 
-    testImplementation(libs.compiler.plugin.cli) {
-        exclude(group = "org.jetbrains.kotlinx", module = "compiler-plugin-k2")
-    }
-    testImplementation(files("$globalRootDir/compiler-plugin/compiler-plugin-k2/build/libs/plugin-k2-for-tests.jar"))
+    testImplementation(libs.compiler.plugin.common)
+    testImplementation(libs.compiler.plugin.backend)
+    testImplementation(libs.compiler.plugin.k2)
+    testImplementation(libs.compiler.plugin.cli)
 
     testImplementation(libs.kotlin.reflect)
     testImplementation(libs.kotlin.compiler)
@@ -136,7 +136,7 @@ tasks.withType<KotlinCompile>().configureEach {
     }
 }
 
-val generateTests by tasks.creating(JavaExec::class) {
+val generateTests = tasks.register<JavaExec>("generateTests") {
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("kotlinx.rpc.codegen.test.GenerateTestsKt")
 }
