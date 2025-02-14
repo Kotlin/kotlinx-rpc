@@ -40,8 +40,8 @@
         </p>
         <code-block lang="Kotlin">
            plugins {
-               kotlin("jvm") version "2.1.0"
-               kotlin("plugin.serialization") version "2.1.0"
+               kotlin("jvm") version "%kotlin-version%"
+               kotlin("plugin.serialization") version "%kotlin-version%"
                id("org.jetbrains.kotlinx.rpc.plugin") version "&lt;version&gt;"
                id("com.google.protobuf") version "0.9.4"
            }
@@ -66,65 +66,111 @@
         <p>
             gRPC requires additional code generation from the <a href="https://github.com/google/protobuf-gradle-plugin">protoc</a>
             compiler.
-            This can be setup up in the following way:
+            It is set up automatically for you when the <code>com.google.protobuf</code>
+            plugin is present in the project.
+        </p>
+        <p>
+            We provide additional options for configuration:
         </p>
         <code-block lang="Kotlin">
-            protobuf {
-                protoc {
-                    artifact = "com.google.protobuf:protoc:4.29.3"
-                }
+            rpc {
+                grpc {
+                    // enforces additional checks on the project configuration
+                    enabled = true
 
-                plugins {
-                    create("kotlinx-rpc") {
-                        artifact = "org.jetbrains.kotlinx:kotlinx-rpc-protobuf-plugin:&lt;version&gt;:all@jar"
+                    // Quick access to a Locator and Options
+                    // for the kotlinx-rpc Protobuf plugin
+                    plugin {
+                        options {
+                            // add/change options
+                            option("debugOutput=myFile.txt")
+                        }
+
+                        locator {
+                            // change artifact coordinates, for example
+                            artifact = "some-other:artifact:version"
+                        }
                     }
 
-                    create("grpc") {
-                        artifact = "io.grpc:protoc-gen-grpc-java:1.69.0"
-                    }
+                    // same as `plugin`, but for gRPC Java generation
+                    grpcJavaPlugin { ... }
+                    // same as `plugin`, but for gRPC Kotlin generation
+                    grpcKotlinPlugin { ... }
 
-                    create("grpckt") {
-                        artifact = "io.grpc:protoc-gen-grpc-kotlin:1.4.1:jdk8@jar"
-                    }
-                }
-
-                generateProtoTasks {
-                    all().all {
+                    // access `generateProto` tasks
+                    tasks {
                         plugins {
-                            create("kotlinx-rpc") {
-                                option("debugOutput=protobuf-plugin.log")
-                                option("messageMode=interface")
-                            }
-                            create("grpc")
-                            create("grpckt")
+                            create("python")
+                        }
+                    }
+
+                    // access `generateProto` tasks with a filter
+                    tasksMatching { it.isTest }.all {
+                        plugins {
+                            create("cpp")
                         }
                     }
                 }
             }
         </code-block>
+        <p>
+            If you want to, you can still use <code>protobuf</code> extension to access the configuration.
+            The following is the equivalent for the code above, but using the <code>protobuf</code> extension:
+        </p>
+        <code-block lang="Kotlin">
+            protobuf {
+                plugins {
+                    named(GrpcExtension.LOCATOR_NAME) {
+                        artifact = "some-other:artifact:version"
+                    }
+
+                    named(GrpcExtension.GRPC_JAVA_LOCATOR_NAME) { ... }
+                    named(GrpcExtension.GRPC_KOTLIN_LOCATOR_NAME) { ... }
+                }
+
+                generateProtoTasks {
+                    all().all {
+                        plugins {
+                            named(GrpcExtension.LOCATOR_NAME) {
+                                option("debugOutput=myFile.txt")
+                            }
+
+                            create("python")
+
+                            if (isTest) {
+                                create("cpp")
+                            }
+                        }
+                    }
+                }
+            }
+        </code-block>
+        <p>
+            Minimum recommended configuration looks like this:
+        </p>
+        <code-block lang="Kotlin">
+            rpc {
+                grpc {
+                    enabled = true
+                }
+            }
+        </code-block>
+        <p>
+            By default, four source sets will be generated:
+        </p>
         <list>
-            <li>
-                Four source sets will be generated:
-                <list>
-                    <li><code>java</code> - protobuf Java declarations</li>
-                    <li><code>grpc</code> - gRPC Java declarations</li>
-                    <li><code>grpckt</code> - gRPC Kotlin wrappers for Java</li>
-                    <li><code>kotlinx-rpc</code> - pur wrappers for all of the above</li>
-                </list>
-                <p>
-                    You won't need to use the first three directly, only the declarations from the <code>kotlinx-rpc</code>
-                    source set are intended to be used.
-                </p>
-                Source sets are generated into <code>$BUILD_DIR/generated/source/proto/main</code> directory
-                unless specified otherwise.
-            </li>
-            <li>
-                <code>option("debugOutput=protobuf-plugin.log")</code> lets you specify the file
-                for the <code>protoc</code> plugin debug output.
-            </li>
-            <li>
-                <code>option("messageMode=interface")</code> is intended to be like so. Don't change it.
-            </li>
+            <li><code>java</code> - protobuf Java declarations</li>
+            <li><code>grpc</code> - gRPC Java declarations</li>
+            <li><code>grpckt</code> - gRPC Kotlin wrappers for Java</li>
+            <li><code>kotlinx-rpc</code> - pur wrappers for all of the above</li>
         </list>
+        <p>
+            You won't need to use the first three directly, only the declarations from the <code>kotlinx-rpc</code>
+            source set are intended to be used.
+        </p>
+        <p>
+            Source sets are generated into <code>$BUILD_DIR/generated/source/proto/main</code> directory
+            unless specified otherwise.
+        </p>
     </chapter>
 </topic>
