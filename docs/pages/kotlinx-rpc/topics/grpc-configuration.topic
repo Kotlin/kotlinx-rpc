@@ -75,19 +75,19 @@
         <code-block lang="Kotlin">
             rpc {
                 grpc {
-                    // enforces additional checks on the project configuration
+                    // Enforce additional checks on the project configuration
                     enabled = true
 
-                    // Quick access to a Locator and Options
+                    // Quick access to a `Locator` and `Options`
                     // for the kotlinx-rpc Protobuf plugin
                     plugin {
                         options {
-                            // add/change options
+                            // Add or modify options
                             option("debugOutput=myFile.txt")
                         }
 
                         locator {
-                            // change artifact coordinates, for example
+                            // Override artifact coordinates
                             artifact = "some-other:artifact:version"
                         }
                     }
@@ -114,8 +114,8 @@
             }
         </code-block>
         <p>
-            If you want to, you can still use <code>protobuf</code> extension to access the configuration.
-            The following is the equivalent for the code above, but using the <code>protobuf</code> extension:
+            You can still use <code>protobuf</code> extension to access the configuration.
+            The following is the equivalent for the above code using the <code>protobuf</code> extension:
         </p>
         <code-block lang="Kotlin">
             protobuf {
@@ -146,7 +146,7 @@
             }
         </code-block>
         <p>
-            Minimum recommended configuration looks like this:
+            The minimum recommended configuration looks like this:
         </p>
         <code-block lang="Kotlin">
             rpc {
@@ -162,14 +162,13 @@
             <li><code>java</code> - protobuf Java declarations</li>
             <li><code>grpc</code> - gRPC Java declarations</li>
             <li><code>grpckt</code> - gRPC Kotlin wrappers for Java</li>
-            <li><code>kotlinx-rpc</code> - pur wrappers for all of the above</li>
+            <li><code>kotlinx-rpc</code> - our wrappers for all of the above</li>
         </list>
         <p>
-            You won't need to use the first three directly, only the declarations from the <code>kotlinx-rpc</code>
-            source set are intended to be used.
+            Only the declarations from the <code>kotlinx-rpc</code> source set are intended to be used.
         </p>
         <p>
-            Source sets are generated into <code>$BUILD_DIR/generated/source/proto/main</code> directory
+            Source sets are generated into the <code>$BUILD_DIR/generated/source/proto/main</code> directory
             unless specified otherwise.
         </p>
     </chapter>
