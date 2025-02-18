@@ -5,7 +5,7 @@
 plugins {
     kotlin("jvm") version "2.1.10"
     kotlin("plugin.serialization") version "2.1.10"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "0.5.0-grpc-6"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.5.1-grpc-16"
     id("com.google.protobuf") version "0.9.4"
 }
 
@@ -22,42 +22,13 @@ kotlin {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core:0.5.0-grpc-6")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core:0.5.1-grpc-16")
     implementation("ch.qos.logback:logback-classic:1.5.16")
     implementation("io.grpc:grpc-netty:1.69.0")
 }
 
-val buildDirPath: String = project.layout.buildDirectory.get().asFile.absolutePath
-
-protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:4.29.3"
-    }
-
-    plugins {
-        create("kotlinx-rpc") {
-            artifact = "org.jetbrains.kotlinx:kotlinx-rpc-protobuf-plugin:0.5.0-grpc-6:all@jar"
-        }
-
-        create("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.69.0"
-        }
-
-        create("grpckt") {
-            artifact = "io.grpc:protoc-gen-grpc-kotlin:1.4.1:jdk8@jar"
-        }
-    }
-
-    generateProtoTasks {
-        all().all {
-            plugins {
-                create("kotlinx-rpc") {
-                    option("debugOutput=$buildDirPath/protobuf-plugin.log")
-                    option("messageMode=interface")
-                }
-                create("grpc")
-                create("grpckt")
-            }
-        }
+rpc {
+    grpc {
+        enabled = true
     }
 }
