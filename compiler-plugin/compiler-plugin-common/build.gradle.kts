@@ -3,8 +3,6 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import util.otherwise
-import util.whenForIde
 
 plugins {
     alias(libs.plugins.conventions.jvm)
@@ -16,9 +14,5 @@ kotlin {
 }
 
 dependencies {
-    whenForIde {
-        compileOnly(libs.kotlin.compiler)
-    } otherwise {
-        compileOnly(libs.kotlin.compiler.embeddable)
-    }
+    compileOnly(libs.kotlin.compiler)
 }
