@@ -14,6 +14,7 @@ import com.google.protobuf.compiler.PluginProtos.CodeGeneratorResponse.Feature
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.helpers.NOPLogger
+import java.io.File
 
 class RpcProtobufPlugin {
     companion object {
@@ -68,7 +69,9 @@ class RpcProtobufPlugin {
             .map { file ->
                 CodeGeneratorResponse.File.newBuilder()
                     .apply {
-                        val dir = file.packageName?.replace('.', '/')?.plus("/") ?: ""
+                        val dir = file.packagePath
+                            ?.replace('.', File.separatorChar)?.plus(File.separatorChar)
+                            ?: ""
 
                         // some filename already contain package (true for Google's default .proto files)
                         val filename = file.filename?.removePrefix(dir) ?: error("File name can not be null")
