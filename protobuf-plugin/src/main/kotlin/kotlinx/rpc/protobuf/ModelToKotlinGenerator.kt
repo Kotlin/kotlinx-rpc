@@ -8,74 +8,89 @@ import kotlinx.rpc.protobuf.CodeGenerator.DeclarationType
 import kotlinx.rpc.protobuf.model.*
 import org.slf4j.Logger
 
+private const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
+
 class ModelToKotlinGenerator(
     private val model: Model,
     private val logger: Logger,
     private val codeGenerationParameters: CodeGenerationParameters,
 ) {
     fun generateKotlinFiles(): List<FileGenerator> {
-        return model.files.map { it.generateKotlinFile() }
+        return model.files.flatMap { it.generateKotlinFiles() }
     }
 
-    private fun FileDeclaration.generateKotlinFile(): FileGenerator {
+    private fun FileDeclaration.generateKotlinFiles(): List<FileGenerator> {
+        return listOf(
+            generatePublicKotlinFile(),
+            generateInternalKotlinFile(),
+        )
+    }
+
+    private fun FileDeclaration.generatePublicKotlinFile(): FileGenerator {
         return file(codeGenerationParameters, logger = logger) {
             filename = name.simpleName
             packageName = name.packageName
+            packagePath = name.packageName
+
+            dependencies.forEach { dependency ->
+                importPackage(dependency.name.packageName)
+            }
+
+            generatePublicDeclaredEntities(this@generatePublicKotlinFile)
+
+            additionalPublicImports.forEach {
+                import(it)
+            }
+        }
+    }
+
+    private fun FileDeclaration.generateInternalKotlinFile(): FileGenerator {
+        return file(codeGenerationParameters, logger = logger) {
+            filename = name.simpleName
+            packageName = name.packageName
+            packagePath = name.packageName.packageNameSuffixed(RPC_INTERNAL_PACKAGE_SUFFIX)
+
             fileOptIns = listOf("ExperimentalRpcApi::class", "InternalRpcApi::class")
 
             dependencies.forEach { dependency ->
                 importPackage(dependency.name.packageName)
             }
 
-            generateDeclaredEntities(this@generateKotlinFile)
+            generateInternalDeclaredEntities(this@generateInternalKotlinFile)
 
-            additionalImports.forEach {
-                import(it)
-            }
             import("kotlinx.rpc.internal.utils.*")
         }
     }
 
-    private val additionalImports = mutableSetOf<String>()
+    private val additionalPublicImports = mutableSetOf<String>()
 
-    private fun CodeGenerator.generateDeclaredEntities(fileDeclaration: FileDeclaration) {
-        fileDeclaration.messageDeclarations.forEach { generateMessage(it) }
+    private fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration) {
+        fileDeclaration.messageDeclarations.forEach { generatePublicMessage(it) }
         // KRPC-141 Enum Types
 //        fileDeclaration.enumDeclarations.forEach { generateEnum(it) }
-        fileDeclaration.serviceDeclarations.forEach { generateService(it) }
+        fileDeclaration.serviceDeclarations.forEach { generatePublicService(it) }
+    }
+
+    private fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {
+        fileDeclaration.messageDeclarations.forEach { generateInternalMessage(it) }
+        // KRPC-141 Enum Types
+//        fileDeclaration.enumDeclarations.forEach { generateEnum(it) }
+        fileDeclaration.serviceDeclarations.forEach { generateInternalService(it) }
+    }
+
+    private fun MessageDeclaration.fields() = actualFields.map {
+        it.transformToFieldDeclaration() to it.type.defaultValue
     }
 
     @Suppress("detekt.CyclomaticComplexMethod")
-    private fun CodeGenerator.generateMessage(declaration: MessageDeclaration) {
-        val fields = declaration.actualFields.map { it.generateFieldDeclaration() to it.type.defaultValue }
-
-        val isInterfaceMode = parameters.messageMode == RpcProtobufPlugin.MessageMode.Interface
-
-        val (declarationType, modifiers) = when {
-            isInterfaceMode -> {
-                DeclarationType.Interface to ""
-            }
-
-            fields.isEmpty() -> {
-                DeclarationType.Object to ""
-            }
-
-            else -> {
-                DeclarationType.Class to "data"
-            }
-        }
-
+    private fun CodeGenerator.generatePublicMessage(declaration: MessageDeclaration) {
         clazz(
             name = declaration.name.simpleName,
-            modifiers = modifiers,
-            constructorArgs = if (isInterfaceMode) emptyList() else fields.map { "val ${it.first}" to it.second },
-            declarationType = declarationType,
+            declarationType = DeclarationType.Interface,
         ) {
-            if (isInterfaceMode) {
-                fields.forEach {
-                    code("val ${it.first}")
-                    newLine()
-                }
+            declaration.fields().forEach {
+                code("val ${it.first}")
+                newLine()
             }
 
             // KRPC-147 OneOf Types
@@ -93,32 +108,31 @@ class ModelToKotlinGenerator(
 //                generateEnum(enum)
 //            }
 
-            if (isInterfaceMode) {
-                clazz("", modifiers = "companion", declarationType = DeclarationType.Object)
+            clazz("", modifiers = "companion", declarationType = DeclarationType.Object)
+        }
+    }
+
+    @Suppress("detekt.CyclomaticComplexMethod")
+    private fun CodeGenerator.generateInternalMessage(declaration: MessageDeclaration) {
+        clazz(
+            name = "${declaration.name.simpleName}Builder",
+            declarationType = DeclarationType.Class,
+            superTypes = listOf(declaration.name.simpleName),
+        ) {
+            declaration.fields().forEach {
+                code("override var ${it.first} = ${it.second}")
+                newLine()
             }
         }
 
-        if (isInterfaceMode) {
-            clazz(
-                name = "${declaration.name.simpleName}Builder",
-                declarationType = DeclarationType.Class,
-                superTypes = listOf(declaration.name.simpleName),
-            ) {
-                fields.forEach {
-                    code("override var ${it.first} = ${it.second}")
-                    newLine()
-                }
-            }
-
-            function(
-                name = "invoke",
-                modifiers = "operator",
-                args = "body: ${declaration.name.simpleName}Builder.() -> Unit",
-                contextReceiver = "${declaration.name.simpleName}.Companion",
-                returnType = declaration.name.simpleName,
-            ) {
-                code("return ${declaration.name.simpleName}Builder().apply(body)")
-            }
+        function(
+            name = "invoke",
+            modifiers = "operator",
+            args = "body: ${declaration.name.simpleName}Builder.() -> Unit",
+            contextReceiver = "${declaration.name.simpleName}.Companion",
+            returnType = declaration.name.simpleName,
+        ) {
+            code("return ${declaration.name.simpleName}Builder().apply(body)")
         }
 
         val platformType = "${declaration.outerClassName.simpleName}.${declaration.name.simpleName}"
@@ -175,7 +189,7 @@ class ModelToKotlinGenerator(
         }
     }
 
-    private fun FieldDeclaration.generateFieldDeclaration(): String {
+    private fun FieldDeclaration.transformToFieldDeclaration(): String {
         return "${name}: ${typeFqName()}"
     }
 
@@ -219,7 +233,7 @@ class ModelToKotlinGenerator(
                     superTypes = listOf(interfaceName),
                 )
 
-                additionalImports.add("kotlin.jvm.JvmInline")
+                additionalPublicImports.add("kotlin.jvm.JvmInline")
             }
         }
     }
@@ -247,7 +261,7 @@ class ModelToKotlinGenerator(
     }
 
     @Suppress("detekt.LongMethod")
-    private fun CodeGenerator.generateService(service: ServiceDeclaration) {
+    private fun CodeGenerator.generatePublicService(service: ServiceDeclaration) {
         code("@kotlinx.rpc.grpc.annotations.Grpc")
         clazz(service.name.simpleName, declarationType = DeclarationType.Interface) {
             service.methods.forEach { method ->
@@ -262,9 +276,9 @@ class ModelToKotlinGenerator(
                 )
             }
         }
+    }
 
-        newLine()
-
+    private fun CodeGenerator.generateInternalService(service: ServiceDeclaration) {
         code("@Suppress(\"unused\", \"all\")")
         clazz(
             modifiers = "private",
@@ -372,4 +386,8 @@ class ModelToKotlinGenerator(
     private fun MessageDeclaration.toPlatformMessageType(): String {
         return "${outerClassName.simpleName}.${name.simpleName.removePrefix(name.parentNameAsPrefix)}"
     }
+}
+
+internal fun String.packageNameSuffixed(suffix: String): String {
+    return if (isEmpty()) suffix else "$this.$suffix"
 }
