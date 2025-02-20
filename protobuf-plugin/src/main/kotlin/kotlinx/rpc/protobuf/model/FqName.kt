@@ -4,28 +4,70 @@
 
 package kotlinx.rpc.protobuf.model
 
-interface FqName {
-    val packageName: String
+sealed interface FqName {
     val simpleName: String
-    val parentName: FqName?
+    val parent: FqName
 
-    val parentNameAsPrefix: String get() = parentName?.let { "$it.".removePrefix(".") } ?: ""
+    data class Declaration(
+        override val simpleName: String,
+        override val parent: FqName,
+    ) : FqName {
+        override fun toString(): String {
+            return fullName()
+        }
+    }
+
+    class Package private constructor(
+        override val simpleName: String,
+        parent: Package? = null,
+    ) : FqName {
+        override val parent: FqName = parent ?: this
+
+        override fun equals(other: Any?): Boolean {
+            return other is Package && other.simpleName == simpleName && (simpleName == "" || other.parent == parent)
+        }
+
+        override fun hashCode(): Int {
+            if (simpleName.isEmpty()) {
+                return simpleName.hashCode()
+            }
+
+            return parent.hashCode() * 31 + simpleName.hashCode()
+        }
+
+        override fun toString(): String {
+            return fullName()
+        }
+
+        companion object {
+            val Root = Package("")
+
+            fun fromString(name: String): Package {
+                return if (name.isEmpty()) {
+                    Root
+                } else {
+                    Package(name.substringAfterLast(".", name), fromString(name.substringBeforeLast('.', "")))
+                }
+            }
+        }
+    }
 }
 
-data class SimpleFqName(
-    override val packageName: String,
-    override val simpleName: String,
-    override val parentName: FqName? = null,
-): FqName {
-    override fun equals(other: Any?): Boolean {
-        return other is FqName && simpleName == other.simpleName
-    }
-
-    override fun hashCode(): Int {
-        return simpleName.hashCode()
-    }
-
-    override fun toString(): String {
-        return simpleName
+internal fun FqName.fullName(): String {
+    val parentName = parent
+    return when {
+        parentName == this -> simpleName
+        else -> {
+            val fullParentName = parentName.fullName()
+            if (fullParentName.isEmpty()) {
+                simpleName
+            } else {
+                "$fullParentName.$simpleName"
+            }
+        }
     }
 }
+
+internal fun String.asParentsAndSimpleName(): Pair<List<String>, String> =
+    split(".").takeIf { it.size > 1 }?.run { dropLast(1) to last() }
+        ?: (emptyList<String>() to this)

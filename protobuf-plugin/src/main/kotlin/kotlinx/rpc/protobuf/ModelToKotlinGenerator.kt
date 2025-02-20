@@ -28,12 +28,12 @@ class ModelToKotlinGenerator(
 
     private fun FileDeclaration.generatePublicKotlinFile(): FileGenerator {
         return file(codeGenerationParameters, logger = logger) {
-            filename = name.simpleName
-            packageName = name.packageName
-            packagePath = name.packageName
+            filename = this@generatePublicKotlinFile.name
+            packageName = this@generatePublicKotlinFile.packageName.fullName()
+            packagePath = this@generatePublicKotlinFile.packageName.fullName()
 
             dependencies.forEach { dependency ->
-                importPackage(dependency.name.packageName)
+                importPackage(dependency.packageName.fullName())
             }
 
             generatePublicDeclaredEntities(this@generatePublicKotlinFile)
@@ -46,9 +46,9 @@ class ModelToKotlinGenerator(
 
     private fun FileDeclaration.generateInternalKotlinFile(): FileGenerator {
         return file(codeGenerationParameters, logger = logger) {
-            filename = name.simpleName
-            packageName = name.packageName
-            packagePath = name.packageName.packageNameSuffixed(RPC_INTERNAL_PACKAGE_SUFFIX)
+            filename = this@generateInternalKotlinFile.name
+            packageName = this@generateInternalKotlinFile.packageName.fullName()
+            packagePath = this@generateInternalKotlinFile.packageName.fullName().packageNameSuffixed(RPC_INTERNAL_PACKAGE_SUFFIX)
 
             fileOptIns = listOf("ExperimentalRpcApi::class", "InternalRpcApi::class")
 
@@ -135,7 +135,7 @@ class ModelToKotlinGenerator(
             code("return ${declaration.name.simpleName}Builder().apply(body)")
         }
 
-        val platformType = "${declaration.outerClassName.simpleName}.${declaration.name.simpleName}"
+        val platformType = "${declaration.outerClassName.fullName()}.${declaration.name.simpleName}"
 
         function(
             name = "toPlatform",
@@ -269,7 +269,7 @@ class ModelToKotlinGenerator(
                 val inputType by method.inputType
                 val outputType by method.outputType
                 function(
-                    name = method.name.simpleName,
+                    name = method.name,
                     modifiers = "suspend",
                     args = "message: ${inputType.name.simpleName}",
                     returnType = outputType.name.simpleName,
@@ -314,7 +314,7 @@ class ModelToKotlinGenerator(
             constructorArgs = listOf("private val impl: ${service.name.simpleName}"),
         ) {
             service.methods.forEach { method ->
-                val grpcName = method.name.simpleName.replaceFirstChar { it.lowercase() }
+                val grpcName = method.name.replaceFirstChar { it.lowercase() }
 
                 val inputType by method.inputType
                 val outputType by method.outputType
@@ -325,7 +325,7 @@ class ModelToKotlinGenerator(
                     args = "request: ${inputType.toPlatformMessageType()}",
                     returnType = outputType.toPlatformMessageType(),
                 ) {
-                    code("return impl.${method.name.simpleName}(request.toKotlin()).toPlatform()")
+                    code("return impl.${method.name}(request.toKotlin()).toPlatform()")
                 }
             }
         }
@@ -362,9 +362,9 @@ class ModelToKotlinGenerator(
                 scope("return when (call.callableName)") {
                     service.methods.forEach { method ->
                         val inputType by method.inputType
-                        val grpcName = method.name.simpleName.replaceFirstChar { it.lowercase() }
+                        val grpcName = method.name.replaceFirstChar { it.lowercase() }
                         val result = "stub.$grpcName((message as ${inputType.name.simpleName}).toPlatform())"
-                        code("\"${method.name.simpleName}\" -> $result.toKotlin() as R")
+                        code("\"${method.name}\" -> $result.toKotlin() as R")
                     }
 
                     code("else -> error(\"Illegal call: \${call.callableName}\")")
@@ -384,7 +384,7 @@ class ModelToKotlinGenerator(
     }
 
     private fun MessageDeclaration.toPlatformMessageType(): String {
-        return "${outerClassName.simpleName}.${name.simpleName.removePrefix(name.parentNameAsPrefix)}"
+        return "${outerClassName.fullName()}.${name.simpleName}"
     }
 }
 
