@@ -5,6 +5,7 @@
 package kotlinx.rpc.protobuf
 
 import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.FileAppender
@@ -42,18 +43,24 @@ class RpcProtobufPlugin {
     private val logger: Logger by lazy {
         val debugOutput = debugOutput ?: return@lazy NOPLogger.NOP_LOGGER
 
-        (LoggerFactory.getILoggerFactory().getLogger("RpcProtobufPlugin") as ch.qos.logback.classic.Logger).apply {
+        val factory = LoggerFactory.getILoggerFactory()
+        (factory.getLogger(Logger.ROOT_LOGGER_NAME) as ch.qos.logback.classic.Logger).apply {
             val appender = FileAppender<ILoggingEvent>().apply {
                 isAppend = true
                 file = debugOutput
                 encoder = PatternLayoutEncoder().apply {
                     pattern = "%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+                    context = factory as LoggerContext
+                    start()
                 }
+                context = factory as LoggerContext
+                start()
             }
 
             addAppender(appender)
 
             level = Level.ALL
+            isAdditive = true
         }
     }
 

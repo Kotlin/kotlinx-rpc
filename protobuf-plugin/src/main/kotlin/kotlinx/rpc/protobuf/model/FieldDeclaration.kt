@@ -15,7 +15,7 @@ data class FieldDeclaration(
 sealed interface FieldType {
     val defaultValue: String
 
-    data class List(val valueName: FqName) : FieldType {
+    data class List(val valueName: Lazy<FqName>) : FieldType {
         override val defaultValue: String = "emptyList()"
     }
 
@@ -23,7 +23,7 @@ sealed interface FieldType {
         override val defaultValue: String = "emptyMap()"
     }
 
-    data class Reference(val value: FqName) : FieldType {
+    data class Reference(val value: Lazy<FqName>) : FieldType {
         override val defaultValue: String = "null"
     }
 
@@ -44,6 +44,6 @@ sealed interface FieldType {
         SFIXED32("Int", "0"),
         SFIXED64("Long", "0");
 
-        val fqName: FqName = SimpleFqName("kotlin", simpleName)
+        val fqName: FqName = FqName.Declaration(simpleName, FqName.Package.fromString("kotlin"))
     }
 }

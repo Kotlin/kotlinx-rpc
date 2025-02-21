@@ -5,7 +5,8 @@
 package kotlinx.rpc.protobuf.model
 
 data class FileDeclaration(
-    val name: FqName,
+    val name: String,
+    val packageName: FqName.Package,
     val dependencies: List<FileDeclaration>,
     val messageDeclarations: List<MessageDeclaration>,
     val enumDeclarations: List<EnumDeclaration>,
