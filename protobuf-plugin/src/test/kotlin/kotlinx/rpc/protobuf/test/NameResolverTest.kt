@@ -424,16 +424,4 @@ class NameResolverTest {
     }
 
     private fun resolver(): NameResolver = NameResolver.create(NOPLogger.NOP_LOGGER)
-
-    private fun fq(packages: String, classes: String): FqName {
-        return classFq(classes.split(".").filter { it.isNotBlank() }, packages)
-    }
-
-    private fun classFq(parts: List<String>, packages: String): FqName {
-        if (parts.isEmpty()) {
-            return FqName.Package.fromString(packages)
-        }
-
-        return FqName.Declaration(parts.last(), classFq(parts.dropLast(1), packages))
-    }
 }
