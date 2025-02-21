@@ -18,13 +18,14 @@ class ProtoToModelInterpreter(
 ) {
     private val fileDependencies = mutableMapOf<String, FileDeclaration>()
     private val messages = mutableMapOf<FqName, MessageDeclaration>()
+    private val rootResolver = NameResolver.create(logger)
 
     fun interpretProtocRequest(message: CodeGeneratorRequest): Model {
         return Model(message.protoFileList.map { it.toModel() })
     }
 
     // package name of a currently parsed file
-    private var packageName by Delegates.notNull<String>()
+    private var packageName: FqName.Package by Delegates.notNull<FqName.Package>()
 
     private fun DescriptorProtos.FileDescriptorProto.toModel(): FileDeclaration {
         val dependencies = dependencyList.map { depFilename ->
@@ -32,30 +33,49 @@ class ProtoToModelInterpreter(
                 ?: error("Unknown dependency $depFilename for $name proto file, wrong topological order")
         }
 
-        packageName = kotlinPackageName(`package`, options)
+        packageName = FqName.Package.fromString(kotlinPackageName(`package`, options))
+
+        val resolver = rootResolver
+            .withScope(packageName)
+            .withImports(dependencies.map { it.packageName })
 
         return FileDeclaration(
-            name = SimpleFqName(
-                packageName = packageName,
-                simpleName = kotlinFileName(name)
-            ),
+            name = kotlinFileName(),
+            packageName = packageName,
             dependencies = dependencies,
-            messageDeclarations = messageTypeList.map { it.toModel(fqOuterClass()) },
-            enumDeclarations = enumTypeList.map { it.toModel() },
-            serviceDeclarations = serviceList.map { it.toModel() },
+            messageDeclarations = messageTypeList.map { it.toModel(outerClassFq(), parent = null, resolver) },
+            enumDeclarations = enumTypeList.map { it.toModel(resolver) },
+            serviceDeclarations = serviceList.map { it.toModel(resolver) },
             deprecated = options.deprecated,
             doc = null,
         ).also {
+            // TODO KRPC-144: check uniqueness
             fileDependencies[name] = it
         }
     }
 
-    private fun DescriptorProtos.FileDescriptorProto.fqOuterClass(): FqName {
-        return "${name.removeSuffix(".proto").fullProtoNameToKotlin(firstLetterUpper = true)}OuterClass".toFqName()
+    private fun DescriptorProtos.FileDescriptorProto.outerClassFq(): FqName {
+        val filename = protoFileNameToKotlinName()
+
+        val messageClash = messageTypeList.any { it.name.fullProtoNameToKotlin(firstLetterUpper = true) == filename }
+        val serviceClash = serviceList.any { it.name.fullProtoNameToKotlin(firstLetterUpper = true) == filename }
+
+        val suffix = if (messageClash || serviceClash) {
+            "OuterClass"
+        } else {
+            ""
+        }
+
+        val simpleName = "${filename}$suffix"
+        return FqName.Declaration(simpleName, packageName)
     }
 
-    private fun kotlinFileName(originalName: String): String {
-        return "${originalName.removeSuffix(".proto").fullProtoNameToKotlin(firstLetterUpper = true)}.kt"
+    private fun DescriptorProtos.FileDescriptorProto.kotlinFileName(): String {
+        return "${protoFileNameToKotlinName()}.kt"
+    }
+
+    private fun DescriptorProtos.FileDescriptorProto.protoFileNameToKotlinName(): String {
+        return name.removeSuffix(".proto").fullProtoNameToKotlin(firstLetterUpper = true)
     }
 
     private fun kotlinPackageName(originalPackage: String, options: DescriptorProtos.FileOptions): String {
@@ -63,52 +83,59 @@ class ProtoToModelInterpreter(
         return originalPackage
     }
 
-    private fun DescriptorProtos.DescriptorProto.toModel(outerClass: FqName): MessageDeclaration {
-        val fields = fieldList.mapNotNull {
+    private fun DescriptorProtos.DescriptorProto.toModel(
+        outerClass: FqName,
+        parent: FqName?,
+        parentResolver: NameResolver,
+    ): MessageDeclaration {
+        val simpleName = name.fullProtoNameToKotlin(firstLetterUpper = true)
+        val fqName = parentResolver.declarationFqName(simpleName, parent ?: packageName)
+        val resolver = parentResolver.withScope(fqName)
+
+        val fields = fieldList.asSequence().mapNotNull {
             val oneOfName = if (it.hasOneofIndex()) {
                 oneofDeclList[it.oneofIndex].name
             } else {
                 null
             }
 
-            it.toModel(oneOfName)
+            it.toModel(oneOfName, resolver)
         }
 
         return MessageDeclaration(
             outerClassName = outerClass,
-            name = name.fullProtoNameToKotlin(firstLetterUpper = true).toFqName(),
+            name = fqName,
             actualFields = fields,
-            oneOfDeclarations = oneofDeclList.mapIndexedNotNull { i, desc -> desc.toModel(i) },
-            enumDeclarations = enumTypeList.map { it.toModel() },
-            nestedDeclarations = nestedTypeList.map { it.toModel(outerClass) },
+            oneOfDeclarations = oneofDeclList.asSequence().mapIndexedNotNull { i, desc -> desc.toModel(i, resolver) },
+            enumDeclarations = enumTypeList.asSequence().map { it.toModel(resolver) },
+            nestedDeclarations = nestedTypeList.asSequence().map { it.toModel(outerClass, fqName, resolver) },
             deprecated = options.deprecated,
             doc = null,
         ).apply {
-            val name = if (packageName.isEmpty()) {
-                name
-            } else {
-                "$packageName.$name".toFqName()
-            }
             messages[name] = this
         }
     }
 
     private val oneOfFieldMembers = mutableMapOf<Int, MutableList<DescriptorProtos.FieldDescriptorProto>>()
 
-    private fun DescriptorProtos.FieldDescriptorProto.toModel(oneOfName: String?): FieldDeclaration? {
+    private fun DescriptorProtos.FieldDescriptorProto.toModel(
+        oneOfName: String?,
+        resolver: NameResolver,
+    ): FieldDeclaration? {
         if (oneOfName != null) {
             val fieldType = when {
                 // effectively optional
                 // https://github.com/protocolbuffers/protobuf/blob/main/docs/implementing_proto3_presence.md#updating-a-code-generator
                 oneOfName == "_$name" -> {
-                    fieldType()
+                    fieldType(resolver)
                 }
 
                 oneOfFieldMembers[oneofIndex] == null -> {
                     oneOfFieldMembers[oneofIndex] = mutableListOf<DescriptorProtos.FieldDescriptorProto>()
                         .also { list -> list.add(this) }
 
-                    FieldType.Reference(oneOfName.fullProtoNameToKotlin(firstLetterUpper = true).toFqName())
+                    TODO("KRPC-147 OneOf Types")
+                    // FieldType.Reference(oneOfName.fullProtoNameToKotlin(firstLetterUpper = true).toFqName())
                 }
 
                 else -> {
@@ -128,23 +155,32 @@ class ProtoToModelInterpreter(
 
         return FieldDeclaration(
             name = name.fullProtoNameToKotlin(),
-            type = fieldType(),
+            type = fieldType(resolver),
             nullable = false,
             deprecated = options.deprecated,
             doc = null,
         )
     }
 
-    private fun DescriptorProtos.FieldDescriptorProto.fieldType(): FieldType {
+    private fun DescriptorProtos.FieldDescriptorProto.fieldType(resolver: NameResolver): FieldType {
         return when {
-            hasTypeName() -> {
+            // from https://github.com/protocolbuffers/protobuf/blob/5fc0e22b9f912c2aa94a34502887c3719e805834/src/google/protobuf/descriptor.proto#L294
+            // if the name starts with a '.', it is fully-qualified.
+            hasTypeName() && typeName.startsWith(".") -> {
                 typeName
-                    // from https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/descriptor.proto
-                    // if the name starts with a '.', it is fully-qualified.
                     .substringAfter('.')
                     .fullProtoNameToKotlin(firstLetterUpper = true)
-                    .toFqName()
-                    .let { wrapWithLabel(it) }
+                    // TODO KRPC-146 Nested Types: parent full type resolution
+                    //  KRPC-144 Import types
+                    .let { wrapWithLabel(lazy { resolver.resolve(it) }) }
+            }
+
+            hasTypeName() -> {
+                typeName
+                    .fullProtoNameToKotlin(firstLetterUpper = true)
+                    // TODO KRPC-146 Nested Types: parent full type resolution
+                    //  KRPC-144 Import types: we assume local types now
+                    .let { wrapWithLabel(lazy { resolver.resolve(it) }) }
             }
 
             else -> {
@@ -177,7 +213,7 @@ class ProtoToModelInterpreter(
         }
     }
 
-    private fun DescriptorProtos.FieldDescriptorProto.wrapWithLabel(fqName: FqName): FieldType {
+    private fun DescriptorProtos.FieldDescriptorProto.wrapWithLabel(fqName: Lazy<FqName>): FieldType {
         return when (label) {
             DescriptorProtos.FieldDescriptorProto.Label.LABEL_REPEATED -> {
                 FieldType.List(fqName)
@@ -190,16 +226,19 @@ class ProtoToModelInterpreter(
         }
     }
 
-    private fun DescriptorProtos.OneofDescriptorProto.toModel(index: Int): OneOfDeclaration? {
-        val name = name.fullProtoNameToKotlin(firstLetterUpper = true).toFqName()
+    private fun DescriptorProtos.OneofDescriptorProto.toModel(index: Int, resolver: NameResolver): OneOfDeclaration? {
+        // TODO KRPC-146 Nested Types: parent full type resolution
+        //  KRPC-147 OneOf Types: check fqName
+        val name = name.fullProtoNameToKotlin(firstLetterUpper = true)
+        val fqName = resolver.declarationFqName(name, packageName)
 
         val fields = oneOfFieldMembers[index] ?: return null
         return OneOfDeclaration(
-            name = name,
+            name = fqName,
             variants = fields.map { field ->
                 FieldDeclaration(
                     name = field.name.fullProtoNameToKotlin(firstLetterUpper = true),
-                    type = field.fieldType(),
+                    type = field.fieldType(resolver),
                     nullable = false,
                     deprecated = field.options.deprecated,
                     doc = null,
@@ -208,7 +247,7 @@ class ProtoToModelInterpreter(
         )
     }
 
-    private fun DescriptorProtos.EnumDescriptorProto.toModel(): EnumDeclaration {
+    private fun DescriptorProtos.EnumDescriptorProto.toModel(resolver: NameResolver): EnumDeclaration {
         val allowAlias = options.allowAlias
         val originalEntries = mutableMapOf<Int, EnumDeclaration.Entry>()
         val aliases = mutableListOf<EnumDeclaration.Alias>()
@@ -226,7 +265,8 @@ class ProtoToModelInterpreter(
 
                 aliases.add(
                     EnumDeclaration.Alias(
-                        name = enumEntry.name.toFqName(),
+                        // TODO KRPC-141 Enum Types: check fqName for nested types
+                        name = resolver.declarationFqName(enumEntry.name, packageName),
                         original = original,
                         deprecated = enumEntry.options.deprecated,
                         doc = null,
@@ -234,7 +274,8 @@ class ProtoToModelInterpreter(
                 )
             } else {
                 originalEntries[enumEntry.number] = EnumDeclaration.Entry(
-                    name = enumEntry.name.toFqName(),
+                    // TODO KRPC-141 Enum Types: check fqName for nested types
+                    name = resolver.declarationFqName(enumEntry.name, packageName),
                     deprecated = enumEntry.options.deprecated,
                     doc = null,
                 )
@@ -242,7 +283,8 @@ class ProtoToModelInterpreter(
         }
 
         return EnumDeclaration(
-            name = name.fullProtoNameToKotlin(firstLetterUpper = true).toFqName(),
+            // TODO KRPC-141 Enum Types: check fqName for nested types
+            name = resolver.declarationFqName(name.fullProtoNameToKotlin(firstLetterUpper = true), packageName),
             originalEntries = originalEntries.values.toList(),
             aliases = aliases,
             deprecated = options.deprecated,
@@ -250,24 +292,34 @@ class ProtoToModelInterpreter(
         )
     }
 
-    private fun DescriptorProtos.ServiceDescriptorProto.toModel(): ServiceDeclaration {
+    private fun DescriptorProtos.ServiceDescriptorProto.toModel(resolver: NameResolver): ServiceDeclaration {
         return ServiceDeclaration(
-            name = name.fullProtoNameToKotlin(firstLetterUpper = true).toFqName(),
-            methods = methodList.map { it.toModel() }
+            name = resolver.declarationFqName(name.fullProtoNameToKotlin(firstLetterUpper = true), packageName),
+            methods = methodList.map { it.toModel(resolver) }
         )
     }
 
-    private fun DescriptorProtos.MethodDescriptorProto.toModel(): MethodDeclaration {
+    private fun DescriptorProtos.MethodDescriptorProto.toModel(resolver: NameResolver): MethodDeclaration {
         return MethodDeclaration(
-            name = name.fullProtoNameToKotlin(firstLetterUpper = false).toFqName(),
+            name = name.fullProtoNameToKotlin(firstLetterUpper = false),
             inputType = inputType
                 .substringAfter('.') // see typeName resolution
-                .fullProtoNameToKotlin(firstLetterUpper = true).toFqName()
-                .let { lazy { messages[it] ?: error("Unknown message type $it, available: ${messages.keys.joinToString(",")}") } },
+                .fullProtoNameToKotlin(firstLetterUpper = true)
+                .let {
+                    lazy {
+                        messages[resolver.resolve(it)]
+                            ?: error("Unknown message type $it, available: ${messages.keys.joinToString(",")}")
+                    }
+                },
             outputType = outputType
                 .substringAfter('.') // see typeName resolution
-                .fullProtoNameToKotlin(firstLetterUpper = true).toFqName()
-                .let { lazy { messages[it] ?: error("Unknown message type $it, available: ${messages.keys.joinToString(",")}") } },
+                .fullProtoNameToKotlin(firstLetterUpper = true)
+                .let {
+                    lazy {
+                        messages[resolver.resolve(it)]
+                            ?: error("Unknown message type $it, available: ${messages.keys.joinToString(",")}")
+                    }
+                },
             clientStreaming = clientStreaming,
             serverStreaming = serverStreaming,
         )
@@ -279,7 +331,7 @@ class ProtoToModelInterpreter(
             val packageName = substring(0, lastDelimiterIndex)
             val name = substring(lastDelimiterIndex + 1)
             val delimiter = this[lastDelimiterIndex]
-            return "$packageName$delimiter${name.simpleProtoNameToKotlin(true)}"
+            return "$packageName$delimiter${name.simpleProtoNameToKotlin(firstLetterUpper = true)}"
         } else {
             simpleProtoNameToKotlin(firstLetterUpper)
         }
@@ -301,5 +353,7 @@ class ProtoToModelInterpreter(
         }
     }
 
-    private fun String.toFqName(parent: FqName? = null) = SimpleFqName(packageName, this, parent)
+    private fun NameResolver.declarationFqName(simpleName: String, parent: FqName): FqName.Declaration {
+        return FqName.Declaration(simpleName, parent).also { add(it) }
+    }
 }

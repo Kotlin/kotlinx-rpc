@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "all_primitives.proto";
+
+message Other {
+  string arg = 1;
+}
+
+message References {
+  Other other = 2;
+}
