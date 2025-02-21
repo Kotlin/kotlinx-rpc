@@ -20,6 +20,9 @@ class ModelToKotlinGenerator(
     }
 
     private fun FileDeclaration.generateKotlinFiles(): List<FileGenerator> {
+        additionalPublicImports.clear()
+        additionalInternalImports.clear()
+
         return listOf(
             generatePublicKotlinFile(),
             generateInternalKotlinFile(),
@@ -28,12 +31,12 @@ class ModelToKotlinGenerator(
 
     private fun FileDeclaration.generatePublicKotlinFile(): FileGenerator {
         return file(codeGenerationParameters, logger = logger) {
-            filename = name.simpleName
-            packageName = name.packageName
-            packagePath = name.packageName
+            filename = this@generatePublicKotlinFile.name
+            packageName = this@generatePublicKotlinFile.packageName.fullName()
+            packagePath = this@generatePublicKotlinFile.packageName.fullName()
 
             dependencies.forEach { dependency ->
-                importPackage(dependency.name.packageName)
+                importPackage(dependency.packageName.fullName())
             }
 
             generatePublicDeclaredEntities(this@generatePublicKotlinFile)
@@ -46,23 +49,28 @@ class ModelToKotlinGenerator(
 
     private fun FileDeclaration.generateInternalKotlinFile(): FileGenerator {
         return file(codeGenerationParameters, logger = logger) {
-            filename = name.simpleName
-            packageName = name.packageName
-            packagePath = name.packageName.packageNameSuffixed(RPC_INTERNAL_PACKAGE_SUFFIX)
+            filename = this@generateInternalKotlinFile.name
+            packageName = this@generateInternalKotlinFile.packageName.fullName()
+            packagePath = this@generateInternalKotlinFile.packageName.fullName().packageNameSuffixed(RPC_INTERNAL_PACKAGE_SUFFIX)
 
             fileOptIns = listOf("ExperimentalRpcApi::class", "InternalRpcApi::class")
 
             dependencies.forEach { dependency ->
-                importPackage(dependency.name.packageName)
+                importPackage(dependency.packageName.fullName())
             }
 
             generateInternalDeclaredEntities(this@generateInternalKotlinFile)
 
             import("kotlinx.rpc.internal.utils.*")
+
+            additionalInternalImports.forEach {
+                import(it)
+            }
         }
     }
 
     private val additionalPublicImports = mutableSetOf<String>()
+    private val additionalInternalImports = mutableSetOf<String>()
 
     private fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration) {
         fileDeclaration.messageDeclarations.forEach { generatePublicMessage(it) }
@@ -79,7 +87,7 @@ class ModelToKotlinGenerator(
     }
 
     private fun MessageDeclaration.fields() = actualFields.map {
-        it.transformToFieldDeclaration() to it.type.defaultValue
+        it.transformToFieldDeclaration() to it.type
     }
 
     @Suppress("detekt.CyclomaticComplexMethod")
@@ -88,8 +96,8 @@ class ModelToKotlinGenerator(
             name = declaration.name.simpleName,
             declarationType = DeclarationType.Interface,
         ) {
-            declaration.fields().forEach {
-                code("val ${it.first}")
+            declaration.fields().forEach { (fieldDeclaration, _) ->
+                code("val $fieldDeclaration")
                 newLine()
             }
 
@@ -119,8 +127,15 @@ class ModelToKotlinGenerator(
             declarationType = DeclarationType.Class,
             superTypes = listOf(declaration.name.simpleName),
         ) {
-            declaration.fields().forEach {
-                code("override var ${it.first} = ${it.second}")
+            declaration.fields().forEach { (fieldDeclaration, type) ->
+                val value = if (type is FieldType.Reference) {
+                    additionalInternalImports.add("kotlin.properties.Delegates")
+                    "by Delegates.notNull()"
+                } else {
+                    "= ${type.defaultValue}"
+                }
+
+                code("override var $fieldDeclaration $value")
                 newLine()
             }
         }
@@ -135,7 +150,7 @@ class ModelToKotlinGenerator(
             code("return ${declaration.name.simpleName}Builder().apply(body)")
         }
 
-        val platformType = "${declaration.outerClassName.simpleName}.${declaration.name.simpleName}"
+        val platformType = "${declaration.outerClassName.fullName()}.${declaration.name.simpleName}"
 
         function(
             name = "toPlatform",
@@ -164,27 +179,25 @@ class ModelToKotlinGenerator(
     }
 
     private fun FieldDeclaration.toPlatformCast(): String {
-        val type = type as? FieldType.IntegralType ?: return ""
-
         return when (type) {
             FieldType.IntegralType.FIXED32 -> ".toInt()"
             FieldType.IntegralType.FIXED64 -> ".toLong()"
             FieldType.IntegralType.UINT32 -> ".toInt()"
             FieldType.IntegralType.UINT64 -> ".toLong()"
             FieldType.IntegralType.BYTES -> ".let { bytes -> com.google.protobuf.ByteString.copyFrom(bytes) }"
+            is FieldType.Reference -> ".toPlatform()"
             else -> ""
         }
     }
 
     private fun FieldDeclaration.toKotlinCast(): String {
-        val type = type as? FieldType.IntegralType ?: return ""
-
         return when (type) {
             FieldType.IntegralType.FIXED32 -> ".toUInt()"
             FieldType.IntegralType.FIXED64 -> ".toULong()"
             FieldType.IntegralType.UINT32 -> ".toUInt()"
             FieldType.IntegralType.UINT64 -> ".toULong()"
             FieldType.IntegralType.BYTES -> ".toByteArray()"
+            is FieldType.Reference -> ".toKotlin()"
             else -> ""
         }
     }
@@ -196,9 +209,10 @@ class ModelToKotlinGenerator(
     private fun FieldDeclaration.typeFqName(): String {
         return when (type) {
             // KRPC-156 Reference Types
-//            is FieldType.Reference -> {
-//                type.value.simpleName
-//            }
+            is FieldType.Reference -> {
+                val value by type.value
+                value.fullName()
+            }
 
             is FieldType.IntegralType -> {
                 type.fqName.simpleName
@@ -269,10 +283,10 @@ class ModelToKotlinGenerator(
                 val inputType by method.inputType
                 val outputType by method.outputType
                 function(
-                    name = method.name.simpleName,
+                    name = method.name,
                     modifiers = "suspend",
-                    args = "message: ${inputType.name.simpleName}",
-                    returnType = outputType.name.simpleName,
+                    args = "message: ${inputType.name.fullName()}",
+                    returnType = outputType.name.fullName(),
                 )
             }
         }
@@ -284,7 +298,7 @@ class ModelToKotlinGenerator(
             modifiers = "private",
             name = "${service.name.simpleName}Delegate",
             declarationType = DeclarationType.Object,
-            superTypes = listOf("kotlinx.rpc.grpc.descriptor.GrpcDelegate<${service.name.simpleName}>"),
+            superTypes = listOf("kotlinx.rpc.grpc.descriptor.GrpcDelegate<${service.name.fullName()}>"),
         ) {
             function(
                 name = "clientProvider",
@@ -298,7 +312,7 @@ class ModelToKotlinGenerator(
             function(
                 name = "definitionFor",
                 modifiers = "override",
-                args = "impl: ${service.name.simpleName}",
+                args = "impl: ${service.name.fullName()}",
                 returnType = "kotlinx.rpc.grpc.ServerServiceDefinition",
             ) {
                 scope("return ${service.name.simpleName}ServerDelegate(impl).bindService()")
@@ -311,10 +325,10 @@ class ModelToKotlinGenerator(
             name = "${service.name.simpleName}ServerDelegate",
             declarationType = DeclarationType.Class,
             superTypes = listOf("${service.name.simpleName}GrpcKt.${service.name.simpleName}CoroutineImplBase()"),
-            constructorArgs = listOf("private val impl: ${service.name.simpleName}"),
+            constructorArgs = listOf("private val impl: ${service.name.fullName()}"),
         ) {
             service.methods.forEach { method ->
-                val grpcName = method.name.simpleName.replaceFirstChar { it.lowercase() }
+                val grpcName = method.name.replaceFirstChar { it.lowercase() }
 
                 val inputType by method.inputType
                 val outputType by method.outputType
@@ -325,7 +339,7 @@ class ModelToKotlinGenerator(
                     args = "request: ${inputType.toPlatformMessageType()}",
                     returnType = outputType.toPlatformMessageType(),
                 ) {
-                    code("return impl.${method.name.simpleName}(request.toKotlin()).toPlatform()")
+                    code("return impl.${method.name}(request.toKotlin()).toPlatform()")
                 }
             }
         }
@@ -362,9 +376,9 @@ class ModelToKotlinGenerator(
                 scope("return when (call.callableName)") {
                     service.methods.forEach { method ->
                         val inputType by method.inputType
-                        val grpcName = method.name.simpleName.replaceFirstChar { it.lowercase() }
-                        val result = "stub.$grpcName((message as ${inputType.name.simpleName}).toPlatform())"
-                        code("\"${method.name.simpleName}\" -> $result.toKotlin() as R")
+                        val grpcName = method.name.replaceFirstChar { it.lowercase() }
+                        val result = "stub.$grpcName((message as ${inputType.name.fullName()}).toPlatform())"
+                        code("\"${method.name}\" -> $result.toKotlin() as R")
                     }
 
                     code("else -> error(\"Illegal call: \${call.callableName}\")")
@@ -384,7 +398,7 @@ class ModelToKotlinGenerator(
     }
 
     private fun MessageDeclaration.toPlatformMessageType(): String {
-        return "${outerClassName.simpleName}.${name.simpleName.removePrefix(name.parentNameAsPrefix)}"
+        return "${outerClassName.fullName()}.${name.simpleName}"
     }
 }
 

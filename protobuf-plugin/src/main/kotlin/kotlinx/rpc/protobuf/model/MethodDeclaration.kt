@@ -5,7 +5,7 @@
 package kotlinx.rpc.protobuf.model
 
 data class MethodDeclaration(
-    val name: FqName,
+    val name: String,
     val clientStreaming: Boolean,
     val serverStreaming: Boolean,
     val inputType: Lazy<MessageDeclaration>,
