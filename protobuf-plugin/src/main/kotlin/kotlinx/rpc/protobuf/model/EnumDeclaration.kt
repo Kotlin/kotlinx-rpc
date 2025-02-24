@@ -5,6 +5,7 @@
 package kotlinx.rpc.protobuf.model
 
 data class EnumDeclaration(
+    val outerClassName: FqName,
     val name: FqName,
     val originalEntries: List<Entry>,
     val aliases: List<Alias>,
