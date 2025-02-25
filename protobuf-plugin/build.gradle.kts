@@ -33,8 +33,8 @@ sourceSets {
     test {
         proto {
             exclude(
+                "**/enum_options.proto",
                 "**/empty_deprecated.proto",
-                "**/enum.proto",
                 "**/example.proto",
                 "**/funny_types.proto",
                 "**/map.proto",
