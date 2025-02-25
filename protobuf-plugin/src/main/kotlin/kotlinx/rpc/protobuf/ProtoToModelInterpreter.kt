@@ -12,6 +12,8 @@ import kotlinx.rpc.protobuf.model.FieldType.IntegralType
 import org.slf4j.Logger
 import kotlin.properties.Delegates
 
+private const val ENUM_UNRECOGNIZED = "UNRECOGNIZED"
+
 class ProtoToModelInterpreter(
     @Suppress("unused")
     private val logger: Logger,
@@ -39,12 +41,14 @@ class ProtoToModelInterpreter(
             .withScope(packageName)
             .withImports(dependencies.map { it.packageName })
 
+        val outerClass = outerClassFq()
+        
         return FileDeclaration(
             name = kotlinFileName(),
             packageName = packageName,
             dependencies = dependencies,
-            messageDeclarations = messageTypeList.map { it.toModel(outerClassFq(), parent = null, resolver) },
-            enumDeclarations = enumTypeList.map { it.toModel(resolver) },
+            messageDeclarations = messageTypeList.map { it.toModel(resolver, outerClass, parent = null) },
+            enumDeclarations = enumTypeList.map { it.toModel(resolver, outerClass, packageName) },
             serviceDeclarations = serviceList.map { it.toModel(resolver) },
             deprecated = options.deprecated,
             doc = null,
@@ -58,9 +62,10 @@ class ProtoToModelInterpreter(
         val filename = protoFileNameToKotlinName()
 
         val messageClash = messageTypeList.any { it.name.fullProtoNameToKotlin(firstLetterUpper = true) == filename }
+        val enumClash = enumTypeList.any { it.name.fullProtoNameToKotlin(firstLetterUpper = true) == filename }
         val serviceClash = serviceList.any { it.name.fullProtoNameToKotlin(firstLetterUpper = true) == filename }
 
-        val suffix = if (messageClash || serviceClash) {
+        val suffix = if (messageClash || enumClash || serviceClash) {
             "OuterClass"
         } else {
             ""
@@ -84,9 +89,9 @@ class ProtoToModelInterpreter(
     }
 
     private fun DescriptorProtos.DescriptorProto.toModel(
+        parentResolver: NameResolver,
         outerClass: FqName,
         parent: FqName?,
-        parentResolver: NameResolver,
     ): MessageDeclaration {
         val simpleName = name.fullProtoNameToKotlin(firstLetterUpper = true)
         val fqName = parentResolver.declarationFqName(simpleName, parent ?: packageName)
@@ -107,8 +112,8 @@ class ProtoToModelInterpreter(
             name = fqName,
             actualFields = fields,
             oneOfDeclarations = oneofDeclList.asSequence().mapIndexedNotNull { i, desc -> desc.toModel(i, resolver) },
-            enumDeclarations = enumTypeList.asSequence().map { it.toModel(resolver) },
-            nestedDeclarations = nestedTypeList.asSequence().map { it.toModel(outerClass, fqName, resolver) },
+            enumDeclarations = enumTypeList.asSequence().map { it.toModel(resolver, outerClass, parent ?: packageName) },
+            nestedDeclarations = nestedTypeList.asSequence().map { it.toModel(resolver, outerClass, fqName) },
             deprecated = options.deprecated,
             doc = null,
         ).apply {
@@ -247,7 +252,11 @@ class ProtoToModelInterpreter(
         )
     }
 
-    private fun DescriptorProtos.EnumDescriptorProto.toModel(resolver: NameResolver): EnumDeclaration {
+    private fun DescriptorProtos.EnumDescriptorProto.toModel(
+        resolver: NameResolver,
+        outerClassName: FqName,
+        parent: FqName,
+    ): EnumDeclaration {
         val allowAlias = options.allowAlias
         val originalEntries = mutableMapOf<Int, EnumDeclaration.Entry>()
         val aliases = mutableListOf<EnumDeclaration.Alias>()
@@ -257,7 +266,7 @@ class ProtoToModelInterpreter(
             if (original != null) {
                 if (!allowAlias) {
                     error(
-                        "Aliases are not allow for enum type $name: " +
+                        "Aliases are not allowed for enum type $name: " +
                                 "${enumEntry.number} of ${enumEntry.name} is already used by $original entry. " +
                                 "Allow aliases via `allow_alias = true` option to avoid this error."
                     )
@@ -265,8 +274,7 @@ class ProtoToModelInterpreter(
 
                 aliases.add(
                     EnumDeclaration.Alias(
-                        // TODO KRPC-141 Enum Types: check fqName for nested types
-                        name = resolver.declarationFqName(enumEntry.name, packageName),
+                        name = resolver.declarationFqName(enumEntry.name, parent),
                         original = original,
                         deprecated = enumEntry.options.deprecated,
                         doc = null,
@@ -274,17 +282,22 @@ class ProtoToModelInterpreter(
                 )
             } else {
                 originalEntries[enumEntry.number] = EnumDeclaration.Entry(
-                    // TODO KRPC-141 Enum Types: check fqName for nested types
-                    name = resolver.declarationFqName(enumEntry.name, packageName),
+                    name = resolver.declarationFqName(enumEntry.name, parent),
                     deprecated = enumEntry.options.deprecated,
                     doc = null,
                 )
             }
         }
 
+        originalEntries[-1] =  EnumDeclaration.Entry(
+            name = resolver.declarationFqName(ENUM_UNRECOGNIZED, parent),
+            deprecated = false,
+            doc = null,
+        )
+
         return EnumDeclaration(
-            // TODO KRPC-141 Enum Types: check fqName for nested types
-            name = resolver.declarationFqName(name.fullProtoNameToKotlin(firstLetterUpper = true), packageName),
+            name = resolver.declarationFqName(name.fullProtoNameToKotlin(firstLetterUpper = true), parent),
+            outerClassName = outerClassName,
             originalEntries = originalEntries.values.toList(),
             aliases = aliases,
             deprecated = options.deprecated,
