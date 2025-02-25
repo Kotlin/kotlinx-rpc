@@ -7,6 +7,7 @@ package kotlinx.rpc.protobuf
 import kotlinx.rpc.protobuf.CodeGenerator.DeclarationType
 import kotlinx.rpc.protobuf.model.*
 import org.slf4j.Logger
+import kotlin.sequences.forEach
 
 private const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
 
@@ -51,7 +52,8 @@ class ModelToKotlinGenerator(
         return file(codeGenerationParameters, logger = logger) {
             filename = this@generateInternalKotlinFile.name
             packageName = this@generateInternalKotlinFile.packageName.fullName()
-            packagePath = this@generateInternalKotlinFile.packageName.fullName().packageNameSuffixed(RPC_INTERNAL_PACKAGE_SUFFIX)
+            packagePath =
+                this@generateInternalKotlinFile.packageName.fullName().packageNameSuffixed(RPC_INTERNAL_PACKAGE_SUFFIX)
 
             fileOptIns = listOf("ExperimentalRpcApi::class", "InternalRpcApi::class")
 
@@ -74,15 +76,13 @@ class ModelToKotlinGenerator(
 
     private fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration) {
         fileDeclaration.messageDeclarations.forEach { generatePublicMessage(it) }
-        // KRPC-141 Enum Types
-//        fileDeclaration.enumDeclarations.forEach { generateEnum(it) }
+        fileDeclaration.enumDeclarations.forEach { generatePublicEnum(it) }
         fileDeclaration.serviceDeclarations.forEach { generatePublicService(it) }
     }
 
     private fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {
         fileDeclaration.messageDeclarations.forEach { generateInternalMessage(it) }
-        // KRPC-141 Enum Types
-//        fileDeclaration.enumDeclarations.forEach { generateEnum(it) }
+        fileDeclaration.enumDeclarations.forEach { generateInternalEnum(it) }
         fileDeclaration.serviceDeclarations.forEach { generateInternalService(it) }
     }
 
@@ -125,7 +125,7 @@ class ModelToKotlinGenerator(
         clazz(
             name = "${declaration.name.simpleName}Builder",
             declarationType = DeclarationType.Class,
-            superTypes = listOf(declaration.name.simpleName),
+            superTypes = listOf(declaration.name.fullName()),
         ) {
             declaration.fields().forEach { (fieldDeclaration, type) ->
                 val value = if (type is FieldType.Reference) {
@@ -144,8 +144,8 @@ class ModelToKotlinGenerator(
             name = "invoke",
             modifiers = "operator",
             args = "body: ${declaration.name.simpleName}Builder.() -> Unit",
-            contextReceiver = "${declaration.name.simpleName}.Companion",
-            returnType = declaration.name.simpleName,
+            contextReceiver = "${declaration.name.fullName()}.Companion",
+            returnType = declaration.name.fullName(),
         ) {
             code("return ${declaration.name.simpleName}Builder().apply(body)")
         }
@@ -154,7 +154,7 @@ class ModelToKotlinGenerator(
 
         function(
             name = "toPlatform",
-            contextReceiver = declaration.name.simpleName,
+            contextReceiver = declaration.name.fullName(),
             returnType = platformType,
         ) {
             scope("return $platformType.newBuilder().apply", ".build()") {
@@ -168,7 +168,7 @@ class ModelToKotlinGenerator(
         function(
             name = "toKotlin",
             contextReceiver = platformType,
-            returnType = declaration.name.simpleName,
+            returnType = declaration.name.fullName(),
         ) {
             scope("return ${declaration.name.simpleName}") {
                 declaration.actualFields.forEach { field ->
@@ -252,12 +252,14 @@ class ModelToKotlinGenerator(
         }
     }
 
-    @Suppress("unused")
-    private fun CodeGenerator.generateEnum(declaration: EnumDeclaration) {
-        clazz(declaration.name.simpleName, "enum") {
-            code(declaration.originalEntries.joinToString(", ", postfix = ";") { enumEntry ->
-                enumEntry.name.simpleName
-            })
+    private fun CodeGenerator.generatePublicEnum(declaration: EnumDeclaration) {
+        clazz(declaration.name.simpleName, modifiers = "enum") {
+            declaration.originalEntries.forEach { entry ->
+                code("${entry.name.simpleName},")
+                newLine()
+            }
+            code(";")
+            newLine()
 
             if (declaration.aliases.isNotEmpty()) {
                 newLine()
@@ -269,6 +271,43 @@ class ModelToKotlinGenerator(
                                     "= ${alias.original.name.simpleName}"
                         )
                     }
+                }
+            }
+        }
+    }
+
+    @Suppress("unused")
+    private fun CodeGenerator.generateInternalEnum(declaration: EnumDeclaration) {
+        val platformType = "${declaration.outerClassName.fullName()}.${declaration.name.simpleName}"
+
+        function(
+            name = "toPlatform",
+            contextReceiver = declaration.name.fullName(),
+            returnType = platformType,
+        ) {
+            scope("return when (this)") {
+                declaration.aliases.forEach { field ->
+                    code("${declaration.name.simpleName}.${field.name.simpleName} -> $platformType.${field.name.simpleName}")
+                }
+
+                declaration.originalEntries.forEach { field ->
+                    code("${declaration.name.simpleName}.${field.name.simpleName} -> $platformType.${field.name.simpleName}")
+                }
+            }
+        }
+
+        function(
+            name = "toKotlin",
+            contextReceiver = platformType,
+            returnType = declaration.name.fullName(),
+        ) {
+            scope("return when (this)") {
+                declaration.aliases.forEach { field ->
+                    code("$platformType.${field.name.simpleName} -> ${declaration.name.simpleName}.${field.name.simpleName}")
+                }
+
+                declaration.originalEntries.forEach { field ->
+                    code("$platformType.${field.name.simpleName} -> ${declaration.name.simpleName}.${field.name.simpleName}")
                 }
             }
         }
