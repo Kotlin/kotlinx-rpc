@@ -98,7 +98,7 @@ class ModelToKotlinGenerator(
     }
 
     private fun MessageDeclaration.fields() = actualFields.map {
-        it.transformToFieldDeclaration() to it.type
+        it.transformToFieldDeclaration() to it
     }
 
     @Suppress("detekt.CyclomaticComplexMethod")
@@ -138,12 +138,20 @@ class ModelToKotlinGenerator(
             declarationType = DeclarationType.Class,
             superTypes = listOf(declaration.name.safeFullName()),
         ) {
-            declaration.fields().forEach { (fieldDeclaration, type) ->
-                val value = if (type is FieldType.Reference) {
-                    additionalInternalImports.add("kotlin.properties.Delegates")
-                    "by Delegates.notNull()"
-                } else {
-                    "= ${type.defaultValue}"
+            declaration.fields().forEach { (fieldDeclaration, field) ->
+                val value = when {
+                    field.type is FieldType.Reference && field.nullable -> {
+                        "= null"
+                    }
+
+                    field.type is FieldType.Reference -> {
+                        additionalInternalImports.add("kotlin.properties.Delegates")
+                        "by Delegates.notNull()"
+                    }
+
+                    else -> {
+                        "= ${field.type.defaultValue}"
+                    }
                 }
 
                 code("override var $fieldDeclaration $value")
@@ -170,8 +178,14 @@ class ModelToKotlinGenerator(
         ) {
             scope("return $platformType.newBuilder().apply", ".build()") {
                 declaration.actualFields.forEach { field ->
-                    val call = "this@toPlatform.${field.name}${field.toPlatformCast()}"
-                    code("set${field.name.replaceFirstChar { ch -> ch.uppercase() }}($call)")
+                    val uppercaseName = field.name.replaceFirstChar { ch -> ch.uppercase() }
+                    val setFieldCall = "set$uppercaseName"
+
+                    if (field.nullable) {
+                        code("this@toPlatform.${field.name}?.let { $setFieldCall(it${field.toPlatformCast()}) }")
+                    } else {
+                        code("$setFieldCall(this@toPlatform.${field.name}${field.toPlatformCast()})")
+                    }
                 }
             }
         }
@@ -183,7 +197,21 @@ class ModelToKotlinGenerator(
         ) {
             scope("return ${declaration.name.simpleName}") {
                 declaration.actualFields.forEach { field ->
-                    code("${field.name} = this@toKotlin.${field.name}${field.toKotlinCast()}")
+                    val getter = "this@toKotlin.${field.name}${field.toKotlinCast()}"
+                    if (field.nullable) {
+                        ifBranch(
+                            prefix = "${field.name} = ",
+                            condition = "has${field.name.replaceFirstChar { ch -> ch.uppercase() }}()",
+                            ifBlock = {
+                                code(getter)
+                            },
+                            elseBlock = {
+                                code("null")
+                            }
+                        )
+                    } else {
+                        code("${field.name} = $getter")
+                    }
                 }
             }
         }
@@ -249,7 +277,11 @@ class ModelToKotlinGenerator(
             else -> {
                 error("Unsupported type: $type")
             }
-        }
+        }.withNullability(nullable)
+    }
+
+    private fun String.withNullability(nullable: Boolean): String {
+        return "$this${if (nullable) "?" else ""}"
     }
 
     @Suppress("unused")

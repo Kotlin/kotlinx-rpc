@@ -152,6 +152,7 @@ class ProtoToModelInterpreter(
             return FieldDeclaration(
                 name = oneOfName.removePrefix("_").fullProtoNameToKotlin(),
                 type = fieldType,
+                // TODO KRPC-147 OneOf Types: check nullability
                 nullable = true,
                 deprecated = options.deprecated,
                 doc = null,
@@ -161,7 +162,7 @@ class ProtoToModelInterpreter(
         return FieldDeclaration(
             name = name.fullProtoNameToKotlin(),
             type = fieldType(resolver),
-            nullable = false,
+            nullable = proto3Optional,
             deprecated = options.deprecated,
             doc = null,
         )
