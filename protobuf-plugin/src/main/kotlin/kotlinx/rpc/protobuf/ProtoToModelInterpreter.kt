@@ -42,7 +42,7 @@ class ProtoToModelInterpreter(
             .withImports(dependencies.map { it.packageName })
 
         val outerClass = outerClassFq()
-        
+
         return FileDeclaration(
             name = kotlinFileName(),
             packageName = packageName,
@@ -289,7 +289,7 @@ class ProtoToModelInterpreter(
             }
         }
 
-        originalEntries[-1] =  EnumDeclaration.Entry(
+        originalEntries[-1] = EnumDeclaration.Entry(
             name = resolver.declarationFqName(ENUM_UNRECOGNIZED, parent),
             deprecated = false,
             doc = null,
