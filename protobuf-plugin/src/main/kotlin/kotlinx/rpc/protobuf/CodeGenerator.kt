@@ -71,12 +71,31 @@ open class CodeGenerator(
         CodeGenerator(parameters, "$indent$ONE_INDENT", builder, logger).block()
     }
 
-    internal fun scope(prefix: String, suffix: String = "", block: (CodeGenerator.() -> Unit)? = null) {
+    internal fun scope(
+        prefix: String,
+        suffix: String = "",
+        nlAfterClosed: Boolean = true,
+        block: (CodeGenerator.() -> Unit)? = null,
+    ) {
         addLine(prefix)
-        scopeWithSuffix(suffix, block)
+        scopeWithSuffix(suffix, nlAfterClosed, block)
     }
 
-    private fun scopeWithSuffix(suffix: String = "", block: (CodeGenerator.() -> Unit)? = null) {
+    internal fun ifBranch(
+        prefix: String = "",
+        condition: String,
+        ifBlock: (CodeGenerator.() -> Unit),
+        elseBlock: (CodeGenerator.() -> Unit)? = null,
+    ) {
+        scope("${prefix}if ($condition)", nlAfterClosed = false, suffix = if (elseBlock != null) " else" else "", block = ifBlock)
+        scopeWithSuffix(block = elseBlock)
+    }
+
+    private fun scopeWithSuffix(
+        suffix: String = "",
+        nlAfterClosed: Boolean = true,
+        block: (CodeGenerator.() -> Unit)? = null,
+    ) {
         if (block == null) {
             newLine()
             lastIsDeclaration = true
@@ -95,8 +114,11 @@ open class CodeGenerator(
         newLine()
         append(nested.build().trimEnd())
         addLine("}$suffix")
-        newLine()
-        lastIsDeclaration = true
+        if (nlAfterClosed) {
+            newLine()
+        }
+
+        lastIsDeclaration = nlAfterClosed
     }
 
     fun code(code: String) {
