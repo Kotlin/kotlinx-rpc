@@ -30,17 +30,25 @@ class ModelToKotlinGenerator(
         )
     }
 
+    private var currentPackage: FqName = FqName.Package.Root
+
     private fun FileDeclaration.generatePublicKotlinFile(): FileGenerator {
+        currentPackage = packageName
+
         return file(codeGenerationParameters, logger = logger) {
             filename = this@generatePublicKotlinFile.name
-            packageName = this@generatePublicKotlinFile.packageName.fullName()
-            packagePath = this@generatePublicKotlinFile.packageName.fullName()
+            packageName = this@generatePublicKotlinFile.packageName.safeFullName()
+            packagePath = this@generatePublicKotlinFile.packageName.safeFullName()
 
             dependencies.forEach { dependency ->
-                importPackage(dependency.packageName.fullName())
+                importPackage(dependency.packageName.safeFullName())
             }
 
+            fileOptIns = listOf("ExperimentalRpcApi::class", "InternalRpcApi::class")
+
             generatePublicDeclaredEntities(this@generatePublicKotlinFile)
+
+            import("kotlinx.rpc.internal.utils.*")
 
             additionalPublicImports.forEach {
                 import(it)
@@ -49,16 +57,19 @@ class ModelToKotlinGenerator(
     }
 
     private fun FileDeclaration.generateInternalKotlinFile(): FileGenerator {
+        currentPackage = packageName
+
         return file(codeGenerationParameters, logger = logger) {
             filename = this@generateInternalKotlinFile.name
-            packageName = this@generateInternalKotlinFile.packageName.fullName()
+            packageName = this@generateInternalKotlinFile.packageName.safeFullName()
             packagePath =
-                this@generateInternalKotlinFile.packageName.fullName().packageNameSuffixed(RPC_INTERNAL_PACKAGE_SUFFIX)
+                this@generateInternalKotlinFile.packageName.safeFullName()
+                    .packageNameSuffixed(RPC_INTERNAL_PACKAGE_SUFFIX)
 
             fileOptIns = listOf("ExperimentalRpcApi::class", "InternalRpcApi::class")
 
             dependencies.forEach { dependency ->
-                importPackage(dependency.packageName.fullName())
+                importPackage(dependency.packageName.safeFullName())
             }
 
             generateInternalDeclaredEntities(this@generateInternalKotlinFile)
@@ -87,7 +98,7 @@ class ModelToKotlinGenerator(
     }
 
     private fun MessageDeclaration.fields() = actualFields.map {
-        it.transformToFieldDeclaration() to it.type
+        it.transformToFieldDeclaration() to it
     }
 
     @Suppress("detekt.CyclomaticComplexMethod")
@@ -125,14 +136,22 @@ class ModelToKotlinGenerator(
         clazz(
             name = "${declaration.name.simpleName}Builder",
             declarationType = DeclarationType.Class,
-            superTypes = listOf(declaration.name.fullName()),
+            superTypes = listOf(declaration.name.safeFullName()),
         ) {
-            declaration.fields().forEach { (fieldDeclaration, type) ->
-                val value = if (type is FieldType.Reference) {
-                    additionalInternalImports.add("kotlin.properties.Delegates")
-                    "by Delegates.notNull()"
-                } else {
-                    "= ${type.defaultValue}"
+            declaration.fields().forEach { (fieldDeclaration, field) ->
+                val value = when {
+                    field.type is FieldType.Reference && field.nullable -> {
+                        "= null"
+                    }
+
+                    field.type is FieldType.Reference -> {
+                        additionalInternalImports.add("kotlin.properties.Delegates")
+                        "by Delegates.notNull()"
+                    }
+
+                    else -> {
+                        "= ${field.type.defaultValue}"
+                    }
                 }
 
                 code("override var $fieldDeclaration $value")
@@ -144,23 +163,29 @@ class ModelToKotlinGenerator(
             name = "invoke",
             modifiers = "operator",
             args = "body: ${declaration.name.simpleName}Builder.() -> Unit",
-            contextReceiver = "${declaration.name.fullName()}.Companion",
-            returnType = declaration.name.fullName(),
+            contextReceiver = "${declaration.name.safeFullName()}.Companion",
+            returnType = declaration.name.safeFullName(),
         ) {
             code("return ${declaration.name.simpleName}Builder().apply(body)")
         }
 
-        val platformType = "${declaration.outerClassName.fullName()}.${declaration.name.simpleName}"
+        val platformType = "${declaration.outerClassName.safeFullName()}.${declaration.name.simpleName}"
 
         function(
             name = "toPlatform",
-            contextReceiver = declaration.name.fullName(),
+            contextReceiver = declaration.name.safeFullName(),
             returnType = platformType,
         ) {
             scope("return $platformType.newBuilder().apply", ".build()") {
                 declaration.actualFields.forEach { field ->
-                    val call = "this@toPlatform.${field.name}${field.toPlatformCast()}"
-                    code("set${field.name.replaceFirstChar { ch -> ch.uppercase() }}($call)")
+                    val uppercaseName = field.name.replaceFirstChar { ch -> ch.uppercase() }
+                    val setFieldCall = "set$uppercaseName"
+
+                    if (field.nullable) {
+                        code("this@toPlatform.${field.name}?.let { $setFieldCall(it${field.toPlatformCast()}) }")
+                    } else {
+                        code("$setFieldCall(this@toPlatform.${field.name}${field.toPlatformCast()})")
+                    }
                 }
             }
         }
@@ -168,11 +193,25 @@ class ModelToKotlinGenerator(
         function(
             name = "toKotlin",
             contextReceiver = platformType,
-            returnType = declaration.name.fullName(),
+            returnType = declaration.name.safeFullName(),
         ) {
             scope("return ${declaration.name.simpleName}") {
                 declaration.actualFields.forEach { field ->
-                    code("${field.name} = this@toKotlin.${field.name}${field.toKotlinCast()}")
+                    val getter = "this@toKotlin.${field.name}${field.toKotlinCast()}"
+                    if (field.nullable) {
+                        ifBranch(
+                            prefix = "${field.name} = ",
+                            condition = "has${field.name.replaceFirstChar { ch -> ch.uppercase() }}()",
+                            ifBlock = {
+                                code(getter)
+                            },
+                            elseBlock = {
+                                code("null")
+                            }
+                        )
+                    } else {
+                        code("${field.name} = $getter")
+                    }
                 }
             }
         }
@@ -185,7 +224,11 @@ class ModelToKotlinGenerator(
             FieldType.IntegralType.UINT32 -> ".toInt()"
             FieldType.IntegralType.UINT64 -> ".toLong()"
             FieldType.IntegralType.BYTES -> ".let { bytes -> com.google.protobuf.ByteString.copyFrom(bytes) }"
-            is FieldType.Reference -> ".toPlatform()"
+            is FieldType.Reference -> ".toPlatform()".also {
+                val fq by type.value
+                importRootDeclarationIfNeeded(fq, "toPlatform", true)
+            }
+
             else -> ""
         }
     }
@@ -197,7 +240,11 @@ class ModelToKotlinGenerator(
             FieldType.IntegralType.UINT32 -> ".toUInt()"
             FieldType.IntegralType.UINT64 -> ".toULong()"
             FieldType.IntegralType.BYTES -> ".toByteArray()"
-            is FieldType.Reference -> ".toKotlin()"
+            is FieldType.Reference -> ".toKotlin()".also {
+                val fq by type.value
+                importRootDeclarationIfNeeded(fq, "toKotlin", true)
+            }
+
             else -> ""
         }
     }
@@ -211,7 +258,7 @@ class ModelToKotlinGenerator(
             // KRPC-156 Reference Types
             is FieldType.Reference -> {
                 val value by type.value
-                value.fullName()
+                value.safeFullName()
             }
 
             is FieldType.IntegralType -> {
@@ -230,7 +277,11 @@ class ModelToKotlinGenerator(
             else -> {
                 error("Unsupported type: $type")
             }
-        }
+        }.withNullability(nullable)
+    }
+
+    private fun String.withNullability(nullable: Boolean): String {
+        return "$this${if (nullable) "?" else ""}"
     }
 
     @Suppress("unused")
@@ -278,11 +329,11 @@ class ModelToKotlinGenerator(
 
     @Suppress("unused")
     private fun CodeGenerator.generateInternalEnum(declaration: EnumDeclaration) {
-        val platformType = "${declaration.outerClassName.fullName()}.${declaration.name.simpleName}"
+        val platformType = "${declaration.outerClassName.safeFullName()}.${declaration.name.simpleName}"
 
         function(
             name = "toPlatform",
-            contextReceiver = declaration.name.fullName(),
+            contextReceiver = declaration.name.safeFullName(),
             returnType = platformType,
         ) {
             scope("return when (this)") {
@@ -299,7 +350,7 @@ class ModelToKotlinGenerator(
         function(
             name = "toKotlin",
             contextReceiver = platformType,
-            returnType = declaration.name.fullName(),
+            returnType = declaration.name.safeFullName(),
         ) {
             scope("return when (this)") {
                 declaration.aliases.forEach { field ->
@@ -324,8 +375,8 @@ class ModelToKotlinGenerator(
                 function(
                     name = method.name,
                     modifiers = "suspend",
-                    args = "message: ${inputType.name.fullName()}",
-                    returnType = outputType.name.fullName(),
+                    args = "message: ${inputType.name.safeFullName()}",
+                    returnType = outputType.name.safeFullName(),
                 )
             }
         }
@@ -337,7 +388,7 @@ class ModelToKotlinGenerator(
             modifiers = "private",
             name = "${service.name.simpleName}Delegate",
             declarationType = DeclarationType.Object,
-            superTypes = listOf("kotlinx.rpc.grpc.descriptor.GrpcDelegate<${service.name.fullName()}>"),
+            superTypes = listOf("kotlinx.rpc.grpc.descriptor.GrpcDelegate<${service.name.safeFullName()}>"),
         ) {
             function(
                 name = "clientProvider",
@@ -351,7 +402,7 @@ class ModelToKotlinGenerator(
             function(
                 name = "definitionFor",
                 modifiers = "override",
-                args = "impl: ${service.name.fullName()}",
+                args = "impl: ${service.name.safeFullName()}",
                 returnType = "kotlinx.rpc.grpc.ServerServiceDefinition",
             ) {
                 scope("return ${service.name.simpleName}ServerDelegate(impl).bindService()")
@@ -364,7 +415,7 @@ class ModelToKotlinGenerator(
             name = "${service.name.simpleName}ServerDelegate",
             declarationType = DeclarationType.Class,
             superTypes = listOf("${service.name.simpleName}GrpcKt.${service.name.simpleName}CoroutineImplBase()"),
-            constructorArgs = listOf("private val impl: ${service.name.fullName()}"),
+            constructorArgs = listOf("private val impl: ${service.name.safeFullName()}"),
         ) {
             service.methods.forEach { method ->
                 val grpcName = method.name.replaceFirstChar { it.lowercase() }
@@ -379,6 +430,9 @@ class ModelToKotlinGenerator(
                     returnType = outputType.toPlatformMessageType(),
                 ) {
                     code("return impl.${method.name}(request.toKotlin()).toPlatform()")
+
+                    importRootDeclarationIfNeeded(inputType.name, "toPlatform", true)
+                    importRootDeclarationIfNeeded(outputType.name, "toKotlin", true)
                 }
             }
         }
@@ -415,9 +469,13 @@ class ModelToKotlinGenerator(
                 scope("return when (call.callableName)") {
                     service.methods.forEach { method ->
                         val inputType by method.inputType
+                        val outputType by method.outputType
                         val grpcName = method.name.replaceFirstChar { it.lowercase() }
-                        val result = "stub.$grpcName((message as ${inputType.name.fullName()}).toPlatform())"
+                        val result = "stub.$grpcName((message as ${inputType.name.safeFullName()}).toPlatform())"
                         code("\"${method.name}\" -> $result.toKotlin() as R")
+
+                        importRootDeclarationIfNeeded(inputType.name, "toPlatform", true)
+                        importRootDeclarationIfNeeded(outputType.name, "toKotlin", true)
                     }
 
                     code("else -> error(\"Illegal call: \${call.callableName}\")")
@@ -437,7 +495,26 @@ class ModelToKotlinGenerator(
     }
 
     private fun MessageDeclaration.toPlatformMessageType(): String {
-        return "${outerClassName.fullName()}.${name.simpleName}"
+        return "${outerClassName.safeFullName()}.${name.simpleName}"
+    }
+
+    private fun FqName.safeFullName(): String {
+        importRootDeclarationIfNeeded(this)
+
+        return fullName()
+    }
+
+    private fun importRootDeclarationIfNeeded(
+        declaration: FqName,
+        nameToImport: String = declaration.simpleName,
+        internalOnly: Boolean = false,
+    ) {
+        if (declaration.parent == FqName.Package.Root && currentPackage != FqName.Package.Root && nameToImport.isNotBlank()) {
+            additionalInternalImports.add(nameToImport)
+            if (!internalOnly) {
+                additionalPublicImports.add(nameToImport)
+            }
+        }
     }
 }
 
