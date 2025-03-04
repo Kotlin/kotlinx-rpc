@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package kotlinx.rpc.protobuf.test;
+
+import 'reference_package.proto';
+
+message OptionalTypes {
+  optional string name = 1;
+  optional int32 age = 2;
+  optional Other reference = 3;
+}
