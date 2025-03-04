@@ -30,6 +30,10 @@ class ReferenceTestServiceImpl : ReferenceTestService {
     override suspend fun Enum(message: UsingEnum): UsingEnum {
         return message
     }
+
+    override suspend fun Optional(message: OptionalTypes): OptionalTypes {
+        return message
+    }
 }
 
 class TestReferenceService {
@@ -58,6 +62,34 @@ class TestReferenceService {
         })
 
         assertEquals(Enum.ONE, result.enum)
+    }
+
+    @Test
+    fun testOptional() = runBlocking {
+        val grpcClient = initializeServerAndClient()
+
+        val service = grpcClient.withService<ReferenceTestService>()
+        val resultNotNull = service.Optional(OptionalTypes {
+            name = "test"
+            age = 42
+            reference = kotlinx.rpc.protobuf.test.Other {
+                field = 42
+            }
+        })
+
+        assertEquals("test", resultNotNull.name)
+        assertEquals(42, resultNotNull.age)
+        assertEquals(42, resultNotNull.reference?.field)
+
+        val resultNullable = service.Optional(OptionalTypes {
+            name = null
+            age = null
+            reference = null
+        })
+
+        assertEquals(null, resultNullable.name)
+        assertEquals(null, resultNullable.age)
+        assertEquals(null, resultNullable.reference)
     }
 
     private fun initializeServerAndClient(): GrpcClient {
