@@ -3,9 +3,12 @@ syntax = "proto3";
 import "reference.proto";
 import "reference_package.proto";
 import "enum.proto";
+import "optional.proto";
 
 service ReferenceTestService {
   rpc Get(References) returns (kotlinx.rpc.protobuf.test.References);
 
   rpc Enum(kotlinx.rpc.protobuf.test.UsingEnum) returns (kotlinx.rpc.protobuf.test.UsingEnum);
+
+  rpc Optional(kotlinx.rpc.protobuf.test.OptionalTypes) returns (kotlinx.rpc.protobuf.test.OptionalTypes);
 }
