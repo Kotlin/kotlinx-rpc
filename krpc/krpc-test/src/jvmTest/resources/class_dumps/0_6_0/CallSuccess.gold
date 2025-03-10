@@ -1,0 +1,14 @@
+org.jetbrains.krpc.internal.transport.RPCMessage.CallSuccess [Declared name: kotlinx.rpc.krpc.internal.KrpcCallMessage.CallSuccess]
+  - callId: kotlin.String
+  - connectionId: kotlin.Long
+    - Nullable
+  - pluginParams: kotlin.collections.Map
+    - Nullable
+  - serviceId: kotlin.Long
+    - Nullable
+  - serviceType: kotlin.String
+
+  org.jetbrains.krpc.internal.transport.RPCMessage.CallSuccessBinary
+  - Declared name: kotlinx.rpc.krpc.internal.KrpcCallMessage.CallSuccessBinary
+  org.jetbrains.krpc.RPCMessage.CallSuccess
+  - Declared name: kotlinx.rpc.krpc.internal.KrpcCallMessage.CallSuccessString
