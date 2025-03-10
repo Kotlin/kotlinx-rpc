@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.internal
@@ -45,6 +45,11 @@ public enum class KrpcPluginKey(override val uniqueIndex: Int, private val assoc
      * Represents a service id that is unique to a current connection.
      */
     CLIENT_SERVICE_ID(4, KrpcPlugin.CANCELLATION),
+
+    /**
+     * Marks a request as a one doesn't suspend and returns a flow.
+     */
+    NON_SUSPENDING_SERVER_FLOW_MARKER(5, KrpcPlugin.NON_SUSPENDING_SERVER_FLOWS),
     ;
 
     init {

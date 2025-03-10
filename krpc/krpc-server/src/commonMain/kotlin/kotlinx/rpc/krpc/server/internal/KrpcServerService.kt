@@ -1,10 +1,11 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.server.internal
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.descriptor.RpcInvokator
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
@@ -16,6 +17,8 @@ import kotlinx.rpc.krpc.internal.logging.CommonLogger
 import kotlinx.rpc.krpc.streamScopeOrNull
 import kotlinx.rpc.krpc.withServerStreamScope
 import kotlinx.serialization.BinaryFormat
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlin.coroutines.CoroutineContext
 
@@ -152,7 +155,18 @@ internal class KrpcServerService<@Rpc T : Any>(
         var failure: Throwable? = null
 
         val requestJob = launch(start = CoroutineStart.LAZY) {
-            val result = try {
+            try {
+                val markedNonSuspending = callData.pluginParams.orEmpty()
+                    .contains(KrpcPluginKey.NON_SUSPENDING_SERVER_FLOW_MARKER)
+
+                if (callable.isNonSuspendFunction && !markedNonSuspending) {
+                    error(
+                        "Server flow returned from non-suspend function but marked so by a client: ${descriptor.fqName}::$callableName." +
+                                "Probable cause is outdated client version, that does not support non-suspending flows, " +
+                                "but calls the function with the same name. Change the function name or update the client."
+                    )
+                }
+
                 val value = when (val invokator = callable.invokator) {
                     is RpcInvokator.Method -> {
                         callScoped(callId) {
@@ -167,32 +181,18 @@ internal class KrpcServerService<@Rpc T : Any>(
 
                 val returnType = callable.returnType
                 val returnSerializer = serialFormat.serializersModule.rpcSerializerForType(returnType)
-                when (serialFormat) {
-                    is StringFormat -> {
-                        val stringValue = serialFormat.encodeToString(returnSerializer, value)
-                        KrpcCallMessage.CallSuccessString(
-                            callId = callData.callId,
-                            serviceType = descriptor.fqName,
-                            data = stringValue,
-                            connectionId = callData.connectionId,
-                            serviceId = callData.serviceId,
+
+                if (callable.isNonSuspendFunction) {
+                    if (value !is Flow<*>) {
+                        error(
+                            "Return value of non-suspend function must be a non nullable flow, " +
+                                "but was: ${value?.let { it::class.simpleName }}"
                         )
                     }
 
-                    is BinaryFormat -> {
-                        val binaryValue = serialFormat.encodeToByteArray(returnSerializer, value)
-                        KrpcCallMessage.CallSuccessBinary(
-                            callId = callData.callId,
-                            serviceType = descriptor.fqName,
-                            data = binaryValue,
-                            connectionId = callData.connectionId,
-                            serviceId = callData.serviceId,
-                        )
-                    }
-
-                    else -> {
-                        unsupportedSerialFormatError(serialFormat)
-                    }
+                    sendFlowMessages(serialFormat, returnSerializer, value, callData)
+                } else {
+                    sendMessages(serialFormat, returnSerializer, value, callData)
                 }
             } catch (cause: CancellationException) {
                 throw cause
@@ -206,10 +206,8 @@ internal class KrpcServerService<@Rpc T : Any>(
                     cause = serializedCause,
                     connectionId = callData.connectionId,
                     serviceId = callData.serviceId,
-                )
+                ).also { sender.sendMessage(it) }
             }
-
-            sender.sendMessage(result)
 
             if (failure == null) {
                 streamContext.valueOrNull?.apply {
@@ -231,6 +229,110 @@ internal class KrpcServerService<@Rpc T : Any>(
         requestMap[callId] = RpcRequest(requestJob, streamContext)
 
         requestJob.start()
+    }
+
+    private suspend fun sendMessages(
+        serialFormat: SerialFormat,
+        returnSerializer: KSerializer<Any?>,
+        value: Any?,
+        callData: KrpcCallMessage.CallData,
+    ) {
+        val result = when (serialFormat) {
+            is StringFormat -> {
+                val stringValue = serialFormat.encodeToString(returnSerializer, value)
+                KrpcCallMessage.CallSuccessString(
+                    callId = callData.callId,
+                    serviceType = descriptor.fqName,
+                    data = stringValue,
+                    connectionId = callData.connectionId,
+                    serviceId = callData.serviceId,
+                )
+            }
+
+            is BinaryFormat -> {
+                val binaryValue = serialFormat.encodeToByteArray(returnSerializer, value)
+                KrpcCallMessage.CallSuccessBinary(
+                    callId = callData.callId,
+                    serviceType = descriptor.fqName,
+                    data = binaryValue,
+                    connectionId = callData.connectionId,
+                    serviceId = callData.serviceId,
+                )
+            }
+
+            else -> {
+                unsupportedSerialFormatError(serialFormat)
+            }
+        }
+
+        sender.sendMessage(result)
+    }
+
+    private suspend fun sendFlowMessages(
+        serialFormat: SerialFormat,
+        returnSerializer: KSerializer<Any?>,
+        flow: Flow<Any?>,
+        callData: KrpcCallMessage.CallData,
+    ) {
+        try {
+            flow.collect { value ->
+                val result = when (serialFormat) {
+                    is StringFormat -> {
+                        val stringValue = serialFormat.encodeToString(returnSerializer, value)
+                        KrpcCallMessage.StreamMessageString(
+                            callId = callData.callId,
+                            serviceType = descriptor.fqName,
+                            data = stringValue,
+                            connectionId = callData.connectionId,
+                            serviceId = callData.serviceId,
+                            streamId = "1",
+                        )
+                    }
+
+                    is BinaryFormat -> {
+                        val binaryValue = serialFormat.encodeToByteArray(returnSerializer, value)
+                        KrpcCallMessage.StreamMessageBinary(
+                            callId = callData.callId,
+                            serviceType = descriptor.fqName,
+                            data = binaryValue,
+                            connectionId = callData.connectionId,
+                            serviceId = callData.serviceId,
+                            streamId = "1",
+                        )
+                    }
+
+                    else -> {
+                        unsupportedSerialFormatError(serialFormat)
+                    }
+                }
+
+                connector.sendMessage(result)
+            }
+
+            connector.sendMessage(
+                KrpcCallMessage.StreamFinished(
+                    callId = callData.callId,
+                    serviceType = descriptor.fqName,
+                    connectionId = callData.connectionId,
+                    serviceId = callData.serviceId,
+                    streamId = "1",
+                )
+            )
+        } catch (cause: CancellationException) {
+            throw cause
+        } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
+            val serializedCause = serializeException(cause)
+            connector.sendMessage(
+                KrpcCallMessage.StreamCancel(
+                    callId = callData.callId,
+                    serviceType = descriptor.fqName,
+                    connectionId = callData.connectionId,
+                    serviceId = callData.serviceId,
+                    streamId = "1",
+                    cause = serializedCause,
+                )
+            )
+        }
     }
 
     suspend fun cancelRequest(
@@ -255,7 +357,7 @@ internal class KrpcServerService<@Rpc T : Any>(
     }
 }
 
-private class RpcRequest(val handlerJob: Job, val streamContext: LazyKrpcStreamContext) {
+internal class RpcRequest(val handlerJob: Job, val streamContext: LazyKrpcStreamContext) {
     suspend fun cancelAndClose(
         callId: String,
         message: String? = null,
