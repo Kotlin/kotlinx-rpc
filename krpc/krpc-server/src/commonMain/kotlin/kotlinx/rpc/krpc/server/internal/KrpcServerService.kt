@@ -160,6 +160,7 @@ internal class KrpcServerService<@Rpc T : Any>(
                     .contains(KrpcPluginKey.NON_SUSPENDING_SERVER_FLOW_MARKER)
 
                 if (callable.isNonSuspendFunction && !markedNonSuspending) {
+                    @Suppress("detekt.MaxLineLength")
                     error(
                         "Server flow returned from non-suspend function but marked so by a client: ${descriptor.fqName}::$callableName." +
                                 "Probable cause is outdated client version, that does not support non-suspending flows, " +

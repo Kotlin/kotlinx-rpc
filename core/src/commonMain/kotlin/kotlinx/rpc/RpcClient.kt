@@ -44,13 +44,13 @@ public interface RpcClient : CoroutineScope {
     public fun <T> callAsync(serviceScope: CoroutineScope, call: RpcCall): Deferred<T>
 
     /**
-     * This method is used by generated clients to perform a call to the server.
+     * This method is used by generated clients to perform a call to the server
+     * that returns a streaming flow.
      *
      * @param T type of the result
-     * @param serviceScope service's coroutine scope
      * @param call an object that contains all required information about the called method,
      * that is needed to route it properly to the server.
-     * @return actual result of the call, for example, data from the server
+     * @return the actual result of the call, for example, data from the server
      */
     public fun <T> callServerStreaming(call: RpcCall): Flow<T> {
         error("Non-suspending server streaming is not supported by this client")

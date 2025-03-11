@@ -316,6 +316,7 @@ public abstract class KrpcClient(
 
     private val nonSuspendingSerialFormat = config.serialFormatInitializer.build()
 
+    @Suppress("detekt.CyclomaticComplexMethod")
     override fun <T> callServerStreaming(call: RpcCall): Flow<T> {
         return flow {
             awaitHandshakeCompletion()
@@ -363,8 +364,8 @@ public abstract class KrpcClient(
 
                         is KrpcCallMessage.CallSuccess, is KrpcCallMessage.StreamMessage -> {
                             val value = runCatching {
-                                val serializerResult =
-                                    nonSuspendingSerialFormat.serializersModule.rpcSerializerForType(callable.returnType)
+                                val serializerResult = nonSuspendingSerialFormat.serializersModule
+                                    .rpcSerializerForType(callable.returnType)
 
                                 decodeMessageData(nonSuspendingSerialFormat, serializerResult, message)
                             }
