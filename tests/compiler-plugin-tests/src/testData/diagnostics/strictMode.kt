@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 // MODULE: none
@@ -76,6 +76,8 @@ interface MyService {
     suspend fun clientInnerFlow(inner: InnerFlow)
     suspend fun clientNestedFlow(<!NESTED_STREAMING_IN_RPC_SERVICE!>inner: Flow<Flow<Int>><!>)
     suspend fun clientNestedTrickyFlow(<!NESTED_STREAMING_IN_RPC_SERVICE!>inner: Wrapper<Flow<Wrapper<Flow<Int>>>><!>)
+    <!NON_SUSPENDING_REQUEST_WITHOUT_STREAMING_RETURN_TYPE!>fun nonSuspendNoFlow()<!>
+    <!NON_SUSPENDING_REQUEST_WITHOUT_STREAMING_RETURN_TYPE!>fun nonSuspendNoFlowString(): String<!>
 }
 
 fun main(): Unit = runBlocking {
