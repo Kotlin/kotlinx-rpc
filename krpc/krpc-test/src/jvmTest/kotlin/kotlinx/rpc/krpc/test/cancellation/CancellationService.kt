@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.test.cancellation
@@ -41,6 +41,8 @@ interface CancellationService : RemoteService {
     suspend fun closedStreamScopeCallback()
 
     suspend fun closedStreamScopeCallbackWithStream(): Flow<Int>
+
+    fun nonSuspendable(): Flow<Int>
 }
 
 class CancellationServiceImpl(override val coroutineContext: CoroutineContext) : CancellationService {
@@ -166,6 +168,31 @@ class CancellationServiceImpl(override val coroutineContext: CoroutineContext) :
                 }
             } finally {
                 consumedAll.complete(Unit)
+            }
+        }
+    }
+
+    var nonSuspendableSecond = false
+    val nonSuspendableFinished = CompletableDeferred<Unit>()
+
+    override fun nonSuspendable(): Flow<Int> {
+        return flow {
+            try {
+                repeat(2) {
+                    if (it == 1) {
+                        nonSuspendableSecond = true
+                    }
+
+                    emit(it)
+
+                    if (it == 0) {
+                        fence.await()
+                    }
+                }
+            } catch (e: CancellationException) {
+                nonSuspendableFinished.complete(Unit)
+
+                throw e
             }
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.test.cancellation
@@ -669,6 +669,61 @@ class CancellationTest {
         }
 
         stopAllAndJoin()
+    }
+
+    @Test
+    fun testCancellingNonSuspendable() = runCancellationTest {
+        val flow = service.nonSuspendable()
+        val firstDone = CompletableDeferred<Unit>()
+        val requestJob = launch {
+            flow.collect {
+                if (it == 0) {
+                    firstDone.complete(Unit)
+                }
+            }
+        }
+
+        firstDone.await()
+        requestJob.cancel("Cancelled by test")
+        requestJob.join()
+        serverInstance().nonSuspendableFinished.await()
+
+        assertEquals(false, serverInstance().nonSuspendableSecond)
+
+        checkAlive()
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testGCNonSuspendable() = runCancellationTest {
+        val firstDone = CompletableDeferred<Unit>()
+        val latch = CompletableDeferred<Unit>()
+        val requestJob = processFlowAndLeaveUnusedForGC(firstDone, latch)
+
+        firstDone.await()
+        System.gc() // hint GC to collect the flow
+        serverInstance().nonSuspendableFinished.await()
+
+        assertEquals(false, serverInstance().nonSuspendableSecond)
+        latch.complete(Unit)
+        requestJob.join()
+
+        checkAlive()
+        stopAllAndJoin()
+    }
+
+    private fun CancellationToolkit.processFlowAndLeaveUnusedForGC(
+        firstDone: CompletableDeferred<Unit>,
+        latch: CompletableDeferred<Unit>
+    ): Job {
+        val flow = service.nonSuspendable()
+        val requestJob = launch {
+            flow.first()
+            firstDone.complete(Unit)
+            latch.await()
+        }
+
+        return requestJob
     }
 
     private fun CancellationToolkit.checkAlive(

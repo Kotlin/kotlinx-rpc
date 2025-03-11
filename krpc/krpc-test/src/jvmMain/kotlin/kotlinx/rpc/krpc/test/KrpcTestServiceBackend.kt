@@ -30,6 +30,16 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
         }
     }
 
+    override fun nonSuspendFlowErrorOnEmit(): Flow<Int> {
+        return flow {
+            error("nonSuspendFlowErrorOnEmit")
+        }
+    }
+
+    override fun nonSuspendFlowErrorOnReturn(): Flow<Int> {
+        error("nonSuspendFlowErrorOnReturn")
+    }
+
     @Suppress("detekt.EmptyFunctionBlock")
     override suspend fun empty() {}
 

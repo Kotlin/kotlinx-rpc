@@ -18,6 +18,8 @@ import java.time.LocalDateTime
 @Rpc
 interface KrpcTestService : RemoteService {
     fun nonSuspendFlow(): Flow<Int>
+    fun nonSuspendFlowErrorOnEmit(): Flow<Int>
+    fun nonSuspendFlowErrorOnReturn(): Flow<Int>
     suspend fun empty()
     suspend fun returnType(): String
     suspend fun simpleWithParams(name: String): String

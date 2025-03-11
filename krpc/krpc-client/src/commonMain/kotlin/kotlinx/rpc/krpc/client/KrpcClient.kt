@@ -340,65 +340,72 @@ public abstract class KrpcClient(
 
             connector.sendMessage(request)
 
-            connector.subscribeToCallResponse(call.descriptor.fqName, callId) { message ->
-                when (message) {
-                    is KrpcCallMessage.CallData -> {
-                        error("Unexpected message")
-                    }
-
-                    is KrpcCallMessage.CallException -> {
-                        val cause = runCatching {
-                            message.cause.deserialize()
-                        }
-
-                        val result = if (cause.isFailure) {
-                            cause.exceptionOrNull()!!
-                        } else {
-                            cause.getOrNull()!!
-                        }
-
-                        channel.close(result)
-                    }
-
-                    is KrpcCallMessage.CallSuccess, is KrpcCallMessage.StreamMessage -> {
-                        val value = runCatching {
-                            val serializerResult =
-                                nonSuspendingSerialFormat.serializersModule.rpcSerializerForType(callable.returnType)
-
-                            decodeMessageData(nonSuspendingSerialFormat, serializerResult, message)
-                        }
-
-                        @Suppress("UNCHECKED_CAST")
-                        channel.send(value.getOrNull() as T)
-                    }
-
-                    is KrpcCallMessage.StreamFinished -> {
-                        connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
-                        channel.close()
-                    }
-
-                    is KrpcCallMessage.StreamCancel -> {
-                        connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
-                        val cause = message.cause.deserialize()
-                        channel.close(cause)
-                    }
-                }
-            }
-
             try {
-                while (true) {
-                    val element = channel.receiveCatching()
-                    if (element.isClosed) {
-                        val ex = element.exceptionOrNull() ?: break
-                        error(ex)
-                    }
+                connector.subscribeToCallResponse(call.descriptor.fqName, callId) { message ->
+                    when (message) {
+                        is KrpcCallMessage.CallData -> {
+                            error("Unexpected message")
+                        }
 
-                    if (!element.isFailure) {
-                        emit(element.getOrThrow())
+                        is KrpcCallMessage.CallException -> {
+                            val cause = runCatching {
+                                message.cause.deserialize()
+                            }
+
+                            val result = if (cause.isFailure) {
+                                cause.exceptionOrNull()!!
+                            } else {
+                                cause.getOrNull()!!
+                            }
+
+                            channel.close(result)
+                        }
+
+                        is KrpcCallMessage.CallSuccess, is KrpcCallMessage.StreamMessage -> {
+                            val value = runCatching {
+                                val serializerResult =
+                                    nonSuspendingSerialFormat.serializersModule.rpcSerializerForType(callable.returnType)
+
+                                decodeMessageData(nonSuspendingSerialFormat, serializerResult, message)
+                            }
+
+                            @Suppress("UNCHECKED_CAST")
+                            channel.send(value.getOrNull() as T)
+                        }
+
+                        is KrpcCallMessage.StreamFinished -> {
+                            connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
+                            channel.close()
+                        }
+
+                        is KrpcCallMessage.StreamCancel -> {
+                            connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
+                            val cause = message.cause.deserialize()
+                            channel.close(cause)
+                        }
                     }
                 }
-            } catch (_: ClosedReceiveChannelException) {
-                // ignore
+
+                try {
+                    while (true) {
+                        val element = channel.receiveCatching()
+                        if (element.isClosed) {
+                            val ex = element.exceptionOrNull() ?: break
+                            error(ex)
+                        }
+
+                        if (!element.isFailure) {
+                            emit(element.getOrThrow())
+                        }
+                    }
+                } catch (_: ClosedReceiveChannelException) {
+                    // ignore
+                }
+            } catch (e: CancellationException) {
+                // sendCancellation is not suspending, so no need for NonCancellable
+                sendCancellation(CancellationType.REQUEST, call.serviceId.toString(), callId)
+
+                throw e
             }
         }
     }
