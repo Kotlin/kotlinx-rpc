@@ -2,6 +2,7 @@ public abstract class kotlinx/rpc/krpc/client/KrpcClient : kotlinx/rpc/krpc/inte
 	public fun <init> (Lkotlinx/rpc/krpc/KrpcConfig$Client;Lkotlinx/rpc/krpc/KrpcTransport;)V
 	public final fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun callAsync (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/Deferred;
+	public fun callServerStreaming (Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/flow/Flow;
 	protected final fun getConfig ()Lkotlinx/rpc/krpc/KrpcConfig$Client;
 	public synthetic fun getConfig ()Lkotlinx/rpc/krpc/KrpcConfig;
 	public final fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
