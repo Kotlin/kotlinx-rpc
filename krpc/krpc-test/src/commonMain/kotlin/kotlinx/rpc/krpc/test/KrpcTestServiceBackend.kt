@@ -7,9 +7,6 @@ package kotlinx.rpc.krpc.test
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.Serializable
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertContentEquals
@@ -110,11 +107,18 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
     }
 
     override suspend fun nonSerializableClass(localDate: LocalDate): LocalDate {
-        return localDate.plusDays(1)
+        return LocalDate(localDate.year, localDate.month, localDate.day + 1)
     }
 
     override suspend fun nonSerializableClassWithSerializer(localDateTime: LocalDateTime): String {
-        return localDateTime.plusDays(1).format(DateTimeFormatter.ISO_DATE_TIME)
+        return LocalDateTime(
+            date = LocalDate(
+                year = localDateTime.date.year,
+                month = localDateTime.date.month,
+                day = localDateTime.date.day + 1,
+            ),
+            time = localDateTime.time,
+        ).toString()
     }
 
     override suspend fun incomingStreamSyncCollect(arg1: Flow<String>): Int {
@@ -240,9 +244,9 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
 
     override suspend fun throwsUNSTOPPABLEThrowable(message: String) {
         suspendCancellableCoroutine<Unit> { continuation ->
-            Thread {
+            runThreadIfPossible {
                 continuation.resumeWithException(Throwable(message))
-            }.start()
+            }
         }
     }
 
@@ -320,3 +324,5 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
         return state
     }
 }
+
+internal expect fun runThreadIfPossible(runner: () -> Unit)

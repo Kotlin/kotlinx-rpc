@@ -11,8 +11,37 @@ import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import java.time.LocalDate
-import java.time.LocalDateTime
+
+data class LocalDate(
+    val year: Int,
+    val month: Int,
+    val day: Int,
+) {
+    override fun toString(): String {
+        return "$year-$month-$day"
+    }
+
+    companion object {
+        fun parse(str: String): LocalDate = str.split('-').let {
+            LocalDate(it[0].toInt(), it[1].toInt(), it[2].toInt())
+        }
+    }
+}
+
+data class LocalDateTime(
+    val date: LocalDate,
+    val time: String,
+) {
+    override fun toString(): String {
+        return "$date $time"
+    }
+
+    companion object {
+        fun parse(str: String): LocalDateTime = str.split(' ').let {
+            LocalDateTime(LocalDate.parse(it[0]), it[1])
+        }
+    }
+}
 
 @Suppress("detekt.TooManyFunctions")
 @Rpc
