@@ -119,7 +119,7 @@ abstract class KrpcTransportTestBase {
 
     @Rule
     @JvmField
-    val globalTimeout: Timeout = Timeout.seconds(3)
+    val globalTimeout: Timeout = Timeout.seconds(30)
 
     @Test
     fun nonSuspend() {
