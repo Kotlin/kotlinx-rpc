@@ -6,9 +6,12 @@
 
 package kotlinx.rpc.krpc.test
 
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.awaitFieldInitialization
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.rpcClientConfig
@@ -25,16 +28,8 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.modules.SerializersModule
-import org.junit.Assert.assertEquals
-import org.junit.Rule
-import org.junit.rules.Timeout
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.concurrent.Semaphore
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.jvm.JvmField
 import kotlin.test.*
 
 internal object LocalDateSerializer : KSerializer<LocalDate> {
@@ -44,11 +39,11 @@ internal object LocalDateSerializer : KSerializer<LocalDate> {
         encoder: Encoder,
         value: LocalDate,
     ) {
-        encoder.encodeString(value.format(DateTimeFormatter.ISO_DATE))
+        encoder.encodeString(value.toString())
     }
 
     override fun deserialize(decoder: Decoder): LocalDate {
-        return LocalDate.parse(decoder.decodeString(), DateTimeFormatter.ISO_DATE)
+        return LocalDate.parse(decoder.decodeString())
     }
 }
 
@@ -59,11 +54,11 @@ internal object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
         encoder: Encoder,
         value: LocalDateTime,
     ) {
-        encoder.encodeString(value.format(DateTimeFormatter.ISO_DATE_TIME))
+        encoder.encodeString(value.toString())
     }
 
     override fun deserialize(decoder: Decoder): LocalDateTime {
-        return LocalDateTime.parse(decoder.decodeString(), DateTimeFormatter.ISO_DATE_TIME)
+        return LocalDateTime.parse(decoder.decodeString())
     }
 }
 
@@ -117,20 +112,16 @@ abstract class KrpcTransportTestBase {
         backend.cancel()
     }
 
-    @Rule
-    @JvmField
-    val globalTimeout: Timeout = Timeout.seconds(30)
-
     @Test
     fun nonSuspend() {
-        runBlocking {
+        runTest {
             assertEquals(List(10) { it }, client.nonSuspendFlow().toList())
         }
     }
 
     @Test
     fun nonSuspendErrorOnEmit() {
-        runBlocking {
+        runTest {
             val flow = client.nonSuspendFlowErrorOnReturn()
             assertFailsWith<IllegalStateException> {
                 flow.toList()
@@ -140,7 +131,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun nonSuspendErrorOnReturn() {
-        runBlocking {
+        runTest {
             assertFailsWith<IllegalStateException> {
                 client.nonSuspendFlowErrorOnReturn().toList()
             }
@@ -155,21 +146,21 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun returnType() {
-        runBlocking {
+        runTest {
             assertEquals("test", client.returnType())
         }
     }
 
     @Test
     fun simpleWithParams() {
-        runBlocking {
+        runTest {
             assertEquals("name".reversed(), client.simpleWithParams("name"))
         }
     }
 
     @Test
     @Ignore // works on my machine issue – timeouts on TC
-    fun simpleWithParams100000() = runBlocking {
+    fun simpleWithParams100000() = runTest {
         repeat(100000) {
             assertEquals("name".reversed(), client.simpleWithParams("name"))
         }
@@ -177,111 +168,113 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun genericReturnType() {
-        runBlocking {
+        runTest {
             assertEquals(listOf("hello", "world"), client.genericReturnType())
         }
     }
 
     @Test
     fun nonSerializableParameter() {
-        runBlocking {
-            val localDate = LocalDate.of(2001, 8, 23)
+        runTest {
+            val localDate = LocalDate(2001, 8, 23)
             val resultDate = client.nonSerializableClass(localDate)
-            assertEquals(localDate.plusDays(1), resultDate)
+            assertEquals(LocalDate(2001, 8, 24), resultDate)
 
-            val localDateTime = LocalDateTime.of(2001, 8, 23, 0, 0)
+            val localDateTime = LocalDateTime(LocalDate(2001, 8, 23), "17:03")
             val resultDateTime = client.nonSerializableClassWithSerializer(localDateTime)
-            assertEquals(localDateTime.plusDays(1).format(DateTimeFormatter.ISO_DATE_TIME), resultDateTime)
+
+            assertEquals(
+                LocalDateTime(LocalDate(2001, 8, 24), "17:03").toString(),
+                resultDateTime,
+            )
         }
     }
 
     @Test
-    fun doubleGenericReturnType() {
-        val result = runBlocking { client.doubleGenericReturnType() }
+    fun doubleGenericReturnType() = runTest {
+        val result = client.doubleGenericReturnType()
         assertEquals(listOf(listOf("1", "2"), listOf("a", "b")), result)
     }
 
     @Test
-    fun paramsSingle() {
-        val result = runBlocking { client.paramsSingle("test") }
+    fun paramsSingle() = runTest {
+        val result = client.paramsSingle("test")
         assertEquals(Unit, result)
     }
 
     @Test
-    fun paramsDouble() {
-        val result = runBlocking { client.paramsDouble("test", "test2") }
+    fun paramsDouble() = runTest {
+        val result = client.paramsDouble("test", "test2")
         assertEquals(Unit, result)
     }
 
     @Test
     @Ignore
-    fun varargParams() {
-        val result = runBlocking { client.varargParams("test", "test2", "test3") }
+    fun varargParams() = runTest {
+        val result = client.varargParams("test", "test2", "test3")
         assertEquals(Unit, result)
     }
 
     @Test
-    fun genericParams() {
-        val result = runBlocking { client.genericParams(listOf("test", "test2", "test3")) }
+    fun genericParams() = runTest {
+        val result = client.genericParams(listOf("test", "test2", "test3"))
         assertEquals(Unit, result)
     }
 
     @Test
-    fun doubleGenericParams() {
-        val result = runBlocking { client.doubleGenericParams(listOf(listOf("test", "test2", "test3"))) }
+    fun doubleGenericParams() = runTest {
+        val result = client.doubleGenericParams(listOf(listOf("test", "test2", "test3")))
         assertEquals(Unit, result)
     }
 
     @Test
-    fun mapParams() {
-        val result = runBlocking { client.mapParams(mapOf("key" to mapOf(1 to listOf("test", "test2", "test3")))) }
+    fun mapParams() = runTest {
+        val result = client.mapParams(mapOf("key" to mapOf(1 to listOf("test", "test2", "test3"))))
         assertEquals(Unit, result)
     }
 
     @Test
-    fun customType() {
-        val result = runBlocking { client.customType(TestClass()) }
+    fun customType() = runTest {
+        val result = client.customType(TestClass())
         assertEquals(TestClass(), result)
     }
 
     @Test
-    open fun nullable() {
-        val result = runBlocking { client.nullable("test") }
+    open fun nullable() = runTest {
+        val result = client.nullable("test")
         assertEquals(TestClass(), result)
 
-        val result2 = runBlocking { client.nullable(null) }
+        val result2 = client.nullable(null)
         assertEquals(null, result2)
     }
 
     @Test
-    fun variance() {
-        val result = runBlocking { client.variance(TestList(), TestList2<TestClass>()) }
-        assertEquals(TestList<TestClass>(3), result)
+    fun variance() = runTest {
+        val result = client.variance(TestList(), TestList2<TestClass>())
+        assertEquals(TestList(3), result)
     }
 
     @Test
-    fun incomingStreamSyncCollect() {
-        val result = runBlocking {
-            streamScoped {
-                client.incomingStreamSyncCollect(flowOf("test1", "test2", "test3"))
-            }
+    fun incomingStreamSyncCollect() = runTest {
+        val result = streamScoped {
+            client.incomingStreamSyncCollect(flowOf("test1", "test2", "test3"))
         }
+
         assertEquals(3, result)
     }
 
     @Test
-    fun incomingStreamAsyncCollect() {
-        val result = runBlocking {
-            streamScoped {
-                client.incomingStreamAsyncCollect(flowOf("test1", "test2", "test3"))
-            }
+    fun incomingStreamAsyncCollect() = runTest {
+        val result = streamScoped {
+            client.incomingStreamAsyncCollect(flowOf("test1", "test2", "test3"))
         }
+
         assertEquals(5, result)
     }
 
     @Test
     fun outgoingStream() {
-        runBlocking {
+        runTest {
             streamScoped {
                 val result = client.outgoingStream()
                 assertEquals(listOf("a", "b", "c"), result.toList(mutableListOf()))
@@ -291,7 +284,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun bidirectionalStream() {
-        runBlocking {
+        runTest {
             streamScoped {
                 val result = client.bidirectionalStream(flowOf("test1", "test2", "test3"))
                 assertEquals(
@@ -304,7 +297,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun streamInDataClass() {
-        runBlocking {
+        runTest {
             streamScoped {
                 val result = client.streamInDataClass(payload())
                 assertEquals(8, result)
@@ -314,7 +307,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun streamInStream() {
-        runBlocking {
+        runTest {
             streamScoped {
                 val result = client.streamInStream(payloadStream())
                 assertEquals(30, result)
@@ -324,7 +317,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun streamOutDataClass() {
-        runBlocking {
+        runTest {
             streamScoped {
                 val result = client.streamOutDataClass()
                 assertEquals("test0", result.payload)
@@ -335,7 +328,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun streamOfStreamsInReturn() {
-        runBlocking {
+        runTest {
             streamScoped {
                 val result = client.streamOfStreamsInReturn().map {
                     it.toList(mutableListOf())
@@ -347,7 +340,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun streamOfPayloadsInReturn() {
-        runBlocking {
+        runTest {
             streamScoped {
                 val result = client.streamOfPayloadsInReturn().map {
                     it.stream.toList(mutableListOf()).joinToString()
@@ -363,7 +356,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun streamInDataClassWithStream() {
-        runBlocking {
+        runTest {
             streamScoped {
                 val result = client.streamInDataClassWithStream(payloadWithPayload())
                 assertEquals(5, result)
@@ -373,7 +366,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun streamInStreamWithStream() {
-        runBlocking {
+        runTest {
             val result = streamScoped {
                 client.streamInStreamWithStream(payloadWithPayloadStream())
             }
@@ -383,7 +376,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun returnPayloadWithPayload() {
-        runBlocking {
+        runTest {
             streamScoped {
                 assertContentEquals(expectedPayloadWithPayload(10), client.returnPayloadWithPayload().collect())
             }
@@ -392,7 +385,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun returnFlowPayloadWithPayload() {
-        runBlocking {
+        runTest {
             streamScoped {
                 client.returnFlowPayloadWithPayload().collectIndexed { index, payloadWithPayload ->
                     assertContentEquals(expectedPayloadWithPayload(index), payloadWithPayload.collect())
@@ -403,7 +396,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun bidirectionalFlowOfPayloadWithPayload() {
-        runBlocking {
+        runTest {
             streamScoped {
                 val result = client.bidirectionalFlowOfPayloadWithPayload(
                     flow {
@@ -424,7 +417,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun bidirectionalAsyncStream() {
-        runBlocking {
+        runTest {
             streamScoped {
                 val flow = MutableSharedFlow<Int>(1)
                 val result = client.echoStream(flow.take(10))
@@ -444,7 +437,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun `RPC should be able to receive 100_000 ints in reasonable time`() {
-        runBlocking {
+        runTest {
             streamScoped {
                 val n = 100_000
                 assertEquals(client.getNInts(n).last(), n)
@@ -454,7 +447,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun `RPC should be able to receive 100_000 ints with batching in reasonable time`() {
-        runBlocking {
+        runTest {
             streamScoped {
                 val n = 100_000
                 assertEquals(client.getNIntsBatched(n).last().last(), n)
@@ -464,35 +457,47 @@ abstract class KrpcTransportTestBase {
 
     @Test
     open fun testByteArraySerialization() {
-        runBlocking {
-            client.bytes("hello".toByteArray())
+        runTest {
+            client.bytes("hello".encodeToByteArray())
             client.nullableBytes(null)
-            client.nullableBytes("hello".toByteArray())
+            client.nullableBytes("hello".encodeToByteArray())
         }
     }
 
     @Test
     @Suppress("detekt.TooGenericExceptionCaught")
     fun testExceptionSerializationAndPropagating() {
-        runBlocking {
+        runTest {
             try {
                 client.throwsIllegalArgument("me")
+                fail("Exception expected")
+            } catch (e : AssertionError) {
+                throw e
             } catch (e: IllegalArgumentException) {
                 assertEquals("me", e.message)
             }
             try {
                 client.throwsSerializableWithMessageAndCause("me")
+                fail("Exception expected")
+            } catch (e : AssertionError) {
+                throw e
             } catch (e: KrpcTestServiceBackend.SerializableTestException) {
                 assertEquals("me", e.message)
                 assertEquals("cause: me", e.cause?.message)
             }
             try {
                 client.throwsThrowable("me")
+                fail("Exception expected")
+            } catch (e : AssertionError) {
+                throw e
             } catch (e: Throwable) {
                 assertEquals("me", e.message)
             }
             try {
                 client.throwsUNSTOPPABLEThrowable("me")
+                fail("Exception expected")
+            } catch (e : AssertionError) {
+                throw e
             } catch (e: Throwable) {
                 assertEquals("me", e.message)
             }
@@ -501,7 +506,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     open fun testNullables() {
-        runBlocking {
+        runTest {
             assertEquals(1, client.nullableInt(1))
             assertNull(client.nullable(null))
         }
@@ -509,7 +514,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     open fun testNullableLists() {
-        runBlocking {
+        runTest {
             assertNull(client.nullableList(null))
 
             assertEquals(emptyList<Int>(), client.nullableList(emptyList()))
@@ -519,7 +524,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun testServerCallCancellation() {
-        runBlocking {
+        runTest {
             val flag: Channel<Boolean> = Channel()
             val remote = launch {
                 try {
@@ -546,14 +551,18 @@ abstract class KrpcTransportTestBase {
         }
     }
 
+    class AtomicTest {
+        val atomic = atomic(true)
+    }
+
     @Test
     fun `rpc continuation is called in the correct scope and doesn't block other rpcs`() {
-        runBlocking {
+        runTest {
             val inContinuation = Semaphore(1)
-            val running = AtomicBoolean(true)
+            val running = AtomicTest()
 
             // start a coroutine that block the thread after continuation
-            val c1 = async(Dispatchers.IO) { // make a rpc call
+            val c1 = async(Dispatchers.Default) { // make a rpc call
                 client.answerToAnything("hello")
 
                 // now we are in the continuation
@@ -563,19 +572,20 @@ abstract class KrpcTransportTestBase {
                 inContinuation.release()
 
                 // let's block the thread
-                while (running.get()) {
+                while (running.atomic.value) {
                     // do nothing
                 }
             }
 
             // wait, till the Rpc continuation thread is blocked
-            assertTrue(inContinuation.tryAcquire(100, TimeUnit.MILLISECONDS))
+            delay(100)
+            assertTrue(inContinuation.tryAcquire())
 
             val c2 = async { // make a call
                 // and make sure the continuation is executed,
                 // even though another call's continuation has blocked its thread.
                 client.answerToAnything("hello")
-                running.set(false)
+                running.atomic.compareAndSet(expect = true, update = false)
             }
 
             awaitAll(c1, c2)
@@ -584,7 +594,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun testPlainFlowOfInts() {
-        runBlocking {
+        runTest {
             val flow = client.plainFlowOfInts.toList()
             assertEquals(List(5) { it }, flow)
         }
@@ -592,7 +602,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun testPlainFlowOfFlowsOfInts() {
-        runBlocking {
+        runTest {
             val lists = client.plainFlowOfFlowsOfInts.map {
                 it.toList()
             }.toList()
@@ -603,7 +613,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun testPlainFlowOfFlowsOfFlowsOfInts() {
-        runBlocking {
+        runTest {
             val lists = client.plainFlowOfFlowsOfFlowsOfInts.map {
                 it.map { i -> i.toList() }.toList()
             }.toList()
@@ -614,7 +624,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun testSharedFlowOfInts() {
-        runBlocking {
+        runTest {
             val list1 = client.sharedFlowOfInts.take(5).toList()
             val list2 = client.sharedFlowOfInts.take(3).toList()
 
@@ -625,7 +635,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun testSharedFlowOfFlowsOfInts() {
-        runBlocking {
+        runTest {
             val list1 = client.sharedFlowOfFlowsOfInts.take(5).map {
                 it.take(5).toList()
             }.toList()
@@ -641,7 +651,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun testSharedFlowOfFlowsOfFlowsOfInts() {
-        runBlocking {
+        runTest {
             val list1 = client.sharedFlowOfFlowsOfFlowsOfInts.take(5).map {
                 it.take(5).map { i -> i.take(5).toList() }.toList()
             }.toList()
@@ -657,7 +667,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun testStateFlowOfInts() {
-        runBlocking {
+        runTest {
             val flow = client.awaitFieldInitialization { stateFlowOfInts }
 
             assertEquals(-1, flow.value)
@@ -670,7 +680,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun testStateFlowOfFlowsOfInts() {
-        runBlocking {
+        runTest {
             val flow1 = client.awaitFieldInitialization { stateFlowOfFlowsOfInts }
             val flow2 = flow1.value
 
@@ -685,7 +695,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun testStateFlowOfFlowsOfFlowsOfInts() {
-        runBlocking {
+        runTest {
             val flow1 = client.awaitFieldInitialization { stateFlowOfFlowsOfFlowsOfInts }
             val flow2 = flow1.value
             val flow3 = flow2.value
@@ -702,7 +712,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun testSharedFlowInFunction() {
-        runBlocking {
+        runTest {
             streamScoped {
                 val flow = sharedFlowOfT { it }
 
@@ -715,7 +725,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun testStateFlowInFunction() {
-        runBlocking {
+        runTest {
             streamScoped {
                 val flow = stateFlowOfT { it }
 
@@ -730,7 +740,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun testAwaitAllFields() {
-        runBlocking {
+        runTest {
             with(client.awaitFieldInitialization()) {
                 assertEquals(-1, stateFlowOfInts.value)
                 assertEquals(-1, stateFlowOfFlowsOfInts.value.value)
