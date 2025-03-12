@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.krpc.test.cancellation
 
+@Suppress("detekt.ExplicitGarbageCollectionCall")
 actual fun hintGC() {
     System.gc()
 }

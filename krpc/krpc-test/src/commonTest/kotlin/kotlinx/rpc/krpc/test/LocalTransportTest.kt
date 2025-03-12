@@ -4,8 +4,6 @@
 
 package kotlinx.rpc.krpc.test
 
-import kotlinx.coroutines.test.TestResult
-import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration
 import kotlinx.rpc.krpc.serialization.cbor.cbor

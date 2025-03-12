@@ -473,7 +473,7 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    @Suppress("detekt.TooGenericExceptionCaught")
+    @Suppress("detekt.TooGenericExceptionCaught", "detekt.ThrowsCount")
     fun testExceptionSerializationAndPropagating() {
         runTest {
             try {
