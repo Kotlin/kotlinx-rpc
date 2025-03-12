@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package util
@@ -38,6 +38,7 @@ class ProjectKotlinConfig(
     jvm: Boolean = true,
     js: Boolean = true,
     wasmJs: Boolean = true,
+    wasmJsD8: Boolean = true,
     wasmWasi: Boolean = true,
     val native: Boolean = true,
 ) : Project by project {
@@ -48,18 +49,18 @@ class ProjectKotlinConfig(
 
     private fun isIncluded(
         targetName: String,
-        kotlinVersion: KotlinVersion,
-        lookupTable: Map<String, String>,
+        lookupTable: Map<String, String> = targetsLookup,
     ): Boolean {
         return lookupTable[targetName]?.let { sinceKotlin ->
             sinceKotlin == FULLY_SUPPORTED_TARGET || sinceKotlin.kotlinVersionParsed() <= kotlinVersion
         } ?: false
     }
 
-    val jvm: Boolean by lazy { jvm && isIncluded("jvm", kotlinVersion, targetsLookup) }
-    val js: Boolean by lazy { js && isIncluded("js", kotlinVersion, targetsLookup) }
-    val wasmJs: Boolean by lazy {  wasmJs && isIncluded("wasmJs", kotlinVersion, targetsLookup) }
-    val wasmWasi: Boolean by lazy {  wasmWasi && isIncluded("wasmWasi", kotlinVersion, targetsLookup) }
+    val jvm: Boolean by lazy { jvm && isIncluded("jvm") }
+    val js: Boolean by lazy { js && isIncluded("js") }
+    val wasmJs: Boolean by lazy {  wasmJs && isIncluded("wasmJs") }
+    val wasmJsD8: Boolean by lazy {  wasmJsD8 && wasmJs }
+    val wasmWasi: Boolean by lazy {  wasmWasi && isIncluded("wasmWasi") }
 
     private val nativeLookup by lazy {
         targetsLookup.filterKeys { key ->
@@ -71,7 +72,6 @@ class ProjectKotlinConfig(
         .filter { targetFunction ->
             targetFunction.parameters.size == 1 && isIncluded(
                 targetName = targetFunction.name,
-                kotlinVersion = kotlinVersion,
                 lookupTable = nativeLookup,
             )
         }.map { function ->
@@ -84,6 +84,7 @@ fun Project.withKotlinConfig(configure: ProjectKotlinConfig.() -> Unit) {
     val excludeJvm: Boolean by optionalProperty()
     val excludeJs: Boolean by optionalProperty()
     val excludeWasmJs: Boolean by optionalProperty()
+    val excludeWasmJsD8: Boolean by optionalProperty()
     val excludeWasmWasi: Boolean by optionalProperty()
     val excludeNative: Boolean by optionalProperty()
 
@@ -93,6 +94,7 @@ fun Project.withKotlinConfig(configure: ProjectKotlinConfig.() -> Unit) {
         jvm = !excludeJvm,
         js = !excludeJs,
         wasmJs = !excludeWasmJs,
+        wasmJsD8 = !excludeWasmJsD8,
         wasmWasi = !excludeWasmWasi,
         native = !excludeNative,
     ).configure()

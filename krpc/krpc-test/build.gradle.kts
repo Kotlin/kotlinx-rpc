@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
@@ -22,11 +22,7 @@ kotlin {
                 // Workaround for
                 // KLIB resolver: Could not find "org.jetbrains.kotlinx:atomicfu"
                 api(libs.atomicfu)
-            }
-        }
 
-        jvmMain {
-            dependencies {
                 api(projects.krpc.krpcCore)
                 api(projects.krpc.krpcServer)
                 api(projects.krpc.krpcClient)
@@ -35,11 +31,17 @@ kotlin {
 
                 implementation(libs.serialization.core)
                 implementation(libs.kotlin.test)
+                implementation(libs.coroutines.test)
+            }
+        }
+
+        jvmMain {
+            dependencies {
                 implementation(libs.kotlin.test.junit)
             }
         }
 
-        jvmTest {
+        commonTest {
             dependencies {
                 implementation(projects.krpc.krpcTest)
                 implementation(projects.krpc.krpcSerialization.krpcSerializationJson)
@@ -47,12 +49,16 @@ kotlin {
                 implementation(projects.krpc.krpcSerialization.krpcSerializationProtobuf)
                 implementation(projects.krpc.krpcLogging)
 
+                implementation(libs.coroutines.test)
+                implementation(libs.kotlin.reflect)
+            }
+        }
+
+        jvmTest {
+            dependencies {
                 implementation(libs.slf4j.api)
                 implementation(libs.logback.classic)
-
-                implementation(libs.coroutines.test)
                 implementation(libs.coroutines.debug)
-                implementation(libs.kotlin.reflect)
             }
         }
     }
@@ -72,7 +78,7 @@ tasks.named<Delete>("clean") {
     delete(resourcesPath.walk().filter { it.isFile && it.extension == tmpExt }.toList())
 }
 
-tasks.create("moveToGold") {
+tasks.register("moveToGold") {
     doLast {
         resourcesPath.walk().forEach {
             if (it.isFile && it.extension == tmpExt) {
