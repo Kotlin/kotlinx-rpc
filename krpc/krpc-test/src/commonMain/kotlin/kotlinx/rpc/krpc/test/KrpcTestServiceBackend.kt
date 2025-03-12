@@ -125,11 +125,14 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
         return arg1.count()
     }
 
+    val incomingStreamAsyncCollectLatch = CompletableDeferred<Unit>()
+
     @OptIn(DelicateCoroutinesApi::class)
     override suspend fun incomingStreamAsyncCollect(arg1: Flow<String>): Int {
         @Suppress("detekt.GlobalCoroutineUsage")
         GlobalScope.launch {
             assertContentEquals(listOf("test1", "test2", "test3"), arg1.toList())
+            incomingStreamAsyncCollectLatch.complete(Unit)
         }
         return 5
     }

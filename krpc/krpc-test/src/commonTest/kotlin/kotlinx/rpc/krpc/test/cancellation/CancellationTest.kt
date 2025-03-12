@@ -8,6 +8,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.krpc.StreamScope
 import kotlinx.rpc.krpc.internal.STREAM_SCOPES_ENABLED
 import kotlinx.rpc.krpc.invokeOnStreamScopeCompletion
@@ -286,7 +287,7 @@ class CancellationTest {
 
     @Test
     fun testNestedStreamScopesForbidden() {
-        runBlocking {
+        runTest {
             assertFailsWith<IllegalStateException> {
                 streamScoped { streamScoped { } }
             }
@@ -682,8 +683,8 @@ class CancellationTest {
                 }
             }
         }
-
         firstDone.await()
+
         requestJob.cancel("Cancelled by test")
         requestJob.join()
         serverInstance().nonSuspendableFinished.await()
@@ -701,7 +702,7 @@ class CancellationTest {
         val requestJob = processFlowAndLeaveUnusedForGC(firstDone, latch)
 
         firstDone.await()
-        System.gc() // hint GC to collect the flow
+        hintGC() // hint GC to collect the flow
         serverInstance().nonSuspendableFinished.await()
 
         assertEquals(false, serverInstance().nonSuspendableSecond)
@@ -755,3 +756,5 @@ class CancellationTest {
 
     private suspend fun CancellationToolkit.stopAllAndJoin() = transport.coroutineContext.job.cancelAndJoin()
 }
+
+expect fun hintGC()

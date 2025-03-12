@@ -258,9 +258,7 @@ public abstract class KrpcClient(
 
         val id = callCounter.incrementAndGet()
 
-        val dataTypeString = callable.dataType.toString()
-
-        val callId = "$connectionId:$dataTypeString:$id"
+        val callId = "$connectionId:${callable.name}:$id"
 
         logger.trace { "start a call[$callId] ${callable.name}" }
 
@@ -325,9 +323,7 @@ public abstract class KrpcClient(
             val callable = call.descriptor.getCallable(call.callableName)
                 ?: error("Unexpected callable '${call.callableName}' for ${call.descriptor.fqName} service")
 
-            val dataTypeString = callable.dataType.toString()
-
-            val callId = "$connectionId:$dataTypeString:$id"
+            val callId = "$connectionId:${callable.name}:$id"
 
             val channel = Channel<T>()
 

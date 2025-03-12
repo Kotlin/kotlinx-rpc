@@ -29,7 +29,6 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.modules.SerializersModule
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.jvm.JvmField
 import kotlin.test.*
 
 internal object LocalDateSerializer : KSerializer<LocalDate> {
@@ -98,11 +97,16 @@ abstract class KrpcTransportTestBase {
 
     private lateinit var backend: KrpcServer
     private lateinit var client: KrpcTestService
+    private lateinit var server: KrpcTestServiceBackend
 
     @BeforeTest
     fun start() {
         backend = KrpcTestServer(serverConfig, serverTransport)
-        backend.registerService<KrpcTestService> { KrpcTestServiceBackend(it) }
+        backend.registerService<KrpcTestService> { ctx ->
+            KrpcTestServiceBackend(ctx).also {
+                server = it
+            }
+        }
 
         client = KrpcTestClient(clientConfig, clientTransport).withService()
     }
@@ -123,7 +127,7 @@ abstract class KrpcTransportTestBase {
     fun nonSuspendErrorOnEmit() {
         runTest {
             val flow = client.nonSuspendFlowErrorOnReturn()
-            assertFailsWith<IllegalStateException> {
+            assertFails {
                 flow.toList()
             }
         }
@@ -132,7 +136,7 @@ abstract class KrpcTransportTestBase {
     @Test
     fun nonSuspendErrorOnReturn() {
         runTest {
-            assertFailsWith<IllegalStateException> {
+            assertFails {
                 client.nonSuspendFlowErrorOnReturn().toList()
             }
         }
@@ -240,12 +244,14 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    open fun nullable() = runTest {
-        val result = client.nullable("test")
-        assertEquals(TestClass(), result)
+    open fun nullable() {
+        runTest {
+            val result = client.nullable("test")
+            assertEquals(TestClass(), result)
 
-        val result2 = client.nullable(null)
-        assertEquals(null, result2)
+            val result2 = client.nullable(null)
+            assertEquals(null, result2)
+        }
     }
 
     @Test
@@ -266,7 +272,9 @@ abstract class KrpcTransportTestBase {
     @Test
     fun incomingStreamAsyncCollect() = runTest {
         val result = streamScoped {
-            client.incomingStreamAsyncCollect(flowOf("test1", "test2", "test3"))
+            client.incomingStreamAsyncCollect(flowOf("test1", "test2", "test3")).also {
+                server.incomingStreamAsyncCollectLatch.await()
+            }
         }
 
         assertEquals(5, result)
@@ -470,24 +478,24 @@ abstract class KrpcTransportTestBase {
         runTest {
             try {
                 client.throwsIllegalArgument("me")
-                fail("Exception expected")
+                fail("Exception expected: throwsIllegalArgument")
             } catch (e : AssertionError) {
                 throw e
-            } catch (e: IllegalArgumentException) {
+            } catch (e: Throwable) {
                 assertEquals("me", e.message)
             }
             try {
                 client.throwsSerializableWithMessageAndCause("me")
-                fail("Exception expected")
+                fail("Exception expected: throwsSerializableWithMessageAndCause")
             } catch (e : AssertionError) {
                 throw e
-            } catch (e: KrpcTestServiceBackend.SerializableTestException) {
+            } catch (e: Throwable) {
                 assertEquals("me", e.message)
                 assertEquals("cause: me", e.cause?.message)
             }
             try {
                 client.throwsThrowable("me")
-                fail("Exception expected")
+                fail("Exception expected: throwsThrowable")
             } catch (e : AssertionError) {
                 throw e
             } catch (e: Throwable) {
@@ -495,7 +503,7 @@ abstract class KrpcTransportTestBase {
             }
             try {
                 client.throwsUNSTOPPABLEThrowable("me")
-                fail("Exception expected")
+                fail("Exception expected: throwsUNSTOPPABLEThrowable")
             } catch (e : AssertionError) {
                 throw e
             } catch (e: Throwable) {

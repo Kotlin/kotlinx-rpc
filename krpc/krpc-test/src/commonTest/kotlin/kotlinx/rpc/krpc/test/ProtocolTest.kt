@@ -1,10 +1,9 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.test
 
-import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.launch
 import kotlinx.rpc.krpc.KrpcTransportMessage
 import kotlinx.rpc.krpc.internal.KrpcPlugin
@@ -12,8 +11,9 @@ import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.protobuf.protobuf
 import kotlinx.serialization.ExperimentalSerializationApi
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 
 @Suppress("detekt.MaxLineLength")
 @OptIn(ExperimentalSerializationApi::class)
@@ -72,7 +72,7 @@ class ProtocolTest : ProtocolTestBase() {
 
         // callId changes here are always compatible
         val serverResponseMessage = KrpcTransportMessage.StringMessage(
-            "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallSuccess\",\"callId\":\"$connectionId:kotlinx.rpc.krpc.test.ProtocolTestService.`\$rpcServiceStub`.`sendRequest\$rpcMethod`:1\",\"serviceType\":\"kotlinx.rpc.krpc.test.ProtocolTestService\",\"data\":\"{}\"}"
+            "{\"type\":\"org.jetbrains.krpc.RPCMessage.CallSuccess\",\"callId\":\"$connectionId:sendRequest:1\",\"serviceType\":\"kotlinx.rpc.krpc.test.ProtocolTestService\",\"data\":\"{}\"}"
         )
 
         transport.server.send(serverResponseMessage)

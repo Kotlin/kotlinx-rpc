@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:Suppress("ExtractKtorModule")
@@ -31,6 +31,7 @@ class NewServiceImpl(
     override val coroutineContext: CoroutineContext,
     private val call: ApplicationCall,
 ) : NewService {
+    @Suppress("UastIncorrectHttpHeaderInspection")
     override suspend fun echo(value: String): String {
         assertEquals("test-header", call.request.headers["TestHeader"])
         return value

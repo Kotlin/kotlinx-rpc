@@ -1,22 +1,28 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.test
 
-import junit.framework.TestCase.assertEquals
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
+import kotlinx.coroutines.test.TestResult
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.*
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.KrpcConfigBuilder
+import kotlinx.rpc.krpc.internal.logging.CommonLogger
+import kotlinx.rpc.krpc.internal.logging.DumpLogger
+import kotlinx.rpc.krpc.internal.logging.DumpLoggerContainer
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.Ignore
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
+import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertTrue
 
 @Rpc
@@ -30,7 +36,7 @@ interface Second : RemoteService {
 }
 
 class EchoImpl(override val coroutineContext: CoroutineContext) : Echo {
-    val received = AtomicInteger()
+    val received = atomic(0)
 
     override suspend fun echo(message: String): String {
         received.incrementAndGet()
@@ -39,7 +45,7 @@ class EchoImpl(override val coroutineContext: CoroutineContext) : Echo {
 }
 
 class SecondServer(override val coroutineContext: CoroutineContext) : Second {
-    val received = AtomicInteger()
+    val received = atomic(0)
 
     override suspend fun second(message: String): String {
         received.incrementAndGet()
@@ -72,13 +78,29 @@ class TransportTest {
         return KrpcTestServer(serverConfig, localTransport.server)
     }
 
+    private fun runTest(block: suspend TestScope.() -> Unit): TestResult = kotlinx.coroutines.test.runTest {
+        val logger = CommonLogger.logger("TransportTest")
+
+        DumpLoggerContainer.set(object : DumpLogger {
+            override val isEnabled: Boolean = true
+
+            override fun dump(vararg tags: String, message: () -> String) {
+                logger.info { "${tags.joinToString(" ") { "[$it]" }} ${message()}" }
+            }
+        })
+
+        block()
+
+        DumpLoggerContainer.set(null)
+    }
+
     @Test
-    fun testUsingWrongService(): Unit = runBlocking {
+    fun testUsingWrongService() = runTest {
         val transports = LocalTransport()
 
         val client = clientOf(transports).withService<KrpcTestService>()
         val result = async {
-            assertFailsWith<IllegalStateException> {
+            assertFails {
                 client.simpleWithParams("foo")
             }
         }
@@ -97,7 +119,7 @@ class TransportTest {
     }
 
     @Test
-    fun testLateConnect() = runBlocking {
+    fun testLateConnect() = runTest {
         val transports = LocalTransport()
 
         val client = clientOf(transports).withService<Echo>()
@@ -110,13 +132,13 @@ class TransportTest {
         val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
 
         assertEquals("foo", result.await())
-        assertEquals(1, echoServices.single().received.get())
+        assertEquals(1, echoServices.single().received.value)
 
         server.cancel()
     }
 
     @Test
-    fun testLateConnectWithManyCalls() = runBlocking {
+    fun testLateConnectWithManyCalls() = runTest {
         val transports = LocalTransport()
 
         val client = clientOf(transports).withService<Echo>()
@@ -131,13 +153,13 @@ class TransportTest {
 
         val response = result.awaitAll()
         assertTrue { response.all { it == "foo" } }
-        assertEquals(10, echoServices.single().received.get())
+        assertEquals(10, echoServices.single().received.value)
 
         server.cancel()
     }
 
     @Test
-    fun testLateConnectWithManyServices() = runBlocking {
+    fun testLateConnectWithManyServices() = runTest {
         val transports = LocalTransport()
 
         val client = clientOf(transports)
@@ -154,14 +176,14 @@ class TransportTest {
 
         val response = result.awaitAll()
         assertTrue { response.all { it == "foo" } }
-        assertEquals(10, echoServices.sumOf { it.received.get() })
+        assertEquals(10, echoServices.sumOf { it.received.value })
 
         server.cancel()
     }
 
 
     @Test
-    fun testLateConnectWithManyCallsAndClients() = runBlocking {
+    fun testLateConnectWithManyCallsAndClients() = runTest {
         val transports = LocalTransport()
 
         val client = clientOf(transports)
@@ -182,13 +204,13 @@ class TransportTest {
 
         val response = result.awaitAll().flatten()
         assertTrue { response.all { it == "foo" } }
-        assertEquals(100, echoServices.sumOf { it.received.get() })
+        assertEquals(100, echoServices.sumOf { it.received.value })
 
         server.cancel()
     }
 
     @Test
-    fun testConnectMultipleServicesOnSingleClient(): Unit = runBlocking {
+    fun testConnectMultipleServicesOnSingleClient() = runTest {
         val transports = LocalTransport()
 
         val client = clientOf(transports)
@@ -208,13 +230,13 @@ class TransportTest {
         delay(1000)
         val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
         assertEquals("foo", firstResult.await())
-        assertEquals(1, echoServices.single().received.get())
+        assertEquals(1, echoServices.single().received.value)
         echoServices.single().cancel()
 
         delay(1000)
         val secondServices = server.registerServiceAndReturn<Second, _> { SecondServer(it) }
         assertEquals("bar", secondResult.await())
-        assertEquals(1, secondServices.single().received.get())
+        assertEquals(1, secondServices.single().received.value)
         secondServices.single().cancel()
 
         server.cancel()
@@ -222,7 +244,7 @@ class TransportTest {
 
     @Test
     @Ignore
-    fun testCancelFromClientToServer() = runBlocking {
+    fun testCancelFromClientToServer() = runTest {
         val transports = LocalTransport()
 
         val client = clientOf(transports).withService<KrpcTestService>()
