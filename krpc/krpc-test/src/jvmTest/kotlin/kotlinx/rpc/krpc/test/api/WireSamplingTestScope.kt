@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.test.api
@@ -282,7 +282,7 @@ data class DumpLog(
         fun fromText(lines: List<String>): List<DumpLog> {
             return lines
                 .map { it.trim() }
-                .filter { !it.startsWith("//") }
+                .filter { !it.startsWith("//") && it.isNotBlank() }
                 .map { line ->
                     val (prefix, log) = line.split("\$", limit = 2).map { it.trim() }
                     val (role, phase) = prefix.split(" ")

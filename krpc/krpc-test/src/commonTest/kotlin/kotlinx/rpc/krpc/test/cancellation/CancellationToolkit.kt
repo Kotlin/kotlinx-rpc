@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.test.cancellation
@@ -21,15 +21,14 @@ import kotlinx.rpc.krpc.test.LocalTransport
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 
-@Suppress("RedundantUnitReturnType")
 fun runCancellationTest(body: suspend CancellationToolkit.() -> Unit): TestResult {
-    runTest {
+    return runTest {
         CancellationToolkit(this).apply { body() }
     }
 }
 
 class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
-    private val logger = CommonLogger.logger("[CancellationTest]")
+    private val logger = CommonLogger.logger("CancellationTest")
 
     init {
         DumpLoggerContainer.set(object : DumpLogger {

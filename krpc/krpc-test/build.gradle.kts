@@ -41,7 +41,7 @@ kotlin {
             }
         }
 
-        jvmTest {
+        commonTest {
             dependencies {
                 implementation(projects.krpc.krpcTest)
                 implementation(projects.krpc.krpcSerialization.krpcSerializationJson)
@@ -49,12 +49,16 @@ kotlin {
                 implementation(projects.krpc.krpcSerialization.krpcSerializationProtobuf)
                 implementation(projects.krpc.krpcLogging)
 
+                implementation(libs.coroutines.test)
+                implementation(libs.kotlin.reflect)
+            }
+        }
+
+        jvmTest {
+            dependencies {
                 implementation(libs.slf4j.api)
                 implementation(libs.logback.classic)
-
-                implementation(libs.coroutines.test)
                 implementation(libs.coroutines.debug)
-                implementation(libs.kotlin.reflect)
             }
         }
     }
