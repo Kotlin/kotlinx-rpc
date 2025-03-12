@@ -286,7 +286,7 @@ internal class KrpcServerService<@Rpc T : Any>(
                             data = stringValue,
                             connectionId = callData.connectionId,
                             serviceId = callData.serviceId,
-                            streamId = "1",
+                            streamId = SINGLE_STREAM_ID,
                         )
                     }
 
@@ -298,7 +298,7 @@ internal class KrpcServerService<@Rpc T : Any>(
                             data = binaryValue,
                             connectionId = callData.connectionId,
                             serviceId = callData.serviceId,
-                            streamId = "1",
+                            streamId = SINGLE_STREAM_ID,
                         )
                     }
 
@@ -316,7 +316,7 @@ internal class KrpcServerService<@Rpc T : Any>(
                     serviceType = descriptor.fqName,
                     connectionId = callData.connectionId,
                     serviceId = callData.serviceId,
-                    streamId = "1",
+                    streamId = SINGLE_STREAM_ID,
                 )
             )
         } catch (cause: CancellationException) {
@@ -329,7 +329,7 @@ internal class KrpcServerService<@Rpc T : Any>(
                     serviceType = descriptor.fqName,
                     connectionId = callData.connectionId,
                     serviceId = callData.serviceId,
-                    streamId = "1",
+                    streamId = SINGLE_STREAM_ID,
                     cause = serializedCause,
                 )
             )
@@ -355,6 +355,12 @@ internal class KrpcServerService<@Rpc T : Any>(
                 )
             )
         )
+    }
+
+    companion object {
+        // streams in non-suspend server functions are unique in each call, so no separate is in needed
+        // this one is provided as a way to interact with the old code around streams
+        private const val SINGLE_STREAM_ID = "1"
     }
 }
 

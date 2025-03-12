@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
+import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.descriptor.RpcCallable
 import kotlinx.rpc.internal.serviceScopeOrNull
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -27,7 +28,6 @@ import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.error
 
 @Deprecated("Use KrpcClient instead", ReplaceWith("KrpcClient"), level = DeprecationLevel.ERROR)
 public typealias KRPCClient = KrpcClient
@@ -343,70 +343,76 @@ public abstract class KrpcClient(
 
             try {
                 connector.subscribeToCallResponse(call.descriptor.fqName, callId) { message ->
-                    when (message) {
-                        is KrpcCallMessage.CallData -> {
-                            error("Unexpected message")
-                        }
-
-                        is KrpcCallMessage.CallException -> {
-                            val cause = runCatching {
-                                message.cause.deserialize()
-                            }
-
-                            val result = if (cause.isFailure) {
-                                cause.exceptionOrNull()!!
-                            } else {
-                                cause.getOrNull()!!
-                            }
-
-                            channel.close(result)
-                        }
-
-                        is KrpcCallMessage.CallSuccess, is KrpcCallMessage.StreamMessage -> {
-                            val value = runCatching {
-                                val serializerResult = nonSuspendingSerialFormat.serializersModule
-                                    .rpcSerializerForType(callable.returnType)
-
-                                decodeMessageData(nonSuspendingSerialFormat, serializerResult, message)
-                            }
-
-                            @Suppress("UNCHECKED_CAST")
-                            channel.send(value.getOrNull() as T)
-                        }
-
-                        is KrpcCallMessage.StreamFinished -> {
-                            connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
-                            channel.close()
-                        }
-
-                        is KrpcCallMessage.StreamCancel -> {
-                            connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
-                            val cause = message.cause.deserialize()
-                            channel.close(cause)
-                        }
-                    }
+                    handleServerStreamingMessage(message, channel, callable, call, callId)
                 }
 
-                try {
-                    while (true) {
-                        val element = channel.receiveCatching()
-                        if (element.isClosed) {
-                            val ex = element.exceptionOrNull() ?: break
-                            error(ex)
-                        }
-
-                        if (!element.isFailure) {
-                            emit(element.getOrThrow())
-                        }
+                while (true) {
+                    val element = channel.receiveCatching()
+                    if (element.isClosed) {
+                        val ex = element.exceptionOrNull() ?: break
+                        throw ex
                     }
-                } catch (_: ClosedReceiveChannelException) {
-                    // ignore
+
+                    if (!element.isFailure) {
+                        emit(element.getOrThrow())
+                    }
                 }
             } catch (e: CancellationException) {
                 // sendCancellation is not suspending, so no need for NonCancellable
                 sendCancellation(CancellationType.REQUEST, call.serviceId.toString(), callId)
 
                 throw e
+            }
+        }
+    }
+
+    private suspend fun <T, @Rpc R: Any> handleServerStreamingMessage(
+        message: KrpcCallMessage,
+        channel: Channel<T>,
+        callable: RpcCallable<R>,
+        call: RpcCall,
+        callId: String,
+    ) {
+        when (message) {
+            is KrpcCallMessage.CallData -> {
+                error("Unexpected message")
+            }
+
+            is KrpcCallMessage.CallException -> {
+                val cause = runCatching {
+                    message.cause.deserialize()
+                }
+
+                val result = if (cause.isFailure) {
+                    cause.exceptionOrNull()!!
+                } else {
+                    cause.getOrNull()!!
+                }
+
+                channel.close(result)
+            }
+
+            is KrpcCallMessage.CallSuccess, is KrpcCallMessage.StreamMessage -> {
+                val value = runCatching {
+                    val serializerResult = nonSuspendingSerialFormat.serializersModule
+                        .rpcSerializerForType(callable.returnType)
+
+                    decodeMessageData(nonSuspendingSerialFormat, serializerResult, message)
+                }
+
+                @Suppress("UNCHECKED_CAST")
+                channel.send(value.getOrNull() as T)
+            }
+
+            is KrpcCallMessage.StreamFinished -> {
+                connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
+                channel.close()
+            }
+
+            is KrpcCallMessage.StreamCancel -> {
+                connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
+                val cause = message.cause.deserialize()
+                channel.close(cause)
             }
         }
     }
