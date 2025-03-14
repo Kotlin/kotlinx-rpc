@@ -227,7 +227,7 @@ FILE fqName:<root> fileName:/fields.kt
                     <A>: kotlin.String
                     <B>: kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>
                     $receiver: CONST String type=kotlin.String value="plainFlow"
-                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, dataType: kotlinx.rpc.descriptor.RpcType, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallable>, parameters: kotlin.Array<kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallable' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
+                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, dataType: kotlinx.rpc.descriptor.RpcType, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallable>, parameters: kotlin.Array<kotlinx.rpc.descriptor.RpcParameter>, isNonSuspendFunction: kotlin.Boolean) declared in kotlinx.rpc.descriptor.RpcCallable' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
                       <T>: <root>.BoxService
                       name: CONST String type=kotlin.String value="plainFlow"
                       dataType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType) declared in kotlinx.rpc.descriptor.RpcType' type=kotlinx.rpc.descriptor.RpcType origin=null
@@ -240,11 +240,12 @@ FILE fqName:<root> fileName:/fields.kt
                         $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                       parameters: CALL 'public final fun emptyArray <T> (): kotlin.Array<T of kotlin.emptyArray> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null
                         <T>: kotlinx.rpc.descriptor.RpcParameter
+                      isNonSuspendFunction: CONST Boolean type=kotlin.Boolean value=false
                   CALL 'public final fun to <A, B> (that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
                     <A>: kotlin.String
                     <B>: kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>
                     $receiver: CONST String type=kotlin.String value="sharedFlow"
-                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, dataType: kotlinx.rpc.descriptor.RpcType, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallable>, parameters: kotlin.Array<kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallable' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
+                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, dataType: kotlinx.rpc.descriptor.RpcType, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallable>, parameters: kotlin.Array<kotlinx.rpc.descriptor.RpcParameter>, isNonSuspendFunction: kotlin.Boolean) declared in kotlinx.rpc.descriptor.RpcCallable' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
                       <T>: <root>.BoxService
                       name: CONST String type=kotlin.String value="sharedFlow"
                       dataType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType) declared in kotlinx.rpc.descriptor.RpcType' type=kotlinx.rpc.descriptor.RpcType origin=null
@@ -257,11 +258,12 @@ FILE fqName:<root> fileName:/fields.kt
                         $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                       parameters: CALL 'public final fun emptyArray <T> (): kotlin.Array<T of kotlin.emptyArray> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null
                         <T>: kotlinx.rpc.descriptor.RpcParameter
+                      isNonSuspendFunction: CONST Boolean type=kotlin.Boolean value=false
                   CALL 'public final fun to <A, B> (that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
                     <A>: kotlin.String
                     <B>: kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>
                     $receiver: CONST String type=kotlin.String value="stateFlow"
-                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, dataType: kotlinx.rpc.descriptor.RpcType, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallable>, parameters: kotlin.Array<kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallable' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
+                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, dataType: kotlinx.rpc.descriptor.RpcType, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallable>, parameters: kotlin.Array<kotlinx.rpc.descriptor.RpcParameter>, isNonSuspendFunction: kotlin.Boolean) declared in kotlinx.rpc.descriptor.RpcCallable' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
                       <T>: <root>.BoxService
                       name: CONST String type=kotlin.String value="stateFlow"
                       dataType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType) declared in kotlinx.rpc.descriptor.RpcType' type=kotlinx.rpc.descriptor.RpcType origin=null
@@ -274,6 +276,7 @@ FILE fqName:<root> fileName:/fields.kt
                         $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                       parameters: CALL 'public final fun emptyArray <T> (): kotlin.Array<T of kotlin.emptyArray> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null
                         <T>: kotlinx.rpc.descriptor.RpcParameter
+                      isNonSuspendFunction: CONST Boolean type=kotlin.Boolean value=false
           FUN DEFAULT_PROPERTY_ACCESSOR name:<get-callableMap> visibility:private modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.Companion) returnType:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>>
             correspondingProperty: PROPERTY name:callableMap visibility:private modality:FINAL [val]
             $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.Companion

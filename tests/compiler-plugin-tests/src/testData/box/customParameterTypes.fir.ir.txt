@@ -440,7 +440,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                     <A>: kotlin.String
                     <B>: kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>
                     $receiver: CONST String type=kotlin.String value="test1"
-                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, dataType: kotlinx.rpc.descriptor.RpcType, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallable>, parameters: kotlin.Array<kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallable' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
+                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, dataType: kotlinx.rpc.descriptor.RpcType, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallable>, parameters: kotlin.Array<kotlinx.rpc.descriptor.RpcParameter>, isNonSuspendFunction: kotlin.Boolean) declared in kotlinx.rpc.descriptor.RpcCallable' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
                       <T>: <root>.BoxService
                       name: CONST String type=kotlin.String value="test1"
                       dataType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType) declared in kotlinx.rpc.descriptor.RpcType' type=kotlinx.rpc.descriptor.RpcType origin=null
@@ -459,11 +459,12 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                             type: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType) declared in kotlinx.rpc.descriptor.RpcType' type=kotlinx.rpc.descriptor.RpcType origin=null
                               kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
                                 <T>: <root>.TestData
+                      isNonSuspendFunction: CONST Boolean type=kotlin.Boolean value=false
                   CALL 'public final fun to <A, B> (that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
                     <A>: kotlin.String
                     <B>: kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>
                     $receiver: CONST String type=kotlin.String value="test2"
-                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, dataType: kotlinx.rpc.descriptor.RpcType, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallable>, parameters: kotlin.Array<kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallable' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
+                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, dataType: kotlinx.rpc.descriptor.RpcType, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallable>, parameters: kotlin.Array<kotlinx.rpc.descriptor.RpcParameter>, isNonSuspendFunction: kotlin.Boolean) declared in kotlinx.rpc.descriptor.RpcCallable' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
                       <T>: <root>.BoxService
                       name: CONST String type=kotlin.String value="test2"
                       dataType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType) declared in kotlinx.rpc.descriptor.RpcType' type=kotlinx.rpc.descriptor.RpcType origin=null
@@ -482,6 +483,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                             type: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType) declared in kotlinx.rpc.descriptor.RpcType' type=kotlinx.rpc.descriptor.RpcType origin=null
                               kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
                                 <T>: <root>.TestData
+                      isNonSuspendFunction: CONST Boolean type=kotlin.Boolean value=false
           FUN DEFAULT_PROPERTY_ACCESSOR name:<get-callableMap> visibility:private modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.Companion) returnType:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>>
             correspondingProperty: PROPERTY name:callableMap visibility:private modality:FINAL [val]
             $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.Companion

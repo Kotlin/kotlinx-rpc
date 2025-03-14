@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.codegen
@@ -52,8 +52,8 @@ fun CompilerConfiguration.strictModeAggregator(): StrictModeAggregator {
         stateFlow = get(StrictModeConfigurationKeys.STATE_FLOW, StrictMode.WARNING),
         sharedFlow = get(StrictModeConfigurationKeys.SHARED_FLOW, StrictMode.WARNING),
         nestedFlow = get(StrictModeConfigurationKeys.NESTED_FLOW, StrictMode.WARNING),
-        streamScopedFunctions = get(StrictModeConfigurationKeys.STREAM_SCOPED_FUNCTIONS, StrictMode.NONE),
-        suspendingServerStreaming = get(StrictModeConfigurationKeys.SUSPENDING_SERVER_STREAMING, StrictMode.NONE),
+        streamScopedFunctions = get(StrictModeConfigurationKeys.STREAM_SCOPED_FUNCTIONS, StrictMode.WARNING),
+        suspendingServerStreaming = get(StrictModeConfigurationKeys.SUSPENDING_SERVER_STREAMING, StrictMode.WARNING),
         notTopLevelServerFlow = get(StrictModeConfigurationKeys.NOT_TOP_LEVEL_SERVER_FLOW, StrictMode.WARNING),
         fields = get(StrictModeConfigurationKeys.FIELDS, StrictMode.WARNING),
     )

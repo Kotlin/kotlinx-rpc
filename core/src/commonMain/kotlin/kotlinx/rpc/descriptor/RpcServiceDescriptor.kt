@@ -62,6 +62,7 @@ public class RpcCallable<@Rpc T : Any>(
     public val returnType: RpcType,
     public val invokator: RpcInvokator<T>,
     public val parameters: Array<RpcParameter>,
+    public val isNonSuspendFunction: Boolean,
 )
 
 @ExperimentalRpcApi

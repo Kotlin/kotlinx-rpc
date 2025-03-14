@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.test.api.util
@@ -103,6 +103,7 @@ private fun writeTmp(
         Please, review and commit:
         ${goldFileLine(goldPath)}
         Temp file: file://${file.absolutePath}
+        Reason: $reason
         Run 'moveToGold' Gradle task to update gold files.
     """.trimIndent()
 }

@@ -226,6 +226,10 @@ FILE: b.kt
 
         public abstract suspend fun clientNestedTrickyFlow(inner: R|Wrapper<kotlinx/coroutines/flow/Flow<Wrapper<kotlinx/coroutines/flow/Flow<kotlin/Int>>>>|): R|kotlin/Unit|
 
+        public abstract fun nonSuspendNoFlow(): R|kotlin/Unit|
+
+        public abstract fun nonSuspendNoFlowString(): R|kotlin/String|
+
         public final class $rpcServiceStub : R|kotlin/Any| {
             @R|kotlinx/serialization/Serializable|() public final class state$rpcMethod : R|kotlin/Any| {
                 @R|kotlinx/serialization/Contextual|() public final val flow: R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|
@@ -712,6 +716,24 @@ FILE: b.kt
                         super<R|kotlin/Any|>()
                     }
 
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final object nonSuspendNoFlow$rpcMethod : R|kotlin/Any| {
+                public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.nonSuspendNoFlow$rpcMethod>|
+
+                private constructor(): R|MyService.$rpcServiceStub.nonSuspendNoFlow$rpcMethod| {
+                    super<R|kotlin/Any|>()
+                }
+
+            }
+
+            @R|kotlinx/serialization/Serializable|() public final object nonSuspendNoFlowString$rpcMethod : R|kotlin/Any| {
+                public final fun serializer(): R|kotlinx/serialization/KSerializer<MyService.$rpcServiceStub.nonSuspendNoFlowString$rpcMethod>|
+
+                private constructor(): R|MyService.$rpcServiceStub.nonSuspendNoFlowString$rpcMethod| {
+                    super<R|kotlin/Any|>()
                 }
 
             }

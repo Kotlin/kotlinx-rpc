@@ -32,7 +32,12 @@ public final class kotlinx/rpc/RpcCall {
 public abstract interface class kotlinx/rpc/RpcClient : kotlinx/coroutines/CoroutineScope {
 	public abstract fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun callAsync (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/Deferred;
+	public abstract fun callServerStreaming (Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/flow/Flow;
 	public abstract fun provideStubContext (J)Lkotlin/coroutines/CoroutineContext;
+}
+
+public final class kotlinx/rpc/RpcClient$DefaultImpls {
+	public static fun callServerStreaming (Lkotlinx/rpc/RpcClient;Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public abstract interface annotation class kotlinx/rpc/RpcEagerField : java/lang/annotation/Annotation {
@@ -59,12 +64,13 @@ public abstract interface annotation class kotlinx/rpc/annotations/Rpc : java/la
 }
 
 public final class kotlinx/rpc/descriptor/RpcCallable {
-	public fun <init> (Ljava/lang/String;Lkotlinx/rpc/descriptor/RpcType;Lkotlinx/rpc/descriptor/RpcType;Lkotlinx/rpc/descriptor/RpcInvokator;[Lkotlinx/rpc/descriptor/RpcParameter;)V
+	public fun <init> (Ljava/lang/String;Lkotlinx/rpc/descriptor/RpcType;Lkotlinx/rpc/descriptor/RpcType;Lkotlinx/rpc/descriptor/RpcInvokator;[Lkotlinx/rpc/descriptor/RpcParameter;Z)V
 	public final fun getDataType ()Lkotlinx/rpc/descriptor/RpcType;
 	public final fun getInvokator ()Lkotlinx/rpc/descriptor/RpcInvokator;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getParameters ()[Lkotlinx/rpc/descriptor/RpcParameter;
 	public final fun getReturnType ()Lkotlinx/rpc/descriptor/RpcType;
+	public final fun isNonSuspendFunction ()Z
 }
 
 public abstract interface class kotlinx/rpc/descriptor/RpcInvokator {

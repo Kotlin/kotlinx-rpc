@@ -21,6 +21,25 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
         const val SHARED_FLOW_REPLAY = 5
     }
 
+    override fun nonSuspendFlow(): Flow<Int> {
+        return flow {
+            repeat(10) {
+                delay(100)
+                emit(it)
+            }
+        }
+    }
+
+    override fun nonSuspendFlowErrorOnEmit(): Flow<Int> {
+        return flow {
+            error("nonSuspendFlowErrorOnEmit")
+        }
+    }
+
+    override fun nonSuspendFlowErrorOnReturn(): Flow<Int> {
+        error("nonSuspendFlowErrorOnReturn")
+    }
+
     @Suppress("detekt.EmptyFunctionBlock")
     override suspend fun empty() {}
 

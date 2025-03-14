@@ -122,6 +122,32 @@ abstract class KrpcTransportTestBase {
     val globalTimeout: Timeout = Timeout.seconds(30)
 
     @Test
+    fun nonSuspend() {
+        runBlocking {
+            assertEquals(List(10) { it }, client.nonSuspendFlow().toList())
+        }
+    }
+
+    @Test
+    fun nonSuspendErrorOnEmit() {
+        runBlocking {
+            val flow = client.nonSuspendFlowErrorOnReturn()
+            assertFailsWith<IllegalStateException> {
+                flow.toList()
+            }
+        }
+    }
+
+    @Test
+    fun nonSuspendErrorOnReturn() {
+        runBlocking {
+            assertFailsWith<IllegalStateException> {
+                client.nonSuspendFlowErrorOnReturn().toList()
+            }
+        }
+    }
+
+    @Test
     fun empty() {
         backend.cancel()
         client.cancel()
