@@ -2,7 +2,9 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import com.osacky.doctor.internal.sysProperty
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
 import util.applyAtomicfuPlugin
 import java.nio.file.Files
@@ -76,6 +78,14 @@ val goldExt = "gold"
 
 tasks.named<Delete>("clean") {
     delete(resourcesPath.walk().filter { it.isFile && it.extension == tmpExt }.toList())
+}
+
+tasks.withType<KotlinJsTest> {
+    onlyIf {
+        // for some reason browser tests don't wait for the test to complete and end immediately
+        // KRPC-166
+        !targetName.orEmpty().endsWith("browser")
+    }
 }
 
 tasks.register("moveToGold") {

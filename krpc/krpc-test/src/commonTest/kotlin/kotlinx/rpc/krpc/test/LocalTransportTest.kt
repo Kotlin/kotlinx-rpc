@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.krpc.test
 
+import kotlinx.coroutines.test.TestResult
+import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration
 import kotlinx.rpc.krpc.serialization.cbor.cbor
@@ -48,11 +50,11 @@ class ProtoBufLocalTransportTest : LocalTransportTest() {
     }
 
     // 'null' is not supported in ProtoBuf
-    override fun nullable() { }
+    override fun nullable(): TestResult = runTest { }
 
-    override fun testByteArraySerialization() { }
+    override fun testByteArraySerialization(): TestResult = runTest { }
 
-    override fun testNullables() { }
+    override fun testNullables(): TestResult = runTest { }
 
-    override fun testNullableLists() { }
+    override fun testNullableLists(): TestResult = runTest { }
 }

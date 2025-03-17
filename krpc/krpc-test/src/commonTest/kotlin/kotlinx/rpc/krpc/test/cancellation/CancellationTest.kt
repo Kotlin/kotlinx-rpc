@@ -286,11 +286,9 @@ class CancellationTest {
     }
 
     @Test
-    fun testNestedStreamScopesForbidden() {
-        runTest {
-            assertFailsWith<IllegalStateException> {
-                streamScoped { streamScoped { } }
-            }
+    fun testNestedStreamScopesForbidden() = runTest {
+        assertFailsWith<IllegalStateException> {
+            streamScoped { streamScoped { } }
         }
     }
 
@@ -702,7 +700,9 @@ class CancellationTest {
         val requestJob = processFlowAndLeaveUnusedForGC(firstDone, latch)
 
         firstDone.await()
-        hintGC() // hint GC to collect the flow
+        // here, GC should collect the flow.
+        // so far, it works well locally and on TC,
+        // so, until it is flaky, we're good
         serverInstance().nonSuspendableFinished.await()
 
         assertEquals(false, serverInstance().nonSuspendableSecond)
@@ -756,5 +756,3 @@ class CancellationTest {
 
     private suspend fun CancellationToolkit.stopAllAndJoin() = transport.coroutineContext.job.cancelAndJoin()
 }
-
-expect fun hintGC()
