@@ -88,6 +88,6 @@ public class RpcParameter(public val name: String, public val type: RpcType)
 @ExperimentalRpcApi
 public class RpcType(public val kType: KType) {
     override fun toString(): String {
-        return return kType.toString()
+        return kType.toString()
     }
 }

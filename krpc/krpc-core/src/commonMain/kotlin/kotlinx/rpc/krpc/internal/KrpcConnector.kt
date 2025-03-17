@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.internal
@@ -154,9 +154,25 @@ public class KrpcConnector<SubscriptionKey>(
             if (waitForSubscribers) {
                 waiting.getOrPut(message.getKey()) { mutableListOf() }.add(message)
 
-                logger.warn {
+                val reason = when (result) {
+                    is HandlerResult.Failure -> {
+                        "Unhandled exception while processing ${result.cause?.message}"
+                    }
+
+                    is HandlerResult.NoSubscription -> {
+                        "No service with key '${message.getKey()}' and '${message.serviceType}' type was registered." +
+                                "Available: keys: [${subscriptions.keys.joinToString()}]"
+                    }
+
+                    else -> {
+                        "Unknown"
+                    }
+                }
+
+                logger.warn((result as? HandlerResult.Failure)?.cause) {
                     "No registered service of ${message.serviceType} service type " +
-                            "was able to process message at the moment. Waiting for new services."
+                            "was able to process message at the moment. Waiting for new services." +
+                            "Reason: $reason"
                 }
 
                 return
