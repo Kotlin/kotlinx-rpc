@@ -31,7 +31,7 @@ shadow-jar = "9.0.0-beta10"
 atomicfu = "0.27.0"
 serialization = "1.8.0"
 detekt-gradle-plugin = "1.23.8"
-gradle-kotlin-dsl = "5.2.0"
+gradle-kotlin-dsl = "5.1.2"
 binary-compatibility-validator = "0.17.0"
 kover = "0.9.1"
 
