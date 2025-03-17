@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.internal.logging
@@ -7,22 +7,22 @@ package kotlinx.rpc.krpc.internal.logging
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
-public interface DumpLogger {
+public interface RpcInternalDumpLogger {
     public val isEnabled: Boolean
 
     public fun dump(vararg tags: String, message: () -> String)
 }
 
 @InternalRpcApi
-public object DumpLoggerContainer {
-    private var logger: DumpLogger? = null
+public object RpcInternalDumpLoggerContainer {
+    private var logger: RpcInternalDumpLogger? = null
 
-    public fun set(logger: DumpLogger?) {
-        DumpLoggerContainer.logger = logger
+    public fun set(logger: RpcInternalDumpLogger?) {
+        RpcInternalDumpLoggerContainer.logger = logger
     }
 
-    public fun provide(): DumpLogger {
-        return object : DumpLogger {
+    public fun provide(): RpcInternalDumpLogger {
+        return object : RpcInternalDumpLogger {
             override val isEnabled: Boolean get() = logger?.isEnabled ?: false
 
             override fun dump(vararg tags: String, message: () -> String) {

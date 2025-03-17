@@ -12,8 +12,8 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.KrpcTransportMessage
-import kotlinx.rpc.krpc.internal.logging.CommonLogger
-import kotlinx.rpc.krpc.internal.logging.DumpLoggerContainer
+import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
+import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
 import kotlinx.serialization.*
 
 @InternalRpcApi
@@ -47,14 +47,14 @@ public class KrpcConnector<SubscriptionKey>(
     private val getKey: KrpcMessage.() -> SubscriptionKey,
 ) : KrpcMessageSender, CoroutineScope by transport {
     private val role = if (isServer) SERVER_ROLE else CLIENT_ROLE
-    private val logger = CommonLogger.logger(objectId(role))
+    private val logger = RpcInternalCommonLogger.logger(rpcInternalObjectId(role))
 
     private val mutex = Mutex()
 
     private val waiting = mutableMapOf<SubscriptionKey, MutableList<KrpcMessage>>()
     private val subscriptions = mutableMapOf<SubscriptionKey, KrpcMessageHandler>()
 
-    private val dumpLogger by lazy { DumpLoggerContainer.provide() }
+    private val dumpLogger by lazy { RpcInternalDumpLoggerContainer.provide() }
 
     override suspend fun sendMessage(message: KrpcMessage) {
         val transportMessage = when (serialFormat) {

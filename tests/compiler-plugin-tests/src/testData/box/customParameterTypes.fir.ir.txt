@@ -385,7 +385,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                     VALUE_PARAMETER name:data index:1 type:kotlin.Any?
                     BLOCK_BODY
                       VAR IR_TEMPORARY_VARIABLE name:tmp_10 type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod [val]
-                        CALL 'public final fun dataCast <T> (methodName: kotlin.String, serviceName: kotlin.String): T of kotlinx.rpc.internal.dataCast declared in kotlinx.rpc.internal' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod origin=null
+                        CALL 'public final fun rpcInternalDataCast <T> (methodName: kotlin.String, serviceName: kotlin.String): T of kotlinx.rpc.internal.rpcInternalDataCast declared in kotlinx.rpc.internal' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod origin=null
                           <T>: <root>.BoxService.$rpcServiceStub.test1$rpcMethod
                           $receiver: GET_VAR 'data: kotlin.Any? declared in <root>.BoxService.$rpcServiceStub.Companion.test1Invokator.<anonymous>' type=kotlin.Any? origin=null
                           methodName: CONST String type=kotlin.String value="test1"
@@ -412,7 +412,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                     VALUE_PARAMETER name:data index:1 type:kotlin.Any?
                     BLOCK_BODY
                       VAR IR_TEMPORARY_VARIABLE name:tmp_11 type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod [val]
-                        CALL 'public final fun dataCast <T> (methodName: kotlin.String, serviceName: kotlin.String): T of kotlinx.rpc.internal.dataCast declared in kotlinx.rpc.internal' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod origin=null
+                        CALL 'public final fun rpcInternalDataCast <T> (methodName: kotlin.String, serviceName: kotlin.String): T of kotlinx.rpc.internal.rpcInternalDataCast declared in kotlinx.rpc.internal' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod origin=null
                           <T>: <root>.BoxService.$rpcServiceStub.test2$rpcMethod
                           $receiver: GET_VAR 'data: kotlin.Any? declared in <root>.BoxService.$rpcServiceStub.Companion.test2Invokator.<anonymous>' type=kotlin.Any? origin=null
                           methodName: CONST String type=kotlin.String value="test2"

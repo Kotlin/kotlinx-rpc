@@ -4,9 +4,9 @@
 
 package kotlinx.rpc.krpc.internal
 
-import kotlinx.rpc.internal.utils.IndexedEnum
+import kotlinx.rpc.internal.utils.RpcInternalIndexedEnum
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.internal.utils.ShortEnumKSerializer
+import kotlinx.rpc.internal.utils.RpcInternalShortEnumKSerializer
 import kotlinx.serialization.Serializable
 
 /**
@@ -25,7 +25,7 @@ public enum class KrpcPlugin(
      * Only for maintenance purposes. Indicates when the plugin was added.
      */
     @Suppress("unused") private val since: KrpcVersion,
-) : IndexedEnum {
+) : RpcInternalIndexedEnum {
     /**
      * Represents all unknown plugins.
      * Endpoint may get this value from a peer, when peer has a newer version and with it some new plugins
@@ -66,7 +66,7 @@ public enum class KrpcPlugin(
     }
 }
 
-private class KrpcPluginSerializer : ShortEnumKSerializer<KrpcPlugin>(
+private class KrpcPluginSerializer : RpcInternalShortEnumKSerializer<KrpcPlugin>(
     kClass = KrpcPlugin::class,
     unknownValue = KrpcPlugin.UNKNOWN,
     allValues = KrpcPlugin.ALL,

@@ -4,9 +4,9 @@
 
 package kotlinx.rpc.krpc.internal
 
-import kotlinx.rpc.internal.utils.IndexedEnum
+import kotlinx.rpc.internal.utils.RpcInternalIndexedEnum
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.internal.utils.ShortEnumKSerializer
+import kotlinx.rpc.internal.utils.RpcInternalShortEnumKSerializer
 import kotlinx.serialization.Serializable
 
 /**
@@ -21,7 +21,10 @@ import kotlinx.serialization.Serializable
  */
 @InternalRpcApi
 @Serializable(with = KrpcPluginKeySerializer::class)
-public enum class KrpcPluginKey(override val uniqueIndex: Int, private val associatedPlugin: KrpcPlugin): IndexedEnum {
+public enum class KrpcPluginKey(
+    override val uniqueIndex: Int,
+    private val associatedPlugin: KrpcPlugin,
+): RpcInternalIndexedEnum {
     /**
      * Failed to decode key, possible due to different endpoint versions.
      */
@@ -65,7 +68,7 @@ public enum class KrpcPluginKey(override val uniqueIndex: Int, private val assoc
     }
 }
 
-private class KrpcPluginKeySerializer : ShortEnumKSerializer<KrpcPluginKey>(
+private class KrpcPluginKeySerializer : RpcInternalShortEnumKSerializer<KrpcPluginKey>(
     kClass = KrpcPluginKey::class,
     unknownValue = KrpcPluginKey.UNKNOWN,
     allValues = KrpcPluginKey.ALL,

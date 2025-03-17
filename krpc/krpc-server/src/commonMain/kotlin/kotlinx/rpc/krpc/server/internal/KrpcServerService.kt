@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.descriptor.RpcInvokator
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
-import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
+import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlinx.rpc.krpc.KrpcConfig
 import kotlinx.rpc.krpc.callScoped
 import kotlinx.rpc.krpc.internal.*
-import kotlinx.rpc.krpc.internal.logging.CommonLogger
+import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.streamScopeOrNull
 import kotlinx.rpc.krpc.withServerStreamScope
 import kotlinx.serialization.BinaryFormat
@@ -29,13 +29,13 @@ internal class KrpcServerService<@Rpc T : Any>(
     private val connector: KrpcServerConnector,
     coroutineContext: CoroutineContext,
 ) : KrpcServiceHandler(), CoroutineScope {
-    override val logger = CommonLogger.logger(objectId(descriptor.fqName))
+    override val logger = RpcInternalCommonLogger.logger(rpcInternalObjectId(descriptor.fqName))
     override val sender: KrpcMessageSender get() = connector
     private val scope: CoroutineScope = this
 
     override val coroutineContext: CoroutineContext = coroutineContext.withServerStreamScope()
 
-    private val requestMap = ConcurrentHashMap<String, RpcRequest>()
+    private val requestMap = RpcInternalConcurrentHashMap<String, RpcRequest>()
 
     init {
         coroutineContext.job.invokeOnCompletion {
