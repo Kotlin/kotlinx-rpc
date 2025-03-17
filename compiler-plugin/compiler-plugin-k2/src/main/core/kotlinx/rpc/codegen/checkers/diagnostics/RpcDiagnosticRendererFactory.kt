@@ -35,9 +35,12 @@ object RpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
 
         put(
             factory = FirRpcDiagnostics.CHECKED_ANNOTATION_VIOLATION,
-            message = "Type argument marked with {0} annotation " +
-                    "must be annotated with {0} or an annotation annotated with {0}.",
-            rendererA = FirDiagnosticRenderers.RENDER_TYPE,
+            message = "{0} type argument is marked with @{1} annotation, but inferred type is {2}. " +
+                    "Provide a type that is marked with @{1} annotation explicitly " +
+                    "or remove the annotation from the type argument declaration.",
+            rendererA = Renderer { it.indexPositionSpelled() },
+            rendererB = FirDiagnosticRenderers.RENDER_TYPE,
+            rendererC = FirDiagnosticRenderers.SYMBOL,
         )
 
         put(
@@ -62,6 +65,18 @@ object RpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
             message = "Type parameters are not allowed in @Rpc interfaces.",
         )
     }
+}
+
+private fun Int.indexPositionSpelled(): String {
+    val padded = this + 1
+    val suffix = when (padded % 10) {
+        1 -> "st"
+        2 -> "nd"
+        3 -> "rd"
+        else -> "th"
+    }
+
+    return "$padded$suffix"
 }
 
 class RpcStrictModeDiagnosticRendererFactory(
