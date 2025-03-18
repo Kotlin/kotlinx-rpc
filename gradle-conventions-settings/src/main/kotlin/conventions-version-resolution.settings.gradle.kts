@@ -222,15 +222,22 @@ dependencyResolutionManagement {
             // Other Kotlin-dependant versions
             val (lookupTable, latestKotlin) = loadLookupTable(rootDir, kotlinVersion)
 
-            val isLatestKotlin = latestKotlin == kotlinVersion
+            val kotlinVersionParsed = kotlinVersion.kotlinVersionParsed()
+            val latestKotlinParsed = latestKotlin.kotlinVersionParsed()
 
-            extra["kotlinVersion"] = kotlinVersion.kotlinVersionParsed()
+            val isLatestKotlin = kotlinVersionParsed.isAtLeast(
+                major = latestKotlinParsed.major,
+                minor = latestKotlinParsed.minor,
+                patch = latestKotlinParsed.patch
+            )
+
+            extra["kotlinVersion"] = kotlinVersionParsed
             extra["kotlinCompilerVersion"] = compilerVersion.kotlinVersionParsed()
             extra["isLatestKotlinVersion"] = isLatestKotlin
 
             gradle.rootProject {
                 allprojects {
-                    this.extra["kotlinVersion"] = kotlinVersion.kotlinVersionParsed()
+                    this.extra["kotlinVersion"] = kotlinVersionParsed
                     this.extra["kotlinCompilerVersion"] = compilerVersion.kotlinVersionParsed()
                     this.extra["isLatestKotlinVersion"] = isLatestKotlin
                 }
