@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package util
@@ -7,7 +7,11 @@ package util
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsEnvSpec
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootEnvSpec
 import java.io.File
 
 fun Project.configureNpm() {
@@ -57,8 +61,8 @@ fun Project.configureNpm() {
 
     val useProxy = useProxyRepositories
 
-    plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class.java).configureEach {
-        rootProject.extensions.configure<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension> {
+    plugins.withType(NodeJsRootPlugin::class.java).configureEach {
+        rootProject.extensions.configure<NodeJsEnvSpec> {
             download = true
             if (useProxy) {
                 downloadBaseUrl = "https://packages.jetbrains.team/files/p/krpc/build-deps/"
@@ -71,8 +75,8 @@ fun Project.configureNpm() {
     }
 
     // necessary for CI js tests
-    rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
-        rootProject.extensions.configure<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension> {
+    rootProject.plugins.withType<YarnPlugin> {
+        rootProject.extensions.configure<YarnRootEnvSpec> {
             ignoreScripts = false
             download = true
 

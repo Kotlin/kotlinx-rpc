@@ -1,9 +1,10 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.codegen.extension
 
+import kotlinx.rpc.codegen.RpcIrServiceProcessorDelegate
 import kotlinx.rpc.codegen.VersionSpecificApi
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
@@ -20,7 +21,7 @@ class RpcIrExtension(configuration: CompilerConfiguration) : IrGenerationExtensi
     ) {
         val context = RpcIrContext(pluginContext, VersionSpecificApi.INSTANCE)
 
-        val processor = RpcIrServiceProcessor(logger)
+        val processor = RpcIrServiceProcessorDelegate(RpcIrServiceProcessor(logger))
         moduleFragment.transform(processor, context)
     }
 }
