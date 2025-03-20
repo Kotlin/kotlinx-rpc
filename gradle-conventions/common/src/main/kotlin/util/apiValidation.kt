@@ -22,6 +22,7 @@ fun Project.configureApiValidation() {
                 if (kotlinMasterBuild) null else "compiler-plugin-tests",
                 "krpc-test",
                 "utils",
+                "krpc-compatibility-tests",
             )
         )
 
