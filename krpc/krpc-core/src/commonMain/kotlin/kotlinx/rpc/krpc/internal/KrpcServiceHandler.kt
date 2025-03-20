@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.internal
@@ -14,7 +14,7 @@ import kotlinx.rpc.descriptor.RpcCallable
 import kotlinx.rpc.descriptor.RpcInvokator
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.krpc.KrpcConfig
-import kotlinx.rpc.krpc.internal.logging.CommonLogger
+import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialFormat
@@ -25,7 +25,7 @@ import kotlinx.serialization.modules.SerializersModule
 public abstract class KrpcServiceHandler {
     protected abstract val sender: KrpcMessageSender
     protected abstract val config: KrpcConfig
-    protected abstract val logger: CommonLogger
+    protected abstract val logger: RpcInternalCommonLogger
 
     protected suspend fun handleIncomingHotFlows(streamContext: KrpcStreamContext) {
         for (hotFlow in streamContext.incomingHotFlows) {

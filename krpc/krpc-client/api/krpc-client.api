@@ -6,6 +6,6 @@ public abstract class kotlinx/rpc/krpc/client/KrpcClient : kotlinx/rpc/krpc/inte
 	protected final fun getConfig ()Lkotlinx/rpc/krpc/KrpcConfig$Client;
 	public synthetic fun getConfig ()Lkotlinx/rpc/krpc/KrpcConfig;
 	public final fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
-	protected fun getLogger ()Lkotlinx/rpc/krpc/internal/logging/CommonLogger;
+	protected final fun getLogger ()Lkotlinx/rpc/krpc/internal/logging/RpcInternalCommonLogger;
 }
 

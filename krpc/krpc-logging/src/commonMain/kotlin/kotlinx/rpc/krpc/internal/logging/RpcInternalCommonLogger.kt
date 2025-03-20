@@ -1,22 +1,22 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.internal.logging
 
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.krpc.internal.logging.impl.CommonLoggerFactoryImpl
+import kotlinx.rpc.krpc.internal.logging.impl.RpcInternalCommonLoggerFactoryImpl
 import kotlin.reflect.KClass
 
 @InternalRpcApi
-public interface CommonLoggerFactory {
-    public fun getLogger(name: String): CommonLogger
+public interface RpcInternalCommonLoggerFactory {
+    public fun getLogger(name: String): RpcInternalCommonLogger
 
-    public fun getLogger(func: () -> Unit): CommonLogger
+    public fun getLogger(func: () -> Unit): RpcInternalCommonLogger
 }
 
 @InternalRpcApi
-public interface CommonLogger {
+public interface RpcInternalCommonLogger {
     public fun debug(msg: () -> Any?)
 
     public fun debug(t: Throwable?, msg: () -> Any?)
@@ -39,21 +39,21 @@ public interface CommonLogger {
 
     @InternalRpcApi
     public companion object {
-        private val factory = CommonLoggerFactoryImpl
+        private val factory = RpcInternalCommonLoggerFactoryImpl
 
-        public fun logger(name: String): CommonLogger {
+        public fun logger(name: String): RpcInternalCommonLogger {
             return factory.getLogger(name)
         }
 
-        public fun <T : Any> logger(kClass: KClass<T>): CommonLogger {
+        public fun <T : Any> logger(kClass: KClass<T>): RpcInternalCommonLogger {
             return logger(kClass::class.simpleName ?: kClass.toString())
         }
 
-        public inline fun <reified T : Any> logger(): CommonLogger {
+        public inline fun <reified T : Any> logger(): RpcInternalCommonLogger {
             return logger(T::class)
         }
 
-        public fun logger(func: () -> Unit = {}): CommonLogger {
+        public fun logger(func: () -> Unit = {}): RpcInternalCommonLogger {
             return factory.getLogger(func)
         }
     }

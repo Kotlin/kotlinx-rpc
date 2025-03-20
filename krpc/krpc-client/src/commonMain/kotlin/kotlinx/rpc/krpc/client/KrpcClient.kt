@@ -15,13 +15,13 @@ import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.descriptor.RpcCallable
 import kotlinx.rpc.internal.serviceScopeOrNull
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.internal.utils.SupervisedCompletableDeferred
+import kotlinx.rpc.internal.utils.RpcInternalSupervisedCompletableDeferred
 import kotlinx.rpc.internal.utils.getOrNull
-import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
+import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlinx.rpc.krpc.*
 import kotlinx.rpc.krpc.client.internal.KrpcClientConnector
 import kotlinx.rpc.krpc.internal.*
-import kotlinx.rpc.krpc.internal.logging.CommonLogger
+import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
@@ -68,7 +68,7 @@ public abstract class KrpcClient(
 
     private val callCounter = atomic(0L)
 
-    override val logger: CommonLogger = CommonLogger.logger(objectId())
+    final override val logger: RpcInternalCommonLogger = RpcInternalCommonLogger.logger(rpcInternalObjectId())
 
     private val serverSupportedPlugins: CompletableDeferred<Set<KrpcPlugin>> = CompletableDeferred()
 
@@ -79,7 +79,7 @@ public abstract class KrpcClient(
     private var clientCancelled = false
 
     // callId to serviceTypeString
-    private val cancellingRequests = ConcurrentHashMap<String, String>()
+    private val cancellingRequests = RpcInternalConcurrentHashMap<String, String>()
 
     init {
         coroutineContext.job.invokeOnCompletion(onCancelling = true) {
@@ -155,7 +155,7 @@ public abstract class KrpcClient(
         val callable = call.descriptor.getCallable(call.callableName)
             ?: error("Unexpected callable '${call.callableName}' for ${call.descriptor.fqName} service")
 
-        val deferred = SupervisedCompletableDeferred<T>(serviceScope.coroutineContext.job)
+        val deferred = RpcInternalSupervisedCompletableDeferred<T>(serviceScope.coroutineContext.job)
 
         /**
          * Launched on the service scope (receiver)
@@ -181,7 +181,7 @@ public abstract class KrpcClient(
         val callable = call.descriptor.getCallable(call.callableName)
             ?: error("Unexpected callable '${call.callableName}' for ${call.descriptor.fqName} service")
 
-        val callCompletableResult = SupervisedCompletableDeferred<T>()
+        val callCompletableResult = RpcInternalSupervisedCompletableDeferred<T>()
         val rpcCall = call(call, callable, callCompletableResult)
         val result = callCompletableResult.await()
 

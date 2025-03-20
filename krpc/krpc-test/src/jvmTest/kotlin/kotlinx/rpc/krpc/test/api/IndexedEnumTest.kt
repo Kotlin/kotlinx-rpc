@@ -1,10 +1,10 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.test.api
 
-import kotlinx.rpc.internal.utils.IndexedEnum
+import kotlinx.rpc.internal.utils.RpcInternalIndexedEnum
 import kotlinx.rpc.krpc.test.api.ApiVersioningTest.Companion.INDEXED_ENUM_DUMPS_DIR
 import kotlinx.rpc.krpc.test.api.util.GoldComparable
 import kotlinx.rpc.krpc.test.api.util.GoldComparisonResult
@@ -13,7 +13,7 @@ import kotlinx.rpc.krpc.test.api.util.checkGold
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
-inline fun <reified E> testEnum() where E : IndexedEnum, E : Enum<E> {
+inline fun <reified E> testEnum() where E : RpcInternalIndexedEnum, E : Enum<E> {
     testEnum(enumValues<E>(), E::class.simpleName!!) { EnumGoldContent.fromText(it) }
 }
 
@@ -21,7 +21,7 @@ fun <E> testEnum(
     values: Array<E>,
     name: String,
     fromText: (String) -> EnumGoldContent<E>,
-) where E : IndexedEnum, E : Enum<E> {
+) where E : RpcInternalIndexedEnum, E : Enum<E> {
     val indexes = values.map { it.uniqueIndex }
     for (i in indexes) {
         assertTrue("All indexes should be in [0..65500] range") { i in 0..65500 }
@@ -53,7 +53,7 @@ fun <E> testEnum(
 }
 
 class EnumGoldContent<E>(private val values: Set<E>) :
-    GoldComparable<EnumGoldContent<E>> where E : IndexedEnum, E : Enum<E> {
+    GoldComparable<EnumGoldContent<E>> where E : RpcInternalIndexedEnum, E : Enum<E> {
     override fun compare(other: EnumGoldContent<E>): GoldComparisonResult {
         val diff = values - other.values
         return if (diff.isEmpty()) {
@@ -70,7 +70,9 @@ class EnumGoldContent<E>(private val values: Set<E>) :
     }
 
     companion object {
-        inline fun <reified E> fromText(text: String): EnumGoldContent<E> where E : IndexedEnum, E : Enum<E> {
+        inline fun <reified E> fromText(
+            text: String,
+        ): EnumGoldContent<E> where E : RpcInternalIndexedEnum, E : Enum<E> {
             return fromText(text, E::class.simpleName!!) { enumValueOf<E>(it) }
         }
 
@@ -78,7 +80,7 @@ class EnumGoldContent<E>(private val values: Set<E>) :
             text: String,
             enumName: String,
             enumValueOf: (String) -> E
-        ): EnumGoldContent<E> where E : IndexedEnum, E : Enum<E> {
+        ): EnumGoldContent<E> where E : RpcInternalIndexedEnum, E : Enum<E> {
             val values = text.split(GoldUtils.NewLine).map {
                 val (name, index) = it.split(" - ")
                 val enum = try {

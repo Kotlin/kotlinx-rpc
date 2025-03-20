@@ -12,11 +12,11 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.annotations.Rpc
-import kotlinx.rpc.internal.utils.hex.hexToReadableBinary
+import kotlinx.rpc.internal.utils.hex.rpcInternalHexToReadableBinary
 import kotlinx.rpc.krpc.KrpcTransportMessage
-import kotlinx.rpc.krpc.internal.logging.CommonLogger
-import kotlinx.rpc.krpc.internal.logging.DumpLogger
-import kotlinx.rpc.krpc.internal.logging.DumpLoggerContainer
+import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
+import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLogger
+import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration
@@ -52,7 +52,7 @@ fun wireSamplingTest(name: String, sampling: suspend WireSamplingTestScope.() ->
 }
 
 class WireSamplingTestScope(private val sampleName: String, scope: TestScope) : CoroutineScope by scope {
-    private val logger = CommonLogger.logger("[WireTest] [$sampleName]")
+    private val logger = RpcInternalCommonLogger.logger("[WireTest] [$sampleName]")
     private var clientSampling: (suspend SamplingService.() -> Unit)? = null
 
     suspend fun sample(
@@ -193,7 +193,7 @@ class WireSamplingTestScope(private val sampleName: String, scope: TestScope) : 
     }
 }
 
-private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val logger: CommonLogger? = null) {
+private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val logger: RpcInternalCommonLogger? = null) {
     val transport = LocalTransport(scope)
 
     val client by lazy {
@@ -220,14 +220,14 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
 
     val logs = mutableListOf<DumpLog>()
 
-    val dumpLogger = object : DumpLogger {
+    val dumpLogger = object : RpcInternalDumpLogger {
         override val isEnabled: Boolean = true
 
         override fun dump(vararg tags: String, message: () -> String) {
             if (logger != null) {
                 val log = when (format) {
                     SamplingFormat.Json -> message()
-                    SamplingFormat.Protobuf -> message().hexToReadableBinary()
+                    SamplingFormat.Protobuf -> message().rpcInternalHexToReadableBinary()
                 }
 
                 logger.info { "DumpLog: ${tags.joinToString(" ") { "[$it]" }} $log" }
@@ -239,11 +239,11 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
 
     suspend fun stop() {
         transport.coroutineContext.job.cancelAndJoin()
-        DumpLoggerContainer.set(null)
+        RpcInternalDumpLoggerContainer.set(null)
     }
 
     init {
-        DumpLoggerContainer.set(dumpLogger)
+        RpcInternalDumpLoggerContainer.set(dumpLogger)
     }
 
     private inline fun <@Rpc reified Service : Any> Service.withConsistentServiceId(): Service = apply {
@@ -354,7 +354,7 @@ private class WireContent(
             val base = "[${dump.role}] [${dump.phase}] $ ${dump.log}"
 
             if (commentBinaryOutput) {
-                val decodedBytes = dump.log.hexToReadableBinary()
+                val decodedBytes = dump.log.rpcInternalHexToReadableBinary()
 
                 "// decoded: $decodedBytes" + GoldUtils.NewLine + base
             } else {

@@ -1,11 +1,11 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.test.api
 
-import kotlinx.rpc.internal.kClass
-import kotlinx.rpc.internal.qualifiedClassName
+import kotlinx.rpc.internal.rpcInternalKClass
+import kotlinx.rpc.internal.rpcInternalQualifiedClassName
 import kotlinx.rpc.krpc.test.api.util.GoldUtils.NewLine
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -21,7 +21,7 @@ inline fun <reified RootType> checkProtocolApi(): ApiTestContext {
 
 @PublishedApi
 internal fun ApiTestContext.traverseClasses(rootType: KType) {
-    traverseClasses(rootType.kClass<Any>(), rootType)
+    traverseClasses(rootType.rpcInternalKClass<Any>(), rootType)
 }
 
 private fun ApiTestContext.traverseClasses(root: KClass<*>, rootType: KType) {
@@ -53,7 +53,7 @@ private fun ApiTestContext.checkSealed(clazz: KClass<*>) {
 }
 
 private fun ApiTestContext.checkType(kClass: KClass<*>, type: KType) {
-    val name = kClass.qualifiedClassName
+    val name = kClass.rpcInternalQualifiedClassName
     when {
         name in stdLibTypes -> {} // ignore
 
@@ -114,7 +114,7 @@ private fun ApiTestContext.serialProperties(kClass: KClass<*>): List<String> {
 private fun ApiTestContext.serialProperty(property: KProperty<*>): String {
     traverseClasses(property.returnType)
     val type = property.returnType
-    val kClass = type.kClass<Any>()
+    val kClass = type.rpcInternalKClass<Any>()
     val nullable = if (type.isMarkedNullable) "Nullable" else null
 
     return lines(
@@ -130,7 +130,7 @@ private fun KClass<*>.serialAndDeclaredName(): String {
 }
 
 private fun KClass<*>.serialName(): String {
-    return serialName(qualifiedClassName)
+    return serialName(rpcInternalQualifiedClassName)
 }
 
 private fun KProperty<*>.serialName(): String {
@@ -142,7 +142,7 @@ private fun KAnnotatedElement.serialName(original: String): String {
 }
 
 private fun KClass<*>.declaredName(): String? {
-    return declaredName(qualifiedClassName)
+    return declaredName(rpcInternalQualifiedClassName)
 }
 
 private fun KProperty<*>.declaredName(): String? {

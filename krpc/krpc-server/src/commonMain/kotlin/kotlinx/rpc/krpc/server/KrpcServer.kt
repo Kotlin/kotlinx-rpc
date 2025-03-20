@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.server
@@ -10,11 +10,11 @@ import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
+import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlinx.rpc.krpc.KrpcConfig
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.internal.*
-import kotlinx.rpc.krpc.internal.logging.CommonLogger
+import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.server.internal.KrpcServerConnector
 import kotlinx.rpc.krpc.server.internal.KrpcServerService
 import kotlin.coroutines.CoroutineContext
@@ -49,7 +49,7 @@ public abstract class KrpcServer(
     // we make a child here, so we can send cancellation messages before closing the connection
     final override val coroutineContext: CoroutineContext = SupervisorJob(transport.coroutineContext.job)
 
-    private val logger = CommonLogger.logger(objectId())
+    private val logger = RpcInternalCommonLogger.logger(rpcInternalObjectId())
 
     private val connector by lazy {
         KrpcServerConnector(
@@ -66,10 +66,10 @@ public abstract class KrpcServer(
     final override var supportedPlugins: Set<KrpcPlugin> = emptySet()
         private set
 
-    private val rpcServices = ConcurrentHashMap<Long, KrpcServerService<*>>()
+    private val rpcServices = RpcInternalConcurrentHashMap<Long, KrpcServerService<*>>()
 
     // compatibility with clients that do not have serviceId
-    private var nullRpcServices = ConcurrentHashMap<String, KrpcServerService<*>>()
+    private var nullRpcServices = RpcInternalConcurrentHashMap<String, KrpcServerService<*>>()
 
     private var cancelledByClient = false
 
