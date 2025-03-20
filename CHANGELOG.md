@@ -1,3 +1,29 @@
+# 0.6.0
+> Published 24 March 2025
+
+### Features 🎉
+* 2.1.20 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/309
+* Non suspend flow by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/299
+
+### Documentation 📗
+* Update gRPC Docs and Sample by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/284
+
+### Infra 🚧
+* Update monitior by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/282
+* Fix build config for for-ide builds by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/287
+* Update build for custom KC versions by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/293
+* Fix kotlin master compilation by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/306
+
+### Other Changes 🧹
+* Upgrade Gradle to 8.12.1 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/286
+* Version 0.6.0-SNAPSHOT by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/283
+* Update leftover sources from jvm-only to kmp by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/300
+* KRPC-129 Move compatibility tests from Toolbox to Kotlin RPC repo by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/304
+* Dependency bump by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/303
+* Better compiler error message for checked annotations by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/302
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.5.1...0.6.0
+
 # 0.5.1
 > Published 12 February 2025
 
