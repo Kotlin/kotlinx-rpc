@@ -14,14 +14,16 @@ import kotlinx.rpc.krpc.KrpcTransportMessage
 import kotlin.coroutines.CoroutineContext
 
 class LocalTransport(parentScope: CoroutineScope? = null) : CoroutineScope {
-    override val coroutineContext = parentScope?.run { SupervisorJob(coroutineContext.job) }
+    override val coroutineContext = parentScope
+        ?.run { coroutineContext + SupervisorJob(coroutineContext.job) }
         ?: SupervisorJob()
 
     private val clientIncoming = Channel<KrpcTransportMessage>()
     private val serverIncoming = Channel<KrpcTransportMessage>()
 
     val client: KrpcTransport = object : KrpcTransport {
-        override val coroutineContext: CoroutineContext = Job(this@LocalTransport.coroutineContext.job)
+        override val coroutineContext: CoroutineContext = this@LocalTransport.coroutineContext +
+                Job(this@LocalTransport.coroutineContext.job)
 
         override suspend fun send(message: KrpcTransportMessage) {
             serverIncoming.send(message)
@@ -33,7 +35,8 @@ class LocalTransport(parentScope: CoroutineScope? = null) : CoroutineScope {
     }
 
     val server: KrpcTransport = object : KrpcTransport {
-        override val coroutineContext: CoroutineContext = Job(this@LocalTransport.coroutineContext)
+        override val coroutineContext: CoroutineContext = this@LocalTransport.coroutineContext +
+                Job(this@LocalTransport.coroutineContext.job)
 
         override suspend fun send(message: KrpcTransportMessage) {
             clientIncoming.send(message)
