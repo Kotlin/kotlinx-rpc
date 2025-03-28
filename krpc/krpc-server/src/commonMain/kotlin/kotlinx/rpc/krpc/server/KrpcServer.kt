@@ -47,7 +47,7 @@ public abstract class KrpcServer(
     transport: KrpcTransport,
 ) : RpcServer, KrpcEndpoint {
     // we make a child here, so we can send cancellation messages before closing the connection
-    final override val coroutineContext: CoroutineContext = SupervisorJob(transport.coroutineContext.job)
+    final override val coroutineContext: CoroutineContext = transport.coroutineContext + SupervisorJob(transport.coroutineContext.job)
 
     private val logger = CommonLogger.logger(objectId())
 
@@ -130,7 +130,7 @@ public abstract class KrpcServer(
         descriptor: RpcServiceDescriptor<Service>,
         serviceFactory: (CoroutineContext) -> Service,
     ): KrpcServerService<Service> {
-        val serviceInstanceContext = SupervisorJob(coroutineContext.job)
+        val serviceInstanceContext = coroutineContext + SupervisorJob(coroutineContext.job)
 
         return KrpcServerService(
             service = serviceFactory(serviceInstanceContext),
