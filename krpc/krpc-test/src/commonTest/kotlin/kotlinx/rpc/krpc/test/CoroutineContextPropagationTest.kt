@@ -38,7 +38,7 @@ class CoroutineContextPropagationTest {
     @Test
     fun test() = runTest {
         var actualContext: CoroutineElement? = null
-        val transport = LocalTransport(CoroutineScope(CoroutineElement))
+        val transport = LocalTransport(transportContext = CoroutineElement)
         val server = KrpcTestServer(rpcServerConfig, transport.server)
         val client = KrpcTestClient(rpcClientConfig, transport.client)
         server.registerService(Echo::class) {
