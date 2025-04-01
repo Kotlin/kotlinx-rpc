@@ -8,9 +8,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.krpc.KrpcConfigBuilder
-import kotlinx.rpc.krpc.internal.logging.CommonLogger
-import kotlinx.rpc.krpc.internal.logging.DumpLogger
-import kotlinx.rpc.krpc.internal.logging.DumpLoggerContainer
+import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
+import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLogger
+import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
@@ -28,10 +28,10 @@ fun runCancellationTest(body: suspend CancellationToolkit.() -> Unit): TestResul
 }
 
 class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
-    private val logger = CommonLogger.logger("CancellationTest")
+    private val logger = RpcInternalCommonLogger.logger("CancellationTest")
 
     init {
-        DumpLoggerContainer.set(object : DumpLogger {
+        RpcInternalDumpLoggerContainer.set(object : RpcInternalDumpLogger {
             override val isEnabled: Boolean = true
 
             override fun dump(vararg tags: String, message: () -> String) {

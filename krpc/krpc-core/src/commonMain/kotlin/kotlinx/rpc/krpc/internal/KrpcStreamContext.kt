@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.internal
@@ -15,7 +15,7 @@ import kotlinx.coroutines.selects.select
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.internal.utils.getDeferred
 import kotlinx.rpc.internal.utils.getOrNull
-import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
+import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlinx.rpc.internal.utils.set
 import kotlinx.rpc.krpc.KrpcConfig
 import kotlinx.rpc.krpc.StreamScope
@@ -62,7 +62,7 @@ public class KrpcStreamContext(
     private val closed = CompletableDeferred<Unit>()
 
     // thread-safe set
-    private val closedStreams = ConcurrentHashMap<String, CompletableDeferred<Unit>>()
+    private val closedStreams = RpcInternalConcurrentHashMap<String, CompletableDeferred<Unit>>()
 
     @InternalRpcApi
     public inline fun launchIf(
@@ -99,13 +99,13 @@ public class KrpcStreamContext(
     private var incomingStreamsInitialized: Boolean = false
     private val incomingStreams by lazy {
         incomingStreamsInitialized = true
-        ConcurrentHashMap<String, CompletableDeferred<KrpcStreamCall>>()
+        RpcInternalConcurrentHashMap<String, CompletableDeferred<KrpcStreamCall>>()
     }
 
     private var incomingChannelsInitialized: Boolean = false
     private val incomingChannels by lazy {
         incomingChannelsInitialized = true
-        ConcurrentHashMap<String, CompletableDeferred<Channel<Any?>?>>()
+        RpcInternalConcurrentHashMap<String, CompletableDeferred<Channel<Any?>?>>()
     }
 
     private var outgoingStreamsInitialized: Boolean = false

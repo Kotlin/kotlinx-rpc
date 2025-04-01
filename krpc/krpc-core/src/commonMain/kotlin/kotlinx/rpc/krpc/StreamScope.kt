@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc
@@ -7,7 +7,7 @@ package kotlinx.rpc.krpc
 import kotlinx.coroutines.*
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
+import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -40,7 +40,7 @@ public class StreamScope internal constructor(
 
     private val scopeJob = SupervisorJob(parentContext.job)
 
-    private val requests = ConcurrentHashMap<String, CoroutineScope>()
+    private val requests = RpcInternalConcurrentHashMap<String, CoroutineScope>()
 
     init {
         scopeJob.invokeOnCompletion {

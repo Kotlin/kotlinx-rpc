@@ -1,25 +1,25 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.internal.logging.impl
 
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.rpc.krpc.internal.logging.CommonLogger
-import kotlinx.rpc.krpc.internal.logging.CommonLoggerFactory
+import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
+import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLoggerFactory
 
-internal object CommonLoggerFactoryImpl : CommonLoggerFactory {
-    override fun getLogger(name: String): CommonLogger {
-        return CommonLoggerImpl(KotlinLogging.logger(name))
+internal object RpcInternalCommonLoggerFactoryImpl : RpcInternalCommonLoggerFactory {
+    override fun getLogger(name: String): RpcInternalCommonLogger {
+        return RpcInternalCommonLoggerImpl(KotlinLogging.logger(name))
     }
 
-    override fun getLogger(func: () -> Unit): CommonLogger {
-       return CommonLoggerImpl(KotlinLogging.logger(func))
+    override fun getLogger(func: () -> Unit): RpcInternalCommonLogger {
+       return RpcInternalCommonLoggerImpl(KotlinLogging.logger(func))
     }
 }
 
-internal class CommonLoggerImpl(private val logger: KLogger) : CommonLogger {
+internal class RpcInternalCommonLoggerImpl(private val logger: KLogger) : RpcInternalCommonLogger {
     override fun debug(msg: () -> Any?) {
         logger.debug(msg)
     }

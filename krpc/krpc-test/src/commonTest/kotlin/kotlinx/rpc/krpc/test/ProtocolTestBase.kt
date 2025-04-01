@@ -11,12 +11,12 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
-import kotlinx.rpc.internal.utils.hex.hexToReadableBinary
+import kotlinx.rpc.internal.utils.hex.rpcInternalHexToReadableBinary
 import kotlinx.rpc.krpc.KrpcConfig
 import kotlinx.rpc.krpc.client.KrpcClient
-import kotlinx.rpc.krpc.internal.logging.CommonLogger
-import kotlinx.rpc.krpc.internal.logging.DumpLogger
-import kotlinx.rpc.krpc.internal.logging.DumpLoggerContainer
+import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
+import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLogger
+import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
@@ -52,15 +52,15 @@ abstract class ProtocolTestBase {
         serverConfig: KrpcConfig.Server,
         private val scope: TestScope
     ) : CoroutineScope by scope {
-        private val logger = object : DumpLogger {
-            private val _log = CommonLogger.logger("ProtocolTestDump")
+        private val logger = object : RpcInternalDumpLogger {
+            private val _log = RpcInternalCommonLogger.logger("ProtocolTestDump")
             override val isEnabled: Boolean = true
             private val isBinary = clientConfig.serialFormatInitializer.build() is BinaryFormat
 
             override fun dump(vararg tags: String, message: () -> String) {
                 val text = if (isBinary) {
                     val hex = message()
-                    "$hex (readable: ${hex.hexToReadableBinary()})"
+                    "$hex (readable: ${hex.rpcInternalHexToReadableBinary()})"
                 } else {
                     message()
                 }
@@ -70,7 +70,7 @@ abstract class ProtocolTestBase {
         }
 
         init {
-            DumpLoggerContainer.set(logger)
+            RpcInternalDumpLoggerContainer.set(logger)
         }
 
         val transport = LocalTransport()

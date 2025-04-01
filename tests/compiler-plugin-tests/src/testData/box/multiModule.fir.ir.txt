@@ -74,7 +74,7 @@ FILE fqName:<root> fileName:/module_lib_multiModule.kt
                     VALUE_PARAMETER name:data index:1 type:kotlin.Any?
                     BLOCK_BODY
                       VAR IR_TEMPORARY_VARIABLE name:tmp_0 type:<root>.BoxService.$rpcServiceStub.simple$rpcMethod [val]
-                        CALL 'public final fun dataCast <T> (methodName: kotlin.String, serviceName: kotlin.String): T of kotlinx.rpc.internal.dataCast declared in kotlinx.rpc.internal' type=<root>.BoxService.$rpcServiceStub.simple$rpcMethod origin=null
+                        CALL 'public final fun rpcInternalDataCast <T> (methodName: kotlin.String, serviceName: kotlin.String): T of kotlinx.rpc.internal.rpcInternalDataCast declared in kotlinx.rpc.internal' type=<root>.BoxService.$rpcServiceStub.simple$rpcMethod origin=null
                           <T>: <root>.BoxService.$rpcServiceStub.simple$rpcMethod
                           $receiver: GET_VAR 'data: kotlin.Any? declared in <root>.BoxService.$rpcServiceStub.Companion.simpleInvokator.<anonymous>' type=kotlin.Any? origin=null
                           methodName: CONST String type=kotlin.String value="simple"

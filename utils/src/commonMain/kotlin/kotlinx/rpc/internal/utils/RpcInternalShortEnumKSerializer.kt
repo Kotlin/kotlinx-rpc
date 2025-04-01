@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.internal.utils
@@ -16,19 +16,19 @@ import kotlin.reflect.KClass
  * Better unique value holder than ordinal. Easier for testing and maintaining.
  */
 @InternalRpcApi
-interface IndexedEnum {
+public interface RpcInternalIndexedEnum {
     /**
      * Values between 0 and 65500 are allowed, other are reserved for testing.
      */
-    val uniqueIndex: Int
+    public val uniqueIndex: Int
 }
 
 @InternalRpcApi
-abstract class ShortEnumKSerializer<E>(
+public abstract class RpcInternalShortEnumKSerializer<E>(
     kClass: KClass<E>,
-    val unknownValue: E,
-    val allValues: Iterable<E>,
-) : KSerializer<E> where E : Enum<E>, E : IndexedEnum {
+    public val unknownValue: E,
+    public val allValues: Iterable<E>,
+) : KSerializer<E> where E : Enum<E>, E : RpcInternalIndexedEnum {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(
         serialName = "ShortEnumKSerializer<${kClass.simpleName}>",
         kind = PrimitiveKind.SHORT, // short can hold 65536 entries, should be more than enough
@@ -44,7 +44,7 @@ abstract class ShortEnumKSerializer<E>(
         encoder.encodeShort(shortValue)
     }
 
-    companion object {
-        const val MODULO: Int = 32768
+    public companion object {
+        public const val MODULO: Int = 32768
     }
 }
