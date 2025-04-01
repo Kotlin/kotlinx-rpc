@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Migration to 0.6.0" id="0-6-0">
+
+    <p>
+        Version <code>0.6.0</code> introduces non-breaking changes, that require migration.
+    </p>
+
+    <chapter title="Non-suspending flows" id="non-suspending-flows">
+        <p>
+            Non-suspending server flows are now supported.
+            That begins the deprecation cycle for the suspending server flows and stream scopes.
+            Please refer to the <a href="strict-mode.topic"/> section for more details on the migration
+            (sections <code>Non-suspending server flows</code> and <code>Stream scopes management</code>).
+        </p>
+    </chapter>
+</topic>

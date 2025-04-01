@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  - Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  - Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
   -->
 
 <!DOCTYPE topic
@@ -25,7 +25,7 @@
 
             @Rpc
             interface MyService : RemoteService {
-                suspend fun sendStream(stream: Flow&lt;Int&gt;): Flow&lt;String&gt;
+                fun sendStream(stream: Flow&lt;Int&gt;): Flow&lt;String&gt;
 
                 suspend fun streamRequest(request: StreamRequest)
             }
@@ -33,7 +33,7 @@
 
         <p>
             Another requirement is that server-side steaming (flows that are returned from a function),
-            must be the top-level type:
+            must be the top-level type and the function must be non-suspending:
         </p>
 
         <code-block lang="kotlin">
@@ -45,7 +45,8 @@
 
             @Rpc
             interface MyService : RemoteService {
-                suspend fun serverStream(): Flow&lt;String&gt; // ok
+                fun serverStream(): Flow&lt;String&gt; // ok
+                suspend fun serverStream(): Flow&lt;String&gt; // not ok
                 suspend fun serverStream(): StreamResult // not ok
             }
         </code-block>
@@ -55,57 +56,5 @@
             <a href="https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/serializers.md#contextual-serialization">Contextual</a>
             annotation.
         </note>
-
-        <p>
-            To use flows in your code, use the <code>streamScoped</code> function
-            that will provide your flows with their lifetime:
-        </p>
-
-        <code-block lang="kotlin">
-            @Rpc
-            interface MyService : RemoteService {
-                suspend fun sendFlow(flow: Flow&lt;Int&gt;)
-            }
-
-            val myService = rpcClient.withService&lt;MyService&gt;()
-
-            streamScoped {
-                val flow = flow {
-                    repeat(10) { i -&gt;
-                        emit(i)
-                    }
-                }
-
-                myService.sendFlow(flow)
-            }
-        </code-block>
-        <p>
-            In that case all your flows, including incoming and outgoing,
-            will work until the <code>streamScoped</code> function completes.
-            After that, all streams that are still live will be closed.
-        </p>
-        <p>
-            You can have multiple RPC calls and flows inside the <code>streamScoped</code> function, including those from
-            different services.
-        </p>
-        <p>
-            On the server side, you can use the <code>invokeOnStreamScopeCompletion</code> handler inside your methods
-            to execute code after <code>streamScoped</code> on the client side has closed.
-            It might be useful to clean resources, for example.
-        </p>
-        <warning>
-            Note that this API is experimental and may be removed in future releases.
-        </warning>
-        <p>
-            Another way of managing streams is to do it manually.
-            For this, you can use the <code>StreamScope</code> constructor function together with
-            <code>withStreamScope</code>:
-        </p>
-        <code-block lang="kotlin">
-            val streamScope = StreamScope(myJob)
-            withStreamScope(streamScope) {
-                // use streams here
-            }
-        </code-block>
     </chapter>
 </topic>
