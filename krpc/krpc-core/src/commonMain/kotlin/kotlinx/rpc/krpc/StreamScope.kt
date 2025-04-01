@@ -26,6 +26,7 @@ import kotlin.js.JsName
  * Failure of one request will not cancel all streams in the others.
  */
 @OptIn(InternalCoroutinesApi::class)
+@Deprecated("StreamScope is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-6-0.html", level = DeprecationLevel.WARNING)
 public class StreamScope internal constructor(
     parentContext: CoroutineContext,
     internal val role: Role,
@@ -170,6 +171,7 @@ public suspend fun <T> callScoped(callId: String, block: suspend CoroutineScope.
  * }
  * ```
  */
+@Deprecated("streamScoped is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-6-0.html", level = DeprecationLevel.WARNING)
 @OptIn(ExperimentalContracts::class)
 public suspend fun <T> streamScoped(block: suspend CoroutineScope.() -> T): T {
     contract {
@@ -205,6 +207,7 @@ private fun CoroutineContext.checkContextForStreamScope() {
  */
 @JsName("StreamScope_fun")
 @ExperimentalRpcApi
+@Deprecated("StreamScoped is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-6-0.html", level = DeprecationLevel.WARNING)
 public fun StreamScope(parent: CoroutineContext): StreamScope {
     parent.checkContextForStreamScope()
 
@@ -216,6 +219,10 @@ public fun StreamScope(parent: CoroutineContext): StreamScope {
  */
 @OptIn(ExperimentalContracts::class)
 @ExperimentalRpcApi
+@Deprecated(
+    "withStreamScope is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-6-0.html",
+    level = DeprecationLevel.WARNING
+)
 public suspend fun <T> withStreamScope(scope: StreamScope, block: suspend CoroutineScope.() -> T): T {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
@@ -252,6 +259,10 @@ public suspend fun <T> withStreamScope(scope: StreamScope, block: suspend Corout
  * ```
  */
 @ExperimentalRpcApi
+@Deprecated(
+    "invokeOnStreamScopeCompletion is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-6-0.html",
+    level = DeprecationLevel.WARNING
+)
 public suspend fun invokeOnStreamScopeCompletion(throwIfNoScope: Boolean = true, block: (Throwable?) -> Unit) {
     val streamScope = streamScopeOrNull() ?: noStreamScopeError()
 
