@@ -123,7 +123,7 @@ FILE fqName:<root> fileName:/simple.kt
         CONSTRUCTOR visibility:private <> () returnType:<root>.BoxService.$rpcServiceStub.Companion [primary]
           BLOCK_BODY
             DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-            INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<<root>.BoxService>]'
+            INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<<root>.BoxService>]' type=kotlin.Unit
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean [fake_override,operator]
           overridden:
             public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
@@ -179,7 +179,7 @@ FILE fqName:<root> fileName:/simple.kt
               receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.simple$rpcMethod declared in <root>.BoxService.$rpcServiceStub.simple$rpcMethod' type=<root>.BoxService.$rpcServiceStub.simple$rpcMethod origin=null
               value: CALL 'public final fun lazy <T> (mode: kotlin.LazyThreadSafetyMode, initializer: kotlin.Function0<T of kotlin.lazy>): kotlin.Lazy<T of kotlin.lazy> declared in kotlin' type=kotlin.Lazy<kotlinx.serialization.KSerializer<kotlin.Any>> origin=null
                 <T>: kotlinx.serialization.KSerializer<kotlin.Any>
-                mode: GET_ENUM 'ENUM_ENTRY name:PUBLICATION' type=kotlin.LazyThreadSafetyMode
+                mode: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:PUBLICATION' type=kotlin.LazyThreadSafetyMode
                 initializer: FUN_EXPR type=kotlin.Function0<kotlinx.serialization.KSerializer<kotlin.Any>> origin=LAMBDA
                   FUN KOTLINX_SERIALIZATION name:<anonymous> visibility:local modality:FINAL <> () returnType:kotlinx.serialization.KSerializer<kotlin.Any>
                     BLOCK_BODY
@@ -204,7 +204,7 @@ FILE fqName:<root> fileName:/simple.kt
         CONSTRUCTOR GENERATED[kotlinx.rpc.codegen.RpcGeneratedRpcMethodClassKey] visibility:private <> () returnType:<root>.BoxService.$rpcServiceStub.simple$rpcMethod [primary]
           BLOCK_BODY
             DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-            INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedRpcMethodClassKey] OBJECT name:simple$rpcMethod modality:FINAL visibility:public superTypes:[kotlin.Any; kotlinx.rpc.internal.RpcMethodClass]'
+            INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedRpcMethodClassKey] OBJECT name:simple$rpcMethod modality:FINAL visibility:public superTypes:[kotlin.Any; kotlinx.rpc.internal.RpcMethodClass]' type=kotlin.Unit
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean [fake_override,operator]
           overridden:
             public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlin.Any
@@ -237,7 +237,7 @@ FILE fqName:<root> fileName:/simple.kt
         VALUE_PARAMETER name:__rpc_client index:1 type:kotlinx.rpc.RpcClient
         BLOCK_BODY
           DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-          INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedStubKey] CLASS name:$rpcServiceStub modality:FINAL visibility:public superTypes:[<root>.BoxService]'
+          INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedStubKey] CLASS name:$rpcServiceStub modality:FINAL visibility:public superTypes:[<root>.BoxService]' type=kotlin.Unit
       FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean [fake_override,operator]
         overridden:
           public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in <root>.BoxService
@@ -310,7 +310,7 @@ FILE fqName:<root> fileName:/simple.kt
                   CALL 'public abstract fun simple (): kotlin.String declared in <root>.BoxService' type=kotlin.String origin=null
                     $this: CALL 'public final fun withService <T> (): T of kotlinx.rpc.withService declared in kotlinx.rpc' type=<root>.BoxService origin=null
                       <T>: <root>.BoxService
-                      $receiver: GET_OBJECT 'CLASS OBJECT name:TestRpcClient modality:FINAL visibility:public superTypes:[kotlinx.rpc.RpcClient]' type=kotlinx.rpc.codegen.test.TestRpcClient
+                      $receiver: GET_OBJECT 'CLASS IR_EXTERNAL_DECLARATION_STUB OBJECT name:TestRpcClient modality:FINAL visibility:public superTypes:[kotlinx.rpc.RpcClient]' type=kotlinx.rpc.codegen.test.TestRpcClient
                 RETURN type=kotlin.Nothing from='local final fun <anonymous> (): kotlin.String declared in <root>.box'
                   WHEN type=kotlin.String origin=IF
                     BRANCH
