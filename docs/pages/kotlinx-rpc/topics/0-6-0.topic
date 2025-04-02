@@ -10,15 +10,15 @@
        title="Migration to 0.6.0" id="0-6-0">
 
     <p>
-        Version <code>0.6.0</code> introduces non-breaking changes, that require migration.
+        Version <code>0.6.0</code> introduces non-breaking changes that require migration.
     </p>
 
     <chapter title="Non-suspending flows" id="non-suspending-flows">
         <p>
             Non-suspending server flows are now supported.
             That begins the deprecation cycle for the suspending server flows and stream scopes.
-            Please refer to the <a href="strict-mode.topic"/> section for more details on the migration
-            (sections <code>Non-suspending server flows</code> and <code>Stream scopes management</code>).
+            For more details, refer to the Non-suspending server flows and Stream scopes management
+            sections in the <a href="strict-mode.topic"/> topic.
         </p>
     </chapter>
 </topic>
