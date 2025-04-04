@@ -26,11 +26,14 @@ import kotlin.js.JsName
  * Failure of one request will not cancel all streams in the others.
  */
 @OptIn(InternalCoroutinesApi::class)
-@Deprecated("StreamScope is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-6-0.html", level = DeprecationLevel.WARNING)
+@Deprecated(
+    "StreamScope is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-6-0.html",
+    level = DeprecationLevel.WARNING
+)
 public class StreamScope internal constructor(
     parentContext: CoroutineContext,
     internal val role: Role,
-): AutoCloseable {
+) : AutoCloseable {
     internal class Element(internal val scope: StreamScope) : CoroutineContext.Element {
         override val key: CoroutineContext.Key<Element> = Key
 
@@ -171,7 +174,10 @@ public suspend fun <T> callScoped(callId: String, block: suspend CoroutineScope.
  * }
  * ```
  */
-@Deprecated("streamScoped is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-6-0.html", level = DeprecationLevel.WARNING)
+@Deprecated(
+    "streamScoped is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-6-0.html",
+    level = DeprecationLevel.WARNING
+)
 @OptIn(ExperimentalContracts::class)
 public suspend fun <T> streamScoped(block: suspend CoroutineScope.() -> T): T {
     contract {
@@ -207,7 +213,10 @@ private fun CoroutineContext.checkContextForStreamScope() {
  */
 @JsName("StreamScope_fun")
 @ExperimentalRpcApi
-@Deprecated("StreamScoped is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-6-0.html", level = DeprecationLevel.WARNING)
+@Deprecated(
+    "StreamScoped is deprecated, see https://kotlin.github.io/kotlinx-rpc/0-6-0.html",
+    level = DeprecationLevel.WARNING
+)
 public fun StreamScope(parent: CoroutineContext): StreamScope {
     parent.checkContextForStreamScope()
 
