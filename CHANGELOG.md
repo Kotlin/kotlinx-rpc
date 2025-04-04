@@ -1,5 +1,5 @@
 # 0.6.0
-> Published 24 March 2025
+> Published 4 April 2025
 
 ### Features 🎉
 * 2.1.20 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/309
