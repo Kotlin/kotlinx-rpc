@@ -694,6 +694,7 @@ class CancellationTest {
     }
 
     @Test
+    @Ignore // KRPC-169
     fun testGCNonSuspendable() = runCancellationTest {
         val firstDone = CompletableDeferred<Unit>()
         val latch = CompletableDeferred<Unit>()

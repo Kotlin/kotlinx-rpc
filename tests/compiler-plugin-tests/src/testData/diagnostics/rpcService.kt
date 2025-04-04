@@ -12,7 +12,7 @@ import kotlinx.serialization.Contextual
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.streamScoped
 import kotlinx.rpc.krpc.withStreamScope
-import kotlinx.rpc.krpc.StreamScope
+import <!DEPRECATION!>kotlinx.rpc.krpc.StreamScope<!>
 import kotlinx.rpc.krpc.invokeOnStreamScopeCompletion
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 
