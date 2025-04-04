@@ -24,9 +24,7 @@
             }
         </code-block>
         <p>
-            For multi-project setups
-            where you define your <a href="services.topic">RPC services</a> in one set of subprojects and use them in
-            another, you can add the plugin only to modules with service definitions.
+            For multi-project setups you must add the plugin to all modules where services are declared or used.
         </p>
     </chapter>
 </topic>
