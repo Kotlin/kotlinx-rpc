@@ -29,7 +29,7 @@ import kotlinx.serialization.Contextual
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.streamScoped
 import kotlinx.rpc.krpc.withStreamScope
-import kotlinx.rpc.krpc.StreamScope
+import <!DEPRECATION!>kotlinx.rpc.krpc.StreamScope<!>
 import kotlinx.rpc.krpc.invokeOnStreamScopeCompletion
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 
@@ -81,8 +81,8 @@ interface MyService {
 }
 
 fun main(): Unit = runBlocking {
-    <!STREAM_SCOPE_FUNCTION_IN_RPC!>streamScoped<!> {}
-    val scope = <!STREAM_SCOPE_FUNCTION_IN_RPC!>StreamScope<!>(Job())
-    <!STREAM_SCOPE_FUNCTION_IN_RPC!>withStreamScope<!>(scope) {}
-    <!STREAM_SCOPE_FUNCTION_IN_RPC!>invokeOnStreamScopeCompletion<!> {}
+    <!DEPRECATION, STREAM_SCOPE_FUNCTION_IN_RPC!>streamScoped<!> {}
+    val scope = <!DEPRECATION, STREAM_SCOPE_FUNCTION_IN_RPC!>StreamScope<!>(Job())
+    <!DEPRECATION, STREAM_SCOPE_FUNCTION_IN_RPC!>withStreamScope<!>(scope) {}
+    <!DEPRECATION, STREAM_SCOPE_FUNCTION_IN_RPC!>invokeOnStreamScopeCompletion<!> {}
 }
