@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
 <!DOCTYPE topic
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -9,66 +13,144 @@
         Starting with version <code>0.5.0</code>, the library introduces major changes to the service APIs.
         The following declarations will be gradually restricted:
     </p>
-    <list>
-        <li>
-            <b><code>StateFlow</code> and <code>SharedFlow</code></b>
-            <p>Deprecation level: <code>WARNING</code></p>
-            <code-block lang="kotlin">
-                @Rpc
-                interface Service : RemoteService {
-                    suspend fun old(): StateFlow&lt;Int&gt; // deprecated
+    <chapter title="StateFlow and SharedFlow" id="stateflow-and-sharedflow">
+        <p>Deprecation level: <code>WARNING</code></p>
+        <code-block lang="kotlin">
+            @Rpc
+            interface Service : RemoteService {
+                suspend fun old(): StateFlow&lt;Int&gt; // deprecated
 
-                    suspend fun new(): Flow&lt;Int&gt; // use .stateIn on the client side
+                suspend fun new(): Flow&lt;Int&gt; // use .stateIn on the client side
+            }
+        </code-block>
+    </chapter>
+
+    <chapter title="Fields" id="fields">
+        <p>Deprecation level: <code>WARNING</code></p>
+        <code-block lang="kotlin">
+            @Rpc
+            interface Service : RemoteService {
+                val old: Flow&lt;Int&gt; // deprecated
+
+                suspend fun new(): Flow&lt;Int&gt; // store flow locally
+            }
+        </code-block>
+    </chapter>
+    <chapter title="Nested Flows" id="nested-flows">
+        <p>Deprecation level: <code>WARNING</code></p>
+        <code-block lang="kotlin">
+            @Rpc
+            interface Service : RemoteService {
+                suspend fun old(): Flow&lt;Flow&lt;Int&gt;&gt; // deprecated
+
+                // no particular alternative, depends on the use case
+            }
+        </code-block>
+    </chapter>
+    <chapter title="Not top-level server flows" id="not-top-level-server-flows">
+        <p>Deprecation level: <code>WARNING</code></p>
+
+        <code-block lang="kotlin">
+            data class SpotifyWrapped(val myMusicFlow: Flow&lt;Rap&gt;, val extra: Data)
+
+            @Rpc
+            interface Service : RemoteService {
+                suspend fun old(): SpotifyWrapped // deprecated
+
+                // one should consider message delivery order when calling these
+                suspend fun new(): Flow&lt;Rap&gt;
+                suspend fun getData(): Data
+            }
+        </code-block>
+    </chapter>
+    <chapter title="Non-suspending server flows" id="non-suspending-server-flows">
+        <p>Deprecation level: <code>WARNING</code></p>
+
+        <code-block lang="kotlin">
+            data class SpotifyWrapped(val extra: Data)
+
+            @Rpc
+            interface Service : RemoteService {
+                suspend fun old(): Flow&lt;SpotifyWrapped&gt; // deprecated
+
+                fun new(): Flow&lt;SpotifyWrapped&gt;
+            }
+        </code-block>
+    </chapter>
+    <chapter title="Stream scopes management" id="stream-scopes-management">
+        <p>Deprecation level: <code>WARNING</code></p>
+
+        <p>
+            The next stream scope management structures are deprecated due to the introduction of
+            non-suspending server flows:
+        </p>
+        <list>
+            <li><code>StreamScoped</code> class and function</li>
+            <li><code>streamScoped</code> function</li>
+            <li><code>invokeOnStreamScopeCompletion</code> function</li>
+            <li><code>withStreamScope</code> function</li>
+        </list>
+        <p>
+            Stream collection and completion is now bound to the <code>CoroutineScope</code> in which the flow was
+            collected (server-side flows) or produced (client-side flows).
+        </p>
+        <p>
+            0.5.x:
+        </p>
+        <code-block lang="kotlin">
+            @Rpc
+            interface Service : RemoteService {
+                suspend fun oldClient(flow: Flow&lt;Int&gt;)
+                suspend fun oldServer(): Flow&lt;Int&gt;
+            }
+
+            suspend fun consumer(service: Service) {
+                streamScoped {
+                    service.oldClient(flow { /* ... */ })
+
+                    service.oldServer().collect {
+                        // ...
+                    }
                 }
-            </code-block>
-        </li>
-        <li>
-            <b>Fields</b>
-            <p>Deprecation level: <code>WARNING</code></p>
-            <code-block lang="kotlin">
-                @Rpc
-                interface Service : RemoteService {
-                    val old: Flow&lt;Int&gt; // deprecated
+            }
+        </code-block>
+        <p>
+            0.6.x:
+        </p>
+        <code-block lang="kotlin">
+            @Rpc
+            interface Service : RemoteService {
+                suspend fun newClient(flow: Flow&lt;Int&gt;)
+                fun newServer(): Flow&lt;Int&gt;
+            }
 
-                    suspend fun new(): Flow&lt;Int&gt; // store flow locally
+            fun consumer(service: Service, scope: CoroutineScope) {
+                val flow = service.new()
+                scope.launch {
+                    service.newClient(flow { /* ... */ })
+
+                    flow.collect {
+                        // ...
+                    }
                 }
-            </code-block>
-        </li>
-        <li>
-            <b>Nested Flows</b>
-            <p>Deprecation level: <code>WARNING</code></p>
-            <code-block lang="kotlin">
-                @Rpc
-                interface Service : RemoteService {
-                    suspend fun old(): Flow&lt;Flow&lt;Int&gt;&gt; // deprecated
+            }
 
-                    // no particular alternative, depends on the use case
+            // or
+            suspend fun consumer(service: Service) {
+                service.newClient(flow { /* ... */ })
+
+                service.new().collect {
+                    // ...
                 }
-            </code-block>
-        </li>
-        <li>
-            <b>Not top-level server flows</b>
-            <p>Deprecation level: <code>WARNING</code></p>
+            }
+        </code-block>
+    </chapter>
 
-            <code-block lang="kotlin">
-                data class SpotifyWrapped(val myMusicFlow: Flow&lt;Rap&gt;, val extra: Data)
-
-                @Rpc
-                interface Service : RemoteService {
-                    suspend fun old(): SpotifyWrapped // deprecated
-
-                    // one should consider message delivery order when calling these
-                    suspend fun new(): Flow&lt;Rap&gt;
-                    suspend fun getData(): Data
-                }
-            </code-block>
-        </li>
-    </list>
-
-    <p>
-        Deprecation levels are controlled by the Gradle <code>rpc</code> extension:
-    </p>
-    <code-block lang="Kotlin">
+    <chapter title="Gradle settings" id="gradle-settings">
+        <p>
+            Deprecation levels are controlled by the Gradle <code>rpc</code> extension:
+        </p>
+        <code-block lang="Kotlin">
         // build.gradle.kts
         plugins {
             id("org.jetbrains.kotlinx.rpc.plugin")
@@ -81,16 +163,19 @@
                 nestedFlow = RpcStrictMode.WARNING
                 notTopLevelServerFlow = RpcStrictMode.WARNING
                 fields = RpcStrictMode.WARNING
+                suspendingServerStreaming = RpcStrictMode.WARNING
+                streamScopedFunctions = RpcStrictMode.WARNING
             }
         }
     </code-block>
-    <p>
-        Modes <code>RpcStrictMode.NONE</code> and <code>RpcStrictMode.ERROR</code> are available.
-    </p>
+        <p>
+            Modes <code>RpcStrictMode.NONE</code> and <code>RpcStrictMode.ERROR</code> are available.
+        </p>
 
-    <warning>
-        Note that setting <code>RpcStrictMode.NONE</code> should not be done permanently.
-        All deprecated APIs will become errors in future without an option to suppress it.
-        Consider your migration path in advance.
-    </warning>
+        <warning>
+            Note that setting <code>RpcStrictMode.NONE</code> should not be done permanently.
+            All deprecated APIs will become errors in the future without an option to suppress them.
+            Consider your migration path in advance.
+        </warning>
+    </chapter>
 </topic>

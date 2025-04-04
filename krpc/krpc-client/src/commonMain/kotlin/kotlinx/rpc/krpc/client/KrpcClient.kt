@@ -355,6 +355,7 @@ public abstract class KrpcClient(
             } catch (e: CancellationException) {
                 // sendCancellation is not suspending, so no need for NonCancellable
                 sendCancellation(CancellationType.REQUEST, call.serviceId.toString(), callId)
+                connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
 
                 throw e
             }
