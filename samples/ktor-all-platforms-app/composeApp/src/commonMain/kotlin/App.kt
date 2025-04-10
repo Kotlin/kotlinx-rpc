@@ -66,10 +66,8 @@ fun App() {
         }
 
         LaunchedEffect(service) {
-            streamScoped {
-                service.subscribeToNews().collect { article ->
-                    news.add(article)
-                }
+            service.subscribeToNews().collect { article ->
+                news.add(article)
             }
         }
 

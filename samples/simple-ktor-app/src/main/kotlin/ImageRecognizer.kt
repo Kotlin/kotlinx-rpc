@@ -27,32 +27,32 @@ enum class Category {
 
 @Rpc
 interface ImageRecognizer : RemoteService {
-    suspend fun currentlyProcessedImage(): Flow<Image?>
+    fun currentlyProcessedImage(): Flow<Image?>
 
     suspend fun recognize(image: Image): Category
 
-    suspend fun recognizeAll(images: Flow<Image>): Flow<Category>
+    fun recognizeAll(images: Flow<Image>): Flow<Category>
 }
 
 class ImageRecognizerService(override val coroutineContext: CoroutineContext) : ImageRecognizer {
-    private val currentlyProcessedImage: MutableStateFlow<Image?> = MutableStateFlow(null)
+    private val _currentlyProcessedImage: MutableStateFlow<Image?> = MutableStateFlow(null)
 
-    override suspend fun currentlyProcessedImage(): Flow<Image?> {
+    override fun currentlyProcessedImage(): Flow<Image?> {
         return flow {
-            currentlyProcessedImage.collect { emit(it) }
+            _currentlyProcessedImage.collect { emit(it) }
         }
     }
 
     override suspend fun recognize(image: Image): Category {
-        currentlyProcessedImage.value = image
+        _currentlyProcessedImage.value = image
         val byte = image.data[0].toInt()
         delay(100) // heavy processing
         val result = if (byte == 0) Category.CAT else Category.DOG
-        currentlyProcessedImage.value = null
+        _currentlyProcessedImage.value = null
         return result
     }
 
-    override suspend fun recognizeAll(images: Flow<Image>): Flow<Category> {
+    override fun recognizeAll(images: Flow<Image>): Flow<Category> {
         return images.map { recognize(it) }
     }
 }

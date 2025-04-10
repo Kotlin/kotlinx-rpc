@@ -42,14 +42,12 @@ class ApplicationTest {
         val flowList = mutableListOf<String?>()
 
         val job = CoroutineScope(Dispatchers.IO).launch {
-            streamScoped {
-                recognizer.currentlyProcessedImage().collect { image ->
-                    val stringValue = image?.data?.toHexString()
-                    flowList.add(stringValue)
+            recognizer.currentlyProcessedImage().collect { image ->
+                val stringValue = image?.data?.toHexString()
+                flowList.add(stringValue)
 
-                    if (stringValue == "000203") {
-                        coroutineContext.cancel()
-                    }
+                if (stringValue == "000203") {
+                    coroutineContext.cancel()
                 }
             }
         }
