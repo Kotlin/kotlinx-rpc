@@ -136,6 +136,22 @@ abstract class KrpcTransportTestBase {
         }
     }
 
+    @Test
+    fun nonSuspendBidirectional() = runTest {
+        assertEquals(
+            expected = List(10) { it * 2 },
+            actual = client.nonSuspendBidirectional(List(10) { it }.asFlow()).toList(),
+        )
+        print(1)
+    }
+
+    @Test
+    fun nonSuspendBidirectionalPayload() = runTest {
+        assertEquals(
+            expected = List(3) { 2 },
+            actual = client.nonSuspendBidirectionalPayload(payload(0)).toList(),
+        )
+    }
 
     @Test
     fun empty() {

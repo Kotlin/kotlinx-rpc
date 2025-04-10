@@ -311,7 +311,7 @@ public abstract class KrpcClient(
         connector.sendMessage(firstMessage)
     }
 
-    private val nonSuspendingSerialFormat = config.serialFormatInitializer.build()
+    private val noFlowSerialFormat = config.serialFormatInitializer.build()
 
     @Suppress("detekt.CyclomaticComplexMethod")
     override fun <T> callServerStreaming(call: RpcCall): Flow<T> {
@@ -326,19 +326,31 @@ public abstract class KrpcClient(
 
             val channel = Channel<T>()
 
-            val request = serializeRequest(
-                callId = callId,
-                call = call,
-                callable = callable,
-                serialFormat = nonSuspendingSerialFormat,
-                pluginParams = mapOf(KrpcPluginKey.NON_SUSPENDING_SERVER_FLOW_MARKER to ""),
-            )
-
-            connector.sendMessage(request)
+            val streamScope = StreamScope(currentCoroutineContext())
 
             try {
+                val streamContext = LazyKrpcStreamContext(streamScope, null) {
+                    KrpcStreamContext(callId, config, connectionId, call.serviceId, it)
+                }
+
+                val serialFormat = prepareSerialFormat(streamContext)
+
+                val request = serializeRequest(
+                    callId = callId,
+                    call = call,
+                    callable = callable,
+                    serialFormat = serialFormat,
+                    pluginParams = mapOf(KrpcPluginKey.NON_SUSPENDING_SERVER_FLOW_MARKER to ""),
+                )
+
+                connector.sendMessage(request)
+
                 connector.subscribeToCallResponse(call.descriptor.fqName, callId) { message ->
                     handleServerStreamingMessage(message, channel, callable, call, callId)
+                }
+
+                streamContext.valueOrNull?.launchIf({ outgoingStreamsAvailable }) {
+                    handleOutgoingStreams(it, serialFormat, call.descriptor.fqName)
                 }
 
                 while (true) {
@@ -358,11 +370,14 @@ public abstract class KrpcClient(
                 connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
 
                 throw e
+            } finally {
+                streamScope.close()
+                channel.close()
             }
         }
     }
 
-    private suspend fun <T, @Rpc R: Any> handleServerStreamingMessage(
+    private suspend fun <T, @Rpc R : Any> handleServerStreamingMessage(
         message: KrpcCallMessage,
         channel: Channel<T>,
         callable: RpcCallable<R>,
@@ -390,10 +405,10 @@ public abstract class KrpcClient(
 
             is KrpcCallMessage.CallSuccess, is KrpcCallMessage.StreamMessage -> {
                 val value = runCatching {
-                    val serializerResult = nonSuspendingSerialFormat.serializersModule
+                    val serializerResult = noFlowSerialFormat.serializersModule
                         .rpcSerializerForType(callable.returnType)
 
-                    decodeMessageData(nonSuspendingSerialFormat, serializerResult, message)
+                    decodeMessageData(noFlowSerialFormat, serializerResult, message)
                 }
 
                 @Suppress("UNCHECKED_CAST")
