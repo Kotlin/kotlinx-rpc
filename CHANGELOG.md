@@ -1,3 +1,12 @@
+# 0.6.1
+> Published 11 April 2025
+
+### Bug fixes 🐛
+* Fix bidirectional flows in non-suspend streams by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/316
+* Fix KRPC-173 (#315) by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/317
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.6.0...0.6.1
+
 # 0.6.0
 > Published 4 April 2025
 
