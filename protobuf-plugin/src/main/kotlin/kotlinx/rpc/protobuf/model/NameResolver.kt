@@ -107,6 +107,7 @@ internal class NameResolver private constructor(
     }
 
     private fun resolveFromNode(start: Node, parents: List<String>, simpleName: String): ResolveResult {
+        val declarationOnlyResolve = start.fqName != FqName.Package.Root && start.fqName is FqName.Package
         var node: Node? = start
         var i = 0
         var entered = false
@@ -114,6 +115,8 @@ internal class NameResolver private constructor(
             node = node?.children[parents[i++]]
             if (node == null) {
                 break
+            } else if (node.fqName is FqName.Package && declarationOnlyResolve) {
+                return ResolveResult.NoResolve
             }
             entered = true
         }
