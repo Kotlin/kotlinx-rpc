@@ -54,6 +54,15 @@
       "enabled": false,
     },
     {
+      // Reason: kotlin-dsl updates are to be done manually
+      "description": "Ignore Kotlin DSL (Gradle) updates",
+      "matchDepNames": [
+        "/org.gradle.kotlin:gradle-kotlin-dsl-plugins(:|\\.).*/",
+        "/org.gradle.kotlin.kotlin-dsl(:|\\.).*/",
+      ],
+      "enabled": false,
+    },
+    {
       // Reason: we support java 8, logback 1.4 or later switched to java 11
       "description": "Ignore logback in Core",
       matchFileNames: [
