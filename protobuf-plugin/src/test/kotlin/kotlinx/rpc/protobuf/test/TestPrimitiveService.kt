@@ -4,9 +4,7 @@
 
 package kotlinx.rpc.protobuf.test
 
-import kotlinx.coroutines.runBlocking
-import kotlinx.rpc.grpc.GrpcClient
-import kotlinx.rpc.grpc.GrpcServer
+import kotlinx.rpc.RpcServer
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.Test
@@ -18,19 +16,13 @@ class PrimitiveServiceImpl : PrimitiveService {
     }
 }
 
-class TestPrimitiveService {
+class TestPrimitiveService : GrpcServerTest() {
+    override fun RpcServer.registerServices() {
+        registerService<PrimitiveService> { PrimitiveServiceImpl() }
+    }
+
     @Test
-    fun testPrimitive(): Unit = runBlocking {
-        val grpcClient = GrpcClient("localhost", 8080) {
-            usePlaintext()
-        }
-
-        val grpcServer = GrpcServer(8080) {
-            registerService<PrimitiveService> { PrimitiveServiceImpl() }
-        }
-
-        grpcServer.start()
-
+    fun testPrimitive(): Unit = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<PrimitiveService>()
         val result = service.Echo(AllPrimitives {
             int32 = 42
