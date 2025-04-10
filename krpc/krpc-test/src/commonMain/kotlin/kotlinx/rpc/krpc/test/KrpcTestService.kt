@@ -108,6 +108,8 @@ interface KrpcTestService : RemoteService {
 
     suspend fun answerToAnything(arg: String): Int
 
+    suspend fun krpc173()
+
     val plainFlowOfInts : Flow<Int>
 
     val plainFlowOfFlowsOfInts : Flow<Flow<Int>>

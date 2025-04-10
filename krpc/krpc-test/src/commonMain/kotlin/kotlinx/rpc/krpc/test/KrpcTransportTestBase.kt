@@ -549,6 +549,11 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
+    fun testKrpc173() = runTest {
+        assertEquals(Unit, client.krpc173())
+    }
+
+    @Test
     fun testPlainFlowOfInts() = runTest {
         val flow = client.plainFlowOfInts.toList()
         assertEquals(List(5) { it }, flow)
