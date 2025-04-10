@@ -12,7 +12,7 @@ import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.grpc.descriptor.GrpcClientDelegate
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
-import kotlinx.rpc.internal.utils.map.ConcurrentHashMap
+import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -23,7 +23,7 @@ import kotlin.coroutines.CoroutineContext
 public class GrpcClient internal constructor(private val channel: ManagedChannel) : RpcClient {
     override val coroutineContext: CoroutineContext = SupervisorJob()
 
-    private val stubs = ConcurrentHashMap<Long, GrpcClientDelegate>()
+    private val stubs = RpcInternalConcurrentHashMap<Long, GrpcClientDelegate>()
 
     override suspend fun <T> call(call: RpcCall): T {
         return call.delegate().call(call)
