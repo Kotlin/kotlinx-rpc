@@ -37,6 +37,14 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
         error("nonSuspendFlowErrorOnReturn")
     }
 
+    override fun nonSuspendBidirectional(flow: Flow<Int>): Flow<Int> {
+        return flow.map { it * 2 }
+    }
+
+    override fun nonSuspendBidirectionalPayload(payloadWithStream: PayloadWithStream): Flow<Int> {
+        return payloadWithStream.stream.map { it.length }
+    }
+
     @Suppress("detekt.EmptyFunctionBlock")
     override suspend fun empty() {}
 
