@@ -19,6 +19,7 @@ dependencies {
 
     testImplementation(projects.grpc.grpcCore)
     testImplementation(libs.coroutines.core)
+    testImplementation(libs.coroutines.test)
     testImplementation(libs.kotlin.test)
 
     testImplementation(libs.grpc.stub)
