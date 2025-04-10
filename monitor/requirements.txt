@@ -1,5 +1,5 @@
 aiohappyeyeballs==2.6.1
-aiohttp==3.11.14
+aiohttp==3.11.16
 aiohttp-jinja2==1.6
 aiosignal==1.3.2
 anyio==4.9.0
@@ -20,15 +20,15 @@ MarkupSafe==3.0.2
 mdit-py-plugins==0.4.2
 mdurl==0.1.2
 msgpack==1.1.0
-multidict==6.1.0
-platformdirs==4.3.6
-propcache==0.3.0
+multidict==6.4.2
+platformdirs==4.3.7
+propcache==0.3.1
 Pygments==2.19.1
 rich==14.0.0
 sniffio==1.3.1
 textual==3.0.1
 textual-dev==1.7.0
 textual-serve==1.1.1
-typing_extensions==4.12.2
+typing_extensions==4.13.1
 uc-micro-py==1.0.3
-yarl==1.18.3
+yarl==1.19.0
