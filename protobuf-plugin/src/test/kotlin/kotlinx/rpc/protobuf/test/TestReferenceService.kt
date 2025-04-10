@@ -9,6 +9,10 @@ import References
 import invoke
 import Other
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.test.runTest
+import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.GrpcClient
 import kotlinx.rpc.grpc.GrpcServer
 import kotlinx.rpc.registerService
@@ -36,11 +40,13 @@ class ReferenceTestServiceImpl : ReferenceTestService {
     }
 }
 
-class TestReferenceService {
-    @Test
-    fun testReferenceService()= runBlocking {
-        val grpcClient = initializeServerAndClient()
+class TestReferenceService : GrpcServerTest() {
+    override fun RpcServer.registerServices() {
+        registerService<ReferenceTestService> { ReferenceTestServiceImpl() }
+    }
 
+    @Test
+    fun testReferenceService()= runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
         val result = service.Get(References {
             other = Other {
@@ -53,9 +59,7 @@ class TestReferenceService {
     }
 
     @Test
-    fun testEnum() = runBlocking {
-        val grpcClient = initializeServerAndClient()
-
+    fun testEnum() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
         val result = service.Enum(UsingEnum {
             enum = Enum.ONE
@@ -65,9 +69,7 @@ class TestReferenceService {
     }
 
     @Test
-    fun testOptional() = runBlocking {
-        val grpcClient = initializeServerAndClient()
-
+    fun testOptional() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
         val resultNotNull = service.Optional(OptionalTypes {
             name = "test"
@@ -90,18 +92,5 @@ class TestReferenceService {
         assertEquals(null, resultNullable.name)
         assertEquals(null, resultNullable.age)
         assertEquals(null, resultNullable.reference)
-    }
-
-    private fun initializeServerAndClient(): GrpcClient {
-        val grpcClient = GrpcClient("localhost", 8080) {
-            usePlaintext()
-        }
-
-        val grpcServer = GrpcServer(8080) {
-            registerService<ReferenceTestService> { ReferenceTestServiceImpl() }
-        }
-
-        grpcServer.start()
-        return grpcClient
     }
 }
