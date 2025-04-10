@@ -5,7 +5,7 @@
 plugins {
     kotlin("jvm") version "2.1.20"
     kotlin("plugin.serialization") version "2.1.20"
-    id("io.ktor.plugin") version "3.0.3"
+    id("io.ktor.plugin") version "3.1.2"
     id("org.jetbrains.kotlinx.rpc.plugin") version "0.6.1"
 }
 
@@ -37,7 +37,7 @@ dependencies {
 
     implementation("io.ktor:ktor-client-cio")
     implementation("io.ktor:ktor-server-netty-jvm")
-    implementation("ch.qos.logback:logback-classic:1.5.16")
+    implementation("ch.qos.logback:logback-classic:1.5.18")
 
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.1.20")
