@@ -21,6 +21,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.typeOf
 
 internal class KrpcServerService<@Rpc T : Any>(
     private val service: T,
@@ -177,6 +178,13 @@ internal class KrpcServerService<@Rpc T : Any>(
 
                     is RpcInvokator.Field -> {
                         invokator.call(service)
+                    }
+                }.let { interceptedValue ->
+                    // KRPC-173
+                    if (callable.returnType.kType == typeOf<Unit>()) {
+                        Unit
+                    } else {
+                        interceptedValue
                     }
                 }
 

@@ -273,6 +273,15 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
         return 42
     }
 
+    private suspend fun doWork(): String {
+        delay(1)
+        return "qwerty"
+    }
+
+    override suspend fun krpc173() {
+        doWork()
+    }
+
     override val plainFlowOfInts: Flow<Int> = plainFlow { it }
 
     override val plainFlowOfFlowsOfInts: Flow<Flow<Int>> = plainFlow { plainFlow { i -> i } }
