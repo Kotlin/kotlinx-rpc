@@ -39,27 +39,23 @@ class AppViewModel : ViewModel() {
 
     private fun fetchData() {
         viewModelScope.launch(Dispatchers.IO) {
-            streamScoped {
-                delay(2000)
-                val greetingDeferred = async {
-                    apiService?.hello(
-                        "Alex",
-                        UserData("Berlin", "Smith")
-                    )
-                }
-                val newsDeferred = async { apiService?.subscribeToNews() }
+            delay(2000)
+            val greetingDeferred = async {
+                apiService?.hello(
+                    "Alex",
+                    UserData("Berlin", "Smith")
+                )
+            }
 
-                val serverGreeting = greetingDeferred.await()
-                val news = newsDeferred.await()
+            val serverGreeting = greetingDeferred.await()
 
-                val allNews: MutableList<String> = mutableListOf()
-                news?.collect {
-                    allNews += it
+            val allNews: MutableList<String> = mutableListOf()
+            apiService?.subscribeToNews()?.collect {
+                allNews += it
 
-                    val sendNews = allNews.toMutableList() // fix ConcurrentModificationException
-                    serverGreeting?.let {
-                        _uiState.value = WelcomeData(serverGreeting, sendNews)
-                    }
+                val sendNews = allNews.toMutableList() // fix ConcurrentModificationException
+                serverGreeting?.let {
+                    _uiState.value = WelcomeData(serverGreeting, sendNews)
                 }
             }
         }

@@ -35,11 +35,9 @@ class ApplicationTest {
             actual = service.hello("Alex", UserData("address1", "last")),
         )
 
-        streamScoped {
-            assertEquals(
-                expected = List(10) { "Article number $it" },
-                actual = service.subscribeToNews().toList(),
-            )
-        }
+        assertEquals(
+            expected = List(10) { "Article number $it" },
+            actual = service.subscribeToNews().toList(),
+        )
     }
 }

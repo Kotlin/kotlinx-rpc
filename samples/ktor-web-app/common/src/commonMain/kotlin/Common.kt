@@ -17,5 +17,5 @@ data class UserData(
 interface MyService : RemoteService {
     suspend fun hello(user: String, userData: UserData): String
 
-    suspend fun subscribeToNews(): Flow<String>
+    fun subscribeToNews(): Flow<String>
 }

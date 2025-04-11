@@ -44,7 +44,7 @@ val AppContainer = FC<AppContainerProps> { props ->
     data?.also { welcomeData ->
         Welcome {
             this.data = welcomeData
-            this.service = service
+            this.news = service.subscribeToNews()
         }
     } ?: run {
         div {

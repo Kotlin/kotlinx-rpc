@@ -1,6 +1,6 @@
 [versions]
 agp = "8.8.0"
-kotlin = "2.1.10"
+kotlin = "2.1.20"
 androidx-activityCompose = "1.9.3"
 androidx-appcompat = "1.7.0"
 androidx-constraintlayout = "2.2.0"
@@ -15,7 +15,7 @@ ktor = "3.0.3"
 kotlinx-serialization-json = "1.8.0"
 kotlinx-coroutines-core = "1.10.1"
 logback = "1.5.16"
-kotlinx-rpc = "0.5.1"
+kotlinx-rpc = "0.6.1"
 
 [libraries]
 # kotlin
