@@ -12,7 +12,6 @@ import kotlinx.rpc.krpc.ktor.client.installKrpc
 import kotlinx.rpc.krpc.ktor.client.rpc
 import kotlinx.rpc.krpc.ktor.client.rpcConfig
 import kotlinx.rpc.krpc.serialization.json.json
-import kotlinx.rpc.krpc.streamScoped
 import kotlinx.rpc.withService
 
 fun main() = runBlocking {
@@ -37,10 +36,8 @@ fun main() = runBlocking {
     val recognizer: ImageRecognizer = client.withService<ImageRecognizer>()
 
     val stateJob = launch {
-        streamScoped {
-            recognizer.currentlyProcessedImage().collect {
-                println("New state, current image: $it")
-            }
+        recognizer.currentlyProcessedImage().collect {
+            println("New state, current image: $it")
         }
     }
 
@@ -54,10 +51,8 @@ fun main() = runBlocking {
         }
     }
 
-    streamScoped {
-        val categories = recognizer.recognizeAll(imageFlow)
-        categories.collect { println("Recognized category: $it") }
-    }
+    val categories = recognizer.recognizeAll(imageFlow)
+    categories.collect { println("Recognized category: $it") }
 
     recognizer.cancel()
     ktorClient.close()
