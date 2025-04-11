@@ -14,10 +14,10 @@ class MyServiceImpl(override val coroutineContext: CoroutineContext) : MyService
         return "Nice to meet you $user, how is it in ${userData.address}?"
     }
 
-    override suspend fun subscribeToNews(): Flow<String> {
+    override fun subscribeToNews(): Flow<String> {
         return flow {
             repeat(10) {
-                delay(2000)
+                delay(200)
                 emit("Article number $it")
             }
         }

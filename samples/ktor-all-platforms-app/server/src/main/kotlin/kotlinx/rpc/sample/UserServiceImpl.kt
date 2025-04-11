@@ -16,7 +16,7 @@ class UserServiceImpl(override val coroutineContext: CoroutineContext) : UserSer
         return "Nice to meet you $user, how is it in ${userData.address}?"
     }
 
-    override suspend fun subscribeToNews(): Flow<String> {
+    override fun subscribeToNews(): Flow<String> {
         return flow {
             repeat(10) {
                 delay(300)

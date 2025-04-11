@@ -1,11 +1,11 @@
 [versions]
-kotlin = "2.1.10"
-kotlin-wrappers-bom = "2025.1.2"
+kotlin = "2.1.20"
+kotlin-wrappers-bom = "2025.4.8"
 ktor = "3.0.3"
 kotlinx-serialization-json = "1.8.0"
 kotlinx-coroutines-core = "1.10.1"
 logback = "1.5.16"
-kotlinx-rpc = "0.5.1"
+kotlinx-rpc = "0.6.1"
 
 [libraries]
 # kotlin
@@ -23,7 +23,8 @@ kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutin
 kotlin-wrappers-bom = { module = "org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom", version.ref = "kotlin-wrappers-bom" }
 react = { module = "org.jetbrains.kotlin-wrappers:kotlin-react" }
 react-dom = { module = "org.jetbrains.kotlin-wrappers:kotlin-react-dom" }
-emotion = { module = "org.jetbrains.kotlin-wrappers:kotlin-emotion" }
+emotion-css = { module = "org.jetbrains.kotlin-wrappers:kotlin-emotion-css" }
+emotion-react = { module = "org.jetbrains.kotlin-wrappers:kotlin-emotion-react" }
 
 # ktor
 ktor-server-cio = { module = "io.ktor:ktor-server-cio", version.ref = "ktor" }

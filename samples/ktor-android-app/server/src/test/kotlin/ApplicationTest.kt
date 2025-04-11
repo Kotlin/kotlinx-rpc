@@ -13,16 +13,20 @@ import kotlinx.rpc.krpc.ktor.client.installKrpc
 import kotlinx.rpc.krpc.ktor.client.rpc
 import kotlinx.rpc.krpc.ktor.client.rpcConfig
 import kotlinx.rpc.krpc.serialization.json.json
-import kotlinx.rpc.krpc.streamScoped
 import kotlinx.rpc.withService
 import kotlinx.rpc.sample.MyService
 import kotlinx.rpc.sample.UserData
+import kotlinx.rpc.sample.module
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ApplicationTest {
     @Test
     fun testRoot() = testApplication {
+        application {
+            module()
+        }
+
         val service = createClient {
             installKrpc()
         }.rpc("/api") {
@@ -38,12 +42,10 @@ class ApplicationTest {
             actual = service.hello("Alex", UserData("address1", "last")),
         )
 
-        streamScoped {
-            assertEquals(
-                expected = List(10) { "Article number $it" },
-                actual = service.subscribeToNews().toList(),
-            )
-        }
+        assertEquals(
+            expected = List(10) { "Article number $it" },
+            actual = service.subscribeToNews().toList(),
+        )
     }
 
     @Test
