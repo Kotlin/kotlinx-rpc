@@ -20,7 +20,7 @@ env:
   ALGOLIA_INDEX_NAME: 'prod_kotlin_rpc'
   ALGOLIA_KEY: '${{ secrets.ALGOLIA_KEY }}'
   CONFIG_JSON_PRODUCT: 'kotlinx-rpc'
-  CONFIG_JSON_VERSION: '0.6.0'
+  CONFIG_JSON_VERSION: '0.6.1'
 
 jobs:
   build:
