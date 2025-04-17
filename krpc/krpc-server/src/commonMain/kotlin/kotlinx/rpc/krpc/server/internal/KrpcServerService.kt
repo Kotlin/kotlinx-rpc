@@ -163,7 +163,7 @@ internal class KrpcServerService<@Rpc T : Any>(
                 if (callable.isNonSuspendFunction && !markedNonSuspending) {
                     @Suppress("detekt.MaxLineLength")
                     error(
-                        "Server flow returned from non-suspend function but marked so by a client: ${descriptor.fqName}::$callableName." +
+                        "Server flow returned from non-suspend function but marked so by a client: ${descriptor.fqName}::$callableName. " +
                                 "Probable cause is outdated client version, that does not support non-suspending flows, " +
                                 "but calls the function with the same name. Change the function name or update the client."
                     )
@@ -181,7 +181,7 @@ internal class KrpcServerService<@Rpc T : Any>(
                     }
                 }.let { interceptedValue ->
                     // KRPC-173
-                    if (callable.returnType.kType == typeOf<Unit>()) {
+                    if (!callable.isNonSuspendFunction && callable.returnType.kType == typeOf<Unit>()) {
                         Unit
                     } else {
                         interceptedValue
@@ -194,8 +194,9 @@ internal class KrpcServerService<@Rpc T : Any>(
                 if (callable.isNonSuspendFunction) {
                     if (value !is Flow<*>) {
                         error(
-                            "Return value of non-suspend function must be a non nullable flow, " +
-                                "but was: ${value?.let { it::class.simpleName }}"
+                            "Return value of non-suspend function '${callable.name}' " +
+                                    "with callId '$callId' must be a non nullable flow, " +
+                                    "but was: ${value?.let { it::class.simpleName }}"
                         )
                     }
 
