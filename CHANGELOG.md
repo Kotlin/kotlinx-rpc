@@ -1,3 +1,11 @@
+# 0.6.2
+> Published 17 April 2025
+
+### Bug fixes 🐛
+* Fix flows that emit Units by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/323
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.6.1...0.6.2
+
 # 0.6.1
 > Published 11 April 2025
 
