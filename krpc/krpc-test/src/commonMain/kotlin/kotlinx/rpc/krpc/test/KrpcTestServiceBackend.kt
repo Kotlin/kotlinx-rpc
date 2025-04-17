@@ -282,6 +282,12 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
         doWork()
     }
 
+    override fun unitFlow(): Flow<Unit> {
+        return flow {
+            emit(Unit)
+        }
+    }
+
     override val plainFlowOfInts: Flow<Int> = plainFlow { it }
 
     override val plainFlowOfFlowsOfInts: Flow<Flow<Int>> = plainFlow { plainFlow { i -> i } }
