@@ -15,7 +15,7 @@ data class FieldDeclaration(
 sealed interface FieldType {
     val defaultValue: String
 
-    data class List(val valueName: Lazy<FqName>) : FieldType {
+    data class List(val value: FieldType) : FieldType {
         override val defaultValue: String = "emptyList()"
     }
 
