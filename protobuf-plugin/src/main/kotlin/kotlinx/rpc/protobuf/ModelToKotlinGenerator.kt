@@ -179,12 +179,15 @@ class ModelToKotlinGenerator(
             scope("return $platformType.newBuilder().apply", ".build()") {
                 declaration.actualFields.forEach { field ->
                     val uppercaseName = field.name.replaceFirstChar { ch -> ch.uppercase() }
-                    val setFieldCall = "set$uppercaseName"
+                    val setFieldCall = when (field.type) {
+                        is FieldType.List -> "addAll$uppercaseName"
+                        else -> "set$uppercaseName"
+                    }
 
                     if (field.nullable) {
-                        code("this@toPlatform.${field.name}?.let { $setFieldCall(it${field.toPlatformCast()}) }")
+                        code("this@toPlatform.${field.name}?.let { $setFieldCall(it${field.type.toPlatformCast()}) }")
                     } else {
-                        code("$setFieldCall(this@toPlatform.${field.name}${field.toPlatformCast()})")
+                        code("$setFieldCall(this@toPlatform.${field.name}${field.type.toPlatformCast()})")
                     }
                 }
             }
@@ -197,7 +200,12 @@ class ModelToKotlinGenerator(
         ) {
             scope("return ${declaration.name.simpleName}") {
                 declaration.actualFields.forEach { field ->
-                    val getter = "this@toKotlin.${field.name}${field.toKotlinCast()}"
+                    val javaName = when (field.type) {
+                        is FieldType.List -> "${field.name}List"
+                        else -> field.name
+                    }
+
+                    val getter = "this@toKotlin.$javaName${field.type.toKotlinCast()}"
                     if (field.nullable) {
                         ifBranch(
                             prefix = "${field.name} = ",
@@ -217,32 +225,52 @@ class ModelToKotlinGenerator(
         }
     }
 
-    private fun FieldDeclaration.toPlatformCast(): String {
-        return when (type) {
+    private fun FieldType.toPlatformCast(): String {
+        return when (this) {
             FieldType.IntegralType.FIXED32 -> ".toInt()"
             FieldType.IntegralType.FIXED64 -> ".toLong()"
             FieldType.IntegralType.UINT32 -> ".toInt()"
             FieldType.IntegralType.UINT64 -> ".toLong()"
             FieldType.IntegralType.BYTES -> ".let { bytes -> com.google.protobuf.ByteString.copyFrom(bytes) }"
             is FieldType.Reference -> ".toPlatform()".also {
-                val fq by type.value
+                val fq by value
                 importRootDeclarationIfNeeded(fq, "toPlatform", true)
+            }
+            is FieldType.List -> {
+                when (value) {
+                    is FieldType.Reference -> ".map { it.toPlatform() }".also {
+                        val fq by value.value
+                        importRootDeclarationIfNeeded(fq, "toPlatform", true)
+                    }
+                    is FieldType.IntegralType -> ""
+                    else -> error("Unsupported type: $value")
+                }
             }
 
             else -> ""
         }
     }
 
-    private fun FieldDeclaration.toKotlinCast(): String {
-        return when (type) {
+    private fun FieldType.toKotlinCast(): String {
+        return when (this) {
             FieldType.IntegralType.FIXED32 -> ".toUInt()"
             FieldType.IntegralType.FIXED64 -> ".toULong()"
             FieldType.IntegralType.UINT32 -> ".toUInt()"
             FieldType.IntegralType.UINT64 -> ".toULong()"
             FieldType.IntegralType.BYTES -> ".toByteArray()"
             is FieldType.Reference -> ".toKotlin()".also {
-                val fq by type.value
+                val fq by value
                 importRootDeclarationIfNeeded(fq, "toKotlin", true)
+            }
+            is FieldType.List -> {
+                when (value) {
+                    is FieldType.Reference -> ".map { it.toKotlin() }".also {
+                        val fq by value.value
+                        importRootDeclarationIfNeeded(fq, "toKotlin", true)
+                    }
+                    is FieldType.IntegralType -> ".toList()"
+                    else -> error("Unsupported type: $value")
+                }
             }
 
             else -> ""
@@ -265,17 +293,22 @@ class ModelToKotlinGenerator(
                 type.fqName.simpleName
             }
 
-            // KRPC-143 Repeated Types
-//            is FieldType.List -> {
-//                "List<${type.valueName.simpleName}>"
-//            }
-//
+            is FieldType.List -> {
+                val fqValue = when (val value = type.value) {
+                    is FieldType.Reference -> value.value.value
+                    is FieldType.IntegralType -> value.fqName
+                    else -> error("Unsupported type: $value")
+                }
+
+                "List<${fqValue.safeFullName()}>"
+            }
+
             // KRPC-145 Map Types
 //            is FieldType.Map -> {
 //                "Map<${type.keyName.simpleName}, ${type.valueName.simpleName}>"
 //            }
             else -> {
-                error("Unsupported type: $type")
+                error("Unsupported type: $this")
             }
         }.withNullability(nullable)
     }

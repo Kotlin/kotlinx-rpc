@@ -112,7 +112,8 @@ class ProtoToModelInterpreter(
             name = fqName,
             actualFields = fields,
             oneOfDeclarations = oneofDeclList.asSequence().mapIndexedNotNull { i, desc -> desc.toModel(i, resolver) },
-            enumDeclarations = enumTypeList.asSequence().map { it.toModel(resolver, outerClass, parent ?: packageName) },
+            enumDeclarations = enumTypeList.asSequence()
+                .map { it.toModel(resolver, outerClass, parent ?: packageName) },
             nestedDeclarations = nestedTypeList.asSequence().map { it.toModel(resolver, outerClass, fqName) },
             deprecated = options.deprecated,
             doc = null,
@@ -178,7 +179,8 @@ class ProtoToModelInterpreter(
                     .fullProtoNameToKotlin(firstLetterUpper = true)
                     // TODO KRPC-146 Nested Types: parent full type resolution
                     //  KRPC-144 Import types
-                    .let { wrapWithLabel(lazy { resolver.resolve(it) }) }
+                    .asReference { resolver.resolve(it) }
+                    .let { wrapWithLabel(it) }
             }
 
             hasTypeName() -> {
@@ -186,17 +188,18 @@ class ProtoToModelInterpreter(
                     .fullProtoNameToKotlin(firstLetterUpper = true)
                     // TODO KRPC-146 Nested Types: parent full type resolution
                     //  KRPC-144 Import types: we assume local types now
-                    .let { wrapWithLabel(lazy { resolver.resolve(it) }) }
+                    .asReference { resolver.resolve(it) }
+                    .let { wrapWithLabel(it) }
             }
 
             else -> {
-                primitiveType()
+                wrapWithLabel(primitiveType())
             }
         }
     }
 
     @Suppress("detekt.CyclomaticComplexMethod")
-    private fun DescriptorProtos.FieldDescriptorProto.primitiveType(): FieldType {
+    private fun DescriptorProtos.FieldDescriptorProto.primitiveType(): IntegralType {
         return when (type) {
             Type.TYPE_STRING -> IntegralType.STRING
             Type.TYPE_BYTES -> IntegralType.BYTES
@@ -219,15 +222,18 @@ class ProtoToModelInterpreter(
         }
     }
 
-    private fun DescriptorProtos.FieldDescriptorProto.wrapWithLabel(fqName: Lazy<FqName>): FieldType {
+    private fun String.asReference(resolver: (String) -> FqName) =
+        FieldType.Reference(lazy { resolver(this) })
+
+    private fun DescriptorProtos.FieldDescriptorProto.wrapWithLabel(fieldType: FieldType): FieldType {
         return when (label) {
             DescriptorProtos.FieldDescriptorProto.Label.LABEL_REPEATED -> {
-                FieldType.List(fqName)
+                FieldType.List(fieldType)
             }
             // LABEL_OPTIONAL is not actually optional in proto3.
             // Actual optional is oneOf with one option and same name
             else -> {
-                FieldType.Reference(fqName)
+                fieldType
             }
         }
     }
