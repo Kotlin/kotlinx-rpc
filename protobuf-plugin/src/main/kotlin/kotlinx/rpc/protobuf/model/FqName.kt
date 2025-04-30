@@ -53,12 +53,29 @@ sealed interface FqName {
     }
 }
 
-internal fun FqName.fullName(): String {
+internal fun FqName.fullName(classSuffix: String = ""): String {
     val parentName = parent
+    val name = if (this is FqName.Declaration) "$simpleName$classSuffix" else simpleName
     return when {
-        parentName == this -> simpleName
+        parentName == this -> name
         else -> {
-            val fullParentName = parentName.fullName()
+            val fullParentName = parentName.fullName(classSuffix)
+            if (fullParentName.isEmpty()) {
+                name
+            } else {
+                "$fullParentName.$name"
+            }
+        }
+    }
+}
+
+internal fun FqName.fullNestedName(): String {
+    val parentName = parent
+    return when (parentName) {
+        is FqName.Package -> simpleName
+        this -> simpleName
+        else -> {
+            val fullParentName = parentName.fullNestedName()
             if (fullParentName.isEmpty()) {
                 simpleName
             } else {

@@ -7,10 +7,10 @@ package kotlinx.rpc.protobuf.model
 data class MessageDeclaration(
     val outerClassName: FqName,
     val name: FqName,
-    val actualFields: Sequence<FieldDeclaration>, // excludes oneOf fields, but includes oneOf itself
-    val oneOfDeclarations: Sequence<OneOfDeclaration>,
-    val enumDeclarations: Sequence<EnumDeclaration>,
-    val nestedDeclarations: Sequence<MessageDeclaration>,
+    val actualFields: List<FieldDeclaration>, // excludes oneOf fields, but includes oneOf itself
+    val oneOfDeclarations: List<OneOfDeclaration>,
+    val enumDeclarations: List<EnumDeclaration>,
+    val nestedDeclarations: List<MessageDeclaration>,
     val deprecated: Boolean,
     val doc: String?,
 )
