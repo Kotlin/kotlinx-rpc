@@ -29,6 +29,10 @@ sealed interface FieldType {
         override val defaultValue: String = "null"
     }
 
+    data class OneOf(val value: Lazy<FqName>, val index: Int) : FieldType {
+        override val defaultValue: String = "null"
+    }
+
     enum class IntegralType(simpleName: String, override val defaultValue: String) : FieldType {
         STRING("String", "\"\""),
         BYTES("ByteArray", "byteArrayOf()"),
