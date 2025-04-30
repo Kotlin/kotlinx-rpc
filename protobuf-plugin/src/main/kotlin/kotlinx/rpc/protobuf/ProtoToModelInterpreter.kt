@@ -27,7 +27,7 @@ class ProtoToModelInterpreter(
     }
 
     // package name of a currently parsed file
-    private var packageName: FqName.Package by Delegates.notNull<FqName.Package>()
+    private var packageName: FqName.Package by Delegates.notNull()
 
     private fun DescriptorProtos.FileDescriptorProto.toModel(): FileDeclaration {
         val dependencies = dependencyList.map { depFilename ->
@@ -47,7 +47,7 @@ class ProtoToModelInterpreter(
             name = kotlinFileName(),
             packageName = packageName,
             dependencies = dependencies,
-            messageDeclarations = messageTypeList.map { it.toModel(resolver, outerClass, parent = null) },
+            messageDeclarations = messageTypeList.mapNotNull { it.toModel(resolver, outerClass, parent = null) },
             enumDeclarations = enumTypeList.map { it.toModel(resolver, outerClass, packageName) },
             serviceDeclarations = serviceList.map { it.toModel(resolver) },
             deprecated = options.deprecated,
@@ -88,15 +88,24 @@ class ProtoToModelInterpreter(
         return originalPackage
     }
 
+    private val mapEntries = mutableMapOf<FqName, Lazy<FieldType.Map.Entry>>()
+
     private fun DescriptorProtos.DescriptorProto.toModel(
         parentResolver: NameResolver,
         outerClass: FqName,
         parent: FqName?,
-    ): MessageDeclaration {
+    ): MessageDeclaration? {
         val simpleName = name.fullProtoNameToKotlin(firstLetterUpper = true)
         val fqName = parentResolver.declarationFqName(simpleName, parent ?: packageName)
         val resolver = parentResolver.withScope(fqName)
 
+        if (options.mapEntry) {
+            mapEntries[fqName] = resolveMapEntry(resolver)
+            return null
+        }
+
+        // resolve before fields
+        val nestedDeclarations = nestedTypeList.mapNotNull { it.toModel(resolver, outerClass, fqName) }
         val fields = fieldList.mapNotNull {
             val oneOfName = if (it.hasOneofIndex()) {
                 oneofDeclList[it.oneofIndex].name
@@ -113,12 +122,19 @@ class ProtoToModelInterpreter(
             actualFields = fields,
             oneOfDeclarations = oneofDeclList.mapIndexedNotNull { i, desc -> desc.toModel(i, resolver) },
             enumDeclarations = enumTypeList.map { it.toModel(resolver, outerClass, fqName) },
-            nestedDeclarations = nestedTypeList.map { it.toModel(resolver, outerClass, fqName) },
+            nestedDeclarations = nestedDeclarations,
             deprecated = options.deprecated,
             doc = null,
         ).apply {
             messages[name] = this
         }
+    }
+
+    private fun DescriptorProtos.DescriptorProto.resolveMapEntry(resolver: NameResolver): Lazy<FieldType.Map.Entry> = lazy {
+        val keyType = fieldList[0].toModel(null, resolver) ?: error("Key type is null")
+        val valueType = fieldList[1].toModel(null, resolver) ?: error("Value type is null")
+
+        FieldType.Map.Entry(keyType.type, valueType.type)
     }
 
     private val oneOfFieldMembers = mutableMapOf<Int, MutableList<DescriptorProtos.FieldDescriptorProto>>()
@@ -176,19 +192,15 @@ class ProtoToModelInterpreter(
                 typeName
                     .substringAfter('.')
                     .fullProtoNameToKotlin(firstLetterUpper = true)
-                    // TODO KRPC-146 Nested Types: parent full type resolution
                     //  KRPC-144 Import types
-                    .asReference { resolver.resolve(it) }
-                    .let { wrapWithLabel(it) }
+                    .let { resolvedType(it, resolver) }
             }
 
             hasTypeName() -> {
                 typeName
                     .fullProtoNameToKotlin(firstLetterUpper = true)
-                    // TODO KRPC-146 Nested Types: parent full type resolution
                     //  KRPC-144 Import types: we assume local types now
-                    .asReference { resolver.resolve(it) }
-                    .let { wrapWithLabel(it) }
+                    .let { resolvedType(it, resolver) }
             }
 
             else -> {
@@ -219,6 +231,18 @@ class ProtoToModelInterpreter(
             Type.TYPE_ENUM, Type.TYPE_MESSAGE, Type.TYPE_GROUP, null ->
                 error("Expected to find primitive type, instead got $type with name '$typeName'")
         }
+    }
+
+    private fun DescriptorProtos.FieldDescriptorProto.resolvedType(name: String, resolver: NameResolver): FieldType {
+        val entry = mapEntries[resolver.resolveOrNull(name)]
+
+        if (entry != null) {
+            return FieldType.Map(entry)
+        }
+
+        val fieldType = FieldType.Reference(lazy { resolver.resolve(name) })
+
+        return wrapWithLabel(fieldType)
     }
 
     private fun String.asReference(resolver: (String) -> FqName) =
