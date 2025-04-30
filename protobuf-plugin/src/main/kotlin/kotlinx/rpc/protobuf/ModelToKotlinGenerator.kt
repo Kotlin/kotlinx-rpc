@@ -132,11 +132,10 @@ class ModelToKotlinGenerator(
 
             newLine()
 
-            // KRPC-147 OneOf Types
-//            declaration.oneOfDeclarations.forEach { oneOf ->
-//                generateOneOf(oneOf)
-//            }
-//
+            declaration.oneOfDeclarations.forEach { oneOf ->
+                generateOneOfPublic(oneOf)
+            }
+
             declaration.nestedDeclarations.forEach { nested ->
                 generatePublicMessage(nested)
             }
@@ -201,17 +200,29 @@ class ModelToKotlinGenerator(
         ) {
             scope("return $platformType.newBuilder().apply", ".build()") {
                 declaration.actualFields.forEach { field ->
-                    val uppercaseName = field.name.replaceFirstChar { ch -> ch.uppercase() }
-                    val setFieldCall = when (field.type) {
-                        is FieldType.List -> "addAll$uppercaseName"
-                        is FieldType.Map -> "putAll$uppercaseName"
-                        else -> "set$uppercaseName"
-                    }
+                    val setFieldCall = setFieldCall(field)
 
-                    if (field.nullable) {
-                        code("this@toPlatform.${field.name}?.let { $setFieldCall(it${field.type.toPlatformCast()}) }")
-                    } else {
-                        code("$setFieldCall(this@toPlatform.${field.name}${field.type.toPlatformCast()})")
+                    when {
+                        field.type is FieldType.OneOf -> {
+                            scope("this@toPlatform.${field.name}?.let { value ->", openingBracket = false) {
+                                scope("when (value)") {
+                                    val oneOf = declaration.oneOfDeclarations[field.type.index]
+                                    val oneOfName = oneOf.name.safeFullName()
+
+                                    oneOf.variants.forEach { variant ->
+                                        code("is $oneOfName.${variant.name} -> ${setFieldCall(variant)}(value.value${variant.type.toPlatformCast()})")
+                                    }
+                                }
+                            }
+                        }
+
+                        field.nullable -> {
+                            code("this@toPlatform.${field.name}?.let { $setFieldCall(it${field.type.toPlatformCast()}) }")
+                        }
+
+                        else -> {
+                            code("$setFieldCall(this@toPlatform.${field.name}${field.type.toPlatformCast()})")
+                        }
                     }
                 }
             }
@@ -224,30 +235,62 @@ class ModelToKotlinGenerator(
         ) {
             scope("return ${declaration.name.safeFullName()}") {
                 declaration.actualFields.forEach { field ->
-                    val javaName = when (field.type) {
-                        is FieldType.List -> "${field.name}List"
-                        is FieldType.Map -> "${field.name}Map"
-                        else -> field.name
-                    }
+                    val javaName = fieldJavaName(field)
 
                     val getter = "this@toKotlin.$javaName${field.type.toKotlinCast()}"
-                    if (field.nullable) {
-                        ifBranch(
-                            prefix = "${field.name} = ",
-                            condition = "has${field.name.replaceFirstChar { ch -> ch.uppercase() }}()",
-                            ifBlock = {
-                                code(getter)
-                            },
-                            elseBlock = {
-                                code("null")
+                    when {
+                        field.type is FieldType.OneOf -> {
+                            val oneOf = declaration.oneOfDeclarations[field.type.index]
+                            val oneOfName = oneOf.name.safeFullName()
+
+                            scope("${field.name} = when") {
+                                oneOf.variants.forEach { variant ->
+                                    code("${hasFieldJavaMethod(variant)} -> $oneOfName.${variant.name}(this@toKotlin.${fieldJavaName(variant)}${variant.type.toKotlinCast()})")
+                                }
+                                code("else -> null")
                             }
-                        )
-                    } else {
-                        code("${field.name} = $getter")
+                        }
+
+                        field.nullable -> {
+                            ifBranch(
+                                prefix = "${field.name} = ",
+                                condition = hasFieldJavaMethod(field),
+                                ifBlock = {
+                                    code(getter)
+                                },
+                                elseBlock = {
+                                    code("null")
+                                }
+                            )
+                        }
+                        else -> {
+                            code("${field.name} = $getter")
+                        }
                     }
                 }
             }
         }
+    }
+
+    private fun fieldJavaName(field: FieldDeclaration): String {
+        val name = field.name.replaceFirstChar { ch -> ch.lowercase() }
+        return when (field.type) {
+            is FieldType.List -> "${name}List"
+            is FieldType.Map -> "${name}Map"
+            else -> name
+        }
+    }
+
+    private fun hasFieldJavaMethod(field: FieldDeclaration): String = "has${field.name.replaceFirstChar { ch -> ch.uppercase() }}()"
+
+    private fun setFieldCall(field: FieldDeclaration): String {
+        val uppercaseName = field.name.replaceFirstChar { ch -> ch.uppercase() }
+        val setFieldCall = when (field.type) {
+            is FieldType.List -> "addAll$uppercaseName"
+            is FieldType.Map -> "putAll$uppercaseName"
+            else -> "set$uppercaseName"
+        }
+        return setFieldCall
     }
 
     private fun FieldType.toPlatformCast(): String {
@@ -339,6 +382,11 @@ class ModelToKotlinGenerator(
                 value.safeFullName()
             }
 
+            is FieldType.OneOf -> {
+                val value by type.value
+                value.safeFullName()
+            }
+
             is FieldType.IntegralType -> {
                 type.fqName.simpleName
             }
@@ -377,11 +425,10 @@ class ModelToKotlinGenerator(
         return "$this${if (nullable) "?" else ""}"
     }
 
-    @Suppress("unused")
-    private fun CodeGenerator.generateOneOf(declaration: OneOfDeclaration) {
+    private fun CodeGenerator.generateOneOfPublic(declaration: OneOfDeclaration) {
         val interfaceName = declaration.name.simpleName
 
-        clazz(declaration.name.simpleName, "sealed", declarationType = DeclarationType.Interface) {
+        clazz(interfaceName, "sealed", declarationType = DeclarationType.Interface) {
             declaration.variants.forEach { variant ->
                 clazz(
                     name = variant.name,
@@ -420,7 +467,6 @@ class ModelToKotlinGenerator(
         }
     }
 
-    @Suppress("unused")
     private fun CodeGenerator.generateToAndFromPlatformCastsEnum(declaration: EnumDeclaration) {
         val platformType = "${declaration.outerClassName.safeFullName()}.${declaration.name.fullNestedName()}"
 
