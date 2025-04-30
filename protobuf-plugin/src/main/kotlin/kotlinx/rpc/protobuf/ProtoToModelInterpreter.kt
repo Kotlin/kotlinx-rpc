@@ -97,7 +97,7 @@ class ProtoToModelInterpreter(
         val fqName = parentResolver.declarationFqName(simpleName, parent ?: packageName)
         val resolver = parentResolver.withScope(fqName)
 
-        val fields = fieldList.asSequence().mapNotNull {
+        val fields = fieldList.mapNotNull {
             val oneOfName = if (it.hasOneofIndex()) {
                 oneofDeclList[it.oneofIndex].name
             } else {
@@ -111,10 +111,9 @@ class ProtoToModelInterpreter(
             outerClassName = outerClass,
             name = fqName,
             actualFields = fields,
-            oneOfDeclarations = oneofDeclList.asSequence().mapIndexedNotNull { i, desc -> desc.toModel(i, resolver) },
-            enumDeclarations = enumTypeList.asSequence()
-                .map { it.toModel(resolver, outerClass, parent ?: packageName) },
-            nestedDeclarations = nestedTypeList.asSequence().map { it.toModel(resolver, outerClass, fqName) },
+            oneOfDeclarations = oneofDeclList.mapIndexedNotNull { i, desc -> desc.toModel(i, resolver) },
+            enumDeclarations = enumTypeList.map { it.toModel(resolver, outerClass, fqName) },
+            nestedDeclarations = nestedTypeList.map { it.toModel(resolver, outerClass, fqName) },
             deprecated = options.deprecated,
             doc = null,
         ).apply {
