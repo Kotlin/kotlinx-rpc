@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package kotlinx.rpc.protobuf.test;
 
-import "one_of.proto";
+import "reference_package.proto";
 
-message Map {
+message TestMap {
   map<string, int64> primitives = 1;
-  map<string, OneOf> references = 2;
+  map<string, References> references = 2;
 }
