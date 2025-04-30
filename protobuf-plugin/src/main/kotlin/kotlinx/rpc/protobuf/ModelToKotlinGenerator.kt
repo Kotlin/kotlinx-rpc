@@ -7,7 +7,6 @@ package kotlinx.rpc.protobuf
 import kotlinx.rpc.protobuf.CodeGenerator.DeclarationType
 import kotlinx.rpc.protobuf.model.*
 import org.slf4j.Logger
-import kotlin.sequences.forEach
 
 private const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
 
@@ -93,8 +92,27 @@ class ModelToKotlinGenerator(
 
     private fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {
         fileDeclaration.messageDeclarations.forEach { generateInternalMessage(it) }
-        fileDeclaration.enumDeclarations.forEach { generateInternalEnum(it) }
         fileDeclaration.serviceDeclarations.forEach { generateInternalService(it) }
+
+        fileDeclaration.messageDeclarations.forEach {
+            generateToAndFromPlatformCastsRec(it)
+        }
+
+        fileDeclaration.enumDeclarations.forEach {
+            generateToAndFromPlatformCastsEnum(it)
+        }
+    }
+
+    private fun CodeGenerator.generateToAndFromPlatformCastsRec(declaration: MessageDeclaration) {
+        generateToAndFromPlatformCasts(declaration)
+
+        declaration.nestedDeclarations.forEach { nested ->
+            generateToAndFromPlatformCastsRec(nested)
+        }
+
+        declaration.enumDeclarations.forEach { nested ->
+            generateToAndFromPlatformCastsEnum(nested)
+        }
     }
 
     private fun MessageDeclaration.fields() = actualFields.map {
@@ -112,20 +130,20 @@ class ModelToKotlinGenerator(
                 newLine()
             }
 
+            newLine()
+
             // KRPC-147 OneOf Types
 //            declaration.oneOfDeclarations.forEach { oneOf ->
 //                generateOneOf(oneOf)
 //            }
 //
-            // KRPC-146 Nested Types
-//            declaration.nestedDeclarations.forEach { nested ->
-//                generateMessage(nested)
-//            }
-//
-            // KRPC-141 Enum Types
-//            declaration.enumDeclarations.forEach { enum ->
-//                generateEnum(enum)
-//            }
+            declaration.nestedDeclarations.forEach { nested ->
+                generatePublicMessage(nested)
+            }
+
+            declaration.enumDeclarations.forEach { enum ->
+                generatePublicEnum(enum)
+            }
 
             clazz("", modifiers = "companion", declarationType = DeclarationType.Object)
         }
@@ -157,20 +175,25 @@ class ModelToKotlinGenerator(
                 code("override var $fieldDeclaration $value")
                 newLine()
             }
-        }
 
+            declaration.nestedDeclarations.forEach { nested ->
+                generateInternalMessage(nested)
+            }
+        }
+    }
+
+    private fun CodeGenerator.generateToAndFromPlatformCasts(declaration: MessageDeclaration) {
         function(
             name = "invoke",
             modifiers = "operator",
-            args = "body: ${declaration.name.simpleName}Builder.() -> Unit",
+            args = "body: ${declaration.name.safeFullName("Builder")}.() -> Unit",
             contextReceiver = "${declaration.name.safeFullName()}.Companion",
             returnType = declaration.name.safeFullName(),
         ) {
-            code("return ${declaration.name.simpleName}Builder().apply(body)")
+            code("return ${declaration.name.safeFullName("Builder")}().apply(body)")
         }
 
-        val platformType = "${declaration.outerClassName.safeFullName()}.${declaration.name.simpleName}"
-
+        val platformType = "${declaration.outerClassName.safeFullName()}.${declaration.name.fullNestedName()}"
         function(
             name = "toPlatform",
             contextReceiver = declaration.name.safeFullName(),
@@ -198,7 +221,7 @@ class ModelToKotlinGenerator(
             contextReceiver = platformType,
             returnType = declaration.name.safeFullName(),
         ) {
-            scope("return ${declaration.name.simpleName}") {
+            scope("return ${declaration.name.safeFullName()}") {
                 declaration.actualFields.forEach { field ->
                     val javaName = when (field.type) {
                         is FieldType.List -> "${field.name}List"
@@ -361,8 +384,8 @@ class ModelToKotlinGenerator(
     }
 
     @Suppress("unused")
-    private fun CodeGenerator.generateInternalEnum(declaration: EnumDeclaration) {
-        val platformType = "${declaration.outerClassName.safeFullName()}.${declaration.name.simpleName}"
+    private fun CodeGenerator.generateToAndFromPlatformCastsEnum(declaration: EnumDeclaration) {
+        val platformType = "${declaration.outerClassName.safeFullName()}.${declaration.name.fullNestedName()}"
 
         function(
             name = "toPlatform",
@@ -371,11 +394,11 @@ class ModelToKotlinGenerator(
         ) {
             scope("return when (this)") {
                 declaration.aliases.forEach { field ->
-                    code("${declaration.name.simpleName}.${field.name.simpleName} -> $platformType.${field.name.simpleName}")
+                    code("${declaration.name.fullNestedName()}.${field.name.simpleName} -> $platformType.${field.name.simpleName}")
                 }
 
                 declaration.originalEntries.forEach { field ->
-                    code("${declaration.name.simpleName}.${field.name.simpleName} -> $platformType.${field.name.simpleName}")
+                    code("${declaration.name.fullNestedName()}.${field.name.simpleName} -> $platformType.${field.name.simpleName}")
                 }
             }
         }
@@ -387,11 +410,11 @@ class ModelToKotlinGenerator(
         ) {
             scope("return when (this)") {
                 declaration.aliases.forEach { field ->
-                    code("$platformType.${field.name.simpleName} -> ${declaration.name.simpleName}.${field.name.simpleName}")
+                    code("$platformType.${field.name.simpleName} -> ${declaration.name.fullNestedName()}.${field.name.simpleName}")
                 }
 
                 declaration.originalEntries.forEach { field ->
-                    code("$platformType.${field.name.simpleName} -> ${declaration.name.simpleName}.${field.name.simpleName}")
+                    code("$platformType.${field.name.simpleName} -> ${declaration.name.fullNestedName()}.${field.name.simpleName}")
                 }
             }
         }
@@ -528,13 +551,13 @@ class ModelToKotlinGenerator(
     }
 
     private fun MessageDeclaration.toPlatformMessageType(): String {
-        return "${outerClassName.safeFullName()}.${name.simpleName}"
+        return "${outerClassName.safeFullName()}.${name.fullNestedName()}"
     }
 
-    private fun FqName.safeFullName(): String {
+    private fun FqName.safeFullName(classSuffix: String = ""): String {
         importRootDeclarationIfNeeded(this)
 
-        return fullName()
+        return fullName(classSuffix)
     }
 
     private fun importRootDeclarationIfNeeded(

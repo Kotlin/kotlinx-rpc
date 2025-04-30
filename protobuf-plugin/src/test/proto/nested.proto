@@ -5,18 +5,19 @@ package kotlinx.rpc.protobuf.test;
 message Nested {
   message Inner1 {
     message Inner11 {
-      Nested.Inner2.Inner21 reference21 = 1;
+      optional Nested.Inner2.Inner21 reference21 = 1;
       Nested.Inner1.Inner12 reference12 = 2;
       Nested.Inner2.NestedEnum enum = 3;
     }
 
     message Inner12 {
-      Inner12 recursion = 1;
+      optional Inner12 recursion = 1;
     }
 
     Inner11 inner11 = 1;
     Inner12 inner22 = 2;
     string string = 3;
+    optional Inner1 inner1 = 4;
   }
 
   message Inner2 {
