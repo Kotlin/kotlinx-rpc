@@ -38,7 +38,6 @@ sourceSets {
                 "**/empty_deprecated.proto",
                 "**/example.proto",
                 "**/funny_types.proto",
-                "**/map.proto",
                 "**/multiple_files.proto",
                 "**/one_of.proto",
                 "**/options.proto",
