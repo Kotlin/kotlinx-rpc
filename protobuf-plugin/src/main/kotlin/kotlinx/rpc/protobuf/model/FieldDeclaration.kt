@@ -19,8 +19,10 @@ sealed interface FieldType {
         override val defaultValue: String = "emptyList()"
     }
 
-    data class Map(val keyName: FqName, val valueName: FqName) : FieldType {
+    data class Map(val entry: Lazy<Entry>) : FieldType {
         override val defaultValue: String = "emptyMap()"
+
+        data class Entry(val key: FieldType, val value: FieldType)
     }
 
     data class Reference(val value: Lazy<FqName>) : FieldType {
