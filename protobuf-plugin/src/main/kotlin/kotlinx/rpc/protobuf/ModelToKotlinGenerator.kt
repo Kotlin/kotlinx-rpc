@@ -204,6 +204,7 @@ class ModelToKotlinGenerator(
                     val uppercaseName = field.name.replaceFirstChar { ch -> ch.uppercase() }
                     val setFieldCall = when (field.type) {
                         is FieldType.List -> "addAll$uppercaseName"
+                        is FieldType.Map -> "putAll$uppercaseName"
                         else -> "set$uppercaseName"
                     }
 
@@ -225,6 +226,7 @@ class ModelToKotlinGenerator(
                 declaration.actualFields.forEach { field ->
                     val javaName = when (field.type) {
                         is FieldType.List -> "${field.name}List"
+                        is FieldType.Map -> "${field.name}Map"
                         else -> field.name
                     }
 
@@ -270,6 +272,19 @@ class ModelToKotlinGenerator(
                 }
             }
 
+            is FieldType.Map -> {
+                val entry by entry
+
+                when (val value = entry.value) {
+                    is FieldType.Reference -> ".mapValues { it.value.toPlatform() }".also {
+                        val fq by value.value
+                        importRootDeclarationIfNeeded(fq, "toPlatform", true)
+                    }
+                    is FieldType.IntegralType -> ""
+                    else -> error("Unsupported type: $value")
+                }
+            }
+
             else -> ""
         }
     }
@@ -296,6 +311,19 @@ class ModelToKotlinGenerator(
                 }
             }
 
+            is FieldType.Map -> {
+                val entry by entry
+
+                when (val value = entry.value) {
+                    is FieldType.Reference -> ".mapValues { it.value.toKotlin() }".also {
+                        val fq by value.value
+                        importRootDeclarationIfNeeded(fq, "toKotlin", true)
+                    }
+                    is FieldType.IntegralType -> ""
+                    else -> error("Unsupported type: $value")
+                }
+            }
+
             else -> ""
         }
     }
@@ -306,7 +334,6 @@ class ModelToKotlinGenerator(
 
     private fun FieldDeclaration.typeFqName(): String {
         return when (type) {
-            // KRPC-156 Reference Types
             is FieldType.Reference -> {
                 val value by type.value
                 value.safeFullName()
@@ -326,12 +353,22 @@ class ModelToKotlinGenerator(
                 "List<${fqValue.safeFullName()}>"
             }
 
-            // KRPC-145 Map Types
-//            is FieldType.Map -> {
-//                "Map<${type.keyName.simpleName}, ${type.valueName.simpleName}>"
-//            }
-            else -> {
-                error("Unsupported type: $this")
+            is FieldType.Map -> {
+                val entry by type.entry
+
+                val fqKey = when (val key = entry.key) {
+                    is FieldType.Reference -> key.value.value
+                    is FieldType.IntegralType -> key.fqName
+                    else -> error("Unsupported type: $key")
+                }
+
+                val fqValue = when (val value = entry.value) {
+                    is FieldType.Reference -> value.value.value
+                    is FieldType.IntegralType -> value.fqName
+                    else -> error("Unsupported type: $value")
+                }
+
+                "Map<${fqKey.safeFullName()}, ${fqValue.safeFullName()}>"
             }
         }.withNullability(nullable)
     }
