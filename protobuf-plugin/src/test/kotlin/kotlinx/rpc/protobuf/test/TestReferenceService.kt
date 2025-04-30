@@ -41,6 +41,10 @@ class ReferenceTestServiceImpl : ReferenceTestService {
     override suspend fun Nested(message: Nested): Nested {
         return message
     }
+
+    override suspend fun Map(message: TestMap): TestMap {
+        return message
+    }
 }
 
 class TestReferenceService : GrpcServerTest() {
@@ -196,5 +200,21 @@ class TestReferenceService : GrpcServerTest() {
         // Assert root Nested
         assertEquals("42", result.string)
         assertEquals(Nested.Inner2.NestedEnum.ZERO, result.enum)
+    }
+
+    @Test
+    fun testMap() = runGrpcTest { grpcClient ->
+        val service = grpcClient.withService<ReferenceTestService>()
+        val result = service.Map(TestMap {
+            primitives = mapOf("1" to 2, "2" to 1)
+            references = mapOf("ref" to kotlinx.rpc.protobuf.test.References {
+                other = kotlinx.rpc.protobuf.test.Other {
+                    field = 42
+                }
+            })
+        })
+
+        assertEquals(mapOf("1" to 2L, "2" to 1L), result.primitives)
+        assertEquals(mapOf("ref" to 42), result.references.mapValues { it.value.other.field })
     }
 }
