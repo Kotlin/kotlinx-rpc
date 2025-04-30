@@ -2,20 +2,19 @@ syntax = "proto3";
 
 package kotlinx.rpc.protobuf.test;
 
-import "with_comments.proto";
-import "funny_types.proto";
 import "all_primitives.proto";
+import "reference_package.proto";
 
 message OneOf {
   oneof primitives {
-    string string = 1;
+    string string_value = 1;
     int32 int32 = 2;
     bool bool = 3;
   }
 
   oneof references {
-    WithComments withComments = 4;
-    FunnyTypes funnyTypes = 5;
+    Other other = 4;
+    References inner_references = 5;
   }
 
   oneof mixed {
