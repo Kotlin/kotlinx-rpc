@@ -120,7 +120,7 @@ class ProtoToModelInterpreter(
             outerClassName = outerClass,
             name = fqName,
             actualFields = fields,
-            oneOfDeclarations = oneofDeclList.mapIndexedNotNull { i, desc -> desc.toModel(i, resolver) },
+            oneOfDeclarations = oneofDeclList.mapIndexedNotNull { i, desc -> desc.toModel(i, resolver, fqName) },
             enumDeclarations = enumTypeList.map { it.toModel(resolver, outerClass, fqName) },
             nestedDeclarations = nestedDeclarations,
             deprecated = options.deprecated,
@@ -130,12 +130,13 @@ class ProtoToModelInterpreter(
         }
     }
 
-    private fun DescriptorProtos.DescriptorProto.resolveMapEntry(resolver: NameResolver): Lazy<FieldType.Map.Entry> = lazy {
-        val keyType = fieldList[0].toModel(null, resolver) ?: error("Key type is null")
-        val valueType = fieldList[1].toModel(null, resolver) ?: error("Value type is null")
+    private fun DescriptorProtos.DescriptorProto.resolveMapEntry(resolver: NameResolver): Lazy<FieldType.Map.Entry> =
+        lazy {
+            val keyType = fieldList[0].toModel(null, resolver) ?: error("Key type is null")
+            val valueType = fieldList[1].toModel(null, resolver) ?: error("Value type is null")
 
-        FieldType.Map.Entry(keyType.type, valueType.type)
-    }
+            FieldType.Map.Entry(keyType.type, valueType.type)
+        }
 
     private val oneOfFieldMembers = mutableMapOf<Int, MutableList<DescriptorProtos.FieldDescriptorProto>>()
 
@@ -155,8 +156,8 @@ class ProtoToModelInterpreter(
                     oneOfFieldMembers[oneofIndex] = mutableListOf<DescriptorProtos.FieldDescriptorProto>()
                         .also { list -> list.add(this) }
 
-                    TODO("KRPC-147 OneOf Types")
-                    // FieldType.Reference(oneOfName.fullProtoNameToKotlin(firstLetterUpper = true).toFqName())
+                    val name = oneOfName.fullProtoNameToKotlin(firstLetterUpper = true)
+                    FieldType.OneOf(lazy { resolver.resolve(name) }, oneofIndex)
                 }
 
                 else -> {
@@ -168,7 +169,6 @@ class ProtoToModelInterpreter(
             return FieldDeclaration(
                 name = oneOfName.removePrefix("_").fullProtoNameToKotlin(),
                 type = fieldType,
-                // TODO KRPC-147 OneOf Types: check nullability
                 nullable = true,
                 deprecated = options.deprecated,
                 doc = null,
@@ -245,9 +245,6 @@ class ProtoToModelInterpreter(
         return wrapWithLabel(fieldType)
     }
 
-    private fun String.asReference(resolver: (String) -> FqName) =
-        FieldType.Reference(lazy { resolver(this) })
-
     private fun DescriptorProtos.FieldDescriptorProto.wrapWithLabel(fieldType: FieldType): FieldType {
         return when (label) {
             DescriptorProtos.FieldDescriptorProto.Label.LABEL_REPEATED -> {
@@ -261,19 +258,23 @@ class ProtoToModelInterpreter(
         }
     }
 
-    private fun DescriptorProtos.OneofDescriptorProto.toModel(index: Int, resolver: NameResolver): OneOfDeclaration? {
-        // TODO KRPC-146 Nested Types: parent full type resolution
-        //  KRPC-147 OneOf Types: check fqName
+    private fun DescriptorProtos.OneofDescriptorProto.toModel(
+        index: Int,
+        resolver: NameResolver,
+        parent: FqName,
+    ): OneOfDeclaration? {
         val name = name.fullProtoNameToKotlin(firstLetterUpper = true)
-        val fqName = resolver.declarationFqName(name, packageName)
+        val fqName = resolver.declarationFqName(name, parent)
 
         val fields = oneOfFieldMembers[index] ?: return null
+
+        val fieldResolver = resolver.withScope(fqName)
         return OneOfDeclaration(
             name = fqName,
             variants = fields.map { field ->
                 FieldDeclaration(
                     name = field.name.fullProtoNameToKotlin(firstLetterUpper = true),
-                    type = field.fieldType(resolver),
+                    type = field.fieldType(fieldResolver),
                     nullable = false,
                     deprecated = field.options.deprecated,
                     doc = null,

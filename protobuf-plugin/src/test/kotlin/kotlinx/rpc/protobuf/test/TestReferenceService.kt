@@ -12,6 +12,7 @@ import kotlinx.rpc.RpcServer
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -43,6 +44,10 @@ class ReferenceTestServiceImpl : ReferenceTestService {
     }
 
     override suspend fun Map(message: TestMap): TestMap {
+        return message
+    }
+
+    override suspend fun OneOf(message: OneOf): OneOf {
         return message
     }
 }
@@ -216,5 +221,49 @@ class TestReferenceService : GrpcServerTest() {
 
         assertEquals(mapOf("1" to 2L, "2" to 1L), result.primitives)
         assertEquals(mapOf("ref" to 42), result.references.mapValues { it.value.other.field })
+    }
+
+    @Test
+    fun testOneOf() = runGrpcTest { grpcClient ->
+        val service = grpcClient.withService<ReferenceTestService>()
+        val result1 = service.OneOf(OneOf {
+            primitives = OneOf.Primitives.StringValue("42")
+            references = OneOf.References.Other(kotlinx.rpc.protobuf.test.Other {
+                field = 42
+            })
+            mixed = OneOf.Mixed.Int64(42L)
+            single = OneOf.Single.Bytes(byteArrayOf(42))
+        })
+
+        assertEquals("42", (result1.primitives as OneOf.Primitives.StringValue).value)
+        assertEquals(42, (result1.references as OneOf.References.Other).value.field)
+        assertEquals(42L, (result1.mixed as OneOf.Mixed.Int64).value)
+        assertContentEquals(byteArrayOf(42), (result1.single as OneOf.Single.Bytes).value)
+
+        val result2 = service.OneOf(OneOf {
+            primitives = OneOf.Primitives.Bool(true)
+            references = OneOf.References.InnerReferences(kotlinx.rpc.protobuf.test.References {
+                other = kotlinx.rpc.protobuf.test.Other {
+                    field = 42
+                }
+            })
+            mixed = OneOf.Mixed.AllPrimitives(AllPrimitives {
+                string = "42"
+            })
+        })
+
+        assertEquals(true, (result2.primitives as OneOf.Primitives.Bool).value)
+        assertEquals(42, (result2.references as OneOf.References.InnerReferences).value.other.field)
+        assertEquals("42", (result2.mixed as OneOf.Mixed.AllPrimitives).value.string)
+        assertEquals(null, result2.single)
+
+        val result3 = service.OneOf(OneOf {
+            primitives = OneOf.Primitives.Int32(42)
+        })
+
+        assertEquals(42, (result3.primitives as OneOf.Primitives.Int32).value)
+        assertEquals(null, result3.references)
+        assertEquals(null, result3.mixed)
+        assertEquals(null, result3.single)
     }
 }

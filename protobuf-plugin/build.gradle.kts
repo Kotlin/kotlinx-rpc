@@ -37,9 +37,7 @@ sourceSets {
                 "**/enum_options.proto",
                 "**/empty_deprecated.proto",
                 "**/example.proto",
-                "**/funny_types.proto",
                 "**/multiple_files.proto",
-                "**/one_of.proto",
                 "**/options.proto",
                 "**/with_comments.proto",
             )
