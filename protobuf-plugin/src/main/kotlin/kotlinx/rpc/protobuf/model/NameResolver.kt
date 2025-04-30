@@ -177,4 +177,17 @@ internal class NameResolver private constructor(
             return _list!!
         }
     }
+
+    @Suppress("unused")
+    fun pprint(): String {
+        return buildString { pprint(root, 0) }
+    }
+
+    private fun StringBuilder.pprint(node: Node, indent: Int) {
+        val spaces = " ".repeat(indent)
+        appendLine("$spaces${node.fqName.fullName()}")
+        for (child in node.children.values) {
+            pprint(child, indent + 4)
+        }
+    }
 }

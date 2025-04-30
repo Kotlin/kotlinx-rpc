@@ -40,7 +40,6 @@ sourceSets {
                 "**/funny_types.proto",
                 "**/map.proto",
                 "**/multiple_files.proto",
-                "**/nested.proto",
                 "**/one_of.proto",
                 "**/options.proto",
                 "**/with_comments.proto",
