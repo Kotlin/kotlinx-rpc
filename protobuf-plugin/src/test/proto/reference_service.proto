@@ -5,6 +5,7 @@ import "reference_package.proto";
 import "enum.proto";
 import "optional.proto";
 import "repeated.proto";
+import "nested.proto";
 
 service ReferenceTestService {
   rpc Get(References) returns (kotlinx.rpc.protobuf.test.References);
@@ -14,4 +15,6 @@ service ReferenceTestService {
   rpc Optional(kotlinx.rpc.protobuf.test.OptionalTypes) returns (kotlinx.rpc.protobuf.test.OptionalTypes);
 
   rpc Repeated(kotlinx.rpc.protobuf.test.Repeated) returns (kotlinx.rpc.protobuf.test.Repeated);
+
+  rpc Nested(kotlinx.rpc.protobuf.test.Nested) returns (kotlinx.rpc.protobuf.test.Nested);
 }
