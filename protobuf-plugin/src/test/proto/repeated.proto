@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package kotlinx.rpc.protobuf.test;
+
+import 'reference_package.proto';
+
+message Repeated {
+  repeated string listString = 1;
+  repeated References listReference = 2;
+}

@@ -8,13 +8,7 @@ import ReferenceTestService
 import References
 import invoke
 import Other
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.grpc.GrpcClient
-import kotlinx.rpc.grpc.GrpcServer
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.Test
@@ -36,6 +30,10 @@ class ReferenceTestServiceImpl : ReferenceTestService {
     }
 
     override suspend fun Optional(message: OptionalTypes): OptionalTypes {
+        return message
+    }
+
+    override suspend fun Repeated(message: Repeated): Repeated {
         return message
     }
 }
@@ -92,5 +90,27 @@ class TestReferenceService : GrpcServerTest() {
         assertEquals(null, resultNullable.name)
         assertEquals(null, resultNullable.age)
         assertEquals(null, resultNullable.reference)
+    }
+
+    @Test
+    fun testRepeated() = runGrpcTest { grpcClient ->
+        val service = grpcClient.withService<ReferenceTestService>()
+        val result = service.Repeated(Repeated {
+            listString = listOf("test", "hello")
+            listReference = listOf(kotlinx.rpc.protobuf.test.References {
+                other = kotlinx.rpc.protobuf.test.Other {
+                    field = 42
+                }
+            })
+        })
+
+        assertEquals(listOf("test", "hello"), result.listString)
+        assertEquals(1, result.listReference.size)
+        assertEquals(42, result.listReference[0].other.field)
+
+        val resultEmpty = service.Repeated(Repeated {})
+
+        assertEquals(emptyList(), resultEmpty.listString)
+        assertEquals(emptyList(), resultEmpty.listReference)
     }
 }
