@@ -6,6 +6,7 @@
 
 package kotlinx.rpc.codegen
 
+import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
@@ -13,6 +14,8 @@ import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
@@ -79,6 +82,12 @@ interface VersionSpecificApi {
         origin: IrStatementOrigin? = null,
         source: SourceElement = SourceElement.NO_SOURCE,
     ): IrConstructorCallImpl
+
+    fun IrFunction.valueParametersVS(): List<IrValueParameter>
+    val IrFunction.extensionReceiverParameterVS: IrValueParameter?
+    var IrFunction.dispatchReceiverParameterVS: IrValueParameter?
+
+    fun IrMemberAccessExpressionData.buildFor(access: IrMemberAccessExpression<*>)
 }
 
 @Suppress("unused")

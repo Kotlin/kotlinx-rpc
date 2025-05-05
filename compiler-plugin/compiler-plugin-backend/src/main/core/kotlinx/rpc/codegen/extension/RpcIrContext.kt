@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.types.makeNullable
 import org.jetbrains.kotlin.ir.util.functions
+import org.jetbrains.kotlin.ir.util.hasShape
 import org.jetbrains.kotlin.ir.util.isVararg
 import org.jetbrains.kotlin.ir.util.nestedClasses
 import org.jetbrains.kotlin.ir.util.properties
@@ -202,19 +203,25 @@ internal class RpcIrContext(
 
         val lazy by lazy {
             namedFunction("kotlin", "lazy") {
-                it.owner.valueParameters.size == 1
+                vsApi {
+                    it.owner.valueParametersVS().size == 1
+                }
             }
         }
 
         val lazyGetValue by lazy {
             namedFunction("kotlin", "getValue") {
-                it.owner.extensionReceiverParameter?.type?.classOrNull == this@RpcIrContext.lazy
+                vsApi {
+                    it.owner.extensionReceiverParameterVS?.type?.classOrNull == this@RpcIrContext.lazy
+                }
             }
         }
 
         val listOf by lazy {
             namedFunction("kotlin.collections", "listOf") {
-                it.owner.valueParameters.singleOrNull()?.isVararg ?: false
+                vsApi {
+                    it.owner.valueParametersVS().singleOrNull()?.isVararg ?: false
+                }
             }
         }
 
@@ -224,7 +231,9 @@ internal class RpcIrContext(
 
         val mapOf by lazy {
             namedFunction("kotlin.collections", "mapOf") {
-                it.owner.valueParameters.singleOrNull()?.isVararg ?: false
+                vsApi {
+                    it.owner.valueParametersVS().singleOrNull()?.isVararg ?: false
+                }
             }
         }
 
@@ -283,5 +292,9 @@ internal class RpcIrContext(
     private fun getIrClassSymbol(packageName: String, name: String): IrClassSymbol {
         return versionSpecificApi.referenceClass(pluginContext, packageName, name)
             ?: error("Unable to find symbol. Package: $packageName, name: $name")
+    }
+
+    private fun <T> vsApi(body: VersionSpecificApi.() -> T): T {
+        return versionSpecificApi.run(body)
     }
 }

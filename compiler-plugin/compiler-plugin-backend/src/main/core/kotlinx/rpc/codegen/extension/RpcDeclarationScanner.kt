@@ -4,11 +4,14 @@
 
 package kotlinx.rpc.codegen.extension
 
+import kotlinx.rpc.codegen.VersionSpecificApi
 import kotlinx.rpc.codegen.common.RpcNames
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.fir.java.enhancement.FirEmptyJavaDeclarationList.declarations
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
+import org.jetbrains.kotlin.ir.declarations.IrParameterKind
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.types.classOrNull
@@ -34,8 +37,10 @@ internal object RpcDeclarationScanner {
 
                     ServiceDeclaration.Method(
                         function = declaration,
-                        arguments = declaration.valueParameters.memoryOptimizedMap { param ->
-                            ServiceDeclaration.Method.Argument(param, param.type)
+                        arguments = ctx.versionSpecificApi.run {
+                            declaration.valueParametersVS().memoryOptimizedMap { param ->
+                                ServiceDeclaration.Method.Argument(param, param.type)
+                            }
                         },
                     )
                 }

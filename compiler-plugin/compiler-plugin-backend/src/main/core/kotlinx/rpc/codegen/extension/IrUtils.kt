@@ -23,10 +23,6 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.Variance
 import java.util.*
 
-fun String.capitalized(): String {
-    return replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-}
-
 fun IrClassifierSymbol.typeWith(type: IrType, variance: Variance): IrType {
     return IrSimpleTypeImpl(
         classifier = this,
