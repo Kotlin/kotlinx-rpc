@@ -16,7 +16,6 @@ import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.declarations.declaredFunctions
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.declarations.utils.visibility
 import org.jetbrains.kotlin.fir.extensions.*
@@ -259,7 +258,7 @@ class FirRpcServiceGenerator(
      * Scrapes the functions from the [owner] to generate method classes.
      */
     private fun generateRpcServiceStubClass(owner: FirClassSymbol<*>): FirRegularClassSymbol? {
-        val functions = owner.declaredFunctions(session)
+        val functions = vsApi { owner.declaredFunctionsVS(session) }
 
         return createNestedClass(owner, RpcNames.SERVICE_STUB_NAME, RpcGeneratedStubKey(owner.name, functions)) {
             visibility = Visibilities.Public

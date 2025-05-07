@@ -6,8 +6,15 @@ package kotlinx.rpc.codegen
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
@@ -32,4 +39,21 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
         set(value) {
             coneType = value
         }
+
+    override fun FirClassSymbol<*>.declaredFunctionsVS(session: FirSession): List<FirFunctionSymbol<FirFunction>> {
+        @OptIn(SymbolInternals::class)
+        return fir.declarations
+            .filterIsInstance<FirFunction>()
+            .map { it.symbol }
+    }
+
+    override fun FirRegularClassSymbol.constructorsVS(session: FirSession): List<FirConstructorSymbol> {
+        return declarationSymbols.filterIsInstance<FirConstructorSymbol>()
+    }
+
+    override fun FirRegularClass.declarationsVS(session: FirSession): List<FirBasedSymbol<*>> {
+        return declarations.map { it.symbol }
+    }
+
+    override val FirResolvedTypeRef.coneTypeVS: ConeKotlinType get() = coneType
 }

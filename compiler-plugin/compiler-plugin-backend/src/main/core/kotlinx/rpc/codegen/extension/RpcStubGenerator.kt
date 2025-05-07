@@ -7,7 +7,6 @@ package kotlinx.rpc.codegen.extension
 import kotlinx.rpc.codegen.VersionSpecificApi
 import kotlinx.rpc.codegen.common.rpcMethodClassName
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
-import org.jetbrains.kotlin.backend.common.serialization.proto.IrFunctionBase
 import org.jetbrains.kotlin.backend.jvm.functionByName
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities

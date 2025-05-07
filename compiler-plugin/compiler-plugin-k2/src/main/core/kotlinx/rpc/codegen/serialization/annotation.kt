@@ -7,7 +7,6 @@ package kotlinx.rpc.codegen.serialization
 import kotlinx.rpc.codegen.vsApi
 import org.jetbrains.kotlin.fir.FirAnnotationContainer
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.declarations.constructors
 import org.jetbrains.kotlin.fir.expressions.buildResolvedArgumentList
 import org.jetbrains.kotlin.fir.expressions.builder.buildAnnotationCall
 import org.jetbrains.kotlin.fir.references.builder.buildResolvedNamedReference
@@ -23,9 +22,11 @@ fun FirAnnotationContainer.addAnnotation(annotationId: ClassId, session: FirSess
         .getClassLikeSymbolByClassId(annotationId)
             as? FirRegularClassSymbol ?: return
 
-    val annotationConstructor = annotation
-        .constructors(session)
-        .firstOrNull() ?: return
+    val annotationConstructor = vsApi {
+        annotation
+            .constructorsVS(session)
+            .firstOrNull() ?: return
+    }
 
     val annotationCall = buildAnnotationCall {
         argumentList = buildResolvedArgumentList(null, linkedMapOf())

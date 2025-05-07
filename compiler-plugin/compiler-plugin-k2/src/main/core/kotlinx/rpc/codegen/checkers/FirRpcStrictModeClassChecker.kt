@@ -18,7 +18,6 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.extractArgumentsTypeRefAndSource
 import org.jetbrains.kotlin.fir.analysis.checkers.toClassLikeSymbol
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
-import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
 import org.jetbrains.kotlin.fir.declarations.utils.isSuspend
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
@@ -70,7 +69,7 @@ object FirRpcStrictModeClassChecker {
         }
 
         val serializablePropertiesProvider = context.session.serializablePropertiesProvider
-        declaration.processAllDeclarations(context.session) { declaration ->
+        vsApi { declaration.declarationsVS(context.session) }.forEach { declaration ->
             when (declaration) {
                 is FirPropertySymbol -> {
                     ctx.strictModeDiagnostics.FIELD_IN_RPC_SERVICE?.let {
@@ -99,7 +98,7 @@ object FirRpcStrictModeClassChecker {
         }
 
         val returnClassSymbol = vsApi {
-            function.resolvedReturnTypeRef.coneType.toClassSymbolVS(context.session)
+            function.resolvedReturnTypeRef.coneTypeVS.toClassSymbolVS(context.session)
         }
 
         val types = function.valueParameterSymbols.memoryOptimizedMap { parameter ->
@@ -168,7 +167,7 @@ object FirRpcStrictModeClassChecker {
             }
 
         val flowProps: List<FirTypeRef> = if (symbol.classId == RpcClassId.flow) {
-            listOf<FirTypeRef>(extracted.values.toList()[0]!!)
+            listOf(extracted.values.toList()[0]!!)
         } else {
             emptyList()
         }

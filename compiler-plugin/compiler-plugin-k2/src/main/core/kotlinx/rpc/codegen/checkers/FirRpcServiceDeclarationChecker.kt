@@ -13,7 +13,6 @@ import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
-import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
 import org.jetbrains.kotlin.fir.declarations.utils.isSuspend
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
@@ -37,14 +36,11 @@ object FirRpcServiceDeclarationChecker {
             )
         }
 
-        val functions = mutableListOf<FirNamedFunctionSymbol>()
-        declaration.processAllDeclarations(context.session) { symbol ->
-            if (symbol is FirNamedFunctionSymbol) {
-                functions.add(symbol)
-            }
-        }
-
-        functions.onEach { function ->
+        vsApi {
+            declaration
+                .declarationsVS(context.session)
+                .filterIsInstance<FirNamedFunctionSymbol>()
+        }.onEach { function ->
             if (function.typeParameterSymbols.isNotEmpty()) {
                 reporter.reportOn(
                     source = function.source,
@@ -53,7 +49,7 @@ object FirRpcServiceDeclarationChecker {
                 )
             }
 
-            val returnType = vsApi { function.resolvedReturnTypeRef.coneType.toClassSymbolVS(context.session) }
+            val returnType = vsApi { function.resolvedReturnTypeRef.coneTypeVS.toClassSymbolVS(context.session) }
                 ?: return@onEach
 
             if (returnType.classId != RpcClassId.flow && !function.isSuspend) {
