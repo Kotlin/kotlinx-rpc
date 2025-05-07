@@ -413,6 +413,10 @@ internal class RpcStubGenerator(
                             )
 
                             arguments {
+                                types {
+                                    +fieldType
+                                }
+
                                 values {
                                     +lambda
                                 }
@@ -737,6 +741,10 @@ internal class RpcStubGenerator(
 
                 val arrayOfCall = irCall(callee, type = ctx.arrayOfAnyNullable).apply arrayOfCall@{
                     if (methodClass.isObject) {
+                        arguments {
+                            types { +ctx.anyNullable }
+                        }
+
                         return@arrayOfCall
                     }
 
@@ -1226,6 +1234,13 @@ internal class RpcStubGenerator(
                         )
                     }.apply mapApply@{
                         if (isEmpty) {
+                            arguments {
+                                types {
+                                    +ctx.irBuiltIns.stringType
+                                    +rpcCallableType
+                                }
+                            }
+
                             return@mapApply
                         }
 
@@ -1377,6 +1392,10 @@ internal class RpcStubGenerator(
                 )
             }.apply arrayOfCall@{
                 if (parameters.isEmpty()) {
+                    arguments {
+                        types { +ctx.rpcParameter.defaultType }
+                    }
+
                     return@arrayOfCall
                 }
 
@@ -1593,6 +1612,10 @@ internal class RpcStubGenerator(
                     type = anyListType,
                 ).apply listApply@{
                     if (isEmpty) {
+                        arguments {
+                            types { +ctx.anyNullable }
+                        }
+
                         return@listApply
                     }
 

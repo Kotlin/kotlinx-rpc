@@ -23,12 +23,16 @@ class IrMemberAccessExpressionBuilder(private val vsApi: VersionSpecificApi) {
     private var valueArguments: List<IrExpression> = emptyList()
     private var typeArguments: List<IrType> = emptyList()
 
+    val typeBuilder = TypeBuilder()
+
     fun types(builder: TypeBuilder.() -> Unit) {
-        TypeBuilder().builder()
+        typeBuilder.builder()
     }
 
+    val valueBuilder = ValueBuilder()
+
     fun values(builder: ValueBuilder.() -> Unit) {
-        ValueBuilder().builder()
+        valueBuilder.builder()
     }
 
     inner class TypeBuilder {

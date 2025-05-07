@@ -151,8 +151,13 @@ object VersionSpecificApiImpl : VersionSpecificApi {
 
 
     override fun IrMemberAccessExpressionData.buildFor(access: IrMemberAccessExpression<*>) {
-        access.dispatchReceiver = dispatchReceiver
-        access.extensionReceiver = extensionReceiver
+        if (dispatchReceiver != null) {
+            access.dispatchReceiver = dispatchReceiver
+        }
+
+        if (extensionReceiver != null) {
+            access.extensionReceiver = extensionReceiver
+        }
 
         valueArguments.forEachIndexed { index, irExpression ->
             access.putValueArgument(index, irExpression)
