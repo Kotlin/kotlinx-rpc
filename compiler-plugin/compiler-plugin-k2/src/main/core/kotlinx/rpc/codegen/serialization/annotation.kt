@@ -7,16 +7,15 @@ package kotlinx.rpc.codegen.serialization
 import kotlinx.rpc.codegen.vsApi
 import org.jetbrains.kotlin.fir.FirAnnotationContainer
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.declarations.constructors
 import org.jetbrains.kotlin.fir.expressions.buildResolvedArgumentList
 import org.jetbrains.kotlin.fir.expressions.builder.buildAnnotationCall
 import org.jetbrains.kotlin.fir.references.builder.buildResolvedNamedReference
 import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
-import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.builder.buildResolvedTypeRef
 import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 
 fun FirAnnotationContainer.addAnnotation(annotationId: ClassId, session: FirSession) {
     val annotation = session
@@ -25,8 +24,8 @@ fun FirAnnotationContainer.addAnnotation(annotationId: ClassId, session: FirSess
             as? FirRegularClassSymbol ?: return
 
     val annotationConstructor = annotation
-        .declarationSymbols
-        .firstIsInstanceOrNull<FirConstructorSymbol>() ?: return
+        .constructors(session)
+        .firstOrNull() ?: return
 
     val annotationCall = buildAnnotationCall {
         argumentList = buildResolvedArgumentList(null, linkedMapOf())

@@ -11,21 +11,17 @@ import kotlinx.rpc.codegen.common.RpcClassId
 import kotlinx.rpc.codegen.vsApi
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
-import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
-import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirClassChecker
-import org.jetbrains.kotlin.fir.declarations.FirClass
-import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
+import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
 import org.jetbrains.kotlin.fir.declarations.utils.isSuspend
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
-import org.jetbrains.kotlin.fir.types.coneType
+import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 
-class FirRpcServiceDeclarationChecker(
-    @Suppress("unused")
-    private val ctx: FirCheckersContext,
-) : FirClassChecker(MppCheckerKind.Common) {
-    override fun check(
-        declaration: FirClass,
+object FirRpcServiceDeclarationChecker {
+    fun check(
+        @Suppress("unused") ctx: FirCheckersContext,
+        declaration: FirRegularClass,
         context: CheckerContext,
         reporter: DiagnosticReporter,
     ) {
@@ -41,8 +37,15 @@ class FirRpcServiceDeclarationChecker(
             )
         }
 
-        declaration.declarations.filterIsInstance<FirSimpleFunction>().onEach { function ->
-            if (function.typeParameters.isNotEmpty()) {
+        val functions = mutableListOf<FirNamedFunctionSymbol>()
+        declaration.processAllDeclarations(context.session) { symbol ->
+            if (symbol is FirNamedFunctionSymbol) {
+                functions.add(symbol)
+            }
+        }
+
+        functions.onEach { function ->
+            if (function.typeParameterSymbols.isNotEmpty()) {
                 reporter.reportOn(
                     source = function.source,
                     factory = FirRpcDiagnostics.TYPE_PARAMETERS_IN_RPC_FUNCTION,
@@ -50,7 +53,7 @@ class FirRpcServiceDeclarationChecker(
                 )
             }
 
-            val returnType = vsApi { function.returnTypeRef.coneType.toClassSymbolVS(context.session) }
+            val returnType = vsApi { function.resolvedReturnTypeRef.coneType.toClassSymbolVS(context.session) }
                 ?: return@onEach
 
             if (returnType.classId != RpcClassId.flow && !function.isSuspend) {

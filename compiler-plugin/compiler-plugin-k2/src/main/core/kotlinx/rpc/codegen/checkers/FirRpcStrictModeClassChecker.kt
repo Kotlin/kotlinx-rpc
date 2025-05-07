@@ -14,15 +14,11 @@ import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory0
 import org.jetbrains.kotlin.diagnostics.reportOn
-import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
-import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirClassChecker
-import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.extractArgumentsTypeRefAndSource
 import org.jetbrains.kotlin.fir.analysis.checkers.toClassLikeSymbol
-import org.jetbrains.kotlin.fir.declarations.FirClass
-import org.jetbrains.kotlin.fir.declarations.FirProperty
-import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
+import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
 import org.jetbrains.kotlin.fir.declarations.utils.isSuspend
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
@@ -30,16 +26,15 @@ import org.jetbrains.kotlin.fir.references.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.scopes.impl.toConeType
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.types.FirTypeRef
-import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.utils.memoryOptimizedMap
 import org.jetbrains.kotlin.utils.memoryOptimizedPlus
 import org.jetbrains.kotlinx.serialization.compiler.fir.services.FirSerializablePropertiesProvider
 import org.jetbrains.kotlinx.serialization.compiler.fir.services.serializablePropertiesProvider
 
-class FirRpcStrictModeExpressionChecker(
-    private val ctx: FirCheckersContext,
-) : FirFunctionCallChecker(MppCheckerKind.Common) {
+object FirRpcStrictModeExpressionChecker {
     private val streamScopeFunctions = setOf(
         RpcCallableId.StreamScope,
         RpcCallableId.streamScoped,
@@ -47,7 +42,8 @@ class FirRpcStrictModeExpressionChecker(
         RpcCallableId.invokeOnStreamScopeCompletion,
     )
 
-    override fun check(
+    fun check(
+        ctx: FirCheckersContext,
         expression: FirFunctionCall,
         context: CheckerContext,
         reporter: DiagnosticReporter,
@@ -62,9 +58,10 @@ class FirRpcStrictModeExpressionChecker(
     }
 }
 
-class FirRpcStrictModeClassChecker(private val ctx: FirCheckersContext) : FirClassChecker(MppCheckerKind.Common) {
-    override fun check(
-        declaration: FirClass,
+object FirRpcStrictModeClassChecker {
+    fun check(
+        ctx: FirCheckersContext,
+        declaration: FirRegularClass,
         context: CheckerContext,
         reporter: DiagnosticReporter,
     ) {
@@ -73,16 +70,16 @@ class FirRpcStrictModeClassChecker(private val ctx: FirCheckersContext) : FirCla
         }
 
         val serializablePropertiesProvider = context.session.serializablePropertiesProvider
-        declaration.declarations.forEach { declaration ->
+        declaration.processAllDeclarations(context.session) { declaration ->
             when (declaration) {
-                is FirProperty -> {
+                is FirPropertySymbol -> {
                     ctx.strictModeDiagnostics.FIELD_IN_RPC_SERVICE?.let {
                         reporter.reportOn(declaration.source, it, context)
                     }
                 }
 
-                is FirSimpleFunction -> {
-                    checkFunction(declaration, context, reporter, serializablePropertiesProvider)
+                is FirNamedFunctionSymbol -> {
+                    checkFunction(ctx, declaration, context, reporter, serializablePropertiesProvider)
                 }
 
                 else -> {}
@@ -91,7 +88,8 @@ class FirRpcStrictModeClassChecker(private val ctx: FirCheckersContext) : FirCla
     }
 
     private fun checkFunction(
-        function: FirSimpleFunction,
+        ctx: FirCheckersContext,
+        function: FirNamedFunctionSymbol,
         context: CheckerContext,
         reporter: DiagnosticReporter,
         serializablePropertiesProvider: FirSerializablePropertiesProvider,
@@ -101,14 +99,14 @@ class FirRpcStrictModeClassChecker(private val ctx: FirCheckersContext) : FirCla
         }
 
         val returnClassSymbol = vsApi {
-            function.returnTypeRef.coneType.toClassSymbolVS(context.session)
+            function.resolvedReturnTypeRef.coneType.toClassSymbolVS(context.session)
         }
 
-        val types = function.valueParameters.memoryOptimizedMap { parameter ->
+        val types = function.valueParameterSymbols.memoryOptimizedMap { parameter ->
             parameter.source to vsApi {
-                parameter.returnTypeRef
+                parameter.resolvedReturnTypeRef
             }
-        } memoryOptimizedPlus (function.returnTypeRef.source to function.returnTypeRef)
+        } memoryOptimizedPlus (function.resolvedReturnTypeRef.source to function.resolvedReturnTypeRef)
 
         types.forEach { (source, symbol) ->
             checkSerializableTypes<FirClassLikeSymbol<*>>(

@@ -137,7 +137,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     }
 
     override fun IrFunction.valueParametersVS(): List<IrValueParameter> {
-        return parameters.filter { it.kind < IrParameterKind.Regular }
+        return parameters.filter { it.kind == IrParameterKind.Regular }
     }
 
     override val IrFunction.extensionReceiverParameterVS: IrValueParameter?
