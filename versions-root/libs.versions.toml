@@ -17,6 +17,7 @@ gradle-plugin-publish = "1.3.1"
 kotlin-wrappers = "2025.4.8"
 junit4 = "4.13.2"
 junit5 = "5.12.1"
+#intellij = "241.19416.19" apply for 2.2.0 update
 intellij = "233.13135.128"
 gradle-doctor = "0.10.0"
 kotlinx-browser = "0.3"
