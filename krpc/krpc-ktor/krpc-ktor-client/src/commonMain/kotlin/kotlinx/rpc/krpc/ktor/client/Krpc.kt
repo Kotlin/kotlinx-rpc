@@ -23,9 +23,9 @@ public val Krpc: ClientPlugin<KrpcConfigBuilder.Client> = createClientPlugin("Kr
 }
 
 @Deprecated("Use installKrpc instead", ReplaceWith("installKrpc"), level = DeprecationLevel.ERROR)
-public fun HttpClientConfig<*>.installRPC(
-    configure: KrpcConfigBuilder.Client.() -> Unit = {}
-) = installKrpc(configure)
+public fun HttpClientConfig<*>.installRPC(configure: KrpcConfigBuilder.Client.() -> Unit = {}) {
+    installKrpc(configure)
+}
 
 /**
  * Installs [WebSockets] and [Krpc] client plugins

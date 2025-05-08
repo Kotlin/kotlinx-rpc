@@ -4,9 +4,10 @@
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import util.enableContextReceivers
+import util.enableContextParameters
 import util.otherwise
 import util.whenForIde
+import util.whenKotlinIsAtLeast
 
 plugins {
     alias(libs.plugins.conventions.jvm)
@@ -68,7 +69,9 @@ tasks.jar {
 kotlin {
     explicitApi = ExplicitApiMode.Disabled
 
-    enableContextReceivers()
+    rootProject.whenKotlinIsAtLeast(2, 2, 0) {
+        enableContextParameters()
+    }
 }
 
 dependencies {

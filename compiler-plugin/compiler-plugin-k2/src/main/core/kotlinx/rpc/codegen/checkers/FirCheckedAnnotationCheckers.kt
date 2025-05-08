@@ -16,12 +16,7 @@ import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.FirTypeRefSource
-import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
-import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirClassChecker
-import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
-import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirTypeParameterChecker
-import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.extractArgumentsTypeRefAndSource
 import org.jetbrains.kotlin.fir.caches.getValue
 import org.jetbrains.kotlin.fir.declarations.FirClass
@@ -33,15 +28,15 @@ import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.references.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.name.ClassId
 
-class FirCheckedAnnotationFunctionCallChecker(
-    private val ctx: FirCheckersContext,
-) : FirFunctionCallChecker(MppCheckerKind.Common) {
-    override fun check(
+object FirCheckedAnnotationFunctionCallChecker {
+    fun check(
+        ctx: FirCheckersContext,
         expression: FirFunctionCall,
         context: CheckerContext,
         reporter: DiagnosticReporter,
@@ -61,10 +56,9 @@ class FirCheckedAnnotationFunctionCallChecker(
     }
 }
 
-class FirCheckedAnnotationTypeParameterChecker(
-    private val ctx: FirCheckersContext,
-) : FirTypeParameterChecker(MppCheckerKind.Common) {
-    override fun check(
+object FirCheckedAnnotationTypeParameterChecker {
+    fun check(
+        ctx: FirCheckersContext,
         declaration: FirTypeParameter,
         context: CheckerContext,
         reporter: DiagnosticReporter,
@@ -87,10 +81,9 @@ class FirCheckedAnnotationTypeParameterChecker(
     }
 }
 
-class FirCheckedAnnotationFirClassChecker(
-    private val ctx: FirCheckersContext,
-) : FirClassChecker(MppCheckerKind.Common) {
-    override fun check(
+object FirCheckedAnnotationFirClassChecker {
+    fun check(
+        ctx: FirCheckersContext,
         declaration: FirClass,
         context: CheckerContext,
         reporter: DiagnosticReporter,
@@ -113,10 +106,9 @@ class FirCheckedAnnotationFirClassChecker(
     }
 }
 
-class FirCheckedAnnotationFirFunctionChecker(
-    private val ctx: FirCheckersContext,
-) : FirFunctionChecker(MppCheckerKind.Common) {
-    override fun check(
+object FirCheckedAnnotationFirFunctionChecker {
+    fun check(
+        ctx: FirCheckersContext,
         declaration: FirFunction,
         context: CheckerContext,
         reporter: DiagnosticReporter,
@@ -240,7 +232,7 @@ object FirCheckedAnnotationHelper {
                 ?.let { FirTypeRefSource(it.typeRef, it.source) }
                 ?: (origin as? FirTypeRef)?.let { FirTypeRefSource(it, it.source) }
 
-            checkTypeArguments<TypeArgument, ConeKotlinType, FirClassSymbol<*>, ConeTypeProjection>(
+            checkTypeArguments(
                 context = context,
                 reporter = reporter,
                 ctx = ctx,
@@ -283,6 +275,7 @@ object FirCheckedAnnotationHelper {
         }
     }
 
+    @OptIn(SymbolInternals::class)
     fun checkedAnnotations(
         session: FirSession,
         symbol: FirBasedSymbol<*>,
@@ -327,6 +320,7 @@ object FirCheckedAnnotationHelper {
         }
     }
 
+    @OptIn(SymbolInternals::class)
     private fun hasCheckedAnnotation(
         session: FirSession,
         symbol: FirBasedSymbol<*>,

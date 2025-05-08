@@ -11,19 +11,16 @@ import kotlinx.rpc.codegen.common.rpcMethodName
 import kotlinx.rpc.codegen.serialization.addAnnotation
 import kotlinx.rpc.codegen.serialization.generateCompanionDeclaration
 import kotlinx.rpc.codegen.serialization.generateSerializerImplClass
-import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.declarations.utils.visibility
 import org.jetbrains.kotlin.fir.extensions.*
 import org.jetbrains.kotlin.fir.moduleData
 import org.jetbrains.kotlin.fir.plugin.*
-import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
@@ -261,10 +258,7 @@ class FirRpcServiceGenerator(
      * Scrapes the functions from the [owner] to generate method classes.
      */
     private fun generateRpcServiceStubClass(owner: FirClassSymbol<*>): FirRegularClassSymbol? {
-        @OptIn(SymbolInternals::class)
-        val functions = owner.fir.declarations
-            .filterIsInstance<FirFunction>()
-            .map { it.symbol }
+        val functions = vsApi { owner.declaredFunctionsVS(session) }
 
         return createNestedClass(owner, RpcNames.SERVICE_STUB_NAME, RpcGeneratedStubKey(owner.name, functions)) {
             visibility = Visibilities.Public

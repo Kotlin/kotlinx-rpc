@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.codegen
 
+import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
+import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.ir.addExtensionReceiver
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -132,5 +134,37 @@ object VersionSpecificApiImpl : VersionSpecificApi {
             origin = origin,
             source = source,
         )
+    }
+
+    override fun IrFunction.valueParametersVS(): List<IrValueParameter> {
+        return valueParameters
+    }
+
+    override val IrFunction.extensionReceiverParameterVS: IrValueParameter?
+        get() = extensionReceiverParameter
+
+    override var IrFunction.dispatchReceiverParameterVS: IrValueParameter?
+        get() = dispatchReceiverParameter
+        set(value) {
+            dispatchReceiverParameter = value
+        }
+
+
+    override fun IrMemberAccessExpressionData.buildFor(access: IrMemberAccessExpression<*>) {
+        if (dispatchReceiver != null) {
+            access.dispatchReceiver = dispatchReceiver
+        }
+
+        if (extensionReceiver != null) {
+            access.extensionReceiver = extensionReceiver
+        }
+
+        valueArguments.forEachIndexed { index, irExpression ->
+            access.putValueArgument(index, irExpression)
+        }
+
+        typeArguments.forEachIndexed { index, irType ->
+            access.putTypeArgument(index, irType)
+        }
     }
 }

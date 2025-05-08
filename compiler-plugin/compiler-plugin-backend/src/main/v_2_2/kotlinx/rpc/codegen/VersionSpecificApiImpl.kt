@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen
 
+import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.ir.createExtensionReceiver
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -13,6 +14,7 @@ import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
@@ -132,5 +134,44 @@ object VersionSpecificApiImpl : VersionSpecificApi {
             origin = origin,
             source = source,
         )
+    }
+
+    override fun IrFunction.valueParametersVS(): List<IrValueParameter> {
+        return parameters.filter { it.kind == IrParameterKind.Regular }
+    }
+
+    override val IrFunction.extensionReceiverParameterVS: IrValueParameter?
+        get() = parameters.firstOrNull { it.kind == IrParameterKind.ExtensionReceiver }
+
+    override var IrFunction.dispatchReceiverParameterVS: IrValueParameter?
+        get() = dispatchReceiverParameter
+        set(value) {
+            if (value != null) {
+                parameters += value
+            }
+        }
+
+    override fun IrMemberAccessExpressionData.buildFor(access: IrMemberAccessExpression<*>) {
+        var offset = if (dispatchReceiver != null) {
+            access.arguments[0] = dispatchReceiver
+            1
+        } else {
+            0
+        }
+
+        offset += if (extensionReceiver != null) {
+            access.arguments[offset] = extensionReceiver
+            1
+        } else {
+            0
+        }
+
+        valueArguments.forEachIndexed { index, irExpression ->
+            access.arguments[offset + index] = irExpression
+        }
+
+        typeArguments.forEachIndexed { index, irType ->
+            access.typeArguments[index] = irType
+        }
     }
 }

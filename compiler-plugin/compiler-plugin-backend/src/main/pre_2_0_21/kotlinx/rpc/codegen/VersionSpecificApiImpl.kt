@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen
 
+import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.ir.addExtensionReceiver
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -13,6 +14,7 @@ import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
@@ -132,5 +134,32 @@ object VersionSpecificApiImpl : VersionSpecificApi {
             origin = origin,
             source = source,
         )
+    }
+
+    override fun IrFunction.valueParametersVS(): List<IrValueParameter> {
+        return valueParameters
+    }
+
+    override val IrFunction.extensionReceiverParameterVS: IrValueParameter?
+        get() = extensionReceiverParameter
+
+    override var IrFunction.dispatchReceiverParameterVS: IrValueParameter?
+        get() = dispatchReceiverParameter
+        set(value) {
+            dispatchReceiverParameter = value
+        }
+
+
+    override fun IrMemberAccessExpressionData.buildFor(access: IrMemberAccessExpression<*>) {
+        access.dispatchReceiver = dispatchReceiver
+        access.extensionReceiver = extensionReceiver
+
+        valueArguments.forEachIndexed { index, irExpression ->
+            access.putValueArgument(index, irExpression)
+        }
+
+        typeArguments.forEachIndexed { index, irType ->
+            access.putTypeArgument(index, irType)
+        }
     }
 }

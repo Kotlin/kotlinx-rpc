@@ -12,11 +12,9 @@ import org.jetbrains.kotlin.fir.expressions.builder.buildAnnotationCall
 import org.jetbrains.kotlin.fir.references.builder.buildResolvedNamedReference
 import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
-import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.builder.buildResolvedTypeRef
 import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 
 fun FirAnnotationContainer.addAnnotation(annotationId: ClassId, session: FirSession) {
     val annotation = session
@@ -24,9 +22,11 @@ fun FirAnnotationContainer.addAnnotation(annotationId: ClassId, session: FirSess
         .getClassLikeSymbolByClassId(annotationId)
             as? FirRegularClassSymbol ?: return
 
-    val annotationConstructor = annotation
-        .declarationSymbols
-        .firstIsInstanceOrNull<FirConstructorSymbol>() ?: return
+    val annotationConstructor = vsApi {
+        annotation
+            .constructorsVS(session)
+            .firstOrNull() ?: return
+    }
 
     val annotationCall = buildAnnotationCall {
         argumentList = buildResolvedArgumentList(null, linkedMapOf())
