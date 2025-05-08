@@ -22,4 +22,4 @@ public operator fun <K : Any, V> RpcInternalConcurrentHashMap<K, CompletableDefe
 
 @InternalRpcApi
 @OptIn(ExperimentalCoroutinesApi::class)
-public fun <T> CompletableDeferred<T>?.getOrNull() = if (this != null && isCompleted) this.getCompleted() else null
+public fun <T> CompletableDeferred<T>?.getOrNull(): T? = if (this != null && isCompleted) this.getCompleted() else null

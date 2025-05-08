@@ -15,16 +15,15 @@ import kotlinx.rpc.codegen.rpcAnnotationSource
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
-import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
-import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirRegularClassChecker
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.types.resolvedType
 
-class FirRpcAnnotationChecker(private val ctx: FirCheckersContext) : FirRegularClassChecker(MppCheckerKind.Common) {
-    override fun check(
+object FirRpcAnnotationChecker {
+    fun check(
+        ctx: FirCheckersContext,
         declaration: FirRegularClass,
         context: CheckerContext,
         reporter: DiagnosticReporter,

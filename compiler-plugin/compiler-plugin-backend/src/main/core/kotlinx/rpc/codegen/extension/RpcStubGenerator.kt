@@ -5,7 +5,6 @@
 package kotlinx.rpc.codegen.extension
 
 import kotlinx.rpc.codegen.VersionSpecificApi
-import kotlinx.rpc.codegen.VersionSpecificApiImpl.copyToVS
 import kotlinx.rpc.codegen.common.rpcMethodClassName
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.backend.jvm.functionByName
@@ -232,9 +231,13 @@ internal class RpcStubGenerator(
                             typeArgumentsCount = 0,
                         )
                     }.apply {
-                        dispatchReceiver = irCallProperty(stubClass, clientProperty)
+                        arguments {
+                            dispatchReceiver = irCallProperty(stubClass, clientProperty)
 
-                        putValueArgument(0, irCallProperty(stubClass, stubIdProperty))
+                            values {
+                                +irCallProperty(stubClass, stubIdProperty)
+                            }
+                        }
                     }
                 )
             }
@@ -324,24 +327,28 @@ internal class RpcStubGenerator(
                     valueArgumentsCount = 4,
                 )
             }.apply {
-                extensionReceiver = irCallProperty(stubClass, clientProperty)
-                putTypeArgument(0, fieldTypeParameter.typeOrFail)
+                arguments {
+                    extensionReceiver = irCallProperty(stubClass, clientProperty)
 
-                putValueArgument(
-                    index = 0,
-                    valueArgument = IrGetValueImpl(
-                        startOffset = UNDEFINED_OFFSET,
-                        endOffset = UNDEFINED_OFFSET,
-                        type = ctx.coroutineScope.defaultType,
-                        symbol = stubClassThisReceiver.symbol,
-                    ),
-                )
+                    types {
+                        +fieldTypeParameter.typeOrFail
+                    }
 
-                putValueArgument(1, irGetDescriptor())
+                    values {
+                        +IrGetValueImpl(
+                            startOffset = UNDEFINED_OFFSET,
+                            endOffset = UNDEFINED_OFFSET,
+                            type = ctx.coroutineScope.defaultType,
+                            symbol = stubClassThisReceiver.symbol,
+                        )
 
-                putValueArgument(2, stringConst(field.property.name.asString()))
+                        +irGetDescriptor()
 
-                putValueArgument(3, irCallProperty(stubClass, stubIdProperty))
+                        +stringConst(field.property.name.asString())
+
+                        +irCallProperty(stubClass, stubIdProperty)
+                    }
+                }
             }
 
             if (!isLazy) {
@@ -382,8 +389,6 @@ internal class RpcStubGenerator(
                                 valueArgumentsCount = 1,
                             )
                         }.apply {
-                            putTypeArgument(0, fieldType)
-
                             val lambdaType = ctx.function0.typeWith(fieldType)
 
                             val lambdaFunction = factory.buildFun {
@@ -407,7 +412,15 @@ internal class RpcStubGenerator(
                                 function = lambdaFunction,
                             )
 
-                            putValueArgument(0, lambda)
+                            arguments {
+                                types {
+                                    +fieldType
+                                }
+
+                                values {
+                                    +lambda
+                                }
+                            }
                         }
                     )
                 }
@@ -425,7 +438,9 @@ internal class RpcStubGenerator(
                     val getterThisReceiver = vsApi {
                         stubClassThisReceiver.copyToVS(propertyGetter, origin = IrDeclarationOrigin.DEFINED)
                     }.also {
-                        dispatchReceiverParameter = it
+                        vsApi {
+                            dispatchReceiverParameterVS = it
+                        }
                     }
 
                     body = irBuilder(symbol).irBlockBody {
@@ -435,45 +450,45 @@ internal class RpcStubGenerator(
                                 callee = ctx.functions.lazyGetValue,
                                 typeArgumentsCount = 1,
                             ).apply {
-                                putTypeArgument(0, fieldType)
+                                arguments {
+                                    types {
+                                        +fieldType
+                                    }
 
-                                extensionReceiver = IrGetFieldImpl(
-                                    startOffset = UNDEFINED_OFFSET,
-                                    endOffset = UNDEFINED_OFFSET,
-                                    symbol = lazyField.symbol,
-                                    type = lazyFieldType,
-                                    receiver = IrGetValueImpl(
+                                    extensionReceiver = IrGetFieldImpl(
                                         startOffset = UNDEFINED_OFFSET,
                                         endOffset = UNDEFINED_OFFSET,
-                                        type = stubClass.defaultType,
-                                        symbol = getterThisReceiver.symbol,
-                                    ),
-                                )
-
-                                putValueArgument(
-                                    index = 0,
-                                    valueArgument = IrGetValueImpl(
-                                        startOffset = UNDEFINED_OFFSET,
-                                        endOffset = UNDEFINED_OFFSET,
-                                        type = stubClass.defaultType,
-                                        symbol = getterThisReceiver.symbol,
+                                        symbol = lazyField.symbol,
+                                        type = lazyFieldType,
+                                        receiver = IrGetValueImpl(
+                                            startOffset = UNDEFINED_OFFSET,
+                                            endOffset = UNDEFINED_OFFSET,
+                                            type = stubClass.defaultType,
+                                            symbol = getterThisReceiver.symbol,
+                                        ),
                                     )
-                                )
 
-                                putValueArgument(
-                                    index = 1,
-                                    valueArgument = IrPropertyReferenceImpl(
-                                        startOffset = UNDEFINED_OFFSET,
-                                        endOffset = UNDEFINED_OFFSET,
-                                        type = ctx.kProperty1.typeWith(stubClass.defaultType, fieldType),
-                                        symbol = fieldProperty.symbol,
-                                        typeArgumentsCount = 0,
-                                        field = null,
-                                        getter = propertyGetter.symbol,
-                                        setter = null,
-                                        origin = IrStatementOrigin.PROPERTY_REFERENCE_FOR_DELEGATE,
-                                    )
-                                )
+                                    values {
+                                        +IrGetValueImpl(
+                                            startOffset = UNDEFINED_OFFSET,
+                                            endOffset = UNDEFINED_OFFSET,
+                                            type = stubClass.defaultType,
+                                            symbol = getterThisReceiver.symbol,
+                                        )
+
+                                        +IrPropertyReferenceImpl(
+                                            startOffset = UNDEFINED_OFFSET,
+                                            endOffset = UNDEFINED_OFFSET,
+                                            type = ctx.kProperty1.typeWith(stubClass.defaultType, fieldType),
+                                            symbol = fieldProperty.symbol,
+                                            typeArgumentsCount = 0,
+                                            field = null,
+                                            getter = propertyGetter.symbol,
+                                            setter = null,
+                                            origin = IrStatementOrigin.PROPERTY_REFERENCE_FOR_DELEGATE,
+                                        )
+                                    }
+                                }
                             }
                         )
                     }
@@ -535,7 +550,9 @@ internal class RpcStubGenerator(
             val functionThisReceiver = vsApi {
                 stubClassThisReceiver.copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
             }.also {
-                dispatchReceiverParameter = it
+                vsApi {
+                    dispatchReceiverParameterVS = it
+                }
             }
 
             val declaredFunction = this
@@ -569,10 +586,6 @@ internal class RpcStubGenerator(
                         callee = ctx.functions.scopedClientCall,
                         type = method.function.returnType,
                     ).apply {
-                        putTypeArgument(0, method.function.returnType)
-
-                        putValueArgument(0, irGet(ctx.coroutineScope.defaultType, functionThisReceiver.symbol))
-
                         // suspend lambda
                         // it's type is not available at runtime, but in fact exists
                         val lambdaType = ctx.suspendFunction0.typeWith(method.function.returnType)
@@ -612,7 +625,17 @@ internal class RpcStubGenerator(
                             function = functionLambda,
                         )
 
-                        putValueArgument(1, lambda)
+                        arguments {
+                            types {
+                                +method.function.returnType
+                            }
+
+                            values {
+                                +irGet(ctx.coroutineScope.defaultType, functionThisReceiver.symbol)
+
+                                +lambda
+                            }
+                        }
                     }
                 )
             }
@@ -671,13 +694,15 @@ internal class RpcStubGenerator(
 
             // primary constructor, serialization may add another
             val constructor = methodClass.constructors.single {
-                method.arguments.size == it.valueParameters.size
+                vsApi {
+                    method.arguments.size == it.valueParametersVS().size
+                }
             }
 
             vsApi { constructor.isPrimaryVS = true }
             methodClass.addDefaultConstructor(constructor)
 
-            constructor.valueParameters.memoryOptimizedMap { valueParam ->
+            vsApi { constructor.valueParametersVS() }.memoryOptimizedMap { valueParam ->
                 methodClass.addConstructorProperty(
                     propertyName = valueParam.name,
                     propertyType = valueParam.type,
@@ -702,7 +727,9 @@ internal class RpcStubGenerator(
             val asArrayThisReceiver = vsApi {
                 methodClassThisReceiver.copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
             }.also {
-                dispatchReceiverParameter = it
+                vsApi {
+                    dispatchReceiverParameterVS = it
+                }
             }
 
             body = irBuilder(symbol).irBlockBody {
@@ -713,9 +740,11 @@ internal class RpcStubGenerator(
                 }
 
                 val arrayOfCall = irCall(callee, type = ctx.arrayOfAnyNullable).apply arrayOfCall@{
-                    putTypeArgument(0, ctx.anyNullable)
-
                     if (methodClass.isObject) {
+                        arguments {
+                            types { +ctx.anyNullable }
+                        }
+
                         return@arrayOfCall
                     }
 
@@ -726,7 +755,16 @@ internal class RpcStubGenerator(
                         },
                     )
 
-                    putValueArgument(0, vararg)
+                    arguments {
+                        types {
+                            +ctx.anyNullable
+                        }
+
+                        values {
+                            +vararg
+                        }
+                    }
+
                 }
 
                 +irReturn(arrayOfCall)
@@ -767,53 +805,64 @@ internal class RpcStubGenerator(
             type = method.function.returnType,
             typeArgumentsCount = 1,
         ).apply {
-            dispatchReceiver = irCallProperty(
-                clazz = stubClass,
-                property = clientProperty,
-                symbol = functionThisReceiver.symbol,
-            )
-
-            putTypeArgument(0, method.function.returnType)
-
             val rpcCallConstructor = irCallConstructor(
                 callee = ctx.rpcCall.constructors.single(),
                 typeArguments = emptyList(),
             ).apply {
-                putValueArgument(
-                    index = 0,
-                    valueArgument = irGetDescriptor(),
-                )
-
-                putValueArgument(
-                    index = 1,
-                    valueArgument = stringConst(method.function.name.asString()),
-                )
-
                 val dataParameter = if (isMethodObject) {
                     irGetObject(methodClass.symbol)
                 } else {
                     irCallConstructor(
                         // serialization plugin adds additional constructor with more arguments
                         callee = methodClass.constructors.single {
-                            it.valueParameters.size == method.arguments.size
+                            vsApi {
+                                it.valueParametersVS().size == method.arguments.size
+                            }
                         }.symbol,
                         typeArguments = emptyList(),
                     ).apply {
-                        arguments.forEachIndexed { i, valueParameter ->
-                            putValueArgument(i, irGet(valueParameter))
+                        arguments {
+                            values {
+                                arguments.forEach { valueParameter ->
+                                    +irGet(valueParameter)
+                                }
+                            }
                         }
                     }
                 }
 
-                putValueArgument(2, dataParameter)
+                arguments {
+                    values {
+                        +irGetDescriptor()
 
-                putValueArgument(
-                    index = 3,
-                    valueArgument = irCallProperty(stubClass, stubIdProperty, symbol = functionThisReceiver.symbol),
-                )
+                        +stringConst(method.function.name.asString())
+
+                        +dataParameter
+
+                        +irCallProperty(
+                            clazz = stubClass,
+                            property = stubIdProperty,
+                            symbol = functionThisReceiver.symbol,
+                        )
+                    }
+                }
             }
 
-            putValueArgument(0, rpcCallConstructor)
+            arguments {
+                dispatchReceiver = irCallProperty(
+                    clazz = stubClass,
+                    property = clientProperty,
+                    symbol = functionThisReceiver.symbol,
+                )
+
+                types {
+                    +method.function.returnType
+                }
+
+                values {
+                    +rpcCallConstructor
+                }
+            }
         }
 
         return call
@@ -860,11 +909,13 @@ internal class RpcStubGenerator(
                 type = getter.returnType,
                 symbol = getter.symbol,
                 origin = IrStatementOrigin.GET_PROPERTY,
-                valueArgumentsCount = getter.valueParameters.size,
+                valueArgumentsCount = vsApi { getter.valueParametersVS() }.size,
                 typeArgumentsCount = getter.typeParameters.size,
             )
         }.apply {
-            dispatchReceiver = receiver
+            arguments {
+                dispatchReceiver = receiver
+            }
         }
     }
 
@@ -1049,35 +1100,45 @@ internal class RpcStubGenerator(
                                 val dataCasted = irTemporary(
                                     value = irCall(ctx.functions.dataCast, type = methodClass.defaultType).apply {
                                         dataParameter ?: error("unreachable")
-                                        extensionReceiver = irGet(dataParameter)
 
-                                        putTypeArgument(0, methodClass.defaultType)
+                                        arguments {
+                                            extensionReceiver = irGet(dataParameter)
 
-                                        putValueArgument(0, stringConst(callable.name))
-                                        putValueArgument(1, stringConst(declaration.fqName))
+                                            types {
+                                                +methodClass.defaultType
+                                            }
+
+                                            values {
+                                                +stringConst(callable.name)
+                                                +stringConst(declaration.fqName)
+                                            }
+                                        }
                                     },
                                     nameHint = "dataCasted",
                                     irType = methodClass.defaultType,
                                 )
 
                                 irCall(callable.function).apply {
-                                    dispatchReceiver = irGet(serviceParameter)
+                                    arguments {
+                                        dispatchReceiver = irGet(serviceParameter)
 
-                                    callable.arguments.forEachIndexed { i, arg ->
-                                        putValueArgument(
-                                            index = i,
-                                            valueArgument = irCallProperty(
-                                                receiver = irGet(dataCasted),
-                                                property = methodClass.properties.single { it.name == arg.value.name },
-                                            ),
-                                        )
+                                        values {
+                                            callable.arguments.forEach { arg ->
+                                                +irCallProperty(
+                                                    receiver = irGet(dataCasted),
+                                                    property = methodClass.properties.single { it.name == arg.value.name },
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
 
                             is ServiceDeclaration.FlowField -> {
                                 irCall(callable.property.getterOrFail).apply {
-                                    dispatchReceiver = irGet(serviceParameter)
+                                    arguments {
+                                        dispatchReceiver = irGet(serviceParameter)
+                                    }
                                 }
                             }
                         }
@@ -1172,10 +1233,14 @@ internal class RpcStubGenerator(
                             typeArgumentsCount = 2,
                         )
                     }.apply mapApply@{
-                        putTypeArgument(0, ctx.irBuiltIns.stringType)
-                        putTypeArgument(1, rpcCallableType)
-
                         if (isEmpty) {
+                            arguments {
+                                types {
+                                    +ctx.irBuiltIns.stringType
+                                    +rpcCallableType
+                                }
+                            }
+
                             return@mapApply
                         }
 
@@ -1201,17 +1266,32 @@ internal class RpcStubGenerator(
                                         valueArgumentsCount = 1,
                                     )
                                 }.apply {
-                                    putTypeArgument(0, ctx.irBuiltIns.stringType)
-                                    putTypeArgument(1, rpcCallableType)
+                                    arguments {
+                                        types {
+                                            +ctx.irBuiltIns.stringType
+                                            +rpcCallableType
+                                        }
 
-                                    extensionReceiver = stringConst(callable.name)
+                                        extensionReceiver = stringConst(callable.name)
 
-                                    putValueArgument(0, irRpcCallable(i, callable))
+                                        values {
+                                            +irRpcCallable(i, callable)
+                                        }
+                                    }
                                 }
                             },
                         )
 
-                        putValueArgument(0, vararg)
+                        arguments {
+                            types {
+                                +ctx.irBuiltIns.stringType
+                                +rpcCallableType
+                            }
+
+                            values {
+                                +vararg
+                            }
+                        }
                     }
                 )
             }
@@ -1265,14 +1345,10 @@ internal class RpcStubGenerator(
         }.apply {
             putConstructorTypeArgument(0, declaration.serviceType)
 
-            putValueArgument(0, stringConst(callable.name))
-
             val dataType = when (callable) {
                 is ServiceDeclaration.Method -> methodClasses[i].defaultType
                 is ServiceDeclaration.FlowField -> ctx.fieldDataObject.defaultType
             }
-
-            putValueArgument(1, irRpcTypeCall(dataType))
 
             val returnType = when (callable) {
                 is ServiceDeclaration.Method -> when {
@@ -1288,12 +1364,8 @@ internal class RpcStubGenerator(
                 is ServiceDeclaration.FlowField -> callable.property.getterOrFail.returnType
             }
 
-            putValueArgument(2, irRpcTypeCall(returnType))
-
             val invokator = invokators[callable.name]
                 ?: error("Expected invokator for ${callable.name} in ${declaration.service.name}")
-
-            putValueArgument(3, irCallProperty(stubCompanionObject.owner, invokator))
 
             val parameters = (callable as? ServiceDeclaration.Method)?.arguments
                 ?: emptyList()
@@ -1319,9 +1391,11 @@ internal class RpcStubGenerator(
                     valueArgumentsCount = if (parameters.isEmpty()) 0 else 1,
                 )
             }.apply arrayOfCall@{
-                putTypeArgument(0, ctx.rpcParameter.defaultType)
-
                 if (parameters.isEmpty()) {
+                    arguments {
+                        types { +ctx.rpcParameter.defaultType }
+                    }
+
                     return@arrayOfCall
                 }
 
@@ -1342,17 +1416,42 @@ internal class RpcStubGenerator(
                                 valueArgumentsCount = 2,
                             )
                         }.apply {
-                            putValueArgument(0, stringConst(parameter.value.name.asString()))
-                            putValueArgument(1, irRpcTypeCall(parameter.type))
+                            arguments {
+                                values {
+                                    +stringConst(parameter.value.name.asString())
+                                    +irRpcTypeCall(parameter.type)
+                                }
+                            }
                         }
                     },
                 )
 
-                putValueArgument(0, vararg)
+                arguments {
+                    types {
+                        +ctx.rpcParameter.defaultType
+                    }
+
+                    values {
+                        +vararg
+                    }
+                }
             }
 
-            putValueArgument(4, arrayOfCall)
-            putValueArgument(5, booleanConst(callable is ServiceDeclaration.Method && !callable.function.isSuspend))
+            arguments {
+                values {
+                    +stringConst(callable.name)
+
+                    +irRpcTypeCall(dataType)
+
+                    +irRpcTypeCall(returnType)
+
+                    +irCallProperty(stubCompanionObject.owner, invokator)
+
+                    +arrayOfCall
+
+                    +booleanConst(callable is ServiceDeclaration.Method && !callable.function.isSuspend)
+                }
+            }
         }
     }
 
@@ -1382,7 +1481,9 @@ internal class RpcStubGenerator(
             val functionThisReceiver = vsApi {
                 stubCompanionObjectThisReceiver.copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
             }.also {
-                dispatchReceiverParameter = it
+                vsApi {
+                    dispatchReceiverParameterVS = it
+                }
             }
 
             val parameter = addValueParameter {
@@ -1395,13 +1496,17 @@ internal class RpcStubGenerator(
                     irCall(ctx.functions.mapGet.symbol, resultType).apply {
                         vsApi { originVS = IrStatementOrigin.GET_ARRAY_ELEMENT }
 
-                        dispatchReceiver = irCallProperty(
-                            clazz = this@generateGetCallableFunction,
-                            property = callableMap,
-                            symbol = functionThisReceiver.symbol,
-                        )
+                        arguments {
+                            dispatchReceiver = irCallProperty(
+                                clazz = this@generateGetCallableFunction,
+                                property = callableMap,
+                                symbol = functionThisReceiver.symbol,
+                            )
 
-                        putValueArgument(0, irGet(parameter))
+                            values {
+                                +irGet(parameter)
+                            }
+                        }
                     }
                 )
             }
@@ -1426,8 +1531,9 @@ internal class RpcStubGenerator(
         }.apply {
             overriddenSymbols = listOf(ctx.rpcServiceDescriptor.functionByName(Descriptor.CREATE_INSTANCE))
 
-            dispatchReceiverParameter = vsApi {
-                stubCompanionObjectThisReceiver.copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
+            vsApi {
+                dispatchReceiverParameterVS = stubCompanionObjectThisReceiver
+                    .copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
             }
 
             val serviceId = addValueParameter {
@@ -1446,8 +1552,12 @@ internal class RpcStubGenerator(
                         callee = stubClass.constructors.single().symbol,
                         typeArguments = emptyList(),
                     ).apply {
-                        putValueArgument(0, irGet(serviceId))
-                        putValueArgument(1, irGet(client))
+                        arguments {
+                            values {
+                                +irGet(serviceId)
+                                +irGet(client)
+                            }
+                        }
                     }
                 )
             }
@@ -1482,8 +1592,9 @@ internal class RpcStubGenerator(
         }.apply {
             overriddenSymbols = listOf(ctx.rpcServiceDescriptor.functionByName(Descriptor.GET_FIELDS))
 
-            dispatchReceiverParameter = vsApi {
-                stubCompanionObjectThisReceiver.copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
+            vsApi {
+                dispatchReceiverParameterVS = stubCompanionObjectThisReceiver
+                    .copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
             }
 
             val service = addValueParameter {
@@ -1500,9 +1611,11 @@ internal class RpcStubGenerator(
                     callee = if (isEmpty) ctx.functions.emptyList else ctx.functions.listOf,
                     type = anyListType,
                 ).apply listApply@{
-                    putTypeArgument(0, ctx.anyNullable)
-
                     if (isEmpty) {
+                        arguments {
+                            types { +ctx.anyNullable }
+                        }
+
                         return@listApply
                     }
 
@@ -1516,7 +1629,15 @@ internal class RpcStubGenerator(
                         }
                     )
 
-                    putValueArgument(0, vararg)
+                    arguments {
+                        types {
+                            +ctx.anyNullable
+                        }
+
+                        values {
+                            +vararg
+                        }
+                    }
                 }
 
                 +irReturn(irAs(listCall, listType))
@@ -1547,16 +1668,17 @@ internal class RpcStubGenerator(
             )
         }.apply {
             val companionObjectType = stubCompanionObject.defaultType
-            putValueArgument(
-                index = 0,
-                valueArgument = IrClassReferenceImpl(
-                    startOffset = startOffset,
-                    endOffset = endOffset,
-                    type = ctx.irBuiltIns.kClassClass.typeWith(companionObjectType),
-                    symbol = stubCompanionObject,
-                    classType = companionObjectType,
-                )
-            )
+            arguments {
+                values {
+                    +IrClassReferenceImpl(
+                        startOffset = startOffset,
+                        endOffset = endOffset,
+                        type = ctx.irBuiltIns.kClassClass.typeWith(companionObjectType),
+                        symbol = stubCompanionObject,
+                        classType = companionObjectType,
+                    )
+                }
+            }
         }
     }
 
@@ -1575,7 +1697,11 @@ internal class RpcStubGenerator(
                 constructorTypeArgumentsCount = 0,
             )
         }.apply {
-            putValueArgument(0, irTypeOfCall(type))
+            arguments {
+                values {
+                    +irTypeOfCall(type)
+                }
+            }
         }
     }
 
@@ -1593,7 +1719,9 @@ internal class RpcStubGenerator(
                 valueArgumentsCount = 0,
             )
         }.apply {
-            putTypeArgument(0, type)
+            arguments {
+                types { +type }
+            }
         }
     }
 
@@ -1629,7 +1757,9 @@ internal class RpcStubGenerator(
                 it.name == OperatorNameConventions.EQUALS
             }.symbol
 
-            dispatchReceiverParameter = anyClass.copyThisReceiver(this@apply)
+            vsApi {
+                dispatchReceiverParameterVS = anyClass.copyThisReceiver(this@apply)
+            }
 
             addValueParameter {
                 name = Name.identifier("other")
@@ -1650,7 +1780,9 @@ internal class RpcStubGenerator(
                 it.name == OperatorNameConventions.HASH_CODE
             }.symbol
 
-            dispatchReceiverParameter = anyClass.copyThisReceiver(this@apply)
+            vsApi {
+                dispatchReceiverParameterVS = anyClass.copyThisReceiver(this@apply)
+            }
         }
 
         addFunction {
@@ -1666,12 +1798,15 @@ internal class RpcStubGenerator(
                 it.name == OperatorNameConventions.TO_STRING
             }.symbol
 
-            dispatchReceiverParameter = anyClass.copyThisReceiver(this@apply)
+            vsApi {
+                dispatchReceiverParameterVS = anyClass.copyThisReceiver(this@apply)
+            }
         }
     }
 
-    private fun IrClass.copyThisReceiver(function: IrFunction) =
+    private fun IrClass.copyThisReceiver(function: IrFunction) = vsApi {
         thisReceiver?.copyToVS(function, origin = IrDeclarationOrigin.DEFINED)
+    }
 
     private fun stringConst(value: String) = IrConstImpl.string(
         startOffset = UNDEFINED_OFFSET,
@@ -1687,7 +1822,11 @@ internal class RpcStubGenerator(
         value = value,
     )
 
-    private fun <T> vsApi(body: VersionSpecificApi.() -> T): T {
+    private inline fun <T> vsApi(body: VersionSpecificApi.() -> T): T {
         return ctx.versionSpecificApi.body()
+    }
+
+    private inline fun IrMemberAccessExpression<*>.arguments(body: IrMemberAccessExpressionBuilder.() -> Unit) {
+        return arguments(ctx.versionSpecificApi, body)
     }
 }

@@ -7,17 +7,17 @@ package util
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
-fun Project.enableContextReceivers() {
+fun Project.enableContextParameters() {
     withKotlinJvmExtension {
         compilerOptions {
-            freeCompilerArgs.add("-Xcontext-receivers")
+            freeCompilerArgs.add("-Xcontext-parameters")
         }
     }
 
     withKotlinKmpExtension {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            freeCompilerArgs.add("-Xcontext-receivers")
+            freeCompilerArgs.add("-Xcontext-parameters")
         }
     }
 }

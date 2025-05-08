@@ -6,7 +6,15 @@ package kotlinx.rpc.codegen
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.expressions.FirAnnotation
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
@@ -23,6 +31,14 @@ interface FirVersionSpecificApi {
     ): FirClassSymbol<*>?
 
     var FirResolvedTypeRefBuilder.coneTypeVS: ConeKotlinType
+
+    fun FirClassSymbol<*>.declaredFunctionsVS(session: FirSession): List<FirFunctionSymbol<*>>
+
+    fun FirRegularClassSymbol.constructorsVS(session: FirSession): List<FirConstructorSymbol>
+
+    fun FirRegularClass.declarationsVS(session: FirSession): List<FirBasedSymbol<*>>
+
+    val FirResolvedTypeRef.coneTypeVS: ConeKotlinType
 }
 
 inline fun <T> vsApi(body: FirVersionSpecificApi.() -> T): T {
