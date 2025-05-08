@@ -23,7 +23,6 @@ import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 
-@Suppress("unused")
 object FirVersionSpecificApiImpl : FirVersionSpecificApi {
     override fun ConeKotlinType.toFirResolvedTypeRefVS(
         source: KtSourceElement?,

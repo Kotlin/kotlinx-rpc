@@ -21,7 +21,6 @@ import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.builder.FirResolvedTypeRefBuilder
 
-@Suppress("unused")
 object FirVersionSpecificApiImpl : FirVersionSpecificApi {
     override fun ConeKotlinType.toFirResolvedTypeRefVS(
         source: KtSourceElement?,
