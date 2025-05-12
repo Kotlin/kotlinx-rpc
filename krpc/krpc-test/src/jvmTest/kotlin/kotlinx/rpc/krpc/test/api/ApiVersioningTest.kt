@@ -5,9 +5,7 @@
 package kotlinx.rpc.krpc.test.api
 
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
-import kotlinx.rpc.awaitFieldInitialization
 import kotlinx.rpc.krpc.internal.CancellationType
 import kotlinx.rpc.krpc.internal.KrpcMessage
 import kotlinx.rpc.krpc.internal.KrpcPlugin
@@ -110,47 +108,6 @@ class ApiVersioningTest {
                 fail("Expected exception to be thrown")
             } catch (e: IllegalStateException) {
                 assertEquals("Server exception", e.message)
-            }
-        }
-    }
-
-    @Test
-    @Ignore("Flow sampling tests are too unstable. Ignored until better fix")
-    fun testPlainFlowSampling() = wireSamplingTest("plainFlow") {
-        sample {
-            val response = plainFlow.toList().joinToString()
-            val expected = List(5) { it }.joinToString()
-
-            assertEquals(expected, response)
-        }
-    }
-
-    @Test
-    @Ignore("First value in stateFlow and CallSuccess for its initialization have a race")
-    fun testSharedFlowSampling() = wireSamplingTest("sharedFlow") {
-        sample {
-            val response = sharedFlow.take(5).toList().joinToString()
-            val expected = List(5) { it }.joinToString()
-
-            assertEquals(expected, response)
-        }
-    }
-
-    @Test
-    @Ignore("First value in stateFlow and CallSuccess for its initialization have a race")
-    fun testStateFlowSampling() = wireSamplingTest("stateFlow") {
-        sample {
-            val state = awaitFieldInitialization { stateFlow }
-            assertEquals(-1, state.value)
-
-            val newFlow = state.take(2)
-
-            newFlow.collect {
-                when (it) {
-                    -1 -> emitNextInStateFlow(10)
-                    10 -> assertEquals(10, state.value)
-                    else -> error("Unexpected value in flow: $it")
-                }
             }
         }
     }

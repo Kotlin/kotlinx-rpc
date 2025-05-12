@@ -11,7 +11,6 @@ import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
-import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.util.dumpKotlinLike
 
 /**
@@ -47,16 +46,10 @@ internal object RpcDeclarationScanner {
                         return@memoryOptimizedMap null
                     }
 
-                    val symbol = declaration.getter!!.returnType.classOrNull
-
-                    val flowType = when (symbol) {
-                        ctx.flow -> ServiceDeclaration.FlowField.Kind.Plain
-                        ctx.sharedFlow -> ServiceDeclaration.FlowField.Kind.Shared
-                        ctx.stateFlow -> ServiceDeclaration.FlowField.Kind.State
-                        else -> return@memoryOptimizedMap unsupportedDeclaration(service, declaration, logger)
-                    }
-
-                    ServiceDeclaration.FlowField(declaration, flowType)
+                    error(
+                        "Fields are not supported in @Rpc services, this error should be caught by frontend. " +
+                                "Please report this issue to the kotlinx-rpc maintainers."
+                    )
                 }
 
                 is IrClass -> {
@@ -80,8 +73,7 @@ internal object RpcDeclarationScanner {
         return ServiceDeclaration(
             service = service,
             stubClass = stubClassNotNull,
-            methods = declarations.filterIsInstance<ServiceDeclaration.Method>(),
-            fields = declarations.filterIsInstance<ServiceDeclaration.FlowField>(),
+            methods = declarations.filterNotNull(),
         )
     }
 }

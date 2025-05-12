@@ -288,45 +288,6 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
         }
     }
 
-    override val plainFlowOfInts: Flow<Int> = plainFlow { it }
-
-    override val plainFlowOfFlowsOfInts: Flow<Flow<Int>> = plainFlow { plainFlow { i -> i } }
-
-    override val plainFlowOfFlowsOfFlowsOfInts: Flow<Flow<Flow<Int>>> = plainFlow { plainFlow { plainFlow { i -> i } } }
-
-    override val sharedFlowOfInts: SharedFlow<Int> =
-        sharedFlowOfT { it }
-
-    override val sharedFlowOfFlowsOfInts: SharedFlow<SharedFlow<Int>> =
-        sharedFlowOfT { sharedFlowOfT { it } }
-
-    override val sharedFlowOfFlowsOfFlowsOfInts: SharedFlow<SharedFlow<SharedFlow<Int>>> =
-        sharedFlowOfT { sharedFlowOfT { sharedFlowOfT { it } } }
-
-    override val stateFlowOfInts: MutableStateFlow<Int> =
-        stateFlowOfT { it }
-
-    override val stateFlowOfFlowsOfInts: MutableStateFlow<MutableStateFlow<Int>> =
-        stateFlowOfT { stateFlowOfT { it } }
-
-    override val stateFlowOfFlowsOfFlowsOfInts: MutableStateFlow<MutableStateFlow<MutableStateFlow<Int>>> =
-        stateFlowOfT { stateFlowOfT { stateFlowOfT { it } } }
-
-    override suspend fun emitNextForStateFlowOfInts(value: Int) {
-        stateFlowOfInts.emit(value)
-    }
-
-    override suspend fun emitNextForStateFlowOfFlowsOfInts(value: Int) {
-        stateFlowOfFlowsOfInts.value.emit(value)
-        stateFlowOfFlowsOfInts.emit(MutableStateFlow(value))
-    }
-
-    override suspend fun emitNextForStateFlowOfFlowsOfFlowsOfInts(value: Int) {
-        stateFlowOfFlowsOfFlowsOfInts.value.value.emit(value)
-        stateFlowOfFlowsOfFlowsOfInts.value.emit(MutableStateFlow(value))
-        stateFlowOfFlowsOfFlowsOfInts.emit(MutableStateFlow(MutableStateFlow(value)))
-    }
-
     override suspend fun sharedFlowInFunction(sharedFlow: SharedFlow<Int>): StateFlow<Int> {
         val state = MutableStateFlow(-1)
 

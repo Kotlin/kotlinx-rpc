@@ -115,30 +115,6 @@ interface KrpcTestService : RemoteService {
 
     fun unitFlow(): Flow<Unit>
 
-    val plainFlowOfInts : Flow<Int>
-
-    val plainFlowOfFlowsOfInts : Flow<Flow<Int>>
-
-    val plainFlowOfFlowsOfFlowsOfInts : Flow<Flow<Flow<Int>>>
-
-    val sharedFlowOfInts : SharedFlow<Int>
-
-    val sharedFlowOfFlowsOfInts : SharedFlow<SharedFlow<Int>>
-
-    val sharedFlowOfFlowsOfFlowsOfInts : SharedFlow<SharedFlow<SharedFlow<Int>>>
-
-    val stateFlowOfInts : StateFlow<Int>
-
-    val stateFlowOfFlowsOfInts : StateFlow<StateFlow<Int>>
-
-    val stateFlowOfFlowsOfFlowsOfInts : StateFlow<StateFlow<StateFlow<Int>>>
-
-    suspend fun emitNextForStateFlowOfInts(value: Int)
-
-    suspend fun emitNextForStateFlowOfFlowsOfInts(value: Int)
-
-    suspend fun emitNextForStateFlowOfFlowsOfFlowsOfInts(value: Int)
-
     suspend fun sharedFlowInFunction(sharedFlow: SharedFlow<Int>): StateFlow<Int>
 
     suspend fun stateFlowInFunction(stateFlow: StateFlow<Int>): StateFlow<Int>

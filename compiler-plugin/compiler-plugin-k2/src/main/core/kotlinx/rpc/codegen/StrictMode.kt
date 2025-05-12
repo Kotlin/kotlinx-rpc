@@ -111,15 +111,15 @@ object StrictModeCliOptions {
     val FIELDS = CliOption(
         optionName = "strict-fields",
         valueDescription = VALUE_DESCRIPTION,
-        description = description("fields"),
+        description = description("fields", deprecated = true),
         required = false,
         allowMultipleOccurrences = false,
     )
 
     const val VALUE_DESCRIPTION = "none, warning or error"
 
-    fun description(entity: String): String {
-        return "Diagnostic level for $entity in @Rpc services."
+    fun description(entity: String, deprecated: Boolean = false): String {
+        return "Diagnostic level for $entity in @Rpc services." + if (deprecated) " Deprecated." else ""
     }
 
     val configurationMapper = mapOf(
