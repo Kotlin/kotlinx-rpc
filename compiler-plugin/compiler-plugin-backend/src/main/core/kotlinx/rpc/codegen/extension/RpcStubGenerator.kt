@@ -27,7 +27,6 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.util.OperatorNameConventions
-import org.jetbrains.kotlin.utils.memoryOptimizedPlus
 import kotlin.properties.Delegates
 
 private object Stub {
@@ -123,10 +122,6 @@ internal class RpcStubGenerator(
         clientProperty()
 
         coroutineContextProperty()
-
-        declaration.fields.forEach {
-            rpcFlowField(it)
-        }
     }
 
     private var stubIdProperty: IrProperty by Delegates.notNull()
@@ -250,249 +245,6 @@ internal class RpcStubGenerator(
                     )
 
                 overriddenSymbols = listOf(serviceCoroutineContext)
-            }
-        }
-    }
-
-    /**
-     * RPC fields.
-     * Can be of two kinds: Lazy and Eager (defined by `@RpcEagerField` annotation)
-     *
-     * Lazy:
-     * ``` kotlin
-     *  final override val <field-name>: <field-type> by lazy {
-     *      client.register<field-kind>FlowField(
-     *          serviceScope = this, // CoroutineScope
-     *          descriptor = Companion,
-     *          fieldName = "<field-name>",
-     *          serviceId = __rpc_stub_id,
-     *      )
-     *  }
-     * ```
-     *
-     *
-     * Eager:
-     * ```kotlin
-     *  final override val <field-name>: <field-type> =
-     *      client.register<field-kind>FlowField(
-     *          serviceScope = this, // CoroutineScope
-     *          descriptor = Companion,
-     *          fieldName = "<field-name>",
-     *          serviceId = __rpc_stub_id,
-     *      )
-     * ```
-     *
-     * Where:
-     *  - `<field-name>` - the name of the RPC field
-     *  - `<field-type>` - actual type of the field. Can be either Flot<T>, SharedFlow<T> or StateFlow<T>
-     *  - `<field-kind>` - [ServiceDeclaration.FlowField.Kind]
-     */
-    @Suppress(
-        "detekt.NestedBlockDepth",
-        "detekt.LongMethod",
-        "detekt.CyclomaticComplexMethod",
-    )
-    private fun IrClass.rpcFlowField(field: ServiceDeclaration.FlowField) {
-        val isLazy = !field.property.hasAnnotation(ctx.rpcEagerFieldAnnotation)
-
-        val servicePropertyGetter = field.property.getterOrFail
-
-        addProperty {
-            name = field.property.name
-            visibility = field.property.visibility
-            modality = Modality.FINAL
-            isDelegated = isLazy
-        }.apply {
-            val fieldProperty = this
-
-            overriddenSymbols = listOf(field.property.symbol)
-
-            val fieldType = servicePropertyGetter.returnType
-
-            val fieldTypeParameter = (fieldType as IrSimpleType).arguments.single()
-
-            val registerFunction = when (field.flowKind) {
-                ServiceDeclaration.FlowField.Kind.Plain -> ctx.functions.registerPlainFlowField
-                ServiceDeclaration.FlowField.Kind.Shared -> ctx.functions.registerSharedFlowField
-                ServiceDeclaration.FlowField.Kind.State -> ctx.functions.registerStateFlowField
-            }
-
-            val registerCall = vsApi {
-                IrCallImplVS(
-                    startOffset = UNDEFINED_OFFSET,
-                    endOffset = UNDEFINED_OFFSET,
-                    type = fieldType,
-                    symbol = registerFunction,
-                    typeArgumentsCount = 1,
-                    valueArgumentsCount = 4,
-                )
-            }.apply {
-                arguments {
-                    extensionReceiver = irCallProperty(stubClass, clientProperty)
-
-                    types {
-                        +fieldTypeParameter.typeOrFail
-                    }
-
-                    values {
-                        +IrGetValueImpl(
-                            startOffset = UNDEFINED_OFFSET,
-                            endOffset = UNDEFINED_OFFSET,
-                            type = ctx.coroutineScope.defaultType,
-                            symbol = stubClassThisReceiver.symbol,
-                        )
-
-                        +irGetDescriptor()
-
-                        +stringConst(field.property.name.asString())
-
-                        +irCallProperty(stubClass, stubIdProperty)
-                    }
-                }
-            }
-
-            if (!isLazy) {
-                addBackingFieldUtil {
-                    type = fieldType
-                    visibility = DescriptorVisibilities.PRIVATE
-                    vsApi { isFinalVS = true }
-                }.apply {
-                    initializer = factory.createExpressionBody(registerCall)
-                }
-
-                addDefaultGetter(this@rpcFlowField, ctx.irBuiltIns) {
-                    visibility = field.property.visibility
-                    overriddenSymbols = listOf(servicePropertyGetter.symbol)
-                }
-            } else {
-                val lazyFieldType = ctx.lazy.typeWith(fieldType)
-
-                val lazyField = addBackingFieldUtil {
-                    origin = IrDeclarationOrigin.PROPERTY_DELEGATE
-                    name = propertyDelegateName(this@apply.name)
-                    visibility = DescriptorVisibilities.PRIVATE
-                    type = lazyFieldType
-                    vsApi { isFinalVS = true }
-                }.apply {
-                    val propertyDelegate = this
-
-                    // initializer for Lazy delegate with lambda
-                    // inside lambda - 'registerCall' expression is used
-                    initializer = factory.createExpressionBody(
-                        vsApi {
-                            IrCallImplVS(
-                                startOffset = UNDEFINED_OFFSET,
-                                endOffset = UNDEFINED_OFFSET,
-                                type = lazyFieldType,
-                                symbol = ctx.functions.lazy,
-                                typeArgumentsCount = 1,
-                                valueArgumentsCount = 1,
-                            )
-                        }.apply {
-                            val lambdaType = ctx.function0.typeWith(fieldType)
-
-                            val lambdaFunction = factory.buildFun {
-                                origin = IrDeclarationOrigin.LOCAL_FUNCTION_FOR_LAMBDA
-                                name = SpecialNames.ANONYMOUS
-                                visibility = DescriptorVisibilities.LOCAL
-                                returnType = fieldType
-                            }.apply {
-                                parent = propertyDelegate
-
-                                body = irBuilder(symbol).irBlockBody {
-                                    +irReturn(registerCall)
-                                }
-                            }
-
-                            val lambda = IrFunctionExpressionImpl(
-                                startOffset = UNDEFINED_OFFSET,
-                                endOffset = UNDEFINED_OFFSET,
-                                type = lambdaType,
-                                origin = IrStatementOrigin.LAMBDA,
-                                function = lambdaFunction,
-                            )
-
-                            arguments {
-                                types {
-                                    +fieldType
-                                }
-
-                                values {
-                                    +lambda
-                                }
-                            }
-                        }
-                    )
-                }
-
-                // Invocation of `operator fun getValue(thisRef: Any?, property: KProperty<*>): T` for delegates
-                addGetter {
-                    origin = IrDeclarationOrigin.DELEGATED_PROPERTY_ACCESSOR
-                    visibility = this@apply.visibility
-                    returnType = fieldType
-                }.apply {
-                    val propertyGetter = this
-
-                    overriddenSymbols = listOf(servicePropertyGetter.symbol)
-
-                    val getterThisReceiver = vsApi {
-                        stubClassThisReceiver.copyToVS(propertyGetter, origin = IrDeclarationOrigin.DEFINED)
-                    }.also {
-                        vsApi {
-                            dispatchReceiverParameterVS = it
-                        }
-                    }
-
-                    body = irBuilder(symbol).irBlockBody {
-                        +irReturn(
-                            irCall(
-                                type = fieldType,
-                                callee = ctx.functions.lazyGetValue,
-                                typeArgumentsCount = 1,
-                            ).apply {
-                                arguments {
-                                    types {
-                                        +fieldType
-                                    }
-
-                                    extensionReceiver = IrGetFieldImpl(
-                                        startOffset = UNDEFINED_OFFSET,
-                                        endOffset = UNDEFINED_OFFSET,
-                                        symbol = lazyField.symbol,
-                                        type = lazyFieldType,
-                                        receiver = IrGetValueImpl(
-                                            startOffset = UNDEFINED_OFFSET,
-                                            endOffset = UNDEFINED_OFFSET,
-                                            type = stubClass.defaultType,
-                                            symbol = getterThisReceiver.symbol,
-                                        ),
-                                    )
-
-                                    values {
-                                        +IrGetValueImpl(
-                                            startOffset = UNDEFINED_OFFSET,
-                                            endOffset = UNDEFINED_OFFSET,
-                                            type = stubClass.defaultType,
-                                            symbol = getterThisReceiver.symbol,
-                                        )
-
-                                        +IrPropertyReferenceImpl(
-                                            startOffset = UNDEFINED_OFFSET,
-                                            endOffset = UNDEFINED_OFFSET,
-                                            type = ctx.kProperty1.typeWith(stubClass.defaultType, fieldType),
-                                            symbol = fieldProperty.symbol,
-                                            typeArgumentsCount = 0,
-                                            field = null,
-                                            getter = propertyGetter.symbol,
-                                            setter = null,
-                                            origin = IrStatementOrigin.PROPERTY_REFERENCE_FOR_DELEGATE,
-                                        )
-                                    }
-                                }
-                            }
-                        )
-                    }
-                }
             }
         }
     }
@@ -1008,7 +760,7 @@ internal class RpcStubGenerator(
     private val invokators = mutableMapOf<String, IrProperty>()
 
     private fun IrClass.generateInvokators() {
-        (declaration.methods memoryOptimizedPlus declaration.fields).forEachIndexed { i, callable ->
+        declaration.methods.forEachIndexed { i, callable ->
             generateInvokator(i, callable)
         }
     }
@@ -1055,12 +807,7 @@ internal class RpcStubGenerator(
             name = Name.identifier("${callable.name}Invokator")
             visibility = DescriptorVisibilities.PRIVATE
         }.apply {
-            val propertyTypeSymbol = when (callable) {
-                is ServiceDeclaration.Method -> ctx.rpcInvokatorMethod
-                is ServiceDeclaration.FlowField -> ctx.rpcInvokatorField
-            }
-
-            val propertyType = propertyTypeSymbol.typeWith(declaration.serviceType)
+            val propertyType = ctx.rpcInvokatorMethod.typeWith(declaration.serviceType)
 
             addBackingFieldUtil {
                 visibility = DescriptorVisibilities.PRIVATE
@@ -1133,14 +880,6 @@ internal class RpcStubGenerator(
                                     }
                                 }
                             }
-
-                            is ServiceDeclaration.FlowField -> {
-                                irCall(callable.property.getterOrFail).apply {
-                                    arguments {
-                                        dispatchReceiver = irGet(serviceParameter)
-                                    }
-                                }
-                            }
                         }
 
                         +irReturn(call)
@@ -1151,11 +890,6 @@ internal class RpcStubGenerator(
                     is ServiceDeclaration.Method -> ctx.suspendFunction2.typeWith(
                         declaration.serviceType, // service
                         ctx.anyNullable, // data
-                        ctx.anyNullable, // returnType
-                    )
-
-                    is ServiceDeclaration.FlowField -> ctx.function1.typeWith(
-                        declaration.serviceType, // service
                         ctx.anyNullable, // returnType
                     )
                 }
@@ -1220,7 +954,7 @@ internal class RpcStubGenerator(
                 vsApi { isFinalVS = true }
                 visibility = DescriptorVisibilities.PRIVATE
             }.apply {
-                val isEmpty = declaration.methods.isEmpty() && declaration.fields.isEmpty()
+                val isEmpty = declaration.methods.isEmpty()
 
                 initializer = factory.createExpressionBody(
                     vsApi {
@@ -1248,7 +982,7 @@ internal class RpcStubGenerator(
 
                         val varargType = ctx.irBuiltIns.arrayClass.typeWith(pairType, Variance.OUT_VARIANCE)
 
-                        val callables = declaration.methods memoryOptimizedPlus declaration.fields
+                        val callables = declaration.methods
 
                         val vararg = IrVarargImpl(
                             startOffset = UNDEFINED_OFFSET,
@@ -1347,28 +1081,22 @@ internal class RpcStubGenerator(
 
             val dataType = when (callable) {
                 is ServiceDeclaration.Method -> methodClasses[i].defaultType
-                is ServiceDeclaration.FlowField -> ctx.fieldDataObject.defaultType
             }
 
-            val returnType = when (callable) {
-                is ServiceDeclaration.Method -> when {
-                    callable.function.isNonSuspendingWithFlowReturn() -> {
-                        (callable.function.returnType as IrSimpleType).arguments.single().typeOrFail
-                    }
-
-                    else -> {
-                        callable.function.returnType
-                    }
+            val returnType = when {
+                callable.function.isNonSuspendingWithFlowReturn() -> {
+                    (callable.function.returnType as IrSimpleType).arguments.single().typeOrFail
                 }
 
-                is ServiceDeclaration.FlowField -> callable.property.getterOrFail.returnType
+                else -> {
+                    callable.function.returnType
+                }
             }
 
             val invokator = invokators[callable.name]
                 ?: error("Expected invokator for ${callable.name} in ${declaration.service.name}")
 
-            val parameters = (callable as? ServiceDeclaration.Method)?.arguments
-                ?: emptyList()
+            val parameters = callable.arguments
 
             val callee = if (parameters.isEmpty()) {
                 ctx.functions.emptyArray
@@ -1449,7 +1177,7 @@ internal class RpcStubGenerator(
 
                     +arrayOfCall
 
-                    +booleanConst(callable is ServiceDeclaration.Method && !callable.function.isSuspend)
+                    +booleanConst(!callable.function.isSuspend)
                 }
             }
         }
@@ -1597,47 +1325,21 @@ internal class RpcStubGenerator(
                     .copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
             }
 
-            val service = addValueParameter {
+            addValueParameter {
                 name = Name.identifier("service")
                 type = declaration.serviceType
             }
 
             body = irBuilder(symbol).irBlockBody {
-                val isEmpty = declaration.fields.isEmpty()
-
                 val anyListType = ctx.irBuiltIns.listClass.typeWith(ctx.anyNullable)
 
                 val listCall = irCall(
-                    callee = if (isEmpty) ctx.functions.emptyList else ctx.functions.listOf,
+                    callee = ctx.functions.emptyList,
                     type = anyListType,
                 ).apply listApply@{
-                    if (isEmpty) {
-                        arguments {
-                            types { +ctx.anyNullable }
-                        }
-
-                        return@listApply
-                    }
-
-                    val vararg = IrVarargImpl(
-                        startOffset = UNDEFINED_OFFSET,
-                        endOffset = UNDEFINED_OFFSET,
-                        type = ctx.arrayOfAnyNullable,
-                        varargElementType = ctx.anyNullable,
-                        elements = declaration.fields.memoryOptimizedMap {
-                            irCallProperty(irGet(service), it.property)
-                        }
-                    )
-
                     arguments {
-                        types {
-                            +ctx.anyNullable
+                        types { +ctx.anyNullable }
                         }
-
-                        values {
-                            +vararg
-                        }
-                    }
                 }
 
                 +irReturn(irAs(listCall, listType))
