@@ -3,8 +3,8 @@
  */
 
 plugins {
-    kotlin("jvm") version "2.1.20"
-    kotlin("plugin.serialization") version "2.1.20"
+    kotlin("jvm") version "2.1.21"
+    kotlin("plugin.serialization") version "2.1.21"
     id("io.ktor.plugin") version "3.1.2"
     id("org.jetbrains.kotlinx.rpc.plugin") version "0.7.0"
 }
@@ -40,5 +40,5 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.5.18")
 
     testImplementation("io.ktor:ktor-server-test-host")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.1.20")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.1.21")
 }
