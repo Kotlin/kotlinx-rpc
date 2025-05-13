@@ -7,7 +7,7 @@
 
 [![Kotlin Experimental](https://kotl.in/badges/experimental.svg)](https://kotlinlang.org/docs/components-stability.html)
 [![Official JetBrains project](http://jb.gg/badges/official.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
-[![Kotlin](https://img.shields.io/badge/kotlin-2.0.0--2.1.20-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.0.0--2.1.21-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![GitHub License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
 
 [//]: # ([![TeamCity build]&#40;https://img.shields.io/teamcity/build/s/Build_kRPC_All.svg?server=http%3A%2F%2Fkrpc.teamcity.com&#41;]&#40;https://teamcity.jetbrains.com/viewType.html?buildTypeId=Build_kRPC_All&guest=1&#41;)
@@ -114,8 +114,8 @@ that will set up code generation in a project.
 Example of a setup in a project's `build.gradle.kts`:
 ```kotlin
 plugins {
-    kotlin("multiplatform") version "2.1.20"
-    kotlin("plugin.serialization") version "2.1.20"
+    kotlin("multiplatform") version "2.1.21"
+    kotlin("plugin.serialization") version "2.1.21"
     id("org.jetbrains.kotlinx.rpc.plugin") version "0.6.2"
 }
 ```
@@ -177,7 +177,7 @@ For a working example, see the [sample gRPC project](/samples/grpc-app).
 ## Kotlin compatibility
 We support all stable Kotlin versions starting from 2.0.0:
 - 2.0.0, 2.0.10, 2.0.20, 2.0.21
-- 2.1.0, 2.1.10, 2.1.20
+- 2.1.0, 2.1.10, 2.1.20, 2.1.21
 
 For a full compatibility checklist, 
 see [Versions](https://kotlin.github.io/kotlinx-rpc/versions.html).
