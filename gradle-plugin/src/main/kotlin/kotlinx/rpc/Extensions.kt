@@ -91,7 +91,7 @@ open class RpcStrictModeExtension @Inject constructor(objects: ObjectFactory) {
     val fields: Property<RpcStrictMode> = objects.strictModeProperty()
 
     private fun ObjectFactory.strictModeProperty(
-        default: RpcStrictMode = RpcStrictMode.WARNING,
+        default: RpcStrictMode = RpcStrictMode.ERROR,
     ): Property<RpcStrictMode> {
         return property(RpcStrictMode::class.java).convention(default)
     }

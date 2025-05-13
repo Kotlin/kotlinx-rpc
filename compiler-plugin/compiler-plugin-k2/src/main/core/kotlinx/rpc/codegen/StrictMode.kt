@@ -49,13 +49,13 @@ object StrictModeConfigurationKeys {
 
 fun CompilerConfiguration.strictModeAggregator(): StrictModeAggregator {
     return StrictModeAggregator(
-        stateFlow = get(StrictModeConfigurationKeys.STATE_FLOW, StrictMode.WARNING),
-        sharedFlow = get(StrictModeConfigurationKeys.SHARED_FLOW, StrictMode.WARNING),
-        nestedFlow = get(StrictModeConfigurationKeys.NESTED_FLOW, StrictMode.WARNING),
-        streamScopedFunctions = get(StrictModeConfigurationKeys.STREAM_SCOPED_FUNCTIONS, StrictMode.WARNING),
-        suspendingServerStreaming = get(StrictModeConfigurationKeys.SUSPENDING_SERVER_STREAMING, StrictMode.WARNING),
-        notTopLevelServerFlow = get(StrictModeConfigurationKeys.NOT_TOP_LEVEL_SERVER_FLOW, StrictMode.WARNING),
-        fields = get(StrictModeConfigurationKeys.FIELDS, StrictMode.WARNING),
+        stateFlow = get(StrictModeConfigurationKeys.STATE_FLOW, StrictMode.ERROR),
+        sharedFlow = get(StrictModeConfigurationKeys.SHARED_FLOW, StrictMode.ERROR),
+        nestedFlow = get(StrictModeConfigurationKeys.NESTED_FLOW, StrictMode.ERROR),
+        streamScopedFunctions = get(StrictModeConfigurationKeys.STREAM_SCOPED_FUNCTIONS, StrictMode.ERROR),
+        suspendingServerStreaming = get(StrictModeConfigurationKeys.SUSPENDING_SERVER_STREAMING, StrictMode.ERROR),
+        notTopLevelServerFlow = get(StrictModeConfigurationKeys.NOT_TOP_LEVEL_SERVER_FLOW, StrictMode.ERROR),
+        fields = get(StrictModeConfigurationKeys.FIELDS, StrictMode.ERROR),
     )
 }
 

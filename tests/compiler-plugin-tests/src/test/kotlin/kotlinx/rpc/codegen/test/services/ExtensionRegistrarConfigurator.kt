@@ -27,7 +27,7 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
     ) {
         val strictMode = module.directives[RpcDirectives.RPC_STRICT_MODE]
         if (strictMode.isNotEmpty()) {
-            val mode = StrictMode.fromCli(strictMode.single()) ?: StrictMode.WARNING
+            val mode = StrictMode.fromCli(strictMode.single()) ?: StrictMode.ERROR
             configuration.put(StrictModeConfigurationKeys.STATE_FLOW, mode)
             configuration.put(StrictModeConfigurationKeys.SHARED_FLOW, mode)
             configuration.put(StrictModeConfigurationKeys.NESTED_FLOW, mode)
