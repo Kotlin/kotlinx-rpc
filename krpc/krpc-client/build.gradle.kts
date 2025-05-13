@@ -2,6 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import kotlinx.rpc.RpcStrictMode
 import util.applyAtomicfuPlugin
 
 plugins {
@@ -24,5 +25,17 @@ kotlin {
                 implementation(projects.krpc.krpcLogging)
             }
         }
+    }
+}
+
+rpc {
+    strict {
+        stateFlow = RpcStrictMode.NONE
+        sharedFlow = RpcStrictMode.NONE
+        nestedFlow = RpcStrictMode.NONE
+        streamScopedFunctions = RpcStrictMode.NONE
+        suspendingServerStreaming = RpcStrictMode.NONE
+        notTopLevelServerFlow = RpcStrictMode.NONE
+        fields = RpcStrictMode.NONE
     }
 }

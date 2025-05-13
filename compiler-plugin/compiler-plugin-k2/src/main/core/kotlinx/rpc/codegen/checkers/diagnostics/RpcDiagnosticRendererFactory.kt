@@ -140,6 +140,7 @@ class RpcStrictModeDiagnosticRendererFactory(
             StrictMode.ERROR -> "prohibited"
         }
 
-        return "$entityName is $actionWord in @Rpc services in strict mode."
+        return "$entityName is $actionWord in @Rpc services in strict mode. " +
+                "Support will be removed completely in the 0.8.0 release."
     }
 }

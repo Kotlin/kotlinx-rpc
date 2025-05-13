@@ -13,8 +13,11 @@
         Starting with version <code>0.5.0</code>, the library introduces major changes to the service APIs.
         The following declarations will be gradually restricted:
     </p>
+    <warning>
+        String mode will be enforced in the <code>0.8.0</code> release.
+    </warning>
     <chapter title="StateFlow and SharedFlow" id="stateflow-and-sharedflow">
-        <p>Deprecation level: <code>WARNING</code></p>
+        <p>Deprecation level: <code>ERROR</code></p>
         <code-block lang="kotlin">
             @Rpc
             interface Service : RemoteService {
@@ -26,7 +29,7 @@
     </chapter>
 
     <chapter title="Fields" id="fields">
-        <p>Deprecation level: <code>WARNING</code></p>
+        <p>Deprecation level: <code>ERROR</code></p>
         <code-block lang="kotlin">
             @Rpc
             interface Service : RemoteService {
@@ -37,7 +40,7 @@
         </code-block>
     </chapter>
     <chapter title="Nested Flows" id="nested-flows">
-        <p>Deprecation level: <code>WARNING</code></p>
+        <p>Deprecation level: <code>ERROR</code></p>
         <code-block lang="kotlin">
             @Rpc
             interface Service : RemoteService {
@@ -48,7 +51,7 @@
         </code-block>
     </chapter>
     <chapter title="Not top-level server flows" id="not-top-level-server-flows">
-        <p>Deprecation level: <code>WARNING</code></p>
+        <p>Deprecation level: <code>ERROR</code></p>
 
         <code-block lang="kotlin">
             data class SpotifyWrapped(val myMusicFlow: Flow&lt;Rap&gt;, val extra: Data)
@@ -64,7 +67,7 @@
         </code-block>
     </chapter>
     <chapter title="Non-suspending server flows" id="non-suspending-server-flows">
-        <p>Deprecation level: <code>WARNING</code></p>
+        <p>Deprecation level: <code>ERROR</code></p>
 
         <code-block lang="kotlin">
             data class SpotifyWrapped(val extra: Data)
@@ -78,7 +81,7 @@
         </code-block>
     </chapter>
     <chapter title="Stream scopes management" id="stream-scopes-management">
-        <p>Deprecation level: <code>WARNING</code></p>
+        <p>Deprecation level: <code>ERROR</code></p>
 
         <p>
             The next stream scope management structures are deprecated due to the introduction of
@@ -158,18 +161,18 @@
 
         rpc {
             strict {
-                stateFlow = RpcStrictMode.WARNING
-                sharedFlow = RpcStrictMode.WARNING
-                nestedFlow = RpcStrictMode.WARNING
-                notTopLevelServerFlow = RpcStrictMode.WARNING
-                fields = RpcStrictMode.WARNING
-                suspendingServerStreaming = RpcStrictMode.WARNING
-                streamScopedFunctions = RpcStrictMode.WARNING
+                stateFlow = RpcStrictMode.ERROR
+                sharedFlow = RpcStrictMode.ERROR
+                nestedFlow = RpcStrictMode.ERROR
+                notTopLevelServerFlow = RpcStrictMode.ERROR
+                fields = RpcStrictMode.ERROR
+                suspendingServerStreaming = RpcStrictMode.ERROR
+                streamScopedFunctions = RpcStrictMode.ERROR
             }
         }
     </code-block>
         <p>
-            Modes <code>RpcStrictMode.NONE</code> and <code>RpcStrictMode.ERROR</code> are available.
+            Modes <code>RpcStrictMode.NONE</code> and <code>RpcStrictMode.WARNING</code> are available.
         </p>
 
         <warning>
