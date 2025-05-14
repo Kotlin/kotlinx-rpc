@@ -3,10 +3,10 @@
  */
 
 plugins {
-    kotlin("jvm") version "2.1.20"
-    kotlin("plugin.serialization") version "2.1.20"
+    kotlin("jvm") version "2.1.21"
+    kotlin("plugin.serialization") version "2.1.21"
     id("io.ktor.plugin") version "3.1.2"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "0.6.2"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.7.0"
 }
 
 group = "kotlinx.rpc.sample"
@@ -28,17 +28,17 @@ kotlin {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-client:0.6.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-server:0.6.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json:0.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-client:0.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-server:0.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json:0.7.0")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client:0.6.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server:0.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client:0.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server:0.7.0")
 
     implementation("io.ktor:ktor-client-cio")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("ch.qos.logback:logback-classic:1.5.18")
 
     testImplementation("io.ktor:ktor-server-test-host")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.1.20")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.1.21")
 }

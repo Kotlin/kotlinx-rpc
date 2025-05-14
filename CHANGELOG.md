@@ -1,3 +1,23 @@
+# 0.7.0
+> Published 13 May 2025
+
+## Announcement
+This release enforces ERROR as a default reporting level for APIs that are forbidden by the strict mode.
+You can still change the level manually, but in `0.8.0` strict mode will be enforced irreversibly.
+
+## What's Changed
+
+### Breaking Changes 🔴
+* Change strict mode to level ERROR by default by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/338
+
+### Other Changes 🧹
+* Update Kotlin to 2.1.21 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/337
+* Version 0.7.0-SNAPSHOT by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/325
+* Samples: version 0.6.2 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/326
+* 2.2.0 compiler migration by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/335
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.6.2...0.7.0
+
 # 0.6.2
 > Published 17 April 2025
 
