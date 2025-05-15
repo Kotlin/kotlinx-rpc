@@ -448,44 +448,6 @@ class CancellationTest {
     }
 
     @Test
-    fun testFieldFlowWorksWithNoScope() = runCancellationTest {
-        val result = service.fastFieldFlow
-
-        serverInstance().fence.complete(Unit)
-
-        assertContentEquals(List(2) { it }, result.toList())
-
-        stopAllAndJoin()
-    }
-
-    @Test
-    fun testServiceCancellationCancelsFieldFlow() = runCancellationTest {
-        val flow = service.slowFieldFlow
-        val firstCollected = CompletableDeferred<Int>()
-        val allCollected = mutableListOf<Int>()
-
-        val job = launch {
-            flow.collect {
-                allCollected.add(it)
-
-                if (!firstCollected.isCompleted) {
-                    firstCollected.complete(it)
-                }
-            }
-        }
-
-        firstCollected.await()
-
-        service.cancel("Service cancelled")
-
-        job.join()
-        assertContentEquals(listOf(0), allCollected)
-        assertContentEquals(listOf(0), serverInstance().emittedFromSlowField)
-
-        stopAllAndJoin()
-    }
-
-    @Test
     fun testInvokeOnStreamScopeCompletionOnServerWithNoStreams() = runCancellationTest {
         streamScoped {
             service.closedStreamScopeCallback()

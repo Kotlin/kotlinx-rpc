@@ -16,7 +16,6 @@ class ServiceDeclaration(
     val service: IrClass,
     val stubClass: IrClass,
     val methods: List<Method>,
-    val fields: List<FlowField>,
 ) {
     val fqName = service.kotlinFqName.asString()
 
@@ -36,16 +35,5 @@ class ServiceDeclaration(
             val value: IrValueParameter,
             val type: IrType,
         )
-    }
-
-    class FlowField(
-        val property: IrProperty,
-        val flowKind: Kind,
-    ) : Callable {
-        override val name: String = property.name.asString()
-
-        enum class Kind {
-            Plain, Shared, State;
-        }
     }
 }

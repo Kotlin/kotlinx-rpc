@@ -34,10 +34,6 @@ interface CancellationService : RemoteService {
 
     suspend fun incomingHotFlow(): StateFlow<Int>
 
-    val fastFieldFlow: Flow<Int>
-
-    val slowFieldFlow: Flow<Int>
-
     suspend fun closedStreamScopeCallback()
 
     suspend fun closedStreamScopeCallbackWithStream(): Flow<Int>
@@ -131,14 +127,6 @@ class CancellationServiceImpl(override val coroutineContext: CoroutineContext) :
         }
 
         return state
-    }
-
-    override val fastFieldFlow: Flow<Int> = resumableFlow(fence)
-
-    val emittedFromSlowField = mutableListOf<Int>()
-
-    override val slowFieldFlow: Flow<Int> = resumableFlow(fence) {
-        emittedFromSlowField.add(it)
     }
 
     val streamScopeCallbackResult = CompletableDeferred<Throwable?>()

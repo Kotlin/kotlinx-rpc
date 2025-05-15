@@ -39,7 +39,8 @@ public interface RpcClient : CoroutineScope {
      */
     @Deprecated(
         "This method was primarily used for fields in RPC services, which are now deprecated. " +
-                "See https://kotlin.github.io/kotlinx-rpc/strict-mode.html fields guide for more information"
+                "See https://kotlin.github.io/kotlinx-rpc/strict-mode.html fields guide for more information",
+        level = DeprecationLevel.ERROR,
     )
     public fun <T> callAsync(serviceScope: CoroutineScope, call: RpcCall): Deferred<T>
 

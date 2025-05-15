@@ -10,9 +10,7 @@ package kotlinx.rpc
 @Target(AnnotationTarget.PROPERTY)
 @Deprecated(
     "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
-    level = DeprecationLevel.WARNING,
+    level = DeprecationLevel.ERROR,
 )
 public annotation class RpcEagerField
 
-@Deprecated("Use RpcEagerField instead", ReplaceWith("RpcEagerField"), level = DeprecationLevel.ERROR)
-public typealias RPCEagerField = RpcEagerField

@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
-import kotlinx.rpc.internal.FieldDataObject
 import kotlinx.rpc.internal.RpcFlow
 
 /**
@@ -27,7 +26,7 @@ import kotlinx.rpc.internal.RpcFlow
  */
 @Deprecated(
     "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
-    level = DeprecationLevel.WARNING,
+    level = DeprecationLevel.ERROR,
 )
 public fun <T> RpcClient.registerPlainFlowField(
     serviceScope: CoroutineScope,
@@ -52,7 +51,7 @@ public fun <T> RpcClient.registerPlainFlowField(
  */
 @Deprecated(
     "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
-    level = DeprecationLevel.WARNING,
+    level = DeprecationLevel.ERROR,
 )
 public fun <T> RpcClient.registerSharedFlowField(
     serviceScope: CoroutineScope,
@@ -77,7 +76,7 @@ public fun <T> RpcClient.registerSharedFlowField(
  */
 @Deprecated(
     "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
-    level = DeprecationLevel.WARNING,
+    level = DeprecationLevel.ERROR,
 )
 public fun <T> RpcClient.registerStateFlowField(
     serviceScope: CoroutineScope,
@@ -88,11 +87,12 @@ public fun <T> RpcClient.registerStateFlowField(
     return RpcFlow.State(descriptor.fqName, initializeFlowField(serviceScope, descriptor, fieldName, serviceId))
 }
 
+@Suppress("unused", "UnusedReceiverParameter")
 private fun <T, FlowT : Flow<T>> RpcClient.initializeFlowField(
     serviceScope: CoroutineScope,
     descriptor: RpcServiceDescriptor<*>,
     fieldName: String,
     serviceId: Long,
 ): Deferred<FlowT> {
-    return callAsync(serviceScope, RpcCall(descriptor, fieldName, FieldDataObject, serviceId))
+    error("Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html")
 }
