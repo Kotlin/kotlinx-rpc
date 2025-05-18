@@ -24,7 +24,7 @@ import kotlinx.rpc.annotations.Rpc
 
 @Rpc
 interface AwesomeService : RemoteService {
-    suspend fun getNews(city: String): Flow<String>
+    fun getNews(city: String): Flow<String>
     
     suspend fun daysUntilStableRelease(): Int
 }
@@ -35,7 +35,7 @@ class AwesomeServiceImpl(
     val parameters: AwesomeParameters,
     override val coroutineContext: CoroutineContext,
 ) : AwesomeService {
-    override suspend fun getNews(city: String): Flow<String> {
+    override fun getNews(city: String): Flow<String> {
         return flow { 
             emit("Today is 23 degrees!")
             emit("Harry Potter is in $city!")
