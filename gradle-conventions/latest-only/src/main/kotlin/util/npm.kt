@@ -15,6 +15,8 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootEnvSpec
 import java.io.File
 
 fun Project.configureNpm() {
+    val kotlinMasterBuild by optionalProperty()
+
     val executeNpmLogin by tasks.registering {
         if (!useProxyRepositories) {
             return@registering
@@ -80,9 +82,10 @@ fun Project.configureNpm() {
             ignoreScripts = false
             download = true
 
-            yarnLockMismatchReport = when (useProxy) {
-                true -> YarnLockMismatchReport.FAIL
-                false -> YarnLockMismatchReport.WARNING
+            yarnLockMismatchReport = if (useProxy && !kotlinMasterBuild) {
+                YarnLockMismatchReport.FAIL
+            } else {
+                YarnLockMismatchReport.WARNING
             }
 
             if (useProxy) {
