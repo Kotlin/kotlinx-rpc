@@ -68,9 +68,11 @@ class ProjectKotlinConfig(
         }
     }
 
+    val kotlinMasterBuild by optionalProperty()
+
     fun nativeTargets(kmp: KotlinMultiplatformExtension) = kmp::class.memberFunctions
         .filter { targetFunction ->
-            targetFunction.parameters.size == 1 && isIncluded(
+            !kotlinMasterBuild && targetFunction.parameters.size == 1 && isIncluded(
                 targetName = targetFunction.name,
                 lookupTable = nativeLookup,
             )

@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.diagnostics.error0
 import org.jetbrains.kotlin.diagnostics.error1
 import org.jetbrains.kotlin.diagnostics.error2
 import org.jetbrains.kotlin.diagnostics.error3
-import org.jetbrains.kotlin.diagnostics.rendering.RootDiagnosticRendererFactory
+import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.name.Name
@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.psi.KtElement
 // # Instead use KtElement, otherwise problems in IDE and in tests may arise #
 // ###########################################################################
 
-object FirRpcDiagnostics {
+object FirRpcDiagnostics : RpcKtDiagnosticsContainer() {
     val MISSING_RPC_ANNOTATION by error0<KtAnnotated>()
     val MISSING_SERIALIZATION_MODULE by error0<KtAnnotated>()
     val WRONG_RPC_ANNOTATION_TARGET by error1<KtAnnotated, ConeKotlinType>()
@@ -35,13 +35,13 @@ object FirRpcDiagnostics {
     val TYPE_PARAMETERS_IN_RPC_FUNCTION by error0<KtElement>(SourceElementPositioningStrategies.TYPE_PARAMETERS_LIST)
     val TYPE_PARAMETERS_IN_RPC_INTERFACE by error0<KtElement>(SourceElementPositioningStrategies.TYPE_PARAMETERS_LIST)
 
-    init {
-        RootDiagnosticRendererFactory.registerFactory(RpcDiagnosticRendererFactory)
+    override fun getRendererFactoryVs(): BaseDiagnosticRendererFactory {
+        return RpcDiagnosticRendererFactory
     }
 }
 
 @Suppress("PropertyName", "detekt.VariableNaming")
-class FirRpcStrictModeDiagnostics(val modes: StrictModeAggregator) {
+class FirRpcStrictModeDiagnostics(val modes: StrictModeAggregator) : RpcKtDiagnosticsContainer() {
     val STATE_FLOW_IN_RPC_SERVICE by modded0<KtElement>(modes.stateFlow)
     val SHARED_FLOW_IN_RPC_SERVICE by modded0<KtElement>(modes.sharedFlow)
     val NESTED_STREAMING_IN_RPC_SERVICE by modded0<KtElement>(modes.nestedFlow)
@@ -50,7 +50,7 @@ class FirRpcStrictModeDiagnostics(val modes: StrictModeAggregator) {
     val NON_TOP_LEVEL_SERVER_STREAMING_IN_RPC_SERVICE by modded0<KtElement>(modes.notTopLevelServerFlow)
     val FIELD_IN_RPC_SERVICE by modded0<KtElement>(modes.fields)
 
-    init {
-        RootDiagnosticRendererFactory.registerFactory(RpcStrictModeDiagnosticRendererFactory(this))
+    override fun getRendererFactoryVs(): BaseDiagnosticRendererFactory {
+        return RpcStrictModeDiagnosticRendererFactory(this)
     }
 }
