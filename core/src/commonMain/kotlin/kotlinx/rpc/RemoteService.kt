@@ -4,15 +4,12 @@
 
 package kotlinx.rpc
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.rpc.annotations.Rpc
 
 /**
  * Marker interface for an RPC service.
- * Provides type safety and [CoroutineScope] for [Rpc] annotated services.
- *
- * Every [RemoteService] service MUST be annotated with [Rpc] annotation.
  *
  * @see Rpc
  */
-public interface RemoteService : CoroutineScope
+@Deprecated("Use of RemoteService is deprecated. Use only @Rpc annotation", level = DeprecationLevel.ERROR)
+public interface RemoteService

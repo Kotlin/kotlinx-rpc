@@ -5,7 +5,6 @@
 package kotlinx.rpc.krpc.test
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -43,7 +42,7 @@ data class LocalDateTime(
 
 @Suppress("detekt.TooManyFunctions")
 @Rpc
-interface KrpcTestService : RemoteService {
+interface KrpcTestService {
     fun nonSuspendFlow(): Flow<Int>
     fun nonSuspendFlowErrorOnEmit(): Flow<Int>
     fun nonSuspendFlowErrorOnReturn(): Flow<Int>

@@ -6,7 +6,6 @@ package kotlinx.rpc
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.rpc.annotations.Rpc
-import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 
 @Deprecated("Use RpcServer instead", ReplaceWith("RpcServer"), level = DeprecationLevel.ERROR)
@@ -15,7 +14,6 @@ public typealias RPCServer = RpcServer
 /**
  * RpcServer is used to accept RPC messages, route them to a specific service, and process given responses.
  * Server may contain multiple services.
- * [CoroutineScope] defines server lifetime.
  */
 public interface RpcServer : CoroutineScope {
     /**
@@ -30,7 +28,11 @@ public interface RpcServer : CoroutineScope {
      */
     public fun <@Rpc Service : Any> registerService(
         serviceKClass: KClass<Service>,
-        serviceFactory: (CoroutineContext) -> Service,
+        serviceFactory: () -> Service,
+    )
+
+    public fun <@Rpc Service : Any> deregisterService(
+        serviceKClass: KClass<Service>,
     )
 }
 
@@ -44,7 +46,7 @@ public interface RpcServer : CoroutineScope {
  * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
  */
 public inline fun <@Rpc reified Service : Any> RpcServer.registerService(
-    noinline serviceFactory: (CoroutineContext) -> Service,
+    noinline serviceFactory: () -> Service,
 ) {
     registerService(Service::class, serviceFactory)
 }

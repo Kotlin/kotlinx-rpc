@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.krpc.internal
 
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -30,7 +31,7 @@ public interface KrpcEndpoint {
             return
         }
 
-        val sendJob = sender.launch {
+        val sendJob = sender.launch(CoroutineName("krpc-endpoint-cancellation-$serviceId-$cancellationId")) {
             val message = KrpcGenericMessage(
                 connectionId = null,
                 pluginParams = listOfNotNull(

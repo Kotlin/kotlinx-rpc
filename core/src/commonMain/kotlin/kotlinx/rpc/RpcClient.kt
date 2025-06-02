@@ -38,13 +38,4 @@ public interface RpcClient : CoroutineScope {
      * @return the actual result of the call, for example, data from the server
      */
     public fun <T> callServerStreaming(call: RpcCall): Flow<T>
-
-    /**
-     * Provides child [CoroutineContext] for a new [RemoteService] service stub.
-     *
-     * This function shouldn't be called directly.
-     *
-     * @param serviceId id of the new service. Used for service cancellation messages.
-     */
-    public fun provideStubContext(serviceId: Long): CoroutineContext
 }

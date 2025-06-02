@@ -8,13 +8,7 @@ package kotlinx.rpc.krpc.internal
  * Release versions of the library
  */
 internal enum class KrpcVersion {
-    /**
-     * Version 0.1.0
-      */
     V_0_1_0_BETA,
-
-    /**
-     * Version 0.6.0
-      */
     V_0_6_0,
+    V_0_8_0,
 }

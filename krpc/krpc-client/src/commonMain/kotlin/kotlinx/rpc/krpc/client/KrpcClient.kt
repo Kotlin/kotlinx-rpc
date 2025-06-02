@@ -11,8 +11,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.annotations.Rpc
@@ -34,9 +32,9 @@ import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
 import kotlin.collections.first
+import kotlin.concurrent.Volatile
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.time.Duration.Companion.seconds
 
 @Deprecated("Use KrpcClient instead", ReplaceWith("KrpcClient"), level = DeprecationLevel.ERROR)
 public typealias KRPCClient = KrpcClient
@@ -63,9 +61,9 @@ public abstract class KrpcClient(
     private val config: KrpcConfig.Client,
     transport: KrpcTransport,
 ) : RpcClient, KrpcEndpoint {
-    // we make a child here, so we can send cancellation messages before closing the connection
     final override val coroutineContext: CoroutineContext = SupervisorJob(transport.coroutineContext.job)
 
+    // we make a child here, so we can send cancellation messages before closing the connection
     private val connector by lazy {
         KrpcClientConnector(config.serialFormatInitializer.build(), transport, config.waitForServices)
     }
@@ -82,43 +80,34 @@ public abstract class KrpcClient(
 
     private val serverSupportedPlugins: CompletableDeferred<Set<KrpcPlugin>> = CompletableDeferred()
 
+    private val requestChannels = RpcInternalConcurrentHashMap<String, Channel<Any?>>()
+
     @InternalRpcApi
     final override val supportedPlugins: Set<KrpcPlugin>
         get() = serverSupportedPlugins.getOrNull() ?: emptySet()
 
-    private var clientCancelled = false
-
     // callId to serviceTypeString
     private val cancellingRequests = RpcInternalConcurrentHashMap<String, String>()
+
+    @Volatile
+    private var clientCancelled = false
 
     init {
         coroutineContext.job.invokeOnCompletion(onCancelling = true) {
             clientCancelled = true
 
             sendCancellation(CancellationType.ENDPOINT, null, null, closeTransportAfterSending = true)
+
+            requestChannels.values.forEach { it.close(CancellationException("Client cancelled")) }
+            requestChannels.clear()
         }
 
-        launch {
+        launch(CoroutineName("krpc-client-generic-messages")) {
             connector.subscribeToGenericMessages(::handleGenericMessage)
         }
     }
 
-    @OptIn(InternalCoroutinesApi::class)
-    @InternalRpcApi
-    final override fun provideStubContext(serviceId: Long): CoroutineContext {
-        val childContext = SupervisorJob(coroutineContext.job)
-
-        childContext.job.invokeOnCompletion(onCancelling = true) {
-            if (!clientCancelled) {
-                // cancellation only by serviceId
-                sendCancellation(CancellationType.SERVICE, serviceId.toString(), null)
-            }
-        }
-
-        return childContext
-    }
-
-    private val initHandshake: Job = launch {
+    private val initHandshake: Job = launch(CoroutineName("krpc-client-handshake")) {
         connector.sendMessage(KrpcProtocolMessage.Handshake(KrpcPlugin.ALL))
 
         connector.subscribeToProtocolMessages(::handleProtocolMessage)
@@ -159,7 +148,7 @@ public abstract class KrpcClient(
     }
 
     @Suppress("detekt.CyclomaticComplexMethod")
-    override fun <T> callServerStreaming(call: RpcCall): Flow<T> {
+    final override fun <T> callServerStreaming(call: RpcCall): Flow<T> {
         return flow {
             awaitHandshakeCompletion()
 
@@ -172,6 +161,9 @@ public abstract class KrpcClient(
             val channel = Channel<T>()
 
             try {
+                @Suppress("UNCHECKED_CAST")
+                requestChannels[callId] = channel as Channel<Any?>
+
                 val request = serializeRequest(
                     callId = callId,
                     call = call,
@@ -180,11 +172,15 @@ public abstract class KrpcClient(
                     pluginParams = mapOf(KrpcPluginKey.NON_SUSPENDING_SERVER_FLOW_MARKER to ""),
                 )
 
-                connector.sendMessage(request)
-
                 connector.subscribeToCallResponse(call.descriptor.fqName, callId) { message ->
-                    handleServerStreamingMessage(message, channel, callable, call, callId)
+                    if (cancellingRequests.containsKey(callId)) {
+                        return@subscribeToCallResponse
+                    }
+
+                    handleServerStreamingMessage(message, channel, callable)
                 }
+
+                connector.sendMessage(request)
 
                 coroutineScope {
                     val clientStreamsJob = launch(CoroutineName("client-stream-root-${call.serviceId}-$callId")) {
@@ -195,7 +191,6 @@ public abstract class KrpcClient(
                                 }
                             }
                         }
-                        println("finished client streams job")
                     }
 
                     try {
@@ -206,13 +201,20 @@ public abstract class KrpcClient(
                     }
                 }
             } catch (e: CancellationException) {
-                // sendCancellation is not suspending, so no need for NonCancellable
-                sendCancellation(CancellationType.REQUEST, call.serviceId.toString(), callId)
-                connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
+                if (!clientCancelled) {
+                    cancellingRequests[callId] = call.descriptor.fqName
+
+                    sendCancellation(CancellationType.REQUEST, call.descriptor.fqName, callId)
+
+                    connector.unsubscribeFromMessages(call.descriptor.fqName, callId) {
+                        cancellingRequests.remove(callId)
+                    }
+                }
 
                 throw e
             } finally {
                 channel.close()
+                requestChannels.remove(callId)
             }
         }
     }
@@ -235,8 +237,6 @@ public abstract class KrpcClient(
         message: KrpcCallMessage,
         channel: Channel<T>,
         callable: RpcCallable<R>,
-        call: RpcCall,
-        callId: String,
     ) {
         when (message) {
             is KrpcCallMessage.CallData -> {
@@ -270,12 +270,10 @@ public abstract class KrpcClient(
             }
 
             is KrpcCallMessage.StreamFinished -> {
-                connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
                 channel.close()
             }
 
             is KrpcCallMessage.StreamCancel -> {
-                connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
                 val cause = message.cause.deserialize()
                 channel.close(cause)
             }
@@ -287,14 +285,6 @@ public abstract class KrpcClient(
         when (val type = message.cancellationType()) {
             CancellationType.ENDPOINT -> {
                 cancel("Closing client after server cancellation") // we cancel this client
-            }
-
-            CancellationType.CANCELLATION_ACK -> {
-                val callId = message[KrpcPluginKey.CANCELLATION_ID]
-                    ?: error("Expected CANCELLATION_ID for cancellation of type 'request'")
-
-                val serviceTypeString = cancellingRequests.remove(callId) ?: return
-                connector.unsubscribeFromMessages(serviceTypeString, callId)
             }
 
             else -> {
@@ -402,7 +392,6 @@ public abstract class KrpcClient(
         outgoingStream: StreamCall,
     ) {
         flow.collect {
-            println("collected: $it, ${outgoingStream.streamId}")
             val message = when (serialFormat) {
                 is StringFormat -> {
                     val stringData = serialFormat.encodeToString(outgoingStream.elementSerializer, it)

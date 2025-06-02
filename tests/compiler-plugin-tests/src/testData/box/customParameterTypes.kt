@@ -5,7 +5,6 @@
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.withService
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.codegen.test.TestRpcClient
@@ -14,7 +13,7 @@ import kotlinx.rpc.codegen.test.TestRpcClient
 data class TestData(val value: String)
 
 @Rpc
-interface BoxService : RemoteService {
+interface BoxService {
     suspend fun test1(testData: TestData): String
 
     suspend fun test2(testData: TestData): String

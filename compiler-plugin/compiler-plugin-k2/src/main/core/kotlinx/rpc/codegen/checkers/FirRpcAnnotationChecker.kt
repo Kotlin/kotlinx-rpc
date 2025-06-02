@@ -8,8 +8,6 @@ import kotlinx.rpc.codegen.FirCheckersContext
 import kotlinx.rpc.codegen.FirRpcPredicates
 import kotlinx.rpc.codegen.checkers.diagnostics.FirRpcDiagnostics
 import kotlinx.rpc.codegen.common.RpcClassId
-import kotlinx.rpc.codegen.isRemoteService
-import kotlinx.rpc.codegen.remoteServiceSupertypeSource
 import kotlinx.rpc.codegen.rpcAnnotation
 import kotlinx.rpc.codegen.rpcAnnotationSource
 import org.jetbrains.kotlin.descriptors.ClassKind
@@ -48,14 +46,6 @@ object FirRpcAnnotationChecker {
                     classId = RpcClassId.rpcAnnotation,
                 )?.resolvedType
                     ?: error("Unexpected unresolved annotation type for declaration: ${declaration.symbol.classId.asSingleFqName()}"),
-            )
-        }
-
-        if (declaration.symbol.isRemoteService(context.session) && !rpcAnnotated) {
-            reporter.reportOn(
-                source = declaration.symbol.remoteServiceSupertypeSource(context.session),
-                factory = FirRpcDiagnostics.MISSING_RPC_ANNOTATION,
-                context = context,
             )
         }
 

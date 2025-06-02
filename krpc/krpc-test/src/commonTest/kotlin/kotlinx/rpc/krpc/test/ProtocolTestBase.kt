@@ -9,7 +9,6 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.job
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.internal.utils.hex.rpcInternalHexToReadableBinary
 import kotlinx.rpc.krpc.KrpcConfig
@@ -80,9 +79,7 @@ abstract class ProtocolTestBase {
 
         val defaultServer by lazy {
             ProtocolTestServer(serverConfig, transport).apply {
-                registerService<ProtocolTestService> {
-                    ProtocolTestServiceImpl(transport.coroutineContext)
-                }
+                registerService<ProtocolTestService> { ProtocolTestServiceImpl() }
             }
         }
 
@@ -91,13 +88,11 @@ abstract class ProtocolTestBase {
 }
 
 @Rpc
-interface ProtocolTestService : RemoteService {
+interface ProtocolTestService {
     suspend fun sendRequest()
 }
 
-private class ProtocolTestServiceImpl(
-    override val coroutineContext: CoroutineContext,
-) : ProtocolTestService {
+private class ProtocolTestServiceImpl : ProtocolTestService {
     override suspend fun sendRequest() {
         // nothing
     }

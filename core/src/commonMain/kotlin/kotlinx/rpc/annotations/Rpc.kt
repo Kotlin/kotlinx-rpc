@@ -4,22 +4,15 @@
 
 package kotlinx.rpc.annotations
 
-import kotlinx.rpc.RemoteService
-
 /**
  * Every [Rpc] annotated interface will have a code generation process run on it,
  * making the interface effectively usable for RPC calls.
- *
- * Every [Rpc] annotated interface MAY inherit from the [RemoteService] interface.
- * If it is not done explicitly, the supertype will be added during the compilation process.
- * In that case an IDE will highlight false-positive type mismatch errors,
- * so it is recommended to add the [RemoteService] parent explicitly, until proper IDE support is provided.
  *
  * Example usage:
  * ```kotlin
  * // common code
  * @Rpc
- * interface MyService : RemoteService {
+ * interface MyService {
  *    suspend fun sayHello(firstName: String, lastName: String, age: Int): String
  * }
  * // client code
@@ -27,16 +20,14 @@ import kotlinx.rpc.RemoteService
  * val myService = rpcClient.withService<MyService>()
  * val greetingFromServer = myService.sayHello("Alex", "Smith", 35)
  * // server code
- * class MyServiceImpl(override val coroutineContext: CoroutineContext) : MyService {
+ * class MyServiceImpl : MyService {
  *     override suspend fun sayHello(firstName: String, lastName: String, age: Int): String {
  *         return "Hello, $firstName $lastName, of age $age. I am your server!"
  *     }
  * }
  * val server: RpcServer
- * server.registerService<MyService> { ctx -> MyServiceImpl(ctx) }
+ * server.registerService<MyService> { MyServiceImpl() }
  * ```
- *
- * @see [RemoteService]
  */
 @CheckedTypeAnnotation
 @Target(AnnotationTarget.CLASS, AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.TYPE_PARAMETER)

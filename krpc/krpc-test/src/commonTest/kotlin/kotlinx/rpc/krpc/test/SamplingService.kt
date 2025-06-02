@@ -7,11 +7,9 @@
 package org.jetbrains.krpc.test.api.util
 
 import kotlinx.coroutines.flow.*
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.test.plainFlow
 import kotlinx.serialization.Serializable
-import kotlin.coroutines.CoroutineContext
 
 @Serializable
 data class SamplingData(
@@ -19,7 +17,7 @@ data class SamplingData(
 )
 
 @Rpc
-interface SamplingService : RemoteService {
+interface SamplingService {
     suspend fun echo(arg1: String, data: SamplingData): SamplingData
 
     suspend fun clientStream(flow: Flow<Int>): List<Int>
@@ -29,7 +27,7 @@ interface SamplingService : RemoteService {
     suspend fun callException()
 }
 
-class SamplingServiceImpl(override val coroutineContext: CoroutineContext) : SamplingService {
+class SamplingServiceImpl : SamplingService {
     override suspend fun echo(arg1: String, data: SamplingData): SamplingData {
         return data
     }

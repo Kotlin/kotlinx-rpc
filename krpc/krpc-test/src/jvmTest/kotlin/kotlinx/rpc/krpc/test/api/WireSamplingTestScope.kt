@@ -30,6 +30,7 @@ import kotlinx.rpc.krpc.test.api.util.GoldComparable
 import kotlinx.rpc.krpc.test.api.util.GoldComparisonResult
 import kotlinx.rpc.krpc.test.api.util.GoldUtils
 import kotlinx.rpc.krpc.test.api.util.checkGold
+import kotlinx.rpc.krpc.test.debugCoroutines
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -38,10 +39,13 @@ import org.jetbrains.krpc.test.api.util.SamplingServiceImpl
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.name
+import kotlin.time.Duration.Companion.seconds
 
 @Suppress("RedundantUnitReturnType")
 fun wireSamplingTest(name: String, sampling: suspend WireSamplingTestScope.() -> Unit): TestResult {
-    return runTest {
+    return runTest(timeout = 15.seconds) {
+        debugCoroutines()
+
         WireSamplingTestScope(name, this).apply {
             sampling()
 
@@ -209,7 +213,7 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
 
     val server by lazy {
         KrpcTestServer(rpcServerConfig { serialization { format.init(this) } }, transport.server).apply {
-            registerService<SamplingService> { SamplingServiceImpl(it) }
+            registerService<SamplingService> { SamplingServiceImpl() }
         }
     }
 

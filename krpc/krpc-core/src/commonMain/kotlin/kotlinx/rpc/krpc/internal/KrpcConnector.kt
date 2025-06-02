@@ -5,16 +5,21 @@
 package kotlinx.rpc.krpc.internal
 
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.KrpcTransportMessage
 import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
+import kotlinx.rpc.krpc.receiveCatching
 import kotlinx.serialization.*
+import kotlin.time.Duration.Companion.seconds
 
 @InternalRpcApi
 public interface KrpcMessageSender : CoroutineScope {
@@ -39,7 +44,7 @@ private typealias KrpcMessageHandler = suspend (KrpcMessage) -> Unit
  * DO NOT use actual dumper in production!
  */
 @InternalRpcApi
-public class KrpcConnector<SubscriptionKey>(
+public class KrpcConnector<SubscriptionKey : Any>(
     private val serialFormat: SerialFormat,
     private val transport: KrpcTransport,
     private val waitForSubscribers: Boolean = true,
@@ -49,10 +54,9 @@ public class KrpcConnector<SubscriptionKey>(
     private val role = if (isServer) SERVER_ROLE else CLIENT_ROLE
     private val logger = RpcInternalCommonLogger.logger(rpcInternalObjectId(role))
 
-    private val mutex = Mutex()
-
-    private val waiting = mutableMapOf<SubscriptionKey, MutableList<KrpcMessage>>()
-    private val subscriptions = mutableMapOf<SubscriptionKey, KrpcMessageHandler>()
+    private val waiting = RpcInternalConcurrentHashMap<SubscriptionKey, MutableList<KrpcMessage>>()
+    private val subscriptions = RpcInternalConcurrentHashMap<SubscriptionKey, KrpcMessageHandler>()
+    private val processWaitersLocks = RpcInternalConcurrentHashMap<SubscriptionKey, Mutex>()
 
     private val dumpLogger by lazy { RpcInternalDumpLoggerContainer.provide() }
 
@@ -78,19 +82,23 @@ public class KrpcConnector<SubscriptionKey>(
         transport.send(transportMessage)
     }
 
-    public fun unsubscribeFromMessages(key: SubscriptionKey) {
-        launch { mutex.withLock { subscriptions.remove(key) } }
-    }
-
-    public suspend fun subscribeToMessages(key: SubscriptionKey, handler: KrpcMessageHandler) {
-        mutex.withLock {
-            subscriptions[key] = handler
-            processWaiters(key, handler)
+    public fun unsubscribeFromMessages(key: SubscriptionKey, callback: () -> Unit = {}) {
+        launch(CoroutineName("krpc-connector-unsubscribe-$key")) {
+            delay(15.seconds)
+            subscriptions.remove(key)
+            processWaitersLocks.remove(key)
+        }.invokeOnCompletion {
+            callback()
         }
     }
 
+    public suspend fun subscribeToMessages(key: SubscriptionKey, handler: KrpcMessageHandler) {
+        subscriptions[key] = handler
+        processWaiters(key, handler)
+    }
+
     init {
-        launch {
+        launch(CoroutineName("krpc-connector-receive-loop")) {
             while (true) {
                 processMessage(transport.receiveCatching().getOrNull() ?: break)
             }
@@ -119,7 +127,7 @@ public class KrpcConnector<SubscriptionKey>(
         processMessage(message)
     }
 
-    private suspend fun processMessage(message: KrpcMessage) = mutex.withLock {
+    private suspend fun processMessage(message: KrpcMessage) = withLockForKey(message.getKey()) {
         when (message) {
             is KrpcCallMessage -> processServiceMessage(message)
             is KrpcProtocolMessage, is KrpcGenericMessage -> processNonServiceMessage(message)
@@ -139,7 +147,7 @@ public class KrpcConnector<SubscriptionKey>(
             }
 
             HandlerResult.NoSubscription -> {
-                waiting.getOrPut(message.getKey()) { mutableListOf() }.add(message)
+                waiting.computeIfAbsent(message.getKey()) { mutableListOf() }.add(message)
             }
 
             HandlerResult.Success -> {} // ok
@@ -152,7 +160,7 @@ public class KrpcConnector<SubscriptionKey>(
         // todo better exception processing probably
         if (result != HandlerResult.Success) {
             if (waitForSubscribers) {
-                waiting.getOrPut(message.getKey()) { mutableListOf() }.add(message)
+                waiting.computeIfAbsent(message.getKey()) { mutableListOf() }.add(message)
 
                 val reason = when (result) {
                     is HandlerResult.Failure -> {
@@ -160,7 +168,7 @@ public class KrpcConnector<SubscriptionKey>(
                     }
 
                     is HandlerResult.NoSubscription -> {
-                        "No service with key '${message.getKey()}' and '${message.serviceType}' type was registered." +
+                        "No service with key '${message.getKey()}' and '${message.serviceType}' type was registered. " +
                                 "Available: keys: [${subscriptions.keys.joinToString()}]"
                     }
 
@@ -171,7 +179,7 @@ public class KrpcConnector<SubscriptionKey>(
 
                 logger.warn((result as? HandlerResult.Failure)?.cause) {
                     "No registered service of ${message.serviceType} service type " +
-                            "was able to process message at the moment. Waiting for new services." +
+                            "was able to process message ($message) at the moment. Waiting for new services. " +
                             "Reason: $reason"
                 }
 
@@ -182,7 +190,7 @@ public class KrpcConnector<SubscriptionKey>(
 
             val cause = IllegalStateException(
                 "Failed to process call ${message.callId} for service ${message.serviceType}, " +
-                        "${subscriptions.size} attempts failed",
+                        "${subscriptions.values.size} attempts failed",
                 initialCause,
             )
 
@@ -225,17 +233,23 @@ public class KrpcConnector<SubscriptionKey>(
     }
 
     private suspend fun processWaiters(key: SubscriptionKey, handler: KrpcMessageHandler) {
-        if (waiting.isEmpty()) return
+        withLockForKey(key) {
+            if (waiting.values.isEmpty()) return
 
-        val iterator = waiting[key]?.iterator() ?: return
-        while (iterator.hasNext()) {
-            val message = iterator.next()
+            val iterator = waiting[key]?.iterator() ?: return
+            while (iterator.hasNext()) {
+                val message = iterator.next()
 
-            if (tryHandle(message, handler) == HandlerResult.Success) {
-                iterator.remove()
+                val tryHandle = tryHandle(message, handler)
+                if (tryHandle == HandlerResult.Success) {
+                    iterator.remove()
+                }
             }
         }
     }
+
+    private suspend inline fun <T> withLockForKey(key: SubscriptionKey, action: () -> T): T =
+        processWaitersLocks.computeIfAbsent(key) { Mutex() }.withLock(action = action)
 
     internal companion object {
         const val SEND_PHASE = "Send"

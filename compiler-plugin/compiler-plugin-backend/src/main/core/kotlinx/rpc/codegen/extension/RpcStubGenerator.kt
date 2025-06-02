@@ -120,8 +120,6 @@ internal class RpcStubGenerator(
         stubIdProperty()
 
         clientProperty()
-
-        coroutineContextProperty()
     }
 
     private var stubIdProperty: IrProperty by Delegates.notNull()
@@ -191,64 +189,6 @@ internal class RpcStubGenerator(
         }
     }
 
-    private var coroutineContextProperty: IrProperty by Delegates.notNull()
-
-    /**
-     * `coroutineContext` property from `RemoteService` interface
-     *
-     * ```kotlin
-     * final override val coroutineContext: CoroutineContext = __rpc_client.provideStubContext(__rpc_stub_id)
-     * ```
-     */
-    private fun IrClass.coroutineContextProperty() {
-        coroutineContextProperty = addProperty {
-            name = Name.identifier("coroutineContext")
-            visibility = DescriptorVisibilities.PUBLIC
-            modality = Modality.FINAL
-        }.apply {
-            overriddenSymbols = listOf(ctx.properties.rpcClientCoroutineContext)
-
-            addBackingFieldUtil {
-                visibility = DescriptorVisibilities.PRIVATE
-                type = ctx.coroutineContext.defaultType
-                vsApi { isFinalVS = true }
-            }.apply {
-                val coroutineContextClass = ctx.coroutineContext.owner
-
-                initializer = factory.createExpressionBody(
-                    vsApi {
-                        IrCallImplVS(
-                            startOffset = UNDEFINED_OFFSET,
-                            endOffset = UNDEFINED_OFFSET,
-                            type = coroutineContextClass.typeWith(),
-                            symbol = ctx.functions.provideStubContext.symbol,
-                            valueArgumentsCount = 1,
-                            typeArgumentsCount = 0,
-                        )
-                    }.apply {
-                        arguments {
-                            dispatchReceiver = irCallProperty(stubClass, clientProperty)
-
-                            values {
-                                +irCallProperty(stubClass, stubIdProperty)
-                            }
-                        }
-                    }
-                )
-            }
-
-            addDefaultGetter(this@coroutineContextProperty, ctx.irBuiltIns) {
-                val serviceCoroutineContext = declaration.service.getPropertyGetter("coroutineContext")
-                    ?: error(
-                        "RPC services expected to have \"coroutineContext\" property with getter: " +
-                                declaration.service.dump()
-                    )
-
-                overriddenSymbols = listOf(serviceCoroutineContext)
-            }
-        }
-    }
-
     private fun IrClass.generateMethods() {
         declaration.methods.forEach {
             generateRpcMethod(it)
@@ -307,8 +247,6 @@ internal class RpcStubGenerator(
                 }
             }
 
-            val declaredFunction = this
-
             val arguments = method.arguments.memoryOptimizedMap { arg ->
                 addValueParameter {
                     name = arg.value.name
@@ -333,63 +271,19 @@ internal class RpcStubGenerator(
                     return@irBlockBody
                 }
 
-                +irReturn(
-                    irCall(
-                        callee = ctx.functions.scopedClientCall,
-                        type = method.function.returnType,
-                    ).apply {
-                        // suspend lambda
-                        // it's type is not available at runtime, but in fact exists
-                        val lambdaType = ctx.suspendFunction0.typeWith(method.function.returnType)
-
-                        val functionLambda = factory.buildFun {
-                            origin = IrDeclarationOrigin.LOCAL_FUNCTION_FOR_LAMBDA
-                            name = SpecialNames.ANONYMOUS
-                            visibility = DescriptorVisibilities.LOCAL
-                            modality = Modality.FINAL
-                            returnType = method.function.returnType
-                            isSuspend = true
-                        }.apply {
-                            parent = declaredFunction
-
-                            body = irBuilder(symbol).irBlockBody {
-                                val call = irRpcMethodClientCall(
-                                    method = method,
-                                    functionThisReceiver = functionThisReceiver,
-                                    isMethodObject = isMethodObject,
-                                    methodClass = methodClass,
-                                    arguments = arguments,
-                                )
-
-                                if (method.function.returnType == ctx.irBuiltIns.unitType) {
-                                    +call
-                                } else {
-                                    +irReturn(call)
-                                }
-                            }
-                        }
-
-                        val lambda = IrFunctionExpressionImpl(
-                            startOffset = UNDEFINED_OFFSET,
-                            endOffset = UNDEFINED_OFFSET,
-                            type = lambdaType,
-                            origin = IrStatementOrigin.LAMBDA,
-                            function = functionLambda,
-                        )
-
-                        arguments {
-                            types {
-                                +method.function.returnType
-                            }
-
-                            values {
-                                +irGet(ctx.coroutineScope.defaultType, functionThisReceiver.symbol)
-
-                                +lambda
-                            }
-                        }
-                    }
+                val call = irRpcMethodClientCall(
+                    method = method,
+                    functionThisReceiver = functionThisReceiver,
+                    isMethodObject = isMethodObject,
+                    methodClass = methodClass,
+                    arguments = arguments,
                 )
+
+                if (method.function.returnType == ctx.irBuiltIns.unitType) {
+                    +call
+                } else {
+                    +irReturn(call)
+                }
             }
         }
     }

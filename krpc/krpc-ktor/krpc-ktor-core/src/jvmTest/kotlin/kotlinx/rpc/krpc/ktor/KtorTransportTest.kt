@@ -9,7 +9,6 @@ package kotlinx.rpc.krpc.ktor
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.cancel
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.ktor.client.installKrpc
 import kotlinx.rpc.krpc.ktor.client.rpc
@@ -19,16 +18,14 @@ import kotlinx.rpc.krpc.ktor.server.rpc
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.withService
 import org.junit.Assert.assertEquals
-import kotlin.coroutines.CoroutineContext
 import kotlin.test.Test
 
 @Rpc
-interface NewService : RemoteService {
+interface NewService {
     suspend fun echo(value: String): String
 }
 
 class NewServiceImpl(
-    override val coroutineContext: CoroutineContext,
     private val call: ApplicationCall,
 ) : NewService {
     @Suppress("UastIncorrectHttpHeaderInspection")
@@ -54,7 +51,7 @@ class KtorTransportTest {
                     waitForServices = true
                 }
 
-                registerService<NewService> { NewServiceImpl(it, call) }
+                registerService<NewService> { NewServiceImpl(call) }
             }
         }
 
@@ -77,7 +74,6 @@ class KtorTransportTest {
 
         assertEquals("Hello, world!", firstActual)
 
-        serviceWithGlobalConfig.cancel()
         clientWithGlobalConfig.cancel()
 
         val clientWithNoConfig = createClient {
@@ -98,7 +94,6 @@ class KtorTransportTest {
 
         assertEquals("Hello, world!", secondActual)
 
-        serviceWithLocalConfig.cancel()
         clientWithNoConfig.cancel()
     }
 }

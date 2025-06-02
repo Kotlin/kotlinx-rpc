@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.codegen
 
-import kotlinx.rpc.codegen.common.RpcClassId
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.toAnnotationClassId
@@ -15,16 +14,10 @@ import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
-import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.types.ConeClassLikeType
-import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.coneTypeSafe
 import org.jetbrains.kotlin.name.ClassId
-
-fun FirClassSymbol<*>.isRemoteService(session: FirSession): Boolean = resolvedSuperTypeRefs.any {
-    it.doesMatchesClassId(session, RpcClassId.remoteServiceInterface)
-}
 
 fun FirBasedSymbol<*>.rpcAnnotationSource(
     session: FirSession,
@@ -51,14 +44,6 @@ fun List<FirAnnotation>.rpcAnnotation(session: FirSession, predicate: Declaratio
             } == true || (classId != null && it.toAnnotationClassId(session) == classId)
         }
     }
-}
-
-fun FirClassSymbol<*>.remoteServiceSupertypeSource(session: FirSession): KtSourceElement? {
-    return remoteServiceSupertype(session)?.source
-}
-
-fun FirClassSymbol<*>.remoteServiceSupertype(session: FirSession): FirResolvedTypeRef? {
-    return resolvedSuperTypeRefs.find { it.doesMatchesClassId(session, RpcClassId.remoteServiceInterface) }
 }
 
 @OptIn(SymbolInternals::class)

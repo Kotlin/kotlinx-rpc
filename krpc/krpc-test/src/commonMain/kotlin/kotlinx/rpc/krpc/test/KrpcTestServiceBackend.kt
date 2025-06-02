@@ -6,14 +6,14 @@ package kotlinx.rpc.krpc.test
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.test.TestScope
 import kotlinx.serialization.Serializable
-import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : KrpcTestService {
+class KrpcTestServiceBackend() : KrpcTestService {
     override fun nonSuspendFlow(): Flow<Int> {
         return flow {
             repeat(10) {
@@ -235,4 +235,4 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
 
 internal expect fun runThreadIfPossible(runner: () -> Unit)
 
-internal expect fun CoroutineScope.debugCoroutines()
+internal expect fun TestScope.debugCoroutines()
