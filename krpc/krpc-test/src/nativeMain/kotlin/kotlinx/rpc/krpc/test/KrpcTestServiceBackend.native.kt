@@ -4,10 +4,14 @@
 
 package kotlinx.rpc.krpc.test
 
+import kotlinx.coroutines.CoroutineScope
 import kotlin.native.concurrent.ObsoleteWorkersApi
 import kotlin.native.concurrent.Worker
 
 @OptIn(ObsoleteWorkersApi::class)
 actual fun runThreadIfPossible(runner: () -> Unit) {
     Worker.start(errorReporting = true).executeAfter(0L, runner)
+}
+
+internal actual fun CoroutineScope.debugCoroutines() {
 }

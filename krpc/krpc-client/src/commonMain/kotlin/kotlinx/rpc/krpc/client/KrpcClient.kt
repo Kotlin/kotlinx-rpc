@@ -8,8 +8,11 @@ import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.annotations.Rpc
@@ -33,6 +36,7 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlin.collections.first
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.seconds
 
 @Deprecated("Use KrpcClient instead", ReplaceWith("KrpcClient"), level = DeprecationLevel.ERROR)
 public typealias KRPCClient = KrpcClient
@@ -58,7 +62,7 @@ public typealias KRPCClient = KrpcClient
 public abstract class KrpcClient(
     private val config: KrpcConfig.Client,
     transport: KrpcTransport,
-): RpcClient, KrpcEndpoint {
+) : RpcClient, KrpcEndpoint {
     // we make a child here, so we can send cancellation messages before closing the connection
     final override val coroutineContext: CoroutineContext = SupervisorJob(transport.coroutineContext.job)
 
@@ -183,26 +187,22 @@ public abstract class KrpcClient(
                 }
 
                 coroutineScope {
-                    launch {
+                    val clientStreamsJob = launch(CoroutineName("client-stream-root-${call.serviceId}-$callId")) {
                         supervisorScope {
                             clientStreamContext.streams[callId].orEmpty().forEach {
-                                launch {
+                                launch(CoroutineName("client-stream-${call.serviceId}-$callId-${it.streamId}")) {
                                     handleOutgoingStream(it, serialFormat, call.descriptor.fqName)
                                 }
                             }
                         }
+                        println("finished client streams job")
                     }
 
-                    while (true) {
-                        val element = channel.receiveCatching()
-                        if (element.isClosed) {
-                            val ex = element.exceptionOrNull() ?: break
-                            throw ex
-                        }
-
-                        if (!element.isFailure) {
-                            emit(element.getOrThrow())
-                        }
+                    try {
+                        consumeAndEmitServerMessages(channel)
+                    } finally {
+                        clientStreamsJob.cancelAndJoin()
+                        clientStreamContext.streams.remove(callId)
                     }
                 }
             } catch (e: CancellationException) {
@@ -213,6 +213,20 @@ public abstract class KrpcClient(
                 throw e
             } finally {
                 channel.close()
+            }
+        }
+    }
+
+    private suspend fun <T> FlowCollector<T>.consumeAndEmitServerMessages(channel: Channel<T>) {
+        while (true) {
+            val element = channel.receiveCatching()
+            if (element.isClosed) {
+                val ex = element.exceptionOrNull() ?: break
+                throw ex
+            }
+
+            if (!element.isFailure) {
+                emit(element.getOrThrow())
             }
         }
     }
@@ -388,6 +402,7 @@ public abstract class KrpcClient(
         outgoingStream: StreamCall,
     ) {
         flow.collect {
+            println("collected: $it, ${outgoingStream.streamId}")
             val message = when (serialFormat) {
                 is StringFormat -> {
                     val stringData = serialFormat.encodeToString(outgoingStream.elementSerializer, it)

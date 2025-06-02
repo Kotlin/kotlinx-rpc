@@ -132,7 +132,6 @@ abstract class KrpcTransportTestBase {
             expected = List(10) { it * 2 },
             actual = client.nonSuspendBidirectional(List(10) { it }.asFlow()).toList(),
         )
-        print(1)
     }
 
     @Test
@@ -259,13 +258,14 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    @Ignore // todo async vs sync client streaming
-    fun incomingStreamAsyncCollect() = runTest {
-        val result = client.incomingStreamAsyncCollect(flowOf("test1", "test2", "test3")).also {
-            server.incomingStreamAsyncCollectLatch.await()
-        }
+    fun incomingStreamSyncCollectMultiple() = runTest {
+        val result = client.incomingStreamSyncCollectMultiple(
+            flowOf("test1", "test2", "test3"),
+            flowOf("test1", "test2", "test3"),
+            flowOf("test1", "test2", "test3"),
+        )
 
-        assertEquals(5, result)
+        assertEquals(9, result)
     }
 
     @Test
@@ -290,20 +290,9 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    @Ignore // todo async vs sync client streaming
-    fun bidirectionalAsyncStream() = runTest {
-        val flow = MutableSharedFlow<Int>(1)
-        val result = client.echoStream(flow.take(10))
-        launch {
-            var id = 0
-            result.collect {
-                assertEquals(id, it)
-                id++
-                flow.emit(id)
-            }
-        }
-
-        flow.emit(0)
+    fun bidirectionalEchoStream() = runTest {
+        val result = client.echoStream(flowOf(1, 2, 3)).toList().sum()
+        assertEquals(6, result)
     }
 
     @Test
@@ -331,7 +320,7 @@ abstract class KrpcTransportTestBase {
         try {
             client.throwsIllegalArgument("me")
             fail("Exception expected: throwsIllegalArgument")
-        } catch (e : AssertionError) {
+        } catch (e: AssertionError) {
             throw e
         } catch (e: Throwable) {
             assertEquals("me", e.message)
@@ -339,7 +328,7 @@ abstract class KrpcTransportTestBase {
         try {
             client.throwsSerializableWithMessageAndCause("me")
             fail("Exception expected: throwsSerializableWithMessageAndCause")
-        } catch (e : AssertionError) {
+        } catch (e: AssertionError) {
             throw e
         } catch (e: Throwable) {
             assertEquals("me", e.message)
@@ -348,7 +337,7 @@ abstract class KrpcTransportTestBase {
         try {
             client.throwsThrowable("me")
             fail("Exception expected: throwsThrowable")
-        } catch (e : AssertionError) {
+        } catch (e: AssertionError) {
             throw e
         } catch (e: Throwable) {
             assertEquals("me", e.message)
@@ -356,7 +345,7 @@ abstract class KrpcTransportTestBase {
         try {
             client.throwsUNSTOPPABLEThrowable("me")
             fail("Exception expected: throwsUNSTOPPABLEThrowable")
-        } catch (e : AssertionError) {
+        } catch (e: AssertionError) {
             throw e
         } catch (e: Throwable) {
             assertEquals("me", e.message)

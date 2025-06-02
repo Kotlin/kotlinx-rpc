@@ -202,6 +202,8 @@ internal class KrpcServerService<@Rpc T : Any>(
 
             if (failure != null) {
                 cancelRequest(callId, "Server request failed", failure, fromJob = true)
+            } else {
+                cancelRequest(callId, fromJob = true)
             }
         }
 
@@ -218,9 +220,7 @@ internal class KrpcServerService<@Rpc T : Any>(
     ) {
         val result = when (serialFormat) {
             is StringFormat -> {
-                val stringValue = serverStreamContext.scoped(callData.callId) {
-                    serialFormat.encodeToString(returnSerializer, value)
-                }
+                val stringValue = serialFormat.encodeToString(returnSerializer, value)
                 KrpcCallMessage.CallSuccessString(
                     callId = callData.callId,
                     serviceType = descriptor.fqName,
@@ -231,9 +231,7 @@ internal class KrpcServerService<@Rpc T : Any>(
             }
 
             is BinaryFormat -> {
-                val binaryValue = serverStreamContext.scoped(callData.callId) {
-                    serialFormat.encodeToByteArray(returnSerializer, value)
-                }
+                val binaryValue = serialFormat.encodeToByteArray(returnSerializer, value)
                 KrpcCallMessage.CallSuccessBinary(
                     callId = callData.callId,
                     serviceType = descriptor.fqName,
@@ -261,9 +259,7 @@ internal class KrpcServerService<@Rpc T : Any>(
             flow.collect { value ->
                 val result = when (serialFormat) {
                     is StringFormat -> {
-                        val stringValue = serverStreamContext.scoped(callData.callId) {
-                            serialFormat.encodeToString(returnSerializer, value)
-                        }
+                        val stringValue = serialFormat.encodeToString(returnSerializer, value)
                         KrpcCallMessage.StreamMessageString(
                             callId = callData.callId,
                             serviceType = descriptor.fqName,
@@ -275,9 +271,7 @@ internal class KrpcServerService<@Rpc T : Any>(
                     }
 
                     is BinaryFormat -> {
-                        val binaryValue = serverStreamContext.scoped(callData.callId) {
-                            serialFormat.encodeToByteArray(returnSerializer, value)
-                        }
+                        val binaryValue = serialFormat.encodeToByteArray(returnSerializer, value)
                         KrpcCallMessage.StreamMessageBinary(
                             callId = callData.callId,
                             serviceType = descriptor.fqName,
@@ -328,6 +322,7 @@ internal class KrpcServerService<@Rpc T : Any>(
         cause: Throwable? = null,
         fromJob: Boolean = false,
     ) {
+        serverStreamContext.removeCall(callId, cause)
         requestMap.remove(callId)?.cancelAndClose(callId, message, cause, fromJob)
 
         // acknowledge the cancellation

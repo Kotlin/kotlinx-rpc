@@ -55,7 +55,7 @@ internal class ServerStreamContext {
     fun prepareClientStream(streamId: String, elementKind: KSerializer<Any?>): Flow<Any?> {
         val callId = currentCallId ?: error("No call id")
 
-        val channel = Channel<Any?>()
+        val channel = Channel<Any?>(Channel.UNLIMITED)
 
         @Suppress("UNCHECKED_CAST")
         val map = streams.computeIfAbsent(callId) { RpcInternalConcurrentHashMap() }
@@ -68,6 +68,7 @@ internal class ServerStreamContext {
 
         val flow = flow {
             for (message in channel) {
+                println("Consumed on server: $message")
                 when (message) {
                     is StreamCancel -> {
                         onClose()

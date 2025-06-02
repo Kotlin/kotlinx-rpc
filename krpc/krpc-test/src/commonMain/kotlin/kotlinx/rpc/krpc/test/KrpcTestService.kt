@@ -71,7 +71,7 @@ interface KrpcTestService : RemoteService {
     ): String
 
     suspend fun incomingStreamSyncCollect(arg1: Flow<String>): Int
-    suspend fun incomingStreamAsyncCollect(arg1: Flow<String>): Int
+    suspend fun incomingStreamSyncCollectMultiple(arg1: Flow<String>, arg2: Flow<String>, arg3: Flow<String>): Int
     fun outgoingStream(): Flow<String>
     fun bidirectionalStream(arg1: Flow<String>): Flow<String>
     fun echoStream(arg1: Flow<Int>): Flow<Int>
