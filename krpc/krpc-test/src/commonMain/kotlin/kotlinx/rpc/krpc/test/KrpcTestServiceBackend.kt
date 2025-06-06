@@ -13,7 +13,7 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class KrpcTestServiceBackend() : KrpcTestService {
+class KrpcTestServiceBackend : KrpcTestService {
     override fun nonSuspendFlow(): Flow<Int> {
         return flow {
             repeat(10) {

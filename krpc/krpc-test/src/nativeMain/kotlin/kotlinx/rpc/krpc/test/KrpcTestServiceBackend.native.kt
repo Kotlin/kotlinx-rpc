@@ -13,5 +13,6 @@ actual fun runThreadIfPossible(runner: () -> Unit) {
     Worker.start(errorReporting = true).executeAfter(0L, runner)
 }
 
+@Suppress("detekt.EmptyFunctionBlock")
 internal actual fun TestScope.debugCoroutines() {
 }

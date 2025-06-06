@@ -8,10 +8,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.native.concurrent.ObsoleteWorkersApi
 import kotlin.native.concurrent.Worker
-import kotlin.native.concurrent.Future
 import kotlin.native.concurrent.TransferMode
 import kotlin.experimental.ExperimentalNativeApi
-import kotlin.native.concurrent.withWorker
 
 class ThreadLocalNativeTest {
     @OptIn(ObsoleteWorkersApi::class, ExperimentalNativeApi::class)

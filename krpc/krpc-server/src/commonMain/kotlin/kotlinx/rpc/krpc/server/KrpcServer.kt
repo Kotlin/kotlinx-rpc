@@ -18,7 +18,6 @@ import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.server.internal.KrpcServerConnector
 import kotlinx.rpc.krpc.server.internal.KrpcServerService
 import kotlin.concurrent.Volatile
-import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 
 @Deprecated("Use KrpcServer instead", ReplaceWith("KrpcServer"), level = DeprecationLevel.ERROR)

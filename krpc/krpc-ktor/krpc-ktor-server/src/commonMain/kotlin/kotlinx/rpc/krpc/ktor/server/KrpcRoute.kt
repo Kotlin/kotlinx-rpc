@@ -5,7 +5,6 @@
 package kotlinx.rpc.krpc.ktor.server
 
 import io.ktor.server.websocket.*
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.KrpcConfigBuilder

@@ -33,7 +33,6 @@ import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
 import kotlin.collections.first
 import kotlin.concurrent.Volatile
-import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
 
 @Deprecated("Use KrpcClient instead", ReplaceWith("KrpcClient"), level = DeprecationLevel.ERROR)
@@ -52,7 +51,7 @@ public typealias KRPCClient = KrpcClient
  * class MyClient(config: RpcConfig.Client): KrpcClient(config, MyTransport())
  * ```
  *
- * @property config configuration provided for that specific client. Applied to all services that use this client.
+ * @param config configuration provided for that specific client. Applied to all services that use this client.
  * @param transport [KrpcTransport] instance that will be used to send and receive RPC messages.
  * IMPORTANT: Must be exclusive to this client, otherwise unexpected behavior may occur.
  */
