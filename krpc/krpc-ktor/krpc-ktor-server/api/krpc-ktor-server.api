@@ -16,7 +16,7 @@ public final class kotlinx/rpc/krpc/ktor/server/KrpcRoute : io/ktor/server/webso
 	public fun getOutgoing ()Lkotlinx/coroutines/channels/SendChannel;
 	public fun getPingIntervalMillis ()J
 	public fun getTimeoutMillis ()J
-	public final fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;)V
+	public final fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function0;)V
 	public final fun rpcConfig (Lkotlin/jvm/functions/Function1;)V
 	public fun send (Lio/ktor/websocket/Frame;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun setMasking (Z)V

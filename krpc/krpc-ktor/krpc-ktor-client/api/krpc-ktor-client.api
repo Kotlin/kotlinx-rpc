@@ -20,7 +20,3 @@ public abstract interface class kotlinx/rpc/krpc/ktor/client/KtorRpcClient : kot
 	public abstract fun getWebSocketSession ()Lio/ktor/websocket/WebSocketSession;
 }
 
-public final class kotlinx/rpc/krpc/ktor/client/KtorRpcClient$DefaultImpls {
-	public static fun callServerStreaming (Lkotlinx/rpc/krpc/ktor/client/KtorRpcClient;Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/flow/Flow;
-}
-
