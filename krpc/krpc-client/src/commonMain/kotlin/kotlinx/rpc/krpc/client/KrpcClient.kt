@@ -61,7 +61,8 @@ public abstract class KrpcClient(
     private val config: KrpcConfig.Client,
     transport: KrpcTransport,
 ) : RpcClient, KrpcEndpoint {
-    final override val coroutineContext: CoroutineContext = SupervisorJob(transport.coroutineContext.job)
+    @InternalRpcApi
+    public val internalScope: CoroutineScope = CoroutineScope(SupervisorJob(transport.coroutineContext.job))
 
     // we make a child here, so we can send cancellation messages before closing the connection
     private val connector by lazy {
@@ -93,7 +94,7 @@ public abstract class KrpcClient(
     private var clientCancelled = false
 
     init {
-        coroutineContext.job.invokeOnCompletion(onCancelling = true) {
+        internalScope.coroutineContext.job.invokeOnCompletion(onCancelling = true) {
             clientCancelled = true
 
             sendCancellation(CancellationType.ENDPOINT, null, null, closeTransportAfterSending = true)
@@ -102,12 +103,12 @@ public abstract class KrpcClient(
             requestChannels.clear()
         }
 
-        launch(CoroutineName("krpc-client-generic-messages")) {
+        internalScope.launch(CoroutineName("krpc-client-generic-messages")) {
             connector.subscribeToGenericMessages(::handleGenericMessage)
         }
     }
 
-    private val initHandshake: Job = launch(CoroutineName("krpc-client-handshake")) {
+    private val initHandshake: Job = internalScope.launch(CoroutineName("krpc-client-handshake")) {
         connector.sendMessage(KrpcProtocolMessage.Handshake(KrpcPlugin.ALL))
 
         connector.subscribeToProtocolMessages(::handleProtocolMessage)
@@ -284,7 +285,7 @@ public abstract class KrpcClient(
     final override suspend fun handleCancellation(message: KrpcGenericMessage) {
         when (val type = message.cancellationType()) {
             CancellationType.ENDPOINT -> {
-                cancel("Closing client after server cancellation") // we cancel this client
+                internalScope.cancel("Closing client after server cancellation") // we cancel this client
             }
 
             else -> {

@@ -5,9 +5,7 @@
 package kotlinx.rpc
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
-import kotlin.coroutines.CoroutineContext
 
 @Deprecated("Use RpcClient instead", ReplaceWith("RpcClient"), level = DeprecationLevel.ERROR)
 public typealias RPCClient = RpcClient
@@ -17,7 +15,7 @@ public typealias RPCClient = RpcClient
  * transform them, send to the server and handle responses and errors.
  * [CoroutineScope] defines the lifetime of the client.
  */
-public interface RpcClient : CoroutineScope {
+public interface RpcClient {
     /**
      * This method is used by generated clients to perform a call to the server.
      *

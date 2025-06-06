@@ -47,8 +47,8 @@ public abstract class KrpcServer(
     private val config: KrpcConfig.Server,
     transport: KrpcTransport,
 ) : RpcServer, KrpcEndpoint {
-    // we make a child here, so we can send cancellation messages before closing the connection
-    final override val coroutineContext: CoroutineContext = SupervisorJob(transport.coroutineContext.job)
+    @InternalRpcApi
+    public val internalScope: CoroutineScope = CoroutineScope(SupervisorJob(transport.coroutineContext.job))
 
     private val logger = RpcInternalCommonLogger.logger(rpcInternalObjectId())
 
@@ -73,13 +73,13 @@ public abstract class KrpcServer(
     private var cancelledByClient = false
 
     init {
-        coroutineContext.job.invokeOnCompletion(onCancelling = true) {
+        internalScope.coroutineContext.job.invokeOnCompletion(onCancelling = true) {
             if (!cancelledByClient) {
                 sendCancellation(CancellationType.ENDPOINT, null, null, closeTransportAfterSending = true)
             }
         }
 
-        launch(CoroutineName("krpc-server-generic-protocol-messages")) {
+        internalScope.launch(CoroutineName("krpc-server-generic-protocol-messages")) {
             connector.subscribeToProtocolMessages(::handleProtocolMessage)
 
             connector.subscribeToGenericMessages(::handleGenericMessage)
@@ -108,7 +108,7 @@ public abstract class KrpcServer(
     ) {
         val descriptor = serviceDescriptorOf(serviceKClass)
 
-        launch(CoroutineName("krpc-server-service-$descriptor")) {
+        internalScope.launch(CoroutineName("krpc-server-service-$descriptor")) {
             connector.subscribeToServiceMessages(descriptor.fqName) { message ->
                 val rpcServerService = rpcServices.computeIfAbsent(descriptor.fqName) {
                     createNewServiceInstance(descriptor, serviceFactory)
@@ -133,7 +133,7 @@ public abstract class KrpcServer(
             config = config,
             connector = connector,
             supportedPlugins = supportedPlugins,
-            serverScope = this,
+            serverScope = internalScope,
         )
     }
 
@@ -143,7 +143,7 @@ public abstract class KrpcServer(
             CancellationType.ENDPOINT -> {
                 cancelledByClient = true
 
-                cancel("Server cancelled by client")
+                internalScope.cancel("Server cancelled by client")
                 rpcServices.clear()
             }
 

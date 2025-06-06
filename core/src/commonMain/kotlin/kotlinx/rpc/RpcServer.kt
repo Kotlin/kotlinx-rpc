@@ -4,7 +4,6 @@
 
 package kotlinx.rpc
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.rpc.annotations.Rpc
 import kotlin.reflect.KClass
 
@@ -15,7 +14,7 @@ public typealias RPCServer = RpcServer
  * RpcServer is used to accept RPC messages, route them to a specific service, and process given responses.
  * Server may contain multiple services.
  */
-public interface RpcServer : CoroutineScope {
+public interface RpcServer {
     /**
      * Registers new service to the server. Server will route all designated messages to it.
      * Service of any type should be unique on the server, but RpcServer doesn't specify the actual retention policy.

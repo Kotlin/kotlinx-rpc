@@ -23,7 +23,6 @@ import kotlinx.rpc.krpc.server.KrpcServer
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlinx.serialization.BinaryFormat
-import kotlin.coroutines.CoroutineContext
 
 abstract class ProtocolTestBase {
     protected fun runTest(

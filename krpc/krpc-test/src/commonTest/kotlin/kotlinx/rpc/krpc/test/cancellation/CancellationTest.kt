@@ -76,7 +76,7 @@ class CancellationTest {
         }
 
         unskippableDelay(150) // wait for requests to reach server
-        client.cancel()
+        client.internalScope.cancel()
         firstRequestJob.join()
         secondRequestJob.join()
 
@@ -85,8 +85,8 @@ class CancellationTest {
 
         assertEquals(0, serverInstances.sumOf { it.delayCounter.value }, "Expected no requests to succeed")
 
-        client.join()
-        server.join()
+        client.internalScope.join()
+        server.internalScope.join()
 
         checkAlive(clientAlive = false, serverAlive = false)
         stopAllAndJoin()
@@ -105,7 +105,7 @@ class CancellationTest {
         }
 
         unskippableDelay(150) // wait for requests to reach server
-        server.cancel()
+        server.internalScope.cancel()
         firstRequestJob.join()
         secondRequestJob.join()
 
@@ -114,8 +114,8 @@ class CancellationTest {
 
         assertEquals(0, serverInstances.sumOf { it.delayCounter.value }, "Expected no requests to succeed")
 
-        client.join()
-        server.join()
+        client.internalScope.join()
+        server.internalScope.join()
 
         checkAlive(clientAlive = false, serverAlive = false)
         stopAllAndJoin()
@@ -220,8 +220,8 @@ class CancellationTest {
 
         serverInstance().firstIncomingConsumed.await()
 
-        client.cancel("Test request cancelled")
-        client.join()
+        client.internalScope.cancel("Test request cancelled")
+        client.internalScope.join()
 
         serverInstance().consumedAll.await()
 
@@ -239,7 +239,7 @@ class CancellationTest {
             caught = it
         }.collect {
             if (it == 0) {
-                client.cancel()
+                client.internalScope.cancel()
             } else {
                 fail("Expected the request to fail with cancellation of the client")
             }
@@ -254,7 +254,7 @@ class CancellationTest {
     fun testCancelledClientCancelsRequest() = runCancellationTest {
         launch {
             serverInstance().firstIncomingConsumed.await()
-            client.cancel("Cancelled by test")
+            client.internalScope.cancel("Cancelled by test")
         }
 
         try {
@@ -330,8 +330,8 @@ class CancellationTest {
         serverAlive: Boolean = true,
         transportAlive: Boolean = true,
     ) {
-        checkAlive(clientAlive, client, "client")
-        checkAlive(serverAlive, server, "server")
+        checkAlive(clientAlive, client.internalScope, "client")
+        checkAlive(serverAlive, server.internalScope, "server")
         checkAlive(transportAlive, transport, "transport")
     }
 

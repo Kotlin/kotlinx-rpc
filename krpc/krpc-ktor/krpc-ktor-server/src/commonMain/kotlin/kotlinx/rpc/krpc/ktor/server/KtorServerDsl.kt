@@ -54,6 +54,6 @@ private fun Route.createRpcServer(rpcRouteBuilder: KrpcRoute.() -> Unit) {
             registration(server)
         }
 
-        server.coroutineContext.job.join()
+        server.internalScope.coroutineContext.job.join()
     }
 }
