@@ -1,4 +1,0 @@
-org.jetbrains.krpc.RPCMessage.CallException
-  - callId: kotlin.String
-  - cause: org.jetbrains.krpc.SerializedException
-  - serviceType: kotlin.String

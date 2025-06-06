@@ -1,4 +1,0 @@
-org.jetbrains.krpc.internal.transport.RPCMessage.CallSuccessBinary
-  - callId: kotlin.String
-  - data: kotlin.ByteArray
-  - serviceType: kotlin.String

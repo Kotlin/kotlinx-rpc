@@ -1,7 +1,0 @@
-org.jetbrains.krpc.SerializedException
-  - cause: org.jetbrains.krpc.SerializedException
-    - Nullable
-  - className: kotlin.String
-  - message: kotlin.String
-  - stacktrace: kotlin.collections.List
-  - toStringMessage: kotlin.String

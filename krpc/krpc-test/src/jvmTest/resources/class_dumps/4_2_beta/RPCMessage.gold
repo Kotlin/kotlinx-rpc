@@ -1,9 +1,0 @@
-org.jetbrains.krpc.RPCMessage
-  - callId: kotlin.String
-  - serviceType: kotlin.String
-
-  org.jetbrains.krpc.RPCMessage.CallData
-  org.jetbrains.krpc.RPCMessage.CallResult
-  org.jetbrains.krpc.RPCMessage.StreamCancel
-  org.jetbrains.krpc.RPCMessage.StreamFinished
-  org.jetbrains.krpc.RPCMessage.StreamMessage
