@@ -4,10 +4,8 @@
 
 package kotlinx.rpc.codegen.checkers
 
-import kotlinx.rpc.codegen.FirCheckersContext
 import kotlinx.rpc.codegen.FirRpcPredicates
 import kotlinx.rpc.codegen.checkers.diagnostics.FirRpcStrictModeDiagnostics
-import kotlinx.rpc.codegen.common.RpcCallableId
 import kotlinx.rpc.codegen.common.RpcClassId
 import kotlinx.rpc.codegen.vsApi
 import org.jetbrains.kotlin.KtSourceElement
@@ -19,9 +17,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.extractArgumentsTypeRefAndSour
 import org.jetbrains.kotlin.fir.analysis.checkers.toClassLikeSymbol
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.utils.isSuspend
-import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
-import org.jetbrains.kotlin.fir.references.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.scopes.impl.toConeType
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
@@ -33,33 +29,8 @@ import org.jetbrains.kotlin.utils.memoryOptimizedPlus
 import org.jetbrains.kotlinx.serialization.compiler.fir.services.FirSerializablePropertiesProvider
 import org.jetbrains.kotlinx.serialization.compiler.fir.services.serializablePropertiesProvider
 
-object FirRpcStrictModeExpressionChecker {
-    private val streamScopeFunctions = setOf(
-        RpcCallableId.StreamScope,
-        RpcCallableId.streamScoped,
-        RpcCallableId.withStreamScope,
-        RpcCallableId.invokeOnStreamScopeCompletion,
-    )
-
-    fun check(
-        ctx: FirCheckersContext,
-        expression: FirFunctionCall,
-        context: CheckerContext,
-        reporter: DiagnosticReporter,
-    ) {
-        expression.calleeReference.toResolvedCallableSymbol()?.let { symbol ->
-            if (symbol.callableId in streamScopeFunctions) {
-                ctx.strictModeDiagnostics.STREAM_SCOPE_FUNCTION_IN_RPC?.let {
-                    reporter.reportOn(expression.calleeReference.source, it, context)
-                }
-            }
-        }
-    }
-}
-
 object FirRpcStrictModeClassChecker {
     fun check(
-        ctx: FirCheckersContext,
         declaration: FirRegularClass,
         context: CheckerContext,
         reporter: DiagnosticReporter,
@@ -72,13 +43,11 @@ object FirRpcStrictModeClassChecker {
         vsApi { declaration.declarationsVS(context.session) }.forEach { declaration ->
             when (declaration) {
                 is FirPropertySymbol -> {
-                    ctx.strictModeDiagnostics.FIELD_IN_RPC_SERVICE?.let {
-                        reporter.reportOn(declaration.source, it, context)
-                    }
+                    reporter.reportOn(declaration.source, FirRpcStrictModeDiagnostics.FIELD_IN_RPC_SERVICE, context)
                 }
 
                 is FirNamedFunctionSymbol -> {
-                    checkFunction(ctx, declaration, context, reporter, serializablePropertiesProvider)
+                    checkFunction(declaration, context, reporter, serializablePropertiesProvider)
                 }
 
                 else -> {}
@@ -87,14 +56,13 @@ object FirRpcStrictModeClassChecker {
     }
 
     private fun checkFunction(
-        ctx: FirCheckersContext,
         function: FirNamedFunctionSymbol,
         context: CheckerContext,
         reporter: DiagnosticReporter,
         serializablePropertiesProvider: FirSerializablePropertiesProvider,
     ) {
         fun reportOn(element: KtSourceElement?, checker: FirRpcStrictModeDiagnostics.() -> KtDiagnosticFactory0?) {
-            reporter.reportOn(element, ctx.strictModeDiagnostics.checker() ?: return, context)
+            reporter.reportOn(element, FirRpcStrictModeDiagnostics.checker() ?: return, context)
         }
 
         val returnClassSymbol = vsApi {

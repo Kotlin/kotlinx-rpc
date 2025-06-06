@@ -6,9 +6,6 @@ package kotlinx.rpc.krpc
 
 import kotlinx.coroutines.CoroutineScope
 
-@Deprecated("Use KrpcTransportMessage instead", ReplaceWith("KrpcTransportMessage"), level = DeprecationLevel.ERROR)
-public typealias RPCTransportMessage = KrpcTransportMessage
-
 /**
  * A single message that can be transferred from one RPC endpoint to another.
  * Can be either of string or binary type.
@@ -18,9 +15,6 @@ public sealed interface KrpcTransportMessage {
 
     public class BinaryMessage(public val value: ByteArray) : KrpcTransportMessage
 }
-
-@Deprecated("Use KrpcTransport instead", ReplaceWith("KrpcTransport"), level = DeprecationLevel.ERROR)
-public typealias RPCTransport = KrpcTransport
 
 /**
  * An abstraction of transport capabilities for KrpcClient and KrpcServer.

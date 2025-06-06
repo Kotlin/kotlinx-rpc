@@ -18,13 +18,6 @@ class RpcCommandLineProcessor : CommandLineProcessor {
     override val pluginId = "kotlinx-rpc"
 
     override val pluginOptions = listOf(
-        StrictModeCliOptions.STATE_FLOW,
-        StrictModeCliOptions.SHARED_FLOW,
-        StrictModeCliOptions.NESTED_FLOW,
-        StrictModeCliOptions.STREAM_SCOPED_FUNCTIONS,
-        StrictModeCliOptions.SUSPENDING_SERVER_STREAMING,
-        StrictModeCliOptions.NOT_TOP_LEVEL_SERVER_FLOW,
-        StrictModeCliOptions.FIELDS,
         RpcFirCliOptions.ANNOTATION_TYPE_SAFETY,
     )
 
@@ -33,10 +26,6 @@ class RpcCommandLineProcessor : CommandLineProcessor {
         value: String,
         configuration: CompilerConfiguration,
     ) {
-        if (option.processAsStrictModeOption(value, configuration)) {
-            return
-        }
-
         when (option) {
             RpcFirCliOptions.ANNOTATION_TYPE_SAFETY -> {
                 @Suppress("NullableBooleanElvis")

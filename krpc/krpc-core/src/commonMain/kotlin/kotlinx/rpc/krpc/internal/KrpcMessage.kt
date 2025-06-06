@@ -115,7 +115,9 @@ public sealed interface KrpcCallMessage : KrpcMessage {
     @Serializable
     @SerialName("org.jetbrains.krpc.internal.transport.RPCMessage.CallType")
     public enum class CallType {
-        Method, Field,
+        Method,
+        @Deprecated("Fields are not supported anymore. Use Method instead.")
+        Field,
     }
 
     @InternalRpcApi

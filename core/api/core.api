@@ -1,14 +1,3 @@
-public final class kotlinx/rpc/AwaitFieldInitializationKt {
-	public static final fun awaitFieldInitialization (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static final fun awaitFieldInitialization (Ljava/lang/Object;Lkotlin/reflect/KClass;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class kotlinx/rpc/RegisterFieldKt {
-	public static final fun registerPlainFlowField (Lkotlinx/rpc/RpcClient;Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;J)Lkotlinx/coroutines/flow/Flow;
-	public static final fun registerSharedFlowField (Lkotlinx/rpc/RpcClient;Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;J)Lkotlinx/coroutines/flow/SharedFlow;
-	public static final fun registerStateFlowField (Lkotlinx/rpc/RpcClient;Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;J)Lkotlinx/coroutines/flow/StateFlow;
-}
-
 public abstract interface class kotlinx/rpc/RemoteService {
 }
 
@@ -34,17 +23,9 @@ public abstract interface class kotlinx/rpc/RpcClient {
 	public abstract fun callServerStreaming (Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/flow/Flow;
 }
 
-public abstract interface annotation class kotlinx/rpc/RpcEagerField : java/lang/annotation/Annotation {
-}
-
 public abstract interface class kotlinx/rpc/RpcServer {
 	public abstract fun deregisterService (Lkotlin/reflect/KClass;)V
 	public abstract fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function0;)V
-}
-
-public final class kotlinx/rpc/UninitializedRpcFieldException : java/lang/Exception {
-	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KProperty;)V
-	public fun getMessage ()Ljava/lang/String;
 }
 
 public final class kotlinx/rpc/WithServiceKt {
@@ -69,10 +50,6 @@ public final class kotlinx/rpc/descriptor/RpcCallable {
 }
 
 public abstract interface class kotlinx/rpc/descriptor/RpcInvokator {
-}
-
-public abstract interface class kotlinx/rpc/descriptor/RpcInvokator$Field : kotlinx/rpc/descriptor/RpcInvokator {
-	public abstract fun call (Ljava/lang/Object;)Ljava/lang/Object;
 }
 
 public abstract interface class kotlinx/rpc/descriptor/RpcInvokator$Method : kotlinx/rpc/descriptor/RpcInvokator {

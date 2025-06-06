@@ -6,9 +6,6 @@ package kotlinx.rpc
 
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
 
-@Deprecated("Use RpcCall instead", ReplaceWith("RpcCall"), level = DeprecationLevel.ERROR)
-public typealias RPCCall = RpcCall
-
 /**
  * Represents a method or field call of an RPC service.
  *

@@ -4,8 +4,6 @@
 
 package kotlinx.rpc.codegen.checkers.diagnostics
 
-import kotlinx.rpc.codegen.StrictMode
-import kotlinx.rpc.codegen.StrictModeAggregator
 import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
 import org.jetbrains.kotlin.diagnostics.rendering.Renderer
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
@@ -71,68 +69,41 @@ private fun Int.indexPositionSpelled(): String {
     return "$padded$suffix"
 }
 
-class RpcStrictModeDiagnosticRendererFactory(
-    private val diagnostics: FirRpcStrictModeDiagnostics,
-) : BaseDiagnosticRendererFactory() {
+object RpcStrictModeDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
     override val MAP by RpcKtDiagnosticFactoryToRendererMap("RpcStrictMode") { map ->
-        diagnostics.STATE_FLOW_IN_RPC_SERVICE?.let {
-            map.put(
-                factory = it,
-                message = message("StateFlow") { stateFlow },
-            )
-        }
+        map.put(
+            factory = FirRpcStrictModeDiagnostics.STATE_FLOW_IN_RPC_SERVICE,
+            message = message("StateFlow")
+        )
 
-        diagnostics.SHARED_FLOW_IN_RPC_SERVICE?.let {
-            map.put(
-                factory = it,
-                message = message("SharedFlow") { sharedFlow },
-            )
-        }
+        map.put(
+            factory = FirRpcStrictModeDiagnostics.SHARED_FLOW_IN_RPC_SERVICE,
+            message = message("SharedFlow"),
+        )
 
-        diagnostics.NESTED_STREAMING_IN_RPC_SERVICE?.let {
-            map.put(
-                factory = it,
-                message = message("Nested streaming") { nestedFlow },
-            )
-        }
+        map.put(
+            factory = FirRpcStrictModeDiagnostics.NESTED_STREAMING_IN_RPC_SERVICE,
+            message = message("Nested streaming"),
+        )
 
-        diagnostics.STREAM_SCOPE_FUNCTION_IN_RPC?.let {
-            map.put(
-                factory = it,
-                message = message("Stream scope usage") { streamScopedFunctions },
-            )
-        }
+        map.put(
+            factory = FirRpcStrictModeDiagnostics.SUSPENDING_SERVER_STREAMING_IN_RPC_SERVICE,
+            message = message("Suspend function declaration with server streaming"),
+        )
 
-        diagnostics.SUSPENDING_SERVER_STREAMING_IN_RPC_SERVICE?.let {
-            map.put(
-                factory = it,
-                message = message("Suspend function declaration with server streaming") { suspendingServerStreaming },
-            )
-        }
+        map.put(
+            factory = FirRpcStrictModeDiagnostics.NON_TOP_LEVEL_SERVER_STREAMING_IN_RPC_SERVICE,
+            message = message("Not top-level server-side streaming"),
+        )
 
-        diagnostics.NON_TOP_LEVEL_SERVER_STREAMING_IN_RPC_SERVICE?.let {
-            map.put(
-                factory = it,
-                message = message("Not top-level server-side streaming") { sharedFlow },
-            )
-        }
-
-        diagnostics.FIELD_IN_RPC_SERVICE?.let {
-            map.put(
-                factory = it,
-                message = message("Field declaration") { fields },
-            )
-        }
+        map.put(
+            factory = FirRpcStrictModeDiagnostics.FIELD_IN_RPC_SERVICE,
+            message = message("Field declaration"),
+        )
     }
 
-    private fun message(entityName: String, selector: StrictModeAggregator.() -> StrictMode): String {
-        val actionWord = when (diagnostics.modes.selector()) {
-            StrictMode.NONE -> ""
-            StrictMode.WARNING -> "deprecated"
-            StrictMode.ERROR -> "prohibited"
-        }
-
-        return "$entityName is $actionWord in @Rpc services in strict mode. " +
+    private fun message(entityName: String): String {
+        return "$entityName is prohibited in @Rpc services in strict mode. " +
                 "Support will be removed completely in the 0.8.0 release."
     }
 }
