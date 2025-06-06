@@ -12,7 +12,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.internal.utils.hex.rpcInternalHexToReadableBinary
 import kotlinx.rpc.krpc.KrpcConfig
-import kotlinx.rpc.krpc.client.KrpcClient
+import kotlinx.rpc.krpc.client.InitializedKrpcClient
 import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
@@ -105,4 +105,4 @@ class ProtocolTestServer(
 class ProtocolTestClient(
     config: KrpcConfig.Client,
     transport: LocalTransport,
-) : KrpcClient(config, transport.client)
+) : InitializedKrpcClient(config, transport.client)

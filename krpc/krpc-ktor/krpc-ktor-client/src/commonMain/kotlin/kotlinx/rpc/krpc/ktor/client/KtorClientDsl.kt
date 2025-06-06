@@ -11,7 +11,6 @@ import io.ktor.client.request.*
 import io.ktor.util.*
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.krpc.KrpcConfigBuilder
-import kotlinx.rpc.krpc.rpcClientConfig
 
 private val KrpcRequestConfigAttributeKey = AttributeKey<KrpcConfigBuilder.Client.() -> Unit>(
     name = "KrpcRequestConfigAttributeKey"
@@ -36,7 +35,7 @@ public fun HttpRequestBuilder.rpcConfig(configBuilder: KrpcConfigBuilder.Client.
  * @param block Optional configuration for the
  * @return An instance of [RpcClient] that is configured to send messages to the server.
  */
-public suspend fun HttpClient.rpc(
+public fun HttpClient.rpc(
     urlString: String,
     block: HttpRequestBuilder.() -> Unit = {},
 ): KtorRpcClient {
@@ -53,24 +52,19 @@ public suspend fun HttpClient.rpc(
  * @param block Optional configuration for the
  * @return An instance of [RpcClient] that is configured to send messages to the server.
  */
-public suspend fun HttpClient.rpc(
+public fun HttpClient.rpc(
     block: HttpRequestBuilder.() -> Unit = {},
 ): KtorRpcClient {
     pluginOrNull(WebSockets)
         ?: error("RPC for client requires $WebSockets plugin to be installed firstly")
 
-    var requestConfigBuilder: KrpcConfigBuilder.Client.() -> Unit = {}
-    val session = webSocketSession {
-        block()
+    val pluginConfigBuilder = attributes.getOrNull(KrpcClientPluginAttributesKey)
 
-        attributes.getOrNull(KrpcRequestConfigAttributeKey)?.let {
-            requestConfigBuilder = it
+    return KtorKrpcClientImpl(pluginConfigBuilder) { configSetter ->
+        webSocketSession {
+            block()
+
+            attributes.getOrNull(KrpcRequestConfigAttributeKey)?.let { configSetter(it) }
         }
     }
-
-    val pluginConfigBuilder = attributes.getOrNull(KrpcClientPluginAttributesKey)
-    val rpcConfig = pluginConfigBuilder?.apply(requestConfigBuilder)?.build()
-        ?: rpcClientConfig(requestConfigBuilder)
-
-    return KtorKrpcClientImpl(session, rpcConfig)
 }

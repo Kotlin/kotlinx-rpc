@@ -34,6 +34,7 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlin.collections.first
 import kotlin.concurrent.Volatile
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.properties.Delegates
 
 @Deprecated("Use KrpcClient instead", ReplaceWith("KrpcClient"), level = DeprecationLevel.ERROR)
 public typealias KRPCClient = KrpcClient
@@ -56,15 +57,61 @@ public typealias KRPCClient = KrpcClient
  * IMPORTANT: Must be exclusive to this client, otherwise unexpected behavior may occur.
  */
 @OptIn(InternalCoroutinesApi::class)
-public abstract class KrpcClient(
-    private val config: KrpcConfig.Client,
-    transport: KrpcTransport,
-) : RpcClient, KrpcEndpoint {
+public abstract class KrpcClient : RpcClient, KrpcEndpoint {
+    /**
+     * Called once to provide [KrpcTransport] for this client
+     */
+    public abstract suspend fun initializeTransport(): KrpcTransport
+
+    private var isTransportReady: Boolean = false
+    private var transport: KrpcTransport by Delegates.notNull()
+
+    /**
+     * Called once to provide [KrpcConfig.Client] for this client
+     */
+    public abstract fun initializeConfig(): KrpcConfig.Client
+
+    private val config: KrpcConfig.Client by lazy {
+        initializeConfig()
+    }
+
+    @Volatile
+    private var clientCancelled = false
+
+    private fun checkTransportReadiness() {
+        if (!isTransportReady) {
+            error(
+                "Internal error, please contact developers for the support. " +
+                        "Transport is not initialized, first scope access must come from an RPC request."
+            )
+        }
+    }
+
     @InternalRpcApi
-    public val internalScope: CoroutineScope = CoroutineScope(SupervisorJob(transport.coroutineContext.job))
+    public val internalScope: CoroutineScope by lazy {
+        checkTransportReadiness()
+
+        val context = SupervisorJob(transport.coroutineContext.job)
+
+        context.job.invokeOnCompletion(onCancelling = true) {
+            clientCancelled = true
+
+            sendCancellation(CancellationType.ENDPOINT, null, null, closeTransportAfterSending = true)
+
+            @OptIn(DelicateCoroutinesApi::class)
+            GlobalScope.launch {
+                requestChannels.values.forEach { it.close(CancellationException("Client cancelled")) }
+                requestChannels.clear()
+            }
+        }
+
+        CoroutineScope(context)
+    }
 
     // we make a child here, so we can send cancellation messages before closing the connection
     private val connector by lazy {
+        checkTransportReadiness()
+
         KrpcClientConnector(config.serialFormatInitializer.build(), transport, config.waitForServices)
     }
 
@@ -89,36 +136,19 @@ public abstract class KrpcClient(
     // callId to serviceTypeString
     private val cancellingRequests = RpcInternalConcurrentHashMap<String, String>()
 
-    @Volatile
-    private var clientCancelled = false
-
-    init {
-        internalScope.coroutineContext.job.invokeOnCompletion(onCancelling = true) {
-            clientCancelled = true
-
-            sendCancellation(CancellationType.ENDPOINT, null, null, closeTransportAfterSending = true)
-
-            requestChannels.values.forEach { it.close(CancellationException("Client cancelled")) }
-            requestChannels.clear()
-        }
-
-        internalScope.launch(CoroutineName("krpc-client-generic-messages")) {
-            connector.subscribeToGenericMessages(::handleGenericMessage)
-        }
-    }
-
-    private val initHandshake: Job = internalScope.launch(CoroutineName("krpc-client-handshake")) {
-        connector.sendMessage(KrpcProtocolMessage.Handshake(KrpcPlugin.ALL))
-
-        connector.subscribeToProtocolMessages(::handleProtocolMessage)
-    }
-
     /**
      * Starts the handshake process and awaits for completion.
      * If the handshake was completed before, nothing happens.
      */
-    private suspend fun awaitHandshakeCompletion() {
-        initHandshake.join()
+    private suspend fun initializeAndAwaitHandshakeCompletion() {
+        transport = initializeTransport()
+        isTransportReady = true
+
+        connector.subscribeToGenericMessages(::handleGenericMessage)
+        connector.subscribeToProtocolMessages(::handleProtocolMessage)
+
+        connector.sendMessage(KrpcProtocolMessage.Handshake(KrpcPlugin.ALL))
+
         serverSupportedPlugins.await()
     }
 
@@ -150,7 +180,11 @@ public abstract class KrpcClient(
     @Suppress("detekt.CyclomaticComplexMethod")
     final override fun <T> callServerStreaming(call: RpcCall): Flow<T> {
         return flow {
-            awaitHandshakeCompletion()
+            if (clientCancelled) {
+                error("Client cancelled")
+            }
+
+            initializeAndAwaitHandshakeCompletion()
 
             val id = callCounter.incrementAndGet()
             val callable = call.descriptor.getCallable(call.callableName)
@@ -444,5 +478,21 @@ public abstract class KrpcClient(
             is RpcInvokator.Method -> KrpcCallMessage.CallType.Method
             is RpcInvokator.Field -> KrpcCallMessage.CallType.Field
         }
+    }
+}
+
+/**
+ * Represents an initialized RPC client that wraps a predefined configuration and transport.
+ */
+public abstract class InitializedKrpcClient(
+    private val config: KrpcConfig.Client,
+    private val transport: KrpcTransport,
+): KrpcClient() {
+    final override suspend fun initializeTransport(): KrpcTransport {
+        return transport
+    }
+
+    final override fun initializeConfig(): KrpcConfig.Client {
+        return config
     }
 }
