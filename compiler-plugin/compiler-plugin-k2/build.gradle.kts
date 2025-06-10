@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import util.enableContextParameters
 import util.otherwise
 import util.whenForIde
-import util.whenKotlinIsAtLeast
+import util.whenKotlinCompilerIsAtLeast
 
 plugins {
     alias(libs.plugins.conventions.jvm)
@@ -69,7 +69,7 @@ tasks.jar {
 kotlin {
     explicitApi = ExplicitApiMode.Disabled
 
-    rootProject.whenKotlinIsAtLeast(2, 2, 0) {
+    rootProject.whenKotlinCompilerIsAtLeast(2, 2, 0) {
         enableContextParameters()
     }
 }

@@ -14,15 +14,15 @@ enum class ActionApplied {
 }
 
 @Suppress("unused")
-inline fun ExtensionAware.whenKotlinIsAtLeast(
+inline fun ExtensionAware.whenKotlinCompilerIsAtLeast(
     major: Int,
     minor: Int,
     patch: Int = 0,
     action: () -> Unit = {},
 ): ActionApplied {
-    val kotlinVersion: KotlinVersion by extra
+    val kotlinCompilerVersion: KotlinVersion by extra
 
-    if (kotlinVersion.isAtLeast(major, minor, patch)) {
+    if (kotlinCompilerVersion.isAtLeast(major, minor, patch)) {
         action()
 
         return ActionApplied.Applied
@@ -31,6 +31,7 @@ inline fun ExtensionAware.whenKotlinIsAtLeast(
     return ActionApplied.NotApplied
 }
 
+@Suppress("unused")
 inline fun ExtensionAware.whenKotlinLatest(action: () -> Unit): ActionApplied {
     val isLatestKotlinVersion: Boolean by extra
 
