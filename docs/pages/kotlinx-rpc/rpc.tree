@@ -24,7 +24,11 @@
         <toc-element toc-title="kRPC">
             <toc-element topic="configuration.topic"/>
             <toc-element topic="features.topic"/>
-            <toc-element topic="transport.topic"/>
+            <toc-element topic="krpc-client.topic"/>
+            <toc-element topic="krpc-server.topic"/>
+            <toc-element topic="transport.topic">
+                <toc-element topic="krpc-ktor.topic"/>
+            </toc-element>
         </toc-element>
         <toc-element toc-title="gRPC">
             <toc-element topic="grpc-configuration.topic"/>

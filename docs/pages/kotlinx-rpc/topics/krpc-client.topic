@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Client" id="krpc-client">
+
+    <chapter title="KrpcClient" id="krpc-client">
+        <p>
+            <code>KrpcClient</code> is an abstract class that implements <code>RpcClient</code> and kRPC protocol
+            logic.
+        </p>
+        <chapter title="Initialization" id="initialization">
+            <p>
+                The client comes in two forms:
+            </p>
+            <list>
+                <li>
+                    <code>KrpcClient</code>
+                </li>
+                <li>
+                    <code>InitializedKrpcClient</code>
+                </li>
+            </list>
+            <p>
+                The only difference between them is that <code>KrpcClient</code> allows to delay the initialization
+                of the transport until the first RPC request is sent.
+                <code>InitializedKrpcClient</code> is initialized right away with a ready <code>KrpcTransport</code>
+                instance.
+            </p>
+        </chapter>
+        <chapter title="Transport" id="transport">
+            <p>
+                The only thing required to be implemented is the transporting of the raw data.
+                Abstract transport is represented by <code>KrpcTransport</code> interface.
+            </p>
+            <p>
+                To implement your own <code>KrpcTransport</code>
+                you need to be able to transfer strings and/or raw bytes (Kotlin's <code>ByteArray</code>).
+                Additionally, the library will provide you with <a href="transport.topic">integrations with different
+                libraries</a> that are used to work with the network.
+            </p>
+
+            <p>
+                See below an example usage of kRPC with a custom transport:
+            </p>
+
+            <code-block lang="kotlin">
+                class MySimpleRpcTransport : KrpcTransport {
+                    val outChannel = Channel&lt;KrpcTransportMessage&gt;()
+                    val inChannel = Channel&lt;KrpcTransportMessage&gt;()
+
+                    override val coroutineContext: CoroutineContext = Job()
+
+                    override suspend fun send(message: KrpcTransportMessage) {
+                        outChannel.send(message)
+                    }
+
+                    override suspend fun receive(): KrpcTransportMessage {
+                        return inChannel.receive()
+                    }
+                }
+
+                class MySimpleRpcClient : KrpcClient(rpcClientConfig(), MySimpleRpcTransport())
+
+                val client = MySimpleRpcClient()
+                val service: MyService = client.withService&lt;MyService&gt;()
+            </code-block>
+        </chapter>
+    </chapter>
+</topic>

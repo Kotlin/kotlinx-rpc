@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Ktor" id="krpc-ktor">
+
+    <p>
+        The <code>kotlinx.rpc</code> library provides integration with the <a href="https://ktor.io">Ktor
+        framework</a>.
+        This includes both server and client APIs.
+        Under the hood, the library uses <a href="https://ktor.io/docs/websocket.html">WebSocket</a> plugin
+        to create a <code>KrpcTransport</code> and send and receive messages through it.
+    </p>
+    <chapter title="Client" id="client">
+        <p>
+            <code>kotlinx.rpc</code> provides a way to plug-in into existing Ktor clients with your RPC services.
+            To do that, the following DSL can be used:
+        </p>
+
+        <code-block lang="kotlin">
+            val ktorClient = HttpClient {
+                installKrpc {
+                    waitForServices = true
+                }
+            }
+
+            val rpcClient: KtorKrpcClient =
+                ktorClient.rpc(&quot;ws://localhost:4242/services&quot;) {
+                    rpcConfig {
+                        waitForServices = false
+                    }
+                }
+
+            // get an RPC service
+            val myService: MyService = rpcClient.withService&lt;MyService&gt;()
+        </code-block>
+        <note>
+            Note that in this example, only the latter defined <code>KrpcConfig</code> will be used.
+        </note>
+    </chapter>
+    <chapter title="Server" id="server">
+        <p>
+            <code>kotlinx.rpc</code> provides a way to plug-in into existing server routing with your RPC
+            services.
+            To do that, the following DSL can be used:
+        </p>
+
+        <code-block lang="kotlin">
+            fun Application.module() {
+                install(Krpc) {
+                    waitForServices = true
+                }
+
+                routing {
+                    rpc(&quot;/services&quot;) {
+                        rpcConfig {
+                            waitForServices = false
+                        }
+
+                        registerService&lt;MyService&gt; { MyServiceImpl() }
+                        registerService&lt;MyOtherService&gt; { MyOtherServiceImpl() }
+                        // more services if needed
+                    }
+                }
+            }
+        </code-block>
+    </chapter>
+    <chapter title="Ktor application example" id="ktor-application-example">
+        <p>
+            An example code for a Ktor web application may look like this:
+        </p>
+
+        <p>
+            In common code, shared classes and services are defined:
+        </p>
+        <code-block lang="kotlin">
+            @Serializable
+            data class ProcessedImage(
+                val url: String,
+                val numberOfCats: Int,
+                val numberOfDogs: Int
+            )
+
+            @Rpc
+            interface ImageService : RemoteService {
+                suspend fun processImage(url: String): ProcessedImage
+            }
+        </code-block>
+        <p>
+            In client code, create an HTTP client and access the service on a the desired route:
+        </p>
+        <code-block lang="kotlin">
+            val client = HttpClient {
+                installKrpc {
+                    serialization {
+                        json()
+                    }
+                }
+            }
+
+            val service = client
+                .rpc(&quot;/image-recognizer&quot;)
+                .withService&lt;ImageService&gt;()
+
+            service.processImage(url = &quot;https://catsanddogs.com/cats/1&quot;)
+        </code-block>
+        <p>
+            In server code, provide an implementation of the <code>ImageService</code> and register it on a route:
+        </p>
+        <code-block lang="kotlin">
+            class ImageServiceImpl : ImageService {
+                // some user defined classes
+                private val downloader = Downloader()
+                private val recognizer = AnimalRecognizer()
+
+                override suspend fun processImage(url: Srting): ProcessedImage {
+                    val image = downloader.loadImage(url)
+                    return ProcessedImage(
+                        url,
+                        recognizer.getNumberOfCatsOnImage(image),
+                        recognizer.getNumberOfDogsOnImage(image)
+                    )
+                }
+            }
+
+            fun main() {
+                embeddedServer(Netty, port = 8080) {
+                    install(Krpc) {
+                        serialization {
+                            json()
+                        }
+                    }
+
+                    routing {
+                        rpc(&quot;/image-recognizer&quot;) {
+                            registerService&lt;ImageService&gt; { ImageServiceImpl() }
+                        }
+                    }
+                }.start(wait = true)
+            }
+        </code-block>
+        <p>
+            For more details and complete examples, see the <a href="%repo-tree-path%/samples">code samples</a>.
+        </p>
+    </chapter>
+</topic>
