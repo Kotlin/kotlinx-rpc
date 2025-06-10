@@ -16,7 +16,7 @@ public class KtorTransport(
 ) : KrpcTransport, CoroutineScope by webSocketSession {
 
     /**
-     * Sends a single encoded RPC message over network (or any other medium) to a peer endpoint.
+     * Sends a single encoded RPC message over a network (or any other medium) to a peer endpoint.
      *
      * @param message a message to send. Either of string or binary type.
      */
@@ -33,9 +33,9 @@ public class KtorTransport(
     }
 
     /**
-     * Suspends until next RPC message from a peer endpoint is received and then returns it.
+     * Suspends until the next RPC message from a peer endpoint is received and then returns it.
      *
-     * @return received RPC message.
+     * @return the received RPC message.
      */
     override suspend fun receive(): KrpcTransportMessage {
         return when (val message = webSocketSession.incoming.receive()) {

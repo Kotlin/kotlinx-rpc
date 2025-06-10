@@ -37,36 +37,59 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlin.properties.Delegates
 
 /**
- * Default implementation of [RpcClient].
- * Takes care of tracking requests and responses,
- * serializing data, tracking streams, processing exceptions, and other protocol responsibilities.
- * Leaves out the delivery of encoded messages to the specific implementations.
- *
- * A simple example of how this client may be implemented:
- * ```kotlin
- * class MyTransport : RpcTransport { /*...*/ }
- *
- * class MyClient(config: RpcConfig.Client): KrpcClient(config, MyTransport())
- * ```
+ * Represents an initialized [KrpcClient] that wraps a predefined [config] and [transport] parameters.
  *
  * @param config configuration provided for that specific client. Applied to all services that use this client.
+ * See [KrpcClient.initializeConfig].
  * @param transport [KrpcTransport] instance that will be used to send and receive RPC messages.
- * IMPORTANT: Must be exclusive to this client, otherwise unexpected behavior may occur.
+ * See [KrpcClient.initializeTransport].
+ */
+public abstract class InitializedKrpcClient(
+    private val transport: KrpcTransport,
+    private val config: KrpcConfig.Client,
+): KrpcClient() {
+    final override suspend fun initializeTransport(): KrpcTransport {
+        return transport
+    }
+
+    final override fun initializeConfig(): KrpcConfig.Client {
+        return config
+    }
+}
+
+/**
+ * kRPC implementation of the [RpcClient].
+ * Takes care of tracking requests and responses,
+ * serializing data, tracking streams, processing exceptions, and other protocol responsibilities.
+ * Leaves out the delivery of encoded messages to the specific implementations with [KrpcTransport].
  */
 @OptIn(InternalCoroutinesApi::class)
 public abstract class KrpcClient : RpcClient, KrpcEndpoint {
     /**
-     * Called once to provide [KrpcTransport] for this client
+     * Called once to provide [KrpcTransport] for this client.
+     *
+     * IMPORTANT: The provided instance must be exclusive to this client, otherwise unexpected behavior may occur.
      */
-    public abstract suspend fun initializeTransport(): KrpcTransport
+    protected abstract suspend fun initializeTransport(): KrpcTransport
+
+    /**
+     * Called once to provide [KrpcConfig.Client] for this client.
+     * Called only after [initializeTransport].
+     *
+     * Configuration is applied to all services that use this client.
+     */
+    protected abstract fun initializeConfig(): KrpcConfig.Client
+
+    /*
+     * #####################################################################
+     * #                                                                   #
+     * #                         INTERNALS AHEAD                           #
+     * #                                                                   #
+     * #####################################################################
+     */
 
     private var isTransportReady: Boolean = false
     private var transport: KrpcTransport by Delegates.notNull()
-
-    /**
-     * Called once to provide [KrpcConfig.Client] for this client
-     */
-    public abstract fun initializeConfig(): KrpcConfig.Client
 
     private val config: KrpcConfig.Client by lazy {
         initializeConfig()
@@ -474,21 +497,5 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
         return when (invokator) {
             is RpcInvokator.Method -> KrpcCallMessage.CallType.Method
         }
-    }
-}
-
-/**
- * Represents an initialized RPC client that wraps a predefined configuration and transport.
- */
-public abstract class InitializedKrpcClient(
-    private val config: KrpcConfig.Client,
-    private val transport: KrpcTransport,
-): KrpcClient() {
-    final override suspend fun initializeTransport(): KrpcTransport {
-        return transport
-    }
-
-    final override fun initializeConfig(): KrpcConfig.Client {
-        return config
     }
 }

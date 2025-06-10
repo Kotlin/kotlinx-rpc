@@ -12,21 +12,25 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
 /**
- * Creates instance of the generated service [T], that is able to communicate with server using [RpcClient].
+ * Creates an instance of the generated service [T], that is able to communicate with a server using this [RpcClient].
  *
  * @param T the exact type of the service to be created.
  * @return instance of the generated service.
+ *
+ * @see kotlinx.rpc.annotations.CheckedTypeAnnotation
  */
 public inline fun <@Rpc reified T : Any> RpcClient.withService(): T {
     return withService(T::class)
 }
 
 /**
- * Creates instance of the generated service [T], that is able to communicate with server using [RpcClient].
+ * Creates an instance of the generated service [T], that is able to communicate with a server using this [RpcClient].
  *
  * @param T the exact type of the service to be created.
  * @param serviceKType [KType] of the service to be created.
  * @return instance of the generated service.
+ *
+ * @see kotlinx.rpc.annotations.CheckedTypeAnnotation
  */
 public fun <@Rpc T : Any> RpcClient.withService(serviceKType: KType): T {
     return withService(serviceKType.rpcInternalKClass())
@@ -39,11 +43,13 @@ public fun <@Rpc T : Any> RpcClient.withService(serviceKType: KType): T {
 private val SERVICE_ID = atomic(0L)
 
 /**
- * Creates instance of the generated service [T], that is able to communicate with server using [RpcClient].
+ * Creates an instance of the generated service [T], that is able to communicate with a server using this [RpcClient].
  *
  * @param T the exact type of the service to be created.
  * @param serviceKClass [KClass] of the service to be created.
  * @return instance of the generated service.
+ *
+ * @see kotlinx.rpc.annotations.CheckedTypeAnnotation
  */
 public fun <@Rpc T : Any> RpcClient.withService(serviceKClass: KClass<T>): T {
     val descriptor = serviceDescriptorOf(serviceKClass)
