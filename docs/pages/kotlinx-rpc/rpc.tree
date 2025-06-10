@@ -40,6 +40,7 @@
     <toc-element topic="strict-mode.topic"/>
     <toc-element topic="versions.topic"/>
     <toc-element toc-title="Migration guides">
+        <toc-element topic="0-8-0.topic"/>
         <toc-element topic="0-6-0.topic"/>
         <toc-element topic="0-5-0.topic"/>
         <toc-element topic="0-4-0.topic"/>

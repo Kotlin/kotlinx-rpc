@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Migration to 0.8.0" id="0-8-0">
+
+    <p>
+        Version <code>0.8.0</code> brings a lot of changes,
+        mainly targeted to remove inherently broken functionality and simplify kRPC protocol where possible.
+        This is reflected in the number of breaking changes and deprecations.
+    </p>
+    <p>
+        This page aims to cover all such changes and associated migration instructions.
+    </p>
+
+    <chapter title="Strict mode enforcement" id="strict-mode-enforcement">
+        <p>
+            Strict mode is now enforced and can't be disabled.
+            See <a href="strict-mode.topic"/> for detailed migrations.
+        </p>
+    </chapter>
+
+    <chapter title="kRPC protocol changes" id="krpc-protocol-changes">
+        <p>
+            The following changes are reflected in the kRPC protocol on the wire:
+        </p>
+        <list>
+            <li>
+                <code>KrpcServer</code> doesn't send CANCELLATION_ACK messages anymore.
+            </li>
+            <li>
+                <code>KrpcClient</code> sends REQUEST cancellation messages for every individually finished call,
+                canceled or finished successfully
+            </li>
+        </list>
+        <p>
+            Though changes should not affect most users,
+            for those who like to look at the wire it might be useful to know.
+        </p>
+    </chapter>
+
+    <chapter title="Behavioral changes" id="behavioral-changes">
+        <p>
+            Some changes in the behavior of kRPC clients and servers:
+        </p>
+        <list>
+            <li>
+                <p>
+                    Lifetime for client-side streams is changed.
+                </p>
+                <p>
+                    Previously, the stream scopes bounded client-side streams.
+                    However, stream scopes are completely removed now,
+                    so the client-side streams lifetime is now bound to the request's lifetime.
+                    This means that when the function returns, every client stream is closed.
+                </p>
+            </li>
+            <li>
+                <p>
+                    Serial format is now only constructed once per client.
+                </p>
+                <p>
+                    Previously, the serial format was constructed once per RPC call.
+                    The serial format can be passed using the <code>KrpcConfig</code>.
+                    And the builder code was executed once per every call.
+                </p>
+                <p>
+                    Now this behavior is removed.
+                    The serial format is constructed once per client.
+                </p>
+            </li>
+            <li>
+                <p>
+                    Services are now instantiated once per service type (Rpc FQ name)
+                    and not once per client-side instance.
+                </p>
+                <p>
+                    Services lost their CoroutineScopes (see <a href="0-8-0.topic#incompatible-api-changes"/>).
+                    That means that there are no individual lifetimes for each service instance now.
+                    Instead, now each service stub on a client is merely a proxy for function calls.
+                    And on the server side, the service implementation is instantiated once per service type.
+                    To control this behavior more granularly on the server, new <code>deregisterService</code>
+                    function is introduced.
+                </p>
+                <tip>
+                    For kRPC servers, the factory function for service instances is now executed once per service type:
+                    <code-block lang="kotlin">
+                        rpcServer.registerService&lt;MyService&gt; { MyServiceImpl() }
+                    </code-block>
+                </tip>
+            </li>
+            <li>
+                <p>
+                    Handshake is now cold.
+                </p>
+                <p>
+                    Previously, the handshake was executed on client creation.
+                    Now, the handshake is executed on the first RPC request.
+                </p>
+            </li>
+        </list>
+    </chapter>
+
+    <chapter title="Incompatible API changes" id="incompatible-api-changes">
+        <list>
+            <li>
+                <p>
+                    <code>RpcClient.callServerStreaming</code> lost its default implementation:
+                </p>
+
+                <compare type="top-bottom">
+                    <code-block lang="Kotlin">
+                        interface RpcClient {
+                            fun &lt;T&gt; callServerStreaming(call: RpcCall): Flow&lt;T&gt; {
+                                error("Not implemented")
+                            }
+                        }
+                    </code-block>
+                    <code-block lang="Kotlin">
+                        interface RpcClient {
+                            fun &lt;T&gt; callServerStreaming(call: RpcCall): Flow&lt;T&gt;
+                        }
+                    </code-block>
+                </compare>
+            </li>
+            <li>
+                <p>
+                    <code>@Rpc</code> services lost their CoroutineScope:
+                </p>
+                <compare type="top-bottom">
+                    <code-block lang="Kotlin">
+                        val service = client.withService&lt;MyService&gt;()
+                        assert(service is CoroutineScope) // OK
+                    </code-block>
+                    <code-block lang="Kotlin">
+                        val service = client.withService&lt;MyService&gt;()
+                        assert(service is CoroutineScope) // fail
+                    </code-block>
+                </compare>
+            </li>
+            <li>
+                <p>
+                    <code>RpcClient</code> lost its <code>CoroutineScope</code>:
+                </p>
+                <compare type="top-bottom">
+                    <code-block lang="Kotlin">
+                        interface RpcClient : CoroutineScope
+                    </code-block>
+                    <code-block lang="Kotlin">
+                        interface RpcClient
+                    </code-block>
+                </compare>
+            </li>
+            <li>
+                <p>
+                    <code>RpcServer</code> lost its <code>CoroutineScope</code>:
+                </p>
+                <compare type="top-bottom">
+                    <code-block lang="Kotlin">
+                        interface RpcServer : CoroutineScope
+                    </code-block>
+                    <code-block lang="Kotlin">
+                        interface RpcServer
+                    </code-block>
+                </compare>
+            </li>
+            <li>
+                <p>
+                    <code>RpcServer.registerService</code> <code>factory</code> parameter changes type
+                    from <code>(CoroutineContext) -> Service</code> to <code>() -> Service</code>:
+                </p>
+                <compare type="top-bottom">
+                    <code-block lang="Kotlin">
+                        interface RpcServer {
+                            fun &lt;@Rpc Service : Any&gt; registerService(
+                                serviceKClass: KClass&lt;Service&gt;,
+                                serviceFactory: (CoroutineContext) -&gt; Service,
+                            )
+                        }
+
+                        inline fun &lt;@Rpc reified Service : Any&gt; RpcServer.registerService(
+                            noinline serviceFactory: (CoroutineContext) -&gt; Service,
+                        ) {
+                            registerService(Service::class, serviceFactory)
+                        }
+                    </code-block>
+                    <code-block lang="Kotlin">
+                        interface RpcServer {
+                            fun &lt;@Rpc Service : Any&gt; registerService(
+                                serviceKClass: KClass&lt;Service&gt;,
+                                serviceFactory: () -&gt; Service,
+                            )
+                        }
+
+                        inline fun &lt;@Rpc reified Service : Any&gt; RpcServer.registerService(
+                            noinline serviceFactory: () -&gt; Service,
+                        ) {
+                            registerService(Service::class, serviceFactory)
+                        }
+                    </code-block>
+                </compare>
+            </li>
+            <li>
+                <p>
+                    <code>RpcServer.registerService</code> lost its <code>CoroutineContext</code> parameter:
+                </p>
+                <compare type="top-bottom">
+                    <code-block lang="Kotlin">
+                        interface RpcServer
+                    </code-block>
+                    <code-block lang="Kotlin">
+                        interface RpcServer {
+                            fun &lt;@Rpc Service : Any&gt; deregisterService(
+                                serviceKClass: KClass&lt;Service&gt;,
+                            )
+                        }
+                    </code-block>
+                </compare>
+            </li>
+            <li>
+                <p>
+                    For Ktor, <code>HttpClient.rpc</code> extension function is now non-suspendable.
+                </p>
+            </li>
+            <li>
+                <code>KtorRpcClient.webSocketSession</code> is now wrapped in Deferred:
+                <compare type="top-bottom">
+                    <code-block lang="Kotlin">
+                        interface KtorRpcClient : RpcClient {
+                            val webSocketSession: WebSocketSession
+                        }
+                    </code-block>
+                    <code-block lang="Kotlin">
+                        interface KtorRpcClient : RpcClient {
+                            val webSocketSession: Deferred&lt;WebSocketSession&gt;
+                        }
+                    </code-block>
+                </compare>
+            </li>
+            <li>
+                <p>
+                    <code>KrpcClient</code> abstract class has two new abstract methods:
+                    <code>initializeConfig</code> and <code>initializeTransport</code>.
+                    They can be used to delay transport initialization until the first RPC call.
+                </p>
+                <p>
+                    To mimic old behavior, <code>InitializedKrpcClient</code> can be used:
+                </p>
+                <compare type="top-bottom">
+                    <code-block lang="Kotlin">
+                        class MyClient(
+                            config: KrpcConfig,
+                            transport: KrpcTransport,
+                        ) : KrpcClient(config, transport)
+                    </code-block>
+                    <code-block lang="Kotlin">
+                        class MyClient(
+                            config: KrpcConfig,
+                            transport: KrpcTransport,
+                        ) : InitializedKrpcClient(transport, config)
+                    </code-block>
+                </compare>
+                <note>
+                    Notice that the parameter order is reversed in new <code>InitializedKrpcClient</code>.
+                </note>
+            </li>
+        </list>
+    </chapter>
+
+    <chapter title="API removals" id="api-removals">
+        <p>
+            The following APIs are removed:
+        </p>
+        <list>
+            <li><code>kotlinx.rpc.RpcClient.callAsync</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.RpcClient.provideStubContext</code></li>
+
+            <li><code>kotlinx.rpc.registerPlainFlowField</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.registerSharedFlowField</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.registerStateFlowField</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.awaitFieldInitialization</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.UninitializedRpcFieldException</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.UninitializedRPCFieldException</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.RpcEagerField</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.RPCCall</code> - previously deprecated alias</li>
+            <li><code>kotlinx.rpc.RPCClient</code> - previously deprecated alias</li>
+
+            <li><code>kotlinx.rpc.descriptor.RpcInvokator.Field</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.descriptor.RpcServiceDescriptor.getFields</code> - previously deprecated</li>
+
+            <li><code>kotlinx.rpc.krpc.StreamScope</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.krpc.streamScoped</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.krpc.withStreamScope</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.krpc.invokeOnStreamScopeCompletion</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.krpc.KrpcConfigBuilder.SharedFlowParametersBuilder</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.krpc.KrpcConfigBuilder.sharedFlowParameters</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.krpc.KrpcConfig.sharedFlowBuilder</code> - previously deprecated</li>
+            <li><code>kotlinx.rpc.krpc.RPCTransport</code> - previously deprecated alias</li>
+            <li><code>kotlinx.rpc.krpc.RPCTransportMessage</code> - previously deprecated alias</li>
+            <li><code>kotlinx.rpc.krpc.RPCConfigBuilder</code> - previously deprecated alias</li>
+            <li><code>kotlinx.rpc.krpc.client.KRPCClient</code> - previously deprecated alias</li>
+            <li><code>kotlinx.rpc.krpc.server.RPCServer</code> - previously deprecated alias</li>
+            <li><code>kotlinx.rpc.krpc.server.KRPCServer</code> - previously deprecated alias</li>
+            <li><code>kotlinx.rpc.krpc.serialization.RPCSerialFormat</code> - previously deprecated alias</li>
+            <li><code>kotlinx.rpc.krpc.serialization.RPCSerialFormatBuilder</code> - previously deprecated alias</li>
+            <li><code>kotlinx.rpc.krpc.serialization.RPCSerialFormatConfiguration</code> - previously deprecated alias</li>
+            <li><code>kotlinx.rpc.krpc.ktor.client.RPC</code> - previously deprecated alias</li>
+            <li><code>kotlinx.rpc.krpc.ktor.client.installRPC</code> - previously deprecated alias</li>
+            <li><code>kotlinx.rpc.krpc.ktor.server.RPC</code> - previously deprecated alias</li>
+            <li><code>kotlinx.rpc.krpc.ktor.server.RPCRoute</code> - previously deprecated alias</li>
+        </list>
+    </chapter>
+
+    <chapter title="Deprecations" id="deprecations">
+        <list>
+            <li>
+                <p>
+                    Gradle's <code>rpc.strict</code> extension is deprecated with an error.
+                    Strict mode is now enforced and can't be disabled.
+                    See <a href="strict-mode.topic"/> for detailed migrations.
+                </p>
+            </li>
+            <li>
+                <p>
+                    <code>RemoteService</code> is deprecated with error;
+                    services are no longer having this interface added during the compilation.
+                    See <a href="0-8-0.topic#behavioral-changes"/> for services' lifetime information.
+                </p>
+            </li>
+        </list>
+    </chapter>
+
+    <chapter title="Other changes" id="other-changes">
+        <list>
+            <li>
+                <p>
+                    <code>MISSING_RPC_ANNOTATION</code> compiler inspection is removed.
+                </p>
+            </li>
+            <li>
+                <p>
+                    ABI incompatible change: <code>KrpcTransport.receiveCatching</code> is now an extension function.
+                </p>
+            </li>
+            <li>
+                <p>
+                    The following compiler plugin options are removed:
+                </p>
+                <list>
+                    <li><code>strict-stateFlow</code></li>
+                    <li><code>strict-sharedFlow</code></li>
+                    <li><code>strict-nested-flow</code></li>
+                    <li><code>strict-stream-scope</code></li>
+                    <li><code>strict-suspending-server-streaming</code></li>
+                    <li><code>strict-not-top-level-server-flow</code></li>
+                    <li><code>strict-fields</code></li>
+                </list>
+            </li>
+        </list>
+    </chapter>
+</topic>
