@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrPropertySymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
-import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.types.makeNullable
 import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.isVararg
@@ -45,18 +44,6 @@ internal class RpcIrContext(
         getIrClassSymbol("kotlin.reflect", "KType")
     }
 
-    val lazy by lazy {
-        getIrClassSymbol("kotlin", "Lazy")
-    }
-
-    val function0 by lazy {
-        getIrClassSymbol("kotlin", "Function0")
-    }
-
-    val function1 by lazy {
-        getIrClassSymbol("kotlin", "Function1")
-    }
-
     val suspendFunction0 by lazy {
         getIrClassSymbol("kotlin.coroutines", "SuspendFunction0")
     }
@@ -77,10 +64,6 @@ internal class RpcIrContext(
         getIrClassSymbol("kotlinx.coroutines.flow", "StateFlow")
     }
 
-    val kProperty1 by lazy {
-        getIrClassSymbol("kotlin.reflect", "KProperty1")
-    }
-
     val pair by lazy {
         getIrClassSymbol("kotlin", "Pair")
     }
@@ -95,10 +78,6 @@ internal class RpcIrContext(
 
     val withServiceDescriptor by lazy {
         getRpcIrClassSymbol("WithServiceDescriptor", "internal")
-    }
-
-    val rpcEagerFieldAnnotation by lazy {
-        getRpcIrClassSymbol("RpcEagerField")
     }
 
     val rpcServiceDescriptor by lazy {
@@ -121,20 +100,12 @@ internal class RpcIrContext(
         rpcInvokator.subClass("Method")
     }
 
-    val rpcInvokatorField by lazy {
-        rpcInvokator.subClass("Field")
-    }
-
     val rpcParameter by lazy {
         getRpcIrClassSymbol("RpcParameter", "descriptor")
     }
 
     val rpcDeferredField by lazy {
         getRpcIrClassSymbol("RpcDeferredField", "internal")
-    }
-
-    val fieldDataObject by lazy {
-        getRpcIrClassSymbol("FieldDataObject", "internal")
     }
 
     val rpcMethodClass by lazy {
@@ -156,18 +127,6 @@ internal class RpcIrContext(
     val functions = Functions()
 
     inner class Functions {
-        val registerPlainFlowField by lazy {
-            namedFunction("kotlinx.rpc", "registerPlainFlowField")
-        }
-
-        val registerSharedFlowField by lazy {
-            namedFunction("kotlinx.rpc", "registerSharedFlowField")
-        }
-
-        val registerStateFlowField by lazy {
-            namedFunction("kotlinx.rpc", "registerStateFlowField")
-        }
-
         val dataCast by lazy {
             namedFunction("kotlinx.rpc.internal", "rpcInternalDataCast")
         }
@@ -198,30 +157,6 @@ internal class RpcIrContext(
 
         val scopedClientCall by lazy {
             namedFunction("kotlinx.rpc.internal", "scopedClientCall")
-        }
-
-        val lazy by lazy {
-            namedFunction("kotlin", "lazy") {
-                vsApi {
-                    it.owner.valueParametersVS().size == 1
-                }
-            }
-        }
-
-        val lazyGetValue by lazy {
-            namedFunction("kotlin", "getValue") {
-                vsApi {
-                    it.owner.extensionReceiverParameterVS?.type?.classOrNull == this@RpcIrContext.lazy
-                }
-            }
-        }
-
-        val listOf by lazy {
-            namedFunction("kotlin.collections", "listOf") {
-                vsApi {
-                    it.owner.valueParametersVS().singleOrNull()?.isVararg ?: false
-                }
-            }
         }
 
         val emptyList by lazy {

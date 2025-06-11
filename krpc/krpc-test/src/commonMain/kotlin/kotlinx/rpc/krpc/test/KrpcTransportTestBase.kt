@@ -575,106 +575,6 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    fun testPlainFlowOfInts() = runTest {
-        val flow = client.plainFlowOfInts.toList()
-        assertEquals(List(5) { it }, flow)
-    }
-
-    @Test
-    fun testPlainFlowOfFlowsOfInts() = runTest {
-        val lists = client.plainFlowOfFlowsOfInts.map {
-            it.toList()
-        }.toList()
-
-        assertEquals(List(5) { List(5) { it } }, lists)
-    }
-
-    @Test
-    fun testPlainFlowOfFlowsOfFlowsOfInts() = runTest {
-        val lists = client.plainFlowOfFlowsOfFlowsOfInts.map {
-            it.map { i -> i.toList() }.toList()
-        }.toList()
-
-        assertEquals(List(5) { List(5) { List(5) { it } } }, lists)
-    }
-
-    @Test
-    fun testSharedFlowOfInts() = runTest {
-        val list1 = client.sharedFlowOfInts.take(5).toList()
-        val list2 = client.sharedFlowOfInts.take(3).toList()
-
-        assertEquals(List(5) { it }, list1)
-        assertEquals(List(3) { it }, list2)
-    }
-
-    @Test
-    fun testSharedFlowOfFlowsOfInts() = runTest {
-        val list1 = client.sharedFlowOfFlowsOfInts.take(5).map {
-            it.take(5).toList()
-        }.toList()
-
-        val list2 = client.sharedFlowOfFlowsOfInts.take(3).map {
-            it.take(3).toList()
-        }.toList()
-
-        assertEquals(List(5) { List(5) { it } }, list1)
-        assertEquals(List(3) { List(3) { it } }, list2)
-    }
-
-    @Test
-    fun testSharedFlowOfFlowsOfFlowsOfInts() = runTest {
-        val list1 = client.sharedFlowOfFlowsOfFlowsOfInts.take(5).map {
-            it.take(5).map { i -> i.take(5).toList() }.toList()
-        }.toList()
-
-        val list2 = client.sharedFlowOfFlowsOfFlowsOfInts.take(3).map {
-            it.take(3).map { i -> i.take(3).toList() }.toList()
-        }.toList()
-
-        assertEquals(List(5) { List(5) { List(5) { it } } }, list1)
-        assertEquals(List(3) { List(3) { List(3) { it } } }, list2)
-    }
-
-    @Test
-    fun testStateFlowOfInts() = runTest {
-        val flow = client.awaitFieldInitialization { stateFlowOfInts }
-
-        assertEquals(-1, flow.value)
-
-        client.emitNextForStateFlowOfInts(42)
-
-        assertEquals(42, flow.first { it == 42 })
-    }
-
-    @Test
-    fun testStateFlowOfFlowsOfInts() = runTest {
-        val flow1 = client.awaitFieldInitialization { stateFlowOfFlowsOfInts }
-        val flow2 = flow1.value
-
-        assertEquals(-1, flow2.value)
-
-        client.emitNextForStateFlowOfFlowsOfInts(42)
-
-        assertEquals(42, flow2.first { it == 42 })
-        assertEquals(42, flow1.first { it.value == 42 }.value)
-    }
-
-    @Test
-    fun testStateFlowOfFlowsOfFlowsOfInts() = runTest {
-        val flow1 = client.awaitFieldInitialization { stateFlowOfFlowsOfFlowsOfInts }
-        val flow2 = flow1.value
-        val flow3 = flow2.value
-
-        assertEquals(-1, flow3.value)
-
-        client.emitNextForStateFlowOfFlowsOfFlowsOfInts(42)
-
-        assertEquals(42, flow3.first { it == 42 })
-        assertEquals(42, flow2.first { it.value == 42 }.value)
-        assertEquals(42, flow1.first { it.value.value == 42 }.value.value)
-    }
-
-    @Test
     fun testSharedFlowInFunction() = runTest {
         streamScoped {
             val flow = sharedFlowOfT { it }
@@ -695,15 +595,6 @@ abstract class KrpcTransportTestBase {
             flow.emit(42)
 
             assertEquals(1, state.first { it == 1 })
-        }
-    }
-
-    @Test
-    fun testAwaitAllFields() = runTest {
-        with(client.awaitFieldInitialization()) {
-            assertEquals(-1, stateFlowOfInts.value)
-            assertEquals(-1, stateFlowOfFlowsOfInts.value.value)
-            assertEquals(-1, stateFlowOfFlowsOfFlowsOfInts.value.value.value)
         }
     }
 

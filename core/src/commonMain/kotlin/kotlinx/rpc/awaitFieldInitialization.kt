@@ -29,7 +29,7 @@ import kotlin.reflect.KClass
  */
 @Deprecated(
     "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
-    level = DeprecationLevel.WARNING,
+    level = DeprecationLevel.ERROR,
 )
 public suspend fun <@Rpc T : Any, R> T.awaitFieldInitialization(getter: T.() -> R): R {
     val field = getter()
@@ -60,12 +60,13 @@ public suspend fun <@Rpc T : Any, R> T.awaitFieldInitialization(getter: T.() -> 
  * @param T service type
  * @return specified service, after all of it's field were initialized.
  */
+@Suppress("RedundantSuspendModifier")
 @Deprecated(
     "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
-    level = DeprecationLevel.WARNING,
+    level = DeprecationLevel.ERROR,
 )
 public suspend inline fun <@Rpc reified T : Any> T.awaitFieldInitialization(): T {
-    return awaitFieldInitialization(T::class)
+    error("Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html")
 }
 
 /**
@@ -89,7 +90,7 @@ public suspend inline fun <@Rpc reified T : Any> T.awaitFieldInitialization(): T
  */
 @Deprecated(
     "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
-    level = DeprecationLevel.WARNING,
+    level = DeprecationLevel.ERROR,
 )
 public suspend fun <@Rpc T : Any> T.awaitFieldInitialization(kClass: KClass<T>): T {
     serviceDescriptorOf(kClass)

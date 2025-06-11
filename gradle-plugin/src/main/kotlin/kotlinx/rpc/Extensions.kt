@@ -88,6 +88,7 @@ open class RpcStrictModeExtension @Inject constructor(objects: ObjectFactory) {
      *
      * Consider using regular streaming.
      */
+    @Deprecated("Field are deprecated with level ERROR. This option can't change it.")
     val fields: Property<RpcStrictMode> = objects.strictModeProperty()
 
     private fun ObjectFactory.strictModeProperty(
