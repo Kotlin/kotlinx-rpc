@@ -9,7 +9,7 @@ import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 
-@Suppress("PropertyName")
+@Suppress("PropertyName", "detekt.VariableNaming")
 @InternalRpcApi
 public abstract class StreamSerializer {
     protected val STREAM_ID_SERIAL_NAME: String = "streamId"

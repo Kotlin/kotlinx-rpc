@@ -17,7 +17,7 @@ import kotlinx.rpc.krpc.internal.*
 import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.server.internal.KrpcServerConnector
 import kotlinx.rpc.krpc.server.internal.KrpcServerService
-import kotlin.coroutines.CoroutineContext
+import kotlin.concurrent.Volatile
 import kotlin.reflect.KClass
 
 @Deprecated("Use KrpcServer instead", ReplaceWith("KrpcServer"), level = DeprecationLevel.ERROR)
@@ -46,8 +46,8 @@ public abstract class KrpcServer(
     private val config: KrpcConfig.Server,
     transport: KrpcTransport,
 ) : RpcServer, KrpcEndpoint {
-    // we make a child here, so we can send cancellation messages before closing the connection
-    final override val coroutineContext: CoroutineContext = SupervisorJob(transport.coroutineContext.job)
+    @InternalRpcApi
+    public val internalScope: CoroutineScope = CoroutineScope(SupervisorJob(transport.coroutineContext.job))
 
     private val logger = RpcInternalCommonLogger.logger(rpcInternalObjectId())
 
@@ -66,21 +66,19 @@ public abstract class KrpcServer(
     final override var supportedPlugins: Set<KrpcPlugin> = emptySet()
         private set
 
-    private val rpcServices = RpcInternalConcurrentHashMap<Long, KrpcServerService<*>>()
+    private val rpcServices = RpcInternalConcurrentHashMap<String, KrpcServerService<*>>()
 
-    // compatibility with clients that do not have serviceId
-    private var nullRpcServices = RpcInternalConcurrentHashMap<String, KrpcServerService<*>>()
-
+    @Volatile
     private var cancelledByClient = false
 
     init {
-        coroutineContext.job.invokeOnCompletion(onCancelling = true) {
+        internalScope.coroutineContext.job.invokeOnCompletion(onCancelling = true) {
             if (!cancelledByClient) {
                 sendCancellation(CancellationType.ENDPOINT, null, null, closeTransportAfterSending = true)
             }
         }
 
-        launch {
+        internalScope.launch(CoroutineName("krpc-server-generic-protocol-messages")) {
             connector.subscribeToProtocolMessages(::handleProtocolMessage)
 
             connector.subscribeToGenericMessages(::handleGenericMessage)
@@ -105,20 +103,14 @@ public abstract class KrpcServer(
 
     final override fun <@Rpc Service : Any> registerService(
         serviceKClass: KClass<Service>,
-        serviceFactory: (CoroutineContext) -> Service,
+        serviceFactory: () -> Service,
     ) {
         val descriptor = serviceDescriptorOf(serviceKClass)
 
-        launch {
+        internalScope.launch(CoroutineName("krpc-server-service-$descriptor")) {
             connector.subscribeToServiceMessages(descriptor.fqName) { message ->
-                val rpcServerService = when (val id = message.serviceId) {
-                    null -> nullRpcServices.computeIfAbsent(descriptor.fqName) {
-                        createNewServiceInstance(descriptor, serviceFactory)
-                    }
-
-                    else -> rpcServices.computeIfAbsent(id) {
-                        createNewServiceInstance(descriptor, serviceFactory)
-                    }
+                val rpcServerService = rpcServices.computeIfAbsent(descriptor.fqName) {
+                    createNewServiceInstance(descriptor, serviceFactory)
                 }
 
                 rpcServerService.accept(message)
@@ -126,23 +118,22 @@ public abstract class KrpcServer(
         }
     }
 
+    override fun <@Rpc Service : Any> deregisterService(serviceKClass: KClass<Service>) {
+        connector.unsubscribeFromServiceMessages(serviceDescriptorOf(serviceKClass).fqName)
+    }
+
     private fun <@Rpc Service : Any> createNewServiceInstance(
         descriptor: RpcServiceDescriptor<Service>,
-        serviceFactory: (CoroutineContext) -> Service,
+        serviceFactory: () -> Service,
     ): KrpcServerService<Service> {
-        val serviceInstanceContext = SupervisorJob(coroutineContext.job)
-
         return KrpcServerService(
-            service = serviceFactory(serviceInstanceContext),
+            service = serviceFactory(),
             descriptor = descriptor,
             config = config,
             connector = connector,
-            coroutineContext = serviceInstanceContext,
-        ).apply {
-            coroutineContext.job.invokeOnCompletion {
-                connector.unsubscribeFromServiceMessages(descriptor.fqName)
-            }
-        }
+            supportedPlugins = supportedPlugins,
+            serverScope = internalScope,
+        )
     }
 
     @InternalRpcApi
@@ -151,25 +142,18 @@ public abstract class KrpcServer(
             CancellationType.ENDPOINT -> {
                 cancelledByClient = true
 
-                cancel("Server cancelled by client")
+                internalScope.cancel("Server cancelled by client")
                 rpcServices.clear()
             }
 
-            CancellationType.SERVICE -> {
-                val serviceId = message[KrpcPluginKey.CLIENT_SERVICE_ID]?.toLongOrNull()
-                    ?: error("Expected CLIENT_SERVICE_ID for cancellation of type 'service' as Long value")
-
-                rpcServices[serviceId]?.cancel("Service cancelled by client")
-            }
-
             CancellationType.REQUEST -> {
-                val serviceId = message[KrpcPluginKey.CLIENT_SERVICE_ID]?.toLongOrNull()
-                    ?: error("Expected CLIENT_SERVICE_ID for cancellation of type 'request' as Long value")
+                val serviceType = message[KrpcPluginKey.CLIENT_SERVICE_ID]
+                    ?: error("Expected CLIENT_SERVICE_ID for cancellation of type 'request'")
 
                 val callId = message[KrpcPluginKey.CANCELLATION_ID]
                     ?: error("Expected CANCELLATION_ID for cancellation of type 'request'")
 
-                rpcServices[serviceId]?.cancelRequest(callId, "Request cancelled by client")
+                rpcServices[serviceType]?.cancelRequestWithOptionalAck(callId, "Request cancelled by client")
             }
 
             else -> {

@@ -1,8 +1,0 @@
-org.jetbrains.krpc.internal.transport.RPCMessage.CallDataBinary
-  - callId: kotlin.String
-  - callType: org.jetbrains.krpc.internal.transport.RPCMessage.CallType
-    - Nullable
-  - method: kotlin.String
-    - Declared name: callableName
-  - data: kotlin.ByteArray
-  - serviceType: kotlin.String

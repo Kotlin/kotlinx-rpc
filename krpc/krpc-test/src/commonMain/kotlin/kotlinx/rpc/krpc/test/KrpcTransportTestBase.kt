@@ -92,18 +92,13 @@ abstract class KrpcTransportTestBase {
     @BeforeTest
     fun start() {
         backend = KrpcTestServer(serverConfig, serverTransport)
-        backend.registerService<KrpcTestService> { ctx ->
-            KrpcTestServiceBackend(ctx).also {
+        backend.registerService<KrpcTestService> {
+            KrpcTestServiceBackend().also {
                 server = it
             }
         }
 
         client = KrpcTestClient(clientConfig, clientTransport).withService()
-    }
-
-    @AfterTest
-    fun end() {
-        backend.cancel()
     }
 
     @Test
@@ -140,12 +135,6 @@ abstract class KrpcTransportTestBase {
             expected = List(3) { 2 },
             actual = client.nonSuspendBidirectionalPayload(payload(0)).toList(),
         )
-    }
-
-    @Test
-    fun empty() {
-        backend.cancel()
-        client.cancel()
     }
 
     @Test

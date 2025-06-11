@@ -4,13 +4,12 @@
 
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.withService
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.codegen.test.TestRpcClient
 
 @Rpc
-interface BoxService : RemoteService {
+interface BoxService {
     // plugin should add @Contextual annotation to the flow parameter in the generated class
     suspend fun stream(flow: Flow<String>): String
 }

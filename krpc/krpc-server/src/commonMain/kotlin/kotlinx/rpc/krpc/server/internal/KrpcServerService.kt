@@ -18,7 +18,6 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
-import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.typeOf
 
 internal class KrpcServerService<@Rpc T : Any>(
@@ -26,17 +25,12 @@ internal class KrpcServerService<@Rpc T : Any>(
     private val descriptor: RpcServiceDescriptor<T>,
     private val config: KrpcConfig.Server,
     private val connector: KrpcServerConnector,
-    override val coroutineContext: CoroutineContext,
-) : CoroutineScope {
+    private val serverScope: CoroutineScope,
+    private val supportedPlugins: Set<KrpcPlugin>,
+) {
     private val logger = RpcInternalCommonLogger.logger(rpcInternalObjectId(descriptor.fqName))
 
     private val requestMap = RpcInternalConcurrentHashMap<String, RpcRequest>()
-
-    init {
-        coroutineContext.job.invokeOnCompletion {
-            logger.trace { "Service completed with $it" }
-        }
-    }
 
     suspend fun accept(message: KrpcCallMessage) {
         val result = runCatching {
@@ -138,7 +132,7 @@ internal class KrpcServerService<@Rpc T : Any>(
 
         var failure: Throwable? = null
 
-        val requestJob = launch(start = CoroutineStart.LAZY) {
+        val requestJob = serverScope.launch(start = CoroutineStart.LAZY) {
             try {
                 val markedNonSuspending = callData.pluginParams.orEmpty()
                     .contains(KrpcPluginKey.NON_SUSPENDING_SERVER_FLOW_MARKER)
@@ -322,20 +316,28 @@ internal class KrpcServerService<@Rpc T : Any>(
         cause: Throwable? = null,
         fromJob: Boolean = false,
     ) {
-        serverStreamContext.removeCall(callId, cause)
         requestMap.remove(callId)?.cancelAndClose(callId, message, cause, fromJob)
+    }
 
-        // acknowledge the cancellation
-        connector.sendMessage(
-            KrpcGenericMessage(
-                connectionId = null,
-                pluginParams = mapOf(
-                    KrpcPluginKey.GENERIC_MESSAGE_TYPE to KrpcGenericMessage.CANCELLATION_TYPE,
-                    KrpcPluginKey.CANCELLATION_TYPE to CancellationType.CANCELLATION_ACK.toString(),
-                    KrpcPluginKey.CANCELLATION_ID to callId,
+    suspend fun cancelRequestWithOptionalAck(
+        callId: String,
+        message: String? = null,
+        cause: Throwable? = null,
+    ) {
+        cancelRequest(callId, message, cause, fromJob = false)
+
+        if (!supportedPlugins.contains(KrpcPlugin.NO_ACK_CANCELLATION)) {
+            connector.sendMessage(
+                KrpcGenericMessage(
+                    connectionId = null,
+                    pluginParams = mapOf(
+                        KrpcPluginKey.GENERIC_MESSAGE_TYPE to KrpcGenericMessage.CANCELLATION_TYPE,
+                        KrpcPluginKey.CANCELLATION_TYPE to CancellationType.CANCELLATION_ACK.toString(),
+                        KrpcPluginKey.CANCELLATION_ID to callId,
+                    )
                 )
             )
-        )
+        }
     }
 
     private val serverStreamContext: ServerStreamContext = ServerStreamContext()

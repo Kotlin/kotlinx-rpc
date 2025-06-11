@@ -13,13 +13,6 @@ import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
 object RpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
     override val MAP by RpcKtDiagnosticFactoryToRendererMap("Rpc") { map ->
         map.put(
-            factory = FirRpcDiagnostics.MISSING_RPC_ANNOTATION,
-            message = "Missing @Rpc annotation. " +
-                    "All services children of kotlinx.rpc.RemoteService " +
-                    "must be annotated with kotlinx.rpc.annotations.Rpc",
-        )
-
-        map.put(
             factory = FirRpcDiagnostics.MISSING_SERIALIZATION_MODULE,
             message = "Missing kotlinx.serialization plugin in the module. " +
                     "Service generation will not be available. " +

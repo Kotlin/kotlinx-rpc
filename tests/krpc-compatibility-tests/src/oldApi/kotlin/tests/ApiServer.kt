@@ -18,9 +18,9 @@ import kotlinx.rpc.registerService
 class ApiServer : TestApiServer {
     override fun serveAllInterfaces(rpcServer: RpcServer) {
         rpcServer.apply {
-            registerService<FooInterface> { FooInterfaceImpl(it) }
-            registerService<BarInterface> { BarInterfaceImpl(it) }
-            registerService<BazInterface> { BazInterfaceImpl(it) }
+            registerService<FooInterface> { FooInterfaceImpl() }
+            registerService<BarInterface> { BarInterfaceImpl() }
+            registerService<BazInterface> { BazInterfaceImpl() }
         }
     }
 }

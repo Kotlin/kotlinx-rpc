@@ -1,4 +1,0 @@
-org.jetbrains.krpc.RPCMessage.CallSuccess
-  - callId: kotlin.String
-  - data: kotlin.String
-  - serviceType: kotlin.String

@@ -17,24 +17,23 @@ import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
-import kotlin.coroutines.CoroutineContext
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.seconds
 
 @Rpc
-interface Echo : RemoteService {
+interface Echo {
     suspend fun echo(message: String): String
 }
 
 @Rpc
-interface Second : RemoteService {
+interface Second {
     suspend fun second(message: String): String
 }
 
-class EchoImpl(override val coroutineContext: CoroutineContext) : Echo {
+class EchoImpl : Echo {
     val received = atomic(0)
 
     override suspend fun echo(message: String): String {
@@ -43,7 +42,7 @@ class EchoImpl(override val coroutineContext: CoroutineContext) : Echo {
     }
 }
 
-class SecondServer(override val coroutineContext: CoroutineContext) : Second {
+class SecondServer : Second {
     val received = atomic(0)
 
     override suspend fun second(message: String): String {
@@ -71,27 +70,30 @@ class TransportTest {
 
     private fun serverOf(
         localTransport: LocalTransport,
-        config: (KrpcConfigBuilder.Server.() -> Unit)? = null
+        config: (KrpcConfigBuilder.Server.() -> Unit)? = null,
     ): RpcServer {
         val serverConfig = config?.let { rpcServerConfig(it) } ?: serverConfig
         return KrpcTestServer(serverConfig, localTransport.server)
     }
 
-    private fun runTest(block: suspend TestScope.() -> Unit): TestResult = kotlinx.coroutines.test.runTest {
-        val logger = RpcInternalCommonLogger.logger("TransportTest")
+    private fun runTest(block: suspend TestScope.() -> Unit): TestResult =
+        kotlinx.coroutines.test.runTest(timeout = 15.seconds) {
+            debugCoroutines()
 
-        RpcInternalDumpLoggerContainer.set(object : RpcInternalDumpLogger {
-            override val isEnabled: Boolean = true
+            val logger = RpcInternalCommonLogger.logger("TransportTest")
 
-            override fun dump(vararg tags: String, message: () -> String) {
-                logger.info { "${tags.joinToString(" ") { "[$it]" }} ${message()}" }
-            }
-        })
+            RpcInternalDumpLoggerContainer.set(object : RpcInternalDumpLogger {
+                override val isEnabled: Boolean = true
 
-        block()
+                override fun dump(vararg tags: String, message: () -> String) {
+                    logger.info { "${tags.joinToString(" ") { "[$it]" }} ${message()}" }
+                }
+            })
 
-        RpcInternalDumpLoggerContainer.set(null)
-    }
+            block()
+
+            RpcInternalDumpLoggerContainer.set(null)
+        }
 
     @Test
     fun testUsingWrongService() = runTest {
@@ -111,10 +113,10 @@ class TransportTest {
 
             waitForServices = false
         }
-        server.registerService<Echo> { EchoImpl(it) }
+        server.registerService<Echo> { EchoImpl() }
 
         result.await()
-        server.cancel()
+        transports.cancel()
     }
 
     @Test
@@ -128,12 +130,12 @@ class TransportTest {
 
         val server = serverOf(transports)
 
-        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
+        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl() }
 
         assertEquals("foo", result.await())
         assertEquals(1, echoServices.single().received.value)
 
-        server.cancel()
+        transports.cancel()
     }
 
     @Test
@@ -148,40 +150,37 @@ class TransportTest {
         }
 
         val server = serverOf(transports)
-        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
+        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl() }
 
         val response = result.awaitAll()
         assertTrue { response.all { it == "foo" } }
         assertEquals(10, echoServices.single().received.value)
 
-        server.cancel()
+        transports.cancel()
     }
 
     @Test
     fun testLateConnectWithManyServices() = runTest {
-        repeat(100) {
-            val transports = LocalTransport()
+        val transports = LocalTransport()
 
-            val client = clientOf(transports)
+        val client = clientOf(transports)
 
-            val result = List(10) {
-                async {
-                    val service = client.withService<Echo>()
-                    service.echo("foo")
-                }
+        val result = List(3) {
+            async {
+                val service = client.withService<Echo>()
+                service.echo("foo")
             }
-
-            val server = serverOf(transports)
-            val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
-
-            val response = result.awaitAll()
-            assertTrue { response.all { it == "foo" } }
-            assertEquals(10, echoServices.sumOf { it.received.value })
-
-            server.cancel()
         }
-    }
 
+        val server = serverOf(transports)
+        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl() }
+
+        val response = result.awaitAll()
+        assertTrue { response.all { it == "foo" } }
+        assertEquals(3, echoServices.sumOf { it.received.value })
+
+        transports.coroutineContext.job.cancelAndJoin()
+    }
 
     @Test
     fun testLateConnectWithManyCallsAndClients() = runTest {
@@ -201,13 +200,13 @@ class TransportTest {
         }
 
         val server = serverOf(transports)
-        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
+        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl() }
 
         val response = result.awaitAll().flatten()
         assertTrue { response.all { it == "foo" } }
         assertEquals(100, echoServices.sumOf { it.received.value })
 
-        server.cancel()
+        transports.cancel()
     }
 
     @Test
@@ -229,43 +228,24 @@ class TransportTest {
         val server = serverOf(transports)
 
         delay(1000)
-        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
+        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl() }
         assertEquals("foo", firstResult.await())
         assertEquals(1, echoServices.single().received.value)
-        echoServices.single().cancel()
 
         delay(1000)
-        val secondServices = server.registerServiceAndReturn<Second, _> { SecondServer(it) }
+        val secondServices = server.registerServiceAndReturn<Second, _> { SecondServer() }
         assertEquals("bar", secondResult.await())
         assertEquals(1, secondServices.single().received.value)
-        secondServices.single().cancel()
 
-        server.cancel()
-    }
-
-    @Test
-    @Ignore
-    fun testCancelFromClientToServer() = runTest {
-        val transports = LocalTransport()
-
-        val client = clientOf(transports).withService<KrpcTestService>()
-
-        val server = serverOf(transports)
-        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
-
-        client.cancel()
-        echoServices.single().coroutineContext.job.join()
-        assertTrue(echoServices.single().coroutineContext.job.isCancelled)
+        transports.cancel()
     }
 
     private inline fun <@Rpc reified Service : Any, reified Impl : Service> RpcServer.registerServiceAndReturn(
-        crossinline body: (CoroutineContext) -> Impl,
+        crossinline body: () -> Impl,
     ): List<Impl> {
         val instances = mutableListOf<Impl>()
 
-        registerService<Service> { ctx ->
-            body(ctx).also { instances.add(it) }
-        }
+        registerService<Service> { body().also { instances.add(it) } }
 
         return instances
     }

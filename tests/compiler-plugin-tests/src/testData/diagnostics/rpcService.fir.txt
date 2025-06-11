@@ -1,6 +1,6 @@
 FILE: rpcService.kt
     @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)))
-    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyService : R|kotlin/Any|, R|kotlinx/rpc/RemoteService| {
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyService : R|kotlin/Any| {
         public abstract fun hello(): R|kotlin/Unit|
 
         public abstract suspend fun <T> generic(a: R|T|): R|kotlin/Unit|
@@ -110,7 +110,7 @@ FILE: rpcService.kt
         }
 
     }
-    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyServiceT<T> : R|kotlin/Any|, R|kotlinx/rpc/RemoteService| {
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyServiceT<T> : R|kotlin/Any| {
         public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
@@ -118,7 +118,7 @@ FILE: rpcService.kt
         }
 
     }
-    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyServiceT2<T, R, A, B> : R|kotlin/Any|, R|kotlinx/rpc/RemoteService| {
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyServiceT2<T, R, A, B> : R|kotlin/Any| {
         public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }

@@ -7,12 +7,10 @@ package kotlinx.rpc.krpc.test.cancellation
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
-import kotlin.coroutines.CoroutineContext
 
 @Rpc
-interface CancellationService : RemoteService {
+interface CancellationService {
     suspend fun longRequest()
 
     suspend fun serverDelay(millis: Long)
@@ -30,7 +28,7 @@ interface CancellationService : RemoteService {
     fun nonSuspendable(): Flow<Int>
 }
 
-class CancellationServiceImpl(override val coroutineContext: CoroutineContext) : CancellationService {
+class CancellationServiceImpl : CancellationService {
     val delayCounter = atomic(0)
     val consumedIncomingValues = mutableListOf<Int>()
     val firstIncomingConsumed = CompletableDeferred<Int>()
@@ -74,18 +72,16 @@ class CancellationServiceImpl(override val coroutineContext: CoroutineContext) :
         error("exception in request")
     }
 
-    private fun consume(stream: Flow<Int>) {
-        launch {
-            try {
-                stream.collect {
-                    if (!firstIncomingConsumed.isCompleted) {
-                        firstIncomingConsumed.complete(it)
-                    }
-                    consumedIncomingValues.add(it)
+    private suspend fun consume(stream: Flow<Int>) {
+        try {
+            stream.collect {
+                if (!firstIncomingConsumed.isCompleted) {
+                    firstIncomingConsumed.complete(it)
                 }
-            } finally {
-                consumedAll.complete(Unit)
+                consumedIncomingValues.add(it)
             }
+        } finally {
+            consumedAll.complete(Unit)
         }
     }
 

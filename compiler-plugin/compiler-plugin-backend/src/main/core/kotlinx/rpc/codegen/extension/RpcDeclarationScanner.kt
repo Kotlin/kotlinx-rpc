@@ -81,7 +81,7 @@ internal object RpcDeclarationScanner {
 private fun unsupportedDeclaration(service: IrClass, declaration: IrDeclaration, logger: MessageCollector): Nothing? {
     logger.report(
         severity = CompilerMessageSeverity.LOGGING,
-        message = "Unsupported declaration in RemoteService interface ${service.name}: ${declaration.dumpKotlinLike()}",
+        message = "Unsupported declaration in @Rpc interface ${service.name}: ${declaration.dumpKotlinLike()}",
     )
 
     return null

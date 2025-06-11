@@ -55,6 +55,11 @@ public enum class KrpcPlugin(
      * This feature adds support for proper service/request cancellation over the network.
      */
     NON_SUSPENDING_SERVER_FLOWS(3, KrpcVersion.V_0_6_0),
+
+    /**
+     * Clients don't require cancellation acknowledgement from the peer server.
+     */
+    NO_ACK_CANCELLATION(4, KrpcVersion.V_0_8_0),
     ;
 
     @InternalRpcApi

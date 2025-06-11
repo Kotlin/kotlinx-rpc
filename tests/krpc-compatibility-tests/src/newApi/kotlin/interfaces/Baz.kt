@@ -4,19 +4,17 @@
 
 package interfaces
 
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.serialization.Serializable
-import kotlin.coroutines.CoroutineContext
 
 @Serializable
 data class Baz(val field: String, val field2: String = "")
 
 @Rpc
-interface BazInterface : RemoteService {
+interface BazInterface {
     suspend fun get(): Baz
 }
 
-class BazInterfaceImpl(override val coroutineContext: CoroutineContext) : BazInterface {
+class BazInterfaceImpl : BazInterface {
     override suspend fun get(): Baz = Baz("asd", "def")
 }

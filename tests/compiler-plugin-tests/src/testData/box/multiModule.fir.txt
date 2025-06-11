@@ -1,6 +1,6 @@
 Module: lib
 FILE: module_lib_multiModule.kt
-    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface BoxService : R|kotlinx/rpc/RemoteService| {
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface BoxService : R|kotlin/Any| {
         public abstract suspend fun simple(): R|kotlin/String|
 
         public final class $rpcServiceStub : R|kotlin/Any| {

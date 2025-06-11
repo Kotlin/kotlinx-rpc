@@ -26,7 +26,6 @@ import org.jetbrains.kotlin.psi.KtElement
 // ###########################################################################
 
 object FirRpcDiagnostics : RpcKtDiagnosticsContainer() {
-    val MISSING_RPC_ANNOTATION by error0<KtAnnotated>()
     val MISSING_SERIALIZATION_MODULE by error0<KtAnnotated>()
     val WRONG_RPC_ANNOTATION_TARGET by error1<KtAnnotated, ConeKotlinType>()
     val CHECKED_ANNOTATION_VIOLATION by error3<KtAnnotated, Int, ConeKotlinType, FirBasedSymbol<*>>()

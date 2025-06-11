@@ -4,18 +4,16 @@
 
 // MODULE: lib
 
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
 
 @Rpc
-interface BoxService : RemoteService {
+interface BoxService {
     suspend fun simple(): String
 }
 
 // MODULE: main(lib)
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.withService
 import kotlinx.rpc.codegen.test.TestRpcClient
 

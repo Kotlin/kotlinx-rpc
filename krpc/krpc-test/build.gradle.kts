@@ -30,8 +30,6 @@ kotlin {
                 api(projects.krpc.krpcClient)
                 api(projects.krpc.krpcLogging)
 
-                implementation(libs.coroutines.debug)
-
                 implementation(projects.krpc.krpcSerialization.krpcSerializationJson)
 
                 implementation(libs.serialization.core)
@@ -42,6 +40,7 @@ kotlin {
 
         jvmMain {
             dependencies {
+                implementation(libs.coroutines.debug)
                 implementation(libs.kotlin.test.junit)
             }
         }

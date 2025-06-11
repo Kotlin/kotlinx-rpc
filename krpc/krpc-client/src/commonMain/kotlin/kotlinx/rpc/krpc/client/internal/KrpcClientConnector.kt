@@ -36,9 +36,8 @@ internal class KrpcClientConnector private constructor(
         }
     )
 
-    @Suppress("unused")
-    fun unsubscribeFromMessages(serviceTypeString: String, callId: String) {
-        connector.unsubscribeFromMessages(CallSubscriptionId.Service(serviceTypeString, callId))
+    fun unsubscribeFromMessages(serviceTypeString: String, callId: String, callback: () -> Unit = {}) {
+        connector.unsubscribeFromMessages(CallSubscriptionId.Service(serviceTypeString, callId), callback)
     }
 
     suspend fun subscribeToCallResponse(

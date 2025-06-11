@@ -17,11 +17,14 @@ import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.krpc.test.KrpcTestClient
 import kotlinx.rpc.krpc.test.KrpcTestServer
 import kotlinx.rpc.krpc.test.LocalTransport
+import kotlinx.rpc.krpc.test.debugCoroutines
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
+import kotlin.time.Duration.Companion.seconds
 
 fun runCancellationTest(body: suspend CancellationToolkit.() -> Unit): TestResult {
-    return runTest {
+    return runTest(timeout = 15.seconds) {
+        debugCoroutines()
         CancellationToolkit(this).apply { body() }
     }
 }
@@ -61,7 +64,7 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
 
     val server = KrpcTestServer(rpcServerConfig { serializationConfig() }, transport.server).apply {
         registerService<CancellationService> {
-            CancellationServiceImpl(it).also { impl ->
+            CancellationServiceImpl().also { impl ->
                 if (!firstServerInstance.isCompleted) {
                     firstServerInstance.complete(impl)
                 }

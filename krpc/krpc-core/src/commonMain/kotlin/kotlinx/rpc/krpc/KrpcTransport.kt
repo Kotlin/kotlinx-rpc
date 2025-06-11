@@ -49,13 +49,13 @@ public interface KrpcTransport : CoroutineScope {
      * @return received RPC message.
      */
     public suspend fun receive(): KrpcTransportMessage
+}
 
-    /**
-     * Suspends until next RPC message from a peer endpoint is received and then returns it.
-     *
-     * @return received RPC message as a [Result].
-     */
-    public suspend fun receiveCatching(): Result<KrpcTransportMessage> {
-        return runCatching { receive() }
-    }
+/**
+ * Suspends until next RPC message from a peer endpoint is received and then returns it.
+ *
+ * @return received RPC message as a [Result].
+ */
+public suspend fun KrpcTransport.receiveCatching(): Result<KrpcTransportMessage> {
+    return runCatching { receive() }
 }

@@ -8,7 +8,6 @@ import io.ktor.server.websocket.*
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.KrpcConfigBuilder
-import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 
 @Deprecated("Use KrpcRoute instead", ReplaceWith("KrpcRoute"), level = DeprecationLevel.ERROR)
@@ -47,7 +46,7 @@ public class KrpcRoute(
      */
     public fun <@Rpc Service : Any> registerService(
         serviceKClass: KClass<Service>,
-        serviceFactory: (CoroutineContext) -> Service,
+        serviceFactory: () -> Service,
     ) {
         registrations.add { server ->
             server.registerService(serviceKClass, serviceFactory)
@@ -64,7 +63,7 @@ public class KrpcRoute(
      * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
      */
     public inline fun <@Rpc reified Service : Any> registerService(
-        noinline serviceFactory: (CoroutineContext) -> Service,
+        noinline serviceFactory: () -> Service,
     ) {
         registerService(Service::class, serviceFactory)
     }

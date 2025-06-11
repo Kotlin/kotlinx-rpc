@@ -8,23 +8,22 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
+import kotlinx.rpc.internal.utils.thread.RpcInternalThreadLocal
 import kotlinx.rpc.krpc.internal.KrpcCallMessage
 import kotlinx.rpc.krpc.internal.decodeMessageData
 import kotlinx.rpc.krpc.internal.deserialize
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialFormat
-import kotlin.native.concurrent.ThreadLocal
 
 internal class ServerStreamContext {
-    @ThreadLocal
-    private var currentCallId: String? = null
+    private val currentCallId = RpcInternalThreadLocal<String>()
 
     fun <T> scoped(callId: String, body: () -> T): T {
         try {
-            currentCallId = callId
+            currentCallId.set(callId)
             return body()
         } finally {
-            currentCallId = null
+            currentCallId.remove()
         }
     }
 
@@ -53,7 +52,7 @@ internal class ServerStreamContext {
     }
 
     fun prepareClientStream(streamId: String, elementKind: KSerializer<Any?>): Flow<Any?> {
-        val callId = currentCallId ?: error("No call id")
+        val callId = currentCallId.get() ?: error("No call id")
 
         val channel = Channel<Any?>(Channel.UNLIMITED)
 
@@ -68,7 +67,6 @@ internal class ServerStreamContext {
 
         val flow = flow {
             for (message in channel) {
-                println("Consumed on server: $message")
                 when (message) {
                     is StreamCancel -> {
                         onClose()

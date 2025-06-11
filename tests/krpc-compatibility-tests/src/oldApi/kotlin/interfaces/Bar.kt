@@ -4,15 +4,13 @@
 
 package interfaces
 
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
-import kotlin.coroutines.CoroutineContext
 
 @Rpc
-interface BarInterface : RemoteService {
+interface BarInterface {
     suspend fun get()
 }
 
-class BarInterfaceImpl(override val coroutineContext: CoroutineContext) : BarInterface {
+class BarInterfaceImpl() : BarInterface {
     override suspend fun get() {}
 }

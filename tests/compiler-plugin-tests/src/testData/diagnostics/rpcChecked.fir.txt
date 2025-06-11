@@ -1,6 +1,6 @@
 FILE: rpcChecked.kt
     @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)))
-    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyService : R|kotlin/Any|, R|kotlinx/rpc/RemoteService| {
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyService : R|kotlin/Any| {
         public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
@@ -9,31 +9,25 @@ FILE: rpcChecked.kt
 
     }
     public final class NotAService : R|kotlin/Any| {
-        public constructor(coroutineContext: R|kotlin/coroutines/CoroutineContext|): R|NotAService| {
+        public constructor(): R|NotAService| {
             super<R|kotlin/Any|>()
         }
-
-        public final val coroutineContext: R|kotlin/coroutines/CoroutineContext| = R|<local>/coroutineContext|
-            public get(): R|kotlin/coroutines/CoroutineContext|
 
     }
     public final class MyServiceImpl : R|MyService| {
-        public constructor(coroutineContext: R|kotlin/coroutines/CoroutineContext|): R|MyServiceImpl| {
+        public constructor(): R|MyServiceImpl| {
             super<R|kotlin/Any|>()
         }
-
-        public open override val coroutineContext: R|kotlin/coroutines/CoroutineContext| = R|<local>/coroutineContext|
-            public get(): R|kotlin/coroutines/CoroutineContext|
 
     }
     public final inline suspend fun <@R|kotlinx/rpc/annotations/Rpc|() reified T : R|kotlin/Any|> ok(client: R|kotlinx/rpc/RpcClient|, server: R|kotlinx/rpc/RpcServer|, impl: R|T|, myServiceImpl: R|MyService|): R|kotlin/Unit| {
         R|<local>/client|.R|kotlinx/rpc/withService|<R|MyService|>()
         R|<local>/client|.R|kotlinx/rpc/withService|<R|T|>()
-        R|<local>/server|.R|kotlinx/rpc/registerService|<R|MyService|>(<L> = registerService@fun <anonymous>(it: R|kotlin/coroutines/CoroutineContext|): R|MyService| <inline=NoInline>  {
-            ^ R|/MyServiceImpl.MyServiceImpl|(R|<local>/it|)
+        R|<local>/server|.R|kotlinx/rpc/registerService|<R|MyService|>(<L> = registerService@fun <anonymous>(): R|MyService| <inline=NoInline>  {
+            ^ R|/MyServiceImpl.MyServiceImpl|()
         }
         )
-        R|<local>/server|.R|kotlinx/rpc/registerService|<R|T|>(<L> = registerService@fun <anonymous>(it: R|kotlin/coroutines/CoroutineContext|): R|T| <inline=NoInline>  {
+        R|<local>/server|.R|kotlinx/rpc/registerService|<R|T|>(<L> = registerService@fun <anonymous>(): R|T| <inline=NoInline>  {
             ^ R|<local>/impl|
         }
         )
@@ -54,15 +48,15 @@ FILE: rpcChecked.kt
         R|<local>/client|.R|kotlinx/rpc/withService|<R|MyServiceImpl|>()
         R|<local>/client|.R|kotlinx/rpc/withService|<R|NotAService|>()
         R|<local>/client|.R|kotlinx/rpc/withService|<R|T|>()
-        R|<local>/server|.R|kotlinx/rpc/registerService|<R|MyServiceImpl|>(<L> = registerService@fun <anonymous>(it: R|kotlin/coroutines/CoroutineContext|): R|MyServiceImpl| <inline=NoInline>  {
-            ^ R|/MyServiceImpl.MyServiceImpl|(R|<local>/it|)
+        R|<local>/server|.R|kotlinx/rpc/registerService|<R|MyServiceImpl|>(<L> = registerService@fun <anonymous>(): R|MyServiceImpl| <inline=NoInline>  {
+            ^ R|/MyServiceImpl.MyServiceImpl|()
         }
         )
-        R|<local>/server|.R|kotlinx/rpc/registerService|<R|NotAService|>(<L> = registerService@fun <anonymous>(it: R|kotlin/coroutines/CoroutineContext|): R|NotAService| <inline=NoInline>  {
-            ^ R|/NotAService.NotAService|(R|<local>/it|)
+        R|<local>/server|.R|kotlinx/rpc/registerService|<R|NotAService|>(<L> = registerService@fun <anonymous>(): R|NotAService| <inline=NoInline>  {
+            ^ R|/NotAService.NotAService|()
         }
         )
-        R|<local>/server|.R|kotlinx/rpc/registerService|<R|T|>(<L> = registerService@fun <anonymous>(it: R|kotlin/coroutines/CoroutineContext|): R|T| <inline=NoInline>  {
+        R|<local>/server|.R|kotlinx/rpc/registerService|<R|T|>(<L> = registerService@fun <anonymous>(): R|T| <inline=NoInline>  {
             ^ R|<local>/impl|
         }
         )

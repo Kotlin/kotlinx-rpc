@@ -36,10 +36,6 @@ internal class RpcIrContext(
         getIrClassSymbol("kotlinx.coroutines", "CoroutineScope")
     }
 
-    val coroutineContext by lazy {
-        getIrClassSymbol("kotlin.coroutines", "CoroutineContext")
-    }
-
     val kTypeClass by lazy {
         getIrClassSymbol("kotlin.reflect", "KType")
     }
@@ -54,14 +50,6 @@ internal class RpcIrContext(
 
     val flow by lazy {
         getIrClassSymbol("kotlinx.coroutines.flow", "Flow")
-    }
-
-    val sharedFlow by lazy {
-        getIrClassSymbol("kotlinx.coroutines.flow", "SharedFlow")
-    }
-
-    val stateFlow by lazy {
-        getIrClassSymbol("kotlinx.coroutines.flow", "StateFlow")
     }
 
     val pair by lazy {
@@ -139,10 +127,6 @@ internal class RpcIrContext(
             rpcClient.namedFunction("callServerStreaming")
         }
 
-        val provideStubContext by lazy {
-            rpcClient.namedFunction("provideStubContext")
-        }
-
         val asArray by lazy {
             rpcMethodClass.namedFunction("asArray")
         }
@@ -153,10 +137,6 @@ internal class RpcIrContext(
 
         val emptyArray by lazy {
             namedFunction("kotlin", "emptyArray")
-        }
-
-        val scopedClientCall by lazy {
-            namedFunction("kotlinx.rpc.internal", "scopedClientCall")
         }
 
         val emptyList by lazy {
@@ -201,10 +181,6 @@ internal class RpcIrContext(
     val properties = Properties()
 
     inner class Properties {
-        val rpcClientCoroutineContext by lazy {
-            rpcClient.namedProperty("coroutineContext")
-        }
-
         val rpcServiceDescriptorFqName by lazy {
             rpcServiceDescriptor.namedProperty("fqName")
         }

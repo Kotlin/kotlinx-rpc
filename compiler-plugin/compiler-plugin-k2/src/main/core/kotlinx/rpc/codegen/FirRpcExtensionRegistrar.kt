@@ -30,7 +30,5 @@ class FirRpcExtensionRegistrar(private val configuration: CompilerConfiguration)
         }
 
         +CFactory { FirRpcAdditionalCheckers(it, serializationIsPresent, configuration) }
-
-        +SFactory { FirRpcSupertypeGenerator(it, logger) }
     }
 }
