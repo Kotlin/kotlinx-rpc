@@ -24,7 +24,6 @@ import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.krpc.serialization.protobuf.protobuf
 import kotlinx.rpc.krpc.test.KrpcTestClient
 import kotlinx.rpc.krpc.test.KrpcTestServer
-import kotlinx.rpc.krpc.test.KrpcTestServiceBackend
 import kotlinx.rpc.krpc.test.LocalTransport
 import kotlinx.rpc.krpc.test.api.ApiVersioningTest.Companion.latestVersionOrCurrent
 import kotlinx.rpc.krpc.test.api.util.GoldComparable
@@ -200,10 +199,6 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
         KrpcTestClient(rpcClientConfig {
             serialization {
                 format.init(this)
-            }
-
-            sharedFlowParameters {
-                replay = KrpcTestServiceBackend.SHARED_FLOW_REPLAY
             }
         }, transport.client)
     }

@@ -4,6 +4,11 @@
 
 package kotlinx.rpc.krpc.test
 
+import kotlinx.coroutines.CoroutineScope
+
 actual inline fun runThreadIfPossible(runner: () -> Unit) {
     runner()
+}
+
+internal actual fun CoroutineScope.debugCoroutines() {
 }

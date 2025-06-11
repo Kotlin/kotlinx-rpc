@@ -14,6 +14,18 @@ internal class SynchronizedHashMap<K : Any, V: Any> : RpcInternalConcurrentHashM
         map.put(key, value)
     }
 
+    override fun merge(key: K, value: V, remappingFunction: (V, V) -> V): V? = synchronized(this) {
+        val old = map[key]
+        if (old == null) {
+            map[key] = value
+            value
+        } else {
+            val new = remappingFunction(old, value)
+            map[key] = new
+            new
+        }
+    }
+
     override fun computeIfAbsent(key: K, computeValue: () -> V): V = synchronized(this) {
         map[key] ?: computeValue().also { map[key] = it }
     }

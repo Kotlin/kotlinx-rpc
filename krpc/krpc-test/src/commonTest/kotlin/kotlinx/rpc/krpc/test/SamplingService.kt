@@ -6,14 +6,10 @@
 @file:Suppress("PackageDirectoryMismatch")
 package org.jetbrains.krpc.test.api.util
 
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.test.plainFlow
-import kotlinx.rpc.krpc.test.sharedFlowOfT
-import kotlinx.rpc.krpc.test.stateFlowOfT
 import kotlinx.serialization.Serializable
 import kotlin.coroutines.CoroutineContext
 
@@ -28,11 +24,7 @@ interface SamplingService : RemoteService {
 
     suspend fun clientStream(flow: Flow<Int>): List<Int>
 
-    suspend fun clientNestedStream(flow: Flow<Flow<Int>>): List<List<Int>>
-
-    suspend fun serverFlow(): Flow<SamplingData>
-
-    suspend fun serverNestedFlow(): Flow<Flow<Int>>
+    fun serverFlow(): Flow<SamplingData>
 
     suspend fun callException()
 }
@@ -46,16 +38,8 @@ class SamplingServiceImpl(override val coroutineContext: CoroutineContext) : Sam
         return flow.toList()
     }
 
-    override suspend fun clientNestedStream(flow: Flow<Flow<Int>>): List<List<Int>> {
-        return flow.map { it.toList() }.toList()
-    }
-
-    override suspend fun serverFlow(): Flow<SamplingData> {
+    override fun serverFlow(): Flow<SamplingData> {
         return plainFlow { SamplingData("data") }
-    }
-
-    override suspend fun serverNestedFlow(): Flow<Flow<Int>> {
-        return plainFlow { plainFlow { it } }
     }
 
     override suspend fun callException() {

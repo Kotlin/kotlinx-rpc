@@ -9,10 +9,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
-import kotlinx.rpc.krpc.invokeOnStreamScopeCompletion
 import kotlin.coroutines.CoroutineContext
-import kotlin.properties.Delegates
-import kotlin.test.assertIs
 
 @Rpc
 interface CancellationService : RemoteService {
@@ -22,21 +19,13 @@ interface CancellationService : RemoteService {
 
     suspend fun callException()
 
-    suspend fun incomingStream(): Flow<Int>
+    fun incomingStream(): Flow<Int>
 
     suspend fun outgoingStream(stream: Flow<Int>)
 
     suspend fun outgoingStreamWithDelayedResponse(stream: Flow<Int>)
 
     suspend fun outgoingStreamWithException(stream: Flow<Int>)
-
-    suspend fun outgoingHotFlow(stream: StateFlow<Int>)
-
-    suspend fun incomingHotFlow(): StateFlow<Int>
-
-    suspend fun closedStreamScopeCallback()
-
-    suspend fun closedStreamScopeCallbackWithStream(): Flow<Int>
 
     fun nonSuspendable(): Flow<Int>
 }
@@ -62,7 +51,7 @@ class CancellationServiceImpl(override val coroutineContext: CoroutineContext) :
         error("callException")
     }
 
-    override suspend fun incomingStream(): Flow<Int> {
+    override fun incomingStream(): Flow<Int> {
         return resumableFlow(fence)
     }
 
@@ -83,66 +72,6 @@ class CancellationServiceImpl(override val coroutineContext: CoroutineContext) :
 
         // it will not cancel launch collector
         error("exception in request")
-    }
-
-    val hotFlowMirror = MutableStateFlow(-1)
-    val hotFlowConsumedSize = CompletableDeferred<Int>()
-
-    override suspend fun outgoingHotFlow(stream: StateFlow<Int>) {
-        launch {
-            var cnt = 0
-
-            val cancellation = runCatching {
-                stream.collect {
-                    cnt++
-                    hotFlowMirror.emit(it)
-                }
-            }
-
-            val result = runCatching {
-                assertIs<CancellationException>(cancellation.exceptionOrNull(), "Cancellation should be thrown")
-
-                cnt
-            }
-
-            hotFlowConsumedSize.completeWith(result)
-        }
-    }
-
-    var incomingHotFlowJob by Delegates.notNull<Job>()
-
-    override suspend fun incomingHotFlow(): StateFlow<Int> {
-        val state = MutableStateFlow(-1)
-
-        incomingHotFlowJob = launch {
-            repeat(Int.MAX_VALUE) { value ->
-                state.value = value
-
-                hotFlowMirror.first { it == value }
-            }
-        }
-
-        invokeOnStreamScopeCompletion {
-            incomingHotFlowJob.cancel()
-        }
-
-        return state
-    }
-
-    val streamScopeCallbackResult = CompletableDeferred<Throwable?>()
-
-    override suspend fun closedStreamScopeCallback() {
-        invokeOnStreamScopeCompletion { cause ->
-            streamScopeCallbackResult.complete(cause)
-        }
-    }
-
-    override suspend fun closedStreamScopeCallbackWithStream(): Flow<Int> {
-        invokeOnStreamScopeCompletion { cause ->
-            streamScopeCallbackResult.complete(cause)
-        }
-
-        return resumableFlow(fence)
     }
 
     private fun consume(stream: Flow<Int>) {

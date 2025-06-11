@@ -16,7 +16,6 @@ import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.krpc.test.KrpcTestClient
 import kotlinx.rpc.krpc.test.KrpcTestServer
-import kotlinx.rpc.krpc.test.KrpcTestServiceBackend
 import kotlinx.rpc.krpc.test.LocalTransport
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
@@ -51,10 +50,6 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
     val client by lazy {
         KrpcTestClient(rpcClientConfig {
             serializationConfig()
-
-            sharedFlowParameters {
-                replay = KrpcTestServiceBackend.SHARED_FLOW_REPLAY
-            }
         }, transport.client)
     }
 
