@@ -35,14 +35,6 @@ interface SamplingService : RemoteService {
     suspend fun serverNestedFlow(): Flow<Flow<Int>>
 
     suspend fun callException()
-
-    val plainFlow: Flow<Int>
-
-    val sharedFlow: SharedFlow<Int>
-
-    val stateFlow: StateFlow<Int>
-
-    suspend fun emitNextInStateFlow(next: Int)
 }
 
 class SamplingServiceImpl(override val coroutineContext: CoroutineContext) : SamplingService {
@@ -68,19 +60,5 @@ class SamplingServiceImpl(override val coroutineContext: CoroutineContext) : Sam
 
     override suspend fun callException() {
         error("Server exception")
-    }
-
-    override val plainFlow: Flow<Int> = plainFlow { it }
-
-    override val sharedFlow: SharedFlow<Int> = sharedFlowOfT { it }
-
-    override val stateFlow: MutableStateFlow<Int> = stateFlowOfT { it }
-
-    override suspend fun emitNextInStateFlow(next: Int) {
-        launch {
-            // CallSuccess and StreamMessage may race, so we prevent this
-            delay(500)
-            stateFlow.value = next
-        }
     }
 }
