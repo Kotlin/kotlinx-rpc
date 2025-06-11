@@ -20,6 +20,10 @@ private class ConcurrentHashMapJvm<K : Any, V: Any>(initialSize: Int) : RpcInter
         return map.put(key, value)
     }
 
+    override fun merge(key: K, value: V, remappingFunction: (V, V) -> V): V? {
+        return map.merge(key, value) { old, new -> remappingFunction(old, new) }
+    }
+
     override fun computeIfAbsent(key: K, computeValue: () -> V): V {
         return map.computeIfAbsent(key) { computeValue() }
     }

@@ -5,8 +5,7 @@
 package kotlinx.rpc.codegen.test
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
@@ -20,25 +19,8 @@ object TestRpcClient : RpcClient {
         return "call_42" as T
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    @Suppress("detekt.GlobalCoroutineUsage")
-    override fun <T> callAsync(serviceScope: CoroutineScope, call: RpcCall): Deferred<T> {
-        val callable = call.descriptor.getCallable(call.callableName)
-            ?: error("No callable found for ${call.callableName}")
-
-        val value = when (callable.name) {
-            "plainFlow" -> flow { emit("registerPlainFlowField_42") }
-
-            "sharedFlow" -> MutableSharedFlow<String>(1).also {
-                GlobalScope.launch { it.emit("registerSharedFlowField_42") }
-            }
-
-            "stateFlow" -> MutableStateFlow("registerStateFlowField_42")
-
-            else -> error("Unknown callable name: ${call.callableName}")
-        }
-
-        return CompletableDeferred(value as T)
+    override fun <T> callServerStreaming(call: RpcCall): Flow<T> {
+        return flow { emit("stream_42" as T) }
     }
 
     override fun provideStubContext(serviceId: Long): CoroutineContext {

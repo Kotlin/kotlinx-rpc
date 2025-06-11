@@ -14,10 +14,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : KrpcTestService {
-    companion object {
-        const val SHARED_FLOW_REPLAY = 5
-    }
-
     override fun nonSuspendFlow(): Flow<Int> {
         return flow {
             repeat(10) {
@@ -133,27 +129,23 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
         return arg1.count()
     }
 
-    val incomingStreamAsyncCollectLatch = CompletableDeferred<Unit>()
-
-    @OptIn(DelicateCoroutinesApi::class)
-    override suspend fun incomingStreamAsyncCollect(arg1: Flow<String>): Int {
-        @Suppress("detekt.GlobalCoroutineUsage")
-        GlobalScope.launch {
-            assertContentEquals(listOf("test1", "test2", "test3"), arg1.toList())
-            incomingStreamAsyncCollectLatch.complete(Unit)
-        }
-        return 5
+    override suspend fun incomingStreamSyncCollectMultiple(
+        arg1: Flow<String>,
+        arg2: Flow<String>,
+        arg3: Flow<String>,
+    ): Int {
+        return arg1.count() + arg2.count() + arg3.count()
     }
 
-    override suspend fun outgoingStream(): Flow<String> {
+    override fun outgoingStream(): Flow<String> {
         return flow { emit("a"); emit("b"); emit("c") }
     }
 
-    override suspend fun bidirectionalStream(arg1: Flow<String>): Flow<String> {
+    override fun bidirectionalStream(arg1: Flow<String>): Flow<String> {
         return arg1.map { it.reversed() }
     }
 
-    override suspend fun echoStream(arg1: Flow<Int>): Flow<Int> = flow {
+    override fun echoStream(arg1: Flow<Int>): Flow<Int> = flow {
         arg1.collect {
             emit(it)
         }
@@ -163,55 +155,7 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
         return payloadWithStream.payload.length + payloadWithStream.stream.count()
     }
 
-    // necessary for older Kotlin versions
-    @Suppress("UnnecessaryOptInAnnotation")
-    @OptIn(FlowPreview::class)
-    override suspend fun streamInStream(payloadWithStream: Flow<PayloadWithStream>): Int {
-        return payloadWithStream.flatMapConcat { it.stream }.count()
-    }
-
-    override suspend fun streamOutDataClass(): PayloadWithStream {
-        return payload()
-    }
-
-    override suspend fun streamOfStreamsInReturn(): Flow<Flow<String>> {
-        return flow {
-            emit(flow { emit("a"); emit("b"); emit("c") })
-            emit(flow { emit("1"); emit("2"); emit("3") })
-        }
-    }
-
-    override suspend fun streamOfPayloadsInReturn(): Flow<PayloadWithStream> {
-        return payloadStream()
-    }
-
-    override suspend fun streamInDataClassWithStream(payloadWithPayload: PayloadWithPayload): Int {
-        assertContentEquals(KrpcTransportTestBase.expectedPayloadWithPayload(10), payloadWithPayload.collect())
-        return 5
-    }
-
-    override suspend fun streamInStreamWithStream(payloadWithPayload: Flow<PayloadWithPayload>): Int {
-        payloadWithPayload.collectIndexed { index, payload ->
-            assertContentEquals(KrpcTransportTestBase.expectedPayloadWithPayload(index), payload.collect())
-        }
-        return 5
-    }
-
-    override suspend fun returnPayloadWithPayload(): PayloadWithPayload {
-        return payloadWithPayload()
-    }
-
-    override suspend fun returnFlowPayloadWithPayload(): Flow<PayloadWithPayload> {
-        return payloadWithPayloadStream()
-    }
-
-    override suspend fun bidirectionalFlowOfPayloadWithPayload(
-        payloadWithPayload: Flow<PayloadWithPayload>
-    ): Flow<PayloadWithPayload> {
-        return payloadWithPayload
-    }
-
-    override suspend fun getNInts(n: Int): Flow<Int> {
+    override fun getNInts(n: Int): Flow<Int> {
         return flow {
             for (it in 1..n) {
                 emit(it)
@@ -219,7 +163,7 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
         }
     }
 
-    override suspend fun getNIntsBatched(n: Int): Flow<List<Int>> {
+    override fun getNIntsBatched(n: Int): Flow<List<Int>> {
         return flow {
             for (it in (1..n).chunked(1000)) {
                 emit(it)
@@ -264,7 +208,7 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
     override suspend fun nullableInt(v: Int?): Int? = v
     override suspend fun nullableList(v: List<Int>?): List<Int>? = v
 
-    override suspend fun delayForever(): Flow<Boolean> = flow {
+    override fun delayForever(): Flow<Boolean> = flow {
         emit(true)
         delay(Int.MAX_VALUE.toLong())
     }
@@ -287,29 +231,8 @@ class KrpcTestServiceBackend(override val coroutineContext: CoroutineContext) : 
             emit(Unit)
         }
     }
-
-    override suspend fun sharedFlowInFunction(sharedFlow: SharedFlow<Int>): StateFlow<Int> {
-        val state = MutableStateFlow(-1)
-
-        launch {
-            assertEquals(listOf(0, 1, 2, 3, 4), sharedFlow.take(5).toList())
-            state.emit(1)
-        }
-
-        return state
-    }
-
-    override suspend fun stateFlowInFunction(stateFlow: StateFlow<Int>): StateFlow<Int> {
-        val state = MutableStateFlow(-1)
-        assertEquals(-1, stateFlow.value)
-
-        launch {
-            assertEquals(42, stateFlow.first { it == 42 })
-            state.emit(1)
-        }
-
-        return state
-    }
 }
 
 internal expect fun runThreadIfPossible(runner: () -> Unit)
+
+internal expect fun CoroutineScope.debugCoroutines()

@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.krpc.test.api
 
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.krpc.internal.CancellationType
 import kotlinx.rpc.krpc.internal.KrpcMessage
@@ -66,33 +65,11 @@ class ApiVersioningTest {
     }
 
     @Test
-    @Ignore("Nested flows proved to be unstable")
-    fun testClientNestedStreamSampling() = wireSamplingTest("clientNestedStream") {
-        sample {
-            val response = clientNestedStream(plainFlow { plainFlow { it } }).join()
-            val expected = List(5) { List(5) { it } }.join()
-
-            assertEquals(expected, response)
-        }
-    }
-
-    @Test
     @Ignore("Flow sampling tests are too unstable. Ignored until better fix")
     fun testServerStreamSampling() = wireSamplingTest("serverStream") {
         sample {
             val response = serverFlow().toList().joinToString()
             val expected = List(5) { SamplingData("data") }.joinToString()
-
-            assertEquals(expected, response)
-        }
-    }
-
-    @Test
-    @Ignore("Nested flows proved to be unstable")
-    fun testServerNestedStreamSampling() = wireSamplingTest("serverNestedStream") {
-        sample {
-            val response = serverNestedFlow().map { it.toList() }.toList().join()
-            val expected = List(5) { List(5) { it } }.join()
 
             assertEquals(expected, response)
         }

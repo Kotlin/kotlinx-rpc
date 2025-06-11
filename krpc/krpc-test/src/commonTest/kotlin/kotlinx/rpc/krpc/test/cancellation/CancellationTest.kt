@@ -5,15 +5,8 @@
 package kotlinx.rpc.krpc.test.cancellation
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runTest
-import kotlinx.rpc.krpc.StreamScope
-import kotlinx.rpc.krpc.internal.STREAM_SCOPES_ENABLED
-import kotlinx.rpc.krpc.invokeOnStreamScopeCompletion
-import kotlinx.rpc.krpc.streamScoped
-import kotlinx.rpc.krpc.withStreamScope
 import kotlinx.rpc.withService
 import kotlin.test.*
 
@@ -191,10 +184,8 @@ class CancellationTest {
     fun testStreamScopeOutgoing() = runCancellationTest {
         val fence = CompletableDeferred<Unit>()
 
-        streamScoped {
-            service.outgoingStream(resumableFlow(fence))
-            serverInstance().firstIncomingConsumed.await()
-        }
+        service.outgoingStream(resumableFlow(fence))
+        serverInstance().firstIncomingConsumed.await()
 
         fence.complete(Unit)
         serverInstance().consumedAll.await()
@@ -204,39 +195,9 @@ class CancellationTest {
     }
 
     @Test
-    fun testStreamScopeAbsentForOutgoingStream() = runCancellationTest {
-        val fence = CompletableDeferred<Unit>()
-
-        if (STREAM_SCOPES_ENABLED) {
-            assertFailsWith<IllegalStateException> {
-                service.outgoingStream(resumableFlow(fence))
-            }
-        } else {
-            service.outgoingStream(resumableFlow(fence))
-        }
-
-        stopAllAndJoin()
-    }
-
-    @Test
-    fun testStreamScopeAbsentForIncomingStream() = runCancellationTest {
-        if (STREAM_SCOPES_ENABLED) {
-            assertFailsWith<IllegalStateException> {
-                service.incomingStream()
-            }
-        } else {
-            service.incomingStream()
-        }
-
-        stopAllAndJoin()
-    }
-
-    @Test
     fun testStreamScopeIncoming() = runCancellationTest {
         val first: Int
-        val flow = streamScoped {
-            service.incomingStream().apply { first = first() }
-        }
+        val flow = service.incomingStream().apply { first = first() }
 
         serverInstance().fence.complete(Unit)
         val consumed = flow.toList()
@@ -252,11 +213,9 @@ class CancellationTest {
         val fence = CompletableDeferred<Unit>()
 
         runCatching {
-            streamScoped {
-                service.outgoingStream(resumableFlow(fence))
-                serverInstance().firstIncomingConsumed.await()
-                error("exception in stream scope")
-            }
+            service.outgoingStream(resumableFlow(fence))
+            serverInstance().firstIncomingConsumed.await()
+            error("exception in stream scope")
         }
 
         fence.complete(Unit)
@@ -271,14 +230,12 @@ class CancellationTest {
     fun testExceptionInRequest() = runCancellationTest {
         val fence = CompletableDeferred<Unit>()
 
-        streamScoped {
-            runCatching {
-                service.outgoingStreamWithException(resumableFlow(fence))
-            }
-
-            // to be sure that exception canceled the stream and not scope closure
-            serverInstance().consumedAll.await()
+        runCatching {
+            service.outgoingStreamWithException(resumableFlow(fence))
         }
+
+        // to be sure that exception canceled the stream and not scope closure
+        serverInstance().consumedAll.await()
 
         assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
 
@@ -286,27 +243,19 @@ class CancellationTest {
     }
 
     @Test
-    fun testNestedStreamScopesForbidden() = runTest {
-        assertFailsWith<IllegalStateException> {
-            streamScoped { streamScoped { } }
-        }
-    }
-
-    @Test
     fun testExceptionInRequestDoesNotCancelOtherRequests() = runCancellationTest {
         val fence = CompletableDeferred<Unit>()
-        val result = streamScoped {
-            val flow = service.incomingStream()
 
-            runCatching {
-                service.outgoingStreamWithException(resumableFlow(fence))
-            }
+        val flow = service.incomingStream()
 
-            fence.complete(Unit)
-            serverInstance().fence.complete(Unit)
-
-            flow.toList()
+        runCatching {
+            service.outgoingStreamWithException(resumableFlow(fence))
         }
+
+        fence.complete(Unit)
+        serverInstance().fence.complete(Unit)
+
+        val result = flow.toList()
 
         serverInstance().consumedAll.await()
         assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
@@ -319,20 +268,19 @@ class CancellationTest {
     @Test
     fun testRequestCancellationCancelsStream() = runCancellationTest {
         val fence = CompletableDeferred<Unit>()
-        streamScoped {
-            val job = launch {
-                service.outgoingStreamWithDelayedResponse(resumableFlow(fence))
-            }
 
-            serverInstance().firstIncomingConsumed.await()
-
-            job.cancel("Test request cancelled")
-            job.join()
-            assertTrue("Job must be canceled") { job.isCancelled }
-
-            // close by request cancel and not scope closure
-            serverInstance().consumedAll.await()
+        val job = launch {
+            service.outgoingStreamWithDelayedResponse(resumableFlow(fence))
         }
+
+        serverInstance().firstIncomingConsumed.await()
+
+        job.cancel("Test request cancelled")
+        job.join()
+        assertTrue("Job must be canceled") { job.isCancelled }
+
+        // close by request cancel and not scope closure
+        serverInstance().consumedAll.await()
 
         assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
 
@@ -342,25 +290,23 @@ class CancellationTest {
     @Test
     fun testRequestCancellationCancelsStreamButNotOthers() = runCancellationTest {
         val fence = CompletableDeferred<Unit>()
-        val result = streamScoped {
-            val job = launch {
-                service.outgoingStreamWithDelayedResponse(resumableFlow(fence))
-            }
-
-            val flow = service.incomingStream()
-
-            serverInstance().firstIncomingConsumed.await()
-
-            job.cancel("Test request cancelled")
-            job.join()
-            assertTrue("Job must be canceled") { job.isCancelled }
-            serverInstance().fence.complete(Unit)
-
-            // close by request cancel and not scope closure
-            serverInstance().consumedAll.await()
-
-            flow.toList()
+        val job = launch {
+            service.outgoingStreamWithDelayedResponse(resumableFlow(fence))
         }
+
+        val flow = service.incomingStream()
+
+        serverInstance().firstIncomingConsumed.await()
+
+        job.cancel("Test request cancelled")
+        job.join()
+        assertTrue("Job must be canceled") { job.isCancelled }
+        serverInstance().fence.complete(Unit)
+
+        // close by request cancel and not scope closure
+        serverInstance().consumedAll.await()
+
+        val result = flow.toList()
 
         assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
         assertContentEquals(List(2) { it }, result)
@@ -371,18 +317,16 @@ class CancellationTest {
     @Test
     fun testServiceCancellationCancelsStream() = runCancellationTest {
         val fence = CompletableDeferred<Unit>()
-        streamScoped {
-            launch {
-                service.outgoingStream(resumableFlow(fence))
-            }
-
-            serverInstance().firstIncomingConsumed.await()
-
-            service.cancel("Test request cancelled")
-            service.join()
-
-            serverInstance().consumedAll.await()
+        launch {
+            service.outgoingStream(resumableFlow(fence))
         }
+
+        serverInstance().firstIncomingConsumed.await()
+
+        service.cancel("Test request cancelled")
+        service.join()
+
+        serverInstance().consumedAll.await()
 
         assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
 
@@ -392,24 +336,22 @@ class CancellationTest {
     @Test
     fun testServiceCancellationCancelsStreamButNotOthers() = runCancellationTest {
         val fence = CompletableDeferred<Unit>()
-        val secondServiceResult = streamScoped {
-            launch {
-                service.outgoingStream(resumableFlow(fence))
-            }
-
-            serverInstance().firstIncomingConsumed.await()
-
-            val secondServiceFlow = client
-                .withService<CancellationService>()
-                .incomingStream()
-
-            service.cancel("Test request cancelled")
-            service.join()
-
-            serverInstances[1].fence.complete(Unit)
-
-            secondServiceFlow.toList()
+        launch {
+            service.outgoingStream(resumableFlow(fence))
         }
+
+        serverInstance().firstIncomingConsumed.await()
+
+        val secondServiceFlow = client
+            .withService<CancellationService>()
+            .incomingStream()
+
+        service.cancel("Test request cancelled")
+        service.join()
+
+        serverInstances[1].fence.complete(Unit)
+
+        val secondServiceResult = secondServiceFlow.toList()
 
         serverInstance().consumedAll.await()
 
@@ -422,21 +364,20 @@ class CancellationTest {
     @Test
     fun testScopeClosureCancelsAllStreams() = runCancellationTest {
         val fence = CompletableDeferred<Unit>()
-        streamScoped {
-            service.outgoingStream(resumableFlow(fence))
 
-            client.withService<CancellationService>().outgoingStream(resumableFlow(fence))
+        service.outgoingStream(resumableFlow(fence))
 
-            serverInstance().firstIncomingConsumed.await()
+        client.withService<CancellationService>().outgoingStream(resumableFlow(fence))
 
-            while (true) {
-                if (serverInstances.size == 2) {
-                    serverInstances[1].firstIncomingConsumed.await()
-                    break
-                }
+        serverInstance().firstIncomingConsumed.await()
 
-                unskippableDelay(50)
+        while (true) {
+            if (serverInstances.size == 2) {
+                serverInstances[1].firstIncomingConsumed.await()
+                break
             }
+
+            unskippableDelay(50)
         }
 
         serverInstances.forEach { it.consumedAll.await() }
@@ -448,152 +389,14 @@ class CancellationTest {
     }
 
     @Test
-    fun testInvokeOnStreamScopeCompletionOnServerWithNoStreams() = runCancellationTest {
-        streamScoped {
-            service.closedStreamScopeCallback()
-        }
-
-        serverInstance().streamScopeCallbackResult.await()
-
-        stopAllAndJoin()
-    }
-
-    @Test
-    fun testInvokeOnStreamScopeCompletionOnServer() = runCancellationTest {
-        val result = streamScoped {
-            service.closedStreamScopeCallbackWithStream().also {
-                serverInstance().fence.complete(Unit)
-            }.toList()
-        }
-
-        serverInstance().streamScopeCallbackResult.await()
-
-        assertContentEquals(List(2) { it }, result)
-
-        stopAllAndJoin()
-    }
-
-    @Test
-    fun testInvokeOnStreamScopeCompletionOnClient() = runCancellationTest {
-        val streamScopeCompleted = CompletableDeferred<Unit>()
-
-        streamScoped {
-            service.closedStreamScopeCallback()
-
-            invokeOnStreamScopeCompletion {
-                streamScopeCompleted.complete(Unit)
-            }
-        }
-
-        streamScopeCompleted.await()
-
-        stopAllAndJoin()
-    }
-
-    @Test
-    fun testOutgoingHotFlow() = runCancellationTest {
-        streamScoped {
-            val state = MutableStateFlow(-2)
-
-            service.outgoingHotFlow(state)
-
-            val mirror = serverInstance().hotFlowMirror
-            mirror.first { it == -2 } // initial value
-
-            repeat(3) { value ->
-                state.value = value
-                mirror.first { it == value }
-            }
-        }
-
-        assertEquals(4, serverInstance().hotFlowConsumedSize.await())
-
-        stopAllAndJoin()
-    }
-
-    @Test
-    fun testIncomingHotFlow() = runCancellationTest {
-        val state = streamScoped {
-            val state = service.incomingHotFlow()
-
-            val mirror = serverInstance().hotFlowMirror
-            repeat(3) { value ->
-                state.first { it == value }
-                mirror.value = value
-            }
-
-            state.first { it == 3 }
-
-            state
-        }
-
-        serverInstance().incomingHotFlowJob.join()
-        assertEquals(3, state.value)
-        assertEquals(2, serverInstance().hotFlowMirror.value)
-
-        stopAllAndJoin()
-    }
-
-    @Test
     fun testCancelledClientCancelsFlows() = runCancellationTest {
-        streamScoped {
-            val flow = service.incomingStream()
+        val flow = service.incomingStream()
 
-            assertEquals(0, flow.first())
-            client.cancel()
-            val rest = flow.toList()
+        assertEquals(0, flow.first())
+        client.cancel()
+        val rest = flow.toList()
 
-            assertTrue("Rest must be empty, as flow was closed") { rest.isEmpty() }
-        }
-
-        stopAllAndJoin()
-    }
-
-    @Test
-    fun manualStreamScopeNoCancel() = runCancellationTest {
-        val myJob = Job()
-        val streamScope = StreamScope(myJob)
-
-        val unrelatedJob = Job()
-
-        var first: Int = -1
-        val deferredFlow = CoroutineScope(unrelatedJob).async {
-            withStreamScope(streamScope) {
-                service.incomingStream().apply { first = first() }
-            }
-        }
-        val flow= deferredFlow.await()
-
-        serverInstance().fence.complete(Unit)
-        val consumed = flow.toList()
-
-        assertEquals(0, first)
-        assertContentEquals(listOf(1), consumed)
-
-        stopAllAndJoin()
-    }
-
-    @Test
-    fun manualStreamScopeWithCancel() = runCancellationTest {
-        val myJob = Job()
-        val streamScope = StreamScope(myJob)
-
-        val unrelatedJob = Job()
-
-        var first: Int = -1
-        val deferredFlow = CoroutineScope(unrelatedJob).async {
-            withStreamScope(streamScope) {
-                service.incomingStream().apply { first = first() }
-            }
-        }
-        val flow= deferredFlow.await()
-
-        streamScope.close()
-        serverInstance().fence.complete(Unit)
-        val consumed = flow.toList()
-
-        assertEquals(0, first)
-        assertContentEquals(emptyList(), consumed)
+        assertTrue("Rest must be empty, as flow was closed") { rest.isEmpty() }
 
         stopAllAndJoin()
     }
@@ -678,7 +481,7 @@ class CancellationTest {
 
     private fun CancellationToolkit.processFlowAndLeaveUnusedForGC(
         firstDone: CompletableDeferred<Unit>,
-        latch: CompletableDeferred<Unit>
+        latch: CompletableDeferred<Unit>,
     ): Job {
         val flow = service.nonSuspendable()
         val requestJob = launch {

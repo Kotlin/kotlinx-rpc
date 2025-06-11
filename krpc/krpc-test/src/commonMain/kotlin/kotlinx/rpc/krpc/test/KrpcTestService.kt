@@ -5,8 +5,6 @@
 package kotlinx.rpc.krpc.test
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.serialization.Contextual
@@ -73,29 +71,15 @@ interface KrpcTestService : RemoteService {
     ): String
 
     suspend fun incomingStreamSyncCollect(arg1: Flow<String>): Int
-    suspend fun incomingStreamAsyncCollect(arg1: Flow<String>): Int
-    suspend fun outgoingStream(): Flow<String>
-    suspend fun bidirectionalStream(arg1: Flow<String>): Flow<String>
-    suspend fun echoStream(arg1: Flow<Int>): Flow<Int>
+    suspend fun incomingStreamSyncCollectMultiple(arg1: Flow<String>, arg2: Flow<String>, arg3: Flow<String>): Int
+    fun outgoingStream(): Flow<String>
+    fun bidirectionalStream(arg1: Flow<String>): Flow<String>
+    fun echoStream(arg1: Flow<Int>): Flow<Int>
 
     suspend fun streamInDataClass(payloadWithStream: PayloadWithStream): Int
-    suspend fun streamInStream(payloadWithStream: Flow<PayloadWithStream>): Int
 
-    suspend fun streamOutDataClass(): PayloadWithStream
-    suspend fun streamOfStreamsInReturn(): Flow<Flow<String>>
-    suspend fun streamOfPayloadsInReturn(): Flow<PayloadWithStream>
-
-    suspend fun streamInDataClassWithStream(payloadWithPayload: PayloadWithPayload): Int
-    suspend fun streamInStreamWithStream(payloadWithPayload: Flow<PayloadWithPayload>): Int
-    suspend fun returnPayloadWithPayload(): PayloadWithPayload
-    suspend fun returnFlowPayloadWithPayload(): Flow<PayloadWithPayload>
-
-    suspend fun bidirectionalFlowOfPayloadWithPayload(
-        payloadWithPayload: Flow<PayloadWithPayload>
-    ): Flow<PayloadWithPayload>
-
-    suspend fun getNInts(n: Int): Flow<Int>
-    suspend fun getNIntsBatched(n: Int): Flow<List<Int>>
+    fun getNInts(n: Int): Flow<Int>
+    fun getNIntsBatched(n: Int): Flow<List<Int>>
 
     suspend fun bytes(byteArray: ByteArray)
     suspend fun nullableBytes(byteArray: ByteArray?)
@@ -107,15 +91,11 @@ interface KrpcTestService : RemoteService {
 
     suspend fun nullableInt(v: Int?): Int?
     suspend fun nullableList(v: List<Int>?): List<Int>?
-    suspend fun delayForever(): Flow<Boolean>
+    fun delayForever(): Flow<Boolean>
 
     suspend fun answerToAnything(arg: String): Int
 
     suspend fun krpc173()
 
     fun unitFlow(): Flow<Unit>
-
-    suspend fun sharedFlowInFunction(sharedFlow: SharedFlow<Int>): StateFlow<Int>
-
-    suspend fun stateFlowInFunction(stateFlow: StateFlow<Int>): StateFlow<Int>
 }

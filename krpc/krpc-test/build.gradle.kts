@@ -28,6 +28,9 @@ kotlin {
                 api(projects.krpc.krpcCore)
                 api(projects.krpc.krpcServer)
                 api(projects.krpc.krpcClient)
+                api(projects.krpc.krpcLogging)
+
+                implementation(libs.coroutines.debug)
 
                 implementation(projects.krpc.krpcSerialization.krpcSerializationJson)
 
@@ -99,17 +102,5 @@ tasks.register("moveToGold") {
                 it.delete()
             }
         }
-    }
-}
-
-rpc {
-    strict {
-        stateFlow = RpcStrictMode.NONE
-        sharedFlow = RpcStrictMode.NONE
-        nestedFlow = RpcStrictMode.NONE
-        streamScopedFunctions = RpcStrictMode.NONE
-        suspendingServerStreaming = RpcStrictMode.NONE
-        notTopLevelServerFlow = RpcStrictMode.NONE
-        fields = RpcStrictMode.NONE
     }
 }

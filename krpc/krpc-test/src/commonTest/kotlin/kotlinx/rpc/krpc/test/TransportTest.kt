@@ -159,25 +159,27 @@ class TransportTest {
 
     @Test
     fun testLateConnectWithManyServices() = runTest {
-        val transports = LocalTransport()
+        repeat(100) {
+            val transports = LocalTransport()
 
-        val client = clientOf(transports)
+            val client = clientOf(transports)
 
-        val result = List(10) {
-            async {
-                val service = client.withService<Echo>()
-                service.echo("foo")
+            val result = List(10) {
+                async {
+                    val service = client.withService<Echo>()
+                    service.echo("foo")
+                }
             }
+
+            val server = serverOf(transports)
+            val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
+
+            val response = result.awaitAll()
+            assertTrue { response.all { it == "foo" } }
+            assertEquals(10, echoServices.sumOf { it.received.value })
+
+            server.cancel()
         }
-
-        val server = serverOf(transports)
-        val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl(it) }
-
-        val response = result.awaitAll()
-        assertTrue { response.all { it == "foo" } }
-        assertEquals(10, echoServices.sumOf { it.received.value })
-
-        server.cancel()
     }
 
 

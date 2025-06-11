@@ -28,14 +28,3 @@ kotlin {
     }
 }
 
-rpc {
-    strict {
-        stateFlow = RpcStrictMode.NONE
-        sharedFlow = RpcStrictMode.NONE
-        nestedFlow = RpcStrictMode.NONE
-        streamScopedFunctions = RpcStrictMode.NONE
-        suspendingServerStreaming = RpcStrictMode.NONE
-        notTopLevelServerFlow = RpcStrictMode.NONE
-        fields = RpcStrictMode.NONE
-    }
-}
