@@ -21,6 +21,8 @@ interface CancellationService {
 
     suspend fun outgoingStream(stream: Flow<Int>)
 
+    suspend fun outgoingStreamAsync(stream: Flow<Int>)
+
     suspend fun outgoingStreamWithDelayedResponse(stream: Flow<Int>)
 
     suspend fun outgoingStreamWithException(stream: Flow<Int>)
@@ -55,6 +57,14 @@ class CancellationServiceImpl : CancellationService {
 
     override suspend fun outgoingStream(stream: Flow<Int>) {
         consume(stream)
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    override suspend fun outgoingStreamAsync(stream: Flow<Int>) {
+        GlobalScope.launch {
+            consume(stream)
+        }
+        firstIncomingConsumed.await()
     }
 
     override suspend fun outgoingStreamWithDelayedResponse(stream: Flow<Int>) {
