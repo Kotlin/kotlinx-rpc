@@ -22,8 +22,4 @@ object TestRpcClient : RpcClient {
     override fun <T> callServerStreaming(call: RpcCall): Flow<T> {
         return flow { emit("stream_42" as T) }
     }
-
-    override fun provideStubContext(serviceId: Long): CoroutineContext {
-        return coroutineContext
-    }
 }

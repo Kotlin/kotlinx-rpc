@@ -11,8 +11,10 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 @Suppress("detekt.MagicNumber")
 public enum class CancellationType(override val uniqueIndex: Int) : RpcInternalIndexedEnum {
     ENDPOINT(0),
+    @Deprecated("Service cancellation is deprecated.")
     SERVICE(1),
     REQUEST(2),
+    @Deprecated("Cancellation acknowledgement is deprecated.")
     CANCELLATION_ACK(3),
     ;
 

@@ -33,8 +33,8 @@ internal class KrpcServerConnector private constructor(
         }
     )
 
-    fun unsubscribeFromServiceMessages(serviceTypeString: String) {
-        connector.unsubscribeFromMessages(MessageKey.Service(serviceTypeString))
+    fun unsubscribeFromServiceMessages(serviceTypeString: String, callback: () -> Unit = {}) {
+        connector.unsubscribeFromMessages(MessageKey.Service(serviceTypeString), callback)
     }
 
     suspend fun subscribeToServiceMessages(

@@ -9,7 +9,7 @@ public final class kotlinx/rpc/RegisterFieldKt {
 	public static final fun registerStateFlowField (Lkotlinx/rpc/RpcClient;Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;J)Lkotlinx/coroutines/flow/StateFlow;
 }
 
-public abstract interface class kotlinx/rpc/RemoteService : kotlinx/coroutines/CoroutineScope {
+public abstract interface class kotlinx/rpc/RemoteService {
 }
 
 public final class kotlinx/rpc/RpcCall {
@@ -29,22 +29,17 @@ public final class kotlinx/rpc/RpcCall {
 	public fun toString ()Ljava/lang/String;
 }
 
-public abstract interface class kotlinx/rpc/RpcClient : kotlinx/coroutines/CoroutineScope {
+public abstract interface class kotlinx/rpc/RpcClient {
 	public abstract fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun callAsync (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/Deferred;
 	public abstract fun callServerStreaming (Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/flow/Flow;
-	public abstract fun provideStubContext (J)Lkotlin/coroutines/CoroutineContext;
-}
-
-public final class kotlinx/rpc/RpcClient$DefaultImpls {
-	public static fun callServerStreaming (Lkotlinx/rpc/RpcClient;Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public abstract interface annotation class kotlinx/rpc/RpcEagerField : java/lang/annotation/Annotation {
 }
 
-public abstract interface class kotlinx/rpc/RpcServer : kotlinx/coroutines/CoroutineScope {
-	public abstract fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;)V
+public abstract interface class kotlinx/rpc/RpcServer {
+	public abstract fun deregisterService (Lkotlin/reflect/KClass;)V
+	public abstract fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function0;)V
 }
 
 public final class kotlinx/rpc/UninitializedRpcFieldException : java/lang/Exception {

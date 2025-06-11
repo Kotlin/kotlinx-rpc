@@ -1,6 +1,6 @@
 Module: none
 FILE: a.kt
-    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyServiceWithStateFlow : R|kotlin/Any|, R|kotlinx/rpc/RemoteService| {
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyServiceWithStateFlow : R|kotlin/Any| {
         public abstract suspend fun hello(flow: R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|): R|kotlin/Unit|
 
         public final class $rpcServiceStub : R|kotlin/Any| {
@@ -174,7 +174,7 @@ FILE: b.kt
         }
 
     }
-    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyService : R|kotlin/Any|, R|kotlinx/rpc/RemoteService| {
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyService : R|kotlin/Any| {
         public abstract val flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
             public get(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
 
@@ -743,22 +743,4 @@ FILE: b.kt
 
         }
 
-    }
-    public final fun main(): R|kotlin/Unit| {
-        ^main R|kotlinx/coroutines/runBlocking|<R|kotlin/Unit|>(<L> = runBlocking@fun R|kotlinx/coroutines/CoroutineScope|.<anonymous>(): R|kotlin/Unit| <inline=NoInline, kind=EXACTLY_ONCE>  {
-            R|kotlinx/rpc/krpc/streamScoped|<R|kotlin/Unit|>(<L> = streamScoped@fun R|kotlinx/coroutines/CoroutineScope|.<anonymous>(): R|kotlin/Unit| <inline=NoInline, kind=EXACTLY_ONCE>  {
-                ^@streamScoped Unit
-            }
-            )
-            lval scope: R|kotlinx/rpc/krpc/StreamScope| = R|kotlinx/rpc/krpc/StreamScope|(R|kotlinx/coroutines/Job|())
-            R|kotlinx/rpc/krpc/withStreamScope|<R|kotlin/Unit|>(R|<local>/scope|, <L> = withStreamScope@fun R|kotlinx/coroutines/CoroutineScope|.<anonymous>(): R|kotlin/Unit| <inline=NoInline, kind=EXACTLY_ONCE>  {
-                ^@withStreamScope Unit
-            }
-            )
-            R|kotlinx/rpc/krpc/invokeOnStreamScopeCompletion|(<L> = invokeOnStreamScopeCompletion@fun <anonymous>(it: R|kotlin/Throwable?|): R|kotlin/Unit| <inline=NoInline>  {
-                ^@invokeOnStreamScopeCompletion Unit
-            }
-            )
-        }
-        )
     }

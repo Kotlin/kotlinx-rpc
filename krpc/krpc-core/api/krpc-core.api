@@ -1,29 +1,23 @@
 public abstract interface class kotlinx/rpc/krpc/KrpcConfig {
 	public abstract fun getSerialFormatInitializer ()Lkotlinx/rpc/krpc/serialization/KrpcSerialFormatBuilder;
-	public abstract fun getSharedFlowBuilder ()Lkotlin/jvm/functions/Function0;
 	public abstract fun getWaitForServices ()Z
 }
 
 public final class kotlinx/rpc/krpc/KrpcConfig$Client : kotlinx/rpc/krpc/KrpcConfig {
 	public fun getSerialFormatInitializer ()Lkotlinx/rpc/krpc/serialization/KrpcSerialFormatBuilder;
-	public fun getSharedFlowBuilder ()Lkotlin/jvm/functions/Function0;
 	public fun getWaitForServices ()Z
 }
 
 public final class kotlinx/rpc/krpc/KrpcConfig$Server : kotlinx/rpc/krpc/KrpcConfig {
 	public fun getSerialFormatInitializer ()Lkotlinx/rpc/krpc/serialization/KrpcSerialFormatBuilder;
-	public fun getSharedFlowBuilder ()Lkotlin/jvm/functions/Function0;
 	public fun getWaitForServices ()Z
 }
 
 public abstract class kotlinx/rpc/krpc/KrpcConfigBuilder {
-	protected final fun getSharedFlowBuilder ()Lkotlin/jvm/functions/Function0;
 	public final fun getWaitForServices ()Z
 	protected final fun rpcSerialFormat ()Lkotlinx/rpc/krpc/serialization/KrpcSerialFormatBuilder;
 	public final fun serialization (Lkotlin/jvm/functions/Function1;)V
-	protected final fun setSharedFlowBuilder (Lkotlin/jvm/functions/Function0;)V
 	public final fun setWaitForServices (Z)V
-	public final fun sharedFlowParameters (Lkotlin/jvm/functions/Function1;)V
 }
 
 public final class kotlinx/rpc/krpc/KrpcConfigBuilder$Client : kotlinx/rpc/krpc/KrpcConfigBuilder {
@@ -36,17 +30,6 @@ public final class kotlinx/rpc/krpc/KrpcConfigBuilder$Server : kotlinx/rpc/krpc/
 	public final fun build ()Lkotlinx/rpc/krpc/KrpcConfig$Server;
 }
 
-public final class kotlinx/rpc/krpc/KrpcConfigBuilder$SharedFlowParametersBuilder {
-	public static final field DEFAULT_EXTRA_BUFFER_CAPACITY I
-	public static final field DEFAULT_REPLAY I
-	public final fun getExtraBufferCapacity ()I
-	public final fun getOnBufferOverflow ()Lkotlinx/coroutines/channels/BufferOverflow;
-	public final fun getReplay ()I
-	public final fun setExtraBufferCapacity (I)V
-	public final fun setOnBufferOverflow (Lkotlinx/coroutines/channels/BufferOverflow;)V
-	public final fun setReplay (I)V
-}
-
 public final class kotlinx/rpc/krpc/KrpcConfigKt {
 	public static final fun rpcClientConfig (Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/krpc/KrpcConfig$Client;
 	public static synthetic fun rpcClientConfig$default (Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/krpc/KrpcConfig$Client;
@@ -56,12 +39,11 @@ public final class kotlinx/rpc/krpc/KrpcConfigKt {
 
 public abstract interface class kotlinx/rpc/krpc/KrpcTransport : kotlinx/coroutines/CoroutineScope {
 	public abstract fun receive (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun receiveCatching-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun send (Lkotlinx/rpc/krpc/KrpcTransportMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class kotlinx/rpc/krpc/KrpcTransport$DefaultImpls {
-	public static fun receiveCatching-IoAF18A (Lkotlinx/rpc/krpc/KrpcTransport;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+public final class kotlinx/rpc/krpc/KrpcTransportKt {
+	public static final fun receiveCatching (Lkotlinx/rpc/krpc/KrpcTransport;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class kotlinx/rpc/krpc/KrpcTransportMessage {
@@ -75,17 +57,5 @@ public final class kotlinx/rpc/krpc/KrpcTransportMessage$BinaryMessage : kotlinx
 public final class kotlinx/rpc/krpc/KrpcTransportMessage$StringMessage : kotlinx/rpc/krpc/KrpcTransportMessage {
 	public fun <init> (Ljava/lang/String;)V
 	public final fun getValue ()Ljava/lang/String;
-}
-
-public final class kotlinx/rpc/krpc/StreamScope : java/lang/AutoCloseable {
-	public fun close ()V
-}
-
-public final class kotlinx/rpc/krpc/StreamScopeKt {
-	public static final fun StreamScope (Lkotlin/coroutines/CoroutineContext;)Lkotlinx/rpc/krpc/StreamScope;
-	public static final fun invokeOnStreamScopeCompletion (ZLkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun invokeOnStreamScopeCompletion$default (ZLkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static final fun streamScoped (Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static final fun withStreamScope (Lkotlinx/rpc/krpc/StreamScope;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 

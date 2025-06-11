@@ -3,13 +3,12 @@
  */
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.withService
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.codegen.test.TestRpcClient
 
 @Rpc
-interface BoxService : RemoteService {
+interface BoxService {
     suspend fun simple(): String
 }
 

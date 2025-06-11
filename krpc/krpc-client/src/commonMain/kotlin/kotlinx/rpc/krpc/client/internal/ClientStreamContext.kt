@@ -7,34 +7,31 @@ package kotlinx.rpc.krpc.client.internal
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
+import kotlinx.rpc.internal.utils.thread.RpcInternalThreadLocal
 import kotlinx.serialization.KSerializer
-import kotlin.native.concurrent.ThreadLocal
 
 internal class ClientStreamContext(private val connectionId: Long?) {
     val streams = RpcInternalConcurrentHashMap<String, List<StreamCall>>()
 
-    @ThreadLocal
-    private var currentCallId: String? = null
-
-    @ThreadLocal
-    private var currentServiceId: Long? = null
+    private val currentCallId = RpcInternalThreadLocal<String>()
+    private val currentServiceId = RpcInternalThreadLocal<Long>()
 
     fun <T> scoped(callId: String, serviceId: Long, body: () -> T): T {
         try {
-            currentCallId = callId
-            currentServiceId = serviceId
+            currentCallId.set(callId)
+            currentServiceId.set(serviceId)
             return body()
         } finally {
-            currentCallId = null
-            currentServiceId = null
+            currentCallId.remove()
+            currentServiceId.remove()
         }
     }
 
     private val streamIdCounter = atomic(0L)
 
     fun registerClientStream(value: Flow<*>, elementKind: KSerializer<*>): String {
-        val callId = currentCallId ?: error("No call id")
-        val serviceId = currentServiceId ?: error("No service id")
+        val callId = currentCallId.get() ?: error("No call id")
+        val serviceId = currentServiceId.get() ?: error("No service id")
         val streamId = "$STREAM_ID_PREFIX${streamIdCounter.getAndIncrement()}"
 
         @Suppress("UNCHECKED_CAST")

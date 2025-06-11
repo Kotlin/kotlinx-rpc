@@ -18,15 +18,15 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 @Rpc
 interface MyService
 
-class NotAService(val coroutineContext: CoroutineContext)
+class NotAService
 
-class MyServiceImpl(override val coroutineContext: CoroutineContext) : MyService
+class MyServiceImpl : MyService
 
 inline suspend fun <@Rpc reified T : Any> ok(client: RpcClient, server: RpcServer, impl: T, myServiceImpl: MyService) {
     client.withService<MyService>()
     client.withService<T>()
 
-    server.registerService<MyService> { MyServiceImpl(it) }
+    server.registerService<MyService> { MyServiceImpl() }
     server.registerService<T> { impl }
 
     myServiceImpl.<!DEPRECATION_ERROR!>awaitFieldInitialization<!><MyService>()
@@ -44,8 +44,8 @@ inline suspend fun <reified T : Any> fail(client: RpcClient, server: RpcServer, 
     client.withService<<!CHECKED_ANNOTATION_VIOLATION!>NotAService<!>>()
     client.withService<<!CHECKED_ANNOTATION_VIOLATION!>T<!>>()
 
-    server.registerService<<!CHECKED_ANNOTATION_VIOLATION!>MyServiceImpl<!>> { MyServiceImpl(it) }
-    server.registerService<<!CHECKED_ANNOTATION_VIOLATION!>NotAService<!>> { NotAService(it) }
+    server.registerService<<!CHECKED_ANNOTATION_VIOLATION!>MyServiceImpl<!>> { MyServiceImpl() }
+    server.registerService<<!CHECKED_ANNOTATION_VIOLATION!>NotAService<!>> { NotAService() }
     server.registerService<<!CHECKED_ANNOTATION_VIOLATION!>T<!>> { impl }
 
     myServiceImpl.<!DEPRECATION_ERROR!>awaitFieldInitialization<!><<!CHECKED_ANNOTATION_VIOLATION!>MyServiceImpl<!>>()
