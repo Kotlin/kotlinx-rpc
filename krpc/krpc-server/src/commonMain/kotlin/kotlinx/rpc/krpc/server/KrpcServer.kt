@@ -21,18 +21,11 @@ import kotlin.concurrent.Volatile
 import kotlin.reflect.KClass
 
 /**
- * Default implementation of [RpcServer].
+ * kRPC implementation of the [RpcServer].
  * Takes care of tracking requests and responses,
  * serializing data, tracking streams, processing exceptions, and other protocol responsibilities.
  * Routes resulting messages to the proper registered services.
- * Leaves out the delivery of encoded messages to the specific implementations.
- *
- * A simple example of how this server may be implemented:
- * ```kotlin
- * class MyTransport : KrpcTransport { /*...*/ }
- *
- * class MyServer(config: KrpcConfig.Server): KrpcServer(config, MyTransport())
- * ```
+ * Leaves out the delivery of encoded messages to the specific implementations with [KrpcTransport].
  *
  * @param config configuration provided for that specific server. Applied to all services that use this server.
  * @param transport [KrpcTransport] instance that will be used to send and receive RPC messages.
@@ -43,6 +36,15 @@ public abstract class KrpcServer(
     private val config: KrpcConfig.Server,
     transport: KrpcTransport,
 ) : RpcServer, KrpcEndpoint {
+
+    /*
+     * #####################################################################
+     * #                                                                   #
+     * #                         INTERNALS AHEAD                           #
+     * #                                                                   #
+     * #####################################################################
+     */
+
     @InternalRpcApi
     public val internalScope: CoroutineScope = CoroutineScope(SupervisorJob(transport.coroutineContext.job))
 

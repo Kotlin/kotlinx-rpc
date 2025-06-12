@@ -11,8 +11,8 @@ import kotlinx.rpc.krpc.KrpcConfigBuilder
 import kotlin.reflect.KClass
 
 /**
- * RpcRoute class represents an RPC server that is mounted in Ktor routing.
- * This class provides API to register services and optionally setup configuration.
+ * [KrpcRoute] class represents an RPC server mounted in Ktor routing.
+ * This class provides an API to register services and optionally setup configuration.
  */
 public class KrpcRoute(
     webSocketSession: DefaultWebSocketServerSession
@@ -36,7 +36,7 @@ public class KrpcRoute(
      * Service of any type should be unique on the server, but RpcServer does not specify the actual retention policy.
      *
      * @param Service the exact type of the server to be registered.
-     * For example for service with `MyService` interface and `MyServiceImpl` implementation,
+     * For example, for service with `MyService` interface and `MyServiceImpl` implementation,
      * type `MyService` should be specified explicitly.
      * @param serviceKClass [KClass] of the [Service].
      * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
@@ -55,7 +55,7 @@ public class KrpcRoute(
      * Service of any type should be unique on the server, but RpcServer does not specify the actual retention policy.
      *
      * @param Service the exact type of the server to be registered.
-     * For example for service with `MyService` interface and `MyServiceImpl` implementation,
+     * For example, for service with `MyService` interface and `MyServiceImpl` implementation,
      * type `MyService` should be specified explicitly.
      * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
      */

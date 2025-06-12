@@ -8,97 +8,78 @@
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
        title="Configuration" id="configuration">
-     <p><code>KrpcConfig</code> is a class used to configure <code>KrpcClient</code> and <code>KrpcServer</code>
-            (not to be confused with <code>KrpcClient</code> and <code>KrpcServer</code>).
-            It has two children: <code>KrpcConfig.Client</code> and <code>KrpcConfig.Server</code>.
-            <code>Client</code> and <code>Server</code> may have shared properties as well as distinct ones.
-            To create instances of these configurations, DSL builders are provided
-            (<code>KrpcConfigBuilder.Client</code> class with <code>rpcClientConfig</code> function
-            and <code>KrpcConfigBuilder.Server</code> class with <code>rpcServerConfig</code> function respectively):
+    <p>
+        <code>KrpcConfig</code> is a class used to configure <code>KrpcClient</code> and <code>KrpcServer</code>
+        (not to be confused with <code>RpcClient</code> and <code>RpcServer</code>).
+    </p>
+    <p>
+        It has two children: <code>KrpcConfig.Client</code> and <code>KrpcConfig.Server</code>.
+        <code>Client</code> and <code>Server</code> may have shared properties as well as distinct ones.
+        To create instances of these configurations, DSL builders are provided:
+    </p>
+    <list>
+        <li>
+            <code>rpcClientConfig</code>
+        </li>
+        <li>
+            <code>rpcServerConfig</code>
+        </li>
+    </list>
+
+    <code-block lang="kotlin">
+        val config: KrpcConfig.Client = rpcClientConfig { // same for KrpcConfig.Server with rpcServerConfig
+            waitForServices = true // default parameter
+        }
+    </code-block>
+    <p>
+        The following configuration options are available:
+    </p>
+    <chapter id="serialization-dsl">
+        <title>
+            <code>serialization</code> DSL
+        </title>
+        <p>
+            This parameter defines how serialization should work in RPC services
+            and is present in both client and server configurations.
+        </p>
+        <p>
+            The serialization process is used to encode and decode data in RPC requests,
+            so that the data can be transferred through the network.
+        </p>
+        <p>
+            Currently only <code>StringFormat</code> and <code>BinaryFormat</code> from
+            <a href="https://github.com/Kotlin/kotlinx.serialization">kotlinx.serialization</a> are supported,
+            and by default you can choose from Json, Protobuf or Cbor formats:
         </p>
 
         <code-block lang="kotlin">
-            val config: KrpcConfig.Client = rpcClientConfig { // same for KrpcConfig.Server with rpcServerConfig
-                waitForServices = true // default parameter
+            rpcClientConfig {
+                serialization {
+                    json { /* this: JsonBuilder from kotlinx.serialization */ }
+                    cbor { /* this: CborBuilder from kotlinx.serialization */ }
+                    protobuf { /* this: ProtobufBuilder from kotlinx.serialization */ }
+                }
             }
         </code-block>
-        <p>The following configuration options are available:</p>
-        <chapter id="serialization-dsl">
-            <title>
-                <code>serialization</code> DSL
-            </title>
-            <p>This parameter defines how serialization should work in RPC services
-                and is present in both client and server configurations.</p>
-            <p>The serialization process is used to encode and decode data in RPC requests,
-                so that the data can be transferred through the network.</p>
-            <p>Currently only <code>StringFormat</code> and <code>BinaryFormat</code> from
-                <a href="https://github.com/Kotlin/kotlinx.serialization">kotlinx.serialization</a> are supported,
-                and by default you can choose from Json, Protobuf or Cbor formats:</p>
-
-            <code-block lang="kotlin">
-                rpcClientConfig {
-                    serialization {
-                        json { /* this: JsonBuilder from kotlinx.serialization */ }
-                        cbor { /* this: CborBuilder from kotlinx.serialization */ }
-                        protobuf { /* this: ProtobufBuilder from kotlinx.serialization */ }
-                    }
-                }
-            </code-block>
-            <p>Only last defined format will be used to serialize requests.
-                If no format is specified, the error will be thrown.
-                You can also define a custom format.</p>
-        </chapter>
-        <chapter id="sharedflowparameters-dsl">
-            <title>
-                <code>sharedFlowParameters</code> DSL
-            </title>
-
-            <warning>
-                These parameters are deprecated since <code>0.5.0</code>. For more information,
-                see the <a href="0-5-0.topic">migration guide</a>.
-            </warning>
-
-            <code-block lang="kotlin">
-                rpcClientConfig {
-                    sharedFlowParameters {
-                        replay = 1 // default parameter
-                        extraBufferCapacity = 10 // default parameter
-                        onBufferOverflow = BufferOverflow.SUSPEND // default parameter
-                    }
-                }
-            </code-block>
-            <p>This parameter is needed to decode <code>SharedFlow</code> parameters received from a peer.
-                <code>MutableSharedFlow</code>, the default function to create a <code>SharedFlow</code> instance,
-                has the following signature:</p>
-
-            <code-block lang="kotlin">
-                fun &lt;T&gt; MutableSharedFlow(
-                    replay: Int = 0,
-                    extraBufferCapacity: Int = 0,
-                    onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND
-                ): MutableSharedFlow&lt;T&gt; { /* ... */
-                }
-            </code-block>
-            <p>It creates a <code>SharedFlowImpl</code> class that contains these parameters as properties,
-                but this class in internal in <code>kotlinx.coroutines</code> and neither <code>SharedFlow</code>,
-                nor <code>MutableShatedFlow</code> interfaces define these properties,
-                which makes it impossible (at least for now) to send these properties from one endpoint to another.
-                But instances of these flows when deserialized should be created somehow,
-                so to overcome this - configuration parameter is created.
-                Configuration builder allows defining these parameters
-                and produces a builder function that is then placed into the <code>KrpcConfig</code>.</p>
-        </chapter>
-        <chapter id="waitforservices-dsl">
-            <title>
-                <code>waitForServices</code> DSL
-            </title>
-            <p><code>waitForServices</code> parameter is available for both client and server.
-                It specifies the behavior for an endpoint in situations
-                when the message for a service is received,
-                but the service is not present in <code>KrpcClient</code> or <code>KrpcServer</code>.
-                If set to <code>true</code>, the message will be stored in memory,
-                otherwise, the error will be sent to a peer endpoint,
-                saying that the message was not handled.
-                Default value is <code>true</code>.</p>
-        </chapter>
+        <p>
+            Only last defined format will be used to serialize requests.
+            If no format is specified, a runtime error will be thrown.
+            You can also define a custom format.
+        </p>
+    </chapter>
+    <chapter id="waitforservices-dsl">
+        <title>
+            <code>waitForServices</code> DSL
+        </title>
+        <p>
+            <code>waitForServices</code> parameter is available for both client and server.
+            It specifies the behavior for an endpoint in situations
+            when the message for a service is received,
+            but the service is not present in <code>KrpcClient</code> or <code>KrpcServer</code>.
+            If set to <code>true</code>, the message will be stored in memory,
+            otherwise, the error will be sent to a peer endpoint,
+            saying that the message was not handled.
+            Default value is <code>true</code>.
+        </p>
+    </chapter>
 </topic>

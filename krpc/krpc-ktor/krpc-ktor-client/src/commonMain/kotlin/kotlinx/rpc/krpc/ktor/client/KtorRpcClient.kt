@@ -18,8 +18,14 @@ import kotlinx.rpc.krpc.rpcClientConfig
 /**
  * [RpcClient] implementation for Ktor, containing [webSocketSession] object,
  * that is used to maintain connection.
+ *
+ * Client is cold, meaning the connection will be established on the first request.
+ * [webSocketSession] will be completed when the connection is established.
  */
 public interface KtorRpcClient : RpcClient {
+    /**
+     * Cold [WebSocketSession] object. Instantiated when the connection is established on the first request.
+     */
     public val webSocketSession: Deferred<WebSocketSession>
 }
 

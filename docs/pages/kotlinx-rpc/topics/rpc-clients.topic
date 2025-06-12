@@ -8,22 +8,22 @@
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
        title="RPC Clients" id="rpc-clients">
-     <p>
-         For each declared service, <code>kotlinx.rpc</code> will generate an actual client implementation
-         that can be used to send requests to a server. You must not use generated code directly. Instead,
-         you should use the APIs that will provide you with the instance of your interface. This generated instance is
-         commonly called a stub in RPC.
-     </p>
+    <p>
+        For each declared service, <code>kotlinx.rpc</code> will generate an actual client implementation
+        that can be used to send requests to a server. This generated instance is
+        commonly called a stub in RPC.
+    </p>
     <tip>
-        Note that we talk about generated stubs (service implementations on the client side)
-            that must not be called directly.
-            There might be a case when the generated code is not a stub, but a service declaration itself
-            (for example, the services generated from
-            <a href="https://grpc.io/docs/what-is-grpc/core-concepts/#service-definition">.proto files</a>).
-            In this case, you can use the generated code.
+        Note that we talk about generated stubs (service interface implementations on the client side)
+        that must not be called directly.
+        There might be a case when the generated code is not a stub, but a service declaration itself
+        (for example, the services generated from
+        <a href="https://grpc.io/docs/what-is-grpc/core-concepts/#service-definition">.proto files</a>).
+        In this case, you can use the generated code.
+        See <a href="grpc-services.topic"/>.
     </tip>
     <p>
-        To be able to obtain an instance of your service, you need to have an <code>RpcClient</code>.
+        To be able to get an instance of your service, you need to have an <code>RpcClient</code>.
         You can call the <code>withService()</code> method on your client:
     </p>
     <code-block lang="kotlin">
@@ -31,6 +31,9 @@
 
         val myService: MyService = rpcClient.withService&lt;MyService&gt;()
     </code-block>
+    <tip>
+        Note that the type parameter of <code>withService</code> must be annotated with <code>@Rpc</code> annotation.
+    </tip>
     <p>
         Now you have your client instance that is able to send RPC requests to your server.
         <code>RpcClient</code> can have multiple services that communicate through it.
@@ -42,42 +45,7 @@
     <p>
         You can provide your own implementations of the <code>RpcClient</code>.
         But <code>kotlinx.rpc</code> already provides one out-of-the-box solution that uses
-        in-house RPC protocol (called kRPC), and we are working on supporting more protocols
-        (with priority on gRPC).
+        in-house RPC protocol (called <a href="krpc-client.topic">kRPC</a>), and we are working on supporting more
+        protocols (see <a href="grpc-configuration.topic"/>).
     </p>
-
-    <chapter title="KrpcClient — RpcClient for kRPC Protocol" id="krpcclient-rpcclient-for-krpc-protocol">
-        <p><code>KrpcClient</code> is an abstract class that implements <code>RpcClient</code> and kRPC protocol
-            logic.
-            The only thing required to be implemented is the transporting of the raw data.
-            Abstract transport is represented by <code>KrpcTransport</code> interface.</p>
-        <p>To implement your own <code>KrpcTransport</code>
-            you need to be able to transfer strings and/or raw bytes (Kotlin's <code>ByteArray</code>).
-            Additionally, the library will provide you with <a href="transport.topic">integrations with different
-            libraries</a> that are used to work with the network.
-        </p>
-        <p>See below an example usage of kRPC with a custom transport:</p>
-
-        <code-block lang="kotlin">
-            class MySimpleRpcTransport : KrpcTransport {
-                val outChannel = Channel&lt;KrpcTransportMessage&gt;()
-                val inChannel = Channel&lt;KrpcTransportMessage&gt;()
-
-                override val coroutineContext: CoroutineContext = Job()
-
-                override suspend fun send(message: KrpcTransportMessage) {
-                    outChannel.send(message)
-                }
-
-                override suspend fun receive(): KrpcTransportMessage {
-                    return inChannel.receive()
-                }
-            }
-
-            class MySimpleRpcClient : KrpcClient(rpcClientConfig(), MySimpleRpcTransport())
-
-            val client = MySimpleRpcClient()
-            val service: MyService = client.withService&lt;MyService&gt;()
-        </code-block>
-    </chapter>
 </topic>

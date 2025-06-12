@@ -9,45 +9,87 @@
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
        title="Services" id="services">
     <p>Services are the centerpieces of the library.
-                A service is an interface annotated with the <code>@Rpc</code> annotation,
-                and contains a set of methods and fields
-                that can be executed or accessed remotely.
-                Additionally, a service always has a type of <code>RemoteService</code>,
-                which can be specified explicitly, or assumed implicitly by the compiler.
+        A service is an interface annotated with the <code>@Rpc</code> annotation,
+        and contains a set of methods that can be executed remotely.
     </p>
-    <note>
-        Note that implicit typing is currently not supported in IDEs, but is a work in progress.
-    </note>
     <p>A simple service can be declared as follows:</p>
 
-            <code-block lang="kotlin">
-                @Rpc
-                interface MyService : RemoteService {
-                    suspend fun hello(name: String): String
-                }
-            </code-block>
-            <p>Here we declare the method <code>hello</code>, that accepts one argument and returns a string.
-                The method is marked with a <code>suspend</code> modifier, which means that we use
-                <a href="https://kotlinlang.org/docs/coroutines-guide.html">coroutines</a>
-                to send RPC requests.
-                Note that for now, only <code>suspend</code> methods are supported in service interfaces.</p>
-            <tip>
-                <p>Depending on the type of the protocol you use, services may support different features and
-                    declarations.</p>
-            </tip>
-            <p>To be able to use a service both in client and server code,
-                the interface should be placed in the common module
-                — kudos to Kotlin Multiplatform.</p>
-            <p>Now we can implement the service, so server knows how to process incoming requests.</p>
-
-            <code-block lang="kotlin">
-                class MyServiceImpl(
-                    override val coroutineContext: CoroutineContext,
-                ) : MyService {
-                    override suspend fun hello(name: String): String {
-                        return &quot;Hello, $name! I'm server!&quot;
-                    }
-                }
-            </code-block>
-            <p>The server will use that implementation to answer the client requests.</p>
+    <code-block lang="kotlin">
+        @Rpc
+        interface MyService {
+            suspend fun hello(name: String): String
+        }
+    </code-block>
+    <p>
+        Here we declare the method <code>hello</code>, that accepts one argument and returns a string.
+        The method is marked with a <code>suspend</code> modifier, which means that we use
+        <a href="https://kotlinlang.org/docs/coroutines-guide.html">coroutines</a>
+        to send RPC requests.
+    </p>
+    <tip>
+        <p>
+            Depending on the type of the protocol you use, services may support different features and
+            declarations.
+        </p>
+    </tip>
+    <p>
+        To be able to use a service both in client and server code,
+        the interface should be placed in the common module
+        — kudos to Kotlin Multiplatform.
+    </p>
+    <p>
+        Now we can implement the service, so the server knows how to process incoming requests.
+    </p>
+    <code-block lang="kotlin">
+        class MyServiceImpl : MyService {
+            override suspend fun hello(name: String): String {
+                return &quot;Hello, $name! I'm server!&quot;
+            }
+        }
+    </code-block>
+    <p>
+        The server will use that implementation to answer the client requests.
+    </p>
+    <chapter title="Streaming" id="streaming">
+        <p>
+            The library supports streaming of data.
+            To declare a streaming method, you need to use the <code>Flow</code> type.
+            For example, to declare a method that returns a stream of integers:
+        </p>
+        <code-block lang="kotlin">
+            @Rpc
+            interface MyService {
+                fun stream(): Flow&lt;Int&gt;
+            }
+        </code-block>
+        <p>
+            Note that the method is not marked with the <code>suspend</code> modifier.
+        </p>
+        <p>
+            You can also pass a <code>Flow</code> as a parameter to the method.
+            For example, to declare a method that accepts a stream of integers:
+        </p>
+        <code-block lang="kotlin">
+            @Rpc
+            interface MyService {
+                suspend fun sendStream(stream: Flow&lt;Int&gt;)
+            }
+        </code-block>
+        <p>
+            Or make streams bidirectional:
+        </p>
+        <code-block lang="kotlin">
+            @Rpc
+            interface MyService {
+                fun bidi(stream: Flow&lt;Int&gt;): Flow&lt;Int&gt;
+            }
+        </code-block>
+        <tip>
+            <p>
+                Note that the function is not <code>suspend</code>
+                only when the return type is a <code>Flow</code>.
+                <code>Flow</code> in parameter list does not affect the function's signature.
+            </p>
+        </tip>
+    </chapter>
 </topic>

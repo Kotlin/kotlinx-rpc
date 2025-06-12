@@ -4,13 +4,11 @@
 
 package kotlinx.rpc
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
 /**
  * [RpcClient] represents an abstraction of an RPC client, that can handle requests from several RPC services,
  * transform them, send to the server and handle responses and errors.
- * [CoroutineScope] defines the lifetime of the client.
  */
 public interface RpcClient {
     /**
@@ -19,7 +17,7 @@ public interface RpcClient {
      * @param T type of the result
      * @param call an object that contains all required information about the called method,
      * that is needed to route it properly to the server.
-     * @return actual result of the call, for example, data from the server.
+     * @return result of the call, for example, data from the server.
      */
     public suspend fun <T> call(call: RpcCall): T
 
@@ -30,7 +28,7 @@ public interface RpcClient {
      * @param T type of the result
      * @param call an object that contains all required information about the called method,
      * that is needed to route it properly to the server.
-     * @return the actual result of the call, for example, data from the server
+     * @return result of the call, for example, data from the server
      */
     public fun <T> callServerStreaming(call: RpcCall): Flow<T>
 }

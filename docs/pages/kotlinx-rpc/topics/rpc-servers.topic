@@ -8,51 +8,39 @@
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
        title="RPC Servers" id="rpc-servers">
-        <p><code>RpcServer</code> interface represents an RPC server,
-            that accepts RPC messages and may contain multiple services to route to.
-            <code>RpcServer</code> uses data from incoming RPC messages
-            and routes it to the designated service and sends service's response back to the corresponding client.
-        </p>
-        <p>You can provide your own <code>RpcServer</code> implementation
-            or use the one provided out of the box.
-            Note that client and server must use the same RPC protocol to communicate.</p>
-        <p>Use <code>registerService</code> function to add your own factory for implemented RPC services.
-            This factory function should accept <code>CoroutineContext</code> argument and pass it to the service,
-            which should use it to override <code>coroutineContext</code> property of parent interface.
-            This ensures proper application lifetime for your services.</p>
-        <p>Example usage:</p>
+    <p>
+        <code>RpcServer</code> interface represents an RPC server,
+        that accepts RPC messages and may contain multiple services to route to.
+        <code>RpcServer</code> uses data from incoming RPC messages
+        and routes it to the designated service and sends service's response back to the corresponding client.
+    </p>
+    <p>
+        You can provide your own <code>RpcServer</code> implementation
+        or use the one provided out of the box.
+        Note that client and server must use the same RPC protocol to communicate.
+    </p>
+    <p>
+        Use <code>registerService</code> function to add your own factory for implemented RPC services:
+    </p>
 
-        <code-block lang="kotlin">
-            val server: RpcServer
+    <code-block lang="kotlin">
+        val server: RpcServer
 
-            server.registerService&lt;MyService&gt; { ctx: CoroutineContext -&gt; MyServiceImpl(ctx) }
-        </code-block>
-        <p>The <code>registerService</code> function requires the explicit type of the declared RPC service.
+        server.registerService&lt;MyService&gt; { MyServiceImpl() }
+    </code-block>
+    <note>
+        <p>
+            The <code>registerService</code> function requires the explicit type of the declared RPC service.
             That means that the code will not work if you provide it with the type of the service implementation:
         </p>
 
         <code-block lang="kotlin">
             // Wrong! Should be `MyService` as type argument
-            server.registerService&lt;MyServiceImpl&gt; { ctx: CoroutineContext -&gt; MyServiceImpl(ctx) }
+            server.registerService&lt;MyServiceImpl&gt; { MyServiceImpl() }
         </code-block>
 
-    <chapter title="KrpcServer — RpcServer for kRPC Protocol" id="krpcserver-rpcserver-for-krpc-protocol">
-        <p><code>KrpcServer</code> abstract class implements <code>RpcServer</code>
-            and all the logic for processing RPC messages
-            and again leaves <code>RpcTransport</code> methods for the specific implementations
-            (see <a href="transport.topic">transports</a>).</p>
-        <p>Example usage with custom transport:</p>
-
-        <code-block lang="kotlin">
-            // same MySimpleRpcTransport as in the client example above
-            class MySimpleRpcServer : KrpcServer(rpcServerConfig(), MySimpleRpcTransport())
-
-            val server = MySimpleRpcServer()
-            server.registerService&lt;MyService&gt; { ctx -&gt; MyServiceImpl(ctx) }
-        </code-block>
-        <p>Note that here we pass explicit <code>MyService</code> type parameter to the <code>registerService</code>
-            method.
-            You must explicitly specify the type of the service interface here,
-            otherwise the server service will not be found.</p>
-    </chapter>
+        <p>
+            See <a href="annotation-type-safety.topic"/> for more details.
+        </p>
+    </note>
 </topic>
