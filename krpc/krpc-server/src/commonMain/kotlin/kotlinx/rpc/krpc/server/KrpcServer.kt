@@ -37,6 +37,20 @@ public abstract class KrpcServer(
     transport: KrpcTransport,
 ) : RpcServer, KrpcEndpoint {
 
+    /**
+     * Close this server, removing all the services and stopping accepting messages.
+     */
+    public fun close(message: String? = null) {
+        internalScope.cancel(message ?: "Server closed")
+    }
+
+    /**
+     * Waits until the server is closed.
+     */
+    public suspend fun awaitCompletion() {
+        internalScope.coroutineContext.job.join()
+    }
+
     /*
      * #####################################################################
      * #                                                                   #
@@ -119,6 +133,7 @@ public abstract class KrpcServer(
 
     override fun <@Rpc Service : Any> deregisterService(serviceKClass: KClass<Service>) {
         connector.unsubscribeFromServiceMessages(serviceDescriptorOf(serviceKClass).fqName)
+        rpcServices.remove(serviceDescriptorOf(serviceKClass).fqName)
     }
 
     private fun <@Rpc Service : Any> createNewServiceInstance(

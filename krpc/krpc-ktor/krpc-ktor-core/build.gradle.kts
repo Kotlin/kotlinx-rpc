@@ -26,10 +26,17 @@ kotlin {
                 implementation(projects.krpc.krpcSerialization.krpcSerializationJson)
                 implementation(projects.krpc.krpcKtor.krpcKtorServer)
                 implementation(projects.krpc.krpcKtor.krpcKtorClient)
+                implementation(projects.krpc.krpcLogging)
 
                 implementation(libs.kotlin.test)
                 implementation(libs.ktor.server.netty)
                 implementation(libs.ktor.server.test.host)
+                implementation(libs.ktor.server.websockets)
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.websockets)
+                implementation(libs.ktor.client.cio)
+                implementation(libs.logback.classic)
+                implementation(libs.coroutines.debug)
             }
         }
     }

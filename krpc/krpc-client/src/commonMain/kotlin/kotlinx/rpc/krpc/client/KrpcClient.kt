@@ -45,8 +45,8 @@ import kotlin.properties.Delegates
  * See [KrpcClient.initializeTransport].
  */
 public abstract class InitializedKrpcClient(
-    private val transport: KrpcTransport,
     private val config: KrpcConfig.Client,
+    private val transport: KrpcTransport,
 ): KrpcClient() {
     final override suspend fun initializeTransport(): KrpcTransport {
         return transport
@@ -79,6 +79,20 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
      * Configuration is applied to all services that use this client.
      */
     protected abstract fun initializeConfig(): KrpcConfig.Client
+
+    /**
+     * Close this client, removing all the services and stopping accepting messages.
+     */
+    public fun close(message: String? = null) {
+        internalScope.cancel(message ?: "Client closed")
+    }
+
+    /**
+     * Waits until the client is closed.
+     */
+    public suspend fun awaitCompletion() {
+        internalScope.coroutineContext.job.join()
+    }
 
     /*
      * #####################################################################
