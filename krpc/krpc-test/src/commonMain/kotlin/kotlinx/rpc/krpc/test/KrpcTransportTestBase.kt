@@ -391,8 +391,9 @@ abstract class KrpcTransportTestBase {
             return@runTest
         }
 
-        val inContinuation = Semaphore(1)
+        val inContinuation = Semaphore(permits = 1, acquiredPermits = 1)
         val running = AtomicTest()
+        val gate = CompletableDeferred<Unit>()
 
         // start a coroutine that block the thread after continuation
         val c1 = async(Dispatchers.Default) { // make a rpc call
@@ -405,13 +406,14 @@ abstract class KrpcTransportTestBase {
             inContinuation.release()
 
             // let's block the thread
+            gate.complete(Unit)
             while (running.atomic.value) {
                 // do nothing
             }
         }
 
         // wait, till the Rpc continuation thread is blocked
-        delay(100)
+        gate.await()
         assertTrue(inContinuation.tryAcquire())
 
         val c2 = async { // make a call

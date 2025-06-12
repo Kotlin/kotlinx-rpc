@@ -43,9 +43,13 @@ import org.jetbrains.krpc.test.api.util.SamplingServiceImpl
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.name
+import kotlin.reflect.full.callSuspend
+import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
 
 @Suppress("RedundantUnitReturnType")
 fun wireSamplingTest(name: String, sampling: suspend WireSamplingTestScope.() -> Unit): TestResult {
@@ -76,6 +80,8 @@ class WireSamplingTestScope(private val sampleName: String, scope: TestScope) : 
         val fails = mutableListOf<String>()
         formats.forEach { format ->
             val finishedToolkit = WireToolkit(this, format).apply {
+                initClient()
+
                 server // init server
 
                 service.block()
@@ -109,6 +115,13 @@ class WireSamplingTestScope(private val sampleName: String, scope: TestScope) : 
         }
 
         fails.failIfAnyCauses()
+    }
+
+    private suspend fun WireToolkit.initClient() {
+        KrpcClient::class.memberFunctions.single { it.name == "initializeTransport" }.apply {
+            isAccessible = true
+            callSuspend(client)
+        }
     }
 
     var skipOldServerTests: Boolean = true
@@ -147,6 +160,7 @@ class WireSamplingTestScope(private val sampleName: String, scope: TestScope) : 
         val oldClientToolkit = WireToolkit(this, format, logger)
         logger.info { "Running wire test: old client (version: $version) with current server on $format format" }
 
+        oldClientToolkit.initClient()
         oldClientToolkit.server // init server
         for ((role, _, message) in dump.filter { it.phase == Phase.Send }) {
             when (role) {
@@ -255,8 +269,25 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
     }
 
     suspend fun stop() {
-        transport.coroutineContext.job.cancelAndJoin()
+        @OptIn(ExperimentalTime::class)
+        while (true) {
+            val now = Clock.System.now().toEpochMilliseconds()
+            if (now - transport.lastMessageSentOnClient.value > 400 &&
+                now - transport.lastMessageSentOnServer.value > 400
+            ) {
+                break
+            }
+
+            delay(100)
+        }
+
         RpcInternalDumpLoggerContainer.set(null)
+
+        client.close()
+        server.close()
+        client.awaitCompletion()
+        server.awaitCompletion()
+        transport.coroutineContext.job.cancelAndJoin()
     }
 
     init {
@@ -301,7 +332,7 @@ data class DumpLog(
                 .map { it.trim() }
                 .filter { !it.startsWith("//") && it.isNotBlank() }
                 .map { line ->
-                    val (prefix, log) = line.split("\$", limit = 2).map { it.trim() }
+                    val (prefix, log) = line.split("$", limit = 2).map { it.trim() }
                     val (role, phase) = prefix.split(" ")
 
                     DumpLog(Role.fromText(role), Phase.fromText(phase), log)

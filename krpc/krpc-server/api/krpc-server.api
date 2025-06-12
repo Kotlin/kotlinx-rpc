@@ -1,5 +1,8 @@
 public abstract class kotlinx/rpc/krpc/server/KrpcServer : kotlinx/rpc/RpcServer, kotlinx/rpc/krpc/internal/KrpcEndpoint {
 	public fun <init> (Lkotlinx/rpc/krpc/KrpcConfig$Server;Lkotlinx/rpc/krpc/KrpcTransport;)V
+	public final fun awaitCompletion (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun close (Ljava/lang/String;)V
+	public static synthetic fun close$default (Lkotlinx/rpc/krpc/server/KrpcServer;Ljava/lang/String;ILjava/lang/Object;)V
 	public fun deregisterService (Lkotlin/reflect/KClass;)V
 	public final fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function0;)V
 }

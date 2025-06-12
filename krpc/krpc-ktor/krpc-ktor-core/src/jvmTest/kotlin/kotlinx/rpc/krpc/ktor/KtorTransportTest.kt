@@ -152,6 +152,7 @@ class KtorTransportTest {
 
         val service = SlowServiceImpl()
 
+        @Suppress("detekt.GlobalCoroutineUsage")
         val serverJob = GlobalScope.launch(CoroutineName("server")) {
             withContext(newPool) {
                 val server = embeddedServer(

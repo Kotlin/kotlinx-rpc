@@ -9,7 +9,6 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.util.*
-import kotlinx.rpc.RpcClient
 import kotlinx.rpc.krpc.KrpcConfigBuilder
 
 private val KrpcRequestConfigAttributeKey = AttributeKey<KrpcConfigBuilder.Client.() -> Unit>(

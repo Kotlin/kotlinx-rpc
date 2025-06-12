@@ -61,6 +61,7 @@ class CancellationServiceImpl : CancellationService {
 
     @OptIn(DelicateCoroutinesApi::class)
     override suspend fun outgoingStreamAsync(stream: Flow<Int>) {
+        @Suppress("detekt.GlobalCoroutineUsage")
         GlobalScope.launch {
             consume(stream)
         }
