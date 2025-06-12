@@ -7,7 +7,6 @@ package kotlinx.rpc.codegen
 import kotlinx.rpc.codegen.checkers.FirCheckedAnnotationHelper
 import kotlinx.rpc.codegen.checkers.FirRpcDeclarationCheckers
 import kotlinx.rpc.codegen.checkers.FirRpcExpressionCheckers
-import kotlinx.rpc.codegen.checkers.diagnostics.FirRpcStrictModeDiagnostics
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.DeclarationCheckers
@@ -32,7 +31,6 @@ class FirRpcAdditionalCheckers(
         session = session,
         serializationIsPresent = serializationIsPresent,
         annotationTypeSafetyEnabled = configuration.get(RpcFirConfigurationKeys.ANNOTATION_TYPE_SAFETY, true),
-        modes = configuration.strictModeAggregator(),
     )
 
     override val declarationCheckers: DeclarationCheckers = FirRpcDeclarationCheckers(ctx)
@@ -43,10 +41,7 @@ class FirCheckersContext(
     private val session: FirSession,
     val serializationIsPresent: Boolean,
     val annotationTypeSafetyEnabled: Boolean,
-    modes: StrictModeAggregator,
 ) {
-    val strictModeDiagnostics = FirRpcStrictModeDiagnostics(modes)
-
     val typeParametersCache = session.firCachesFactory.createCache { typeParameter: FirTypeParameterSymbol ->
         FirCheckedAnnotationHelper.checkedAnnotations(session, typeParameter)
     }

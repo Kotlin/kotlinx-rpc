@@ -31,8 +31,8 @@ open class RpcExtension @Inject constructor(objects: ObjectFactory) {
 
     /**
      * Strict mode settings.
-     * Allows configuring the reporting state of deprecated features.
      */
+    @Deprecated("Strict mode enabled irreversibly. This option can't change it.", level = DeprecationLevel.ERROR)
     fun strict(configure: Action<RpcStrictModeExtension>) {
         configure.execute(strict)
     }

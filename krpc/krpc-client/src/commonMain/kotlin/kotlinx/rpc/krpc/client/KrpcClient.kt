@@ -36,9 +36,6 @@ import kotlin.concurrent.Volatile
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.properties.Delegates
 
-@Deprecated("Use KrpcClient instead", ReplaceWith("KrpcClient"), level = DeprecationLevel.ERROR)
-public typealias KRPCClient = KrpcClient
-
 /**
  * Default implementation of [RpcClient].
  * Takes care of tracking requests and responses,
@@ -476,7 +473,6 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
     private fun RpcCallable<*>.toMessageCallType(): KrpcCallMessage.CallType {
         return when (invokator) {
             is RpcInvokator.Method -> KrpcCallMessage.CallType.Method
-            is RpcInvokator.Field -> KrpcCallMessage.CallType.Field
         }
     }
 }

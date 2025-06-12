@@ -29,20 +29,8 @@ class CompilerPluginCli : KotlinCompilerPluginSupportPlugin by compilerPlugin({
         val extension = it.target.project.extensions.findByType<RpcExtension>()
             ?: RpcExtension(it.target.project.objects)
 
-        val strict = extension.strict
-
         it.target.project.provider {
             listOf(
-                SubpluginOption("strict-stateFlow", strict.stateFlow.get().toCompilerArg()),
-                SubpluginOption("strict-sharedFlow", strict.sharedFlow.get().toCompilerArg()),
-                SubpluginOption("strict-nested-flow", strict.nestedFlow.get().toCompilerArg()),
-                SubpluginOption("strict-stream-scope", strict.streamScopedFunctions.get().toCompilerArg()),
-                SubpluginOption(
-                    "strict-suspending-server-streaming",
-                    strict.suspendingServerStreaming.get().toCompilerArg()
-                ),
-                SubpluginOption("strict-not-top-level-server-flow", strict.notTopLevelServerFlow.get().toCompilerArg()),
-                SubpluginOption("strict-fields", strict.fields.get().toCompilerArg()),
                 @OptIn(RpcDangerousApi::class)
                 SubpluginOption("annotation-type-safety", extension.annotationTypeSafetyEnabled.get().toString()),
             )

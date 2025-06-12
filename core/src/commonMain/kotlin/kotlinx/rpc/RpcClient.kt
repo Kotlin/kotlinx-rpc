@@ -7,9 +7,6 @@ package kotlinx.rpc
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
-@Deprecated("Use RpcClient instead", ReplaceWith("RpcClient"), level = DeprecationLevel.ERROR)
-public typealias RPCClient = RpcClient
-
 /**
  * [RpcClient] represents an abstraction of an RPC client, that can handle requests from several RPC services,
  * transform them, send to the server and handle responses and errors.

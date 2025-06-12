@@ -2,21 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-// MODULE: none
-// RPC_STRICT_MODE: none
-// FILE: a.kt
-
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import kotlinx.rpc.annotations.Rpc
-
-@Rpc
-interface MyServiceWithStateFlow {
-    suspend fun hello(flow: StateFlow<Int>)
-}
-
 // MODULE: main
-// RPC_STRICT_MODE: warning
 // FILE: b.kt
 
 @file:OptIn(ExperimentalRpcApi::class)

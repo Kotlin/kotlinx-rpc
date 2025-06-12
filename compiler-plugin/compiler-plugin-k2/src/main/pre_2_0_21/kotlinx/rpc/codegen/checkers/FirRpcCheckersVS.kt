@@ -65,14 +65,6 @@ class FirRpcServiceDeclarationCheckerVS(
     }
 }
 
-class FirRpcStrictModeExpressionCheckerVS(
-    private val ctx: FirCheckersContext,
-) : FirFunctionCallChecker(MppCheckerKind.Common) {
-    override fun check(expression: FirFunctionCall, context: CheckerContext, reporter: DiagnosticReporter) {
-        FirRpcStrictModeExpressionChecker.check(ctx, expression, context, reporter)
-    }
-}
-
 class FirRpcStrictModeClassCheckerVS(private val ctx: FirCheckersContext) : FirRegularClassChecker(MppCheckerKind.Common) {
     override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         FirRpcStrictModeClassChecker.check(ctx, declaration, context, reporter)

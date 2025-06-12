@@ -7,9 +7,6 @@ package kotlinx.rpc
 import kotlinx.rpc.annotations.Rpc
 import kotlin.reflect.KClass
 
-@Deprecated("Use RpcServer instead", ReplaceWith("RpcServer"), level = DeprecationLevel.ERROR)
-public typealias RPCServer = RpcServer
-
 /**
  * RpcServer is used to accept RPC messages, route them to a specific service, and process given responses.
  * Server may contain multiple services.

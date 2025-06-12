@@ -8,7 +8,6 @@ import kotlinx.rpc.RpcClient
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.internal.*
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
-import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -43,13 +42,6 @@ public fun <@Rpc T : Any> serviceDescriptorOf(kClass: KClass<T>): RpcServiceDesc
 public interface RpcServiceDescriptor<@Rpc T : Any> {
     public val fqName: String
 
-    @InternalRpcApi
-    @Deprecated(
-        "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
-        level = DeprecationLevel.WARNING,
-    )
-    public fun getFields(service: T): List<RpcDeferredField<*>>
-
     public fun getCallable(name: String): RpcCallable<T>?
 
     public fun createInstance(serviceId: Long, client: RpcClient): T
@@ -70,15 +62,6 @@ public sealed interface RpcInvokator<@Rpc T : Any> {
     @ExperimentalRpcApi
     public fun interface Method<@Rpc T : Any> : RpcInvokator<T> {
         public suspend fun call(service: T, data: Any?): Any?
-    }
-
-    @ExperimentalRpcApi
-    @Deprecated(
-        "Fields are deprecated, see https://kotlin.github.io/kotlinx-rpc/0-5-0.html",
-        level = DeprecationLevel.WARNING,
-    )
-    public fun interface Field<@Rpc T : Any> : RpcInvokator<T> {
-        public fun call(service: T): Any?
     }
 }
 
