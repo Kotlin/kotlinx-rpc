@@ -14,6 +14,8 @@ plugins {
 applyAtomicfuPlugin()
 
 kotlin {
+    compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
+
     sourceSets {
         commonMain {
             dependencies {

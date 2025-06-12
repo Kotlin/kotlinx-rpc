@@ -1,6 +1,5 @@
 public final class kotlinx/rpc/krpc/ktor/server/KrpcKt {
 	public static final fun getKrpc ()Lio/ktor/server/application/ApplicationPlugin;
-	public static final fun getRPC ()Lio/ktor/server/application/ApplicationPlugin;
 }
 
 public final class kotlinx/rpc/krpc/ktor/server/KrpcRoute : io/ktor/server/websocket/DefaultWebSocketServerSession {

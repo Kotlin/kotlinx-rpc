@@ -122,7 +122,7 @@ class CancellationTest {
     }
 
     @Test
-    fun testStreamScopeOutgoing() = runCancellationTest {
+    fun testStreamOutgoing() = runCancellationTest {
         service.outgoingStream(
             flow {
                 repeat(2) {
@@ -142,7 +142,7 @@ class CancellationTest {
     }
 
     @Test
-    fun testStreamScopeIncoming() = runCancellationTest {
+    fun testStreamIncoming() = runCancellationTest {
         var first: Int = -1
         val flow = service.incomingStream()
 

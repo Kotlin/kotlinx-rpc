@@ -9,13 +9,10 @@ import kotlinx.rpc.krpc.serialization.KrpcSerialFormat
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormatBuilder
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration
 
-@Deprecated("Use KrpcConfigBuilder instead", ReplaceWith("KrpcConfigBuilder"), level = DeprecationLevel.ERROR)
-public typealias RPCConfigBuilder = KrpcConfigBuilder
-
 /**
  * Builder for [KrpcConfig]. Provides DSL to configure parameters for KrpcClient and/or KrpcServer.
  */
-public sealed class KrpcConfigBuilder private constructor() {
+public sealed class KrpcConfigBuilder protected constructor() {
     private var serialFormatInitializer: KrpcSerialFormatBuilder<*, *>? = null
 
     private val configuration = object : KrpcSerialFormatConfiguration {
@@ -86,9 +83,6 @@ public sealed class KrpcConfigBuilder private constructor() {
         }
     }
 }
-
-@Deprecated("Use KrpcConfig instead", ReplaceWith("KrpcConfig"), level = DeprecationLevel.ERROR)
-public typealias RPCConfig = KrpcConfig
 
 /**
  * Configuration class that is used by kRPC protocol's client and server (KrpcClient and KrpcServer).

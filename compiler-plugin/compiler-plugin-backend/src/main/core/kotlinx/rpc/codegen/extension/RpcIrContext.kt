@@ -32,16 +32,8 @@ internal class RpcIrContext(
         irBuiltIns.arrayClass.typeWith(anyNullable, Variance.OUT_VARIANCE)
     }
 
-    val coroutineScope by lazy {
-        getIrClassSymbol("kotlinx.coroutines", "CoroutineScope")
-    }
-
     val kTypeClass by lazy {
         getIrClassSymbol("kotlin.reflect", "KType")
-    }
-
-    val suspendFunction0 by lazy {
-        getIrClassSymbol("kotlin.coroutines", "SuspendFunction0")
     }
 
     val suspendFunction2 by lazy {
@@ -92,10 +84,6 @@ internal class RpcIrContext(
         getRpcIrClassSymbol("RpcParameter", "descriptor")
     }
 
-    val rpcDeferredField by lazy {
-        getRpcIrClassSymbol("RpcDeferredField", "internal")
-    }
-
     val rpcMethodClass by lazy {
         getRpcIrClassSymbol("RpcMethodClass", "internal")
     }
@@ -137,10 +125,6 @@ internal class RpcIrContext(
 
         val emptyArray by lazy {
             namedFunction("kotlin", "emptyArray")
-        }
-
-        val emptyList by lazy {
-            namedFunction("kotlin.collections", "emptyList")
         }
 
         val mapOf by lazy {

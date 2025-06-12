@@ -31,16 +31,6 @@ FILE: rpcChecked.kt
             ^ R|<local>/impl|
         }
         )
-        R|<local>/myServiceImpl|.R|kotlinx/rpc/awaitFieldInitialization|<R|MyService|>()
-        R|<local>/myServiceImpl|.R|kotlinx/rpc/awaitFieldInitialization|<R|MyService|, R|kotlin/Int|>(<L> = awaitFieldInitialization@fun R|MyService|.<anonymous>(): R|kotlin/Int| <inline=NoInline>  {
-            ^ Int(1)
-        }
-        )
-        R|<local>/impl|.R|kotlinx/rpc/awaitFieldInitialization|<R|T|>()
-        R|<local>/impl|.R|kotlinx/rpc/awaitFieldInitialization|<R|T|, R|kotlin/Int|>(<L> = awaitFieldInitialization@fun R|T|.<anonymous>(): R|kotlin/Int| <inline=NoInline>  {
-            ^ Int(1)
-        }
-        )
         R|kotlinx/rpc/descriptor/serviceDescriptorOf|<R|MyService|>()
         R|kotlinx/rpc/descriptor/serviceDescriptorOf|<R|T|>()
     }
@@ -58,21 +48,6 @@ FILE: rpcChecked.kt
         )
         R|<local>/server|.R|kotlinx/rpc/registerService|<R|T|>(<L> = registerService@fun <anonymous>(): R|T| <inline=NoInline>  {
             ^ R|<local>/impl|
-        }
-        )
-        R|<local>/myServiceImpl|.R|kotlinx/rpc/awaitFieldInitialization|<R|MyServiceImpl|>()
-        R|<local>/myServiceImpl|.R|kotlinx/rpc/awaitFieldInitialization|<R|MyServiceImpl|, R|kotlin/Int|>(<L> = awaitFieldInitialization@fun R|MyServiceImpl|.<anonymous>(): R|kotlin/Int| <inline=NoInline>  {
-            ^ Int(1)
-        }
-        )
-        R|<local>/notAServiceImpl|.R|kotlinx/rpc/awaitFieldInitialization|<R|NotAService|>()
-        R|<local>/notAServiceImpl|.R|kotlinx/rpc/awaitFieldInitialization|<R|NotAService|, R|kotlin/Int|>(<L> = awaitFieldInitialization@fun R|NotAService|.<anonymous>(): R|kotlin/Int| <inline=NoInline>  {
-            ^ Int(1)
-        }
-        )
-        R|<local>/impl|.R|kotlinx/rpc/awaitFieldInitialization|<R|T|>()
-        R|<local>/impl|.R|kotlinx/rpc/awaitFieldInitialization|<R|T|, R|kotlin/Int|>(<L> = awaitFieldInitialization@fun R|T|.<anonymous>(): R|kotlin/Int| <inline=NoInline>  {
-            ^ Int(1)
         }
         )
         R|kotlinx/rpc/descriptor/serviceDescriptorOf|<R|MyServiceImpl|>()

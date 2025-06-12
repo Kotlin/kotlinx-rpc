@@ -110,6 +110,14 @@ internal class KrpcServerService<@Rpc T : Any>(
                 .endsWith("\$method") // compatibility with beta-4.2 clients
         }
 
+        if (!isMethod) {
+            error(
+                "Service ${descriptor.fqName} doesn't support fields calls, " +
+                        "but got a field call: ${callData.callableName} with callId $callId. " +
+                        "Please, update the client version or change the call type to method."
+            )
+        }
+
         val callableName = callData.callableName
             .substringBefore('$') // compatibility with beta-4.2 clients
 
@@ -149,10 +157,6 @@ internal class KrpcServerService<@Rpc T : Any>(
                 val value = when (val invokator = callable.invokator) {
                     is RpcInvokator.Method -> {
                         invokator.call(service, data)
-                    }
-
-                    is RpcInvokator.Field -> {
-                        invokator.call(service)
                     }
                 }.let { interceptedValue ->
                     // KRPC-173

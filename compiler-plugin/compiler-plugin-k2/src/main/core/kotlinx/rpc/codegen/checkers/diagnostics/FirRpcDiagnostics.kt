@@ -6,7 +6,6 @@
 
 package kotlinx.rpc.codegen.checkers.diagnostics
 
-import kotlinx.rpc.codegen.StrictModeAggregator
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
 import org.jetbrains.kotlin.diagnostics.error0
 import org.jetbrains.kotlin.diagnostics.error1
@@ -39,17 +38,15 @@ object FirRpcDiagnostics : RpcKtDiagnosticsContainer() {
     }
 }
 
-@Suppress("PropertyName", "detekt.VariableNaming")
-class FirRpcStrictModeDiagnostics(val modes: StrictModeAggregator) : RpcKtDiagnosticsContainer() {
-    val STATE_FLOW_IN_RPC_SERVICE by modded0<KtElement>(modes.stateFlow)
-    val SHARED_FLOW_IN_RPC_SERVICE by modded0<KtElement>(modes.sharedFlow)
-    val NESTED_STREAMING_IN_RPC_SERVICE by modded0<KtElement>(modes.nestedFlow)
-    val STREAM_SCOPE_FUNCTION_IN_RPC by modded0<KtElement>(modes.streamScopedFunctions)
-    val SUSPENDING_SERVER_STREAMING_IN_RPC_SERVICE by modded0<KtElement>(modes.suspendingServerStreaming)
-    val NON_TOP_LEVEL_SERVER_STREAMING_IN_RPC_SERVICE by modded0<KtElement>(modes.notTopLevelServerFlow)
-    val FIELD_IN_RPC_SERVICE by modded0<KtElement>(modes.fields)
+object FirRpcStrictModeDiagnostics : RpcKtDiagnosticsContainer() {
+    val STATE_FLOW_IN_RPC_SERVICE by error0<KtElement>()
+    val SHARED_FLOW_IN_RPC_SERVICE by error0<KtElement>()
+    val NESTED_STREAMING_IN_RPC_SERVICE by error0<KtElement>()
+    val SUSPENDING_SERVER_STREAMING_IN_RPC_SERVICE by error0<KtElement>()
+    val NON_TOP_LEVEL_SERVER_STREAMING_IN_RPC_SERVICE by error0<KtElement>()
+    val FIELD_IN_RPC_SERVICE by error0<KtElement>()
 
     override fun getRendererFactoryVs(): BaseDiagnosticRendererFactory {
-        return RpcStrictModeDiagnosticRendererFactory(this)
+        return RpcStrictModeDiagnosticRendererFactory
     }
 }

@@ -37,7 +37,6 @@ private object Stub {
 private object Descriptor {
     const val CALLABLE_MAP = "callableMap"
     const val FQ_NAME = "fqName"
-    const val GET_FIELDS = "getFields"
     const val GET_CALLABLE = "getCallable"
     const val CREATE_INSTANCE = "createInstance"
 }
@@ -616,8 +615,6 @@ internal class RpcStubGenerator(
         generateGetCallableFunction()
 
         generateCreateInstanceFunction()
-
-        generateGetFieldsFunction()
     }
 
     /**
@@ -1182,61 +1179,6 @@ internal class RpcStubGenerator(
                         }
                     }
                 )
-            }
-        }
-    }
-
-    /**
-     * Function for getting a list of all RPC fields in a given service as [RpcDeferredField<*>]
-     *
-     * ```kotlin
-     *  final override fun getFields(service: MyService): List<RpcDeferredField<*>> {
-     *      return listOf( // or emptyList() if no fields
-     *          service.<field-1>,
-     *          ...
-     *          service.<field-n>,
-     *      ) as List<RpcDeferredField<*>>
-     *  }
-     * ```
-     *
-     * Where:
-     *  - `<field-k>` - the k-th field of a given service
-     */
-    private fun IrClass.generateGetFieldsFunction() {
-        val listType = ctx.irBuiltIns.listClass.typeWith(ctx.rpcDeferredField.starProjectedType)
-
-        addFunction {
-            name = Name.identifier(Descriptor.GET_FIELDS)
-            visibility = DescriptorVisibilities.PUBLIC
-            modality = Modality.OPEN
-
-            returnType = listType
-        }.apply {
-            overriddenSymbols = listOf(ctx.rpcServiceDescriptor.functionByName(Descriptor.GET_FIELDS))
-
-            vsApi {
-                dispatchReceiverParameterVS = stubCompanionObjectThisReceiver
-                    .copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
-            }
-
-            addValueParameter {
-                name = Name.identifier("service")
-                type = declaration.serviceType
-            }
-
-            body = irBuilder(symbol).irBlockBody {
-                val anyListType = ctx.irBuiltIns.listClass.typeWith(ctx.anyNullable)
-
-                val listCall = irCall(
-                    callee = ctx.functions.emptyList,
-                    type = anyListType,
-                ).apply listApply@{
-                    arguments {
-                        types { +ctx.anyNullable }
-                        }
-                }
-
-                +irReturn(irAs(listCall, listType))
             }
         }
     }

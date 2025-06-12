@@ -5,8 +5,6 @@
 package kotlinx.rpc.codegen.test.services
 
 import kotlinx.rpc.codegen.RpcFirConfigurationKeys
-import kotlinx.rpc.codegen.StrictMode
-import kotlinx.rpc.codegen.StrictModeConfigurationKeys
 import kotlinx.rpc.codegen.registerRpcExtensions
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
@@ -25,18 +23,6 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
         module: TestModule,
         configuration: CompilerConfiguration,
     ) {
-        val strictMode = module.directives[RpcDirectives.RPC_STRICT_MODE]
-        if (strictMode.isNotEmpty()) {
-            val mode = StrictMode.fromCli(strictMode.single()) ?: StrictMode.ERROR
-            configuration.put(StrictModeConfigurationKeys.STATE_FLOW, mode)
-            configuration.put(StrictModeConfigurationKeys.SHARED_FLOW, mode)
-            configuration.put(StrictModeConfigurationKeys.NESTED_FLOW, mode)
-            configuration.put(StrictModeConfigurationKeys.STREAM_SCOPED_FUNCTIONS, mode)
-            configuration.put(StrictModeConfigurationKeys.SUSPENDING_SERVER_STREAMING, mode)
-            configuration.put(StrictModeConfigurationKeys.NOT_TOP_LEVEL_SERVER_FLOW, mode)
-            configuration.put(StrictModeConfigurationKeys.FIELDS, mode)
-        }
-
         val annotationTypeSafety = module.directives[RpcDirectives.ANNOTATION_TYPE_SAFETY]
         if (annotationTypeSafety.isNotEmpty()) {
             configuration.put(
@@ -53,6 +39,5 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
 }
 
 object RpcDirectives : SimpleDirectivesContainer() {
-    val RPC_STRICT_MODE by stringDirective("none, warning or error", DirectiveApplicability.Module)
     val ANNOTATION_TYPE_SAFETY by stringDirective("true or false", DirectiveApplicability.Module)
 }

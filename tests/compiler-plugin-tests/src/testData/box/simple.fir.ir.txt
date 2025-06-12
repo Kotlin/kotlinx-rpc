@@ -140,16 +140,6 @@ FILE fqName:<root> fileName:/simple.kt
                 $this: CALL 'private final fun <get-callableMap> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=GET_PROPERTY
                   $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.getCallable' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                 key: GET_VAR 'name: kotlin.String declared in <root>.BoxService.$rpcServiceStub.Companion.getCallable' type=kotlin.String origin=null
-        FUN name:getFields visibility:public modality:OPEN <> ($this:<root>.BoxService.$rpcServiceStub.Companion, service:<root>.BoxService) returnType:kotlin.collections.List<kotlinx.rpc.internal.RpcDeferredField<*>>
-          overridden:
-            public abstract fun getFields (service: T of kotlinx.rpc.descriptor.RpcServiceDescriptor): kotlin.collections.List<kotlinx.rpc.internal.RpcDeferredField<*>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
-          $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.Companion
-          VALUE_PARAMETER name:service index:0 type:<root>.BoxService
-          BLOCK_BODY
-            RETURN type=kotlin.Nothing from='public open fun getFields (service: <root>.BoxService): kotlin.collections.List<kotlinx.rpc.internal.RpcDeferredField<*>> declared in <root>.BoxService.$rpcServiceStub.Companion'
-              TYPE_OP type=kotlin.collections.List<kotlinx.rpc.internal.RpcDeferredField<*>> origin=CAST typeOperand=kotlin.collections.List<kotlinx.rpc.internal.RpcDeferredField<*>>
-                CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Any?> origin=null
-                  <T>: kotlin.Any?
       CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedRpcMethodClassKey] OBJECT name:simple$rpcMethod modality:FINAL visibility:public superTypes:[kotlin.Any; kotlinx.rpc.internal.RpcMethodClass]
         annotations:
           Serializable(with = <null>)

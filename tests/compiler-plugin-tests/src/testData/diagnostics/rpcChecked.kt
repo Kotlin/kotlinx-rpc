@@ -12,7 +12,6 @@ import kotlinx.rpc.RpcClient
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.registerService
 import kotlinx.rpc.descriptor.serviceDescriptorOf
-import kotlinx.rpc.awaitFieldInitialization
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 
 @Rpc
@@ -29,12 +28,6 @@ inline suspend fun <@Rpc reified T : Any> ok(client: RpcClient, server: RpcServe
     server.registerService<MyService> { MyServiceImpl() }
     server.registerService<T> { impl }
 
-    myServiceImpl.<!DEPRECATION_ERROR!>awaitFieldInitialization<!><MyService>()
-    myServiceImpl.<!DEPRECATION_ERROR!>awaitFieldInitialization<!><MyService, Int> { 1 }
-
-    impl.<!DEPRECATION_ERROR!>awaitFieldInitialization<!><T>()
-    impl.<!DEPRECATION_ERROR!>awaitFieldInitialization<!><T, Int> { 1 }
-
     serviceDescriptorOf<MyService>()
     serviceDescriptorOf<T>()
 }
@@ -47,15 +40,6 @@ inline suspend fun <reified T : Any> fail(client: RpcClient, server: RpcServer, 
     server.registerService<<!CHECKED_ANNOTATION_VIOLATION!>MyServiceImpl<!>> { MyServiceImpl() }
     server.registerService<<!CHECKED_ANNOTATION_VIOLATION!>NotAService<!>> { NotAService() }
     server.registerService<<!CHECKED_ANNOTATION_VIOLATION!>T<!>> { impl }
-
-    myServiceImpl.<!DEPRECATION_ERROR!>awaitFieldInitialization<!><<!CHECKED_ANNOTATION_VIOLATION!>MyServiceImpl<!>>()
-    myServiceImpl.<!DEPRECATION_ERROR!>awaitFieldInitialization<!><<!CHECKED_ANNOTATION_VIOLATION!>MyServiceImpl<!>, Int> { 1 }
-
-    notAServiceImpl.<!DEPRECATION_ERROR!>awaitFieldInitialization<!><<!CHECKED_ANNOTATION_VIOLATION!>NotAService<!>>()
-    notAServiceImpl.<!DEPRECATION_ERROR!>awaitFieldInitialization<!><<!CHECKED_ANNOTATION_VIOLATION!>NotAService<!>, Int> { 1 }
-
-    impl.<!DEPRECATION_ERROR!>awaitFieldInitialization<!><<!CHECKED_ANNOTATION_VIOLATION!>T<!>>()
-    impl.<!DEPRECATION_ERROR!>awaitFieldInitialization<!><<!CHECKED_ANNOTATION_VIOLATION!>T<!>, Int> { 1 }
 
     serviceDescriptorOf<<!CHECKED_ANNOTATION_VIOLATION!>MyServiceImpl<!>>()
     serviceDescriptorOf<<!CHECKED_ANNOTATION_VIOLATION!>NotAService<!>>()
