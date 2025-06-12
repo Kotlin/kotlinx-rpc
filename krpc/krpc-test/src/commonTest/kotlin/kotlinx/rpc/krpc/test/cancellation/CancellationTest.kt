@@ -76,7 +76,7 @@ class CancellationTest {
         }
 
         unskippableDelay(150) // wait for requests to reach server
-        client.internalScope.cancel()
+        client.close()
         firstRequestJob.join()
         secondRequestJob.join()
 
@@ -85,8 +85,8 @@ class CancellationTest {
 
         assertEquals(0, serverInstances.sumOf { it.delayCounter.value }, "Expected no requests to succeed")
 
-        client.internalScope.join()
-        server.internalScope.join()
+        client.awaitCompletion()
+        server.awaitCompletion()
 
         checkAlive(clientAlive = false, serverAlive = false)
         stopAllAndJoin()
@@ -105,7 +105,7 @@ class CancellationTest {
         }
 
         unskippableDelay(150) // wait for requests to reach server
-        server.internalScope.cancel()
+        server.close()
         firstRequestJob.join()
         secondRequestJob.join()
 
@@ -114,8 +114,8 @@ class CancellationTest {
 
         assertEquals(0, serverInstances.sumOf { it.delayCounter.value }, "Expected no requests to succeed")
 
-        client.internalScope.join()
-        server.internalScope.join()
+        client.awaitCompletion()
+        server.awaitCompletion()
 
         checkAlive(clientAlive = false, serverAlive = false)
         stopAllAndJoin()
@@ -137,6 +137,18 @@ class CancellationTest {
 
         serverInstance().consumedAll.await()
         assertContentEquals(listOf(0, 1), serverInstance().consumedIncomingValues)
+
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testOutgoingFlowLifetime() = runCancellationTest {
+        val fence = CompletableDeferred<Unit>()
+
+        service.outgoingStreamAsync(resumableFlow(fence))
+
+        serverInstance().consumedAll.await()
+        assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
 
         stopAllAndJoin()
     }
@@ -220,8 +232,8 @@ class CancellationTest {
 
         serverInstance().firstIncomingConsumed.await()
 
-        client.internalScope.cancel("Test request cancelled")
-        client.internalScope.join()
+        client.close("Test request cancelled")
+        client.awaitCompletion()
 
         serverInstance().consumedAll.await()
 
@@ -239,7 +251,7 @@ class CancellationTest {
             caught = it
         }.collect {
             if (it == 0) {
-                client.internalScope.cancel()
+                client.close()
             } else {
                 fail("Expected the request to fail with cancellation of the client")
             }
@@ -254,7 +266,7 @@ class CancellationTest {
     fun testCancelledClientCancelsRequest() = runCancellationTest {
         launch {
             serverInstance().firstIncomingConsumed.await()
-            client.internalScope.cancel("Cancelled by test")
+            client.close("Cancelled by test")
         }
 
         try {
@@ -346,9 +358,6 @@ class CancellationTest {
 
     private val CoroutineScope.isCompleted get() = coroutineContext.job.isCompleted
     private val CoroutineScope.isCancelled get() = coroutineContext.job.isCancelled
-
-    @Suppress("SuspendFunctionOnCoroutineScope")
-    private suspend fun CoroutineScope.join() = apply { coroutineContext.job.join() }
 
     private suspend fun CancellationToolkit.stopAllAndJoin() = transport.coroutineContext.job.cancelAndJoin()
 }

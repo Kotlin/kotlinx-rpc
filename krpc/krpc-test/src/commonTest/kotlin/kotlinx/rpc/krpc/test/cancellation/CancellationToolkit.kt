@@ -26,8 +26,6 @@ fun runCancellationTest(body: suspend CancellationToolkit.() -> Unit): TestResul
     return runTest(timeout = 15.seconds) {
         debugCoroutines()
         CancellationToolkit(this).apply {
-            client.initializeTransport()
-
             body()
         }
     }

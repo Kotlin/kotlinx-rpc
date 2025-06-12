@@ -262,12 +262,9 @@
                         class MyClient(
                             config: KrpcConfig,
                             transport: KrpcTransport,
-                        ) : InitializedKrpcClient(transport, config)
+                        ) : InitializedKrpcClient(config, transport)
                     </code-block>
                 </compare>
-                <note>
-                    Notice that the parameter order is reversed in new <code>InitializedKrpcClient</code>.
-                </note>
             </li>
         </list>
     </chapter>
