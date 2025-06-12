@@ -6,6 +6,8 @@ package kotlinx.rpc.krpc.test.api
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestResult
@@ -13,7 +15,9 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.internal.utils.hex.rpcInternalHexToReadableBinary
+import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlinx.rpc.krpc.KrpcTransportMessage
+import kotlinx.rpc.krpc.client.KrpcClient
 import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
@@ -39,6 +43,8 @@ import org.jetbrains.krpc.test.api.util.SamplingServiceImpl
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.name
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 import kotlin.time.Duration.Companion.seconds
 
 @Suppress("RedundantUnitReturnType")
@@ -73,6 +79,18 @@ class WireSamplingTestScope(private val sampleName: String, scope: TestScope) : 
                 server // init server
 
                 service.block()
+
+                @Suppress("UNCHECKED_CAST")
+                val requests = KrpcClient::class.memberProperties
+                    .single { it.name == "requestChannels" }
+                    .apply {
+                        isAccessible = true
+                    }
+                    .get(client) as RpcInternalConcurrentHashMap<String, Channel<Any?>>
+
+                while (requests.values.isNotEmpty()) {
+                    delay(100)
+                }
 
                 stop()
             }
