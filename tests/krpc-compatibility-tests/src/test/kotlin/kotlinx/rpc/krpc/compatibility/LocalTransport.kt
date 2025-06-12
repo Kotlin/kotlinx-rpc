@@ -12,7 +12,7 @@ import kotlinx.coroutines.job
 import kotlinx.rpc.krpc.KrpcConfig
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.KrpcTransportMessage
-import kotlinx.rpc.krpc.client.KrpcClient
+import kotlinx.rpc.krpc.client.InitializedKrpcClient
 import kotlinx.rpc.krpc.server.KrpcServer
 import kotlin.coroutines.CoroutineContext
 
@@ -24,7 +24,7 @@ class KrpcTestServer(
 class KrpcTestClient(
     config: KrpcConfig.Client,
     transport: KrpcTransport,
-) : KrpcClient(config, transport)
+) : InitializedKrpcClient(config, transport)
 
 class LocalTransport(parentScope: CoroutineScope? = null) : CoroutineScope {
     override val coroutineContext = parentScope?.run { SupervisorJob(coroutineContext.job) }

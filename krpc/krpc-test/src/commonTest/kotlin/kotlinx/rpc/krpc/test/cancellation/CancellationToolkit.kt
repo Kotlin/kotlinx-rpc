@@ -25,7 +25,11 @@ import kotlin.time.Duration.Companion.seconds
 fun runCancellationTest(body: suspend CancellationToolkit.() -> Unit): TestResult {
     return runTest(timeout = 15.seconds) {
         debugCoroutines()
-        CancellationToolkit(this).apply { body() }
+        CancellationToolkit(this).apply {
+            client.initializeTransport()
+
+            body()
+        }
     }
 }
 

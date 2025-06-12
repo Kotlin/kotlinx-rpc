@@ -6,6 +6,7 @@ package kotlinx.rpc.krpc.test
 
 import kotlinx.rpc.krpc.KrpcConfig
 import kotlinx.rpc.krpc.KrpcTransport
+import kotlinx.rpc.krpc.client.InitializedKrpcClient
 import kotlinx.rpc.krpc.client.KrpcClient
 
 /**
@@ -17,4 +18,4 @@ import kotlinx.rpc.krpc.client.KrpcClient
 class KrpcTestClient(
     config: KrpcConfig.Client,
     transport: KrpcTransport,
-) : KrpcClient(config, transport)
+) : InitializedKrpcClient(config, transport)

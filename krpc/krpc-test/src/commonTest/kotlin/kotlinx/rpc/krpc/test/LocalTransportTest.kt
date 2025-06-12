@@ -12,6 +12,7 @@ import kotlinx.rpc.krpc.serialization.cbor.cbor
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.krpc.serialization.protobuf.protobuf
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlin.test.Test
 
 abstract class LocalTransportTest : KrpcTransportTestBase() {
     private val transport = LocalTransport()
@@ -50,11 +51,15 @@ class ProtoBufLocalTransportTest : LocalTransportTest() {
     }
 
     // 'null' is not supported in ProtoBuf
+    @Test
     override fun nullable(): TestResult = runTest { }
 
+    @Test
     override fun testByteArraySerialization(): TestResult = runTest { }
 
+    @Test
     override fun testNullables(): TestResult = runTest { }
 
+    @Test
     override fun testNullableLists(): TestResult = runTest { }
 }
