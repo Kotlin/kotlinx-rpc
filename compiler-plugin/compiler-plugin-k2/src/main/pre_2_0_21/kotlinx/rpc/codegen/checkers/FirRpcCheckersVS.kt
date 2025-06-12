@@ -65,8 +65,8 @@ class FirRpcServiceDeclarationCheckerVS(
     }
 }
 
-class FirRpcStrictModeClassCheckerVS(private val ctx: FirCheckersContext) : FirRegularClassChecker(MppCheckerKind.Common) {
+class FirRpcStrictModeClassCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
     override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
-        FirRpcStrictModeClassChecker.check(ctx, declaration, context, reporter)
+        FirRpcStrictModeClassChecker.check(declaration, context, reporter)
     }
 }

@@ -84,6 +84,10 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
      * Close this client, removing all the services and stopping accepting messages.
      */
     public fun close(message: String? = null) {
+        if (!isTransportReady) {
+            return
+        }
+
         internalScope.cancel(message ?: "Client closed")
     }
 
@@ -91,6 +95,10 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
      * Waits until the client is closed.
      */
     public suspend fun awaitCompletion() {
+        if (!isTransportReady) {
+            return
+        }
+
         internalScope.coroutineContext.job.join()
     }
 
@@ -133,7 +141,8 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
             sendCancellation(CancellationType.ENDPOINT, null, null, closeTransportAfterSending = true)
 
             @OptIn(DelicateCoroutinesApi::class)
-            GlobalScope.launch {
+            @Suppress("detekt.GlobalCoroutineUsage")
+            GlobalScope.launch(CoroutineName("client-request-channels-closing")) {
                 requestChannels.values.forEach { it.close(CancellationException("Client cancelled")) }
                 requestChannels.clear()
             }

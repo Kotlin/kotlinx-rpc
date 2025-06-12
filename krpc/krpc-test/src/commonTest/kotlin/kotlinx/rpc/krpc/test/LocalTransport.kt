@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.krpc.test
 
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -12,6 +13,8 @@ import kotlinx.coroutines.job
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.KrpcTransportMessage
 import kotlin.coroutines.CoroutineContext
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 class LocalTransport(parentScope: CoroutineScope? = null) : CoroutineScope {
     override val coroutineContext = parentScope?.run { SupervisorJob(coroutineContext.job) }
@@ -20,10 +23,15 @@ class LocalTransport(parentScope: CoroutineScope? = null) : CoroutineScope {
     private val clientIncoming = Channel<KrpcTransportMessage>()
     private val serverIncoming = Channel<KrpcTransportMessage>()
 
+    val lastMessageSentOnClient = atomic(0L)
+    val lastMessageSentOnServer = atomic(0L)
+
     val client: KrpcTransport = object : KrpcTransport {
         override val coroutineContext: CoroutineContext = Job(this@LocalTransport.coroutineContext.job)
 
+        @OptIn(ExperimentalTime::class)
         override suspend fun send(message: KrpcTransportMessage) {
+            lastMessageSentOnClient.getAndSet(Clock.System.now().toEpochMilliseconds())
             serverIncoming.send(message)
         }
 
@@ -35,7 +43,9 @@ class LocalTransport(parentScope: CoroutineScope? = null) : CoroutineScope {
     val server: KrpcTransport = object : KrpcTransport {
         override val coroutineContext: CoroutineContext = Job(this@LocalTransport.coroutineContext)
 
+        @OptIn(ExperimentalTime::class)
         override suspend fun send(message: KrpcTransportMessage) {
+            lastMessageSentOnServer.getAndSet(Clock.System.now().toEpochMilliseconds())
             clientIncoming.send(message)
         }
 
