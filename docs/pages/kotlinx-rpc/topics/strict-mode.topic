@@ -10,11 +10,11 @@
        title="Strict mode" id="strict-mode">
 
     <p>
-        Starting with version <code>0.5.0</code>, the library introduces major changes to the service APIs.
-        The following declarations will be gradually restricted:
+        Starting with version <code>0.5.0</code>, the library introduced major changes to the service APIs.
+        The following declarations are now restricted:
     </p>
     <warning>
-        String mode will be enforced in the <code>0.8.0</code> release.
+        Strict mode is enforced irreversibly since <code>0.8.0</code>.
     </warning>
     <chapter title="StateFlow and SharedFlow" id="stateflow-and-sharedflow">
         <p>Deprecation level: <code>ERROR</code></p>
@@ -147,38 +147,5 @@
                 }
             }
         </code-block>
-    </chapter>
-
-    <chapter title="Gradle settings" id="gradle-settings">
-        <p>
-            Deprecation levels are controlled by the Gradle <code>rpc</code> extension:
-        </p>
-        <code-block lang="Kotlin">
-        // build.gradle.kts
-        plugins {
-            id("org.jetbrains.kotlinx.rpc.plugin")
-        }
-
-        rpc {
-            strict {
-                stateFlow = RpcStrictMode.ERROR
-                sharedFlow = RpcStrictMode.ERROR
-                nestedFlow = RpcStrictMode.ERROR
-                notTopLevelServerFlow = RpcStrictMode.ERROR
-                fields = RpcStrictMode.ERROR
-                suspendingServerStreaming = RpcStrictMode.ERROR
-                streamScopedFunctions = RpcStrictMode.ERROR
-            }
-        }
-    </code-block>
-        <p>
-            Modes <code>RpcStrictMode.NONE</code> and <code>RpcStrictMode.WARNING</code> are available.
-        </p>
-
-        <warning>
-            Note that setting <code>RpcStrictMode.NONE</code> should not be done permanently.
-            All deprecated APIs will become errors in the future without an option to suppress them.
-            Consider your migration path in advance.
-        </warning>
     </chapter>
 </topic>

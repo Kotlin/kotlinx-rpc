@@ -29,7 +29,7 @@
     </p>
     <code-block lang="Kotlin">
         @Rpc
-        interface MyService : RemoteService
+        interface MyService
 
         class MyServiceImpl : MyService
 
@@ -50,12 +50,31 @@
 
             // T is resolved to MyService,
             // but 'body' returns MyServiceImpl
-            registerService&lt;MyService&gt; { ctx -> MyServiceImpl(ctx) }
+            registerService&lt;MyService&gt; { MyServiceImpl() }
 
             // Error: T is resolved to MyServiceImpl
-            registerService { ctx -> MyServiceImpl(ctx) }
+            registerService { MyServiceImpl() }
         </code-block>
     </note>
+    <p>
+        Annotation type-safety can be enforced recursively:
+    </p>
+    <code-block lang="Kotlin">
+        @Rpc
+        annotation class Grpc
+
+        @Grpc
+        interface MyGrpcService
+
+        fun &lt;@Rpc T&gt; acceptAnyRpcType()
+        fun &lt;@Grpc T&gt; acceptOnlyGrpcType()
+
+        acceptAnyRpcType&lt;MyService&gt;() // OK
+        acceptAnyRpcType&lt;MyGrpcService&gt;() // OK
+
+        acceptOnlyGrpcType&lt;MyService&gt;() // Compiler time error
+        acceptOnlyGrpcType&lt;MyGrpcService&gt;() // OK
+    </code-block>
 
     <warning>
         This feature is highly experimental and may lead to unexpected behaviour. If you encounter any issues,

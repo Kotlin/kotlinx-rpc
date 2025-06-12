@@ -8,42 +8,47 @@
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
        title="Versions" id="versions">
-        <p>As <code>kotlinx.rpc</code> uses Kotlin compiler plugin,
-            we rely on internal functionality that may change over time with any new Kotlin version.
-            To prevent the library from breaking with an incompatible Kotlin version,
-            we use version prefix for artifacts with code generating functionality.
-        </p>
-        <p>
-            We provide core version updates for all stable versions of
-            <control>the last three</control>
-            major Kotlin releases.
-            So if the last stable Kotlin version is <code>%kotlin-version%</code>, as at the time of writing this guide,
-            the following versions of Kotlin are supported:
-        </p>
-        <list>
-            <li>2.0.0, 2.0.10, 2.0.20, 2.0.21</li>
-            <li>2.1.0, 2.1.10, 2.1.20, 2.1.21</li>
-        </list>
-        <p>
-            Our code generation will support these versions (See more on <a anchor="code-generation-artifacts">code generation artifacts</a>).
-            Runtime artifacts are configured with
-            <a href="https://kotlinlang.org/docs/compatibility-modes.html">
-                <code>language-version</code> and <code>api-version</code> parameters
-            </a>
-            for the oldest supported minor version of Kotlin.
-        </p>
-        <warning>
-            The <code>kotlinx-rpc</code> library is currently <b>not stable</b>.
-            As a result, we cannot guarantee compatibility with all Kotlin versions for our runtime dependencies at this time.
-            However, we are committed to maintaining compatibility as much as possible.
-            It is in our plans to ensure that all runtime dependencies are compatible with all supported Kotlin versions by the time of the stable release.
-        </warning>
-    <chapter title="Project configuration" id="project-configuration">
     <p>
-        To simplify project configuration, both our <a href="plugins.topic">Gradle plugins</a>
-        are able to set proper runtime dependencies versions automatically based
-        on the project's Kotlin version and the Gradle plugin version
-        which is used as a core library version.</p>
+        As <code>kotlinx.rpc</code> uses Kotlin compiler plugin,
+        we rely on internal functionality that may change over time with any new Kotlin version.
+        To prevent the library from breaking with an incompatible Kotlin version,
+        we use version prefix for artifacts with code generating functionality.
+    </p>
+    <p>
+        We provide core version updates for all stable versions of
+        <control>the last three</control>
+        major Kotlin releases.
+        So if the last stable Kotlin version is <code>%kotlin-version%</code>, as at the time of writing this guide,
+        the following versions of Kotlin are supported:
+    </p>
+    <list>
+        <li>2.0.0, 2.0.10, 2.0.20, 2.0.21</li>
+        <li>2.1.0, 2.1.10, 2.1.20, 2.1.21</li>
+    </list>
+    <p>
+        Our code generation will support these versions (See more on <a anchor="code-generation-artifacts">code
+        generation artifacts</a>).
+        Runtime artifacts are configured with
+        <a href="https://kotlinlang.org/docs/compatibility-modes.html">
+            <code>language-version</code> and <code>api-version</code> parameters
+        </a>
+        for the oldest supported minor version of Kotlin.
+    </p>
+    <warning>
+        The <code>kotlinx-rpc</code> library is currently <b>not stable</b>.
+        As a result, we cannot guarantee compatibility with all Kotlin versions for our runtime dependencies at this
+        time.
+        However, we are committed to maintaining compatibility as much as possible.
+        It is in our plans to ensure that all runtime dependencies are compatible with all supported Kotlin versions by
+        the time of the stable release.
+    </warning>
+    <chapter title="Project configuration" id="project-configuration">
+        <p>
+            To simplify project configuration, our <a href="plugins.topic"/>
+            is able to set proper runtime dependencies versions automatically based
+            on the project's Kotlin version and the Gradle plugin version
+            which is used as a core library version.
+        </p>
         <code-block lang="kotlin">
             plugins {
                 // project's Kotlin plugin
@@ -77,6 +82,6 @@
             org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-k2:%kotlin-version%-%kotlinx-rpc-version%
             org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-backend:%kotlin-version%-%kotlinx-rpc-version%
         </code-block>
-        Such dependencies are managed automatically, and should not be used explicitly.
+        These dependencies are managed automatically, and should not be used explicitly.
     </chapter>
 </topic>

@@ -5,8 +5,11 @@
 package kotlinx.rpc.annotations
 
 /**
- * Marks an annotation as a one that marks
- * a type argument as a one that requires its resolved type to be annotated this annotation.
+ * Meta annotation.
+ * Used to perform [annotation type-safety](https://kotlin.github.io/kotlinx-rpc/annotation-type-safety.html) checks.
+ *
+ * When an annotation class (for example, `@X`) is marked with `@CheckedTypeAnnotation` -
+ * Any other type can be marked with `@X` to perform safety checks on type parameters that are also marked with `@X`.
  *
  * Example:
  * ```kotlin

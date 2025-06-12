@@ -24,7 +24,7 @@
             )
 
             @Rpc
-            interface MyService : RemoteService {
+            interface MyService {
                 fun sendStream(stream: Flow&lt;Int&gt;): Flow&lt;String&gt;
 
                 suspend fun streamRequest(request: StreamRequest)
@@ -44,7 +44,7 @@
             )
 
             @Rpc
-            interface MyService : RemoteService {
+            interface MyService {
                 fun serverStream(): Flow&lt;String&gt; // ok
                 suspend fun serverStream(): Flow&lt;String&gt; // not ok
                 suspend fun serverStream(): StreamResult // not ok
@@ -52,7 +52,7 @@
         </code-block>
 
         <note>
-            Note that flows that are declared in classes (like in <code>StreamResult</code>) require a
+            Note that flows that are declared in classes (like in <code>StreamRequest</code>) require a
             <a href="https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/serializers.md#contextual-serialization">Contextual</a>
             annotation.
         </note>

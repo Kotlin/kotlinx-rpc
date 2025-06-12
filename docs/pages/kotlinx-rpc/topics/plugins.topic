@@ -9,22 +9,32 @@
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
        title="Gradle plugin" id="plugins">
     <p>
-        The <code>kotlinx.rpc</code> library offers a <a href="https://docs.gradle.org/current/userguide/plugins.html">Gradle plugin</a>
-        that simplifies project configuration by automating repetitive tasks: `org.jetbrains.kotlinx.rpc.plugin`
+        The <code>kotlinx.rpc</code> library offers a <a href="https://docs.gradle.org/current/userguide/plugins.html">Gradle
+        plugin</a>
+        that simplifies project configuration by automating repetitive tasks and configuring code generation.
     </p>
 
-    <chapter title="org.jetbrains.kotlinx.rpc.plugin" id="rpc-plugin">
-        <p>
-            The <code>org.jetbrains.kotlinx.rpc.plugin</code> plugin sets up code generation configurations.
-        </p>
-        <code-block lang="kotlin">
-            plugins {
-                kotlin("jvm") version "%kotlin-version%"
-                id("org.jetbrains.kotlinx.rpc.plugin") version "%kotlinx-rpc-version%"
-            }
-        </code-block>
-        <p>
-            For multi-project setups you must add the plugin to all modules where services are declared or used.
-        </p>
-    </chapter>
+    <code-block lang="kotlin">
+        plugins {
+            kotlin("jvm") version "%kotlin-version%"
+            id("org.jetbrains.kotlinx.rpc.plugin") version "%kotlinx-rpc-version%"
+        }
+    </code-block>
+    <note>
+        For multi-project setups you must add the plugin to all modules where services are declared or used.
+    </note>
+
+    Plugin provides an <code>rpc</code> extension:
+    <code-block lang="kotlin">
+        rpc {
+            annotationTypeSafetyEnabled = true
+        }
+    </code-block>
+    <p>Options:</p>
+    <list>
+        <li>
+            <code>annotationTypeSafetyEnabled</code> - whether to enable type safety checks for annotations.
+            See <a href="annotation-type-safety.topic"/>.
+        </li>
+    </list>
 </topic>

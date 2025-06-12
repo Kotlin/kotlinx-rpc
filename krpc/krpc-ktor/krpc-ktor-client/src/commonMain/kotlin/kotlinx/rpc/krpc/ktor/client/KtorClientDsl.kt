@@ -28,12 +28,15 @@ public fun HttpRequestBuilder.rpcConfig(configBuilder: KrpcConfigBuilder.Client.
 }
 
 /**
- * Configures [RpcClient] for the following path. Provides means for additional configuration via [block].
+ * Configures [KtorRpcClient] for the following path. Provides means for additional configuration via [block].
  * Note that the [WebSockets] plugin is required for these calls.
  *
  * @param urlString The URL to use for the request.
- * @param block Optional configuration for the
- * @return An instance of [RpcClient] that is configured to send messages to the server.
+ * @param block Optional configuration for the [HttpRequestBuilder].
+ * @return An instance of [KtorRpcClient] that is configured to send messages to the server.
+ * The instance is cold and will establish WebSocket connection on the first request.
+ *
+ * @See [KtorRpcClient]
  */
 public fun HttpClient.rpc(
     urlString: String,
@@ -46,11 +49,14 @@ public fun HttpClient.rpc(
 }
 
 /**
- * Configures [RpcClient] for the following path. Provides means for additional configuration via [block].
+ * Configures [KtorRpcClient] for the following path. Provides means for additional configuration via [block].
  * Note that the [WebSockets] plugin is required for these calls.
  *
- * @param block Optional configuration for the
- * @return An instance of [RpcClient] that is configured to send messages to the server.
+ * @param block Optional configuration for the [HttpRequestBuilder].
+ * @return An instance of [KtorRpcClient] that is configured to send messages to the server.
+ * The instance is cold and will establish WebSocket connection on the first request.
+ *
+ * @See [KtorRpcClient]
  */
 public fun HttpClient.rpc(
     block: HttpRequestBuilder.() -> Unit = {},
