@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.codegen.checkers
 
-import kotlinx.rpc.codegen.FirCheckersContext
 import kotlinx.rpc.codegen.FirRpcPredicates
 import kotlinx.rpc.codegen.checkers.diagnostics.FirRpcDiagnostics
 import kotlinx.rpc.codegen.common.RpcClassId
@@ -21,12 +20,10 @@ import org.jetbrains.kotlin.fir.types.resolvedType
 
 object FirRpcAnnotationChecker {
     fun check(
-        ctx: FirCheckersContext,
         declaration: FirRegularClass,
         context: CheckerContext,
         reporter: DiagnosticReporter,
     ) {
-        val rpcAnnotated = context.session.predicateBasedProvider.matches(FirRpcPredicates.rpc, declaration)
         val rpcMetaAnnotated = context.session.predicateBasedProvider.matches(FirRpcPredicates.rpcMeta, declaration)
 
         val isMetaAnnotated = declaration.classKind != ClassKind.ANNOTATION_CLASS
@@ -46,18 +43,6 @@ object FirRpcAnnotationChecker {
                     classId = RpcClassId.rpcAnnotation,
                 )?.resolvedType
                     ?: error("Unexpected unresolved annotation type for declaration: ${declaration.symbol.classId.asSingleFqName()}"),
-            )
-        }
-
-        if (rpcAnnotated && !ctx.serializationIsPresent && isMetaAnnotated) {
-            reporter.reportOn(
-                source = declaration.symbol.rpcAnnotationSource(
-                    session = context.session,
-                    predicate = FirRpcPredicates.rpcMeta,
-                    classId = RpcClassId.rpcAnnotation,
-                ),
-                factory = FirRpcDiagnostics.MISSING_SERIALIZATION_MODULE,
-                context = context,
             )
         }
     }

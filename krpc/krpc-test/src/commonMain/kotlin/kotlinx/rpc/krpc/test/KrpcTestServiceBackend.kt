@@ -114,7 +114,7 @@ class KrpcTestServiceBackend : KrpcTestService {
         return LocalDate(localDate.year, localDate.month, localDate.day + 1)
     }
 
-    override suspend fun nonSerializableClassWithSerializer(localDateTime: LocalDateTime): String {
+    override suspend fun nonSerializableClassWithSerializer(localDateTime: LocalDateTime): LocalDateTime {
         return LocalDateTime(
             date = LocalDate(
                 year = localDateTime.date.year,
@@ -122,7 +122,7 @@ class KrpcTestServiceBackend : KrpcTestService {
                 day = localDateTime.date.day + 1,
             ),
             time = localDateTime.time,
-        ).toString()
+        )
     }
 
     override suspend fun incomingStreamSyncCollect(arg1: Flow<String>): Int {

@@ -1,5 +1,5 @@
 FILE: customParameterTypes.kt
-    @R|kotlinx/serialization/Serializable|() public final data class TestData : R|kotlin/Any| {
+    public final data class TestData : R|kotlin/Any| {
         public constructor(value: R|kotlin/String|): R|TestData| {
             super<R|kotlin/Any|>()
         }
@@ -11,31 +11,6 @@ FILE: customParameterTypes.kt
 
         public final fun copy(value: R|kotlin/String| = this@R|/TestData|.R|/TestData.value|): R|TestData|
 
-        public final companion object Companion : R|kotlin/Any| {
-            public final fun serializer(): R|kotlinx/serialization/KSerializer<TestData>|
-
-            private constructor(): R|TestData.Companion| {
-                super<R|kotlin/Any|>()
-            }
-
-        }
-
-        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<TestData>| {
-            public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|TestData|): R|kotlin/Unit|
-
-            public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|TestData|
-
-            public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
-                public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
-
-            public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
-
-            private constructor(): R|TestData.$serializer| {
-                super<R|kotlin/Any|>()
-            }
-
-        }
-
     }
     @R|kotlinx/rpc/annotations/Rpc|() public abstract interface BoxService : R|kotlin/Any| {
         public abstract suspend fun test1(testData: R|TestData|): R|kotlin/String|
@@ -43,72 +18,6 @@ FILE: customParameterTypes.kt
         public abstract suspend fun test2(testData: R|TestData|): R|kotlin/String|
 
         public final class $rpcServiceStub : R|kotlin/Any| {
-            @R|kotlinx/serialization/Serializable|() public final class test1$rpcMethod : R|kotlin/Any| {
-                public final val testData: R|TestData|
-                    public get(): R|TestData|
-
-                public constructor(testData: R|TestData|): R|BoxService.$rpcServiceStub.test1$rpcMethod|
-
-                public final companion object Companion : R|kotlin/Any| {
-                    public final fun serializer(): R|kotlinx/serialization/KSerializer<BoxService.$rpcServiceStub.test1$rpcMethod>|
-
-                    private constructor(): R|BoxService.$rpcServiceStub.test1$rpcMethod.Companion| {
-                        super<R|kotlin/Any|>()
-                    }
-
-                }
-
-                @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<BoxService.$rpcServiceStub.test1$rpcMethod>| {
-                    public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|BoxService.$rpcServiceStub.test1$rpcMethod|): R|kotlin/Unit|
-
-                    public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|BoxService.$rpcServiceStub.test1$rpcMethod|
-
-                    public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
-                        public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
-
-                    public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
-
-                    private constructor(): R|BoxService.$rpcServiceStub.test1$rpcMethod.$serializer| {
-                        super<R|kotlin/Any|>()
-                    }
-
-                }
-
-            }
-
-            @R|kotlinx/serialization/Serializable|() public final class test2$rpcMethod : R|kotlin/Any| {
-                public final val testData: R|TestData|
-                    public get(): R|TestData|
-
-                public constructor(testData: R|TestData|): R|BoxService.$rpcServiceStub.test2$rpcMethod|
-
-                public final companion object Companion : R|kotlin/Any| {
-                    public final fun serializer(): R|kotlinx/serialization/KSerializer<BoxService.$rpcServiceStub.test2$rpcMethod>|
-
-                    private constructor(): R|BoxService.$rpcServiceStub.test2$rpcMethod.Companion| {
-                        super<R|kotlin/Any|>()
-                    }
-
-                }
-
-                @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final object $serializer : R|kotlinx/serialization/internal/GeneratedSerializer<BoxService.$rpcServiceStub.test2$rpcMethod>| {
-                    public final override fun serialize(encoder: R|kotlinx/serialization/encoding/Encoder|, value: R|BoxService.$rpcServiceStub.test2$rpcMethod|): R|kotlin/Unit|
-
-                    public final override fun deserialize(decoder: R|kotlinx/serialization/encoding/Decoder|): R|BoxService.$rpcServiceStub.test2$rpcMethod|
-
-                    public final val descriptor: R|kotlinx/serialization/descriptors/SerialDescriptor|
-                        public get(): R|kotlinx/serialization/descriptors/SerialDescriptor|
-
-                    public final override fun childSerializers(): R|kotlin/Array<kotlinx/serialization/KSerializer<*>>|
-
-                    private constructor(): R|BoxService.$rpcServiceStub.test2$rpcMethod.$serializer| {
-                        super<R|kotlin/Any|>()
-                    }
-
-                }
-
-            }
-
             public final companion object Companion : R|kotlin/Any| {
             }
 

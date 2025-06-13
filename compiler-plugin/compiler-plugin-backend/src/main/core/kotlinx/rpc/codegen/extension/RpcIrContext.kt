@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrPropertySymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.makeNullable
+import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.isVararg
 import org.jetbrains.kotlin.ir.util.nestedClasses
@@ -30,6 +31,14 @@ internal class RpcIrContext(
 
     val arrayOfAnyNullable by lazy {
         irBuiltIns.arrayClass.typeWith(anyNullable, Variance.OUT_VARIANCE)
+    }
+
+    val listOfAnnotations by lazy {
+        irBuiltIns.listClass.typeWith(irBuiltIns.annotationType)
+    }
+
+    val arrayOfAnnotations by lazy {
+        irBuiltIns.arrayClass.typeWith(irBuiltIns.annotationType, Variance.OUT_VARIANCE)
     }
 
     val kTypeClass by lazy {
@@ -68,8 +77,20 @@ internal class RpcIrContext(
         getRpcIrClassSymbol("RpcType", "descriptor")
     }
 
+    val rpcTypeDefault by lazy {
+        getRpcIrClassSymbol("RpcTypeDefault", "descriptor")
+    }
+
+    val rpcTypeKrpc by lazy {
+        getRpcIrClassSymbol("RpcTypeKrpc", "descriptor")
+    }
+
     val rpcCallable by lazy {
         getRpcIrClassSymbol("RpcCallable", "descriptor")
+    }
+
+    val rpcCallableDefault by lazy {
+        getRpcIrClassSymbol("RpcCallableDefault", "descriptor")
     }
 
     private val rpcInvokator by lazy {
@@ -84,8 +105,20 @@ internal class RpcIrContext(
         getRpcIrClassSymbol("RpcParameter", "descriptor")
     }
 
-    val rpcMethodClass by lazy {
-        getRpcIrClassSymbol("RpcMethodClass", "internal")
+    val rpcParameterDefault by lazy {
+        getRpcIrClassSymbol("RpcParameterDefault", "descriptor")
+    }
+
+    val kSerializer by lazy {
+        getIrClassSymbol("kotlinx.serialization", "KSerializer")
+    }
+
+    val kSerializerAnyNullable by lazy {
+        kSerializer.typeWith(anyNullable)
+    }
+
+    val kSerializerAnyNullableKClass by lazy {
+        irBuiltIns.kClassClass.typeWith(kSerializerAnyNullable)
     }
 
     fun isJsTarget(): Boolean {
@@ -103,20 +136,12 @@ internal class RpcIrContext(
     val functions = Functions()
 
     inner class Functions {
-        val dataCast by lazy {
-            namedFunction("kotlinx.rpc.internal", "rpcInternalDataCast")
-        }
-
         val rpcClientCall by lazy {
             rpcClient.namedFunction("call")
         }
 
         val rpcClientCallServerStreaming by lazy {
             rpcClient.namedFunction("callServerStreaming")
-        }
-
-        val asArray by lazy {
-            rpcMethodClass.namedFunction("asArray")
         }
 
         val typeOf by lazy {
@@ -135,8 +160,24 @@ internal class RpcIrContext(
             }
         }
 
+        val emptyList by lazy {
+            namedFunction("kotlin.collections", "emptyList")
+        }
+
+        val listOf by lazy {
+            namedFunction("kotlin.collections", "listOf") {
+                vsApi {
+                    it.owner.valueParametersVS().singleOrNull()?.isVararg ?: false
+                }
+            }
+        }
+
         val mapGet by lazy {
             irBuiltIns.mapClass.namedFunction("get")
+        }
+
+        val arrayGet by lazy {
+            irBuiltIns.arrayClass.namedFunction("get")
         }
 
         val emptyMap by lazy {

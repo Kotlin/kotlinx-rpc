@@ -10,26 +10,21 @@
 import kotlin.coroutines.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Contextual
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 
-@Serializable
 data class InnerFlow(
-    val flow: @Contextual Flow<Int>,
+    val flow: Flow<Int>,
 )
 
-@Serializable
 data class Wrapper<T>(
     val inner: T,
 )
 
-@Serializable
 data class MultiFlow(
-    val flow1: @Contextual Flow<Int>,
-    val flow2: @Contextual Flow<Int>,
-    val flow3: @Contextual Flow<Int>,
+    val flow1: Flow<Int>,
+    val flow2: Flow<Int>,
+    val flow3: Flow<Int>,
 )
 
 @Rpc

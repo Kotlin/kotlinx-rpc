@@ -15,8 +15,8 @@ import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChec
 
 class FirRpcDeclarationCheckers(ctx: FirCheckersContext) : DeclarationCheckers() {
     override val regularClassCheckers: Set<FirRegularClassChecker> = setOfNotNull(
-        FirRpcAnnotationCheckerVS(ctx),
-        if (ctx.serializationIsPresent) FirRpcStrictModeClassCheckerVS() else null,
+        FirRpcAnnotationCheckerVS(),
+        FirRpcStrictModeClassCheckerVS(),
         FirRpcServiceDeclarationCheckerVS(ctx),
     )
 

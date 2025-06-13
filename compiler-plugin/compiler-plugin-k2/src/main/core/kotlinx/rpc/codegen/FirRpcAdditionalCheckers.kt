@@ -19,7 +19,6 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
 
 class FirRpcAdditionalCheckers(
     session: FirSession,
-    serializationIsPresent: Boolean,
     configuration: CompilerConfiguration,
 ) : FirAdditionalCheckersExtension(session) {
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
@@ -29,7 +28,6 @@ class FirRpcAdditionalCheckers(
 
     private val ctx = FirCheckersContext(
         session = session,
-        serializationIsPresent = serializationIsPresent,
         annotationTypeSafetyEnabled = configuration.get(RpcFirConfigurationKeys.ANNOTATION_TYPE_SAFETY, true),
     )
 
@@ -39,7 +37,6 @@ class FirRpcAdditionalCheckers(
 
 class FirCheckersContext(
     private val session: FirSession,
-    val serializationIsPresent: Boolean,
     val annotationTypeSafetyEnabled: Boolean,
 ) {
     val typeParametersCache = session.firCachesFactory.createCache { typeParameter: FirTypeParameterSymbol ->

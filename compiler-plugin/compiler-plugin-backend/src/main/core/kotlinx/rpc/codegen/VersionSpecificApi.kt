@@ -14,6 +14,8 @@ import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
+import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
@@ -52,6 +54,12 @@ interface VersionSpecificApi {
     var IrCall.originVS: IrStatementOrigin?
 
     var IrConstructor.isPrimaryVS: Boolean
+
+    val IrConstructor.parametersVS: List<IrValueParameter>
+
+    val IrConstructorCall.argumentsVS: List<IrExpression?>
+
+    fun IrType.isNullableVS(): Boolean
 
     val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
 

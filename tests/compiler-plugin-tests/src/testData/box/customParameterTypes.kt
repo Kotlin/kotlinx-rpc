@@ -4,12 +4,10 @@
 
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.Serializable
 import kotlinx.rpc.withService
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.codegen.test.TestRpcClient
 
-@Serializable
 data class TestData(val value: String)
 
 @Rpc

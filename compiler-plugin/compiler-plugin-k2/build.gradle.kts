@@ -77,13 +77,5 @@ kotlin {
 dependencies {
     compileOnly(libs.kotlin.compiler)
 
-    whenForIde {
-        compileOnly(libs.serialization.plugin.forIde) {
-            isTransitive = false
-        }
-    } otherwise {
-        compileOnly(libs.serialization.plugin)
-    }
-
     implementation(projects.compilerPluginCommon)
 }

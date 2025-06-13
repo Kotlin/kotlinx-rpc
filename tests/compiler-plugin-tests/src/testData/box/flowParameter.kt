@@ -10,7 +10,6 @@ import kotlinx.rpc.codegen.test.TestRpcClient
 
 @Rpc
 interface BoxService {
-    // plugin should add @Contextual annotation to the flow parameter in the generated class
     suspend fun stream(flow: Flow<String>): String
 }
 

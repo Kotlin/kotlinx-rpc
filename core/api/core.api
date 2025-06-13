@@ -2,20 +2,11 @@ public abstract interface class kotlinx/rpc/RemoteService {
 }
 
 public final class kotlinx/rpc/RpcCall {
-	public fun <init> (Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;Ljava/lang/Object;J)V
-	public final fun component1 ()Lkotlinx/rpc/descriptor/RpcServiceDescriptor;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Ljava/lang/Object;
-	public final fun component4 ()J
-	public final fun copy (Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;Ljava/lang/Object;J)Lkotlinx/rpc/RpcCall;
-	public static synthetic fun copy$default (Lkotlinx/rpc/RpcCall;Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;Ljava/lang/Object;JILjava/lang/Object;)Lkotlinx/rpc/RpcCall;
-	public fun equals (Ljava/lang/Object;)Z
+	public fun <init> (Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;[Ljava/lang/Object;J)V
 	public final fun getCallableName ()Ljava/lang/String;
-	public final fun getData ()Ljava/lang/Object;
 	public final fun getDescriptor ()Lkotlinx/rpc/descriptor/RpcServiceDescriptor;
+	public final fun getParameters ()[Ljava/lang/Object;
 	public final fun getServiceId ()J
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class kotlinx/rpc/RpcClient {
@@ -39,27 +30,25 @@ public abstract interface annotation class kotlinx/rpc/annotations/CheckedTypeAn
 public abstract interface annotation class kotlinx/rpc/annotations/Rpc : java/lang/annotation/Annotation {
 }
 
-public final class kotlinx/rpc/descriptor/RpcCallable {
-	public fun <init> (Ljava/lang/String;Lkotlinx/rpc/descriptor/RpcType;Lkotlinx/rpc/descriptor/RpcType;Lkotlinx/rpc/descriptor/RpcInvokator;[Lkotlinx/rpc/descriptor/RpcParameter;Z)V
-	public final fun getDataType ()Lkotlinx/rpc/descriptor/RpcType;
-	public final fun getInvokator ()Lkotlinx/rpc/descriptor/RpcInvokator;
-	public final fun getName ()Ljava/lang/String;
-	public final fun getParameters ()[Lkotlinx/rpc/descriptor/RpcParameter;
-	public final fun getReturnType ()Lkotlinx/rpc/descriptor/RpcType;
-	public final fun isNonSuspendFunction ()Z
+public abstract interface class kotlinx/rpc/descriptor/RpcCallable {
+	public abstract fun getInvokator ()Lkotlinx/rpc/descriptor/RpcInvokator;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getParameters ()[Lkotlinx/rpc/descriptor/RpcParameter;
+	public abstract fun getReturnType ()Lkotlinx/rpc/descriptor/RpcType;
+	public abstract fun isNonSuspendFunction ()Z
 }
 
 public abstract interface class kotlinx/rpc/descriptor/RpcInvokator {
 }
 
 public abstract interface class kotlinx/rpc/descriptor/RpcInvokator$Method : kotlinx/rpc/descriptor/RpcInvokator {
-	public abstract fun call (Ljava/lang/Object;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun call (Ljava/lang/Object;[Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class kotlinx/rpc/descriptor/RpcParameter {
-	public fun <init> (Ljava/lang/String;Lkotlinx/rpc/descriptor/RpcType;)V
-	public final fun getName ()Ljava/lang/String;
-	public final fun getType ()Lkotlinx/rpc/descriptor/RpcType;
+public abstract interface class kotlinx/rpc/descriptor/RpcParameter {
+	public abstract fun getAnnotations ()Ljava/util/List;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getType ()Lkotlinx/rpc/descriptor/RpcType;
 }
 
 public abstract interface class kotlinx/rpc/descriptor/RpcServiceDescriptor {
@@ -73,9 +62,8 @@ public final class kotlinx/rpc/descriptor/RpcServiceDescriptorKt {
 	public static final fun serviceDescriptorOf (Lkotlin/reflect/KType;)Lkotlinx/rpc/descriptor/RpcServiceDescriptor;
 }
 
-public final class kotlinx/rpc/descriptor/RpcType {
-	public fun <init> (Lkotlin/reflect/KType;)V
-	public final fun getKType ()Lkotlin/reflect/KType;
-	public fun toString ()Ljava/lang/String;
+public abstract interface class kotlinx/rpc/descriptor/RpcType {
+	public abstract fun getAnnotations ()Ljava/util/List;
+	public abstract fun getKType ()Lkotlin/reflect/KType;
 }
 

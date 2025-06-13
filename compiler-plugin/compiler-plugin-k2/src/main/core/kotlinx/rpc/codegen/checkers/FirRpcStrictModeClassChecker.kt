@@ -26,8 +26,6 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.utils.memoryOptimizedMap
 import org.jetbrains.kotlin.utils.memoryOptimizedPlus
-import org.jetbrains.kotlinx.serialization.compiler.fir.services.FirSerializablePropertiesProvider
-import org.jetbrains.kotlinx.serialization.compiler.fir.services.serializablePropertiesProvider
 
 object FirRpcStrictModeClassChecker {
     fun check(
@@ -141,13 +139,12 @@ object FirRpcStrictModeClassChecker {
         }
 
         serializablePropertiesProvider.getSerializablePropertiesForClass(symbol)
-            .serializableProperties
             .mapNotNull { property ->
-                val resolvedTypeRef = property.propertySymbol.resolvedReturnTypeRef
+                val resolvedTypeRef = property.resolvedReturnTypeRef
                 if (resolvedTypeRef.toClassLikeSymbol(context.session) != null) {
                     resolvedTypeRef
                 } else {
-                    extracted[property.propertySymbol.resolvedReturnType]
+                    extracted[property.resolvedReturnType]
                 }
             }.memoryOptimizedPlus(flowProps)
             .forEach { symbol ->

@@ -337,7 +337,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
             is KrpcCallMessage.CallSuccess, is KrpcCallMessage.StreamMessage -> {
                 val value = runCatching {
                     val serializerResult = serialFormat.serializersModule
-                        .rpcSerializerForType(callable.returnType)
+                        .buildContextual(callable.returnType)
 
                     decodeMessageData(serialFormat, serializerResult, message)
                 }
@@ -380,11 +380,12 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
         serialFormat: SerialFormat,
         pluginParams: Map<KrpcPluginKey, String> = emptyMap(),
     ): KrpcCallMessage {
-        val serializerData = serialFormat.serializersModule.rpcSerializerForType(callable.dataType)
+        val parametersSerializer = CallableParametersSerializer(callable, serialFormat.serializersModule)
+
         return when (serialFormat) {
             is StringFormat -> {
                 val stringValue = clientStreamContext.scoped(callId, call.serviceId) {
-                    serialFormat.encodeToString(serializerData, call.data)
+                    serialFormat.encodeToString(parametersSerializer, call.parameters)
                 }
 
                 KrpcCallMessage.CallDataString(
@@ -401,7 +402,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
 
             is BinaryFormat -> {
                 val binaryValue = clientStreamContext.scoped(callId, call.serviceId) {
-                    serialFormat.encodeToByteArray(serializerData, call.data)
+                    serialFormat.encodeToByteArray(parametersSerializer, call.parameters)
                 }
 
                 KrpcCallMessage.CallDataBinary(

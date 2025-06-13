@@ -170,7 +170,7 @@ abstract class KrpcTransportTestBase {
         val resultDateTime = client.nonSerializableClassWithSerializer(localDateTime)
 
         assertEquals(
-            LocalDateTime(LocalDate(2001, 8, 24), "17:03").toString(),
+            LocalDateTime(LocalDate(2001, 8, 24), "17:03"),
             resultDateTime,
         )
     }
