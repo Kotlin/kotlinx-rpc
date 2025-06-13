@@ -6,7 +6,6 @@ package kotlinx.rpc.krpc.test
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.annotations.Rpc
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 
 data class LocalDate(
@@ -62,12 +61,12 @@ interface KrpcTestService {
     suspend fun mapParams(arg1: Map<String, Map<Int, List<String>>>)
     suspend fun customType(arg1: TestClass): TestClass
     suspend fun nullable(arg1: String?): TestClass?
-    suspend fun variance(arg2: TestList<in TestClass>, arg3: TestList2<*>): TestList<out TestClass>?
+    suspend fun variance(arg2: TestList<in TestClass>, arg3: TestList2<TestClass>): TestList<out TestClass>?
 
-    suspend fun nonSerializableClass(localDate: @Contextual LocalDate): LocalDate
+    suspend fun nonSerializableClass(localDate: LocalDate): LocalDate
     suspend fun nonSerializableClassWithSerializer(
         localDateTime: @Serializable(LocalDateTimeSerializer::class) LocalDateTime,
-    ): String
+    ): @Serializable(LocalDateTimeSerializer::class) LocalDateTime
 
     suspend fun incomingStreamSyncCollect(arg1: Flow<String>): Int
     suspend fun incomingStreamSyncCollectMultiple(arg1: Flow<String>, arg2: Flow<String>, arg3: Flow<String>): Int

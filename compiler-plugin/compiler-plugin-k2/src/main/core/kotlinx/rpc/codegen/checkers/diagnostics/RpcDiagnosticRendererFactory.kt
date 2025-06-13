@@ -11,13 +11,6 @@ import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
 object RpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
     override val MAP by RpcKtDiagnosticFactoryToRendererMap("Rpc") { map ->
         map.put(
-            factory = FirRpcDiagnostics.MISSING_SERIALIZATION_MODULE,
-            message = "Missing kotlinx.serialization plugin in the module. " +
-                    "Service generation will not be available. " +
-                    "Add kotlin(\"plugin.serialization\") to your build.gradle.kts plugins section."
-        )
-
-        map.put(
             factory = FirRpcDiagnostics.WRONG_RPC_ANNOTATION_TARGET,
             message = "@{0} annotation is only applicable to interfaces and annotation classes.",
             rendererA = FirDiagnosticRenderers.RENDER_TYPE,

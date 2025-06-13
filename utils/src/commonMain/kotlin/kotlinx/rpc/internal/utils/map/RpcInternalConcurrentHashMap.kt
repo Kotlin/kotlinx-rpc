@@ -14,7 +14,7 @@ public interface RpcInternalConcurrentHashMap<K : Any, V : Any> {
         put(key, value)
     }
 
-    public fun merge(key: K, value: V, remappingFunction: (V, V) -> V): V?
+    public fun merge(key: K, value: V, remappingFunction: (V, V) -> V): V
 
     public fun computeIfAbsent(key: K, computeValue: () -> V): V
 

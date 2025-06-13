@@ -51,9 +51,9 @@ class FirCheckedAnnotationFirFunctionCheckerVS(
     }
 }
 
-class FirRpcAnnotationCheckerVS(private val ctx: FirCheckersContext) : FirRegularClassChecker(MppCheckerKind.Common) {
+class FirRpcAnnotationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
     override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
-        FirRpcAnnotationChecker.check(ctx, declaration, context, reporter)
+        FirRpcAnnotationChecker.check(declaration, context, reporter)
     }
 }
 

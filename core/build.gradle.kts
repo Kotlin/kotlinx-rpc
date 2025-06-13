@@ -6,7 +6,6 @@ import util.applyAtomicfuPlugin
 
 plugins {
     alias(libs.plugins.conventions.kmp)
-    alias(libs.plugins.serialization)
     alias(libs.plugins.kotlinx.rpc)
 }
 
@@ -19,7 +18,9 @@ kotlin {
                 api(projects.utils)
                 api(libs.coroutines.core)
 
+                // TODO Remove after KRPC-178
                 implementation(libs.serialization.core)
+
                 implementation(libs.kotlin.reflect)
             }
         }
