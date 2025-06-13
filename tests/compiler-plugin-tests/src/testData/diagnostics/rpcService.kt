@@ -7,8 +7,6 @@
 import kotlin.coroutines.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Contextual
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 

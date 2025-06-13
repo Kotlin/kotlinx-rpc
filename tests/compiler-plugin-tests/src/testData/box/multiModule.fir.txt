@@ -4,15 +4,6 @@ FILE: module_lib_multiModule.kt
         public abstract suspend fun simple(): R|kotlin/String|
 
         public final class $rpcServiceStub : R|kotlin/Any| {
-            @R|kotlinx/serialization/Serializable|() public final object simple$rpcMethod : R|kotlin/Any| {
-                public final fun serializer(): R|kotlinx/serialization/KSerializer<BoxService.$rpcServiceStub.simple$rpcMethod>|
-
-                private constructor(): R|BoxService.$rpcServiceStub.simple$rpcMethod| {
-                    super<R|kotlin/Any|>()
-                }
-
-            }
-
             public final companion object Companion : R|kotlin/Any| {
             }
 

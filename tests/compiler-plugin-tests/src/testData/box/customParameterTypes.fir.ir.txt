@@ -1,7 +1,5 @@
 FILE fqName:<root> fileName:/customParameterTypes.kt
   CLASS CLASS name:TestData modality:FINAL visibility:public [data] superTypes:[kotlin.Any]
-    annotations:
-      Serializable(with = <null>)
     $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.TestData
     PROPERTY name:value visibility:public modality:FINAL [val]
       FIELD PROPERTY_BACKING_FIELD name:value type:kotlin.String visibility:private [final]
@@ -14,214 +12,6 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
           RETURN type=kotlin.Nothing from='public final fun <get-value> (): kotlin.String declared in <root>.TestData'
             GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:value type:kotlin.String visibility:private [final]' type=kotlin.String origin=null
               receiver: GET_VAR '<this>: <root>.TestData declared in <root>.TestData.<get-value>' type=<root>.TestData origin=null
-    CLASS GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlin.Any]
-      $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.TestData.Companion
-      CONSTRUCTOR GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] visibility:private <> () returnType:<root>.TestData.Companion [primary]
-        BLOCK_BODY
-          DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-          INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlin.Any]' type=kotlin.Unit
-      FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean [fake_override,operator]
-        overridden:
-          public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlin.Any
-        $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-        VALUE_PARAMETER name:other index:0 type:kotlin.Any?
-      FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int [fake_override]
-        overridden:
-          public open fun hashCode (): kotlin.Int declared in kotlin.Any
-        $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-      FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String [fake_override]
-        overridden:
-          public open fun toString (): kotlin.String declared in kotlin.Any
-        $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-      FUN GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:serializer visibility:public modality:FINAL <> ($this:<root>.TestData.Companion) returnType:kotlinx.serialization.KSerializer<<root>.TestData>
-        $this: VALUE_PARAMETER name:<this> type:<root>.TestData.Companion
-        BLOCK_BODY
-          RETURN type=kotlin.Nothing from='public final fun serializer (): kotlinx.serialization.KSerializer<<root>.TestData> declared in <root>.TestData.Companion'
-            GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>]' type=<root>.TestData.$serializer
-    CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>]
-      annotations:
-        Deprecated(message = "This synthesized declaration should not be used directly", replaceWith = <null>, level = GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:HIDDEN' type=kotlin.DeprecationLevel)
-      $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.TestData.$serializer
-      PROPERTY GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:descriptor visibility:public modality:FINAL [val]
-        overridden:
-          public abstract descriptor: kotlinx.serialization.descriptors.SerialDescriptor declared in kotlinx.serialization.internal.GeneratedSerializer
-        FIELD PROPERTY_BACKING_FIELD name:descriptor type:kotlinx.serialization.descriptors.SerialDescriptor visibility:private [final]
-        FUN DEFAULT_PROPERTY_ACCESSOR name:<get-descriptor> visibility:public modality:FINAL <> ($this:<root>.TestData.$serializer) returnType:kotlinx.serialization.descriptors.SerialDescriptor
-          correspondingProperty: PROPERTY GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:descriptor visibility:public modality:FINAL [val]
-          overridden:
-            public abstract fun <get-descriptor> (): kotlinx.serialization.descriptors.SerialDescriptor declared in kotlinx.serialization.internal.GeneratedSerializer
-          $this: VALUE_PARAMETER name:<this> type:<root>.TestData.$serializer
-          BLOCK_BODY
-            RETURN type=kotlin.Nothing from='public final fun <get-descriptor> (): kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.TestData.$serializer'
-              GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:descriptor type:kotlinx.serialization.descriptors.SerialDescriptor visibility:private [final]' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-                receiver: GET_VAR '<this>: <root>.TestData.$serializer declared in <root>.TestData.$serializer.<get-descriptor>' type=<root>.TestData.$serializer origin=null
-      ANONYMOUS_INITIALIZER isStatic=false
-        BLOCK_BODY
-          VAR IR_TEMPORARY_VARIABLE name:tmp_0 type:kotlinx.serialization.internal.PluginGeneratedSerialDescriptor [val]
-            CONSTRUCTOR_CALL 'public constructor <init> (serialName: kotlin.String, generatedSerializer: kotlinx.serialization.internal.GeneratedSerializer<*>?, elementsCount: kotlin.Int) declared in kotlinx.serialization.internal.PluginGeneratedSerialDescriptor' type=kotlinx.serialization.internal.PluginGeneratedSerialDescriptor origin=null
-              serialName: CONST String type=kotlin.String value="TestData"
-              generatedSerializer: GET_VAR '<this>: <root>.TestData.$serializer declared in <root>.TestData.$serializer' type=<root>.TestData.$serializer origin=null
-              elementsCount: CONST Int type=kotlin.Int value=1
-          CALL 'public final fun addElement (name: kotlin.String, isOptional: kotlin.Boolean): kotlin.Unit declared in kotlinx.serialization.internal.PluginGeneratedSerialDescriptor' type=kotlin.Unit origin=null
-            $this: GET_VAR 'val tmp_0: kotlinx.serialization.internal.PluginGeneratedSerialDescriptor declared in <root>.TestData.$serializer' type=kotlinx.serialization.internal.PluginGeneratedSerialDescriptor origin=null
-            name: CONST String type=kotlin.String value="value"
-            isOptional: CONST Boolean type=kotlin.Boolean value=false
-          SET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:descriptor type:kotlinx.serialization.descriptors.SerialDescriptor visibility:private [final]' type=kotlin.Unit origin=null
-            receiver: GET_VAR '<this>: <root>.TestData.$serializer declared in <root>.TestData.$serializer' type=<root>.TestData.$serializer origin=null
-            value: GET_VAR 'val tmp_0: kotlinx.serialization.internal.PluginGeneratedSerialDescriptor declared in <root>.TestData.$serializer' type=kotlinx.serialization.internal.PluginGeneratedSerialDescriptor origin=null
-      CONSTRUCTOR GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] visibility:private <> () returnType:<root>.TestData.$serializer [primary]
-        BLOCK_BODY
-          DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-          INSTANCE_INITIALIZER_CALL classDescriptor='CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>]' type=kotlin.Unit
-      FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean [fake_override,operator]
-        overridden:
-          public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlinx.serialization.internal.GeneratedSerializer
-        $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-        VALUE_PARAMETER name:other index:0 type:kotlin.Any?
-      FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int [fake_override]
-        overridden:
-          public open fun hashCode (): kotlin.Int declared in kotlinx.serialization.internal.GeneratedSerializer
-        $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-      FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String [fake_override]
-        overridden:
-          public open fun toString (): kotlin.String declared in kotlinx.serialization.internal.GeneratedSerializer
-        $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-      FUN FAKE_OVERRIDE name:typeParametersSerializers visibility:public modality:OPEN <> ($this:kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>) returnType:kotlin.Array<kotlinx.serialization.KSerializer<*>> [fake_override]
-        overridden:
-          public open fun typeParametersSerializers (): kotlin.Array<kotlinx.serialization.KSerializer<*>> declared in kotlinx.serialization.internal.GeneratedSerializer
-        $this: VALUE_PARAMETER name:<this> type:kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>
-      FUN GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:childSerializers visibility:public modality:FINAL <> ($this:<root>.TestData.$serializer) returnType:kotlin.Array<kotlinx.serialization.KSerializer<*>>
-        overridden:
-          public abstract fun childSerializers (): kotlin.Array<kotlinx.serialization.KSerializer<*>> declared in kotlinx.serialization.internal.GeneratedSerializer
-        $this: VALUE_PARAMETER name:<this> type:<root>.TestData.$serializer
-        BLOCK_BODY
-          RETURN type=kotlin.Nothing from='public final fun childSerializers (): kotlin.Array<kotlinx.serialization.KSerializer<*>> declared in <root>.TestData.$serializer'
-            CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<kotlinx.serialization.KSerializer<*>> origin=null
-              <T>: kotlinx.serialization.KSerializer<*>
-              elements: VARARG type=kotlin.Array<kotlinx.serialization.KSerializer<*>> varargElementType=kotlinx.serialization.KSerializer<*>
-                GET_OBJECT 'CLASS IR_EXTERNAL_DECLARATION_STUB OBJECT name:StringSerializer modality:FINAL visibility:internal superTypes:[kotlinx.serialization.KSerializer<kotlin.String>]' type=kotlinx.serialization.internal.StringSerializer
-      FUN GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:deserialize visibility:public modality:FINAL <> ($this:<root>.TestData.$serializer, decoder:kotlinx.serialization.encoding.Decoder) returnType:<root>.TestData
-        overridden:
-          public abstract fun deserialize (decoder: kotlinx.serialization.encoding.Decoder): T of kotlinx.serialization.internal.GeneratedSerializer declared in kotlinx.serialization.internal.GeneratedSerializer
-        $this: VALUE_PARAMETER name:<this> type:<root>.TestData.$serializer
-        VALUE_PARAMETER GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:decoder index:0 type:kotlinx.serialization.encoding.Decoder
-        BLOCK_BODY
-          VAR IR_TEMPORARY_VARIABLE name:tmp_1 type:kotlinx.serialization.descriptors.SerialDescriptor [val]
-            CALL 'public final fun <get-descriptor> (): kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.TestData.$serializer' type=kotlinx.serialization.descriptors.SerialDescriptor origin=GET_PROPERTY
-              $this: GET_VAR '<this>: <root>.TestData.$serializer declared in <root>.TestData.$serializer.deserialize' type=<root>.TestData.$serializer origin=null
-          VAR IR_TEMPORARY_VARIABLE name:tmp_2 type:kotlin.Boolean [var]
-            CONST Boolean type=kotlin.Boolean value=true
-          VAR IR_TEMPORARY_VARIABLE name:tmp_3 type:kotlin.Int [var]
-            CONST Int type=kotlin.Int value=0
-          VAR IR_TEMPORARY_VARIABLE name:tmp_4 type:kotlin.Int [var]
-            CONST Int type=kotlin.Int value=0
-          VAR IR_TEMPORARY_VARIABLE name:tmp_5 type:kotlin.String? [var]
-            CONST Null type=kotlin.String? value=null
-          VAR IR_TEMPORARY_VARIABLE name:tmp_6 type:kotlinx.serialization.encoding.CompositeDecoder [val]
-            CALL 'public abstract fun beginStructure (descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlinx.serialization.encoding.CompositeDecoder declared in kotlinx.serialization.encoding.Decoder' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-              $this: GET_VAR 'decoder: kotlinx.serialization.encoding.Decoder declared in <root>.TestData.$serializer.deserialize' type=kotlinx.serialization.encoding.Decoder origin=null
-              descriptor: GET_VAR 'val tmp_1: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.TestData.$serializer.deserialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-          WHEN type=kotlin.Unit origin=null
-            BRANCH
-              if: CALL 'public open fun decodeSequentially (): kotlin.Boolean declared in kotlinx.serialization.encoding.CompositeDecoder' type=kotlin.Boolean origin=null
-                $this: GET_VAR 'val tmp_6: kotlinx.serialization.encoding.CompositeDecoder declared in <root>.TestData.$serializer.deserialize' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-              then: BLOCK type=kotlin.Unit origin=null
-                BLOCK type=kotlin.Unit origin=null
-                  SET_VAR 'var tmp_5: kotlin.String? declared in <root>.TestData.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                    CALL 'public abstract fun decodeStringElement (descriptor: kotlinx.serialization.descriptors.SerialDescriptor, index: kotlin.Int): kotlin.String declared in kotlinx.serialization.encoding.CompositeDecoder' type=kotlin.String origin=null
-                      $this: GET_VAR 'val tmp_6: kotlinx.serialization.encoding.CompositeDecoder declared in <root>.TestData.$serializer.deserialize' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-                      descriptor: GET_VAR 'val tmp_1: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.TestData.$serializer.deserialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-                      index: CONST Int type=kotlin.Int value=0
-                  SET_VAR 'var tmp_4: kotlin.Int declared in <root>.TestData.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                    CALL 'public final fun or (other: kotlin.Int): kotlin.Int declared in kotlin.Int' type=kotlin.Int origin=null
-                      $this: GET_VAR 'var tmp_4: kotlin.Int declared in <root>.TestData.$serializer.deserialize' type=kotlin.Int origin=null
-                      other: CONST Int type=kotlin.Int value=1
-            BRANCH
-              if: CONST Boolean type=kotlin.Boolean value=true
-              then: WHILE label=null origin=null
-                condition: GET_VAR 'var tmp_2: kotlin.Boolean declared in <root>.TestData.$serializer.deserialize' type=kotlin.Boolean origin=null
-                body: BLOCK type=kotlin.Unit origin=null
-                  SET_VAR 'var tmp_3: kotlin.Int declared in <root>.TestData.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                    CALL 'public abstract fun decodeElementIndex (descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlin.Int declared in kotlinx.serialization.encoding.CompositeDecoder' type=kotlin.Int origin=null
-                      $this: GET_VAR 'val tmp_6: kotlinx.serialization.encoding.CompositeDecoder declared in <root>.TestData.$serializer.deserialize' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-                      descriptor: GET_VAR 'val tmp_1: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.TestData.$serializer.deserialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-                  WHEN type=kotlin.Unit origin=null
-                    BRANCH
-                      if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                        arg0: GET_VAR 'var tmp_3: kotlin.Int declared in <root>.TestData.$serializer.deserialize' type=kotlin.Int origin=null
-                        arg1: CONST Int type=kotlin.Int value=-1
-                      then: SET_VAR 'var tmp_2: kotlin.Boolean declared in <root>.TestData.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                        CONST Boolean type=kotlin.Boolean value=false
-                    BRANCH
-                      if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                        arg0: GET_VAR 'var tmp_3: kotlin.Int declared in <root>.TestData.$serializer.deserialize' type=kotlin.Int origin=null
-                        arg1: CONST Int type=kotlin.Int value=0
-                      then: BLOCK type=kotlin.Unit origin=null
-                        SET_VAR 'var tmp_5: kotlin.String? declared in <root>.TestData.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                          CALL 'public abstract fun decodeStringElement (descriptor: kotlinx.serialization.descriptors.SerialDescriptor, index: kotlin.Int): kotlin.String declared in kotlinx.serialization.encoding.CompositeDecoder' type=kotlin.String origin=null
-                            $this: GET_VAR 'val tmp_6: kotlinx.serialization.encoding.CompositeDecoder declared in <root>.TestData.$serializer.deserialize' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-                            descriptor: GET_VAR 'val tmp_1: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.TestData.$serializer.deserialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-                            index: CONST Int type=kotlin.Int value=0
-                        SET_VAR 'var tmp_4: kotlin.Int declared in <root>.TestData.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                          CALL 'public final fun or (other: kotlin.Int): kotlin.Int declared in kotlin.Int' type=kotlin.Int origin=null
-                            $this: GET_VAR 'var tmp_4: kotlin.Int declared in <root>.TestData.$serializer.deserialize' type=kotlin.Int origin=null
-                            other: CONST Int type=kotlin.Int value=1
-                    BRANCH
-                      if: CONST Boolean type=kotlin.Boolean value=true
-                      then: THROW type=kotlin.Nothing
-                        CONSTRUCTOR_CALL 'public constructor <init> (index: kotlin.Int) declared in kotlinx.serialization.UnknownFieldException' type=kotlinx.serialization.UnknownFieldException origin=null
-                          index: GET_VAR 'var tmp_3: kotlin.Int declared in <root>.TestData.$serializer.deserialize' type=kotlin.Int origin=null
-          CALL 'public abstract fun endStructure (descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlin.Unit declared in kotlinx.serialization.encoding.CompositeDecoder' type=kotlin.Unit origin=null
-            $this: GET_VAR 'val tmp_6: kotlinx.serialization.encoding.CompositeDecoder declared in <root>.TestData.$serializer.deserialize' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-            descriptor: GET_VAR 'val tmp_1: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.TestData.$serializer.deserialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-          RETURN type=kotlin.Nothing from='public final fun deserialize (decoder: kotlinx.serialization.encoding.Decoder): <root>.TestData declared in <root>.TestData.$serializer'
-            CONSTRUCTOR_CALL 'internal constructor <init> (seen0: kotlin.Int, value: kotlin.String?, serializationConstructorMarker: kotlinx.serialization.internal.SerializationConstructorMarker?) declared in <root>.TestData' type=<root>.TestData origin=null
-              seen0: GET_VAR 'var tmp_4: kotlin.Int declared in <root>.TestData.$serializer.deserialize' type=kotlin.Int origin=null
-              value: GET_VAR 'var tmp_5: kotlin.String? declared in <root>.TestData.$serializer.deserialize' type=kotlin.String? origin=null
-              serializationConstructorMarker: CONST Null type=kotlin.Nothing? value=null
-      FUN GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:serialize visibility:public modality:FINAL <> ($this:<root>.TestData.$serializer, encoder:kotlinx.serialization.encoding.Encoder, value:<root>.TestData) returnType:kotlin.Unit
-        overridden:
-          public abstract fun serialize (encoder: kotlinx.serialization.encoding.Encoder, value: T of kotlinx.serialization.internal.GeneratedSerializer): kotlin.Unit declared in kotlinx.serialization.internal.GeneratedSerializer
-        $this: VALUE_PARAMETER name:<this> type:<root>.TestData.$serializer
-        VALUE_PARAMETER GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:encoder index:0 type:kotlinx.serialization.encoding.Encoder
-        VALUE_PARAMETER GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:value index:1 type:<root>.TestData
-        BLOCK_BODY
-          VAR IR_TEMPORARY_VARIABLE name:tmp_7 type:kotlinx.serialization.descriptors.SerialDescriptor [val]
-            CALL 'public final fun <get-descriptor> (): kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.TestData.$serializer' type=kotlinx.serialization.descriptors.SerialDescriptor origin=GET_PROPERTY
-              $this: GET_VAR '<this>: <root>.TestData.$serializer declared in <root>.TestData.$serializer.serialize' type=<root>.TestData.$serializer origin=null
-          VAR IR_TEMPORARY_VARIABLE name:tmp_8 type:kotlinx.serialization.encoding.CompositeEncoder [val]
-            CALL 'public abstract fun beginStructure (descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlinx.serialization.encoding.CompositeEncoder declared in kotlinx.serialization.encoding.Encoder' type=kotlinx.serialization.encoding.CompositeEncoder origin=null
-              $this: GET_VAR 'encoder: kotlinx.serialization.encoding.Encoder declared in <root>.TestData.$serializer.serialize' type=kotlinx.serialization.encoding.Encoder origin=null
-              descriptor: GET_VAR 'val tmp_7: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.TestData.$serializer.serialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-          CALL 'internal final fun write$Self (self: <root>.TestData, output: kotlinx.serialization.encoding.CompositeEncoder, serialDesc: kotlinx.serialization.descriptors.SerialDescriptor): kotlin.Unit declared in <root>.TestData' type=kotlin.Unit origin=null
-            self: GET_VAR 'value: <root>.TestData declared in <root>.TestData.$serializer.serialize' type=<root>.TestData origin=null
-            output: GET_VAR 'val tmp_8: kotlinx.serialization.encoding.CompositeEncoder declared in <root>.TestData.$serializer.serialize' type=kotlinx.serialization.encoding.CompositeEncoder origin=null
-            serialDesc: GET_VAR 'val tmp_7: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.TestData.$serializer.serialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-          CALL 'public abstract fun endStructure (descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlin.Unit declared in kotlinx.serialization.encoding.CompositeEncoder' type=kotlin.Unit origin=null
-            $this: GET_VAR 'val tmp_8: kotlinx.serialization.encoding.CompositeEncoder declared in <root>.TestData.$serializer.serialize' type=kotlinx.serialization.encoding.CompositeEncoder origin=null
-            descriptor: GET_VAR 'val tmp_7: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.TestData.$serializer.serialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-    CONSTRUCTOR KOTLINX_SERIALIZATION visibility:internal <> (seen0:kotlin.Int, value:kotlin.String?, serializationConstructorMarker:kotlinx.serialization.internal.SerializationConstructorMarker?) returnType:<root>.TestData
-      VALUE_PARAMETER KOTLINX_SERIALIZATION name:seen0 index:0 type:kotlin.Int
-      VALUE_PARAMETER KOTLINX_SERIALIZATION name:value index:1 type:kotlin.String?
-      VALUE_PARAMETER KOTLINX_SERIALIZATION name:serializationConstructorMarker index:2 type:kotlinx.serialization.internal.SerializationConstructorMarker?
-      BLOCK_BODY
-        WHEN type=kotlin.Unit origin=null
-          BRANCH
-            if: CALL 'public final fun not (): kotlin.Boolean declared in kotlin.Boolean' type=kotlin.Boolean origin=EXCLEQ
-              $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EXCLEQ
-                arg0: CONST Int type=kotlin.Int value=1
-                arg1: CALL 'public final fun and (other: kotlin.Int): kotlin.Int declared in kotlin.Int' type=kotlin.Int origin=null
-                  $this: CONST Int type=kotlin.Int value=1
-                  other: GET_VAR 'seen0: kotlin.Int declared in <root>.TestData.<init>' type=kotlin.Int origin=null
-            then: CALL 'public final fun throwMissingFieldException (seen: kotlin.Int, goldenMask: kotlin.Int, descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlin.Unit declared in kotlinx.serialization.internal' type=kotlin.Unit origin=null
-              seen: GET_VAR 'seen0: kotlin.Int declared in <root>.TestData.<init>' type=kotlin.Int origin=null
-              goldenMask: CONST Int type=kotlin.Int value=1
-              descriptor: CALL 'public final fun <get-descriptor> (): kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.TestData.$serializer' type=kotlinx.serialization.descriptors.SerialDescriptor origin=GET_PROPERTY
-                $this: GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>]' type=<root>.TestData.$serializer
-        DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-        SET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:value type:kotlin.String visibility:private [final]' type=kotlin.Unit origin=null
-          receiver: GET_VAR '<this>: <root>.TestData declared in <root>.TestData' type=<root>.TestData origin=null
-          value: GET_VAR 'value: kotlin.String? declared in <root>.TestData.<init>' type=kotlin.String? origin=null
     CONSTRUCTOR visibility:public <> (value:kotlin.String) returnType:<root>.TestData [primary]
       VALUE_PARAMETER name:value index:0 type:kotlin.String
       BLOCK_BODY
@@ -262,7 +52,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
               GET_VAR 'other: kotlin.Any? declared in <root>.TestData.equals' type=kotlin.Any? origin=null
             then: RETURN type=kotlin.Nothing from='public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in <root>.TestData'
               CONST Boolean type=kotlin.Boolean value=false
-        VAR IR_TEMPORARY_VARIABLE name:tmp_9 type:<root>.TestData [val]
+        VAR IR_TEMPORARY_VARIABLE name:tmp_0 type:<root>.TestData [val]
           TYPE_OP type=<root>.TestData origin=CAST typeOperand=<root>.TestData
             GET_VAR 'other: kotlin.Any? declared in <root>.TestData.equals' type=kotlin.Any? origin=null
         WHEN type=kotlin.Unit origin=null
@@ -272,7 +62,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                 arg0: GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:value type:kotlin.String visibility:private [final]' type=kotlin.String origin=null
                   receiver: GET_VAR '<this>: <root>.TestData declared in <root>.TestData.equals' type=<root>.TestData origin=null
                 arg1: GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:value type:kotlin.String visibility:private [final]' type=kotlin.String origin=null
-                  receiver: GET_VAR 'val tmp_9: <root>.TestData declared in <root>.TestData.equals' type=<root>.TestData origin=null
+                  receiver: GET_VAR 'val tmp_0: <root>.TestData declared in <root>.TestData.equals' type=<root>.TestData origin=null
             then: RETURN type=kotlin.Nothing from='public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in <root>.TestData'
               CONST Boolean type=kotlin.Boolean value=false
         RETURN type=kotlin.Nothing from='public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in <root>.TestData'
@@ -298,19 +88,6 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
             GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:value type:kotlin.String visibility:private [final]' type=kotlin.String origin=null
               receiver: GET_VAR '<this>: <root>.TestData declared in <root>.TestData.toString' type=<root>.TestData origin=null
             CONST String type=kotlin.String value=")"
-    FUN KOTLINX_SERIALIZATION name:write$Self visibility:internal modality:FINAL <> (self:<root>.TestData, output:kotlinx.serialization.encoding.CompositeEncoder, serialDesc:kotlinx.serialization.descriptors.SerialDescriptor) returnType:kotlin.Unit
-      annotations:
-        JvmStatic
-      VALUE_PARAMETER KOTLINX_SERIALIZATION name:self index:0 type:<root>.TestData
-      VALUE_PARAMETER KOTLINX_SERIALIZATION name:output index:1 type:kotlinx.serialization.encoding.CompositeEncoder
-      VALUE_PARAMETER KOTLINX_SERIALIZATION name:serialDesc index:2 type:kotlinx.serialization.descriptors.SerialDescriptor
-      BLOCK_BODY
-        CALL 'public abstract fun encodeStringElement (descriptor: kotlinx.serialization.descriptors.SerialDescriptor, index: kotlin.Int, value: kotlin.String): kotlin.Unit declared in kotlinx.serialization.encoding.CompositeEncoder' type=kotlin.Unit origin=null
-          $this: GET_VAR 'output: kotlinx.serialization.encoding.CompositeEncoder declared in <root>.TestData.write$Self' type=kotlinx.serialization.encoding.CompositeEncoder origin=null
-          descriptor: GET_VAR 'serialDesc: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.TestData.write$Self' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-          index: CONST Int type=kotlin.Int value=0
-          value: CALL 'public final fun <get-value> (): kotlin.String declared in <root>.TestData' type=kotlin.String origin=GET_PROPERTY
-            $this: GET_VAR 'self: <root>.TestData declared in <root>.TestData.write$Self' type=<root>.TestData origin=null
   CLASS INTERFACE name:BoxService modality:ABSTRACT visibility:public superTypes:[kotlin.Any]
     annotations:
       Rpc
@@ -361,21 +138,17 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
             EXPRESSION_BODY
               TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.Method<<root>.BoxService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.Method<<root>.BoxService>
                 FUN_EXPR type=kotlin.coroutines.SuspendFunction2<<root>.BoxService, kotlin.Any?, kotlin.Any?> origin=LAMBDA
-                  FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL <> (service:<root>.BoxService, data:kotlin.Any?) returnType:kotlin.Any? [suspend]
+                  FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL <> (service:<root>.BoxService, parameters:kotlin.Array<out kotlin.Any?>) returnType:kotlin.Any? [suspend]
                     VALUE_PARAMETER name:service index:0 type:<root>.BoxService
-                    VALUE_PARAMETER name:data index:1 type:kotlin.Any?
+                    VALUE_PARAMETER name:parameters index:1 type:kotlin.Array<out kotlin.Any?>
                     BLOCK_BODY
-                      VAR IR_TEMPORARY_VARIABLE name:tmp_10 type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod [val]
-                        CALL 'public final fun rpcInternalDataCast <T> (methodName: kotlin.String, serviceName: kotlin.String): T of kotlinx.rpc.internal.rpcInternalDataCast declared in kotlinx.rpc.internal' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod origin=null
-                          <T>: <root>.BoxService.$rpcServiceStub.test1$rpcMethod
-                          $receiver: GET_VAR 'data: kotlin.Any? declared in <root>.BoxService.$rpcServiceStub.Companion.test1Invokator.<anonymous>' type=kotlin.Any? origin=null
-                          methodName: CONST String type=kotlin.String value="test1"
-                          serviceName: CONST String type=kotlin.String value="BoxService"
-                      RETURN type=kotlin.Nothing from='local final fun <anonymous> (service: <root>.BoxService, data: kotlin.Any?): kotlin.Any? declared in <root>.BoxService.$rpcServiceStub.Companion.test1Invokator'
+                      RETURN type=kotlin.Nothing from='local final fun <anonymous> (service: <root>.BoxService, parameters: kotlin.Array<out kotlin.Any?>): kotlin.Any? declared in <root>.BoxService.$rpcServiceStub.Companion.test1Invokator'
                         CALL 'public abstract fun test1 (testData: <root>.TestData): kotlin.String declared in <root>.BoxService' type=kotlin.String origin=null
                           $this: GET_VAR 'service: <root>.BoxService declared in <root>.BoxService.$rpcServiceStub.Companion.test1Invokator.<anonymous>' type=<root>.BoxService origin=null
-                          testData: CALL 'public final fun <get-testData> (): <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod' type=<root>.TestData origin=GET_PROPERTY
-                            $this: GET_VAR 'val tmp_10: <root>.BoxService.$rpcServiceStub.test1$rpcMethod declared in <root>.BoxService.$rpcServiceStub.Companion.test1Invokator.<anonymous>' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod origin=null
+                          testData: TYPE_OP type=<root>.TestData origin=CAST typeOperand=<root>.TestData
+                            CALL 'public final fun get (index: kotlin.Int): T of kotlin.Array declared in kotlin.Array' type=kotlin.Any? origin=GET_ARRAY_ELEMENT
+                              $this: GET_VAR 'parameters: kotlin.Array<out kotlin.Any?> declared in <root>.BoxService.$rpcServiceStub.Companion.test1Invokator.<anonymous>' type=kotlin.Array<out kotlin.Any?> origin=null
+                              index: CONST Int type=kotlin.Int value=0
           FUN DEFAULT_PROPERTY_ACCESSOR name:<get-test1Invokator> visibility:private modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.Companion) returnType:kotlinx.rpc.descriptor.RpcInvokator.Method<<root>.BoxService>
             correspondingProperty: PROPERTY name:test1Invokator visibility:private modality:FINAL [val]
             $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.Companion
@@ -388,21 +161,17 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
             EXPRESSION_BODY
               TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.Method<<root>.BoxService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.Method<<root>.BoxService>
                 FUN_EXPR type=kotlin.coroutines.SuspendFunction2<<root>.BoxService, kotlin.Any?, kotlin.Any?> origin=LAMBDA
-                  FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL <> (service:<root>.BoxService, data:kotlin.Any?) returnType:kotlin.Any? [suspend]
+                  FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL <> (service:<root>.BoxService, parameters:kotlin.Array<out kotlin.Any?>) returnType:kotlin.Any? [suspend]
                     VALUE_PARAMETER name:service index:0 type:<root>.BoxService
-                    VALUE_PARAMETER name:data index:1 type:kotlin.Any?
+                    VALUE_PARAMETER name:parameters index:1 type:kotlin.Array<out kotlin.Any?>
                     BLOCK_BODY
-                      VAR IR_TEMPORARY_VARIABLE name:tmp_11 type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod [val]
-                        CALL 'public final fun rpcInternalDataCast <T> (methodName: kotlin.String, serviceName: kotlin.String): T of kotlinx.rpc.internal.rpcInternalDataCast declared in kotlinx.rpc.internal' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod origin=null
-                          <T>: <root>.BoxService.$rpcServiceStub.test2$rpcMethod
-                          $receiver: GET_VAR 'data: kotlin.Any? declared in <root>.BoxService.$rpcServiceStub.Companion.test2Invokator.<anonymous>' type=kotlin.Any? origin=null
-                          methodName: CONST String type=kotlin.String value="test2"
-                          serviceName: CONST String type=kotlin.String value="BoxService"
-                      RETURN type=kotlin.Nothing from='local final fun <anonymous> (service: <root>.BoxService, data: kotlin.Any?): kotlin.Any? declared in <root>.BoxService.$rpcServiceStub.Companion.test2Invokator'
+                      RETURN type=kotlin.Nothing from='local final fun <anonymous> (service: <root>.BoxService, parameters: kotlin.Array<out kotlin.Any?>): kotlin.Any? declared in <root>.BoxService.$rpcServiceStub.Companion.test2Invokator'
                         CALL 'public abstract fun test2 (testData: <root>.TestData): kotlin.String declared in <root>.BoxService' type=kotlin.String origin=null
                           $this: GET_VAR 'service: <root>.BoxService declared in <root>.BoxService.$rpcServiceStub.Companion.test2Invokator.<anonymous>' type=<root>.BoxService origin=null
-                          testData: CALL 'public final fun <get-testData> (): <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod' type=<root>.TestData origin=GET_PROPERTY
-                            $this: GET_VAR 'val tmp_11: <root>.BoxService.$rpcServiceStub.test2$rpcMethod declared in <root>.BoxService.$rpcServiceStub.Companion.test2Invokator.<anonymous>' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod origin=null
+                          testData: TYPE_OP type=<root>.TestData origin=CAST typeOperand=<root>.TestData
+                            CALL 'public final fun get (index: kotlin.Int): T of kotlin.Array declared in kotlin.Array' type=kotlin.Any? origin=GET_ARRAY_ELEMENT
+                              $this: GET_VAR 'parameters: kotlin.Array<out kotlin.Any?> declared in <root>.BoxService.$rpcServiceStub.Companion.test2Invokator.<anonymous>' type=kotlin.Array<out kotlin.Any?> origin=null
+                              index: CONST Int type=kotlin.Int value=0
           FUN DEFAULT_PROPERTY_ACCESSOR name:<get-test2Invokator> visibility:private modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.Companion) returnType:kotlinx.rpc.descriptor.RpcInvokator.Method<<root>.BoxService>
             correspondingProperty: PROPERTY name:test2Invokator visibility:private modality:FINAL [val]
             $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.Companion
@@ -421,49 +190,55 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                     <A>: kotlin.String
                     <B>: kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>
                     $receiver: CONST String type=kotlin.String value="test1"
-                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, dataType: kotlinx.rpc.descriptor.RpcType, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallable>, parameters: kotlin.Array<kotlinx.rpc.descriptor.RpcParameter>, isNonSuspendFunction: kotlin.Boolean) declared in kotlinx.rpc.descriptor.RpcCallable' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
+                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>, isNonSuspendFunction: kotlin.Boolean) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
                       <T>: <root>.BoxService
                       name: CONST String type=kotlin.String value="test1"
-                      dataType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType) declared in kotlinx.rpc.descriptor.RpcType' type=kotlinx.rpc.descriptor.RpcType origin=null
-                        kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                          <T>: <root>.BoxService.$rpcServiceStub.test1$rpcMethod
-                      returnType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType) declared in kotlinx.rpc.descriptor.RpcType' type=kotlinx.rpc.descriptor.RpcType origin=null
+                      returnType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType, annotations: kotlin.collections.List<kotlin.Annotation>) declared in kotlinx.rpc.descriptor.RpcTypeDefault' type=kotlinx.rpc.descriptor.RpcType origin=null
                         kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
                           <T>: kotlin.String
+                        annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
+                          <T>: <none>
                       invokator: CALL 'private final fun <get-test1Invokator> (): kotlinx.rpc.descriptor.RpcInvokator.Method<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.Method<<root>.BoxService> origin=GET_PROPERTY
                         $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                       parameters: CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null
                         <T>: kotlinx.rpc.descriptor.RpcParameter
                         elements: VARARG type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> varargElementType=kotlinx.rpc.descriptor.RpcParameter
-                          CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, type: kotlinx.rpc.descriptor.RpcType) declared in kotlinx.rpc.descriptor.RpcParameter' type=kotlinx.rpc.descriptor.RpcParameter origin=null
+                          CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, type: kotlinx.rpc.descriptor.RpcType, annotations: kotlin.collections.List<kotlin.Annotation>) declared in kotlinx.rpc.descriptor.RpcParameterDefault' type=kotlinx.rpc.descriptor.RpcParameter origin=null
                             name: CONST String type=kotlin.String value="testData"
-                            type: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType) declared in kotlinx.rpc.descriptor.RpcType' type=kotlinx.rpc.descriptor.RpcType origin=null
+                            type: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType, annotations: kotlin.collections.List<kotlin.Annotation>) declared in kotlinx.rpc.descriptor.RpcTypeDefault' type=kotlinx.rpc.descriptor.RpcType origin=null
                               kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
                                 <T>: <root>.TestData
+                              annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
+                                <T>: <none>
+                            annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
+                              <T>: <none>
                       isNonSuspendFunction: CONST Boolean type=kotlin.Boolean value=false
                   CALL 'public final fun to <A, B> (that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
                     <A>: kotlin.String
                     <B>: kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>
                     $receiver: CONST String type=kotlin.String value="test2"
-                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, dataType: kotlinx.rpc.descriptor.RpcType, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallable>, parameters: kotlin.Array<kotlinx.rpc.descriptor.RpcParameter>, isNonSuspendFunction: kotlin.Boolean) declared in kotlinx.rpc.descriptor.RpcCallable' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
+                    that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<T of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>, isNonSuspendFunction: kotlin.Boolean) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
                       <T>: <root>.BoxService
                       name: CONST String type=kotlin.String value="test2"
-                      dataType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType) declared in kotlinx.rpc.descriptor.RpcType' type=kotlinx.rpc.descriptor.RpcType origin=null
-                        kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                          <T>: <root>.BoxService.$rpcServiceStub.test2$rpcMethod
-                      returnType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType) declared in kotlinx.rpc.descriptor.RpcType' type=kotlinx.rpc.descriptor.RpcType origin=null
+                      returnType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType, annotations: kotlin.collections.List<kotlin.Annotation>) declared in kotlinx.rpc.descriptor.RpcTypeDefault' type=kotlinx.rpc.descriptor.RpcType origin=null
                         kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
                           <T>: kotlin.String
+                        annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
+                          <T>: <none>
                       invokator: CALL 'private final fun <get-test2Invokator> (): kotlinx.rpc.descriptor.RpcInvokator.Method<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.Method<<root>.BoxService> origin=GET_PROPERTY
                         $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                       parameters: CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null
                         <T>: kotlinx.rpc.descriptor.RpcParameter
                         elements: VARARG type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> varargElementType=kotlinx.rpc.descriptor.RpcParameter
-                          CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, type: kotlinx.rpc.descriptor.RpcType) declared in kotlinx.rpc.descriptor.RpcParameter' type=kotlinx.rpc.descriptor.RpcParameter origin=null
+                          CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, type: kotlinx.rpc.descriptor.RpcType, annotations: kotlin.collections.List<kotlin.Annotation>) declared in kotlinx.rpc.descriptor.RpcParameterDefault' type=kotlinx.rpc.descriptor.RpcParameter origin=null
                             name: CONST String type=kotlin.String value="testData"
-                            type: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType) declared in kotlinx.rpc.descriptor.RpcType' type=kotlinx.rpc.descriptor.RpcType origin=null
+                            type: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType, annotations: kotlin.collections.List<kotlin.Annotation>) declared in kotlinx.rpc.descriptor.RpcTypeDefault' type=kotlinx.rpc.descriptor.RpcType origin=null
                               kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
                                 <T>: <root>.TestData
+                              annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
+                                <T>: <none>
+                            annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
+                              <T>: <none>
                       isNonSuspendFunction: CONST Boolean type=kotlin.Boolean value=false
           FUN DEFAULT_PROPERTY_ACCESSOR name:<get-callableMap> visibility:private modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.Companion) returnType:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>>
             correspondingProperty: PROPERTY name:callableMap visibility:private modality:FINAL [val]
@@ -511,552 +286,6 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                 $this: CALL 'private final fun <get-callableMap> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=GET_PROPERTY
                   $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.getCallable' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                 key: GET_VAR 'name: kotlin.String declared in <root>.BoxService.$rpcServiceStub.Companion.getCallable' type=kotlin.String origin=null
-      CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedRpcMethodClassKey] CLASS name:test1$rpcMethod modality:FINAL visibility:public superTypes:[kotlin.Any; kotlinx.rpc.internal.RpcMethodClass]
-        annotations:
-          Serializable(with = <null>)
-        $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod
-        PROPERTY name:testData visibility:public modality:FINAL [val]
-          FIELD PROPERTY_BACKING_FIELD name:testData type:<root>.TestData visibility:private [final]
-            EXPRESSION_BODY
-              GET_VAR 'testData: <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.<init>' type=<root>.TestData origin=INITIALIZE_PROPERTY_FROM_PARAMETER
-          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-testData> visibility:public modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.test1$rpcMethod) returnType:<root>.TestData
-            correspondingProperty: PROPERTY name:testData visibility:public modality:FINAL [val]
-            $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod
-            BLOCK_BODY
-              RETURN type=kotlin.Nothing from='public final fun <get-testData> (): <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod'
-                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:testData type:<root>.TestData visibility:private [final]' type=<root>.TestData origin=null
-                  receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test1$rpcMethod declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.<get-testData>' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod origin=null
-        CLASS GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlin.Any]
-          $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.Companion
-          CONSTRUCTOR GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] visibility:private <> () returnType:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.Companion [primary]
-            BLOCK_BODY
-              DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-              INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlin.Any]' type=kotlin.Unit
-          FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean [fake_override,operator]
-            overridden:
-              public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlin.Any
-            $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-            VALUE_PARAMETER name:other index:0 type:kotlin.Any?
-          FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int [fake_override]
-            overridden:
-              public open fun hashCode (): kotlin.Int declared in kotlin.Any
-            $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-          FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String [fake_override]
-            overridden:
-              public open fun toString (): kotlin.String declared in kotlin.Any
-            $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-          FUN GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:serializer visibility:public modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.Companion) returnType:kotlinx.serialization.KSerializer<<root>.BoxService.$rpcServiceStub.test1$rpcMethod>
-            $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.Companion
-            BLOCK_BODY
-              RETURN type=kotlin.Nothing from='public final fun serializer (): kotlinx.serialization.KSerializer<<root>.BoxService.$rpcServiceStub.test1$rpcMethod> declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.Companion'
-                GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test1$rpcMethod>]' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer
-        CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test1$rpcMethod>]
-          annotations:
-            Deprecated(message = "This synthesized declaration should not be used directly", replaceWith = <null>, level = GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:HIDDEN' type=kotlin.DeprecationLevel)
-          $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer
-          PROPERTY GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:descriptor visibility:public modality:FINAL [val]
-            overridden:
-              public abstract descriptor: kotlinx.serialization.descriptors.SerialDescriptor declared in kotlinx.serialization.internal.GeneratedSerializer
-            FIELD PROPERTY_BACKING_FIELD name:descriptor type:kotlinx.serialization.descriptors.SerialDescriptor visibility:private [final]
-            FUN DEFAULT_PROPERTY_ACCESSOR name:<get-descriptor> visibility:public modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer) returnType:kotlinx.serialization.descriptors.SerialDescriptor
-              correspondingProperty: PROPERTY GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:descriptor visibility:public modality:FINAL [val]
-              overridden:
-                public abstract fun <get-descriptor> (): kotlinx.serialization.descriptors.SerialDescriptor declared in kotlinx.serialization.internal.GeneratedSerializer
-              $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer
-              BLOCK_BODY
-                RETURN type=kotlin.Nothing from='public final fun <get-descriptor> (): kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer'
-                  GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:descriptor type:kotlinx.serialization.descriptors.SerialDescriptor visibility:private [final]' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-                    receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.<get-descriptor>' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer origin=null
-          ANONYMOUS_INITIALIZER isStatic=false
-            BLOCK_BODY
-              VAR IR_TEMPORARY_VARIABLE name:tmp_12 type:kotlinx.serialization.internal.PluginGeneratedSerialDescriptor [val]
-                CONSTRUCTOR_CALL 'public constructor <init> (serialName: kotlin.String, generatedSerializer: kotlinx.serialization.internal.GeneratedSerializer<*>?, elementsCount: kotlin.Int) declared in kotlinx.serialization.internal.PluginGeneratedSerialDescriptor' type=kotlinx.serialization.internal.PluginGeneratedSerialDescriptor origin=null
-                  serialName: CONST String type=kotlin.String value="BoxService.$rpcServiceStub.test1$rpcMethod"
-                  generatedSerializer: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer origin=null
-                  elementsCount: CONST Int type=kotlin.Int value=1
-              CALL 'public final fun addElement (name: kotlin.String, isOptional: kotlin.Boolean): kotlin.Unit declared in kotlinx.serialization.internal.PluginGeneratedSerialDescriptor' type=kotlin.Unit origin=null
-                $this: GET_VAR 'val tmp_12: kotlinx.serialization.internal.PluginGeneratedSerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer' type=kotlinx.serialization.internal.PluginGeneratedSerialDescriptor origin=null
-                name: CONST String type=kotlin.String value="testData"
-                isOptional: CONST Boolean type=kotlin.Boolean value=false
-              SET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:descriptor type:kotlinx.serialization.descriptors.SerialDescriptor visibility:private [final]' type=kotlin.Unit origin=null
-                receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer origin=null
-                value: GET_VAR 'val tmp_12: kotlinx.serialization.internal.PluginGeneratedSerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer' type=kotlinx.serialization.internal.PluginGeneratedSerialDescriptor origin=null
-          CONSTRUCTOR GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] visibility:private <> () returnType:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer [primary]
-            BLOCK_BODY
-              DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-              INSTANCE_INITIALIZER_CALL classDescriptor='CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test1$rpcMethod>]' type=kotlin.Unit
-          FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean [fake_override,operator]
-            overridden:
-              public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlinx.serialization.internal.GeneratedSerializer
-            $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-            VALUE_PARAMETER name:other index:0 type:kotlin.Any?
-          FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int [fake_override]
-            overridden:
-              public open fun hashCode (): kotlin.Int declared in kotlinx.serialization.internal.GeneratedSerializer
-            $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-          FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String [fake_override]
-            overridden:
-              public open fun toString (): kotlin.String declared in kotlinx.serialization.internal.GeneratedSerializer
-            $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-          FUN FAKE_OVERRIDE name:typeParametersSerializers visibility:public modality:OPEN <> ($this:kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test1$rpcMethod>) returnType:kotlin.Array<kotlinx.serialization.KSerializer<*>> [fake_override]
-            overridden:
-              public open fun typeParametersSerializers (): kotlin.Array<kotlinx.serialization.KSerializer<*>> declared in kotlinx.serialization.internal.GeneratedSerializer
-            $this: VALUE_PARAMETER name:<this> type:kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test1$rpcMethod>
-          FUN GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:childSerializers visibility:public modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer) returnType:kotlin.Array<kotlinx.serialization.KSerializer<*>>
-            overridden:
-              public abstract fun childSerializers (): kotlin.Array<kotlinx.serialization.KSerializer<*>> declared in kotlinx.serialization.internal.GeneratedSerializer
-            $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer
-            BLOCK_BODY
-              RETURN type=kotlin.Nothing from='public final fun childSerializers (): kotlin.Array<kotlinx.serialization.KSerializer<*>> declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer'
-                CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<kotlinx.serialization.KSerializer<*>> origin=null
-                  <T>: kotlinx.serialization.KSerializer<*>
-                  elements: VARARG type=kotlin.Array<kotlinx.serialization.KSerializer<*>> varargElementType=kotlinx.serialization.KSerializer<*>
-                    GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>]' type=<root>.TestData.$serializer
-          FUN GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:deserialize visibility:public modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer, decoder:kotlinx.serialization.encoding.Decoder) returnType:<root>.BoxService.$rpcServiceStub.test1$rpcMethod
-            overridden:
-              public abstract fun deserialize (decoder: kotlinx.serialization.encoding.Decoder): T of kotlinx.serialization.internal.GeneratedSerializer declared in kotlinx.serialization.internal.GeneratedSerializer
-            $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer
-            VALUE_PARAMETER GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:decoder index:0 type:kotlinx.serialization.encoding.Decoder
-            BLOCK_BODY
-              VAR IR_TEMPORARY_VARIABLE name:tmp_13 type:kotlinx.serialization.descriptors.SerialDescriptor [val]
-                CALL 'public final fun <get-descriptor> (): kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer' type=kotlinx.serialization.descriptors.SerialDescriptor origin=GET_PROPERTY
-                  $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer origin=null
-              VAR IR_TEMPORARY_VARIABLE name:tmp_14 type:kotlin.Boolean [var]
-                CONST Boolean type=kotlin.Boolean value=true
-              VAR IR_TEMPORARY_VARIABLE name:tmp_15 type:kotlin.Int [var]
-                CONST Int type=kotlin.Int value=0
-              VAR IR_TEMPORARY_VARIABLE name:tmp_16 type:kotlin.Int [var]
-                CONST Int type=kotlin.Int value=0
-              VAR IR_TEMPORARY_VARIABLE name:tmp_17 type:<root>.TestData? [var]
-                CONST Null type=<root>.TestData? value=null
-              VAR IR_TEMPORARY_VARIABLE name:tmp_18 type:kotlinx.serialization.encoding.CompositeDecoder [val]
-                CALL 'public abstract fun beginStructure (descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlinx.serialization.encoding.CompositeDecoder declared in kotlinx.serialization.encoding.Decoder' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-                  $this: GET_VAR 'decoder: kotlinx.serialization.encoding.Decoder declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.encoding.Decoder origin=null
-                  descriptor: GET_VAR 'val tmp_13: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-              WHEN type=kotlin.Unit origin=null
-                BRANCH
-                  if: CALL 'public open fun decodeSequentially (): kotlin.Boolean declared in kotlinx.serialization.encoding.CompositeDecoder' type=kotlin.Boolean origin=null
-                    $this: GET_VAR 'val tmp_18: kotlinx.serialization.encoding.CompositeDecoder declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-                  then: BLOCK type=kotlin.Unit origin=null
-                    BLOCK type=kotlin.Unit origin=null
-                      SET_VAR 'var tmp_17: <root>.TestData? declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                        CALL 'public abstract fun decodeSerializableElement <T> (descriptor: kotlinx.serialization.descriptors.SerialDescriptor, index: kotlin.Int, deserializer: kotlinx.serialization.DeserializationStrategy<T of kotlinx.serialization.encoding.CompositeDecoder.decodeSerializableElement>, previousValue: T of kotlinx.serialization.encoding.CompositeDecoder.decodeSerializableElement?): T of kotlinx.serialization.encoding.CompositeDecoder.decodeSerializableElement declared in kotlinx.serialization.encoding.CompositeDecoder' type=<root>.TestData origin=null
-                          <T>: <root>.TestData
-                          $this: GET_VAR 'val tmp_18: kotlinx.serialization.encoding.CompositeDecoder declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-                          descriptor: GET_VAR 'val tmp_13: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-                          index: CONST Int type=kotlin.Int value=0
-                          deserializer: GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>]' type=<root>.TestData.$serializer
-                          previousValue: GET_VAR 'var tmp_17: <root>.TestData? declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=<root>.TestData? origin=null
-                      SET_VAR 'var tmp_16: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                        CALL 'public final fun or (other: kotlin.Int): kotlin.Int declared in kotlin.Int' type=kotlin.Int origin=null
-                          $this: GET_VAR 'var tmp_16: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlin.Int origin=null
-                          other: CONST Int type=kotlin.Int value=1
-                BRANCH
-                  if: CONST Boolean type=kotlin.Boolean value=true
-                  then: WHILE label=null origin=null
-                    condition: GET_VAR 'var tmp_14: kotlin.Boolean declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlin.Boolean origin=null
-                    body: BLOCK type=kotlin.Unit origin=null
-                      SET_VAR 'var tmp_15: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                        CALL 'public abstract fun decodeElementIndex (descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlin.Int declared in kotlinx.serialization.encoding.CompositeDecoder' type=kotlin.Int origin=null
-                          $this: GET_VAR 'val tmp_18: kotlinx.serialization.encoding.CompositeDecoder declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-                          descriptor: GET_VAR 'val tmp_13: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-                      WHEN type=kotlin.Unit origin=null
-                        BRANCH
-                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                            arg0: GET_VAR 'var tmp_15: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlin.Int origin=null
-                            arg1: CONST Int type=kotlin.Int value=-1
-                          then: SET_VAR 'var tmp_14: kotlin.Boolean declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                            CONST Boolean type=kotlin.Boolean value=false
-                        BRANCH
-                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                            arg0: GET_VAR 'var tmp_15: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlin.Int origin=null
-                            arg1: CONST Int type=kotlin.Int value=0
-                          then: BLOCK type=kotlin.Unit origin=null
-                            SET_VAR 'var tmp_17: <root>.TestData? declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                              CALL 'public abstract fun decodeSerializableElement <T> (descriptor: kotlinx.serialization.descriptors.SerialDescriptor, index: kotlin.Int, deserializer: kotlinx.serialization.DeserializationStrategy<T of kotlinx.serialization.encoding.CompositeDecoder.decodeSerializableElement>, previousValue: T of kotlinx.serialization.encoding.CompositeDecoder.decodeSerializableElement?): T of kotlinx.serialization.encoding.CompositeDecoder.decodeSerializableElement declared in kotlinx.serialization.encoding.CompositeDecoder' type=<root>.TestData origin=null
-                                <T>: <root>.TestData
-                                $this: GET_VAR 'val tmp_18: kotlinx.serialization.encoding.CompositeDecoder declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-                                descriptor: GET_VAR 'val tmp_13: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-                                index: CONST Int type=kotlin.Int value=0
-                                deserializer: GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>]' type=<root>.TestData.$serializer
-                                previousValue: GET_VAR 'var tmp_17: <root>.TestData? declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=<root>.TestData? origin=null
-                            SET_VAR 'var tmp_16: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                              CALL 'public final fun or (other: kotlin.Int): kotlin.Int declared in kotlin.Int' type=kotlin.Int origin=null
-                                $this: GET_VAR 'var tmp_16: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlin.Int origin=null
-                                other: CONST Int type=kotlin.Int value=1
-                        BRANCH
-                          if: CONST Boolean type=kotlin.Boolean value=true
-                          then: THROW type=kotlin.Nothing
-                            CONSTRUCTOR_CALL 'public constructor <init> (index: kotlin.Int) declared in kotlinx.serialization.UnknownFieldException' type=kotlinx.serialization.UnknownFieldException origin=null
-                              index: GET_VAR 'var tmp_15: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlin.Int origin=null
-              CALL 'public abstract fun endStructure (descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlin.Unit declared in kotlinx.serialization.encoding.CompositeDecoder' type=kotlin.Unit origin=null
-                $this: GET_VAR 'val tmp_18: kotlinx.serialization.encoding.CompositeDecoder declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-                descriptor: GET_VAR 'val tmp_13: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-              RETURN type=kotlin.Nothing from='public final fun deserialize (decoder: kotlinx.serialization.encoding.Decoder): <root>.BoxService.$rpcServiceStub.test1$rpcMethod declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer'
-                CONSTRUCTOR_CALL 'internal constructor <init> (seen0: kotlin.Int, testData: <root>.TestData?, serializationConstructorMarker: kotlinx.serialization.internal.SerializationConstructorMarker?) declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod origin=null
-                  seen0: GET_VAR 'var tmp_16: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=kotlin.Int origin=null
-                  testData: GET_VAR 'var tmp_17: <root>.TestData? declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.deserialize' type=<root>.TestData? origin=null
-                  serializationConstructorMarker: CONST Null type=kotlin.Nothing? value=null
-          FUN GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:serialize visibility:public modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer, encoder:kotlinx.serialization.encoding.Encoder, value:<root>.BoxService.$rpcServiceStub.test1$rpcMethod) returnType:kotlin.Unit
-            overridden:
-              public abstract fun serialize (encoder: kotlinx.serialization.encoding.Encoder, value: T of kotlinx.serialization.internal.GeneratedSerializer): kotlin.Unit declared in kotlinx.serialization.internal.GeneratedSerializer
-            $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer
-            VALUE_PARAMETER GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:encoder index:0 type:kotlinx.serialization.encoding.Encoder
-            VALUE_PARAMETER GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:value index:1 type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod
-            BLOCK_BODY
-              VAR IR_TEMPORARY_VARIABLE name:tmp_19 type:kotlinx.serialization.descriptors.SerialDescriptor [val]
-                CALL 'public final fun <get-descriptor> (): kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer' type=kotlinx.serialization.descriptors.SerialDescriptor origin=GET_PROPERTY
-                  $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.serialize' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer origin=null
-              VAR IR_TEMPORARY_VARIABLE name:tmp_20 type:kotlinx.serialization.encoding.CompositeEncoder [val]
-                CALL 'public abstract fun beginStructure (descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlinx.serialization.encoding.CompositeEncoder declared in kotlinx.serialization.encoding.Encoder' type=kotlinx.serialization.encoding.CompositeEncoder origin=null
-                  $this: GET_VAR 'encoder: kotlinx.serialization.encoding.Encoder declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.serialize' type=kotlinx.serialization.encoding.Encoder origin=null
-                  descriptor: GET_VAR 'val tmp_19: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.serialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-              CALL 'internal final fun write$Self (self: <root>.BoxService.$rpcServiceStub.test1$rpcMethod, output: kotlinx.serialization.encoding.CompositeEncoder, serialDesc: kotlinx.serialization.descriptors.SerialDescriptor): kotlin.Unit declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod' type=kotlin.Unit origin=null
-                self: GET_VAR 'value: <root>.BoxService.$rpcServiceStub.test1$rpcMethod declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.serialize' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod origin=null
-                output: GET_VAR 'val tmp_20: kotlinx.serialization.encoding.CompositeEncoder declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.serialize' type=kotlinx.serialization.encoding.CompositeEncoder origin=null
-                serialDesc: GET_VAR 'val tmp_19: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.serialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-              CALL 'public abstract fun endStructure (descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlin.Unit declared in kotlinx.serialization.encoding.CompositeEncoder' type=kotlin.Unit origin=null
-                $this: GET_VAR 'val tmp_20: kotlinx.serialization.encoding.CompositeEncoder declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.serialize' type=kotlinx.serialization.encoding.CompositeEncoder origin=null
-                descriptor: GET_VAR 'val tmp_19: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer.serialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-        CONSTRUCTOR GENERATED[kotlinx.rpc.codegen.RpcGeneratedRpcMethodClassKey] visibility:public <> (testData:<root>.TestData) returnType:<root>.BoxService.$rpcServiceStub.test1$rpcMethod [primary]
-          VALUE_PARAMETER GENERATED[kotlinx.rpc.codegen.RpcGeneratedRpcMethodClassKey] name:testData index:0 type:<root>.TestData
-          BLOCK_BODY
-            DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-            INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedRpcMethodClassKey] CLASS name:test1$rpcMethod modality:FINAL visibility:public superTypes:[kotlin.Any; kotlinx.rpc.internal.RpcMethodClass]' type=kotlin.Unit
-        CONSTRUCTOR KOTLINX_SERIALIZATION visibility:internal <> (seen0:kotlin.Int, testData:<root>.TestData?, serializationConstructorMarker:kotlinx.serialization.internal.SerializationConstructorMarker?) returnType:<root>.BoxService.$rpcServiceStub.test1$rpcMethod
-          VALUE_PARAMETER KOTLINX_SERIALIZATION name:seen0 index:0 type:kotlin.Int
-          VALUE_PARAMETER KOTLINX_SERIALIZATION name:testData index:1 type:<root>.TestData?
-          VALUE_PARAMETER KOTLINX_SERIALIZATION name:serializationConstructorMarker index:2 type:kotlinx.serialization.internal.SerializationConstructorMarker?
-          BLOCK_BODY
-            WHEN type=kotlin.Unit origin=null
-              BRANCH
-                if: CALL 'public final fun not (): kotlin.Boolean declared in kotlin.Boolean' type=kotlin.Boolean origin=EXCLEQ
-                  $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EXCLEQ
-                    arg0: CONST Int type=kotlin.Int value=1
-                    arg1: CALL 'public final fun and (other: kotlin.Int): kotlin.Int declared in kotlin.Int' type=kotlin.Int origin=null
-                      $this: CONST Int type=kotlin.Int value=1
-                      other: GET_VAR 'seen0: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.<init>' type=kotlin.Int origin=null
-                then: CALL 'public final fun throwMissingFieldException (seen: kotlin.Int, goldenMask: kotlin.Int, descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlin.Unit declared in kotlinx.serialization.internal' type=kotlin.Unit origin=null
-                  seen: GET_VAR 'seen0: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.<init>' type=kotlin.Int origin=null
-                  goldenMask: CONST Int type=kotlin.Int value=1
-                  descriptor: CALL 'public final fun <get-descriptor> (): kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer' type=kotlinx.serialization.descriptors.SerialDescriptor origin=GET_PROPERTY
-                    $this: GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test1$rpcMethod>]' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod.$serializer
-            DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-            SET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:testData type:<root>.TestData visibility:private [final]' type=kotlin.Unit origin=null
-              receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test1$rpcMethod declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod origin=null
-              value: GET_VAR 'testData: <root>.TestData? declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.<init>' type=<root>.TestData? origin=null
-        FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean [fake_override,operator]
-          overridden:
-            public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlin.Any
-          $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-          VALUE_PARAMETER name:other index:0 type:kotlin.Any?
-        FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int [fake_override]
-          overridden:
-            public open fun hashCode (): kotlin.Int declared in kotlin.Any
-          $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-        FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String [fake_override]
-          overridden:
-            public open fun toString (): kotlin.String declared in kotlin.Any
-          $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-        FUN KOTLINX_SERIALIZATION name:write$Self visibility:internal modality:FINAL <> (self:<root>.BoxService.$rpcServiceStub.test1$rpcMethod, output:kotlinx.serialization.encoding.CompositeEncoder, serialDesc:kotlinx.serialization.descriptors.SerialDescriptor) returnType:kotlin.Unit
-          annotations:
-            JvmStatic
-          VALUE_PARAMETER KOTLINX_SERIALIZATION name:self index:0 type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod
-          VALUE_PARAMETER KOTLINX_SERIALIZATION name:output index:1 type:kotlinx.serialization.encoding.CompositeEncoder
-          VALUE_PARAMETER KOTLINX_SERIALIZATION name:serialDesc index:2 type:kotlinx.serialization.descriptors.SerialDescriptor
-          BLOCK_BODY
-            CALL 'public abstract fun encodeSerializableElement <T> (descriptor: kotlinx.serialization.descriptors.SerialDescriptor, index: kotlin.Int, serializer: kotlinx.serialization.SerializationStrategy<T of kotlinx.serialization.encoding.CompositeEncoder.encodeSerializableElement>, value: T of kotlinx.serialization.encoding.CompositeEncoder.encodeSerializableElement): kotlin.Unit declared in kotlinx.serialization.encoding.CompositeEncoder' type=kotlin.Unit origin=null
-              <T>: <root>.TestData
-              $this: GET_VAR 'output: kotlinx.serialization.encoding.CompositeEncoder declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.write$Self' type=kotlinx.serialization.encoding.CompositeEncoder origin=null
-              descriptor: GET_VAR 'serialDesc: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.write$Self' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-              index: CONST Int type=kotlin.Int value=0
-              serializer: GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>]' type=<root>.TestData.$serializer
-              value: CALL 'public final fun <get-testData> (): <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod' type=<root>.TestData origin=GET_PROPERTY
-                $this: GET_VAR 'self: <root>.BoxService.$rpcServiceStub.test1$rpcMethod declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.write$Self' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod origin=null
-        FUN name:asArray visibility:public modality:OPEN <> ($this:<root>.BoxService.$rpcServiceStub.test1$rpcMethod) returnType:kotlin.Array<out kotlin.Any?>
-          overridden:
-            public abstract fun asArray (): kotlin.Array<out kotlin.Any?> declared in kotlinx.rpc.internal.RpcMethodClass
-          $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.test1$rpcMethod
-          BLOCK_BODY
-            RETURN type=kotlin.Nothing from='public open fun asArray (): kotlin.Array<out kotlin.Any?> declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod'
-              CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<out kotlin.Any?> origin=null
-                <T>: kotlin.Any?
-                elements: VARARG type=kotlin.Array<kotlin.Any?> varargElementType=kotlin.Any?
-                  CALL 'public final fun <get-testData> (): <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod' type=<root>.TestData origin=GET_PROPERTY
-                    $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test1$rpcMethod declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod.asArray' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod origin=null
-      CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedRpcMethodClassKey] CLASS name:test2$rpcMethod modality:FINAL visibility:public superTypes:[kotlin.Any; kotlinx.rpc.internal.RpcMethodClass]
-        annotations:
-          Serializable(with = <null>)
-        $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod
-        PROPERTY name:testData visibility:public modality:FINAL [val]
-          FIELD PROPERTY_BACKING_FIELD name:testData type:<root>.TestData visibility:private [final]
-            EXPRESSION_BODY
-              GET_VAR 'testData: <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.<init>' type=<root>.TestData origin=INITIALIZE_PROPERTY_FROM_PARAMETER
-          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-testData> visibility:public modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.test2$rpcMethod) returnType:<root>.TestData
-            correspondingProperty: PROPERTY name:testData visibility:public modality:FINAL [val]
-            $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod
-            BLOCK_BODY
-              RETURN type=kotlin.Nothing from='public final fun <get-testData> (): <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod'
-                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:testData type:<root>.TestData visibility:private [final]' type=<root>.TestData origin=null
-                  receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test2$rpcMethod declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.<get-testData>' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod origin=null
-        CLASS GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlin.Any]
-          $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.Companion
-          CONSTRUCTOR GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] visibility:private <> () returnType:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.Companion [primary]
-            BLOCK_BODY
-              DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-              INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlin.Any]' type=kotlin.Unit
-          FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean [fake_override,operator]
-            overridden:
-              public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlin.Any
-            $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-            VALUE_PARAMETER name:other index:0 type:kotlin.Any?
-          FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int [fake_override]
-            overridden:
-              public open fun hashCode (): kotlin.Int declared in kotlin.Any
-            $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-          FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String [fake_override]
-            overridden:
-              public open fun toString (): kotlin.String declared in kotlin.Any
-            $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-          FUN GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:serializer visibility:public modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.Companion) returnType:kotlinx.serialization.KSerializer<<root>.BoxService.$rpcServiceStub.test2$rpcMethod>
-            $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.Companion
-            BLOCK_BODY
-              RETURN type=kotlin.Nothing from='public final fun serializer (): kotlinx.serialization.KSerializer<<root>.BoxService.$rpcServiceStub.test2$rpcMethod> declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.Companion'
-                GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test2$rpcMethod>]' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer
-        CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test2$rpcMethod>]
-          annotations:
-            Deprecated(message = "This synthesized declaration should not be used directly", replaceWith = <null>, level = GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:HIDDEN' type=kotlin.DeprecationLevel)
-          $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer
-          PROPERTY GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:descriptor visibility:public modality:FINAL [val]
-            overridden:
-              public abstract descriptor: kotlinx.serialization.descriptors.SerialDescriptor declared in kotlinx.serialization.internal.GeneratedSerializer
-            FIELD PROPERTY_BACKING_FIELD name:descriptor type:kotlinx.serialization.descriptors.SerialDescriptor visibility:private [final]
-            FUN DEFAULT_PROPERTY_ACCESSOR name:<get-descriptor> visibility:public modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer) returnType:kotlinx.serialization.descriptors.SerialDescriptor
-              correspondingProperty: PROPERTY GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:descriptor visibility:public modality:FINAL [val]
-              overridden:
-                public abstract fun <get-descriptor> (): kotlinx.serialization.descriptors.SerialDescriptor declared in kotlinx.serialization.internal.GeneratedSerializer
-              $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer
-              BLOCK_BODY
-                RETURN type=kotlin.Nothing from='public final fun <get-descriptor> (): kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer'
-                  GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:descriptor type:kotlinx.serialization.descriptors.SerialDescriptor visibility:private [final]' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-                    receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.<get-descriptor>' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer origin=null
-          ANONYMOUS_INITIALIZER isStatic=false
-            BLOCK_BODY
-              VAR IR_TEMPORARY_VARIABLE name:tmp_21 type:kotlinx.serialization.internal.PluginGeneratedSerialDescriptor [val]
-                CONSTRUCTOR_CALL 'public constructor <init> (serialName: kotlin.String, generatedSerializer: kotlinx.serialization.internal.GeneratedSerializer<*>?, elementsCount: kotlin.Int) declared in kotlinx.serialization.internal.PluginGeneratedSerialDescriptor' type=kotlinx.serialization.internal.PluginGeneratedSerialDescriptor origin=null
-                  serialName: CONST String type=kotlin.String value="BoxService.$rpcServiceStub.test2$rpcMethod"
-                  generatedSerializer: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer origin=null
-                  elementsCount: CONST Int type=kotlin.Int value=1
-              CALL 'public final fun addElement (name: kotlin.String, isOptional: kotlin.Boolean): kotlin.Unit declared in kotlinx.serialization.internal.PluginGeneratedSerialDescriptor' type=kotlin.Unit origin=null
-                $this: GET_VAR 'val tmp_21: kotlinx.serialization.internal.PluginGeneratedSerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer' type=kotlinx.serialization.internal.PluginGeneratedSerialDescriptor origin=null
-                name: CONST String type=kotlin.String value="testData"
-                isOptional: CONST Boolean type=kotlin.Boolean value=false
-              SET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:descriptor type:kotlinx.serialization.descriptors.SerialDescriptor visibility:private [final]' type=kotlin.Unit origin=null
-                receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer origin=null
-                value: GET_VAR 'val tmp_21: kotlinx.serialization.internal.PluginGeneratedSerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer' type=kotlinx.serialization.internal.PluginGeneratedSerialDescriptor origin=null
-          CONSTRUCTOR GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] visibility:private <> () returnType:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer [primary]
-            BLOCK_BODY
-              DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-              INSTANCE_INITIALIZER_CALL classDescriptor='CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test2$rpcMethod>]' type=kotlin.Unit
-          FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean [fake_override,operator]
-            overridden:
-              public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlinx.serialization.internal.GeneratedSerializer
-            $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-            VALUE_PARAMETER name:other index:0 type:kotlin.Any?
-          FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int [fake_override]
-            overridden:
-              public open fun hashCode (): kotlin.Int declared in kotlinx.serialization.internal.GeneratedSerializer
-            $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-          FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String [fake_override]
-            overridden:
-              public open fun toString (): kotlin.String declared in kotlinx.serialization.internal.GeneratedSerializer
-            $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-          FUN FAKE_OVERRIDE name:typeParametersSerializers visibility:public modality:OPEN <> ($this:kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test2$rpcMethod>) returnType:kotlin.Array<kotlinx.serialization.KSerializer<*>> [fake_override]
-            overridden:
-              public open fun typeParametersSerializers (): kotlin.Array<kotlinx.serialization.KSerializer<*>> declared in kotlinx.serialization.internal.GeneratedSerializer
-            $this: VALUE_PARAMETER name:<this> type:kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test2$rpcMethod>
-          FUN GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:childSerializers visibility:public modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer) returnType:kotlin.Array<kotlinx.serialization.KSerializer<*>>
-            overridden:
-              public abstract fun childSerializers (): kotlin.Array<kotlinx.serialization.KSerializer<*>> declared in kotlinx.serialization.internal.GeneratedSerializer
-            $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer
-            BLOCK_BODY
-              RETURN type=kotlin.Nothing from='public final fun childSerializers (): kotlin.Array<kotlinx.serialization.KSerializer<*>> declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer'
-                CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<kotlinx.serialization.KSerializer<*>> origin=null
-                  <T>: kotlinx.serialization.KSerializer<*>
-                  elements: VARARG type=kotlin.Array<kotlinx.serialization.KSerializer<*>> varargElementType=kotlinx.serialization.KSerializer<*>
-                    GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>]' type=<root>.TestData.$serializer
-          FUN GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:deserialize visibility:public modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer, decoder:kotlinx.serialization.encoding.Decoder) returnType:<root>.BoxService.$rpcServiceStub.test2$rpcMethod
-            overridden:
-              public abstract fun deserialize (decoder: kotlinx.serialization.encoding.Decoder): T of kotlinx.serialization.internal.GeneratedSerializer declared in kotlinx.serialization.internal.GeneratedSerializer
-            $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer
-            VALUE_PARAMETER GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:decoder index:0 type:kotlinx.serialization.encoding.Decoder
-            BLOCK_BODY
-              VAR IR_TEMPORARY_VARIABLE name:tmp_22 type:kotlinx.serialization.descriptors.SerialDescriptor [val]
-                CALL 'public final fun <get-descriptor> (): kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer' type=kotlinx.serialization.descriptors.SerialDescriptor origin=GET_PROPERTY
-                  $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer origin=null
-              VAR IR_TEMPORARY_VARIABLE name:tmp_23 type:kotlin.Boolean [var]
-                CONST Boolean type=kotlin.Boolean value=true
-              VAR IR_TEMPORARY_VARIABLE name:tmp_24 type:kotlin.Int [var]
-                CONST Int type=kotlin.Int value=0
-              VAR IR_TEMPORARY_VARIABLE name:tmp_25 type:kotlin.Int [var]
-                CONST Int type=kotlin.Int value=0
-              VAR IR_TEMPORARY_VARIABLE name:tmp_26 type:<root>.TestData? [var]
-                CONST Null type=<root>.TestData? value=null
-              VAR IR_TEMPORARY_VARIABLE name:tmp_27 type:kotlinx.serialization.encoding.CompositeDecoder [val]
-                CALL 'public abstract fun beginStructure (descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlinx.serialization.encoding.CompositeDecoder declared in kotlinx.serialization.encoding.Decoder' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-                  $this: GET_VAR 'decoder: kotlinx.serialization.encoding.Decoder declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.encoding.Decoder origin=null
-                  descriptor: GET_VAR 'val tmp_22: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-              WHEN type=kotlin.Unit origin=null
-                BRANCH
-                  if: CALL 'public open fun decodeSequentially (): kotlin.Boolean declared in kotlinx.serialization.encoding.CompositeDecoder' type=kotlin.Boolean origin=null
-                    $this: GET_VAR 'val tmp_27: kotlinx.serialization.encoding.CompositeDecoder declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-                  then: BLOCK type=kotlin.Unit origin=null
-                    BLOCK type=kotlin.Unit origin=null
-                      SET_VAR 'var tmp_26: <root>.TestData? declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                        CALL 'public abstract fun decodeSerializableElement <T> (descriptor: kotlinx.serialization.descriptors.SerialDescriptor, index: kotlin.Int, deserializer: kotlinx.serialization.DeserializationStrategy<T of kotlinx.serialization.encoding.CompositeDecoder.decodeSerializableElement>, previousValue: T of kotlinx.serialization.encoding.CompositeDecoder.decodeSerializableElement?): T of kotlinx.serialization.encoding.CompositeDecoder.decodeSerializableElement declared in kotlinx.serialization.encoding.CompositeDecoder' type=<root>.TestData origin=null
-                          <T>: <root>.TestData
-                          $this: GET_VAR 'val tmp_27: kotlinx.serialization.encoding.CompositeDecoder declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-                          descriptor: GET_VAR 'val tmp_22: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-                          index: CONST Int type=kotlin.Int value=0
-                          deserializer: GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>]' type=<root>.TestData.$serializer
-                          previousValue: GET_VAR 'var tmp_26: <root>.TestData? declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=<root>.TestData? origin=null
-                      SET_VAR 'var tmp_25: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                        CALL 'public final fun or (other: kotlin.Int): kotlin.Int declared in kotlin.Int' type=kotlin.Int origin=null
-                          $this: GET_VAR 'var tmp_25: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlin.Int origin=null
-                          other: CONST Int type=kotlin.Int value=1
-                BRANCH
-                  if: CONST Boolean type=kotlin.Boolean value=true
-                  then: WHILE label=null origin=null
-                    condition: GET_VAR 'var tmp_23: kotlin.Boolean declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlin.Boolean origin=null
-                    body: BLOCK type=kotlin.Unit origin=null
-                      SET_VAR 'var tmp_24: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                        CALL 'public abstract fun decodeElementIndex (descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlin.Int declared in kotlinx.serialization.encoding.CompositeDecoder' type=kotlin.Int origin=null
-                          $this: GET_VAR 'val tmp_27: kotlinx.serialization.encoding.CompositeDecoder declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-                          descriptor: GET_VAR 'val tmp_22: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-                      WHEN type=kotlin.Unit origin=null
-                        BRANCH
-                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                            arg0: GET_VAR 'var tmp_24: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlin.Int origin=null
-                            arg1: CONST Int type=kotlin.Int value=-1
-                          then: SET_VAR 'var tmp_23: kotlin.Boolean declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                            CONST Boolean type=kotlin.Boolean value=false
-                        BRANCH
-                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                            arg0: GET_VAR 'var tmp_24: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlin.Int origin=null
-                            arg1: CONST Int type=kotlin.Int value=0
-                          then: BLOCK type=kotlin.Unit origin=null
-                            SET_VAR 'var tmp_26: <root>.TestData? declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                              CALL 'public abstract fun decodeSerializableElement <T> (descriptor: kotlinx.serialization.descriptors.SerialDescriptor, index: kotlin.Int, deserializer: kotlinx.serialization.DeserializationStrategy<T of kotlinx.serialization.encoding.CompositeDecoder.decodeSerializableElement>, previousValue: T of kotlinx.serialization.encoding.CompositeDecoder.decodeSerializableElement?): T of kotlinx.serialization.encoding.CompositeDecoder.decodeSerializableElement declared in kotlinx.serialization.encoding.CompositeDecoder' type=<root>.TestData origin=null
-                                <T>: <root>.TestData
-                                $this: GET_VAR 'val tmp_27: kotlinx.serialization.encoding.CompositeDecoder declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-                                descriptor: GET_VAR 'val tmp_22: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-                                index: CONST Int type=kotlin.Int value=0
-                                deserializer: GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>]' type=<root>.TestData.$serializer
-                                previousValue: GET_VAR 'var tmp_26: <root>.TestData? declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=<root>.TestData? origin=null
-                            SET_VAR 'var tmp_25: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlin.Unit origin=EQ
-                              CALL 'public final fun or (other: kotlin.Int): kotlin.Int declared in kotlin.Int' type=kotlin.Int origin=null
-                                $this: GET_VAR 'var tmp_25: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlin.Int origin=null
-                                other: CONST Int type=kotlin.Int value=1
-                        BRANCH
-                          if: CONST Boolean type=kotlin.Boolean value=true
-                          then: THROW type=kotlin.Nothing
-                            CONSTRUCTOR_CALL 'public constructor <init> (index: kotlin.Int) declared in kotlinx.serialization.UnknownFieldException' type=kotlinx.serialization.UnknownFieldException origin=null
-                              index: GET_VAR 'var tmp_24: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlin.Int origin=null
-              CALL 'public abstract fun endStructure (descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlin.Unit declared in kotlinx.serialization.encoding.CompositeDecoder' type=kotlin.Unit origin=null
-                $this: GET_VAR 'val tmp_27: kotlinx.serialization.encoding.CompositeDecoder declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.encoding.CompositeDecoder origin=null
-                descriptor: GET_VAR 'val tmp_22: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-              RETURN type=kotlin.Nothing from='public final fun deserialize (decoder: kotlinx.serialization.encoding.Decoder): <root>.BoxService.$rpcServiceStub.test2$rpcMethod declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer'
-                CONSTRUCTOR_CALL 'internal constructor <init> (seen0: kotlin.Int, testData: <root>.TestData?, serializationConstructorMarker: kotlinx.serialization.internal.SerializationConstructorMarker?) declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod origin=null
-                  seen0: GET_VAR 'var tmp_25: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=kotlin.Int origin=null
-                  testData: GET_VAR 'var tmp_26: <root>.TestData? declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.deserialize' type=<root>.TestData? origin=null
-                  serializationConstructorMarker: CONST Null type=kotlin.Nothing? value=null
-          FUN GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:serialize visibility:public modality:FINAL <> ($this:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer, encoder:kotlinx.serialization.encoding.Encoder, value:<root>.BoxService.$rpcServiceStub.test2$rpcMethod) returnType:kotlin.Unit
-            overridden:
-              public abstract fun serialize (encoder: kotlinx.serialization.encoding.Encoder, value: T of kotlinx.serialization.internal.GeneratedSerializer): kotlin.Unit declared in kotlinx.serialization.internal.GeneratedSerializer
-            $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer
-            VALUE_PARAMETER GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:encoder index:0 type:kotlinx.serialization.encoding.Encoder
-            VALUE_PARAMETER GENERATED[org.jetbrains.kotlinx.serialization.compiler.fir.SerializationPluginKey] name:value index:1 type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod
-            BLOCK_BODY
-              VAR IR_TEMPORARY_VARIABLE name:tmp_28 type:kotlinx.serialization.descriptors.SerialDescriptor [val]
-                CALL 'public final fun <get-descriptor> (): kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer' type=kotlinx.serialization.descriptors.SerialDescriptor origin=GET_PROPERTY
-                  $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.serialize' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer origin=null
-              VAR IR_TEMPORARY_VARIABLE name:tmp_29 type:kotlinx.serialization.encoding.CompositeEncoder [val]
-                CALL 'public abstract fun beginStructure (descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlinx.serialization.encoding.CompositeEncoder declared in kotlinx.serialization.encoding.Encoder' type=kotlinx.serialization.encoding.CompositeEncoder origin=null
-                  $this: GET_VAR 'encoder: kotlinx.serialization.encoding.Encoder declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.serialize' type=kotlinx.serialization.encoding.Encoder origin=null
-                  descriptor: GET_VAR 'val tmp_28: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.serialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-              CALL 'internal final fun write$Self (self: <root>.BoxService.$rpcServiceStub.test2$rpcMethod, output: kotlinx.serialization.encoding.CompositeEncoder, serialDesc: kotlinx.serialization.descriptors.SerialDescriptor): kotlin.Unit declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod' type=kotlin.Unit origin=null
-                self: GET_VAR 'value: <root>.BoxService.$rpcServiceStub.test2$rpcMethod declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.serialize' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod origin=null
-                output: GET_VAR 'val tmp_29: kotlinx.serialization.encoding.CompositeEncoder declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.serialize' type=kotlinx.serialization.encoding.CompositeEncoder origin=null
-                serialDesc: GET_VAR 'val tmp_28: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.serialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-              CALL 'public abstract fun endStructure (descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlin.Unit declared in kotlinx.serialization.encoding.CompositeEncoder' type=kotlin.Unit origin=null
-                $this: GET_VAR 'val tmp_29: kotlinx.serialization.encoding.CompositeEncoder declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.serialize' type=kotlinx.serialization.encoding.CompositeEncoder origin=null
-                descriptor: GET_VAR 'val tmp_28: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer.serialize' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-        CONSTRUCTOR GENERATED[kotlinx.rpc.codegen.RpcGeneratedRpcMethodClassKey] visibility:public <> (testData:<root>.TestData) returnType:<root>.BoxService.$rpcServiceStub.test2$rpcMethod [primary]
-          VALUE_PARAMETER GENERATED[kotlinx.rpc.codegen.RpcGeneratedRpcMethodClassKey] name:testData index:0 type:<root>.TestData
-          BLOCK_BODY
-            DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-            INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedRpcMethodClassKey] CLASS name:test2$rpcMethod modality:FINAL visibility:public superTypes:[kotlin.Any; kotlinx.rpc.internal.RpcMethodClass]' type=kotlin.Unit
-        CONSTRUCTOR KOTLINX_SERIALIZATION visibility:internal <> (seen0:kotlin.Int, testData:<root>.TestData?, serializationConstructorMarker:kotlinx.serialization.internal.SerializationConstructorMarker?) returnType:<root>.BoxService.$rpcServiceStub.test2$rpcMethod
-          VALUE_PARAMETER KOTLINX_SERIALIZATION name:seen0 index:0 type:kotlin.Int
-          VALUE_PARAMETER KOTLINX_SERIALIZATION name:testData index:1 type:<root>.TestData?
-          VALUE_PARAMETER KOTLINX_SERIALIZATION name:serializationConstructorMarker index:2 type:kotlinx.serialization.internal.SerializationConstructorMarker?
-          BLOCK_BODY
-            WHEN type=kotlin.Unit origin=null
-              BRANCH
-                if: CALL 'public final fun not (): kotlin.Boolean declared in kotlin.Boolean' type=kotlin.Boolean origin=EXCLEQ
-                  $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EXCLEQ
-                    arg0: CONST Int type=kotlin.Int value=1
-                    arg1: CALL 'public final fun and (other: kotlin.Int): kotlin.Int declared in kotlin.Int' type=kotlin.Int origin=null
-                      $this: CONST Int type=kotlin.Int value=1
-                      other: GET_VAR 'seen0: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.<init>' type=kotlin.Int origin=null
-                then: CALL 'public final fun throwMissingFieldException (seen: kotlin.Int, goldenMask: kotlin.Int, descriptor: kotlinx.serialization.descriptors.SerialDescriptor): kotlin.Unit declared in kotlinx.serialization.internal' type=kotlin.Unit origin=null
-                  seen: GET_VAR 'seen0: kotlin.Int declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.<init>' type=kotlin.Int origin=null
-                  goldenMask: CONST Int type=kotlin.Int value=1
-                  descriptor: CALL 'public final fun <get-descriptor> (): kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer' type=kotlinx.serialization.descriptors.SerialDescriptor origin=GET_PROPERTY
-                    $this: GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.BoxService.$rpcServiceStub.test2$rpcMethod>]' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod.$serializer
-            DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-            SET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:testData type:<root>.TestData visibility:private [final]' type=kotlin.Unit origin=null
-              receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test2$rpcMethod declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod origin=null
-              value: GET_VAR 'testData: <root>.TestData? declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.<init>' type=<root>.TestData? origin=null
-        FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean [fake_override,operator]
-          overridden:
-            public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlin.Any
-          $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-          VALUE_PARAMETER name:other index:0 type:kotlin.Any?
-        FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int [fake_override]
-          overridden:
-            public open fun hashCode (): kotlin.Int declared in kotlin.Any
-          $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-        FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String [fake_override]
-          overridden:
-            public open fun toString (): kotlin.String declared in kotlin.Any
-          $this: VALUE_PARAMETER name:<this> type:kotlin.Any
-        FUN KOTLINX_SERIALIZATION name:write$Self visibility:internal modality:FINAL <> (self:<root>.BoxService.$rpcServiceStub.test2$rpcMethod, output:kotlinx.serialization.encoding.CompositeEncoder, serialDesc:kotlinx.serialization.descriptors.SerialDescriptor) returnType:kotlin.Unit
-          annotations:
-            JvmStatic
-          VALUE_PARAMETER KOTLINX_SERIALIZATION name:self index:0 type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod
-          VALUE_PARAMETER KOTLINX_SERIALIZATION name:output index:1 type:kotlinx.serialization.encoding.CompositeEncoder
-          VALUE_PARAMETER KOTLINX_SERIALIZATION name:serialDesc index:2 type:kotlinx.serialization.descriptors.SerialDescriptor
-          BLOCK_BODY
-            CALL 'public abstract fun encodeSerializableElement <T> (descriptor: kotlinx.serialization.descriptors.SerialDescriptor, index: kotlin.Int, serializer: kotlinx.serialization.SerializationStrategy<T of kotlinx.serialization.encoding.CompositeEncoder.encodeSerializableElement>, value: T of kotlinx.serialization.encoding.CompositeEncoder.encodeSerializableElement): kotlin.Unit declared in kotlinx.serialization.encoding.CompositeEncoder' type=kotlin.Unit origin=null
-              <T>: <root>.TestData
-              $this: GET_VAR 'output: kotlinx.serialization.encoding.CompositeEncoder declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.write$Self' type=kotlinx.serialization.encoding.CompositeEncoder origin=null
-              descriptor: GET_VAR 'serialDesc: kotlinx.serialization.descriptors.SerialDescriptor declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.write$Self' type=kotlinx.serialization.descriptors.SerialDescriptor origin=null
-              index: CONST Int type=kotlin.Int value=0
-              serializer: GET_OBJECT 'CLASS KOTLINX_SERIALIZATION OBJECT name:$serializer modality:FINAL visibility:public superTypes:[kotlinx.serialization.internal.GeneratedSerializer<<root>.TestData>]' type=<root>.TestData.$serializer
-              value: CALL 'public final fun <get-testData> (): <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod' type=<root>.TestData origin=GET_PROPERTY
-                $this: GET_VAR 'self: <root>.BoxService.$rpcServiceStub.test2$rpcMethod declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.write$Self' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod origin=null
-        FUN name:asArray visibility:public modality:OPEN <> ($this:<root>.BoxService.$rpcServiceStub.test2$rpcMethod) returnType:kotlin.Array<out kotlin.Any?>
-          overridden:
-            public abstract fun asArray (): kotlin.Array<out kotlin.Any?> declared in kotlinx.rpc.internal.RpcMethodClass
-          $this: VALUE_PARAMETER name:<this> type:<root>.BoxService.$rpcServiceStub.test2$rpcMethod
-          BLOCK_BODY
-            RETURN type=kotlin.Nothing from='public open fun asArray (): kotlin.Array<out kotlin.Any?> declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod'
-              CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<out kotlin.Any?> origin=null
-                <T>: kotlin.Any?
-                elements: VARARG type=kotlin.Array<kotlin.Any?> varargElementType=kotlin.Any?
-                  CALL 'public final fun <get-testData> (): <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod' type=<root>.TestData origin=GET_PROPERTY
-                    $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.test2$rpcMethod declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod.asArray' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod origin=null
       CONSTRUCTOR visibility:public <> (__rpc_stub_id:kotlin.Long, __rpc_client:kotlinx.rpc.RpcClient) returnType:<root>.BoxService.$rpcServiceStub [primary]
         VALUE_PARAMETER name:__rpc_stub_id index:0 type:kotlin.Long
         VALUE_PARAMETER name:__rpc_client index:1 type:kotlinx.rpc.RpcClient
@@ -1087,11 +316,13 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
               <T>: kotlin.String
               $this: CALL 'private final fun <get-__rpc_client> (): kotlinx.rpc.RpcClient declared in <root>.BoxService.$rpcServiceStub' type=kotlinx.rpc.RpcClient origin=GET_PROPERTY
                 $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.test1' type=<root>.BoxService.$rpcServiceStub origin=null
-              call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<*>, callableName: kotlin.String, data: kotlin.Any, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall origin=null
+              call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<*>, callableName: kotlin.String, parameters: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall origin=null
                 descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<<root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
                 callableName: CONST String type=kotlin.String value="test1"
-                data: CONSTRUCTOR_CALL 'public constructor <init> (testData: <root>.TestData) declared in <root>.BoxService.$rpcServiceStub.test1$rpcMethod' type=<root>.BoxService.$rpcServiceStub.test1$rpcMethod origin=null
-                  testData: GET_VAR 'testData: <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test1' type=<root>.TestData origin=null
+                parameters: CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<out kotlin.Any?> origin=null
+                  <T>: kotlin.Any?
+                  elements: VARARG type=kotlin.Array<kotlin.Any?> varargElementType=kotlin.Any?
+                    GET_VAR 'testData: <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test1' type=<root>.TestData origin=null
                 serviceId: CALL 'private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.BoxService.$rpcServiceStub' type=kotlin.Long origin=GET_PROPERTY
                   $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.test1' type=<root>.BoxService.$rpcServiceStub origin=null
       FUN name:test2 visibility:public modality:OPEN <> ($this:<root>.BoxService.$rpcServiceStub, testData:<root>.TestData) returnType:kotlin.String [suspend]
@@ -1105,11 +336,13 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
               <T>: kotlin.String
               $this: CALL 'private final fun <get-__rpc_client> (): kotlinx.rpc.RpcClient declared in <root>.BoxService.$rpcServiceStub' type=kotlinx.rpc.RpcClient origin=GET_PROPERTY
                 $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.test2' type=<root>.BoxService.$rpcServiceStub origin=null
-              call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<*>, callableName: kotlin.String, data: kotlin.Any, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall origin=null
+              call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<*>, callableName: kotlin.String, parameters: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall origin=null
                 descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<<root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
                 callableName: CONST String type=kotlin.String value="test2"
-                data: CONSTRUCTOR_CALL 'public constructor <init> (testData: <root>.TestData) declared in <root>.BoxService.$rpcServiceStub.test2$rpcMethod' type=<root>.BoxService.$rpcServiceStub.test2$rpcMethod origin=null
-                  testData: GET_VAR 'testData: <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test2' type=<root>.TestData origin=null
+                parameters: CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<out kotlin.Any?> origin=null
+                  <T>: kotlin.Any?
+                  elements: VARARG type=kotlin.Array<kotlin.Any?> varargElementType=kotlin.Any?
+                    GET_VAR 'testData: <root>.TestData declared in <root>.BoxService.$rpcServiceStub.test2' type=<root>.TestData origin=null
                 serviceId: CALL 'private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.BoxService.$rpcServiceStub' type=kotlin.Long origin=GET_PROPERTY
                   $this: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.test2' type=<root>.BoxService.$rpcServiceStub origin=null
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean [fake_override,operator]
