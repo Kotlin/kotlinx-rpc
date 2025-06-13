@@ -5,10 +5,10 @@
 package kotlinx.rpc.codegen.checkers
 
 import kotlinx.rpc.codegen.common.RpcClassId
+import kotlinx.rpc.codegen.vsApi
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.analysis.checkers.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.caches.FirCache
 import org.jetbrains.kotlin.fir.caches.createCache
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
@@ -22,7 +22,6 @@ import org.jetbrains.kotlin.fir.deserialization.registeredInSerializationPluginM
 import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
-import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.scopes.impl.declaredMemberScope
 import org.jetbrains.kotlin.fir.scopes.processAllProperties
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
@@ -98,7 +97,8 @@ private class FirSerializableProperty(
     }
 }
 
-private fun FirBasedSymbol<*>.hasSerialTransient(session: FirSession): Boolean = getSerialTransientAnnotation(session) != null
+private fun FirBasedSymbol<*>.hasSerialTransient(session: FirSession): Boolean =
+    getSerialTransientAnnotation(session) != null
 
 private fun FirBasedSymbol<*>.getSerialTransientAnnotation(session: FirSession): FirAnnotation? =
     getAnnotationByClassId(RpcClassId.serializationTransient, session)
@@ -109,8 +109,12 @@ private fun FirClassSymbol<*>.superClassNotAny(session: FirSession): FirRegularC
 
 private fun FirClassSymbol<*>.superClassOrAny(session: FirSession): FirRegularClassSymbol {
     return resolvedSuperTypes.firstNotNullOfOrNull { superType ->
-        superType.fullyExpandedType(session)
-            .toRegularClassSymbol(session)
-            ?.takeIf { it.classKind == ClassKind.CLASS }
-    } ?: session.builtinTypes.anyType.toRegularClassSymbol(session) ?: error("Symbol for kotlin/Any not found")
+        vsApi {
+            superType
+                .fullyExpandedType(session)
+                .toRegularClassSymbolVS(session)
+        }?.takeIf { it.classKind == ClassKind.CLASS }
+    }
+        ?: vsApi { session.builtinTypes.anyType.toRegularClassSymbolVS(session) }
+        ?: error("Symbol for kotlin/Any not found")
 }

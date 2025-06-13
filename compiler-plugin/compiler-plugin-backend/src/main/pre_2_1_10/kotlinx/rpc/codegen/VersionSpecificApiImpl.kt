@@ -5,6 +5,7 @@
 package kotlinx.rpc.codegen
 
 import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
+import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.ir.addExtensionReceiver
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -17,7 +18,6 @@ import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
@@ -52,7 +52,9 @@ object VersionSpecificApiImpl : VersionSpecificApi {
 
     override var IrCall.originVS: IrStatementOrigin?
         get() = origin
-        set(value) { origin = value }
+        set(value) {
+            origin = value
+        }
 
     override var IrConstructor.isPrimaryVS: Boolean
         get() = isPrimary
@@ -120,7 +122,6 @@ object VersionSpecificApiImpl : VersionSpecificApi {
             type = type,
             symbol = symbol,
             typeArgumentsCount = typeArgumentsCount,
-            valueArgumentsCount = valueArgumentsCount,
             origin = origin,
             superQualifierSymbol = superQualifierSymbol,
         )
@@ -143,7 +144,6 @@ object VersionSpecificApiImpl : VersionSpecificApi {
             type = type,
             symbol = symbol,
             typeArgumentsCount = typeArgumentsCount,
-            valueArgumentsCount = valueArgumentsCount,
             constructorTypeArgumentsCount = constructorTypeArgumentsCount,
             origin = origin,
             source = source,
@@ -165,8 +165,13 @@ object VersionSpecificApiImpl : VersionSpecificApi {
 
 
     override fun IrMemberAccessExpressionData.buildFor(access: IrMemberAccessExpression<*>) {
-        access.dispatchReceiver = dispatchReceiver
-        access.extensionReceiver = extensionReceiver
+        if (dispatchReceiver != null) {
+            access.dispatchReceiver = dispatchReceiver
+        }
+
+        if (extensionReceiver != null) {
+            access.extensionReceiver = extensionReceiver
+        }
 
         valueArguments.forEachIndexed { index, irExpression ->
             access.putValueArgument(index, irExpression)

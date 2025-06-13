@@ -22,7 +22,6 @@ import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
 import org.jetbrains.kotlin.ir.types.*
-import org.jetbrains.kotlin.ir.util.isNullable
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
@@ -603,7 +602,7 @@ internal class RpcStubGenerator(
                                             }
                                         }
 
-                                        if (arg.type.isNullable()) {
+                                        if (vsApi { arg.type.isNullableVS() }) {
                                             +irSafeAs(parameter, arg.type)
                                         } else {
                                             +irAs(parameter, arg.type)
@@ -1061,7 +1060,7 @@ internal class RpcStubGenerator(
                             elements = type.annotations
                                 .filter { it.type.isSerializableAnnotation() }
                                 .memoryOptimizedMap {
-                                    val kClassValue = it.arguments.singleOrNull()
+                                    val kClassValue = vsApi { it.argumentsVS }.singleOrNull()
                                             as? IrClassReference
                                         ?: error("Expected single not null value parameter of KSerializer::class for @Serializable annotation on type '${type.dumpKotlinLike()}'")
 
@@ -1076,7 +1075,7 @@ internal class RpcStubGenerator(
 
     private fun IrType.irCreateInstance(): IrExpression {
         val classSymbol =
-            classOrNull ?: error("Expected class type for type to create instance '${type.dumpKotlinLike()}'")
+            classOrNull ?: error("Expected class type for type to create instance '${dumpKotlinLike()}'")
 
         return if (classSymbol.owner.isObject) {
             IrGetObjectValueImpl(
@@ -1089,10 +1088,10 @@ internal class RpcStubGenerator(
             val constructor = classSymbol.owner.primaryConstructor
                 ?: error("Expected primary constructor for a serializer '${dumpKotlinLike()}'")
 
-            if (constructor.parameters.isNotEmpty()) {
+            if (vsApi { constructor.parametersVS.isNotEmpty() }) {
                 error(
                     "Primary constructor for a serializer '${dumpKotlinLike()}' can't have parameters: " +
-                            constructor.parameters.joinToString { it.dumpKotlinLike() }
+                            vsApi { constructor.parametersVS }.joinToString { it.dumpKotlinLike() }
                 )
             }
 

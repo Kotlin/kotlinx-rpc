@@ -14,6 +14,8 @@ import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
+import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
@@ -23,6 +25,7 @@ import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.copyTo
+import org.jetbrains.kotlin.ir.util.isNullable
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
@@ -57,6 +60,16 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         set(value) {
             isPrimary = value
         }
+
+    override val IrConstructor.parametersVS: List<IrValueParameter>
+        get() = parameters
+
+    override val IrConstructorCall.argumentsVS: List<IrExpression?>
+        get() = arguments.toList()
+
+    override fun IrType.isNullableVS(): Boolean {
+        return isNullable()
+    }
 
     override fun referenceClass(context: IrPluginContext, packageName: String, name: String): IrClassSymbol? {
         return context.referenceClass(
