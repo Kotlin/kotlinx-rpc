@@ -5,10 +5,10 @@
 package kotlinx.rpc.codegen.checkers
 
 import kotlinx.rpc.codegen.common.RpcClassId
+import kotlinx.rpc.codegen.vsApi
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.analysis.checkers.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.caches.FirCache
 import org.jetbrains.kotlin.fir.caches.createCache
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
@@ -112,5 +112,5 @@ private fun FirClassSymbol<*>.superClassOrAny(session: FirSession): FirRegularCl
         superType.fullyExpandedType(session)
             .toRegularClassSymbol(session)
             ?.takeIf { it.classKind == ClassKind.CLASS }
-    } ?: session.builtinTypes.anyType.toRegularClassSymbol(session) ?: error("Symbol for kotlin/Any not found")
+    } ?: vsApi { session.builtinTypes.anyType.toRegularClassSymbolVS(session) } ?: error("Symbol for kotlin/Any not found")
 }

@@ -6,6 +6,7 @@ package kotlinx.rpc.codegen
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.analysis.checkers.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
@@ -55,4 +56,8 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
     }
 
     override val FirResolvedTypeRef.coneTypeVS: ConeKotlinType get() = coneType
+
+    override fun FirTypeRef.toRegularClassSymbolVS(session: FirSession): FirRegularClassSymbol? {
+        return toRegularClassSymbol(session)
+    }
 }
