@@ -8,5 +8,5 @@ plugins {
 
 dependencies {
     implementation("com.gradle:develocity-gradle-plugin:3.17")
-    implementation("com.gradle:common-custom-user-data-gradle-plugin:2.2.1")
+    implementation("com.gradle:common-custom-user-data-gradle-plugin:2.3")
 }
