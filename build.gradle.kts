@@ -6,7 +6,9 @@ import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 import util.configureApiValidation
 import util.configureNpm
 import util.configureProjectReport
+import util.registerDumpPlatformTableTask
 import util.libs
+import util.registerVerifyPlatformTableTask
 
 plugins {
     alias(libs.plugins.serialization) apply false
@@ -20,6 +22,9 @@ plugins {
 configureProjectReport()
 configureNpm()
 configureApiValidation()
+
+registerDumpPlatformTableTask()
+registerVerifyPlatformTableTask()
 
 val kotlinVersion = rootProject.libs.versions.kotlin.lang.get()
 val kotlinCompiler = rootProject.libs.versions.kotlin.compiler.get()

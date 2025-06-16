@@ -114,11 +114,11 @@ However, we are also a multi-module library, meaning that some modules may not s
 
 Current high-level status:
 
-| Subsystem | Supported Platforms                        |
-|-----------|--------------------------------------------|
-| Core      | JVM, Native, JS, WasmJs, WasmWASI, Windows |
-| kRPC      | JVM, Native, JS, WasmJs, Windows           |
-| gRPC      | JVM (in JVM-only projects)                 |
+| Subsystem | Supported Platforms                              |
+|-----------|--------------------------------------------------|
+| Core      | Jvm, Js, WasmJs, WasmWasi, Apple, Linux, Windows |
+| kRPC      | Jvm, Js, WasmJs, Apple, Linux, Windows           |
+| gRPC      | Jvm (in Jvm-only projects)                       |
 
 For more detailed module by module information, 
 check out our [platform support table](https://kotlin.github.io/kotlinx-rpc/platforms.html).
