@@ -36,6 +36,8 @@ gradle-kotlin-dsl = "5.1.2"
 binary-compatibility-validator = "0.17.0"
 kover = "0.9.1"
 
+puppeteer = "24.9.0"
+
 [libraries]
 # kotlinx.rpc – references to the included builds
 # as they're local to the project, kotlinx-rpc- prefix is omitted

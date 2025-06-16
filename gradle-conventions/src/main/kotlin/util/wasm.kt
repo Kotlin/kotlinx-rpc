@@ -38,7 +38,7 @@ fun ProjectKotlinConfig.configureWasm() {
                 }
 
                 wasmJsTest {
-                    puppeteer()
+                    puppeteer(libs.versions.puppeteer.get())
                 }
             }
         }
