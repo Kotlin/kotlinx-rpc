@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.test.directives.model.SimpleDirectivesContainer
 import org.jetbrains.kotlin.test.model.TestModule
 import org.jetbrains.kotlin.test.services.EnvironmentConfigurator
 import org.jetbrains.kotlin.test.services.TestServices
-import org.jetbrains.kotlinx.serialization.compiler.extensions.SerializationComponentRegistrar
 
 class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentConfigurator(testServices) {
     override val directiveContainers: List<DirectivesContainer> = listOf(RpcDirectives)
@@ -32,9 +31,6 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
         }
 
         registerRpcExtensions(configuration)
-
-        // libs
-        SerializationComponentRegistrar.registerExtensions(this)
     }
 }
 

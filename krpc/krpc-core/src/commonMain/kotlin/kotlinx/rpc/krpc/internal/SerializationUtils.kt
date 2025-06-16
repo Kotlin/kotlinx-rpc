@@ -4,43 +4,49 @@
 
 package kotlinx.rpc.krpc.internal
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.rpc.descriptor.RpcCallable
 import kotlinx.rpc.descriptor.RpcType
+import kotlinx.rpc.descriptor.RpcTypeKrpc
+import kotlinx.rpc.internal.rpcInternalKClass
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.serialization.*
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.encoding.*
 import kotlinx.serialization.modules.SerializersModule
-import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
 @OptIn(ExperimentalSerializationApi::class)
-internal fun SerializersModule.buildContextual(type: KType): KSerializer<Any?> {
+internal fun SerializersModule.buildContextualInternal(type: KType): KSerializer<Any?>? {
     val result = getContextual(
-        kClass = type.classifier as? KClass<*> ?: error("Unknown type $type"),
-        typeArgumentsSerializers = type.arguments.map {
-            rpcSerializerForType(
-                it.type ?: error("No type information for $type<$it>")
-            )
+        kClass = type.rpcInternalKClass(),
+        typeArgumentsSerializers = type.arguments.mapIndexed { i, typeArgument ->
+            val typeArg = typeArgument.type
+                ?: error("Unexpected star projection type at index $i in type arguments list of '$type'")
+
+            buildContextualInternal(typeArg) ?: serializer(typeArg)
         }
     )
+
     @Suppress("UNCHECKED_CAST")
-    return result as? KSerializer<Any?> ?: error("No serializer found for $type")
+    return result as? KSerializer<Any?>
 }
 
+private fun SerializersModule.buildContextual(type: KType): KSerializer<Any?> {
+    return buildContextualInternal(type) ?: serializer(type)
+}
+
+@OptIn(ExperimentalSerializationApi::class)
 @InternalRpcApi
-public fun SerializersModule.rpcSerializerForType(type: RpcType): KSerializer<Any?> {
-    return rpcSerializerForType(type.kType)
+public fun SerializersModule.buildContextual(type: RpcType): KSerializer<Any?> {
+    return type.annotations
+        .filterIsInstance<Serializable>()
+        .lastOrNull()
+        ?.let {
+            (type as? RpcTypeKrpc)?.serializers[it.with]
+        }
+        ?: buildContextual(type.kType)
 }
-
-@InternalRpcApi
-public fun SerializersModule.rpcSerializerForType(type: KType): KSerializer<Any?> {
-    return when (type.classifier) {
-        Flow::class, SharedFlow::class, StateFlow::class -> buildContextual(type)
-        else -> serializer(type)
-    }
-}
-
 
 @InternalRpcApi
 public fun unsupportedSerialFormatError(serialFormat: SerialFormat): Nothing {
@@ -56,16 +62,18 @@ internal fun unexpectedDataFormatForProvidedSerialFormat(
         else -> "StringFormat" to "binary"
     }
 
-    error("Unexpected message format for provided serial format: " +
-            "message is in $actual format (${data::class}), but provided SerialFormat is $expected")
+    error(
+        "Unexpected message format for provided serial format: " +
+                "message is in $actual format (${data::class}), but provided SerialFormat is $expected"
+    )
 }
 
 @InternalRpcApi
-public fun decodeMessageData(
+public fun <T> decodeMessageData(
     serialFormat: SerialFormat,
-    dataSerializer: KSerializer<Any?>,
+    dataSerializer: KSerializer<T>,
     data: KrpcCallMessage.Data,
-): Any? {
+): T {
     return when (serialFormat) {
         is StringFormat -> {
             if (data !is KrpcCallMessage.Data.StringData) {
@@ -85,6 +93,55 @@ public fun decodeMessageData(
 
         else -> {
             unsupportedSerialFormatError(serialFormat)
+        }
+    }
+}
+
+@InternalRpcApi
+public class CallableParametersSerializer(
+    private val callable: RpcCallable<*>,
+    private val module: SerializersModule,
+) : KSerializer<Array<Any?>> {
+    private val callableSerializers = Array(callable.parameters.size) { i ->
+        module.buildContextual(callable.parameters[i].type)
+    }
+
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("CallableParametersSerializer") {
+        for (i in callableSerializers.indices) {
+            val param = callable.parameters[i]
+            element(
+                elementName = param.name,
+                descriptor = callableSerializers[i].descriptor,
+                annotations = param.type.annotations,
+                isOptional = param.type.kType.isMarkedNullable,
+            )
+        }
+    }
+
+    override fun serialize(
+        encoder: Encoder,
+        value: Array<Any?>,
+    ) {
+        encoder.encodeStructure(descriptor) {
+            for (i in callable.parameters.indices) {
+                encodeSerializableElement(descriptor, i, callableSerializers[i], value[i])
+            }
+        }
+    }
+
+    override fun deserialize(decoder: Decoder): Array<Any?> {
+        return decoder.decodeStructure(descriptor) {
+            val result = arrayOfNulls<Any?>(callable.parameters.size)
+            while (true) {
+                val index = decodeElementIndex(descriptor)
+                if (index == CompositeDecoder.DECODE_DONE) {
+                    break
+                }
+
+                result[index] = decodeSerializableElement(descriptor, index, callableSerializers[index])
+            }
+
+            result
         }
     }
 }

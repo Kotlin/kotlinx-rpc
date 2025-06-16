@@ -46,6 +46,7 @@ fun List<FirAnnotation>.rpcAnnotation(session: FirSession, predicate: Declaratio
     }
 }
 
+@Suppress("unused")
 @OptIn(SymbolInternals::class)
 internal fun FirTypeRef.doesMatchesClassId(session: FirSession, classId: ClassId): Boolean {
     return coneTypeSafe<ConeClassLikeType>()?.fullyExpandedType(session)?.lookupTag?.classId == classId

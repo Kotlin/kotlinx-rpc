@@ -72,13 +72,16 @@ dependencies {
     testRuntimeOnly(libs.kotlin.script.runtime)
     testRuntimeOnly(libs.kotlin.annotations.jvm)
 
-    whenForIde {
-        testImplementation(libs.serialization.plugin.forIde) {
-            isTransitive = false
-        }
-    } otherwise {
-        testImplementation(libs.serialization.plugin)
-    }
+    // uncomment when serialization is needed for testing again
+//    whenForIde {
+//        testImplementation(libs.serialization.plugin.forIde) {
+//            isTransitive = false
+//        }
+//    } otherwise {
+//        testImplementation(libs.serialization.plugin)
+//    }
+//
+//    testDataClasspath(libs.serialization.core)
 
     testImplementation(libs.compiler.plugin.common)
     testImplementation(libs.compiler.plugin.backend)
@@ -100,7 +103,6 @@ dependencies {
 
     testDataClasspath(projects.utils)
     testDataClasspath(libs.coroutines.core)
-    testDataClasspath(libs.serialization.core)
 }
 
 val updateTestData = (project.findProperty("kotlin.test.update.test.data") as? String) ?: "false"

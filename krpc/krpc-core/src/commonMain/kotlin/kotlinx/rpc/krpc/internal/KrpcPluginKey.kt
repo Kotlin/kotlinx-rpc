@@ -4,9 +4,7 @@
 
 package kotlinx.rpc.krpc.internal
 
-import kotlinx.rpc.internal.utils.RpcInternalIndexedEnum
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.internal.utils.RpcInternalShortEnumKSerializer
 import kotlinx.serialization.Serializable
 
 /**

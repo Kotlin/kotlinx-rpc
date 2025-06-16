@@ -48,29 +48,41 @@ public interface RpcServiceDescriptor<@Rpc T : Any> {
 }
 
 @ExperimentalRpcApi
-public class RpcCallable<@Rpc T : Any>(
-    public val name: String,
-    public val dataType: RpcType,
-    public val returnType: RpcType,
-    public val invokator: RpcInvokator<T>,
-    public val parameters: Array<RpcParameter>,
-    public val isNonSuspendFunction: Boolean,
-)
+public interface RpcCallable<@Rpc T : Any> {
+    public val name: String
+    public val returnType: RpcType
+    public val invokator: RpcInvokator<T>
+    public val parameters: Array<out RpcParameter>
+    public val isNonSuspendFunction: Boolean
+}
 
 @ExperimentalRpcApi
 public sealed interface RpcInvokator<@Rpc T : Any> {
     @ExperimentalRpcApi
     public fun interface Method<@Rpc T : Any> : RpcInvokator<T> {
-        public suspend fun call(service: T, data: Any?): Any?
+        public suspend fun call(service: T, parameters: Array<Any?>): Any?
     }
 }
 
 @ExperimentalRpcApi
-public class RpcParameter(public val name: String, public val type: RpcType)
+public interface RpcParameter {
+    public val name: String
+    public val type: RpcType
+
+    /**
+     * List of annotations with target [AnnotationTarget.VALUE_PARAMETER].
+     *
+     * Don't confuse with [RpcType.annotations].
+     */
+    public val annotations: List<Annotation>
+}
 
 @ExperimentalRpcApi
-public class RpcType(public val kType: KType) {
-    override fun toString(): String {
-        return kType.toString()
-    }
+public interface RpcType {
+    public val kType: KType
+
+    /**
+     * List of annotations with target [AnnotationTarget.TYPE].
+     */
+    public val annotations: List<Annotation>
 }

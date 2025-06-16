@@ -14,7 +14,6 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.serialization.core)
                 implementation(libs.coroutines.core)
             }
         }

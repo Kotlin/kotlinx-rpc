@@ -13,7 +13,7 @@ object RpcClassId {
     val checkedTypeAnnotation = ClassId(FqName("kotlinx.rpc.annotations"), Name.identifier("CheckedTypeAnnotation"))
 
     val serializableAnnotation = ClassId(FqName("kotlinx.serialization"), Name.identifier("Serializable"))
-    val contextualAnnotation = ClassId(FqName("kotlinx.serialization"), Name.identifier("Contextual"))
+    val serializationTransient = ClassId.topLevel(FqName("kotlinx.serialization.Transient"))
 
     val flow = ClassId(FqName("kotlinx.coroutines.flow"), Name.identifier("Flow"))
     val sharedFlow = ClassId(FqName("kotlinx.coroutines.flow"), Name.identifier("SharedFlow"))
@@ -22,9 +22,4 @@ object RpcClassId {
 
 object RpcNames {
     val SERVICE_STUB_NAME: Name = Name.identifier("\$rpcServiceStub")
-
-    const val METHOD_CLASS_NAME_SUFFIX = "\$rpcMethod"
 }
-
-val Name.rpcMethodClassName: Name get() = Name.identifier("$identifier${RpcNames.METHOD_CLASS_NAME_SUFFIX}")
-val Name.rpcMethodName: Name get() = Name.identifier(identifier.removeSuffix(RpcNames.METHOD_CLASS_NAME_SUFFIX))

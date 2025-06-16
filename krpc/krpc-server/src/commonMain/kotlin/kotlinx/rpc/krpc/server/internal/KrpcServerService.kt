@@ -128,14 +128,10 @@ internal class KrpcServerService<@Rpc T : Any>(
             error("Service ${descriptor.fqName} has no $callType '$callableName'")
         }
 
-        val data = if (isMethod) {
-            val serializerModule = serialFormat.serializersModule
-            val paramsSerializer = serializerModule.rpcSerializerForType(callable.dataType)
-            serverStreamContext.scoped(callId) {
-                decodeMessageData(serialFormat, paramsSerializer, callData)
-            }
-        } else {
-            null
+        val paramsSerializer = CallableParametersSerializer(callable, serialFormat.serializersModule)
+
+        val data = serverStreamContext.scoped(callId) {
+            decodeMessageData(serialFormat, paramsSerializer, callData)
         }
 
         var failure: Throwable? = null
@@ -168,7 +164,8 @@ internal class KrpcServerService<@Rpc T : Any>(
                 }
 
                 val returnType = callable.returnType
-                val returnSerializer = serialFormat.serializersModule.rpcSerializerForType(returnType)
+                val returnSerializer = serialFormat.serializersModule
+                    .buildContextual(returnType)
 
                 if (callable.isNonSuspendFunction) {
                     if (value !is Flow<*>) {
