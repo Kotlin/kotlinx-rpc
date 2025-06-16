@@ -10,11 +10,11 @@
     </p>
     <code-block lang="Kotlin">
         @Rpc
-        interface MyService : RemoteService
+        interface MyService
 
         class MyServiceImpl : MyService
 
-        fun &lt;T : RemoteService&gt; withService() {}
+        fun &lt;T&gt; withService() {}
     </code-block>
     <p>
         The compiler can't guarantee that the passed type parameter is the one for which the code generation was run:

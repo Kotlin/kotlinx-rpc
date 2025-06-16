@@ -20,7 +20,7 @@
         <p>Deprecation level: <code>ERROR</code></p>
         <code-block lang="kotlin">
             @Rpc
-            interface Service : RemoteService {
+            interface Service {
                 suspend fun old(): StateFlow&lt;Int&gt; // deprecated
 
                 suspend fun new(): Flow&lt;Int&gt; // use .stateIn on the client side
@@ -32,7 +32,7 @@
         <p>Deprecation level: <code>ERROR</code></p>
         <code-block lang="kotlin">
             @Rpc
-            interface Service : RemoteService {
+            interface Service {
                 val old: Flow&lt;Int&gt; // deprecated
 
                 suspend fun new(): Flow&lt;Int&gt; // store flow locally
@@ -43,7 +43,7 @@
         <p>Deprecation level: <code>ERROR</code></p>
         <code-block lang="kotlin">
             @Rpc
-            interface Service : RemoteService {
+            interface Service {
                 suspend fun old(): Flow&lt;Flow&lt;Int&gt;&gt; // deprecated
 
                 // no particular alternative, depends on the use case
@@ -57,7 +57,7 @@
             data class SpotifyWrapped(val myMusicFlow: Flow&lt;Rap&gt;, val extra: Data)
 
             @Rpc
-            interface Service : RemoteService {
+            interface Service {
                 suspend fun old(): SpotifyWrapped // deprecated
 
                 // one should consider message delivery order when calling these
@@ -73,7 +73,7 @@
             data class SpotifyWrapped(val extra: Data)
 
             @Rpc
-            interface Service : RemoteService {
+            interface Service {
                 suspend fun old(): Flow&lt;SpotifyWrapped&gt; // deprecated
 
                 fun new(): Flow&lt;SpotifyWrapped&gt;
@@ -102,7 +102,7 @@
         </p>
         <code-block lang="kotlin">
             @Rpc
-            interface Service : RemoteService {
+            interface Service {
                 suspend fun oldClient(flow: Flow&lt;Int&gt;)
                 suspend fun oldServer(): Flow&lt;Int&gt;
             }
@@ -122,7 +122,7 @@
         </p>
         <code-block lang="kotlin">
             @Rpc
-            interface Service : RemoteService {
+            interface Service {
                 suspend fun newClient(flow: Flow&lt;Int&gt;)
                 fun newServer(): Flow&lt;Int&gt;
             }
