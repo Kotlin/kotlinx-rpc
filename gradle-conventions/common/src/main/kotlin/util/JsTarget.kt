@@ -24,15 +24,15 @@ fun ProjectKotlinConfig.configureJs() {
 
         sourceSets {
             val jsTest by getting {
-                puppeteer()
+                puppeteer(libs.versions.puppeteer.get())
             }
         }
     }
 }
 
-fun KotlinSourceSet.puppeteer() {
+fun KotlinSourceSet.puppeteer(version: String) {
     dependencies {
-        implementation(npm("puppeteer", "*"))
+        implementation(npm("puppeteer", version))
     }
 }
 
