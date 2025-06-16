@@ -1,4 +1,4 @@
-name: Check PR Labels
+name: Verify Platforms Table
 
 on:
   pull_request:
@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   verify-platforms-table:
-    name: Verify Platforms Table
+    name: Run Verification
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Sources
@@ -16,4 +16,4 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Check Platforms Table
-        run: ./gradlew verifyPlatformsTable --no-configuration-cache
+        run: ./gradlew verifyPlatformTable --no-configuration-cache

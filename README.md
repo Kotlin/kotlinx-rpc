@@ -114,11 +114,11 @@ However, we are also a multi-module library, meaning that some modules may not s
 
 Current high-level status:
 
-| Subsystem | Supported Platforms                              |
-|-----------|--------------------------------------------------|
-| Core      | Jvm, Js, WasmJs, WasmWasi, Apple, Linux, Windows |
-| kRPC      | Jvm, Js, WasmJs, Apple, Linux, Windows           |
-| gRPC      | Jvm (in Jvm-only projects)                       |
+| Subsystem | Supported Platforms                              | Notes                                                                                       | 
+|-----------|--------------------------------------------------|---------------------------------------------------------------------------------------------|
+| Core      | Jvm, Js, WasmJs, WasmWasi, Apple, Linux, Windows |                                                                                             |
+| kRPC      | Jvm, Js, WasmJs, Apple, Linux, Windows           | WasmWasi is blocked by [kotlin-logging](https://github.com/oshai/kotlin-logging/issues/433) |
+| gRPC      | Jvm                                              | Projects with `kotlin("jvm")` **only**! <br/> KMP support is in development                 |
 
 For more detailed module by module information, 
 check out our [platform support table](https://kotlin.github.io/kotlinx-rpc/platforms.html).

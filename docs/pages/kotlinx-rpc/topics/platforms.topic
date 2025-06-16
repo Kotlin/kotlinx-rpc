@@ -18,18 +18,31 @@
         <tr>
             <td>Subsystem</td>
             <td>Supported Platforms</td>
+            <td>Notes</td>
         </tr>
         <tr>
             <td>Core</td>
             <td>Jvm, Js, WasmJs, WasmWasi, Apple, Linux, Windows</td>
+            <td></td>
         </tr>
         <tr>
             <td>kRPC</td>
             <td>Jvm, Js, WasmJs, Apple, Linux, Windows</td>
+            <td>
+                WasmWasi is blocked by <a href="https://github.com/oshai/kotlin-logging/issues/433">kotlin-logging</a>.
+            </td>
         </tr>
         <tr>
             <td>gRPC</td>
-            <td>Jvm (in Jvm-only projects)</td>
+            <td>Jvm</td>
+            <td>
+                <p>
+                    Projects with <code>kotlin("jvm")</code> <b>only</b>!
+                </p>
+                <p>
+                    KMP support is in development
+                </p>
+            </td>
         </tr>
     </table>
 
