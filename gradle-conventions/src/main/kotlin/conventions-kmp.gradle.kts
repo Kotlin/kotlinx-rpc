@@ -4,6 +4,7 @@
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import util.*
+import util.applyDokka
 
 plugins {
     id("conventions-common")
@@ -23,3 +24,5 @@ withKotlinConfig {
 }
 
 configureJvm(isKmp = true)
+
+applyDokka()

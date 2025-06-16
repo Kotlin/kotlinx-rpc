@@ -13,6 +13,7 @@ dependencies {
 
     api(libs.kotlin.gradle.plugin)
     api(libs.detekt.gradle.plugin)
+    api(libs.dokka.gradle.plugin)
     api(libs.binary.compatibility.validator.gradle.plugin)
 
     if (isLatestKotlinVersion) {

@@ -19,6 +19,7 @@ lib-kotlin
 !.idea/icon.svg
 !.idea/detekt.xml
 !.idea/kotlinTestDataPluginTestDataPaths.xml
+!.idea/kotlinx-rpc.iml
 
 samples/**/.idea/*
 

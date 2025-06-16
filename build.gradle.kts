@@ -3,20 +3,74 @@
  */
 
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
+import util.asDokkaVersion
 import util.configureApiValidation
 import util.configureNpm
 import util.configureProjectReport
 import util.registerDumpPlatformTableTask
 import util.libs
 import util.registerVerifyPlatformTableTask
+import java.time.Year
 
 plugins {
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.kotlinx.rpc) apply false
     alias(libs.plugins.conventions.kover)
     alias(libs.plugins.conventions.gradle.doctor)
+    alias(libs.plugins.dokka)
     alias(libs.plugins.atomicfu)
     id("build-util")
+}
+
+dokka {
+    val libDokkaVersion = libs.versions.kotlinx.rpc.get().asDokkaVersion()
+
+    moduleVersion.set(libDokkaVersion)
+
+    val pagesDirectory = layout.projectDirectory
+        .dir("docs")
+        .dir("pages")
+
+    val dokkaVersionsDirectory = pagesDirectory
+        .dir("api")
+        .asFile
+
+    val templatesDirectory = pagesDirectory
+        .dir("templates")
+
+    pluginsConfiguration {
+        html {
+            customAssets.from(
+                "docs/pages/assets/logo-icon.svg",
+                "docs/pages/assets/homepage.svg", // Doesn't work due to https://github.com/Kotlin/dokka/issues/4007
+            )
+
+            footerMessage = "© ${Year.now()} JetBrains s.r.o and contributors. Apache License 2.0"
+            homepageLink = "https://kotlin.github.io/kotlinx-rpc/get-started.html"
+
+            // replace with homepage.svg once the mentioned issue is resolved
+            templatesDir.set(templatesDirectory)
+        }
+
+        // enable versioning for stable
+//        versioning {
+//            version = libDokkaVersion
+//            olderVersionsDir = dokkaVersionsDirectory
+//        }
+    }
+
+    dokkaPublications.html {
+        outputDirectory = dokkaVersionsDirectory
+    }
+
+    tasks.clean {
+        delete(dokkaVersionsDirectory)
+    }
+
+    dokkaGeneratorIsolation = ProcessIsolation {
+        // Configures heap size, use if start to fail with OOM on CI
+//        maxHeapSize = "4g"
+    }
 }
 
 configureProjectReport()
