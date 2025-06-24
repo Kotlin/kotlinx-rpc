@@ -5,8 +5,6 @@
 This release enforces ERROR as a default reporting level for APIs that are forbidden by the strict mode.
 You can still change the level manually, but in `0.8.0` strict mode will be enforced irreversibly.
 
-## What's Changed
-
 ### Breaking Changes 🔴
 * Change strict mode to level ERROR by default by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/338
 

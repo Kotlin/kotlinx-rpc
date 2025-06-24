@@ -8,6 +8,7 @@ import util.configureApiValidation
 import util.configureNpm
 import util.configureProjectReport
 import util.registerDumpPlatformTableTask
+import util.registerChangelogTask
 import util.libs
 import util.registerVerifyPlatformTableTask
 import java.time.Year
@@ -83,6 +84,7 @@ configureApiValidation()
 
 registerDumpPlatformTableTask()
 registerVerifyPlatformTableTask()
+registerChangelogTask()
 
 val kotlinVersion = rootProject.libs.versions.kotlin.lang.get()
 val kotlinCompiler = rootProject.libs.versions.kotlin.compiler.get()
