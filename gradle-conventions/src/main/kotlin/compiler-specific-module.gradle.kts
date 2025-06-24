@@ -4,12 +4,12 @@
 
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import util.*
+import util.other.DirectoryNames
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.text.lowercase
 
 val kotlinCompilerVersion: KotlinVersion by extra
-val preserveDefaultSourceDirectories by optionalProperty()
 
 fun NamedDomainObjectContainer<KotlinSourceSet>.applyCompilerSpecificSourceSets() {
     forEach { set ->
@@ -25,7 +25,7 @@ fun NamedDomainObjectContainer<KotlinSourceSet>.applyCompilerSpecificSourceSets(
             return@forEach
         }
 
-        val core = sourceSetPath.resolve(Dir.CORE_SOURCE_DIR).toFile()
+        val core = sourceSetPath.resolve(DirectoryNames.CORE_SOURCE_DIR).toFile()
 
         // version-specific source sets
         val vsSets = filterSourceDirsForCSM(sourceSetPath)
@@ -40,11 +40,7 @@ fun NamedDomainObjectContainer<KotlinSourceSet>.applyCompilerSpecificSourceSets(
 
         val newSourceDirectories = listOfNotNull(core, mostSpecificApplicable)
 
-        if (preserveDefaultSourceDirectories) {
-            set.kotlin.srcDirs(newSourceDirectories)
-        } else {
-            set.kotlin.setSrcDirs(newSourceDirectories) // 'core' source set instead of 'kotlin'
-        }
+        set.kotlin.setSrcDirs(newSourceDirectories) // 'core' source set instead of 'kotlin'
 
         set.configureResources(sourceSetPath)
 
@@ -62,7 +58,7 @@ fun KotlinSourceSet.configureResources(sourceSetPath: Path) {
     }
 
     // only works for jvm projects
-    val resourcesName = if (name.lowercase().contains(Dir.MAIN_SOURCE_SET)) Dir.MAIN_RESOURCES else Dir.TEST_RESOURCES
+    val resourcesName = if (name.lowercase().contains(DirectoryNames.MAIN_SOURCE_SET)) DirectoryNames.MAIN_RESOURCES else DirectoryNames.TEST_RESOURCES
     val resourcesDir = parent.resolve(resourcesName)
 
     if (!Files.exists(resourcesDir)) {
@@ -72,7 +68,7 @@ fun KotlinSourceSet.configureResources(sourceSetPath: Path) {
     val mostSpecificApplicable = filterSourceDirsForCSM(resourcesDir)
         .mostSpecificVersionOrLatest(kotlinCompilerVersion)
 
-    val versionNames = listOfNotNull(Dir.CORE_SOURCE_DIR, mostSpecificApplicable?.name)
+    val versionNames = listOfNotNull(DirectoryNames.CORE_SOURCE_DIR, mostSpecificApplicable?.name)
 
     resources.srcDirs(versionNames.map { resourcesDir.resolve(it).toFile() })
 }

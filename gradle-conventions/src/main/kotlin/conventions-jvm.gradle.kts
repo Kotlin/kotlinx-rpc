@@ -2,10 +2,12 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
-import util.configureJvm
-import util.optInForRpcApi
-import util.applyDokka
+@file:OptIn(ExperimentalAbiValidation::class)
+
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
+import util.configureAbiFilters
+import util.enableAbiValidation
+import util.targets.configureJvm
 
 plugins {
     id("conventions-common")
@@ -16,16 +18,18 @@ java {
     withSourcesJar()
 }
 
-configure<KotlinJvmProjectExtension> {
+kotlin {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(8))
     }
 
-    optInForRpcApi()
-
     explicitApi()
+
+    abiValidation {
+        enabled = enableAbiValidation
+
+        configureAbiFilters()
+    }
 }
 
 configureJvm(isKmp = false)
-
-applyDokka()

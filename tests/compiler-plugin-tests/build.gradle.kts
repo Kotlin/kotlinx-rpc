@@ -4,8 +4,6 @@
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import util.otherwise
-import util.whenForIde
 
 plugins {
     java

@@ -5,25 +5,19 @@
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
-import util.applyAtomicfuPlugin
 import java.nio.file.Files
 
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.serialization)
     alias(libs.plugins.kotlinx.rpc)
+    alias(libs.plugins.atomicfu)
 }
-
-applyAtomicfuPlugin()
 
 kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                // Workaround for
-                // KLIB resolver: Could not find "org.jetbrains.kotlinx:atomicfu"
-                api(libs.atomicfu)
-
                 api(projects.krpc.krpcCore)
                 api(projects.krpc.krpcServer)
                 api(projects.krpc.krpcClient)

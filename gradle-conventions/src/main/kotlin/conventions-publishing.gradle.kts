@@ -4,6 +4,8 @@
 
 import org.gradle.kotlin.dsl.registering
 import util.*
+import util.other.getSensitiveProperty
+import util.other.isPublicModule
 
 val isGradlePlugin = project.name == "gradle-plugin"
 val publishingExtension = project.extensions.findByType<PublishingExtension>()

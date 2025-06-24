@@ -2,27 +2,39 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+@file:OptIn(ExperimentalAbiValidation::class)
+
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import util.*
-import util.applyDokka
+import util.targets.configureJs
+import util.targets.configureJvm
+import util.targets.configureKotlinExtension
+import util.targets.configureWasm
+import util.targets.withKmpConfig
 
 plugins {
     id("conventions-common")
     id("org.jetbrains.kotlin.multiplatform")
 }
 
-configure<KotlinMultiplatformExtension> {
-    optInForRpcApi()
-
+kotlin {
     explicitApi()
+
+    abiValidation {
+        enabled = enableAbiValidation
+
+        klib {
+            enabled = enableAbiValidation
+        }
+
+        configureAbiFilters()
+    }
 }
 
-withKotlinConfig {
-    configureKotlin()
+withKmpConfig {
+    configureKotlinExtension()
     configureJs()
     configureWasm()
 }
 
 configureJvm(isKmp = true)
-
-applyDokka()
