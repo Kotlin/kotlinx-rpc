@@ -32,6 +32,7 @@ plugins {
 
 dependencyResolutionManagement {
     includeBuild("compiler-plugin")
+    includeBuild("dokka-plugin")
 }
 
 includePublic(":bom")

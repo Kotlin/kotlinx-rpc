@@ -51,6 +51,8 @@ fun Project.applyDokka() {
         }
     }
 
+    dependencies.add("dokkaPlugin", libs.dokka.rpc.plugin)
+
     val thisProject = project
 
     rootProject.configurations.matching { it.name == "dokka" }.all {

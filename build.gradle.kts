@@ -73,6 +73,10 @@ dokka {
     }
 }
 
+dependencies {
+    dokkaPlugin(libs.dokka.rpc.plugin)
+}
+
 configureProjectReport()
 configureNpm()
 configureApiValidation()
