@@ -3,7 +3,7 @@
 kotlinx-rpc = "0.8.0-SNAPSHOT"
 
 # kotlin
-kotlin-lang = "2.1.21" # or env.KOTLIN_VERSION
+kotlin-lang = "2.2.0" # or env.KOTLIN_VERSION
 kotlin-compiler = "0.0.0" # default to kotlin-lang or env.KOTLIN_COMPILER_VERSION
 
 # kotlin independent versions
@@ -17,8 +17,7 @@ gradle-plugin-publish = "1.3.1"
 kotlin-wrappers = "2025.4.8"
 junit4 = "4.13.2"
 junit5 = "5.12.1"
-#intellij = "241.19416.19" apply for 2.2.0 update
-intellij = "233.13135.128"
+intellij = "241.19416.19"
 gradle-doctor = "0.10.0"
 kotlinx-browser = "0.3"
 shadow-jar = "9.0.0-beta12"

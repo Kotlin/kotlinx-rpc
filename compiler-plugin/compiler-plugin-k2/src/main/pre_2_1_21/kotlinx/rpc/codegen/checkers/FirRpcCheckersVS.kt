@@ -22,8 +22,7 @@ import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 class FirCheckedAnnotationFunctionCallCheckerVS(
     private val ctx: FirCheckersContext,
 ) : FirFunctionCallChecker(MppCheckerKind.Common) {
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun check(expression: FirFunctionCall) {
+    override fun check(expression: FirFunctionCall, context: CheckerContext, reporter: DiagnosticReporter) {
         FirCheckedAnnotationFunctionCallChecker.check(ctx, expression, context, reporter)
     }
 }
@@ -31,8 +30,7 @@ class FirCheckedAnnotationFunctionCallCheckerVS(
 class FirCheckedAnnotationTypeParameterCheckerVS(
     private val ctx: FirCheckersContext,
 ) : FirTypeParameterChecker(MppCheckerKind.Common) {
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun check(declaration: FirTypeParameter) {
+    override fun check(declaration: FirTypeParameter, context: CheckerContext, reporter: DiagnosticReporter) {
         FirCheckedAnnotationTypeParameterChecker.check(ctx, declaration, context, reporter)
     }
 }
@@ -40,8 +38,7 @@ class FirCheckedAnnotationTypeParameterCheckerVS(
 class FirCheckedAnnotationFirClassCheckerVS(
     private val ctx: FirCheckersContext,
 ) : FirClassChecker(MppCheckerKind.Common) {
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun check(declaration: FirClass) {
+    override fun check(declaration: FirClass, context: CheckerContext, reporter: DiagnosticReporter) {
         FirCheckedAnnotationFirClassChecker.check(ctx, declaration, context, reporter)
     }
 }
@@ -49,15 +46,13 @@ class FirCheckedAnnotationFirClassCheckerVS(
 class FirCheckedAnnotationFirFunctionCheckerVS(
     private val ctx: FirCheckersContext,
 ) : FirFunctionChecker(MppCheckerKind.Common) {
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun check(declaration: FirFunction) {
+    override fun check(declaration: FirFunction, context: CheckerContext, reporter: DiagnosticReporter) {
         FirCheckedAnnotationFirFunctionChecker.check(ctx, declaration, context, reporter)
     }
 }
 
 class FirRpcAnnotationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun check(declaration: FirRegularClass) {
+    override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         FirRpcAnnotationChecker.check(declaration, context, reporter)
     }
 }
@@ -65,15 +60,13 @@ class FirRpcAnnotationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) 
 class FirRpcServiceDeclarationCheckerVS(
     private val ctx: FirCheckersContext,
 ) : FirRegularClassChecker(MppCheckerKind.Common) {
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun check(declaration: FirRegularClass) {
+    override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         FirRpcServiceDeclarationChecker.check(ctx, declaration, context, reporter)
     }
 }
 
 class FirRpcStrictModeClassCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun check(declaration: FirRegularClass) {
+    override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         FirRpcStrictModeClassChecker.check(declaration, context, reporter)
     }
 }
