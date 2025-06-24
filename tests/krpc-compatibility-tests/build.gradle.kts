@@ -3,15 +3,13 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import util.applyAtomicfuPlugin
 
 plugins {
     alias(libs.plugins.conventions.jvm)
     alias(libs.plugins.serialization)
     alias(libs.plugins.kotlinx.rpc)
+    alias(libs.plugins.atomicfu)
 }
-
-applyAtomicfuPlugin()
 
 val main: SourceSet by sourceSets.getting
 val test: SourceSet by sourceSets.getting

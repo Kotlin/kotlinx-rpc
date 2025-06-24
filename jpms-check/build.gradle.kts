@@ -2,8 +2,8 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import util.hasJavaModule
-import util.javaModuleName
+import util.targets.hasJavaModule
+import util.targets.javaModuleName
 
 plugins {
     `java-library`

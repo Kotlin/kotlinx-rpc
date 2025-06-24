@@ -3,7 +3,7 @@
  */
 
 import util.KOTLINX_RPC_PREFIX
-import util.isPublicModule
+import util.other.isPublicModule
 
 plugins {
     `java-platform`

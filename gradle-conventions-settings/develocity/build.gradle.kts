@@ -3,10 +3,10 @@
  */
 
 plugins {
-    alias(libs.plugins.gradle.kotlin.dsl)
+    `kotlin-dsl`
 }
 
 dependencies {
-    implementation("com.gradle:develocity-gradle-plugin:3.17")
-    implementation("com.gradle:common-custom-user-data-gradle-plugin:2.2.1")
+    implementation(libs.develocity)
+    implementation(libs.common.custom.user.data)
 }

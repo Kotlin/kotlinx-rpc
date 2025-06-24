@@ -9,7 +9,7 @@ import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 import org.jetbrains.kotlin.gradle.utils.loadPropertyFromResources
 
-object RpcPluginConst {
+internal object RpcPluginConst {
     const val GROUP_ID = "org.jetbrains.kotlinx"
     const val PLUGIN_ID = "kotlinx-rpc"
     const val COMPILER_PLUGIN_ARTIFACT_ID = "kotlinx-rpc-compiler-plugin"
@@ -31,7 +31,7 @@ object RpcPluginConst {
     }
 }
 
-val Project.isInternalDevelopment: Boolean
+internal val Project.isInternalDevelopment: Boolean
     get() {
         return (properties.getOrDefault(INTERNAL_DEVELOPMENT_PROPERTY, null) as String?)
             ?.toBoolean() ?: false

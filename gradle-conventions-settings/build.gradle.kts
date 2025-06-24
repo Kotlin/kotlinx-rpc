@@ -3,7 +3,7 @@
  */
 
 plugins {
-    alias(libs.plugins.gradle.kotlin.dsl)
+    `kotlin-dsl`
 }
 
 dependencies {

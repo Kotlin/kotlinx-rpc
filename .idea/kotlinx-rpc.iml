@@ -8,6 +8,7 @@
       <excludeFolder url="file://$MODULE_DIR$/lib-kotlin" />
       <excludeFolder url="file://$MODULE_DIR$/docs/pages/api" />
       <excludeFolder url="file://$MODULE_DIR$/kotlin-js-store" />
+      <excludeFolder url="file://$MODULE_DIR$/detekt/reports" />
     </content>
   </component>
 </module>
