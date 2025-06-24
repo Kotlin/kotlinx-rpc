@@ -5,9 +5,9 @@
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 
 plugins {
+    `kotlin-dsl`
     alias(libs.plugins.conventions.jvm)
     alias(libs.plugins.conventions.gradle.publish)
-    alias(libs.plugins.gradle.kotlin.dsl)
     alias(libs.plugins.gradle.plugin.publish)
     alias(libs.plugins.conventions.gradle.doctor)
 }
@@ -16,7 +16,7 @@ group = "org.jetbrains.kotlinx"
 version = rootProject.libs.versions.kotlinx.rpc.get()
 
 kotlin {
-    explicitApi = ExplicitApiMode.Disabled
+    explicitApi()
 }
 
 dependencies {
@@ -51,13 +51,13 @@ abstract class GeneratePluginVersionTask @Inject constructor(
 ) : DefaultTask() {
     @TaskAction
     fun generate() {
-        val sourceFile = File(sourcesDir, "PluginVersion.kt")
+        val sourceFile = File(sourcesDir, "Versions.kt")
 
         sourceFile.writeText(
             """
             package kotlinx.rpc
 
-            const val PLUGIN_VERSION = "$pluginVersion"
+            public const val PLUGIN_VERSION: String = "$pluginVersion"
             
             """.trimIndent()
         )

@@ -3,21 +3,18 @@
  */
 
 import io.gitlab.arturbosch.detekt.Detekt
-import util.configureApiValidation
-import util.libs
-import util.whenKotlinLatest
+import util.other.libs
 
 plugins {
     id("io.gitlab.arturbosch.detekt")
     id("conventions-publishing")
     id("conventions-kotlin-version")
+    id("conventions-dokka-public")
 }
 
 val globalRootDir: String by extra
 
 val globalDetektDir = "$globalRootDir/detekt"
-
-configureApiValidation()
 
 // https://detekt.dev/docs/gettingstarted/gradle#options-for-detekt-configuration-closure
 detekt {
@@ -55,12 +52,10 @@ afterEvaluate {
     }
 }
 
-whenKotlinLatest {
-    apply(plugin = "org.jetbrains.kotlinx.kover")
+apply(plugin = "org.jetbrains.kotlinx.kover")
 
-    val thisProject = project
+val thisProject = project
 
-    rootProject.configurations.matching { it.name == "kover" }.all {
-        rootProject.dependencies.add("kover", thisProject)
-    }
+rootProject.configurations.matching { it.name == "kover" }.all {
+    rootProject.dependencies.add("kover", thisProject)
 }

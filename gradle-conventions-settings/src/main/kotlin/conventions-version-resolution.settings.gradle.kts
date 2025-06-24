@@ -37,7 +37,6 @@ object SettingsConventions {
 
     const val VERSIONS_ROOT_PATH = "versions-root"
     const val LIBS_VERSION_CATALOG_PATH = "$VERSIONS_ROOT_PATH/libs.versions.toml"
-    const val KOTLIN_VERSIONS_LOOKUP_PATH = "$VERSIONS_ROOT_PATH/kotlin-versions-lookup.csv"
 }
 
 // ### VERSION RESOLVING SECTION ###
@@ -66,46 +65,6 @@ fun findGlobalRootDirPath(start: Path): Path {
     }
 
     return path
-}
-
-// Resolves 'versions-root/kotlin-versions-lookup.csv'
-fun loadLookupTable(rootDir: Path, kotlinVersion: String): Pair<Map<String, String>, String> {
-    val file = rootDir.resolve(SettingsConventions.KOTLIN_VERSIONS_LOOKUP_PATH).toFile()
-
-    var latest = kotlinVersion
-    val table = file.readText()
-        .split("\n")
-        .takeIf { it.size >= 2 }
-        ?.run {
-            first().asCsvValues() to when (val versionsRow = singleOrNull { it.startsWith(kotlinVersion) }) {
-                // resolve latest for an unknown version
-                // considers that unknown versions are too new and not yet added
-                null -> {
-                    latest = kotlinVersion
-                    get(1).asCsvValues()
-                }
-
-                else -> {
-                    latest = get(1).substringBefore(',')
-                    versionsRow.asCsvValues()
-                }
-            }
-        }
-        ?.takeIf { (keys, values) -> keys.size == values.size }
-        ?.let { (keys, values) ->
-            keys.zip(values)
-        }?.associate { it }
-        ?: error(
-            "Malformed Kotlin version in lookup table, " +
-                    "should be proper CSV file with horizontal header of version names " +
-                    "and vertical headers of Kotlin versions."
-        )
-
-    return table to latest
-}
-
-fun String.asCsvValues(): List<String> {
-    return split(",").map { it.trim() }.drop(1)
 }
 
 // Resolves [versions] section from 'versions-root/libs.versions.toml' into map
@@ -156,7 +115,7 @@ fun VersionCatalogBuilder.resolveKotlinVersion(versionCatalog: Map<String, Strin
         kotlinCatalogVersion = versionCatalog[SettingsConventions.KOTLIN_VERSION_ALIAS]
     }
 
-    var catalogCompilerVersion = versionCatalog[SettingsConventions.KOTLIN_COMPILER_VERSION_ALIAS]
+    val catalogCompilerVersion = versionCatalog[SettingsConventions.KOTLIN_COMPILER_VERSION_ALIAS]
     if (kotlinCompilerVersion != null) {
         logger.info("Resolved Kotlin compiler version: $kotlinCompilerVersion")
         version(SettingsConventions.KOTLIN_COMPILER_VERSION_ALIAS, kotlinCompilerVersion)
@@ -219,34 +178,16 @@ dependencyResolutionManagement {
 
             resolveLibraryVersion(versionCatalog)
 
-            // Other Kotlin-dependant versions
-            val (lookupTable, latestKotlin) = loadLookupTable(rootDir, kotlinVersion)
-
             val kotlinVersionParsed = kotlinVersion.kotlinVersionParsed()
-            val latestKotlinParsed = latestKotlin.kotlinVersionParsed()
-
-            val isLatestKotlin = kotlinVersionParsed.isAtLeast(
-                major = latestKotlinParsed.major,
-                minor = latestKotlinParsed.minor,
-                patch = latestKotlinParsed.patch
-            )
 
             extra["kotlinVersion"] = kotlinVersionParsed
             extra["kotlinCompilerVersion"] = compilerVersion.kotlinVersionParsed()
-            extra["isLatestKotlinVersion"] = isLatestKotlin
 
             gradle.rootProject {
                 allprojects {
                     this.extra["kotlinVersion"] = kotlinVersionParsed
                     this.extra["kotlinCompilerVersion"] = compilerVersion.kotlinVersionParsed()
-                    this.extra["isLatestKotlinVersion"] = isLatestKotlin
                 }
-            }
-
-            logger.info("Resolved compiler specific dependencies versions (Kotlin $kotlinVersion):")
-            lookupTable.forEach { (name, version) ->
-                logger.info("$name -> $version")
-                version(name, version)
             }
         }
     }

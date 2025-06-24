@@ -20,22 +20,14 @@ junit5 = "5.12.1"
 intellij = "241.19416.19"
 gradle-doctor = "0.10.0"
 kotlinx-browser = "0.3"
-shadow-jar = "9.0.0-beta12"
 dokka = "2.0.0"
-
-# Stub versions – relpaced based on kotlin, mostly for gradle-related (plugins) dependencies
-#  but also for dependencies for compiler-specific modules.
-#
-# The current version is the one that is used with the latest Kotlin.
-#
-# NOTE: When updating kotlin-versions-lookup.csv, update the latest version here for the Renovate configs
+puppeteer = "24.9.0"
 atomicfu = "0.27.0"
 serialization = "1.8.1"
 detekt-gradle-plugin = "1.23.8"
-gradle-kotlin-dsl = "5.1.2"
 kover = "0.9.1"
-
-puppeteer = "24.9.0"
+develocity = "3.17"
+common-custom-user-data = "2.2.1"
 
 [libraries]
 # kotlinx.rpc – references to the included builds
@@ -92,23 +84,32 @@ junit5-platform-launcher = { module = "org.junit.platform:junit-platform-launche
 junit5-platform-runner = { module = "org.junit.platform:junit-platform-runner" }
 junit5-platform-suite-api = { module = "org.junit.platform:junit-platform-suite-api" }
 
+# dokka
+dokka-core = { module = "org.jetbrains.dokka:dokka-core", version.ref = "dokka" }
+dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" }
+dokka-test-api = { module = "org.jetbrains.dokka:dokka-test-api", version.ref = "dokka" }
+dokka-base-test-utils = { module = "org.jetbrains.dokka:dokka-base-test-utils", version.ref = "dokka" }
+dokka-analysis-kotlin-symbols = { module = "org.jetbrains.dokka:analysis-kotlin-symbols", version.ref = "dokka" }
+dokka-rpc-plugin = { module = "org.jetbrains.kotlinx:dokka-rpc-plugin", version.ref = "kotlinx-rpc" }
+
 # other
 kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
 kotlin-logging-legacy = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "coroutines" }
+kotlin-js-wrappers = { module = "org.jetbrains.kotlin-wrappers:kotlin-js", version.ref = "kotlin-wrappers" }
+intellij-util = { module = "com.jetbrains.intellij.platform:util", version.ref = "intellij" }
+atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
+develocity = { module = "com.gradle:develocity-gradle-plugin", version.ref = "develocity" }
+common-custom-user-data = { module ="com.gradle:common-custom-user-data-gradle-plugin", version.ref = "common-custom-user-data" }
+
+# gradle plugins as lib deps
 detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt-gradle-plugin" }
 kover-gradle-plugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
-dokka-core = { module = "org.jetbrains.dokka:dokka-core", version.ref = "dokka" }
-dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" }
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
-dokka-rpc-plugin = { module = "org.jetbrains.kotlinx:dokka-rpc-plugin", version.ref = "kotlinx-rpc" }
-kotlin-js-wrappers = { module = "org.jetbrains.kotlin-wrappers:kotlin-js", version.ref = "kotlin-wrappers" }
-gradle-kotlin-dsl-pluigns = { module = "org.gradle.kotlin:gradle-kotlin-dsl-plugins", version.ref = "gradle-kotlin-dsl" }
-intellij-util = { module = "com.jetbrains.intellij.platform:util", version.ref = "intellij" }
-gradle-doctor-plugin = { module = "com.osacky.doctor:doctor-plugin", version.ref = "gradle-doctor" }
-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
+gradle-doctor-gradle-plugin = { module = "com.osacky.doctor:doctor-plugin", version.ref = "gradle-doctor" }
+gradle-publish-gradle-plugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "gradle-plugin-publish" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-lang" }
@@ -117,21 +118,22 @@ serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref 
 
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt-gradle-plugin" }
 atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
-gradle-kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version.ref = "gradle-kotlin-dsl" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
-shadow-jar = { id = "com.gradleup.shadow", version.ref = "shadow-jar" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 
 # gradle-conventions project
-conventions-common = { id = "conventions-common", version.ref = "kotlinx-rpc" }
-conventions-jvm = { id = "conventions-jvm", version.ref = "kotlinx-rpc" }
-conventions-kmp = { id = "conventions-kmp", version.ref = "kotlinx-rpc" }
-conventions-gradle-publish = { id = "conventions-gradle-publish", version.ref = "kotlinx-rpc" }
-conventions-kover = { id = "conventions-kover", version.ref = "kotlinx-rpc" }
-conventions-gradle-doctor = { id = "conventions-gradle-doctor", version.ref = "kotlinx-rpc" }
-conventions-npm = { id = "conventions-npm", version.ref = "kotlinx-rpc" }
-compiler-specific-module = { id = "compiler-specific-module", version.ref = "kotlinx-rpc" }
+conventions-common = { id = "conventions-common" }
+conventions-jvm = { id = "conventions-jvm" }
+conventions-kmp = { id = "conventions-kmp" }
+conventions-gradle-publish = { id = "conventions-gradle-publish" }
+conventions-kover = { id = "conventions-kover" }
+conventions-gradle-doctor = { id = "conventions-gradle-doctor" }
+conventions-npm = { id = "conventions-npm" }
+conventions-root = { id = "conventions-root" }
+conventions-dokka-spec = { id = "conventions-dokka-spec" }
+conventions-dokka-public = { id = "conventions-dokka-public" }
+compiler-specific-module = { id = "compiler-specific-module" }
 
 # gradle-plugin project
 kotlinx-rpc = { id = "org.jetbrains.kotlinx.rpc.plugin" }
