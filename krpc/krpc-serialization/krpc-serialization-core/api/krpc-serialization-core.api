@@ -1,6 +1,7 @@
 public abstract interface class kotlinx/rpc/krpc/serialization/KrpcSerialFormat {
 	public abstract fun applySerializersModule (Ljava/lang/Object;Lkotlinx/serialization/modules/SerializersModule;)V
 	public abstract fun withBuilder (Lkotlinx/serialization/SerialFormat;Lkotlin/jvm/functions/Function1;)Lkotlinx/serialization/SerialFormat;
+	public static synthetic fun withBuilder$default (Lkotlinx/rpc/krpc/serialization/KrpcSerialFormat;Lkotlinx/serialization/SerialFormat;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/serialization/SerialFormat;
 }
 
 public final class kotlinx/rpc/krpc/serialization/KrpcSerialFormat$DefaultImpls {

@@ -1,0 +1,25 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <org.jetbrains.kotlinx:krpc-client>
+abstract class kotlinx.rpc.krpc.client/InitializedKrpcClient : kotlinx.rpc.krpc.client/KrpcClient { // kotlinx.rpc.krpc.client/InitializedKrpcClient|null[0]
+    constructor <init>(kotlinx.rpc.krpc/KrpcConfig.Client, kotlinx.rpc.krpc/KrpcTransport) // kotlinx.rpc.krpc.client/InitializedKrpcClient.<init>|<init>(kotlinx.rpc.krpc.KrpcConfig.Client;kotlinx.rpc.krpc.KrpcTransport){}[0]
+
+    final fun initializeConfig(): kotlinx.rpc.krpc/KrpcConfig.Client // kotlinx.rpc.krpc.client/InitializedKrpcClient.initializeConfig|initializeConfig(){}[0]
+    final suspend fun initializeTransport(): kotlinx.rpc.krpc/KrpcTransport // kotlinx.rpc.krpc.client/InitializedKrpcClient.initializeTransport|initializeTransport(){}[0]
+}
+
+abstract class kotlinx.rpc.krpc.client/KrpcClient : kotlinx.rpc.krpc.internal/KrpcEndpoint, kotlinx.rpc/RpcClient { // kotlinx.rpc.krpc.client/KrpcClient|null[0]
+    constructor <init>() // kotlinx.rpc.krpc.client/KrpcClient.<init>|<init>(){}[0]
+
+    abstract fun initializeConfig(): kotlinx.rpc.krpc/KrpcConfig.Client // kotlinx.rpc.krpc.client/KrpcClient.initializeConfig|initializeConfig(){}[0]
+    abstract suspend fun initializeTransport(): kotlinx.rpc.krpc/KrpcTransport // kotlinx.rpc.krpc.client/KrpcClient.initializeTransport|initializeTransport(){}[0]
+    final fun <#A1: kotlin/Any?> callServerStreaming(kotlinx.rpc/RpcCall): kotlinx.coroutines.flow/Flow<#A1> // kotlinx.rpc.krpc.client/KrpcClient.callServerStreaming|callServerStreaming(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]
+    final fun close(kotlin/String? = ...) // kotlinx.rpc.krpc.client/KrpcClient.close|close(kotlin.String?){}[0]
+    final suspend fun <#A1: kotlin/Any?> call(kotlinx.rpc/RpcCall): #A1 // kotlinx.rpc.krpc.client/KrpcClient.call|call(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]
+    final suspend fun awaitCompletion() // kotlinx.rpc.krpc.client/KrpcClient.awaitCompletion|awaitCompletion(){}[0]
+}
