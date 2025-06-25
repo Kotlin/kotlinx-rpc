@@ -5,7 +5,7 @@
 plugins {
     kotlin("jvm") version "2.1.10"
     kotlin("plugin.serialization") version "2.1.10"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "0.6.0"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.7.0"
     id("com.google.protobuf") version "0.9.5"
 }
 
@@ -22,9 +22,9 @@ kotlin {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core:0.5.1-grpc-39")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core:0.7.0-grpc-56")
     implementation("ch.qos.logback:logback-classic:1.5.18")
-    implementation("io.grpc:grpc-netty:1.71.0")
+    implementation("io.grpc:grpc-netty:1.73.0")
 }
 
 rpc {
