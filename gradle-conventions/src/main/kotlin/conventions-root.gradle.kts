@@ -9,6 +9,13 @@ import util.tasks.registerChangelogTask
 import util.tasks.registerDumpPlatformTableTask
 import util.tasks.registerVerifyPlatformTableTask
 import java.time.Year
+import kotlin.io.path.exists
+import kotlin.io.path.isDirectory
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.name
+import kotlin.io.path.readText
+import java.nio.file.Path
+import kotlin.io.path.createFile
 
 plugins {
     id("org.jetbrains.dokka")
@@ -70,3 +77,43 @@ configureNpm()
 registerDumpPlatformTableTask()
 registerVerifyPlatformTableTask()
 registerChangelogTask()
+
+fun Project.forEachSubproject(action: (String, Path, Path) -> Unit) {
+    val globalRootDir: String by extra
+    val root = Path.of(globalRootDir)
+    val rootProperties = root.resolve("gradle.properties").readText()
+    root.listDirectoryEntries()
+        .filter { it.isDirectory() && it.name != "gradle-conventions-settings" && it.name != "gradle-conventions" }
+        .forEach {
+            val subProjectProperties = it.resolve("gradle.properties")
+            val subProjectSettings = it.resolve("settings.gradle.kts")
+            if (subProjectSettings.exists()) {
+                action(rootProperties, it, subProjectProperties)
+            }
+        }
+}
+
+val updateProperties = tasks.register("updateProperties") {
+    forEachSubproject { rootProperties, _, subProjectProperties ->
+        if (!subProjectProperties.exists()) {
+            subProjectProperties.createFile()
+        }
+
+        subProjectProperties.toFile().writeText(rootProperties)
+    }
+}
+
+gradle.afterProject {
+    if (gradle.startParameter.taskNames.singleOrNull() == updateProperties.name) {
+        return@afterProject
+    }
+
+    forEachSubproject { rootProperties, parent, subProjectProperties ->
+        if (!subProjectProperties.exists() || subProjectProperties.readText() != rootProperties) {
+            throw GradleException(
+                "'gradle.properties' file in ${parent.name} included project is not up-to-date with root. " +
+                        "Please, run `./gradlew ${updateProperties.name}"
+            )
+        }
+    }
+}

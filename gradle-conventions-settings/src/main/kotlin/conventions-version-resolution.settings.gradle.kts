@@ -64,6 +64,8 @@ fun findGlobalRootDirPath(start: Path): Path {
         }
     }
 
+    settings.extra["globalRootDir"] = path.toAbsolutePath().toString()
+
     return path
 }
 

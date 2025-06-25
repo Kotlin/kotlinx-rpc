@@ -116,7 +116,8 @@ private fun goldFileLine(goldPath: String?): String {
     }
 }
 
-private val isCI = System.getenv("TEAMCITY_VERSION") != null
+private val isCI = System.getenv("TEAMCITY_VERSION") != null ||
+        System.getenv("GITHUB_ACTIONS") != null
 
 object GoldUtils {
     val NewLine: String = System.lineSeparator()

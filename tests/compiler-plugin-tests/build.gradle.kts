@@ -141,7 +141,7 @@ val generateTests = tasks.register<JavaExec>("generateTests") {
     mainClass.set("kotlinx.rpc.codegen.test.GenerateTestsKt")
 }
 
-val isCI = System.getenv("TEAMCITY_VERSION") != null
+val isCI = System.getenv("TEAMCITY_VERSION") != null || System.getenv("GITHUB_ACTIONS") != null
 
 tasks.named<KotlinCompile>("compileTestKotlin").configure {
     if (!isCI) {
