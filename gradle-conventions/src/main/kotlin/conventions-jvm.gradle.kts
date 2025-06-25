@@ -5,6 +5,7 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import util.configureJvm
 import util.optInForRpcApi
+import util.applyDokka
 
 plugins {
     id("conventions-common")
@@ -26,3 +27,5 @@ configure<KotlinJvmProjectExtension> {
 }
 
 configureJvm(isKmp = false)
+
+applyDokka()

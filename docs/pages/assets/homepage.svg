@@ -1,0 +1,20 @@
+<svg width="120" height="24" viewBox="0 0 120 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <style>
+<!--        UNCOMMENT FOR DEBUG PURPOSES ONLY -->
+
+<!--        :root {-->
+<!--            &#45;&#45;font-family-default: JetBrains Sans, Inter, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Droid Sans, Helvetica Neue, Arial, sans-serif;-->
+<!--            &#45;&#45;font-h4: 400 16px/24px var(&#45;&#45;font-family-default);-->
+<!--            &#45;&#45;color-text-dt: rgba(255, 255, 255, 0.96);-->
+<!--        }-->
+
+        .docs-text {
+            fill: var(--color-text-dt);
+            font: var(--font-text-m);
+        }
+    </style>
+    <text x="0" y="18" class="docs-text">
+        Back to docs
+    </text>
+    <path d="M108 20V7L100 3L92 7V20H98V13H102V20H108Z" fill="var(--color-text-dt)"/>
+</svg>

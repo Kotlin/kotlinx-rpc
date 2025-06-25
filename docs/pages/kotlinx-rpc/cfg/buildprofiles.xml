@@ -22,7 +22,7 @@
 
         <versions-switcher>%docs-raw-path%/help-versions.json</versions-switcher>
 
-        <generate-sitemap-url-prefix>https://www.jetbrains.com/help/</generate-sitemap-url-prefix>
+        <generate-sitemap-url-prefix>%host%</generate-sitemap-url-prefix>
 
         <algolia-id>MMA5Z3JT91</algolia-id>
         <algolia-index>prod_kotlin_rpc</algolia-index>
@@ -37,8 +37,9 @@
 
     <sitemap priority="0.35" change-frequency="monthly"/>
     <footer>
-        <copyright>2000-2024 JetBrains s.r.o.</copyright>
+        <copyright>2000-2025 JetBrains s.r.o.</copyright>
         <link href="https://github.com/Kotlin/kotlinx-rpc/blob/main/CONTRIBUTING.md">Contribute to kotlinx.rpc</link>
         <link href="https://kotlinlang.slack.com/archives/C072YJ3Q91V">Slack Community</link>
+        <link href="%host%/api/">API Reference</link>
     </footer>
 </buildprofiles>

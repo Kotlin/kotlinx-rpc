@@ -49,4 +49,5 @@
         <toc-element topic="0-2-4.topic"/>
         <toc-element topic="0-2-1.topic"/>
     </toc-element>
+    <toc-element toc-title="API Reference" href="%host%/api/"/>
 </instance-profile>

@@ -72,13 +72,32 @@ jobs:
     needs: [ build, test ]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Run Dokka
+        run: ./gradlew dokkaGenerate
+
+      - name: Move API docs to the publication directory
+        run:
+          mkdir __docs_publication_dir
+          cp -r docs/pages/api __docs_publication_dir/api
+
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           name: kotlinx-rpc
 
       - name: Unzip artifact
-        run: unzip -O UTF-8 -qq '${{ env.ARTIFACT }}' -d dir
+        run: unzip -O UTF-8 -qq '${{ env.ARTIFACT }}' -d __docs_publication_dir
+
+      - name: Update sitemap.xml
+        run: chmod +x updateSitemap.sh && ./updateSitemap.sh __docs_publication_dir/sitemap.xml __docs_publication_dir/api
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -86,7 +105,7 @@ jobs:
       - name: Package and upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dir
+          path: __docs_publication_dir
 
       - name: Deploy to GitHub Pages
         id: deployment
