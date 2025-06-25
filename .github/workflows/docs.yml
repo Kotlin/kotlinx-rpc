@@ -31,6 +31,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Create stub changelog.md file
+        run: echo "# Changelog" > docs/pages/kotlinx-rpc/topics/changelog.md
+
       - name: Build docs using Writerside Docker builder
         uses: JetBrains/writerside-github-action@v4
         with:
@@ -98,6 +101,13 @@ jobs:
 
       - name: Update sitemap.xml
         run: chmod +x updateSitemap.sh && ./updateSitemap.sh __docs_publication_dir/sitemap.xml __docs_publication_dir/api
+
+      - name: Run Changelog Generator
+        run: ./gradlew updateDocsChangelog
+
+      - name: Move Changelog.md to the publication directory
+        run:
+          mv docs/pages/kotlinx-rpc/topics/changelog.md __docs_publication_dir/changelog.md
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
