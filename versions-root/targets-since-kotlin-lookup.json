@@ -5,7 +5,7 @@
   "wasmJs": "*",
   "wasmWasi": "*",
 
-  "mingwX64": "-",
+  "mingwX64": "*",
 
   "linuxX64": "*",
   "linuxArm64": "*",
@@ -15,15 +15,20 @@
   "iosSimulatorArm64": "*",
 
   "watchosX64": "*",
-  "watchosArm32": "-",
+  "watchosArm32": "*",
   "watchosArm64": "*",
   "watchosSimulatorArm64": "*",
-  "watchosDeviceArm64": "-",
+  "watchosDeviceArm64": "*",
 
   "tvosX64": "*",
   "tvosArm64": "*",
-  "tvosSimulatorArm64": "-",
+  "tvosSimulatorArm64": "*",
 
   "macosX64": "*",
-  "macosArm64": "*"
+  "macosArm64": "*",
+
+  "androidNativeArm32": "-",
+  "androidNativeArm64": "-",
+  "androidNativeX86": "-",
+  "androidNativeX64": "-"
 }

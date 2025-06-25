@@ -2,6 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import org.gradle.kotlin.dsl.registering
 import util.*
 
 val isGradlePlugin = project.name == "gradle-plugin"
@@ -153,8 +154,8 @@ val sonatypeRepositoryUri: String?
         return "https://oss.sonatype.org/service/local/staging/deployByRepositoryId/$repositoryId"
     }
 
-fun configureEmptyJavadocArtifact(): org.gradle.jvm.tasks.Jar {
-    val javadocJar by project.tasks.creating(Jar::class) {
+fun configureEmptyJavadocArtifact(): TaskProvider<Jar?> {
+    val javadocJar by project.tasks.registering(Jar::class) {
         archiveClassifier.set("javadoc")
         // contents are deliberately left empty
         // https://central.sonatype.org/publish/requirements/#supply-javadoc-and-sources

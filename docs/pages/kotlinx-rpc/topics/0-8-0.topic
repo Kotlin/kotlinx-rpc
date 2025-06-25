@@ -224,6 +224,29 @@
             </li>
             <li>
                 <p>
+                    <code>RpcCall</code> changed parameter name and type for function's data:
+                </p>
+                <compare type="top-bottom">
+                    <code-block lang="Kotlin">
+                        class RpcCall(
+                            val descriptor: RpcServiceDescriptor&lt;*&gt;,
+                            val callableName: String,
+                            val data: Any?,
+                            val serviceId: Long,
+                        )
+                    </code-block>
+                    <code-block lang="Kotlin">
+                        class RpcCall(
+                            val descriptor: RpcServiceDescriptor&lt;*&gt;,
+                            val callableName: String,
+                            val parameters: Array&lt;Any?&gt;,
+                            val serviceId: Long,
+                        )
+                    </code-block>
+                </compare>
+            </li>
+            <li>
+                <p>
                     For Ktor, <code>HttpClient.rpc</code> extension function is now non-suspendable.
                 </p>
             </li>

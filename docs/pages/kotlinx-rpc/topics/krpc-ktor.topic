@@ -87,7 +87,7 @@
             )
 
             @Rpc
-            interface ImageService : RemoteService {
+            interface ImageService {
                 suspend fun processImage(url: String): ProcessedImage
             }
         </code-block>

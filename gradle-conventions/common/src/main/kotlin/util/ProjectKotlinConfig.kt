@@ -35,12 +35,6 @@ private fun loadTargetsSinceKotlinLookupTable(rootDir: String): Map<String, Stri
 class ProjectKotlinConfig(
     project: Project,
     val kotlinVersion: KotlinVersion,
-    jvm: Boolean = true,
-    js: Boolean = true,
-    wasmJs: Boolean = true,
-    wasmJsD8: Boolean = true,
-    wasmWasi: Boolean = true,
-    val native: Boolean = true,
 ) : Project by project {
     private val targetsLookup by lazy {
         val globalRootDir: String by extra
@@ -56,11 +50,19 @@ class ProjectKotlinConfig(
         } ?: false
     }
 
-    val jvm: Boolean by lazy { jvm && isIncluded("jvm") }
-    val js: Boolean by lazy { js && isIncluded("js") }
-    val wasmJs: Boolean by lazy {  wasmJs && isIncluded("wasmJs") }
-    val wasmJsD8: Boolean by lazy {  wasmJsD8 && wasmJs }
-    val wasmWasi: Boolean by lazy {  wasmWasi && isIncluded("wasmWasi") }
+    private val excludeJvm: Boolean by optionalProperty("exclude")
+    private val excludeJs: Boolean by optionalProperty("exclude")
+    private val excludeWasmJs: Boolean by optionalProperty("exclude")
+    private val excludeWasmJsD8: Boolean by optionalProperty("exclude")
+    private val excludeWasmWasi: Boolean by optionalProperty("exclude")
+    val excludeNative: Boolean by optionalProperty("exclude")
+
+    val jvm: Boolean by lazy { !excludeJvm && isIncluded("jvm") }
+    val js: Boolean by lazy { !excludeJs && isIncluded("js") }
+    val wasmJs: Boolean by lazy { !excludeWasmJs && isIncluded("wasmJs") }
+    val wasmJsD8: Boolean by lazy { !excludeWasmJsD8 && wasmJs }
+    val wasmWasi: Boolean by lazy { !excludeWasmWasi && isIncluded("wasmWasi") }
+    val native = !excludeNative
 
     private val nativeLookup by lazy {
         targetsLookup.filterKeys { key ->
@@ -75,7 +77,7 @@ class ProjectKotlinConfig(
             !kotlinMasterBuild && targetFunction.parameters.size == 1 && isIncluded(
                 targetName = targetFunction.name,
                 lookupTable = nativeLookup,
-            )
+            ) && !optionalPropertyValue(targetFunction.name, "exclude")
         }.map { function ->
             function.call(kmp) as KotlinTarget
         }
@@ -83,21 +85,9 @@ class ProjectKotlinConfig(
 
 fun Project.withKotlinConfig(configure: ProjectKotlinConfig.() -> Unit) {
     val kotlinVersion: KotlinVersion by extra
-    val excludeJvm: Boolean by optionalProperty()
-    val excludeJs: Boolean by optionalProperty()
-    val excludeWasmJs: Boolean by optionalProperty()
-    val excludeWasmJsD8: Boolean by optionalProperty()
-    val excludeWasmWasi: Boolean by optionalProperty()
-    val excludeNative: Boolean by optionalProperty()
 
     ProjectKotlinConfig(
         project = project,
         kotlinVersion = kotlinVersion,
-        jvm = !excludeJvm,
-        js = !excludeJs,
-        wasmJs = !excludeWasmJs,
-        wasmJsD8 = !excludeWasmJsD8,
-        wasmWasi = !excludeWasmWasi,
-        native = !excludeNative,
     ).configure()
 }

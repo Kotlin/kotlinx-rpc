@@ -19,11 +19,8 @@ Build your RPC with already known language constructs and nothing more!
 
 First, create your RPC service and define some methods:
 ```kotlin
-import kotlinx.rpc.RemoteService
-import kotlinx.rpc.annotations.Rpc
-
 @Rpc
-interface AwesomeService : RemoteService {
+interface AwesomeService {
     fun getNews(city: String): Flow<String>
     
     suspend fun daysUntilStableRelease(): Int
@@ -31,10 +28,7 @@ interface AwesomeService : RemoteService {
 ```
 In your server code define how to respond by simply implementing the service:
 ```kotlin
-class AwesomeServiceImpl(
-    val parameters: AwesomeParameters,
-    override val coroutineContext: CoroutineContext,
-) : AwesomeService {
+class AwesomeServiceImpl(val parameters: AwesomeParameters) : AwesomeService {
     override fun getNews(city: String): Flow<String> {
         return flow { 
             emit("Today is 23 degrees!")
@@ -66,8 +60,8 @@ fun main() {
                     }
                 }
 
-                registerService<AwesomeService> { ctx -> 
-                    AwesomeServiceImpl(AwesomeParameters(false, null), ctx) 
+                registerService<AwesomeService> { 
+                    AwesomeServiceImpl(AwesomeParameters(false, null)) 
                 }
             }
         }
@@ -90,10 +84,8 @@ val service = rpcClient.withService<AwesomeService>()
 
 service.daysUntilStableRelease()
 
-streamScoped {
-    service.getNews("KotlinBurg").collect { article ->
-        println(article)
-    }
+service.getNews("KotlinBurg").collect { article ->
+    println(article)
 }
 ```
 
@@ -105,6 +97,33 @@ Check out our [getting started guide](https://kotlin.github.io/kotlinx-rpc) for 
 
 To ensure that all IDE features of our compiler plugin work properly on IntelliJ-based IDEs, install the
 [Kotlin External FIR Support](https://plugins.jetbrains.com/plugin/26480-kotlin-external-fir-support?noRedirect=true) plugin.
+
+## Kotlin compatibility
+We support all stable Kotlin versions starting from 2.0.0:
+- 2.0.0, 2.0.10, 2.0.20, 2.0.21
+- 2.1.0, 2.1.10, 2.1.20, 2.1.21
+
+For a full compatibility checklist,
+see [Versions](https://kotlin.github.io/kotlinx-rpc/versions.html).
+
+## Supported Platforms
+
+`kotlinx.rpc` is a KMP library, so we aim to support all available platforms. 
+
+However, we are also a multi-module library, meaning that some modules may not support some platforms.
+
+Current high-level status:
+
+| Subsystem | Supported Platforms                              | Notes                                                                                       | 
+|-----------|--------------------------------------------------|---------------------------------------------------------------------------------------------|
+| Core      | Jvm, Js, WasmJs, WasmWasi, Apple, Linux, Windows |                                                                                             |
+| kRPC      | Jvm, Js, WasmJs, Apple, Linux, Windows           | WasmWasi is blocked by [kotlin-logging](https://github.com/oshai/kotlin-logging/issues/433) |
+| gRPC      | Jvm                                              | Projects with `kotlin("jvm")` **only**! <br/> KMP support is in development                 |
+
+For more detailed module by module information, 
+check out our [platform support table](https://kotlin.github.io/kotlinx-rpc/platforms.html).
+
+For information about gRPC, see [gRPC Integration](#grpc-integration)
 
 ### Gradle plugins
 
@@ -173,14 +192,6 @@ Current latest version:
 For more information on gRPC usage, 
 see the [official documentation](https://kotlin.github.io/kotlinx-rpc/grpc-configuration.html).
 For a working example, see the [sample gRPC project](/samples/grpc-app).
-
-## Kotlin compatibility
-We support all stable Kotlin versions starting from 2.0.0:
-- 2.0.0, 2.0.10, 2.0.20, 2.0.21
-- 2.1.0, 2.1.10, 2.1.20, 2.1.21
-
-For a full compatibility checklist, 
-see [Versions](https://kotlin.github.io/kotlinx-rpc/versions.html).
 
 ## JetBrains Product
 
