@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 import java.util.*
@@ -16,9 +16,6 @@ develocity {
     server.set(DEVELOCITY_SERVER)
 
     buildScan {
-        termsOfUseUrl = "https://gradle.com/terms-of-service"
-        termsOfUseAgree = loadAgreement()
-
         uploadInBackground.set(!isCIRun)
 
         // obfuscate NIC since we don't want to expose user real IP (will be relevant without VPN)
@@ -38,7 +35,7 @@ develocity {
             .getOrElse("false")
             .toBooleanStrict()
 
-        publishing.onlyIf { termsOfUseAgree.get() == "yes" && !skipBuildScans }
+        publishing.onlyIf { !skipBuildScans }
     }
 }
 
