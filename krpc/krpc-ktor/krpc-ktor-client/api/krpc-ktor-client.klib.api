@@ -1,0 +1,20 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <org.jetbrains.kotlinx:krpc-ktor-client>
+abstract interface kotlinx.rpc.krpc.ktor.client/KtorRpcClient : kotlinx.rpc/RpcClient { // kotlinx.rpc.krpc.ktor.client/KtorRpcClient|null[0]
+    abstract val webSocketSession // kotlinx.rpc.krpc.ktor.client/KtorRpcClient.webSocketSession|{}webSocketSession[0]
+        abstract fun <get-webSocketSession>(): kotlinx.coroutines/Deferred<io.ktor.websocket/WebSocketSession> // kotlinx.rpc.krpc.ktor.client/KtorRpcClient.webSocketSession.<get-webSocketSession>|<get-webSocketSession>(){}[0]
+}
+
+final val kotlinx.rpc.krpc.ktor.client/Krpc // kotlinx.rpc.krpc.ktor.client/Krpc|{}Krpc[0]
+    final fun <get-Krpc>(): io.ktor.client.plugins.api/ClientPlugin<kotlinx.rpc.krpc/KrpcConfigBuilder.Client> // kotlinx.rpc.krpc.ktor.client/Krpc.<get-Krpc>|<get-Krpc>(){}[0]
+
+final fun (io.ktor.client.request/HttpRequestBuilder).kotlinx.rpc.krpc.ktor.client/rpcConfig(kotlin/Function1<kotlinx.rpc.krpc/KrpcConfigBuilder.Client, kotlin/Unit> = ...) // kotlinx.rpc.krpc.ktor.client/rpcConfig|rpcConfig@io.ktor.client.request.HttpRequestBuilder(kotlin.Function1<kotlinx.rpc.krpc.KrpcConfigBuilder.Client,kotlin.Unit>){}[0]
+final fun (io.ktor.client/HttpClient).kotlinx.rpc.krpc.ktor.client/rpc(kotlin/Function1<io.ktor.client.request/HttpRequestBuilder, kotlin/Unit> = ...): kotlinx.rpc.krpc.ktor.client/KtorRpcClient // kotlinx.rpc.krpc.ktor.client/rpc|rpc@io.ktor.client.HttpClient(kotlin.Function1<io.ktor.client.request.HttpRequestBuilder,kotlin.Unit>){}[0]
+final fun (io.ktor.client/HttpClient).kotlinx.rpc.krpc.ktor.client/rpc(kotlin/String, kotlin/Function1<io.ktor.client.request/HttpRequestBuilder, kotlin/Unit> = ...): kotlinx.rpc.krpc.ktor.client/KtorRpcClient // kotlinx.rpc.krpc.ktor.client/rpc|rpc@io.ktor.client.HttpClient(kotlin.String;kotlin.Function1<io.ktor.client.request.HttpRequestBuilder,kotlin.Unit>){}[0]
+final fun (io.ktor.client/HttpClientConfig<*>).kotlinx.rpc.krpc.ktor.client/installKrpc(kotlin/Function1<kotlinx.rpc.krpc/KrpcConfigBuilder.Client, kotlin/Unit> = ...) // kotlinx.rpc.krpc.ktor.client/installKrpc|installKrpc@io.ktor.client.HttpClientConfig<*>(kotlin.Function1<kotlinx.rpc.krpc.KrpcConfigBuilder.Client,kotlin.Unit>){}[0]

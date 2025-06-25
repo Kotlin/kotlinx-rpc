@@ -4,7 +4,6 @@
 
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 import util.asDokkaVersion
-import util.configureApiValidation
 import util.configureNpm
 import util.configureProjectReport
 import util.registerDumpPlatformTableTask
@@ -80,7 +79,6 @@ dependencies {
 
 configureProjectReport()
 configureNpm()
-configureApiValidation()
 
 registerDumpPlatformTableTask()
 registerVerifyPlatformTableTask()

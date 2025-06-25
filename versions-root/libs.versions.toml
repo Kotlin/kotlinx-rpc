@@ -3,7 +3,7 @@
 kotlinx-rpc = "0.8.0-SNAPSHOT"
 
 # kotlin
-kotlin-lang = "2.1.21" # or env.KOTLIN_VERSION
+kotlin-lang = "2.2.0" # or env.KOTLIN_VERSION
 kotlin-compiler = "0.0.0" # default to kotlin-lang or env.KOTLIN_COMPILER_VERSION
 
 # kotlin independent versions
@@ -17,8 +17,7 @@ gradle-plugin-publish = "1.3.1"
 kotlin-wrappers = "2025.4.8"
 junit4 = "4.13.2"
 junit5 = "5.12.1"
-#intellij = "241.19416.19" apply for 2.2.0 update
-intellij = "233.13135.128"
+intellij = "241.19416.19"
 gradle-doctor = "0.10.0"
 kotlinx-browser = "0.3"
 shadow-jar = "9.0.0-beta12"
@@ -34,7 +33,6 @@ atomicfu = "0.27.0"
 serialization = "1.8.1"
 detekt-gradle-plugin = "1.23.8"
 gradle-kotlin-dsl = "5.1.2"
-binary-compatibility-validator = "0.17.0"
 kover = "0.9.1"
 
 puppeteer = "24.9.0"
@@ -106,7 +104,6 @@ dokka-core = { module = "org.jetbrains.dokka:dokka-core", version.ref = "dokka" 
 dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" }
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 dokka-rpc-plugin = { module = "org.jetbrains.kotlinx:dokka-rpc-plugin", version.ref = "kotlinx-rpc" }
-binary-compatibility-validator-gradle-plugin = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "binary-compatibility-validator" }
 kotlin-js-wrappers = { module = "org.jetbrains.kotlin-wrappers:kotlin-js", version.ref = "kotlin-wrappers" }
 gradle-kotlin-dsl-pluigns = { module = "org.gradle.kotlin:gradle-kotlin-dsl-plugins", version.ref = "gradle-kotlin-dsl" }
 intellij-util = { module = "com.jetbrains.intellij.platform:util", version.ref = "intellij" }
@@ -119,7 +116,6 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-lang" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-lang" }
 
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt-gradle-plugin" }
-binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compatibility-validator" }
 atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
 gradle-kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version.ref = "gradle-kotlin-dsl" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }

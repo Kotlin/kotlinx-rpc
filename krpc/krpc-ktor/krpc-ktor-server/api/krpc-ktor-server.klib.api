@@ -1,0 +1,51 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <org.jetbrains.kotlinx:krpc-ktor-server>
+final class kotlinx.rpc.krpc.ktor.server/KrpcRoute : io.ktor.server.websocket/DefaultWebSocketServerSession { // kotlinx.rpc.krpc.ktor.server/KrpcRoute|null[0]
+    constructor <init>(io.ktor.server.websocket/DefaultWebSocketServerSession) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.<init>|<init>(io.ktor.server.websocket.DefaultWebSocketServerSession){}[0]
+
+    final val call // kotlinx.rpc.krpc.ktor.server/KrpcRoute.call|{}call[0]
+        final fun <get-call>(): io.ktor.server.application/ApplicationCall // kotlinx.rpc.krpc.ktor.server/KrpcRoute.call.<get-call>|<get-call>(){}[0]
+    final val closeReason // kotlinx.rpc.krpc.ktor.server/KrpcRoute.closeReason|{}closeReason[0]
+        final fun <get-closeReason>(): kotlinx.coroutines/Deferred<io.ktor.websocket/CloseReason?> // kotlinx.rpc.krpc.ktor.server/KrpcRoute.closeReason.<get-closeReason>|<get-closeReason>(){}[0]
+    final val coroutineContext // kotlinx.rpc.krpc.ktor.server/KrpcRoute.coroutineContext|{}coroutineContext[0]
+        final fun <get-coroutineContext>(): kotlin.coroutines/CoroutineContext // kotlinx.rpc.krpc.ktor.server/KrpcRoute.coroutineContext.<get-coroutineContext>|<get-coroutineContext>(){}[0]
+    final val extensions // kotlinx.rpc.krpc.ktor.server/KrpcRoute.extensions|{}extensions[0]
+        final fun <get-extensions>(): kotlin.collections/List<io.ktor.websocket/WebSocketExtension<*>> // kotlinx.rpc.krpc.ktor.server/KrpcRoute.extensions.<get-extensions>|<get-extensions>(){}[0]
+    final val incoming // kotlinx.rpc.krpc.ktor.server/KrpcRoute.incoming|{}incoming[0]
+        final fun <get-incoming>(): kotlinx.coroutines.channels/ReceiveChannel<io.ktor.websocket/Frame> // kotlinx.rpc.krpc.ktor.server/KrpcRoute.incoming.<get-incoming>|<get-incoming>(){}[0]
+    final val outgoing // kotlinx.rpc.krpc.ktor.server/KrpcRoute.outgoing|{}outgoing[0]
+        final fun <get-outgoing>(): kotlinx.coroutines.channels/SendChannel<io.ktor.websocket/Frame> // kotlinx.rpc.krpc.ktor.server/KrpcRoute.outgoing.<get-outgoing>|<get-outgoing>(){}[0]
+
+    final var masking // kotlinx.rpc.krpc.ktor.server/KrpcRoute.masking|{}masking[0]
+        final fun <get-masking>(): kotlin/Boolean // kotlinx.rpc.krpc.ktor.server/KrpcRoute.masking.<get-masking>|<get-masking>(){}[0]
+        final fun <set-masking>(kotlin/Boolean) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.masking.<set-masking>|<set-masking>(kotlin.Boolean){}[0]
+    final var maxFrameSize // kotlinx.rpc.krpc.ktor.server/KrpcRoute.maxFrameSize|{}maxFrameSize[0]
+        final fun <get-maxFrameSize>(): kotlin/Long // kotlinx.rpc.krpc.ktor.server/KrpcRoute.maxFrameSize.<get-maxFrameSize>|<get-maxFrameSize>(){}[0]
+        final fun <set-maxFrameSize>(kotlin/Long) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.maxFrameSize.<set-maxFrameSize>|<set-maxFrameSize>(kotlin.Long){}[0]
+    final var pingIntervalMillis // kotlinx.rpc.krpc.ktor.server/KrpcRoute.pingIntervalMillis|{}pingIntervalMillis[0]
+        final fun <get-pingIntervalMillis>(): kotlin/Long // kotlinx.rpc.krpc.ktor.server/KrpcRoute.pingIntervalMillis.<get-pingIntervalMillis>|<get-pingIntervalMillis>(){}[0]
+        final fun <set-pingIntervalMillis>(kotlin/Long) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.pingIntervalMillis.<set-pingIntervalMillis>|<set-pingIntervalMillis>(kotlin.Long){}[0]
+    final var timeoutMillis // kotlinx.rpc.krpc.ktor.server/KrpcRoute.timeoutMillis|{}timeoutMillis[0]
+        final fun <get-timeoutMillis>(): kotlin/Long // kotlinx.rpc.krpc.ktor.server/KrpcRoute.timeoutMillis.<get-timeoutMillis>|<get-timeoutMillis>(){}[0]
+        final fun <set-timeoutMillis>(kotlin/Long) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.timeoutMillis.<set-timeoutMillis>|<set-timeoutMillis>(kotlin.Long){}[0]
+
+    final fun <#A1: kotlin/Any> registerService(kotlin.reflect/KClass<#A1>, kotlin/Function0<#A1>) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.registerService|registerService(kotlin.reflect.KClass<0:0>;kotlin.Function0<0:0>){0§<kotlin.Any>}[0]
+    final fun rpcConfig(kotlin/Function1<kotlinx.rpc.krpc/KrpcConfigBuilder.Server, kotlin/Unit>) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.rpcConfig|rpcConfig(kotlin.Function1<kotlinx.rpc.krpc.KrpcConfigBuilder.Server,kotlin.Unit>){}[0]
+    final fun start(kotlin.collections/List<io.ktor.websocket/WebSocketExtension<*>>) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.start|start(kotlin.collections.List<io.ktor.websocket.WebSocketExtension<*>>){}[0]
+    final fun terminate() // kotlinx.rpc.krpc.ktor.server/KrpcRoute.terminate|terminate(){}[0]
+    final inline fun <#A1: reified kotlin/Any> registerService(noinline kotlin/Function0<#A1>) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.registerService|registerService(kotlin.Function0<0:0>){0§<kotlin.Any>}[0]
+    final suspend fun flush() // kotlinx.rpc.krpc.ktor.server/KrpcRoute.flush|flush(){}[0]
+    final suspend fun send(io.ktor.websocket/Frame) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.send|send(io.ktor.websocket.Frame){}[0]
+}
+
+final val kotlinx.rpc.krpc.ktor.server/Krpc // kotlinx.rpc.krpc.ktor.server/Krpc|{}Krpc[0]
+    final fun <get-Krpc>(): io.ktor.server.application/ApplicationPlugin<kotlinx.rpc.krpc/KrpcConfigBuilder.Server> // kotlinx.rpc.krpc.ktor.server/Krpc.<get-Krpc>|<get-Krpc>(){}[0]
+
+final fun (io.ktor.server.routing/Route).kotlinx.rpc.krpc.ktor.server/rpc(kotlin/Function1<kotlinx.rpc.krpc.ktor.server/KrpcRoute, kotlin/Unit>) // kotlinx.rpc.krpc.ktor.server/rpc|rpc@io.ktor.server.routing.Route(kotlin.Function1<kotlinx.rpc.krpc.ktor.server.KrpcRoute,kotlin.Unit>){}[0]
+final fun (io.ktor.server.routing/Route).kotlinx.rpc.krpc.ktor.server/rpc(kotlin/String, kotlin/Function1<kotlinx.rpc.krpc.ktor.server/KrpcRoute, kotlin/Unit>) // kotlinx.rpc.krpc.ktor.server/rpc|rpc@io.ktor.server.routing.Route(kotlin.String;kotlin.Function1<kotlinx.rpc.krpc.ktor.server.KrpcRoute,kotlin.Unit>){}[0]

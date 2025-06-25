@@ -3,6 +3,7 @@
  */
 
 import io.gitlab.arturbosch.detekt.Detekt
+import util.configureApiValidation
 import util.libs
 import util.whenKotlinLatest
 
@@ -15,6 +16,8 @@ plugins {
 val globalRootDir: String by extra
 
 val globalDetektDir = "$globalRootDir/detekt"
+
+configureApiValidation()
 
 // https://detekt.dev/docs/gettingstarted/gradle#options-for-detekt-configuration-closure
 detekt {

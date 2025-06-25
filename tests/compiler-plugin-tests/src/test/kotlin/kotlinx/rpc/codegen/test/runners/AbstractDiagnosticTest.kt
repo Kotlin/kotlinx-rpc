@@ -4,19 +4,26 @@
 
 package kotlinx.rpc.codegen.test.runners
 
-import org.jetbrains.kotlin.test.FirParser
 import org.jetbrains.kotlin.test.builders.TestConfigurationBuilder
-import org.jetbrains.kotlin.test.directives.configureFirParser
-import org.jetbrains.kotlin.test.services.EnvironmentBasedStandardLibrariesPathProvider
-import org.jetbrains.kotlin.test.services.KotlinStandardLibrariesPathProvider
 
-abstract class AbstractDiagnosticTest : BaseTestRunner() {
-    override fun configure(builder: TestConfigurationBuilder) = with(builder) {
-        commonFirWithPluginFrontendConfiguration()
-        configureFirParser(FirParser.LightTree)
-    }
+open class AbstractDiagnosticTest : BaseTestRunner() {
+    override fun configure(builder: TestConfigurationBuilder) {
+        super.configure(builder)
 
-    override fun createKotlinStandardLibrariesPathProvider(): KotlinStandardLibrariesPathProvider {
-        return EnvironmentBasedStandardLibrariesPathProvider
+        with(builder) {
+            defaultDirectives {
+                /*
+                 * Containers of different directives, which can be used in tests:
+                 * - ModuleStructureDirectives
+                 * - LanguageSettingsDirectives
+                 * - DiagnosticsDirectives
+                 * - FirDiagnosticsDirectives
+                 *
+                 * All of them are located in `org.jetbrains.kotlin.test.directives` package
+                 */
+            }
+
+            commonFirWithPluginFrontendConfiguration()
+        }
     }
 }

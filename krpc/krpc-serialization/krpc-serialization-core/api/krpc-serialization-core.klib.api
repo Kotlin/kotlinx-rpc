@@ -1,0 +1,27 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <org.jetbrains.kotlinx:krpc-serialization-core>
+abstract interface <#A: kotlinx.serialization/SerialFormat, #B: kotlin/Any> kotlinx.rpc.krpc.serialization/KrpcSerialFormat { // kotlinx.rpc.krpc.serialization/KrpcSerialFormat|null[0]
+    abstract fun (#B).applySerializersModule(kotlinx.serialization.modules/SerializersModule) // kotlinx.rpc.krpc.serialization/KrpcSerialFormat.applySerializersModule|applySerializersModule@1:1(kotlinx.serialization.modules.SerializersModule){}[0]
+    abstract fun withBuilder(#A? = ..., kotlin/Function1<#B, kotlin/Unit>): #A // kotlinx.rpc.krpc.serialization/KrpcSerialFormat.withBuilder|withBuilder(1:0?;kotlin.Function1<1:1,kotlin.Unit>){}[0]
+}
+
+abstract interface kotlinx.rpc.krpc.serialization/KrpcSerialFormatConfiguration { // kotlinx.rpc.krpc.serialization/KrpcSerialFormatConfiguration|null[0]
+    abstract fun register(kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder.Binary<*, *>) // kotlinx.rpc.krpc.serialization/KrpcSerialFormatConfiguration.register|register(kotlinx.rpc.krpc.serialization.KrpcSerialFormatBuilder.Binary<*,*>){}[0]
+    abstract fun register(kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder.String<*, *>) // kotlinx.rpc.krpc.serialization/KrpcSerialFormatConfiguration.register|register(kotlinx.rpc.krpc.serialization.KrpcSerialFormatBuilder.String<*,*>){}[0]
+}
+
+sealed class <#A: kotlinx.serialization/SerialFormat, #B: kotlin/Any> kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder { // kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder|null[0]
+    final class <#A1: kotlinx.serialization/BinaryFormat, #B1: kotlin/Any> Binary : kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder<#A1, #B1> { // kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder.Binary|null[0]
+        constructor <init>(kotlinx.rpc.krpc.serialization/KrpcSerialFormat<#A1, #B1>, #A1? = ..., kotlin/Function1<#B1, kotlin/Unit>) // kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder.Binary.<init>|<init>(kotlinx.rpc.krpc.serialization.KrpcSerialFormat<1:0,1:1>;1:0?;kotlin.Function1<1:1,kotlin.Unit>){}[0]
+    }
+
+    final class <#A1: kotlinx.serialization/StringFormat, #B1: kotlin/Any> String : kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder<#A1, #B1> { // kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder.String|null[0]
+        constructor <init>(kotlinx.rpc.krpc.serialization/KrpcSerialFormat<#A1, #B1>, #A1? = ..., kotlin/Function1<#B1, kotlin/Unit>) // kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder.String.<init>|<init>(kotlinx.rpc.krpc.serialization.KrpcSerialFormat<1:0,1:1>;1:0?;kotlin.Function1<1:1,kotlin.Unit>){}[0]
+    }
+}

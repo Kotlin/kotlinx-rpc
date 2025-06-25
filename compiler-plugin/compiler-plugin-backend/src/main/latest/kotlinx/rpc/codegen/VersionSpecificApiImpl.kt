@@ -1,13 +1,12 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.codegen
 
 import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
-import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.backend.common.ir.addExtensionReceiver
+import org.jetbrains.kotlin.backend.common.ir.createExtensionReceiver
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
@@ -17,6 +16,7 @@ import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
@@ -65,7 +65,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         get() = parameters
 
     override val IrConstructorCall.argumentsVS: List<IrExpression?>
-        get() = arguments
+        get() = arguments.toList()
 
     override fun IrType.isNullableVS(): Boolean {
         return isNullable()
@@ -99,7 +99,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     }
 
     override fun IrSimpleFunction.addExtensionReceiverVS(type: IrType, origin: IrDeclarationOrigin): IrValueParameter {
-        return addExtensionReceiver(type, origin)
+        return createExtensionReceiver(type, origin)
     }
 
     override val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
@@ -150,34 +150,41 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     }
 
     override fun IrFunction.valueParametersVS(): List<IrValueParameter> {
-        return valueParameters
+        return parameters.filter { it.kind == IrParameterKind.Regular }
     }
 
     override val IrFunction.extensionReceiverParameterVS: IrValueParameter?
-        get() = extensionReceiverParameter
+        get() = parameters.firstOrNull { it.kind == IrParameterKind.ExtensionReceiver }
 
     override var IrFunction.dispatchReceiverParameterVS: IrValueParameter?
         get() = dispatchReceiverParameter
         set(value) {
-            dispatchReceiverParameter = value
+            if (value != null) {
+                parameters += value
+            }
         }
-
 
     override fun IrMemberAccessExpressionData.buildFor(access: IrMemberAccessExpression<*>) {
-        if (dispatchReceiver != null) {
-            access.dispatchReceiver = dispatchReceiver
+        var offset = if (dispatchReceiver != null) {
+            access.arguments[0] = dispatchReceiver
+            1
+        } else {
+            0
         }
 
-        if (extensionReceiver != null) {
-            access.extensionReceiver = extensionReceiver
+        offset += if (extensionReceiver != null) {
+            access.arguments[offset] = extensionReceiver
+            1
+        } else {
+            0
         }
 
         valueArguments.forEachIndexed { index, irExpression ->
-            access.putValueArgument(index, irExpression)
+            access.arguments[offset + index] = irExpression
         }
 
         typeArguments.forEachIndexed { index, irType ->
-            access.putTypeArgument(index, irType)
+            access.typeArguments[index] = irType
         }
     }
 }

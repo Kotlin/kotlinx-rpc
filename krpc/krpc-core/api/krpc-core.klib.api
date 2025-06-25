@@ -1,0 +1,74 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <org.jetbrains.kotlinx:krpc-core>
+abstract interface kotlinx.rpc.krpc/KrpcTransport : kotlinx.coroutines/CoroutineScope { // kotlinx.rpc.krpc/KrpcTransport|null[0]
+    abstract suspend fun receive(): kotlinx.rpc.krpc/KrpcTransportMessage // kotlinx.rpc.krpc/KrpcTransport.receive|receive(){}[0]
+    abstract suspend fun send(kotlinx.rpc.krpc/KrpcTransportMessage) // kotlinx.rpc.krpc/KrpcTransport.send|send(kotlinx.rpc.krpc.KrpcTransportMessage){}[0]
+}
+
+sealed interface kotlinx.rpc.krpc/KrpcConfig { // kotlinx.rpc.krpc/KrpcConfig|null[0]
+    abstract val serialFormatInitializer // kotlinx.rpc.krpc/KrpcConfig.serialFormatInitializer|{}serialFormatInitializer[0]
+        abstract fun <get-serialFormatInitializer>(): kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder<*, *> // kotlinx.rpc.krpc/KrpcConfig.serialFormatInitializer.<get-serialFormatInitializer>|<get-serialFormatInitializer>(){}[0]
+    abstract val waitForServices // kotlinx.rpc.krpc/KrpcConfig.waitForServices|{}waitForServices[0]
+        abstract fun <get-waitForServices>(): kotlin/Boolean // kotlinx.rpc.krpc/KrpcConfig.waitForServices.<get-waitForServices>|<get-waitForServices>(){}[0]
+
+    final class Client : kotlinx.rpc.krpc/KrpcConfig { // kotlinx.rpc.krpc/KrpcConfig.Client|null[0]
+        final val serialFormatInitializer // kotlinx.rpc.krpc/KrpcConfig.Client.serialFormatInitializer|{}serialFormatInitializer[0]
+            final fun <get-serialFormatInitializer>(): kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder<*, *> // kotlinx.rpc.krpc/KrpcConfig.Client.serialFormatInitializer.<get-serialFormatInitializer>|<get-serialFormatInitializer>(){}[0]
+        final val waitForServices // kotlinx.rpc.krpc/KrpcConfig.Client.waitForServices|{}waitForServices[0]
+            final fun <get-waitForServices>(): kotlin/Boolean // kotlinx.rpc.krpc/KrpcConfig.Client.waitForServices.<get-waitForServices>|<get-waitForServices>(){}[0]
+    }
+
+    final class Server : kotlinx.rpc.krpc/KrpcConfig { // kotlinx.rpc.krpc/KrpcConfig.Server|null[0]
+        final val serialFormatInitializer // kotlinx.rpc.krpc/KrpcConfig.Server.serialFormatInitializer|{}serialFormatInitializer[0]
+            final fun <get-serialFormatInitializer>(): kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder<*, *> // kotlinx.rpc.krpc/KrpcConfig.Server.serialFormatInitializer.<get-serialFormatInitializer>|<get-serialFormatInitializer>(){}[0]
+        final val waitForServices // kotlinx.rpc.krpc/KrpcConfig.Server.waitForServices|{}waitForServices[0]
+            final fun <get-waitForServices>(): kotlin/Boolean // kotlinx.rpc.krpc/KrpcConfig.Server.waitForServices.<get-waitForServices>|<get-waitForServices>(){}[0]
+    }
+}
+
+sealed interface kotlinx.rpc.krpc/KrpcTransportMessage { // kotlinx.rpc.krpc/KrpcTransportMessage|null[0]
+    final class BinaryMessage : kotlinx.rpc.krpc/KrpcTransportMessage { // kotlinx.rpc.krpc/KrpcTransportMessage.BinaryMessage|null[0]
+        constructor <init>(kotlin/ByteArray) // kotlinx.rpc.krpc/KrpcTransportMessage.BinaryMessage.<init>|<init>(kotlin.ByteArray){}[0]
+
+        final val value // kotlinx.rpc.krpc/KrpcTransportMessage.BinaryMessage.value|{}value[0]
+            final fun <get-value>(): kotlin/ByteArray // kotlinx.rpc.krpc/KrpcTransportMessage.BinaryMessage.value.<get-value>|<get-value>(){}[0]
+    }
+
+    final class StringMessage : kotlinx.rpc.krpc/KrpcTransportMessage { // kotlinx.rpc.krpc/KrpcTransportMessage.StringMessage|null[0]
+        constructor <init>(kotlin/String) // kotlinx.rpc.krpc/KrpcTransportMessage.StringMessage.<init>|<init>(kotlin.String){}[0]
+
+        final val value // kotlinx.rpc.krpc/KrpcTransportMessage.StringMessage.value|{}value[0]
+            final fun <get-value>(): kotlin/String // kotlinx.rpc.krpc/KrpcTransportMessage.StringMessage.value.<get-value>|<get-value>(){}[0]
+    }
+}
+
+sealed class kotlinx.rpc.krpc/KrpcConfigBuilder { // kotlinx.rpc.krpc/KrpcConfigBuilder|null[0]
+    final var waitForServices // kotlinx.rpc.krpc/KrpcConfigBuilder.waitForServices|{}waitForServices[0]
+        final fun <get-waitForServices>(): kotlin/Boolean // kotlinx.rpc.krpc/KrpcConfigBuilder.waitForServices.<get-waitForServices>|<get-waitForServices>(){}[0]
+        final fun <set-waitForServices>(kotlin/Boolean) // kotlinx.rpc.krpc/KrpcConfigBuilder.waitForServices.<set-waitForServices>|<set-waitForServices>(kotlin.Boolean){}[0]
+
+    final fun rpcSerialFormat(): kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder<*, *> // kotlinx.rpc.krpc/KrpcConfigBuilder.rpcSerialFormat|rpcSerialFormat(){}[0]
+    final fun serialization(kotlin/Function1<kotlinx.rpc.krpc.serialization/KrpcSerialFormatConfiguration, kotlin/Unit>) // kotlinx.rpc.krpc/KrpcConfigBuilder.serialization|serialization(kotlin.Function1<kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration,kotlin.Unit>){}[0]
+
+    final class Client : kotlinx.rpc.krpc/KrpcConfigBuilder { // kotlinx.rpc.krpc/KrpcConfigBuilder.Client|null[0]
+        constructor <init>() // kotlinx.rpc.krpc/KrpcConfigBuilder.Client.<init>|<init>(){}[0]
+
+        final fun build(): kotlinx.rpc.krpc/KrpcConfig.Client // kotlinx.rpc.krpc/KrpcConfigBuilder.Client.build|build(){}[0]
+    }
+
+    final class Server : kotlinx.rpc.krpc/KrpcConfigBuilder { // kotlinx.rpc.krpc/KrpcConfigBuilder.Server|null[0]
+        constructor <init>() // kotlinx.rpc.krpc/KrpcConfigBuilder.Server.<init>|<init>(){}[0]
+
+        final fun build(): kotlinx.rpc.krpc/KrpcConfig.Server // kotlinx.rpc.krpc/KrpcConfigBuilder.Server.build|build(){}[0]
+    }
+}
+
+final fun kotlinx.rpc.krpc/rpcClientConfig(kotlin/Function1<kotlinx.rpc.krpc/KrpcConfigBuilder.Client, kotlin/Unit> = ...): kotlinx.rpc.krpc/KrpcConfig.Client // kotlinx.rpc.krpc/rpcClientConfig|rpcClientConfig(kotlin.Function1<kotlinx.rpc.krpc.KrpcConfigBuilder.Client,kotlin.Unit>){}[0]
+final fun kotlinx.rpc.krpc/rpcServerConfig(kotlin/Function1<kotlinx.rpc.krpc/KrpcConfigBuilder.Server, kotlin/Unit> = ...): kotlinx.rpc.krpc/KrpcConfig.Server // kotlinx.rpc.krpc/rpcServerConfig|rpcServerConfig(kotlin.Function1<kotlinx.rpc.krpc.KrpcConfigBuilder.Server,kotlin.Unit>){}[0]
+final suspend fun (kotlinx.rpc.krpc/KrpcTransport).kotlinx.rpc.krpc/receiveCatching(): kotlin/Result<kotlinx.rpc.krpc/KrpcTransportMessage> // kotlinx.rpc.krpc/receiveCatching|receiveCatching@kotlinx.rpc.krpc.KrpcTransport(){}[0]

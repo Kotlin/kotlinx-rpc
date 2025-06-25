@@ -4,28 +4,50 @@
 
 package util
 
-import kotlinx.validation.ApiValidationExtension
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.configure
+import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
+import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 
+@OptIn(ExperimentalAbiValidation::class)
 fun Project.configureApiValidation() {
-    plugins.apply(libs.plugins.binary.compatibility.validator.get().pluginId)
+    when (project.name) {
+        "krpc-test",
+        "krpc-compatibility-tests",
+        "compiler-plugin-tests",
+            -> return
+    }
 
-    val kotlinMasterBuild by optionalProperty()
+    withKotlinJvmExtension {
+        extensions.configure<AbiValidationExtension> {
+            enabled.set(true)
 
-    the<ApiValidationExtension>().apply {
-        ignoredPackages.add("kotlinx.rpc.internal")
-        ignoredPackages.add("kotlinx.rpc.krpc.internal")
+            configureFilters()
+        }
+    }
 
-        ignoredProjects.addAll(
-            listOfNotNull(
-                if (kotlinMasterBuild) null else "compiler-plugin-tests",
-                "krpc-test",
-                "utils",
-                "krpc-compatibility-tests",
-            )
-        )
+    withKotlinKmpExtension {
+        extensions.configure<AbiValidationMultiplatformExtension> {
+            enabled.set(true)
 
-        nonPublicMarkers.add("kotlinx.rpc.internal.utils.InternalRpcApi")
+            klib {
+                enabled.set(true)
+            }
+
+            configureFilters()
+        }
+    }
+}
+
+@OptIn(ExperimentalAbiValidation::class)
+private fun AbiValidationVariantSpec.configureFilters() {
+    filters {
+        excluded {
+            annotatedWith.add("kotlinx.rpc.internal.utils.InternalRpcApi")
+            byNames.add("kotlinx.rpc.internal.**")
+            byNames.add("kotlinx.rpc.krpc.internal.**")
+        }
     }
 }

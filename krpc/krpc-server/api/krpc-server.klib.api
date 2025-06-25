@@ -1,0 +1,16 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <org.jetbrains.kotlinx:krpc-server>
+abstract class kotlinx.rpc.krpc.server/KrpcServer : kotlinx.rpc.krpc.internal/KrpcEndpoint, kotlinx.rpc/RpcServer { // kotlinx.rpc.krpc.server/KrpcServer|null[0]
+    constructor <init>(kotlinx.rpc.krpc/KrpcConfig.Server, kotlinx.rpc.krpc/KrpcTransport) // kotlinx.rpc.krpc.server/KrpcServer.<init>|<init>(kotlinx.rpc.krpc.KrpcConfig.Server;kotlinx.rpc.krpc.KrpcTransport){}[0]
+
+    final fun <#A1: kotlin/Any> registerService(kotlin.reflect/KClass<#A1>, kotlin/Function0<#A1>) // kotlinx.rpc.krpc.server/KrpcServer.registerService|registerService(kotlin.reflect.KClass<0:0>;kotlin.Function0<0:0>){0§<kotlin.Any>}[0]
+    final fun close(kotlin/String? = ...) // kotlinx.rpc.krpc.server/KrpcServer.close|close(kotlin.String?){}[0]
+    final suspend fun awaitCompletion() // kotlinx.rpc.krpc.server/KrpcServer.awaitCompletion|awaitCompletion(){}[0]
+    open fun <#A1: kotlin/Any> deregisterService(kotlin.reflect/KClass<#A1>) // kotlinx.rpc.krpc.server/KrpcServer.deregisterService|deregisterService(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
+}
