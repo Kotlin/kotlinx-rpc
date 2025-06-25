@@ -16,6 +16,9 @@ develocity {
     server.set(DEVELOCITY_SERVER)
 
     buildScan {
+        termsOfUseUrl = "https://gradle.com/terms-of-service"
+        termsOfUseAgree = loadAgreement()
+
         uploadInBackground.set(!isCIRun)
 
         // obfuscate NIC since we don't want to expose user real IP (will be relevant without VPN)
@@ -35,7 +38,7 @@ develocity {
             .getOrElse("false")
             .toBooleanStrict()
 
-        publishing.onlyIf { !skipBuildScans }
+        publishing.onlyIf { termsOfUseAgree.get() == "yes" && !skipBuildScans }
     }
 }
 

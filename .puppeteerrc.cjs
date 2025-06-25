@@ -1,6 +1,6 @@
 const {join} = require('path');
 
-const isCI = process.env.TEAMCITY_VERSION
+const isCI = process.env.TEAMCITY_VERSION || process.env.GITHUB_ACTIONS;
 
 if (isCI) {
     /**
