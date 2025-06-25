@@ -4,7 +4,6 @@
 
 import org.gradle.api.initialization.Settings
 
-@Suppress("UnstableApiUsage")
 fun Settings.execute(cmd: String): String {
     return settings.providers.exec {
         commandLine(cmd.split(" "))
