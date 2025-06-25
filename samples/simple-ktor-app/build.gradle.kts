@@ -3,10 +3,10 @@
  */
 
 plugins {
-    kotlin("jvm") version "2.1.21"
-    kotlin("plugin.serialization") version "2.1.21"
-    id("io.ktor.plugin") version "3.1.2"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "0.7.0"
+    kotlin("jvm") version "2.2.0"
+    kotlin("plugin.serialization") version "2.2.0"
+    id("io.ktor.plugin") version "3.2.0"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.8.0"
 }
 
 group = "kotlinx.rpc.sample"
