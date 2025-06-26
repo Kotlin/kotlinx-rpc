@@ -199,10 +199,6 @@ For a working example, see the [sample gRPC project](/samples/grpc-app).
 `kotlinx.rpc` is an official [JetBrains](https://jetbrains.com) product and is primarily developed by the team at JetBrains, with
 contributions from the community.
 
-[//]: # (## Documentation)
-
-[//]: # (TODO: add docs site and most useful links)
-
 ## Support 
 
 Community support is available on the [Kotlin Slack kotlinx-rpc channel](https://kotlinlang.slack.com/archives/C072YJ3Q91V)

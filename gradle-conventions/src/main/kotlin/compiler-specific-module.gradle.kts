@@ -58,7 +58,12 @@ fun KotlinSourceSet.configureResources(sourceSetPath: Path) {
     }
 
     // only works for jvm projects
-    val resourcesName = if (name.lowercase().contains(DirectoryNames.MAIN_SOURCE_SET)) DirectoryNames.MAIN_RESOURCES else DirectoryNames.TEST_RESOURCES
+    val resourcesName = if (name.lowercase().contains(DirectoryNames.MAIN_SOURCE_SET)) {
+        DirectoryNames.MAIN_RESOURCES
+    } else {
+        DirectoryNames.TEST_RESOURCES
+    }
+
     val resourcesDir = parent.resolve(resourcesName)
 
     if (!Files.exists(resourcesDir)) {
