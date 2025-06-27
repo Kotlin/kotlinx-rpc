@@ -30,7 +30,7 @@ fun Application.module() {
                 }
             }
 
-            registerService<UserService> { ctx -> UserServiceImpl(ctx) }
+            registerService<UserService> { UserServiceImpl() }
         }
     }
 }

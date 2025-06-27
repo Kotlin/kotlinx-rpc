@@ -2,7 +2,6 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import kotlinx.rpc.RpcClient
 import kotlinx.rpc.withService
 import react.FC
 import react.Props
@@ -11,20 +10,10 @@ import react.useEffectOnce
 import react.useState
 
 val App = FC<Props> {
-    var rpcClient by useState<RpcClient?>(null)
+    val rpcClient = initRpcClient()
 
-    useEffectOnce {
-        rpcClient = initRpcClient()
-    }
-
-    rpcClient?.also { client ->
-        AppContainer {
-            this.apiService = client.withService<MyService>()
-        }
-    } ?: run {
-        div {
-            +"Establishing connection..."
-        }
+    AppContainer {
+        apiService = rpcClient.withService<MyService>()
     }
 }
 
