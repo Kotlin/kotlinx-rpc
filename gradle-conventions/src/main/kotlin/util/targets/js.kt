@@ -22,7 +22,7 @@ fun KmpConfig.configureJs() {
             nodejs {
                 testTask {
                     useMocha {
-                        timeout = "100s"
+                        timeout = "300s"
                     }
                 }
             }

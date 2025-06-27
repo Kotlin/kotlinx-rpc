@@ -9,6 +9,12 @@
       <excludeFolder url="file://$MODULE_DIR$/docs/pages/api" />
       <excludeFolder url="file://$MODULE_DIR$/kotlin-js-store" />
       <excludeFolder url="file://$MODULE_DIR$/detekt/reports" />
+      <excludeFolder url="file://$MODULE_DIR$/gradle-conventions/build/generated-sources/kotlin-dsl-external-plugin-spec-builders/kotlin" />
+      <excludeFolder url="file://$MODULE_DIR$/gradle-conventions/build/generated-sources/kotlin-dsl-plugins/kotlin" />
+      <excludeFolder url="file://$MODULE_DIR$/gradle-conventions/build/generated-sources/kotlin-dsl-accessors/kotlin" />
+      <excludeFolder url="file://$MODULE_DIR$/gradle-conventions-settings/build/generated-sources/kotlin-dsl-external-plugin-spec-builders/kotlin" />
+      <excludeFolder url="file://$MODULE_DIR$/gradle-conventions-settings/build/generated-sources/kotlin-dsl-plugins/kotlin" />
+      <excludeFolder url="file://$MODULE_DIR$/gradle-conventions-settings/build/generated-sources/kotlin-dsl-accessors/kotlin" />
     </content>
   </component>
 </module>

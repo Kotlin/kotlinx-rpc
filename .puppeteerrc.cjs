@@ -1,8 +1,13 @@
+/*
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 const {join} = require('path');
 
-const isCI = process.env.TEAMCITY_VERSION || process.env.GITHUB_ACTIONS;
+const isTC = process.env.TEAMCITY_VERSION;
+const isGA = process.env.GITHUB_ACTIONS;
 
-if (isCI) {
+if (isTC !== undefined || isGA !== undefined) {
     /**
      * @type {import("puppeteer").Configuration}
      */
