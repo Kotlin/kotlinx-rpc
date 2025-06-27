@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlin.coroutines.CoroutineContext
 
-class MyServiceImpl(override val coroutineContext: CoroutineContext) : MyService {
+class MyServiceImpl : MyService {
     override suspend fun hello(user: String, userData: UserData): String {
         return "Nice to meet you $user, how is it in ${userData.address}?"
     }

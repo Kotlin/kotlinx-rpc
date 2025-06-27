@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlin.coroutines.CoroutineContext
 
-class UserServiceImpl(override val coroutineContext: CoroutineContext) : UserService {
+class UserServiceImpl : UserService {
     override suspend fun hello(user: String, userData: UserData): String {
         return "Nice to meet you $user, how is it in ${userData.address}?"
     }
