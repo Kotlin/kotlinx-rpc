@@ -4,7 +4,6 @@
 
 import io.ktor.client.*
 import io.ktor.http.*
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -54,7 +53,6 @@ fun main() = runBlocking {
     val categories = recognizer.recognizeAll(imageFlow)
     categories.collect { println("Recognized category: $it") }
 
-    recognizer.cancel()
     ktorClient.close()
     stateJob.cancel()
 }
