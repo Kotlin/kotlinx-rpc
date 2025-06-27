@@ -1,3 +1,57 @@
+# 0.8.0
+> Published 30 June 2025
+
+## Overview
+This release brings a lot of changes, including breaking changes:
+- Kotlin 2.2.0 Update
+- Decoupling of `kotlinx.serialization` from the core functionality
+- Simplifying lifetime schema (services lost their `CoroutineScope`)
+- Irreversible enforcement of the [strict mode](https://kotlin.github.io/kotlinx-rpc/strict-mode.html)
+
+These changes significantly reduce the number of footguns and improve the overall usability of the library.
+
+Additionally, the internal structure of kRPC protocol and our compiler plugin reduced its complexity. 
+That allows us to provide better quality in future releases
+(and this also applies to gRPC, even though in this particular release it was not a priority).
+
+For the full list of changes that require migration,
+see the [Migration Guide](https://kotlin.github.io/kotlinx-rpc/0-8-0.html).
+
+## Docs update
+
+We added three new documentation sections:
+- [API Reference](https://kotlin.github.io/kotlinx-rpc/api/index.html) 
+- [Platform compatibility overview](https://kotlin.github.io/kotlinx-rpc/platforms.html) 
+- [Changelog](https://kotlin.github.io/kotlinx-rpc/changelog.html) in the web
+
+### Features 🎉
+* Serialization decoupling by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/354
+* Update Kotlin to 2.2.0 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/359
+
+### Breaking Changes 🔴
+* [Meta] Strict mode, deprecations, lifetime by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/353
+
+### Bug fixes 🐛
+* Fix compilation for standalone k2 module by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/350
+* Fix Pupperteer Version by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/355
+
+### Documentation 📗
+* Platforms Table and docs by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/356
+* Dokka  by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/357
+* Add Changelog.md to Docs by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/358
+* Onboarding by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/363
+
+### Other Changes 🧹
+* Advance version to 0.8.0-SNAPSHOT by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/340
+* Update README.md to use non-suspend flows by @brokenhappy in https://github.com/Kotlin/kotlinx-rpc/pull/342
+* Fix kotlin master builds by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/345
+* Simplify Gradle Configs by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/360
+
+## New Contributors
+* @brokenhappy made their first contribution in https://github.com/Kotlin/kotlinx-rpc/pull/342
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.7.0...0.8.0
+
 # 0.7.0
 > Published 13 May 2025
 
