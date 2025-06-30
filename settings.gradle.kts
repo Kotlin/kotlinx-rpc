@@ -19,8 +19,7 @@ plugins {
     id("conventions-repositories")
     id("conventions-version-resolution")
     id("conventions-develocity")
-    // rollback to 0.9.0, as 1.0.0 requires JDK_17 on CI, which I have no time to set up
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 dependencyResolutionManagement {
