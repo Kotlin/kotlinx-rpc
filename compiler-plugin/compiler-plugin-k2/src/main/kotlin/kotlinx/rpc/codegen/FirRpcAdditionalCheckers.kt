@@ -23,7 +23,6 @@ class FirRpcAdditionalCheckers(
 ) : FirAdditionalCheckersExtension(session) {
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
         register(FirRpcPredicates.rpc)
-        register(FirRpcPredicates.grpc)
         register(FirRpcPredicates.checkedAnnotationMeta)
     }
 
