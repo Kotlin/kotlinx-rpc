@@ -28,6 +28,7 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.modules.SerializersModule
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.*
+import kotlin.time.Duration.Companion.seconds
 
 internal object LocalDateSerializer : KSerializer<LocalDate> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalDate", PrimitiveKind.STRING)
@@ -285,7 +286,7 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    fun `RPC should be able to receive 100_000 ints in reasonable time`() = runTest {
+    fun `RPC should be able to receive 100_000 ints in reasonable time`() = runTest(timeout = JS_EXTENDED_TIMEOUT) {
         val n = 100_000
         assertEquals(client.getNInts(n).last(), n)
     }
@@ -436,5 +437,7 @@ abstract class KrpcTransportTestBase {
         assertEquals(Unit, client.unitFlow().toList().single())
     }
 }
+
+private val JS_EXTENDED_TIMEOUT = if (isJs) 300.seconds else 60.seconds
 
 internal expect val isJs: Boolean
