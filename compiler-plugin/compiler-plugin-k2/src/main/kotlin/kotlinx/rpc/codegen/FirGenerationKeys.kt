@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.name.Name
 
 internal class RpcGeneratedStubKey(
-    val isGrpc: Boolean,
     private val serviceName: Name,
 ) : GeneratedDeclarationKey() {
     override fun toString(): String {
