@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc.descriptor
 
-import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
 import kotlinx.rpc.grpc.ManagedChannel
@@ -28,5 +28,5 @@ public interface GrpcDelegate<@Grpc T : Any> {
 public interface GrpcClientDelegate {
     public suspend fun <R> call(rpcCall: RpcCall): R
 
-    public fun <R> callAsync(rpcCall: RpcCall): Deferred<R>
+    public fun <R> callServerStreaming(rpcCall: RpcCall): Flow<R>
 }
