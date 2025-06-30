@@ -2,6 +2,8 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:Suppress("detekt.all")
+
 package kotlinx.rpc.protobuf
 
 import kotlinx.rpc.protobuf.CodeGenerator.DeclarationType
@@ -599,13 +601,13 @@ class ModelToKotlinGenerator(
             function(
                 name = "call",
                 modifiers = "override suspend",
-                args = "call: kotlinx.rpc.RpcCall",
+                args = "rpcCall: kotlinx.rpc.RpcCall",
                 typeParameters = "R",
                 returnType = "R",
             ) {
-                code("val message = (call.data as kotlinx.rpc.internal.RpcMethodClass).asArray()[0]")
+                code("val message = rpcCall.parameters[0]")
                 code("@Suppress(\"UNCHECKED_CAST\")")
-                scope("return when (call.callableName)") {
+                scope("return when (rpcCall.callableName)") {
                     service.methods.forEach { method ->
                         val inputType by method.inputType
                         val outputType by method.outputType
@@ -617,18 +619,18 @@ class ModelToKotlinGenerator(
                         importRootDeclarationIfNeeded(outputType.name, "toKotlin", true)
                     }
 
-                    code("else -> error(\"Illegal call: \${call.callableName}\")")
+                    code("else -> error(\"Illegal call: \${rpcCall.callableName}\")")
                 }
             }
 
             function(
-                name = "callAsync",
+                name = "callServerStreaming",
                 modifiers = "override",
-                args = "call: kotlinx.rpc.RpcCall",
+                args = "rpcCall: kotlinx.rpc.RpcCall",
                 typeParameters = "R",
-                returnType = "kotlinx.coroutines.Deferred<R>",
+                returnType = "kotlinx.coroutines.flow.Flow<R>",
             ) {
-                code("error(\"Async calls are not supported\")")
+                code("error(\"Flow calls are not supported\")")
             }
         }
     }

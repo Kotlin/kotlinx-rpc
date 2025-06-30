@@ -23,7 +23,6 @@ class FirRpcServiceGenerator(
 ) : FirDeclarationGenerationExtension(session) {
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
         register(FirRpcPredicates.rpc)
-        register(FirRpcPredicates.grpc)
     }
 
     /**
@@ -53,8 +52,7 @@ class FirRpcServiceGenerator(
             }
 
             classSymbol.isInterface && (
-                    session.predicateBasedProvider.matches(FirRpcPredicates.rpc, classSymbol) ||
-                            session.predicateBasedProvider.matches(FirRpcPredicates.grpc, classSymbol)
+                    session.predicateBasedProvider.matches(FirRpcPredicates.rpc, classSymbol)
                     ) -> {
                 setOf(RpcNames.SERVICE_STUB_NAME)
             }
@@ -100,7 +98,7 @@ class FirRpcServiceGenerator(
      * Generates [owner]'s service stub.
      * Scrapes the functions from the [owner] to generate method classes.
      */
-    private fun generateRpcServiceStubClass(owner: FirClassSymbol<*>): FirRegularClassSymbol? {
+    private fun generateRpcServiceStubClass(owner: FirClassSymbol<*>): FirRegularClassSymbol {
         return createNestedClass(owner, RpcNames.SERVICE_STUB_NAME, RpcGeneratedStubKey(owner.name)) {
             visibility = Visibilities.Public
             modality = Modality.FINAL
