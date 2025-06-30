@@ -29,10 +29,10 @@ develocity = "3.19.2"
 common-custom-user-data = "2.4.0"
 compat-patrouille = "0.0.2"
 lincheck = "3.2"
-grpc = "1.69.0"
+grpc = "1.73.0"
 grpc-kotlin = "1.4.1"
-protobuf = "4.29.3"
-protobuf-gradle = "0.9.4"
+protobuf = "4.31.1"
+protobuf-gradle = "0.9.5"
 
 [libraries]
 # kotlinx.rpc – references to the included builds
