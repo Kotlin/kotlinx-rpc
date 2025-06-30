@@ -13,6 +13,7 @@ private val excludedProjects = setOf(
     "krpc-compatibility-tests",
     "krpc-protocol-compatibility-tests",
     "compiler-plugin-tests",
+    "protobuf-plugin",
 )
 
 val Project.enableAbiValidation get() = name !in excludedProjects
@@ -25,6 +26,7 @@ fun AbiValidationVariantSpec.configureAbiFilters() {
             annotatedWith.add("kotlinx.rpc.internal.utils.InternalRpcApi")
             byNames.add("kotlinx.rpc.internal.**")
             byNames.add("kotlinx.rpc.krpc.internal.**")
+            byNames.add("kotlinx.rpc.grpc.internal.**")
         }
     }
 }
