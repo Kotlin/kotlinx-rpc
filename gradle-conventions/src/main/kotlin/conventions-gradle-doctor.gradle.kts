@@ -8,7 +8,6 @@ plugins {
 
 doctor {
     enableTestCaching.assign(false)
-    warnWhenNotUsingParallelGC.assign(true)
     disallowMultipleDaemons.assign(false)
     GCFailThreshold.assign(0.5f)
 }
