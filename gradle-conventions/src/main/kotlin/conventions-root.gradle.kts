@@ -2,7 +2,6 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import util.other.asDokkaVersion
 import util.other.libs
 import util.tasks.configureNpm
 import util.tasks.registerChangelogTask
@@ -29,9 +28,9 @@ allprojects {
 }
 
 dokka {
-    val libDokkaVersion = libs.versions.kotlinx.rpc.get().asDokkaVersion()
+    val libVersion = libs.versions.kotlinx.rpc.get()
 
-    moduleVersion.set(libDokkaVersion)
+    moduleVersion.set(libVersion)
 
     val pagesDirectory = layout.projectDirectory
         .dir("docs")
@@ -61,6 +60,13 @@ dokka {
 
     dokkaPublications.html {
         outputDirectory = dokkaVersionsDirectory
+    }
+
+    tasks.dokkaGenerate {
+        doFirst {
+            dokkaVersionsDirectory.mkdirs()
+            dokkaVersionsDirectory.resolve("version.txt").writeText(libVersion)
+        }
     }
 
     tasks.clean {

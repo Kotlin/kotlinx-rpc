@@ -4,7 +4,6 @@
 
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import util.KOTLINX_RPC_PREFIX
-import util.other.asDokkaVersion
 import util.other.libs
 import java.time.Year
 
@@ -24,7 +23,7 @@ dokka {
     dokkaSourceSets.configureEach {
         sourceLink {
             localDirectory = rootDir
-            remoteUrl("https://github.com/Kotlin/kotlinx-rpc/blob/${libs.versions.kotlinx.rpc.get().asDokkaVersion()}")
+            remoteUrl("https://github.com/Kotlin/kotlinx-rpc/blob/${libs.versions.kotlinx.rpc.get()}")
             remoteLineSuffix = "#L"
 
             documentedVisibilities = setOf(
