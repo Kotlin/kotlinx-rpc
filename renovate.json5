@@ -104,6 +104,7 @@
       "description": "Ignore Develocity updates",
       "matchDepNames": [
         "com.gradle:develocity-gradle-plugin*",
+        "com.gradle.develocity*",
       ],
       "enabled": false,
     },
