@@ -15,4 +15,8 @@ internal actual class MutableHandlerRegistry : HandlerRegistry() {
     actual fun addService(service: ServerServiceDefinition): ServerServiceDefinition? {
         error("Native target is not supported in gRPC")
     }
+
+    actual fun removeService(service: ServerServiceDefinition): Boolean {
+        error("Native target is not supported in gRPC")
+    }
 }

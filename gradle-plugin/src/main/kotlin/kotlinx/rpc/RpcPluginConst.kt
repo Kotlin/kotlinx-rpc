@@ -19,7 +19,7 @@ internal object RpcPluginConst {
     private val kotlinVersion by lazy { loadKotlinVersion() }
 
     val libraryKotlinPrefixedVersion by lazy {
-        "$kotlinVersion-$PLUGIN_VERSION"
+        "$kotlinVersion-$LIBRARY_VERSION"
     }
 
     /**

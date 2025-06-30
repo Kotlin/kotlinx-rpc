@@ -6,7 +6,6 @@ package kotlinx.rpc.codegen.extension
 
 import kotlinx.rpc.codegen.common.RpcClassId
 import org.jetbrains.kotlin.ir.declarations.IrClass
-import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.types.IrType
@@ -19,6 +18,7 @@ class ServiceDeclaration(
     val stubClass: IrClass,
     val methods: List<Method>,
 ) {
+    // todo change to extension after KRPC-178
     val isGrpc = service.hasAnnotation(RpcClassId.grpcAnnotation)
     val fqName = service.kotlinFqName.asString()
 

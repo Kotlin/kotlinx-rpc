@@ -24,8 +24,7 @@ object FirRpcAnnotationChecker {
         context: CheckerContext,
         reporter: DiagnosticReporter,
     ) {
-        val rpcMetaAnnotated = context.session.predicateBasedProvider.matches(FirRpcPredicates.rpcMeta, declaration)
-        val grpcAnnotated = context.session.predicateBasedProvider.matches(FirRpcPredicates.grpc, declaration)
+        val rpcMetaAnnotated = context.session.predicateBasedProvider.matches(FirRpcPredicates.rpc, declaration)
 
         val isMetaAnnotated = declaration.classKind != ClassKind.ANNOTATION_CLASS
 
@@ -33,7 +32,7 @@ object FirRpcAnnotationChecker {
             reporter.reportOn(
                 source = declaration.symbol.rpcAnnotationSource(
                     session = context.session,
-                    predicate = FirRpcPredicates.rpcMeta,
+                    predicate = FirRpcPredicates.rpc,
                     classId = RpcClassId.rpcAnnotation,
                 ),
                 factory = FirRpcDiagnostics.WRONG_RPC_ANNOTATION_TARGET,

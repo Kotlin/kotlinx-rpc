@@ -9,15 +9,7 @@ import org.jetbrains.kotlin.fir.extensions.predicate.DeclarationPredicate
 
 object FirRpcPredicates {
     internal val rpc = DeclarationPredicate.create {
-        annotated(RpcClassId.rpcAnnotation.asSingleFqName()) // @Rpc
-    }
-
-    internal val rpcMeta = DeclarationPredicate.create {
-        metaAnnotated(RpcClassId.rpcAnnotation.asSingleFqName(), includeItself = true)
-    }
-
-    internal val grpc = DeclarationPredicate.create {
-        annotated(RpcClassId.grpcAnnotation.asSingleFqName()) // @Grpc
+        metaAnnotated(RpcClassId.rpcAnnotation.asSingleFqName(), includeItself = true) // @Rpc
     }
 
     internal val checkedAnnotationMeta = DeclarationPredicate.create {

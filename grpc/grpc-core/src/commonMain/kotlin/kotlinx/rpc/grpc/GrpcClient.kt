@@ -4,33 +4,27 @@
 
 package kotlinx.rpc.grpc
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.grpc.descriptor.GrpcClientDelegate
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
-import kotlin.coroutines.CoroutineContext
 
 /**
  * GrpcClient manages gRPC communication by providing implementation for making asynchronous RPC calls.
  *
- * @property channel The [ManagedChannel] used to communicate with remote gRPC services.
+ * @field channel The [ManagedChannel] used to communicate with remote gRPC services.
  */
 public class GrpcClient internal constructor(private val channel: ManagedChannel) : RpcClient {
-    override val coroutineContext: CoroutineContext = SupervisorJob()
-
     private val stubs = RpcInternalConcurrentHashMap<Long, GrpcClientDelegate>()
 
     override suspend fun <T> call(call: RpcCall): T {
         return call.delegate().call(call)
     }
 
-    override fun <T> callAsync(serviceScope: CoroutineScope, call: RpcCall): Deferred<T> {
-        return call.delegate().callAsync(call)
+    override fun <T> callServerStreaming(call: RpcCall): Flow<T> {
+        return call.delegate().callServerStreaming(call)
     }
 
     private fun RpcCall.delegate(): GrpcClientDelegate {
@@ -38,10 +32,6 @@ public class GrpcClient internal constructor(private val channel: ManagedChannel
             ?: error("Service ${descriptor.fqName} is not a gRPC service")
 
         return stubs.computeIfAbsent(serviceId) { grpc.delegate.clientProvider(channel) }
-    }
-
-    override fun provideStubContext(serviceId: Long): CoroutineContext {
-        return SupervisorJob(coroutineContext.job)
     }
 }
 

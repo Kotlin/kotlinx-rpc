@@ -4,12 +4,11 @@
 
 package kotlinx.rpc.grpc
 
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
-import kotlin.coroutines.CoroutineContext
+import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 
@@ -32,15 +31,13 @@ public class GrpcServer internal constructor(
         MutableHandlerRegistry().apply { serverBuilder.fallbackHandlerRegistry(this) }
     }
 
-    override val coroutineContext: CoroutineContext
-        get() = error("coroutineContext is not available for gRPC server")
+    private val localRegistry = RpcInternalConcurrentHashMap<KClass<*>, ServerServiceDefinition>()
 
     override fun <@Grpc Service : Any> registerService(
         serviceKClass: KClass<Service>,
-        serviceFactory: (CoroutineContext) -> Service,
+        serviceFactory: () -> Service,
     ) {
-        val childJob = SupervisorJob()
-        val service = serviceFactory(childJob)
+        val service = serviceFactory()
 
         val definition: ServerServiceDefinition = getDefinition(service, serviceKClass)
 
@@ -51,11 +48,17 @@ public class GrpcServer internal constructor(
         }
     }
 
+    override fun <Service : Any> deregisterService(serviceKClass: KClass<Service>) {
+        localRegistry.remove(serviceKClass)?.let {
+            registry.removeService(it)
+        }
+    }
+
     private fun <@Grpc Service : Any> getDefinition(
         service: Service,
         serviceKClass: KClass<Service>,
     ): ServerServiceDefinition {
-        val descriptor = serviceDescriptorOf<Service>(serviceKClass)
+        val descriptor = serviceDescriptorOf(serviceKClass)
         val grpc = (descriptor as? GrpcServiceDescriptor<Service>)
             ?: error("Service ${descriptor.fqName} is not a gRPC service")
 

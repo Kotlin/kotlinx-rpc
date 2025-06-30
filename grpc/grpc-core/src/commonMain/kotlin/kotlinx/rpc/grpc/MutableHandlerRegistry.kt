@@ -14,4 +14,5 @@ public expect abstract class HandlerRegistry
 @Suppress("RedundantConstructorKeyword")
 internal expect class MutableHandlerRegistry constructor() : HandlerRegistry {
     internal fun addService(@Suppress("unused") service: ServerServiceDefinition): ServerServiceDefinition?
+    internal fun removeService(@Suppress("unused") service: ServerServiceDefinition): Boolean
 }
