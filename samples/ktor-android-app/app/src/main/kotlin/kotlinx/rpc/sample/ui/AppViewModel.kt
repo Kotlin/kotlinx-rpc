@@ -6,6 +6,7 @@ package kotlinx.rpc.sample.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.rpc.sample.data.createRpcClient
 import kotlinx.rpc.sample.ui.state.WelcomeData
 import kotlinx.coroutines.Dispatchers
@@ -15,49 +16,40 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.rpc.RpcClient
-import kotlinx.rpc.krpc.streamScoped
 import kotlinx.rpc.withService
 import kotlinx.rpc.sample.MyService
 import kotlinx.rpc.sample.UserData
 
 class AppViewModel : ViewModel() {
-    private var rpcClient: RpcClient? = null
-    private var apiService: MyService? = null
+    private val rpcClient: RpcClient = createRpcClient()
+    private val apiService: MyService = rpcClient.withService<MyService>()
 
     private val _uiState = MutableStateFlow<WelcomeData?>(null)
     val uiState: StateFlow<WelcomeData?> = _uiState
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            rpcClient = createRpcClient()
-            rpcClient?.let {
-                apiService = it.withService()
-                fetchData()
-            }
+            fetchData()
         }
     }
 
-    private fun fetchData() {
-        viewModelScope.launch(Dispatchers.IO) {
-            delay(2000)
-            val greetingDeferred = async {
-                apiService?.hello(
-                    "Alex",
-                    UserData("Berlin", "Smith")
-                )
-            }
+    private suspend fun CoroutineScope.fetchData() {
+        delay(2000)
+        val greetingDeferred = async {
+            apiService.hello(
+                "Alex",
+                UserData("Berlin", "Smith")
+            )
+        }
 
-            val serverGreeting = greetingDeferred.await()
+        val serverGreeting = greetingDeferred.await()
 
-            val allNews: MutableList<String> = mutableListOf()
-            apiService?.subscribeToNews()?.collect {
-                allNews += it
+        val allNews: MutableList<String> = mutableListOf()
+        apiService.subscribeToNews().collect {
+            allNews += it
 
-                val sendNews = allNews.toMutableList() // fix ConcurrentModificationException
-                serverGreeting?.let {
-                    _uiState.value = WelcomeData(serverGreeting, sendNews)
-                }
-            }
+            val sendNews = allNews.toMutableList() // fix ConcurrentModificationException
+            _uiState.value = WelcomeData(serverGreeting, sendNews)
         }
     }
 }

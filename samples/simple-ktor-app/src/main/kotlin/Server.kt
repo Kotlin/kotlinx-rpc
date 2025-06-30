@@ -27,7 +27,7 @@ fun Application.module() {
                 }
             }
 
-            registerService<ImageRecognizer> { ctx -> ImageRecognizerService(ctx) }
+            registerService<ImageRecognizer> { ImageRecognizerService() }
         }
     }
 }

@@ -7,10 +7,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.serialization.Serializable
-import kotlin.coroutines.CoroutineContext
 
 @Suppress("ArrayInDataClass")
 @Serializable
@@ -26,7 +24,7 @@ enum class Category {
 }
 
 @Rpc
-interface ImageRecognizer : RemoteService {
+interface ImageRecognizer {
     fun currentlyProcessedImage(): Flow<Image?>
 
     suspend fun recognize(image: Image): Category
@@ -34,7 +32,7 @@ interface ImageRecognizer : RemoteService {
     fun recognizeAll(images: Flow<Image>): Flow<Category>
 }
 
-class ImageRecognizerService(override val coroutineContext: CoroutineContext) : ImageRecognizer {
+class ImageRecognizerService : ImageRecognizer {
     private val _currentlyProcessedImage: MutableStateFlow<Image?> = MutableStateFlow(null)
 
     override fun currentlyProcessedImage(): Flow<Image?> {

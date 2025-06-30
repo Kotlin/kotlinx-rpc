@@ -11,7 +11,7 @@ import kotlinx.rpc.krpc.ktor.client.rpc
 import kotlinx.rpc.krpc.ktor.client.rpcConfig
 import kotlinx.rpc.krpc.serialization.json.json
 
-suspend fun initRpcClient(): RpcClient {
+fun initRpcClient(): RpcClient {
     return HttpClient(Js) {
         installKrpc()
     }.rpc {

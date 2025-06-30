@@ -3,7 +3,6 @@
  */
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.serialization.Serializable
 
@@ -14,7 +13,7 @@ data class UserData(
 )
 
 @Rpc
-interface UserService : RemoteService {
+interface UserService {
     suspend fun hello(user: String, userData: UserData): String
 
     fun subscribeToNews(): Flow<String>
