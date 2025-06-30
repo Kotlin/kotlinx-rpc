@@ -10,8 +10,15 @@ import org.gradle.kotlin.dsl.attributes
 import org.gradle.kotlin.dsl.getByName
 import util.other.files
 import util.other.libs
+import util.other.optionalProperty
 
 fun Project.configureJvm(isKmp: Boolean) {
+    val excludeJvm by optionalProperty("exclude")
+
+    if (isKmp && excludeJvm) {
+        return
+    }
+
     tasks.getByName<Jar>(if (isKmp) "jvmJar" else "jar").apply {
         manifest {
             attributes(
