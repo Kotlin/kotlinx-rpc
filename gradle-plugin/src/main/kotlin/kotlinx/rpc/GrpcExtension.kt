@@ -77,9 +77,9 @@ public open class GrpcExtension @Inject constructor(objects: ObjectFactory, priv
     private fun pluginAccess(action: Action<GrpcPlugin>, locatorName: String) {
         val extension = project.the<ProtobufExtension>()
         val plugin = object : GrpcPlugin {
-            override fun options(options: Action<GenerateProtoTask.PluginOptions>) {
+            override fun options(optionsAction: Action<GenerateProtoTask.PluginOptions>) {
                 extension.generateProtoTasks.all().all {
-                    options.execute(plugins.maybeCreate(locatorName))
+                    optionsAction.execute(plugins.maybeCreate(locatorName))
                 }
             }
 
