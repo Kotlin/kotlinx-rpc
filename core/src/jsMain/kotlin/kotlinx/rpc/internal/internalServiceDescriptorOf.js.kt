@@ -1,11 +1,13 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:Suppress("detekt.MatchingDeclarationName")
 
 package kotlinx.rpc.internal
 
+import js.array.component1
+import js.array.component2
 import js.objects.Object
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
