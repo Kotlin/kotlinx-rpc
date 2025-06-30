@@ -2,86 +2,32 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import util.*
-import util.other.DirectoryNames
-import java.nio.file.Files
-import java.nio.file.Path
-import kotlin.text.lowercase
+import gradle.kotlin.dsl.accessors._46680087f5e33e6a2d850d9e9b86aaa7.main
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import util.csm.ProcessCsmTemplate
+import util.other.libs
+import kotlin.io.path.createDirectories
 
-val kotlinCompilerVersion: KotlinVersion by extra
+val kotlin = the<KotlinJvmProjectExtension>()
 
-fun NamedDomainObjectContainer<KotlinSourceSet>.applyCompilerSpecificSourceSets() {
-    forEach { set ->
-        val sourceDirs = set.kotlin.sourceDirectories.toList()
-        val path = sourceDirs.firstOrNull() // one is ok in most cases because we need its parent directory
-            ?: error(
-                "Expected at least one source set dir for '${set.name}' source set (kotlin dir). " +
-                        "Review the case and adjust the script"
-            )
-
-        val sourceSetPath = path.toPath().parent
-        if (!Files.exists(sourceSetPath)) {
-            return@forEach
-        }
-
-        val core = sourceSetPath.resolve(DirectoryNames.CORE_SOURCE_DIR).toFile()
-
-        // version-specific source sets
-        val vsSets = filterSourceDirsForCSM(sourceSetPath)
-
-        // choose 'latest' if there are no more specific ones
-        val mostSpecificApplicable = vsSets.mostSpecificVersionOrLatest(kotlinCompilerVersion)
-
-        logger.lifecycle(
-            "${project.name}: included version specific source sets: " +
-                    "[${core.name}${mostSpecificApplicable?.let { ", ${it.name}" } ?: ""}]"
-        )
-
-        val newSourceDirectories = listOfNotNull(core, mostSpecificApplicable)
-
-        set.kotlin.setSrcDirs(newSourceDirectories) // 'core' source set instead of 'kotlin'
-
-        set.configureResources(sourceSetPath)
-
-        val excluded = vsSets.filter { it != mostSpecificApplicable }
-        logger.lifecycle(
-            "${project.name}: excluded version specific source sets: [${excluded.joinToString { it.name }}]"
-        )
-    }
+val templatesDir = kotlin.sourceSets.main.map {
+    it.kotlin.srcDirs.single { dir -> dir.name == "kotlin" }.toPath().parent.resolve("templates")
 }
 
-fun KotlinSourceSet.configureResources(sourceSetPath: Path) {
-    val parent = sourceSetPath.parent.toAbsolutePath()
-    if (!Files.exists(parent)) {
-        error("Expected parent dir for ${sourceSetPath.toAbsolutePath()}")
-    }
+templatesDir.get().createDirectories()
 
-    // only works for jvm projects
-    val resourcesName = if (name.lowercase().contains(DirectoryNames.MAIN_SOURCE_SET)) {
-        DirectoryNames.MAIN_RESOURCES
-    } else {
-        DirectoryNames.TEST_RESOURCES
-    }
-
-    val resourcesDir = parent.resolve(resourcesName)
-
-    if (!Files.exists(resourcesDir)) {
-        return
-    }
-
-    val mostSpecificApplicable = filterSourceDirsForCSM(resourcesDir)
-        .mostSpecificVersionOrLatest(kotlinCompilerVersion)
-
-    val versionNames = listOfNotNull(DirectoryNames.CORE_SOURCE_DIR, mostSpecificApplicable?.name)
-
-    resources.srcDirs(versionNames.map { resourcesDir.resolve(it).toFile() })
+val sourcesDir = project.layout.buildDirectory.asFile.map {
+    it.toPath().resolve("generated-sources/csm")
 }
 
-withKotlinJvmExtension {
-    sourceSets.applyCompilerSpecificSourceSets()
-}
+val processCsmTemplates =
+    tasks.register<ProcessCsmTemplate>(
+        "processCsmTemplates",
+        libs.versions.kotlin.compiler.get(),
+        templatesDir,
+        sourcesDir,
+    )
 
-withKotlinKmpExtension {
-    sourceSets.applyCompilerSpecificSourceSets()
+kotlin.sourceSets.main {
+    kotlin.srcDirs(processCsmTemplates.map { it.sourcesDir })
 }
