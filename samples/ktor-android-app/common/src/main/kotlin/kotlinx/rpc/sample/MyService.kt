@@ -5,11 +5,10 @@
 package kotlinx.rpc.sample
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.rpc.RemoteService
 import kotlinx.rpc.annotations.Rpc
 
 @Rpc
-interface MyService : RemoteService {
+interface MyService {
     suspend fun hello(user: String, userData: UserData): String
 
     fun subscribeToNews(): Flow<String>

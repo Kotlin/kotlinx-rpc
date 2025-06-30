@@ -24,7 +24,7 @@ fun Application.module() {
                 }
             }
 
-            registerService<MyService> { ctx -> MyServiceImpl(ctx) }
+            registerService<MyService> { MyServiceImpl() }
         }
     }
 }
