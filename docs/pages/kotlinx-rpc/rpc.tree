@@ -50,5 +50,5 @@
         <toc-element topic="0-2-1.topic"/>
     </toc-element>
     <toc-element topic="changelog.md"/>
-    <toc-element toc-title="API Reference" href="%host%/api/"/>
+    <toc-element toc-title="API Reference" href="%host%/kotlinx-rpc/api/"/>
 </instance-profile>
