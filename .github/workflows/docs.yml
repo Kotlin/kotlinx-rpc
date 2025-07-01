@@ -7,13 +7,19 @@ on:
       - '.github/workflows/**'
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version of library that is being documented'
+      build_id:
+        description: 'Id of TeamCity build that produced the Dokka artifact.'
+        required: true
+      dry_run:
+        type: boolean
+        description: "Dry run. If set to true, the action will not actually publish the pages, but will assemble the artifact."
+        default: true
         required: true
 
 permissions:
   id-token: write
   pages: write
+  contents: read
 
 env:
   INSTANCE: 'kotlinx-rpc/rpc'
@@ -90,10 +96,23 @@ jobs:
         run: unzip -O UTF-8 -qq '${{ env.ARTIFACT }}' -d ${{ env.ASSEMBLE_DIR }}
 
       - name: Download Dokka
-        uses: actions/download-artifact@v4
-        with:
-          name: dokka-${{ inputs.version }}
-          path: ${{ env.DOKKA_ARTIFACT }}
+        run: |
+          if [ -z "${{ inputs.build_id }}" ]; then
+            echo "'build_id' is not set"
+            exit 1
+          fi
+          
+          echo "Downloading Dokka artifact, build id: ${{ inputs.build_id }}"
+
+          artifact_url="https://krpc.teamcity.com/app/rest/builds/id:${{ inputs.build_id }}/artifacts/content/${{ env.DOKKA_ARTIFACT }}"
+          echo "Downloading Dokka artifact from URL: $artifact_url"
+
+          curl -v -s -f -L -H "Authorization: Bearer ${{ secrets.TEAMCITY_TOKEN }}" "$artifact_url" -o "${{ env.DOKKA_ARTIFACT }}"
+          
+          if [ -z "$(ls | grep -x ${{ env.DOKKA_ARTIFACT }})" ]; then
+            echo "Failed to download Dokka artifact, asset id: ${{ inputs.build_id }}"
+            exit 1
+          fi
 
       - name: Unzip Dokka
         run: unzip -O UTF-8 -qq '${{ env.DOKKA_ARTIFACT }}' -d ${{ env.ASSEMBLE_DIR }}/api
@@ -110,7 +129,7 @@ jobs:
           retention-days: 7
 
   deploy:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && !inputs.dry_run
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -138,7 +157,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
   publish-indexes:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && !inputs.dry_run
     needs: [ build, test, assemble, deploy ]
     runs-on: ubuntu-latest
     container:
