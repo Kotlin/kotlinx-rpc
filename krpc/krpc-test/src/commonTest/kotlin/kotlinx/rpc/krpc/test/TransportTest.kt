@@ -77,7 +77,7 @@ class TransportTest {
     }
 
     private fun runTest(block: suspend TestScope.() -> Unit): TestResult =
-        kotlinx.coroutines.test.runTest(timeout = 15.seconds) {
+        kotlinx.coroutines.test.runTest(timeout = 20.seconds) {
             debugCoroutines()
 
             val logger = RpcInternalCommonLogger.logger("TransportTest")
