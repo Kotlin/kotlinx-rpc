@@ -7,8 +7,13 @@ on:
       - '.github/workflows/**'
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version of library that is being documented'
+      dokka_artifact_url:
+        description: 'URL of Dokka artifact.'
+        required: true
+      dry_run:
+        type: boolean
+        description: 'If set to true, the action will not actually publish the pages, but will assemble the artifact.'
+        default: true
         required: true
 
 permissions:
@@ -90,10 +95,21 @@ jobs:
         run: unzip -O UTF-8 -qq '${{ env.ARTIFACT }}' -d ${{ env.ASSEMBLE_DIR }}
 
       - name: Download Dokka
-        uses: actions/download-artifact@v4
-        with:
-          name: dokka-${{ inputs.version }}
-          path: ${{ env.DOKKA_ARTIFACT }}
+        run: |
+          if [ -z "${{ inputs.dokka_artifact_url }}" ]; then
+            echo "'dokka_artifact_url' is not set"
+            exit 1
+          fi
+
+          if [ ${{ inputs.dry_run }} == true ]; then
+            echo "Dry run mode is enabled."
+            curl -v -s -f -L \
+              -H "Authorization: Bearer ${{ secrets.TEAMCITY_TOKEN }}" \
+              ${{ inputs.dokka_artifact_url }} -o ${{ env.DOKKA_ARTIFACT }}
+          else
+            curl -v -s -f -L \
+              ${{ inputs.dokka_artifact_url }} -o ${{ env.DOKKA_ARTIFACT }}
+          fi
 
       - name: Unzip Dokka
         run: unzip -O UTF-8 -qq '${{ env.DOKKA_ARTIFACT }}' -d ${{ env.ASSEMBLE_DIR }}/api
@@ -110,7 +126,7 @@ jobs:
           retention-days: 7
 
   deploy:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && !inputs.dry_run
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -138,7 +154,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
   publish-indexes:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && !inputs.dry_run
     needs: [ build, test, assemble, deploy ]
     runs-on: ubuntu-latest
     container:
