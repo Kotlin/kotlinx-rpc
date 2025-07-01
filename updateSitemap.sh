@@ -32,7 +32,7 @@ current_date=$(date +%Y-%m-%d)
 temp_file=$(mktemp)
 
 # Extract the first line from sitemap file (XML header), removing closing urlset tag if present
-head -n 1 "$sitemap_file" | sed -En 's/<\/urlset>//' > "$temp_file"
+head -n 1 "$sitemap_file" | sed -En 's/<\/urlset>//p' > "$temp_file"
 
 # Find all HTML files in the API docs directory recursively
 find "$api_docs_dir" -type f -name "*.html" | while read -r html_file; do
