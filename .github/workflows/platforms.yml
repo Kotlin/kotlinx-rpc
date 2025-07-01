@@ -13,7 +13,9 @@ jobs:
     steps:
       - name: Checkout Sources
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
       - name: Check Platforms Table
-        run: ./gradlew verifyPlatformTable --no-configuration-cache
+        run: ./gradlew verifyPlatformTable --no-configuration-cache --info --stacktrace
