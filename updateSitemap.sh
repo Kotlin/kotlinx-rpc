@@ -31,13 +31,13 @@ current_date=$(date +%Y-%m-%d)
 # Create a temporary file to store the updated sitemap
 temp_file=$(mktemp)
 
-# Extract the XML header (everything before the closing urlset tag)
-sed -n '1,/<\/urlset>/p' "$sitemap_file" | sed '$d' > "$temp_file"
+# Extract the first line from sitemap file (XML header), removing closing urlset tag if present
+head -n 1 "$sitemap_file" | sed -En 's/<\/urlset>//' > "$temp_file"
 
 # Find all HTML files in the API docs directory recursively
 find "$api_docs_dir" -type f -name "*.html" | while read -r html_file; do
   # Convert the file path to a URL path (remove the docs/pages/ prefix)
-  url_path=$(echo "$html_file" | sed 's|^docs/pages/||')
+  url_path="${html_file/#$api_docs_dir/api}"
 
   # Create the full URL
   url="https://kotlin.github.io/kotlinx-rpc/$url_path"
@@ -48,7 +48,7 @@ find "$api_docs_dir" -type f -name "*.html" | while read -r html_file; do
         <loc>$url</loc>
         <lastmod>$current_date</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.35</priority>
+        <priority>0.15</priority>
     </url>
 EOF
 done
