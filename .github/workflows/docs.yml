@@ -38,9 +38,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create stub changelog.md file
-        run: echo "# Changelog" > docs/pages/kotlinx-rpc/topics/changelog.md
-
       - name: Build docs using Writerside Docker builder
         uses: JetBrains/writerside-github-action@v4
         with:
@@ -100,9 +97,6 @@ jobs:
 
       - name: Unzip Dokka
         run: unzip -O UTF-8 -qq '${{ env.DOKKA_ARTIFACT }}' -d ${{ env.ASSEMBLE_DIR }}/api
-        
-      - name: Move changelog.md to the docs root
-        run: mv ${{ env.ASSEMBLE_DIR }}/api/changelog.md ${{ env.ASSEMBLE_DIR }}/changelog.md      
 
       - name: Update sitemap.xml
         run: chmod +x updateSitemap.sh && ./updateSitemap.sh ${{ env.ASSEMBLE_DIR }}/sitemap.xml ${{ env.ASSEMBLE_DIR }}/api
