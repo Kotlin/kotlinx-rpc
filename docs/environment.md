@@ -166,47 +166,72 @@ Here goes all heavy lifting codegen
 
 #### Compiler Specific Modules
 
-> [!NOTE] Has its drawbacks, maybe we'll redesign later.
-
 We have a problem when developing a Kotlin compiler plugin:
 Compiler API is not stable (not won't be for a while). So how can one develop a plugin that works stably?
 
 We compile for multiple Kotlin versions at once!
 
 We use an in-house ✨technology✨ for this: CSM or Compiler Specific Modules.
-The idea is to substitute source sets depending on the current kotlin compiler version
+This is a templating engine, which resolution is based on the current kotlin compiler version
 (`kotlin-compiler` in [libs.versions.toml](../versions-root/libs.versions.toml)).
 
-There is always a `core` source set (like this: [core](../compiler-plugin/compiler-plugin-k2/src/main/core)) 
+There is always a core source set (like this: [kotlin](../compiler-plugin/compiler-plugin-k2/src/main/kotlin)) 
 that compiles nicely on all Kotlin versions. It is the majority of the code.
-And then we have source sets that are swapped for a specific version 
-(check other directories in the [main](../compiler-plugin/compiler-plugin-k2/src/main)).
+And then we have a template set, which is processed before compilation for a specific version. 
+([templates](../compiler-plugin/compiler-plugin-k2/src/main/templates)).
 
-The code that swaps them is in [compiler-specific-module.gradle.kts](../gradle-conventions/src/main/kotlin/compiler-specific-module.gradle.kts).
+The code that swaps them is in [template.kt](../gradle-conventions/src/main/kotlin/util/csm/template.kt).
 
 The rules are the following:
-- Check all source sets that start with `v_` (for example, `v_2_2`, `v_2_1`, `v_2_2_2`). 
-It matches the most specific like a tree (so for `2.2.20` it will be `v_2_2_2`, for `2.2.10` - `v_2_2` and for `2.3.0` none).
-If found one - its taken.
-- If none, then check all that start with `pre_` (for example, `pre_2_0_10`, `pre_2_1_0`, `pre_2_2_0`). 
-Again, it matches the most specific inclusively, but chronologically
-(for `2.1.0` it will be `pre_2_1_0`, for `2.0.0` - `pre_2_0_10`, for `2.3.0` none)
-- Take `latest` otherwise
-- Suffixes don't matter (`2.2.0` and `2.2.0-RC` are considered the same)
+- We enclose code dependent on a version in `##csm` tags.
+- Every such block must:
+  - Start with `//##csm <block_name>`
+  - End with `//##csm /<block_name>`
+  - Specify inside zero of more of the code blocks:
+    - `//##csm default` + `//##csm /default`
+    - `//##csm specific=[<version_patten>]` + `//##csm /specific`
 
-It allows supporting some past and future Kotlin versions 
+Example code:
+```kotlin
+fun functionAvailableInAllVersions() {
+    
+}
+fun csmFunction() {
+    //##csm my-block
+    //##csm default
+    return 1
+    //##csm /default
+    //##csm specific=[2.0.0...2.1.0, 2.1.0-ij-*]
+    return 2
+    //##csm /specific
+    //##csm /my-block
+}
+```
+
+Templates matches `specific` versions greedy, so with multiple `specific` blocks - first one matched will be chosen, 
+or `default` if none, or nothing if there is no `default`.
+
+`<version_pattern>` works like this:
+- It's a comma-separated array of versions matchers
+- Version matcher is either:
+  - Range — consists of `from` and `to` version separated by `...`. 
+  `From` must be an exact version without a suffix.
+  `To` must be a version without a suffix, where `*` can be used for any part: `2.2.*`, `2.*` but not `2.2.2*`.
+  - Prefix matcher — matches a version by prefix: `2.2.0-*`, `2.2.2*`, `2.3.0-dev-*`
+
+This allows us to support some past and future Kotlin versions 
 (including versions for IDE, which are not in the stable list nor generally public) simultaneously.
 
-Rule for complier API breaking changes:
+Rules for complier API breaking changes:
 - If some function or property changed signature or was replaced by another - 
-use `VersionSpecificApi` interface in `core` to declare functionality 
-and write the implementation in **all** other source sets 
-(see [FirVersionSpecificApi.kt](../compiler-plugin/compiler-plugin-k2/src/main/core/kotlinx/rpc/codegen/FirVersionSpecificApi.kt)
-and [VersionSpecificApi.kt](../compiler-plugin/compiler-plugin-backend/src/main/core/kotlinx/rpc/codegen/VersionSpecificApi.kt)).
+use `VersionSpecificApi` interface in core to declare functionality  
+(see [FirVersionSpecificApi.kt](../compiler-plugin/compiler-plugin-k2/src/main/kotlin/kotlinx/rpc/codegen/FirVersionSpecificApi.kt)
+and [VersionSpecificApi.kt](../compiler-plugin/compiler-plugin-backend/src/main/kotlin/kotlinx/rpc/codegen/VersionSpecificApi.kt)).
 - If some class differs in signature, 
-write a proxy in `core` and implementation in source sets. FQ name must match exactly 
-(see [FirRpcCheckersVS.kt](../compiler-plugin/compiler-plugin-k2/src/main/v_2_3/kotlinx/rpc/codegen/checkers/FirRpcCheckersVS.kt))
-as an example, and all classes with the same names in other source sets.
+write a proxy in core and implementation in the template. 
+FQ name must match exactly.
+(see [FirRpcCheckersVS.kt](../compiler-plugin/compiler-plugin-k2/src/main/templates/kotlinx/rpc/codegen/checkers/FirRpcCheckersVS.kt)
+as an example)
 
 TeamCity is set up to work with multiple Kotlin versions for testing and releases.
 
@@ -365,14 +390,14 @@ Here is a 'simple' guide for solving problems:
     - `Cannot connect to the Docker daemon` - open `Docker Desktop`
 - Kotlin/Js or Kotlin/Wasm
   - `kotlinUpgradePackageLock` or `kotlinWasmUpgradePackageLock` (and also `kotlinNpmInstall` or `kotlinWasmNpmInstall`)
-have a funny tendency to fail sometimes, and you don't know why. 
-<br/>
-I'll tell you! 
-<br/>
-We use proxy repos, and sometimes dependencies get downloaded from the wrong source.
-Make sure ALL urls in `package-lock.json` files start with `https://packages.jetbrains.team/npm/p/krpc/build-deps/`.
-<br/>
-If something doesn't work, your steps are:
+  have a funny tendency to fail sometimes, and you don't know why. 
+    
+    I'll tell you! 
+    
+    We use proxy repos, and sometimes dependencies get downloaded from the wrong source.
+    Make sure ALL urls in `package-lock.json` files start with `https://packages.jetbrains.team/npm/p/krpc/build-deps/`.
+    
+    If something doesn't work, your steps are:
     - Delete `package-lock.json` file
     - Delete `<REPO_ROOT>/build/js` / `<REPO_ROOT>/build/wasm`
     - Run `kotlinUpgradePackageLock` / `kotlinWasmUpgradePackageLock`
@@ -384,13 +409,13 @@ If something doesn't work, your steps are:
         - `always-auth=true`
         - `save-exact=true`
         - `//packages.jetbrains.team/npm/p/krpc/build-deps/:_authToken=<your_auth_token>`, 
-where `<your_auth_token>` is from the [proxy-repositories.md](proxy-repositories.md) guide.
+          where `<your_auth_token>` is from the [proxy-repositories.md](proxy-repositories.md) guide.
       - Check that `<USER_HOME>/.npmrc` / `<USER_HOME>/.yarnrc` don't interfere
-command to debug. Replace versions of tools if needed.
+      command to debug. Replace versions of tools if needed.
   - When you get the following error — `puppeteer` failed to run the installation script. 
-Reasons vary, try updating the version to a newer one, 
-check the [.puppeteerrc.cjs](../.puppeteerrc.cjs) and [chrome_bin.js](../karma/chrome_bin.js) files if they are valid js.
-
+    Reasons vary, try updating the version to a newer one, 
+    check the [.puppeteerrc.cjs](../.puppeteerrc.cjs) and [chrome_bin.js](../karma/chrome_bin.js) files if they are valid js.
+  
         For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
         at ChromeLauncher.resolveExecutablePath (/rpc/build/js/packages/kotlinx-rpc-utils-test/node_modules/puppeteer-core/lib/cjs/puppeteer/node/ProductLauncher.js:295:27)
 
@@ -410,27 +435,33 @@ check the [.puppeteerrc.cjs](../.puppeteerrc.cjs) and [chrome_bin.js](../karma/c
                 }
             }
     This means the `puppeteer` failed to locate Chrome.
-Either the cache dir is wrong (check [.puppeteerrc.cjs](../.puppeteerrc.cjs) file) or it really isn't there.
-<br/>
-Reasons again vary.
-When `npm` installs `puppeteer`, it should execute script to install the browser too
-(On CI to the `<ROOT_DIR>/.puppeteer/browsers` directory).
-This absence may be caused by the `--ignore-scripts` flag. 
-Check the clean installation (`rm -rf build && ./gradlew clean cleanJsBrowserTest`) with `--debug` flag.
-(Something like `./gradlew jsBrowserTest --debug`).
-**IMPORTANT: run in docker with `TEAMCITY_VERSION` env var set, if you are chasing a CI fail**.
-<br/>
-The property is set in [npm.kt](../gradle-conventions/src/main/kotlin/util/tasks/npm.kt), see `ignoreScripts`, 
-it should be `false`. 
-<br/>
-If this is not the case, check the debug log for other `node`-related issues.
-Try installing browsers manually: `~/.gradle/nodejs/node-v22.0.0-linux-x64/bin/node build/js/node_modules/puppeteer/install.mjs`
-If this works — problem is somewhere in KGP and probably your configs. 
-Check that your config (like ones with `ignoreScript`) are actually applied, 
-as they use on demand execution and may target wrong plugin or extension and never be executed.
-<br/>
-**Bonus**: it may not be installed, because npm install doesn't do this. 
-See the long comment in [npm.kt](../gradle-conventions/src/main/kotlin/util/tasks/npm.kt).
+    Either the cache dir is wrong (check [.puppeteerrc.cjs](../.puppeteerrc.cjs) file) or it really isn't there.
+    
+    Reasons again vary.
+    
+    - When `npm` installs `puppeteer`, it should execute script to install the browser too
+    (On CI to the `<ROOT_DIR>/.puppeteer/browsers` directory).
+    This absence may be caused by the `--ignore-scripts` flag. 
+    
+      Check the clean installation (`rm -rf build && ./gradlew clean cleanJsBrowserTest`) with `--debug` flag.
+      (Something like `./gradlew jsBrowserTest --debug`).
+    
+      The property is set in [npm.kt](../gradle-conventions/src/main/kotlin/util/tasks/npm.kt), see `ignoreScripts`, 
+      it should be `false`. 
+   
+      **IMPORTANT: run in docker with `TEAMCITY_VERSION` env var set, if you are chasing a CI fail**.
+    
+    - If this is not the case, check the debug log for other `node`-related issues.
+      Try installing browsers manually: 
+    
+          ~/.gradle/nodejs/node-v22.0.0-linux-x64/bin/node build/js/node_modules/puppeteer/install.mjs
+    
+      If this works — problem is somewhere in KGP and probably your configs. 
+    Check that your config (like ones with `ignoreScript`) are actually applied, 
+    as they use on demand execution and may target wrong plugin or extension and never be executed.
+    
+      **Bonus**: it may not be installed, because npm install doesn't do this. 
+    See the long comment in [npm.kt](../gradle-conventions/src/main/kotlin/util/tasks/npm.kt).
 
 Something doesn't work, and you are sure it's not your fault? Report it appropriately! Don't be lazy.
 
