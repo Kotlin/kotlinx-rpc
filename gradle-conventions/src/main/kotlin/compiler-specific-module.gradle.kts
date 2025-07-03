@@ -2,7 +2,6 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import gradle.kotlin.dsl.accessors._46680087f5e33e6a2d850d9e9b86aaa7.main
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import util.csm.ProcessCsmTemplate
 import util.other.libs
@@ -10,7 +9,8 @@ import kotlin.io.path.createDirectories
 
 val kotlin = the<KotlinJvmProjectExtension>()
 
-val templatesDir = kotlin.sourceSets.main.map {
+val mainSourceSet = kotlin.sourceSets.named("main")
+val templatesDir = mainSourceSet.map {
     it.kotlin.srcDirs.single { dir -> dir.name == "kotlin" }.toPath().parent.resolve("templates")
 }
 
@@ -28,6 +28,6 @@ val processCsmTemplates =
         sourcesDir,
     )
 
-kotlin.sourceSets.main {
+mainSourceSet.configure {
     kotlin.srcDirs(processCsmTemplates.map { it.sourcesDir })
 }
