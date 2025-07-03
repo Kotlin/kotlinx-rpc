@@ -29,7 +29,6 @@ if (isPublicModule) {
 
 fun PublishingExtension.configurePublication() {
     repositories {
-        configureSonatypeRepository()
         configureSpaceRepository()
         configureForIdeRepository()
         configureLocalDevRepository()
@@ -136,15 +135,6 @@ fun RepositoryHandler.configureLocalDevRepository() {
     // Something that's straightforward to "clean" for development, not mavenLocal
     maven("$globalRootDir/build/repo") {
         name = "buildRepo"
-    }
-}
-
-fun RepositoryHandler.configureSonatypeRepository() {
-    configureRepository(project) {
-        username = "libs.sonatype.user"
-        password = "libs.sonatype.password"
-        name = "sonatype"
-        url = sonatypeRepositoryUri
     }
 }
 
