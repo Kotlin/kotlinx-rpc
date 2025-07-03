@@ -120,16 +120,19 @@ jobs:
       - name: Update sitemap.xml
         run: chmod +x updateSitemap.sh && ./updateSitemap.sh ${{ env.ASSEMBLE_DIR }}/sitemap.xml ${{ env.ASSEMBLE_DIR }}/api
 
+      - name: Assemble file
+        run: cd ${{ env.ASSEMBLE_DIR }} && zip -r ../${{ env.ASSEMBLE_ARTIFACT }} .
+
       - name: Save assembled artifact
         uses: actions/upload-artifact@v4
         with:
           name: kotlinx-rpc-assembled
           path: |
-            ${{ env.ASSEMBLE_DIR }}
+            ${{ env.ASSEMBLE_ARTIFACT }}
           retention-days: 7
 
   deploy:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && !inputs.dry_run
+    if: github.event_name == 'workflow_dispatch' && startsWith(github.ref, 'refs/heads/release-') && !inputs.dry_run
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -142,7 +145,7 @@ jobs:
           name: kotlinx-rpc-assembled
 
       - name: Unzip artifact
-        run: unzip -O UTF-8 -qq '${{ env.ASSEMBLE_ARTIFACT }}' -d ${{ env.ASSEMBLE_DIR }}
+        run: unzip -O UTF-8 -qq '${{ env.ASSEMBLE_ARTIFACT }}' -d publish
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -150,14 +153,14 @@ jobs:
       - name: Package and upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ env.ASSEMBLE_DIR }}
+          path: publish
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
 
   publish-indexes:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && !inputs.dry_run
+    if: github.event_name == 'workflow_dispatch' && startsWith(github.ref, 'refs/heads/release-') && !inputs.dry_run
     needs: [ build, test, assemble, deploy ]
     runs-on: ubuntu-latest
     container:
@@ -166,7 +169,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: kotlinx-rpc-assembled
+          name: kotlinx-rpc
       - name: Unzip artifact
         run: |
           unzip -O UTF-8 -qq '${{ env.ALGOLIA_ARTIFACT }}' -d algolia-indexes

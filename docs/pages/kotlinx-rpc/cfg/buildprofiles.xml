@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  ~ Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
   -->
 
 <buildprofiles xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/build-profiles.xsd"
@@ -40,6 +40,6 @@
         <copyright>2000-2025 JetBrains s.r.o.</copyright>
         <link href="https://github.com/Kotlin/kotlinx-rpc/blob/main/CONTRIBUTING.md">Contribute to kotlinx.rpc</link>
         <link href="https://kotlinlang.slack.com/archives/C072YJ3Q91V">Slack Community</link>
-        <link href="%host%/api/">API Reference</link>
+        <link href="%host%/kotlinx-rpc/api/">API Reference</link>
     </footer>
 </buildprofiles>
