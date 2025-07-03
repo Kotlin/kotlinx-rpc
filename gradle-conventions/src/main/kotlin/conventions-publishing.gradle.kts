@@ -6,6 +6,7 @@ import org.gradle.kotlin.dsl.registering
 import util.*
 import util.other.getSensitiveProperty
 import util.other.isPublicModule
+import util.tasks.ValidatePublishedArtifactsTask
 
 val isGradlePlugin = project.name == "gradle-plugin"
 val publishingExtension = project.extensions.findByType<PublishingExtension>()
@@ -166,6 +167,10 @@ fun configureEmptyJavadocArtifact(): TaskProvider<Jar?> {
 }
 
 fun MavenPublication.signPublicationIfKeyPresent() {
+    if (gradle.startParameter.taskNames.contains(ValidatePublishedArtifactsTask.NAME)) {
+        return
+    }
+
     val keyId = project.getSensitiveProperty("libs.sign.key.id")
     val signingKey = project.getSensitiveProperty("libs.sign.key.private")
     val signingKeyPassphrase = project.getSensitiveProperty("libs.sign.passphrase")

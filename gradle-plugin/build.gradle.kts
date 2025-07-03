@@ -76,4 +76,4 @@ kotlin {
     }
 }
 
-println("[Gradle Plugin] kotlinx.rpc project version: $version")
+logger.lifecycle("[Gradle Plugin] kotlinx.rpc project version: $version")

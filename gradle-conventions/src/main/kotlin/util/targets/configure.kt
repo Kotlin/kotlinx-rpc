@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import util.kmp
 import util.setPublicArtifactId
+import kotlin.collections.map
 
 private fun KotlinMultiplatformExtension.configureTargets(config: KmpConfig): List<KotlinTarget> {
     val targets = mutableListOf<KotlinTarget>()
@@ -20,6 +21,7 @@ private fun KotlinMultiplatformExtension.configureTargets(config: KmpConfig): Li
     if (config.native) {
         val nativeTargets = config.nativeTargets(this)
         targets.addAll(nativeTargets)
+        config.project.configureNativePublication(nativeTargets)
     }
 
     if (config.jvm) {

@@ -10,7 +10,7 @@ plugins {
 group = "org.jetbrains.kotlinx"
 version = libs.versions.kotlinx.rpc.get()
 
-println("[Dokka Plugin] kotlinx.rpc project version: $version, Kotlin version: ${libs.versions.kotlin.lang.get()}")
+logger.lifecycle("[Dokka Plugin] kotlinx.rpc project version: $version, Kotlin version: ${libs.versions.kotlin.lang.get()}")
 
 kotlin {
     jvmToolchain(8)

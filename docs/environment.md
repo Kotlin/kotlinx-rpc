@@ -153,7 +153,10 @@ Before pushing, run (maybe separately):
 ```
 
 Beware, that `detekt` doesn't fail the build, but outputs messages into the console.
-Makes sense to run it separately. You can also see generated reports 
+Makes sense to run it separately. You can also see generated reports
+
+Also, artifact checks: `./validatePublishedArtifacts.sh -s`. 
+See the [section](#tasks-to-know-about) below. 
 
 ### How to work with the compiler plugin
 
@@ -486,6 +489,11 @@ usually after Kotlin version update.
   - `clean` - everything
   - `cleanTest` - JVM test results
   - `cleanAllTests` - KMP test results
+- `validatePublishedArtifacts` task and more importantly `./validatePublishedArtifacts.sh` script.
+  
+  They are used to validate published artifacts and ensure you didn't delete or published something accidentally.
+  
+  Available options: `--dump` - update files, `-s` - no Gradle output except for errors, `-v` - verbose output.
 
 ## Other
 

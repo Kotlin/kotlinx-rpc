@@ -21,7 +21,7 @@ allprojects {
     version = rootProject.libs.versions.kotlinx.rpc.get()
 }
 
-println("[Core] kotlinx.rpc project version: $version, Kotlin version: $kotlinVersion, Compiler: $kotlinCompiler")
+logger.lifecycle("[Core] kotlinx.rpc project version: $version, Kotlin version: $kotlinVersion, Compiler: $kotlinCompiler")
 
 // If the prefix of the kPRC version is not Kotlin gradle plugin version – you have a problem :)
 // Probably some dependency brings kotlin with the later version.
