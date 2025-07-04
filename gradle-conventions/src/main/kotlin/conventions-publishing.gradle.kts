@@ -6,6 +6,7 @@ import org.gradle.kotlin.dsl.registering
 import util.*
 import util.other.getSensitiveProperty
 import util.other.isPublicModule
+import util.tasks.ValidatePublishedArtifactsTask
 
 val isGradlePlugin = project.name == "gradle-plugin"
 val publishingExtension = project.extensions.findByType<PublishingExtension>()
@@ -28,7 +29,6 @@ if (isPublicModule) {
 
 fun PublishingExtension.configurePublication() {
     repositories {
-        configureSonatypeRepository()
         configureSpaceRepository()
         configureForIdeRepository()
         configureLocalDevRepository()
@@ -138,15 +138,6 @@ fun RepositoryHandler.configureLocalDevRepository() {
     }
 }
 
-fun RepositoryHandler.configureSonatypeRepository() {
-    configureRepository(project) {
-        username = "libs.sonatype.user"
-        password = "libs.sonatype.password"
-        name = "sonatype"
-        url = sonatypeRepositoryUri
-    }
-}
-
 val sonatypeRepositoryUri: String?
     get() {
         val repositoryId: String = project.getSensitiveProperty("libs.repository.id")
@@ -166,6 +157,10 @@ fun configureEmptyJavadocArtifact(): TaskProvider<Jar?> {
 }
 
 fun MavenPublication.signPublicationIfKeyPresent() {
+    if (gradle.startParameter.taskNames.contains(ValidatePublishedArtifactsTask.NAME)) {
+        return
+    }
+
     val keyId = project.getSensitiveProperty("libs.sign.key.id")
     val signingKey = project.getSensitiveProperty("libs.sign.key.private")
     val signingKeyPassphrase = project.getSensitiveProperty("libs.sign.passphrase")

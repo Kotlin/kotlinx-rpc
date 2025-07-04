@@ -22,12 +22,12 @@ allprojects {
     }
 }
 
-println(
+logger.lifecycle(
     "[Compiler Plugin] kotlinx.rpc project version: $version, " +
             "Kotlin version: $kotlinLangVersion, " +
             "Compiler version: $kotlinCompilerVersion"
 )
 
 whenForIde {
-    println("[Compiler Plugin] For-ide project mode enabled")
+    logger.lifecycle("[Compiler Plugin] For-ide project mode enabled")
 }

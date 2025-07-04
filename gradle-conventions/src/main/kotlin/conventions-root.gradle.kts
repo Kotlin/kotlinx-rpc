@@ -2,7 +2,10 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import util.other.isPublicModule
 import util.other.libs
+import util.other.maybeNamed
+import util.tasks.ValidatePublishedArtifactsTask
 import util.tasks.configureNpm
 import util.tasks.registerChangelogTask
 import util.tasks.registerDumpPlatformTableTask
@@ -26,6 +29,17 @@ plugins {
 allprojects {
     plugins.apply("project-report")
 }
+
+tasks.register<ValidatePublishedArtifactsTask>(ValidatePublishedArtifactsTask.NAME) {
+    dependsOn(subprojects.filter { it.isPublicModule })
+}
+
+// Remove then first Jvm Only public module is created
+val publishMavenPublicationToBuildRepoRepository = "publishMavenPublicationToBuildRepoRepository"
+tasks.maybeNamed(publishMavenPublicationToBuildRepoRepository)
+    ?: tasks.register(publishMavenPublicationToBuildRepoRepository) {
+        group = PublishingPlugin.PUBLISH_TASK_GROUP
+    }
 
 dokka {
     val libVersion = libs.versions.kotlinx.rpc.get()
@@ -84,7 +98,7 @@ registerDumpPlatformTableTask()
 registerVerifyPlatformTableTask()
 registerChangelogTask()
 
-fun Project.forEachSubproject(action: (String, Path, Path) -> Unit) {
+fun Project.forEachIncludedProject(action: (String, Path, Path) -> Unit) {
     val globalRootDir: String by extra
     val root = Path.of(globalRootDir)
     val rootProperties = root.resolve("gradle.properties").readText()
@@ -100,7 +114,7 @@ fun Project.forEachSubproject(action: (String, Path, Path) -> Unit) {
 }
 
 val updateProperties = tasks.register("updateProperties") {
-    forEachSubproject { rootProperties, _, subProjectProperties ->
+    forEachIncludedProject { rootProperties, _, subProjectProperties ->
         if (!subProjectProperties.exists()) {
             subProjectProperties.createFile()
         }
@@ -114,7 +128,7 @@ gradle.afterProject {
         return@afterProject
     }
 
-    forEachSubproject { rootProperties, parent, subProjectProperties ->
+    forEachIncludedProject { rootProperties, parent, subProjectProperties ->
         if (!subProjectProperties.exists() || subProjectProperties.readText() != rootProperties) {
             throw GradleException(
                 "'gradle.properties' file in ${parent.name} included project is not up-to-date with root. " +
