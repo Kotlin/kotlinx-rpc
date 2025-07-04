@@ -229,7 +229,7 @@ class WireSamplingTestScope(private val sampleName: String, scope: TestScope) : 
 }
 
 private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val logger: RpcInternalCommonLogger? = null) {
-    val transport = LocalTransport(scope)
+    val transport = LocalTransport(scope.coroutineContext.job)
 
     val client by lazy {
         KrpcTestClient(rpcClientConfig {

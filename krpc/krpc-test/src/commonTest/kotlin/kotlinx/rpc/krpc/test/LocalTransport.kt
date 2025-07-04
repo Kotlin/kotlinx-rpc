@@ -16,9 +16,10 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-class LocalTransport(parentScope: CoroutineScope? = null) : CoroutineScope {
-    override val coroutineContext = parentScope?.run { SupervisorJob(coroutineContext.job) }
-        ?: SupervisorJob()
+class LocalTransport(
+    parentContext: CoroutineContext? = null,
+) : CoroutineScope {
+    override val coroutineContext = SupervisorJob(parentContext?.get(Job))
 
     private val clientIncoming = Channel<KrpcTransportMessage>()
     private val serverIncoming = Channel<KrpcTransportMessage>()
@@ -27,7 +28,9 @@ class LocalTransport(parentScope: CoroutineScope? = null) : CoroutineScope {
     val lastMessageSentOnServer = atomic(0L)
 
     val client: KrpcTransport = object : KrpcTransport {
-        override val coroutineContext: CoroutineContext = Job(this@LocalTransport.coroutineContext.job)
+        override val coroutineContext: CoroutineContext = Job(this@LocalTransport.coroutineContext.job).let {
+            if(parentContext != null) parentContext + it else it
+        }
 
         @OptIn(ExperimentalTime::class)
         override suspend fun send(message: KrpcTransportMessage) {
@@ -41,7 +44,9 @@ class LocalTransport(parentScope: CoroutineScope? = null) : CoroutineScope {
     }
 
     val server: KrpcTransport = object : KrpcTransport {
-        override val coroutineContext: CoroutineContext = Job(this@LocalTransport.coroutineContext)
+        override val coroutineContext: CoroutineContext = Job(this@LocalTransport.coroutineContext.job).let {
+            if(parentContext != null) parentContext + it else it
+        }
 
         @OptIn(ExperimentalTime::class)
         override suspend fun send(message: KrpcTransportMessage) {

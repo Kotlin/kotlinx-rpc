@@ -60,7 +60,9 @@ public abstract class KrpcServer(
      */
 
     @InternalRpcApi
-    public val internalScope: CoroutineScope = CoroutineScope(SupervisorJob(transport.coroutineContext.job))
+    public val internalScope: CoroutineScope = CoroutineScope(
+        transport.coroutineContext + SupervisorJob(transport.coroutineContext.job)
+    )
 
     private val logger = RpcInternalCommonLogger.logger(rpcInternalObjectId())
 
