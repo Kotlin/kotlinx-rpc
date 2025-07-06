@@ -128,7 +128,7 @@
             }
 
             fun consumer(service: Service, scope: CoroutineScope) {
-                val flow = service.new()
+                val flow = service.newServer()
                 scope.launch {
                     service.newClient(flow { /* ... */ })
 
@@ -142,7 +142,7 @@
             suspend fun consumer(service: Service) {
                 service.newClient(flow { /* ... */ })
 
-                service.new().collect {
+                service.newServer().collect {
                     // ...
                 }
             }
