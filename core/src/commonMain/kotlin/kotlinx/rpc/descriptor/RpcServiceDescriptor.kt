@@ -68,6 +68,7 @@ public sealed interface RpcInvokator<@Rpc T : Any> {
 public interface RpcParameter {
     public val name: String
     public val type: RpcType
+    public val isOptional: Boolean
 
     /**
      * List of annotations with target [AnnotationTarget.VALUE_PARAMETER].

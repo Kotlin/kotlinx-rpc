@@ -21,6 +21,7 @@ public class RpcCallableDefault<@Rpc T : Any>(
 public class RpcParameterDefault(
     override val name: String,
     override val type: RpcType,
+    override val isOptional: Boolean,
     override val annotations: List<Annotation>,
 ) : RpcParameter
 

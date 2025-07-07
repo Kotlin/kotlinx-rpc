@@ -52,7 +52,7 @@ class ProtoBufLocalTransportTest : LocalTransportTest() {
 
     // 'null' is not supported in ProtoBuf
     @Test
-    override fun nullable(): TestResult = runTest { }
+    override fun nullableReturn(): TestResult = runTest { }
 
     @Test
     override fun testByteArraySerialization(): TestResult = runTest { }

@@ -60,7 +60,8 @@ interface KrpcTestService {
     suspend fun doubleGenericParams(arg1: List<List<String>>)
     suspend fun mapParams(arg1: Map<String, Map<Int, List<String>>>)
     suspend fun customType(arg1: TestClass): TestClass
-    suspend fun nullable(arg1: String?): TestClass?
+    suspend fun nullableParam(arg1: String?): String
+    suspend fun nullableReturn(returnNull: Boolean): TestClass?
     suspend fun variance(arg2: TestList<in TestClass>, arg3: TestList2<TestClass>): TestList<out TestClass>?
 
     suspend fun nonSerializableClass(localDate: LocalDate): LocalDate

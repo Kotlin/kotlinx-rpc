@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.util.dumpKotlinLike
+import org.jetbrains.kotlin.ir.util.hasDefaultValue
 
 /**
  * This class scans user declared RPC service
@@ -35,7 +36,7 @@ internal object RpcDeclarationScanner {
                         function = declaration,
                         arguments = ctx.versionSpecificApi.run {
                             declaration.valueParametersVS().memoryOptimizedMap { param ->
-                                ServiceDeclaration.Method.Argument(param, param.type)
+                                ServiceDeclaration.Method.Argument(param, param.type, param.hasDefaultValue())
                             }
                         },
                     )
