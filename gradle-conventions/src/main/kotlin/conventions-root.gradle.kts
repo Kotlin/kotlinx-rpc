@@ -5,12 +5,12 @@
 import util.other.isPublicModule
 import util.other.libs
 import util.other.maybeNamed
+import util.setupPage
 import util.tasks.ValidatePublishedArtifactsTask
 import util.tasks.configureNpm
 import util.tasks.registerChangelogTask
 import util.tasks.registerDumpPlatformTableTask
 import util.tasks.registerVerifyPlatformTableTask
-import java.time.Year
 import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
@@ -46,29 +46,19 @@ dokka {
 
     moduleVersion.set(libVersion)
 
-    val pagesDirectory = layout.projectDirectory
-        .dir("docs")
-        .dir("pages")
+    val globalRootDir: String by project.extra
+
+    val pagesDirectory = kotlin.io.path.Path(globalRootDir)
+        .resolve("docs")
+        .resolve("pages")
 
     val dokkaVersionsDirectory = pagesDirectory
-        .dir("api")
-        .asFile
-
-    val templatesDirectory = pagesDirectory
-        .dir("templates")
+        .resolve("api")
+        .toFile()
 
     pluginsConfiguration {
         html {
-            customAssets.from(
-                "docs/pages/assets/logo-icon.svg",
-                "docs/pages/assets/homepage.svg", // Doesn't work due to https://github.com/Kotlin/dokka/issues/4007
-            )
-
-            footerMessage = "© ${Year.now()} JetBrains s.r.o and contributors. Apache License 2.0"
-            homepageLink = "https://kotlin.github.io/kotlinx-rpc/get-started.html"
-
-            // replace with homepage.svg once the mentioned issue is resolved
-            templatesDir.set(templatesDirectory)
+            setupPage(globalRootDir)
         }
     }
 
