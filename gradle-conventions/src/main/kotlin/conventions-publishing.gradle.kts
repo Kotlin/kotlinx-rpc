@@ -138,15 +138,6 @@ fun RepositoryHandler.configureLocalDevRepository() {
     }
 }
 
-val sonatypeRepositoryUri: String?
-    get() {
-        val repositoryId: String = project.getSensitiveProperty("libs.repository.id")
-            ?.takeIf { it.isNotBlank() }
-            ?: return null
-
-        return "https://oss.sonatype.org/service/local/staging/deployByRepositoryId/$repositoryId"
-    }
-
 fun configureEmptyJavadocArtifact(): TaskProvider<Jar?> {
     val javadocJar by project.tasks.registering(Jar::class) {
         archiveClassifier.set("javadoc")

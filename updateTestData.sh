@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+# Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
 #
 
 if [ "$#" -ne 1 ] && [ "$#" -ne 2 ]; then
@@ -23,4 +23,5 @@ set -o xtrace
     :tests:compiler-plugin-tests:test \
     --tests "kotlinx.rpc.codegen.test.runners.$1Generated$TEST_NAME" \
     --continue \
+    --stacktrace \
     -Pkotlin.test.update.test.data=true

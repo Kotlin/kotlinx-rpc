@@ -29,6 +29,13 @@ data class MultiFlow(
     val flow3: Flow<Int>,
 )
 
+data class ComplexFilter(
+    val a: SimpleFilter?,
+    val b: ComplexFilter?
+)
+
+data class SimpleFilter(val text: String)
+
 @Rpc
 interface MyService {
     <!FIELD_IN_RPC_SERVICE!>val flow: Flow<Int><!>
@@ -57,4 +64,5 @@ interface MyService {
     suspend fun clientNestedTrickyFlow(<!NESTED_STREAMING_IN_RPC_SERVICE!>inner: Wrapper<Flow<Wrapper<Flow<Int>>>><!>)
     <!NON_SUSPENDING_REQUEST_WITHOUT_STREAMING_RETURN_TYPE!>fun nonSuspendNoFlow()<!>
     <!NON_SUSPENDING_REQUEST_WITHOUT_STREAMING_RETURN_TYPE!>fun nonSuspendNoFlowString(): String<!>
+    suspend fun complex(filter: ComplexFilter): String // doesn't fail on circular dependency
 }

@@ -49,6 +49,37 @@ FILE: b.kt
         public final fun copy(flow1: R|kotlinx/coroutines/flow/Flow<kotlin/Int>| = this@R|/MultiFlow|.R|/MultiFlow.flow1|, flow2: R|kotlinx/coroutines/flow/Flow<kotlin/Int>| = this@R|/MultiFlow|.R|/MultiFlow.flow2|, flow3: R|kotlinx/coroutines/flow/Flow<kotlin/Int>| = this@R|/MultiFlow|.R|/MultiFlow.flow3|): R|MultiFlow|
 
     }
+    public final data class ComplexFilter : R|kotlin/Any| {
+        public constructor(a: R|SimpleFilter?|, b: R|ComplexFilter?|): R|ComplexFilter| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val a: R|SimpleFilter?| = R|<local>/a|
+            public get(): R|SimpleFilter?|
+
+        public final val b: R|ComplexFilter?| = R|<local>/b|
+            public get(): R|ComplexFilter?|
+
+        public final operator fun component1(): R|SimpleFilter?|
+
+        public final operator fun component2(): R|ComplexFilter?|
+
+        public final fun copy(a: R|SimpleFilter?| = this@R|/ComplexFilter|.R|/ComplexFilter.a|, b: R|ComplexFilter?| = this@R|/ComplexFilter|.R|/ComplexFilter.b|): R|ComplexFilter|
+
+    }
+    public final data class SimpleFilter : R|kotlin/Any| {
+        public constructor(text: R|kotlin/String|): R|SimpleFilter| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val text: R|kotlin/String| = R|<local>/text|
+            public get(): R|kotlin/String|
+
+        public final operator fun component1(): R|kotlin/String|
+
+        public final fun copy(text: R|kotlin/String| = this@R|/SimpleFilter|.R|/SimpleFilter.text|): R|SimpleFilter|
+
+    }
     @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyService : R|kotlin/Any| {
         public abstract val flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
             public get(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
@@ -104,6 +135,8 @@ FILE: b.kt
         public abstract fun nonSuspendNoFlow(): R|kotlin/Unit|
 
         public abstract fun nonSuspendNoFlowString(): R|kotlin/String|
+
+        public abstract suspend fun complex(filter: R|ComplexFilter|): R|kotlin/String|
 
         public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
