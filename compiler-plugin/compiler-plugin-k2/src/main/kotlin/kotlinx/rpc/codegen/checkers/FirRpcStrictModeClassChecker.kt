@@ -74,7 +74,7 @@ object FirRpcStrictModeClassChecker {
         } memoryOptimizedPlus (function.resolvedReturnTypeRef.source to function.resolvedReturnTypeRef)
 
         types.forEach { (source, symbol) ->
-            checkSerializableTypes<FirClassLikeSymbol<*>>(
+            checkSerializableTypes(
                 context = context,
                 typeRef = symbol,
                 serializablePropertiesProvider = serializablePropertiesProvider,
@@ -96,8 +96,6 @@ object FirRpcStrictModeClassChecker {
                         }
                     }
                 }
-
-                symbol
             }
         }
 
@@ -106,26 +104,28 @@ object FirRpcStrictModeClassChecker {
         }
     }
 
-    private fun <ContextElement> checkSerializableTypes(
+    private fun checkSerializableTypes(
         context: CheckerContext,
         typeRef: FirTypeRef,
         serializablePropertiesProvider: FirSerializablePropertiesProvider,
-        parentContext: List<ContextElement> = emptyList(),
-        checker: (FirClassLikeSymbol<*>, List<ContextElement>) -> ContextElement?,
+        parentContext: List<FirClassLikeSymbol<*>> = emptyList(),
+        checker: (FirClassLikeSymbol<*>, List<FirClassLikeSymbol<*>>) -> Unit,
     ) {
         val symbol = typeRef.toClassLikeSymbol(context.session) ?: return
-        val newElement = checker(symbol, parentContext)
-        val nextContext = if (newElement != null) {
-            parentContext memoryOptimizedPlus newElement
-        } else {
-            parentContext
-        }
+
+        checker(symbol, parentContext)
 
         if (symbol !is FirClassSymbol<*>) {
             return
         }
 
-        val extracted = extractArgumentsTypeRefAndSource(typeRef)
+        val nextContext = parentContext memoryOptimizedPlus symbol
+
+        if (symbol in parentContext && symbol.typeParameterSymbols.isEmpty()) {
+            return
+        }
+
+        val typeParameters = extractArgumentsTypeRefAndSource(typeRef)
             .orEmpty()
             .withIndex()
             .associate { (i, refSource) ->
@@ -133,7 +133,7 @@ object FirRpcStrictModeClassChecker {
             }
 
         val flowProps: List<FirTypeRef> = if (symbol.classId == RpcClassId.flow) {
-            listOf(extracted.values.toList()[0]!!)
+            listOf(typeParameters.values.toList()[0]!!)
         } else {
             emptyList()
         }
@@ -144,7 +144,7 @@ object FirRpcStrictModeClassChecker {
                 if (resolvedTypeRef.toClassLikeSymbol(context.session) != null) {
                     resolvedTypeRef
                 } else {
-                    extracted[property.resolvedReturnType]
+                    typeParameters[property.resolvedReturnType]
                 }
             }.memoryOptimizedPlus(flowProps)
             .forEach { symbol ->
