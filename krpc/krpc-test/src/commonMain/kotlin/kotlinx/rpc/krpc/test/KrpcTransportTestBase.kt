@@ -226,12 +226,21 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    open fun nullable() = runTest {
-        val result = client.nullable("test")
-        assertEquals(TestClass(), result)
+    open fun nullableParameter() = runTest {
+        val result = client.nullableParam("test")
+        assertEquals("test", result)
 
-        val result2 = client.nullable(null)
-        assertEquals(null, result2)
+        val result2 = client.nullableParam(null)
+        assertEquals("null", result2)
+    }
+
+    @Test
+    open fun nullableReturn() = runTest {
+        val result = client.nullableReturn(returnNull = true)
+        assertEquals(null, result)
+
+        val result2 = client.nullableReturn(returnNull = false)
+        assertEquals(TestClass(), result2)
     }
 
     @Test
@@ -345,7 +354,7 @@ abstract class KrpcTransportTestBase {
     @Test
     open fun testNullables() = runTest {
         assertEquals(1, client.nullableInt(1))
-        assertNull(client.nullable(null))
+        assertNull(client.nullableReturn(returnNull = true))
     }
 
     @Test

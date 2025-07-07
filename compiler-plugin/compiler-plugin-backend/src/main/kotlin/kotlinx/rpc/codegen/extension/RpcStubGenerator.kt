@@ -815,6 +815,7 @@ internal class RpcStubGenerator(
                                 values {
                                     +stringConst(parameter.value.name.asString())
                                     +irRpcTypeCall(parameter.type)
+                                    +booleanConst(parameter.isOptional)
                                     +irListOfAnnotations(parameter.value)
                                 }
                             }

@@ -97,8 +97,12 @@ class KrpcTestServiceBackend : KrpcTestService {
         return arg1
     }
 
-    override suspend fun nullable(arg1: String?): TestClass? {
-        return if (arg1 == null) null else TestClass()
+    override suspend fun nullableParam(arg1: String?): String {
+        return arg1 ?: "null"
+    }
+
+    override suspend fun nullableReturn(returnNull: Boolean): TestClass? {
+        return if (returnNull) null else TestClass()
     }
 
     override suspend fun variance(
