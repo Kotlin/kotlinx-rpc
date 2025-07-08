@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.rpc.sample.ui.state.WelcomeData
 import kotlinx.rpc.sample.ui.theme.KtorApplicationTheme
-
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 
