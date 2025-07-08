@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtAnnotated
 import org.jetbrains.kotlin.psi.KtElement
+import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 
 // ###########################################################################
 // ###                     BIG WARNING, LISTEN CLOSELY!                    ###
@@ -25,8 +26,8 @@ import org.jetbrains.kotlin.psi.KtElement
 // ###########################################################################
 
 object FirRpcDiagnostics : RpcKtDiagnosticsContainer() {
-    val WRONG_RPC_ANNOTATION_TARGET by error1<KtAnnotated, ConeKotlinType>()
-    val CHECKED_ANNOTATION_VIOLATION by error3<KtAnnotated, Int, ConeKotlinType, FirBasedSymbol<*>>()
+    val WRONG_RPC_ANNOTATION_TARGET by error1<KtElement, ConeKotlinType>()
+    val CHECKED_ANNOTATION_VIOLATION by error3<KtElement, Int, ConeKotlinType, FirBasedSymbol<*>>()
     val NON_SUSPENDING_REQUEST_WITHOUT_STREAMING_RETURN_TYPE by error0<KtElement>()
     val AD_HOC_POLYMORPHISM_IN_RPC_SERVICE by error2<KtElement, Int, Name>()
     val TYPE_PARAMETERS_IN_RPC_FUNCTION by error0<KtElement>(SourceElementPositioningStrategies.TYPE_PARAMETERS_LIST)
