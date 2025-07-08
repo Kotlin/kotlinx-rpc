@@ -5,16 +5,18 @@
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import util.KOTLINX_RPC_PREFIX
 import util.other.libs
-import java.time.Year
+import util.setupPage
 
 plugins {
     id("org.jetbrains.dokka")
 }
 
 dokka {
+    val globalRootDir: String by project.extra
+
     pluginsConfiguration {
         html {
-            footerMessage = "© ${Year.now()} JetBrains s.r.o and contributors. Apache License 2.0"
+            setupPage(globalRootDir)
         }
     }
 
