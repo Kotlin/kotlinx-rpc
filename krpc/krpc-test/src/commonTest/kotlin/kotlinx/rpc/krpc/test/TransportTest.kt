@@ -259,7 +259,8 @@ class TransportTest {
     }
 
     private val handshakeClassSerialName = KrpcProtocolMessage.Handshake.serializer().descriptor.serialName
-    private val clientHandshake = ".*\\[Client] \\[Send] \\{\"type\":\"$handshakeClassSerialName\".*+".toRegex()
+    @Suppress("RegExpRedundantEscape") // fails on js otherwise
+    private val clientHandshake = ".*\\[Client\\] \\[Send\\] \\{\"type\":\"$handshakeClassSerialName\".*".toRegex()
 
     private val transportInitialized = atomic(0)
     private val configInitialized = atomic(0)
