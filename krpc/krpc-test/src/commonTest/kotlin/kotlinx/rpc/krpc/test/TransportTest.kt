@@ -6,6 +6,7 @@ package kotlinx.rpc.krpc.test
 
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.rpc.*
@@ -87,12 +88,20 @@ class TransportTest {
             val logger = RpcInternalCommonLogger.logger("TransportTest")
 
             val logs = mutableListOf<String>()
+            val logsChannel = Channel<String>(Channel.UNLIMITED)
+
+            val logsJob = launch(CoroutineName("logs collector")) {
+                for (log in logsChannel) {
+                    logs.add(log)
+                }
+            }
+
             RpcInternalDumpLoggerContainer.set(object : RpcInternalDumpLogger {
                 override val isEnabled: Boolean = true
 
                 override fun dump(vararg tags: String, message: () -> String) {
                     val message = "${tags.joinToString(" ") { "[$it]" }} ${message()}"
-                    logs.add(message)
+                    logsChannel.trySend(message)
                     logger.info { message }
                 }
             })
@@ -100,6 +109,8 @@ class TransportTest {
             block(logs)
 
             RpcInternalDumpLoggerContainer.set(null)
+            logsJob.cancelAndJoin()
+            logsChannel.close()
         }
 
     @Test
@@ -247,21 +258,23 @@ class TransportTest {
         transports.cancel()
     }
 
-    private val clientHandshake = ".*\\[Client] \\[Send] \\{\"type\":\"${KrpcProtocolMessage.Handshake.serializer().descriptor.serialName}\".*+".toRegex()
+    private val handshakeClassSerialName = KrpcProtocolMessage.Handshake.serializer().descriptor.serialName
+    private val clientHandshake = ".*\\[Client] \\[Send] \\{\"type\":\"$handshakeClassSerialName\".*+".toRegex()
+
+    private val transportInitialized = atomic(0)
+    private val configInitialized = atomic(0)
 
     @Test
     fun transportInitializedOnlyOnce() = runTest { logs ->
         val localTransport = LocalTransport()
-        var transportInitialized = 0
-        var configInitialized = 0
         val client = object : KrpcClient() {
             override suspend fun initializeTransport(): KrpcTransport {
-                transportInitialized++
+                transportInitialized.getAndIncrement()
                 return localTransport.client
             }
 
             override fun initializeConfig(): KrpcConfig.Client {
-                configInitialized++
+                configInitialized.getAndIncrement()
                 return clientConfig
             }
         }
@@ -274,8 +287,8 @@ class TransportTest {
         client.withService<Echo>().apply { echo("foo"); echo("bar") }
         client.withService<Second>().apply{ second("bar"); second("baz") }
 
-        assertEquals(1, transportInitialized)
-        assertEquals(1, configInitialized)
+        assertEquals(1, transportInitialized.value)
+        assertEquals(1, configInitialized.value)
         assertEquals(1, logs.count { it.matches(clientHandshake) })
     }
 
