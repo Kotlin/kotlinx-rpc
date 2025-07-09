@@ -2,6 +2,35 @@
 
 This page contains all changes throughout releases of the library.
 
+## 0.8.1
+> Published 9 July 2025
+
+**Full Changelog**: [0.8.0...0.8.1](https://github.com/Kotlin/kotlinx-rpc/compare/0.8.0...0.8.1)
+
+#### Bug fixes 🐛 {id=Bug_fixes_0_8_1}
+* Propagate transport coroutine context by [@yakivy](https://github.com/yakivy) in [#374](https://github.com/Kotlin/kotlinx-rpc/pull/374)
+* Fix compiler bugs by [@Mr3zee](https://github.com/Mr3zee) in [#382](https://github.com/Kotlin/kotlinx-rpc/pull/382)
+* kRPC client initialization is not single shot by [@Mr3zee](https://github.com/Mr3zee) in [#385](https://github.com/Kotlin/kotlinx-rpc/pull/385)
+
+#### Documentation 📗 {id=Documentation_0_8_1}
+* Grpc sample update by [@Mr3zee](https://github.com/Mr3zee) in [#371](https://github.com/Kotlin/kotlinx-rpc/pull/371)
+* Fix dokka API button for all modules by [@Mr3zee](https://github.com/Mr3zee) in [#381](https://github.com/Kotlin/kotlinx-rpc/pull/381)
+
+#### Infra 🚧 {id=Infra_0_8_1}
+* Update pages publication and api link by [@Mr3zee](https://github.com/Mr3zee) in [#375](https://github.com/Kotlin/kotlinx-rpc/pull/375)
+* Added artifacts validation by [@Mr3zee](https://github.com/Mr3zee) in [#377](https://github.com/Kotlin/kotlinx-rpc/pull/377)
+
+#### Other Changes 🧹 {id=Other_Changes_0_8_1}
+* Ci updates by [@Mr3zee](https://github.com/Mr3zee) in [#370](https://github.com/Kotlin/kotlinx-rpc/pull/370)
+* Updated CSM sources for template generation by [@Mr3zee](https://github.com/Mr3zee) in [#372](https://github.com/Kotlin/kotlinx-rpc/pull/372)
+* Update strict-mode.topic by [@BierDav](https://github.com/BierDav) in [#380](https://github.com/Kotlin/kotlinx-rpc/pull/380)
+* Update Ktor to 3.2.1 and samples by [@Mr3zee](https://github.com/Mr3zee) in [#383](https://github.com/Kotlin/kotlinx-rpc/pull/383)
+
+### New Contributors {id=New_Contributors_0_8_1}
+* [@yakivy](https://github.com/yakivy) made their first contribution in [#374](https://github.com/Kotlin/kotlinx-rpc/pull/374)
+* [@BierDav](https://github.com/BierDav) made their first contribution in [#380](https://github.com/Kotlin/kotlinx-rpc/pull/380)
+
+
 ## 0.8.0
 > Published 30 June 2025
 
