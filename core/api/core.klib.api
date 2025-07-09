@@ -38,6 +38,8 @@ abstract interface <#A: kotlin/Any> kotlinx.rpc.descriptor/RpcServiceDescriptor 
 abstract interface kotlinx.rpc.descriptor/RpcParameter { // kotlinx.rpc.descriptor/RpcParameter|null[0]
     abstract val annotations // kotlinx.rpc.descriptor/RpcParameter.annotations|{}annotations[0]
         abstract fun <get-annotations>(): kotlin.collections/List<kotlin/Annotation> // kotlinx.rpc.descriptor/RpcParameter.annotations.<get-annotations>|<get-annotations>(){}[0]
+    abstract val isOptional // kotlinx.rpc.descriptor/RpcParameter.isOptional|{}isOptional[0]
+        abstract fun <get-isOptional>(): kotlin/Boolean // kotlinx.rpc.descriptor/RpcParameter.isOptional.<get-isOptional>|<get-isOptional>(){}[0]
     abstract val name // kotlinx.rpc.descriptor/RpcParameter.name|{}name[0]
         abstract fun <get-name>(): kotlin/String // kotlinx.rpc.descriptor/RpcParameter.name.<get-name>|<get-name>(){}[0]
     abstract val type // kotlinx.rpc.descriptor/RpcParameter.type|{}type[0]

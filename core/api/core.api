@@ -49,6 +49,7 @@ public abstract interface class kotlinx/rpc/descriptor/RpcParameter {
 	public abstract fun getAnnotations ()Ljava/util/List;
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getType ()Lkotlinx/rpc/descriptor/RpcType;
+	public abstract fun isOptional ()Z
 }
 
 public abstract interface class kotlinx/rpc/descriptor/RpcServiceDescriptor {
