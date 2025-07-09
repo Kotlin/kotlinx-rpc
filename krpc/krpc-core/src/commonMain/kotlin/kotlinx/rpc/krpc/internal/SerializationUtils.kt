@@ -15,7 +15,6 @@ import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.modules.SerializersModule
 import kotlin.reflect.KType
-import kotlin.reflect.KTypeParameter
 
 @OptIn(ExperimentalSerializationApi::class)
 internal fun SerializersModule.buildContextualInternal(type: KType): KSerializer<Any?>? {
