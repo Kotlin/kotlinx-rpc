@@ -1,3 +1,31 @@
+# 0.8.1
+> Published 9 July 2025
+
+### Bug fixes 🐛
+* Propagate transport coroutine context by @yakivy in https://github.com/Kotlin/kotlinx-rpc/pull/374
+* Fix compiler bugs by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/382
+* kRPC client initialization is not single shot by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/385
+
+### Documentation 📗
+* Grpc sample update by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/371
+* Fix dokka API button for all modules by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/381
+
+### Infra 🚧
+* Update pages publication and api link by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/375
+* Added artifacts validation by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/377
+
+### Other Changes 🧹
+* Ci updates by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/370
+* Updated CSM sources for template generation by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/372
+* Update strict-mode.topic by @BierDav in https://github.com/Kotlin/kotlinx-rpc/pull/380
+* Update Ktor to 3.2.1 and samples by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/383
+
+## New Contributors
+* @yakivy made their first contribution in https://github.com/Kotlin/kotlinx-rpc/pull/374
+* @BierDav made their first contribution in https://github.com/Kotlin/kotlinx-rpc/pull/380
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.8.0...0.8.1
+
 # 0.8.0
 > Published 30 June 2025
 
