@@ -10,7 +10,11 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.rpc.*
 import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.krpc.KrpcConfig
 import kotlinx.rpc.krpc.KrpcConfigBuilder
+import kotlinx.rpc.krpc.KrpcTransport
+import kotlinx.rpc.krpc.client.KrpcClient
+import kotlinx.rpc.krpc.internal.KrpcProtocolMessage
 import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
@@ -76,21 +80,24 @@ class TransportTest {
         return KrpcTestServer(serverConfig, localTransport.server)
     }
 
-    private fun runTest(block: suspend TestScope.() -> Unit): TestResult =
+    private fun runTest(block: suspend TestScope.(logs: List<String>) -> Unit): TestResult =
         kotlinx.coroutines.test.runTest(timeout = 20.seconds) {
             debugCoroutines()
 
             val logger = RpcInternalCommonLogger.logger("TransportTest")
 
+            val logs = mutableListOf<String>()
             RpcInternalDumpLoggerContainer.set(object : RpcInternalDumpLogger {
                 override val isEnabled: Boolean = true
 
                 override fun dump(vararg tags: String, message: () -> String) {
-                    logger.info { "${tags.joinToString(" ") { "[$it]" }} ${message()}" }
+                    val message = "${tags.joinToString(" ") { "[$it]" }} ${message()}"
+                    logs.add(message)
+                    logger.info { message }
                 }
             })
 
-            block()
+            block(logs)
 
             RpcInternalDumpLoggerContainer.set(null)
         }
@@ -238,6 +245,38 @@ class TransportTest {
         assertEquals(1, secondServices.single().received.value)
 
         transports.cancel()
+    }
+
+    private val clientHandshake = ".*\\[Client] \\[Send] \\{\"type\":\"${KrpcProtocolMessage.Handshake.serializer().descriptor.serialName}\".*+".toRegex()
+
+    @Test
+    fun transportInitializedOnlyOnce() = runTest { logs ->
+        val localTransport = LocalTransport()
+        var transportInitialized = 0
+        var configInitialized = 0
+        val client = object : KrpcClient() {
+            override suspend fun initializeTransport(): KrpcTransport {
+                transportInitialized++
+                return localTransport.client
+            }
+
+            override fun initializeConfig(): KrpcConfig.Client {
+                configInitialized++
+                return clientConfig
+            }
+        }
+
+        val server = serverOf(localTransport)
+
+        server.registerServiceAndReturn<Echo, _> { EchoImpl() }
+        server.registerServiceAndReturn<Second, _> { SecondServer() }
+
+        client.withService<Echo>().apply { echo("foo"); echo("bar") }
+        client.withService<Second>().apply{ second("bar"); second("baz") }
+
+        assertEquals(1, transportInitialized)
+        assertEquals(1, configInitialized)
+        assertEquals(1, logs.count { it.matches(clientHandshake) })
     }
 
     private inline fun <@Rpc reified Service : Any, reified Impl : Service> RpcServer.registerServiceAndReturn(

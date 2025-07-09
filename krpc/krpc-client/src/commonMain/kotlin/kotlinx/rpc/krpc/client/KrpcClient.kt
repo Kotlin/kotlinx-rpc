@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.annotations.Rpc
@@ -47,7 +49,7 @@ import kotlin.properties.Delegates
 public abstract class InitializedKrpcClient(
     private val config: KrpcConfig.Client,
     private val transport: KrpcTransport,
-): KrpcClient() {
+) : KrpcClient() {
     final override suspend fun initializeTransport(): KrpcTransport {
         return transport
     }
@@ -179,18 +181,28 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
     // callId to serviceTypeString
     private val cancellingRequests = RpcInternalConcurrentHashMap<String, String>()
 
+    private val transportInitializationLock = Mutex()
+
     /**
      * Starts the handshake process and awaits for completion.
      * If the handshake was completed before, nothing happens.
      */
     private suspend fun initializeAndAwaitHandshakeCompletion() {
-        transport = initializeTransport()
-        isTransportReady = true
+        if (!isTransportReady) {
+            transportInitializationLock.withLock {
+                if (isTransportReady) {
+                    return@withLock
+                }
 
-        connector.subscribeToGenericMessages(::handleGenericMessage)
-        connector.subscribeToProtocolMessages(::handleProtocolMessage)
+                transport = initializeTransport()
+                isTransportReady = true
 
-        connector.sendMessage(KrpcProtocolMessage.Handshake(KrpcPlugin.ALL))
+                connector.subscribeToGenericMessages(::handleGenericMessage)
+                connector.subscribeToProtocolMessages(::handleProtocolMessage)
+
+                connector.sendMessage(KrpcProtocolMessage.Handshake(KrpcPlugin.ALL))
+            }
+        }
 
         serverSupportedPlugins.await()
     }
