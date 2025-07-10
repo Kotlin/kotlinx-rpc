@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 import util.targets.hasJavaModule
@@ -11,9 +11,13 @@ plugins {
 
 description = "Internal module for checking JPMS compliance"
 
-tasks.register("generateModuleInfo") {
+val excludedProjects = listOf(
+    "protobuf-plugin",
+)
+
+val generateModuleInfo = tasks.register("generateModuleInfo") {
     val modules = project.rootProject.subprojects
-        .filter { it.hasJavaModule }
+        .filter { it.applicableForCheck() }
         .map { it.javaModuleName() }
 
     val moduleInfoPath = project.projectDir.absolutePath + "/src/main/java/module-info.java"
@@ -33,7 +37,7 @@ tasks.register("generateModuleInfo") {
 }
 
 tasks.getByName<JavaCompile>("compileJava") {
-    dependsOn("generateModuleInfo")
+    dependsOn(generateModuleInfo)
 
     val projectFiles = project.files()
     doFirst {
@@ -58,9 +62,13 @@ dependencies {
                 .joinToString(":", prefix = ":") { segment -> segment.name }
 
             it.plugins.withId("maven-publish") {
-                if (it.hasJavaModule) {
+                if (it.applicableForCheck()) {
                     api(project(dep))
                 }
             }
         }
+}
+
+private fun Project.applicableForCheck(): Boolean {
+    return hasJavaModule && name !in excludedProjects
 }
