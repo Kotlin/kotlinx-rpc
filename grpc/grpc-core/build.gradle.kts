@@ -19,12 +19,12 @@ kotlin {
 
         jvmMain {
             dependencies {
-                api(libs.grpc.util)
-                api(libs.grpc.stub)
-                api(libs.grpc.protobuf)
-                api(libs.grpc.kotlin.stub)
-                api(libs.protobuf.java.util)
-                api(libs.protobuf.kotlin)
+                implementation(libs.grpc.util)
+                implementation(libs.grpc.stub)
+                implementation(libs.grpc.protobuf)
+                implementation(libs.grpc.kotlin.stub)
+                implementation(libs.protobuf.java.util)
+                implementation(libs.protobuf.kotlin)
             }
         }
     }
