@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
 <!DOCTYPE topic
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -91,8 +95,6 @@
     <chapter title="Limitations" id="limitations">
         <p>Current known limitations:</p>
         <list>
-            <li>No streaming</li>
-            <li>Only primitive types in messages</li>
             <li>Mandatory java and kotlin protoc generation in addition to our codegen</li>
             <li>Kotlin/JVM project only</li>
         </list>
