@@ -10,6 +10,7 @@ import kotlinx.rpc.descriptor.RpcTypeKrpc
 import kotlinx.rpc.internal.rpcInternalKClass
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.serialization.*
+import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.*
@@ -29,7 +30,7 @@ internal fun SerializersModule.buildContextualInternal(type: KType): KSerializer
     )
 
     @Suppress("UNCHECKED_CAST")
-    return result as? KSerializer<Any?>
+    return if (type.isMarkedNullable) result?.nullable else result as? KSerializer<Any?>
 }
 
 private fun SerializersModule.buildContextual(type: KType): KSerializer<Any?> {
