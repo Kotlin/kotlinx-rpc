@@ -38,6 +38,11 @@ import kotlinx.rpc.krpc.test.debugCoroutines
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.protobuf.ProtoBuf
+import org.jetbrains.krpc.test.api.util.SamplingCustomString
+import org.jetbrains.krpc.test.api.util.SamplingCustomStringSerializer
 import org.jetbrains.krpc.test.api.util.SamplingService
 import org.jetbrains.krpc.test.api.util.SamplingServiceImpl
 import java.nio.file.Files
@@ -308,11 +313,19 @@ private class WireToolkit(scope: CoroutineScope, format: SamplingFormat, val log
 @OptIn(ExperimentalSerializationApi::class)
 enum class SamplingFormat(val commentBinaryOutput: Boolean, val init: KrpcSerialFormatConfiguration.() -> Unit) {
     Json(false, {
-        json()
+        json(Json {
+            serializersModule = SerializersModule {
+                contextual(SamplingCustomString::class, SamplingCustomStringSerializer)
+            }
+        })
     }),
 
     Protobuf(true, {
-        protobuf()
+        protobuf(ProtoBuf {
+            serializersModule = SerializersModule {
+                contextual(SamplingCustomString::class, SamplingCustomStringSerializer)
+            }
+        })
     }),
     ;
 

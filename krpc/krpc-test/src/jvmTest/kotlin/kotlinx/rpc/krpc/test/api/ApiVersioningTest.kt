@@ -48,8 +48,16 @@ class ApiVersioningTest {
     @Test
     fun testEchoSampling() = wireSamplingTest("echo") {
         sample {
-            val response = echo("Hello", SamplingData("data"))
-            assertEquals(SamplingData("data"), response)
+            val response = echo("Hello", SamplingData("World"))
+            assertEquals(SamplingData("Hello World"), response)
+        }
+    }
+
+    @Test
+    fun testParseNullableArgSampling() = wireSamplingTest("parseNullableArg") {
+        sample(SamplingFormat.Json) {
+            val response = parseNullableArg("Hello", null)
+            assertEquals("Hello null", response)
         }
     }
 
