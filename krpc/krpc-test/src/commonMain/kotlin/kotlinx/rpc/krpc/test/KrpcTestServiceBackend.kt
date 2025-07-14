@@ -129,6 +129,10 @@ class KrpcTestServiceBackend : KrpcTestService {
         )
     }
 
+    override suspend fun nullableNonSerializableClass(localDate: LocalDate?): LocalDate? {
+        return localDate?.let { LocalDate(it.year, it.month, it.day + 1) }
+    }
+
     override suspend fun incomingStreamSyncCollect(arg1: Flow<String>): Int {
         return arg1.count()
     }

@@ -55,6 +55,9 @@ class ProtoBufLocalTransportTest : LocalTransportTest() {
     override fun nullableReturn(): TestResult = runTest { }
 
     @Test
+    override fun nullableNonSerializableParameter(): TestResult = runTest { }
+
+    @Test
     override fun testByteArraySerialization(): TestResult = runTest { }
 
     @Test

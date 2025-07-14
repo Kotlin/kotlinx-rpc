@@ -68,6 +68,7 @@ interface KrpcTestService {
     suspend fun nonSerializableClassWithSerializer(
         localDateTime: @Serializable(LocalDateTimeSerializer::class) LocalDateTime,
     ): @Serializable(LocalDateTimeSerializer::class) LocalDateTime
+    suspend fun nullableNonSerializableClass(localDate: LocalDate?): LocalDate?
 
     suspend fun incomingStreamSyncCollect(arg1: Flow<String>): Int
     suspend fun incomingStreamSyncCollectMultiple(arg1: Flow<String>, arg2: Flow<String>, arg3: Flow<String>): Int
