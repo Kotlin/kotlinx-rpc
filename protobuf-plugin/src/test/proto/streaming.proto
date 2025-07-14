@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+import "reference_package.proto";
+
+service StreamingTestService {
+  rpc Server(kotlinx.rpc.protobuf.test.References) returns (stream kotlinx.rpc.protobuf.test.References);
+  rpc Client(stream kotlinx.rpc.protobuf.test.References) returns (kotlinx.rpc.protobuf.test.References);
+  rpc Bidi(stream kotlinx.rpc.protobuf.test.References) returns (stream kotlinx.rpc.protobuf.test.References);
+}
