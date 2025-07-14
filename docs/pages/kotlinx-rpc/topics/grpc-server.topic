@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
 <!DOCTYPE topic
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -19,7 +23,6 @@
     <list>
         <li>
             <code>GrpcServer</code> allows to register multiple services, like regular <code>RpcServer</code>.
-            However, <code>CoroutineContext</code> parameter is not needed and should not be used.
         </li>
         <li>
             <code>GrpcServer</code> does <b>not</b> bind to Java gRPC <code>Server</code>,
