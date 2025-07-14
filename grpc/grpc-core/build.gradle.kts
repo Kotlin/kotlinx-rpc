@@ -14,17 +14,20 @@ kotlin {
                 api(projects.core)
                 api(projects.utils)
                 api(libs.coroutines.core)
+
+                implementation(libs.atomicfu)
             }
         }
 
         jvmMain {
             dependencies {
+                api(libs.grpc.api)
                 api(libs.grpc.util)
                 api(libs.grpc.stub)
                 api(libs.grpc.protobuf)
-                api(libs.grpc.kotlin.stub)
+                implementation(libs.grpc.kotlin.stub) // causes problems to jpms if api
                 api(libs.protobuf.java.util)
-                api(libs.protobuf.kotlin)
+                implementation(libs.protobuf.kotlin)
             }
         }
     }
