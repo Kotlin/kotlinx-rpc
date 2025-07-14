@@ -9,6 +9,7 @@ package kotlinx.rpc.protobuf
 import kotlinx.rpc.protobuf.CodeGenerator.DeclarationType
 import kotlinx.rpc.protobuf.model.*
 import org.slf4j.Logger
+import kotlin.getValue
 
 private const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
 
@@ -50,6 +51,7 @@ class ModelToKotlinGenerator(
             generatePublicDeclaredEntities(this@generatePublicKotlinFile)
 
             import("kotlinx.rpc.internal.utils.*")
+            import("kotlinx.coroutines.flow.*")
 
             additionalPublicImports.forEach {
                 import(it)
@@ -76,6 +78,7 @@ class ModelToKotlinGenerator(
             generateInternalDeclaredEntities(this@generateInternalKotlinFile)
 
             import("kotlinx.rpc.internal.utils.*")
+            import("kotlinx.coroutines.flow.*")
 
             additionalInternalImports.forEach {
                 import(it)
@@ -510,17 +513,20 @@ class ModelToKotlinGenerator(
         code("@kotlinx.rpc.grpc.annotations.Grpc")
         clazz(service.name.simpleName, declarationType = DeclarationType.Interface) {
             service.methods.forEach { method ->
-                // no streaming for now
                 val inputType by method.inputType
                 val outputType by method.outputType
                 function(
                     name = method.name,
-                    modifiers = "suspend",
-                    args = "message: ${inputType.name.safeFullName()}",
-                    returnType = outputType.name.safeFullName(),
+                    modifiers = if (method.serverStreaming) "" else "suspend",
+                    args = "message: ${inputType.name.safeFullName().wrapInFlowIf(method.clientStreaming)}",
+                    returnType = outputType.name.safeFullName().wrapInFlowIf(method.serverStreaming),
                 )
             }
         }
+    }
+
+    private fun String.wrapInFlowIf(condition: Boolean): String {
+        return if (condition) "Flow<$this>" else this
     }
 
     private fun CodeGenerator.generateInternalService(service: ServiceDeclaration) {
@@ -566,11 +572,23 @@ class ModelToKotlinGenerator(
 
                 function(
                     name = grpcName,
-                    modifiers = "override suspend",
-                    args = "request: ${inputType.toPlatformMessageType()}",
-                    returnType = outputType.toPlatformMessageType(),
+                    modifiers = "override${if (method.serverStreaming) "" else " suspend"}",
+                    args = "request: ${inputType.toPlatformMessageType().wrapInFlowIf(method.clientStreaming)}",
+                    returnType = outputType.toPlatformMessageType().wrapInFlowIf(method.serverStreaming),
                 ) {
-                    code("return impl.${method.name}(request.toKotlin()).toPlatform()")
+                    val toKotlin = if (method.clientStreaming) {
+                        "map { it.toKotlin() }"
+                    } else {
+                        "toKotlin()"
+                    }
+
+                    val toPlatform = if (method.serverStreaming) {
+                        "map { it.toPlatform() }"
+                    } else {
+                        "toPlatform()"
+                    }
+
+                    code("return impl.${method.name}(request.${toKotlin}).${toPlatform}")
 
                     importRootDeclarationIfNeeded(inputType.name, "toPlatform", true)
                     importRootDeclarationIfNeeded(outputType.name, "toKotlin", true)
@@ -605,22 +623,14 @@ class ModelToKotlinGenerator(
                 typeParameters = "R",
                 returnType = "R",
             ) {
-                code("val message = rpcCall.parameters[0]")
-                code("@Suppress(\"UNCHECKED_CAST\")")
-                scope("return when (rpcCall.callableName)") {
-                    service.methods.forEach { method ->
-                        val inputType by method.inputType
-                        val outputType by method.outputType
-                        val grpcName = method.name.replaceFirstChar { it.lowercase() }
-                        val result = "stub.$grpcName((message as ${inputType.name.safeFullName()}).toPlatform())"
-                        code("\"${method.name}\" -> $result.toKotlin() as R")
+                val methods = service.methods.filter { !it.serverStreaming }
 
-                        importRootDeclarationIfNeeded(inputType.name, "toPlatform", true)
-                        importRootDeclarationIfNeeded(outputType.name, "toKotlin", true)
-                    }
-
-                    code("else -> error(\"Illegal call: \${rpcCall.callableName}\")")
+                if (methods.isEmpty()) {
+                    code("error(\"Illegal call: \${rpcCall.callableName}\")")
+                    return@function
                 }
+
+                generateCallsImpls(methods)
             }
 
             function(
@@ -628,10 +638,54 @@ class ModelToKotlinGenerator(
                 modifiers = "override",
                 args = "rpcCall: kotlinx.rpc.RpcCall",
                 typeParameters = "R",
-                returnType = "kotlinx.coroutines.flow.Flow<R>",
+                returnType = "Flow<R>",
             ) {
-                code("error(\"Flow calls are not supported\")")
+                val methods = service.methods.filter { it.serverStreaming }
+
+                if (methods.isEmpty()) {
+                    code("error(\"Illegal streaming call: \${rpcCall.callableName}\")")
+                    return@function
+                }
+
+                generateCallsImpls(methods)
             }
+        }
+    }
+
+    private fun CodeGenerator.generateCallsImpls(
+        methods: List<MethodDeclaration>,
+    ) {
+        code("val message = rpcCall.parameters[0]")
+        code("@Suppress(\"UNCHECKED_CAST\")")
+        scope("return when (rpcCall.callableName)") {
+            methods.forEach { method ->
+                val inputType by method.inputType
+                val outputType by method.outputType
+                val grpcName = method.name.replaceFirstChar { it.lowercase() }
+
+                val toKotlin = if (method.serverStreaming) {
+                    "map { it.toKotlin() }"
+                } else {
+                    "toKotlin()"
+                }
+
+                val toPlatform = if (method.clientStreaming) {
+                    "map { it.toPlatform() }"
+                } else {
+                    "toPlatform()"
+                }
+
+                val argumentCast = inputType.name.safeFullName().wrapInFlowIf(method.clientStreaming)
+                val resultCast = "R".wrapInFlowIf(method.serverStreaming)
+
+                val result = "stub.$grpcName((message as $argumentCast).${toPlatform})"
+                code("\"${method.name}\" -> $result.${toKotlin} as $resultCast")
+
+                importRootDeclarationIfNeeded(inputType.name, "toPlatform", true)
+                importRootDeclarationIfNeeded(outputType.name, "toKotlin", true)
+            }
+
+            code("else -> error(\"Illegal call: \${rpcCall.callableName}\")")
         }
     }
 
