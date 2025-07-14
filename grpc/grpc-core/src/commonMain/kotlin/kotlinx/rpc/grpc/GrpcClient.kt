@@ -10,6 +10,7 @@ import kotlinx.rpc.RpcClient
 import kotlinx.rpc.grpc.descriptor.GrpcClientDelegate
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
+import kotlin.time.Duration
 
 /**
  * GrpcClient manages gRPC communication by providing implementation for making asynchronous RPC calls.
@@ -18,6 +19,20 @@ import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
  */
 public class GrpcClient internal constructor(private val channel: ManagedChannel) : RpcClient {
     private val stubs = RpcInternalConcurrentHashMap<Long, GrpcClientDelegate>()
+
+    public fun shutdown() {
+        stubs.clear()
+        channel.shutdown()
+    }
+
+    public fun shutdownNow() {
+        stubs.clear()
+        channel.shutdownNow()
+    }
+
+    public suspend fun awaitTermination(duration: Duration) {
+        channel.awaitTermination(duration)
+    }
 
     override suspend fun <T> call(call: RpcCall): T {
         return call.delegate().call(call)
@@ -39,11 +54,11 @@ public class GrpcClient internal constructor(private val channel: ManagedChannel
  * Constructor function for the [GrpcClient] class.
  */
 public fun GrpcClient(
-    name: String,
+    hostname: String,
     port: Int,
     configure: ManagedChannelBuilder<*>.() -> Unit = {},
 ): GrpcClient {
-    val channel = ManagedChannelBuilder(name, port).apply(configure).buildChannel()
+    val channel = ManagedChannelBuilder(hostname, port).apply(configure).buildChannel()
     return GrpcClient(channel)
 }
 
