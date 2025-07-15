@@ -56,7 +56,7 @@ class KmpConfig(
     private val excludeJvm: Boolean by optionalProperty("exclude")
     private val excludeJs: Boolean by optionalProperty("exclude")
     private val excludeWasmJs: Boolean by optionalProperty("exclude")
-    private val excludeWasmJsD8: Boolean by optionalProperty("exclude")
+    private val excludeWasmJsD8: Boolean by optionalProperty("exclude", "wasmJs")
     private val excludeWasmWasi: Boolean by optionalProperty("exclude")
     val excludeNative: Boolean by optionalProperty("exclude")
 
