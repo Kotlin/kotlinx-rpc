@@ -1,0 +1,6 @@
+headers = grpcpp_c.h
+headerFilter= grpcpp_c.h grpc/slice.h grpc/byte_buffer.h
+
+noStringConversion = grpc_slice_from_copied_buffer my_grpc_slice_from_copied_buffer
+
+staticLibraries = libgrpcpp_c_static.a

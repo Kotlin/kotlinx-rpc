@@ -1,0 +1,24 @@
+module(
+    name = "grpcpp_c",
+    version = "0.1",
+)
+
+# rules_cc for cc_library support
+bazel_dep(
+    name = "rules_cc",
+    version = "0.1.1",
+)
+
+# Protobuf
+bazel_dep(
+    name = "protobuf",
+    version = "31.1",
+    repo_name = "com_google_protobuf",
+)
+
+# gRPC C++ library
+bazel_dep(
+    name = "grpc",
+    version = "1.73.1",
+    repo_name = "com_github_grpc_grpc",
+)
