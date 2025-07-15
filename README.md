@@ -136,7 +136,7 @@ Example of a setup in a project's `build.gradle.kts`:
 plugins {
     kotlin("multiplatform") version "2.2.0"
     kotlin("plugin.serialization") version "2.2.0"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "0.8.1"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.9.0"
 }
 ```
 
@@ -151,15 +151,15 @@ And now you can add dependencies to your project:
 ```kotlin
 dependencies {
     // Client API
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-client:0.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-client:0.9.0")
     // Server API
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-server:0.8.1") 
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-server:0.9.0") 
     // Serialization module. Also, protobuf and cbor are provided
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json:0.8.1") 
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json:0.9.0") 
 
     // Transport implementation for Ktor
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client:0.8.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server:0.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client:0.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server:0.9.0")
 
     // Ktor API
     implementation("io.ktor:ktor-client-cio-jvm:$ktor_version")
