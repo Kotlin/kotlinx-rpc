@@ -3,5 +3,4 @@ headerFilter= grpcpp_c.h grpc/slice.h grpc/byte_buffer.h
 
 noStringConversion = grpc_slice_from_copied_buffer my_grpc_slice_from_copied_buffer
 
-linkerOpts.osx = -lgrpcpp_c_static
-#staticLibraries = libgrpcpp_c_static.a
+staticLibraries = libgrpcpp_c_static.a

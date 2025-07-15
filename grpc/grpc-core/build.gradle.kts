@@ -3,7 +3,8 @@
  */
 
 import org.gradle.internal.extensions.stdlib.capitalized
-import util.createCInterop
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -28,6 +29,12 @@ kotlin {
                 api(libs.grpc.kotlin.stub)
                 api(libs.protobuf.java.util)
                 api(libs.protobuf.kotlin)
+            }
+        }
+
+        nativeTest {
+            dependencies {
+                implementation(kotlin("test"))
             }
         }
     }
@@ -56,20 +63,27 @@ kotlin {
         dependsOn(checkBazel)
     }
 
-    createCInterop("libgrpcpp_c", sourceSet = "src/nativeMain") { target ->
-        includeDirs(grpcppCLib.resolve("include"))
-        extraOpts(
-            "-libraryPath", "${grpcppCLib.resolve("bazel-out/darwin_arm64-opt/bin")}"
-        )
-        includeDirs(
-            grpcppCLib.resolve("include"),
-            grpcppCLib.resolve("bazel-grpcpp-c/external/grpc+/include")
-        )
 
-        tasks.named("cinteropLibgrpcpp_c${target.capitalized()}") {
-            dependsOn(buildGrpcppCLib)
+    targets.filterIsInstance<KotlinNativeTarget>().forEach {
+        it.compilations.getByName("main") {
+            cinterops {
+                val libgrpcpp_c by creating {
+                    includeDirs(
+                        grpcppCLib.resolve("include"),
+                        grpcppCLib.resolve("bazel-grpcpp-c/external/grpc+/include")
+                    )
+                    extraOpts(
+                    "-libraryPath", "${grpcppCLib.resolve("bazel-out/darwin_arm64-opt/bin")}",
+                    )
+                }
+
+                val interopTask = "cinterop${libgrpcpp_c.name.capitalized()}${it.targetName.capitalized()}"
+                tasks.named(interopTask, CInteropProcess::class) {
+                    dependsOn(buildGrpcppCLib)
+                }
+            }
         }
-
     }
+
 
 }
