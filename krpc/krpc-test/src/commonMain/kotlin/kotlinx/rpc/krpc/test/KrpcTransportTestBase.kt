@@ -177,6 +177,16 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
+    open fun nullableNonSerializableParameter() = runTest {
+        val localDate = LocalDate(2001, 8, 23)
+        val resultDate = client.nonSerializableClass(localDate)
+        assertEquals(LocalDate(2001, 8, 24), resultDate)
+
+        val resultNull = client.nullableNonSerializableClass(null)
+        assertNull(resultNull)
+    }
+
+    @Test
     fun doubleGenericReturnType() = runTest {
         val result = client.doubleGenericReturnType()
         assertEquals(listOf(listOf("1", "2"), listOf("a", "b")), result)
