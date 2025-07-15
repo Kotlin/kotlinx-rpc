@@ -12,7 +12,6 @@ import libgrpcpp_c.grpc_slice
 import libgrpcpp_c.grpc_slice_from_copied_buffer
 import libgrpcpp_c.grpc_slice_unref
 
-
 @OptIn(ExperimentalForeignApi::class)
 internal class GrpcSlice internal constructor(internal val cSlice: CValue<grpc_slice>) : AutoCloseable {
 

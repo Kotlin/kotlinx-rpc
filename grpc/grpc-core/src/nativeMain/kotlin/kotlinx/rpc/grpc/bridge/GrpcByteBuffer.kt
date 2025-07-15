@@ -10,17 +10,17 @@ import libgrpcpp_c.*
 @OptIn(ExperimentalForeignApi::class)
 internal class GrpcByteBuffer internal constructor(
     internal val cByteBuffer: CPointer<grpc_byte_buffer>
-): AutoCloseable {
+) : AutoCloseable {
 
-    constructor(slice: GrpcSlice): this(memScoped {
+    constructor(slice: GrpcSlice) : this(memScoped {
         grpc_raw_byte_buffer_create(slice.cSlice, 1u) ?: error("Failed to create byte buffer")
     })
 
     fun intoSlice(): GrpcSlice {
         memScoped {
-            val resp_slice = alloc<grpc_slice>()
-            grpc_byte_buffer_dump_to_single_slice(cByteBuffer, resp_slice.ptr)
-            return GrpcSlice(resp_slice.readValue())
+            val respSlice = alloc<grpc_slice>()
+            grpc_byte_buffer_dump_to_single_slice(cByteBuffer, respSlice.ptr)
+            return GrpcSlice(respSlice.readValue())
         }
     }
 

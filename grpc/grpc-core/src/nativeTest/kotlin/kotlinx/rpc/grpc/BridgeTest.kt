@@ -8,14 +8,14 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.rpc.grpc.bridge.GrpcByteBuffer
 import kotlinx.rpc.grpc.bridge.GrpcClient
 import kotlinx.rpc.grpc.bridge.GrpcSlice
+import libgrpcpp_c.pb_decode_greeter_sayhello_response
 import kotlin.test.Test
-import libgrpcpp_c.*
 
 @OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 class BridgeTest {
 
     @Test
-    fun `test basic unary async call`() {
+    fun testBasicUnaryAsyncCall() {
         runBlocking {
             GrpcClient("localhost:50051").use { client ->
                 GrpcSlice(byteArrayOf(8, 4)).use { request ->
@@ -30,7 +30,7 @@ class BridgeTest {
                             }
                     }
                 }
-        }
+            }
         }
     }
 }

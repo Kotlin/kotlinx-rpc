@@ -41,12 +41,13 @@ kotlin {
 
     val grpcppCLib = projectDir.resolve("../grpcpp-c")
 
+    // TODO: Replace function implementation, so it does not use an internal API
     fun findProgram(name: String) = org.gradle.internal.os.OperatingSystem.current().findInPath(name)
     val checkBazel by tasks.registering {
         doLast {
             val bazelPath = findProgram("bazel")
             if (bazelPath != null) {
-                println("bazel: $bazelPath")
+                logger.debug("bazel: {}", bazelPath)
             } else {
                 throw GradleException("'bazel' not found on PATH. Please install Bazel (https://bazel.build/).")
             }
@@ -73,7 +74,7 @@ kotlin {
                         grpcppCLib.resolve("bazel-grpcpp-c/external/grpc+/include")
                     )
                     extraOpts(
-                    "-libraryPath", "${grpcppCLib.resolve("bazel-out/darwin_arm64-opt/bin")}",
+                        "-libraryPath", "${grpcppCLib.resolve("bazel-out/darwin_arm64-opt/bin")}",
                     )
                 }
 
