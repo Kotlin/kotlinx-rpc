@@ -18,6 +18,9 @@ public val Krpc: ApplicationPlugin<KrpcConfigBuilder.Server> = createApplication
     name = "Krpc",
     createConfiguration = { KrpcConfigBuilder.Server() },
 ) {
-    application.install(WebSockets)
+    application.pluginOrNull(WebSockets) ?: run {
+        application.install(WebSockets)
+    }
+
     application.attributes.put(KrpcServerPluginAttributesKey, pluginConfig)
 }
