@@ -1,4 +1,4 @@
-# 0.9.0
+# 0.9.1
 > Published 17 July 2025
 
 ### Bug fixes 🐛
@@ -16,7 +16,7 @@
 ### Other Changes 🧹
 * Update version for 0.9.0-SNAPSHOT by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/387
 
-**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.8.1...0.9.0
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.8.1...0.9.1
 
 # 0.8.1
 > Published 9 July 2025
