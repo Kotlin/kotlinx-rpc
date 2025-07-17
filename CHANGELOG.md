@@ -1,3 +1,23 @@
+# 0.9.1
+> Published 17 July 2025
+
+### Bug fixes 🐛
+* Support nullable contextual serializers by @yakivy in https://github.com/Kotlin/kotlinx-rpc/pull/392
+* Make WS plugin installation for Ktor server more flexible by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/398
+* Make KtorRpcClient inherit KrpcClient by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/396
+
+### Documentation 📗
+* Update gRPC doc by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/391
+* Add stub targets tags for platforms table by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/397
+
+### Infra 🚧
+* Remove the monitor application by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/388
+
+### Other Changes 🧹
+* Update version for 0.9.0-SNAPSHOT by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/387
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.8.1...0.9.1
+
 # 0.8.1
 > Published 9 July 2025
 
