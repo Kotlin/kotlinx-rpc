@@ -1,6 +1,12 @@
 org.jetbrains.kotlinx:kotlinx-rpc-core-jvm/.jar
 org.jetbrains.kotlinx:kotlinx-rpc-core-jvm/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-core-jvm/sources.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-jvm/.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-jvm/javadoc.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-jvm/sources.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server-jvm/.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server-jvm/javadoc.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server-jvm/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-client-jvm/.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-client-jvm/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-client-jvm/sources.jar
