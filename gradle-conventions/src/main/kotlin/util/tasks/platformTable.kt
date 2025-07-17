@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import util.KOTLIN_JVM_PLUGIN_ID
 import util.KOTLIN_MULTIPLATFORM_PLUGIN_ID
 import util.other.isPublicModule
+import util.other.optionalPropertyValue
 import java.io.File
 import java.nio.file.Files
 
@@ -38,13 +39,15 @@ enum class TableColumn {
 sealed interface PlatformTarget {
     val name: String
     val subtargets: List<PlatformTarget>
+    val stub: Boolean get() = false
 
     class Group(
         override val name: String,
         override val subtargets: List<PlatformTarget>,
+        override val stub: Boolean,
     ) : PlatformTarget
 
-    class LeafTarget(override val name: String) : PlatformTarget {
+    class LeafTarget(override val name: String, override val stub: Boolean) : PlatformTarget {
         override val subtargets: List<PlatformTarget> = emptyList()
     }
 }
@@ -113,32 +116,44 @@ abstract class DumpPlatformsTask : DefaultTask() {
             .mapValues { (platform, targets) ->
                 when (platform) {
                     KotlinPlatformType.jvm -> {
-                        PlatformTarget.LeafTarget(TableColumn.Jvm.name.lowercase())
+                        val isStub = subproject.optionalPropertyValue(targets[0].name, "stub")
+                        PlatformTarget.LeafTarget(TableColumn.Jvm.name.lowercase(), isStub)
                     }
 
                     KotlinPlatformType.js -> {
-                        val subtargets = targets.jsOrWasmSubTargets("js", subproject) {
+                        val (target, subtargets) = targets.jsOrWasmSubTargets("js", subproject) {
                             it is KotlinJsIrTarget
-                        }
+                        } ?: return@mapValues null
 
-                        PlatformTarget.Group(TableColumn.Js.name, subtargets)
+                        val isStub = subproject.optionalPropertyValue(target.name, "stub")
+                        PlatformTarget.Group(TableColumn.Js.name, subtargets, isStub)
                     }
 
                     KotlinPlatformType.wasm -> {
-                        val jsSubtargets = targets.jsOrWasmSubTargets("wasmJs", subproject) {
+                        val (jsTarget, jsSubtargets) = targets.jsOrWasmSubTargets("wasmJs", subproject) {
                             it is KotlinWasmJsTargetDsl && it.wasmTargetType == KotlinWasmTargetType.JS
-                        }
+                        } ?: (null to emptyList())
 
-                        val wasiSubtargets = targets.jsOrWasmSubTargets("wasmWasi", subproject) {
+                        val (wasiTarget, wasiSubtargets) = targets.jsOrWasmSubTargets("wasmWasi", subproject) {
                             it is KotlinWasmWasiTargetDsl && it.wasmTargetType == KotlinWasmTargetType.WASI
-                        }
+                        } ?: (null to emptyList())
+
+                        val jsIsStub = jsTarget?.name
+                            ?.let { subproject.optionalPropertyValue(it, "stub") } ?: false
+
+                        val wasiIsStub = wasiTarget?.name
+                            ?.let { subproject.optionalPropertyValue(it, "stub") } ?: false
 
                         val wasmSubtargets = listOfNotNull(
-                            PlatformTarget.Group("wasmJs", jsSubtargets).takeIf { jsSubtargets.isNotEmpty() },
-                            PlatformTarget.Group("wasmWasi", wasiSubtargets).takeIf { wasiSubtargets.isNotEmpty() },
+                            PlatformTarget.Group("wasmJs", jsSubtargets, jsIsStub).takeIf { jsSubtargets.isNotEmpty() },
+                            PlatformTarget.Group("wasmWasi", wasiSubtargets, wasiIsStub).takeIf { wasiSubtargets.isNotEmpty() },
                         )
 
-                        PlatformTarget.Group(TableColumn.Wasm.name, wasmSubtargets)
+                        PlatformTarget.Group(
+                            name = TableColumn.Wasm.name,
+                            subtargets = wasmSubtargets,
+                            stub = subproject.optionalPropertyValue(TableColumn.Wasm.name, "stub"),
+                        )
                     }
 
                     KotlinPlatformType.native -> {
@@ -148,15 +163,17 @@ abstract class DumpPlatformsTask : DefaultTask() {
                                 PlatformTarget.Group(
                                     name = "apple",
                                     subtargets = listOf(
-                                        targets.nativeGroup("ios"),
-                                        targets.nativeGroup("macos"),
-                                        targets.nativeGroup("watchos"),
-                                        targets.nativeGroup("tvos"),
+                                        targets.nativeGroup(subproject, "ios"),
+                                        targets.nativeGroup(subproject, "macos"),
+                                        targets.nativeGroup(subproject, "watchos"),
+                                        targets.nativeGroup(subproject, "tvos"),
                                     ),
+                                    stub = subproject.optionalPropertyValue("apple", "stub"),
                                 ),
-                                targets.nativeGroup("linux"),
-                                targets.nativeGroup("windows", "mingw"),
-                            )
+                                targets.nativeGroup(subproject, "linux"),
+                                targets.nativeGroup(subproject, "windows", "mingw"),
+                            ),
+                            stub = subproject.optionalPropertyValue(TableColumn.Native.name, "stub"),
                         )
                     }
 
@@ -173,29 +190,34 @@ abstract class DumpPlatformsTask : DefaultTask() {
         name: String,
         project: Project,
         condition: (KotlinTarget) -> Boolean,
-    ): List<PlatformTarget.LeafTarget> {
+    ): Pair<KotlinTarget, List<PlatformTarget.LeafTarget>>? {
         val foundTargets = filter(condition)
             .filterIsInstance<KotlinJsIrTarget>()
 
         if (foundTargets.isEmpty()) {
-            return emptyList()
+            return null
         }
 
         if (foundTargets.size > 1) {
             error("Multiple $name targets are not supported (project ${project.name})")
         }
 
-        val jsSubtargets = foundTargets.single().subTargets.map { subTargetWithBinary ->
-            PlatformTarget.LeafTarget(subTargetWithBinary.name)
+        val target = foundTargets.single()
+        val jsSubtargets = target.subTargets.map { subTargetWithBinary ->
+            val isStub = project.optionalPropertyValue(subTargetWithBinary.name, "stub", target.name)
+            PlatformTarget.LeafTarget(subTargetWithBinary.name, isStub)
         }
 
-        return jsSubtargets
+        return target to jsSubtargets
     }
 
-    private fun List<KotlinTarget>.nativeGroup(name: String, prefix: String = name): PlatformTarget.Group {
+    private fun List<KotlinTarget>.nativeGroup(subproject: Project, name: String, prefix: String = name): PlatformTarget.Group {
         return PlatformTarget.Group(
             name = name,
-            subtargets = filter { it.name.startsWith(prefix) }.map { PlatformTarget.LeafTarget(it.name) },
+            subtargets = filter { it.name.startsWith(prefix) }.map {
+                PlatformTarget.LeafTarget(it.name, subproject.optionalPropertyValue(it.name, "stub"))
+            },
+            stub = subproject.optionalPropertyValue(name, "stub")
         )
     }
 
@@ -224,12 +246,25 @@ abstract class DumpPlatformsTask : DefaultTask() {
 
                         is PlatformTarget.LeafTarget -> {
                             append(target.name)
+                            if (target.stub) {
+                                append(" <b>[stub]</b>")
+                            }
                         }
 
                         is PlatformTarget.Group -> {
-                            if (!topLevel) {
-                                append(target.name)
+                            when {
+                                !topLevel -> {
+                                    append(target.name)
+                                    if (target.stub) {
+                                        append(" <b>[stub]</b>")
+                                    }
+                                }
+
+                                target.stub -> {
+                                    append("<b>[stubs]</b>")
+                                }
                             }
+
                             append("<list>")
                             target.subtargets.forEach { subtarget ->
                                 append("<li>")
