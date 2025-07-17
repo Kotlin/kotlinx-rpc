@@ -1,6 +1,12 @@
 org.jetbrains.kotlinx:kotlinx-rpc-core-js/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-core-js/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-core-js/sources.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-js/.klib
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-js/javadoc.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-js/sources.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server-js/.klib
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server-js/javadoc.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server-js/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-client-js/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-client-js/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-client-js/sources.jar
