@@ -35,6 +35,7 @@
             <toc-element topic="grpc-services.topic"/>
             <toc-element topic="grpc-client.topic"/>
             <toc-element topic="grpc-server.topic"/>
+            <toc-element topic="grpc-ktor-server.topic"/>
         </toc-element>
     </toc-element>
     <toc-element topic="strict-mode.topic"/>
