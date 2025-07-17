@@ -20,7 +20,7 @@ internal actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
     error("JS target is not supported in gRPC")
 }
 
-internal actual fun ManagedChannelBuilder(name: String, port: Int): ManagedChannelBuilder<*> {
+internal actual fun ManagedChannelBuilder(hostname: String, port: Int): ManagedChannelBuilder<*> {
     error("JS target is not supported in gRPC")
 }
 
