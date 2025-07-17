@@ -1,0 +1,17 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <org.jetbrains.kotlinx:grpc-ktor-server>
+final object kotlinx.rpc.grpc.ktor.server/GrpcConfigKeys { // kotlinx.rpc.grpc.ktor.server/GrpcConfigKeys|null[0]
+    final const val grpcHostPortPath // kotlinx.rpc.grpc.ktor.server/GrpcConfigKeys.grpcHostPortPath|{}grpcHostPortPath[0]
+        final fun <get-grpcHostPortPath>(): kotlin/String // kotlinx.rpc.grpc.ktor.server/GrpcConfigKeys.grpcHostPortPath.<get-grpcHostPortPath>|<get-grpcHostPortPath>(){}[0]
+}
+
+final val kotlinx.rpc.grpc.ktor.server/GrpcServerKey // kotlinx.rpc.grpc.ktor.server/GrpcServerKey|{}GrpcServerKey[0]
+    final fun <get-GrpcServerKey>(): io.ktor.util/AttributeKey<kotlinx.rpc.grpc/GrpcServer> // kotlinx.rpc.grpc.ktor.server/GrpcServerKey.<get-GrpcServerKey>|<get-GrpcServerKey>(){}[0]
+
+final fun (io.ktor.server.application/Application).kotlinx.rpc.grpc.ktor.server/grpc(kotlin/Int = ..., kotlin/Function1<kotlinx.rpc.grpc/ServerBuilder<*>, kotlin/Unit> = ..., kotlin/Function1<kotlinx.rpc/RpcServer, kotlin/Unit>): kotlinx.rpc.grpc/GrpcServer // kotlinx.rpc.grpc.ktor.server/grpc|grpc@io.ktor.server.application.Application(kotlin.Int;kotlin.Function1<kotlinx.rpc.grpc.ServerBuilder<*>,kotlin.Unit>;kotlin.Function1<kotlinx.rpc.RpcServer,kotlin.Unit>){}[0]
