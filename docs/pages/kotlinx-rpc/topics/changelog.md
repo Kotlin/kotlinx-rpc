@@ -2,24 +2,24 @@
 
 This page contains all changes throughout releases of the library.
 
-## 0.9.0
+## 0.9.1
 > Published 17 July 2025
 
-**Full Changelog**: [0.8.1...0.9.0](https://github.com/Kotlin/kotlinx-rpc/compare/0.8.1...0.9.0)
+**Full Changelog**: [0.8.1...0.9.1](https://github.com/Kotlin/kotlinx-rpc/compare/0.8.1...0.9.1)
 
-#### Bug fixes 🐛 {id=Bug_fixes_0_9_0}
+#### Bug fixes 🐛 {id=Bug_fixes_0_9_1}
 * Support nullable contextual serializers by [@yakivy](https://github.com/yakivy) in [#392](https://github.com/Kotlin/kotlinx-rpc/pull/392)
 * Make WS plugin installation for Ktor server more flexible by [@Mr3zee](https://github.com/Mr3zee) in [#398](https://github.com/Kotlin/kotlinx-rpc/pull/398)
 * Make KtorRpcClient inherit KrpcClient by [@Mr3zee](https://github.com/Mr3zee) in [#396](https://github.com/Kotlin/kotlinx-rpc/pull/396)
 
-#### Documentation 📗 {id=Documentation_0_9_0}
+#### Documentation 📗 {id=Documentation_0_9_1}
 * Update gRPC doc by [@Mr3zee](https://github.com/Mr3zee) in [#391](https://github.com/Kotlin/kotlinx-rpc/pull/391)
 * Add stub targets tags for platforms table by [@Mr3zee](https://github.com/Mr3zee) in [#397](https://github.com/Kotlin/kotlinx-rpc/pull/397)
 
-#### Infra 🚧 {id=Infra_0_9_0}
+#### Infra 🚧 {id=Infra_0_9_1}
 * Remove the monitor application by [@Mr3zee](https://github.com/Mr3zee) in [#388](https://github.com/Kotlin/kotlinx-rpc/pull/388)
 
-#### Other Changes 🧹 {id=Other_Changes_0_9_0}
+#### Other Changes 🧹 {id=Other_Changes_0_9_1}
 * Update version for 0.9.0-SNAPSHOT by [@Mr3zee](https://github.com/Mr3zee) in [#387](https://github.com/Kotlin/kotlinx-rpc/pull/387)
 
 
