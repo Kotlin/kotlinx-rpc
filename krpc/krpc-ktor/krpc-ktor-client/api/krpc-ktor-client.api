@@ -13,7 +13,8 @@ public final class kotlinx/rpc/krpc/ktor/client/KtorClientDslKt {
 	public static synthetic fun rpcConfig$default (Lio/ktor/client/request/HttpRequestBuilder;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
-public abstract interface class kotlinx/rpc/krpc/ktor/client/KtorRpcClient : kotlinx/rpc/RpcClient {
+public abstract class kotlinx/rpc/krpc/ktor/client/KtorRpcClient : kotlinx/rpc/krpc/client/KrpcClient {
+	public fun <init> ()V
 	public abstract fun getWebSocketSession ()Lkotlinx/coroutines/Deferred;
 }
 

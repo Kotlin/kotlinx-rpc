@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.ktor.client
@@ -22,11 +22,11 @@ import kotlinx.rpc.krpc.rpcClientConfig
  * Client is cold, meaning the connection will be established on the first request.
  * [webSocketSession] will be completed when the connection is established.
  */
-public interface KtorRpcClient : RpcClient {
+public abstract class KtorRpcClient : KrpcClient() {
     /**
      * Cold [WebSocketSession] object. Instantiated when the connection is established on the first request.
      */
-    public val webSocketSession: Deferred<WebSocketSession>
+    public abstract val webSocketSession: Deferred<WebSocketSession>
 }
 
 internal class KtorKrpcClientImpl(
@@ -34,7 +34,7 @@ internal class KtorKrpcClientImpl(
     private val webSocketSessionFactory: suspend (
         configSetter: (KrpcConfigBuilder.Client.() -> Unit) -> Unit,
     ) -> WebSocketSession,
-): KrpcClient(), KtorRpcClient {
+): KtorRpcClient() {
     private var requestConfigBuilder: KrpcConfigBuilder.Client.() -> Unit = {}
 
     private val _webSocketSession = CompletableDeferred<WebSocketSession>()
