@@ -5,9 +5,9 @@
 package kotlinx.rpc.grpc
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.rpc.grpc.bridge.GrpcByteBuffer
-import kotlinx.rpc.grpc.bridge.GrpcClient
-import kotlinx.rpc.grpc.bridge.GrpcSlice
+import kotlinx.rpc.grpc.internal.bridge.GrpcByteBuffer
+import kotlinx.rpc.grpc.internal.bridge.GrpcClient
+import kotlinx.rpc.grpc.internal.bridge.GrpcSlice
 import libgrpcpp_c.pb_decode_greeter_sayhello_response
 import kotlin.test.Test
 

@@ -1,0 +1,4 @@
+headers = protowire.h
+headerFilter = protowire.h
+
+staticLibraries = libprotowire_static.a
