@@ -1,6 +1,12 @@
 org.jetbrains.kotlinx:kotlinx-rpc-core-wasm-js/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-core-wasm-js/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-core-wasm-js/sources.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-wasm-js/.klib
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-wasm-js/javadoc.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-wasm-js/sources.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server-wasm-js/.klib
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server-wasm-js/javadoc.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server-wasm-js/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-client-wasm-js/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-client-wasm-js/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-client-wasm-js/sources.jar
