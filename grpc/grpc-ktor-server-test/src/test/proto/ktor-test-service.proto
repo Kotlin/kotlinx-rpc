@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package kotlinx.rpc.grpc.ktor.server.test;
+
+message Hello {
+  string message = 1;
+}
+
+service KtorTestService {
+  rpc sayHello(Hello) returns (Hello);
+}

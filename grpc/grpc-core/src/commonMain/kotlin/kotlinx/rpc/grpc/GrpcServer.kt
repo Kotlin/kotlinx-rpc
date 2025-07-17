@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.grpc
 
+import kotlinx.atomicfu.atomic
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.grpc.annotations.Grpc
@@ -65,9 +66,13 @@ public class GrpcServer internal constructor(
         return grpc.delegate.definitionFor(service)
     }
 
+    private val buildLock = atomic(false)
+
     internal fun build() {
-        internalServer = Server(serverBuilder)
-        isBuilt = true
+        if (buildLock.compareAndSet(expect = false, update = true)) {
+            internalServer = Server(serverBuilder)
+            isBuilt = true
+        }
     }
 
     override val isShutdown: Boolean

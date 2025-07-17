@@ -24,8 +24,8 @@ internal actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
     return build().toKotlin()
 }
 
-internal actual fun ManagedChannelBuilder(name: String, port: Int): ManagedChannelBuilder<*> {
-    return io.grpc.ManagedChannelBuilder.forAddress(name, port)
+internal actual fun ManagedChannelBuilder(hostname: String, port: Int): ManagedChannelBuilder<*> {
+    return io.grpc.ManagedChannelBuilder.forAddress(hostname, port)
 }
 
 internal actual fun ManagedChannelBuilder(target: String): ManagedChannelBuilder<*> {

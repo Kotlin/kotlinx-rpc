@@ -1,8 +1,9 @@
 public final class kotlinx/rpc/grpc/GrpcClient : kotlinx/rpc/RpcClient {
+	public final fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun callAsync (Lkotlinx/coroutines/CoroutineScope;Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/Deferred;
-	public fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
-	public fun provideStubContext (J)Lkotlin/coroutines/CoroutineContext;
+	public fun callServerStreaming (Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/flow/Flow;
+	public final fun shutdown ()V
+	public final fun shutdownNow ()V
 }
 
 public final class kotlinx/rpc/grpc/GrpcClientKt {
@@ -14,11 +15,11 @@ public final class kotlinx/rpc/grpc/GrpcClientKt {
 
 public final class kotlinx/rpc/grpc/GrpcServer : kotlinx/rpc/RpcServer, kotlinx/rpc/grpc/Server {
 	public fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
+	public fun deregisterService (Lkotlin/reflect/KClass;)V
 	public fun getPort ()I
 	public fun isShutdown ()Z
 	public fun isTerminated ()Z
-	public fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;)V
+	public fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function0;)V
 	public fun shutdown ()Lkotlinx/rpc/grpc/GrpcServer;
 	public synthetic fun shutdown ()Lkotlinx/rpc/grpc/Server;
 	public fun shutdownNow ()Lkotlinx/rpc/grpc/GrpcServer;
@@ -47,6 +48,7 @@ public final class kotlinx/rpc/grpc/ManagedChannel_jvmKt {
 
 public abstract interface class kotlinx/rpc/grpc/Server {
 	public abstract fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun awaitTermination-VtjQ1oo$default (Lkotlinx/rpc/grpc/Server;JLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun getPort ()I
 	public abstract fun isShutdown ()Z
 	public abstract fun isTerminated ()Z
@@ -102,7 +104,7 @@ public final class kotlinx/rpc/grpc/StatusRuntimeException_jvmKt {
 
 public abstract interface class kotlinx/rpc/grpc/descriptor/GrpcClientDelegate {
 	public abstract fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun callAsync (Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/Deferred;
+	public abstract fun callServerStreaming (Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public abstract interface class kotlinx/rpc/grpc/descriptor/GrpcDelegate {
