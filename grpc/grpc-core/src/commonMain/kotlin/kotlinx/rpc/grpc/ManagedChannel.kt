@@ -68,7 +68,7 @@ public interface ManagedChannel {
  */
 public expect abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
 
-internal expect fun ManagedChannelBuilder(name: String, port: Int): ManagedChannelBuilder<*>
+internal expect fun ManagedChannelBuilder(hostname: String, port: Int): ManagedChannelBuilder<*>
 internal expect fun ManagedChannelBuilder(target: String): ManagedChannelBuilder<*>
 
 internal expect fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel
