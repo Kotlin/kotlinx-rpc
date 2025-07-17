@@ -1,3 +1,4 @@
+load("@emsdk//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
 load("@rules_cc//cc:defs.bzl", "cc_library")
 
 cc_library(
@@ -10,6 +11,25 @@ cc_library(
     deps = [
         "@com_github_grpc_grpc//:grpc++",
         "@com_google_protobuf//:protobuf",
+    ],
+)
+
+cc_library(
+    name = "protowire",
+    srcs = ["src/protowire.cpp"],
+    hdrs = glob(["include/*.h"]),
+    copts = ["-std=c++20"],
+    includes = ["include"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_google_protobuf//:protobuf_lite",
+    ],
+)
+
+cc_static_library(
+    name = "protowire_static",
+    deps = [
+        ":protowire",
     ],
 )
 

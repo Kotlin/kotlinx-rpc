@@ -22,3 +22,13 @@ bazel_dep(
     version = "1.73.1",
     repo_name = "com_github_grpc_grpc",
 )
+
+emsdk_version = "4.0.11"
+
+bazel_dep(name = "emsdk", version = emsdk_version)
+git_override(
+    module_name = "emsdk",
+    remote = "https://github.com/emscripten-core/emsdk.git",
+    strip_prefix = "bazel",
+    tag = emsdk_version,
+)
