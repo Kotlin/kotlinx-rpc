@@ -2,6 +2,14 @@ org.jetbrains.kotlinx:kotlinx-rpc-core/.jar
 org.jetbrains.kotlinx:kotlinx-rpc-core/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-core/kotlin-tooling-metadata.json
 org.jetbrains.kotlinx:kotlinx-rpc-core/sources.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-core/.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-core/javadoc.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-core/kotlin-tooling-metadata.json
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-core/sources.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server/.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server/javadoc.jar
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server/kotlin-tooling-metadata.json
+org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-client/.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-client/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-client/kotlin-tooling-metadata.json
