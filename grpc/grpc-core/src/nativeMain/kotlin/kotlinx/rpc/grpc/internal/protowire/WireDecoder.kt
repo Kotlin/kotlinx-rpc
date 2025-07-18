@@ -5,12 +5,7 @@
 package kotlinx.rpc.grpc.internal.protowire
 
 import kotlinx.cinterop.*
-import libprotowire.pw_decoder_delete
-import libprotowire.pw_decoder_delete_opaque_string
-import libprotowire.pw_decoder_new
-import libprotowire.pw_decoder_read_bool
-import libprotowire.pw_decoder_read_string
-import libprotowire.pw_decoder_read_tag
+import libprotowire.*
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
@@ -26,6 +21,11 @@ internal class WireDecoder(buffer: UByteArray) {
         createCleaner(raw) {
             pw_decoder_delete(it)
         }
+        createCleaner(pinnedBuffer) {
+            // it is not sure if this is needed (https://kotlinlang.slack.com/archives/C3SGXARS6/p1752851274402679)
+            // or if this is already done by the GC.
+            it.unpin()
+        }
     }
 
     fun readTag(): KTag? {
@@ -34,24 +34,109 @@ internal class WireDecoder(buffer: UByteArray) {
     }
 
     fun readBool(): Boolean? = memScoped {
-        val bool = alloc<BooleanVar>()
-        if (pw_decoder_read_bool(raw, bool.ptr)) {
-            return bool.value
+        val value = alloc<BooleanVar>()
+        if (pw_decoder_read_bool(raw, value.ptr)) {
+            return value.value
+        }
+        return null
+    }
+
+    fun readInt32(): Int? = memScoped {
+        val value = alloc<IntVar>()
+        if (pw_decoder_read_int32(raw, value.ptr)) {
+            return value.value
+        }
+        return null
+    }
+
+    fun readInt64(): Long? = memScoped {
+        val value = alloc<LongVar>()
+        if (pw_decoder_read_int64(raw, value.ptr)) {
+            return value.value
+        }
+        return null
+    }
+
+    fun readUInt32(): UInt? = memScoped {
+        val value = alloc<UIntVar>()
+        if (pw_decoder_read_uint32(raw, value.ptr)) {
+            return value.value
+        }
+        return null
+    }
+
+    fun readUInt64(): ULong? = memScoped {
+        val value = alloc<ULongVar>()
+        if (pw_decoder_read_uint64(raw, value.ptr)) {
+            return value.value
+        }
+        return null
+    }
+
+    fun readSInt32(): Int? = memScoped {
+        val value = alloc<IntVar>()
+        if (pw_decoder_read_sint32(raw, value.ptr)) {
+            return value.value
+        }
+        return null
+    }
+
+    fun readSInt64(): Long? = memScoped {
+        val value = alloc<LongVar>()
+        if (pw_decoder_read_sint64(raw, value.ptr)) {
+            return value.value
+        }
+        return null
+    }
+
+    fun readFixed32(): UInt? = memScoped {
+        val value = alloc<UIntVar>()
+        if (pw_decoder_read_fixed32(raw, value.ptr)) {
+            return value.value
+        }
+        return null
+    }
+
+    fun readFixed64(): ULong? = memScoped {
+        val value = alloc<ULongVar>()
+        if (pw_decoder_read_fixed64(raw, value.ptr)) {
+            return value.value
+        }
+        return null
+    }
+
+    fun readSFixed32(): Int? = memScoped {
+        val value = alloc<IntVar>()
+        if (pw_decoder_read_sfixed32(raw, value.ptr)) {
+            return value.value
+        }
+        return null
+    }
+
+    fun readSFixed64(): Long? = memScoped {
+        val value = alloc<LongVar>()
+        if (pw_decoder_read_sfixed64(raw, value.ptr)) {
+            return value.value
+        }
+        return null
+    }
+
+    fun readEnum(): Int? = memScoped {
+        val value = alloc<IntVar>()
+        if (pw_decoder_read_enum(raw, value.ptr)) {
+            return value.value
         }
         return null
     }
 
     fun readString(): String? = memScoped {
-        // allocate an opaque pointer that holds a reference to the allocated std::string.
-        // by keeping std::string object alive, we avoid the need to copy the C++ string to an allocated C string.
-        val opaqueStr = alloc<COpaquePointerVar>()
-        val cCharPtr = alloc<CPointerVar<ByteVar>>()
-        val ok = pw_decoder_read_string(raw, opaqueStr.ptr, cCharPtr.ptr)
-        var result: String? = null
-        if (ok) result = cCharPtr.value?.toKString()
-        // after copying the string to a Kotlin string, we must delete the allocated C++ string (includes the C string)
-        pw_decoder_delete_opaque_string(opaqueStr.value)
-        return result;
-
+        val str = alloc<CPointerVar<pw_string_t>>()
+        val ok = pw_decoder_read_string(raw, str.ptr)
+        try {
+            if (!ok) return null
+            return pw_string_c_str(str.value)?.toKString()
+        } finally {
+            pw_string_delete(str.value)
+        }
     }
 }
