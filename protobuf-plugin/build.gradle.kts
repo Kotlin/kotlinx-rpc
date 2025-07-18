@@ -2,13 +2,15 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import kotlinx.rpc.buf.tasks.BufGenerateTask
+import kotlinx.rpc.proto.kxrpc
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 
 plugins {
     alias(libs.plugins.conventions.jvm)
     alias(libs.plugins.kotlinx.rpc)
     alias(libs.plugins.serialization)
-    alias(libs.plugins.protobuf)
 }
 
 dependencies {
@@ -30,17 +32,10 @@ dependencies {
     testImplementation(libs.protobuf.kotlin)
 }
 
-sourceSets {
-    test {
+protoSourceSets {
+    protoTest {
         proto {
-            exclude(
-                "**/enum_options.proto",
-                "**/empty_deprecated.proto",
-                "**/example.proto",
-                "**/multiple_files.proto",
-                "**/options.proto",
-                "**/with_comments.proto",
-            )
+            exclude("exclude/**")
         }
     }
 }
@@ -62,20 +57,18 @@ tasks.jar {
     )
 }
 
-val buildDirPath: String = project.layout.buildDirectory.get().asFile.absolutePath
-
 rpc {
     grpc {
-        enabled = true
-
-        plugin {
-            locator {
-                path = "$buildDirPath/libs/protobuf-plugin-$version-all.jar"
+        protocPlugins.kxrpc {
+            local {
+                javaJar(tasks.jar.map { it.archiveFile.get().asFile.absolutePath })
             }
         }
 
-        tasksMatching { it.isTest }.all {
-            dependsOn(tasks.jar)
+        project.tasks.withType<BufGenerateTask>().configureEach {
+            if (name.endsWith("Test")) {
+                dependsOn(tasks.jar)
+            }
         }
     }
 }

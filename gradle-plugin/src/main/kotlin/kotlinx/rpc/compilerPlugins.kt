@@ -6,7 +6,6 @@
 
 package kotlinx.rpc
 
-import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
@@ -26,8 +25,7 @@ internal class CompilerPluginCli : KotlinCompilerPluginSupportPlugin by compiler
     pluginSuffix = "-cli"
 
     applyToCompilation = {
-        val extension = it.target.project.extensions.findByType<RpcExtension>()
-            ?: RpcExtension(it.target.project.objects)
+        val extension = it.target.project.rpcExtension()
 
         it.target.project.provider {
             listOf(

@@ -16,10 +16,11 @@ version = rootProject.libs.versions.kotlinx.rpc.get()
 
 kotlin {
     explicitApi()
+
+    jvmToolchain(11)
 }
 
 dependencies {
-    implementation(libs.protobuf.gradle.plugin)
     compileOnly(libs.kotlin.gradle.plugin)
 }
 
@@ -50,6 +51,7 @@ abstract class GeneratePluginVersionTask @Inject constructor(
     @get:Input val protobufVersion: String,
     @get:Input val grpcVersion: String,
     @get:Input val grpcKotlinVersion: String,
+    @get:Input val bufToolVersion: String,
     @get:OutputDirectory val sourcesDir: File
 ) : DefaultTask() {
     @TaskAction
@@ -68,6 +70,7 @@ abstract class GeneratePluginVersionTask @Inject constructor(
             public const val PROTOBUF_VERSION: String = "$protobufVersion"
             public const val GRPC_VERSION: String = "$grpcVersion"
             public const val GRPC_KOTLIN_VERSION: String = "$grpcKotlinVersion"
+            public const val BUF_TOOL_VERSION: String = "$bufToolVersion"
             
             """.trimIndent()
         )
@@ -79,9 +82,10 @@ val sourcesDir = File(project.layout.buildDirectory.asFile.get(), "generated-sou
 val generatePluginVersionTask = tasks.register<GeneratePluginVersionTask>(
     "generatePluginVersion",
     version.toString(),
-    libs.versions.protobuf.asProvider().get().toString(),
-    libs.versions.grpc.asProvider().get().toString(),
-    libs.versions.grpc.kotlin.get().toString(),
+    libs.versions.protobuf.asProvider().get(),
+    libs.versions.grpc.asProvider().get(),
+    libs.versions.grpc.kotlin.get(),
+    libs.versions.buf.tool.get(),
     sourcesDir,
 )
 

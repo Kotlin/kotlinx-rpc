@@ -32,6 +32,7 @@ grpc = "1.73.0"
 grpc-kotlin = "1.4.1"
 protobuf = "4.31.1"
 protobuf-gradle = "0.9.5"
+buf-tool = "1.55.1"
 
 [libraries]
 # kotlinx.rpc – references to the included builds

@@ -77,7 +77,9 @@ class RpcProtobufPlugin {
                 CodeGeneratorResponse.File.newBuilder()
                     .apply {
                         val dir = file.packagePath
-                            ?.replace('.', File.separatorChar)?.plus(File.separatorChar)
+                            ?.takeIf { it.isNotEmpty() }
+                            ?.replace('.', File.separatorChar)
+                            ?.plus(File.separatorChar)
                             ?: ""
 
                         // some filename already contain package (true for Google's default .proto files)
