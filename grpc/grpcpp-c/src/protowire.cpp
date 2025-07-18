@@ -12,6 +12,10 @@ namespace pb = google::protobuf;
 
 typedef pb::internal::WireFormatLite WireFormatLite;
 
+struct pw_string {
+    std::string str;
+};
+
 struct pw_encoder {
     pb::io::ArrayOutputStream aos;
     pb::io::CodedOutputStream cos;
@@ -33,6 +37,16 @@ struct pw_decoder {
 
 extern "C" {
 
+    pw_string_t *pw_string_new(const char *str) {
+        return new pw_string_t{str };
+    }
+    void pw_string_delete(pw_string_t *self) {
+        delete self;
+    }
+    const char *pw_string_c_str(pw_string_t *self) {
+        return self->str.c_str();
+    }
+
     pw_encoder_t * pw_encoder_new(uint8_t *buf, uint32_t cap) {
         return new pw_encoder_t(buf, cap);
     }
@@ -46,16 +60,31 @@ extern "C" {
         return self->cos.HadError();
     }
 
-    bool pw_encoder_write_bool(pw_encoder_t *self, int field_no, bool v) {
-        WireFormatLite::WriteBool(field_no, v, &self->cos);
-        return check(self);
+#define WRITE_FIELD_FUNC( funcSuffix, wireTy, cTy) \
+    bool pw_encoder_write_##funcSuffix(pw_encoder_t *self, int field_no, cTy value) { \
+        WireFormatLite::Write##wireTy(field_no, value, &self->cos); \
+        return check(self); \
     }
 
-    bool pw_encoder_write_string(pw_encoder_t *self, int field_no, const char *v) {
-        // TODO: This requires a copy of the string.
-        //  We could write the raw buffer manually to avoid this.
-        const std::string str(v);
-        WireFormatLite::WriteString(field_no, str, &self->cos);
+    WRITE_FIELD_FUNC( bool, Bool, bool)
+    WRITE_FIELD_FUNC( int32, Int32, int32_t)
+    WRITE_FIELD_FUNC( int64, Int64, int64_t)
+    WRITE_FIELD_FUNC( uint32, UInt32, uint32_t)
+    WRITE_FIELD_FUNC( uint64, UInt64, uint64_t)
+    WRITE_FIELD_FUNC( sint32, SInt32, int32_t)
+    WRITE_FIELD_FUNC( sint64, SInt64, int64_t)
+    WRITE_FIELD_FUNC( fixed32, Fixed32, uint32_t)
+    WRITE_FIELD_FUNC( fixed64, Fixed64, uint64_t)
+    WRITE_FIELD_FUNC( sfixed32, SFixed32, int32_t)
+    WRITE_FIELD_FUNC( sfixed64, SFixed64, int64_t)
+    WRITE_FIELD_FUNC( enum, Enum, int)
+
+    bool pw_encoder_write_string(pw_encoder_t *self, int field_no, pw_string_t *value) {
+        WireFormatLite::WriteString(field_no, value->str, &self->cos);
+        return check(self);
+    }
+    bool pw_encoder_write_bytes(pw_encoder_t *self, int field_no, pw_string_t *value) {
+        WireFormatLite::WriteBytes(field_no, value->str, &self->cos);
         return check(self);
     }
 
@@ -72,24 +101,26 @@ extern "C" {
         return self->cis.ReadTag();
     }
 
-    bool pw_decoder_read_bool(pw_decoder_t *self, bool *v) {
-        return WireFormatLite::ReadPrimitive<bool, WireFormatLite::TYPE_BOOL>(&self->cis, v);
+#define READ_VAL_FUNC( funcSuffix, wireTy, cTy) \
+    bool pw_decoder_read_##funcSuffix(pw_decoder_t *self, cTy *value_ref) { \
+        return WireFormatLite::ReadPrimitive<cTy, WireFormatLite::TYPE_##wireTy>(&self->cis, value_ref); \
     }
 
-    bool pw_decoder_read_string(pw_decoder_t *self, void **opaque_string, const char **out) {
-        // create a std::string object and place the pointer to the opaque_string ptr references
-        // this string object will outlive the functions, the caller is responsible to call
-        // pw_decoder_delete_opaque_string with the opaque string pointer
-        auto *str_ptr = new std::string;
-        *opaque_string = str_ptr;
-        const auto ok = WireFormatLite::ReadString(&self->cis, str_ptr);
-        // set the c_str start pointer to the out ptr reference
-        *out = str_ptr->c_str();
-        return ok;
-    }
+    READ_VAL_FUNC( bool, BOOL, bool)
+    READ_VAL_FUNC( int32, INT32, int32_t)
+    READ_VAL_FUNC( int64, INT64, int64_t)
+    READ_VAL_FUNC( uint32, UINT32, uint32_t)
+    READ_VAL_FUNC( uint64, UINT64, uint64_t)
+    READ_VAL_FUNC( sint32, SINT32, int32_t)
+    READ_VAL_FUNC( sint64, SINT64, int64_t)
+    READ_VAL_FUNC( fixed32, FIXED32, uint32_t)
+    READ_VAL_FUNC( fixed64, FIXED64, uint64_t)
+    READ_VAL_FUNC( sfixed32, SFIXED32, int32_t)
+    READ_VAL_FUNC( sfixed64, SFIXED64, int64_t)
+    READ_VAL_FUNC( enum, ENUM, int)
 
-    void pw_decoder_delete_opaque_string(void *opaque_string) {
-        auto *str_ptr = static_cast<std::string *>(opaque_string);
-        delete str_ptr;
+    bool pw_decoder_read_string(pw_decoder_t *self, pw_string_t **string_ref) {
+        *string_ref = new pw_string_t;
+        return WireFormatLite::ReadString(&self->cis, &(*string_ref)->str);
     }
 }
