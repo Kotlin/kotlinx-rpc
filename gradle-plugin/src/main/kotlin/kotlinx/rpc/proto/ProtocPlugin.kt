@@ -58,8 +58,8 @@ public open class ProtocPlugin(
 ) {
     public val isJava: Property<Boolean> = project.objects.property<Boolean>().convention(false)
 
-    public val options: MapProperty<String, String?> = project.objects
-        .mapProperty<String, String?>()
+    public val options: MapProperty<String, Any?> = project.objects
+        .mapProperty<String, Any?>()
         .convention(emptyMap())
 
     public fun local(action: Action<Artifact.Local>) {

@@ -4,7 +4,9 @@
 
 package kotlinx.rpc.grpc
 
-import kotlinx.rpc.LIBRARY_VERSION
+import kotlinx.rpc.GRPC_KOTLIN_VERSION
+import kotlinx.rpc.GRPC_VERSION
+import kotlinx.rpc.PROTOBUF_VERSION
 import kotlinx.rpc.buf.BufExtension
 import kotlinx.rpc.proto.ProtocPlugin.Companion.GRPC_JAVA
 import kotlinx.rpc.proto.ProtocPlugin.Companion.GRPC_KOTLIN
@@ -15,8 +17,10 @@ import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.buf.tasks.registerBufGenYamlUpdateTask
 import kotlinx.rpc.buf.tasks.registerBufGenerateTask
 import kotlinx.rpc.buf.tasks.registerBufYamlUpdateTask
+import kotlinx.rpc.proto.KXRPC_PLUGIN_JAR_CONFIGURATION
 import kotlinx.rpc.proto.ProtoSourceSet
 import kotlinx.rpc.proto.ProtocPlugin
+import kotlinx.rpc.proto.configureKxRpcPluginJarConfiguration
 import kotlinx.rpc.proto.configureProtoExtensions
 import kotlinx.rpc.proto.grpcJava
 import kotlinx.rpc.proto.grpcKotlin
@@ -35,7 +39,10 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import javax.inject.Inject
@@ -60,6 +67,7 @@ public open class GrpcExtension @Inject constructor(
 
     init {
         project.configureBufExecutable()
+        project.configureKxRpcPluginJarConfiguration()
 
         createDefaultProtocPlugins()
 
@@ -193,25 +201,28 @@ public open class GrpcExtension @Inject constructor(
 
     private fun createDefaultProtocPlugins() {
         protocPlugins.create(KXRPC) {
-            remote {
-                locator.set("buf.build/kxrpc/grpc:${LIBRARY_VERSION}")
+            local {
+                javaJar(project.configurations.named(KXRPC_PLUGIN_JAR_CONFIGURATION).map { it.singleFile.absolutePath })
             }
 
             options.put("debugOutput", "protobuf-kxrpc-plugin.log")
             options.put("messageMode", "interface")
+            options.put("explicitApiModeEnabled", project.provider {
+                project.the<KotlinBaseExtension>().explicitApi != ExplicitApiMode.Disabled
+            })
         }
 
         protocPlugins.create(GRPC_JAVA) {
             isJava.set(true)
 
             remote {
-                locator.set("buf.build/grpc/java")
+                locator.set("buf.build/grpc/java:v$GRPC_VERSION")
             }
         }
 
         protocPlugins.create(GRPC_KOTLIN) {
             remote {
-                locator.set("buf.build/grpc/kotlin")
+                locator.set("buf.build/grpc/kotlin:v$GRPC_KOTLIN_VERSION")
             }
         }
 
@@ -219,7 +230,9 @@ public open class GrpcExtension @Inject constructor(
             isJava.set(true)
 
             remote {
-                locator.set("buf.build/protocolbuffers/java")
+                // for some reason they omit the first digit in this version:
+                // https://buf.build/protocolbuffers/java?version=v31.1
+                locator.set("buf.build/protocolbuffers/java:v${PROTOBUF_VERSION.substringAfter(".")}")
             }
         }
     }
