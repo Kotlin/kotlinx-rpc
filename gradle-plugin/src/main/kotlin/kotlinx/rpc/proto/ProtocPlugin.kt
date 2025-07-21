@@ -10,6 +10,7 @@ import kotlinx.rpc.proto.ProtocPlugin.Companion.GRPC_KOTLIN
 import kotlinx.rpc.proto.ProtocPlugin.Companion.KXRPC
 import kotlinx.rpc.proto.ProtocPlugin.Companion.PROTOBUF_JAVA
 import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
@@ -20,6 +21,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.mapProperty
 import org.gradle.kotlin.dsl.property
+import java.io.File
 
 public val NamedDomainObjectContainer<ProtocPlugin>.kxrpc: NamedDomainObjectProvider<ProtocPlugin>
     get() = named(KXRPC)
@@ -98,8 +100,17 @@ public open class ProtocPlugin(
                 executor.set(elements)
             }
 
-            public fun javaJar(jarPath: Provider<String>) {
-                executor(jarPath.map { listOf("java", "-jar", it) })
+            public fun javaJar(jarPath: Provider<String>, executablePath: Provider<String>? = null) {
+                if (executablePath == null) {
+                    executor(jarPath.map { listOf(javaExePath, "-jar", it) })
+                    return
+                }
+
+                val list = jarPath.zip(executablePath) { jar, exe ->
+                    listOf(exe, "-jar", jar)
+                }
+
+                executor(list)
             }
 
             public fun javaJar(jarPath: String) {
@@ -107,6 +118,22 @@ public open class ProtocPlugin(
             }
 
             override val type: ResolvedGrpcPlugin.Type = ResolvedGrpcPlugin.Type.local
+
+            internal companion object {
+                internal val javaExePath: String by lazy {
+                    val java = File(System.getProperty("java.home"), if (isWindows) "bin/java.exe" else "bin/java")
+
+                    if (!java.exists()) {
+                        throw GradleException("Could not find java executable at " + java.path)
+                    }
+
+                    java.path
+                }
+
+                internal val isWindows: Boolean by lazy {
+                    System.getProperty("os.name").lowercase().contains("win")
+                }
+            }
         }
 
         public class Remote(project: Project) : Artifact() {
