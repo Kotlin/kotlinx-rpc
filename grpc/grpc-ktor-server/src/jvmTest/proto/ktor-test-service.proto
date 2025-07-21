@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package kotlinx.rpc.grpc.ktor.server.test;
 
-//import "some.proto";
-
 message Hello {
   string message = 1;
 }

@@ -5,6 +5,7 @@
 package kotlinx.rpc.buf.tasks
 
 import kotlinx.rpc.buf.BUF_YAML
+import kotlinx.rpc.proto.IMPORT_PROTO_FILES_DIR
 import kotlinx.rpc.proto.PROTO_FILES_DIR
 import kotlinx.rpc.proto.PROTO_GROUP
 import kotlinx.rpc.proto.protoBuildDirSourceSets
@@ -12,10 +13,9 @@ import kotlinx.rpc.util.ensureDirectoryExists
 import kotlinx.rpc.util.ensureRegularFileExists
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
-import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
@@ -25,6 +25,10 @@ import java.io.File
 public abstract class BufYamlUpdate : DefaultTask() {
     @get:InputDirectory
     internal abstract val protoSourceDir: Property<File>
+
+    @get:Optional
+    @get:InputDirectory
+    internal abstract val importSourceDir: Property<File>
 
     @get:OutputFile
     public abstract val bufFile: Property<File>
@@ -59,6 +63,12 @@ public abstract class BufYamlUpdate : DefaultTask() {
                 writer.appendLine("  - path: $modulePath")
             }
 
+            val importDir = importSourceDir.orNull
+            if (importDir != null && importDir.exists()) {
+                val modulePath = importDir.relativeTo(file.parentFile)
+                writer.appendLine("  - path: $modulePath")
+            }
+
             writer.flush()
         }
     }
@@ -71,21 +81,29 @@ public abstract class BufYamlUpdate : DefaultTask() {
 internal fun Project.registerBufYamlUpdateTask(
     name: String,
     dir: String,
+    withImport: Boolean,
     configure: BufYamlUpdate.() -> Unit = {},
 ): TaskProvider<BufYamlUpdate> {
     val capitalizeName = name.replaceFirstChar { it.uppercase() }
     return tasks.register<BufYamlUpdate>("${BufYamlUpdate.PREFIX_NAME}$capitalizeName") {
-        val protoDir = project.protoBuildDirSourceSets.resolve(dir).resolve(PROTO_FILES_DIR)
-        protoDir.ensureDirectoryExists()
+        val baseDir = project.protoBuildDirSourceSets.resolve(dir)
+        val protoDir = baseDir
+            .resolve(PROTO_FILES_DIR)
+            .ensureDirectoryExists()
 
         protoSourceDir.set(protoDir)
 
-        val bufYamlFile = project.protoBuildDirSourceSets
-            .resolve(dir)
+        if (withImport) {
+            val importDir = baseDir
+                .resolve(IMPORT_PROTO_FILES_DIR)
+                .ensureDirectoryExists()
+
+            importSourceDir.set(importDir)
+        }
+
+        val bufYamlFile = baseDir
             .resolve(BUF_YAML)
-            .apply {
-                ensureRegularFileExists()
-            }
+            .ensureRegularFileExists()
 
         bufFile.set(bufYamlFile)
 

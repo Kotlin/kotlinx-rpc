@@ -40,12 +40,6 @@ kotlin {
     }
 }
 
-protoSourceSets {
-    jvmProtoMain {
-        proto { exclude("some.proto") }
-    }
-}
-
 rpc {
     grpc {
         val globalRootDir: String by extra

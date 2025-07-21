@@ -6,15 +6,19 @@ package kotlinx.rpc.util
 
 import java.io.File
 
-internal fun File.ensureDirectoryExists() {
+internal fun File.ensureDirectoryExists(): File {
     if (!exists()) {
         mkdirs()
     }
+
+    return this
 }
 
-internal fun File.ensureRegularFileExists() {
+internal fun File.ensureRegularFileExists(): File {
     if (!exists()) {
         parentFile.ensureDirectoryExists()
         createNewFile()
     }
+
+    return this
 }

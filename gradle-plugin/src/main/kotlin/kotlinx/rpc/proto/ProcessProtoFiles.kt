@@ -22,12 +22,13 @@ internal fun Project.registerProcessProtoFilesTask(
     name: String,
     baseGenDir: Provider<File>,
     protoFiles: SourceDirectorySet,
+    toDir: String,
     configure: ProcessProtoFiles.() -> Unit = {},
 ): TaskProvider<ProcessProtoFiles> {
     val capitalName = name.replaceFirstChar { it.uppercase() }
 
     return tasks.register<ProcessProtoFiles>("process${capitalName}ProtoFiles") {
-        val protoGenDir = baseGenDir.map { it.resolve(PROTO_FILES_DIR) }
+        val protoGenDir = baseGenDir.map { it.resolve(toDir) }
 
         val allFiles = protoFiles.files
 

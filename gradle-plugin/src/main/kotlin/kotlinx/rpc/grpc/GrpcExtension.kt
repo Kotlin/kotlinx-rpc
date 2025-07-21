@@ -17,7 +17,9 @@ import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.buf.tasks.registerBufGenYamlUpdateTask
 import kotlinx.rpc.buf.tasks.registerBufGenerateTask
 import kotlinx.rpc.buf.tasks.registerBufYamlUpdateTask
+import kotlinx.rpc.proto.IMPORT_PROTO_FILES_DIR
 import kotlinx.rpc.proto.KXRPC_PLUGIN_JAR_CONFIGURATION
+import kotlinx.rpc.proto.PROTO_FILES_DIR
 import kotlinx.rpc.proto.ProtoSourceSet
 import kotlinx.rpc.proto.ProtocPlugin
 import kotlinx.rpc.proto.configureKxRpcPluginJarConfiguration
@@ -89,7 +91,10 @@ public open class GrpcExtension @Inject constructor(
         val baseName = protoSourceSet.baseName.get()
         val baseGenDir = project.protoBuildDirSourceSets.resolve(baseName)
 
-        val protocPluginNames = protoSourceSet.collectProtocPlugins().distinct()
+        val pairSourceSet = protoSourceSet.correspondingMainSourceSetOrNull()
+
+        val mainProtocPlugins = pairSourceSet?.protocPlugins?.get().orEmpty()
+        val protocPluginNames = (protoSourceSet.protocPlugins.get() + mainProtocPlugins).distinct()
 
         val includedProtocPlugins = protocPluginNames.map {
             protocPlugins.findByName(it)
@@ -99,46 +104,81 @@ public open class GrpcExtension @Inject constructor(
         val protoFiles = protoSourceSet.proto
         val hasFiles = !protoFiles.isEmpty
 
-        val bufGenUpdateTask = project.registerBufGenYamlUpdateTask(
+        val bufUpdateTask = registerBufYamlUpdateTask(
+            name = protoSourceSet.name,
+            dir = baseName,
+            withImport = pairSourceSet != null,
+        )
+
+        val bufGenUpdateTask = registerBufGenYamlUpdateTask(
             name = protoSourceSet.name,
             dir = baseName,
             protocPlugins = includedProtocPlugins,
         ) {
-            onlyIf { hasFiles }
-        }
-
-        val bufUpdateTask = project.registerBufYamlUpdateTask(protoSourceSet.name, baseName) {
-            onlyIf { hasFiles }
-        }
-
-        val processProtoTask = project.registerProcessProtoFilesTask(
-            name = protoSourceSet.name,
-            baseGenDir = project.provider { baseGenDir },
-            protoFiles = protoFiles,
-        ) {
-            onlyIf { hasFiles }
-
-            dependsOn(bufGenUpdateTask)
             dependsOn(bufUpdateTask)
         }
 
-        val out = project.protoBuildDirGenerated.resolve(baseName)
+        val processProtoTask = registerProcessProtoFilesTask(
+            name = protoSourceSet.name,
+            baseGenDir = provider { baseGenDir },
+            protoFiles = protoFiles,
+            toDir = PROTO_FILES_DIR,
+        ) {
+            dependsOn(bufUpdateTask)
+            dependsOn(bufGenUpdateTask)
+        }
+
+        val processImportProtoTask = if (pairSourceSet != null) {
+            val importProtoFiles = pairSourceSet.proto
+
+            registerProcessProtoFilesTask(
+                name = "${protoSourceSet.name}Import",
+                baseGenDir = provider { baseGenDir },
+                protoFiles = importProtoFiles,
+                toDir = IMPORT_PROTO_FILES_DIR,
+            ) {
+                dependsOn(bufUpdateTask)
+                dependsOn(bufGenUpdateTask)
+                dependsOn(processProtoTask)
+            }
+        } else {
+            null
+        }
+
+        val out = protoBuildDirGenerated.resolve(baseName)
 
         val capitalName = protoSourceSet.name.replaceFirstChar { it.uppercase() }
-        val bufGenerateTask = project.registerBufGenerateTask(
+        val bufGenerateTask = registerBufGenerateTask(
             name = "${BufGenerateTask.NAME_PREFIX}$capitalName",
             workingDir = provider { baseGenDir },
-            inputFiles = processProtoTask.map { it.outputs.files },
             outputDirectory = provider { out },
+            protoFiles = provider {
+                protoFiles.asFileTree.let {
+                    if (pairSourceSet != null) {
+                        it + pairSourceSet.proto
+                    } else {
+                        it
+                    }
+                }
+            },
         ) {
             dependsOn(bufGenUpdateTask)
             dependsOn(bufUpdateTask)
             dependsOn(processProtoTask)
+            if (processImportProtoTask != null) {
+                dependsOn(processImportProtoTask)
+            }
+
+            if (pairSourceSet != null) {
+                dependsOn(pairSourceSet.generateTask)
+            }
 
             onlyIf { hasFiles }
         }
 
-        project.tasks.withType<KotlinCompile>().configureEach {
+        protoSourceSet.generateTask.set(bufGenerateTask)
+
+        tasks.withType<KotlinCompile>().configureEach {
             // compileKotlin - main
             // compileTestKotlin - test
             // compileKotlinJvm - jvmMain
@@ -147,8 +187,8 @@ public open class GrpcExtension @Inject constructor(
             // compileTestKotlinIosArm64 - iosArm64Test
             val taskNameAsSourceSet = name
                 .removePrefix("compile").let {
-                    val suffix = it.substringBefore("Kotlin").takeIf {
-                        prefix -> prefix.isNotEmpty()
+                    val suffix = it.substringBefore("Kotlin").takeIf { prefix ->
+                        prefix.isNotEmpty()
                     } ?: "Main"
 
                     (it.substringAfter("Kotlin")
@@ -162,7 +202,7 @@ public open class GrpcExtension @Inject constructor(
             }
         }
 
-        project.tasks.withType<JavaCompile>().configureEach {
+        tasks.withType<JavaCompile>().configureEach {
             // compileJvmTestJava - test (java, kmp)
             // compileJvmMainJava - main (java, kmp)
             // compileJava - main (java)
@@ -183,7 +223,7 @@ public open class GrpcExtension @Inject constructor(
 
         includedProtocPlugins.forEach { plugin ->
             // locates correctly jvmMain, main jvmTest, test
-            val javaSourceSet = project.extensions.findByType<JavaPluginExtension>()
+            val javaSourceSet = extensions.findByType<JavaPluginExtension>()
                 ?.sourceSets?.findByName(baseName)?.java
 
             if (plugin.isJava.get() && javaSourceSet != null) {
@@ -237,17 +277,17 @@ public open class GrpcExtension @Inject constructor(
         }
     }
 
-    private fun ProtoSourceSet.collectProtocPlugins(): List<String> {
+    private fun ProtoSourceSet.correspondingMainSourceSetOrNull(): ProtoSourceSet? {
         return when {
             name.endsWith("Main") -> {
-                protocPlugins.get()
+                null
             }
 
             name.endsWith("Test") -> {
                 val main = project.protoSourceSets
                     .getByName(correspondingMainName())
 
-                main.collectProtocPlugins()  + protocPlugins.get()
+                main
             }
 
             else -> throw GradleException("Unknown source set name: $name")

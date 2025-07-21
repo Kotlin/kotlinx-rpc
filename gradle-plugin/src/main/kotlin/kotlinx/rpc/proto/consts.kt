@@ -8,6 +8,7 @@ import org.gradle.api.Project
 
 public const val PROTO_GROUP: String = "proto"
 public const val PROTO_FILES_DIR: String = "proto"
+public const val IMPORT_PROTO_FILES_DIR: String = "import"
 public const val PROTO_BUILD_DIR: String = "protoBuild"
 public const val PROTO_SOURCE_DIRECTORY_NAME: String = "proto"
 public const val PROTO_SOURCE_SETS: String = "protoSourceSets"

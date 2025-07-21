@@ -5,6 +5,7 @@
 package kotlinx.rpc.buf.tasks
 
 import kotlinx.rpc.buf.BUF_GEN_YAML
+import kotlinx.rpc.proto.PROTO_FILES_DIR
 import kotlinx.rpc.proto.PROTO_GROUP
 import kotlinx.rpc.proto.ProtocPlugin
 import kotlinx.rpc.proto.protoBuildDirSourceSets
@@ -26,7 +27,7 @@ internal data class ResolvedGrpcPlugin(
     val type: Type,
     val locator: List<String>,
     val out: String,
-    val options: Map<String, String?>,
+    val options: Map<String, Any?>,
     val strategy: String?,
     val includeImports: Boolean?,
     val includeWrk: Boolean?,
@@ -59,7 +60,7 @@ public abstract class BufGenYamlUpdate : DefaultTask() {
             file.createNewFile()
         }
 
-        bufGenFile.get().bufferedWriter(Charsets.UTF_8).use { writer ->
+        file.bufferedWriter(Charsets.UTF_8).use { writer ->
             writer.appendLine("version: v2")
             writer.appendLine("clean: true")
             writer.appendLine("plugins:")
@@ -106,6 +107,9 @@ public abstract class BufGenYamlUpdate : DefaultTask() {
                     }
                 }
             }
+
+            writer.appendLine("inputs:")
+            writer.appendLine("  - directory: $PROTO_FILES_DIR")
 
             writer.flush()
         }
@@ -155,9 +159,7 @@ internal fun Project.registerBufGenYamlUpdateTask(
         val bufGenYamlFile = project.protoBuildDirSourceSets
             .resolve(dir)
             .resolve(BUF_GEN_YAML)
-            .apply {
-                ensureRegularFileExists()
-            }
+            .ensureRegularFileExists()
 
         bufGenFile.set(bufGenYamlFile)
 

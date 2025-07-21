@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.proto
 
+import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.util.findOrCreate
 import kotlinx.rpc.util.withKotlinJvmExtension
 import kotlinx.rpc.util.withKotlinKmpExtension
@@ -40,6 +41,7 @@ public open class ProtoSourceSet @Inject constructor(internal val project: Proje
     internal val baseName: Property<String> = project.objects.property<String>()
     internal val languageSourceSets: ListProperty<Any> = project.objects.listProperty<Any>()
     internal val protocPlugins: ListProperty<String> = project.objects.listProperty<String>().convention(emptyList())
+    internal val generateTask: Property<BufGenerateTask> = project.objects.property<BufGenerateTask>()
 
     public fun protocPlugin(plugin: NamedDomainObjectProvider<ProtocPlugin>) {
         protocPlugins.add(plugin.name)

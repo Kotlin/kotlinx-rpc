@@ -24,13 +24,12 @@ public abstract class BufGenerateTask : BufExecTask() {
     @get:Optional
     public abstract val additionalArgs: ListProperty<String>
 
+    @get:InputFiles
+    internal abstract val protoFiles: ListProperty<File>
+
     /** Whether to include imports. */
     @get:Input
     internal abstract val includeImports: Property<Boolean>
-
-    /** The input proto files. */
-    @get:InputFiles
-    internal abstract val inputFiles: ConfigurableFileCollection
 
     /** The directory to output generated files. */
     @get:OutputDirectory
@@ -57,8 +56,8 @@ public abstract class BufGenerateTask : BufExecTask() {
 internal fun Project.registerBufGenerateTask(
     name: String,
     workingDir: Provider<File>,
-    inputFiles: Provider<FileCollection>,
     outputDirectory: Provider<File>,
+    protoFiles: Provider<FileCollection>,
     configure: BufGenerateTask.() -> Unit = {},
 ): TaskProvider<BufGenerateTask> {
     return registerBufExecTask<BufGenerateTask>(name, workingDir) {
@@ -68,8 +67,8 @@ internal fun Project.registerBufGenerateTask(
         val generate = project.rpcExtension().grpc.buf.generate
 
         includeImports.set(generate.includeImports)
-        this.inputFiles.setFrom(inputFiles)
         this.outputDirectory.set(outputDirectory)
+        this.protoFiles.set(protoFiles)
 
         configure()
     }
