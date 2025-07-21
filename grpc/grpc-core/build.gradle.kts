@@ -11,6 +11,8 @@ plugins {
     alias(libs.plugins.kotlinx.rpc)
 }
 
+
+
 kotlin {
     sourceSets {
         commonMain {

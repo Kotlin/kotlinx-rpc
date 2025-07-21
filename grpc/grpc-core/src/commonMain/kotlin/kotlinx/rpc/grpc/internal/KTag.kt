@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.internal.protowire
+package kotlinx.rpc.grpc.internal
 
 internal enum class WireType {
     VARINT, // 0
@@ -14,8 +14,6 @@ internal enum class WireType {
 }
 
 internal data class KTag(val fieldNr: Int, val wireType: WireType) {
-
-
     companion object {
         // Number of bits in a tag which identify the wire type.
         const val K_TAG_TYPE_BITS: UInt = 3u;
