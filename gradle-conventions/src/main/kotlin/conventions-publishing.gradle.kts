@@ -58,10 +58,6 @@ fun PublishingExtension.configurePublication() {
 
         logger.info("Project ${project.name} -> Publication configured: $name, $version")
     }
-
-    tasks.withType<PublishToMavenRepository>().configureEach {
-        dependsOn(tasks.withType<Sign>())
-    }
 }
 
 // we need to configure maven publication for kotlin("jvm") projects manually
