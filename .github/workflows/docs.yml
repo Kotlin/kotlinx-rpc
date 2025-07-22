@@ -132,7 +132,7 @@ jobs:
           retention-days: 7
 
   deploy:
-    if: github.event_name == 'workflow_dispatch' && startsWith(github.ref, 'refs/heads/release-') && !inputs.dry_run
+    if: github.event_name == 'workflow_dispatch' && !inputs.dry_run
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -160,7 +160,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
   publish-indexes:
-    if: github.event_name == 'workflow_dispatch' && startsWith(github.ref, 'refs/heads/release-') && !inputs.dry_run
+    if: github.event_name == 'workflow_dispatch' && !inputs.dry_run
     needs: [ build, test, assemble, deploy ]
     runs-on: ubuntu-latest
     container:
