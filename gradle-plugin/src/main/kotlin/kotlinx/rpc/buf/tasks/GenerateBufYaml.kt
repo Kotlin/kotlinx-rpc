@@ -5,7 +5,7 @@
 package kotlinx.rpc.buf.tasks
 
 import kotlinx.rpc.buf.BUF_YAML
-import kotlinx.rpc.proto.IMPORT_PROTO_FILES_DIR
+import kotlinx.rpc.proto.PROTO_FILES_IMPORT_DIR
 import kotlinx.rpc.proto.PROTO_FILES_DIR
 import kotlinx.rpc.proto.PROTO_GROUP
 import kotlinx.rpc.proto.protoBuildDirSourceSets
@@ -22,7 +22,10 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.register
 import java.io.File
 
-public abstract class BufYamlUpdate : DefaultTask() {
+/**
+ * Generates/updates a Buf `buf.yaml` file.
+ */
+public abstract class GenerateBufYaml : DefaultTask() {
     @get:InputDirectory
     internal abstract val protoSourceDir: Property<File>
 
@@ -30,6 +33,9 @@ public abstract class BufYamlUpdate : DefaultTask() {
     @get:InputDirectory
     internal abstract val importSourceDir: Property<File>
 
+    /**
+     * The `buf.yaml` file to generate/update.
+     */
     @get:OutputFile
     public abstract val bufFile: Property<File>
 
@@ -73,19 +79,19 @@ public abstract class BufYamlUpdate : DefaultTask() {
         }
     }
 
-    public companion object {
-        public const val PREFIX_NAME: String = "bufYamlUpdate"
+    internal companion object {
+        const val NAME_PREFIX: String = "generateBufYaml"
     }
 }
 
-internal fun Project.registerBufYamlUpdateTask(
+internal fun Project.registerGenerateBufYamlTask(
     name: String,
     dir: String,
     withImport: Boolean,
-    configure: BufYamlUpdate.() -> Unit = {},
-): TaskProvider<BufYamlUpdate> {
+    configure: GenerateBufYaml.() -> Unit = {},
+): TaskProvider<GenerateBufYaml> {
     val capitalizeName = name.replaceFirstChar { it.uppercase() }
-    return tasks.register<BufYamlUpdate>("${BufYamlUpdate.PREFIX_NAME}$capitalizeName") {
+    return tasks.register<GenerateBufYaml>("${GenerateBufYaml.NAME_PREFIX}$capitalizeName") {
         val baseDir = project.protoBuildDirSourceSets.resolve(dir)
         val protoDir = baseDir
             .resolve(PROTO_FILES_DIR)
@@ -95,7 +101,7 @@ internal fun Project.registerBufYamlUpdateTask(
 
         if (withImport) {
             val importDir = baseDir
-                .resolve(IMPORT_PROTO_FILES_DIR)
+                .resolve(PROTO_FILES_IMPORT_DIR)
                 .ensureDirectoryExists()
 
             importSourceDir.set(importDir)

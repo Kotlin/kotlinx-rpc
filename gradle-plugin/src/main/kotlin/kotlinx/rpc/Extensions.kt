@@ -6,6 +6,7 @@
 
 package kotlinx.rpc
 
+import kotlinx.rpc.grpc.DefaultGrpcExtension
 import kotlinx.rpc.grpc.GrpcExtension
 import org.gradle.api.Action
 import org.gradle.api.Project
@@ -18,7 +19,7 @@ import org.gradle.kotlin.dsl.property
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
-public fun Project.rpcExtension(): RpcExtension = extensions.findByType<RpcExtension>() ?: RpcExtension(objects, this)
+internal fun Project.rpcExtension(): RpcExtension = extensions.findByType<RpcExtension>() ?: RpcExtension(objects, this)
 
 public open class RpcExtension @Inject constructor(objects: ObjectFactory, private val project: Project) {
     /**
@@ -51,13 +52,13 @@ public open class RpcExtension @Inject constructor(objects: ObjectFactory, priva
      */
     public val grpc: GrpcExtension by lazy {
         grpcApplied.set(true)
-        objects.newInstance<GrpcExtension>()
+        objects.newInstance<DefaultGrpcExtension>()
     }
 
     /**
      * Grpc settings.
      */
-    public fun grpc(configure: Action<GrpcExtension>) {
+    public fun grpc(configure: Action<GrpcExtension> = Action {}) {
         configure.execute(grpc)
     }
 }

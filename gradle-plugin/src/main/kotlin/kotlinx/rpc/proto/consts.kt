@@ -4,24 +4,56 @@
 
 package kotlinx.rpc.proto
 
-import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 
+/**
+ * `proto` group for related gradle tasks.
+ */
 public const val PROTO_GROUP: String = "proto"
-public const val PROTO_FILES_DIR: String = "proto"
-public const val IMPORT_PROTO_FILES_DIR: String = "import"
-public const val PROTO_BUILD_DIR: String = "protoBuild"
-public const val PROTO_SOURCE_DIRECTORY_NAME: String = "proto"
+
+/**
+ * Container for proto source sets.
+ */
 public const val PROTO_SOURCE_SETS: String = "protoSourceSets"
 
-internal val Project.protoBuildDir
-    get() =
-        layout.buildDirectory
-            .dir(PROTO_BUILD_DIR)
-            .get()
-            .asFile
+/**
+ * Name of the default source directory set for proto files in [PROTO_SOURCE_SETS].
+ */
+public const val PROTO_SOURCE_DIRECTORY_NAME: String = "proto"
 
-internal val Project.protoBuildDirSourceSets
-    get() = protoBuildDir.resolve("sourceSets")
+/**
+ * Directory for proto build artifacts.
+ */
+public const val PROTO_BUILD_DIR: String = "protoBuild"
 
-internal val Project.protoBuildDirGenerated
-    get() = protoBuildDir.resolve("generated")
+/**
+ * Directory for proto build generated files.
+ */
+public const val PROTO_BUILD_GENERATED: String = "generated"
+
+/**
+ * Directory for proto build temporary files.
+ * Files there are constructed to form a valid Buf workspace.
+ */
+public const val PROTO_BUILD_SOURCE_SETS: String = "sourceSets"
+
+/**
+ * Source directory for proto files in [PROTO_BUILD_SOURCE_SETS].
+ *
+ * For these files the `buf generate` task will be called.
+ */
+public const val PROTO_FILES_DIR: String = "proto"
+
+/**
+ * Source directory for proto imported files in [PROTO_BUILD_SOURCE_SETS].
+ *
+ * These files are included as imports in the `buf generate` task, but don't get processed by it.
+ */
+public const val PROTO_FILES_IMPORT_DIR: String = "import"
+
+/**
+ * [Configuration] name for the `kotlinx-rpc` protoc plugin artifact.
+ *
+ * MUST be a single file.
+ */
+public const val KXRPC_PLUGIN_JAR_CONFIGURATION: String = "kxrpcPluginJar"

@@ -5,15 +5,10 @@
 package kotlinx.rpc.util
 
 import org.gradle.api.Action
-import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.api.artifacts.ConfigurationContainer
-import org.gradle.api.plugins.ExtensionAware
-import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import kotlin.reflect.KClass
 
 private const val KOTLIN_MULTIPLATFORM_PLUGIN_ID = "org.jetbrains.kotlin.multiplatform"
 private const val KOTLIN_JVM_PLUGIN_ID = "org.jetbrains.kotlin.jvm"

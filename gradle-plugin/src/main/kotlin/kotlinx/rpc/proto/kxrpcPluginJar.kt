@@ -4,13 +4,8 @@
 
 package kotlinx.rpc.proto
 
-import kotlinx.rpc.BUF_TOOL_VERSION
 import kotlinx.rpc.LIBRARY_VERSION
 import org.gradle.api.Project
-
-// https://maven.pkg.jetbrains.space/public/p/krpc/grpc/org/jetbrains/kotlinx/kotlinx-rpc-protobuf-plugin/0.8.1-grpc-99/kotlinx-rpc-protobuf-plugin-0.8.1-grpc-99-all.jar
-
-public const val KXRPC_PLUGIN_JAR_CONFIGURATION: String = "kxrpcPluginJar"
 
 internal fun Project.configureKxRpcPluginJarConfiguration() {
     configurations.create(KXRPC_PLUGIN_JAR_CONFIGURATION)

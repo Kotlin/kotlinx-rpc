@@ -30,7 +30,7 @@ internal data class ResolvedGrpcPlugin(
     val options: Map<String, Any?>,
     val strategy: String?,
     val includeImports: Boolean?,
-    val includeWrk: Boolean?,
+    val includeWkt: Boolean?,
     val types: List<String>,
     val excludeTypes: List<String>,
 ) : Serializable {
@@ -41,10 +41,16 @@ internal data class ResolvedGrpcPlugin(
     }
 }
 
-public abstract class BufGenYamlUpdate : DefaultTask() {
+/**
+ * Generates/updates Buf `buf.gen.yaml` file.
+ */
+public abstract class GenerateBufGenYaml : DefaultTask() {
     @get:Input
     internal abstract val plugins: ListProperty<ResolvedGrpcPlugin>
 
+    /**
+     * The `buf.gen.yaml` file to generate/update.
+     */
     @get:OutputFile
     public abstract val bufGenFile: Property<File>
 
@@ -84,8 +90,8 @@ public abstract class BufGenYamlUpdate : DefaultTask() {
                 if (plugin.includeImports != null) {
                     writer.appendLine("    include_imports: ${plugin.includeImports}")
                 }
-                if (plugin.type == ResolvedGrpcPlugin.Type.local && plugin.includeWrk != null) {
-                    writer.appendLine("    include_wrk: ${plugin.includeWrk}")
+                if (plugin.includeWkt != null) {
+                    writer.appendLine("    include_wkt: ${plugin.includeWkt}")
                 }
                 if (plugin.types.isNotEmpty()) {
                     writer.appendLine("    types:")
@@ -115,23 +121,25 @@ public abstract class BufGenYamlUpdate : DefaultTask() {
         }
     }
 
-    public companion object {
-        public const val NAME_PREFIX: String = "bufGenYamlUpdate"
+    internal companion object {
+        const val NAME_PREFIX: String = "generateBufGenYaml"
     }
 }
 
-internal fun Project.registerBufGenYamlUpdateTask(
+internal fun Project.registerGenerateBufGenYamlTask(
     name: String,
     dir: String,
     protocPlugins: Iterable<ProtocPlugin>,
-    configure: BufGenYamlUpdate.() -> Unit = {},
-): TaskProvider<BufGenYamlUpdate> {
+    configure: GenerateBufGenYaml.() -> Unit = {},
+): TaskProvider<GenerateBufGenYaml> {
     val capitalizeName = name.replaceFirstChar { it.uppercase() }
-    return project.tasks.register<BufGenYamlUpdate>("${BufGenYamlUpdate.NAME_PREFIX}$capitalizeName") {
+    return project.tasks.register<GenerateBufGenYaml>("${GenerateBufGenYaml.NAME_PREFIX}$capitalizeName") {
         val pluginsProvider = project.provider {
             protocPlugins.map { plugin ->
                 if (!plugin.artifact.isPresent) {
-                    throw GradleException("Artifact is not specified for protoc plugin ${plugin.name}")
+                    throw GradleException(
+                        "Artifact is not specified for protoc plugin ${plugin.name}. " +
+                                "Use `local {}` or `remote {}` to specify it.")
                 }
 
                 val artifact = plugin.artifact.get()
@@ -141,13 +149,13 @@ internal fun Project.registerBufGenYamlUpdateTask(
                 }
 
                 ResolvedGrpcPlugin(
-                    type = artifact.type,
+                    type = if (artifact is ProtocPlugin.Artifact.Local) ResolvedGrpcPlugin.Type.local else ResolvedGrpcPlugin.Type.remote,
                     locator = locator,
                     options = plugin.options.get(),
                     out = plugin.name,
                     strategy = plugin.strategy.orNull?.name?.lowercase(),
                     includeImports = plugin.includeImports.orNull,
-                    includeWrk = plugin.includeWrk.orNull,
+                    includeWkt = plugin.includeWkt.orNull,
                     types = plugin.types.get(),
                     excludeTypes = plugin.excludeTypes.get(),
                 )

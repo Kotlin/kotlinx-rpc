@@ -9,8 +9,8 @@ import kotlinx.rpc.buf.tasks.BufExecTask
 import kotlinx.rpc.util.ProcessRunner
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.logging.LogLevel
 import org.gradle.kotlin.dsl.dependencies
-
 
 // See: https://github.com/bufbuild/buf-gradle-plugin/blob/1bc48078880887797db3aa412d6a3fea60461276/src/main/kotlin/build/buf/gradle/BufSupport.kt#L28
 internal fun Project.configureBufExecutable() {
@@ -53,20 +53,41 @@ internal fun BufExecTask.execBuf(args: Iterable<Any>) {
         executable.setExecutable(true)
     }
 
-    val config = configFile.orNull
-    val configArgs = if (config != null) listOf("--config", config.absolutePath) else emptyList()
+    val baseArgs = buildList {
+        val configValue = configFile.orNull
+        if (configValue != null) {
+            add("--config")
+            add(configValue.absolutePath)
+        }
 
-    val processArgs = listOf(executable.absolutePath) + configArgs + args
+        if (project.gradle.startParameter.logLevel == LogLevel.DEBUG) {
+            add("--debug")
+        }
+
+        val logFormatValue = logFormat.get()
+        if (logFormatValue != BufExtension.LogFormat.Default) {
+            add("--log-format")
+            add(logFormatValue.name.lowercase())
+        }
+
+        val timeoutValue = bufTimeoutInWholeSeconds.get()
+        if (timeoutValue != 0L) {
+            add("--timeout")
+            add("${timeoutValue}s")
+        }
+    }
+
+    val processArgs = listOf(executable.absolutePath) + args + baseArgs
 
     val workingDirValue = workingDir.get()
 
-    logger.info("Running buf from $workingDirValue: `buf ${args.joinToString(" ")}`")
+    logger.debug("Running buf from {}: `buf {}`", workingDirValue, processArgs.joinToString(" "))
 
     val result = ProcessRunner().use { it.shell("buf", workingDirValue, processArgs) }
 
     if (result.exitCode != 0) {
         throw GradleException(result.formattedOutput())
     } else {
-        logger.info(result.formattedOutput())
+        logger.debug(result.formattedOutput())
     }
 }

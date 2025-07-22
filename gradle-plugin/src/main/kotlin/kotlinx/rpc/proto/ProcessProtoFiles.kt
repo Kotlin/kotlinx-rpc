@@ -12,6 +12,9 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.register
 import java.io.File
 
+/**
+ * Copy proto files to a temporary directory for Buf to process.
+ */
 public abstract class ProcessProtoFiles : Copy() {
     init {
         group = PROTO_GROUP
