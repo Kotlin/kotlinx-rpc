@@ -5,9 +5,7 @@
 package kotlinx.rpc.grpc.internal
 
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.rpc.grpc.internal.protowire.WireDecoder
-import kotlinx.rpc.grpc.internal.protowire.WireEncoder
-import kotlinx.rpc.grpc.internal.protowire.WireType
+import kotlinx.io.Buffer
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.test.Test
 
@@ -19,12 +17,13 @@ class ProtoWireTest {
     fun testEncodeDecodeBool()  {
         val fieldNr = 3;
 
-        val encoder = WireEncoder()
+        val buffer = Buffer()
+        val encoder = WireEncoderNative(buffer)
         encoder.writeBool(fieldNr, true)
         encoder.writeString(4, "Hello Test")
+        encoder.flush()
 
-        val encodedBuffer = encoder.buffer.get()
-        val decoder = WireDecoder(encodedBuffer)
+        val decoder = WireDecoderNative(buffer)
 
         val t1 = decoder.readTag()!!
         check(t1.wireType == WireType.VARINT)
@@ -39,5 +38,8 @@ class ProtoWireTest {
 
         val str = decoder.readString()!!
         check(str == "Hello Test")
+
+        decoder.close()
+        assert(buffer.exhausted())
     }
 }

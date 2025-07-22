@@ -4,7 +4,15 @@
 
 package kotlinx.rpc.grpc.internal
 
-internal interface WireDecoder {
+import kotlinx.io.Buffer
+
+/**
+ * A platform-specific decoder for wire format data.
+ *
+ * If one `read*()` method returns `null`, decoding the data failed and no further
+ * decoding can be done.
+ */
+internal interface WireDecoder: AutoCloseable {
     fun readTag(): KTag?
     fun readBool(): Boolean?
     fun readInt32(): Int?
@@ -20,3 +28,15 @@ internal interface WireDecoder {
     fun readEnum(): Int?
     fun readString(): String?
 }
+
+/**
+ * Creates a platform-specific [WireDecoder].
+ *
+ * This constructor takes a [Buffer] instead of a [kotlinx.io.Source] because
+ * the native implementation (`WireDecoderNative`) depends on [Buffer]'s internal structure.
+ *
+ * NOTE: Do not use the [source] buffer while the [WireDecoder] is still open.
+ *
+ * @param source The buffer containing the encoded wire-format data.
+ */
+internal expect fun WireDecoder(source: Buffer): WireDecoder

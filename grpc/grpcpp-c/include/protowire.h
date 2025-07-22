@@ -19,8 +19,9 @@ extern "C" {
 
     typedef struct pw_encoder pw_encoder_t;
 
-    pw_encoder_t * pw_encoder_new(uint8_t *buf, uint32_t cap);
+    pw_encoder_t *pw_encoder_new(void* ctx, bool (*)(void* ctx, const void* buf, int size));
     void pw_encoder_delete(pw_encoder_t *self);
+    bool pw_encoder_flush(pw_encoder_t *self);
 
     bool pw_encoder_write_bool(pw_encoder_t *self, int field_no, bool value);
     bool pw_encoder_write_int32(pw_encoder_t *self, int field_no, int32_t value);
@@ -45,7 +46,15 @@ extern "C" {
 
     typedef struct pw_decoder pw_decoder_t;
 
-    pw_decoder_t * pw_decoder_new(uint8_t *buf, uint32_t cap);
+    typedef struct pw_zero_copy_input {
+        void *ctx;
+        bool (*next)(void *ctx, const void **data, int *size);
+        void (*backUp)(void *ctx, int size);
+        bool (*skip)(void *ctx, int size);
+        int64_t (*byteCount)(void *ctx);
+    } pw_zero_copy_input_t;
+
+    pw_decoder_t * pw_decoder_new(pw_zero_copy_input_t zero_copy_input);
     void pw_decoder_delete(pw_decoder_t *self);
 
     uint32_t pw_decoder_read_tag(pw_decoder_t *self);

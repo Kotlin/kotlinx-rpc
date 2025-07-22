@@ -20,6 +20,8 @@ kotlin {
                 api(projects.core)
                 api(projects.utils)
                 api(libs.coroutines.core)
+
+                implementation(libs.kotlinx.io.core)
             }
         }
 
