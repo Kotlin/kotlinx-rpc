@@ -160,6 +160,10 @@ public final class kotlinx/rpc/proto/ConstsKt {
 	public static final field PROTO_SOURCE_SETS Ljava/lang/String;
 }
 
+public final class kotlinx/rpc/proto/KxrpcPluginJarKt {
+	public static final fun getKxrpcProtocPluginJarPath (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+}
+
 public abstract class kotlinx/rpc/proto/ProcessProtoFiles : org/gradle/api/tasks/Copy {
 	public fun <init> ()V
 }

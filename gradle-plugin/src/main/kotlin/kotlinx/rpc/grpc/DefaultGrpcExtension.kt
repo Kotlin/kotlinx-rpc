@@ -256,7 +256,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
     private fun createDefaultProtocPlugins() {
         protocPlugins.create(KXRPC) {
             local {
-                javaJar(project.configurations.named(KXRPC_PLUGIN_JAR_CONFIGURATION).map { it.singleFile.absolutePath })
+                javaJar(project.kxrpcProtocPluginJarPath)
             }
 
             options.put("debugOutput", "protobuf-kxrpc-plugin.log")
