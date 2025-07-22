@@ -9,7 +9,6 @@ import kotlinx.rpc.buf.tasks.BufExecTask
 import kotlinx.rpc.util.ProcessRunner
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.logging.LogLevel
 import org.gradle.kotlin.dsl.dependencies
 
 // See: https://github.com/bufbuild/buf-gradle-plugin/blob/1bc48078880887797db3aa412d6a3fea60461276/src/main/kotlin/build/buf/gradle/BufSupport.kt#L28
@@ -60,7 +59,7 @@ internal fun BufExecTask.execBuf(args: Iterable<Any>) {
             add(configValue.absolutePath)
         }
 
-        if (project.gradle.startParameter.logLevel == LogLevel.DEBUG) {
+        if (debug.get()) {
             add("--debug")
         }
 

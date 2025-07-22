@@ -26,6 +26,7 @@ import kotlin.reflect.KClass
 import kotlinx.rpc.buf.BUF_GEN_YAML
 import kotlinx.rpc.buf.BUF_YAML
 import kotlinx.rpc.buf.BufTasksExtension
+import org.gradle.api.logging.LogLevel
 
 /**
  * Abstract base class for `buf` tasks.
@@ -37,6 +38,9 @@ public abstract class BufExecTask : DefaultTask() {
 
     @get:InputFile
     internal abstract val bufExecutable: Property<File>
+
+    @get:Input
+    internal abstract val debug: Property<Boolean>
 
     /**
      * The `buf` command to execute.
@@ -114,6 +118,7 @@ internal fun <T : BufExecTask> Project.registerBufExecTask(
     configFile.set(buf.configFile)
     logFormat.set(buf.logFormat)
     bufTimeoutInWholeSeconds.set(buf.timeout.map { it.inWholeSeconds })
+    debug.set(project.gradle.startParameter.logLevel == LogLevel.DEBUG)
 
     configuration()
 }
