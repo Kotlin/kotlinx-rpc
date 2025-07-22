@@ -100,7 +100,9 @@ public open class ProtocPlugin(
     /**
      * Local protoc plugin artifact.
      *
-     * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#type-of-plugin">Buf documentation - Type of plugin</a>
+     * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#type-of-plugin">
+     *     Buf documentation - Type of plugin
+     * </a>
      */
     public fun local(action: Action<Artifact.Local>) {
         artifact.set(Artifact.Local(project).apply(action::execute))
@@ -109,7 +111,9 @@ public open class ProtocPlugin(
     /**
      * Remote protoc plugin artifact.
      *
-     * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#type-of-plugin">Buf documentation - Type of plugin</a>
+     * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#type-of-plugin">
+     *     Buf documentation - Type of plugin
+     * </a>
      */
     public fun remote(action: Action<Artifact.Remote>) {
         artifact.set(Artifact.Remote(project).apply(action::execute))
@@ -120,7 +124,9 @@ public open class ProtocPlugin(
      *
      * Can be either [Artifact.Local] or [Artifact.Remote].
      *
-     * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#type-of-plugin">Buf documentation - Type of plugin</a>
+     * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#type-of-plugin">
+     *     Buf documentation - Type of plugin
+     * </a>
      */
     public val artifact: Property<Artifact> = project.objects.property<Artifact>()
 
@@ -140,7 +146,9 @@ public open class ProtocPlugin(
      * Optional.
      * Default is Buf's default.
      *
-     * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#include_imports">Buf documentation - include_imports</a>
+     * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#include_imports">
+     *     Buf documentation - include_imports
+     * </a>
      */
     public val includeImports: Property<Boolean?> = project.objects.property<Boolean?>().convention(null)
 
@@ -150,7 +158,9 @@ public open class ProtocPlugin(
      * Optional.
      * Default is Buf's default.
      *
-     * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#include_wkt">Buf documentation - include_wkt</a>
+     * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#include_wkt">
+     *     Buf documentation - include_wkt
+     * </a>
      */
     public val includeWkt: Property<Boolean?> = project.objects.property<Boolean?>().convention(null)
 
@@ -159,7 +169,9 @@ public open class ProtocPlugin(
      *
      * Optional.
      *
-     * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#types">Buf documentation - types</a>
+     * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#types">
+     *     Buf documentation - types
+     * </a>
      */
     public val types: ListProperty<String> = project.objects.listProperty()
 
@@ -168,7 +180,9 @@ public open class ProtocPlugin(
      *
      * Optional.
      *
-     * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#exclude-types">Buf documentation - exclude-types</a>
+     * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#exclude-types">
+     *     Buf documentation - exclude-types
+     * </a>
      */
     public val excludeTypes: ListProperty<String> = project.objects.listProperty()
 
@@ -220,7 +234,9 @@ public open class ProtocPlugin(
          *
          * Local artifact is defined by a list of command-line arguments that execute the plugin - [executor]
          *
-         * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#type-of-plugin">Buf documentation - Type of plugin</a>
+         * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#type-of-plugin">
+         *     Buf documentation - Type of plugin
+         * </a>
          */
         public class Local(private val project: Project) : Artifact() {
             /**
@@ -268,7 +284,9 @@ public open class ProtocPlugin(
          *
          * Locator is a BSR Url.
          *
-         * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#type-of-plugin">Buf documentation - Type of plugin</a>
+         * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#type-of-plugin">
+         *     Buf documentation - Type of plugin
+         * </a>
          */
         public class Remote(project: Project) : Artifact() {
             public val locator: Property<String> = project.objects.property()

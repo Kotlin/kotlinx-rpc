@@ -34,10 +34,15 @@ internal data class ResolvedGrpcPlugin(
     val types: List<String>,
     val excludeTypes: List<String>,
 ) : Serializable {
-    @Suppress("EnumEntryName")
+    @Suppress("EnumEntryName", "detekt.EnumNaming")
     enum class Type {
         local, remote,
         ;
+    }
+
+    companion object {
+        @Suppress("unused")
+        private const val serialVersionUID: Long = 1L
     }
 }
 
@@ -59,6 +64,7 @@ public abstract class GenerateBufGenYaml : DefaultTask() {
     }
 
     @TaskAction
+    @Suppress("detekt.CyclomaticComplexMethod", "detekt.NestedBlockDepth")
     internal fun generate() {
         val file = bufGenFile.get()
         if (!file.exists()) {
@@ -80,7 +86,9 @@ public abstract class GenerateBufGenYaml : DefaultTask() {
                         }
                     }
 
-                    ResolvedGrpcPlugin.Type.remote -> plugin.locator.single()
+                    ResolvedGrpcPlugin.Type.remote -> {
+                        plugin.locator.single()
+                    }
                 }
 
                 writer.appendLine("  - ${plugin.type.name}: $locatorLine")
@@ -149,7 +157,11 @@ internal fun Project.registerGenerateBufGenYamlTask(
                 }
 
                 ResolvedGrpcPlugin(
-                    type = if (artifact is ProtocPlugin.Artifact.Local) ResolvedGrpcPlugin.Type.local else ResolvedGrpcPlugin.Type.remote,
+                    type = if (artifact is ProtocPlugin.Artifact.Local) {
+                        ResolvedGrpcPlugin.Type.local
+                    } else {
+                        ResolvedGrpcPlugin.Type.remote
+                    },
                     locator = locator,
                     options = plugin.options.get(),
                     out = plugin.name,

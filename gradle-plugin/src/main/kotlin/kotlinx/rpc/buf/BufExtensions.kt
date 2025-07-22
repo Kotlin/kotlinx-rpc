@@ -111,7 +111,11 @@ public open class BufTasksExtension @Inject constructor(internal val project: Pr
      *
      * Note the by default 'test' task doesn't depend on 'main' task.
      */
-    public fun <T : BufExecTask> registerWorkspaceTask(kClass: KClass<T>, name: String, configure: Action<T>): Provider<T> {
+    public fun <T : BufExecTask> registerWorkspaceTask(
+        kClass: KClass<T>,
+        name: String,
+        configure: Action<T>,
+    ): Provider<T> {
         val property = project.objects.property(kClass)
 
         @Suppress("UNCHECKED_CAST")
@@ -131,7 +135,10 @@ public open class BufTasksExtension @Inject constructor(internal val project: Pr
      *
      * Note the by default 'test' task doesn't depend on 'main' task.
      */
-    public inline fun <reified T : BufExecTask> registerWorkspaceTask(name: String, configure: Action<T>): Provider<T> {
+    public inline fun <reified T : BufExecTask> registerWorkspaceTask(
+        name: String,
+        configure: Action<T>,
+    ): Provider<T> {
         return registerWorkspaceTask(T::class, name, configure)
     }
 
@@ -155,7 +162,9 @@ public open class BufGenerateExtension @Inject constructor(internal val project:
     /**
      * `--include-imports` option.
      *
-     * @see <a href="https://buf.build/docs/reference/cli/buf/generate/#include-imports">buf generate --include-imports</a>
+     * @see <a href="https://buf.build/docs/reference/cli/buf/generate/#include-imports">
+     *     buf generate --include-imports
+     * </a>
      * @see [ProtocPlugin.includeImports]
      */
     public val includeImports: Property<Boolean> = project.objects.property<Boolean>().convention(false)
@@ -173,7 +182,8 @@ public open class BufGenerateExtension @Inject constructor(internal val project:
      *
      * @see <a href="https://buf.build/docs/reference/cli/buf/generate/#error-format">buf generate --error-format</a>
      */
-    public val errorFormat: Property<ErrorFormat> = project.objects.property<ErrorFormat>().convention(ErrorFormat.Default)
+    public val errorFormat: Property<ErrorFormat> = project.objects.property<ErrorFormat>()
+        .convention(ErrorFormat.Default)
 
     /**
      * Possible values for `--error-format` option.

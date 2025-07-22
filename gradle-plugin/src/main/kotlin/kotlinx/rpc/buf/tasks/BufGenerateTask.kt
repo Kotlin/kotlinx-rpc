@@ -32,7 +32,9 @@ public abstract class BufGenerateTask : BufExecTask() {
     /**
      * Whether to include imports.
      *
-     * @see <a href="https://buf.build/docs/reference/cli/buf/generate/#include-imports">buf generate --include-imports</a>
+     * @see <a href="https://buf.build/docs/reference/cli/buf/generate/#include-imports">
+     *     buf generate --include-imports
+     * </a>
      * @see [BufGenerateExtension.includeImports]
      */
     @get:Input

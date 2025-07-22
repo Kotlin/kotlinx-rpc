@@ -77,6 +77,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
         }
     }
 
+    @Suppress("detekt.LongMethod", "detekt.CyclomaticComplexMethod")
     private fun Project.configureTasks(protoSourceSet: DefaultProtoSourceSet) {
         val baseName = protoSourceSet.baseName.get()
         val baseGenDir = project.protoBuildDirSourceSets.resolve(baseName)
@@ -222,7 +223,8 @@ internal open class DefaultGrpcExtension @Inject constructor(
                     (it as KotlinSourceSet)
                         .kotlin.srcDirs(out.resolve(plugin.name))
                 } ?: error(
-                    "Unable to find fitting source directory set for plugin '${plugin.name}' in '$protoSourceSet' source set"
+                    "Unable to find fitting source directory set " +
+                            "for plugin '${plugin.name}' in '$protoSourceSet' source set"
                 )
             }
         }
@@ -232,7 +234,11 @@ internal open class DefaultGrpcExtension @Inject constructor(
             val capital = definition.name.replaceFirstChar { it.uppercase() }
             val taskName = "buf$capital$baseCapital"
 
-            val customTask = registerBufExecTask(clazz = definition.kClass, workingDir = provider { baseGenDir }, name = taskName) {
+            val customTask = registerBufExecTask(
+                clazz = definition.kClass,
+                workingDir = provider { baseGenDir },
+                name = taskName,
+            ) {
                 dependsOn(generateBufYamlTask)
                 dependsOn(generateBufGenYamlTask)
                 dependsOn(processProtoTask)
@@ -292,13 +298,12 @@ internal open class DefaultGrpcExtension @Inject constructor(
             }
 
             name.endsWith("Test") -> {
-                val main = project.protoSourceSets
-                    .getByName(correspondingMainName()) as DefaultProtoSourceSet
-
-                main
+                project.protoSourceSets.getByName(correspondingMainName()) as DefaultProtoSourceSet
             }
 
-            else -> throw GradleException("Unknown source set name: $name")
+            else -> {
+                throw GradleException("Unknown source set name: $name")
+            }
         }
     }
 

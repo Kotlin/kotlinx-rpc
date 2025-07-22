@@ -51,7 +51,10 @@ internal open class DefaultProtoSourceSet @Inject constructor(
         protocPlugins.add(plugin.name)
     }
 
-    override val proto: SourceDirectorySet = project.objects.sourceDirectorySet(PROTO_SOURCE_DIRECTORY_NAME, "Proto sources").apply {
+    override val proto: SourceDirectorySet = project.objects.sourceDirectorySet(
+        PROTO_SOURCE_DIRECTORY_NAME,
+        "Proto sources",
+    ).apply {
         srcDirs(baseName.map { "src/$it/proto" })
     }
 
@@ -60,9 +63,12 @@ internal open class DefaultProtoSourceSet @Inject constructor(
     }
 }
 
-
 internal fun Project.configureProtoExtensions(
-    configure: Project.(languageSourceSetName: String, languageSourceSet: Any, protoSourceSet: DefaultProtoSourceSet) -> Unit
+    configure: Project.(
+        languageSourceSetName: String,
+        languageSourceSet: Any,
+        protoSourceSet: DefaultProtoSourceSet,
+    ) -> Unit
 ) {
     fun findOrCreateAndConfigure(languageSourceSetName: String, languageSourceSet: Any) {
         val protoName = languageSourceSetName.sourceSetToProtoName()
