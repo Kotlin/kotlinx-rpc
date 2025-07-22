@@ -29,6 +29,7 @@ kotlin {
                 api(libs.coroutines.core)
 
                 implementation(libs.atomicfu)
+                implementation(libs.kotlinx.io.core)
             }
         }
 

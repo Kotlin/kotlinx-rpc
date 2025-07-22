@@ -4,19 +4,32 @@
 
 package kotlinx.rpc.grpc.internal
 
+import kotlinx.io.Sink
+
+/**
+ * A platform-specific class that encodes values into protobuf's wire format.
+ *
+ * If one `write*()` method returns false, the encoding of the value failed
+ * and no further encodings can be performed on this [WireEncoder].
+ *
+ * [flush] must be called to ensure that all data is written to the [Sink].
+ */
 internal interface WireEncoder {
-    fun readTag(): KTag?
-    fun readBool(): Boolean?
-    fun readInt32(): Int?
-    fun readInt64(): Long?
-    fun readUInt32(): UInt?
-    fun readUInt64(): ULong?
-    fun readSInt32(): Int?
-    fun readSInt64(): Long?
-    fun readFixed32(): UInt?
-    fun readFixed64(): ULong?
-    fun readSFixed32(): Int?
-    fun readSFixed64(): Long?
-    fun readEnum(): Int?
-    fun readString(): String?
+    fun writeBool(field: Int, value: Boolean): Boolean
+    fun writeInt32(fieldNr: Int, value: Int): Boolean
+    fun writeInt64(fieldNr: Int, value: Long): Boolean
+    fun writeUInt32(fieldNr: Int, value: UInt): Boolean
+    fun writeUInt64(fieldNr: Int, value: ULong): Boolean
+    fun writeSInt32(fieldNr: Int, value: Int): Boolean
+    fun writeSInt64(fieldNr: Int, value: Long): Boolean
+    fun writeFixed32(fieldNr: Int, value: UInt): Boolean
+    fun writeFixed64(fieldNr: Int, value: ULong): Boolean
+    fun writeSFixed32(fieldNr: Int, value: Int): Boolean
+    fun writeSFixed64(fieldNr: Int, value: Long): Boolean
+    fun writeEnum(fieldNr: Int, value: Int): Boolean
+    fun writeString(fieldNr: Int, value: String): Boolean
+    fun flush()
 }
+
+
+internal expect fun WireEncoder(sink: Sink): WireEncoder

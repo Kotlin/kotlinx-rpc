@@ -4,36 +4,85 @@
 
 #include "protowire.h"
 
+#include <utility>
+
 #include "src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 #include "src/google/protobuf/io/coded_stream.h"
 #include "src/google/protobuf/wire_format_lite.h"
 
 namespace pb = google::protobuf;
-
 typedef pb::internal::WireFormatLite WireFormatLite;
+
+namespace protowire {
+class SinkStream final : public pb::io::CopyingOutputStream {
+public:
+    SinkStream(void *ctx, bool(*sink)(void *ctx, const void *buffer, int size))
+        : ctx(ctx),
+          sink(sink) {
+    }
+
+    bool Write(const void *buffer, int size) override {
+        return sink(ctx, buffer, size);
+    }
+
+private:
+    void *ctx;
+    bool (*sink)(void *ctx, const void *buffer, int size);
+};
+
+class SourceStream final : public pb::io::ZeroCopyInputStream {
+public:
+    explicit SourceStream(const pw_zero_copy_input_t &input)
+        : input(input) {
+    }
+
+    bool Next(const void **data, int *size) override {
+        return input.next(input.ctx, data, size);
+    };
+
+    void BackUp(int count) override {
+        return input.backUp(input.ctx, count);
+    };
+
+    bool Skip(int count) override {
+        return input.skip(input.ctx, count);
+    };
+
+    int64_t ByteCount() const override {
+        return input.byteCount(input.ctx);
+    };
+
+private:
+    pw_zero_copy_input_t input;
+};
+
+}
 
 struct pw_string {
     std::string str;
 };
 
 struct pw_encoder {
-    pb::io::ArrayOutputStream aos;
+    protowire::SinkStream sinkStream;
+    pb::io::CopyingOutputStreamAdaptor cosa;
     pb::io::CodedOutputStream cos;
 
-    pw_encoder(uint8_t* buf, int size)
-    : aos(buf, size),
-      cos(&aos) {}
+    explicit pw_encoder(protowire::SinkStream sink)
+    : sinkStream(std::move(sink)),
+      cosa(&sinkStream),
+      cos(&cosa) {}
 
 };
 
 struct pw_decoder {
-    pb::io::ArrayInputStream ais;
+    protowire::SourceStream ss;
     pb::io::CodedInputStream cis;
 
-    pw_decoder(uint8_t* buf, int size)
-    : ais(buf, size),
-      cis(&ais) {}
+    pw_decoder(pw_zero_copy_input_t input)
+    : ss(input),
+      cis(&ss) {}
 };
+
 
 extern "C" {
 
@@ -47,12 +96,20 @@ extern "C" {
         return self->str.c_str();
     }
 
-    pw_encoder_t * pw_encoder_new(uint8_t *buf, uint32_t cap) {
-        return new pw_encoder_t(buf, cap);
+    pw_encoder_t *pw_encoder_new(void* ctx, bool (* sink_fn)(void* ctx, const void* buf, int size)) {
+        auto sink = protowire::SinkStream(ctx, sink_fn);
+        return new pw_encoder(std::move(sink));
     }
 
     void pw_encoder_delete(pw_encoder_t *self) {
         delete self;
+    }
+    bool pw_encoder_flush(pw_encoder_t *self) {
+        self->cos.Trim();
+        if (!self->cosa.Flush()) {
+            return false;
+        }
+        return !self->cos.HadError();
     }
 
     // check if there was an error
@@ -89,8 +146,8 @@ extern "C" {
     }
 
 
-    pw_decoder_t *pw_decoder_new(uint8_t *buf, uint32_t cap) {
-        return new pw_decoder_t(buf, cap);
+    pw_decoder_t *pw_decoder_new(pw_zero_copy_input_t zero_copy_input) {
+        return new pw_decoder_t(zero_copy_input);
     }
 
     void pw_decoder_delete(pw_decoder_t *self) {

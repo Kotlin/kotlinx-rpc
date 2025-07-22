@@ -1,6 +1,14 @@
 load("@emsdk//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
 load("@rules_cc//cc:defs.bzl", "cc_library")
 
+cc_binary(
+    name = "testdemo",
+    srcs = ["src/main.cpp"],
+    deps = [
+        ":protowire",
+    ],
+)
+
 cc_static_library(
     name = "grpcpp_c_static",
     deps = [
@@ -16,9 +24,12 @@ cc_library(
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [
+        # TODO: Reduce the dependencies and only use required once
         "@com_github_grpc_grpc//:channelz",
         "@com_github_grpc_grpc//:generic_stub",
+        "@com_github_grpc_grpc//:grpc++",
         "@com_github_grpc_grpc//:grpc_credentials_util",
+        "@com_google_protobuf//:protobuf",
     ],
 )
 
