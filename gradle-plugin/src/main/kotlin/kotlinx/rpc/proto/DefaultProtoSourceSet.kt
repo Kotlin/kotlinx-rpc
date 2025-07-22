@@ -38,7 +38,6 @@ internal open class DefaultProtoSourceSet @Inject constructor(
     internal val project: Project,
     override val name: String,
 ) : ProtoSourceSet {
-    val baseName: Property<String> = project.objects.property<String>()
     val languageSourceSets: ListProperty<Any> = project.objects.listProperty<Any>()
     val protocPlugins: ListProperty<String> = project.objects.listProperty<String>().convention(emptyList())
     val generateTask: Property<BufGenerateTask> = project.objects.property<BufGenerateTask>()
@@ -55,7 +54,7 @@ internal open class DefaultProtoSourceSet @Inject constructor(
         PROTO_SOURCE_DIRECTORY_NAME,
         "Proto sources",
     ).apply {
-        srcDirs(baseName.map { "src/$it/proto" })
+        srcDirs("src/$name/proto")
     }
 
     override fun proto(action: Action<SourceDirectorySet>) {
@@ -65,13 +64,11 @@ internal open class DefaultProtoSourceSet @Inject constructor(
 
 internal fun Project.configureProtoExtensions(
     configure: Project.(
-        languageSourceSetName: String,
         languageSourceSet: Any,
         protoSourceSet: DefaultProtoSourceSet,
     ) -> Unit
 ) {
     fun findOrCreateAndConfigure(languageSourceSetName: String, languageSourceSet: Any) {
-        val protoName = languageSourceSetName.sourceSetToProtoName()
         val container = project.findOrCreate(PROTO_SOURCE_SETS) {
             val container = objects.domainObjectContainer(
                 ProtoSourceSet::class.java,
@@ -83,9 +80,9 @@ internal fun Project.configureProtoExtensions(
             container
         }
 
-        val protoSourceSet = container.maybeCreate(protoName) as DefaultProtoSourceSet
+        val protoSourceSet = container.maybeCreate(languageSourceSetName) as DefaultProtoSourceSet
 
-        configure(languageSourceSetName, languageSourceSet, protoSourceSet)
+        configure(languageSourceSet, protoSourceSet)
     }
 
     project.withKotlinJvmExtension {
@@ -113,23 +110,12 @@ internal fun Project.configureProtoExtensions(
     }
 }
 
-private fun String.sourceSetToProtoName(): String {
-    return when  {
-        this == "main" -> "protoMain"
-        this == "test" -> "protoTest"
-        endsWith("Main") -> "${removeSuffix("Main")}ProtoMain"
-        endsWith("Test") -> "${removeSuffix("Test")}ProtoTest"
-        else -> throw IllegalArgumentException("Unsupported source set name: $this")
-    }
-}
-
 internal fun Project.createProtoExtensions() {
-    configureProtoExtensions { languageSourceSetName, languageSourceSet, sourceSet ->
-        sourceSet.initExtension(languageSourceSetName, languageSourceSet)
+    configureProtoExtensions { languageSourceSet, sourceSet ->
+        sourceSet.initExtension(languageSourceSet)
     }
 }
 
-private fun DefaultProtoSourceSet.initExtension(languageSourceSetName: String, languageSourceSet: Any) {
-    baseName.set(languageSourceSetName)
+private fun DefaultProtoSourceSet.initExtension(languageSourceSet: Any) {
     this.languageSourceSets.add(languageSourceSet)
 }

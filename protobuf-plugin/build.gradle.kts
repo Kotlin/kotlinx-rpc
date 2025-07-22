@@ -33,7 +33,7 @@ dependencies {
 }
 
 protoSourceSets {
-    protoTest {
+    test {
         proto {
             exclude("exclude/**")
         }

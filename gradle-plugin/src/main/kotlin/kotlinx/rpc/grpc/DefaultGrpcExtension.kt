@@ -59,7 +59,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
 
         createDefaultProtocPlugins()
 
-        project.configureProtoExtensions { _, _, protoSourceSet ->
+        project.configureProtoExtensions { _, protoSourceSet ->
             protoSourceSet.protocPlugin(protocPlugins.protobufJava)
             protoSourceSet.protocPlugin(protocPlugins.grpcJava)
             protoSourceSet.protocPlugin(protocPlugins.grpcKotlin)
@@ -79,7 +79,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
 
     @Suppress("detekt.LongMethod", "detekt.CyclomaticComplexMethod")
     private fun Project.configureTasks(protoSourceSet: DefaultProtoSourceSet) {
-        val baseName = protoSourceSet.baseName.get()
+        val baseName = protoSourceSet.name
         val baseGenDir = project.protoBuildDirSourceSets.resolve(baseName)
 
         val pairSourceSet = protoSourceSet.correspondingMainSourceSetOrNull()
@@ -224,7 +224,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
                         .kotlin.srcDirs(out.resolve(plugin.name))
                 } ?: error(
                     "Unable to find fitting source directory set " +
-                            "for plugin '${plugin.name}' in '$protoSourceSet' source set"
+                            "for plugin '${plugin.name}' in '$protoSourceSet' proto source set"
                 )
             }
         }
@@ -293,11 +293,11 @@ internal open class DefaultGrpcExtension @Inject constructor(
 
     private fun DefaultProtoSourceSet.correspondingMainSourceSetOrNull(): DefaultProtoSourceSet? {
         return when {
-            name.endsWith("Main") -> {
+            name.lowercase().endsWith("main") -> {
                 null
             }
 
-            name.endsWith("Test") -> {
+            name.lowercase().endsWith("test") -> {
                 project.protoSourceSets.getByName(correspondingMainName()) as DefaultProtoSourceSet
             }
 
