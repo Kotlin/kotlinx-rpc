@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
 <!DOCTYPE topic
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -7,7 +11,8 @@
 
     <tldr>
         <p>
-            Artifacts for gRPC integration are published <a href="https://public.jetbrains.space/p/krpc/packages/maven/grpc">separately</a>
+            Artifacts for gRPC integration are published <a
+                href="https://public.jetbrains.space/p/krpc/packages/maven/grpc">separately</a>
             and updated frequently, independent of the main releases.
         </p>
         <p>
@@ -39,137 +44,425 @@
             <code>build.gradle.kts</code>:
         </p>
         <code-block lang="Kotlin">
-           plugins {
-               kotlin("jvm") version "%kotlin-version%"
-               kotlin("plugin.serialization") version "%kotlin-version%"
-               id("org.jetbrains.kotlinx.rpc.plugin") version "&lt;version&gt;"
-               id("com.google.protobuf") version "0.9.4"
-           }
+            plugins {
+                kotlin("jvm") version "%kotlin-version%"
+                id("org.jetbrains.kotlinx.rpc.plugin") version "&lt;version&gt;"
+            }
 
-           repositories {
-               mavenCentral()
-               maven("https://maven.pkg.jetbrains.space/public/p/krpc/grpc")
-           }
+            repositories {
+                mavenCentral()
+                maven("https://maven.pkg.jetbrains.space/public/p/krpc/grpc")
+            }
 
-           dependencies {
-               implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core:&lt;version&gt;")
-               implementation("ch.qos.logback:logback-classic:1.5.16")
-               implementation("io.grpc:grpc-netty:1.69.0")
-           }
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core:&lt;version&gt;")
+                implementation("ch.qos.logback:logback-classic:1.5.16")
+                implementation("io.grpc:grpc-netty:1.73.0")
+            }
         </code-block>
         <p>Here <code>&lt;version&gt;</code> comes from the badge above.</p>
-        <warning>
-            The setup has only been tested on <code>Kotlin/JVM</code> projects.
-        </warning>
+        <note>
+            We prohibit using <code>com.google.protobuf</code> Gradle Plugin
+            in projects with our plugin to prevent conflicts.
+        </note>
     </chapter>
-    <chapter title="Protoc setup" id="protoc-setup">
+    <chapter id="working-with-proto-files">
+        <title>
+            Working with <code>.proto</code> files
+        </title>
         <p>
-            gRPC requires additional code generation from the <a href="https://github.com/google/protobuf-gradle-plugin">protoc</a>
-            compiler.
-            It is set up automatically for you when the <code>com.google.protobuf</code>
-            plugin is present in the project.
-        </p>
-        <p>
-            We provide additional options for configuration:
+            The minimum required configuration looks like this:
         </p>
         <code-block lang="Kotlin">
             rpc {
-                grpc {
-                    // Enforce additional checks on the project configuration
-                    enabled = true
-
-                    // Quick access to a `Locator` and `Options`
-                    // for the kotlinx-rpc Protobuf plugin
-                    plugin {
-                        options {
-                            // Add or modify options
-                            option("debugOutput=myFile.txt")
-                        }
-
-                        locator {
-                            // Override artifact coordinates
-                            artifact = "some-other:artifact:version"
-                        }
-                    }
-
-                    // same as `plugin`, but for gRPC Java generation
-                    grpcJavaPlugin { ... }
-                    // same as `plugin`, but for gRPC Kotlin generation
-                    grpcKotlinPlugin { ... }
-
-                    // access `generateProto` tasks
-                    tasks {
-                        plugins {
-                            create("python")
-                        }
-                    }
-
-                    // access `generateProto` tasks with a filter
-                    tasksMatching { it.isTest }.all {
-                        plugins {
-                            create("cpp")
-                        }
-                    }
-                }
+                grpc()
             }
         </code-block>
         <p>
-            You can still use <code>protobuf</code> extension to access the configuration.
-            The following is the equivalent for the above code using the <code>protobuf</code> extension:
-        </p>
-        <code-block lang="Kotlin">
-            protobuf {
-                plugins {
-                    named(GrpcExtension.LOCATOR_NAME) {
-                        artifact = "some-other:artifact:version"
-                    }
-
-                    named(GrpcExtension.GRPC_JAVA_LOCATOR_NAME) { ... }
-                    named(GrpcExtension.GRPC_KOTLIN_LOCATOR_NAME) { ... }
-                }
-
-                generateProtoTasks {
-                    all().all {
-                        plugins {
-                            named(GrpcExtension.LOCATOR_NAME) {
-                                option("debugOutput=myFile.txt")
-                            }
-
-                            create("python")
-
-                            if (isTest) {
-                                create("cpp")
-                            }
-                        }
-                    }
-                }
-            }
-        </code-block>
-        <p>
-            The minimum recommended configuration looks like this:
-        </p>
-        <code-block lang="Kotlin">
-            rpc {
-                grpc {
-                    enabled = true
-                }
-            }
-        </code-block>
-        <p>
-            By default, four source sets will be generated:
+            This will enable the code generation for your <code>.proto</code> files.
+            We create special source sets for <code>.proto</code> files:
         </p>
         <list>
-            <li><code>java</code> - protobuf Java declarations</li>
-            <li><code>grpc</code> - gRPC Java declarations</li>
-            <li><code>grpckt</code> - gRPC Kotlin wrappers for Java</li>
-            <li><code>kotlinx-rpc</code> - our wrappers for all of the above</li>
+            <li>
+                <code>main</code> and <code>test</code> - source sets for Kotlin/JVM projects.
+                Default source directories are <code>src/main/proto</code> and <code>src/test/proto</code>.
+            </li>
+            <li>
+                <code>jvmMain</code> and <code>jvmTest</code> - source sets for Kotlin/Multiplatform projects.
+                Default source directories are <code>src/jsmMain/proto</code> and <code>src/jvmTest/proto</code>.
+                <warning>
+                    This will change to <code>src/commonMain/proto</code> and <code>src/commonTest/proto</code> in the
+                    future.
+                </warning>
+                <note>
+                    Source set hierarchy is not supported, and we have no plans to support it.
+                    That means, for example,
+                    that you can't have <code>jsMain</code> and <code>jsTest</code> source sets for proto files.
+                    Same for native and WASM.
+                    Proto files can only be in the <code>jvmMain</code> and <code>jvmTest</code> source sets.
+                    (Later to be replaced with <code>commonMain</code> and <code>commonTest</code>)
+                    <br/>
+                    <br/>
+                    If you have a use case for other source sets and a hierarchy,
+                    please <a href="https://github.com/Kotlin/kotlinx-rpc/issues/new?template=feature_request.md">report it</a>.
+                </note>
+            </li>
+            <li>
+                Android source sets are not supported yet. <b>WIP</b>
+            </li>
         </list>
         <p>
-            Only the declarations from the <code>kotlinx-rpc</code> source set are intended to be used.
+            All source sets are generated automatically and available
+            via the <code>protoSourceSets</code> Gradle Project extension:
+        </p>
+        <code-block lang="Kotlin">
+            protoSourceSets {
+                // for Kotlin/JVM projects
+                main {
+                    proto {
+                        // SourceDirectorySet for .proto files
+                        include("**/main.proto") // optional filters
+                        exclude("**/excluded.proto")
+                    }
+                }
+                test { }
+
+                // for Kotlin/Multiplatform projects
+                jvmMain { }
+                jvmTest { }
+            }
+        </code-block>
+        <p>
+            By default, four source directories will be generated:
+        </p>
+        <list>
+            <li>
+                <code>java</code> - protobuf Java declarations, attached to <code>java</code> sources
+            </li>
+            <li>
+                <code>grpc-java</code> - gRPC Java declarations, attached to <code>java</code> sources
+            </li>
+            <li>
+                <code>grpc-kotlin</code> - gRPC Kotlin wrappers for Java, attached to <code>kotlin</code> sources
+            </li>
+            <li>
+                <code>kotlinx-multiplatform</code> - our wrappers for all of the above, attached to <code>kotlin</code> sources
+            </li>
+        </list>
+        <note>
+            Only the declarations from the <code>kotlinx-multiplatform</code> source set are intended to be used.
+            The other ones are for internal use only and will be removed in the future.
+        </note>
+    </chapter>
+    <chapter title="Protoc plugins" id="protoc-plugins">
+        <p>
+            To generate code, we need to use <a href="https://protobuf.dev/reference/other/">protoc plugins</a>.
+            By default, we use the following plugins:
+        </p>
+        <list>
+            <li>
+                <a href="https://buf.build/protocolbuffers/java">protobuf-java</a> - Buf's version of the official Java
+                plugin.
+            </li>
+            <li>
+                <a href="https://buf.build/grpc/java">grpc-java</a> - Buf's version of the official gRPC Java plugin.
+            </li>
+            <li>
+                <a href="https://buf.build/grpc/kotlin">grpc-kotlin</a> - Buf's version of the official gRPC Kotlin
+                plugin.
+            </li>
+            <li>
+                <code>kotlinx-multiplatform</code> - out own protoc plugin.
+            </li>
+        </list>
+        <p>
+            You can configure the plugins in the <code>rpc</code> block:
+        </p>
+        <code-block lang="Kotlin">
+            rpc {
+                grpc {
+                    // configure plugins here
+                    protocPlugins {
+                        kotlinMultiplatform { }
+                        protobufJava { }
+                        grpcJava { }
+                        grpcKotlin { }
+
+                        create("myPlugin") { }
+                    }
+                }
+            }
+        </code-block>
+        <p>
+            <code>protocPlugins</code> is a <code>NamedDomainObjectContainer&lt;ProtocPlugin&gt;</code>,
+            which allows to add your own plugins.
         </p>
         <p>
-            Source sets are generated into the <code>$BUILD_DIR/generated/source/proto/main</code> directory
-            unless specified otherwise.
+            Every plugin is a <code>ProtocPlugin</code> class, that can be configured like this:
         </p>
+        <code-block lang="Kotlin">
+            // or like protocPlugins.kotlinMultiplatform for default plugins
+            protocPlugins.create("myPlugin") {
+                isJava = true // add generated code to the java source set
+
+                // add plugin options
+                options.put("myOption")
+                options.put("myOption1", "myValue")
+
+                // Plugin can be local or remote
+
+                // For a local plugin
+                local {
+                    // Path to the plugin executable
+                    executor("java", "-jar", "myPlugin.jar")
+                    // or
+                    javaJar("myPlugin.jar") // uses java.home
+                    // or
+                    javaJar("myPlugin.jar", "path/to/my/java")
+                    // or
+                    executor("myCustomExe.exe")
+                }
+
+                // For a remote plugin
+                remote {
+                    // Buf's BSR locator
+                    locator = "buf.build/grpc/go"
+                }
+
+                // other Buf configuration options:
+                strategy = ProtocPlugin.Strategy.All
+                includeImports = false
+                includeWkt = false
+                types = listOf("my.package.MyType")
+                excludeTypes = listOf("my.package.NotMyType")
+            }
+        </code-block>
+        <p>
+            Buf's plugin <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml#plugins">configuration</a>
+            options:
+        </p>
+        <list>
+            <li>
+                <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#strategy">strategy</a>
+                — <code>All</code> or <code>Directory</code>
+            </li>
+            <li>
+                <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#include_imports">includeImports</a>
+                — <code>true</code> or <code>false</code>
+            </li>
+            <li>
+                <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#include_wkt">includeWkt</a>
+                — <code>true</code> or <code>false</code>
+            </li>
+            <li>
+                <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#types">types</a>
+                — a list of types to generate.
+            </li>
+            <li>
+                <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#exclude-types">excludeTypes</a>
+                — a list of types to exclude from generation.
+            </li>
+        </list>
+        <p>
+            A plugin, once added to the <code>protocPlugins</code> container, can be used in a source set:
+        </p>
+        <code-block lang="Kotlin">
+            protoSourceSets {
+                jvmMain {
+                    protocPlugin(rpc.grpc.protocPlugins.named("myPlugin"))
+                }
+            }
+        </code-block>
+    </chapter>
+    <chapter title="Buf" id="buf">
+        <p>
+            As you may already notice,
+            we use <a href="https://buf.build/docs">Buf</a> —
+            a tool for managing and building Protobuf schemas.
+            We use its CLI to execute tasks like code generation.
+        </p>
+        <note>
+            We <b>don't</b> use Buf's <code>build.buf</code> Gradle Plugin
+            and prohibit using it in projects with our plugin to prevent conflicts.
+        </note>
+        <chapter title="Generated Workspace" id="generated-workspace">
+            <p>
+                To make UX smooth, we introduce a concept of a <b>generated workspace</b>.
+                It's a directory that contains all the necessary files for Buf to work:
+            </p>
+            <list>
+                <li>
+                    Filtered <code>.proto</code> files
+                </li>
+                <li>
+                    Generated <code>buf.yaml</code> file
+                </li>
+                <li>
+                    Generated <code>buf.gen.yaml</code> file
+                </li>
+                <li>
+                    Automatically managed imports from a <code>main</code> source set to a <code>test</code> source set,
+                    making imports intuitive.
+                </li>
+            </list>
+            <p>
+                This workspace is created automatically for each source set,
+                and can be found in the <code>build/protoBuild</code> directory.
+                You don't need to do anything with it, unless you want to customise it.
+            </p>
+        </chapter>
+        <chapter title="Tasks" id="buf-tasks">
+            <p>
+                We create the following tasks if the project is configured to use <code>grpc</code>:
+            </p>
+            <list>
+                <li>
+                    <code>generateBufYaml&lt;sourceSet&gt;</code>
+                    — generates <code>buf.yaml</code>
+                    <br/>
+                    <br/>
+                    Type: <code>kotlinx.rpc.buf.tasks.GenerateBufYaml</code>
+                </li>
+                <li>
+                    <code>generateBufGenYaml&lt;sourceSet&gt;</code>
+                    — generates <code>buf.gen.yaml</code>
+                    <br/>
+                    <br/>
+                    Type: <code>kotlinx.rpc.buf.tasks.GenerateBufGenYaml</code>
+                </li>
+                <li>
+                    <code>processProtoFiles&lt;sourceSet&gt;</code>
+                    — copies proto files to the workspace directory
+                    <br/>
+                    <br/>
+                    Type: <code>kotlinx.rpc.proto.ProcessProtoFiles</code>
+                </li>
+                <li>
+                    <code>processProtoFilesImport&lt;sourceSet&gt;</code>
+                    — copies import proto files to the workspace directory
+                    <br/>
+                    <br/>
+                    Type: <code>kotlinx.rpc.proto.ProcessProtoFiles</code>
+                </li>
+                <li>
+                    <code>bufGenerate&lt;sourceSet&gt;</code>
+                    — runs <code>buf generate</code> command.
+                    <br/>
+                    <br/>
+                    Type: <code>kotlinx.rpc.buf.tasks.BufGenerateTask</code>
+                </li>
+            </list>
+            <p>
+                To configure Buf, use the <code>buf</code> block:
+            </p>
+            <code-block lang="Kotlin">
+                rpc {
+                    grpc {
+                        buf {
+                            // configure Buf here
+                            logFormat = BufExtenstion.LogFormat.Text
+                            timeout = 60.seconds
+
+                            generate {
+                                // configure Buf generate here
+
+                                includeImports = false
+                                includeWkt = false
+                                errorFormat = BufGenerateExtenstion.ErrorFormat.Text
+                            }
+                        }
+                    }
+                }
+            </code-block>
+            <p>
+                General configuration options:
+            </p>
+            <list>
+                <li>
+                    <a href="https://buf.build/docs/reference/cli/buf/#log-format">logFormat</a>
+                    — either <code>Text</code>, <code>Color</code>, <code>Json</code> or <code>Default</code>
+                </li>
+                <li>
+                    <a href="https://buf.build/docs/reference/cli/buf/#timeout">timeout</a>
+                    — timeout for the <code>buf</code> commands, always converted to whole seconds
+                </li>
+                <li>
+                    Gradle's <code>--debug</code> enables Buf's <code>--debug</code> option.
+                </li>
+            </list>
+            <p>
+                <code>buf generate</code> configuration options:
+            </p>
+            <list>
+                <li>
+                    <a href="https://buf.build/docs/reference/cli/buf/generate/#include-imports">includeImports</a>
+                    — <code>true</code> or <code>false</code>
+                </li>
+                <li>
+                    <a href="https://buf.build/docs/reference/cli/buf/generate/#include-wkt">includeWkt</a>
+                    — <code>true</code> or <code>false</code>
+                </li>
+                <li>
+                    <a href="https://buf.build/docs/reference/cli/buf/generate/#error-format">errorFormat</a>
+                    — either <code>Text</code>, <code>Json</code>, <code>Msvs</code>,
+                    <code>Junit</code>, <code>GithubActions</code> or <code>Default</code>
+                </li>
+            </list>
+        </chapter>
+        <chapter title="Custom tasks" id="buf-custom-tasks">
+            <p>
+                We only support <code>generate</code> tasks for now.
+                But Buf has great capabilities for managing <code>.proto</code> files,
+                like linting, detection of breaking changes, etc.
+                So we made it possible to create custom buf tasks.
+            </p>
+            <p>
+                To create a custom task, it must be a subclass of the <code>kotlinx.rpc.buf.tasks.BufExecTask</code>.
+                It doesn't need to define a <code>@TaskAction</code>, just a set of arguments and a command to execute.
+            </p>
+            <p>
+                Registering the task can be done in two ways:
+            </p>
+            <list>
+                <li>
+                    <p>A workspace task (recommended):</p>
+                    <code-block lang="Kotlin">
+                        rpc.grpc.buf.tasks {
+                            val provider = registerWorkspaceTask&lt;MyBufLintTask&gt;("lint") {
+                                // configure task here
+                            }
+
+                            // bufLintMain, or bufLintJvmMain for KMP projects
+                            provider.mainTask
+
+                            // bufLintTest, or bufLintJvmTest for KMP projects
+                            provider.testTask
+                        }
+                    </code-block>
+                    <p>
+                        These tasks can be executed on a generated workspace for all proto source sets.
+                    </p>
+                    <note>
+                        Note that the tasks are not plugged into the build cycle,
+                        so they won't be executed automatically.
+                    </note>
+                </li>
+                <li>
+                    <p>A regular task:</p>
+                    <code-block lang="Kotlin">
+                        project.registerBufExecTask&lt;MyBufLintTask&gt;(
+                            name = "bufLint",
+                            workingDir = workingDirProvider,
+                        ) {
+                            // configure task here
+                        }
+                    </code-block>
+                    <p>
+                        It is just a regular Gradle task that has access to the Buf's executable
+                        and some predefined properties.
+                    </p>
+                </li>
+            </list>
+        </chapter>
     </chapter>
 </topic>
