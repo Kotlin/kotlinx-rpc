@@ -20,10 +20,6 @@ internal class WireDecoderNative(private val source: Buffer): WireDecoder {
     // the CodedInputStream and the given source buffer. it passes functions that call the respective
     // ZeroCopyInputSource methods.
     internal val raw = run {
-        if (source.exhausted()) {
-            error("Failed to create WireDecoder: provided buffer is empty")
-        }
-
         // construct the pw_zero_copy_input_t that functions as a bridge to the ZeroCopyInputSource
         val zeroCopyCInput = cValue<pw_zero_copy_input> {
             ctx = zeroCopyInput.asCPointer()

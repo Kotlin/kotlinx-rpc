@@ -11,6 +11,22 @@ import kotlinx.io.Buffer
  *
  * If one `read*()` method returns `null`, decoding the data failed and no further
  * decoding can be done.
+ *
+ * NOTE: If the value of a `read*()` method is non-null, it doesn't mean that the
+ * value is correctly decoded. E.g., the following test will pass:
+ * ```kt
+ * val fieldNr = 1
+ * val buffer = Buffer()
+ *
+ * val encoder = WireEncoder(buffer)
+ * assertTrue(encoder.writeInt32(fieldNr, 12312))
+ * encoder.flush()
+ *
+ * WireDecoder(buffer).use { decoder ->
+ *     decoder.readTag()
+ *     assertNotNull(decoder.readBool())
+ * }
+ * ```
  */
 internal interface WireDecoder: AutoCloseable {
     fun readTag(): KTag?

@@ -54,6 +54,7 @@ internal class ZeroCopyInputSource(private val inner: Buffer) : AutoCloseable {
     // released by the buffer. this is done by releaseLatestReadSegement
     // which releases the segment in the inner buffer.
     private var latestReadSegementArray: Pinned<ByteArray>? = null
+    private var closed = false;
 
     /**
      * Get access to a segment of continuous bytes in the underlying [Buffer].
@@ -64,6 +65,7 @@ internal class ZeroCopyInputSource(private val inner: Buffer) : AutoCloseable {
      * @return false if the buffer is exhausted, otherwise true
      */
     fun next(outData: CPointer<CPointerVar<ByteVar>>, outSize: CPointer<IntVar>): Boolean {
+        check(!closed) { "ZeroCopyInputSource has already been closed." }
         if (latestReadSegementArray != null) {
             // if there is some unreleased segment array, we must release it first.
             // this will advance the head of the buffer to the correct position.
@@ -105,10 +107,14 @@ internal class ZeroCopyInputSource(private val inner: Buffer) : AutoCloseable {
      * ```
      * This is only possible if [next] was the last method called.
      *
+     * @throws IllegalStateException if [count] is greater than size of the last read segment (retrieved from [next]).
+     *
      */
     fun backUp(count: Int) {
+        check(!closed) { "ZeroCopyInputSource has already been closed." }
         check(latestReadSegementArray != null) { "next() must be immediately before backUp()" }
-        releaseLatestReadSegment(count)
+        val readBytes = releaseLatestReadSegment(count)
+        check(readBytes >= 0) { "backUp() must not be called more than the number of bytes that were read in next()" }
         byteCount -= count;
     }
 
@@ -117,8 +123,9 @@ internal class ZeroCopyInputSource(private val inner: Buffer) : AutoCloseable {
      * @return `false` iff the buffer is exhausted before skipping completed, `true` otherwise
      */
     fun skip(count: Int): Boolean {
+        check(!closed) { "ZeroCopyInputSource has already been closed." }
         if (latestReadSegementArray != null) {
-            releaseLatestReadSegment(count)
+            releaseLatestReadSegment()
         }
         try {
             byteCount += count
@@ -148,6 +155,7 @@ internal class ZeroCopyInputSource(private val inner: Buffer) : AutoCloseable {
         if (latestReadSegementArray != null) {
             releaseLatestReadSegment()
         }
+        closed = true;
     }
 
     /**
@@ -156,21 +164,28 @@ internal class ZeroCopyInputSource(private val inner: Buffer) : AutoCloseable {
      *
      * The [backUpCount] defines how many bytes of the segment should stay valid (not released). This is used by the
      * [backUp] to allow users to replay reading of the latest read segment.
+     * If the [backUpCount] is greater than the segment size, 0 bytes are read.
+     *
+     * @return number of bytes released, based on [backUpCount]. This value might be negative
+     * if the [backUpCount] is greater than the latest read segment (indicates a user side error).
      */
-    private fun releaseLatestReadSegment(backUpCount: Int = 0) {
+    private fun releaseLatestReadSegment(backUpCount: Int = 0): Int {
         check(latestReadSegementArray != null) { "currArr must be not null" }
+        var readBytes: Int
         // the return value of the readFromHead defines the number of bytes that are getting released in the underlying
         // buffer.
         UnsafeBufferOperations.readFromHead(inner.buffer) { arr, start, end ->
             check(latestReadSegementArray?.get() == arr) {
                 "array to advance must be the SAME as the currArr, was there some access to the underlying buffer?" }
             // release the whole segmentSize - the backup count.
+            readBytes = end - start - backUpCount
             // prevent the value from being negative.
-            val read = maxOf(end - start - backUpCount, 0)
-            read
+            val safeReadBytes = maxOf(readBytes, 0)
+            safeReadBytes
         }
         // remove tracking of the released segment
         latestReadSegementArray?.unpin()
         latestReadSegementArray = null;
+        return readBytes
     }
 }
