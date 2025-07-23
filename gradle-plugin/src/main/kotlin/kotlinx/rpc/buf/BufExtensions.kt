@@ -115,13 +115,16 @@ public open class BufTasksExtension @Inject constructor(internal val project: Pr
         kClass: KClass<T>,
         name: String,
         configure: Action<T>,
-    ): Provider<T> {
-        val property = project.objects.property(kClass)
+    ): TaskProvider<T> {
+        val mainProperty = project.objects.property(kClass)
+        val testProperty = project.objects.property(kClass)
+
+        val provider = TaskProperty(mainProperty, testProperty)
 
         @Suppress("UNCHECKED_CAST")
-        customTasks.add(Definition(name, kClass, configure, property as Property<BufExecTask>))
+        customTasks.add(Definition(name, kClass, configure, provider as TaskProperty<BufExecTask>))
 
-        return property
+        return provider
     }
 
     // TODO change to commonMain/commonTest in docs when it's supported KRPC-180
@@ -138,7 +141,7 @@ public open class BufTasksExtension @Inject constructor(internal val project: Pr
     public inline fun <reified T : BufExecTask> registerWorkspaceTask(
         name: String,
         configure: Action<T>,
-    ): Provider<T> {
+    ): TaskProvider<T> {
         return registerWorkspaceTask(T::class, name, configure)
     }
 
@@ -148,8 +151,28 @@ public open class BufTasksExtension @Inject constructor(internal val project: Pr
         val name: String,
         val kClass: KClass<T>,
         val configure: Action<T>,
-        val property: Property<BufExecTask>,
+        val property: TaskProperty<BufExecTask>,
     )
+
+    /**
+     * Container for the main and test Buf tasks created by [BufTasksExtension.registerWorkspaceTask].
+     */
+    public sealed interface TaskProvider<T : BufExecTask> {
+        /**
+         * Task created via [BufTasksExtension.registerWorkspaceTask] and associated with the main source set.
+         */
+        public val mainTask: Provider<T>
+
+        /**
+         * Task created via [BufTasksExtension.registerWorkspaceTask] and associated with the test source set.
+         */
+        public val testTask: Provider<T>
+    }
+
+    internal class TaskProperty<T : BufExecTask>(
+        override val mainTask: Property<T>,
+        override val testTask: Property<T>,
+    ) : TaskProvider<T>
 }
 
 /**

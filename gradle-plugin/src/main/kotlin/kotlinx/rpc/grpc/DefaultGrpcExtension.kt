@@ -249,7 +249,19 @@ internal open class DefaultGrpcExtension @Inject constructor(
                 onlyIf { hasFiles }
             }
 
-            definition.property.set(customTask)
+            when {
+                baseName.lowercase().endsWith("main") -> {
+                    definition.property.mainTask.set(customTask)
+                }
+
+                baseName.lowercase().endsWith("test") -> {
+                    definition.property.testTask.set(customTask)
+                }
+
+                else -> {
+                    throw GradleException("Unknown source set name: $baseName")
+                }
+            }
         }
     }
 
