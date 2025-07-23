@@ -9,6 +9,7 @@ import kotlinx.io.Sink
 import libprotowire.*
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
+import kotlin.text.isEmpty
 
 
 // TODO: Evaluate if we should implement a ZeroCopyOutputSink (similar to the ZeroCopyInputSource)
@@ -101,6 +102,15 @@ internal class WireEncoderNative(private val sink: Sink): WireEncoder {
         }
         return value.usePinned {
             pw_encoder_write_string(raw, fieldNr, it.addressOf(0).reinterpret(), value.length)
+        }
+    }
+
+    override fun writeBytes(fieldNr: Int, value: ByteArray): Boolean {
+        if (value.isEmpty()) {
+            return pw_encoder_write_bytes(raw, fieldNr, null, 0)
+        }
+        return value.usePinned {
+            pw_encoder_write_bytes(raw, fieldNr, it.addressOf(0), value.size)
         }
     }
 

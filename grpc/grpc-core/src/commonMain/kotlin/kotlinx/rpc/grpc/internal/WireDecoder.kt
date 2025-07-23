@@ -43,6 +43,7 @@ internal interface WireDecoder: AutoCloseable {
     fun readSFixed64(): Long?
     fun readEnum(): Int?
     fun readString(): String?
+    fun readBytes(): ByteArray?
 }
 
 /**

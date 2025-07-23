@@ -49,7 +49,7 @@ extern "C" {
     bool pw_encoder_write_double(pw_encoder_t *self, int field_no, double value);
     bool pw_encoder_write_enum(pw_encoder_t *self, int field_no, int value);
     bool pw_encoder_write_string(pw_encoder_t *self, int field_no, const char *data, int size);
-    bool pw_encoder_write_bytes(pw_encoder_t *self, int field_no, pw_string_t *value);
+    bool pw_encoder_write_bytes(pw_encoder_t *self, int field_no, const void *data, int size);
 
 
     //// WIRE DECODER ////
@@ -95,6 +95,8 @@ extern "C" {
     bool pw_decoder_read_double(pw_decoder_t *self, double *value);
     bool pw_decoder_read_enum(pw_decoder_t *self, int *value);
     bool pw_decoder_read_string(pw_decoder_t *self, pw_string_t **opaque_string);
+    // To read an actual bytes field, you must combine read_int32 and this function
+    bool pw_decoder_read_raw_bytes(pw_decoder_t *self, void* buffer, int size);
 
 #ifdef __cplusplus
     }

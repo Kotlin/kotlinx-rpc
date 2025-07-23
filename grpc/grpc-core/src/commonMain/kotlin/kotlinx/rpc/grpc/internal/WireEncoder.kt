@@ -29,6 +29,7 @@ internal interface WireEncoder {
     fun writeEnum(fieldNr: Int, value: Int): Boolean
     fun writeString(fieldNr: Int, value: String): Boolean
     fun flush()
+    fun writeBytes(fieldNr: Int, value: ByteArray): Boolean
 }
 
 
