@@ -1,0 +1,241 @@
+public abstract interface annotation class kotlinx/rpc/RpcDangerousApi : java/lang/annotation/Annotation {
+}
+
+public class kotlinx/rpc/RpcExtension {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;Lorg/gradle/api/Project;)V
+	public final fun getAnnotationTypeSafetyEnabled ()Lorg/gradle/api/provider/Provider;
+	public final fun getGrpc ()Lkotlinx/rpc/grpc/GrpcExtension;
+	public final fun getStrict ()Lkotlinx/rpc/RpcStrictModeExtension;
+	public final fun grpc (Lorg/gradle/api/Action;)V
+	public static synthetic fun grpc$default (Lkotlinx/rpc/RpcExtension;Lorg/gradle/api/Action;ILjava/lang/Object;)V
+	public final fun strict (Lorg/gradle/api/Action;)V
+}
+
+public final class kotlinx/rpc/RpcGradlePlugin : org/gradle/api/Plugin {
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+}
+
+public final class kotlinx/rpc/RpcStrictMode : java/lang/Enum {
+	public static final field ERROR Lkotlinx/rpc/RpcStrictMode;
+	public static final field NONE Lkotlinx/rpc/RpcStrictMode;
+	public static final field WARNING Lkotlinx/rpc/RpcStrictMode;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/RpcStrictMode;
+	public static fun values ()[Lkotlinx/rpc/RpcStrictMode;
+}
+
+public class kotlinx/rpc/RpcStrictModeExtension {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun getFields ()Lorg/gradle/api/provider/Property;
+	public final fun getNestedFlow ()Lorg/gradle/api/provider/Property;
+	public final fun getNotTopLevelServerFlow ()Lorg/gradle/api/provider/Property;
+	public final fun getSharedFlow ()Lorg/gradle/api/provider/Property;
+	public final fun getStateFlow ()Lorg/gradle/api/provider/Property;
+	public final fun getStreamScopedFunctions ()Lorg/gradle/api/provider/Property;
+	public final fun getSuspendingServerStreaming ()Lorg/gradle/api/provider/Property;
+}
+
+public final class kotlinx/rpc/VersionsKt {
+	public static final field BUF_TOOL_VERSION Ljava/lang/String;
+	public static final field GRPC_KOTLIN_VERSION Ljava/lang/String;
+	public static final field GRPC_VERSION Ljava/lang/String;
+	public static final field LIBRARY_VERSION Ljava/lang/String;
+	public static final field PLUGIN_VERSION Ljava/lang/String;
+	public static final field PROTOBUF_VERSION Ljava/lang/String;
+}
+
+public class kotlinx/rpc/buf/BufExtension {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun generate (Lorg/gradle/api/Action;)V
+	public final fun getConfigFile ()Lorg/gradle/api/provider/Property;
+	public final fun getGenerate ()Lkotlinx/rpc/buf/BufGenerateExtension;
+	public final fun getLogFormat ()Lorg/gradle/api/provider/Property;
+	public final fun getTasks ()Lkotlinx/rpc/buf/BufTasksExtension;
+	public final fun getTimeout ()Lorg/gradle/api/provider/Property;
+	public final fun tasks (Lorg/gradle/api/Action;)V
+}
+
+public final class kotlinx/rpc/buf/BufExtension$LogFormat : java/lang/Enum {
+	public static final field Color Lkotlinx/rpc/buf/BufExtension$LogFormat;
+	public static final field Default Lkotlinx/rpc/buf/BufExtension$LogFormat;
+	public static final field Json Lkotlinx/rpc/buf/BufExtension$LogFormat;
+	public static final field Text Lkotlinx/rpc/buf/BufExtension$LogFormat;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/buf/BufExtension$LogFormat;
+	public static fun values ()[Lkotlinx/rpc/buf/BufExtension$LogFormat;
+}
+
+public class kotlinx/rpc/buf/BufGenerateExtension {
+	public fun <init> (Lorg/gradle/api/Project;)V
+	public final fun getErrorFormat ()Lorg/gradle/api/provider/Property;
+	public final fun getIncludeImports ()Lorg/gradle/api/provider/Property;
+	public final fun getIncludeWkt ()Lorg/gradle/api/provider/Property;
+}
+
+public final class kotlinx/rpc/buf/BufGenerateExtension$ErrorFormat : java/lang/Enum {
+	public static final field Default Lkotlinx/rpc/buf/BufGenerateExtension$ErrorFormat;
+	public static final field GithubActions Lkotlinx/rpc/buf/BufGenerateExtension$ErrorFormat;
+	public static final field Json Lkotlinx/rpc/buf/BufGenerateExtension$ErrorFormat;
+	public static final field Junit Lkotlinx/rpc/buf/BufGenerateExtension$ErrorFormat;
+	public static final field Msvs Lkotlinx/rpc/buf/BufGenerateExtension$ErrorFormat;
+	public static final field Text Lkotlinx/rpc/buf/BufGenerateExtension$ErrorFormat;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/buf/BufGenerateExtension$ErrorFormat;
+	public static fun values ()[Lkotlinx/rpc/buf/BufGenerateExtension$ErrorFormat;
+}
+
+public class kotlinx/rpc/buf/BufTasksExtension {
+	public fun <init> (Lorg/gradle/api/Project;)V
+	public final fun registerWorkspaceTask (Lkotlin/reflect/KClass;Ljava/lang/String;Lorg/gradle/api/Action;)Lorg/gradle/api/provider/Provider;
+}
+
+public final class kotlinx/rpc/buf/ConstsKt {
+	public static final field BUF_EXECUTABLE_CONFIGURATION Ljava/lang/String;
+	public static final field BUF_GEN_YAML Ljava/lang/String;
+	public static final field BUF_YAML Ljava/lang/String;
+}
+
+public abstract class kotlinx/rpc/buf/tasks/BufExecTask : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getArgs ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getBufTimeoutInWholeSeconds ()Lorg/gradle/api/provider/Property;
+	public abstract fun getCommand ()Lorg/gradle/api/provider/Property;
+	public abstract fun getConfigFile ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLogFormat ()Lorg/gradle/api/provider/Property;
+	public abstract fun getWorkingDir ()Lorg/gradle/api/provider/Property;
+}
+
+public final class kotlinx/rpc/buf/tasks/BufExecTaskKt {
+	public static final fun registerBufExecTask (Lorg/gradle/api/Project;Lkotlin/reflect/KClass;Ljava/lang/String;Lorg/gradle/api/provider/Provider;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/tasks/TaskProvider;
+	public static synthetic fun registerBufExecTask$default (Lorg/gradle/api/Project;Lkotlin/reflect/KClass;Ljava/lang/String;Lorg/gradle/api/provider/Provider;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lorg/gradle/api/tasks/TaskProvider;
+}
+
+public abstract class kotlinx/rpc/buf/tasks/BufGenerateTask : kotlinx/rpc/buf/tasks/BufExecTask {
+	public static final field NAME_PREFIX Ljava/lang/String;
+	public fun <init> ()V
+	public abstract fun getAdditionalArgs ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getErrorFormat ()Lorg/gradle/api/provider/Property;
+	public abstract fun getIncludeImports ()Lorg/gradle/api/provider/Property;
+	public abstract fun getIncludeWkt ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class kotlinx/rpc/buf/tasks/GenerateBufGenYaml : org/gradle/api/DefaultTask {
+	public static final field NAME_PREFIX Ljava/lang/String;
+	public fun <init> ()V
+	public abstract fun getBufGenFile ()Lorg/gradle/api/provider/Property;
+}
+
+public final class kotlinx/rpc/buf/tasks/GenerateBufGenYamlKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public abstract class kotlinx/rpc/buf/tasks/GenerateBufYaml : org/gradle/api/DefaultTask {
+	public static final field NAME_PREFIX Ljava/lang/String;
+	public fun <init> ()V
+	public abstract fun getBufFile ()Lorg/gradle/api/provider/Property;
+}
+
+public final class kotlinx/rpc/buf/tasks/GenerateBufYamlKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public abstract interface class kotlinx/rpc/grpc/GrpcExtension {
+	public abstract fun buf (Lorg/gradle/api/Action;)V
+	public abstract fun getBuf ()Lkotlinx/rpc/buf/BufExtension;
+	public abstract fun getProtocPlugins ()Lorg/gradle/api/NamedDomainObjectContainer;
+	public abstract fun protocPlugins (Lorg/gradle/api/Action;)V
+}
+
+public final class kotlinx/rpc/proto/ConstsKt {
+	public static final field KXRPC_PLUGIN_JAR_CONFIGURATION Ljava/lang/String;
+	public static final field PROTO_BUILD_DIR Ljava/lang/String;
+	public static final field PROTO_BUILD_GENERATED Ljava/lang/String;
+	public static final field PROTO_BUILD_SOURCE_SETS Ljava/lang/String;
+	public static final field PROTO_FILES_DIR Ljava/lang/String;
+	public static final field PROTO_FILES_IMPORT_DIR Ljava/lang/String;
+	public static final field PROTO_GROUP Ljava/lang/String;
+	public static final field PROTO_SOURCE_DIRECTORY_NAME Ljava/lang/String;
+	public static final field PROTO_SOURCE_SETS Ljava/lang/String;
+}
+
+public final class kotlinx/rpc/proto/KxrpcPluginJarKt {
+	public static final fun getKxrpcProtocPluginJarPath (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+}
+
+public abstract class kotlinx/rpc/proto/ProcessProtoFiles : org/gradle/api/tasks/Copy {
+	public fun <init> ()V
+}
+
+public final class kotlinx/rpc/proto/ProcessProtoFilesKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public abstract interface class kotlinx/rpc/proto/ProtoSourceSet {
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getProto ()Lorg/gradle/api/file/SourceDirectorySet;
+	public fun proto (Lorg/gradle/api/Action;)V
+	public abstract fun protocPlugin (Lkotlinx/rpc/proto/ProtocPlugin;)V
+	public abstract fun protocPlugin (Lorg/gradle/api/NamedDomainObjectProvider;)V
+}
+
+public class kotlinx/rpc/proto/ProtocPlugin {
+	public static final field Companion Lkotlinx/rpc/proto/ProtocPlugin$Companion;
+	public static final field GRPC_JAVA Ljava/lang/String;
+	public static final field GRPC_KOTLIN Ljava/lang/String;
+	public static final field KXRPC Ljava/lang/String;
+	public static final field PROTOBUF_JAVA Ljava/lang/String;
+	public fun <init> (Ljava/lang/String;Lorg/gradle/api/Project;)V
+	public final fun getArtifact ()Lorg/gradle/api/provider/Property;
+	public final fun getExcludeTypes ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getIncludeImports ()Lorg/gradle/api/provider/Property;
+	public final fun getIncludeWkt ()Lorg/gradle/api/provider/Property;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getOptions ()Lorg/gradle/api/provider/MapProperty;
+	public final fun getStrategy ()Lorg/gradle/api/provider/Property;
+	public final fun getTypes ()Lorg/gradle/api/provider/ListProperty;
+	public final fun isJava ()Lorg/gradle/api/provider/Property;
+	public final fun local (Lorg/gradle/api/Action;)V
+	public final fun remote (Lorg/gradle/api/Action;)V
+}
+
+public abstract class kotlinx/rpc/proto/ProtocPlugin$Artifact {
+}
+
+public final class kotlinx/rpc/proto/ProtocPlugin$Artifact$Local : kotlinx/rpc/proto/ProtocPlugin$Artifact {
+	public fun <init> (Lorg/gradle/api/Project;)V
+	public final fun executor (Lorg/gradle/api/provider/Provider;)V
+	public final fun getExecutor ()Lorg/gradle/api/provider/ListProperty;
+	public final fun javaJar (Ljava/lang/String;)V
+	public final fun javaJar (Lorg/gradle/api/provider/Provider;Lorg/gradle/api/provider/Provider;)V
+	public static synthetic fun javaJar$default (Lkotlinx/rpc/proto/ProtocPlugin$Artifact$Local;Lorg/gradle/api/provider/Provider;Lorg/gradle/api/provider/Provider;ILjava/lang/Object;)V
+}
+
+public final class kotlinx/rpc/proto/ProtocPlugin$Artifact$Remote : kotlinx/rpc/proto/ProtocPlugin$Artifact {
+	public fun <init> (Lorg/gradle/api/Project;)V
+	public final fun getLocator ()Lorg/gradle/api/provider/Property;
+}
+
+public final class kotlinx/rpc/proto/ProtocPlugin$Companion {
+}
+
+public final class kotlinx/rpc/proto/ProtocPlugin$Strategy : java/lang/Enum {
+	public static final field All Lkotlinx/rpc/proto/ProtocPlugin$Strategy;
+	public static final field Directory Lkotlinx/rpc/proto/ProtocPlugin$Strategy;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/proto/ProtocPlugin$Strategy;
+	public static fun values ()[Lkotlinx/rpc/proto/ProtocPlugin$Strategy;
+}
+
+public final class kotlinx/rpc/proto/ProtocPluginKt {
+	public static final fun getGrpcJava (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public static final fun getGrpcKotlin (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public static final fun getKxrpc (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public static final fun getProtobufJava (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public static final fun grpcJava (Lorg/gradle/api/NamedDomainObjectContainer;Lorg/gradle/api/Action;)V
+	public static final fun grpcKotlin (Lorg/gradle/api/NamedDomainObjectContainer;Lorg/gradle/api/Action;)V
+	public static final fun kxrpc (Lorg/gradle/api/NamedDomainObjectContainer;Lorg/gradle/api/Action;)V
+	public static final fun protobufJava (Lorg/gradle/api/NamedDomainObjectContainer;Lorg/gradle/api/Action;)V
+}
+

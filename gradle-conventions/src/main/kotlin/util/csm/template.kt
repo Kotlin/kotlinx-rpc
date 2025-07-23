@@ -145,7 +145,7 @@ object CsmTemplateProcessor {
                     throw GradleException("Wildcard is not allowed in 'from' part of kotlin version range: $from, $pattern")
                 }
 
-                if (to.contains("-") || to.contains("-")) {
+                if (from.contains("-") || to.contains("-")) {
                     throw GradleException("Non stable versions are not allowed in kotlin version range: $pattern")
                 }
 
