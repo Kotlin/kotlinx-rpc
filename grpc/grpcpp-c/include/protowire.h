@@ -48,7 +48,7 @@ extern "C" {
     bool pw_encoder_write_float(pw_encoder_t *self, int field_no, float value);
     bool pw_encoder_write_double(pw_encoder_t *self, int field_no, double value);
     bool pw_encoder_write_enum(pw_encoder_t *self, int field_no, int value);
-    bool pw_encoder_write_string(pw_encoder_t *self, int field_no, pw_string_t *value);
+    bool pw_encoder_write_string(pw_encoder_t *self, int field_no, const char *data, int size);
     bool pw_encoder_write_bytes(pw_encoder_t *self, int field_no, pw_string_t *value);
 
 
@@ -69,6 +69,7 @@ extern "C" {
         bool (*skip)(void *ctx, int size);
         int64_t (*byteCount)(void *ctx);
     } pw_zero_copy_input_t;
+
 
     /**
      * Create a new pw_decoder_t that wraps a CodedInputStream to decode values from a wire format stream.

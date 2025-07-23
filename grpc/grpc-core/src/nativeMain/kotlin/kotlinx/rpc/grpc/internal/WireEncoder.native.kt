@@ -11,6 +11,8 @@ import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
 
+// TODO: Evaluate if we should implement a ZeroCopyOutputSink (similar to the ZeroCopyInputSource)
+//      to reduce the number of copies during encoding.
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 internal class WireEncoderNative(private val sink: Sink): WireEncoder {
     /**
@@ -94,10 +96,12 @@ internal class WireEncoderNative(private val sink: Sink): WireEncoder {
     }
 
     override fun writeString(fieldNr: Int, value: String): Boolean {
-        val str = pw_string_new(value) ?: error("Failed to create string")
-        val result = pw_encoder_write_string(raw, fieldNr, str)
-        pw_string_delete(str)
-        return result;
+        if (value.isEmpty()) {
+            return pw_encoder_write_string(raw, fieldNr, null, 0)
+        }
+        return value.usePinned {
+            pw_encoder_write_string(raw, fieldNr, it.addressOf(0).reinterpret(), value.length)
+        }
     }
 
     override fun flush() {
