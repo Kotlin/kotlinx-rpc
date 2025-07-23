@@ -252,6 +252,13 @@ public open class ProtocPlugin(
             }
 
             /**
+             * Command-line arguments that execute the plugin.
+             */
+            public fun executor(vararg elements: String) {
+                executor.set(elements.toList())
+            }
+
+            /**
              * Protoc plugin jar file path.
              *
              * If [executablePath] is not specified, the jar will be executed with Java used for the Gradle build.
