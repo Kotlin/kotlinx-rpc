@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+// Defines the C wrapper around the C++ Wire Format encoding/decoding API
+// (WireFormatLite, Coded(Input|Output)Stream, ZeroCopyInputStream, CopingOutputStream)
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -22,7 +24,13 @@ extern "C" {
 
     typedef struct pw_encoder pw_encoder_t;
 
-    pw_encoder_t *pw_encoder_new(void* ctx, bool (*)(void* ctx, const void* buf, int size));
+    /**
+     * Create a new pw_encoder_t that wraps a CodedOutputStream to encode values into a wire format stream.
+     *
+     * @param ctx a stable pointer to a Kotlin managed object, used by the K/N sink callback to access Kotlin objects.
+     * @param sink_fn the K/N callback function to write encoded data into the kotlinx.io.Sink.
+     */
+    pw_encoder_t *pw_encoder_new(void* ctx, bool (*sink_fn)(void* ctx, const void* buf, int size));
     void pw_encoder_delete(pw_encoder_t *self);
     bool pw_encoder_flush(pw_encoder_t *self);
 
@@ -44,11 +52,16 @@ extern "C" {
     bool pw_encoder_write_bytes(pw_encoder_t *self, int field_no, pw_string_t *value);
 
 
-
     //// WIRE DECODER ////
 
     typedef struct pw_decoder pw_decoder_t;
 
+    /**
+     * Holds callbacks corresponding to the methods of a ZeroCopyInputStream.
+     * They are called to retrieve data from the K/N side with a minimal number of copies.
+     *
+     * For method documentation see the ZeroCopyInputStream (C++) interface and the ZeroCopyInputSource (Kotlin) class.
+     */
     typedef struct pw_zero_copy_input {
         void *ctx;
         bool (*next)(void *ctx, const void **data, int *size);
@@ -57,13 +70,15 @@ extern "C" {
         int64_t (*byteCount)(void *ctx);
     } pw_zero_copy_input_t;
 
+    /**
+     * Create a new pw_decoder_t that wraps a CodedInputStream to decode values from a wire format stream.
+     *
+     * @param zero_copy_input holds callbacks to the K/N side, matching the ZeroCopyInputStream interface.
+     */
     pw_decoder_t * pw_decoder_new(pw_zero_copy_input_t zero_copy_input);
     void pw_decoder_delete(pw_decoder_t *self);
 
     uint32_t pw_decoder_read_tag(pw_decoder_t *self);
-
-    /** Read primitive **/
-
     bool pw_decoder_read_bool(pw_decoder_t *self, bool *value);
     bool pw_decoder_read_int32(pw_decoder_t *self, int32_t *value);
     bool pw_decoder_read_int64(pw_decoder_t *self, int64_t *value);

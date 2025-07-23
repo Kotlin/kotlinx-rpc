@@ -14,7 +14,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-// TODO: Move this into the commonTest
+// TODO: Move this to the commonTest
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 class WireCodecTest {
 

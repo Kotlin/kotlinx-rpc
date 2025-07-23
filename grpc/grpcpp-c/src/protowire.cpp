@@ -14,48 +14,78 @@ namespace pb = google::protobuf;
 typedef pb::internal::WireFormatLite WireFormatLite;
 
 namespace protowire {
-class SinkStream final : public pb::io::CopyingOutputStream {
-public:
-    SinkStream(void *ctx, bool(*sink)(void *ctx, const void *buffer, int size))
-        : ctx(ctx),
-          sink(sink) {
-    }
+    /**
+     * A bridge that passes write calls to the K/N side, to write the data into a kotlinx.io.Sink.
+     *
+     * This reduces the amount of copying, as the callback on the K/N may directly use the
+     * buffer pointer to copy the whole chunk at into the stream.
+     */
+    class SinkStream final : public pb::io::CopyingOutputStream {
+    public:
+        /**
+         * Constructs the stream with a ctx pointer and a callback to the K/N side.
+         * The ctx pointer is used to on the K/N to reference a Kotlin managed object
+         * from within its static callback function.
+         *
+         * @param ctx the context used by the K/N side to reference Kotlin managed objects.
+         * @param sink the K/N callback to write data into the sink
+         */
+        SinkStream(void *ctx, bool(*sink)(void *ctx, const void *buffer, int size))
+            : ctx(ctx),
+              sink(sink) {
+        }
 
-    bool Write(const void *buffer, int size) override {
-        return sink(ctx, buffer, size);
-    }
+        bool Write(const void *buffer, int size) override {
+            return sink(ctx, buffer, size);
+        }
 
-private:
-    void *ctx;
-    bool (*sink)(void *ctx, const void *buffer, int size);
-};
-
-class SourceStream final : public pb::io::ZeroCopyInputStream {
-public:
-    explicit SourceStream(const pw_zero_copy_input_t &input)
-        : input(input) {
-    }
-
-    bool Next(const void **data, int *size) override {
-        auto result = input.next(input.ctx, data, size);
-        return result;
+    private:
+        void *ctx;
+        bool (*sink)(void *ctx, const void *buffer, int size);
     };
 
-    void BackUp(int count) override {
-        return input.backUp(input.ctx, count);
-    };
+    /**
+     * A bridge that passes read calls to the K/N side, to read data from a kotlinx.io.Buffer.
+     *
+     * This allows efficient data reading from the K/N side buffer, as it allows
+     * directly accessing continuous memory blocks from within the buffer, instead of copying them
+     * via C-Interop.
+     *
+     * All ZeroCopyInputStream methods are delegated to the K/N call back functions, hold in
+     * the pw_zero_copy_input_t.
+     */
+    class BufferSourceStream final : public pb::io::ZeroCopyInputStream {
+    public:
+        /**
+         * Constructs the BufferSourceStream to access kotlinx.io.Buffer segments directly, without
+         * copying them via C-Interop.
+         *
+         * @param input a struct containing K/N callbacks for all methods of the ZeroCopyInputStream.
+         */
+        explicit BufferSourceStream(const pw_zero_copy_input_t &input)
+            : input(input) {
+        }
 
-    bool Skip(int count) override {
-        return input.skip(input.ctx, count);
-    };
+        bool Next(const void **data, int *size) override {
+            auto result = input.next(input.ctx, data, size);
+            return result;
+        };
 
-    int64_t ByteCount() const override {
-        return input.byteCount(input.ctx);
-    };
+        void BackUp(int count) override {
+            return input.backUp(input.ctx, count);
+        };
 
-private:
-    pw_zero_copy_input_t input;
-};
+        bool Skip(int count) override {
+            return input.skip(input.ctx, count);
+        };
+
+        int64_t ByteCount() const override {
+            return input.byteCount(input.ctx);
+        };
+
+    private:
+        pw_zero_copy_input_t input;
+    };
 
 }
 
@@ -72,11 +102,10 @@ struct pw_encoder {
     : sinkStream(std::move(sink)),
       cosa(&sinkStream),
       cos(&cosa) {}
-
 };
 
 struct pw_decoder {
-    protowire::SourceStream ss;
+    protowire::BufferSourceStream ss;
     pb::io::CodedInputStream cis;
 
     explicit pw_decoder(pw_zero_copy_input_t input)
