@@ -100,7 +100,7 @@ public open class BufExtension @Inject constructor(objects: ObjectFactory) {
  * Allows registering custom Buf tasks that can operate on the generated workspace.
  */
 public open class BufTasksExtension @Inject constructor(internal val project: Project) {
-    // TODO change to commonMain/commonTest in docs when it's supported
+    // TODO change to commonMain/commonTest in docs when it's supported KRPC-180
     /**
      * Registers a custom Buf task that operates on the generated workspace.
      *
@@ -124,7 +124,7 @@ public open class BufTasksExtension @Inject constructor(internal val project: Pr
         return property
     }
 
-    // TODO change to commonMain/commonTest in docs when it's supported
+    // TODO change to commonMain/commonTest in docs when it's supported KRPC-180
     /**
      * Registers a custom Buf task that operates on the generated workspace.
      *
