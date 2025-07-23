@@ -573,4 +573,41 @@ class WireCodecTest {
         assertNotNull(str)
         assertEquals("", str)
     }
+
+    @Test
+    fun testEmptyByteArray() {
+        val buffer = Buffer()
+
+        val encoder = WireEncoder(buffer)
+        assertTrue(encoder.writeBytes(1, ByteArray(0)))
+        encoder.flush()
+
+        val decoder = WireDecoder(buffer)
+
+        val tag = decoder.readTag()
+        assertNotNull(tag)
+        assertEquals(1, tag.fieldNr)
+        assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
+
+        val bytes = decoder.readBytes()
+        assertNotNull(bytes)
+        assertEquals(0, bytes.size)
+    }
+
+    @Test
+    fun testBytesEncodeDecode() {
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+
+        val bytes = ByteArray(1000000) { it.toByte() }
+
+        assertTrue(encoder.writeBytes(1, bytes))
+        encoder.flush()
+
+        val decoder = WireDecoder(buffer)
+        val tag = decoder.readTag()
+        assertNotNull(tag)
+        assertEquals(1, tag.fieldNr)
+        assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
+    }
 }

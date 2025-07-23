@@ -169,16 +169,14 @@ extern "C" {
     WRITE_FIELD_FUNC( enum, Enum, int)
 
     bool pw_encoder_write_string(pw_encoder_t *self, int field_no, const char *data, int size) {
+        return pw_encoder_write_bytes(self, field_no, data, size);
+    }
+    bool pw_encoder_write_bytes(pw_encoder_t *self, int field_no, const void *data, int size) {
         WireFormatLite::WriteTag(field_no, WireFormatLite::WIRETYPE_LENGTH_DELIMITED, &self->cos);
         self->cos.WriteVarint32(size);
         self->cos.WriteRawMaybeAliased(data, size);
         return check(self);
     }
-    bool pw_encoder_write_bytes(pw_encoder_t *self, int field_no, pw_string_t *value) {
-        WireFormatLite::WriteBytes(field_no, value->str, &self->cos);
-        return check(self);
-    }
-
 
     pw_decoder_t *pw_decoder_new(pw_zero_copy_input_t zero_copy_input) {
         return new pw_decoder_t(zero_copy_input);
@@ -213,5 +211,9 @@ extern "C" {
     bool pw_decoder_read_string(pw_decoder_t *self, pw_string_t **string_ref) {
         *string_ref = new pw_string_t;
         return WireFormatLite::ReadString(&self->cis, &(*string_ref)->str);
+    }
+
+    bool pw_decoder_read_raw_bytes(pw_decoder_t *self, void* buffer, int size) {
+        return self->cis.ReadRaw(buffer, size);
     }
 }

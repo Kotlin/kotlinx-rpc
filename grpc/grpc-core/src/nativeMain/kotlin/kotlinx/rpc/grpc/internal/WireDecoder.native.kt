@@ -152,6 +152,7 @@ internal class WireDecoderNative(private val source: Buffer): WireDecoder {
         return null
     }
 
+    // TODO: Is it possible to avoid copying the c_str, by directly allocating a K/N String (as in readBytes)?
     override fun readString(): String? = memScoped {
         val str = alloc<CPointerVar<pw_string_t>>()
         val ok = pw_decoder_read_string(raw, str.ptr)
@@ -161,6 +162,16 @@ internal class WireDecoderNative(private val source: Buffer): WireDecoder {
         } finally {
             pw_string_delete(str.value)
         }
+    }
+
+    override fun readBytes(): ByteArray? {
+        val length = readInt32() ?: return null
+        if (length == 0) return ByteArray(0)
+        val bytes = ByteArray(length)
+        bytes.usePinned {
+            pw_decoder_read_raw_bytes(raw, it.addressOf(0), length)
+        }
+        return bytes
     }
 }
 
