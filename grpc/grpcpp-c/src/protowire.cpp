@@ -101,7 +101,9 @@ struct pw_encoder {
     explicit pw_encoder(protowire::SinkStream sink)
     : sinkStream(std::move(sink)),
       cosa(&sinkStream),
-      cos(&cosa) {}
+      cos(&cosa) {
+        cos.EnableAliasing(true);
+    }
 };
 
 struct pw_decoder {
@@ -166,8 +168,10 @@ extern "C" {
     WRITE_FIELD_FUNC( sfixed64, SFixed64, int64_t)
     WRITE_FIELD_FUNC( enum, Enum, int)
 
-    bool pw_encoder_write_string(pw_encoder_t *self, int field_no, pw_string_t *value) {
-        WireFormatLite::WriteString(field_no, value->str, &self->cos);
+    bool pw_encoder_write_string(pw_encoder_t *self, int field_no, const char *data, int size) {
+        WireFormatLite::WriteTag(field_no, WireFormatLite::WIRETYPE_LENGTH_DELIMITED, &self->cos);
+        self->cos.WriteVarint32(size);
+        self->cos.WriteRawMaybeAliased(data, size);
         return check(self);
     }
     bool pw_encoder_write_bytes(pw_encoder_t *self, int field_no, pw_string_t *value) {
