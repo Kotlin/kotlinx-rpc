@@ -4,6 +4,8 @@
 
 package kotlinx.rpc
 
+import kotlinx.rpc.grpc.configurePluginProtections
+import kotlinx.rpc.proto.createProtoExtensions
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create
@@ -15,7 +17,8 @@ public class RpcGradlePlugin : Plugin<Project> {
 
         applyCompilerPlugin(target)
 
-        target.configureGrpc()
+        target.createProtoExtensions()
+        target.configurePluginProtections()
     }
 
     private fun applyCompilerPlugin(target: Project) {
