@@ -8,6 +8,9 @@
 extern "C" {
 #endif
 
+    //// STD::STRING WRAPPER ////
+
+    // A std::string wrapper that helps reduce copies when C++ api returns std::strings
     typedef struct pw_string pw_string_t;
 
     pw_string_t * pw_string_new(const char *str);

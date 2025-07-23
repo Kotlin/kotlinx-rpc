@@ -14,19 +14,31 @@ internal enum class WireType {
 }
 
 internal data class KTag(val fieldNr: Int, val wireType: WireType) {
+
+    init {
+        check(isValidFieldNr(fieldNr)) { "Invalid field number: $fieldNr" }
+    }
+
     companion object {
         // Number of bits in a tag which identify the wire type.
-        const val K_TAG_TYPE_BITS: UInt = 3u;
+        const val K_TAG_TYPE_BITS: Int = 3;
         // Mask for those bits. (just 0b111)
-        val K_TAG_TYPE_MASK: UInt = (1u shl K_TAG_TYPE_BITS.toInt()) - 1u
+        val K_TAG_TYPE_MASK: UInt = (1u shl K_TAG_TYPE_BITS) - 1u
     }
 }
 
 internal fun KTag.Companion.from(rawKTag: UInt): KTag? {
-    val type = rawKTag and K_TAG_TYPE_MASK
-    val field = rawKTag shr K_TAG_TYPE_BITS.toInt()
-    if (type >= WireType.entries.size.toUInt()) {
+    val type = (rawKTag and K_TAG_TYPE_MASK).toInt()
+    val field = (rawKTag shr K_TAG_TYPE_BITS).toInt()
+    if (!isValidFieldNr(field)) {
         return null
     }
-    return KTag(field.toInt(), WireType.entries[type.toInt()])
+    if (type >= WireType.entries.size) {
+        return null
+    }
+    return KTag(field, WireType.entries[type])
+}
+
+internal fun KTag.Companion.isValidFieldNr(fieldNr: Int): Boolean {
+    return 1 <= fieldNr && fieldNr <= 536_870_911
 }

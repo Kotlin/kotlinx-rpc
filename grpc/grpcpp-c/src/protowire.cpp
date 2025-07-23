@@ -37,7 +37,8 @@ public:
     }
 
     bool Next(const void **data, int *size) override {
-        return input.next(input.ctx, data, size);
+        auto result = input.next(input.ctx, data, size);
+        return result;
     };
 
     void BackUp(int count) override {
@@ -78,7 +79,7 @@ struct pw_decoder {
     protowire::SourceStream ss;
     pb::io::CodedInputStream cis;
 
-    pw_decoder(pw_zero_copy_input_t input)
+    explicit pw_decoder(pw_zero_copy_input_t input)
     : ss(input),
       cis(&ss) {}
 };
@@ -112,9 +113,9 @@ extern "C" {
         return !self->cos.HadError();
     }
 
-    // check if there was an error
+    // check that there was no error
     static bool check(pw_encoder_t *self) {
-        return self->cos.HadError();
+        return !self->cos.HadError();
     }
 
 #define WRITE_FIELD_FUNC( funcSuffix, wireTy, cTy) \
