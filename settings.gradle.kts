@@ -33,8 +33,6 @@ includePublic(":protobuf-plugin")
 include(":grpc")
 includePublic(":grpc:grpc-core")
 includePublic(":grpc:grpc-ktor-server")
-// temporary module until KMP project structure support in Protobuf plugin
-include(":grpc:grpc-ktor-server-test")
 
 includePublic(":bom")
 

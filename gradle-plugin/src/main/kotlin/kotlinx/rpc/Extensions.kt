@@ -6,6 +6,8 @@
 
 package kotlinx.rpc
 
+import kotlinx.rpc.grpc.DefaultGrpcExtension
+import kotlinx.rpc.grpc.GrpcExtension
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
@@ -14,11 +16,12 @@ import org.gradle.kotlin.dsl.findByType
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.property
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
-public fun Project.rpcExtension(): RpcExtension = extensions.findByType<RpcExtension>() ?: RpcExtension(objects)
+internal fun Project.rpcExtension(): RpcExtension = extensions.findByType<RpcExtension>() ?: RpcExtension(objects, this)
 
-public open class RpcExtension @Inject constructor(objects: ObjectFactory) {
+public open class RpcExtension @Inject constructor(objects: ObjectFactory, private val project: Project) {
     /**
      * Controls `@Rpc` [annotation type-safety](https://github.com/Kotlin/kotlinx-rpc/pull/240) compile-time checkers.
      *
@@ -42,15 +45,20 @@ public open class RpcExtension @Inject constructor(objects: ObjectFactory) {
         configure.execute(strict)
     }
 
-    /**
-     * Grpc settings.
-     */
-    public val grpc: GrpcExtension = objects.newInstance<GrpcExtension>()
+    internal val grpcApplied = AtomicBoolean(false)
 
     /**
      * Grpc settings.
      */
-    public fun grpc(configure: Action<GrpcExtension>) {
+    public val grpc: GrpcExtension by lazy {
+        grpcApplied.set(true)
+        objects.newInstance<DefaultGrpcExtension>()
+    }
+
+    /**
+     * Grpc settings.
+     */
+    public fun grpc(configure: Action<GrpcExtension> = Action {}) {
         configure.execute(grpc)
     }
 }

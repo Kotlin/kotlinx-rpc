@@ -294,6 +294,8 @@ class ProtoToModelInterpreter(
         val originalEntries = mutableMapOf<Int, EnumDeclaration.Entry>()
         val aliases = mutableListOf<EnumDeclaration.Alias>()
 
+        val enumName = resolver.declarationFqName(name.fullProtoNameToKotlin(firstLetterUpper = true), parent)
+
         valueList.forEach { enumEntry ->
             val original = originalEntries[enumEntry.number]
             if (original != null) {
@@ -307,7 +309,7 @@ class ProtoToModelInterpreter(
 
                 aliases.add(
                     EnumDeclaration.Alias(
-                        name = resolver.declarationFqName(enumEntry.name, parent),
+                        name = resolver.declarationFqName(enumEntry.name, enumName),
                         original = original,
                         deprecated = enumEntry.options.deprecated,
                         doc = null,
@@ -315,7 +317,7 @@ class ProtoToModelInterpreter(
                 )
             } else {
                 originalEntries[enumEntry.number] = EnumDeclaration.Entry(
-                    name = resolver.declarationFqName(enumEntry.name, parent),
+                    name = resolver.declarationFqName(enumEntry.name, enumName),
                     deprecated = enumEntry.options.deprecated,
                     doc = null,
                 )
@@ -323,13 +325,13 @@ class ProtoToModelInterpreter(
         }
 
         originalEntries[-1] = EnumDeclaration.Entry(
-            name = resolver.declarationFqName(ENUM_UNRECOGNIZED, parent),
+            name = resolver.declarationFqName(ENUM_UNRECOGNIZED, enumName),
             deprecated = false,
             doc = null,
         )
 
         return EnumDeclaration(
-            name = resolver.declarationFqName(name.fullProtoNameToKotlin(firstLetterUpper = true), parent),
+            name = enumName,
             outerClassName = outerClassName,
             originalEntries = originalEntries.values.toList(),
             aliases = aliases,
