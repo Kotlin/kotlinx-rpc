@@ -26,6 +26,8 @@ internal interface WireEncoder {
     fun writeFixed64(fieldNr: Int, value: ULong): Boolean
     fun writeSFixed32(fieldNr: Int, value: Int): Boolean
     fun writeSFixed64(fieldNr: Int, value: Long): Boolean
+    fun writeFloat(fieldNr: Int, value: Float): Boolean
+    fun writeDouble(fieldNr: Int, value: Double): Boolean
     fun writeEnum(fieldNr: Int, value: Int): Boolean
     fun writeString(fieldNr: Int, value: String): Boolean
     fun flush()

@@ -98,6 +98,7 @@ extern "C" {
     // To read an actual bytes field, you must combine read_int32 and this function
     bool pw_decoder_read_raw_bytes(pw_decoder_t *self, void* buffer, int size);
 
+
 #ifdef __cplusplus
     }
 #endif

@@ -41,6 +41,8 @@ internal interface WireDecoder: AutoCloseable {
     fun readFixed64(): ULong?
     fun readSFixed32(): Int?
     fun readSFixed64(): Long?
+    fun readFloat(): Float?
+    fun readDouble(): Double?
     fun readEnum(): Int?
     fun readString(): String?
     fun readBytes(): ByteArray?

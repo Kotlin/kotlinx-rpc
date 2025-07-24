@@ -166,6 +166,8 @@ extern "C" {
     WRITE_FIELD_FUNC( fixed64, Fixed64, uint64_t)
     WRITE_FIELD_FUNC( sfixed32, SFixed32, int32_t)
     WRITE_FIELD_FUNC( sfixed64, SFixed64, int64_t)
+    WRITE_FIELD_FUNC( float, Float, float)
+    WRITE_FIELD_FUNC( double, Double, double)
     WRITE_FIELD_FUNC( enum, Enum, int)
 
     bool pw_encoder_write_string(pw_encoder_t *self, int field_no, const char *data, int size) {
@@ -206,6 +208,8 @@ extern "C" {
     READ_VAL_FUNC( fixed64, FIXED64, uint64_t)
     READ_VAL_FUNC( sfixed32, SFIXED32, int32_t)
     READ_VAL_FUNC( sfixed64, SFIXED64, int64_t)
+    READ_VAL_FUNC( float, FLOAT, float)
+    READ_VAL_FUNC( double, DOUBLE, double)
     READ_VAL_FUNC( enum, ENUM, int)
 
     bool pw_decoder_read_string(pw_decoder_t *self, pw_string_t **string_ref) {
