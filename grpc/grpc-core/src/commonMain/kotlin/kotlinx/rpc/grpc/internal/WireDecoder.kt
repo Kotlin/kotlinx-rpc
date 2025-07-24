@@ -46,6 +46,7 @@ internal interface WireDecoder: AutoCloseable {
     fun readEnum(): Int?
     fun readString(): String?
     fun readBytes(): ByteArray?
+    fun readPackedFixed32(): List<UInt>?
 }
 
 /**

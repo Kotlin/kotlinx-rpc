@@ -7,6 +7,7 @@ package kotlinx.rpc.grpc.internal
 import kotlinx.cinterop.*
 import kotlinx.io.Sink
 import libprotowire.*
+import kotlin.collections.isEmpty
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 import kotlin.text.isEmpty
@@ -46,6 +47,10 @@ internal class WireEncoderNative(private val sink: Sink): WireEncoder {
     }
     private val rawCleaner = createCleaner(raw) {
         pw_encoder_delete(it)
+    }
+
+    override fun flush() {
+        pw_encoder_flush(raw)
     }
 
     override fun writeBool(field: Int, value: Boolean): Boolean {
@@ -104,13 +109,12 @@ internal class WireEncoderNative(private val sink: Sink): WireEncoder {
         return pw_encoder_write_enum(raw, fieldNr, value)
     }
 
-    override fun writeString(fieldNr: Int, value: String): Boolean {
+    override fun writeString(fieldNr: Int, value: String): Boolean = memScoped {
         if (value.isEmpty()) {
             return pw_encoder_write_string(raw, fieldNr, null, 0)
         }
-        return value.usePinned {
-            pw_encoder_write_string(raw, fieldNr, it.addressOf(0).reinterpret(), value.length)
-        }
+        val cStr = value.cstr
+        return pw_encoder_write_string(raw, fieldNr, cStr.ptr, cStr.size)
     }
 
     override fun writeBytes(fieldNr: Int, value: ByteArray): Boolean {
@@ -122,9 +126,16 @@ internal class WireEncoderNative(private val sink: Sink): WireEncoder {
         }
     }
 
-    override fun flush() {
-        pw_encoder_flush(raw)
+    override fun writePackedFixed32(fieldNr: Int, value: UIntArray): Boolean {
+        if (value.isEmpty()) {
+            return pw_encoder_write_bytes(raw, fieldNr, null, 0)
+        }
+        val bytes = value.size * UInt.SIZE_BYTES
+        return value.usePinned {
+            pw_encoder_write_bytes(raw, fieldNr, it.addressOf(0), bytes)
+        }
     }
+
 }
 
 internal actual fun WireEncoder(sink: Sink): WireEncoder = WireEncoderNative(sink)

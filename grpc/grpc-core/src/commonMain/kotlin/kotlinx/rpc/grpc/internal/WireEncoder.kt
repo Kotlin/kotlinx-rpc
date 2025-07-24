@@ -32,6 +32,7 @@ internal interface WireEncoder {
     fun writeString(fieldNr: Int, value: String): Boolean
     fun flush()
     fun writeBytes(fieldNr: Int, value: ByteArray): Boolean
+    fun writePackedFixed32(fieldNr: Int, value: UIntArray): Boolean
 }
 
 

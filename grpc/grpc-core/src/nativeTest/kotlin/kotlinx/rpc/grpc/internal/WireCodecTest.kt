@@ -5,7 +5,12 @@
 package kotlinx.rpc.grpc.internal
 
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.convert
+import kotlinx.cinterop.readBytes
+import kotlinx.cinterop.usePinned
 import kotlinx.io.Buffer
+import platform.posix.memcpy
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -609,6 +614,39 @@ class WireCodecTest {
         assertNotNull(tag)
         assertEquals(1, tag.fieldNr)
         assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
+
+        val actualBytes = decoder.readBytes()
+        assertNotNull(actualBytes)
+        assertEquals(1000000, actualBytes.size)
+        assertTrue(bytes.contentEquals(actualBytes))
+
+        decoder.close()
+        assertTrue(buffer.exhausted())
+    }
+
+    @Test
+    fun testPackedFixed32EncodeDecode() {
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+
+        val ints = UIntArray(100000) { it.toUInt() }
+
+        assertTrue(encoder.writePackedFixed32(1, ints))
+        encoder.flush()
+
+        val decoder = WireDecoder(buffer)
+        val tag = decoder.readTag()
+        assertNotNull(tag)
+        assertEquals(1, tag.fieldNr)
+        assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
+
+        val actualInts = decoder.readPackedFixed32()
+        assertNotNull(actualInts)
+        assertEquals(ints.size, actualInts.size)
+        assertEquals(ints.toList(), actualInts)
+
+        decoder.close()
+        assertTrue(buffer.exhausted())
     }
 
     @Test

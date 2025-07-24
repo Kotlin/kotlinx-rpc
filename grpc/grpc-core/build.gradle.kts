@@ -61,6 +61,12 @@ kotlin {
             }
         }
 
+        nativeMain {
+            dependencies {
+                implementation(libs.kotlinx.collections.immutable)
+            }
+        }
+
         nativeTest {
             dependencies {
                 implementation(kotlin("test"))

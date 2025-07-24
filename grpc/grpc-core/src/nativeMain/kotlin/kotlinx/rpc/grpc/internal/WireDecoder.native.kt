@@ -5,12 +5,16 @@
 package kotlinx.rpc.grpc.internal
 
 import kotlinx.cinterop.*
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.io.Buffer
 import libprotowire.*
 import kotlin.experimental.ExperimentalNativeApi
+import kotlin.math.min
+
+private const val MAX_PACKED_BULK_SIZE: Int = 1_000_000
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
-internal class WireDecoderNative(source: Buffer): WireDecoder {
+internal class WireDecoderNative(private val source: Buffer): WireDecoder {
 
     // wraps the source in a class that allows to pass data from the source buffer to the C++ encoder
     // without copying it to an intermediate byte array.
@@ -180,17 +184,66 @@ internal class WireDecoderNative(source: Buffer): WireDecoder {
         }
     }
 
-    // TODO: Should readBytes return a buffer? The current approach is dangerous as one could send a
-    //    huge length (max 2GB) and we would just allocate the array of that length.
+    // TODO: Should readBytes return a buffer, to prevent allocation of large contiguous memory blocks ? KRPC-182
     override fun readBytes(): ByteArray? {
         val length = readInt32() ?: return null
         if (length < 0) return null
+        // check if the remaining buffer size is less than the set length,
+        // we can early abort, without allocating unnecessary memory
+        if (source.size < length) return null
         if (length == 0) return ByteArray(0)
         val bytes = ByteArray(length)
+        var ok = true
         bytes.usePinned {
-            pw_decoder_read_raw_bytes(raw, it.addressOf(0), length)
+            ok = pw_decoder_read_raw_bytes(raw, it.addressOf(0), length)
         }
+        if (!ok) return null
         return bytes
+    }
+
+    /*
+     * Based on the length of the packed repeated field, one of two list strategies is chosen.
+     * If the length is less or equal a specific threshold (MAX_PACKED_BULK_SIZE),
+     * a single array list is filled with the buffer-packed value (two copies).
+     * Otherwise, a kotlinx.collections.immutable.PersistentList is used to split allocation in several chunks.
+     * To build the persistent list, a buffer array is allocated that is used for fast copy from C++ to Kotlin.
+     *
+     * Note that this implementation assumes a little endian memory order.
+     */
+    override fun readPackedFixed32(): List<UInt>? {
+        var byteLen = readInt32() ?: return null
+        if (byteLen < 0) return null
+        if (source.size < byteLen) return null
+        if (byteLen % UInt.SIZE_BYTES != 0 ) return null
+        val count = byteLen / UInt.SIZE_BYTES
+        if (byteLen == 0) return emptyList()
+
+        if (count <= MAX_PACKED_BULK_SIZE) {
+            // this implementation assumes that the program is running on little endian machines.
+            val arr = UIntArray(count)
+            arr.usePinned {
+                pw_decoder_read_raw_bytes(raw, it.addressOf(0), byteLen)
+            }
+            return ArrayList(arr)
+        } else {
+            val bufByteLen = MAX_PACKED_BULK_SIZE
+            val bufLen = bufByteLen / UInt.SIZE_BYTES
+            val buffer = UIntArray(bufLen)
+            var list = persistentListOf<UInt>()
+            buffer.usePinned {
+                while (byteLen > 0) {
+                    val written = min(bufByteLen, byteLen)
+                    pw_decoder_read_raw_bytes(raw, it.addressOf(0), written)
+                    list = if (written == bufByteLen) {
+                        list.addAll(buffer)
+                    } else {
+                        list.addAll(buffer.copyOfRange(0, written / UInt.SIZE_BYTES))
+                    }
+                    byteLen -= written
+                }
+            }
+            return list
+        }
     }
 }
 
