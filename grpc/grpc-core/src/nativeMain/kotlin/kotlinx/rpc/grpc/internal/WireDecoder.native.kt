@@ -10,7 +10,7 @@ import libprotowire.*
 import kotlin.experimental.ExperimentalNativeApi
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
-internal class WireDecoderNative(private val source: Buffer): WireDecoder {
+internal class WireDecoderNative(source: Buffer): WireDecoder {
 
     // wraps the source in a class that allows to pass data from the source buffer to the C++ encoder
     // without copying it to an intermediate byte array.
@@ -144,6 +144,22 @@ internal class WireDecoderNative(private val source: Buffer): WireDecoder {
         return null
     }
 
+    override fun readFloat(): Float? = memScoped {
+        val value = alloc<FloatVar>()
+        if (pw_decoder_read_float(raw, value.ptr)) {
+            return value.value
+        }
+        return null
+    }
+
+    override fun readDouble(): Double? = memScoped {
+        val value = alloc<DoubleVar>()
+        if (pw_decoder_read_double(raw, value.ptr)) {
+            return value.value
+        }
+        return null
+    }
+
     override fun readEnum(): Int? = memScoped {
         val value = alloc<IntVar>()
         if (pw_decoder_read_enum(raw, value.ptr)) {
@@ -164,8 +180,11 @@ internal class WireDecoderNative(private val source: Buffer): WireDecoder {
         }
     }
 
+    // TODO: Should readBytes return a buffer? The current approach is dangerous as one could send a
+    //    huge length (max 2GB) and we would just allocate the array of that length.
     override fun readBytes(): ByteArray? {
         val length = readInt32() ?: return null
+        if (length < 0) return null
         if (length == 0) return ByteArray(0)
         val bytes = ByteArray(length)
         bytes.usePinned {

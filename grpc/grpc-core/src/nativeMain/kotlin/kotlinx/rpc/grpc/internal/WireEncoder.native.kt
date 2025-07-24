@@ -92,6 +92,14 @@ internal class WireEncoderNative(private val sink: Sink): WireEncoder {
         return pw_encoder_write_sfixed64(raw, fieldNr, value)
     }
 
+    override fun writeFloat(fieldNr: Int, value: Float): Boolean {
+        return pw_encoder_write_float(raw, fieldNr, value)
+    }
+
+    override fun writeDouble(fieldNr: Int, value: Double): Boolean {
+        return pw_encoder_write_double(raw, fieldNr, value)
+    }
+
     override fun writeEnum(fieldNr: Int, value: Int): Boolean {
         return pw_encoder_write_enum(raw, fieldNr, value)
     }

@@ -610,4 +610,54 @@ class WireCodecTest {
         assertEquals(1, tag.fieldNr)
         assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
     }
+
+    @Test
+    fun testDoubleEncodeDecode() {
+        val fieldNr = 21
+        val testValue = 3.14159265359
+        val buffer = Buffer()
+
+        val encoder = WireEncoder(buffer)
+        assertTrue(encoder.writeDouble(fieldNr, testValue))
+        encoder.flush()
+
+        val decoder = WireDecoder(buffer)
+
+        val tag = decoder.readTag()
+        assertNotNull(tag)
+        assertEquals(WireType.FIXED64, tag.wireType)
+        assertEquals(fieldNr, tag.fieldNr)
+
+        val value = decoder.readDouble()
+        assertNotNull(value)
+        assertEquals(testValue, value)
+
+        decoder.close()
+        assertTrue(buffer.exhausted())
+    }
+
+    @Test
+    fun testFloatEncodeDecode() {
+        val fieldNr = 22
+        val testValue = 3.14159f
+        val buffer = Buffer()
+
+        val encoder = WireEncoder(buffer)
+        assertTrue(encoder.writeFloat(fieldNr, testValue))
+        encoder.flush()
+
+        val decoder = WireDecoder(buffer)
+
+        val tag = decoder.readTag()
+        assertNotNull(tag)
+        assertEquals(WireType.FIXED32, tag.wireType)
+        assertEquals(fieldNr, tag.fieldNr)
+
+        val value = decoder.readFloat()
+        assertNotNull(value)
+        assertEquals(testValue, value)
+
+        decoder.close()
+        assertTrue(buffer.exhausted())
+    }
 }
