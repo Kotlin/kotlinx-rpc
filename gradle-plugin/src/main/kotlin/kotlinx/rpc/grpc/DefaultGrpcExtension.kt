@@ -18,6 +18,7 @@ import kotlinx.rpc.proto.ProtocPlugin.Companion.GRPC_JAVA
 import kotlinx.rpc.proto.ProtocPlugin.Companion.GRPC_KOTLIN
 import kotlinx.rpc.proto.ProtocPlugin.Companion.KXRPC
 import kotlinx.rpc.proto.ProtocPlugin.Companion.PROTOBUF_JAVA
+import kotlinx.rpc.util.ensureDirectoryExists
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
@@ -59,7 +60,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
 
         createDefaultProtocPlugins()
 
-        project.configureProtoExtensions { _, protoSourceSet ->
+        project.protoSourceSets.forEach { protoSourceSet ->
             protoSourceSet.protocPlugin(protocPlugins.protobufJava)
             protoSourceSet.protocPlugin(protocPlugins.grpcJava)
             protoSourceSet.protocPlugin(protocPlugins.grpcKotlin)
@@ -80,7 +81,15 @@ internal open class DefaultGrpcExtension @Inject constructor(
     @Suppress("detekt.LongMethod", "detekt.CyclomaticComplexMethod")
     private fun Project.configureTasks(protoSourceSet: DefaultProtoSourceSet) {
         val baseName = protoSourceSet.name
-        val baseGenDir = project.protoBuildDirSourceSets.resolve(baseName)
+
+        val buildSourceSetsDir = project.protoBuildDirSourceSets.resolve(baseName)
+            .ensureDirectoryExists()
+
+        val buildSourceSetsProtoDir = buildSourceSetsDir.resolve(PROTO_FILES_DIR)
+            .ensureDirectoryExists()
+
+        val buildSourceSetsImportDir = buildSourceSetsDir.resolve(PROTO_FILES_IMPORT_DIR)
+            .ensureDirectoryExists()
 
         val pairSourceSet = protoSourceSet.correspondingMainSourceSetOrNull()
 
@@ -93,17 +102,18 @@ internal open class DefaultGrpcExtension @Inject constructor(
         }
 
         val protoFiles = protoSourceSet.proto
-        val hasFiles = !protoFiles.isEmpty
 
         val generateBufYamlTask = registerGenerateBufYamlTask(
             name = baseName,
-            dir = baseName,
+            buildSourceSetsDir = buildSourceSetsDir,
+            buildSourceSetsProtoDir = buildSourceSetsProtoDir,
+            buildSourceSetsImportDir = buildSourceSetsImportDir,
             withImport = pairSourceSet != null,
         )
 
         val generateBufGenYamlTask = registerGenerateBufGenYamlTask(
             name = baseName,
-            dir = baseName,
+            buildSourceSetsDir = buildSourceSetsDir,
             protocPlugins = includedProtocPlugins,
         ) {
             dependsOn(generateBufYamlTask)
@@ -111,9 +121,8 @@ internal open class DefaultGrpcExtension @Inject constructor(
 
         val processProtoTask = registerProcessProtoFilesTask(
             name = baseName,
-            baseGenDir = provider { baseGenDir },
+            destination = buildSourceSetsProtoDir,
             protoFiles = protoFiles,
-            toDir = PROTO_FILES_DIR,
         ) {
             dependsOn(generateBufYamlTask)
             dependsOn(generateBufGenYamlTask)
@@ -124,9 +133,8 @@ internal open class DefaultGrpcExtension @Inject constructor(
 
             registerProcessProtoFilesTask(
                 name = "${baseName}Import",
-                baseGenDir = provider { baseGenDir },
+                destination = buildSourceSetsImportDir,
                 protoFiles = importProtoFiles,
-                toDir = PROTO_FILES_IMPORT_DIR,
             ) {
                 dependsOn(generateBufYamlTask)
                 dependsOn(generateBufGenYamlTask)
@@ -138,19 +146,14 @@ internal open class DefaultGrpcExtension @Inject constructor(
 
         val out = protoBuildDirGenerated.resolve(baseName)
 
+        val destinationFileTree = fileTree(buildSourceSetsProtoDir)
+
         val bufGenerateTask = registerBufGenerateTask(
             name = baseName,
-            workingDir = provider { baseGenDir },
-            outputDirectory = provider { out },
-            protoFiles = provider {
-                protoFiles.asFileTree.let {
-                    if (pairSourceSet != null) {
-                        it + pairSourceSet.proto
-                    } else {
-                        it
-                    }
-                }
-            },
+            workingDir = buildSourceSetsDir,
+            outputDirectory = out,
+            protoFilesDir = buildSourceSetsProtoDir,
+            importFilesDir = buildSourceSetsImportDir,
         ) {
             dependsOn(generateBufGenYamlTask)
             dependsOn(generateBufYamlTask)
@@ -163,7 +166,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
                 dependsOn(pairSourceSet.generateTask)
             }
 
-            onlyIf { hasFiles }
+            onlyIf { !destinationFileTree.filter { it.extension == "proto" }.isEmpty }
         }
 
         protoSourceSet.generateTask.set(bufGenerateTask)
@@ -236,7 +239,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
 
             val customTask = registerBufExecTask(
                 clazz = definition.kClass,
-                workingDir = provider { baseGenDir },
+                workingDir = provider { buildSourceSetsDir },
                 name = taskName,
             ) {
                 dependsOn(generateBufYamlTask)
@@ -246,7 +249,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
                     dependsOn(processImportProtoTask)
                 }
 
-                onlyIf { hasFiles }
+                onlyIf { !destinationFileTree.filter { it.extension == "proto" }.isEmpty }
             }
 
             when {
@@ -310,7 +313,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
             }
 
             name.lowercase().endsWith("test") -> {
-                project.protoSourceSets.getByName(correspondingMainName()) as DefaultProtoSourceSet
+                project.protoSourceSets.findByName(correspondingMainName()) as? DefaultProtoSourceSet
             }
 
             else -> {
