@@ -25,9 +25,8 @@ plugins {
 dependencyResolutionManagement {
     includeBuild("compiler-plugin")
     includeBuild("dokka-plugin")
+    includeBuild("protoc-gen")
 }
-
-includePublic(":protobuf-plugin")
 
 include(":grpc")
 includePublic(":grpc:grpc-core")

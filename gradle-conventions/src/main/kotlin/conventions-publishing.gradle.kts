@@ -9,6 +9,7 @@ import util.other.isPublicModule
 import util.tasks.ValidatePublishedArtifactsTask
 
 val isGradlePlugin = project.name == "gradle-plugin"
+val isProtocGen = project.name == "protoc-gen"
 val publishingExtension = project.extensions.findByType<PublishingExtension>()
 val globalRootDir: String by extra
 
@@ -53,7 +54,7 @@ fun PublishingExtension.configurePublication() {
         // mainly for kotlinMultiplatform publication
         setPublicArtifactId(project)
 
-        if (!isGradlePlugin) {
+        if (!isGradlePlugin && !isProtocGen) {
             fixModuleMetadata(project)
         }
 
