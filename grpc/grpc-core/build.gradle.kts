@@ -11,6 +11,8 @@ plugins {
     alias(libs.plugins.kotlinx.rpc)
 }
 
+
+
 kotlin {
     sourceSets {
         commonMain {
@@ -18,6 +20,8 @@ kotlin {
                 api(projects.core)
                 api(projects.utils)
                 api(libs.coroutines.core)
+
+                implementation(libs.kotlinx.io.core)
             }
         }
 
@@ -29,6 +33,12 @@ kotlin {
                 api(libs.grpc.kotlin.stub)
                 api(libs.protobuf.java.util)
                 api(libs.protobuf.kotlin)
+            }
+        }
+
+        nativeMain {
+            dependencies {
+                implementation(libs.kotlinx.collections.immutable)
             }
         }
 
@@ -57,7 +67,7 @@ kotlin {
     val buildGrpcppCLib = tasks.register<Exec>("buildGrpcppCLib") {
         group = "build"
         workingDir = grpcppCLib
-        commandLine("bash", "-c", "bazel build :grpcpp_c_static --config=release")
+        commandLine("bash", "-c", "bazel build :grpcpp_c_static :protowire_static --config=release")
         inputs.files(fileTree(grpcppCLib) { exclude("bazel-*/**") })
         outputs.dir(grpcppCLib.resolve("bazel-bin"))
 
@@ -82,6 +92,22 @@ kotlin {
                 tasks.named(interopTask, CInteropProcess::class) {
                     dependsOn(buildGrpcppCLib)
                 }
+
+
+                val libprotowire by creating {
+                    includeDirs(
+                        grpcppCLib.resolve("include")
+                    )
+                    extraOpts(
+                        "-libraryPath", "${grpcppCLib.resolve("bazel-out/darwin_arm64-opt/bin")}",
+                    )
+                }
+
+                val libUpbTask = "cinterop${libprotowire.name.capitalized()}${it.targetName.capitalized()}"
+                tasks.named(libUpbTask, CInteropProcess::class) {
+                    dependsOn(buildGrpcppCLib)
+                }
+
             }
         }
     }
