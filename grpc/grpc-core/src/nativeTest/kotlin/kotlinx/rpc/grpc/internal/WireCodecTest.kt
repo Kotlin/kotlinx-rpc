@@ -664,7 +664,7 @@ class WireCodecTest {
         assertTrue(buffer.exhausted())
     }
 
-    private fun <T> runPackedTest(
+    private fun <T> runPackedFixedTest(
         list: List<T>,
         write: WireEncoder.(Int, List<T>) -> Boolean,
         read: WireDecoder.() -> List<T>?,
@@ -686,44 +686,123 @@ class WireCodecTest {
     }
 
     @Test
-    fun testPackedFixed32() = runPackedTest(
+    fun testPackedFixed32() = runPackedFixedTest(
         List(1_000_000) { UInt.MAX_VALUE + it.toUInt() },
         WireEncoder::writePackedFixed32,
         WireDecoder::readPackedFixed32
     )
 
     @Test
-    fun testPackedFixed64() = runPackedTest(
+    fun testPackedFixed64() = runPackedFixedTest(
         List(1_000_000) { UInt.MAX_VALUE + it.toULong() },
         WireEncoder::writePackedFixed64,
         WireDecoder::readPackedFixed64,
     )
 
     @Test
-    fun testPackedSFixed32() = runPackedTest(
+    fun testPackedSFixed32() = runPackedFixedTest(
         List(1_000_000) { Int.MAX_VALUE + it },
         WireEncoder::writePackedSFixed32,
         WireDecoder::readPackedSFixed32
     )
 
     @Test
-    fun testPackedSFixed64() = runPackedTest(
+    fun testPackedSFixed64() = runPackedFixedTest(
         List(1_000_000) { Long.MAX_VALUE + it },
         WireEncoder::writePackedSFixed64,
         WireDecoder::readPackedSFixed64
     )
 
     @Test
-    fun testPackedFloat() = runPackedTest(
+    fun testPackedFloat() = runPackedFixedTest(
         List(1_000_000) { it.toFloat() / 3.3f * ((it and 1) * 2 - 1) },
         WireEncoder::writePackedFloat,
         WireDecoder::readPackedFloat,
     )
 
     @Test
-    fun testPackedDouble() = runPackedTest(
+    fun testPackedDouble() = runPackedFixedTest(
         List(1_000_000) { it.toDouble() / 3.3 * ((it and 1) * 2 - 1) },
         WireEncoder::writePackedDouble,
         WireDecoder::readPackedDouble,
     )
+
+    private fun <T> runPackedVarTest(
+        list: List<T>,
+        sizeFn: (List<T>) -> UInt,
+        write: WireEncoder.(Int, List<T>, Int) -> Boolean,
+        read: WireDecoder.() -> List<T>?,
+    ) {
+        val buf = Buffer()
+        with(WireEncoder(buf)) {
+            assertTrue(write(1, list, sizeFn(list).toInt()))
+            flush()
+        }
+        WireDecoder(buf).use { dec ->
+            dec.readTag()!!.apply {
+                assertEquals(1, fieldNr)
+                assertEquals(WireType.LENGTH_DELIMITED, wireType)
+            }
+            val test = dec.read()
+            assertEquals(list, test)
+        }
+        assertTrue(buf.exhausted())
+    }
+
+    @Test
+    fun testPackedInt32() = runPackedVarTest(
+        List(1_000_000) { Int.MAX_VALUE + it },
+        WireSize::packedInt32,
+        WireEncoder::writePackedInt32,
+        WireDecoder::readPackedInt32
+    )
+
+    @Test
+    fun testPackedInt64() = runPackedVarTest(
+        List(1_000_000) { Long.MAX_VALUE + it.toLong() },
+        WireSize::packedInt64,
+        WireEncoder::writePackedInt64,
+        WireDecoder::readPackedInt64
+    )
+
+    @Test
+    fun testPackedUInt32() = runPackedVarTest(
+        List(1_000_000) { UInt.MAX_VALUE + it.toUInt() },
+        WireSize::packedUInt32,
+        WireEncoder::writePackedUInt32,
+        WireDecoder::readPackedUInt32
+    )
+
+    @Test
+    fun testPackedUInt64() = runPackedVarTest(
+        List(1_000_000) { ULong.MAX_VALUE + it.toULong() },
+        WireSize::packedUInt64,
+        WireEncoder::writePackedUInt64,
+        WireDecoder::readPackedUInt64
+    )
+
+    @Test
+    fun testPackedSInt32() = runPackedVarTest(
+        List(1_000_000) { Int.MAX_VALUE + it },
+        WireSize::packedSInt32,
+        WireEncoder::writePackedSInt32,
+        WireDecoder::readPackedSInt32
+    )
+
+    @Test
+    fun testPackedSInt64() = runPackedVarTest(
+        List(1_000_000) { Long.MAX_VALUE + it.toLong() },
+        WireSize::packedSInt64,
+        WireEncoder::writePackedSInt64,
+        WireDecoder::readPackedSInt64
+    )
+
+    @Test
+    fun testPackedEnum() = runPackedVarTest(
+        List(1_000_000) { it },
+        WireSize::packedEnum,
+        WireEncoder::writePackedEnum,
+        WireDecoder::readPackedEnum
+    )
+
 }

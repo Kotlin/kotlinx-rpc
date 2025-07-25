@@ -11,8 +11,6 @@ import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
 
-// TODO: Evaluate if we should implement a ZeroCopyOutputSink (similar to the ZeroCopyInputSource)
-//      to reduce the number of copies during encoding.
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
     /**
@@ -125,39 +123,61 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
         }
     }
 
+    override fun writePackedBool(fieldNr: Int, value: List<Boolean>, fieldSize: Int) =
+        writePackedInternal(fieldNr, value, fieldSize, ::pw_encoder_write_bool_no_tag)
+
+    override fun writePackedInt32(fieldNr: Int, value: List<Int>, fieldSize: Int) =
+        writePackedInternal(fieldNr, value, fieldSize, ::pw_encoder_write_int32_no_tag)
+
+    override fun writePackedInt64(fieldNr: Int, value: List<Long>, fieldSize: Int) =
+        writePackedInternal(fieldNr, value, fieldSize, ::pw_encoder_write_int64_no_tag)
+
+    override fun writePackedUInt32(fieldNr: Int, value: List<UInt>, fieldSize: Int) =
+        writePackedInternal(fieldNr, value, fieldSize, ::pw_encoder_write_uint32_no_tag)
+
+    override fun writePackedUInt64(fieldNr: Int, value: List<ULong>, fieldSize: Int) =
+        writePackedInternal(fieldNr, value, fieldSize, ::pw_encoder_write_uint64_no_tag)
+
+    override fun writePackedSInt32(fieldNr: Int, value: List<Int>, fieldSize: Int) =
+        writePackedInternal(fieldNr, value, fieldSize, ::pw_encoder_write_sint32_no_tag)
+
+    override fun writePackedSInt64(fieldNr: Int, value: List<Long>, fieldSize: Int) =
+        writePackedInternal(fieldNr, value, fieldSize, ::pw_encoder_write_sint64_no_tag)
+
     override fun writePackedFixed32(fieldNr: Int, value: List<UInt>) =
-        writePackedInternal(fieldNr, value, UInt.SIZE_BYTES, ::pw_encoder_write_fixed32_no_tag)
+        writePackedInternal(fieldNr, value, value.size * UInt.SIZE_BYTES, ::pw_encoder_write_fixed32_no_tag)
 
     override fun writePackedFixed64(fieldNr: Int, value: List<ULong>) =
-        writePackedInternal(fieldNr, value, ULong.SIZE_BYTES, ::pw_encoder_write_fixed64_no_tag)
+        writePackedInternal(fieldNr, value, value.size * ULong.SIZE_BYTES, ::pw_encoder_write_fixed64_no_tag)
 
     override fun writePackedSFixed32(fieldNr: Int, value: List<Int>) =
-        writePackedInternal(fieldNr, value, Int.SIZE_BYTES, ::pw_encoder_write_sfixed32_no_tag)
+        writePackedInternal(fieldNr, value, value.size * Int.SIZE_BYTES, ::pw_encoder_write_sfixed32_no_tag)
 
     override fun writePackedSFixed64(fieldNr: Int, value: List<Long>) =
-        writePackedInternal(fieldNr, value, Long.SIZE_BYTES, ::pw_encoder_write_sfixed64_no_tag)
+        writePackedInternal(fieldNr, value, value.size * Long.SIZE_BYTES, ::pw_encoder_write_sfixed64_no_tag)
 
     override fun writePackedFloat(fieldNr: Int, value: List<Float>) =
-        writePackedInternal(fieldNr, value, Float.SIZE_BYTES, ::pw_encoder_write_float_no_tag)
+        writePackedInternal(fieldNr, value, value.size * Float.SIZE_BYTES, ::pw_encoder_write_float_no_tag)
 
     override fun writePackedDouble(fieldNr: Int, value: List<Double>) =
-        writePackedInternal(fieldNr, value, Double.SIZE_BYTES, ::pw_encoder_write_double_no_tag)
+        writePackedInternal(fieldNr, value, value.size * Double.SIZE_BYTES, ::pw_encoder_write_double_no_tag)
 }
 
 internal actual fun WireEncoder(sink: Sink): WireEncoder = WireEncoderNative(sink)
 
 
+// the current implementation is slow, as it iterates through the list, to write each element individually,
+// which can be speed up in case of fixed sized types, that are not compressed. KRPC-183
 @OptIn(ExperimentalForeignApi::class)
 private inline fun <T> WireEncoderNative.writePackedInternal(
     fieldNr: Int,
     value: List<T>,
-    byteSize: Int,
+    fieldSize: Int,
     crossinline writer: (CValuesRef<pw_encoder_t>?, T) -> Boolean
 ): Boolean {
     val ktag = KTag(fieldNr, WireType.LENGTH_DELIMITED).toRawKTag()
     pw_encoder_write_tag(raw, ktag)
     // write the field size of the packed field
-    val fieldSize = value.size * byteSize;
     pw_encoder_write_int32_no_tag(raw, fieldSize)
     for (v in value) {
         if (!writer(raw, v)) {

@@ -46,12 +46,20 @@ internal interface WireDecoder : AutoCloseable {
     fun readEnum(): Int?
     fun readString(): String?
     fun readBytes(): ByteArray?
+    fun readPackedBool(): List<Boolean>?
+    fun readPackedInt32(): List<Int>?
+    fun readPackedInt64(): List<Long>?
+    fun readPackedSInt32(): List<Int>?
+    fun readPackedSInt64(): List<Long>?
+    fun readPackedUInt32(): List<UInt>?
+    fun readPackedUInt64(): List<ULong>?
     fun readPackedFixed32(): List<UInt>?
     fun readPackedFixed64(): List<ULong>?
     fun readPackedSFixed32(): List<Int>?
     fun readPackedSFixed64(): List<Long>?
     fun readPackedFloat(): List<Float>?
     fun readPackedDouble(): List<Double>?
+    fun readPackedEnum(): List<Int>?
 }
 
 /**

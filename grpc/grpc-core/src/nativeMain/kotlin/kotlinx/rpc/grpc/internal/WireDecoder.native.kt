@@ -45,7 +45,7 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         pw_decoder_new(zeroCopyCInput)
             ?: error("Failed to create proto wire decoder")
     }
-    
+
     val rawCleaner = createCleaner(raw) {
         pw_decoder_delete(it)
     }
@@ -206,6 +206,15 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         return bytes
     }
 
+    override fun readPackedBool() = readPackedVarInternal(this::readBool)
+    override fun readPackedInt32() = readPackedVarInternal(this::readInt32)
+    override fun readPackedInt64() = readPackedVarInternal(this::readInt64)
+    override fun readPackedUInt32() = readPackedVarInternal(this::readUInt32)
+    override fun readPackedUInt64() = readPackedVarInternal(this::readUInt64)
+    override fun readPackedSInt32() = readPackedVarInternal(this::readSInt32)
+    override fun readPackedSInt64() = readPackedVarInternal(this::readSInt64)
+    override fun readPackedEnum() = readPackedVarInternal(this::readEnum)
+
     override fun readPackedFixed32() = readPackedFixedInternal(
         UInt.SIZE_BYTES,
         ::UIntArray,
@@ -247,6 +256,27 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         Pinned<DoubleArray>::addressOf,
         DoubleArray::asList,
     )
+
+    private inline fun <T : Any> readPackedVarInternal(
+        crossinline readFn: () -> T?
+    ): List<T>? {
+        val byteLen = readInt32() ?: return null
+        if (byteLen < 0) return null
+        if (source.size < byteLen) return null
+        if (byteLen == 0) return null
+
+        val limit = pw_decoder_push_limit(raw, byteLen)
+
+        val result = mutableListOf<T>()
+
+        while (pw_decoder_bytes_until_limit(raw) > 0) {
+            val elem = readFn() ?: return null
+            result.add(elem)
+        }
+
+        pw_decoder_pop_limit(raw, limit)
+        return result
+    }
 
     /*
      * Based on the length of the packed repeated field, one of two list strategies is chosen.

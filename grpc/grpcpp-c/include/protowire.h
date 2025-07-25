@@ -67,7 +67,6 @@ extern "C" {
     bool pw_encoder_write_float_no_tag(pw_encoder_t *self, float value);
     bool pw_encoder_write_double_no_tag(pw_encoder_t *self, double value);
 
-
     //// WIRE DECODER ////
 
     typedef struct pw_decoder pw_decoder_t;
@@ -114,6 +113,20 @@ extern "C" {
     bool pw_decoder_read_string(pw_decoder_t *self, pw_string_t **opaque_string);
     // To read an actual bytes field, you must combine read_int32 and this function
     bool pw_decoder_read_raw_bytes(pw_decoder_t *self, void* buffer, int size);
+
+    int pw_decoder_push_limit(pw_decoder_t *self, int limit);
+    void pw_decoder_pop_limit(pw_decoder_t *self, int limit);
+    int pw_decoder_bytes_until_limit(pw_decoder_t *self);
+
+
+    /// Size Calculation Functions ///
+
+    uint32_t pw_size_int32(int32_t value);
+    uint32_t pw_size_int64(int64_t value);
+    uint32_t pw_size_uint32(uint32_t value);
+    uint32_t pw_size_uint64(uint64_t value);
+    uint32_t pw_size_sint32(int32_t value);
+    uint32_t pw_size_sint64(int64_t value);
 
 
 #ifdef __cplusplus

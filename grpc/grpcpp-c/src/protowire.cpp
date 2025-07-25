@@ -254,4 +254,36 @@ return check(self); \
     bool pw_decoder_read_raw_bytes(pw_decoder_t *self, void* buffer, int size) {
         return self->cis.ReadRaw(buffer, size);
     }
+
+    int pw_decoder_push_limit(pw_decoder_t *self, int limit) {
+        return self->cis.PushLimit(limit);
+    }
+
+    void pw_decoder_pop_limit(pw_decoder_t *self, int limit) {
+        self->cis.PopLimit(limit);
+    }
+
+    int pw_decoder_bytes_until_limit(pw_decoder_t *self) {
+        return self->cis.BytesUntilLimit();
+    }
+
+    uint32_t pw_size_int32(int32_t value) {
+     return WireFormatLite::Int32Size(value);
+     }
+    uint32_t pw_size_int64(int64_t value) {
+     return WireFormatLite::Int64Size(value);
+     }
+    uint32_t pw_size_uint32(uint32_t value) {
+     return WireFormatLite::UInt32Size(value);
+     }
+    uint32_t pw_size_uint64(uint64_t value) {
+     return WireFormatLite::UInt64Size(value);
+     }
+    uint32_t pw_size_sint32(int32_t value) {
+     return WireFormatLite::SInt32Size(value);
+     }
+    uint32_t pw_size_sint64(int64_t value) {
+     return WireFormatLite::SInt64Size(value);
+     }
+
 }
