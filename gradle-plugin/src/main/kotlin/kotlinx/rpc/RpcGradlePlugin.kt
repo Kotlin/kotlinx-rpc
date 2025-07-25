@@ -9,13 +9,22 @@ import kotlinx.rpc.proto.createProtoExtensions
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.findByType
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 @Suppress("unused")
 public class RpcGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
+        println("Start parameters: ${target.gradle.startParameter.systemPropertiesArgs.values}")
         target.extensions.create<RpcExtension>("rpc")
 
-        applyCompilerPlugin(target)
+        try {
+            target.extensions.findByType<KotlinJvmProjectExtension>()
+            applyCompilerPlugin(target)
+        } catch (e: Throwable) {
+            e.printStackTrace()
+            throw e
+        }
 
         target.createProtoExtensions()
         target.configurePluginProtections()

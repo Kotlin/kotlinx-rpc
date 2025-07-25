@@ -84,6 +84,7 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "lo
 junit4 = { module = "junit:junit", version.ref = "junit4" }
 junit5-bom = { module = "org.junit:junit-bom", version.ref = "junit5" }
 junit5-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit5-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api" }
 junit5-platform-commons = { module = "org.junit.platform:junit-platform-commons" }
 junit5-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 junit5-platform-runner = { module = "org.junit.platform:junit-platform-runner" }
