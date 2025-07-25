@@ -664,16 +664,14 @@ class WireCodecTest {
         assertTrue(buffer.exhausted())
     }
 
-
-    private inline fun <A, T> runPackedTest(
-        arr: A,
-        crossinline write: WireEncoder.(Int, A) -> Boolean,
-        crossinline read: WireDecoder.() -> List<T>?,
-        crossinline asList: (A) -> List<T>
+    private fun <T> runPackedTest(
+        list: List<T>,
+        write: WireEncoder.(Int, List<T>) -> Boolean,
+        read: WireDecoder.() -> List<T>?,
     ) {
         val buf = Buffer()
         with(WireEncoder(buf)) {
-            assertTrue(write(1, arr))
+            assertTrue(write(1, list))
             flush()
         }
         WireDecoder(buf).use { dec ->
@@ -682,56 +680,50 @@ class WireCodecTest {
                 assertEquals(WireType.LENGTH_DELIMITED, wireType)
             }
             val test = dec.read()
-            assertEquals(asList(arr), test)
+            assertEquals(list, test)
         }
         assertTrue(buf.exhausted())
     }
 
     @Test
     fun testPackedFixed32() = runPackedTest(
-        UIntArray(1_000_000) { UInt.MAX_VALUE + it.toUInt() },
+        List(1_000_000) { UInt.MAX_VALUE + it.toUInt() },
         WireEncoder::writePackedFixed32,
-        WireDecoder::readPackedFixed32,
-        UIntArray::asList
+        WireDecoder::readPackedFixed32
     )
 
     @Test
     fun testPackedFixed64() = runPackedTest(
-        ULongArray(1_000_000) { UInt.MAX_VALUE + it.toULong() },
+        List(1_000_000) { UInt.MAX_VALUE + it.toULong() },
         WireEncoder::writePackedFixed64,
         WireDecoder::readPackedFixed64,
-        ULongArray::asList
     )
 
     @Test
     fun testPackedSFixed32() = runPackedTest(
-        IntArray(1_000_000) { Int.MAX_VALUE + it },
+        List(1_000_000) { Int.MAX_VALUE + it },
         WireEncoder::writePackedSFixed32,
-        WireDecoder::readPackedSFixed32,
-        IntArray::asList
+        WireDecoder::readPackedSFixed32
     )
 
     @Test
     fun testPackedSFixed64() = runPackedTest(
-        LongArray(1_000_000) { Long.MAX_VALUE + it },
+        List(1_000_000) { Long.MAX_VALUE + it },
         WireEncoder::writePackedSFixed64,
-        WireDecoder::readPackedSFixed64,
-        LongArray::asList
+        WireDecoder::readPackedSFixed64
     )
 
     @Test
     fun testPackedFloat() = runPackedTest(
-        FloatArray(1_000_000) { it.toFloat() / 3.3f * ((it and 1) * 2 - 1) },
+        List(1_000_000) { it.toFloat() / 3.3f * ((it and 1) * 2 - 1) },
         WireEncoder::writePackedFloat,
         WireDecoder::readPackedFloat,
-        FloatArray::asList
     )
 
     @Test
     fun testPackedDouble() = runPackedTest(
-        DoubleArray(1_000_000) { it.toDouble() / 3.3 * ((it and 1) * 2 - 1) },
+        List(1_000_000) { it.toDouble() / 3.3 * ((it and 1) * 2 - 1) },
         WireEncoder::writePackedDouble,
         WireDecoder::readPackedDouble,
-        DoubleArray::asList
     )
 }

@@ -180,12 +180,46 @@ extern "C" {
         return check(self);
     }
 
+    bool pw_encoder_write_tag(pw_encoder_t *self, uint32_t tag) {
+        self->cos.WriteTag(tag);
+        return check(self);
+    }
+
+#define WRITE_FIELD_NO_TAG( funcSuffix, wireTy, cTy) \
+bool pw_encoder_write_##funcSuffix##_no_tag(pw_encoder_t *self, cTy value) { \
+WireFormatLite::Write##wireTy##NoTag(value, &self->cos); \
+return check(self); \
+}
+
+    WRITE_FIELD_NO_TAG( bool, Bool, bool)
+    WRITE_FIELD_NO_TAG( int32, Int32, int32_t)
+    WRITE_FIELD_NO_TAG( int64, Int64, int64_t)
+    WRITE_FIELD_NO_TAG( uint32, UInt32, uint32_t)
+    WRITE_FIELD_NO_TAG( uint64, UInt64, uint64_t)
+    WRITE_FIELD_NO_TAG( sint32, SInt32, int32_t)
+    WRITE_FIELD_NO_TAG( sint64, SInt64, int64_t)
+    WRITE_FIELD_NO_TAG( fixed32, Fixed32, uint32_t)
+    WRITE_FIELD_NO_TAG( fixed64, Fixed64, uint64_t)
+    WRITE_FIELD_NO_TAG( sfixed32, SFixed32, int32_t)
+    WRITE_FIELD_NO_TAG( sfixed64, SFixed64, int64_t)
+    WRITE_FIELD_NO_TAG( float, Float, float)
+    WRITE_FIELD_NO_TAG( double, Double, double)
+    WRITE_FIELD_NO_TAG( enum, Enum, int)
+
+
+    /// DECODER IMPLEMENATION ///
+
     pw_decoder_t *pw_decoder_new(pw_zero_copy_input_t zero_copy_input) {
         return new pw_decoder_t(zero_copy_input);
     }
 
     void pw_decoder_delete(pw_decoder_t *self) {
         delete self;
+    }
+
+    void pw_decoder_close(pw_decoder_t *self) {
+        // the deconstructor backs the stream up to the current position.
+        self->cis.~CodedInputStream();
     }
 
     uint32_t pw_decoder_read_tag(pw_decoder_t *self) {

@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.grpc.internal
 
+import kotlinx.rpc.grpc.internal.KTag.Companion.K_TAG_TYPE_BITS
+
 internal enum class WireType {
     VARINT, // 0
     FIXED64, // 1
@@ -22,9 +24,14 @@ internal data class KTag(val fieldNr: Int, val wireType: WireType) {
     companion object {
         // Number of bits in a tag which identify the wire type.
         const val K_TAG_TYPE_BITS: Int = 3;
+
         // Mask for those bits. (just 0b111)
         val K_TAG_TYPE_MASK: UInt = (1u shl K_TAG_TYPE_BITS) - 1u
     }
+}
+
+internal fun KTag.toRawKTag(): UInt {
+    return (fieldNr.toUInt() shl K_TAG_TYPE_BITS) or wireType.ordinal.toUInt()
 }
 
 internal fun KTag.Companion.from(rawKTag: UInt): KTag? {

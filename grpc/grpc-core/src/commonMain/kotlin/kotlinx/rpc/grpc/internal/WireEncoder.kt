@@ -33,12 +33,12 @@ internal interface WireEncoder {
     fun writeEnum(fieldNr: Int, value: Int): Boolean
     fun writeBytes(fieldNr: Int, value: ByteArray): Boolean
     fun writeString(fieldNr: Int, value: String): Boolean
-    fun writePackedFixed32(fieldNr: Int, value: UIntArray): Boolean
-    fun writePackedFixed64(fieldNr: Int, value: ULongArray): Boolean
-    fun writePackedSFixed32(fieldNr: Int, value: IntArray): Boolean
-    fun writePackedSFixed64(fieldNr: Int, value: LongArray): Boolean
-    fun writePackedFloat(fieldNr: Int, value: FloatArray): Boolean
-    fun writePackedDouble(fieldNr: Int, value: DoubleArray): Boolean
+    fun writePackedFixed32(fieldNr: Int, value: List<UInt>): Boolean
+    fun writePackedFixed64(fieldNr: Int, value: List<ULong>): Boolean
+    fun writePackedSFixed32(fieldNr: Int, value: List<Int>): Boolean
+    fun writePackedSFixed64(fieldNr: Int, value: List<Long>): Boolean
+    fun writePackedFloat(fieldNr: Int, value: List<Float>): Boolean
+    fun writePackedDouble(fieldNr: Int, value: List<Double>): Boolean
 }
 
 

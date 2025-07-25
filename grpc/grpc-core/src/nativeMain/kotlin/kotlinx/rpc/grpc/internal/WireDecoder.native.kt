@@ -10,6 +10,7 @@ import kotlinx.io.Buffer
 import libprotowire.*
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.math.min
+import kotlin.native.ref.createCleaner
 
 // maximum buffer size to allocate as contiguous memory in bytes
 private const val MAX_PACKED_BULK_SIZE: Int = 1_000_000
@@ -44,14 +45,17 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         pw_decoder_new(zeroCopyCInput)
             ?: error("Failed to create proto wire decoder")
     }
+    
+    val rawCleaner = createCleaner(raw) {
+        pw_decoder_delete(it)
+    }
 
 
     override fun close() {
-        // delete the underlying decoder.
-        // this will also fix the position in the source buffer
+        // this will fix the position in the source buffer
         // (done by deconstructor of CodedInputStream)
-        pw_decoder_delete(raw)
-        // close zero inputs on close
+        pw_decoder_close(raw)
+
         zeroCopyInput.get().close()
         zeroCopyInput.dispose()
     }
@@ -243,7 +247,7 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         Pinned<DoubleArray>::addressOf,
         DoubleArray::asList,
     )
-    
+
     /*
      * Based on the length of the packed repeated field, one of two list strategies is chosen.
      * If the length is less or equal a specific threshold (MAX_PACKED_BULK_SIZE),

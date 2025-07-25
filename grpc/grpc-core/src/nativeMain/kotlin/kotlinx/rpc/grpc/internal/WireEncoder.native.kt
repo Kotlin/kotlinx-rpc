@@ -125,46 +125,44 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
         }
     }
 
-    override fun writePackedFixed32(fieldNr: Int, value: UIntArray) =
-        writePackedInternal(fieldNr, value, UIntArray::size, UInt.SIZE_BYTES)
-        { it.addressOf(0) }
+    override fun writePackedFixed32(fieldNr: Int, value: List<UInt>) =
+        writePackedInternal(fieldNr, value, UInt.SIZE_BYTES, ::pw_encoder_write_fixed32_no_tag)
 
-    override fun writePackedFixed64(fieldNr: Int, value: ULongArray) =
-        writePackedInternal(fieldNr, value, ULongArray::size, ULong.SIZE_BYTES)
-        { it.addressOf(0) }
+    override fun writePackedFixed64(fieldNr: Int, value: List<ULong>) =
+        writePackedInternal(fieldNr, value, ULong.SIZE_BYTES, ::pw_encoder_write_fixed64_no_tag)
 
-    override fun writePackedSFixed32(fieldNr: Int, value: IntArray) =
-        writePackedInternal(fieldNr, value, IntArray::size, Int.SIZE_BYTES)
-        { it.addressOf(0) }
+    override fun writePackedSFixed32(fieldNr: Int, value: List<Int>) =
+        writePackedInternal(fieldNr, value, Int.SIZE_BYTES, ::pw_encoder_write_sfixed32_no_tag)
 
-    override fun writePackedSFixed64(fieldNr: Int, value: LongArray) =
-        writePackedInternal(fieldNr, value, LongArray::size, Long.SIZE_BYTES)
-        { it.addressOf(0) }
+    override fun writePackedSFixed64(fieldNr: Int, value: List<Long>) =
+        writePackedInternal(fieldNr, value, Long.SIZE_BYTES, ::pw_encoder_write_sfixed64_no_tag)
 
-    override fun writePackedFloat(fieldNr: Int, value: FloatArray) =
-        writePackedInternal(fieldNr, value, FloatArray::size, Float.SIZE_BYTES)
-        { it.addressOf(0) }
+    override fun writePackedFloat(fieldNr: Int, value: List<Float>) =
+        writePackedInternal(fieldNr, value, Float.SIZE_BYTES, ::pw_encoder_write_float_no_tag)
 
-    override fun writePackedDouble(fieldNr: Int, value: DoubleArray) =
-        writePackedInternal(fieldNr, value, DoubleArray::size, Double.SIZE_BYTES)
-        { it.addressOf(0) }
+    override fun writePackedDouble(fieldNr: Int, value: List<Double>) =
+        writePackedInternal(fieldNr, value, Double.SIZE_BYTES, ::pw_encoder_write_double_no_tag)
 }
 
 internal actual fun WireEncoder(sink: Sink): WireEncoder = WireEncoderNative(sink)
 
 
 @OptIn(ExperimentalForeignApi::class)
-private inline fun <A : Any> WireEncoderNative.writePackedInternal(
+private inline fun <T> WireEncoderNative.writePackedInternal(
     fieldNr: Int,
-    value: A,
-    crossinline sizeOf: A.() -> Int,
-    sizeBytes: Int,
-    crossinline ptr: (Pinned<A>) -> COpaquePointer
+    value: List<T>,
+    byteSize: Int,
+    crossinline writer: (CValuesRef<pw_encoder_t>?, T) -> Boolean
 ): Boolean {
-    val len = sizeOf(value)
-    if (len == 0) return pw_encoder_write_bytes(raw, fieldNr, null, 0)
-    val bytes = len * sizeBytes
-    return value.usePinned { pinned ->
-        pw_encoder_write_bytes(raw, fieldNr, ptr(pinned), bytes)
+    val ktag = KTag(fieldNr, WireType.LENGTH_DELIMITED).toRawKTag()
+    pw_encoder_write_tag(raw, ktag)
+    // write the field size of the packed field
+    val fieldSize = value.size * byteSize;
+    pw_encoder_write_int32_no_tag(raw, fieldSize)
+    for (v in value) {
+        if (!writer(raw, v)) {
+            return false
+        }
     }
+    return true
 }
