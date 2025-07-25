@@ -5,17 +5,13 @@
 package kotlinx.rpc.buf.tasks
 
 import kotlinx.rpc.buf.BUF_YAML
-import kotlinx.rpc.proto.PROTO_FILES_IMPORT_DIR
-import kotlinx.rpc.proto.PROTO_FILES_DIR
 import kotlinx.rpc.proto.PROTO_GROUP
-import kotlinx.rpc.proto.protoBuildDirSourceSets
-import kotlinx.rpc.util.ensureDirectoryExists
 import kotlinx.rpc.util.ensureRegularFileExists
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
@@ -29,9 +25,11 @@ public abstract class GenerateBufYaml : DefaultTask() {
     @get:InputDirectory
     internal abstract val protoSourceDir: Property<File>
 
-    @get:Optional
     @get:InputDirectory
     internal abstract val importSourceDir: Property<File>
+
+    @get:Input
+    internal abstract val withImport: Property<Boolean>
 
     /**
      * The `buf.yaml` file to generate/update.
@@ -69,8 +67,8 @@ public abstract class GenerateBufYaml : DefaultTask() {
                 writer.appendLine("  - path: $modulePath")
             }
 
-            val importDir = importSourceDir.orNull
-            if (importDir != null && importDir.exists()) {
+            val importDir = importSourceDir.get()
+            if (withImport.get() && importDir.exists()) {
                 val modulePath = importDir.relativeTo(file.parentFile)
                 writer.appendLine("  - path: $modulePath")
             }
@@ -86,28 +84,19 @@ public abstract class GenerateBufYaml : DefaultTask() {
 
 internal fun Project.registerGenerateBufYamlTask(
     name: String,
-    dir: String,
+    buildSourceSetsDir: File,
+    buildSourceSetsProtoDir: File,
+    buildSourceSetsImportDir: File,
     withImport: Boolean,
     configure: GenerateBufYaml.() -> Unit = {},
 ): TaskProvider<GenerateBufYaml> {
     val capitalizeName = name.replaceFirstChar { it.uppercase() }
     return tasks.register<GenerateBufYaml>("${GenerateBufYaml.NAME_PREFIX}$capitalizeName") {
-        val baseDir = project.protoBuildDirSourceSets.resolve(dir)
-        val protoDir = baseDir
-            .resolve(PROTO_FILES_DIR)
-            .ensureDirectoryExists()
+        protoSourceDir.set(buildSourceSetsProtoDir)
+        importSourceDir.set(buildSourceSetsImportDir)
+        this.withImport.set(withImport)
 
-        protoSourceDir.set(protoDir)
-
-        if (withImport) {
-            val importDir = baseDir
-                .resolve(PROTO_FILES_IMPORT_DIR)
-                .ensureDirectoryExists()
-
-            importSourceDir.set(importDir)
-        }
-
-        val bufYamlFile = baseDir
+        val bufYamlFile = buildSourceSetsDir
             .resolve(BUF_YAML)
             .ensureRegularFileExists()
 
