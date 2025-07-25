@@ -25,7 +25,9 @@ class ProtoToModelInterpreter(
     private val rootResolver = NameResolver.create(logger)
 
     fun interpretProtocRequest(message: CodeGeneratorRequest): Model {
-        return Model(message.protoFileList.map { it.toModel() })
+        val protoFileMap = message.protoFileList.associateBy { it.name }
+
+        return Model(message.fileToGenerateList.map { protoFileMap.getValue(it).toModel() })
     }
 
     // package name of a currently parsed file
