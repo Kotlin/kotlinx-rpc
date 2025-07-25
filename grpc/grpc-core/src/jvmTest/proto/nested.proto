@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package kotlinx.rpc.grpc.test;
+
+message Nested {
+  message Inner1 {
+    message Inner11 {
+      optional Nested.Inner2.Inner21 reference21 = 1;
+      Nested.Inner1.Inner12 reference12 = 2;
+      Nested.Inner2.NestedEnum enum = 3;
+    }
+
+    message Inner12 {
+      optional Inner12 recursion = 1;
+    }
+
+    Inner11 inner11 = 1;
+    Inner12 inner22 = 2;
+    string string = 3;
+    optional Inner1 inner1 = 4;
+  }
+
+  message Inner2 {
+    message Inner21 {
+      Nested.Inner1.Inner11 reference11 = 1;
+      Nested.Inner2.Inner22 reference22 = 2;
+    }
+
+    message Inner22 {
+      NestedEnum enum = 1;
+    }
+
+    enum NestedEnum {
+      ZERO = 0;
+    }
+
+    Inner21 inner21 = 1;
+    Inner22 inner22 = 2;
+    string string = 3;
+  }
+
+  Inner1 inner1 = 1;
+  Inner2 inner2 = 2;
+  string string = 3;
+  Inner2.NestedEnum enum = 4;
+}

@@ -1,5 +1,6 @@
 public final class kotlinx/rpc/grpc/GrpcClient : kotlinx/rpc/RpcClient {
 	public final fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun awaitTermination-VtjQ1oo$default (Lkotlinx/rpc/grpc/GrpcClient;JLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun callServerStreaming (Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/flow/Flow;
 	public final fun shutdown ()V
