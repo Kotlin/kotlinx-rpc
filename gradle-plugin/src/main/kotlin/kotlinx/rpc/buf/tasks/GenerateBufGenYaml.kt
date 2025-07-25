@@ -8,7 +8,6 @@ import kotlinx.rpc.buf.BUF_GEN_YAML
 import kotlinx.rpc.proto.PROTO_FILES_DIR
 import kotlinx.rpc.proto.PROTO_GROUP
 import kotlinx.rpc.proto.ProtocPlugin
-import kotlinx.rpc.proto.protoBuildDirSourceSets
 import kotlinx.rpc.util.ensureRegularFileExists
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
@@ -136,7 +135,7 @@ public abstract class GenerateBufGenYaml : DefaultTask() {
 
 internal fun Project.registerGenerateBufGenYamlTask(
     name: String,
-    dir: String,
+    buildSourceSetsDir: File,
     protocPlugins: Iterable<ProtocPlugin>,
     configure: GenerateBufGenYaml.() -> Unit = {},
 ): TaskProvider<GenerateBufGenYaml> {
@@ -176,8 +175,7 @@ internal fun Project.registerGenerateBufGenYamlTask(
 
         plugins.set(pluginsProvider)
 
-        val bufGenYamlFile = project.protoBuildDirSourceSets
-            .resolve(dir)
+        val bufGenYamlFile = buildSourceSetsDir
             .resolve(BUF_GEN_YAML)
             .ensureRegularFileExists()
 
