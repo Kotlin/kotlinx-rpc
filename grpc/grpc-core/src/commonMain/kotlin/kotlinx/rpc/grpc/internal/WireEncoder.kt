@@ -14,7 +14,9 @@ import kotlinx.io.Sink
  *
  * [flush] must be called to ensure that all data is written to the [Sink].
  */
+@OptIn(ExperimentalUnsignedTypes::class)
 internal interface WireEncoder {
+    fun flush()
     fun writeBool(field: Int, value: Boolean): Boolean
     fun writeInt32(fieldNr: Int, value: Int): Boolean
     fun writeInt64(fieldNr: Int, value: Long): Boolean
@@ -29,10 +31,14 @@ internal interface WireEncoder {
     fun writeFloat(fieldNr: Int, value: Float): Boolean
     fun writeDouble(fieldNr: Int, value: Double): Boolean
     fun writeEnum(fieldNr: Int, value: Int): Boolean
-    fun writeString(fieldNr: Int, value: String): Boolean
-    fun flush()
     fun writeBytes(fieldNr: Int, value: ByteArray): Boolean
+    fun writeString(fieldNr: Int, value: String): Boolean
     fun writePackedFixed32(fieldNr: Int, value: UIntArray): Boolean
+    fun writePackedFixed64(fieldNr: Int, value: ULongArray): Boolean
+    fun writePackedSFixed32(fieldNr: Int, value: IntArray): Boolean
+    fun writePackedSFixed64(fieldNr: Int, value: LongArray): Boolean
+    fun writePackedFloat(fieldNr: Int, value: FloatArray): Boolean
+    fun writePackedDouble(fieldNr: Int, value: DoubleArray): Boolean
 }
 
 

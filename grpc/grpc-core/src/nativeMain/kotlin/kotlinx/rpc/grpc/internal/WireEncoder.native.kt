@@ -7,16 +7,14 @@ package kotlinx.rpc.grpc.internal
 import kotlinx.cinterop.*
 import kotlinx.io.Sink
 import libprotowire.*
-import kotlin.collections.isEmpty
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
-import kotlin.text.isEmpty
 
 
 // TODO: Evaluate if we should implement a ZeroCopyOutputSink (similar to the ZeroCopyInputSource)
 //      to reduce the number of copies during encoding.
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
-internal class WireEncoderNative(private val sink: Sink): WireEncoder {
+internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
     /**
      * The context object provides a stable reference to the kotlin context.
      * This is required, as functions must be static and cannot capture environment references.
@@ -32,6 +30,7 @@ internal class WireEncoderNative(private val sink: Sink): WireEncoder {
 
     // create context as a stable reference that can be passed to static function callback
     private val context = StableRef.create(this.Ctx())
+
     // construct encoder with a callback that calls write() on this.context
     internal val raw = run {
         pw_encoder_new(context.asCPointer(), staticCFunction { ctx, buf, size ->
@@ -126,16 +125,46 @@ internal class WireEncoderNative(private val sink: Sink): WireEncoder {
         }
     }
 
-    override fun writePackedFixed32(fieldNr: Int, value: UIntArray): Boolean {
-        if (value.isEmpty()) {
-            return pw_encoder_write_bytes(raw, fieldNr, null, 0)
-        }
-        val bytes = value.size * UInt.SIZE_BYTES
-        return value.usePinned {
-            pw_encoder_write_bytes(raw, fieldNr, it.addressOf(0), bytes)
-        }
-    }
+    override fun writePackedFixed32(fieldNr: Int, value: UIntArray) =
+        writePackedInternal(fieldNr, value, UIntArray::size, UInt.SIZE_BYTES)
+        { it.addressOf(0) }
 
+    override fun writePackedFixed64(fieldNr: Int, value: ULongArray) =
+        writePackedInternal(fieldNr, value, ULongArray::size, ULong.SIZE_BYTES)
+        { it.addressOf(0) }
+
+    override fun writePackedSFixed32(fieldNr: Int, value: IntArray) =
+        writePackedInternal(fieldNr, value, IntArray::size, Int.SIZE_BYTES)
+        { it.addressOf(0) }
+
+    override fun writePackedSFixed64(fieldNr: Int, value: LongArray) =
+        writePackedInternal(fieldNr, value, LongArray::size, Long.SIZE_BYTES)
+        { it.addressOf(0) }
+
+    override fun writePackedFloat(fieldNr: Int, value: FloatArray) =
+        writePackedInternal(fieldNr, value, FloatArray::size, Float.SIZE_BYTES)
+        { it.addressOf(0) }
+
+    override fun writePackedDouble(fieldNr: Int, value: DoubleArray) =
+        writePackedInternal(fieldNr, value, DoubleArray::size, Double.SIZE_BYTES)
+        { it.addressOf(0) }
 }
 
 internal actual fun WireEncoder(sink: Sink): WireEncoder = WireEncoderNative(sink)
+
+
+@OptIn(ExperimentalForeignApi::class)
+private inline fun <A : Any> WireEncoderNative.writePackedInternal(
+    fieldNr: Int,
+    value: A,
+    crossinline sizeOf: A.() -> Int,
+    sizeBytes: Int,
+    crossinline ptr: (Pinned<A>) -> COpaquePointer
+): Boolean {
+    val len = sizeOf(value)
+    if (len == 0) return pw_encoder_write_bytes(raw, fieldNr, null, 0)
+    val bytes = len * sizeBytes
+    return value.usePinned { pinned ->
+        pw_encoder_write_bytes(raw, fieldNr, ptr(pinned), bytes)
+    }
+}

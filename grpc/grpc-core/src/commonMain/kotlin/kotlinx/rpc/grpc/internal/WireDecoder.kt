@@ -28,7 +28,7 @@ import kotlinx.io.Buffer
  * }
  * ```
  */
-internal interface WireDecoder: AutoCloseable {
+internal interface WireDecoder : AutoCloseable {
     fun readTag(): KTag?
     fun readBool(): Boolean?
     fun readInt32(): Int?
@@ -47,6 +47,11 @@ internal interface WireDecoder: AutoCloseable {
     fun readString(): String?
     fun readBytes(): ByteArray?
     fun readPackedFixed32(): List<UInt>?
+    fun readPackedFixed64(): List<ULong>?
+    fun readPackedSFixed32(): List<Int>?
+    fun readPackedSFixed64(): List<Long>?
+    fun readPackedFloat(): List<Float>?
+    fun readPackedDouble(): List<Double>?
 }
 
 /**
