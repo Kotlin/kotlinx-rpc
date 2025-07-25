@@ -7,17 +7,16 @@ package kotlinx.rpc.buf.tasks
 import kotlinx.rpc.proto.PROTO_GROUP
 import kotlinx.rpc.rpcExtension
 import org.gradle.api.Project
-import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskProvider
 import java.io.File
 import kotlinx.rpc.buf.BufGenerateExtension
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.InputDirectory
 
 /**
  * Buf `generate` command.
@@ -26,8 +25,12 @@ import kotlinx.rpc.buf.BufGenerateExtension
  */
 public abstract class BufGenerateTask : BufExecTask() {
     // unsued, but required for Gradle to properly recognize inputs
-    @get:InputFiles
-    internal abstract val protoFiles: ListProperty<File>
+    @get:InputDirectory
+    internal abstract val protoFilesDir: Property<File>
+
+    // unsued, but required for Gradle to properly recognize inputs
+    @get:InputDirectory
+    internal abstract val importFilesDir: Property<File>
 
     /**
      * Whether to include imports.
@@ -103,15 +106,16 @@ public abstract class BufGenerateTask : BufExecTask() {
 
 internal fun Project.registerBufGenerateTask(
     name: String,
-    workingDir: Provider<File>,
-    outputDirectory: Provider<File>,
-    protoFiles: Provider<FileCollection>,
+    workingDir: File,
+    outputDirectory: File,
+    protoFilesDir: File,
+    importFilesDir: File,
     configure: BufGenerateTask.() -> Unit = {},
 ): TaskProvider<BufGenerateTask> {
     val capitalName = name.replaceFirstChar { it.uppercase() }
     val bufGenerateTaskName = "${BufGenerateTask.NAME_PREFIX}$capitalName"
 
-    return registerBufExecTask<BufGenerateTask>(bufGenerateTaskName, workingDir) {
+    return registerBufExecTask<BufGenerateTask>(bufGenerateTaskName, provider { workingDir }) {
         group = PROTO_GROUP
         description = "Generates code from .proto files using 'buf generate'"
 
@@ -122,7 +126,9 @@ internal fun Project.registerBufGenerateTask(
         errorFormat.set(generate.errorFormat)
 
         this.outputDirectory.set(outputDirectory)
-        this.protoFiles.set(protoFiles)
+
+        this.protoFilesDir.set(protoFilesDir)
+        this.importFilesDir.set(importFilesDir)
 
         configure()
     }
