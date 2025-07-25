@@ -51,6 +51,22 @@ extern "C" {
     bool pw_encoder_write_string(pw_encoder_t *self, int field_no, const char *data, int size);
     bool pw_encoder_write_bytes(pw_encoder_t *self, int field_no, const void *data, int size);
 
+    // No tag writers
+    bool pw_encoder_write_tag(pw_encoder_t *self, uint32_t tag);
+    bool pw_encoder_write_bool_no_tag(pw_encoder_t *self, bool value);
+    bool pw_encoder_write_int32_no_tag(pw_encoder_t *self, int32_t value);
+    bool pw_encoder_write_int64_no_tag(pw_encoder_t *self, int64_t value);
+    bool pw_encoder_write_uint32_no_tag(pw_encoder_t *self, uint32_t value);
+    bool pw_encoder_write_uint64_no_tag(pw_encoder_t *self, uint64_t value);
+    bool pw_encoder_write_sint32_no_tag(pw_encoder_t *self, int32_t value);
+    bool pw_encoder_write_sint64_no_tag(pw_encoder_t *self, int64_t value);
+    bool pw_encoder_write_fixed32_no_tag(pw_encoder_t *self, uint32_t value);
+    bool pw_encoder_write_fixed64_no_tag(pw_encoder_t *self, uint64_t value);
+    bool pw_encoder_write_sfixed32_no_tag(pw_encoder_t *self, int32_t value);
+    bool pw_encoder_write_sfixed64_no_tag(pw_encoder_t *self, int64_t value);
+    bool pw_encoder_write_float_no_tag(pw_encoder_t *self, float value);
+    bool pw_encoder_write_double_no_tag(pw_encoder_t *self, double value);
+
 
     //// WIRE DECODER ////
 
@@ -78,6 +94,7 @@ extern "C" {
      */
     pw_decoder_t * pw_decoder_new(pw_zero_copy_input_t zero_copy_input);
     void pw_decoder_delete(pw_decoder_t *self);
+    void pw_decoder_close(pw_decoder_t *self);
 
     uint32_t pw_decoder_read_tag(pw_decoder_t *self);
     bool pw_decoder_read_bool(pw_decoder_t *self, bool *value);
