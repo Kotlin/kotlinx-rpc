@@ -5,19 +5,9 @@
 package kotlinx.rpc.grpc.internal
 
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.convert
-import kotlinx.cinterop.readBytes
-import kotlinx.cinterop.usePinned
 import kotlinx.io.Buffer
-import platform.posix.memcpy
 import kotlin.experimental.ExperimentalNativeApi
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 // TODO: Move this to the commonTest
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
@@ -625,31 +615,6 @@ class WireCodecTest {
     }
 
     @Test
-    fun testPackedFixed32EncodeDecode() {
-        val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-
-        val ints = UIntArray(100000) { it.toUInt() }
-
-        assertTrue(encoder.writePackedFixed32(1, ints))
-        encoder.flush()
-
-        val decoder = WireDecoder(buffer)
-        val tag = decoder.readTag()
-        assertNotNull(tag)
-        assertEquals(1, tag.fieldNr)
-        assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
-
-        val actualInts = decoder.readPackedFixed32()
-        assertNotNull(actualInts)
-        assertEquals(ints.size, actualInts.size)
-        assertEquals(ints.toList(), actualInts)
-
-        decoder.close()
-        assertTrue(buffer.exhausted())
-    }
-
-    @Test
     fun testDoubleEncodeDecode() {
         val fieldNr = 21
         val testValue = 3.14159265359
@@ -698,4 +663,75 @@ class WireCodecTest {
         decoder.close()
         assertTrue(buffer.exhausted())
     }
+
+
+    private inline fun <A, T> runPackedTest(
+        arr: A,
+        crossinline write: WireEncoder.(Int, A) -> Boolean,
+        crossinline read: WireDecoder.() -> List<T>?,
+        crossinline asList: (A) -> List<T>
+    ) {
+        val buf = Buffer()
+        with(WireEncoder(buf)) {
+            assertTrue(write(1, arr))
+            flush()
+        }
+        WireDecoder(buf).use { dec ->
+            dec.readTag()!!.apply {
+                assertEquals(1, fieldNr)
+                assertEquals(WireType.LENGTH_DELIMITED, wireType)
+            }
+            val test = dec.read()
+            assertEquals(asList(arr), test)
+        }
+        assertTrue(buf.exhausted())
+    }
+
+    @Test
+    fun testPackedFixed32() = runPackedTest(
+        UIntArray(1_000_000) { UInt.MAX_VALUE + it.toUInt() },
+        WireEncoder::writePackedFixed32,
+        WireDecoder::readPackedFixed32,
+        UIntArray::asList
+    )
+
+    @Test
+    fun testPackedFixed64() = runPackedTest(
+        ULongArray(1_000_000) { UInt.MAX_VALUE + it.toULong() },
+        WireEncoder::writePackedFixed64,
+        WireDecoder::readPackedFixed64,
+        ULongArray::asList
+    )
+
+    @Test
+    fun testPackedSFixed32() = runPackedTest(
+        IntArray(1_000_000) { Int.MAX_VALUE + it },
+        WireEncoder::writePackedSFixed32,
+        WireDecoder::readPackedSFixed32,
+        IntArray::asList
+    )
+
+    @Test
+    fun testPackedSFixed64() = runPackedTest(
+        LongArray(1_000_000) { Long.MAX_VALUE + it },
+        WireEncoder::writePackedSFixed64,
+        WireDecoder::readPackedSFixed64,
+        LongArray::asList
+    )
+
+    @Test
+    fun testPackedFloat() = runPackedTest(
+        FloatArray(1_000_000) { it.toFloat() / 3.3f * ((it and 1) * 2 - 1) },
+        WireEncoder::writePackedFloat,
+        WireDecoder::readPackedFloat,
+        FloatArray::asList
+    )
+
+    @Test
+    fun testPackedDouble() = runPackedTest(
+        DoubleArray(1_000_000) { it.toDouble() / 3.3 * ((it and 1) * 2 - 1) },
+        WireEncoder::writePackedDouble,
+        WireDecoder::readPackedDouble,
+        DoubleArray::asList
+    )
 }

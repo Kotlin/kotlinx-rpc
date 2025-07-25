@@ -11,10 +11,11 @@ import libprotowire.*
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.math.min
 
+// maximum buffer size to allocate as contiguous memory in bytes
 private const val MAX_PACKED_BULK_SIZE: Int = 1_000_000
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
-internal class WireDecoderNative(private val source: Buffer): WireDecoder {
+internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
 
     // wraps the source in a class that allows to pass data from the source buffer to the C++ encoder
     // without copying it to an intermediate byte array.
@@ -201,6 +202,48 @@ internal class WireDecoderNative(private val source: Buffer): WireDecoder {
         return bytes
     }
 
+    override fun readPackedFixed32() = readPackedFixedInternal(
+        UInt.SIZE_BYTES,
+        ::UIntArray,
+        Pinned<UIntArray>::addressOf,
+        UIntArray::asList,
+    )
+
+    override fun readPackedFixed64() = readPackedFixedInternal(
+        ULong.SIZE_BYTES,
+        ::ULongArray,
+        Pinned<ULongArray>::addressOf,
+        ULongArray::asList,
+    )
+
+    override fun readPackedSFixed32() = readPackedFixedInternal(
+        Int.SIZE_BYTES,
+        ::IntArray,
+        Pinned<IntArray>::addressOf,
+        IntArray::asList,
+    )
+
+    override fun readPackedSFixed64() = readPackedFixedInternal(
+        Long.SIZE_BYTES,
+        ::LongArray,
+        Pinned<LongArray>::addressOf,
+        LongArray::asList,
+    )
+
+    override fun readPackedFloat() = readPackedFixedInternal(
+        Float.SIZE_BYTES,
+        ::FloatArray,
+        Pinned<FloatArray>::addressOf,
+        FloatArray::asList,
+    )
+
+    override fun readPackedDouble() = readPackedFixedInternal(
+        Double.SIZE_BYTES,
+        ::DoubleArray,
+        Pinned<DoubleArray>::addressOf,
+        DoubleArray::asList,
+    )
+    
     /*
      * Based on the length of the packed repeated field, one of two list strategies is chosen.
      * If the length is less or equal a specific threshold (MAX_PACKED_BULK_SIZE),
@@ -210,39 +253,52 @@ internal class WireDecoderNative(private val source: Buffer): WireDecoder {
      *
      * Note that this implementation assumes a little endian memory order.
      */
-    override fun readPackedFixed32(): List<UInt>? {
+    private inline fun <T : Any, R : Any> readPackedFixedInternal(
+        sizeBytes: Int,
+        crossinline createArray: (Int) -> R,
+        crossinline getAddress: Pinned<R>.(Int) -> COpaquePointer,
+        crossinline asList: (R) -> List<T>
+    ): List<T>? {
+        // fetch the size of the packed repeated field
         var byteLen = readInt32() ?: return null
         if (byteLen < 0) return null
         if (source.size < byteLen) return null
-        if (byteLen % UInt.SIZE_BYTES != 0 ) return null
-        val count = byteLen / UInt.SIZE_BYTES
+        if (byteLen % sizeBytes != 0) return null
         if (byteLen == 0) return emptyList()
 
-        if (count <= MAX_PACKED_BULK_SIZE) {
-            // this implementation assumes that the program is running on little endian machines.
-            val arr = UIntArray(count)
-            arr.usePinned {
-                pw_decoder_read_raw_bytes(raw, it.addressOf(0), byteLen)
-            }
-            return ArrayList(arr)
-        } else {
-            val bufByteLen = MAX_PACKED_BULK_SIZE
-            val bufLen = bufByteLen / UInt.SIZE_BYTES
-            val buffer = UIntArray(bufLen)
-            var list = persistentListOf<UInt>()
-            buffer.usePinned {
+        // allocate the buffer array (has at most MAX_PACKED_BULK_SIZE bytes)
+        val bufByteLen = minOf(byteLen, MAX_PACKED_BULK_SIZE)
+        val bufElemCount = bufByteLen / sizeBytes
+        val buffer = createArray(bufElemCount)
+
+        buffer.usePinned {
+            val bufAddr = it.getAddress(0)
+
+            if (byteLen == bufByteLen) {
+                // the whole packed field fits into the buffer -> copy into buffer and returns it as a list.
+                pw_decoder_read_raw_bytes(raw, bufAddr, byteLen)
+                return asList(buffer)
+            } else {
+                // the packed field is too large for the buffer, so we load it into a persistent list
+                var chunkedList = persistentListOf<T>()
+
                 while (byteLen > 0) {
-                    val written = min(bufByteLen, byteLen)
-                    pw_decoder_read_raw_bytes(raw, it.addressOf(0), written)
-                    list = if (written == bufByteLen) {
-                        list.addAll(buffer)
+                    // copy data into the buffer.
+                    val copySize = min(bufByteLen, byteLen)
+                    pw_decoder_read_raw_bytes(raw, bufAddr, copySize)
+
+                    // add buffer to the chunked list
+                    chunkedList = if (copySize == bufByteLen) {
+                        chunkedList.addAll(asList(buffer))
                     } else {
-                        list.addAll(buffer.copyOfRange(0, written / UInt.SIZE_BYTES))
+                        chunkedList.addAll(asList(buffer).subList(0, copySize / sizeBytes))
                     }
-                    byteLen -= written
+
+                    byteLen -= copySize
                 }
+
+                return chunkedList
             }
-            return list
         }
     }
 }
