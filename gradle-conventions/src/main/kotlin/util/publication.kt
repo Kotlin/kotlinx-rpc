@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:Suppress("detekt.MaxLineLength")
@@ -26,7 +26,7 @@ const val KOTLINX_RPC_PREFIX = "kotlinx-rpc"
 fun MavenPublication.setPublicArtifactId(project: Project) {
     val publication = this
 
-    if (!publication.artifactId.startsWith(KOTLINX_RPC_PREFIX)) {
+    if (!publication.artifactId.startsWith(KOTLINX_RPC_PREFIX) && !publication.artifactId.startsWith("protoc-gen-")) {
         publication.artifactId = "$KOTLINX_RPC_PREFIX-$artifactId"
         project.logger.info("Altered artifactId for $name publication: $artifactId")
     }

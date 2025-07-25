@@ -116,7 +116,7 @@ final class kotlinx.rpc.grpc/GrpcClient : kotlinx.rpc/RpcClient { // kotlinx.rpc
     final fun shutdown() // kotlinx.rpc.grpc/GrpcClient.shutdown|shutdown(){}[0]
     final fun shutdownNow() // kotlinx.rpc.grpc/GrpcClient.shutdownNow|shutdownNow(){}[0]
     final suspend fun <#A1: kotlin/Any?> call(kotlinx.rpc/RpcCall): #A1 // kotlinx.rpc.grpc/GrpcClient.call|call(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]
-    final suspend fun awaitTermination(kotlin.time/Duration) // kotlinx.rpc.grpc/GrpcClient.awaitTermination|awaitTermination(kotlin.time.Duration){}[0]
+    final suspend fun awaitTermination(kotlin.time/Duration = ...) // kotlinx.rpc.grpc/GrpcClient.awaitTermination|awaitTermination(kotlin.time.Duration){}[0]
 }
 
 final class kotlinx.rpc.grpc/GrpcServer : kotlinx.rpc.grpc/Server, kotlinx.rpc/RpcServer { // kotlinx.rpc.grpc/GrpcServer|null[0]

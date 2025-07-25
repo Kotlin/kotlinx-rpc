@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package kotlinx.rpc.grpc.test;
+
+enum Enum {
+  option allow_alias = true;
+  ZERO = 0;
+  ONE = 1;
+  ONE_SECOND = 1;
+  TWO = 2 [deprecated = true];
+  THREE = 3;
+}
+
+message UsingEnum {
+  Enum enum = 1;
+}
