@@ -54,7 +54,7 @@ internal open class DefaultProtoSourceSet @Inject constructor(
         PROTO_SOURCE_DIRECTORY_NAME,
         "Proto sources",
     ).apply {
-        srcDirs("src/$name/proto")
+        srcDirs("src/${this@DefaultProtoSourceSet.name}/proto")
     }
 
     override fun proto(action: Action<SourceDirectorySet>) {
@@ -62,12 +62,7 @@ internal open class DefaultProtoSourceSet @Inject constructor(
     }
 }
 
-internal fun Project.configureProtoExtensions(
-    configure: Project.(
-        languageSourceSet: Any,
-        protoSourceSet: DefaultProtoSourceSet,
-    ) -> Unit
-) {
+internal fun Project.createProtoExtensions() {
     fun findOrCreateAndConfigure(languageSourceSetName: String, languageSourceSet: Any) {
         val container = project.findOrCreate(PROTO_SOURCE_SETS) {
             val container = objects.domainObjectContainer(
@@ -82,7 +77,7 @@ internal fun Project.configureProtoExtensions(
 
         val protoSourceSet = container.maybeCreate(languageSourceSetName) as DefaultProtoSourceSet
 
-        configure(languageSourceSet, protoSourceSet)
+        protoSourceSet.languageSourceSets.add(languageSourceSet)
     }
 
     project.withKotlinJvmExtension {
@@ -108,14 +103,4 @@ internal fun Project.configureProtoExtensions(
             }
         }
     }
-}
-
-internal fun Project.createProtoExtensions() {
-    configureProtoExtensions { languageSourceSet, sourceSet ->
-        sourceSet.initExtension(languageSourceSet)
-    }
-}
-
-private fun DefaultProtoSourceSet.initExtension(languageSourceSet: Any) {
-    this.languageSourceSets.add(languageSourceSet)
 }

@@ -19,6 +19,11 @@ internal val Project.protoBuildDirSourceSets: File
         return protoBuildDir.resolve(PROTO_BUILD_SOURCE_SETS)
     }
 
+internal val Project.protoBuildDirSourceSetsKeep: File
+    get() {
+        return protoBuildDirSourceSets.resolve(".keep")
+    }
+
 internal val Project.protoBuildDirGenerated: File
     get() {
         return protoBuildDir.resolve(PROTO_BUILD_GENERATED)

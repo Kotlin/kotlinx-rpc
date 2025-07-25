@@ -7,9 +7,7 @@ package kotlinx.rpc.util
 import java.io.File
 
 internal fun File.ensureDirectoryExists(): File {
-    if (!exists()) {
-        mkdirs()
-    }
+    mkdirs()
 
     return this
 }
