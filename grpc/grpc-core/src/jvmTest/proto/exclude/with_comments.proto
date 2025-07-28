@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package kotlinx.rpc.grpc.test;
+
+// This message has comment
+message WithComments {
+  // and this field too.
+  string string = 1;
+}
