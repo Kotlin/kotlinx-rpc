@@ -19,6 +19,8 @@ private const val MAX_PACKED_BULK_SIZE: Int = 1_000_000
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
 
+    private var hadError = false;
+
     // wraps the source in a class that allows to pass data from the source buffer to the C++ encoder
     // without copying it to an intermediate byte array.
     private val zeroCopyInput = StableRef.create(ZeroCopyInputSource(source))
@@ -61,149 +63,130 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         zeroCopyInput.dispose()
     }
 
+    override fun hadError(): Boolean {
+        return hadError;
+    }
+
     override fun readTag(): KTag? {
         val tag = pw_decoder_read_tag(raw)
-        return KTag.fromOrNull(tag)
+        if (tag == 0u) return null.withError()
+        val kTag = KTag.fromOrNull(tag)
+        if (kTag == null) {
+            hadError = true
+        }
+        return kTag
     }
 
-    override fun readBool(): Boolean? = memScoped {
+    override fun readBool(): Boolean = memScoped {
         val value = alloc<BooleanVar>()
-        if (pw_decoder_read_bool(raw, value.ptr)) {
-            return value.value
-        }
-        return null
+        pw_decoder_read_bool(raw, value.ptr).checkError()
+        return value.value
     }
 
-    override fun readInt32(): Int? = memScoped {
+    override fun readInt32(): Int = memScoped {
         val value = alloc<IntVar>()
-        if (pw_decoder_read_int32(raw, value.ptr)) {
-            return value.value
-        }
-        return null
+        pw_decoder_read_int32(raw, value.ptr).checkError()
+        return value.value
     }
 
-    override fun readInt64(): Long? = memScoped {
+    override fun readInt64(): Long = memScoped {
         val value = alloc<LongVar>()
-        if (pw_decoder_read_int64(raw, value.ptr)) {
-            return value.value
-        }
-        return null
+        pw_decoder_read_int64(raw, value.ptr).checkError()
+        return value.value
     }
 
-    override fun readUInt32(): UInt? = memScoped {
+    override fun readUInt32(): UInt = memScoped {
         val value = alloc<UIntVar>()
-        if (pw_decoder_read_uint32(raw, value.ptr)) {
-            return value.value
-        }
-        return null
+        pw_decoder_read_uint32(raw, value.ptr).checkError()
+        return value.value
     }
 
-    override fun readUInt64(): ULong? = memScoped {
+    override fun readUInt64(): ULong = memScoped {
         val value = alloc<ULongVar>()
-        if (pw_decoder_read_uint64(raw, value.ptr)) {
-            return value.value
-        }
-        return null
+        pw_decoder_read_uint64(raw, value.ptr).checkError()
+        return value.value
     }
 
-    override fun readSInt32(): Int? = memScoped {
+    override fun readSInt32(): Int = memScoped {
         val value = alloc<IntVar>()
-        if (pw_decoder_read_sint32(raw, value.ptr)) {
-            return value.value
-        }
-        return null
+        pw_decoder_read_sint32(raw, value.ptr).checkError()
+        return value.value
     }
 
-    override fun readSInt64(): Long? = memScoped {
+    override fun readSInt64(): Long = memScoped {
         val value = alloc<LongVar>()
-        if (pw_decoder_read_sint64(raw, value.ptr)) {
-            return value.value
-        }
-        return null
+        pw_decoder_read_sint64(raw, value.ptr).checkError()
+        return value.value
     }
 
-    override fun readFixed32(): UInt? = memScoped {
+    override fun readFixed32(): UInt = memScoped {
         val value = alloc<UIntVar>()
-        if (pw_decoder_read_fixed32(raw, value.ptr)) {
-            return value.value
-        }
-        return null
+        pw_decoder_read_fixed32(raw, value.ptr).checkError()
+        return value.value
     }
 
-    override fun readFixed64(): ULong? = memScoped {
+    override fun readFixed64(): ULong = memScoped {
         val value = alloc<ULongVar>()
-        if (pw_decoder_read_fixed64(raw, value.ptr)) {
-            return value.value
-        }
-        return null
+        pw_decoder_read_fixed64(raw, value.ptr).checkError()
+        return value.value
     }
 
-    override fun readSFixed32(): Int? = memScoped {
+    override fun readSFixed32(): Int = memScoped {
         val value = alloc<IntVar>()
-        if (pw_decoder_read_sfixed32(raw, value.ptr)) {
-            return value.value
-        }
-        return null
+        pw_decoder_read_sfixed32(raw, value.ptr).checkError()
+        return value.value
     }
 
-    override fun readSFixed64(): Long? = memScoped {
+    override fun readSFixed64(): Long = memScoped {
         val value = alloc<LongVar>()
-        if (pw_decoder_read_sfixed64(raw, value.ptr)) {
-            return value.value
-        }
-        return null
+        pw_decoder_read_sfixed64(raw, value.ptr).checkError()
+        return value.value
     }
 
-    override fun readFloat(): Float? = memScoped {
+    override fun readFloat(): Float = memScoped {
         val value = alloc<FloatVar>()
-        if (pw_decoder_read_float(raw, value.ptr)) {
-            return value.value
-        }
-        return null
+        pw_decoder_read_float(raw, value.ptr).checkError()
+        return value.value
     }
 
-    override fun readDouble(): Double? = memScoped {
+    override fun readDouble(): Double = memScoped {
         val value = alloc<DoubleVar>()
-        if (pw_decoder_read_double(raw, value.ptr)) {
-            return value.value
-        }
-        return null
+        pw_decoder_read_double(raw, value.ptr).checkError()
+        return value.value
     }
 
-    override fun readEnum(): Int? = memScoped {
+    override fun readEnum(): Int = memScoped {
         val value = alloc<IntVar>()
-        if (pw_decoder_read_enum(raw, value.ptr)) {
-            return value.value
-        }
-        return null
+        pw_decoder_read_enum(raw, value.ptr).checkError()
+        return value.value
     }
 
     // TODO: Is it possible to avoid copying the c_str, by directly allocating a K/N String (as in readBytes)? KRPC-187
-    override fun readString(): String? = memScoped {
+    override fun readString(): String = memScoped {
         val str = alloc<CPointerVar<pw_string_t>>()
-        val ok = pw_decoder_read_string(raw, str.ptr)
+        pw_decoder_read_string(raw, str.ptr).checkError()
         try {
-            if (!ok) return null
-            return pw_string_c_str(str.value)?.toKString()
+            if (hadError) return ""
+            return pw_string_c_str(str.value)?.toKString() ?: "".also { hadError = true }
         } finally {
             pw_string_delete(str.value)
         }
     }
 
     // TODO: Should readBytes return a buffer, to prevent allocation of large contiguous memory blocks ? KRPC-182
-    override fun readBytes(): ByteArray? {
-        val length = readInt32() ?: return null
-        if (length < 0) return null
+    override fun readBytes(): ByteArray {
+        val length = readInt32()
+        if (hadError) return ByteArray(0)
+        if (length < 0) return ByteArray(0).withError()
         // check if the remaining buffer size is less than the set length,
         // we can early abort, without allocating unnecessary memory
-        if (source.size < length) return null
-        if (length == 0) return ByteArray(0)
+        if (source.size < length) return ByteArray(0).withError()
+        if (length == 0) return ByteArray(0) // actually an empty array (no error)
         val bytes = ByteArray(length)
-        var ok = true
         bytes.usePinned {
-            ok = pw_decoder_read_raw_bytes(raw, it.addressOf(0), length)
+            pw_decoder_read_raw_bytes(raw, it.addressOf(0), length).checkError()
         }
-        if (!ok) return null
+        if (hadError) return ByteArray(0)
         return bytes
     }
 
@@ -259,19 +242,21 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
     )
 
     private inline fun <T : Any> readPackedVarInternal(
-        crossinline readFn: () -> T?
-    ): List<T>? {
-        val byteLen = readInt32() ?: return null
-        if (byteLen < 0) return null
-        if (source.size < byteLen) return null
-        if (byteLen == 0) return emptyList()
+        crossinline readFn: () -> T
+    ): List<T> {
+        val byteLen = readInt32()
+        if (hadError) return emptyList()
+        if (byteLen < 0) return emptyList<T>().withError()
+        if (source.size < byteLen) return emptyList<T>().withError()
+        if (byteLen == 0) return emptyList() // actually an empty list (no error)
 
         val limit = pw_decoder_push_limit(raw, byteLen)
 
         val result = mutableListOf<T>()
 
         while (pw_decoder_bytes_until_limit(raw) > 0) {
-            val elem = readFn() ?: return null
+            val elem = readFn()
+            if (hadError) break
             result.add(elem)
         }
 
@@ -293,13 +278,14 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         crossinline createArray: (Int) -> R,
         crossinline getAddress: Pinned<R>.(Int) -> COpaquePointer,
         crossinline asList: (R) -> List<T>
-    ): List<T>? {
+    ): List<T> {
         // fetch the size of the packed repeated field
-        var byteLen = readInt32() ?: return null
-        if (byteLen < 0) return null
-        if (source.size < byteLen) return null
-        if (byteLen % sizeBytes != 0) return null
-        if (byteLen == 0) return emptyList()
+        var byteLen = readInt32()
+        if (hadError) return emptyList()
+        if (byteLen < 0) return emptyList<T>().withError()
+        if (source.size < byteLen) return emptyList<T>().withError()
+        if (byteLen % sizeBytes != 0) return emptyList<T>().withError()
+        if (byteLen == 0) return emptyList()  // actually an empty list (no error)
 
         // allocate the buffer array (has at most MAX_PACKED_BULK_SIZE bytes)
         val bufByteLen = minOf(byteLen, MAX_PACKED_BULK_SIZE)
@@ -311,7 +297,7 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
 
             if (byteLen == bufByteLen) {
                 // the whole packed field fits into the buffer -> copy into buffer and returns it as a list.
-                pw_decoder_read_raw_bytes(raw, bufAddr, byteLen)
+                pw_decoder_read_raw_bytes(raw, bufAddr, byteLen).checkError()
                 return asList(buffer)
             } else {
                 // the packed field is too large for the buffer, so we load it into a persistent list
@@ -320,7 +306,8 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
                 while (byteLen > 0) {
                     // copy data into the buffer.
                     val copySize = min(bufByteLen, byteLen)
-                    pw_decoder_read_raw_bytes(raw, bufAddr, copySize)
+                    pw_decoder_read_raw_bytes(raw, bufAddr, copySize).checkError()
+                    if (hadError) return emptyList()
 
                     // add buffer to the chunked list
                     chunkedList = if (copySize == bufByteLen) {
@@ -335,6 +322,15 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
                 return chunkedList
             }
         }
+    }
+
+    private fun Boolean.checkError() {
+        hadError = !this || hadError;
+    }
+
+    private fun <T> T.withError(): T {
+        hadError = true
+        return this
     }
 }
 

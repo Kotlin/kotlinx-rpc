@@ -11,13 +11,11 @@ import kotlinx.io.Buffer
  *
  * This decoder is used by first calling [readTag], than looking up the field based on the field number in the returned,
  * tag and then calling the actual `read*()` method to read the value to the corresponding field.
- * This means that the nullable return value does not collide with optional fields, as optional fields would not
- * include a tag in the encoded message.
  *
- * If one `read*()` method returns `null`, decoding the data failed and no further
- * decoding can be done.
+ * [hadError] indicates an error during decoding. While calling `read*()` is safe, the returned values
+ * are meaningless if [hadError] returns `true`.
  *
- * NOTE: If the value of a `read*()` method is non-null, it doesn't mean that the
+ * NOTE: If the [hadError] after a call to `read*()` returns `false`, it doesn't mean that the
  * value is correctly decoded. E.g., the following test will pass:
  * ```kt
  * val fieldNr = 1
@@ -29,43 +27,45 @@ import kotlinx.io.Buffer
  *
  * WireDecoder(buffer).use { decoder ->
  *     decoder.readTag()
- *     assertNotNull(decoder.readBool())
+ *     decoder.readBool()
+ *     assertFalse(decoder.hasError())
  * }
  * ```
  */
 internal interface WireDecoder : AutoCloseable {
+    fun hadError(): Boolean
     fun readTag(): KTag?
-    fun readBool(): Boolean?
-    fun readInt32(): Int?
-    fun readInt64(): Long?
-    fun readUInt32(): UInt?
-    fun readUInt64(): ULong?
-    fun readSInt32(): Int?
-    fun readSInt64(): Long?
-    fun readFixed32(): UInt?
-    fun readFixed64(): ULong?
-    fun readSFixed32(): Int?
-    fun readSFixed64(): Long?
-    fun readFloat(): Float?
-    fun readDouble(): Double?
+    fun readBool(): Boolean
+    fun readInt32(): Int
+    fun readInt64(): Long
+    fun readUInt32(): UInt
+    fun readUInt64(): ULong
+    fun readSInt32(): Int
+    fun readSInt64(): Long
+    fun readFixed32(): UInt
+    fun readFixed64(): ULong
+    fun readSFixed32(): Int
+    fun readSFixed64(): Long
+    fun readFloat(): Float
+    fun readDouble(): Double
 
-    fun readEnum(): Int?
-    fun readString(): String?
-    fun readBytes(): ByteArray?
-    fun readPackedBool(): List<Boolean>?
-    fun readPackedInt32(): List<Int>?
-    fun readPackedInt64(): List<Long>?
-    fun readPackedSInt32(): List<Int>?
-    fun readPackedSInt64(): List<Long>?
-    fun readPackedUInt32(): List<UInt>?
-    fun readPackedUInt64(): List<ULong>?
-    fun readPackedFixed32(): List<UInt>?
-    fun readPackedFixed64(): List<ULong>?
-    fun readPackedSFixed32(): List<Int>?
-    fun readPackedSFixed64(): List<Long>?
-    fun readPackedFloat(): List<Float>?
-    fun readPackedDouble(): List<Double>?
-    fun readPackedEnum(): List<Int>?
+    fun readEnum(): Int
+    fun readString(): String
+    fun readBytes(): ByteArray
+    fun readPackedBool(): List<Boolean>
+    fun readPackedInt32(): List<Int>
+    fun readPackedInt64(): List<Long>
+    fun readPackedSInt32(): List<Int>
+    fun readPackedSInt64(): List<Long>
+    fun readPackedUInt32(): List<UInt>
+    fun readPackedUInt64(): List<ULong>
+    fun readPackedFixed32(): List<UInt>
+    fun readPackedFixed64(): List<ULong>
+    fun readPackedSFixed32(): List<Int>
+    fun readPackedSFixed64(): List<Long>
+    fun readPackedFloat(): List<Float>
+    fun readPackedDouble(): List<Double>
+    fun readPackedEnum(): List<Int>
 }
 
 /**
