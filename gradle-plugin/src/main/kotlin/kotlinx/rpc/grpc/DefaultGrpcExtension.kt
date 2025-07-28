@@ -16,7 +16,7 @@ import kotlinx.rpc.buf.tasks.registerGenerateBufYamlTask
 import kotlinx.rpc.proto.*
 import kotlinx.rpc.proto.ProtocPlugin.Companion.GRPC_JAVA
 import kotlinx.rpc.proto.ProtocPlugin.Companion.GRPC_KOTLIN
-import kotlinx.rpc.proto.ProtocPlugin.Companion.KXRPC
+import kotlinx.rpc.proto.ProtocPlugin.Companion.KOTLIN_MULTIPLATFORM
 import kotlinx.rpc.proto.ProtocPlugin.Companion.PROTOBUF_JAVA
 import kotlinx.rpc.util.ensureDirectoryExists
 import org.gradle.api.Action
@@ -56,7 +56,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
 
     init {
         project.configureBufExecutable()
-        project.configureKxRpcPluginJarConfiguration()
+        project.configureKotlinMultiplatformPluginJarConfiguration()
 
         createDefaultProtocPlugins()
 
@@ -64,7 +64,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
             protoSourceSet.protocPlugin(protocPlugins.protobufJava)
             protoSourceSet.protocPlugin(protocPlugins.grpcJava)
             protoSourceSet.protocPlugin(protocPlugins.grpcKotlin)
-            protoSourceSet.protocPlugin(protocPlugins.kxrpc)
+            protoSourceSet.protocPlugin(protocPlugins.kotlinMultiplatform)
         }
 
         project.afterEvaluate {
@@ -269,12 +269,12 @@ internal open class DefaultGrpcExtension @Inject constructor(
     }
 
     private fun createDefaultProtocPlugins() {
-        protocPlugins.create(KXRPC) {
+        protocPlugins.create(KOTLIN_MULTIPLATFORM) {
             local {
-                javaJar(project.kxrpcProtocPluginJarPath)
+                javaJar(project.kotlinMultiplatformProtocPluginJarPath)
             }
 
-            options.put("debugOutput", "protobuf-kxrpc-plugin.log")
+            options.put("debugOutput", "protoc-gen-kotlin-multiplatform.log")
             options.put("messageMode", "interface")
             options.put("explicitApiModeEnabled", project.provider {
                 project.the<KotlinBaseExtension>().explicitApi != ExplicitApiMode.Disabled

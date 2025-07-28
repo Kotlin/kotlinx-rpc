@@ -6,7 +6,7 @@ package kotlinx.rpc.proto
 
 import kotlinx.rpc.proto.ProtocPlugin.Companion.GRPC_JAVA
 import kotlinx.rpc.proto.ProtocPlugin.Companion.GRPC_KOTLIN
-import kotlinx.rpc.proto.ProtocPlugin.Companion.KXRPC
+import kotlinx.rpc.proto.ProtocPlugin.Companion.KOTLIN_MULTIPLATFORM
 import kotlinx.rpc.proto.ProtocPlugin.Companion.PROTOBUF_JAVA
 import kotlinx.rpc.util.OS
 import org.gradle.api.Action
@@ -22,16 +22,16 @@ import org.gradle.kotlin.dsl.mapProperty
 import org.gradle.kotlin.dsl.property
 
 /**
- * Access to the `kotlinx-rpc` protoc plugin.
+ * Access to the `kotlin-multiplatform` protoc plugin.
  */
-public val NamedDomainObjectContainer<ProtocPlugin>.kxrpc: NamedDomainObjectProvider<ProtocPlugin>
-    get() = named(KXRPC)
+public val NamedDomainObjectContainer<ProtocPlugin>.kotlinMultiplatform: NamedDomainObjectProvider<ProtocPlugin>
+    get() = named(KOTLIN_MULTIPLATFORM)
 
 /**
- * Configures the `kotlinx-rpc` protoc plugin.
+ * Configures the `kotlin-multiplatform` protoc plugin.
  */
-public fun NamedDomainObjectContainer<ProtocPlugin>.kxrpc(action: Action<ProtocPlugin>) {
-    kxrpc.configure(action)
+public fun NamedDomainObjectContainer<ProtocPlugin>.kotlinMultiplatform(action: Action<ProtocPlugin>) {
+    kotlinMultiplatform.configure(action)
 }
 
 /**
@@ -188,28 +188,28 @@ public open class ProtocPlugin(
 
     public companion object {
         /**
-         * The name of the kotlinx-rpc protoc plugin.
+         * The name of the `kotlin-multiplatform` protoc plugin.
          *
-         * @see [kxrpc]
+         * @see [kotlinMultiplatform]
          */
-        public const val KXRPC: String = "kotlinx-rpc"
+        public const val KOTLIN_MULTIPLATFORM: String = "kotlin-multiplatform"
 
         /**
-         * The name of the protobuf-java protoc plugin.
+         * The name of the `protobuf-java` protoc plugin.
          *
          * @see [protobufJava]
          */
         public const val PROTOBUF_JAVA: String = "java"
 
         /**
-         * The name of the grpc-java protoc plugin.
+         * The name of the `grpc-java` protoc plugin.
          *
          * @see [grpcJava]
          */
         public const val GRPC_JAVA: String = "grpc-java"
 
         /**
-         * The name of the grpc-kotlin protoc plugin.
+         * The name of the `grpc-kotlin` protoc plugin.
          *
          * @see [grpcKotlin]
          */
