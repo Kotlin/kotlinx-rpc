@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package kotlinx.rpc.grpc.test;
+
+message Options {
+  message Inner {
+    string string = 1;
+  }
+
+  string string = 1;
+  Inner inner = 2;
+}

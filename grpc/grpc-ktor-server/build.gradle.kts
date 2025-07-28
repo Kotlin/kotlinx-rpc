@@ -46,13 +46,13 @@ rpc {
 
         protocPlugins.kxrpc {
             local {
-                javaJar("$globalRootDir/protobuf-plugin/build/libs/protobuf-plugin-$version-all.jar")
+                javaJar("$globalRootDir/protoc-gen/build/libs/protoc-gen-$version-all.jar")
             }
         }
 
         project.tasks.withType<BufGenerateTask>().configureEach {
             if (name.endsWith("Test")) {
-                dependsOn(":protobuf-plugin:jar")
+                dependsOn(gradle.includedBuild("protoc-gen").task(":jar"))
             }
         }
     }

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package kotlinx.rpc.grpc.test;
+
+message Other {
+  int32 field = 1;
+}
+
+message References {
+  string primitive = 1;
+  Other other = 2;
+}

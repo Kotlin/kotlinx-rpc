@@ -30,7 +30,7 @@ public class GrpcClient internal constructor(private val channel: ManagedChannel
         channel.shutdownNow()
     }
 
-    public suspend fun awaitTermination(duration: Duration) {
+    public suspend fun awaitTermination(duration: Duration = Duration.INFINITE) {
         channel.awaitTermination(duration)
     }
 
