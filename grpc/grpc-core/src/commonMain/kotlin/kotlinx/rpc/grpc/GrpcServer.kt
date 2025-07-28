@@ -18,16 +18,16 @@ import kotlin.time.Duration
  * providing the ability to host gRPC services.
  *
  * @property port Specifies the port used by the server to listen for incoming connections.
- * @param builder exposes platform-specific Server builder.
+ * @param configure exposes platform-specific Server builder.
  */
 public class GrpcServer internal constructor(
     override val port: Int = 8080,
-    builder: ServerBuilder<*>.() -> Unit,
+    configure: ServerBuilder<*>.() -> Unit,
 ) : RpcServer, Server {
     private var isBuilt = false
     private lateinit var internalServer: Server
 
-    private val serverBuilder: ServerBuilder<*> = ServerBuilder(port).apply(builder)
+    private val serverBuilder: ServerBuilder<*> = ServerBuilder(port).apply(configure)
     private val registry: MutableHandlerRegistry by lazy {
         MutableHandlerRegistry().apply { serverBuilder.fallbackHandlerRegistry(this) }
     }
