@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package kotlinx.rpc.protobuf.test;
-
-// This message has comment
-message WithComments {
-  // and this field too.
-  string string = 1;
-}
