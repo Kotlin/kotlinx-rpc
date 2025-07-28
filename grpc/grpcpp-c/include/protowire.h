@@ -19,7 +19,6 @@ extern "C" {
     void pw_string_delete(pw_string_t *self);
     const char * pw_string_c_str(pw_string_t *self);
 
-
     //// WIRE ENCODER ////
 
     typedef struct pw_encoder pw_encoder_t;
@@ -52,7 +51,7 @@ extern "C" {
     bool pw_encoder_write_bytes(pw_encoder_t *self, int field_no, const void *data, int size);
 
     // No tag writers
-    bool pw_encoder_write_tag(pw_encoder_t *self, uint32_t tag);
+    bool pw_encoder_write_tag(pw_encoder_t *self, int field_no, int wire_type);
     bool pw_encoder_write_bool_no_tag(pw_encoder_t *self, bool value);
     bool pw_encoder_write_int32_no_tag(pw_encoder_t *self, int32_t value);
     bool pw_encoder_write_int64_no_tag(pw_encoder_t *self, int64_t value);
@@ -114,8 +113,28 @@ extern "C" {
     // To read an actual bytes field, you must combine read_int32 and this function
     bool pw_decoder_read_raw_bytes(pw_decoder_t *self, void* buffer, int size);
 
+    /**
+     * Pushes the limit of the underlying pb::io::CodedStream to a certain value.
+     *
+     * This is required for reading packed fields that don't have fixed size (like int32).
+     * In this case, the user must push the limit by the length of the decoded LEN and read until
+     * the limit is reached (which indicates that the end of the repeated field is reached).
+     */
     int pw_decoder_push_limit(pw_decoder_t *self, int limit);
+    /**
+     * Resets the limit previously pushed with pw_decoder_push_limit.
+     * The limit argument must be the value returned by pw_decoder_push_limit.
+     *
+     * This is typically used called after the user reached the end of a packed field and wants to
+     * reset the stream to the state before the read started.
+     */
     void pw_decoder_pop_limit(pw_decoder_t *self, int limit);
+    /**
+     * Returns the number of bytes until the limit of the underlying pb::io::CodedStream is reached.
+     *
+     * This is used to know when to stop reading a packed field. It must be used in combination with
+     * pw_decoder_push_limit and pw_decoder_pop_limit.
+     */
     int pw_decoder_bytes_until_limit(pw_decoder_t *self);
 
 

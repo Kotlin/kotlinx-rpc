@@ -12,6 +12,7 @@ import kotlin.experimental.ExperimentalNativeApi
 import kotlin.math.min
 import kotlin.native.ref.createCleaner
 
+// TODO: Evaluate if this buffer size is suitable for all targets (KRPC-186)
 // maximum buffer size to allocate as contiguous memory in bytes
 private const val MAX_PACKED_BULK_SIZE: Int = 1_000_000
 
@@ -25,7 +26,7 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
     // construct the pw_decoder_t by passing a pw_zero_copy_input_t that provides a bridge between
     // the CodedInputStream and the given source buffer. it passes functions that call the respective
     // ZeroCopyInputSource methods.
-    internal val raw = run {
+    internal val raw: CPointer<pw_decoder_t> = run {
         // construct the pw_zero_copy_input_t that functions as a bridge to the ZeroCopyInputSource
         val zeroCopyCInput = cValue<pw_zero_copy_input> {
             ctx = zeroCopyInput.asCPointer()
@@ -62,7 +63,7 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
 
     override fun readTag(): KTag? {
         val tag = pw_decoder_read_tag(raw)
-        return KTag.from(tag)
+        return KTag.fromOrNull(tag)
     }
 
     override fun readBool(): Boolean? = memScoped {
@@ -177,7 +178,7 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         return null
     }
 
-    // TODO: Is it possible to avoid copying the c_str, by directly allocating a K/N String (as in readBytes)?
+    // TODO: Is it possible to avoid copying the c_str, by directly allocating a K/N String (as in readBytes)? KRPC-187
     override fun readString(): String? = memScoped {
         val str = alloc<CPointerVar<pw_string_t>>()
         val ok = pw_decoder_read_string(raw, str.ptr)
@@ -263,7 +264,7 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         val byteLen = readInt32() ?: return null
         if (byteLen < 0) return null
         if (source.size < byteLen) return null
-        if (byteLen == 0) return null
+        if (byteLen == 0) return emptyList()
 
         val limit = pw_decoder_push_limit(raw, byteLen)
 

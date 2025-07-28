@@ -13,7 +13,7 @@ import platform.posix.memcpy
 
 
 @OptIn(ExperimentalForeignApi::class, InternalIoApi::class, UnsafeIoApi::class)
-public fun Sink.writeFully(buffer: CPointer<ByteVar>, offset: Long, length: Long) {
+internal fun Sink.writeFully(buffer: CPointer<ByteVar>, offset: Long, length: Long) {
     var consumed = 0L
     while (consumed < length) {
         UnsafeBufferOperations.writeToTail(this.buffer, 1) { array, start, endExclusive ->

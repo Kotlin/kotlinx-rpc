@@ -27,21 +27,21 @@ namespace protowire {
          * The ctx pointer is used to on the K/N to reference a Kotlin managed object
          * from within its static callback function.
          *
-         * @param ctx the context used by the K/N side to reference Kotlin managed objects.
-         * @param sink the K/N callback to write data into the sink
+         * @param thisRef the context used by the K/N side to reference Kotlin managed objects.
+         * @param sink_fn the K/N callback to write data into the sink
          */
-        SinkStream(void *ctx, bool(*sink)(void *ctx, const void *buffer, int size))
-            : ctx(ctx),
-              sink(sink) {
+        SinkStream(void *thisRef, bool(*sink_fn)(void *ctx, const void *buffer, int size))
+            : ctx(thisRef),
+              sink_fn(sink_fn) {
         }
 
         bool Write(const void *buffer, int size) override {
-            return sink(ctx, buffer, size);
+            return sink_fn(ctx, buffer, size);
         }
 
     private:
         void *ctx;
-        bool (*sink)(void *ctx, const void *buffer, int size);
+        bool (*sink_fn)(void *ctx, const void *buffer, int size);
     };
 
     /**
@@ -95,28 +95,30 @@ struct pw_string {
 
 struct pw_encoder {
     protowire::SinkStream sinkStream;
-    pb::io::CopyingOutputStreamAdaptor cosa;
-    pb::io::CodedOutputStream cos;
+    pb::io::CopyingOutputStreamAdaptor copyingOutputStreamAdaptor;
+    pb::io::CodedOutputStream codedOutputStream;
 
     explicit pw_encoder(protowire::SinkStream sink)
     : sinkStream(std::move(sink)),
-      cosa(&sinkStream),
-      cos(&cosa) {
-        cos.EnableAliasing(true);
+      copyingOutputStreamAdaptor(&sinkStream),
+      codedOutputStream(&copyingOutputStreamAdaptor) {
+        codedOutputStream.EnableAliasing(true);
     }
 };
 
 struct pw_decoder {
-    protowire::BufferSourceStream ss;
-    pb::io::CodedInputStream cis;
+    protowire::BufferSourceStream bufferSourceStream;
+    pb::io::CodedInputStream codedInputStream;
 
     explicit pw_decoder(pw_zero_copy_input_t input)
-    : ss(input),
-      cis(&ss) {}
+    : bufferSourceStream(input),
+      codedInputStream(&bufferSourceStream) {}
 };
 
 
 extern "C" {
+
+    /// STD::STRING WRAPPER IMPLEMENTATION ///
 
     pw_string_t *pw_string_new(const char *str) {
         return new pw_string_t{str };
@@ -128,6 +130,8 @@ extern "C" {
         return self->str.c_str();
     }
 
+    /// ENCODER IMPLEMENTATION ///
+
     pw_encoder_t *pw_encoder_new(void* ctx, bool (* sink_fn)(void* ctx, const void* buf, int size)) {
         auto sink = protowire::SinkStream(ctx, sink_fn);
         return new pw_encoder(std::move(sink));
@@ -137,21 +141,21 @@ extern "C" {
         delete self;
     }
     bool pw_encoder_flush(pw_encoder_t *self) {
-        self->cos.Trim();
-        if (!self->cosa.Flush()) {
+        self->codedOutputStream.Trim();
+        if (!self->copyingOutputStreamAdaptor.Flush()) {
             return false;
         }
-        return !self->cos.HadError();
+        return !self->codedOutputStream.HadError();
     }
 
     // check that there was no error
     static bool check(pw_encoder_t *self) {
-        return !self->cos.HadError();
+        return !self->codedOutputStream.HadError();
     }
 
 #define WRITE_FIELD_FUNC( funcSuffix, wireTy, cTy) \
     bool pw_encoder_write_##funcSuffix(pw_encoder_t *self, int field_no, cTy value) { \
-        WireFormatLite::Write##wireTy(field_no, value, &self->cos); \
+        WireFormatLite::Write##wireTy(field_no, value, &self->codedOutputStream); \
         return check(self); \
     }
 
@@ -174,22 +178,22 @@ extern "C" {
         return pw_encoder_write_bytes(self, field_no, data, size);
     }
     bool pw_encoder_write_bytes(pw_encoder_t *self, int field_no, const void *data, int size) {
-        WireFormatLite::WriteTag(field_no, WireFormatLite::WIRETYPE_LENGTH_DELIMITED, &self->cos);
-        self->cos.WriteVarint32(size);
-        self->cos.WriteRawMaybeAliased(data, size);
+        WireFormatLite::WriteTag(field_no, WireFormatLite::WIRETYPE_LENGTH_DELIMITED, &self->codedOutputStream);
+        self->codedOutputStream.WriteVarint32(size);
+        self->codedOutputStream.WriteRawMaybeAliased(data, size);
         return check(self);
     }
 
-    bool pw_encoder_write_tag(pw_encoder_t *self, uint32_t tag) {
-        self->cos.WriteTag(tag);
+    bool pw_encoder_write_tag(pw_encoder_t *self, int field_no, int wire_type) {
+        WireFormatLite::WriteTag(field_no, static_cast<WireFormatLite::WireType>(wire_type), &self->codedOutputStream);
         return check(self);
     }
 
 #define WRITE_FIELD_NO_TAG( funcSuffix, wireTy, cTy) \
-bool pw_encoder_write_##funcSuffix##_no_tag(pw_encoder_t *self, cTy value) { \
-WireFormatLite::Write##wireTy##NoTag(value, &self->cos); \
-return check(self); \
-}
+    bool pw_encoder_write_##funcSuffix##_no_tag(pw_encoder_t *self, cTy value) { \
+        WireFormatLite::Write##wireTy##NoTag(value, &self->codedOutputStream); \
+        return check(self); \
+    }
 
     WRITE_FIELD_NO_TAG( bool, Bool, bool)
     WRITE_FIELD_NO_TAG( int32, Int32, int32_t)
@@ -207,7 +211,7 @@ return check(self); \
     WRITE_FIELD_NO_TAG( enum, Enum, int)
 
 
-    /// DECODER IMPLEMENATION ///
+    /// DECODER IMPLEMENTATION ///
 
     pw_decoder_t *pw_decoder_new(pw_zero_copy_input_t zero_copy_input) {
         return new pw_decoder_t(zero_copy_input);
@@ -219,16 +223,16 @@ return check(self); \
 
     void pw_decoder_close(pw_decoder_t *self) {
         // the deconstructor backs the stream up to the current position.
-        self->cis.~CodedInputStream();
+        self->codedInputStream.~CodedInputStream();
     }
 
     uint32_t pw_decoder_read_tag(pw_decoder_t *self) {
-        return self->cis.ReadTag();
+        return self->codedInputStream.ReadTag();
     }
 
 #define READ_VAL_FUNC( funcSuffix, wireTy, cTy) \
     bool pw_decoder_read_##funcSuffix(pw_decoder_t *self, cTy *value_ref) { \
-        return WireFormatLite::ReadPrimitive<cTy, WireFormatLite::TYPE_##wireTy>(&self->cis, value_ref); \
+        return WireFormatLite::ReadPrimitive<cTy, WireFormatLite::TYPE_##wireTy>(&self->codedInputStream, value_ref); \
     }
 
     READ_VAL_FUNC( bool, BOOL, bool)
@@ -248,42 +252,42 @@ return check(self); \
 
     bool pw_decoder_read_string(pw_decoder_t *self, pw_string_t **string_ref) {
         *string_ref = new pw_string_t;
-        return WireFormatLite::ReadString(&self->cis, &(*string_ref)->str);
+        return WireFormatLite::ReadString(&self->codedInputStream, &(*string_ref)->str);
     }
 
     bool pw_decoder_read_raw_bytes(pw_decoder_t *self, void* buffer, int size) {
-        return self->cis.ReadRaw(buffer, size);
+        return self->codedInputStream.ReadRaw(buffer, size);
     }
 
     int pw_decoder_push_limit(pw_decoder_t *self, int limit) {
-        return self->cis.PushLimit(limit);
+        return self->codedInputStream.PushLimit(limit);
     }
 
     void pw_decoder_pop_limit(pw_decoder_t *self, int limit) {
-        self->cis.PopLimit(limit);
+        self->codedInputStream.PopLimit(limit);
     }
 
     int pw_decoder_bytes_until_limit(pw_decoder_t *self) {
-        return self->cis.BytesUntilLimit();
+        return self->codedInputStream.BytesUntilLimit();
     }
 
     uint32_t pw_size_int32(int32_t value) {
-     return WireFormatLite::Int32Size(value);
-     }
+        return WireFormatLite::Int32Size(value);
+    }
     uint32_t pw_size_int64(int64_t value) {
-     return WireFormatLite::Int64Size(value);
-     }
+        return WireFormatLite::Int64Size(value);
+    }
     uint32_t pw_size_uint32(uint32_t value) {
-     return WireFormatLite::UInt32Size(value);
-     }
+        return WireFormatLite::UInt32Size(value);
+    }
     uint32_t pw_size_uint64(uint64_t value) {
-     return WireFormatLite::UInt64Size(value);
-     }
+        return WireFormatLite::UInt64Size(value);
+    }
     uint32_t pw_size_sint32(int32_t value) {
-     return WireFormatLite::SInt32Size(value);
-     }
+        return WireFormatLite::SInt32Size(value);
+    }
     uint32_t pw_size_sint64(int64_t value) {
-     return WireFormatLite::SInt64Size(value);
-     }
+        return WireFormatLite::SInt64Size(value);
+    }
 
 }

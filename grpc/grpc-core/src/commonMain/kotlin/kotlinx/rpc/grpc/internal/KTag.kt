@@ -34,7 +34,7 @@ internal fun KTag.toRawKTag(): UInt {
     return (fieldNr.toUInt() shl K_TAG_TYPE_BITS) or wireType.ordinal.toUInt()
 }
 
-internal fun KTag.Companion.from(rawKTag: UInt): KTag? {
+internal fun KTag.Companion.fromOrNull(rawKTag: UInt): KTag? {
     val type = (rawKTag and K_TAG_TYPE_MASK).toInt()
     val field = (rawKTag shr K_TAG_TYPE_BITS).toInt()
     if (!isValidFieldNr(field)) {

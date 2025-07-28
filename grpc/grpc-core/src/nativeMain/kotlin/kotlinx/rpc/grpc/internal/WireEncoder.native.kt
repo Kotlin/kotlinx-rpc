@@ -30,7 +30,7 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
     private val context = StableRef.create(this.Ctx())
 
     // construct encoder with a callback that calls write() on this.context
-    internal val raw = run {
+    internal val raw: CPointer<pw_encoder_t> = run {
         pw_encoder_new(context.asCPointer(), staticCFunction { ctx, buf, size ->
             if (buf == null || ctx == null) {
                 return@staticCFunction false
@@ -175,8 +175,7 @@ private inline fun <T> WireEncoderNative.writePackedInternal(
     fieldSize: Int,
     crossinline writer: (CValuesRef<pw_encoder_t>?, T) -> Boolean
 ): Boolean {
-    val ktag = KTag(fieldNr, WireType.LENGTH_DELIMITED).toRawKTag()
-    pw_encoder_write_tag(raw, ktag)
+    pw_encoder_write_tag(raw, fieldNr, WireType.LENGTH_DELIMITED.ordinal)
     // write the field size of the packed field
     pw_encoder_write_int32_no_tag(raw, fieldSize)
     for (v in value) {

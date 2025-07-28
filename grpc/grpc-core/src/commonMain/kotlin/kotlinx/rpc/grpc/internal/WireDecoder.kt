@@ -9,6 +9,11 @@ import kotlinx.io.Buffer
 /**
  * A platform-specific decoder for wire format data.
  *
+ * This decoder is used by first calling [readTag], than looking up the field based on the field number in the returned,
+ * tag and then calling the actual `read*()` method to read the value to the corresponding field.
+ * This means that the nullable return value does not collide with optional fields, as optional fields would not
+ * include a tag in the encoded message.
+ *
  * If one `read*()` method returns `null`, decoding the data failed and no further
  * decoding can be done.
  *
@@ -43,6 +48,7 @@ internal interface WireDecoder : AutoCloseable {
     fun readSFixed64(): Long?
     fun readFloat(): Float?
     fun readDouble(): Double?
+
     fun readEnum(): Int?
     fun readString(): String?
     fun readBytes(): ByteArray?
