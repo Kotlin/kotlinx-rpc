@@ -78,14 +78,6 @@
 </tr>
 
 <tr>
-<td>protobuf-plugin</td>
-<td>Jvm Only</td>
-<td>-</td>
-<td>-</td>
-<td>-</td>
-</tr>
-
-<tr>
 <td>utils</td>
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>

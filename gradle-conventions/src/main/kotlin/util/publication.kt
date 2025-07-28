@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:Suppress("detekt.MaxLineLength")
@@ -17,16 +17,21 @@ import util.other.getSensitiveProperty
 import java.io.File
 
 const val KOTLINX_RPC_PREFIX = "kotlinx-rpc"
+const val PROTOC_GEN = "protoc-gen"
+const val PROTOC_GEN_KOTLIN_MULTIPLATFORM = "protoc-gen-kotlin-multiplatform"
 
 /**
  * Important to configure inside [KotlinTarget.mavenPublication]
  * AND in [PublishingExtension.configurePublication] in the conventions-publishing.gradle.kts file.
  */
-@Suppress("KDocUnresolvedReference")
+@Suppress("KDocUnresolvedReference", "LoggingSimilarMessage")
 fun MavenPublication.setPublicArtifactId(project: Project) {
     val publication = this
 
-    if (!publication.artifactId.startsWith(KOTLINX_RPC_PREFIX)) {
+    if (publication.artifactId == PROTOC_GEN) {
+        publication.artifactId = PROTOC_GEN_KOTLIN_MULTIPLATFORM
+        project.logger.info("Altered artifactId for $name publication: $artifactId")
+    } else if (!publication.artifactId.startsWith(KOTLINX_RPC_PREFIX)) {
         publication.artifactId = "$KOTLINX_RPC_PREFIX-$artifactId"
         project.logger.info("Altered artifactId for $name publication: $artifactId")
     }
@@ -101,6 +106,8 @@ private fun String.updateAvailableAtModuleField(projectName: String): String {
 // in "available-at" object:
 // from: "url": "../../krpc-client-iossimulatorarm64/0.2.0/krpc-client-iossimulatorarm64-0.2.0.module",
 // to: "url": "../../kotlinx-rpc-krpc-client-iossimulatorarm64/0.2.0/kotlinx-rpc-krpc-client-iossimulatorarm64-0.2.0.module",
+//
+// and same idea for protoc-gen
 private fun String.updateAvailableAtUrlField(projectName: String, version: String): String {
     return replace(
         availableAtUrl(projectName, version, "(\\w+)", "(.+)").toRegex(),
