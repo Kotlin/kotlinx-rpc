@@ -102,7 +102,7 @@ class RpcProtobufPlugin {
     private fun CodeGeneratorRequest.generateKotlinFiles(): List<FileGenerator> {
         val interpreter = ProtoToModelInterpreter(logger)
         val model = interpreter.interpretProtocRequest(this)
-        val fileGenerator = ModelToKotlinGenerator(model, logger, CodeGenerationParameters(messageGenerationMode))
+        val fileGenerator = ModelToKotlinCommonGenerator(model, logger, CodeGenerationParameters(messageGenerationMode))
         return fileGenerator.generateKotlinFiles()
     }
 }

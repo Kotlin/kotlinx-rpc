@@ -88,9 +88,36 @@ open class CodeGenerator(
         ifBlock: (CodeGenerator.() -> Unit),
         elseBlock: (CodeGenerator.() -> Unit)? = null,
     ) {
-        scope("${prefix}if ($condition)", nlAfterClosed = false, suffix = if (elseBlock != null) " else" else "", block = ifBlock)
+        scope(
+            "${prefix}if ($condition)",
+            nlAfterClosed = false,
+            suffix = if (elseBlock != null) " else" else "",
+            block = ifBlock
+        )
         scopeWithSuffix(block = elseBlock)
     }
+
+    internal fun whileBlock(
+        condition: String,
+        block: (CodeGenerator.() -> Unit),
+    ) {
+        scope("while ($condition)", block = block)
+    }
+
+    internal fun whenBlock(
+        condition: String,
+        block: (CodeGenerator.() -> Unit),
+    ) {
+        scope("when ($condition)", block = block)
+    }
+
+    internal fun whenCase(
+        condition: String,
+        block: (CodeGenerator.() -> Unit),
+    ) {
+        scope("$condition ->", block = block)
+    }
+
 
     private fun scopeWithSuffix(
         suffix: String = "",

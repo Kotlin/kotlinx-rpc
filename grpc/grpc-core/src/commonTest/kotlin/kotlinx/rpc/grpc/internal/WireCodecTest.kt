@@ -5,6 +5,8 @@
 package kotlinx.rpc.grpc.internal
 
 import kotlinx.io.Buffer
+import kotlinx.rpc.grpc.pb.*
+import kotlin.experimental.ExperimentalNativeApi
 import kotlin.test.*
 
 enum class TestPlatform {

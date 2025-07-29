@@ -4,7 +4,7 @@
 
 @file:OptIn(ExperimentalForeignApi::class)
 
-package kotlinx.rpc.grpc.internal
+package kotlinx.rpc.grpc.pb
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import libprotowire.*
