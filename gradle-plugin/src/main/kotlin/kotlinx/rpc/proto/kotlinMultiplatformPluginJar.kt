@@ -21,7 +21,8 @@ import org.gradle.api.provider.Provider
  * ```
  */
 public val Project.kotlinMultiplatformProtocPluginJarPath: Provider<String>
-    get() = project.configurations.named(PROTOC_GEN_KOTLIN_MULTIPLATFORM_JAR_CONFIGURATION).map { it.singleFile.absolutePath }
+    get() = project.configurations.named(PROTOC_GEN_KOTLIN_MULTIPLATFORM_JAR_CONFIGURATION)
+        .map { it.singleFile.absolutePath }
 
 internal fun Project.configureKotlinMultiplatformPluginJarConfiguration() {
     configurations.create(PROTOC_GEN_KOTLIN_MULTIPLATFORM_JAR_CONFIGURATION)

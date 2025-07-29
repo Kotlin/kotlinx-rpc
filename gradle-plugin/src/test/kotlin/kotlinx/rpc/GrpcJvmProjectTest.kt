@@ -173,6 +173,7 @@ inputs:
         assert(result.output.contains("Artifact is not specified for protoc plugin myPlugin"))
     }
 
+    @Suppress("detekt.MaxLineLength")
     private val cliFlagsRegex = "- Buf Arguments: \\[.*?, generate, --output, .*?, --include-imports, --include-wkt, --error-format, json, --config, some\\.buf\\.yaml, --log-format, json, --timeout, 60s]".toRegex()
 
     @Test

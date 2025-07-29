@@ -81,7 +81,8 @@ abstract class GrpcBaseTest : BaseTest() {
             }.toSet()
 
             protoSources.walk().forEach {
-                if (it.isRegularFile() && it.extension == "proto" && it.relativeTo(protoSources).pathString !in included) {
+                val pathString = it.relativeTo(protoSources).pathString
+                if (it.isRegularFile() && it.extension == "proto" && pathString !in included) {
                     fail("File 'file://${it.absolutePathString()}' in '$protoSources' is not expected")
                 }
             }
