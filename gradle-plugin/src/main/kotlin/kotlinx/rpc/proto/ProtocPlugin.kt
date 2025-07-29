@@ -93,8 +93,8 @@ public open class ProtocPlugin(
      *
      * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#opt">Buf documentation - opt</a>
      */
-    public val options: MapProperty<String, Any?> = project.objects
-        .mapProperty<String, Any?>()
+    public val options: MapProperty<String, Any> = project.objects
+        .mapProperty<String, Any>()
         .convention(emptyMap())
 
     /**
