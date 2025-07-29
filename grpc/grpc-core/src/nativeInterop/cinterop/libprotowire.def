@@ -1,0 +1,6 @@
+headers = protowire.h
+headerFilter = protowire.h
+
+noStringConversion = pw_encoder_write_string
+
+staticLibraries = libprotowire_static.a
