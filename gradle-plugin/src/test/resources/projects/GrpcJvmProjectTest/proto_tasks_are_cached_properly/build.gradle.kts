@@ -3,14 +3,13 @@
  */
 
 import org.gradle.kotlin.dsl.version
+import kotlinx.rpc.proto.kotlinMultiplatform
 
 plugins {
     kotlin("jvm") version "<kotlin-version>"
     id("org.jetbrains.kotlinx.rpc.plugin")
 }
 
-// should nonetheless be available
-protoSourceSets {
-    main {}
-    test {}
+rpc {
+    grpc()
 }

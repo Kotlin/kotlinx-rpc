@@ -9,8 +9,6 @@ plugins {
     id("org.jetbrains.kotlinx.rpc.plugin")
 }
 
-// should nonetheless be available
-protoSourceSets {
-    main {}
-    test {}
+rpc {
+    grpc()
 }

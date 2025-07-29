@@ -3,14 +3,23 @@
  */
 
 import org.gradle.kotlin.dsl.version
+import kotlinx.rpc.proto.*
 
 plugins {
     kotlin("jvm") version "<kotlin-version>"
     id("org.jetbrains.kotlinx.rpc.plugin")
 }
 
-// should nonetheless be available
+rpc {
+    grpc {
+        protocPlugins {
+            create("myPlugin") {}
+        }
+    }
+}
+
 protoSourceSets {
-    main {}
-    test {}
+    main {
+        protocPlugin(rpc.grpc.protocPlugins.named("myPlugin"))
+    }
 }

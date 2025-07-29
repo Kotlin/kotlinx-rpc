@@ -5,12 +5,21 @@
 import org.gradle.kotlin.dsl.version
 
 plugins {
-    kotlin("jvm") version "<kotlin-version>"
+    kotlin("multiplatform") version "<kotlin-version>"
     id("org.jetbrains.kotlinx.rpc.plugin")
 }
 
-// should nonetheless be available
+kotlin {
+    jvm()
+    js()
+    macosArm64()
+}
+
 protoSourceSets {
-    main {}
-    test {}
+    jvmMain {}
+    jvmTest {}
+}
+
+rpc {
+    grpc()
 }
