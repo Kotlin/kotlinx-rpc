@@ -19,6 +19,8 @@ junit4 = "4.13.2"
 junit5 = "5.13.2"
 intellij = "241.19416.19"
 kotlinx-browser = "0.3"
+kotlinx-io = "0.8.0"
+kotlinx-collections = "0.4.0"
 dokka = "2.0.0"
 puppeteer = "24.9.0"
 atomicfu = "0.29.0"
@@ -59,6 +61,8 @@ kotlin-compiler-test-framework = { module = "org.jetbrains.kotlin:kotlin-compile
 serialization-plugin = { module = "org.jetbrains.kotlin:kotlin-serialization-compiler-plugin", version.ref = "kotlin-compiler" }
 serialization-plugin-forIde = { module = "org.jetbrains.kotlin:kotlinx-serialization-compiler-plugin-for-ide", version.ref = "kotlin-compiler" }
 kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
+kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections"}
 
 # serialization
 serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "serialization" }

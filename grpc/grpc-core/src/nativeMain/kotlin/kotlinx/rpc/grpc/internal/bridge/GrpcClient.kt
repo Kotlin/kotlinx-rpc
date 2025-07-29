@@ -2,18 +2,26 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.bridge
+package kotlinx.rpc.grpc.internal.bridge
 
 import kotlinx.cinterop.*
 import kotlinx.coroutines.suspendCancellableCoroutine
 import libgrpcpp_c.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.experimental.ExperimentalNativeApi
+import kotlin.native.ref.createCleaner
 
-@OptIn(ExperimentalForeignApi::class)
-internal class GrpcClient(target: String) : AutoCloseable {
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+internal class GrpcClient(target: String) {
     private var clientPtr: CPointer<grpc_client_t> =
         grpc_client_create_insecure(target) ?: error("Failed to create client")
+
+    init {
+        createCleaner(clientPtr) {
+            grpc_client_delete(it)
+        }
+    }
 
     fun callUnaryBlocking(method: String, req: GrpcSlice): GrpcSlice {
         memScoped {
@@ -62,9 +70,4 @@ internal class GrpcClient(target: String) : AutoCloseable {
                     cbCtxStable.dispose()
                 })
         }
-
-    override fun close() {
-        grpc_client_delete(clientPtr)
-    }
-
 }
