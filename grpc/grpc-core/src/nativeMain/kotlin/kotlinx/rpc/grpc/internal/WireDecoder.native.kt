@@ -12,10 +12,6 @@ import kotlin.experimental.ExperimentalNativeApi
 import kotlin.math.min
 import kotlin.native.ref.createCleaner
 
-// TODO: Evaluate if this buffer size is suitable for all targets (KRPC-186)
-// maximum buffer size to allocate as contiguous memory in bytes
-private const val MAX_PACKED_BULK_SIZE: Int = 1_000_000
-
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
 
@@ -241,28 +237,12 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         DoubleArray::asList,
     )
 
-    private inline fun <T : Any> readPackedVarInternal(
-        crossinline readFn: () -> T
-    ): List<T> {
-        val byteLen = readInt32()
-        if (hadError) return emptyList()
-        if (byteLen < 0) return emptyList<T>().withError()
-        if (source.size < byteLen) return emptyList<T>().withError()
-        if (byteLen == 0) return emptyList() // actually an empty list (no error)
-
-        val limit = pw_decoder_push_limit(raw, byteLen)
-
-        val result = mutableListOf<T>()
-
-        while (pw_decoder_bytes_until_limit(raw) > 0) {
-            val elem = readFn()
-            if (hadError) break
-            result.add(elem)
-        }
-
-        pw_decoder_pop_limit(raw, limit)
-        return result
-    }
+    private fun <T : Any> readPackedVarInternal(read: () -> T) = readPackedVarInternal(
+        size = { source.size },
+        readFn = read,
+        withError = { hadError = true },
+        hadError = { hadError },
+    )
 
     /*
      * Based on the length of the packed repeated field, one of two list strategies is chosen.
