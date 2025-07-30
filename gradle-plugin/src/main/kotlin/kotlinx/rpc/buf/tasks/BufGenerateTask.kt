@@ -15,7 +15,6 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskProvider
 import java.io.File
 import kotlinx.rpc.buf.BufGenerateExtension
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.InputDirectory
 
 /**
@@ -24,11 +23,11 @@ import org.gradle.api.tasks.InputDirectory
  * @see <a href="https://buf.build/docs/reference/cli/buf/generate/">buf generate</a>
  */
 public abstract class BufGenerateTask : BufExecTask() {
-    // unsued, but required for Gradle to properly recognize inputs
+    // unsued, but required for Gradle to properly recognise inputs
     @get:InputDirectory
     internal abstract val protoFilesDir: Property<File>
 
-    // unsued, but required for Gradle to properly recognize inputs
+    // unsued, but required for Gradle to properly recognise inputs
     @get:InputDirectory
     internal abstract val importFilesDir: Property<File>
 
