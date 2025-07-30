@@ -191,7 +191,7 @@ class ModelToKotlinCommonGenerator(
         code("val msg = ${declaration.name.safeFullName("Builder")}()")
         whileBlock("!decoder.hadError()") {
             code("val tag = decoder.readTag() ?: break // EOF, we read the whole message")
-            whenBlock("tag.fieldNr") {
+            whenBlock {
                 declaration.fields().forEach { (_, field) -> readMatchCase(field) }
                 whenCase("else") { code("TODO(\"Handle unknown fields\")") }
             }
@@ -209,16 +209,16 @@ class ModelToKotlinCommonGenerator(
         val encFuncName = field.type.decodeEncodeFuncName()
         val assignment = "msg.${field.name} ="
         when (val fieldType = field.type) {
-            is FieldType.IntegralType -> whenCase("${field.number} if tag.wireType == WireType.${field.type.wireType.name}") {
+            is FieldType.IntegralType -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == WireType.${field.type.wireType.name}") {
                 code("$assignment decoder.read$encFuncName()")
             }
 
             is FieldType.List -> if (field.packed) {
-                whenCase("${field.number} if tag.wireType == WireType.LENGTH_DELIMITED") {
+                whenCase("tag.fieldNr == ${field.number} && tag.wireType == WireType.LENGTH_DELIMITED") {
                     code("$assignment decoder.readPacked${fieldType.value.decodeEncodeFuncName()}()")
                 }
             } else {
-                whenCase("${field.number} if tag.wireType == WireType.LENGTH_DELIMITED") {
+                whenCase("tag.fieldNr == ${field.number} && tag.wireType == WireType.LENGTH_DELIMITED") {
                     code("(msg.${field.name} as ArrayList).add(decoder.read${fieldType.value.decodeEncodeFuncName()}())")
                 }
             }

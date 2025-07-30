@@ -105,10 +105,11 @@ open class CodeGenerator(
     }
 
     internal fun whenBlock(
-        condition: String,
+        condition: String? = null,
         block: (CodeGenerator.() -> Unit),
     ) {
-        scope("when ($condition)", block = block)
+        val cond = condition?.let { " ($it)" } ?: ""
+        scope("when$cond", block = block)
     }
 
     internal fun whenCase(

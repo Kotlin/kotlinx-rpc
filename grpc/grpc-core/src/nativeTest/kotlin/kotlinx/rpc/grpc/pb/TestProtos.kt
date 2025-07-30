@@ -31,7 +31,21 @@ class TestProtos {
     @Test
     fun testAllPrimitiveProto() {
         val msg = AllPrimitives {
+            int32 = 12
+            int64 = 1234567890123456789L
+            uint32 = 12345u
+            uint64 = 1234567890123456789uL
+            sint32 = -12
+            sint64 = -1234567890123456789L
+            fixed32 = 12345u
+            fixed64 = 1234567890123456789uL
+            sfixed32 = -12345
+            sfixed64 = -1234567890123456789L
+            bool = true
+            float = 1.0f
             double = 3.0
+            string = "test"
+            bytes = byteArrayOf(1, 2, 3)
         }
 
         val decoded = decodeEncode(msg, { encodeWith(it) }, AllPrimitives::decodeWith)
