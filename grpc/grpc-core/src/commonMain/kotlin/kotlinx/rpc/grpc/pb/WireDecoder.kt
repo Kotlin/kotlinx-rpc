@@ -2,9 +2,10 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.internal
+package kotlinx.rpc.grpc.pb
 
 import kotlinx.io.Buffer
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 // TODO: Evaluate if this buffer size is suitable for all targets (KRPC-186)
 // maximum buffer size to allocate as contiguous memory in bytes
@@ -36,40 +37,45 @@ internal const val MAX_PACKED_BULK_SIZE: Int = 1_000_000
  * }
  * ```
  */
-internal interface WireDecoder : AutoCloseable {
-    fun hadError(): Boolean
-    fun readTag(): KTag?
-    fun readBool(): Boolean
-    fun readInt32(): Int
-    fun readInt64(): Long
-    fun readUInt32(): UInt
-    fun readUInt64(): ULong
-    fun readSInt32(): Int
-    fun readSInt64(): Long
-    fun readFixed32(): UInt
-    fun readFixed64(): ULong
-    fun readSFixed32(): Int
-    fun readSFixed64(): Long
-    fun readFloat(): Float
-    fun readDouble(): Double
+@InternalRpcApi
+public interface WireDecoder : AutoCloseable {
+    public fun hadError(): Boolean
 
-    fun readEnum(): Int
-    fun readString(): String
-    fun readBytes(): ByteArray
-    fun readPackedBool(): List<Boolean>
-    fun readPackedInt32(): List<Int>
-    fun readPackedInt64(): List<Long>
-    fun readPackedSInt32(): List<Int>
-    fun readPackedSInt64(): List<Long>
-    fun readPackedUInt32(): List<UInt>
-    fun readPackedUInt64(): List<ULong>
-    fun readPackedFixed32(): List<UInt>
-    fun readPackedFixed64(): List<ULong>
-    fun readPackedSFixed32(): List<Int>
-    fun readPackedSFixed64(): List<Long>
-    fun readPackedFloat(): List<Float>
-    fun readPackedDouble(): List<Double>
-    fun readPackedEnum(): List<Int>
+    /**
+     * When the read tag is null, it indicates EOF and the parser may stop at this point.
+     */
+    public fun readTag(): KTag?
+    public fun readBool(): Boolean
+    public fun readInt32(): Int
+    public fun readInt64(): Long
+    public fun readUInt32(): UInt
+    public fun readUInt64(): ULong
+    public fun readSInt32(): Int
+    public fun readSInt64(): Long
+    public fun readFixed32(): UInt
+    public fun readFixed64(): ULong
+    public fun readSFixed32(): Int
+    public fun readSFixed64(): Long
+    public fun readFloat(): Float
+    public fun readDouble(): Double
+
+    public fun readEnum(): Int
+    public fun readString(): String
+    public fun readBytes(): ByteArray
+    public fun readPackedBool(): List<Boolean>
+    public fun readPackedInt32(): List<Int>
+    public fun readPackedInt64(): List<Long>
+    public fun readPackedSInt32(): List<Int>
+    public fun readPackedSInt64(): List<Long>
+    public fun readPackedUInt32(): List<UInt>
+    public fun readPackedUInt64(): List<ULong>
+    public fun readPackedFixed32(): List<UInt>
+    public fun readPackedFixed64(): List<ULong>
+    public fun readPackedSFixed32(): List<Int>
+    public fun readPackedSFixed64(): List<Long>
+    public fun readPackedFloat(): List<Float>
+    public fun readPackedDouble(): List<Double>
+    public fun readPackedEnum(): List<Int>
 }
 
 /**
