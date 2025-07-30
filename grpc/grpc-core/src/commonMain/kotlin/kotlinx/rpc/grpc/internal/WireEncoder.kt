@@ -17,7 +17,7 @@ import kotlinx.io.Sink
 @OptIn(ExperimentalUnsignedTypes::class)
 internal interface WireEncoder {
     fun flush()
-    fun writeBool(field: Int, value: Boolean): Boolean
+    fun writeBool(fieldNr: Int, value: Boolean): Boolean
     fun writeInt32(fieldNr: Int, value: Int): Boolean
     fun writeInt64(fieldNr: Int, value: Long): Boolean
     fun writeUInt32(fieldNr: Int, value: UInt): Boolean
