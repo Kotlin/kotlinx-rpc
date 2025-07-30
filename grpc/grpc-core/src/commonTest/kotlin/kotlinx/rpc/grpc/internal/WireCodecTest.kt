@@ -4,13 +4,15 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.io.Buffer
-import kotlin.experimental.ExperimentalNativeApi
 import kotlin.test.*
 
-// TODO: Move this to the commonTest
-@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+enum class TestPlatform {
+    Jvm, Native, Js, WasmJs, Wasi;
+}
+
+expect val testPlatform: TestPlatform
+
 class WireCodecTest {
 
     @Test
@@ -343,8 +345,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val decoder = WireDecoder(buffer)
-        decoder.readTag()
-        assertTrue(decoder.hadError())
+        assertNull(decoder.readTag())
     }
 
     @Test
@@ -418,6 +419,11 @@ class WireCodecTest {
 
     @Test
     fun testReadAfterClose() {
+        // jvm has no close method
+        if (testPlatform == TestPlatform.Jvm) {
+            return
+        }
+
         val fieldNr = 19
         val buffer = Buffer()
 
@@ -432,7 +438,7 @@ class WireCodecTest {
         try {
             val tag = decoder.readTag()
             assertNull(tag)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Expected exception in some implementations
         }
     }
@@ -497,6 +503,11 @@ class WireCodecTest {
 
     @Test
     fun testBufferNotExhausted() {
+        // jvm reads buffer - buffered (ba dum tss)
+        if (testPlatform == TestPlatform.Jvm) {
+            return
+        }
+
         val fieldNr = 1
         val buffer = Buffer()
 
