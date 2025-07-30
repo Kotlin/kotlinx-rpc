@@ -7,6 +7,7 @@ package kotlinx.rpc.grpc.pb
 import com.google.protobuf.CodedInputStream
 import kotlinx.io.Buffer
 import kotlinx.io.asInputStream
+import kotlinx.rpc.grpc.internal.readPackedVarInternal
 
 internal class WireDecoderJvm(source: Buffer) : WireDecoder {
     // there is no way to omit coping here

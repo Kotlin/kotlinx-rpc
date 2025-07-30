@@ -5,7 +5,7 @@
 package kotlinx.rpc.grpc.pb
 
 import kotlinx.io.Buffer
-import kotlinx.rpc.grpc.test.*
+import kotlinx.rpc.grpc.test.common.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -30,7 +30,7 @@ class TestProtos {
 
     @Test
     fun testAllPrimitiveProto() {
-        val msg = AllPrimitives {
+        val msg = AllPrimitivesCommon {
             int32 = 12
             int64 = 1234567890123456789L
             uint32 = 12345u
@@ -48,20 +48,20 @@ class TestProtos {
             bytes = byteArrayOf(1, 2, 3)
         }
 
-        val decoded = decodeEncode(msg, { encodeWith(it) }, AllPrimitives::decodeWith)
+        val decoded = decodeEncode(msg, { encodeWith(it) }, AllPrimitivesCommon::decodeWith)
 
         assertEquals(msg.double, decoded?.double)
     }
 
     @Test
     fun testRepeatedProto() {
-        val msg = Repeated {
+        val msg = RepeatedCommon {
             listFixed32 = listOf(1, 2, 3).map { it.toUInt() }
             listInt32 = listOf(4, 5, 6)
             listString = listOf("a", "b", "c")
         }
 
-        val decoded = decodeEncode(msg, { encodeWith(it) }, Repeated::decodeWith)
+        val decoded = decodeEncode(msg, { encodeWith(it) }, RepeatedCommon::decodeWith)
 
         assertEquals(msg.listInt32, decoded?.listInt32)
         assertEquals(msg.listFixed32, decoded?.listFixed32)

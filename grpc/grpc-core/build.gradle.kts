@@ -4,7 +4,6 @@
 
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.proto.kotlinMultiplatform
-import org.gradle.kotlin.dsl.withType
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
@@ -123,8 +122,8 @@ kotlin {
                     )
                 }
 
-                val libUpbTask = "cinterop${libprotowire.name.capitalized()}${it.targetName.capitalized()}"
-                tasks.named(libUpbTask, CInteropProcess::class) {
+                val libProtowireTask = "cinterop${libprotowire.name.capitalized()}${it.targetName.capitalized()}"
+                tasks.named(libProtowireTask, CInteropProcess::class) {
                     dependsOn(buildGrpcppCLib)
                 }
 
@@ -139,7 +138,14 @@ protoSourceSets {
             exclude("exclude/**")
         }
     }
+
+    configureEach {
+        proto {
+            exclude("exclude/**")
+        }
+    }
 }
+
 
 rpc {
     grpc {
@@ -152,6 +158,15 @@ rpc {
         }
 
         project.tasks.withType<BufGenerateTask>().configureEach {
+
+            // TODO: Remove this once we remove JVM generation
+            // Set compile for common(native) option
+            if (name.endsWith("CommonTest")) {
+                protocPlugins.kotlinMultiplatform {
+                    options.set(options.getOrElse(emptyMap()) + mapOf("targetMode" to "common"))
+                }
+            }
+
             if (name.endsWith("Test")) {
                 dependsOn(gradle.includedBuild("protoc-gen").task(":jar"))
             }

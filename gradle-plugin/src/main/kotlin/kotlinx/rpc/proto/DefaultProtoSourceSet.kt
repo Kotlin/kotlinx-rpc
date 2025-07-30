@@ -100,7 +100,7 @@ internal fun Project.createProtoExtensions() {
         findOrCreateAndConfigure("jvmTest", null)
 
         sourceSets.configureEach {
-            if (name == "jvmMain" || name == "jvmTest" || name == "nativeTest") {
+            if (name == "jvmMain" || name == "jvmTest" || name == "nativeTest" || name == "commonTest") {
                 findOrCreateAndConfigure(name, this)
             }
         }

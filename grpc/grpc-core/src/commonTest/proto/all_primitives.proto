@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package kotlinx.rpc.grpc.test;
+package kotlinx.rpc.grpc.test.common;
 
-message AllPrimitives {
+message AllPrimitivesCommon {
   double double = 1;
   float float = 2;
   int32 int32 = 3;

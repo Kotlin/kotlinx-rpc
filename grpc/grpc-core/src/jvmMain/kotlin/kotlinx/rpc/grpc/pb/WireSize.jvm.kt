@@ -4,35 +4,30 @@
 
 package kotlinx.rpc.grpc.pb
 
-import com.google.protobuf.CodedOutputStream.computeInt32SizeNoTag
-import com.google.protobuf.CodedOutputStream.computeInt64SizeNoTag
-import com.google.protobuf.CodedOutputStream.computeUInt32SizeNoTag
-import com.google.protobuf.CodedOutputStream.computeUInt64SizeNoTag
-import com.google.protobuf.CodedOutputStream.computeSInt32SizeNoTag
-import com.google.protobuf.CodedOutputStream.computeSInt64SizeNoTag
+import com.google.protobuf.CodedOutputStream.*
 
-internal actual fun WireSize.int32(value: Int): UInt {
-    return computeInt32SizeNoTag(value).toUInt()
+public actual fun WireSize.int32(value: Int): Int {
+    return computeInt32SizeNoTag(value)
 }
 
-internal actual fun WireSize.int64(value: Long): UInt {
-    return computeInt64SizeNoTag(value).toUInt()
+public actual fun WireSize.int64(value: Long): Int {
+    return computeInt64SizeNoTag(value)
 }
 
-internal actual fun WireSize.uInt32(value: UInt): UInt {
+public actual fun WireSize.uInt32(value: UInt): Int {
     // todo check java unsigned types
-    return computeUInt32SizeNoTag(value.toInt()).toUInt()
+    return computeUInt32SizeNoTag(value.toInt())
 }
 
-internal actual fun WireSize.uInt64(value: ULong): UInt {
+public actual fun WireSize.uInt64(value: ULong): Int {
     // todo check java unsigned types
-    return computeUInt64SizeNoTag(value.toLong()).toUInt()
+    return computeUInt64SizeNoTag(value.toLong())
 }
 
-internal actual fun WireSize.sInt32(value: Int): UInt {
-    return computeSInt32SizeNoTag(value).toUInt()
+public actual fun WireSize.sInt32(value: Int): Int {
+    return computeSInt32SizeNoTag(value)
 }
 
-internal actual fun WireSize.sInt64(value: Long): UInt {
-    return computeSInt64SizeNoTag(value).toUInt()
+public actual fun WireSize.sInt64(value: Long): Int {
+    return computeSInt64SizeNoTag(value)
 }

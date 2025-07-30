@@ -8,6 +8,7 @@ import kotlinx.cinterop.*
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.internal.ZeroCopyInputSource
+import kotlinx.rpc.grpc.internal.readPackedVarInternal
 import libprotowire.*
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.math.min
