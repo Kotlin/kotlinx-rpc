@@ -4,26 +4,35 @@
 
 package kotlinx.rpc.grpc.internal
 
+import com.google.protobuf.CodedOutputStream.computeInt32SizeNoTag
+import com.google.protobuf.CodedOutputStream.computeInt64SizeNoTag
+import com.google.protobuf.CodedOutputStream.computeUInt32SizeNoTag
+import com.google.protobuf.CodedOutputStream.computeUInt64SizeNoTag
+import com.google.protobuf.CodedOutputStream.computeSInt32SizeNoTag
+import com.google.protobuf.CodedOutputStream.computeSInt64SizeNoTag
+
 internal actual fun WireSize.int32(value: Int): UInt {
-    TODO("Not yet implemented")
+    return computeInt32SizeNoTag(value).toUInt()
 }
 
 internal actual fun WireSize.int64(value: Long): UInt {
-    TODO("Not yet implemented")
+    return computeInt64SizeNoTag(value).toUInt()
 }
 
 internal actual fun WireSize.uInt32(value: UInt): UInt {
-    TODO("Not yet implemented")
+    // todo check java unsigned types
+    return computeUInt32SizeNoTag(value.toInt()).toUInt()
 }
 
 internal actual fun WireSize.uInt64(value: ULong): UInt {
-    TODO("Not yet implemented")
+    // todo check java unsigned types
+    return computeUInt64SizeNoTag(value.toLong()).toUInt()
 }
 
 internal actual fun WireSize.sInt32(value: Int): UInt {
-    TODO("Not yet implemented")
+    return computeSInt32SizeNoTag(value).toUInt()
 }
 
 internal actual fun WireSize.sInt64(value: Long): UInt {
-    TODO("Not yet implemented")
+    return computeSInt64SizeNoTag(value).toUInt()
 }
