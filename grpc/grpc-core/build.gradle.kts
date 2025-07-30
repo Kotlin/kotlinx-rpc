@@ -30,6 +30,13 @@ kotlin {
 
                 implementation(libs.atomicfu)
                 implementation(libs.kotlinx.io.core)
+                implementation(libs.kotlinx.collections.immutable)
+            }
+        }
+
+        commonTest {
+            dependencies {
+                implementation(libs.kotlin.test)
             }
         }
 
@@ -39,6 +46,7 @@ kotlin {
                 api(libs.grpc.util)
                 api(libs.grpc.stub)
                 api(libs.grpc.protobuf)
+                api("io.grpc:grpc-protobuf-lite:${libs.versions.grpc.asProvider().get()}")
                 implementation(libs.grpc.kotlin.stub) // causes problems to jpms if api
                 api(libs.protobuf.java.util)
                 implementation(libs.protobuf.kotlin)
@@ -50,7 +58,6 @@ kotlin {
                 implementation(projects.grpc.grpcCore)
                 implementation(libs.coroutines.core)
                 implementation(libs.coroutines.test)
-                implementation(libs.kotlin.test)
 
                 implementation(libs.grpc.stub)
                 implementation(libs.grpc.netty)
@@ -58,18 +65,6 @@ kotlin {
                 implementation(libs.grpc.kotlin.stub)
                 implementation(libs.protobuf.java.util)
                 implementation(libs.protobuf.kotlin)
-            }
-        }
-
-        nativeMain {
-            dependencies {
-                implementation(libs.kotlinx.collections.immutable)
-            }
-        }
-
-        nativeTest {
-            dependencies {
-                implementation(kotlin("test"))
             }
         }
     }

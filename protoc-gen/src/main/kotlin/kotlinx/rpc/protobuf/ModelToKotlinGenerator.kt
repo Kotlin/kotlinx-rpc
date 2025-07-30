@@ -309,28 +309,12 @@ class ModelToKotlinGenerator(
                 val fq by value
                 importRootDeclarationIfNeeded(fq, "toPlatform", true)
             }
-            is FieldType.List -> {
-                when (value) {
-                    is FieldType.Reference -> ".map { it.toPlatform() }".also {
-                        val fq by value.value
-                        importRootDeclarationIfNeeded(fq, "toPlatform", true)
-                    }
-                    is FieldType.IntegralType -> ""
-                    else -> error("Unsupported type: $value")
-                }
-            }
+            is FieldType.List -> ".map { it${value.toPlatformCast()} }"
 
             is FieldType.Map -> {
                 val entry by entry
 
-                when (val value = entry.value) {
-                    is FieldType.Reference -> ".mapValues { it.value.toPlatform() }".also {
-                        val fq by value.value
-                        importRootDeclarationIfNeeded(fq, "toPlatform", true)
-                    }
-                    is FieldType.IntegralType -> ""
-                    else -> error("Unsupported type: $value")
-                }
+                ".mapValues { it.value${entry.value.toPlatformCast()} }"
             }
 
             else -> ""
@@ -348,28 +332,12 @@ class ModelToKotlinGenerator(
                 val fq by value
                 importRootDeclarationIfNeeded(fq, "toKotlin", true)
             }
-            is FieldType.List -> {
-                when (value) {
-                    is FieldType.Reference -> ".map { it.toKotlin() }".also {
-                        val fq by value.value
-                        importRootDeclarationIfNeeded(fq, "toKotlin", true)
-                    }
-                    is FieldType.IntegralType -> ".toList()"
-                    else -> error("Unsupported type: $value")
-                }
-            }
+            is FieldType.List -> ".map { it${value.toKotlinCast()} }"
 
             is FieldType.Map -> {
                 val entry by entry
 
-                when (val value = entry.value) {
-                    is FieldType.Reference -> ".mapValues { it.value.toKotlin() }".also {
-                        val fq by value.value
-                        importRootDeclarationIfNeeded(fq, "toKotlin", true)
-                    }
-                    is FieldType.IntegralType -> ""
-                    else -> error("Unsupported type: $value")
-                }
+                ".mapValues { it.value${entry.value.toKotlinCast()} }"
             }
 
             else -> ""

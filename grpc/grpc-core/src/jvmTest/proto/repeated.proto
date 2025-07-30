@@ -5,6 +5,8 @@ package kotlinx.rpc.grpc.test;
 import 'reference_package.proto';
 
 message Repeated {
-  repeated string listString = 1;
-  repeated References listReference = 2;
+  repeated int32 listInt32 = 1;
+  repeated fixed32 listFixed32 = 2;
+  repeated string listString = 3;
+  repeated References listReference = 4;
 }

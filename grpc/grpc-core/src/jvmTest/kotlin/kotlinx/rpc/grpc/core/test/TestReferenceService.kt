@@ -120,6 +120,8 @@ class TestReferenceService : GrpcServerTest() {
     fun testRepeated() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
         val result = service.Repeated(Repeated {
+            listFixed32 = listOf(0u, 1u, 2u)
+            listInt32 = listOf(0, 1, 2)
             listString = listOf("test", "hello")
             listReference = listOf(kotlinx.rpc.grpc.test.References {
                 other = kotlinx.rpc.grpc.test.Other {
@@ -129,12 +131,16 @@ class TestReferenceService : GrpcServerTest() {
         })
 
         assertEquals(listOf("test", "hello"), result.listString)
+        assertEquals(listOf(0u, 1u, 2u), result.listFixed32)
+        assertEquals(listOf(0, 1, 2), result.listInt32)
         assertEquals(1, result.listReference.size)
         assertEquals(42, result.listReference[0].other.field)
 
         val resultEmpty = service.Repeated(Repeated {})
 
         assertEquals(emptyList(), resultEmpty.listString)
+        assertEquals(emptyList(), resultEmpty.listFixed32)
+        assertEquals(emptyList(), resultEmpty.listInt32)
         assertEquals(emptyList(), resultEmpty.listReference)
     }
 

@@ -6,6 +6,10 @@ package kotlinx.rpc.grpc.internal
 
 import kotlinx.io.Buffer
 
+// TODO: Evaluate if this buffer size is suitable for all targets (KRPC-186)
+// maximum buffer size to allocate as contiguous memory in bytes
+internal const val MAX_PACKED_BULK_SIZE: Int = 1_000_000
+
 /**
  * A platform-specific decoder for wire format data.
  *

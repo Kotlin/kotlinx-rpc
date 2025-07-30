@@ -50,8 +50,8 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
         pw_encoder_flush(raw)
     }
 
-    override fun writeBool(field: Int, value: Boolean): Boolean {
-        return pw_encoder_write_bool(raw, field, value)
+    override fun writeBool(fieldNr: Int, value: Boolean): Boolean {
+        return pw_encoder_write_bool(raw, fieldNr, value)
     }
 
     override fun writeInt32(fieldNr: Int, value: Int): Boolean {
