@@ -9,7 +9,7 @@ import kotlinx.rpc.grpc.test.common.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class TestProtos {
+class ProtosTest {
 
     private fun <T : Any> decodeEncode(
         msg: T,
