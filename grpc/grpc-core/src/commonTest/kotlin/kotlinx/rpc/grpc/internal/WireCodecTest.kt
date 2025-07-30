@@ -734,13 +734,13 @@ class WireCodecTest {
 
     private fun <T> runPackedVarTest(
         list: List<T>,
-        sizeFn: (List<T>) -> UInt,
+        sizeFn: (List<T>) -> Int,
         write: WireEncoder.(Int, List<T>, Int) -> Boolean,
         read: WireDecoder.() -> List<T>?,
     ) {
         val buf = Buffer()
         with(WireEncoder(buf)) {
-            assertTrue(write(1, list, sizeFn(list).toInt()))
+            assertTrue(write(1, list, sizeFn(list)))
             flush()
         }
         WireDecoder(buf).use { dec ->

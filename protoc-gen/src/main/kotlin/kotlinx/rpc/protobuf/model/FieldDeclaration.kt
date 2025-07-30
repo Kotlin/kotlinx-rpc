@@ -14,7 +14,23 @@ data class FieldDeclaration(
     val deprecated: Boolean,
     val doc: String?,
     val proto: DescriptorProtos.FieldDescriptorProto
-)
+) {
+    val isRepeated = proto.label == DescriptorProtos.FieldDescriptorProto.Label.LABEL_REPEATED
+    val isExtension = proto.hasExtendee()
+    val containsOneOf = proto.hasOneofIndex()
+
+    val hasPresence = if (isRepeated) false else
+        proto.proto3Optional || proto.type == DescriptorProtos.FieldDescriptorProto.Type.TYPE_MESSAGE
+                || proto.type == DescriptorProtos.FieldDescriptorProto.Type.TYPE_GROUP
+                || isExtension || containsOneOf
+
+    val isPackable = isRepeated && type.isPackable
+
+    val packed = isPackable // TODO: must checked if this is also declared as [packed = true] (or proto3 auto packed)
+
+    val packedFixedSize = type.wireType == WireType.FIXED64 || type.wireType == WireType.FIXED32
+}
+
 
 enum class WireType {
     VARINT,
@@ -29,9 +45,12 @@ sealed interface FieldType {
     val defaultValue: String
     val wireType: WireType
 
+    val isPackable: Boolean get() = false
+
     data class List(val value: FieldType) : FieldType {
-        override val defaultValue: String = "emptyList()"
+        override val defaultValue: String = "arrayListOf()"
         override val wireType: WireType = value.wireType
+        override val isPackable: Boolean = value.isPackable
     }
 
     data class Map(val entry: Lazy<Entry>) : FieldType {
@@ -51,23 +70,28 @@ sealed interface FieldType {
         override val wireType: WireType = WireType.LENGTH_DELIMITED
     }
 
-    enum class IntegralType(simpleName: String, override val defaultValue: String, override val wireType: WireType) :
+    enum class IntegralType(
+        simpleName: String,
+        override val defaultValue: String,
+        override val wireType: WireType,
+        override val isPackable: Boolean = true
+    ) :
         FieldType {
-        STRING("String", "\"\"", WireType.LENGTH_DELIMITED),
-        BYTES("ByteArray", "byteArrayOf()", WireType.LENGTH_DELIMITED),
+        STRING("String", "\"\"", WireType.LENGTH_DELIMITED, false),
+        BYTES("ByteArray", "byteArrayOf()", WireType.LENGTH_DELIMITED, false),
         BOOL("Boolean", "false", WireType.VARINT),
         FLOAT("Float", "0.0f", WireType.FIXED32),
         DOUBLE("Double", "0.0", WireType.FIXED64),
         INT32("Int", "0", WireType.VARINT),
-        INT64("Long", "0", WireType.VARINT),
+        INT64("Long", "0L", WireType.VARINT),
         UINT32("UInt", "0u", WireType.VARINT),
-        UINT64("ULong", "0u", WireType.VARINT),
+        UINT64("ULong", "0uL", WireType.VARINT),
         FIXED32("UInt", "0u", WireType.FIXED32),
-        FIXED64("ULong", "0u", WireType.FIXED64),
+        FIXED64("ULong", "0uL", WireType.FIXED64),
         SINT32("Int", "0", WireType.VARINT),
-        SINT64("Long", "0", WireType.VARINT),
+        SINT64("Long", "0L", WireType.VARINT),
         SFIXED32("Int", "0", WireType.FIXED32),
-        SFIXED64("Long", "0", WireType.FIXED64);
+        SFIXED64("Long", "0L", WireType.FIXED64);
 
         val fqName: FqName = FqName.Declaration(simpleName, FqName.Package.fromString("kotlin"))
     }

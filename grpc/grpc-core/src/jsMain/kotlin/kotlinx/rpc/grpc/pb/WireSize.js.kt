@@ -4,26 +4,26 @@
 
 package kotlinx.rpc.grpc.pb
 
-internal actual fun WireSize.int32(value: Int): UInt {
+internal actual fun WireSize.int32(value: Int): Int {
     TODO("Not yet implemented")
 }
 
-internal actual fun WireSize.int64(value: Long): UInt {
+internal actual fun WireSize.int64(value: Long): Int {
     TODO("Not yet implemented")
 }
 
-internal actual fun WireSize.uInt32(value: UInt): UInt {
+internal actual fun WireSize.uInt32(value: UInt): Int {
     TODO("Not yet implemented")
 }
 
-internal actual fun WireSize.uInt64(value: ULong): UInt {
+internal actual fun WireSize.uInt64(value: ULong): Int {
     TODO("Not yet implemented")
 }
 
-internal actual fun WireSize.sInt32(value: Int): UInt {
+internal actual fun WireSize.sInt32(value: Int): Int {
     TODO("Not yet implemented")
 }
 
-internal actual fun WireSize.sInt64(value: Long): UInt {
+internal actual fun WireSize.sInt64(value: Long): Int {
     TODO("Not yet implemented")
 }

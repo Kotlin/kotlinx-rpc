@@ -6,12 +6,12 @@ package kotlinx.rpc.grpc.pb
 
 internal object WireSize
 
-internal expect fun WireSize.int32(value: Int): UInt
-internal expect fun WireSize.int64(value: Long): UInt
-internal expect fun WireSize.uInt32(value: UInt): UInt
-internal expect fun WireSize.uInt64(value: ULong): UInt
-internal expect fun WireSize.sInt32(value: Int): UInt
-internal expect fun WireSize.sInt64(value: Long): UInt
+internal expect fun WireSize.int32(value: Int): Int
+internal expect fun WireSize.int64(value: Long): Int
+internal expect fun WireSize.uInt32(value: UInt): Int
+internal expect fun WireSize.uInt64(value: ULong): Int
+internal expect fun WireSize.sInt32(value: Int): Int
+internal expect fun WireSize.sInt64(value: Long): Int
 
 internal fun WireSize.bool(value: Boolean) = int32(if (value) 1 else 0)
 internal fun WireSize.enum(value: Int) = int32(value)

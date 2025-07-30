@@ -78,9 +78,7 @@ class ModelToKotlinCommonGenerator(
 
             import("kotlinx.rpc.internal.utils.*")
             import("kotlinx.coroutines.flow.*")
-            import("kotlinx.rpc.grpc.WireDecoder")
-            import("kotlinx.rpc.grpc.WireEncoder")
-            import("kotlinx.rpc.grpc.WireType")
+            import("kotlinx.rpc.grpc.pb.*")
 
 
             additionalInternalImports.forEach {
@@ -194,11 +192,7 @@ class ModelToKotlinCommonGenerator(
         whileBlock("!decoder.hadError()") {
             code("val tag = decoder.readTag() ?: break // EOF, we read the whole message")
             whenBlock("tag.fieldNr") {
-                declaration.fields().forEach { (_, field) ->
-                    whenCase("${field.number} if tag.wireType == WireType.${field.type.wireType.name}") {
-                        code("msg.${field.name} = decoder.read${field.type.decodeEncodeFuncName()}()")
-                    }
-                }
+                declaration.fields().forEach { (_, field) -> readMatchCase(field) }
                 whenCase("else") { code("TODO(\"Handle unknown fields\")") }
             }
         }
@@ -211,6 +205,30 @@ class ModelToKotlinCommonGenerator(
         code("return msg")
     }
 
+    private fun CodeGenerator.readMatchCase(field: FieldDeclaration) {
+        val encFuncName = field.type.decodeEncodeFuncName()
+        val assignment = "msg.${field.name} ="
+        when (val fieldType = field.type) {
+            is FieldType.IntegralType -> whenCase("${field.number} if tag.wireType == WireType.${field.type.wireType.name}") {
+                code("$assignment decoder.read$encFuncName()")
+            }
+
+            is FieldType.List -> if (field.packed) {
+                whenCase("${field.number} if tag.wireType == WireType.LENGTH_DELIMITED") {
+                    code("$assignment decoder.readPacked${fieldType.value.decodeEncodeFuncName()}()")
+                }
+            } else {
+                whenCase("${field.number} if tag.wireType == WireType.LENGTH_DELIMITED") {
+                    code("(msg.${field.name} as ArrayList).add(decoder.read${fieldType.value.decodeEncodeFuncName()}())")
+                }
+            }
+
+            is FieldType.Map -> TODO()
+            is FieldType.OneOf -> TODO()
+            is FieldType.Reference -> TODO()
+        }
+    }
+
     private fun CodeGenerator.generateMessageEncoder(declaration: MessageDeclaration) = function(
         name = "encodeWith",
         args = "encoder: WireEncoder",
@@ -218,16 +236,71 @@ class ModelToKotlinCommonGenerator(
     ) {
 
         declaration.fields().forEach { (_, field) ->
-            val encFuncName = field.type.decodeEncodeFuncName()
-            val fieldNr = field.number
             val fieldName = field.name
             if (field.nullable) {
                 scope("$fieldName?.also") {
-                    code("encoder.write$encFuncName($fieldNr, it)")
+                    code(field.writeValue())
                 }
+            } else if (!field.hasPresence) {
+                ifBranch(condition = field.defaultCheck(), ifBlock = {
+                    code(field.writeValue())
+                })
             } else {
-                code("encoder.write$encFuncName($fieldNr, $fieldName)")
+                code(field.writeValue())
             }
+        }
+    }
+
+    private fun FieldDeclaration.writeValue(): String {
+        return when (val fieldType = type) {
+            is FieldType.IntegralType -> "encoder.write${type.decodeEncodeFuncName()}($number, $name)"
+            is FieldType.List -> when {
+                packed && packedFixedSize ->
+                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $name)"
+
+                packed && !packedFixedSize ->
+                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $name, ${wireSizeCall(name)})"
+
+                else ->
+                    "$name.forEach { encoder.write${fieldType.value.decodeEncodeFuncName()}($number, it) }"
+            }
+
+            is FieldType.Map -> TODO()
+            is FieldType.OneOf -> TODO()
+            is FieldType.Reference -> TODO()
+        }
+    }
+
+    private fun FieldDeclaration.wireSizeCall(variable: String): String {
+        val sizeFunc = "WireSize.${type.decodeEncodeFuncName().replaceFirstChar { it.lowercase() }}($variable)"
+        return when (val fieldType = type) {
+            is FieldType.IntegralType -> when {
+                fieldType.wireType == WireType.FIXED32 -> "32"
+                fieldType.wireType == WireType.FIXED64 -> "64"
+                else -> sizeFunc
+            }
+
+            is FieldType.List -> when {
+                isPackable && !packedFixedSize -> sizeFunc
+                else -> error("Unexpected use of size call for field: $name, type: $fieldType")
+            }
+
+            is FieldType.Map -> TODO()
+            is FieldType.OneOf -> TODO()
+            is FieldType.Reference -> TODO()
+        }
+    }
+
+    private fun FieldDeclaration.defaultCheck(): String {
+        return when (val fieldType = type) {
+            is FieldType.IntegralType -> when (fieldType) {
+                FieldType.IntegralType.BYTES, FieldType.IntegralType.STRING -> "$name.isNotEmpty()"
+                else -> "$name != ${fieldType.defaultValue}"
+            }
+
+            is FieldType.List -> "$name.isNotEmpty()"
+
+            else -> TODO("Field: $name, type: $fieldType")
         }
     }
 
