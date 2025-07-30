@@ -56,7 +56,7 @@ internal fun BufExecTask.execBuf(args: Iterable<Any>) {
         val configValue = configFile.orNull
         if (configValue != null) {
             add("--config")
-            add(configValue.absolutePath)
+            add(configValue.path)
         }
 
         if (debug.get()) {
