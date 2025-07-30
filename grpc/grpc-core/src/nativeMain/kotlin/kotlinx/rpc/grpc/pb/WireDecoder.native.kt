@@ -2,11 +2,13 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.internal
+package kotlinx.rpc.grpc.pb
 
 import kotlinx.cinterop.*
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.io.Buffer
+import kotlinx.rpc.grpc.internal.ZeroCopyInputSource
+import kotlinx.rpc.grpc.internal.readPackedVarInternal
 import libprotowire.*
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.math.min
@@ -65,12 +67,7 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
 
     override fun readTag(): KTag? {
         val tag = pw_decoder_read_tag(raw)
-        if (tag == 0u) return null.withError()
-        val kTag = KTag.fromOrNull(tag)
-        if (kTag == null) {
-            hadError = true
-        }
-        return kTag
+        return KTag.fromOrNull(tag)
     }
 
     override fun readBool(): Boolean = memScoped {
