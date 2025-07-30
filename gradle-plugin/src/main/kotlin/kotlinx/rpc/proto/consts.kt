@@ -52,8 +52,8 @@ public const val PROTO_FILES_DIR: String = "proto"
 public const val PROTO_FILES_IMPORT_DIR: String = "import"
 
 /**
- * [Configuration] name for the `kotlinx-rpc` protoc plugin artifact.
+ * [Configuration] name for the `protoc-gen-kotlin-multiplatform` protoc plugin artifact.
  *
  * MUST be a single file.
  */
-public const val KXRPC_PLUGIN_JAR_CONFIGURATION: String = "kxrpcPluginJar"
+public const val PROTOC_GEN_KOTLIN_MULTIPLATFORM_JAR_CONFIGURATION: String = "protocGenKotlinMultiplatformJar"

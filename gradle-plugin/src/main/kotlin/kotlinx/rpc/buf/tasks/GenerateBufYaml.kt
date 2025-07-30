@@ -11,7 +11,6 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
@@ -22,11 +21,11 @@ import java.io.File
  * Generates/updates a Buf `buf.yaml` file.
  */
 public abstract class GenerateBufYaml : DefaultTask() {
-    @get:InputDirectory
-    internal abstract val protoSourceDir: Property<File>
+    @get:Input
+    internal abstract val protoSourceDir: Property<String>
 
-    @get:InputDirectory
-    internal abstract val importSourceDir: Property<File>
+    @get:Input
+    internal abstract val importSourceDir: Property<String>
 
     @get:Input
     internal abstract val withImport: Property<Boolean>
@@ -61,13 +60,15 @@ public abstract class GenerateBufYaml : DefaultTask() {
 
             writer.appendLine("modules:")
 
-            val protoDir = protoSourceDir.get()
+            val protoDirName = protoSourceDir.get()
+            val protoDir = file.parentFile.resolve(protoDirName)
             if (protoDir.exists()) {
                 val modulePath = protoDir.relativeTo(file.parentFile)
                 writer.appendLine("  - path: $modulePath")
             }
 
-            val importDir = importSourceDir.get()
+            val importDirName = importSourceDir.get()
+            val importDir = file.parentFile.resolve(importDirName)
             if (withImport.get() && importDir.exists()) {
                 val modulePath = importDir.relativeTo(file.parentFile)
                 writer.appendLine("  - path: $modulePath")
@@ -92,8 +93,8 @@ internal fun Project.registerGenerateBufYamlTask(
 ): TaskProvider<GenerateBufYaml> {
     val capitalizeName = name.replaceFirstChar { it.uppercase() }
     return tasks.register<GenerateBufYaml>("${GenerateBufYaml.NAME_PREFIX}$capitalizeName") {
-        protoSourceDir.set(buildSourceSetsProtoDir)
-        importSourceDir.set(buildSourceSetsImportDir)
+        protoSourceDir.set(buildSourceSetsProtoDir.name)
+        importSourceDir.set(buildSourceSetsImportDir.name)
         this.withImport.set(withImport)
 
         val bufYamlFile = buildSourceSetsDir
