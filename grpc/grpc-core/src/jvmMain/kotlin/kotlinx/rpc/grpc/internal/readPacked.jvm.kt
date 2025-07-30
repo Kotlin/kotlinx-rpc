@@ -4,6 +4,9 @@
 
 package kotlinx.rpc.grpc.internal
 
+import kotlinx.rpc.grpc.pb.WireDecoder
+import kotlinx.rpc.grpc.pb.WireDecoderJvm
+
 internal actual fun WireDecoder.pushLimit(byteLen: Int): Int {
     return (this as WireDecoderJvm).codedInputStream.pushLimit(byteLen)
 }
