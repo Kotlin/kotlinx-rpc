@@ -8,11 +8,7 @@ import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.util.findOrCreate
 import kotlinx.rpc.util.withKotlinJvmExtension
 import kotlinx.rpc.util.withKotlinKmpExtension
-import org.gradle.api.Action
-import org.gradle.api.GradleException
-import org.gradle.api.NamedDomainObjectFactory
-import org.gradle.api.NamedDomainObjectProvider
-import org.gradle.api.Project
+import org.gradle.api.*
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -102,9 +98,11 @@ internal fun Project.createProtoExtensions() {
     project.withKotlinKmpExtension {
         findOrCreateAndConfigure("jvmMain", null)
         findOrCreateAndConfigure("jvmTest", null)
+        findOrCreateAndConfigure("commonMain", null)
+        findOrCreateAndConfigure("commonTest", null)
 
         sourceSets.configureEach {
-            if (name == "jvmMain" || name == "jvmTest") {
+            if (name == "jvmMain" || name == "jvmTest" || name == "commonMain" || name == "commonTest") {
                 findOrCreateAndConfigure(name, this)
             }
         }

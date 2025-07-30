@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.io.Buffer
+import kotlinx.rpc.grpc.pb.WireDecoder
 
 internal expect fun WireDecoder.pushLimit(byteLen: Int): Int
 internal expect fun WireDecoder.popLimit(limit: Int)
