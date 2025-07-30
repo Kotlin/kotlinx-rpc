@@ -63,7 +63,7 @@ internal open class DefaultProtoSourceSet @Inject constructor(
 }
 
 internal fun Project.createProtoExtensions() {
-    fun findOrCreateAndConfigure(languageSourceSetName: String, languageSourceSet: Any) {
+    fun findOrCreateAndConfigure(languageSourceSetName: String, languageSourceSet: Any?) {
         val container = project.findOrCreate(PROTO_SOURCE_SETS) {
             val container = objects.domainObjectContainer(
                 ProtoSourceSet::class.java,
@@ -77,10 +77,13 @@ internal fun Project.createProtoExtensions() {
 
         val protoSourceSet = container.maybeCreate(languageSourceSetName) as DefaultProtoSourceSet
 
-        protoSourceSet.languageSourceSets.add(languageSourceSet)
+        languageSourceSet?.let { protoSourceSet.languageSourceSets.add(it) }
     }
 
     project.withKotlinJvmExtension {
+        findOrCreateAndConfigure("main", null)
+        findOrCreateAndConfigure("test", null)
+
         sourceSets.configureEach {
             if (name == SourceSet.MAIN_SOURCE_SET_NAME || name == SourceSet.TEST_SOURCE_SET_NAME) {
                 findOrCreateAndConfigure(name, this)
@@ -97,6 +100,9 @@ internal fun Project.createProtoExtensions() {
     }
 
     project.withKotlinKmpExtension {
+        findOrCreateAndConfigure("jvmMain", null)
+        findOrCreateAndConfigure("jvmTest", null)
+
         sourceSets.configureEach {
             if (name == "jvmMain" || name == "jvmTest") {
                 findOrCreateAndConfigure(name, this)

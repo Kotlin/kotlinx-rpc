@@ -26,7 +26,7 @@ internal data class ResolvedGrpcPlugin(
     val type: Type,
     val locator: List<String>,
     val out: String,
-    val options: Map<String, Any?>,
+    val options: Map<String, Any>,
     val strategy: String?,
     val includeImports: Boolean?,
     val includeWkt: Boolean?,
@@ -91,6 +91,13 @@ public abstract class GenerateBufGenYaml : DefaultTask() {
                 }
 
                 writer.appendLine("  - ${plugin.type.name}: $locatorLine")
+                writer.appendLine("    out: ${plugin.out}")
+                if (plugin.options.isNotEmpty()) {
+                    writer.appendLine("    opt:")
+                    plugin.options.forEach { (key, value) ->
+                        writer.appendLine("      - $key=$value")
+                    }
+                }
                 if (plugin.strategy != null) {
                     writer.appendLine("    strategy: ${plugin.strategy}")
                 }
@@ -110,13 +117,6 @@ public abstract class GenerateBufGenYaml : DefaultTask() {
                     writer.appendLine("    exclude_types:")
                     plugin.excludeTypes.forEach { type ->
                         writer.appendLine("      - $type")
-                    }
-                }
-                writer.appendLine("    out: ${plugin.out}")
-                if (plugin.options.isNotEmpty()) {
-                    writer.appendLine("    opt:")
-                    plugin.options.forEach { (key, value) ->
-                        writer.appendLine("      - $key${if (value != null) "=$value" else ""}")
                     }
                 }
             }

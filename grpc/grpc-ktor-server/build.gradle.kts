@@ -3,7 +3,7 @@
  */
 
 import kotlinx.rpc.buf.tasks.BufGenerateTask
-import kotlinx.rpc.proto.kxrpc
+import kotlinx.rpc.proto.kotlinMultiplatform
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.withType
 
@@ -44,7 +44,7 @@ rpc {
     grpc {
         val globalRootDir: String by extra
 
-        protocPlugins.kxrpc {
+        protocPlugins.kotlinMultiplatform {
             local {
                 javaJar("$globalRootDir/protoc-gen/build/libs/protoc-gen-$version-all.jar")
             }

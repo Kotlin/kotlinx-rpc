@@ -11,6 +11,12 @@ pluginManagement {
     includeBuild("../gradle-conventions-settings")
 }
 
+dependencyResolutionManagement {
+    // for tests
+    includeBuild("../protoc-gen")
+    includeBuild("../compiler-plugin")
+}
+
 plugins {
     id("conventions-repositories")
     id("conventions-version-resolution")

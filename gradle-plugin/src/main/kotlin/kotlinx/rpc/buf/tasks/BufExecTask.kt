@@ -27,6 +27,7 @@ import kotlinx.rpc.buf.BUF_GEN_YAML
 import kotlinx.rpc.buf.BUF_YAML
 import kotlinx.rpc.buf.BufTasksExtension
 import org.gradle.api.logging.LogLevel
+import org.gradle.api.tasks.Classpath
 
 /**
  * Abstract base class for `buf` tasks.
@@ -60,6 +61,8 @@ public abstract class BufExecTask : DefaultTask() {
      * The working directory for the `buf` command.
      */
     @get:InputDirectory
+    // https://docs.gradle.org/current/userguide/incremental_build.html#sec:configure_input_normalization
+    @get:Classpath
     public abstract val workingDir: Property<File>
 
     /**

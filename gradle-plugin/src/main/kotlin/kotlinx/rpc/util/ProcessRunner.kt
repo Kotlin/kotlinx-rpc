@@ -55,7 +55,7 @@ internal class ProcessRunner : Closeable {
     ) {
         fun formattedOutput() = buildString {
             appendLine("Process $name finished:")
-            appendLine("  - Arguments: $args")
+            appendLine("  - Buf Arguments: $args")
             appendLine("  - Exit code: $exitCode")
             val perStream = { name: String, content: ByteArray ->
                 val string = content.toString(StandardCharsets.UTF_8)

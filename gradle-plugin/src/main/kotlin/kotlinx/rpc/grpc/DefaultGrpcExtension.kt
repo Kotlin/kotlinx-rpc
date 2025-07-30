@@ -16,7 +16,7 @@ import kotlinx.rpc.buf.tasks.registerGenerateBufYamlTask
 import kotlinx.rpc.proto.*
 import kotlinx.rpc.proto.ProtocPlugin.Companion.GRPC_JAVA
 import kotlinx.rpc.proto.ProtocPlugin.Companion.GRPC_KOTLIN
-import kotlinx.rpc.proto.ProtocPlugin.Companion.KXRPC
+import kotlinx.rpc.proto.ProtocPlugin.Companion.KOTLIN_MULTIPLATFORM
 import kotlinx.rpc.proto.ProtocPlugin.Companion.PROTOBUF_JAVA
 import kotlinx.rpc.util.ensureDirectoryExists
 import org.gradle.api.Action
@@ -56,7 +56,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
 
     init {
         project.configureBufExecutable()
-        project.configureKxRpcPluginJarConfiguration()
+        project.configureKotlinMultiplatformPluginJarConfiguration()
 
         createDefaultProtocPlugins()
 
@@ -64,7 +64,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
             protoSourceSet.protocPlugin(protocPlugins.protobufJava)
             protoSourceSet.protocPlugin(protocPlugins.grpcJava)
             protoSourceSet.protocPlugin(protocPlugins.grpcKotlin)
-            protoSourceSet.protocPlugin(protocPlugins.kxrpc)
+            protoSourceSet.protocPlugin(protocPlugins.kotlinMultiplatform)
         }
 
         project.afterEvaluate {
@@ -78,8 +78,18 @@ internal open class DefaultGrpcExtension @Inject constructor(
         }
     }
 
-    @Suppress("detekt.LongMethod", "detekt.CyclomaticComplexMethod")
+    @Suppress("detekt.LongMethod", "detekt.CyclomaticComplexMethod", "detekt.ThrowsCount")
     private fun Project.configureTasks(protoSourceSet: DefaultProtoSourceSet) {
+        // todo remove after KRPC-180
+        if (!protoSourceSet.languageSourceSets.isPresent) {
+            logger.debug(
+                "Language source sets are not set for proto source set '${protoSourceSet.name}', " +
+                        "skipping buf tasks configuration"
+            )
+
+            return
+        }
+
         val baseName = protoSourceSet.name
 
         val buildSourceSetsDir = project.protoBuildDirSourceSets.resolve(baseName)
@@ -103,30 +113,11 @@ internal open class DefaultGrpcExtension @Inject constructor(
 
         val protoFiles = protoSourceSet.proto
 
-        val generateBufYamlTask = registerGenerateBufYamlTask(
-            name = baseName,
-            buildSourceSetsDir = buildSourceSetsDir,
-            buildSourceSetsProtoDir = buildSourceSetsProtoDir,
-            buildSourceSetsImportDir = buildSourceSetsImportDir,
-            withImport = pairSourceSet != null,
-        )
-
-        val generateBufGenYamlTask = registerGenerateBufGenYamlTask(
-            name = baseName,
-            buildSourceSetsDir = buildSourceSetsDir,
-            protocPlugins = includedProtocPlugins,
-        ) {
-            dependsOn(generateBufYamlTask)
-        }
-
         val processProtoTask = registerProcessProtoFilesTask(
             name = baseName,
             destination = buildSourceSetsProtoDir,
             protoFiles = protoFiles,
-        ) {
-            dependsOn(generateBufYamlTask)
-            dependsOn(generateBufGenYamlTask)
-        }
+        )
 
         val processImportProtoTask = if (pairSourceSet != null) {
             val importProtoFiles = pairSourceSet.proto
@@ -136,12 +127,31 @@ internal open class DefaultGrpcExtension @Inject constructor(
                 destination = buildSourceSetsImportDir,
                 protoFiles = importProtoFiles,
             ) {
-                dependsOn(generateBufYamlTask)
-                dependsOn(generateBufGenYamlTask)
                 dependsOn(processProtoTask)
             }
         } else {
             null
+        }
+
+        val generateBufYamlTask = registerGenerateBufYamlTask(
+            name = baseName,
+            buildSourceSetsDir = buildSourceSetsDir,
+            buildSourceSetsProtoDir = buildSourceSetsProtoDir,
+            buildSourceSetsImportDir = buildSourceSetsImportDir,
+            withImport = pairSourceSet != null,
+        ) {
+            dependsOn(processProtoTask)
+            if (processImportProtoTask != null) {
+                dependsOn(processImportProtoTask)
+            }
+        }
+
+        val generateBufGenYamlTask = registerGenerateBufGenYamlTask(
+            name = baseName,
+            buildSourceSetsDir = buildSourceSetsDir,
+            protocPlugins = includedProtocPlugins,
+        ) {
+            dependsOn(generateBufYamlTask)
         }
 
         val out = protoBuildDirGenerated.resolve(baseName)
@@ -269,17 +279,21 @@ internal open class DefaultGrpcExtension @Inject constructor(
     }
 
     private fun createDefaultProtocPlugins() {
-        protocPlugins.create(KXRPC) {
+        protocPlugins.create(KOTLIN_MULTIPLATFORM) {
             local {
-                javaJar(project.kxrpcProtocPluginJarPath)
+                javaJar(project.kotlinMultiplatformProtocPluginJarPath)
             }
 
-            options.put("debugOutput", "protobuf-kxrpc-plugin.log")
+            options.put("debugOutput", "protoc-gen-kotlin-multiplatform.log")
             options.put("messageMode", "interface")
             options.put("explicitApiModeEnabled", project.provider {
                 project.the<KotlinBaseExtension>().explicitApi != ExplicitApiMode.Disabled
             })
         }
+
+        // ignore for bufGenerate task caching
+        project.normalization.runtimeClasspath.ignore("**/protoc-gen-kotlin-multiplatform.log")
+        project.normalization.runtimeClasspath.ignore("**/.keep")
 
         protocPlugins.create(GRPC_JAVA) {
             isJava.set(true)

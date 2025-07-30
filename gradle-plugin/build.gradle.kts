@@ -33,7 +33,28 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 dependencies {
-    compileOnly(libs.kotlin.gradle.plugin)
+    implementation(libs.kotlin.gradle.plugin)
+
+    testImplementation(libs.kotlin.gradle.plugin)
+    testImplementation(gradleTestKit())
+    testImplementation(platform(libs.junit5.bom))
+    testImplementation(libs.kotlin.test.junit5)
+    testImplementation(libs.junit5.jupiter)
+    testImplementation(libs.junit5.jupiter.api)
+    testRuntimeOnly(libs.junit5.platform.launcher)
+
+    testImplementation(libs.logback.classic)
+}
+
+tasks.test {
+    val forwardOutput: Boolean = (properties.getOrDefault("gradle.test.forward.output", "false")
+         as String).toBooleanStrictOrNull() ?: false
+
+    systemProperty("gradle.test.forward.output", forwardOutput)
+
+    useJUnitPlatform()
+
+    dependsOn(gradle.includedBuild("protoc-gen").task(":publishAllPublicationsToBuildRepoRepository"))
 }
 
 // This block is needed to show plugin tasks on --dry-run
@@ -94,5 +115,23 @@ generateSource(
     """.trimIndent(),
     chooseSourceSet = { main }
 )
+
+generateSource(
+    name = "TestVersions",
+    text = """
+        package kotlinx.rpc
+        
+        const val KOTLIN_VERSION: String = "${libs.versions.kotlin.lang.get()}"
+        
+        const val BUILD_REPO: String = "${File(globalRootDir).resolve("build/repo").absolutePath}"
+        
+        // can't use from generatePluginVersionsTask bacause Gradle messes up caches
+        const val TEST_PROTOBUF_VERSION: String = "${libs.versions.protobuf.asProvider().get()}"
+        const val TEST_GRPC_VERSION: String = "${libs.versions.grpc.asProvider().get()}"
+        const val TEST_GRPC_KOTLIN_VERSION: String = "${libs.versions.grpc.kotlin.get()}"
+    """.trimIndent(),
+    chooseSourceSet = { test }
+)
+
 
 logger.lifecycle("[Gradle Plugin] kotlinx.rpc project version: $version")

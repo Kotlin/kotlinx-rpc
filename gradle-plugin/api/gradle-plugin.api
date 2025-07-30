@@ -85,7 +85,12 @@ public final class kotlinx/rpc/buf/BufGenerateExtension$ErrorFormat : java/lang/
 
 public class kotlinx/rpc/buf/BufTasksExtension {
 	public fun <init> (Lorg/gradle/api/Project;)V
-	public final fun registerWorkspaceTask (Lkotlin/reflect/KClass;Ljava/lang/String;Lorg/gradle/api/Action;)Lorg/gradle/api/provider/Provider;
+	public final fun registerWorkspaceTask (Lkotlin/reflect/KClass;Ljava/lang/String;Lorg/gradle/api/Action;)Lkotlinx/rpc/buf/BufTasksExtension$TaskProvider;
+}
+
+public abstract interface class kotlinx/rpc/buf/BufTasksExtension$TaskProvider {
+	public abstract fun getMainTask ()Lorg/gradle/api/provider/Provider;
+	public abstract fun getTestTask ()Lorg/gradle/api/provider/Provider;
 }
 
 public final class kotlinx/rpc/buf/ConstsKt {
@@ -149,7 +154,7 @@ public abstract interface class kotlinx/rpc/grpc/GrpcExtension {
 }
 
 public final class kotlinx/rpc/proto/ConstsKt {
-	public static final field KXRPC_PLUGIN_JAR_CONFIGURATION Ljava/lang/String;
+	public static final field PROTOC_GEN_KOTLIN_MULTIPLATFORM_JAR_CONFIGURATION Ljava/lang/String;
 	public static final field PROTO_BUILD_DIR Ljava/lang/String;
 	public static final field PROTO_BUILD_GENERATED Ljava/lang/String;
 	public static final field PROTO_BUILD_SOURCE_SETS Ljava/lang/String;
@@ -160,8 +165,8 @@ public final class kotlinx/rpc/proto/ConstsKt {
 	public static final field PROTO_SOURCE_SETS Ljava/lang/String;
 }
 
-public final class kotlinx/rpc/proto/KxrpcPluginJarKt {
-	public static final fun getKxrpcProtocPluginJarPath (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+public final class kotlinx/rpc/proto/KotlinMultiplatformPluginJarKt {
+	public static final fun getKotlinMultiplatformProtocPluginJarPath (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 }
 
 public abstract class kotlinx/rpc/proto/ProcessProtoFiles : org/gradle/api/tasks/Copy {
@@ -185,7 +190,7 @@ public class kotlinx/rpc/proto/ProtocPlugin {
 	public static final field Companion Lkotlinx/rpc/proto/ProtocPlugin$Companion;
 	public static final field GRPC_JAVA Ljava/lang/String;
 	public static final field GRPC_KOTLIN Ljava/lang/String;
-	public static final field KXRPC Ljava/lang/String;
+	public static final field KOTLIN_MULTIPLATFORM Ljava/lang/String;
 	public static final field PROTOBUF_JAVA Ljava/lang/String;
 	public fun <init> (Ljava/lang/String;Lorg/gradle/api/Project;)V
 	public final fun getArtifact ()Lorg/gradle/api/provider/Property;
@@ -207,6 +212,7 @@ public abstract class kotlinx/rpc/proto/ProtocPlugin$Artifact {
 public final class kotlinx/rpc/proto/ProtocPlugin$Artifact$Local : kotlinx/rpc/proto/ProtocPlugin$Artifact {
 	public fun <init> (Lorg/gradle/api/Project;)V
 	public final fun executor (Lorg/gradle/api/provider/Provider;)V
+	public final fun executor ([Ljava/lang/String;)V
 	public final fun getExecutor ()Lorg/gradle/api/provider/ListProperty;
 	public final fun javaJar (Ljava/lang/String;)V
 	public final fun javaJar (Lorg/gradle/api/provider/Provider;Lorg/gradle/api/provider/Provider;)V
@@ -231,11 +237,11 @@ public final class kotlinx/rpc/proto/ProtocPlugin$Strategy : java/lang/Enum {
 public final class kotlinx/rpc/proto/ProtocPluginKt {
 	public static final fun getGrpcJava (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
 	public static final fun getGrpcKotlin (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
-	public static final fun getKxrpc (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public static final fun getKotlinMultiplatform (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
 	public static final fun getProtobufJava (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
 	public static final fun grpcJava (Lorg/gradle/api/NamedDomainObjectContainer;Lorg/gradle/api/Action;)V
 	public static final fun grpcKotlin (Lorg/gradle/api/NamedDomainObjectContainer;Lorg/gradle/api/Action;)V
-	public static final fun kxrpc (Lorg/gradle/api/NamedDomainObjectContainer;Lorg/gradle/api/Action;)V
+	public static final fun kotlinMultiplatform (Lorg/gradle/api/NamedDomainObjectContainer;Lorg/gradle/api/Action;)V
 	public static final fun protobufJava (Lorg/gradle/api/NamedDomainObjectContainer;Lorg/gradle/api/Action;)V
 }
 
