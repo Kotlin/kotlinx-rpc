@@ -172,19 +172,23 @@ class ProtoToModelInterpreter(
 
             return FieldDeclaration(
                 name = oneOfName.removePrefix("_").fullProtoNameToKotlin(),
+                number = number,
                 type = fieldType,
                 nullable = true,
                 deprecated = options.deprecated,
                 doc = null,
+                proto = this,
             )
         }
 
         return FieldDeclaration(
             name = name.fullProtoNameToKotlin(),
+            number = number,
             type = fieldType(resolver),
             nullable = proto3Optional,
             deprecated = options.deprecated,
             doc = null,
+            proto = this,
         )
     }
 
@@ -278,10 +282,12 @@ class ProtoToModelInterpreter(
             variants = fields.map { field ->
                 FieldDeclaration(
                     name = field.name.fullProtoNameToKotlin(firstLetterUpper = true),
+                    number = field.number,
                     type = field.fieldType(fieldResolver),
                     nullable = false,
                     deprecated = field.options.deprecated,
                     doc = null,
+                    proto = field,
                 )
             }
         )

@@ -2,11 +2,12 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.internal
+package kotlinx.rpc.grpc.pb
 
-import kotlinx.rpc.grpc.internal.KTag.Companion.K_TAG_TYPE_BITS
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
-internal enum class WireType {
+@InternalRpcApi
+public enum class WireType {
     VARINT, // 0
     FIXED64, // 1
     LENGTH_DELIMITED, // 2
@@ -15,13 +16,14 @@ internal enum class WireType {
     FIXED32, // 5
 }
 
-internal data class KTag(val fieldNr: Int, val wireType: WireType) {
+@InternalRpcApi
+public data class KTag(val fieldNr: Int, val wireType: WireType) {
 
     init {
         check(isValidFieldNr(fieldNr)) { "Invalid field number: $fieldNr" }
     }
 
-    companion object {
+    internal companion object {
         // Number of bits in a tag which identify the wire type.
         const val K_TAG_TYPE_BITS: Int = 3;
 
@@ -31,7 +33,7 @@ internal data class KTag(val fieldNr: Int, val wireType: WireType) {
 }
 
 internal fun KTag.toRawKTag(): UInt {
-    return (fieldNr.toUInt() shl K_TAG_TYPE_BITS) or wireType.ordinal.toUInt()
+    return (fieldNr.toUInt() shl KTag.Companion.K_TAG_TYPE_BITS) or wireType.ordinal.toUInt()
 }
 
 internal fun KTag.Companion.fromOrNull(rawKTag: UInt): KTag? {

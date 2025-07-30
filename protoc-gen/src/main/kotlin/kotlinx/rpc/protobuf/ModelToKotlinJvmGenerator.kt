@@ -9,11 +9,10 @@ package kotlinx.rpc.protobuf
 import kotlinx.rpc.protobuf.CodeGenerator.DeclarationType
 import kotlinx.rpc.protobuf.model.*
 import org.slf4j.Logger
-import kotlin.getValue
 
 private const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
 
-class ModelToKotlinGenerator(
+class ModelToKotlinJvmGenerator(
     private val model: Model,
     private val logger: Logger,
     private val codeGenerationParameters: CodeGenerationParameters,
@@ -250,7 +249,13 @@ class ModelToKotlinGenerator(
 
                             scope("${field.name} = when") {
                                 oneOf.variants.forEach { variant ->
-                                    code("${hasFieldJavaMethod(variant)} -> $oneOfName.${variant.name}(this@toKotlin.${fieldJavaName(variant)}${variant.type.toKotlinCast()})")
+                                    code(
+                                        "${hasFieldJavaMethod(variant)} -> $oneOfName.${variant.name}(this@toKotlin.${
+                                            fieldJavaName(
+                                                variant
+                                            )
+                                        }${variant.type.toKotlinCast()})"
+                                    )
                                 }
                                 code("else -> null")
                             }
@@ -268,6 +273,7 @@ class ModelToKotlinGenerator(
                                 }
                             )
                         }
+
                         else -> {
                             code("${field.name} = $getter")
                         }
@@ -286,7 +292,8 @@ class ModelToKotlinGenerator(
         }
     }
 
-    private fun hasFieldJavaMethod(field: FieldDeclaration): String = "has${field.name.replaceFirstChar { ch -> ch.uppercase() }}()"
+    private fun hasFieldJavaMethod(field: FieldDeclaration): String =
+        "has${field.name.replaceFirstChar { ch -> ch.uppercase() }}()"
 
     private fun setFieldCall(field: FieldDeclaration): String {
         val uppercaseName = field.name.replaceFirstChar { ch -> ch.uppercase() }
@@ -309,6 +316,7 @@ class ModelToKotlinGenerator(
                 val fq by value
                 importRootDeclarationIfNeeded(fq, "toPlatform", true)
             }
+
             is FieldType.List -> ".map { it${value.toPlatformCast()} }"
 
             is FieldType.Map -> {
@@ -332,6 +340,7 @@ class ModelToKotlinGenerator(
                 val fq by value
                 importRootDeclarationIfNeeded(fq, "toKotlin", true)
             }
+
             is FieldType.List -> ".map { it${value.toKotlinCast()} }"
 
             is FieldType.Map -> {
@@ -681,6 +690,6 @@ class ModelToKotlinGenerator(
     }
 }
 
-internal fun String.packageNameSuffixed(suffix: String): String {
+private fun String.packageNameSuffixed(suffix: String): String {
     return if (isEmpty()) suffix else "$this.$suffix"
 }

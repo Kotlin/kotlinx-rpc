@@ -7,6 +7,8 @@
 package kotlinx.rpc.grpc.internal
 
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.rpc.grpc.pb.WireDecoder
+import kotlinx.rpc.grpc.pb.WireDecoderNative
 import libprotowire.pw_decoder_bytes_until_limit
 import libprotowire.pw_decoder_pop_limit
 import libprotowire.pw_decoder_push_limit
