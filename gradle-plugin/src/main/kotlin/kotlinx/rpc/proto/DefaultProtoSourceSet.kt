@@ -98,9 +98,11 @@ internal fun Project.createProtoExtensions() {
     project.withKotlinKmpExtension {
         findOrCreateAndConfigure("jvmMain", null)
         findOrCreateAndConfigure("jvmTest", null)
+        findOrCreateAndConfigure("commonMain", null)
+        findOrCreateAndConfigure("commonTest", null)
 
         sourceSets.configureEach {
-            if (name == "jvmMain" || name == "jvmTest" || name == "nativeTest" || name == "commonTest") {
+            if (name == "jvmMain" || name == "jvmTest" || name == "commonMain" || name == "commonTest") {
                 findOrCreateAndConfigure(name, this)
             }
         }

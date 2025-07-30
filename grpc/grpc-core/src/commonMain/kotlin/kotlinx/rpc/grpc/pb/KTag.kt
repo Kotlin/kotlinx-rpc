@@ -4,6 +4,9 @@
 
 package kotlinx.rpc.grpc.pb
 
+import kotlinx.rpc.internal.utils.InternalRpcApi
+
+@InternalRpcApi
 public enum class WireType {
     VARINT, // 0
     FIXED64, // 1
@@ -13,6 +16,7 @@ public enum class WireType {
     FIXED32, // 5
 }
 
+@InternalRpcApi
 public data class KTag(val fieldNr: Int, val wireType: WireType) {
 
     init {

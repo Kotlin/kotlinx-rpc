@@ -42,7 +42,7 @@ public interface WireDecoder : AutoCloseable {
     public fun hadError(): Boolean
 
     /**
-     * When the read tag is null, it indicates EOF and the parse may stop at this point.
+     * When the read tag is null, it indicates EOF and the parser may stop at this point.
      */
     public fun readTag(): KTag?
     public fun readBool(): Boolean

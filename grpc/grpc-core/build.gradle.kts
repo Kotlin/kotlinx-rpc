@@ -139,7 +139,7 @@ protoSourceSets {
         }
     }
 
-    configureEach {
+    commonTest {
         proto {
             exclude("exclude/**")
         }
@@ -163,7 +163,7 @@ rpc {
             // Set compile for common(native) option
             if (name.endsWith("CommonTest")) {
                 protocPlugins.kotlinMultiplatform {
-                    options.set(options.getOrElse(emptyMap()) + mapOf("targetMode" to "common"))
+                    options.put("targetMode", "common")
                 }
             }
 
