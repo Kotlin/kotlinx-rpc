@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.internal
+package kotlinx.rpc.grpc.pb
 
 import kotlinx.io.Buffer
 import kotlin.test.*
@@ -732,13 +732,13 @@ class WireCodecTest {
 
     private fun <T> runPackedVarTest(
         list: List<T>,
-        sizeFn: (List<T>) -> UInt,
+        sizeFn: (List<T>) -> Int,
         write: WireEncoder.(Int, List<T>, Int) -> Boolean,
         read: WireDecoder.() -> List<T>?,
     ) {
         val buf = Buffer()
         with(WireEncoder(buf)) {
-            assertTrue(write(1, list, sizeFn(list).toInt()))
+            assertTrue(write(1, list, sizeFn(list)))
             flush()
         }
         WireDecoder(buf).use { dec ->
