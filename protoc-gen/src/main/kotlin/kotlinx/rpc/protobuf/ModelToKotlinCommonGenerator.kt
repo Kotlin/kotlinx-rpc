@@ -15,7 +15,6 @@ private const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
 class ModelToKotlinCommonGenerator(
     private val model: Model,
     private val logger: Logger,
-    private val codeGenerationParameters: CodeGenerationParameters,
 ) {
     fun generateKotlinFiles(): List<FileGenerator> {
         return model.files.flatMap { it.generateKotlinFiles() }
@@ -36,7 +35,7 @@ class ModelToKotlinCommonGenerator(
     private fun FileDeclaration.generatePublicKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(codeGenerationParameters, logger = logger) {
+        return file(logger = logger) {
             filename = this@generatePublicKotlinFile.name
             packageName = this@generatePublicKotlinFile.packageName.safeFullName()
             packagePath = this@generatePublicKotlinFile.packageName.safeFullName()
@@ -61,7 +60,7 @@ class ModelToKotlinCommonGenerator(
     private fun FileDeclaration.generateInternalKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(codeGenerationParameters, logger = logger) {
+        return file(logger = logger) {
             filename = this@generateInternalKotlinFile.name
             packageName = this@generateInternalKotlinFile.packageName.safeFullName()
             packagePath =

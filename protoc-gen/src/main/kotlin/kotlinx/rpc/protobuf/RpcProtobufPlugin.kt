@@ -20,27 +20,9 @@ import java.io.File
 class RpcProtobufPlugin {
     companion object {
         private const val DEBUG_OUTPUT_OPTION = "debugOutput"
-        private const val MESSAGE_MODE_OPTION = "messageMode"
-    }
-
-    enum class MessageMode {
-        Interface, Class;
-
-        companion object {
-            fun of(value: String?): MessageMode {
-                return when (value) {
-                    "interface" -> Interface
-                    "class" -> Class
-                    null -> error("Message mode is not specified, use --messageMode=interface or --messageMode=class")
-                    else -> error("Unknown message mode: $value")
-                }
-            }
-        }
     }
 
     private var debugOutput: String? = null
-    private lateinit var messageGenerationMode: MessageMode
-    private var targetCommon: Boolean = false
     private val logger: Logger by lazy {
         val debugOutput = debugOutput ?: return@lazy NOPLogger.NOP_LOGGER
 
@@ -71,7 +53,6 @@ class RpcProtobufPlugin {
         }
 
         debugOutput = parameters[DEBUG_OUTPUT_OPTION]
-        messageGenerationMode = MessageMode.of(parameters[MESSAGE_MODE_OPTION])
 
         val files = input.generateKotlinCommonFiles()
             .map { file ->
@@ -101,9 +82,8 @@ class RpcProtobufPlugin {
     }
 
     private fun CodeGeneratorRequest.generateKotlinCommonFiles(): List<FileGenerator> {
-        val model = this.toCommonModel()
-        val fileGenerator =
-            ModelToKotlinCommonGenerator(model, logger, CodeGenerationParameters(messageGenerationMode))
+        val model = this.toModel()
+        val fileGenerator = ModelToKotlinCommonGenerator(model, logger)
         return fileGenerator.generateKotlinFiles()
     }
 }
