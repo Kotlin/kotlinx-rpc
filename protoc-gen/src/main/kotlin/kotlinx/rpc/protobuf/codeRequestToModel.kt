@@ -22,6 +22,23 @@ fun CodeGeneratorRequest.toCommonModel(): Model {
     )
 }
 
+
+private fun DescriptorProtos.FileDescriptorProto.toDescriptor(
+    protoFileMap: Map<String, DescriptorProtos.FileDescriptorProto>,
+    cache: MutableMap<String, Descriptors.FileDescriptor>
+): Descriptors.FileDescriptor {
+    if (cache.containsKey(name)) return cache[name]!!
+
+    val dependencies = dependencyList.map { depName ->
+        val depProto = protoFileMap[depName] ?: error("Missing dependency: $depName")
+        depProto.toDescriptor(protoFileMap, cache)
+    }.toTypedArray()
+
+    val fileDescriptor = Descriptors.FileDescriptor.buildFrom(this, dependencies)
+    cache[name] = fileDescriptor
+    return fileDescriptor
+}
+
 private inline fun <D, reified T> D.cached(block: (D) -> T): T
         where D : Descriptors.GenericDescriptor, T : Any {
     if (modelCache.containsKey(this)) {
@@ -149,23 +166,6 @@ private fun Descriptors.MethodDescriptor.toCommonModel(): MethodDeclaration = ca
     )
 }
 
-
-private fun DescriptorProtos.FileDescriptorProto.toDescriptor(
-    protoFileMap: Map<String, DescriptorProtos.FileDescriptorProto>,
-    cache: MutableMap<String, Descriptors.FileDescriptor>
-): Descriptors.FileDescriptor {
-    if (cache.containsKey(name)) return cache[name]!!
-
-    val dependencies = dependencyList.map { depName ->
-        val depProto = protoFileMap[depName] ?: error("Missing dependency: $depName")
-        depProto.toDescriptor(protoFileMap, cache)
-    }.toTypedArray()
-
-    val fileDescriptor = Descriptors.FileDescriptor.buildFrom(this, dependencies)
-    cache[name] = fileDescriptor
-    return fileDescriptor
-}
-
 //// Type Conversion Extension ////
 
 private fun Descriptors.FieldDescriptor.modelType(): FieldType {
@@ -197,6 +197,27 @@ private fun Descriptors.FieldDescriptor.modelType(): FieldType {
     // TODO: Handle map type
 
     return baseType
+}
+
+//// GenericDescriptor Extensions ////
+
+private fun Descriptors.GenericDescriptor.fqName(): FqName {
+    val nameCapital = name.simpleProtoNameToKotlin(firstLetterUpper = true)
+    val nameLower = name.simpleProtoNameToKotlin()
+    return when (this) {
+        is Descriptors.FileDescriptor -> FqName.Package.fromString(`package`)
+        is Descriptors.Descriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
+        is Descriptors.FieldDescriptor -> {
+            val usedName = if (realContainingOneof != null) nameCapital else nameLower
+            FqName.Declaration(usedName, containingType?.fqName() ?: file.fqName())
+        }
+
+        is Descriptors.EnumValueDescriptor -> FqName.Declaration(name, type.fqName())
+        is Descriptors.OneofDescriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
+        is Descriptors.ServiceDescriptor -> FqName.Declaration(nameCapital, file?.fqName() ?: file.fqName())
+        is Descriptors.MethodDescriptor -> FqName.Declaration(nameLower, service?.fqName() ?: file.fqName())
+        else -> error("Unknown generic descriptor: $this")
+    }
 }
 
 //// Utility Extensions ////

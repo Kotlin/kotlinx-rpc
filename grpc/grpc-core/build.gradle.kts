@@ -133,12 +133,6 @@ kotlin {
 }
 
 protoSourceSets {
-    jvmTest {
-        proto {
-            exclude("exclude/**")
-        }
-    }
-
     commonTest {
         proto {
             exclude("exclude/**")
