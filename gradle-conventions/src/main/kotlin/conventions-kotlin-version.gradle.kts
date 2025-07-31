@@ -32,25 +32,11 @@ fun KotlinCommonCompilerOptions.setProjectLanguageVersion() {
 withKotlinJvmExtension {
     optInForRpcApi()
 
-    target.compilations
-        .filter { it.isMain }
-        .forEach { compilation ->
-            compilation.compileJavaTaskProvider.configure {
-                compilerOptions.setProjectLanguageVersion()
-            }
-        }
+    compilerOptions.setProjectLanguageVersion()
 }
 
 withKotlinKmpExtension {
     optInForRpcApi()
 
-    targets.flatMap { it.compilations }
-        .filter { it.isMain }
-        .forEach { compilation ->
-            compilation.compileTaskProvider.configure {
-                compilerOptions.setProjectLanguageVersion()
-            }
-        }
+    compilerOptions.setProjectLanguageVersion()
 }
-
-val KotlinCompilation<*>.isMain get() = name.lowercase().contains("main")
