@@ -310,7 +310,7 @@
             <p>
                 This workspace is created automatically for each source set
                 and can be found in the <path>build/protoBuild</path> directory.
-                You don't need to do anything with it, unless you want to customise it.
+                You don't need to do anything with it, unless you want to customize it.
             </p>
         </chapter>
         <chapter title="Tasks" id="buf-tasks">
