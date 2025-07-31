@@ -213,7 +213,7 @@ class ModelToKotlinCommonGenerator(
                 code("$assignment decoder.read$encFuncName()")
             }
 
-            is FieldType.List -> if (field.packed) {
+            is FieldType.List -> if (field.dec.isPacked) {
                 whenCase("tag.fieldNr == ${field.number} && tag.wireType == WireType.LENGTH_DELIMITED") {
                     code("$assignment decoder.readPacked${fieldType.value.decodeEncodeFuncName()}()")
                 }
@@ -241,7 +241,7 @@ class ModelToKotlinCommonGenerator(
                 scope("$fieldName?.also") {
                     code(field.writeValue("it"))
                 }
-            } else if (!field.hasPresence) {
+            } else if (!field.dec.hasPresence()) {
                 ifBranch(condition = field.defaultCheck(), ifBlock = {
                     code(field.writeValue(field.name))
                 })
@@ -255,10 +255,10 @@ class ModelToKotlinCommonGenerator(
         return when (val fieldType = type) {
             is FieldType.IntegralType -> "encoder.write${type.decodeEncodeFuncName()}($number, $variable)"
             is FieldType.List -> when {
-                packed && packedFixedSize ->
+                dec.isPacked && packedFixedSize ->
                     "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $variable)"
 
-                packed && !packedFixedSize ->
+                dec.isPacked && !packedFixedSize ->
                     "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $variable, ${
                         wireSizeCall(
                             variable
@@ -285,7 +285,7 @@ class ModelToKotlinCommonGenerator(
             }
 
             is FieldType.List -> when {
-                isPackable && !packedFixedSize -> sizeFunc
+                dec.isPacked && !packedFixedSize -> sizeFunc
                 else -> error("Unexpected use of size call for field: $name, type: $fieldType")
             }
 
@@ -431,13 +431,13 @@ class ModelToKotlinCommonGenerator(
         code("@kotlinx.rpc.grpc.annotations.Grpc")
         clazz(service.name.simpleName, declarationType = DeclarationType.Interface) {
             service.methods.forEach { method ->
-                val inputType by method.inputType
-                val outputType by method.outputType
+                val inputType = method.inputType
+                val outputType = method.outputType
                 function(
                     name = method.name,
-                    modifiers = if (method.serverStreaming) "" else "suspend",
-                    args = "message: ${inputType.name.safeFullName().wrapInFlowIf(method.clientStreaming)}",
-                    returnType = outputType.name.safeFullName().wrapInFlowIf(method.serverStreaming),
+                    modifiers = if (method.dec.isServerStreaming) "" else "suspend",
+                    args = "message: ${inputType.name.safeFullName().wrapInFlowIf(method.dec.isClientStreaming)}",
+                    returnType = outputType.name.safeFullName().wrapInFlowIf(method.dec.isServerStreaming),
                 )
             }
         }

@@ -57,8 +57,8 @@ private fun Descriptors.FileDescriptor.toCommonModel(): FileDeclaration = cached
         messageDeclarations = messageTypes.map { it.toCommonModel() },
         enumDeclarations = enumTypes.map { it.toCommonModel() },
         serviceDeclarations = services.map { it.toCommonModel() },
-        deprecated = options.deprecated,
         doc = null,
+        dec = this,
     )
 }
 
@@ -66,15 +66,14 @@ private fun Descriptors.Descriptor.toCommonModel(): MessageDeclaration = cached 
     val regularFields = fields.filter { field -> field.realContainingOneof == null }.map { it.toCommonModel() }
 
     return MessageDeclaration(
-        outerClassName = fqName(),
         name = fqName(),
         actualFields = regularFields,
         // get all oneof declarations that are not created from an optional in proto3 https://github.com/googleapis/api-linter/issues/1323
         oneOfDeclarations = oneofs.filter { it.fields[0].realContainingOneof != null }.map { it.toCommonModel() },
         enumDeclarations = enumTypes.map { it.toCommonModel() },
         nestedDeclarations = nestedTypes.map { it.toCommonModel() },
-        deprecated = options.deprecated,
         doc = null,
+        dec = this,
     )
 }
 
@@ -82,25 +81,18 @@ private fun Descriptors.FieldDescriptor.toCommonModel(): FieldDeclaration = cach
     toProto().hasProto3Optional()
     return FieldDeclaration(
         name = fqName().simpleName,
-        number = number,
         type = modelType(),
-        nullable = isNullable(),
-        deprecated = options.deprecated,
         doc = null,
-        proto = toProto(),
+        dec = this,
     )
 }
 
-private fun Descriptors.FieldDescriptor.isNullable(): Boolean {
-    // aligns with edition settings and backward compatibility with proto2 and proto3
-    return hasPresence() && !isRequired && !hasDefaultValue()
-}
 
 private fun Descriptors.OneofDescriptor.toCommonModel(): OneOfDeclaration = cached {
     return OneOfDeclaration(
         name = fqName(),
         variants = fields.map { it.toCommonModel() },
-        descriptor = this
+        dec = this,
     )
 }
 
@@ -122,20 +114,19 @@ private fun Descriptors.EnumDescriptor.toCommonModel(): EnumDeclaration = cached
     }
 
     return EnumDeclaration(
-        outerClassName = fqName(),
         name = fqName(),
         originalEntries = entriesMap.values.toList(),
         aliases = aliases,
-        deprecated = options.deprecated,
-        doc = null
+        doc = null,
+        dec = this,
     )
 }
 
 private fun Descriptors.EnumValueDescriptor.toCommonModel(): EnumDeclaration.Entry = cached {
     return EnumDeclaration.Entry(
         name = fqName(),
-        deprecated = options.deprecated,
         doc = null,
+        dec = this,
     )
 }
 
@@ -144,25 +135,25 @@ private fun Descriptors.EnumValueDescriptor.toAliasModel(original: EnumDeclarati
     return EnumDeclaration.Alias(
         name = fqName(),
         original = original,
-        deprecated = options.deprecated,
         doc = null,
+        dec = this,
     )
 }
 
 private fun Descriptors.ServiceDescriptor.toCommonModel(): ServiceDeclaration = cached {
     return ServiceDeclaration(
         name = fqName(),
-        methods = methods.map { it.toCommonModel() }
+        methods = methods.map { it.toCommonModel() },
+        dec = this,
     )
 }
 
 private fun Descriptors.MethodDescriptor.toCommonModel(): MethodDeclaration = cached {
     return MethodDeclaration(
         name = name,
-        clientStreaming = isClientStreaming,
-        serverStreaming = isServerStreaming,
-        inputType = lazy { inputType.toCommonModel() },
-        outputType = lazy { outputType.toCommonModel() }
+        inputType = inputType.toCommonModel(),
+        outputType = outputType.toCommonModel(),
+        dec = this,
     )
 }
 
