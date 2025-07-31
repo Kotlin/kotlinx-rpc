@@ -81,7 +81,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
     @Suppress("detekt.LongMethod", "detekt.CyclomaticComplexMethod", "detekt.ThrowsCount")
     private fun Project.configureTasks(protoSourceSet: DefaultProtoSourceSet) {
         // todo remove after KRPC-180
-        if (!protoSourceSet.languageSourceSets.isPresent) {
+        if (!protoSourceSet.languageSourceSets.isPresent || protoSourceSet.languageSourceSets.get().isEmpty()) {
             logger.debug(
                 "Language source sets are not set for proto source set '${protoSourceSet.name}', " +
                         "skipping buf tasks configuration"
