@@ -100,8 +100,6 @@ class ModelToKotlinCommonGenerator(
 
         fileDeclaration.messageDeclarations.forEach {
             generateMessageConstructor(it)
-            generateMessageDecoder(it)
-            generateMessageEncoder(it)
         }
     }
 
@@ -140,10 +138,11 @@ class ModelToKotlinCommonGenerator(
 
     @Suppress("detekt.CyclomaticComplexMethod")
     private fun CodeGenerator.generateInternalMessage(declaration: MessageDeclaration) {
+        val builderClassName = "${declaration.name.simpleName}Builder"
         clazz(
-            name = "${declaration.name.simpleName}Builder",
+            name = builderClassName,
             declarationType = DeclarationType.Class,
-            superTypes = listOf(declaration.name.safeFullName()),
+            superTypes = listOf(declaration.name.safeFullName(), "Message()"),
         ) {
             declaration.fields().forEach { (fieldDeclaration, field) ->
                 val value = when {
@@ -168,6 +167,12 @@ class ModelToKotlinCommonGenerator(
             declaration.nestedDeclarations.forEach { nested ->
                 generateInternalMessage(nested)
             }
+
+            generateMessageEncoder(declaration)
+
+            scope("companion object: Message.Companion<$builderClassName>") {
+                generateMessageDecoder(declaration)
+            }
         }
     }
 
@@ -184,8 +189,8 @@ class ModelToKotlinCommonGenerator(
     private fun CodeGenerator.generateMessageDecoder(declaration: MessageDeclaration) = function(
         name = "decodeWith",
         args = "decoder: WireDecoder",
-        contextReceiver = "${declaration.name.safeFullName()}.Companion",
-        returnType = "${declaration.name.safeFullName()}?"
+        modifiers = "override",
+        returnType = declaration.name.simpleName + "Builder"
     ) {
         code("val msg = ${declaration.name.safeFullName("Builder")}()")
         whileBlock("!decoder.hadError()") {
@@ -197,7 +202,7 @@ class ModelToKotlinCommonGenerator(
         }
         ifBranch(
             condition = "decoder.hadError()",
-            ifBlock = { code("return null") }
+            ifBlock = { code("error(\"Error during decoding of ${declaration.name.simpleName}\")") }
         )
 
         // TODO: Make a lists immutable
@@ -231,8 +236,12 @@ class ModelToKotlinCommonGenerator(
     private fun CodeGenerator.generateMessageEncoder(declaration: MessageDeclaration) = function(
         name = "encodeWith",
         args = "encoder: WireEncoder",
-        contextReceiver = declaration.name.safeFullName(),
+        modifiers = "override"
     ) {
+        if (declaration.fields().isEmpty()) {
+            code("// no fields to encode")
+            return@function
+        }
 
         declaration.fields().forEach { (_, field) ->
             val fieldName = field.name

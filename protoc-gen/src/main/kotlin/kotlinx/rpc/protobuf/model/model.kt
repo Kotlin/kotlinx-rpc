@@ -67,7 +67,7 @@ data class FieldDeclaration(
     val packedFixedSize = type.wireType == WireType.FIXED64 || type.wireType == WireType.FIXED32
 
     // aligns with edition settings and backward compatibility with proto2 and proto3
-    val nullable: Boolean = dec.hasPresence() && !dec.isRequired && !dec.hasDefaultValue()
+    val nullable: Boolean = dec.hasPresence() && !dec.isRequired && !dec.hasDefaultValue() && !dec.isRepeated
     val number: Int = dec.number
 }
 

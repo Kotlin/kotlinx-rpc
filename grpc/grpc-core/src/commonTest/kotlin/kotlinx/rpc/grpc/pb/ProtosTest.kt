@@ -11,19 +11,18 @@ import kotlin.test.assertEquals
 
 class ProtosTest {
 
-    private fun <T : Any> decodeEncode(
+    private fun <T : Message> decodeEncode(
         msg: T,
-        enc: T.(WireEncoder) -> Unit,
-        dec: (WireDecoder) -> T?
-    ): T? {
+        decoder: (WireDecoder) -> T,
+    ): T {
         val buffer = Buffer()
         val encoder = WireEncoder(buffer)
 
-        msg.enc(encoder)
+        msg.encodeWith(encoder)
         encoder.flush()
 
         return WireDecoder(buffer).use {
-            dec(it)
+            decoder(it)
         }
     }
 
@@ -48,9 +47,12 @@ class ProtosTest {
             bytes = byteArrayOf(1, 2, 3)
         }
 
-        val decoded = decodeEncode(msg, { encodeWith(it) }, AllPrimitivesCommon::decodeWith)
+        val msgObj = msg as Message
 
-        assertEquals(msg.double, decoded?.double)
+        val decoded = decodeEncode(msgObj, AllPrimitivesCommonBuilder::decodeWith)
+                as AllPrimitivesCommon
+
+        assertEquals(msg.double, decoded.double)
     }
 
     @Test
@@ -61,11 +63,11 @@ class ProtosTest {
             listString = listOf("a", "b", "c")
         }
 
-        val decoded = decodeEncode(msg, { encodeWith(it) }, RepeatedCommon::decodeWith)
+        val decoded = decodeEncode(msg as Message, RepeatedCommonBuilder::decodeWith) as RepeatedCommonBuilder
 
-        assertEquals(msg.listInt32, decoded?.listInt32)
-        assertEquals(msg.listFixed32, decoded?.listFixed32)
-        assertEquals(msg.listString, decoded?.listString)
+        assertEquals(msg.listInt32, decoded.listInt32)
+        assertEquals(msg.listFixed32, decoded.listFixed32)
+        assertEquals(msg.listString, decoded.listString)
     }
 
 }
