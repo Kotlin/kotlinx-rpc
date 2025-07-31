@@ -9,9 +9,14 @@ import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.FileAppender
+import com.google.protobuf.Descriptors
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorResponse
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorResponse.Feature
+import kotlinx.rpc.protobuf.model.FieldDeclaration
+import kotlinx.rpc.protobuf.model.FileDeclaration
+import kotlinx.rpc.protobuf.model.MessageDeclaration
+import kotlinx.rpc.protobuf.model.Model
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.helpers.NOPLogger
@@ -77,7 +82,14 @@ class RpcProtobufPlugin {
         messageGenerationMode = MessageMode.of(parameters[MESSAGE_MODE_OPTION])
         targetCommon = parameters[TARGET_MODE_OPTION] == "common"
 
-        val files = input.generateKotlinFiles()
+        // choose common generator if targetMode option was set.
+        val generatorFn = if (targetCommon) {
+            { input.generateKotlinCommonFiles() }
+        } else {
+            { input.generateKotlinJvmFiles() }
+        }
+
+        val files = generatorFn()
             .map { file ->
                 CodeGeneratorResponse.File.newBuilder()
                     .apply {
@@ -104,19 +116,101 @@ class RpcProtobufPlugin {
             .build()
     }
 
-    private fun CodeGeneratorRequest.generateKotlinFiles(): List<FileGenerator> {
+    private fun CodeGeneratorRequest.generateKotlinJvmFiles(): List<FileGenerator> {
         val interpreter = ProtoToModelInterpreter(logger)
         val model = interpreter.interpretProtocRequest(this)
+        val fileGenerator =
+            ModelToKotlinJvmGenerator(model, logger, CodeGenerationParameters(messageGenerationMode))
+        return fileGenerator.generateKotlinFiles()
+    }
 
-        // choose common generator if targetMode option was set.
-        if (targetCommon) {
-            val fileGenerator =
-                ModelToKotlinCommonGenerator(model, logger, CodeGenerationParameters(messageGenerationMode))
-            return fileGenerator.generateKotlinFiles()
-        } else {
-            val fileGenerator =
-                ModelToKotlinJvmGenerator(model, logger, CodeGenerationParameters(messageGenerationMode))
-            return fileGenerator.generateKotlinFiles()
+    private fun CodeGeneratorRequest.generateKotlinCommonFiles(): List<FileGenerator> {
+        val model = this.toCommonModel()
+        val fileGenerator =
+            ModelToKotlinCommonGenerator(model, logger, CodeGenerationParameters(messageGenerationMode))
+        return fileGenerator.generateKotlinFiles()
+    }
+
+    private fun showFqNames(model: Model, descriptors: List<Descriptors.FileDescriptor>) {
+
+        System.err.println("Model:")
+        for (file in model.files) {
+            file.print("")
+        }
+
+        System.err.println(" ----------------------- ")
+
+        System.err.println("Descriptors:")
+        for (file in descriptors) {
+            file.print("")
+        }
+
+        println("Make it crash with this print")
+    }
+
+    private fun FileDeclaration.print(intent: String) {
+        System.err.println("[FILE]  $intent- ${packageName.simpleName}: ${packageName}")
+        for (msg in messageDeclarations) {
+            msg.print(intent + "\t")
+        }
+    }
+
+    private fun MessageDeclaration.print(intent: String) {
+        System.err.println("[MSG]   $intent- ${name.simpleName}: ${name}")
+        for (field in actualFields) {
+            field.print(intent + "\t")
+        }
+        for (msg in nestedDeclarations) {
+            msg.print(intent + "\t")
+        }
+    }
+
+    private fun FieldDeclaration.print(intent: String) {
+        System.err.println("[FIELD] $intent- ${this.name}")
+    }
+
+    private fun Descriptors.FileDescriptor.print(intent: String) {
+        System.err.println("[FILE]  $intent- ${fqName().simpleName}: ${fqName()}")
+        for (msg in messageTypes) {
+            msg.print(intent + "\t")
+        }
+    }
+
+    private fun Descriptors.Descriptor.print(intent: String) {
+        System.err.println("[MSG]   $intent- ${fqName().simpleName}: ${fqName()}")
+        for (field in fields) {
+            field.print(intent + "\t")
+        }
+        for (msg in nestedTypes) {
+            msg.print(intent + "\t")
+        }
+    }
+
+    private fun Descriptors.FieldDescriptor.print(intent: String) {
+        System.err.println("[FIELD] $intent- ${fqName().simpleName}: ${ktTypeName()}")
+    }
+
+    private fun Descriptors.FieldDescriptor.ktTypeName(): String {
+        return when (type) {
+            Descriptors.FieldDescriptor.Type.DOUBLE -> "Double"
+            Descriptors.FieldDescriptor.Type.FLOAT -> "Float"
+            Descriptors.FieldDescriptor.Type.INT64 -> "Long"
+            Descriptors.FieldDescriptor.Type.UINT64 -> "ULong"
+            Descriptors.FieldDescriptor.Type.INT32 -> "Int"
+            Descriptors.FieldDescriptor.Type.FIXED64 -> "ULong"
+            Descriptors.FieldDescriptor.Type.FIXED32 -> "UInt"
+            Descriptors.FieldDescriptor.Type.BOOL -> "Boolean"
+            Descriptors.FieldDescriptor.Type.STRING -> "String"
+            Descriptors.FieldDescriptor.Type.BYTES -> "ByteArray"
+            Descriptors.FieldDescriptor.Type.UINT32 -> "UInt"
+            Descriptors.FieldDescriptor.Type.SFIXED32 -> "Int"
+            Descriptors.FieldDescriptor.Type.SFIXED64 -> "Long"
+            Descriptors.FieldDescriptor.Type.SINT32 -> "Int"
+            Descriptors.FieldDescriptor.Type.SINT64 -> "Long"
+            Descriptors.FieldDescriptor.Type.ENUM -> "<missing>"
+            Descriptors.FieldDescriptor.Type.MESSAGE -> messageType!!.fqName().toString()
+            Descriptors.FieldDescriptor.Type.GROUP -> error("GROUP is unsupported")
         }
     }
 }
+

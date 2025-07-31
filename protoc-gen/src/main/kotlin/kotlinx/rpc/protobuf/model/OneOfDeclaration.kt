@@ -4,7 +4,10 @@
 
 package kotlinx.rpc.protobuf.model
 
+import com.google.protobuf.Descriptors
+
 data class OneOfDeclaration(
     val name: FqName,
     val variants: List<FieldDeclaration>,
+    val descriptor: Descriptors.OneofDescriptor?
 )

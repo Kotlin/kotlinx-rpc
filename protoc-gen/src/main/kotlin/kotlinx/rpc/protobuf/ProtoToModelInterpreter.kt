@@ -289,7 +289,8 @@ class ProtoToModelInterpreter(
                     doc = null,
                     proto = field,
                 )
-            }
+            },
+            null
         )
     }
 

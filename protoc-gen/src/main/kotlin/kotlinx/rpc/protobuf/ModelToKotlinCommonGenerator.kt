@@ -239,30 +239,34 @@ class ModelToKotlinCommonGenerator(
             val fieldName = field.name
             if (field.nullable) {
                 scope("$fieldName?.also") {
-                    code(field.writeValue())
+                    code(field.writeValue("it"))
                 }
             } else if (!field.hasPresence) {
                 ifBranch(condition = field.defaultCheck(), ifBlock = {
-                    code(field.writeValue())
+                    code(field.writeValue(field.name))
                 })
             } else {
-                code(field.writeValue())
+                code(field.writeValue(field.name))
             }
         }
     }
 
-    private fun FieldDeclaration.writeValue(): String {
+    private fun FieldDeclaration.writeValue(variable: String): String {
         return when (val fieldType = type) {
-            is FieldType.IntegralType -> "encoder.write${type.decodeEncodeFuncName()}($number, $name)"
+            is FieldType.IntegralType -> "encoder.write${type.decodeEncodeFuncName()}($number, $variable)"
             is FieldType.List -> when {
                 packed && packedFixedSize ->
-                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $name)"
+                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $variable)"
 
                 packed && !packedFixedSize ->
-                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $name, ${wireSizeCall(name)})"
+                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $variable, ${
+                        wireSizeCall(
+                            variable
+                        )
+                    })"
 
                 else ->
-                    "$name.forEach { encoder.write${fieldType.value.decodeEncodeFuncName()}($number, it) }"
+                    "$variable.forEach { encoder.write${fieldType.value.decodeEncodeFuncName()}($number, it) }"
             }
 
             is FieldType.Map -> TODO()
