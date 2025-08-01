@@ -21,7 +21,8 @@ fun CodeGeneratorRequest.toModel(): Model {
     val protoFileMap = protoFileList.associateBy { it.name }
     val fileDescriptors = mutableMapOf<String, Descriptors.FileDescriptor>()
 
-    val files = protoFileList.map { protoFile -> protoFile.toDescriptor(protoFileMap, fileDescriptors) }
+    val files = fileToGenerateList.map { protoFileMap[it]!! }
+        .map { protoFile -> protoFile.toDescriptor(protoFileMap, fileDescriptors) }
 
     return Model(
         files = files.map { it.toModel() }

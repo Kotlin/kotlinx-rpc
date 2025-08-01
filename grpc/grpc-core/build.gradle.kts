@@ -152,15 +152,6 @@ rpc {
         }
 
         project.tasks.withType<BufGenerateTask>().configureEach {
-
-            // TODO: Remove this once we remove JVM generation
-            // Set compile for common(native) option
-            if (name.endsWith("CommonTest")) {
-                protocPlugins.kotlinMultiplatform {
-                    options.put("targetMode", "common")
-                }
-            }
-
             if (name.endsWith("Test")) {
                 dependsOn(gradle.includedBuild("protoc-gen").task(":jar"))
             }
