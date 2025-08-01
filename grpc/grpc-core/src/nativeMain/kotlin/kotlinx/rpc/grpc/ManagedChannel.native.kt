@@ -6,15 +6,21 @@
 
 package kotlinx.rpc.grpc
 
+import kotlinx.rpc.grpc.internal.GrpcChannel
+
 /**
  * Same as [ManagedChannel], but is platform-exposed.
  */
-public actual abstract class ManagedChannelPlatform
+public actual abstract class ManagedChannelPlatform : GrpcChannel()
 
 /**
  * Builder class for [ManagedChannel].
  */
-public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
+public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>> {
+    public actual fun usePlaintext(): T {
+        TODO("Not yet implemented")
+    }
+}
 
 internal actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
     error("Native target is not supported in gRPC")
