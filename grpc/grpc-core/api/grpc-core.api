@@ -62,45 +62,35 @@ public final class kotlinx/rpc/grpc/Server$DefaultImpls {
 	public static synthetic fun awaitTermination-VtjQ1oo$default (Lkotlinx/rpc/grpc/Server;JLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
-public abstract interface class kotlinx/rpc/grpc/Status {
-	public abstract fun getCause ()Ljava/lang/Throwable;
-	public abstract fun getCode ()Lkotlinx/rpc/grpc/Status$Code;
-	public abstract fun getDescription ()Ljava/lang/String;
-}
-
-public final class kotlinx/rpc/grpc/Status$Code : java/lang/Enum {
-	public static final field ABORTED Lkotlinx/rpc/grpc/Status$Code;
-	public static final field ALREADY_EXISTS Lkotlinx/rpc/grpc/Status$Code;
-	public static final field CANCELLED Lkotlinx/rpc/grpc/Status$Code;
-	public static final field DATA_LOSS Lkotlinx/rpc/grpc/Status$Code;
-	public static final field DEADLINE_EXCEEDED Lkotlinx/rpc/grpc/Status$Code;
-	public static final field FAILED_PRECONDITION Lkotlinx/rpc/grpc/Status$Code;
-	public static final field INTERNAL Lkotlinx/rpc/grpc/Status$Code;
-	public static final field INVALID_ARGUMENT Lkotlinx/rpc/grpc/Status$Code;
-	public static final field NOT_FOUND Lkotlinx/rpc/grpc/Status$Code;
-	public static final field OK Lkotlinx/rpc/grpc/Status$Code;
-	public static final field OUT_OF_RANGE Lkotlinx/rpc/grpc/Status$Code;
-	public static final field PERMISSION_DENIED Lkotlinx/rpc/grpc/Status$Code;
-	public static final field RESOURCE_EXHAUSTED Lkotlinx/rpc/grpc/Status$Code;
-	public static final field UNAUTHENTICATED Lkotlinx/rpc/grpc/Status$Code;
-	public static final field UNAVAILABLE Lkotlinx/rpc/grpc/Status$Code;
-	public static final field UNIMPLEMENTED Lkotlinx/rpc/grpc/Status$Code;
-	public static final field UNKNOWN Lkotlinx/rpc/grpc/Status$Code;
+public final class kotlinx/rpc/grpc/StatusCode : java/lang/Enum {
+	public static final field ABORTED Lkotlinx/rpc/grpc/StatusCode;
+	public static final field ALREADY_EXISTS Lkotlinx/rpc/grpc/StatusCode;
+	public static final field CANCELLED Lkotlinx/rpc/grpc/StatusCode;
+	public static final field DATA_LOSS Lkotlinx/rpc/grpc/StatusCode;
+	public static final field DEADLINE_EXCEEDED Lkotlinx/rpc/grpc/StatusCode;
+	public static final field FAILED_PRECONDITION Lkotlinx/rpc/grpc/StatusCode;
+	public static final field INTERNAL Lkotlinx/rpc/grpc/StatusCode;
+	public static final field INVALID_ARGUMENT Lkotlinx/rpc/grpc/StatusCode;
+	public static final field NOT_FOUND Lkotlinx/rpc/grpc/StatusCode;
+	public static final field OK Lkotlinx/rpc/grpc/StatusCode;
+	public static final field OUT_OF_RANGE Lkotlinx/rpc/grpc/StatusCode;
+	public static final field PERMISSION_DENIED Lkotlinx/rpc/grpc/StatusCode;
+	public static final field RESOURCE_EXHAUSTED Lkotlinx/rpc/grpc/StatusCode;
+	public static final field UNAUTHENTICATED Lkotlinx/rpc/grpc/StatusCode;
+	public static final field UNAVAILABLE Lkotlinx/rpc/grpc/StatusCode;
+	public static final field UNIMPLEMENTED Lkotlinx/rpc/grpc/StatusCode;
+	public static final field UNKNOWN Lkotlinx/rpc/grpc/StatusCode;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun getValue ()I
 	public final fun getValueAscii ()[B
-	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/grpc/Status$Code;
-	public static fun values ()[Lkotlinx/rpc/grpc/Status$Code;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/grpc/StatusCode;
+	public static fun values ()[Lkotlinx/rpc/grpc/StatusCode;
 }
 
-public abstract interface class kotlinx/rpc/grpc/StatusRuntimeException {
-	public abstract fun getStatus ()Lkotlinx/rpc/grpc/Status;
-}
-
-public final class kotlinx/rpc/grpc/StatusRuntimeException_jvmKt {
-	public static final fun StatusRuntimeException (Lkotlinx/rpc/grpc/Status;)Lkotlinx/rpc/grpc/StatusRuntimeException;
-	public static final fun toJvm (Lkotlinx/rpc/grpc/StatusRuntimeException;)Lio/grpc/StatusRuntimeException;
-	public static final fun toKotlin (Lio/grpc/StatusRuntimeException;)Lkotlinx/rpc/grpc/StatusRuntimeException;
+public final class kotlinx/rpc/grpc/Status_jvmKt {
+	public static final fun Status (Lkotlinx/rpc/grpc/StatusCode;Ljava/lang/String;Ljava/lang/Throwable;)Lio/grpc/Status;
+	public static synthetic fun Status$default (Lkotlinx/rpc/grpc/StatusCode;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Lio/grpc/Status;
+	public static final fun getCode (Lio/grpc/Status;)Lkotlinx/rpc/grpc/StatusCode;
 }
 
 public abstract interface class kotlinx/rpc/grpc/descriptor/GrpcClientDelegate {

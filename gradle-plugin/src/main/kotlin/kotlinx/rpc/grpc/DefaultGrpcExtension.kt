@@ -172,6 +172,7 @@ internal open class DefaultGrpcExtension @Inject constructor(
 
         protoSourceSet.generateTask.set(bufGenerateTask)
 
+        // todo fix for common source sets
         tasks.withType<KotlinCompile>().configureEach {
             // compileKotlin - main
             // compileTestKotlin - test
@@ -276,7 +277,6 @@ internal open class DefaultGrpcExtension @Inject constructor(
             }
 
             options.put("debugOutput", "protoc-gen-kotlin-multiplatform.log")
-            options.put("messageMode", "interface")
             options.put("explicitApiModeEnabled", project.provider {
                 project.the<KotlinBaseExtension>().explicitApi != ExplicitApiMode.Disabled
             })

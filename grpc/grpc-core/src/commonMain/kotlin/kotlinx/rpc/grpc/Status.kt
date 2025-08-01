@@ -7,7 +7,7 @@
 package kotlinx.rpc.grpc
 
 /**
- * Defines the status of an operation by providing a standard [Code] in conjunction with an
+ * Defines the status of an operation by providing a standard [StatusCode] in conjunction with an
  * optional descriptive message.
  *
  * For clients, every remote call will return a status on completion.
@@ -15,7 +15,7 @@ package kotlinx.rpc.grpc
  * status may be propagated to blocking stubs as a [RuntimeException] or to a listener as an
  * explicit parameter.
  *
- * Similarly, servers can report a status by throwing [StatusRuntimeException]
+ * Similarly, servers can report a status by throwing [StatusException]
  * or by passing the status to a callback.
  *
  * Utility functions are provided to convert a status to an exception and to extract them
@@ -25,30 +25,33 @@ package kotlinx.rpc.grpc
  * can be found at
  * [doc/statuscodes.md](https://github.com/grpc/grpc/blob/master/doc/statuscodes.md)
  */
-public interface Status {
-    public val code: Code
-    public val description: String?
-    public val cause: Throwable?
+public expect class Status {
+    public fun getDescription(): String?
+    public fun getCause(): Throwable?
+}
 
-    public enum class Code(public val value: Int) {
-        OK(0),
-        CANCELLED(1),
-        UNKNOWN(2),
-        INVALID_ARGUMENT(3),
-        DEADLINE_EXCEEDED(4),
-        NOT_FOUND(5),
-        ALREADY_EXISTS(6),
-        PERMISSION_DENIED(7),
-        RESOURCE_EXHAUSTED(8),
-        FAILED_PRECONDITION(9),
-        ABORTED(10),
-        OUT_OF_RANGE(11),
-        UNIMPLEMENTED(12),
-        INTERNAL(13),
-        UNAVAILABLE(14),
-        DATA_LOSS(15),
-        UNAUTHENTICATED(16);
+public expect fun Status(code: StatusCode, description: String? = null, cause: Throwable? = null): Status
 
-        public val valueAscii: ByteArray = value.toString().encodeToByteArray()
-    }
+public expect val Status.code: StatusCode
+
+public enum class StatusCode(public val value: Int) {
+    OK(0),
+    CANCELLED(1),
+    UNKNOWN(2),
+    INVALID_ARGUMENT(3),
+    DEADLINE_EXCEEDED(4),
+    NOT_FOUND(5),
+    ALREADY_EXISTS(6),
+    PERMISSION_DENIED(7),
+    RESOURCE_EXHAUSTED(8),
+    FAILED_PRECONDITION(9),
+    ABORTED(10),
+    OUT_OF_RANGE(11),
+    UNIMPLEMENTED(12),
+    INTERNAL(13),
+    UNAVAILABLE(14),
+    DATA_LOSS(15),
+    UNAUTHENTICATED(16);
+
+    public val valueAscii: ByteArray = value.toString().encodeToByteArray()
 }
