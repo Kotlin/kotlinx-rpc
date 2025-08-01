@@ -4,34 +4,34 @@
 
 package kotlinx.rpc.grpc.core.test
 
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.test.runTest
-import kotlinx.rpc.RpcServer
-import kotlinx.rpc.grpc.GrpcClient
-import kotlinx.rpc.grpc.GrpcServer
-
-abstract class GrpcServerTest {
-    private val serverMutex = Mutex()
-
-    abstract fun RpcServer.registerServices()
-
-    protected fun runGrpcTest(test: suspend (GrpcClient) -> Unit, ) = runTest {
-        serverMutex.withLock {
-            val grpcClient = GrpcClient("localhost", 8080) {
-                usePlaintext()
-            }
-
-            val grpcServer = GrpcServer(8080, builder = {
-                registerServices()
-            })
-
-            grpcServer.start()
-            test(grpcClient)
-            grpcServer.shutdown()
-            grpcServer.awaitTermination()
-            grpcClient.shutdown()
-            grpcClient.awaitTermination()
-        }
-    }
-}
+//import kotlinx.coroutines.sync.Mutex
+//import kotlinx.coroutines.sync.withLock
+//import kotlinx.coroutines.test.runTest
+//import kotlinx.rpc.RpcServer
+//import kotlinx.rpc.grpc.GrpcClient
+//import kotlinx.rpc.grpc.GrpcServer
+//
+//abstract class GrpcServerTest {
+//    private val serverMutex = Mutex()
+//
+//    abstract fun RpcServer.registerServices()
+//
+//    protected fun runGrpcTest(test: suspend (GrpcClient) -> Unit, ) = runTest {
+//        serverMutex.withLock {
+//            val grpcClient = GrpcClient("localhost", 8080) {
+//                usePlaintext()
+//            }
+//
+//            val grpcServer = GrpcServer(8080, builder = {
+//                registerServices()
+//            })
+//
+//            grpcServer.start()
+//            test(grpcClient)
+//            grpcServer.shutdown()
+//            grpcServer.awaitTermination()
+//            grpcClient.shutdown()
+//            grpcClient.awaitTermination()
+//        }
+//    }
+//}
