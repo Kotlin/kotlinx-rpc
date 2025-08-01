@@ -21,13 +21,6 @@ class ProtosTest {
         return codec.decode(source)
     }
 
-    fun codecShowCase() {
-        val msg = AllPrimitivesCommon {
-            // set fields
-        }
-        val decodedMsg = decodeEncode(msg, AllPrimitivesCommonInternal.CODEC)
-    }
-
     @Test
     fun testAllPrimitiveProto() {
         val msg = AllPrimitivesCommon {
