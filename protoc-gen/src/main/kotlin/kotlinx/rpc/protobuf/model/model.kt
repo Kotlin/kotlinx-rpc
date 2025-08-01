@@ -23,6 +23,7 @@ data class FileDeclaration(
 
 data class MessageDeclaration(
     val name: FqName,
+    val presenceMaskSize: Int,
     val actualFields: List<FieldDeclaration>, // excludes oneOf fields, but includes oneOf itself
     val oneOfDeclarations: List<OneOfDeclaration>,
     val enumDeclarations: List<EnumDeclaration>,
@@ -62,12 +63,15 @@ data class FieldDeclaration(
     val name: String,
     val type: FieldType,
     val doc: String?,
-    val dec: Descriptors.FieldDescriptor
+    val dec: Descriptors.FieldDescriptor,
+    // defines the index in the presenceMask of the Message.
+    // this cannot be the number, as only fields with hasPresence == true are part of the presenceMask
+    val presenceIdx: Int? = null
 ) {
     val packedFixedSize = type.wireType == WireType.FIXED64 || type.wireType == WireType.FIXED32
 
     // aligns with edition settings and backward compatibility with proto2 and proto3
-    val nullable: Boolean = dec.hasPresence() && !dec.isRequired && !dec.hasDefaultValue()
+    val nullable: Boolean = dec.hasPresence() && !dec.isRequired && !dec.hasDefaultValue() && !dec.isRepeated
     val number: Int = dec.number
 }
 
