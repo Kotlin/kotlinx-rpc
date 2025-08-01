@@ -2,11 +2,14 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.internal
+package kotlinx.rpc.grpc.utils
+
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
  * A fixed-sized vector of bits, allowing one to set/clear/read bits from it by a bit index.
  */
+@InternalRpcApi
 public class BitSet(public val size: Int) {
     private val data: LongArray = LongArray((size + 63) ushr 6)
 

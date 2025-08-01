@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc.pb
 
-import kotlinx.rpc.grpc.internal.BitSet
+import kotlinx.rpc.grpc.utils.BitSet
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
