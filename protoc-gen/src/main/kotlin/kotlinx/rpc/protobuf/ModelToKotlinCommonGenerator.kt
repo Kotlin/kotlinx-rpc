@@ -146,9 +146,16 @@ class ModelToKotlinCommonGenerator(
         val internalClassName = declaration.internalClassName()
         clazz(
             name = internalClassName,
+            annotations = listOf("@kotlinx.rpc.internal.utils.InternalRpcApi"),
             declarationType = DeclarationType.Class,
-            superTypes = listOf(declaration.name.safeFullName(), "Message(${declaration.presenceMaskSize})"),
+            superTypes = listOf(
+                declaration.name.safeFullName(),
+                "Message(fieldsWithPresence = ${declaration.presenceMaskSize})"
+            ),
         ) {
+
+            generatePresenceIndicesObject(declaration)
+
             declaration.fields().forEach { (fieldDeclaration, field) ->
                 val value = when {
                     field.nullable -> {
@@ -168,7 +175,7 @@ class ModelToKotlinCommonGenerator(
                 code("override var $fieldDeclaration $value")
                 if (field.presenceIdx != null) {
                     scope("set(value) ") {
-                        code("presenceMask.set(${field.presenceIdx})")
+                        code("presenceMask.set(PresenceIndices.${field.name})")
                         code("field = value")
                     }
                 }
@@ -183,6 +190,20 @@ class ModelToKotlinCommonGenerator(
 
             scope("companion object: Message.Companion<$internalClassName>") {
                 generateMessageDecoder(declaration)
+            }
+        }
+    }
+
+    private fun CodeGenerator.generatePresenceIndicesObject(declaration: MessageDeclaration) {
+        if (declaration.presenceMaskSize == 0) {
+            return
+        }
+        scope("private object PresenceIndices") {
+            declaration.fields().forEach { (_, field) ->
+                if (field.presenceIdx != null) {
+                    code("const val ${field.name} = ${field.presenceIdx}")
+                    newLine()
+                }
             }
         }
     }
@@ -277,13 +298,13 @@ class ModelToKotlinCommonGenerator(
 
     private fun FieldDeclaration.writeValue(variable: String): String {
         return when (val fieldType = type) {
-            is FieldType.IntegralType -> "encoder.write${type.decodeEncodeFuncName()}($number, $variable)"
+            is FieldType.IntegralType -> "encoder.write${type.decodeEncodeFuncName()}(fieldNr = $number, value = $variable)"
             is FieldType.List -> when {
                 dec.isPacked && packedFixedSize ->
-                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $variable)"
+                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}(fieldNr = $number, value = $variable)"
 
                 dec.isPacked && !packedFixedSize ->
-                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $variable, ${
+                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}(fieldNr = $number, value = $variable, size = ${
                         wireSizeCall(
                             variable
                         )
