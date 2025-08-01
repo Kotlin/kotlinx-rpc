@@ -16,6 +16,6 @@ kotlin {
 
 // should nonetheless be available
 protoSourceSets {
-    jvmMain {}
-    jvmTest {}
+    commonMain {}
+    commonTest {}
 }
