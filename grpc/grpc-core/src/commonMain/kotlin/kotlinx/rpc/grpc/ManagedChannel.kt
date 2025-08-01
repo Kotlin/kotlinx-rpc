@@ -6,12 +6,13 @@
 
 package kotlinx.rpc.grpc
 
+import kotlinx.rpc.grpc.internal.GrpcChannel
 import kotlin.time.Duration
 
 /**
  * Same as [ManagedChannel], but is platform-exposed.
  */
-public expect abstract class ManagedChannelPlatform
+public expect abstract class ManagedChannelPlatform : GrpcChannel
 
 /**
  * A virtual connection to a conceptual endpoint, to perform RPCs.
@@ -66,7 +67,9 @@ public interface ManagedChannel {
 /**
  * Builder class for [ManagedChannel].
  */
-public expect abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
+public expect abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>> {
+    public fun usePlaintext(): T
+}
 
 internal expect fun ManagedChannelBuilder(hostname: String, port: Int): ManagedChannelBuilder<*>
 internal expect fun ManagedChannelBuilder(target: String): ManagedChannelBuilder<*>

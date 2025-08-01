@@ -1,0 +1,222 @@
+/*
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+package kotlinx.rpc.grpc.internal
+
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.onFailure
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.Status
+import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.StatusRuntimeException
+import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+
+@InternalRpcApi
+public fun <Request, Response> CoroutineScope.unaryServerMethodDefinition(
+    descriptor: MethodDescriptor<Request, Response>,
+    implementation: suspend (request: Request) -> Response,
+): ServerMethodDefinition<Request, Response> {
+    val type = descriptor.type
+    require(type == MethodType.UNARY) {
+        "Expected a unary method descriptor but got $descriptor"
+    }
+
+    return serverMethodDefinition(descriptor) { requests ->
+        requests
+            .singleOrStatusFlow("request", descriptor)
+            .map { implementation(it) }
+    }
+}
+
+@InternalRpcApi
+public fun <Request, Response> CoroutineScope.clientStreamingServerMethodDefinition(
+    descriptor: MethodDescriptor<Request, Response>,
+    implementation: suspend (requests: Flow<Request>) -> Response,
+): ServerMethodDefinition<Request, Response> {
+    val type = descriptor.type
+    require(type == MethodType.CLIENT_STREAMING) {
+        "Expected a client streaming method descriptor but got $descriptor"
+    }
+
+    return serverMethodDefinition(descriptor) { requests ->
+        flow {
+            val response = implementation(requests)
+            emit(response)
+        }
+    }
+}
+
+@InternalRpcApi
+public fun <Request, Response> CoroutineScope.serverStreamingServerMethodDefinition(
+    descriptor: MethodDescriptor<Request, Response>,
+    implementation: (request: Request) -> Flow<Response>,
+): ServerMethodDefinition<Request, Response> {
+    val type = descriptor.type
+    require(type == MethodType.SERVER_STREAMING) {
+        "Expected a server streaming method descriptor but got $descriptor"
+    }
+
+    return serverMethodDefinition(descriptor) { requests ->
+        flow {
+            requests
+                .singleOrStatusFlow("request", descriptor)
+                .collect { req ->
+                    implementation(req).collect { resp -> emit(resp) }
+                }
+        }
+    }
+}
+
+@InternalRpcApi
+public fun <Request, Response> CoroutineScope.bidiStreamingServerMethodDefinition(
+    descriptor: MethodDescriptor<Request, Response>,
+    implementation: (requests: Flow<Request>) -> Flow<Response>,
+): ServerMethodDefinition<Request, Response> {
+    val type = descriptor.type
+    check(type == MethodType.BIDI_STREAMING) {
+        "Expected a bidi streaming method descriptor but got $descriptor"
+    }
+
+    return serverMethodDefinition(descriptor, implementation)
+}
+
+private fun <Request, Response> CoroutineScope.serverMethodDefinition(
+    descriptor: MethodDescriptor<Request, Response>,
+    implementation: (Flow<Request>) -> Flow<Response>,
+): ServerMethodDefinition<Request, Response> = serverMethodDefinition(descriptor, serverCallHandler(implementation))
+
+private fun <Request, Response> CoroutineScope.serverCallHandler(
+    implementation: (Flow<Request>) -> Flow<Response>,
+): ServerCallHandler<Request, Response> =
+    ServerCallHandler { call, _ ->
+        serverCallListenerImpl(call, implementation)
+    }
+
+@OptIn(ExperimentalAtomicApi::class)
+private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
+    handler: ServerCall<Request, Response>,
+    implementation: (Flow<Request>) -> Flow<Response>,
+): ServerCall.Listener<Request> {
+    val readiness = Ready()
+    val requestsChannel = Channel<Request>(1)
+
+    val requestsStarted = AtomicBoolean(false) // enforces read-once
+
+    val requests = flow {
+        check(requestsStarted.compareAndSet(expectedValue = false, newValue = true)) {
+            "requests flow can only be collected once"
+        }
+
+        handler.request(1)
+        try {
+            for (request in requestsChannel) {
+                emit(request)
+                handler.request(1)
+            }
+        } catch (e: Exception) {
+            requestsChannel.cancel(
+                CancellationException("Exception thrown while collecting requests", e)
+            )
+            handler.request(1) // make sure we don't cause backpressure
+            throw e
+        }
+    }
+
+    val rpcJob = launch(GrpcContextElement.current()) {
+        val mutex = Mutex()
+        val headersSent = AtomicBoolean(false) // enforces only sending headers once
+        val failure = runCatching {
+            implementation(requests).collect {
+                // once we have a response message, check if we've sent headers yet - if not, do so
+                if (headersSent.compareAndSet(expectedValue = false, newValue = true)) {
+                    mutex.withLock {
+                        handler.sendHeaders(GrpcTrailers())
+                    }
+                }
+                readiness.suspendUntilReady()
+                mutex.withLock { handler.sendMessage(it) }
+            }
+        }.exceptionOrNull()
+        // check headers again once we're done collecting the response flow - if we received
+        // no elements or threw an exception, then we wouldn't have sent them
+        if (failure == null && headersSent.compareAndSet(expectedValue = false, newValue = true)) {
+            mutex.withLock {
+                handler.sendHeaders(GrpcTrailers())
+            }
+        }
+
+        val closeStatus = when (failure) {
+            null -> Status(StatusCode.OK)
+            is CancellationException -> Status(StatusCode.CANCELLED, cause = failure)
+            is StatusException -> failure.getStatus()
+            is StatusRuntimeException -> failure.getStatus()
+            else -> Status(StatusCode.UNKNOWN, cause = failure)
+        }
+
+        val trailers = failure?.let {
+            when (it) {
+                is StatusException -> {
+                    it.getTrailers()
+                }
+
+                is StatusRuntimeException -> {
+                    it.getTrailers()
+                }
+
+                else -> {
+                    null
+                }
+            }
+        } ?: GrpcTrailers()
+
+        mutex.withLock { handler.close(closeStatus, trailers) }
+    }
+
+    return serverCallListener(
+        state = ServerCallListenerState(),
+        onCancel = {
+            rpcJob.cancel("Cancellation received from client")
+        },
+        onMessage = { state, message: Request ->
+            if (state.isReceiving) {
+                val result = requestsChannel.trySend(message)
+                state.isReceiving = result.isSuccess
+                result.onFailure { ex ->
+                    if (ex !is CancellationException) {
+                        throw StatusException(
+                            Status(StatusCode.INTERNAL, "onMessage should never be called until requests is ready"),
+                        )
+                    }
+                }
+            }
+
+            if (!state.isReceiving) {
+                handler.request(1) // do not exert backpressure
+            }
+        },
+        onHalfClose = {
+            requestsChannel.close()
+        },
+        onReady = {
+            readiness.onReady()
+        },
+        onComplete = {}
+    )
+}
+
+private class ServerCallListenerState {
+    var isReceiving = true
+}
