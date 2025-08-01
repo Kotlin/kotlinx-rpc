@@ -9,4 +9,3 @@ message RepeatedCommon {
   repeated int32 listInt32Packed = 4 [packed = true];
   repeated string listString = 5;
 }
-

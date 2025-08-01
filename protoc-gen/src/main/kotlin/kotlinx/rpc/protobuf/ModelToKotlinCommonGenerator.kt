@@ -105,7 +105,10 @@ class ModelToKotlinCommonGenerator(
 
         fileDeclaration.messageDeclarations.forEach {
             generateRequiredCheck(it)
+            generateMessageEncoder(it)
+            generateMessageDecoder(it)
         }
+
     }
 
     private fun MessageDeclaration.fields() = actualFields.map {
@@ -150,7 +153,7 @@ class ModelToKotlinCommonGenerator(
             declarationType = DeclarationType.Class,
             superTypes = listOf(
                 declaration.name.safeFullName(),
-                "Message(fieldsWithPresence = ${declaration.presenceMaskSize})"
+                "InternalMessage(fieldsWithPresence = ${declaration.presenceMaskSize})"
             ),
         ) {
 
@@ -186,10 +189,8 @@ class ModelToKotlinCommonGenerator(
                 generateInternalMessage(nested)
             }
 
-            generateMessageEncoder(declaration)
-
-            scope("companion object: Message.Companion<$internalClassName>") {
-                generateMessageDecoder(declaration)
+            scope("companion object") {
+                generateCodecObject(declaration)
             }
         }
     }
@@ -208,6 +209,30 @@ class ModelToKotlinCommonGenerator(
         }
     }
 
+    private fun CodeGenerator.generateCodecObject(declaration: MessageDeclaration) {
+        val msgFqName = declaration.name.safeFullName()
+        val downCastErrorStr = "The message is a custom implementation of ${msgFqName}. This is currently not allowed."
+        val sourceFqName = "kotlinx.io.Source"
+        val bufferFqName = "kotlinx.io.Buffer"
+        scope("val CODEC = object : kotlinx.rpc.grpc.internal.MessageCodec<$msgFqName>") {
+            function("encode", modifiers = "override", args = "value: $msgFqName", returnType = "$sourceFqName") {
+                code("val msg = value as? ${declaration.internalClassFullName()} ?: error(\"$downCastErrorStr\")")
+                code("val buffer = $bufferFqName()")
+                code("val encoder = WireEncoder(buffer)")
+                code("msg.encodeWith(encoder)")
+                code("encoder.flush()")
+                code("return buffer")
+            }
+
+
+            function("decode", modifiers = "override", args = "stream: $sourceFqName", returnType = msgFqName) {
+                scope("WireDecoder(stream as $bufferFqName).use") {
+                    code("return ${declaration.internalClassFullName()}.decodeWith(it)")
+                }
+            }
+        }
+    }
+
     private fun CodeGenerator.generateMessageConstructor(declaration: MessageDeclaration) = function(
         name = "invoke",
         modifiers = "operator",
@@ -215,13 +240,17 @@ class ModelToKotlinCommonGenerator(
         contextReceiver = "${declaration.name.safeFullName()}.Companion",
         returnType = declaration.name.safeFullName(),
     ) {
-        code("return ${declaration.internalClassFullName()}().apply(body)")
+        code("val msg = ${declaration.internalClassFullName()}().apply(body)")
+        // check if the user set all required fields
+        code("msg.checkRequiredFields()")
+        code("return msg")
     }
 
     private fun CodeGenerator.generateMessageDecoder(declaration: MessageDeclaration) = function(
         name = "decodeWith",
+        modifiers = "private",
         args = "decoder: WireDecoder",
-        modifiers = "override",
+        contextReceiver = "${declaration.internalClassFullName()}.Companion",
         returnType = declaration.internalClassName()
     ) {
         code("val msg = ${declaration.internalClassFullName()}()")
@@ -269,16 +298,14 @@ class ModelToKotlinCommonGenerator(
 
     private fun CodeGenerator.generateMessageEncoder(declaration: MessageDeclaration) = function(
         name = "encodeWith",
+        modifiers = "private",
         args = "encoder: WireEncoder",
-        modifiers = "override"
+        contextReceiver = declaration.internalClassFullName(),
     ) {
         if (declaration.fields().isEmpty()) {
             code("// no fields to encode")
             return@function
         }
-
-        // check if the user set all required fields
-        code("checkRequiredFields()")
 
         declaration.fields().forEach { (_, field) ->
             val fieldName = field.name
@@ -304,7 +331,7 @@ class ModelToKotlinCommonGenerator(
                     "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}(fieldNr = $number, value = $variable)"
 
                 dec.isPacked && !packedFixedSize ->
-                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}(fieldNr = $number, value = $variable, size = ${
+                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}(fieldNr = $number, value = $variable, fieldSize = ${
                         wireSizeCall(
                             variable
                         )

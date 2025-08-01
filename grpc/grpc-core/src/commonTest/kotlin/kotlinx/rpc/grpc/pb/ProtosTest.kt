@@ -5,6 +5,7 @@
 package kotlinx.rpc.grpc.pb
 
 import kotlinx.io.Buffer
+import kotlinx.rpc.grpc.internal.MessageCodec
 import kotlinx.rpc.grpc.test.common.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -12,19 +13,12 @@ import kotlin.test.assertFailsWith
 
 class ProtosTest {
 
-    private fun <T : Message> decodeEncode(
-        msg: T,
-        decoder: (WireDecoder) -> T,
-    ): T {
-        val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-
-        msg.encodeWith(encoder)
-        encoder.flush()
-
-        return WireDecoder(buffer).use {
-            decoder(it)
-        }
+    private fun <M> decodeEncode(
+        msg: M,
+        codec: MessageCodec<M>
+    ): M {
+        val source = codec.encode(msg)
+        return codec.decode(source)
     }
 
 
@@ -48,10 +42,9 @@ class ProtosTest {
             bytes = byteArrayOf(1, 2, 3)
         }
 
-        val msgObj = msg as Message
+        val msgObj = msg
 
-        val decoded = decodeEncode(msgObj, AllPrimitivesCommonInternal::decodeWith)
-                as AllPrimitivesCommon
+        val decoded = decodeEncode(msgObj, AllPrimitivesCommonInternal.CODEC)
 
         assertEquals(msg.double, decoded.double)
     }
@@ -66,7 +59,7 @@ class ProtosTest {
             listString = listOf("a", "b", "c")
         }
 
-        val decoded = decodeEncode(msg as Message, RepeatedCommonInternal::decodeWith) as RepeatedCommonInternal
+        val decoded = decodeEncode(msg, RepeatedCommonInternal.CODEC)
 
         assertEquals(msg.listInt32, decoded.listInt32)
         assertEquals(msg.listFixed32, decoded.listFixed32)
@@ -77,11 +70,8 @@ class ProtosTest {
     fun testPresenceCheckProto() {
 
         // Check a missing required field in a user-constructed message
-        val presenceCheck = PresenceCheck {
-            // net no fields
-        }
         assertFailsWith<IllegalStateException>("PresenceCheck is missing required field: RequiredPresence") {
-            (presenceCheck as Message).encodeWith(WireEncoder(Buffer()))
+            PresenceCheck {}
         }
 
         // Test missing field during decoding of an encoded message
@@ -91,9 +81,7 @@ class ProtosTest {
         encoder.flush()
 
         assertFailsWith<IllegalStateException>("PresenceCheck is missing required field: RequiredPresence") {
-            WireDecoder(buffer).use {
-                PresenceCheckInternal.decodeWith(it)
-            }
+            PresenceCheckInternal.CODEC.decode(buffer)
         }
     }
 
