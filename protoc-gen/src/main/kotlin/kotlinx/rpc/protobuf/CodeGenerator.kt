@@ -7,12 +7,8 @@ package kotlinx.rpc.protobuf
 import org.slf4j.Logger
 import org.slf4j.helpers.NOPLogger
 
-data class CodeGenerationParameters(
-    val messageMode: RpcProtobufPlugin.MessageMode,
-)
 
 open class CodeGenerator(
-    val parameters: CodeGenerationParameters,
     private val indent: String,
     private val builder: StringBuilder = StringBuilder(),
     private val logger: Logger = NOPLogger.NOP_LOGGER,
@@ -68,7 +64,7 @@ open class CodeGenerator(
     }
 
     private fun withNextIndent(block: CodeGenerator.() -> Unit) {
-        CodeGenerator(parameters, "$indent$ONE_INDENT", builder, logger).block()
+        CodeGenerator("$indent$ONE_INDENT", builder, logger).block()
     }
 
     internal fun scope(
@@ -132,7 +128,7 @@ open class CodeGenerator(
             return
         }
 
-        val nested = CodeGenerator(parameters, "$indent$ONE_INDENT", logger = logger).apply(block)
+        val nested = CodeGenerator("$indent$ONE_INDENT", logger = logger).apply(block)
 
         if (nested.isEmpty) {
             newLine()
@@ -306,13 +302,12 @@ open class CodeGenerator(
 }
 
 class FileGenerator(
-    codeGenerationParameters: CodeGenerationParameters,
     var filename: String? = null,
     var packageName: String? = null,
     var packagePath: String? = packageName,
     var fileOptIns: List<String> = emptyList(),
     logger: Logger = NOPLogger.NOP_LOGGER,
-) : CodeGenerator(codeGenerationParameters, "", logger = logger) {
+) : CodeGenerator("", logger = logger) {
     private val imports = mutableListOf<String>()
 
     fun importPackage(name: String) {
@@ -354,10 +349,9 @@ class FileGenerator(
 }
 
 fun file(
-    codeGenerationParameters: CodeGenerationParameters,
     name: String? = null,
     packageName: String? = null,
     logger: Logger = NOPLogger.NOP_LOGGER,
     block: FileGenerator.() -> Unit,
-): FileGenerator = FileGenerator(codeGenerationParameters, name, packageName, packageName, emptyList(), logger)
+): FileGenerator = FileGenerator(name, packageName, packageName, emptyList(), logger)
     .apply(block)

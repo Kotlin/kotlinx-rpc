@@ -5,19 +5,19 @@
 package kotlinx.rpc.buf
 
 import kotlinx.rpc.buf.tasks.BufExecTask
+import kotlinx.rpc.proto.ProtocPlugin
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.property
 import java.io.File
 import javax.inject.Inject
-import kotlin.time.Duration
-import kotlinx.rpc.proto.ProtocPlugin
-import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.ListProperty
-import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.listProperty
 import kotlin.reflect.KClass
+import kotlin.time.Duration
 
 /**
  * Options for the Buf tasks.
@@ -100,14 +100,14 @@ public open class BufExtension @Inject constructor(objects: ObjectFactory) {
  * Allows registering custom Buf tasks that can operate on the generated workspace.
  */
 public open class BufTasksExtension @Inject constructor(internal val project: Project) {
-    // TODO change to commonMain/commonTest in docs when it's supported KRPC-180
+
     /**
      * Registers a custom Buf task that operates on the generated workspace.
      *
      * Name conventions:
      * `lint` input for [name] will result in tasks
      * named 'bufLintMain' and 'bufLintTest' for Kotlin/JVM projects
-     * and 'bufLintJvmMain' and 'bufLintJvmTest' for Kotlin/Multiplatform projects.
+     * and 'bufLintCommonMain' and 'bufLintCommonTest' for Kotlin/Multiplatform projects.
      *
      * Note the by default 'test' task doesn't depend on 'main' task.
      */
@@ -127,14 +127,14 @@ public open class BufTasksExtension @Inject constructor(internal val project: Pr
         return provider
     }
 
-    // TODO change to commonMain/commonTest in docs when it's supported KRPC-180
+
     /**
      * Registers a custom Buf task that operates on the generated workspace.
      *
      * Name conventions:
      * `lint` input for [name] will result in tasks
      * named 'bufLintMain' and 'bufLintTest' for Kotlin/JVM projects
-     * and 'bufLintJvmMain' and 'bufLintJvmTest' for Kotlin/Multiplatform projects.
+     * and 'bufLintCommonMain' and 'bufLintCommonTest' for Kotlin/Multiplatform projects.
      *
      * Note the by default 'test' task doesn't depend on 'main' task.
      */
