@@ -4,10 +4,13 @@
 
 package kotlinx.rpc.grpc.pb
 
+import kotlinx.rpc.grpc.internal.BitSet
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
-public abstract class Message {
+public abstract class Message(fieldsWithPresence: Int) {
+
+    public val presenceMask: BitSet = BitSet(fieldsWithPresence)
 
     @InternalRpcApi
     public interface Companion<T : Message> {
@@ -17,5 +20,4 @@ public abstract class Message {
     }
 
     public abstract fun encodeWith(encoder: WireEncoder)
-
 }

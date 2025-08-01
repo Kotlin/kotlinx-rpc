@@ -3,8 +3,10 @@ syntax = "proto3";
 package kotlinx.rpc.grpc.test.common;
 
 message RepeatedCommon {
-  repeated fixed32 listFixed32 = 1 [packed = true];
-  repeated int32 listInt32 = 2 [packed = false];
-  repeated string listString = 3;
+  repeated fixed32 listFixed32 = 1 [packed = false];
+  repeated fixed32 listFixed32Packed = 2 [packed = true];
+  repeated int32 listInt32 = 3 [packed = false];
+  repeated int32 listInt32Packed = 4 [packed = true];
+  repeated string listString = 5;
 }
 

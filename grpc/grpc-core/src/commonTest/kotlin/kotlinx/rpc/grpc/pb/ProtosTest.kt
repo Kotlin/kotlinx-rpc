@@ -8,6 +8,7 @@ import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.test.common.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class ProtosTest {
 
@@ -49,7 +50,7 @@ class ProtosTest {
 
         val msgObj = msg as Message
 
-        val decoded = decodeEncode(msgObj, AllPrimitivesCommonBuilder::decodeWith)
+        val decoded = decodeEncode(msgObj, AllPrimitivesCommonInternal::decodeWith)
                 as AllPrimitivesCommon
 
         assertEquals(msg.double, decoded.double)
@@ -58,16 +59,43 @@ class ProtosTest {
     @Test
     fun testRepeatedProto() {
         val msg = RepeatedCommon {
-            listFixed32 = listOf(1, 2, 3).map { it.toUInt() }
-            listInt32 = listOf(4, 5, 6)
+            listFixed32 = listOf(1, 5, 3).map { it.toUInt() }
+            listFixed32Packed = listOf(1, 2, 3).map { it.toUInt() }
+            listInt32 = listOf(4, 7, 6)
+            listInt32Packed = listOf(4, 5, 6)
             listString = listOf("a", "b", "c")
         }
 
-        val decoded = decodeEncode(msg as Message, RepeatedCommonBuilder::decodeWith) as RepeatedCommonBuilder
+        val decoded = decodeEncode(msg as Message, RepeatedCommonInternal::decodeWith) as RepeatedCommonInternal
 
         assertEquals(msg.listInt32, decoded.listInt32)
         assertEquals(msg.listFixed32, decoded.listFixed32)
         assertEquals(msg.listString, decoded.listString)
     }
+
+    @Test
+    fun testPresenceCheckProto() {
+
+        // Check a missing required field in a user-constructed message
+        val presenceCheck = PresenceCheck {
+            // net no fields
+        }
+        assertFailsWith<IllegalStateException>("PresenceCheck is missing required field: RequiredPresence") {
+            (presenceCheck as Message).encodeWith(WireEncoder(Buffer()))
+        }
+
+        // Test missing field during decoding of an encoded message
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+        encoder.writeFloat(2, 1f)
+        encoder.flush()
+
+        assertFailsWith<IllegalStateException>("PresenceCheck is missing required field: RequiredPresence") {
+            WireDecoder(buffer).use {
+                PresenceCheckInternal.decodeWith(it)
+            }
+        }
+    }
+
 
 }

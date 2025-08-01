@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-package kotlinx.rpc.grpc.test.common;
-
-message MiniMsg {
-  int32 MiniField = 1;
-}
-
