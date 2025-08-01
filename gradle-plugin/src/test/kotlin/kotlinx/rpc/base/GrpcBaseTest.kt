@@ -9,17 +9,7 @@ import org.gradle.testkit.runner.TaskOutcome
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.TestInstance
 import java.nio.file.Path
-import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.deleteRecursively
-import kotlin.io.path.exists
-import kotlin.io.path.extension
-import kotlin.io.path.isRegularFile
-import kotlin.io.path.pathString
-import kotlin.io.path.readLines
-import kotlin.io.path.relativeTo
-import kotlin.io.path.walk
-import kotlin.lazy
+import kotlin.io.path.*
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
@@ -229,7 +219,7 @@ abstract class GrpcBaseTest : BaseTest() {
     }
 
     companion object {
-        private const val KMP_SOURCE_SET = "jvm"
+        private const val KMP_SOURCE_SET = "common"
         private val KMP_SOURCE_SET_CAPITAL = KMP_SOURCE_SET.replaceFirstChar(Char::uppercaseChar)
         private const val KOTLIN_MULTIPLATFORM_DIR = "kotlin-multiplatform"
         const val RPC_INTERNAL = "_rpc_internal"
