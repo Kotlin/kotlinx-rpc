@@ -4,34 +4,6 @@
 
 package kotlinx.rpc.protobuf.model
 
-import com.google.protobuf.DescriptorProtos
-
-data class FieldDeclaration(
-    val name: String,
-    val number: Int,
-    val type: FieldType,
-    val nullable: Boolean,
-    val deprecated: Boolean,
-    val doc: String?,
-    val proto: DescriptorProtos.FieldDescriptorProto
-) {
-    val isRepeated = proto.label == DescriptorProtos.FieldDescriptorProto.Label.LABEL_REPEATED
-    val isExtension = proto.hasExtendee()
-    val containsOneOf = proto.hasOneofIndex()
-
-    val hasPresence = if (isRepeated) false else
-        proto.proto3Optional || proto.type == DescriptorProtos.FieldDescriptorProto.Type.TYPE_MESSAGE
-                || proto.type == DescriptorProtos.FieldDescriptorProto.Type.TYPE_GROUP
-                || isExtension || containsOneOf
-
-    val isPackable = isRepeated && type.isPackable
-
-    val packed = isPackable // TODO: must checked if this is also declared as [packed = true] (or proto3 auto packed)
-
-    val packedFixedSize = type.wireType == WireType.FIXED64 || type.wireType == WireType.FIXED32
-}
-
-
 enum class WireType {
     VARINT,
     FIXED64,
