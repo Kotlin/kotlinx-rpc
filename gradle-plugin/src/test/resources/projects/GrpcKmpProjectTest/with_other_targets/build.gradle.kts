@@ -16,8 +16,8 @@ kotlin {
 }
 
 protoSourceSets {
-    jvmMain {}
-    jvmTest {}
+    commonMain {}
+    commonTest {}
 }
 
 rpc {

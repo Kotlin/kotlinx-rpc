@@ -6,4 +6,8 @@ message RepeatedCommon {
   repeated fixed32 listFixed32 = 1 [packed = true];
   repeated int32 listInt32 = 2 [packed = false];
   repeated string listString = 3;
+
+  message InnerClass {
+
+  }
 }

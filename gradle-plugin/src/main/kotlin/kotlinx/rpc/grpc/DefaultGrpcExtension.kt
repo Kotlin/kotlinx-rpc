@@ -4,9 +4,6 @@
 
 package kotlinx.rpc.grpc
 
-import kotlinx.rpc.GRPC_KOTLIN_VERSION
-import kotlinx.rpc.GRPC_VERSION
-import kotlinx.rpc.PROTOBUF_VERSION
 import kotlinx.rpc.buf.BufExtension
 import kotlinx.rpc.buf.configureBufExecutable
 import kotlinx.rpc.buf.tasks.registerBufExecTask
@@ -14,10 +11,7 @@ import kotlinx.rpc.buf.tasks.registerBufGenerateTask
 import kotlinx.rpc.buf.tasks.registerGenerateBufGenYamlTask
 import kotlinx.rpc.buf.tasks.registerGenerateBufYamlTask
 import kotlinx.rpc.proto.*
-import kotlinx.rpc.proto.ProtocPlugin.Companion.GRPC_JAVA
-import kotlinx.rpc.proto.ProtocPlugin.Companion.GRPC_KOTLIN
 import kotlinx.rpc.proto.ProtocPlugin.Companion.KOTLIN_MULTIPLATFORM
-import kotlinx.rpc.proto.ProtocPlugin.Companion.PROTOBUF_JAVA
 import kotlinx.rpc.util.ensureDirectoryExists
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -61,9 +55,6 @@ internal open class DefaultGrpcExtension @Inject constructor(
         createDefaultProtocPlugins()
 
         project.protoSourceSets.forEach { protoSourceSet ->
-            protoSourceSet.protocPlugin(protocPlugins.protobufJava)
-            protoSourceSet.protocPlugin(protocPlugins.grpcJava)
-            protoSourceSet.protocPlugin(protocPlugins.grpcKotlin)
             protoSourceSet.protocPlugin(protocPlugins.kotlinMultiplatform)
         }
 
@@ -294,30 +285,6 @@ internal open class DefaultGrpcExtension @Inject constructor(
         // ignore for bufGenerate task caching
         project.normalization.runtimeClasspath.ignore("**/protoc-gen-kotlin-multiplatform.log")
         project.normalization.runtimeClasspath.ignore("**/.keep")
-
-        protocPlugins.create(GRPC_JAVA) {
-            isJava.set(true)
-
-            remote {
-                locator.set("buf.build/grpc/java:v$GRPC_VERSION")
-            }
-        }
-
-        protocPlugins.create(GRPC_KOTLIN) {
-            remote {
-                locator.set("buf.build/grpc/kotlin:v$GRPC_KOTLIN_VERSION")
-            }
-        }
-
-        protocPlugins.create(PROTOBUF_JAVA) {
-            isJava.set(true)
-
-            remote {
-                // for some reason they omit the first digit in this version:
-                // https://buf.build/protocolbuffers/java?version=v31.1
-                locator.set("buf.build/protocolbuffers/java:v${PROTOBUF_VERSION.substringAfter(".")}")
-            }
-        }
     }
 
     private fun DefaultProtoSourceSet.correspondingMainSourceSetOrNull(): DefaultProtoSourceSet? {

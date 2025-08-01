@@ -135,12 +135,6 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
 version: v2
 clean: true
 plugins:
-  - remote: buf.build/protocolbuffers/java:v${TEST_PROTOBUF_VERSION.substringAfter(".")}
-    out: java
-  - remote: buf.build/grpc/java:v$TEST_GRPC_VERSION
-    out: grpc-java
-  - remote: buf.build/grpc/kotlin:v$TEST_GRPC_KOTLIN_VERSION
-    out: grpc-kotlin
   - local: [protoc-gen-kotlin-multiplatform]
     out: kotlin-multiplatform
     opt:
@@ -174,7 +168,8 @@ inputs:
     }
 
     @Suppress("detekt.MaxLineLength")
-    private val cliFlagsRegex = "- Buf Arguments: \\[.*?, generate, --output, .*?, --include-imports, --include-wkt, --error-format, json, --config, some\\.buf\\.yaml, --log-format, json, --timeout, 60s]".toRegex()
+    private val cliFlagsRegex =
+        "- Buf Arguments: \\[.*?, generate, --output, .*?, --include-imports, --include-wkt, --error-format, json, --config, some\\.buf\\.yaml, --log-format, json, --timeout, 60s]".toRegex()
 
     @Test
     fun `Custom Buf CLI Flags`() = runGrpcTest {
