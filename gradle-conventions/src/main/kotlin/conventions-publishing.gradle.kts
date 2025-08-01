@@ -4,6 +4,7 @@
 
 import org.gradle.kotlin.dsl.registering
 import util.*
+import util.other.capitalized
 import util.other.getSensitiveProperty
 import util.other.isPublicModule
 import util.tasks.ValidatePublishedArtifactsTask
@@ -21,7 +22,23 @@ if (isPublicModule) {
         apply(plugin = "signing")
     }
 
-    the<PublishingExtension>().configurePublication()
+    the<PublishingExtension>().apply {
+        configurePublication()
+
+        project.withKotlinKmpExtension {
+            // Remove then first Jvm Only public module is created
+            val publishMavenPublication = "publishMavenPublication"
+            repositories.all {
+                val publishTaskName = "${publishMavenPublication}To${name.capitalized()}Repository"
+                if (tasks.findByName(publishTaskName) == null) {
+                    tasks.register(publishTaskName) {
+                        group = PublishingPlugin.PUBLISH_TASK_GROUP
+                    }
+                }
+            }
+        }
+    }
+
     logger.info("Configured ${project.name} for publication")
 } else {
     logger.info("Skipping ${project.name} publication configuration, not a public module")

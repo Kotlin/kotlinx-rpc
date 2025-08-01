@@ -2,6 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import util.other.capitalized
 import util.other.isPublicModule
 import util.other.libs
 import util.other.maybeNamed
@@ -33,13 +34,6 @@ allprojects {
 tasks.register<ValidatePublishedArtifactsTask>(ValidatePublishedArtifactsTask.NAME) {
     dependsOn(subprojects.filter { it.isPublicModule })
 }
-
-// Remove then first Jvm Only public module is created
-val publishMavenPublicationToBuildRepoRepository = "publishMavenPublicationToBuildRepoRepository"
-tasks.maybeNamed(publishMavenPublicationToBuildRepoRepository)
-    ?: tasks.register(publishMavenPublicationToBuildRepoRepository) {
-        group = PublishingPlugin.PUBLISH_TASK_GROUP
-    }
 
 dokka {
     val libVersion = libs.versions.kotlinx.rpc.get()
