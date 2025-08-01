@@ -12,6 +12,7 @@ import org.slf4j.Logger
 
 private const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
 private const val MSG_INTERNAL_SUFFIX = "Internal"
+private const val PB_PKG = "kotlinx.rpc.grpc.pb"
 
 class ModelToKotlinCommonGenerator(
     private val model: Model,
@@ -78,8 +79,6 @@ class ModelToKotlinCommonGenerator(
 
             import("kotlinx.rpc.internal.utils.*")
             import("kotlinx.coroutines.flow.*")
-            import("kotlinx.rpc.grpc.pb.*")
-
 
             additionalInternalImports.forEach {
                 import(it)
@@ -153,7 +152,7 @@ class ModelToKotlinCommonGenerator(
             declarationType = DeclarationType.Class,
             superTypes = listOf(
                 declaration.name.safeFullName(),
-                "InternalMessage(fieldsWithPresence = ${declaration.presenceMaskSize})"
+                "$PB_PKG.InternalMessage(fieldsWithPresence = ${declaration.presenceMaskSize})"
             ),
         ) {
 
@@ -218,7 +217,7 @@ class ModelToKotlinCommonGenerator(
             function("encode", modifiers = "override", args = "value: $msgFqName", returnType = "$sourceFqName") {
                 code("val msg = value as? ${declaration.internalClassFullName()} ?: error(\"$downCastErrorStr\")")
                 code("val buffer = $bufferFqName()")
-                code("val encoder = WireEncoder(buffer)")
+                code("val encoder = $PB_PKG.WireEncoder(buffer)")
                 code("msg.encodeWith(encoder)")
                 code("encoder.flush()")
                 code("return buffer")
@@ -226,7 +225,7 @@ class ModelToKotlinCommonGenerator(
 
 
             function("decode", modifiers = "override", args = "stream: $sourceFqName", returnType = msgFqName) {
-                scope("WireDecoder(stream as $bufferFqName).use") {
+                scope("$PB_PKG.WireDecoder(stream as $bufferFqName).use") {
                     code("return ${declaration.internalClassFullName()}.decodeWith(it)")
                 }
             }
@@ -249,7 +248,7 @@ class ModelToKotlinCommonGenerator(
     private fun CodeGenerator.generateMessageDecoder(declaration: MessageDeclaration) = function(
         name = "decodeWith",
         modifiers = "private",
-        args = "decoder: WireDecoder",
+        args = "decoder: $PB_PKG.WireDecoder",
         contextReceiver = "${declaration.internalClassFullName()}.Companion",
         returnType = declaration.internalClassName()
     ) {
@@ -276,16 +275,16 @@ class ModelToKotlinCommonGenerator(
         val encFuncName = field.type.decodeEncodeFuncName()
         val assignment = "msg.${field.name} ="
         when (val fieldType = field.type) {
-            is FieldType.IntegralType -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == WireType.${field.type.wireType.name}") {
+            is FieldType.IntegralType -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.${field.type.wireType.name}") {
                 code("$assignment decoder.read$encFuncName()")
             }
 
             is FieldType.List -> if (field.dec.isPacked) {
-                whenCase("tag.fieldNr == ${field.number} && tag.wireType == WireType.LENGTH_DELIMITED") {
+                whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.LENGTH_DELIMITED") {
                     code("$assignment decoder.readPacked${fieldType.value.decodeEncodeFuncName()}()")
                 }
             } else {
-                whenCase("tag.fieldNr == ${field.number} && tag.wireType == WireType.${fieldType.value.wireType.name}") {
+                whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.${fieldType.value.wireType.name}") {
                     code("(msg.${field.name} as ArrayList).add(decoder.read${fieldType.value.decodeEncodeFuncName()}())")
                 }
             }
@@ -299,7 +298,7 @@ class ModelToKotlinCommonGenerator(
     private fun CodeGenerator.generateMessageEncoder(declaration: MessageDeclaration) = function(
         name = "encodeWith",
         modifiers = "private",
-        args = "encoder: WireEncoder",
+        args = "encoder: $PB_PKG.WireEncoder",
         contextReceiver = declaration.internalClassFullName(),
     ) {
         if (declaration.fields().isEmpty()) {
