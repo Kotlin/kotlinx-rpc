@@ -15,7 +15,6 @@ private const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
 class ModelToKotlinCommonGenerator(
     private val model: Model,
     private val logger: Logger,
-    private val codeGenerationParameters: CodeGenerationParameters,
 ) {
     fun generateKotlinFiles(): List<FileGenerator> {
         return model.files.flatMap { it.generateKotlinFiles() }
@@ -36,7 +35,7 @@ class ModelToKotlinCommonGenerator(
     private fun FileDeclaration.generatePublicKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(codeGenerationParameters, logger = logger) {
+        return file(logger = logger) {
             filename = this@generatePublicKotlinFile.name
             packageName = this@generatePublicKotlinFile.packageName.safeFullName()
             packagePath = this@generatePublicKotlinFile.packageName.safeFullName()
@@ -61,7 +60,7 @@ class ModelToKotlinCommonGenerator(
     private fun FileDeclaration.generateInternalKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(codeGenerationParameters, logger = logger) {
+        return file(logger = logger) {
             filename = this@generateInternalKotlinFile.name
             packageName = this@generateInternalKotlinFile.packageName.safeFullName()
             packagePath =
@@ -213,7 +212,7 @@ class ModelToKotlinCommonGenerator(
                 code("$assignment decoder.read$encFuncName()")
             }
 
-            is FieldType.List -> if (field.packed) {
+            is FieldType.List -> if (field.dec.isPacked) {
                 whenCase("tag.fieldNr == ${field.number} && tag.wireType == WireType.LENGTH_DELIMITED") {
                     code("$assignment decoder.readPacked${fieldType.value.decodeEncodeFuncName()}()")
                 }
@@ -239,30 +238,34 @@ class ModelToKotlinCommonGenerator(
             val fieldName = field.name
             if (field.nullable) {
                 scope("$fieldName?.also") {
-                    code(field.writeValue())
+                    code(field.writeValue("it"))
                 }
-            } else if (!field.hasPresence) {
+            } else if (!field.dec.hasPresence()) {
                 ifBranch(condition = field.defaultCheck(), ifBlock = {
-                    code(field.writeValue())
+                    code(field.writeValue(field.name))
                 })
             } else {
-                code(field.writeValue())
+                code(field.writeValue(field.name))
             }
         }
     }
 
-    private fun FieldDeclaration.writeValue(): String {
+    private fun FieldDeclaration.writeValue(variable: String): String {
         return when (val fieldType = type) {
-            is FieldType.IntegralType -> "encoder.write${type.decodeEncodeFuncName()}($number, $name)"
+            is FieldType.IntegralType -> "encoder.write${type.decodeEncodeFuncName()}($number, $variable)"
             is FieldType.List -> when {
-                packed && packedFixedSize ->
-                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $name)"
+                dec.isPacked && packedFixedSize ->
+                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $variable)"
 
-                packed && !packedFixedSize ->
-                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $name, ${wireSizeCall(name)})"
+                dec.isPacked && !packedFixedSize ->
+                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $variable, ${
+                        wireSizeCall(
+                            variable
+                        )
+                    })"
 
                 else ->
-                    "$name.forEach { encoder.write${fieldType.value.decodeEncodeFuncName()}($number, it) }"
+                    "$variable.forEach { encoder.write${fieldType.value.decodeEncodeFuncName()}($number, it) }"
             }
 
             is FieldType.Map -> TODO()
@@ -281,7 +284,7 @@ class ModelToKotlinCommonGenerator(
             }
 
             is FieldType.List -> when {
-                isPackable && !packedFixedSize -> sizeFunc
+                dec.isPacked && !packedFixedSize -> sizeFunc
                 else -> error("Unexpected use of size call for field: $name, type: $fieldType")
             }
 
@@ -427,13 +430,13 @@ class ModelToKotlinCommonGenerator(
         code("@kotlinx.rpc.grpc.annotations.Grpc")
         clazz(service.name.simpleName, declarationType = DeclarationType.Interface) {
             service.methods.forEach { method ->
-                val inputType by method.inputType
-                val outputType by method.outputType
+                val inputType = method.inputType
+                val outputType = method.outputType
                 function(
                     name = method.name,
-                    modifiers = if (method.serverStreaming) "" else "suspend",
-                    args = "message: ${inputType.name.safeFullName().wrapInFlowIf(method.clientStreaming)}",
-                    returnType = outputType.name.safeFullName().wrapInFlowIf(method.serverStreaming),
+                    modifiers = if (method.dec.isServerStreaming) "" else "suspend",
+                    args = "message: ${inputType.name.safeFullName().wrapInFlowIf(method.dec.isClientStreaming)}",
+                    returnType = outputType.name.safeFullName().wrapInFlowIf(method.dec.isServerStreaming),
                 )
             }
         }
