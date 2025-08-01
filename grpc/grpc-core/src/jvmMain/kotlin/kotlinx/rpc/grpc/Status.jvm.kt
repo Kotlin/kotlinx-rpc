@@ -6,59 +6,55 @@
 
 package kotlinx.rpc.grpc
 
-internal fun Status.toJvm(): io.grpc.Status {
-    val code = when (code) {
-        Status.Code.OK -> io.grpc.Status.Code.OK
-        Status.Code.CANCELLED -> io.grpc.Status.Code.CANCELLED
-        Status.Code.UNKNOWN -> io.grpc.Status.Code.UNKNOWN
-        Status.Code.INVALID_ARGUMENT -> io.grpc.Status.Code.INVALID_ARGUMENT
-        Status.Code.DEADLINE_EXCEEDED -> io.grpc.Status.Code.DEADLINE_EXCEEDED
-        Status.Code.NOT_FOUND -> io.grpc.Status.Code.NOT_FOUND
-        Status.Code.ALREADY_EXISTS -> io.grpc.Status.Code.ALREADY_EXISTS
-        Status.Code.PERMISSION_DENIED -> io.grpc.Status.Code.PERMISSION_DENIED
-        Status.Code.RESOURCE_EXHAUSTED -> io.grpc.Status.Code.RESOURCE_EXHAUSTED
-        Status.Code.FAILED_PRECONDITION -> io.grpc.Status.Code.FAILED_PRECONDITION
-        Status.Code.ABORTED -> io.grpc.Status.Code.ABORTED
-        Status.Code.OUT_OF_RANGE -> io.grpc.Status.Code.OUT_OF_RANGE
-        Status.Code.UNIMPLEMENTED -> io.grpc.Status.Code.UNIMPLEMENTED
-        Status.Code.INTERNAL -> io.grpc.Status.Code.INTERNAL
-        Status.Code.UNAVAILABLE -> io.grpc.Status.Code.UNAVAILABLE
-        Status.Code.DATA_LOSS -> io.grpc.Status.Code.DATA_LOSS
-        Status.Code.UNAUTHENTICATED -> io.grpc.Status.Code.UNAUTHENTICATED
+internal fun StatusCode.toJvm(): io.grpc.Status.Code {
+    return when (this) {
+        StatusCode.OK -> io.grpc.Status.Code.OK
+        StatusCode.CANCELLED -> io.grpc.Status.Code.CANCELLED
+        StatusCode.UNKNOWN -> io.grpc.Status.Code.UNKNOWN
+        StatusCode.INVALID_ARGUMENT -> io.grpc.Status.Code.INVALID_ARGUMENT
+        StatusCode.DEADLINE_EXCEEDED -> io.grpc.Status.Code.DEADLINE_EXCEEDED
+        StatusCode.NOT_FOUND -> io.grpc.Status.Code.NOT_FOUND
+        StatusCode.ALREADY_EXISTS -> io.grpc.Status.Code.ALREADY_EXISTS
+        StatusCode.PERMISSION_DENIED -> io.grpc.Status.Code.PERMISSION_DENIED
+        StatusCode.RESOURCE_EXHAUSTED -> io.grpc.Status.Code.RESOURCE_EXHAUSTED
+        StatusCode.FAILED_PRECONDITION -> io.grpc.Status.Code.FAILED_PRECONDITION
+        StatusCode.ABORTED -> io.grpc.Status.Code.ABORTED
+        StatusCode.OUT_OF_RANGE -> io.grpc.Status.Code.OUT_OF_RANGE
+        StatusCode.UNIMPLEMENTED -> io.grpc.Status.Code.UNIMPLEMENTED
+        StatusCode.INTERNAL -> io.grpc.Status.Code.INTERNAL
+        StatusCode.UNAVAILABLE -> io.grpc.Status.Code.UNAVAILABLE
+        StatusCode.DATA_LOSS -> io.grpc.Status.Code.DATA_LOSS
+        StatusCode.UNAUTHENTICATED -> io.grpc.Status.Code.UNAUTHENTICATED
     }
-
-    return io.grpc.Status.fromCode(code)
-        .withDescription(description)
-        .withCause(cause)
 }
 
-@Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
-internal fun io.grpc.Status.toKotlin(): Status {
-    val code = when (code) {
-        io.grpc.Status.Code.OK -> Status.Code.OK
-        io.grpc.Status.Code.CANCELLED -> Status.Code.CANCELLED
-        io.grpc.Status.Code.UNKNOWN -> Status.Code.UNKNOWN
-        io.grpc.Status.Code.INVALID_ARGUMENT -> Status.Code.INVALID_ARGUMENT
-        io.grpc.Status.Code.DEADLINE_EXCEEDED -> Status.Code.DEADLINE_EXCEEDED
-        io.grpc.Status.Code.NOT_FOUND -> Status.Code.NOT_FOUND
-        io.grpc.Status.Code.ALREADY_EXISTS -> Status.Code.ALREADY_EXISTS
-        io.grpc.Status.Code.PERMISSION_DENIED -> Status.Code.PERMISSION_DENIED
-        io.grpc.Status.Code.RESOURCE_EXHAUSTED -> Status.Code.RESOURCE_EXHAUSTED
-        io.grpc.Status.Code.FAILED_PRECONDITION -> Status.Code.FAILED_PRECONDITION
-        io.grpc.Status.Code.ABORTED -> Status.Code.ABORTED
-        io.grpc.Status.Code.OUT_OF_RANGE -> Status.Code.OUT_OF_RANGE
-        io.grpc.Status.Code.UNIMPLEMENTED -> Status.Code.UNIMPLEMENTED
-        io.grpc.Status.Code.INTERNAL -> Status.Code.INTERNAL
-        io.grpc.Status.Code.UNAVAILABLE -> Status.Code.UNAVAILABLE
-        io.grpc.Status.Code.DATA_LOSS -> Status.Code.DATA_LOSS
-        io.grpc.Status.Code.UNAUTHENTICATED -> Status.Code.UNAUTHENTICATED
+public actual typealias Status = io.grpc.Status
+
+public actual val Status.code: StatusCode
+    get() = when (this.code) {
+        io.grpc.Status.Code.OK -> StatusCode.OK
+        io.grpc.Status.Code.CANCELLED -> StatusCode.CANCELLED
+        io.grpc.Status.Code.UNKNOWN -> StatusCode.UNKNOWN
+        io.grpc.Status.Code.INVALID_ARGUMENT -> StatusCode.INVALID_ARGUMENT
+        io.grpc.Status.Code.DEADLINE_EXCEEDED -> StatusCode.DEADLINE_EXCEEDED
+        io.grpc.Status.Code.NOT_FOUND -> StatusCode.NOT_FOUND
+        io.grpc.Status.Code.ALREADY_EXISTS -> StatusCode.ALREADY_EXISTS
+        io.grpc.Status.Code.PERMISSION_DENIED -> StatusCode.PERMISSION_DENIED
+        io.grpc.Status.Code.RESOURCE_EXHAUSTED -> StatusCode.RESOURCE_EXHAUSTED
+        io.grpc.Status.Code.FAILED_PRECONDITION -> StatusCode.FAILED_PRECONDITION
+        io.grpc.Status.Code.ABORTED -> StatusCode.ABORTED
+        io.grpc.Status.Code.OUT_OF_RANGE -> StatusCode.OUT_OF_RANGE
+        io.grpc.Status.Code.UNIMPLEMENTED -> StatusCode.UNIMPLEMENTED
+        io.grpc.Status.Code.INTERNAL -> StatusCode.INTERNAL
+        io.grpc.Status.Code.UNAVAILABLE -> StatusCode.UNAVAILABLE
+        io.grpc.Status.Code.DATA_LOSS -> StatusCode.DATA_LOSS
+        io.grpc.Status.Code.UNAUTHENTICATED -> StatusCode.UNAUTHENTICATED
     }
 
-    return JvmStatus(code, description, cause)
+public actual fun Status(
+    code: StatusCode,
+    description: String?,
+    cause: Throwable?,
+): Status {
+    return Status.fromCode(code.toJvm()).withDescription(description).withCause(cause)
 }
-
-internal class JvmStatus(
-    override val code: Status.Code,
-    override val description: String? = null,
-    override val cause: Throwable? = null,
-): Status
