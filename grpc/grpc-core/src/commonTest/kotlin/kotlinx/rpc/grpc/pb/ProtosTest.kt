@@ -17,18 +17,6 @@ import kotlin.test.assertFailsWith
 
 class ProtosTest {
 
-    @Test
-    fun bugDemo() {
-        val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-        encoder.writeEnum(1, 0)
-        encoder.flush()
-
-        val decodedMsg = UsingEnumInternal.CODEC.decode(buffer)
-        assertEquals(Enum.UNRECOGNIZED(50), decodedMsg.enum)
-    }
-
-
     private fun <M> decodeEncode(
         msg: M,
         codec: MessageCodec<M>

@@ -370,12 +370,16 @@ class ModelToKotlinCommonGenerator(
             contextReceiver = "${enum.name.safeFullName()}.Companion",
             returnType = enum.name.safeFullName(),
         ) {
-            scope("for (entry in entries)") {
-                ifBranch(condition = "entry.number == number", ifBlock = {
-                    code("return entry")
-                })
+            whenBlock(prefix = "return") {
+                enum.originalEntries.forEach { entry ->
+                    whenCase("number == ${entry.dec.number}") {
+                        code("${entry.name}")
+                    }
+                }
+                whenCase("else") {
+                    code("${enum.name.safeFullName()}.UNRECOGNIZED(number)")
+                }
             }
-            code("return ${enum.name.safeFullName()}.UNRECOGNIZED(number)")
         }
     }
 
@@ -546,7 +550,7 @@ class ModelToKotlinCommonGenerator(
 
         clazz(
             className, "sealed",
-            constructorArgs = listOf("val number: Int"),
+            constructorArgs = listOf("open val number: Int"),
         ) {
 
             declaration.originalEntries.forEach { variant ->
@@ -559,8 +563,9 @@ class ModelToKotlinCommonGenerator(
 
             // TODO: Avoid name conflict
             clazz(
+                modifiers = "data",
                 name = "UNRECOGNIZED",
-                constructorArgs = listOf("number: Int"),
+                constructorArgs = listOf("override val number: Int"),
                 superTypes = listOf("$className(number)"),
             )
 
