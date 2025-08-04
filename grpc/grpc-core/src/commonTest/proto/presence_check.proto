@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+package kotlinx.rpc.grpc.test.common;
+
+message PresenceCheck {
+  required int32 RequiredPresence = 1;
+  optional float OptionalPresence = 2;
+}
+

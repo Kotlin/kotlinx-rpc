@@ -11,6 +11,9 @@ import kotlinx.rpc.protobuf.model.*
 import org.slf4j.Logger
 
 private const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
+private const val MSG_INTERNAL_SUFFIX = "Internal"
+private const val PB_PKG = "kotlinx.rpc.grpc.pb"
+private const val INTERNAL_RPC_API_ANNO = "kotlinx.rpc.internal.utils.InternalRpcApi"
 
 class ModelToKotlinCommonGenerator(
     private val model: Model,
@@ -67,18 +70,13 @@ class ModelToKotlinCommonGenerator(
                 this@generateInternalKotlinFile.packageName.safeFullName()
                     .packageNameSuffixed(RPC_INTERNAL_PACKAGE_SUFFIX)
 
-            fileOptIns = listOf("ExperimentalRpcApi::class", "InternalRpcApi::class")
+            fileOptIns = listOf("ExperimentalRpcApi::class", "$INTERNAL_RPC_API_ANNO::class")
 
             dependencies.forEach { dependency ->
                 importPackage(dependency.packageName.safeFullName())
             }
 
             generateInternalDeclaredEntities(this@generateInternalKotlinFile)
-
-            import("kotlinx.rpc.internal.utils.*")
-            import("kotlinx.coroutines.flow.*")
-            import("kotlinx.rpc.grpc.pb.*")
-
 
             additionalInternalImports.forEach {
                 import(it)
@@ -100,9 +98,14 @@ class ModelToKotlinCommonGenerator(
 
         fileDeclaration.messageDeclarations.forEach {
             generateMessageConstructor(it)
-            generateMessageDecoder(it)
-            generateMessageEncoder(it)
         }
+
+        fileDeclaration.messageDeclarations.forEach {
+            generateRequiredCheck(it)
+            generateMessageEncoder(it)
+            generateMessageDecoder(it)
+        }
+
     }
 
     private fun MessageDeclaration.fields() = actualFields.map {
@@ -140,11 +143,19 @@ class ModelToKotlinCommonGenerator(
 
     @Suppress("detekt.CyclomaticComplexMethod")
     private fun CodeGenerator.generateInternalMessage(declaration: MessageDeclaration) {
+        val internalClassName = declaration.internalClassName()
         clazz(
-            name = "${declaration.name.simpleName}Builder",
+            name = internalClassName,
+            annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
             declarationType = DeclarationType.Class,
-            superTypes = listOf(declaration.name.safeFullName()),
+            superTypes = listOf(
+                declaration.name.safeFullName(),
+                "$PB_PKG.InternalMessage(fieldsWithPresence = ${declaration.presenceMaskSize})"
+            ),
         ) {
+
+            generatePresenceIndicesObject(declaration)
+
             declaration.fields().forEach { (fieldDeclaration, field) ->
                 val value = when {
                     field.nullable -> {
@@ -162,11 +173,59 @@ class ModelToKotlinCommonGenerator(
                 }
 
                 code("override var $fieldDeclaration $value")
+                if (field.presenceIdx != null) {
+                    scope("set(value) ") {
+                        code("presenceMask[PresenceIndices.${field.name}] = true")
+                        code("field = value")
+                    }
+                }
                 newLine()
             }
 
             declaration.nestedDeclarations.forEach { nested ->
                 generateInternalMessage(nested)
+            }
+
+            scope("companion object") {
+                generateCodecObject(declaration)
+            }
+        }
+    }
+
+    private fun CodeGenerator.generatePresenceIndicesObject(declaration: MessageDeclaration) {
+        if (declaration.presenceMaskSize == 0) {
+            return
+        }
+        scope("private object PresenceIndices") {
+            declaration.fields().forEach { (_, field) ->
+                if (field.presenceIdx != null) {
+                    code("const val ${field.name} = ${field.presenceIdx}")
+                    newLine()
+                }
+            }
+        }
+    }
+
+    private fun CodeGenerator.generateCodecObject(declaration: MessageDeclaration) {
+        val msgFqName = declaration.name.safeFullName()
+        val downCastErrorStr =
+            "\${value::class.simpleName} implements ${msgFqName}, which is prohibited."
+        val sourceFqName = "kotlinx.io.Source"
+        val bufferFqName = "kotlinx.io.Buffer"
+        scope("val CODEC = object : kotlinx.rpc.grpc.internal.MessageCodec<$msgFqName>") {
+            function("encode", modifiers = "override", args = "value: $msgFqName", returnType = sourceFqName) {
+                code("val msg = value as? ${declaration.internalClassFullName()} ?: error { \"$downCastErrorStr\" }")
+                code("val buffer = $bufferFqName()")
+                code("val encoder = $PB_PKG.WireEncoder(buffer)")
+                code("msg.encodeWith(encoder)")
+                code("encoder.flush()")
+                code("return buffer")
+            }
+
+            function("decode", modifiers = "override", args = "stream: $sourceFqName", returnType = msgFqName) {
+                scope("$PB_PKG.WireDecoder(stream as $bufferFqName).use") {
+                    code("return ${declaration.internalClassFullName()}.decodeWith(it)")
+                }
             }
         }
     }
@@ -174,20 +233,24 @@ class ModelToKotlinCommonGenerator(
     private fun CodeGenerator.generateMessageConstructor(declaration: MessageDeclaration) = function(
         name = "invoke",
         modifiers = "operator",
-        args = "body: ${declaration.name.safeFullName("Builder")}.() -> Unit",
+        args = "body: ${declaration.internalClassFullName()}.() -> Unit",
         contextReceiver = "${declaration.name.safeFullName()}.Companion",
         returnType = declaration.name.safeFullName(),
     ) {
-        code("return ${declaration.name.safeFullName("Builder")}().apply(body)")
+        code("val msg = ${declaration.internalClassFullName()}().apply(body)")
+        // check if the user set all required fields
+        code("msg.checkRequiredFields()")
+        code("return msg")
     }
 
     private fun CodeGenerator.generateMessageDecoder(declaration: MessageDeclaration) = function(
         name = "decodeWith",
-        args = "decoder: WireDecoder",
-        contextReceiver = "${declaration.name.safeFullName()}.Companion",
-        returnType = "${declaration.name.safeFullName()}?"
+        modifiers = "private",
+        args = "decoder: $PB_PKG.WireDecoder",
+        contextReceiver = "${declaration.internalClassFullName()}.Companion",
+        returnType = declaration.internalClassName()
     ) {
-        code("val msg = ${declaration.name.safeFullName("Builder")}()")
+        code("val msg = ${declaration.internalClassFullName()}()")
         whileBlock("!decoder.hadError()") {
             code("val tag = decoder.readTag() ?: break // EOF, we read the whole message")
             whenBlock {
@@ -197,8 +260,10 @@ class ModelToKotlinCommonGenerator(
         }
         ifBranch(
             condition = "decoder.hadError()",
-            ifBlock = { code("return null") }
+            ifBlock = { code("error(\"Error during decoding of ${declaration.name.simpleName}\")") }
         )
+
+        code("msg.checkRequiredFields()")
 
         // TODO: Make a lists immutable
         code("return msg")
@@ -208,16 +273,16 @@ class ModelToKotlinCommonGenerator(
         val encFuncName = field.type.decodeEncodeFuncName()
         val assignment = "msg.${field.name} ="
         when (val fieldType = field.type) {
-            is FieldType.IntegralType -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == WireType.${field.type.wireType.name}") {
+            is FieldType.IntegralType -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.${field.type.wireType.name}") {
                 code("$assignment decoder.read$encFuncName()")
             }
 
             is FieldType.List -> if (field.dec.isPacked) {
-                whenCase("tag.fieldNr == ${field.number} && tag.wireType == WireType.LENGTH_DELIMITED") {
+                whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.LENGTH_DELIMITED") {
                     code("$assignment decoder.readPacked${fieldType.value.decodeEncodeFuncName()}()")
                 }
             } else {
-                whenCase("tag.fieldNr == ${field.number} && tag.wireType == WireType.LENGTH_DELIMITED") {
+                whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.${fieldType.value.wireType.name}") {
                     code("(msg.${field.name} as ArrayList).add(decoder.read${fieldType.value.decodeEncodeFuncName()}())")
                 }
             }
@@ -230,9 +295,14 @@ class ModelToKotlinCommonGenerator(
 
     private fun CodeGenerator.generateMessageEncoder(declaration: MessageDeclaration) = function(
         name = "encodeWith",
-        args = "encoder: WireEncoder",
-        contextReceiver = declaration.name.safeFullName(),
+        modifiers = "private",
+        args = "encoder: $PB_PKG.WireEncoder",
+        contextReceiver = declaration.internalClassFullName(),
     ) {
+        if (declaration.fields().isEmpty()) {
+            code("// no fields to encode")
+            return@function
+        }
 
         declaration.fields().forEach { (_, field) ->
             val fieldName = field.name
@@ -252,13 +322,13 @@ class ModelToKotlinCommonGenerator(
 
     private fun FieldDeclaration.writeValue(variable: String): String {
         return when (val fieldType = type) {
-            is FieldType.IntegralType -> "encoder.write${type.decodeEncodeFuncName()}($number, $variable)"
+            is FieldType.IntegralType -> "encoder.write${type.decodeEncodeFuncName()}(fieldNr = $number, value = $variable)"
             is FieldType.List -> when {
                 dec.isPacked && packedFixedSize ->
-                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $variable)"
+                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}(fieldNr = $number, value = $variable)"
 
                 dec.isPacked && !packedFixedSize ->
-                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}($number, $variable, ${
+                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}(fieldNr = $number, value = $variable, fieldSize = ${
                         wireSizeCall(
                             variable
                         )
@@ -274,8 +344,33 @@ class ModelToKotlinCommonGenerator(
         }
     }
 
+
+    /**
+     * Generates a function to check for the presence of all required fields in a message declaration.
+     */
+    private fun CodeGenerator.generateRequiredCheck(declaration: MessageDeclaration) = function(
+        name = "checkRequiredFields",
+        modifiers = "private",
+        contextReceiver = declaration.internalClassFullName(),
+    ) {
+        val requiredFields = declaration.actualFields
+            .filter { it.dec.isRequired }
+
+        if (requiredFields.isEmpty()) {
+            code("// no fields to check")
+            return@function
+        }
+
+        requiredFields.forEach { field ->
+            ifBranch(condition = "!presenceMask[${field.presenceIdx}]", ifBlock = {
+                code("error(\"${declaration.name.simpleName} is missing required field: ${field.name}\")")
+            })
+        }
+    }
+
+
     private fun FieldDeclaration.wireSizeCall(variable: String): String {
-        val sizeFunc = "WireSize.${type.decodeEncodeFuncName().replaceFirstChar { it.lowercase() }}($variable)"
+        val sizeFunc = "$PB_PKG.WireSize.${type.decodeEncodeFuncName().replaceFirstChar { it.lowercase() }}($variable)"
         return when (val fieldType = type) {
             is FieldType.IntegralType -> when {
                 fieldType.wireType == WireType.FIXED32 -> "32"
@@ -464,7 +559,16 @@ class ModelToKotlinCommonGenerator(
             }
         }
     }
+
+    private fun MessageDeclaration.internalClassFullName(): String {
+        return name.safeFullName(MSG_INTERNAL_SUFFIX)
+    }
+
+    private fun MessageDeclaration.internalClassName(): String {
+        return name.simpleName + MSG_INTERNAL_SUFFIX
+    }
 }
+
 
 private fun String.packageNameSuffixed(suffix: String): String {
     return if (isEmpty()) suffix else "$this.$suffix"
