@@ -13,6 +13,7 @@ import org.slf4j.Logger
 private const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
 private const val MSG_INTERNAL_SUFFIX = "Internal"
 private const val PB_PKG = "kotlinx.rpc.grpc.pb"
+private const val INTERNAL_RPC_API_ANNO = "kotlinx.rpc.internal.utils.InternalRpcApi"
 
 class ModelToKotlinCommonGenerator(
     private val model: Model,
@@ -69,16 +70,13 @@ class ModelToKotlinCommonGenerator(
                 this@generateInternalKotlinFile.packageName.safeFullName()
                     .packageNameSuffixed(RPC_INTERNAL_PACKAGE_SUFFIX)
 
-            fileOptIns = listOf("ExperimentalRpcApi::class", "InternalRpcApi::class")
+            fileOptIns = listOf("ExperimentalRpcApi::class", "$INTERNAL_RPC_API_ANNO::class")
 
             dependencies.forEach { dependency ->
                 importPackage(dependency.packageName.safeFullName())
             }
 
             generateInternalDeclaredEntities(this@generateInternalKotlinFile)
-
-            import("kotlinx.rpc.internal.utils.*")
-            import("kotlinx.coroutines.flow.*")
 
             additionalInternalImports.forEach {
                 import(it)
@@ -148,7 +146,7 @@ class ModelToKotlinCommonGenerator(
         val internalClassName = declaration.internalClassName()
         clazz(
             name = internalClassName,
-            annotations = listOf("@kotlinx.rpc.internal.utils.InternalRpcApi"),
+            annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
             declarationType = DeclarationType.Class,
             superTypes = listOf(
                 declaration.name.safeFullName(),
@@ -177,7 +175,7 @@ class ModelToKotlinCommonGenerator(
                 code("override var $fieldDeclaration $value")
                 if (field.presenceIdx != null) {
                     scope("set(value) ") {
-                        code("presenceMask.set(PresenceIndices.${field.name})")
+                        code("presenceMask[PresenceIndices.${field.name}] = true")
                         code("field = value")
                     }
                 }
@@ -210,19 +208,19 @@ class ModelToKotlinCommonGenerator(
 
     private fun CodeGenerator.generateCodecObject(declaration: MessageDeclaration) {
         val msgFqName = declaration.name.safeFullName()
-        val downCastErrorStr = "The message is a custom implementation of ${msgFqName}. This is currently not allowed."
+        val downCastErrorStr =
+            "\${value::class.simpleName} implements ${msgFqName}, which is prohibited."
         val sourceFqName = "kotlinx.io.Source"
         val bufferFqName = "kotlinx.io.Buffer"
         scope("val CODEC = object : kotlinx.rpc.grpc.internal.MessageCodec<$msgFqName>") {
-            function("encode", modifiers = "override", args = "value: $msgFqName", returnType = "$sourceFqName") {
-                code("val msg = value as? ${declaration.internalClassFullName()} ?: error(\"$downCastErrorStr\")")
+            function("encode", modifiers = "override", args = "value: $msgFqName", returnType = sourceFqName) {
+                code("val msg = value as? ${declaration.internalClassFullName()} ?: error { \"$downCastErrorStr\" }")
                 code("val buffer = $bufferFqName()")
                 code("val encoder = $PB_PKG.WireEncoder(buffer)")
                 code("msg.encodeWith(encoder)")
                 code("encoder.flush()")
                 code("return buffer")
             }
-
 
             function("decode", modifiers = "override", args = "stream: $sourceFqName", returnType = msgFqName) {
                 scope("$PB_PKG.WireDecoder(stream as $bufferFqName).use") {
@@ -372,7 +370,7 @@ class ModelToKotlinCommonGenerator(
 
 
     private fun FieldDeclaration.wireSizeCall(variable: String): String {
-        val sizeFunc = "WireSize.${type.decodeEncodeFuncName().replaceFirstChar { it.lowercase() }}($variable)"
+        val sizeFunc = "$PB_PKG.WireSize.${type.decodeEncodeFuncName().replaceFirstChar { it.lowercase() }}($variable)"
         return when (val fieldType = type) {
             is FieldType.IntegralType -> when {
                 fieldType.wireType == WireType.FIXED32 -> "32"

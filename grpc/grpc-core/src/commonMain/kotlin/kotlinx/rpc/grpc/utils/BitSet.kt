@@ -14,10 +14,12 @@ public class BitSet(public val size: Int) {
     private val data: LongArray = LongArray((size + 63) ushr 6)
 
     /** Sets the bit at [index] to 1. */
-    public fun set(index: Int) {
-        require(index >= 0 && index < size) { "Index $index out of bounds for length $size" }
+    public operator fun set(index: Int, value: Boolean) {
+        if (!value) return clear(index)
+        require(index in 0 until size) { "Index $index out‑of‑bounds for length $size" }
         val word = index ushr 6
-        data[word] = data[word] or (1L shl (index and 63))
+        val mask = 1L shl (index and 63)
+        data[word] = data[word] or mask
     }
 
     /** Clears the bit at [index] (sets to 0). */

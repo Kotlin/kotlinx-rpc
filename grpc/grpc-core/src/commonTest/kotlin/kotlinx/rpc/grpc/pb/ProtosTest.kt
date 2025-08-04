@@ -23,7 +23,7 @@ class ProtosTest {
 
     @Test
     fun testAllPrimitiveProto() {
-        val msg = AllPrimitivesCommon {
+        val msg = AllPrimitives {
             int32 = 12
             int64 = 1234567890123456789L
             uint32 = 12345u
@@ -43,14 +43,14 @@ class ProtosTest {
 
         val msgObj = msg
 
-        val decoded = decodeEncode(msgObj, AllPrimitivesCommonInternal.CODEC)
+        val decoded = decodeEncode(msgObj, AllPrimitivesInternal.CODEC)
 
         assertEquals(msg.double, decoded.double)
     }
 
     @Test
     fun testRepeatedProto() {
-        val msg = RepeatedCommon {
+        val msg = Repeated {
             listFixed32 = listOf(1, 5, 3).map { it.toUInt() }
             listFixed32Packed = listOf(1, 2, 3).map { it.toUInt() }
             listInt32 = listOf(4, 7, 6)
@@ -58,7 +58,7 @@ class ProtosTest {
             listString = listOf("a", "b", "c")
         }
 
-        val decoded = decodeEncode(msg, RepeatedCommonInternal.CODEC)
+        val decoded = decodeEncode(msg, RepeatedInternal.CODEC)
 
         assertEquals(msg.listInt32, decoded.listInt32)
         assertEquals(msg.listFixed32, decoded.listFixed32)

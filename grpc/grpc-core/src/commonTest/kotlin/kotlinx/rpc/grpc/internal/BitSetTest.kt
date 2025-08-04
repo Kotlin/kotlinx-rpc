@@ -47,11 +47,11 @@ class BitSetTest {
         }
 
         // Set some bits
-        bitSet.set(0)
-        bitSet.set(1)
-        bitSet.set(63)
-        bitSet.set(64)
-        bitSet.set(99)
+        bitSet[0] = true
+        bitSet[1] = true
+        bitSet[63] = true
+        bitSet[64] = true
+        bitSet[99] = true
 
         // Verify the bits are set
         assertTrue(bitSet[0], "Bit 0 should be set")
@@ -73,7 +73,7 @@ class BitSetTest {
 
         // Set all bits
         for (i in 0 until 100) {
-            bitSet.set(i)
+            bitSet[i] = true
         }
 
         // Verify all bits are set
@@ -82,11 +82,11 @@ class BitSetTest {
         }
 
         // Clear some bits
-        bitSet.clear(0)
-        bitSet.clear(1)
-        bitSet.clear(63)
-        bitSet.clear(64)
-        bitSet.clear(99)
+        bitSet[0] = false
+        bitSet[1] = false
+        bitSet[63] = false
+        bitSet[64] = false
+        bitSet[99] = false
 
         // Verify the bits are cleared
         assertFalse(bitSet[0], "Bit 0 should be cleared")
@@ -108,7 +108,7 @@ class BitSetTest {
 
         // Set all bits
         for (i in 0 until 100) {
-            bitSet.set(i)
+            bitSet[i] = true
         }
 
         // Verify all bits are set
@@ -131,16 +131,16 @@ class BitSetTest {
         assertEquals(0, bitSet.cardinality(), "Initial cardinality should be 0")
 
         // Set some bits
-        bitSet.set(0)
+        bitSet[0] = true
         assertEquals(1, bitSet.cardinality(), "Cardinality should be 1 after setting 1 bit")
 
-        bitSet.set(63)
+        bitSet[63] = true
         assertEquals(2, bitSet.cardinality(), "Cardinality should be 2 after setting 2 bits")
 
-        bitSet.set(64)
+        bitSet[64] = true
         assertEquals(3, bitSet.cardinality(), "Cardinality should be 3 after setting 3 bits")
 
-        bitSet.set(99)
+        bitSet[99] = true
         assertEquals(4, bitSet.cardinality(), "Cardinality should be 4 after setting 4 bits")
 
         // Clear a bit
@@ -148,7 +148,7 @@ class BitSetTest {
         assertEquals(3, bitSet.cardinality(), "Cardinality should be 3 after clearing 1 bit")
 
         // Set a bit that's already set
-        bitSet.set(63)
+        bitSet[63] = true
         assertEquals(3, bitSet.cardinality(), "Cardinality should still be 3 after setting an already set bit")
 
         // Clear all bits
@@ -166,11 +166,11 @@ class BitSetTest {
         val smallBitSet = BitSet(5)
         assertFalse(smallBitSet.allSet(), "New BitSet should return false for allSet")
 
-        smallBitSet.set(0)
-        smallBitSet.set(1)
-        smallBitSet.set(2)
-        smallBitSet.set(3)
-        smallBitSet.set(4)
+        smallBitSet[0] = true
+        smallBitSet[1] = true
+        smallBitSet[2] = true
+        smallBitSet[3] = true
+        smallBitSet[4] = true
         assertTrue(smallBitSet.allSet(), "BitSet with all bits set should return true for allSet")
 
         smallBitSet.clear(2)
@@ -181,7 +181,7 @@ class BitSetTest {
         assertFalse(largeBitSet.allSet(), "New large BitSet should return false for allSet")
 
         for (i in 0 until 100) {
-            largeBitSet.set(i)
+            largeBitSet[i] = true
         }
         assertTrue(largeBitSet.allSet(), "Large BitSet with all bits set should return true for allSet")
 
@@ -193,7 +193,7 @@ class BitSetTest {
         assertFalse(wordBoundaryBitSet.allSet(), "New word boundary BitSet should return false for allSet")
 
         for (i in 0 until 64) {
-            wordBoundaryBitSet.set(i)
+            wordBoundaryBitSet[i] = true
         }
         assertTrue(wordBoundaryBitSet.allSet(), "Word boundary BitSet with all bits set should return true for allSet")
     }
@@ -203,10 +203,10 @@ class BitSetTest {
         val bitSet = BitSet(100)
 
         // Test setting and getting at boundaries
-        bitSet.set(0)
+        bitSet[0] = true
         assertTrue(bitSet[0], "Should be able to set and get bit 0")
 
-        bitSet.set(99)
+        bitSet[99] = true
         assertTrue(bitSet[99], "Should be able to set and get bit at size-1")
 
         // Test clearing at boundaries
@@ -218,7 +218,7 @@ class BitSetTest {
 
         // Test out of bounds access
         assertFailsWith<IllegalArgumentException> {
-            bitSet.set(100)
+            bitSet[100] = true
         }
 
         assertFailsWith<IllegalArgumentException> {
@@ -230,7 +230,7 @@ class BitSetTest {
         }
 
         assertFailsWith<IllegalArgumentException> {
-            bitSet.set(-1)
+            bitSet[-1] = true
         }
 
         assertFailsWith<IllegalArgumentException> {
@@ -250,7 +250,7 @@ class BitSetTest {
 
             // Set all bits
             for (i in 0 until size) {
-                bitSet.set(i)
+                bitSet[i] = true
             }
 
             // Verify all bits are set
@@ -288,7 +288,7 @@ class BitSetTest {
 
         // Set every other bit
         for (i in 0 until size step 2) {
-            bitSet.set(i)
+            bitSet[i] = true
         }
 
         // Verify cardinality
@@ -296,7 +296,7 @@ class BitSetTest {
 
         // Set all bits
         for (i in 0 until size) {
-            bitSet.set(i)
+            bitSet[i] = true
         }
 
         // Verify cardinality
