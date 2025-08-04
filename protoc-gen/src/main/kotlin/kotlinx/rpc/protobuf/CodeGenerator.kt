@@ -233,6 +233,7 @@ open class CodeGenerator(
     fun clazz(
         name: String,
         modifiers: String = "",
+        constructorModifiers: String = "",
         constructorArgs: List<Pair<String, String?>> = emptyList(),
         superTypes: List<String> = emptyList(),
         annotations: List<String> = emptyList(),
@@ -258,8 +259,12 @@ open class CodeGenerator(
             "$arg$defaultString"
         }
 
+        val constructorModifiersTransformed = if (constructorModifiers.isEmpty()) "" else
+            " ${constructorModifiers.trim()} constructor "
+
         when {
             shouldPutArgsOnNewLines && constructorArgsTransformed.isNotEmpty() -> {
+                append(constructorModifiersTransformed)
                 append("(")
                 newLine()
                 withNextIndent {
@@ -271,9 +276,14 @@ open class CodeGenerator(
             }
 
             constructorArgsTransformed.isNotEmpty() -> {
+                append(constructorModifiersTransformed)
                 append("(")
                 append(constructorArgsTransformed.joinToString(", "))
                 append(")")
+            }
+
+            constructorModifiersTransformed.isNotEmpty() -> {
+                append("$constructorModifiersTransformed()")
             }
         }
 
