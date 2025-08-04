@@ -5,6 +5,8 @@
 package kotlinx.rpc.grpc
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
@@ -98,6 +100,9 @@ class RawClientServerTest {
         methodDefinition: CoroutineScope.(MethodDescriptor<String, String>) -> ServerMethodDefinition<String, String>,
         block: suspend (GrpcChannel, MethodDescriptor<String, String>) -> Unit,
     ) = kotlinx.coroutines.test.runTest {
+        val serverJob = Job()
+        val serverScope = CoroutineScope(serverJob)
+
         val clientChannel = ManagedChannelBuilder("localhost", PORT).apply {
             usePlaintext()
         }.buildChannel()
@@ -122,13 +127,19 @@ class RawClientServerTest {
                     methods = methods,
                     schemaDescriptor = Unit,
                 ),
-                methods = methods.map { methodDefinition(it) },
+                methods = methods.map { serverScope.methodDefinition(it) },
             )
         )
         val server = Server(builder)
         server.start()
 
         block(clientChannel.platformApi, descriptor)
+
+        serverJob.cancelAndJoin()
+        clientChannel.shutdown()
+        clientChannel.awaitTermination()
+        server.shutdown()
+        server.awaitTermination()
     }
 
     companion object {
