@@ -3,8 +3,10 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Files
 
 plugins {
@@ -12,6 +14,16 @@ plugins {
     alias(libs.plugins.serialization)
     alias(libs.plugins.kotlinx.rpc)
     alias(libs.plugins.atomicfu)
+}
+
+tasks.withType<KotlinCompile> {
+    if (this.name.contains("Test")) {
+        compilerOptions {
+            // for kotlin.time.Clock API
+            languageVersion.set(KotlinVersion.KOTLIN_2_1)
+            apiVersion.set(KotlinVersion.KOTLIN_2_1)
+        }
+    }
 }
 
 kotlin {

@@ -305,13 +305,13 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    fun `RPC should be able to receive 100_000 ints in reasonable time`() = runTest(timeout = JS_EXTENDED_TIMEOUT) {
+    fun RPC_should_be_able_to_receive_100_000_ints_in_reasonable_time() = runTest(timeout = JS_EXTENDED_TIMEOUT) {
         val n = 100_000
         assertEquals(client.getNInts(n).last(), n)
     }
 
     @Test
-    fun `RPC should be able to receive 100_000 ints with batching in reasonable time`() = runTest {
+    fun RPC_should_be_able_to_receive_100_000_ints_with_batching_in_reasonable_time() = runTest {
         val n = 100_000
         assertEquals(client.getNIntsBatched(n).last().last(), n)
     }
@@ -405,7 +405,7 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    fun `rpc continuation is called in the correct scope and doesn't block other rpcs`() = runTest {
+    fun rpc_continuation_is_called_in_the_correct_scope_and_doesnt_block_other_rpcs() = runTest {
         if (isJs) {
             println("Test is skipped on JS, because it doesn't support multiple threads.")
             return@runTest
