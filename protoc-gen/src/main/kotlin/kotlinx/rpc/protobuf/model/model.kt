@@ -39,6 +39,11 @@ data class EnumDeclaration(
     val doc: String?,
     val dec: Descriptors.EnumDescriptor,
 ) {
+
+    fun defaultEntry(): Entry {
+        return originalEntries.minBy { it.dec.number }
+    }
+
     data class Entry(
         val name: FqName,
         val doc: String?,

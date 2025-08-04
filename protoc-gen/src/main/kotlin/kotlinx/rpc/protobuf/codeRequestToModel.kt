@@ -75,8 +75,9 @@ private fun Descriptors.GenericDescriptor.fqName(): FqName {
             FqName.Declaration(usedName, containingType?.fqName() ?: file.fqName())
         }
 
-        is Descriptors.EnumValueDescriptor -> FqName.Declaration(name, type.fqName())
         is Descriptors.OneofDescriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
+        is Descriptors.EnumDescriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
+        is Descriptors.EnumValueDescriptor -> FqName.Declaration(name, type.fqName())
         is Descriptors.ServiceDescriptor -> FqName.Declaration(nameCapital, file?.fqName() ?: file.fqName())
         is Descriptors.MethodDescriptor -> FqName.Declaration(nameLower, service?.fqName() ?: file.fqName())
         else -> error("Unknown generic descriptor: $this")
@@ -233,7 +234,7 @@ private fun Descriptors.FieldDescriptor.modelType(): FieldType {
         Descriptors.FieldDescriptor.Type.SFIXED64 -> FieldType.IntegralType.SFIXED64
         Descriptors.FieldDescriptor.Type.SINT32 -> FieldType.IntegralType.SINT32
         Descriptors.FieldDescriptor.Type.SINT64 -> FieldType.IntegralType.SINT64
-        Descriptors.FieldDescriptor.Type.ENUM -> FieldType.Reference(lazy { enumType!!.toModel().name })
+        Descriptors.FieldDescriptor.Type.ENUM -> FieldType.Enum(enumType.toModel())
         Descriptors.FieldDescriptor.Type.MESSAGE -> FieldType.Reference(lazy { messageType!!.toModel().name })
         Descriptors.FieldDescriptor.Type.GROUP -> error("GROUP type is unsupported")
     }

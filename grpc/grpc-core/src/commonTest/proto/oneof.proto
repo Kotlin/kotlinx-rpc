@@ -1,0 +1,8 @@
+message OneOfMsg {
+
+  oneof f {
+    int32 i = 2;
+    fixed64 T = 3;
+  }
+
+}

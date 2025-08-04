@@ -6,12 +6,28 @@ package kotlinx.rpc.grpc.pb
 
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.internal.MessageCodec
+import kotlinx.rpc.grpc.test.Enum
+import kotlinx.rpc.grpc.test.UsingEnum
+import kotlinx.rpc.grpc.test.UsingEnumInternal
 import kotlinx.rpc.grpc.test.common.*
+import kotlinx.rpc.grpc.test.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class ProtosTest {
+
+    @Test
+    fun bugDemo() {
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+        encoder.writeEnum(1, 0)
+        encoder.flush()
+
+        val decodedMsg = UsingEnumInternal.CODEC.decode(buffer)
+        assertEquals(Enum.UNRECOGNIZED(50), decodedMsg.enum)
+    }
+
 
     private fun <M> decodeEncode(
         msg: M,
@@ -84,5 +100,40 @@ class ProtosTest {
         }
     }
 
+    @Test
+    fun testEnumUnrecognized() {
+        // write unknown enum value
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+        encoder.writeEnum(1, 50)
+        encoder.flush()
+
+        val decodedMsg = UsingEnumInternal.CODEC.decode(buffer)
+        assertEquals(Enum.UNRECOGNIZED(50), decodedMsg.enum)
+    }
+
+    @Test
+    fun testEnumAlias() {
+        val msg = UsingEnum {
+            enum = Enum.ONE_SECOND
+        }
+
+        val decodedMsg = decodeEncode(msg, UsingEnumInternal.CODEC)
+        assertEquals(Enum.ONE, decodedMsg.enum)
+        assertEquals(Enum.ONE_SECOND, decodedMsg.enum)
+    }
+
+    @Test
+    fun testDefault() {
+        // create message without enum field set
+        val msg = UsingEnum {}
+
+        val buffer = UsingEnumInternal.CODEC.encode(msg) as Buffer
+        // buffer should be empty (default is not in wire)
+        assertEquals(0, buffer.size)
+
+        val decoded = UsingEnumInternal.CODEC.decode(buffer)
+        assertEquals(Enum.ZERO, decoded.enum)
+    }
 
 }
