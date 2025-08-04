@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.kotlinx.rpc)
+    alias(libs.plugins.atomicfu)
 }
 
 
@@ -37,6 +38,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
+                implementation(libs.atomicfu)
             }
         }
 
