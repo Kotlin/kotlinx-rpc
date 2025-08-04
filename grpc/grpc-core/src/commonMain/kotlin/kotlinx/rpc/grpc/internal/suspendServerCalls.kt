@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.grpc.internal
 
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
@@ -21,8 +22,6 @@ import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.StatusRuntimeException
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlin.concurrent.atomics.AtomicBoolean
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 @InternalRpcApi
 public fun <Request, Response> CoroutineScope.unaryServerMethodDefinition(
@@ -105,7 +104,6 @@ private fun <Request, Response> CoroutineScope.serverCallHandler(
         serverCallListenerImpl(call, implementation)
     }
 
-@OptIn(ExperimentalAtomicApi::class)
 private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
     handler: ServerCall<Request, Response>,
     implementation: (Flow<Request>) -> Flow<Response>,
@@ -116,7 +114,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
     val requestsStarted = AtomicBoolean(false) // enforces read-once
 
     val requests = flow {
-        check(requestsStarted.compareAndSet(expectedValue = false, newValue = true)) {
+        check(requestsStarted.value.compareAndSet(expect = false, update = true)) {
             "requests flow can only be collected once"
         }
 
@@ -141,7 +139,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         val failure = runCatching {
             implementation(requests).collect {
                 // once we have a response message, check if we've sent headers yet - if not, do so
-                if (headersSent.compareAndSet(expectedValue = false, newValue = true)) {
+                if (headersSent.value.compareAndSet(expect = false, update = true)) {
                     mutex.withLock {
                         handler.sendHeaders(GrpcTrailers())
                     }
@@ -152,7 +150,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         }.exceptionOrNull()
         // check headers again once we're done collecting the response flow - if we received
         // no elements or threw an exception, then we wouldn't have sent them
-        if (failure == null && headersSent.compareAndSet(expectedValue = false, newValue = true)) {
+        if (failure == null && headersSent.value.compareAndSet(expect = false, update = true)) {
             mutex.withLock {
                 handler.sendHeaders(GrpcTrailers())
             }
@@ -215,6 +213,10 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         },
         onComplete = {}
     )
+}
+
+private class AtomicBoolean(initialValue: Boolean) {
+    val value = atomic(initialValue)
 }
 
 private class ServerCallListenerState {
