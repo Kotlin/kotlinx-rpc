@@ -78,6 +78,7 @@ class ModelToKotlinCommonGenerator(
 
             generateInternalDeclaredEntities(this@generateInternalKotlinFile)
 
+            import("kotlinx.rpc.grpc.pb.*")
             import("kotlinx.rpc.internal.utils.*")
             import("kotlinx.coroutines.flow.*")
 
