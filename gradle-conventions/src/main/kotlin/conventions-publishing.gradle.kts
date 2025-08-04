@@ -73,6 +73,12 @@ fun PublishingExtension.configurePublication() {
             fixModuleMetadata(project)
         }
 
+        // no way around this: https://github.com/gradle/gradle/issues/26091
+        val signingTasks = tasks.withType<Sign>()
+        tasks.withType<PublishToMavenRepository>().configureEach {
+            dependsOn(signingTasks)
+        }
+
         logger.info("Project ${project.name} -> Publication configured: $name, $version")
     }
 }
