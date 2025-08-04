@@ -5,7 +5,6 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-import util.other.libs
 import util.withKotlinJvmExtension
 import util.withKotlinKmpExtension
 

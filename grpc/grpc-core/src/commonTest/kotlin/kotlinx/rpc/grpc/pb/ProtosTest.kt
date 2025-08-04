@@ -5,32 +5,25 @@
 package kotlinx.rpc.grpc.pb
 
 import kotlinx.io.Buffer
+import kotlinx.rpc.grpc.internal.MessageCodec
 import kotlinx.rpc.grpc.test.common.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class ProtosTest {
 
-    private fun <T : Any> decodeEncode(
-        msg: T,
-        enc: T.(WireEncoder) -> Unit,
-        dec: (WireDecoder) -> T?
-    ): T? {
-        val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-
-        msg.enc(encoder)
-        encoder.flush()
-
-        return WireDecoder(buffer).use {
-            dec(it)
-        }
+    private fun <M> decodeEncode(
+        msg: M,
+        codec: MessageCodec<M>
+    ): M {
+        val source = codec.encode(msg)
+        return codec.decode(source)
     }
-
 
     @Test
     fun testAllPrimitiveProto() {
-        val msg = AllPrimitivesCommon {
+        val msg = AllPrimitives {
             int32 = 12
             int64 = 1234567890123456789L
             uint32 = 12345u
@@ -48,24 +41,48 @@ class ProtosTest {
             bytes = byteArrayOf(1, 2, 3)
         }
 
-        val decoded = decodeEncode(msg, { encodeWith(it) }, AllPrimitivesCommon::decodeWith)
+        val msgObj = msg
 
-        assertEquals(msg.double, decoded?.double)
+        val decoded = decodeEncode(msgObj, AllPrimitivesInternal.CODEC)
+
+        assertEquals(msg.double, decoded.double)
     }
 
     @Test
     fun testRepeatedProto() {
-        val msg = RepeatedCommon {
-            listFixed32 = listOf(1, 2, 3).map { it.toUInt() }
-            listInt32 = listOf(4, 5, 6)
+        val msg = Repeated {
+            listFixed32 = listOf(1, 5, 3).map { it.toUInt() }
+            listFixed32Packed = listOf(1, 2, 3).map { it.toUInt() }
+            listInt32 = listOf(4, 7, 6)
+            listInt32Packed = listOf(4, 5, 6)
             listString = listOf("a", "b", "c")
         }
 
-        val decoded = decodeEncode(msg, { encodeWith(it) }, RepeatedCommon::decodeWith)
+        val decoded = decodeEncode(msg, RepeatedInternal.CODEC)
 
-        assertEquals(msg.listInt32, decoded?.listInt32)
-        assertEquals(msg.listFixed32, decoded?.listFixed32)
-        assertEquals(msg.listString, decoded?.listString)
+        assertEquals(msg.listInt32, decoded.listInt32)
+        assertEquals(msg.listFixed32, decoded.listFixed32)
+        assertEquals(msg.listString, decoded.listString)
     }
+
+    @Test
+    fun testPresenceCheckProto() {
+
+        // Check a missing required field in a user-constructed message
+        assertFailsWith<IllegalStateException>("PresenceCheck is missing required field: RequiredPresence") {
+            PresenceCheck {}
+        }
+
+        // Test missing field during decoding of an encoded message
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+        encoder.writeFloat(2, 1f)
+        encoder.flush()
+
+        assertFailsWith<IllegalStateException>("PresenceCheck is missing required field: RequiredPresence") {
+            PresenceCheckInternal.CODEC.decode(buffer)
+        }
+    }
+
 
 }
