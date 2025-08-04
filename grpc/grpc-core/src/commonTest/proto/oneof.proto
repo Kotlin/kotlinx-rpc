@@ -1,8 +1,6 @@
 message OneOfMsg {
-
-  oneof f {
-    int32 i = 2;
-    fixed64 T = 3;
+  oneof field {
+    int32 sint = 2;
+    fixed64 fixed = 3;
   }
-
 }

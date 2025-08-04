@@ -113,20 +113,31 @@ private fun Descriptors.FileDescriptor.toModel(): FileDeclaration = cached {
 
 private fun Descriptors.Descriptor.toModel(): MessageDeclaration = cached {
     var currPresenceIdx = 0
-    val regularFields = fields
+    var regularFields = fields
         // only fields that are not part of a oneOf declaration
         .filter { field -> field.realContainingOneof == null }
         .map {
             val presenceIdx = if (it.hasPresence()) currPresenceIdx++ else null
             it.toModel(presenceIdx = presenceIdx)
         }
+    val oneOfs = oneofs.filter { it.fields[0].realContainingOneof != null }.map { it.toModel() }
+
+    regularFields = regularFields + oneOfs.map {
+        FieldDeclaration(
+            // TODO: Proper handling of this field name
+            it.name.simpleName.lowercase(),
+            FieldType.OneOf(it),
+            doc = null,
+            dec = it.variants.first().dec,
+        )
+    }
 
     return MessageDeclaration(
         name = fqName(),
         presenceMaskSize = currPresenceIdx,
         actualFields = regularFields,
         // get all oneof declarations that are not created from an optional in proto3 https://github.com/googleapis/api-linter/issues/1323
-        oneOfDeclarations = oneofs.filter { it.fields[0].realContainingOneof != null }.map { it.toModel() },
+        oneOfDeclarations = oneOfs,
         enumDeclarations = enumTypes.map { it.toModel() },
         nestedDeclarations = nestedTypes.map { it.toModel() },
         doc = null,

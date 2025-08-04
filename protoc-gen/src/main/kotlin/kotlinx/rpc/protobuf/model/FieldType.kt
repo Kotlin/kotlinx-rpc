@@ -42,7 +42,7 @@ sealed interface FieldType {
         override val wireType: WireType = WireType.LENGTH_DELIMITED
     }
 
-    data class OneOf(val value: Lazy<FqName>, val index: Int) : FieldType {
+    data class OneOf(val dec: OneOfDeclaration) : FieldType {
         override val defaultValue: String = "null"
         override val wireType: WireType = WireType.LENGTH_DELIMITED
     }

@@ -4,6 +4,9 @@
 
 package kotlinx.rpc.grpc.pb
 
+import OneOfMsg
+import OneOfMsgInternal
+import invoke
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.internal.MessageCodec
 import kotlinx.rpc.grpc.test.Enum
@@ -14,6 +17,7 @@ import kotlinx.rpc.grpc.test.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 
 class ProtosTest {
 
@@ -122,6 +126,44 @@ class ProtosTest {
 
         val decoded = UsingEnumInternal.CODEC.decode(buffer)
         assertEquals(Enum.ZERO, decoded.enum)
+    }
+
+    @Test
+    fun testOneOf() {
+        val msg1 = OneOfMsg {
+            field = OneOfMsg.Field.Sint(23)
+        }
+        val decoded1 = decodeEncode(msg1, OneOfMsgInternal.CODEC)
+        assertEquals(OneOfMsg.Field.Sint(23), decoded1.field)
+
+        val msg2 = OneOfMsg {
+            field = OneOfMsg.Field.Fixed(21u)
+        }
+        val decoded2 = decodeEncode(msg2, OneOfMsgInternal.CODEC)
+        assertEquals(OneOfMsg.Field.Fixed(21u), decoded2.field)
+    }
+
+    @Test
+    fun testOneOfLastWins() {
+        // write two values on the oneOf field.
+        // the second value must be the one stored during decoding.
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+        encoder.writeInt32(2, 99)
+        encoder.writeFixed64(3, 123u)
+        encoder.flush()
+
+        val decoded = OneOfMsgInternal.CODEC.decode(buffer)
+        assertEquals(OneOfMsg.Field.Fixed(123u), decoded.field)
+    }
+
+    @Test
+    fun testOneOfNull() {
+        // write two values on the oneOf field.
+        // the second value must be the one stored during decoding.
+        val buffer = Buffer()
+        val decoded = OneOfMsgInternal.CODEC.decode(buffer)
+        assertNull(decoded.field)
     }
 
 }
