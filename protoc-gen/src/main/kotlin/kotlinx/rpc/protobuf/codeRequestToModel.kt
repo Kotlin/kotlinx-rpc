@@ -246,7 +246,7 @@ private fun Descriptors.FieldDescriptor.modelType(): FieldType {
         Descriptors.FieldDescriptor.Type.SINT32 -> FieldType.IntegralType.SINT32
         Descriptors.FieldDescriptor.Type.SINT64 -> FieldType.IntegralType.SINT64
         Descriptors.FieldDescriptor.Type.ENUM -> FieldType.Enum(enumType.toModel())
-        Descriptors.FieldDescriptor.Type.MESSAGE -> FieldType.Reference(lazy { messageType!!.toModel().name })
+        Descriptors.FieldDescriptor.Type.MESSAGE -> FieldType.Reference(messageType!!.toModel())
         Descriptors.FieldDescriptor.Type.GROUP -> error("GROUP type is unsupported")
     }
 

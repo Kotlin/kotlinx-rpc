@@ -10,4 +10,5 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 @InternalRpcApi
 public abstract class InternalMessage(fieldsWithPresence: Int) {
     public val presenceMask: BitSet = BitSet(fieldsWithPresence)
+    public abstract val _size: Int
 }

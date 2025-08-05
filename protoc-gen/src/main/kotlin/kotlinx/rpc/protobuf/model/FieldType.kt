@@ -14,7 +14,7 @@ enum class WireType {
 }
 
 sealed interface FieldType {
-    val defaultValue: String
+    val defaultValue: String?
     val wireType: WireType
 
     val isPackable: Boolean get() = false
@@ -37,8 +37,8 @@ sealed interface FieldType {
         override val wireType: WireType = WireType.VARINT
     }
 
-    data class Reference(val value: Lazy<FqName>) : FieldType {
-        override val defaultValue: String = "null"
+    data class Reference(val dec: MessageDeclaration) : FieldType {
+        override val defaultValue: String? = null
         override val wireType: WireType = WireType.LENGTH_DELIMITED
     }
 

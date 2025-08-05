@@ -162,6 +162,16 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
 
     override fun writePackedDouble(fieldNr: Int, value: List<Double>) =
         writePackedInternal(fieldNr, value, value.size * Double.SIZE_BYTES, ::pw_encoder_write_double_no_tag)
+
+    override fun <T : InternalMessage> writeMessage(
+        fieldNr: Int,
+        value: T,
+        encode: (WireEncoder) -> Unit
+    ) {
+        pw_encoder_write_tag(raw, fieldNr, WireType.LENGTH_DELIMITED.ordinal)
+        pw_encoder_write_int32_no_tag(raw, value._size)
+        encode(this)
+    }
 }
 
 internal actual fun WireEncoder(sink: Sink): WireEncoder = WireEncoderNative(sink)

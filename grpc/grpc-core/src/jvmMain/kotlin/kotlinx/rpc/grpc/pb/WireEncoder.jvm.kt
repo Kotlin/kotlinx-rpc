@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.grpc.pb
 
-import com.google.protobuf.ByteString
 import com.google.protobuf.CodedOutputStream
 import kotlinx.io.Sink
 import kotlinx.io.asOutputStream
@@ -199,6 +198,16 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
     override fun writePackedDouble(fieldNr: Int, value: List<Double>): Boolean {
         writePackedInternal(fieldNr, value, value.size * Double.SIZE_BYTES, CodedOutputStream::writeDoubleNoTag)
         return true
+    }
+
+    override fun <T : InternalMessage> writeMessage(
+        fieldNr: Int,
+        value: T,
+        encode: (WireEncoder) -> Unit
+    ) {
+        codedOutputStream.writeTag(fieldNr, WireType.LENGTH_DELIMITED.ordinal)
+        codedOutputStream.writeInt32NoTag(value._size)
+        encode(this)
     }
 
     private inline fun <T> writePackedInternal(
