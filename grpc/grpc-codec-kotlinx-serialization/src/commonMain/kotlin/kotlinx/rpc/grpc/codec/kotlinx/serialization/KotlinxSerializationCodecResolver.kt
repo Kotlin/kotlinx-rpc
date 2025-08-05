@@ -1,0 +1,72 @@
+/*
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+package kotlinx.rpc.grpc.codec.kotlinx.serialization
+
+import kotlinx.io.Buffer
+import kotlinx.io.Source
+import kotlinx.io.readByteArray
+import kotlinx.io.readString
+import kotlinx.io.writeString
+import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.codec.MessageCodecResolver
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.serialization.BinaryFormat
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialFormat
+import kotlinx.serialization.StringFormat
+import kotlinx.serialization.serializer
+import kotlin.reflect.KType
+
+@ExperimentalRpcApi
+public class KotlinxSerializationCodecResolver(private val serialFormat: SerialFormat) : MessageCodecResolver {
+    override fun resolve(kType: KType): MessageCodec<*> {
+        val serializer = serialFormat.serializersModule.serializer(kType)
+
+        return KotlinxSerializationCodec(serializer, serialFormat)
+    }
+}
+
+@ExperimentalRpcApi
+public fun SerialFormat.asCodecResolver(): MessageCodecResolver =
+    KotlinxSerializationCodecResolver(this)
+
+private class KotlinxSerializationCodec<T>(
+    private val serializer: KSerializer<T>,
+    private val serialFormat: SerialFormat,
+) : MessageCodec<T> {
+    override fun encode(value: T): Source {
+        return when (serialFormat) {
+            is StringFormat -> {
+                val stringValue = serialFormat.encodeToString(serializer, value)
+                Buffer().apply {
+                    writeString(stringValue)
+                }
+            }
+
+            is BinaryFormat -> {
+                val bytesValue = serialFormat.encodeToByteArray(serializer, value)
+                Buffer().apply {
+                    write(bytesValue)
+                }
+            }
+
+            else -> error("Only ${StringFormat::class.simpleName} and ${BinaryFormat::class.simpleName} are supported")
+        }
+    }
+
+    override fun decode(stream: Source): T {
+        return when (serialFormat) {
+            is StringFormat -> {
+                serialFormat.decodeFromString(serializer, stream.readString())
+            }
+
+            is BinaryFormat -> {
+                serialFormat.decodeFromByteArray(serializer, stream.readByteArray())
+            }
+
+            else -> error("Only ${StringFormat::class.simpleName} and ${BinaryFormat::class.simpleName} are supported")
+        }
+    }
+}
