@@ -14,4 +14,3 @@ enum Enum {
 message UsingEnum {
   Enum enum = 1;
 }
-

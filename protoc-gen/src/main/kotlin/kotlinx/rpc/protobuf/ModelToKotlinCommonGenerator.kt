@@ -438,8 +438,10 @@ class ModelToKotlinCommonGenerator(
 
 
     private fun FieldDeclaration.wireSizeCall(variable: String): String {
+        val sizeFunName =
+            type.decodeEncodeFuncName()?.decapitalize() ?: error("No decodeEncodeFuncName for type: $type")
         val sizeFunc =
-            "$PB_PKG.WireSize.${type.decodeEncodeFuncName()!!.decapitalize()}($variable)"
+            "$PB_PKG.WireSize.$sizeFunName($variable)"
         return when (val fieldType = type) {
             is FieldType.IntegralType -> when {
                 fieldType.wireType == WireType.FIXED32 -> "32"
@@ -604,12 +606,12 @@ class ModelToKotlinCommonGenerator(
                     declaration.aliases.forEach { alias: EnumDeclaration.Alias ->
                         code(
                             "val ${alias.name.simpleName}: $className " +
-                                    "= ${alias.original.name.simpleName}"
+                                    "get() = ${alias.original.name.simpleName}"
                         )
                     }
 
                     val entryNamesSorted = entriesSorted.joinToString(", ") { it.name.simpleName }
-                    code("val entries: List<$className> = listOf($entryNamesSorted)")
+                    code("val entries: Lazy<List<$className>> = lazy { listOf($entryNamesSorted) }")
                 }
             }
         }
