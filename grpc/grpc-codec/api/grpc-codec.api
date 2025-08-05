@@ -1,0 +1,18 @@
+public final class kotlinx/rpc/grpc/codec/EmptyMessageCodecResolver : kotlinx/rpc/grpc/codec/MessageCodecResolver {
+	public static final field INSTANCE Lkotlinx/rpc/grpc/codec/EmptyMessageCodecResolver;
+	public fun resolve (Lkotlin/reflect/KType;)Lkotlinx/rpc/grpc/codec/MessageCodec;
+}
+
+public abstract interface class kotlinx/rpc/grpc/codec/MessageCodec {
+	public abstract fun decode (Lkotlinx/io/Source;)Ljava/lang/Object;
+	public abstract fun encode (Ljava/lang/Object;)Lkotlinx/io/Source;
+}
+
+public abstract interface class kotlinx/rpc/grpc/codec/MessageCodecResolver {
+	public abstract fun resolve (Lkotlin/reflect/KType;)Lkotlinx/rpc/grpc/codec/MessageCodec;
+}
+
+public abstract interface annotation class kotlinx/rpc/grpc/codec/WithCodec : java/lang/annotation/Annotation {
+	public abstract fun codec ()Ljava/lang/Class;
+}
+
