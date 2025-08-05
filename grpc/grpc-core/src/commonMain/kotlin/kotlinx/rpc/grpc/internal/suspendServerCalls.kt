@@ -72,8 +72,10 @@ public fun <Request, Response> CoroutineScope.serverStreamingServerMethodDefinit
         flow {
             requests
                 .singleOrStatusFlow("request", descriptor)
-                .collect { req ->
-                    implementation(req).collect { resp -> emit(resp) }
+                .collect { request ->
+                    implementation(request).collect { response ->
+                        emit(response)
+                    }
                 }
         }
     }
@@ -108,7 +110,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
     handler: ServerCall<Request, Response>,
     implementation: (Flow<Request>) -> Flow<Response>,
 ): ServerCall.Listener<Request> {
-    val readiness = Ready()
+    val ready = Ready { handler.isReady()}
     val requestsChannel = Channel<Request>(1)
 
     val requestsStarted = AtomicBoolean(false) // enforces read-once
@@ -118,8 +120,8 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
             "requests flow can only be collected once"
         }
 
-        handler.request(1)
         try {
+            handler.request(1)
             for (request in requestsChannel) {
                 emit(request)
                 handler.request(1)
@@ -144,8 +146,10 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
                         handler.sendHeaders(GrpcTrailers())
                     }
                 }
-                readiness.suspendUntilReady()
-                mutex.withLock { handler.sendMessage(it) }
+                ready.suspendUntilReady()
+                mutex.withLock {
+                    handler.sendMessage(it)
+                }
             }
         }.exceptionOrNull()
         // check headers again once we're done collecting the response flow - if we received
@@ -180,7 +184,9 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
             }
         } ?: GrpcTrailers()
 
-        mutex.withLock { handler.close(closeStatus, trailers) }
+        mutex.withLock {
+            handler.close(closeStatus, trailers)
+        }
     }
 
     return serverCallListener(
@@ -209,7 +215,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
             requestsChannel.close()
         },
         onReady = {
-            readiness.onReady()
+            ready.onReady()
         },
         onComplete = {}
     )
