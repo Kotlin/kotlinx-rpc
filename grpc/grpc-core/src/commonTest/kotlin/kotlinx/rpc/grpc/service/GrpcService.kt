@@ -15,7 +15,7 @@ import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.codec.MessageCodecResolver
 import kotlinx.rpc.grpc.codec.WithCodec
-import kotlinx.rpc.grpc.codec.kotlinx.serialization.KotlinxSerializationCodecResolver
+import kotlinx.rpc.grpc.codec.kotlinx.serialization.asCodecResolver
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlinx.serialization.Serializable
@@ -91,7 +91,7 @@ class GrpcGeneratedServiceTest {
 
     @Test
     fun testSerializationCodec() = runServiceTest<GrpcServiceSerializable>(
-        resolver = KotlinxSerializationCodecResolver(Json),
+        resolver = Json.asCodecResolver(),
         impl = GrpcServiceSerializableImpl(),
     ) { service ->
         assertEquals("test test", service.plainString("test"))
