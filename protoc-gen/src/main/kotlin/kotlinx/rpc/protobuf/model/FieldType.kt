@@ -32,12 +32,17 @@ sealed interface FieldType {
         data class Entry(val key: FieldType, val value: FieldType)
     }
 
+    data class Enum(val dec: EnumDeclaration) : FieldType {
+        override val defaultValue = dec.defaultEntry().name.fullName()
+        override val wireType: WireType = WireType.VARINT
+    }
+
     data class Reference(val value: Lazy<FqName>) : FieldType {
         override val defaultValue: String = "null"
         override val wireType: WireType = WireType.LENGTH_DELIMITED
     }
 
-    data class OneOf(val value: Lazy<FqName>, val index: Int) : FieldType {
+    data class OneOf(val dec: OneOfDeclaration) : FieldType {
         override val defaultValue: String = "null"
         override val wireType: WireType = WireType.LENGTH_DELIMITED
     }
