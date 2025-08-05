@@ -75,8 +75,9 @@ private fun Descriptors.GenericDescriptor.fqName(): FqName {
             FqName.Declaration(usedName, containingType?.fqName() ?: file.fqName())
         }
 
-        is Descriptors.EnumValueDescriptor -> FqName.Declaration(name, type.fqName())
         is Descriptors.OneofDescriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
+        is Descriptors.EnumDescriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
+        is Descriptors.EnumValueDescriptor -> FqName.Declaration(name, type.fqName())
         is Descriptors.ServiceDescriptor -> FqName.Declaration(nameCapital, file?.fqName() ?: file.fqName())
         is Descriptors.MethodDescriptor -> FqName.Declaration(nameLower, service?.fqName() ?: file.fqName())
         else -> error("Unknown generic descriptor: $this")
@@ -112,20 +113,31 @@ private fun Descriptors.FileDescriptor.toModel(): FileDeclaration = cached {
 
 private fun Descriptors.Descriptor.toModel(): MessageDeclaration = cached {
     var currPresenceIdx = 0
-    val regularFields = fields
+    var regularFields = fields
         // only fields that are not part of a oneOf declaration
         .filter { field -> field.realContainingOneof == null }
         .map {
             val presenceIdx = if (it.hasPresence()) currPresenceIdx++ else null
             it.toModel(presenceIdx = presenceIdx)
         }
+    val oneOfs = oneofs.filter { it.fields[0].realContainingOneof != null }.map { it.toModel() }
+
+    regularFields = regularFields + oneOfs.map {
+        FieldDeclaration(
+            // TODO: Proper handling of this field name
+            it.name.simpleName.decapitalize(),
+            FieldType.OneOf(it),
+            doc = null,
+            dec = it.variants.first().dec,
+        )
+    }
 
     return MessageDeclaration(
         name = fqName(),
         presenceMaskSize = currPresenceIdx,
         actualFields = regularFields,
         // get all oneof declarations that are not created from an optional in proto3 https://github.com/googleapis/api-linter/issues/1323
-        oneOfDeclarations = oneofs.filter { it.fields[0].realContainingOneof != null }.map { it.toModel() },
+        oneOfDeclarations = oneOfs,
         enumDeclarations = enumTypes.map { it.toModel() },
         nestedDeclarations = nestedTypes.map { it.toModel() },
         doc = null,
@@ -233,7 +245,7 @@ private fun Descriptors.FieldDescriptor.modelType(): FieldType {
         Descriptors.FieldDescriptor.Type.SFIXED64 -> FieldType.IntegralType.SFIXED64
         Descriptors.FieldDescriptor.Type.SINT32 -> FieldType.IntegralType.SINT32
         Descriptors.FieldDescriptor.Type.SINT64 -> FieldType.IntegralType.SINT64
-        Descriptors.FieldDescriptor.Type.ENUM -> FieldType.Reference(lazy { enumType!!.toModel().name })
+        Descriptors.FieldDescriptor.Type.ENUM -> FieldType.Enum(enumType.toModel())
         Descriptors.FieldDescriptor.Type.MESSAGE -> FieldType.Reference(lazy { messageType!!.toModel().name })
         Descriptors.FieldDescriptor.Type.GROUP -> error("GROUP type is unsupported")
     }
