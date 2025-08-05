@@ -159,7 +159,7 @@ private fun <Request, Response> rpcImpl(
          * there is room in the buffer.
          */
         val responses = Channel<Response>(1)
-        val ready = Ready()
+        val ready = Ready { handler.isReady() }
 
         handler.start(channelResponseListener(responses, ready), headers)
 
@@ -200,7 +200,7 @@ private fun <Request, Response> rpcImpl(
 private fun <Response> channelResponseListener(
     responses: Channel<Response>,
     ready: Ready,
-) = clientCallListener<Response>(
+) = clientCallListener(
     onHeaders = {
         // todo check what happens here
     },
@@ -226,7 +226,7 @@ private fun <Response> channelResponseListener(
 // todo really needed?
 internal fun <T> Flow<T>.singleOrStatusFlow(
     expected: String,
-    descriptor: Any
+    descriptor: Any,
 ): Flow<T> = flow {
     var found = false
     collect {
@@ -252,16 +252,22 @@ internal suspend fun <T> Flow<T>.singleOrStatus(
     descriptor: Any
 ): T = singleOrStatusFlow(expected, descriptor).single()
 
-internal class Ready {
+internal class Ready(private val isReallyReady: () -> Boolean) {
     // A CONFLATED channel never suspends to send, and two notifications of readiness are equivalent
     // to one
     private val channel = Channel<Unit>(Channel.CONFLATED)
 
     fun onReady() {
-        channel.trySend(Unit)
+        channel.trySend(Unit).onFailure { e ->
+            throw e ?: AssertionError(
+                "Should be impossible; a CONFLATED channel should never return false on offer"
+            )
+        }
     }
 
     suspend fun suspendUntilReady() {
-        channel.receive()
+        while (!isReallyReady()) {
+            channel.receive()
+        }
     }
 }

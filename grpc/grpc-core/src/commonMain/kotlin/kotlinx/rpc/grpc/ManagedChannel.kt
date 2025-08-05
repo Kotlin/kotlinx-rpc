@@ -40,7 +40,7 @@ public interface ManagedChannel {
      *
      * @return whether the channel is terminated, as would be done by [isTerminated].
      */
-    public suspend fun awaitTermination(duration: Duration): Boolean
+    public suspend fun awaitTermination(duration: Duration = Duration.INFINITE): Boolean
 
     /**
      * Initiates an orderly shutdown in which preexisting calls continue but new calls are immediately canceled.
