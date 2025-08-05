@@ -439,7 +439,7 @@ class ModelToKotlinCommonGenerator(
 
     private fun FieldDeclaration.wireSizeCall(variable: String): String {
         val sizeFunc =
-            "$PB_PKG.WireSize.${type.decodeEncodeFuncName()!!.replaceFirstChar { it.lowercase() }}($variable)"
+            "$PB_PKG.WireSize.${type.decodeEncodeFuncName()!!.decapitalize()}($variable)"
         return when (val fieldType = type) {
             is FieldType.IntegralType -> when {
                 fieldType.wireType == WireType.FIXED32 -> "32"

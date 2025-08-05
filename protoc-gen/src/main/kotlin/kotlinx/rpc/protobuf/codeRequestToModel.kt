@@ -125,7 +125,7 @@ private fun Descriptors.Descriptor.toModel(): MessageDeclaration = cached {
     regularFields = regularFields + oneOfs.map {
         FieldDeclaration(
             // TODO: Proper handling of this field name
-            it.name.simpleName.lowercase(),
+            it.name.simpleName.decapitalize(),
             FieldType.OneOf(it),
             doc = null,
             dec = it.variants.first().dec,
