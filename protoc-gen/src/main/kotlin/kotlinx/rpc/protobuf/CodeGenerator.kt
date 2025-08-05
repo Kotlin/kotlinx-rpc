@@ -102,10 +102,12 @@ open class CodeGenerator(
 
     internal fun whenBlock(
         condition: String? = null,
+        prefix: String = "",
         block: (CodeGenerator.() -> Unit),
     ) {
+        val pre = if (prefix.isNotEmpty()) prefix.trim() + " " else ""
         val cond = condition?.let { " ($it)" } ?: ""
-        scope("when$cond", block = block)
+        scope("${pre}when$cond", block = block)
     }
 
     internal fun whenCase(

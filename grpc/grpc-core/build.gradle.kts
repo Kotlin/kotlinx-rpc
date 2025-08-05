@@ -7,6 +7,7 @@ import kotlinx.rpc.proto.kotlinMultiplatform
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -157,6 +158,13 @@ rpc {
         project.tasks.withType<BufGenerateTask>().configureEach {
             if (name.endsWith("Test")) {
                 dependsOn(gradle.includedBuild("protoc-gen").task(":jar"))
+            }
+        }
+
+        // generate protos before compiling tests
+        project.tasks.withType<KotlinCompile>().configureEach {
+            if (name.startsWith("compileTest")) {
+                dependsOn(project.tasks.withType<BufGenerateTask>())
             }
         }
     }

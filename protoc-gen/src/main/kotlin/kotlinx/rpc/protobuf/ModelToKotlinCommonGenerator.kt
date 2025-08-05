@@ -78,6 +78,10 @@ class ModelToKotlinCommonGenerator(
 
             generateInternalDeclaredEntities(this@generateInternalKotlinFile)
 
+            import("kotlinx.rpc.grpc.pb.*")
+            import("kotlinx.rpc.internal.utils.*")
+            import("kotlinx.coroutines.flow.*")
+
             additionalInternalImports.forEach {
                 import(it)
             }
@@ -94,19 +98,29 @@ class ModelToKotlinCommonGenerator(
     }
 
     private fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {
-        fileDeclaration.messageDeclarations.forEach { generateInternalMessage(it) }
+        generateInternalMessageEntities(fileDeclaration.messageDeclarations)
 
-        fileDeclaration.messageDeclarations.forEach {
+        val allEnums =
+            fileDeclaration.enumDeclarations + fileDeclaration.messageDeclarations.flatMap { it.allEnumsRecursively() }
+        allEnums.forEach { enum ->
+            generateInternalEnumConstructor(enum)
+        }
+    }
+
+    private fun CodeGenerator.generateInternalMessageEntities(messages: List<MessageDeclaration>) {
+        messages.forEach { generateInternalMessage(it) }
+
+        messages.forEach {
             generateMessageConstructor(it)
         }
 
-        fileDeclaration.messageDeclarations.forEach {
+        messages.forEach {
             generateRequiredCheck(it)
             generateMessageEncoder(it)
             generateMessageDecoder(it)
         }
-
     }
+
 
     private fun MessageDeclaration.fields() = actualFields.map {
         it.transformToFieldDeclaration() to it
@@ -269,12 +283,15 @@ class ModelToKotlinCommonGenerator(
         code("return msg")
     }
 
-    private fun CodeGenerator.readMatchCase(field: FieldDeclaration) {
-        val encFuncName = field.type.decodeEncodeFuncName()
-        val assignment = "msg.${field.name} ="
+    private fun CodeGenerator.readMatchCase(
+        field: FieldDeclaration,
+        assignment: String = "msg.${field.name} =",
+        wrapperCtor: (String) -> String = { it }
+    ) {
         when (val fieldType = field.type) {
             is FieldType.IntegralType -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.${field.type.wireType.name}") {
-                code("$assignment decoder.read$encFuncName()")
+                val raw = "decoder.read${field.type.decodeEncodeFuncName()}()"
+                code("$assignment ${wrapperCtor(raw)}")
             }
 
             is FieldType.List -> if (field.dec.isPacked) {
@@ -287,8 +304,24 @@ class ModelToKotlinCommonGenerator(
                 }
             }
 
+            is FieldType.Enum -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.VARINT") {
+                val fromNum = "${fieldType.dec.name.safeFullName()}.fromNumber"
+                val raw = "$fromNum(decoder.read${field.type.decodeEncodeFuncName()}())"
+                code("$assignment ${wrapperCtor(raw)}")
+            }
+
+            is FieldType.OneOf -> {
+                fieldType.dec.variants.forEach { variant ->
+                    val variantName = "${fieldType.dec.name.safeFullName()}.${variant.name}"
+                    readMatchCase(
+                        field = variant,
+                        assignment = assignment,
+                        wrapperCtor = { "$variantName($it)" }
+                    )
+                }
+            }
+
             is FieldType.Map -> TODO()
-            is FieldType.OneOf -> TODO()
             is FieldType.Reference -> TODO()
         }
     }
@@ -308,42 +341,77 @@ class ModelToKotlinCommonGenerator(
             val fieldName = field.name
             if (field.nullable) {
                 scope("$fieldName?.also") {
-                    code(field.writeValue("it"))
+                    writeFieldValue(field, "it")
                 }
             } else if (!field.dec.hasPresence()) {
                 ifBranch(condition = field.defaultCheck(), ifBlock = {
-                    code(field.writeValue(field.name))
+                    writeFieldValue(field, field.name)
                 })
             } else {
-                code(field.writeValue(field.name))
+                writeFieldValue(field, field.name)
             }
         }
     }
 
-    private fun FieldDeclaration.writeValue(variable: String): String {
-        return when (val fieldType = type) {
-            is FieldType.IntegralType -> "encoder.write${type.decodeEncodeFuncName()}(fieldNr = $number, value = $variable)"
-            is FieldType.List -> when {
-                dec.isPacked && packedFixedSize ->
-                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}(fieldNr = $number, value = $variable)"
+    private fun CodeGenerator.writeFieldValue(field: FieldDeclaration, valueVar: String) {
+        var encFunc = field.type.decodeEncodeFuncName()
+        val number = field.number
+        when (val fieldType = field.type) {
+            is FieldType.IntegralType -> code("encoder.write${encFunc!!}(fieldNr = $number, value = $valueVar)")
+            is FieldType.List -> {
+                encFunc = fieldType.value.decodeEncodeFuncName()
+                when {
+                    field.dec.isPacked && field.packedFixedSize ->
+                        code("encoder.writePacked${encFunc!!}(fieldNr = $number, value = $valueVar)")
 
-                dec.isPacked && !packedFixedSize ->
-                    "encoder.writePacked${fieldType.value.decodeEncodeFuncName()}(fieldNr = $number, value = $variable, fieldSize = ${
-                        wireSizeCall(
-                            variable
+                    field.dec.isPacked && !field.packedFixedSize ->
+                        code(
+                            "encoder.writePacked${encFunc!!}(fieldNr = $number, value = $valueVar, fieldSize = ${
+                                field.wireSizeCall(valueVar)
+                            })"
                         )
-                    })"
 
-                else ->
-                    "$variable.forEach { encoder.write${fieldType.value.decodeEncodeFuncName()}($number, it) }"
+                    else -> code("$valueVar.forEach { encoder.write${encFunc!!}($number, it) }")
+                }
+            }
+
+            is FieldType.Enum -> code("encoder.write${encFunc!!}(fieldNr = $number, value = ${valueVar}.number)")
+
+            is FieldType.OneOf -> whenBlock("val value = $valueVar") {
+                fieldType.dec.variants.forEach { variant ->
+                    whenCase("is ${fieldType.dec.name.safeFullName()}.${variant.name}") {
+                        writeFieldValue(variant, "value.value")
+                    }
+                }
             }
 
             is FieldType.Map -> TODO()
-            is FieldType.OneOf -> TODO()
-            is FieldType.Reference -> TODO()
+            is FieldType.Reference -> code("<TODO: Implement Reference writeValue()>")
         }
+
     }
 
+
+    private fun CodeGenerator.generateInternalEnumConstructor(enum: EnumDeclaration) {
+        function(
+            "fromNumber",
+            modifiers = "private",
+            args = "number: Int",
+            contextReceiver = "${enum.name.safeFullName()}.Companion",
+            returnType = enum.name.safeFullName(),
+        ) {
+            whenBlock(prefix = "return", condition = "number") {
+                enum.originalEntries.forEach { entry ->
+                    whenCase("${entry.dec.number}") {
+                        code("${entry.name}")
+                    }
+                }
+                whenCase("else") {
+                    code("${enum.name.safeFullName()}.UNRECOGNIZED(number)")
+                }
+            }
+        }
+    }
 
     /**
      * Generates a function to check for the presence of all required fields in a message declaration.
@@ -370,7 +438,10 @@ class ModelToKotlinCommonGenerator(
 
 
     private fun FieldDeclaration.wireSizeCall(variable: String): String {
-        val sizeFunc = "$PB_PKG.WireSize.${type.decodeEncodeFuncName().replaceFirstChar { it.lowercase() }}($variable)"
+        val sizeFunName =
+            type.decodeEncodeFuncName()?.decapitalize() ?: error("No decodeEncodeFuncName for type: $type")
+        val sizeFunc =
+            "$PB_PKG.WireSize.$sizeFunName($variable)"
         return when (val fieldType = type) {
             is FieldType.IntegralType -> when {
                 fieldType.wireType == WireType.FIXED32 -> "32"
@@ -383,6 +454,7 @@ class ModelToKotlinCommonGenerator(
                 else -> error("Unexpected use of size call for field: $name, type: $fieldType")
             }
 
+            is FieldType.Enum -> sizeFunc
             is FieldType.Map -> TODO()
             is FieldType.OneOf -> TODO()
             is FieldType.Reference -> TODO()
@@ -397,12 +469,15 @@ class ModelToKotlinCommonGenerator(
             }
 
             is FieldType.List -> "$name.isNotEmpty()"
+            is FieldType.Reference -> "<TODO: Implement Reference defaultCheck>"
+
+            is FieldType.Enum -> "${fieldType.defaultValue} != $name"
 
             else -> TODO("Field: $name, type: $fieldType")
         }
     }
 
-    private fun FieldType.decodeEncodeFuncName(): String = when (this) {
+    private fun FieldType.decodeEncodeFuncName(): String? = when (this) {
         FieldType.IntegralType.STRING -> "String"
         FieldType.IntegralType.BYTES -> "Bytes"
         FieldType.IntegralType.BOOL -> "Bool"
@@ -419,9 +494,10 @@ class ModelToKotlinCommonGenerator(
         FieldType.IntegralType.SFIXED32 -> "SFixed32"
         FieldType.IntegralType.SFIXED64 -> "SFixed64"
         is FieldType.List -> "Packed${value.decodeEncodeFuncName()}"
-        is FieldType.Map -> error("No encoding/decoding function for map types")
-        is FieldType.OneOf -> error("No encoding/decoding function for oneOf types")
-        is FieldType.Reference -> error("No encoding/decoding function for sub message types")
+        is FieldType.Enum -> "Enum"
+        is FieldType.Map -> null
+        is FieldType.OneOf -> null
+        is FieldType.Reference -> null
     }
 
     private fun FieldDeclaration.transformToFieldDeclaration(): String {
@@ -435,10 +511,9 @@ class ModelToKotlinCommonGenerator(
                 value.safeFullName()
             }
 
-            is FieldType.OneOf -> {
-                val value by type.value
-                value.safeFullName()
-            }
+            is FieldType.Enum -> type.dec.name.safeFullName()
+
+            is FieldType.OneOf -> type.dec.name.safeFullName()
 
             is FieldType.IntegralType -> {
                 type.fqName.simpleName
@@ -471,6 +546,7 @@ class ModelToKotlinCommonGenerator(
 
                 "Map<${fqKey.safeFullName()}, ${fqValue.safeFullName()}>"
             }
+
         }.withNullability(nullable)
     }
 
@@ -497,13 +573,31 @@ class ModelToKotlinCommonGenerator(
     }
 
     private fun CodeGenerator.generatePublicEnum(declaration: EnumDeclaration) {
-        clazz(declaration.name.simpleName, modifiers = "enum") {
-            declaration.originalEntries.forEach { entry ->
-                code("${entry.name.simpleName},")
-                newLine()
+
+        val className = declaration.name.simpleName
+
+        val entriesSorted = declaration.originalEntries.sortedBy { it.dec.number }
+
+        clazz(
+            className, "sealed",
+            constructorArgs = listOf("open val number: Int"),
+        ) {
+
+            declaration.originalEntries.forEach { variant ->
+                clazz(
+                    name = variant.name.simpleName,
+                    declarationType = DeclarationType.Object,
+                    superTypes = listOf("$className(number = ${variant.dec.number})"),
+                )
             }
-            code(";")
-            newLine()
+
+            // TODO: Avoid name conflict
+            clazz(
+                modifiers = "data",
+                name = "UNRECOGNIZED",
+                constructorArgs = listOf("override val number: Int"),
+                superTypes = listOf("$className(number)"),
+            )
 
             if (declaration.aliases.isNotEmpty()) {
                 newLine()
@@ -511,10 +605,13 @@ class ModelToKotlinCommonGenerator(
                 clazz("", modifiers = "companion", declarationType = DeclarationType.Object) {
                     declaration.aliases.forEach { alias: EnumDeclaration.Alias ->
                         code(
-                            "val ${alias.name.simpleName}: ${declaration.name.simpleName} " +
-                                    "= ${alias.original.name.simpleName}"
+                            "val ${alias.name.simpleName}: $className " +
+                                    "get() = ${alias.original.name.simpleName}"
                         )
                     }
+
+                    val entryNamesSorted = entriesSorted.joinToString(", ") { it.name.simpleName }
+                    code("val entries: Lazy<List<$className>> = lazy { listOf($entryNamesSorted) }")
                 }
             }
         }
@@ -569,6 +666,8 @@ class ModelToKotlinCommonGenerator(
     }
 }
 
+private fun MessageDeclaration.allEnumsRecursively(): List<EnumDeclaration> =
+    enumDeclarations + nestedDeclarations.flatMap(MessageDeclaration::allEnumsRecursively)
 
 private fun String.packageNameSuffixed(suffix: String): String {
     return if (isEmpty()) suffix else "$this.$suffix"
