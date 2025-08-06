@@ -8,6 +8,8 @@ import OneOfMsg
 import OneOfMsgInternal
 import Outer
 import OuterInternal
+import asInternal
+import encodeWith
 import invoke
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.codec.MessageCodec
@@ -175,6 +177,30 @@ class ProtosTest {
             val decoded = encodeDecode(msg, OneOfMsgInternal.CODEC)
             assertEquals(MyEnum.ONE, (decoded.field as OneOfMsg.Field.Enum).value)
         }
+    }
+
+    @Test
+    fun testOneOfMsgMerging() {
+        val part1 = OneOfMsg {
+            field = OneOfMsg.Field.Other(Other { arg2 = "arg2" })
+        }
+        val part2 = OneOfMsg {
+            field = OneOfMsg.Field.Other(Other { arg1 = "arg1" })
+        }
+
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+        part1.asInternal().encodeWith(encoder)
+        part2.asInternal().encodeWith(encoder)
+        encoder.flush()
+
+
+        val decoded = OneOfMsgInternal.CODEC.decode(buffer)
+        assertIs<OneOfMsg.Field.Other>(decoded.field)
+        val decodedOther = (decoded.field as OneOfMsg.Field.Other).value
+        assertEquals("arg2", decodedOther.arg2)
+        assertEquals("arg1", decodedOther.arg1)
+        assertEquals(null, decodedOther.arg3)
     }
 
     @Test

@@ -265,7 +265,7 @@ class ModelToKotlinCommonGenerator(
             code("val tag = decoder.readTag() ?: break // EOF, we read the whole message")
             whenBlock {
                 declaration.fields().forEach { (_, field) -> readMatchCase(field) }
-                whenCase("else") { code("TODO(\"Handle unknown fields\")") }
+                whenCase("else") { code("TODO(\"Handle unknown fields: \$tag\")") }
             }
         }
         ifBranch(
@@ -394,7 +394,7 @@ class ModelToKotlinCommonGenerator(
 
             is FieldType.Message -> {
                 val internalClassName = fieldType.dec.value.internalClassFullName()
-                code("decoder.readMessage($lvalue.asInternal(), $internalClassName::decodeWith)")
+                code("decoder.readMessage($lvalue.asInternal(), $internalClassName.CODEC::decodeWith)")
             }
 
             is FieldType.Map -> TODO()
