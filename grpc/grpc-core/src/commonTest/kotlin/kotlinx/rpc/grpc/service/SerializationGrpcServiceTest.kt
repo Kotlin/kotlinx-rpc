@@ -25,7 +25,7 @@ interface GrpcServiceSerializable {
 
     suspend fun serialization(value: SerializableMessage): SerializableMessage
 
-    suspend fun krpc173(unit: Unit)
+    suspend fun krpc173()
 
     suspend fun clientStreaming(flow: Flow<String>): String
 
@@ -43,7 +43,7 @@ class GrpcServiceSerializableImpl : GrpcServiceSerializable {
         return SerializableMessage("${value.value} ${value.value}")
     }
 
-    override suspend fun krpc173(unit: Unit) {
+    override suspend fun krpc173() {
         doWork()
     }
 
@@ -76,7 +76,7 @@ class SerializationGrpcServiceTest : BaseGrpcServiceTest() {
         resolver = Json.asCodecResolver(),
         impl = GrpcServiceSerializableImpl(),
     ) { service ->
-        assertEquals(Unit, service.krpc173(Unit))
+        assertEquals(Unit, service.krpc173())
     }
 
     @Test

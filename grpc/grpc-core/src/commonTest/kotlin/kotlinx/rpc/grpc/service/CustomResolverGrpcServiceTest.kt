@@ -6,7 +6,6 @@ package kotlinx.rpc.grpc.service
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.io.Buffer
@@ -40,7 +39,7 @@ interface GrpcService {
 
     suspend fun message(value: Message): Message
 
-    suspend fun krpc173(unit: Unit)
+    suspend fun krpc173()
 
     suspend fun clientStreaming(flow: Flow<String>): String
 
@@ -58,7 +57,7 @@ class GrpcServiceImpl : GrpcService {
         return Message("${value.value} ${value.value}")
     }
 
-    override suspend fun krpc173(unit: Unit) {
+    override suspend fun krpc173() {
         doWork()
     }
 
@@ -97,7 +96,7 @@ class CustomResolverGrpcServiceTest : BaseGrpcServiceTest() {
         resolver = simpleResolver,
         impl = GrpcServiceImpl(),
     ) { service ->
-        assertEquals(Unit, service.krpc173(Unit))
+        assertEquals(Unit, service.krpc173())
     }
 
     @Test
@@ -148,11 +147,11 @@ class CustomResolverGrpcServiceTest : BaseGrpcServiceTest() {
 
         val unitCodec = object : MessageCodec<Unit> {
             override fun encode(value: Unit): Source {
-                return Buffer().apply { writeString("Unit") }
+                return Buffer()
             }
 
             override fun decode(stream: Source) {
-                assertEquals("Unit", stream.readString())
+                check(stream.exhausted())
             }
         }
     }

@@ -93,7 +93,9 @@ public class GrpcClient internal constructor(
     }
 
     private inline fun <T, R> withGrpcCall(call: RpcCall, body: (MethodDescriptor<RequestClient, T>, Any) -> R): R {
-        require(call.arguments.size == 1) { "Call parameter size should be 1, but ${call.arguments.size}" }
+        require(call.arguments.size <= 1) {
+            "Call parameter size must be 0 or 1, but ${call.arguments.size}"
+        }
 
         val delegate = delegates.computeIfAbsent(call.descriptor.fqName) {
             val grpc = call.descriptor as? GrpcServiceDescriptor<*>
@@ -107,8 +109,7 @@ public class GrpcClient internal constructor(
                 as? MethodDescriptor<RequestClient, T>
             ?: error("Expected a gRPC method descriptor")
 
-        val request = call.arguments[0]
-            ?: error("Expected a single argument for a gRPC call")
+        val request = call.arguments.getOrNull(0) ?: Unit
 
         return body(methodDescriptor, request)
     }
