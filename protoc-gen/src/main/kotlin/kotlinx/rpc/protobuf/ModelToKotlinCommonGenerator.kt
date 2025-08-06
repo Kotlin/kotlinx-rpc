@@ -260,6 +260,7 @@ class ModelToKotlinCommonGenerator(
         name = "decodeWith",
         modifiers = "internal",
         args = "msg: ${declaration.internalClassFullName()}, decoder: $PB_PKG.WireDecoder",
+        annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
         contextReceiver = "${declaration.internalClassFullName()}.CODEC"
     ) {
         whileBlock("!decoder.hadError()") {
@@ -381,6 +382,7 @@ class ModelToKotlinCommonGenerator(
     private fun CodeGenerator.generateMessageEncoder(declaration: MessageDeclaration) = function(
         name = "encodeWith",
         modifiers = "internal",
+        annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
         args = "encoder: $PB_PKG.WireEncoder",
         contextReceiver = declaration.internalClassFullName(),
     ) {
@@ -459,8 +461,9 @@ class ModelToKotlinCommonGenerator(
     private fun CodeGenerator.generateInternalEnumConstructor(enum: EnumDeclaration) {
         function(
             "fromNumber",
-            modifiers = "private",
+            modifiers = "internal",
             args = "number: Int",
+            annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
             contextReceiver = "${enum.name.safeFullName()}.Companion",
             returnType = enum.name.safeFullName(),
         ) {
@@ -482,7 +485,8 @@ class ModelToKotlinCommonGenerator(
      */
     private fun CodeGenerator.generateRequiredCheck(declaration: MessageDeclaration) = function(
         name = "checkRequiredFields",
-        modifiers = "private",
+        modifiers = "internal",
+        annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
         contextReceiver = declaration.internalClassFullName(),
     ) {
         val requiredFields = declaration.actualFields.filter { it.dec.isRequired }
@@ -537,7 +541,8 @@ class ModelToKotlinCommonGenerator(
     private fun CodeGenerator.generateInternalCastExtension(declaration: MessageDeclaration) {
         function(
             "asInternal",
-            modifiers = "private",
+            modifiers = "internal",
+            annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
             contextReceiver = declaration.name.safeFullName(),
             returnType = declaration.internalClassFullName(),
         ) {
