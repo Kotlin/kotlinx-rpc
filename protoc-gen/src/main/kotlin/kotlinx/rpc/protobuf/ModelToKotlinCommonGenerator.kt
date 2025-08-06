@@ -315,7 +315,7 @@ class ModelToKotlinCommonGenerator(
                             lvalue = "field.value",
                             beforeValueDecoding = {
                                 beforeValueDecoding()
-                                scope("val field = ($lvalue as? $variantName) ?: $variantName(${variant.type.internalCtor()}).also") {
+                                scope("val field = ($lvalue as? $variantName) ?: $variantName(${variant.type.internalConstructor()}).also") {
                                     // write the constructed oneof variant to the field
                                     code("$lvalue = it")
                                 }
@@ -870,7 +870,7 @@ class ModelToKotlinCommonGenerator(
         }
     }
 
-    private fun FieldType.Message.internalCtor() =
+    private fun FieldType.Message.internalConstructor() =
         dec.value.internalClassFullName() + "()"
 
     private fun MessageDeclaration.internalClassFullName(): String {
