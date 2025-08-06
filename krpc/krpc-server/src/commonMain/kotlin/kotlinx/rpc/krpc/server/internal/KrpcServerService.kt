@@ -123,7 +123,7 @@ internal class KrpcServerService<@Rpc T : Any>(
 
         val callable = descriptor.getCallable(callableName)
 
-        if (callable == null || callable.invokator is RpcInvokator.Method && !isMethod) {
+        if (callable == null || !isMethod) {
             val callType = if (isMethod) "method" else "field"
             error("Service ${descriptor.fqName} has no $callType '$callableName'")
         }
@@ -135,13 +135,14 @@ internal class KrpcServerService<@Rpc T : Any>(
         }
 
         var failure: Throwable? = null
+        val isNonSuspendFunction = callable.invokator is RpcInvokator.FlowResponse
 
         val requestJob = serverScope.launch(start = CoroutineStart.LAZY) {
             try {
                 val markedNonSuspending = callData.pluginParams.orEmpty()
                     .contains(KrpcPluginKey.NON_SUSPENDING_SERVER_FLOW_MARKER)
 
-                if (callable.isNonSuspendFunction && !markedNonSuspending) {
+                if (isNonSuspendFunction && !markedNonSuspending) {
                     @Suppress("detekt.MaxLineLength")
                     error(
                         "Server flow returned from non-suspend function but marked so by a client: ${descriptor.fqName}::$callableName. " +
@@ -150,35 +151,31 @@ internal class KrpcServerService<@Rpc T : Any>(
                     )
                 }
 
-                val value = when (val invokator = callable.invokator) {
-                    is RpcInvokator.Method -> {
-                        invokator.call(service, data)
-                    }
-                }.let { interceptedValue ->
-                    // KRPC-173
-                    if (!callable.isNonSuspendFunction && callable.returnType.kType == typeOf<Unit>()) {
-                        Unit
-                    } else {
-                        interceptedValue
-                    }
-                }
+                when (val invokator = callable.invokator) {
+                    is RpcInvokator.UnaryResponse -> {
+                        val value = invokator.call(service, data).let { interceptedValue ->
+                            // KRPC-173
+                            if (callable.returnType.kType == typeOf<Unit>()) {
+                                Unit
+                            } else {
+                                interceptedValue
+                            }
+                        }
 
-                val returnType = callable.returnType
-                val returnSerializer = serialFormat.serializersModule
-                    .buildContextual(returnType)
+                        val returnSerializer = serialFormat.serializersModule
+                            .buildContextual(callable.returnType)
 
-                if (callable.isNonSuspendFunction) {
-                    if (value !is Flow<*>) {
-                        error(
-                            "Return value of non-suspend function '${callable.name}' " +
-                                    "with callId '$callId' must be a non nullable flow, " +
-                                    "but was: ${value?.let { it::class.simpleName }}"
-                        )
+                        sendMessages(serialFormat, returnSerializer, value, callData)
                     }
 
-                    sendFlowMessages(serialFormat, returnSerializer, value, callData)
-                } else {
-                    sendMessages(serialFormat, returnSerializer, value, callData)
+                    is RpcInvokator.FlowResponse -> {
+                        val value = invokator.call(service, data)
+
+                        val returnSerializer = serialFormat.serializersModule
+                            .buildContextual(callable.returnType)
+
+                        sendFlowMessages(serialFormat, returnSerializer, value, callData)
+                    }
                 }
             } catch (cause: CancellationException) {
                 throw cause

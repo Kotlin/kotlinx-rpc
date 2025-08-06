@@ -9,13 +9,12 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KType
 
 @InternalRpcApi
-public class RpcCallableDefault<@Rpc T : Any>(
+public class RpcCallableDefault<@Rpc Service : Any>(
     override val name: String,
     override val returnType: RpcType,
-    override val invokator: RpcInvokator<T>,
+    override val invokator: RpcInvokator<Service>,
     override val parameters: Array<out RpcParameter>,
-    override val isNonSuspendFunction: Boolean,
-) : RpcCallable<T>
+) : RpcCallable<Service>
 
 @InternalRpcApi
 public class RpcParameterDefault(

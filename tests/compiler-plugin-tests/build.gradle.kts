@@ -113,6 +113,9 @@ tasks.test {
 
     useJUnitPlatform()
 
+    systemProperty("idea.ignore.disabled.plugins", "true")
+    systemProperty("idea.home.path", rootDir)
+
     systemPropertyLogged("kotlinx.rpc.globalRootDir", globalRootDir)
     systemPropertyLogged("kotlin.test.update.test.data", updateTestData)
 

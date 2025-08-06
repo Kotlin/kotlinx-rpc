@@ -13,9 +13,8 @@ plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.kotlinx.rpc)
     alias(libs.plugins.atomicfu)
+    alias(libs.plugins.serialization) // for tests
 }
-
-
 
 kotlin {
     compilerOptions {
@@ -28,6 +27,7 @@ kotlin {
                 api(projects.core)
                 api(projects.utils)
                 api(libs.coroutines.core)
+                api(projects.grpc.grpcCodec)
 
                 implementation(libs.atomicfu)
                 implementation(libs.kotlinx.io.core)
@@ -40,6 +40,9 @@ kotlin {
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
                 implementation(libs.atomicfu)
+                implementation(libs.serialization.json)
+
+                implementation(projects.grpc.grpcCodecKotlinxSerialization)
             }
         }
 

@@ -31,6 +31,8 @@ dependencyResolutionManagement {
 include(":grpc")
 includePublic(":grpc:grpc-core")
 includePublic(":grpc:grpc-ktor-server")
+includePublic(":grpc:grpc-codec")
+includePublic(":grpc:grpc-codec-kotlinx-serialization")
 
 includePublic(":bom")
 
