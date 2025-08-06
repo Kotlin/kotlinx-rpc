@@ -4,29 +4,22 @@
 
 package kotlinx.rpc.grpc.descriptor
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.rpc.RpcCall
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
-import kotlinx.rpc.grpc.ManagedChannel
-import kotlinx.rpc.grpc.ServerServiceDefinition
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.grpc.codec.MessageCodecResolver
+import kotlinx.rpc.grpc.internal.MethodDescriptor
+import kotlinx.rpc.grpc.internal.ServiceDescriptor
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
-@ExperimentalRpcApi
+@InternalRpcApi
 public interface GrpcServiceDescriptor<@Grpc T : Any> : RpcServiceDescriptor<T> {
-    public val delegate: GrpcDelegate<T>
+    public fun delegate(resolver: MessageCodecResolver): GrpcServiceDelegate
 }
 
-@ExperimentalRpcApi
-public interface GrpcDelegate<@Grpc T : Any> {
-    public fun clientProvider(channel: ManagedChannel): GrpcClientDelegate
-
-    public fun definitionFor(impl: T): ServerServiceDefinition
-}
-
-@ExperimentalRpcApi
-public interface GrpcClientDelegate {
-    public suspend fun <R> call(rpcCall: RpcCall): R
-
-    public fun <R> callServerStreaming(rpcCall: RpcCall): Flow<R>
+@InternalRpcApi
+public class GrpcServiceDelegate(
+    private val methodDescriptorMap: Map<String, MethodDescriptor<*, *>>,
+    public val serviceDescriptor: ServiceDescriptor,
+) {
+    public fun getMethodDescriptor(methodName: String): MethodDescriptor<*, *>? = methodDescriptorMap[methodName]
 }
