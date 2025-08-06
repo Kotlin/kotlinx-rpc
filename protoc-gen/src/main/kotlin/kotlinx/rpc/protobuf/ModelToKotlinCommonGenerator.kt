@@ -132,6 +132,8 @@ class ModelToKotlinCommonGenerator(
 
     @Suppress("detekt.CyclomaticComplexMethod")
     private fun CodeGenerator.generatePublicMessage(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) return
+
         clazz(
             name = declaration.name.simpleName,
             declarationType = DeclarationType.Interface,
@@ -162,20 +164,30 @@ class ModelToKotlinCommonGenerator(
     @Suppress("detekt.CyclomaticComplexMethod")
     private fun CodeGenerator.generateInternalMessage(declaration: MessageDeclaration) {
         val internalClassName = declaration.internalClassName()
+
+        val annotations = buildList {
+            add("@$INTERNAL_RPC_API_ANNO")
+            if (declaration.isUserFacing)
+                add("@$WITH_CODEC_ANNO($internalClassName.CODEC::class)")
+        }
+        val superTypes = buildList {
+            if (declaration.isUserFacing)
+                add(declaration.name.safeFullName())
+            add("$PB_PKG.InternalMessage(fieldsWithPresence = ${declaration.presenceMaskSize})")
+        }
+
         clazz(
             name = internalClassName,
-            annotations = listOf("@$INTERNAL_RPC_API_ANNO", "@$WITH_CODEC_ANNO($internalClassName.CODEC::class)"),
+            annotations = annotations,
             declarationType = DeclarationType.Class,
-            superTypes = listOf(
-                declaration.name.safeFullName(),
-                "$PB_PKG.InternalMessage(fieldsWithPresence = ${declaration.presenceMaskSize})"
-            ),
+            superTypes = superTypes,
         ) {
 
             generatePresenceIndicesObject(declaration)
 
             code("override val _size: Int by lazy { computeSize() }")
 
+            val override = if (declaration.isUserFacing) "override " else ""
             declaration.fields().forEach { (fieldDeclaration, field) ->
                 val value = when {
                     field.nullable -> {
@@ -191,7 +203,7 @@ class ModelToKotlinCommonGenerator(
                     }
                 }
 
-                code("override var $fieldDeclaration $value")
+                code("$override var $fieldDeclaration $value")
                 newLine()
             }
 
@@ -200,6 +212,9 @@ class ModelToKotlinCommonGenerator(
             }
 
             generateCodecObject(declaration)
+
+            // required for decodeWith extension
+            code("companion object")
         }
     }
 
@@ -218,6 +233,8 @@ class ModelToKotlinCommonGenerator(
     }
 
     private fun CodeGenerator.generateCodecObject(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) return
+
         val msgFqName = declaration.name.safeFullName()
         val sourceFqName = "kotlinx.io.Source"
         val bufferFqName = "kotlinx.io.Buffer"
@@ -233,7 +250,7 @@ class ModelToKotlinCommonGenerator(
             function("decode", modifiers = "override", args = "stream: $sourceFqName", returnType = msgFqName) {
                 scope("$PB_PKG.WireDecoder(stream as $bufferFqName).use") {
                     code("val msg = ${declaration.internalClassFullName()}()")
-                    code("${declaration.internalClassFullName()}.CODEC.decodeWith(msg, it)")
+                    code("${declaration.internalClassFullName()}.decodeWith(msg, it)")
                     code("msg.checkRequiredFields()")
                     code("return msg")
                 }
@@ -241,17 +258,21 @@ class ModelToKotlinCommonGenerator(
         }
     }
 
-    private fun CodeGenerator.generateMessageConstructor(declaration: MessageDeclaration) = function(
-        name = "invoke",
-        modifiers = "operator",
-        args = "body: ${declaration.internalClassFullName()}.() -> Unit",
-        contextReceiver = "${declaration.name.safeFullName()}.Companion",
-        returnType = declaration.name.safeFullName(),
-    ) {
-        code("val msg = ${declaration.internalClassFullName()}().apply(body)")
-        // check if the user set all required fields
-        code("msg.checkRequiredFields()")
-        code("return msg")
+    private fun CodeGenerator.generateMessageConstructor(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) return
+
+        function(
+            name = "invoke",
+            modifiers = "operator",
+            args = "body: ${declaration.internalClassFullName()}.() -> Unit",
+            contextReceiver = "${declaration.name.safeFullName()}.Companion",
+            returnType = declaration.name.safeFullName(),
+        ) {
+            code("val msg = ${declaration.internalClassFullName()}().apply(body)")
+            // check if the user set all required fields
+            code("msg.checkRequiredFields()")
+            code("return msg")
+        }
     }
 
     private fun CodeGenerator.generateMessageDecoder(declaration: MessageDeclaration) = function(
@@ -259,7 +280,7 @@ class ModelToKotlinCommonGenerator(
         modifiers = "internal",
         args = "msg: ${declaration.internalClassFullName()}, decoder: $PB_PKG.WireDecoder",
         annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
-        contextReceiver = "${declaration.internalClassFullName()}.CODEC"
+        contextReceiver = "${declaration.internalClassFullName()}.Companion"
     ) {
         whileBlock("!decoder.hadError()") {
             code("val tag = decoder.readTag() ?: break // EOF, we read the whole message")
@@ -273,7 +294,7 @@ class ModelToKotlinCommonGenerator(
             ifBlock = { code("error(\"Error during decoding of ${declaration.name.simpleName}\")") }
         )
 
-        // TODO: Make a lists immutable
+        // TODO: Make lists and maps immutable (KRPC-190)
     }
 
     private fun CodeGenerator.readMatchCase(
@@ -345,7 +366,10 @@ class ModelToKotlinCommonGenerator(
                 }
             }
 
-            is FieldType.Map -> TODO()
+            is FieldType.Map -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.LENGTH_DELIMITED") {
+                beforeValueDecoding()
+                generateDecodeFieldValue(fieldType, lvalue, wrapperCtor = wrapperCtor)
+            }
         }
     }
 
@@ -372,7 +396,7 @@ class ModelToKotlinCommonGenerator(
 
                     else -> generateDecodeFieldValue(fieldType.value, "val elem", wrapperCtor = wrapperCtor)
                 }
-                code("($lvalue as ArrayList).add(elem)")
+                code("($lvalue as MutableList).add(elem)")
             }
 
             is FieldType.Enum -> {
@@ -394,10 +418,21 @@ class ModelToKotlinCommonGenerator(
 
             is FieldType.Message -> {
                 val internalClassName = fieldType.dec.value.internalClassFullName()
-                code("decoder.readMessage($lvalue.asInternal(), $internalClassName.CODEC::decodeWith)")
+                code("decoder.readMessage($lvalue.asInternal(), $internalClassName::decodeWith)")
             }
 
-            is FieldType.Map -> TODO()
+            is FieldType.Map -> {
+                val entryClassName = fieldType.entry.dec.internalClassFullName()
+                scope("with($entryClassName())") {
+                    generateDecodeFieldValue(
+                        fieldType = FieldType.Message(lazy { fieldType.entry.dec }),
+                        lvalue = "this",
+                        isPacked = false,
+                        wrapperCtor = wrapperCtor
+                    )
+                    code("($lvalue as MutableMap)[key] = value")
+                }
+            }
         }
     }
 
@@ -417,40 +452,56 @@ class ModelToKotlinCommonGenerator(
             val fieldName = field.name
             if (field.nullable) {
                 scope("$fieldName?.also") {
-                    writeFieldValue(field, "it")
+                    generateEncodeFieldValue(field, "it")
                 }
-            } else if (!field.dec.hasPresence()) {
-                ifBranch(condition = field.notDefaultCheck(), ifBlock = {
-                    writeFieldValue(field, field.name)
+            } else if (field.dec.hasPresence()) {
+                ifBranch(condition = "presenceMask[${field.presenceIdx}]", ifBlock = {
+                    generateEncodeFieldValue(field, field.name)
                 })
             } else {
-                ifBranch(condition = "presenceMask[${field.presenceIdx}]", ifBlock = {
-                    writeFieldValue(field, field.name)
+                ifBranch(condition = field.notDefaultCheck(), ifBlock = {
+                    generateEncodeFieldValue(field, field.name)
                 })
             }
         }
     }
 
-    private fun CodeGenerator.writeFieldValue(field: FieldDeclaration, valueVar: String) {
-        var encFunc = field.type.decodeEncodeFuncName()
-        val number = field.number
-        when (val fieldType = field.type) {
+    private fun CodeGenerator.generateEncodeFieldValue(
+        field: FieldDeclaration,
+        valueVar: String,
+    ) {
+        generateEncodeFieldValue(
+            valueVar, field.type, number = field.number,
+            isPacked = field.dec.isPacked,
+            packedWithFixedSize = field.packedFixedSize
+        )
+    }
+
+    private fun CodeGenerator.generateEncodeFieldValue(
+        valueVar: String,
+        type: FieldType,
+        number: Int,
+        isPacked: Boolean,
+        packedWithFixedSize: Boolean
+    ) {
+        var encFunc = type.decodeEncodeFuncName()
+        when (val fieldType = type) {
             is FieldType.IntegralType -> code("encoder.write${encFunc!!}(fieldNr = $number, value = $valueVar)")
             is FieldType.List -> {
                 encFunc = fieldType.value.decodeEncodeFuncName()
                 when {
-                    field.dec.isPacked && field.packedFixedSize ->
+                    isPacked && packedWithFixedSize ->
                         code("encoder.writePacked${encFunc!!}(fieldNr = $number, value = $valueVar)")
 
-                    field.dec.isPacked && !field.packedFixedSize ->
+                    isPacked && !packedWithFixedSize ->
                         code(
                             "encoder.writePacked${encFunc!!}(fieldNr = $number, value = $valueVar, fieldSize = ${
-                                field.type.valueSizeCall(valueVar, number, true)
+                                type.valueSizeCall(valueVar, number, true)
                             })"
                         )
 
                     fieldType.value is FieldType.Message -> scope("$valueVar.forEach") {
-                        code("encoder.writeMessage(fieldNr = ${field.number}, value = it.asInternal()) { encodeWith(it) }")
+                        code("encoder.writeMessage(fieldNr = ${number}, value = it.asInternal()) { encodeWith(it) }")
                     }
 
                     else -> {
@@ -467,14 +518,25 @@ class ModelToKotlinCommonGenerator(
             is FieldType.OneOf -> whenBlock("val value = $valueVar") {
                 fieldType.dec.variants.forEach { variant ->
                     whenCase("is ${fieldType.dec.name.safeFullName()}.${variant.name}") {
-                        writeFieldValue(variant, "value.value")
+                        generateEncodeFieldValue(variant, "value.value")
                     }
                 }
             }
 
-            is FieldType.Map -> TODO()
+            is FieldType.Map -> {
+                scope("$valueVar.forEach", paramDecl = "kEntry ->") {
+                    generateMapConstruction(fieldType, "kEntry.key", "kEntry.value")
+                    scope(".also", paramDecl = "entry ->") {
+                        generateEncodeFieldValue(
+                            valueVar = "entry",
+                            type = FieldType.Message(lazy { fieldType.entry.dec }),
+                            number = number, isPacked = false, packedWithFixedSize = false
+                        )
+                    }
+                }
+            }
 
-            is FieldType.Message -> code("encoder.writeMessage(fieldNr = ${field.number}, value = $valueVar.asInternal()) { encodeWith(it) }")
+            is FieldType.Message -> code("encoder.writeMessage(fieldNr = ${number}, value = $valueVar.asInternal()) { encodeWith(it) }")
         }
 
     }
@@ -512,10 +574,9 @@ class ModelToKotlinCommonGenerator(
         contextReceiver = declaration.internalClassFullName(),
     ) {
         val requiredFields = declaration.actualFields.filter { it.dec.isRequired }
-        val submessages = declaration.actualFields.filter { it.type is FieldType.Message }
 
-        if (submessages.isEmpty() && requiredFields.isEmpty()) {
-            code("// no fields to check")
+        if (requiredFields.isEmpty()) {
+            code("// no required fields to check")
         }
 
         requiredFields.forEach { field ->
@@ -525,14 +586,14 @@ class ModelToKotlinCommonGenerator(
         }
 
         // check submessages
-        submessages.forEach { field ->
+        declaration.actualFields.filter { it.type is FieldType.Message }.forEach { field ->
             ifBranch(condition = "presenceMask[${field.presenceIdx}]", ifBlock = {
                 code("${field.name}.asInternal().checkRequiredFields()")
             })
         }
 
         // check submessages in oneofs
-        declaration.fields().filter { it.second.type is FieldType.OneOf }.forEach { (_, field) ->
+        declaration.actualFields.filter { it.type is FieldType.OneOf }.forEach { field ->
             val oneOfType = field.type as FieldType.OneOf
             val messageVariants = oneOfType.dec.variants.filter { it.type is FieldType.Message }
             if (messageVariants.isEmpty()) return@forEach
@@ -550,11 +611,22 @@ class ModelToKotlinCommonGenerator(
         }
 
         // check submessages in lists
-        declaration.fields().filter { it.second.type is FieldType.List }.forEach { (_, field) ->
+        declaration.actualFields.filter { it.type is FieldType.List }.forEach { field ->
             val listType = field.type as FieldType.List
             if (listType.value !is FieldType.Message) return@forEach
 
             scope("${field.name}.forEach") {
+                code("it.asInternal().checkRequiredFields()")
+            }
+        }
+
+        // check submessage in maps
+        declaration.actualFields.filter { it.type is FieldType.Map }.forEach { field ->
+            val mapType = field.type as FieldType.Map
+            // we only have to check the value, as the key cannot be a message
+            if (mapType.entry.value !is FieldType.Message) return@forEach
+
+            scope("${field.name}.values.forEach") {
                 code("it.asInternal().checkRequiredFields()")
             }
         }
@@ -590,14 +662,23 @@ class ModelToKotlinCommonGenerator(
     }
 
     private fun CodeGenerator.generateInternalCastExtension(declaration: MessageDeclaration) {
+        val internalClassName = declaration.internalClassFullName()
+        val ctxReceiver = if (declaration.isUserFacing) declaration.name.safeFullName() else internalClassName
+
+        // we generate the asInternal extension even for non-user-facing message classes (map entry)
+        // to avoid edge-cases when generating other code that uses the asInternal() extension.
         function(
             "asInternal",
             modifiers = "internal",
             annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
-            contextReceiver = declaration.name.safeFullName(),
-            returnType = declaration.internalClassFullName(),
+            contextReceiver = ctxReceiver,
+            returnType = internalClassName,
         ) {
-            code("return this as? ${declaration.internalClassFullName()} ?: error(\"Message \${this::class.simpleName} is a non-internal message type.\")")
+            if (ctxReceiver == internalClassName) {
+                code("return this")
+            } else {
+                code("return this as? $internalClassName ?: error(\"Message \${this::class.simpleName} is a non-internal message type.\")")
+            }
         }
     }
 
@@ -617,7 +698,13 @@ class ModelToKotlinCommonGenerator(
             FieldType.IntegralType.STRING,
             FieldType.IntegralType.BYTES -> code("result += $valueSize.let { $tagSize + ${int32SizeCall("it")} + it }")
 
-            is FieldType.Map -> TODO()
+            is FieldType.Map -> {
+                scope("result += ${field.name}.entries.sumOf", paramDecl = "kEntry ->") {
+                    generateMapConstruction(field.type, "kEntry.key", "kEntry.value")
+                    code("._size")
+                }
+            }
+
             is FieldType.OneOf -> whenBlock("val value = $variable") {
                 field.type.dec.variants.forEach { variant ->
                     val variantName = "${field.type.dec.name.safeFullName()}.${variant.name}"
@@ -641,6 +728,14 @@ class ModelToKotlinCommonGenerator(
             FieldType.IntegralType.SINT64,
             FieldType.IntegralType.SFIXED32,
             FieldType.IntegralType.SFIXED64 -> code("result += ($tagSize + $valueSize)")
+        }
+    }
+
+    private fun CodeGenerator.generateMapConstruction(map: FieldType.Map, keyVar: String, valueVar: String) {
+        val entryClass = map.entry.dec.internalClassFullName()
+        scope("$entryClass().apply", nlAfterClosed = false) {
+            code("key = $keyVar")
+            code("value = $valueVar")
         }
     }
 
@@ -684,11 +779,11 @@ class ModelToKotlinCommonGenerator(
             }
 
             is FieldType.List -> "$name.isNotEmpty()"
-            is FieldType.Message -> "<TODO: Implement Reference defaultCheck>"
+            is FieldType.Message -> error("Message fields should not be checked for default values.")
 
             is FieldType.Enum -> "${fieldType.defaultValue} != $name"
 
-            else -> TODO("Field: $name, type: $fieldType")
+            else -> "$name.isNotEmpty()"
         }
     }
 
@@ -744,7 +839,7 @@ class ModelToKotlinCommonGenerator(
             }
 
             is FieldType.Map -> {
-                val entry by type.entry
+                val entry = type.entry
 
                 val fqKey = when (val key = entry.key) {
                     is FieldType.Message -> key.dec.value.name
