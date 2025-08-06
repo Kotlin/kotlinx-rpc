@@ -23,13 +23,3 @@ public class GrpcServiceDelegate(
 ) {
     public fun getMethodDescriptor(methodName: String): MethodDescriptor<*, *>? = methodDescriptorMap[methodName]
 }
-
-//@ExperimentalRpcApi
-//public class GrpcMethod {
-//    @Target(AnnotationTarget.FUNCTION, AnnotationTarget.ANNOTATION_CLASS)
-//    public annotation class Meta(
-//        val safe: Boolean = true,
-//        val idempotent: Boolean = true,
-//        val sampledToLocalTracing: Boolean = true,
-//    )
-//}
