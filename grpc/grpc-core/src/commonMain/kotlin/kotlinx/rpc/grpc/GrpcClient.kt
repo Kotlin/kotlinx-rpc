@@ -9,6 +9,8 @@ import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.grpc.codec.EmptyMessageCodecResolver
 import kotlinx.rpc.grpc.codec.MessageCodecResolver
+import kotlinx.rpc.grpc.codec.ThrowingMessageCodecResolver
+import kotlinx.rpc.grpc.codec.plus
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlinx.rpc.grpc.internal.*
@@ -24,9 +26,10 @@ private typealias RequestClient = Any
  */
 public class GrpcClient internal constructor(
     private val channel: ManagedChannel,
-    private val messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
+    messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
 ) : RpcClient {
     private val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
+    private val messageCodecResolver = messageCodecResolver + ThrowingMessageCodecResolver
 
     public fun shutdown() {
         delegates.clear()

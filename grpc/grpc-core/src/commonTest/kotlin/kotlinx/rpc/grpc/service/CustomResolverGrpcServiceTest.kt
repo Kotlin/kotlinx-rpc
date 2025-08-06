@@ -131,7 +131,7 @@ class CustomResolverGrpcServiceTest : BaseGrpcServiceTest() {
             when (kType.classifier) {
                 Unit::class -> unitCodec
                 String::class -> stringCodec
-                else -> error("Unsupported type: $kType")
+                else -> null
             }
         }
 

@@ -1262,7 +1262,7 @@ internal class RpcStubGenerator(
                     startOffset = UNDEFINED_OFFSET,
                     endOffset = UNDEFINED_OFFSET,
                     type = ctx.grpcMessageCodec.typeWith(type),
-                    symbol = ctx.functions.grpcMessageCodecResolverResolve.symbol,
+                    symbol = ctx.functions.grpcMessageCodecResolverResolveOrNull.symbol,
                     typeArgumentsCount = 0,
                     valueArgumentsCount = 1,
                 )

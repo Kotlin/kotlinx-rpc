@@ -18,6 +18,8 @@ import kotlinx.rpc.descriptor.unaryInvokator
 import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.codec.EmptyMessageCodecResolver
 import kotlinx.rpc.grpc.codec.MessageCodecResolver
+import kotlinx.rpc.grpc.codec.ThrowingMessageCodecResolver
+import kotlinx.rpc.grpc.codec.plus
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlinx.rpc.grpc.internal.MethodDescriptor
 import kotlinx.rpc.grpc.internal.MethodType
@@ -46,12 +48,14 @@ private typealias ResponseServer = Any
  */
 public class GrpcServer internal constructor(
     override val port: Int = 8080,
-    private val messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
+    messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
     parentContext: CoroutineContext = EmptyCoroutineContext,
     configure: ServerBuilder<*>.() -> Unit,
 ) : RpcServer, Server {
     private val internalContext = SupervisorJob(parentContext.job)
     private val internalScope = CoroutineScope(parentContext + internalContext)
+
+    private val messageCodecResolver = messageCodecResolver + ThrowingMessageCodecResolver
 
     private var isBuilt = false
     private lateinit var internalServer: Server
