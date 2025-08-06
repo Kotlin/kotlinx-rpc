@@ -112,7 +112,7 @@ class ModelToKotlinCommonGenerator(
         messages.forEach { generateInternalMessage(it) }
 
         // emit all required functions in the outer scope
-        val allMsgs = messages + messages.flatMap(MessageDeclaration::nestedDeclarations)
+        val allMsgs = messages + messages.flatMap(MessageDeclaration::allNestedRecursively)
         allMsgs.forEach {
             generateMessageConstructor(it)
         }
@@ -713,21 +713,20 @@ class ModelToKotlinCommonGenerator(
                 superTypes = listOf("$className(number)"),
             )
 
-            if (declaration.aliases.isNotEmpty()) {
-                newLine()
+            newLine()
 
-                clazz("", modifiers = "companion", declarationType = DeclarationType.Object) {
-                    declaration.aliases.forEach { alias: EnumDeclaration.Alias ->
-                        code(
-                            "val ${alias.name.simpleName}: $className " +
-                                    "get() = ${alias.original.name.simpleName}"
-                        )
-                    }
-
-                    val entryNamesSorted = entriesSorted.joinToString(", ") { it.name.simpleName }
-                    code("val entries: List<$className> by lazy { listOf($entryNamesSorted) }")
+            clazz("", modifiers = "companion", declarationType = DeclarationType.Object) {
+                declaration.aliases.forEach { alias: EnumDeclaration.Alias ->
+                    code(
+                        "val ${alias.name.simpleName}: $className " +
+                                "get() = ${alias.original.name.simpleName}"
+                    )
                 }
+
+                val entryNamesSorted = entriesSorted.joinToString(", ") { it.name.simpleName }
+                code("val entries: List<$className> by lazy { listOf($entryNamesSorted) }")
             }
+
         }
     }
 

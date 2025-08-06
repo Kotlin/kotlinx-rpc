@@ -12,6 +12,8 @@ import kotlin.reflect.KProperty
 @InternalRpcApi
 public abstract class InternalMessage(fieldsWithPresence: Int) {
     public val presenceMask: BitSet = BitSet(fieldsWithPresence)
+
+    @Suppress("PropertyName")
     public abstract val _size: Int
 }
 
@@ -32,13 +34,12 @@ public class MsgFieldDelegate<T : Any>(
                 error("Property ${property.name} not initialized")
             }
         }
-        @Suppress("UNCHECKED_CAST")
         return _value as T
     }
 
-    override operator fun setValue(thisRef: InternalMessage, property: KProperty<*>, new: T) {
+    override operator fun setValue(thisRef: InternalMessage, property: KProperty<*>, value: T) {
         presenceIdx?.let { thisRef.presenceMask[it] = true }
-        _value = new
+        _value = value
         valueSet = true
     }
 }

@@ -11,8 +11,16 @@ import OuterInternal
 import invoke
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.codec.MessageCodec
-import kotlinx.rpc.grpc.test.*
+import kotlinx.rpc.grpc.test.MyEnum
+import kotlinx.rpc.grpc.test.UsingEnum
+import kotlinx.rpc.grpc.test.UsingEnumInternal
 import kotlinx.rpc.grpc.test.common.*
+import kotlinx.rpc.grpc.test.invoke
+import test.nested.*
+import test.recursive.Recursive
+import test.recursive.RecursiveInternal
+import test.recursive.RecursiveReq
+import test.recursive.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -100,18 +108,18 @@ class ProtosTest {
         encoder.flush()
 
         val decodedMsg = UsingEnumInternal.CODEC.decode(buffer)
-        assertEquals(Enum.UNRECOGNIZED(50), decodedMsg.enum)
+        assertEquals(MyEnum.UNRECOGNIZED(50), decodedMsg.enum)
     }
 
     @Test
     fun testEnumAlias() {
         val msg = UsingEnum {
-            enum = Enum.ONE_SECOND
+            enum = MyEnum.ONE_SECOND
         }
 
         val decodedMsg = encodeDecode(msg, UsingEnumInternal.CODEC)
-        assertEquals(Enum.ONE, decodedMsg.enum)
-        assertEquals(Enum.ONE_SECOND, decodedMsg.enum)
+        assertEquals(MyEnum.ONE, decodedMsg.enum)
+        assertEquals(MyEnum.ONE_SECOND, decodedMsg.enum)
     }
 
     @Test
@@ -124,7 +132,7 @@ class ProtosTest {
         assertEquals(0, buffer.size)
 
         val decoded = UsingEnumInternal.CODEC.decode(buffer)
-        assertEquals(Enum.ZERO, decoded.enum)
+        assertEquals(MyEnum.ZERO, decoded.enum)
     }
 
     @Test
@@ -206,6 +214,47 @@ class ProtosTest {
 
         assertEquals(3, decoded.rec.num)
         assertEquals(null, decoded.rec.rec.rec.rec.num)
+    }
+
+    @Test
+    fun testNested() {
+        val inner = NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.CantBelieveItsSoInner {
+            num = 123456789
+        }
+
+        val notInside = NotInside {
+            num = -12
+        }
+        val outer = NestedOuter {
+            deep = inner
+            deepEnum =
+                NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.JustWayTooInner.JUST_WAY_TOO_INNER_UNSPECIFIED
+        }
+
+        assertEquals(123456789, outer.deep.num)
+        assertEquals(
+            NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.JustWayTooInner.JUST_WAY_TOO_INNER_UNSPECIFIED,
+            outer.deepEnum
+        )
+        assertEquals(-12, notInside.num)
+
+        val decodedOuter = encodeDecode(outer, NestedOuterInternal.CODEC)
+        assertEquals(123456789, decodedOuter.deep.num)
+        assertEquals(
+            NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.JustWayTooInner.JUST_WAY_TOO_INNER_UNSPECIFIED,
+            decodedOuter.deepEnum
+        )
+        assertEquals(-12, notInside.num)
+
+        val decodedNotInside = encodeDecode(notInside, NotInsideInternal.CODEC)
+        assertEquals(-12, decodedNotInside.num)
+
+        val decodedInner = encodeDecode(
+            inner,
+            NestedOuterInternal.InnerInternal.SuperInnerInternal.DuperInnerInternal.EvenMoreInnerInternal.CantBelieveItsSoInnerInternal.CODEC
+        )
+        assertEquals(123456789, decodedInner.num)
+
     }
 
 }
