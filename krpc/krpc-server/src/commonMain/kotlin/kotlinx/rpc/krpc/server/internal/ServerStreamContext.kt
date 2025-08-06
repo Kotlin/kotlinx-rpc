@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.krpc.server.internal
 
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -65,7 +66,13 @@ internal class ServerStreamContext {
             map.remove(streamId)
         }
 
+        val collected = AtomicBoolean(false)
+
         val flow = flow {
+            check(collected.value.compareAndSet(expect = false, update = true)) {
+                "Request streams can only be collected once"
+            }
+
             for (message in channel) {
                 when (message) {
                     is StreamCancel -> {
@@ -90,6 +97,10 @@ internal class ServerStreamContext {
     }
 
     private fun streamCanceled(): Throwable = NoSuchElementException("Stream canceled")
+}
+
+private class AtomicBoolean(initialValue: Boolean) {
+    val value = atomic(initialValue)
 }
 
 private data class StreamCancel(val cause: Throwable? = null)

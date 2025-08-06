@@ -11,6 +11,7 @@ import kotlinx.serialization.Serializable
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class KrpcTestServiceBackend : KrpcTestService {
@@ -112,6 +113,11 @@ class KrpcTestServiceBackend : KrpcTestService {
         assertEquals(arg2.value, 42)
         assertEquals(arg3.value, 42)
         return TestList(3)
+    }
+
+    override suspend fun collectOnce(flow: Flow<String>) {
+        flow.toList()
+        assertFailsWith<IllegalStateException> { flow.toList() }
     }
 
     override suspend fun nonSerializableClass(localDate: LocalDate): LocalDate {
