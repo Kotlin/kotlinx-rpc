@@ -37,7 +37,7 @@ sealed interface FieldType {
         override val wireType: WireType = WireType.VARINT
     }
 
-    data class Reference(val dec: MessageDeclaration) : FieldType {
+    data class Message(val dec: MessageDeclaration) : FieldType {
         override val defaultValue: String? = null
         override val wireType: WireType = WireType.LENGTH_DELIMITED
     }

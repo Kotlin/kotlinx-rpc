@@ -54,7 +54,7 @@ public interface WireEncoder {
     public fun <T : InternalMessage> writeMessage(
         fieldNr: Int,
         value: T,
-        encode: (WireEncoder) -> Unit
+        encode: T.(WireEncoder) -> Unit
     )
 
 }

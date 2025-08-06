@@ -203,11 +203,11 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
     override fun <T : InternalMessage> writeMessage(
         fieldNr: Int,
         value: T,
-        encode: (WireEncoder) -> Unit
+        encode: T.(WireEncoder) -> Unit
     ) {
         codedOutputStream.writeTag(fieldNr, WireType.LENGTH_DELIMITED.ordinal)
         codedOutputStream.writeInt32NoTag(value._size)
-        encode(this)
+        value.encode(this)
     }
 
     private inline fun <T> writePackedInternal(

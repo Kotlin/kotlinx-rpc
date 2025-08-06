@@ -6,6 +6,8 @@ package kotlinx.rpc.grpc.pb
 
 import OneOfMsg
 import OneOfMsgInternal
+import Outer
+import OuterInternal
 import invoke
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.codec.MessageCodec
@@ -164,6 +166,17 @@ class ProtosTest {
         val buffer = Buffer()
         val decoded = OneOfMsgInternal.CODEC.decode(buffer)
         assertNull(decoded.field)
+    }
+
+    @Test
+    fun testSubMessage() {
+        val msg = Outer {
+            inner = Outer.Inner {
+                field = 12345678
+            }
+        }
+        val decoded = decodeEncode(msg, OuterInternal.CODEC)
+        assertEquals(msg.inner.field, decoded.inner.field)
     }
 
 }

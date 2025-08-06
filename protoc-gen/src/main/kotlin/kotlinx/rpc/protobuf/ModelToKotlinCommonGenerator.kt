@@ -182,7 +182,7 @@ class ModelToKotlinCommonGenerator(
                         "= null"
                     }
 
-                    field.type is FieldType.Reference -> "= ${field.type.dec.internalClassFullName()}()"
+                    field.type is FieldType.Message -> "= ${field.type.dec.internalClassFullName()}()"
 
                     else -> {
                         "= ${field.type.defaultValue}"
@@ -319,9 +319,13 @@ class ModelToKotlinCommonGenerator(
                 }
             }
 
-            is FieldType.Reference -> {
+            is FieldType.Message -> {
                 val internalClassName = fieldType.dec.internalClassFullName()
                 whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.LENGTH_DELIMITED") {
+                    // check if the the current sub message object
+                    ifBranch(condition = "!msg.presenceMask[${field.presenceIdx}]", ifBlock = {
+                        code("$lvalue = ${fieldType.dec.internalClassFullName()}()")
+                    })
                     code("decoder.readMessage($lvalue.asInternal(), $internalClassName::decodeWith)")
                 }
             }
@@ -391,7 +395,7 @@ class ModelToKotlinCommonGenerator(
 
             is FieldType.Map -> TODO()
 
-            is FieldType.Reference -> code("encoder.writeMessage(fieldNr = ${field.number}, value = $valueVar.asInternal()) { encodeWith(it) }")
+            is FieldType.Message -> code("encoder.writeMessage(fieldNr = ${field.number}, value = $valueVar.asInternal()) { encodeWith(it) }")
         }
 
     }
@@ -426,17 +430,23 @@ class ModelToKotlinCommonGenerator(
         modifiers = "private",
         contextReceiver = declaration.internalClassFullName(),
     ) {
-        val requiredFields = declaration.actualFields
-            .filter { it.dec.isRequired }
+        val requiredFields = declaration.actualFields.filter { it.dec.isRequired }
+        val submessages = declaration.actualFields.filter { it.type is FieldType.Message }
 
-        if (requiredFields.isEmpty()) {
+        if (submessages.isEmpty() && requiredFields.isEmpty()) {
             code("// no fields to check")
-            return@function
         }
 
         requiredFields.forEach { field ->
             ifBranch(condition = "!presenceMask[${field.presenceIdx}]", ifBlock = {
                 code("error(\"${declaration.name.simpleName} is missing required field: ${field.name}\")")
+            })
+        }
+
+        // check submessages
+        submessages.forEach { field ->
+            ifBranch(condition = "presenceMask[${field.presenceIdx}]", ifBlock = {
+                code("${field.name}.asInternal().checkRequiredFields()")
             })
         }
     }
@@ -490,9 +500,9 @@ class ModelToKotlinCommonGenerator(
                 else -> code("result = $valueSize")
             }
 
-            is FieldType.Reference,
+            is FieldType.Message,
             FieldType.IntegralType.STRING,
-            FieldType.IntegralType.BYTES -> code("$valueSize.let { $tagSize + ${int32SizeCall("it")} + it }")
+            FieldType.IntegralType.BYTES -> code("result += $valueSize.let { $tagSize + ${int32SizeCall("it")} + it }")
 
             is FieldType.Map -> TODO()
             is FieldType.OneOf -> whenBlock("val value = $variable") {
@@ -545,7 +555,7 @@ class ModelToKotlinCommonGenerator(
             is FieldType.Enum -> "$PB_PKG.WireSize.$sizeFunName($variable.number)"
             is FieldType.Map -> TODO()
             is FieldType.OneOf -> error("OneOf fields have no direct valueSizeCall")
-            is FieldType.Reference -> "$variable.asInternal()._size"
+            is FieldType.Message -> "$variable.asInternal()._size"
         }
     }
 
@@ -565,7 +575,7 @@ class ModelToKotlinCommonGenerator(
             }
 
             is FieldType.List -> "$name.isNotEmpty()"
-            is FieldType.Reference -> "<TODO: Implement Reference defaultCheck>"
+            is FieldType.Message -> "<TODO: Implement Reference defaultCheck>"
 
             is FieldType.Enum -> "${fieldType.defaultValue} != $name"
 
@@ -593,7 +603,7 @@ class ModelToKotlinCommonGenerator(
         is FieldType.Enum -> "Enum"
         is FieldType.Map -> null
         is FieldType.OneOf -> null
-        is FieldType.Reference -> null
+        is FieldType.Message -> null
     }
 
     private fun FieldDeclaration.transformToFieldDeclaration(): String {
@@ -602,7 +612,7 @@ class ModelToKotlinCommonGenerator(
 
     private fun FieldDeclaration.typeFqName(): String {
         return when (type) {
-            is FieldType.Reference -> {
+            is FieldType.Message -> {
                 type.dec.name.safeFullName()
             }
 
@@ -616,7 +626,7 @@ class ModelToKotlinCommonGenerator(
 
             is FieldType.List -> {
                 val fqValue = when (val value = type.value) {
-                    is FieldType.Reference -> value.dec.name
+                    is FieldType.Message -> value.dec.name
                     is FieldType.IntegralType -> value.fqName
                     else -> error("Unsupported type: $value")
                 }
@@ -628,13 +638,13 @@ class ModelToKotlinCommonGenerator(
                 val entry by type.entry
 
                 val fqKey = when (val key = entry.key) {
-                    is FieldType.Reference -> key.dec.name
+                    is FieldType.Message -> key.dec.name
                     is FieldType.IntegralType -> key.fqName
                     else -> error("Unsupported type: $key")
                 }
 
                 val fqValue = when (val value = entry.value) {
-                    is FieldType.Reference -> value.dec.name
+                    is FieldType.Message -> value.dec.name
                     is FieldType.IntegralType -> value.fqName
                     else -> error("Unsupported type: $value")
                 }

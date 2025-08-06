@@ -166,11 +166,11 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
     override fun <T : InternalMessage> writeMessage(
         fieldNr: Int,
         value: T,
-        encode: (WireEncoder) -> Unit
+        encode: T.(WireEncoder) -> Unit
     ) {
         pw_encoder_write_tag(raw, fieldNr, WireType.LENGTH_DELIMITED.ordinal)
         pw_encoder_write_int32_no_tag(raw, value._size)
-        encode(this)
+        value.encode(this)
     }
 }
 
