@@ -284,23 +284,77 @@ class ModelToKotlinCommonGenerator(
     ) {
         when (val fieldType = field.type) {
             is FieldType.IntegralType -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.${field.type.wireType.name}") {
-                val raw = "decoder.read${field.type.decodeEncodeFuncName()}()"
-                code("$lvalue = ${wrapperCtor(raw)}")
+                generateDecodeFieldValue(fieldType, lvalue, wrapperCtor = wrapperCtor)
             }
 
             is FieldType.List -> if (field.dec.isPacked) {
                 whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.LENGTH_DELIMITED") {
-                    code("$lvalue = decoder.readPacked${fieldType.value.decodeEncodeFuncName()}()")
+                    generateDecodeFieldValue(fieldType, lvalue, isPacked = true, wrapperCtor = wrapperCtor)
                 }
             } else {
                 whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.${fieldType.value.wireType.name}") {
-                    code("(msg.${field.name} as ArrayList).add(decoder.read${fieldType.value.decodeEncodeFuncName()}())")
+                    generateDecodeFieldValue(fieldType, lvalue, isPacked = false, wrapperCtor = wrapperCtor)
                 }
             }
 
             is FieldType.Enum -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.VARINT") {
+                generateDecodeFieldValue(fieldType, lvalue, wrapperCtor = wrapperCtor)
+            }
+
+            is FieldType.OneOf -> {
+                fieldType.dec.variants.forEach { variant ->
+                    val variantName = "${fieldType.dec.name.safeFullName()}.${variant.name}"
+                    readMatchCase(
+                        field = variant,
+                        lvalue = lvalue,
+                        wrapperCtor = { "$variantName($it)" }
+                    )
+                }
+            }
+
+            is FieldType.Message -> {
+                whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.LENGTH_DELIMITED") {
+                    // check if the the current sub message object
+                    ifBranch(condition = "!msg.presenceMask[${field.presenceIdx}]", ifBlock = {
+                        code("$lvalue = ${fieldType.dec.value.internalClassFullName()}()")
+                    })
+                    generateDecodeFieldValue(fieldType, lvalue, wrapperCtor = wrapperCtor)
+                }
+            }
+
+            is FieldType.Map -> TODO()
+        }
+    }
+
+    private fun CodeGenerator.generateDecodeFieldValue(
+        fieldType: FieldType,
+        lvalue: String,
+        isPacked: Boolean = false,
+        wrapperCtor: (String) -> String = { it }
+    ) {
+        when (fieldType) {
+            is FieldType.IntegralType -> {
+                val raw = "decoder.read${fieldType.decodeEncodeFuncName()}()"
+                code("$lvalue = ${wrapperCtor(raw)}")
+            }
+
+            is FieldType.List -> if (isPacked) {
+                code("$lvalue = decoder.readPacked${fieldType.value.decodeEncodeFuncName()}()")
+            } else {
+                when (val elemType = fieldType.value) {
+                    is FieldType.Message -> {
+                        code("val elem = ${elemType.dec.value.internalClassFullName()}()")
+                        generateDecodeFieldValue(fieldType.value, "elem", wrapperCtor = wrapperCtor)
+                    }
+
+                    else -> generateDecodeFieldValue(fieldType.value, "val elem", wrapperCtor = wrapperCtor)
+                }
+                code("($lvalue as ArrayList).add(elem)")
+            }
+
+            is FieldType.Enum -> {
                 val fromNum = "${fieldType.dec.name.safeFullName()}.fromNumber"
-                val raw = "$fromNum(decoder.read${field.type.decodeEncodeFuncName()}())"
+                val raw = "$fromNum(decoder.read${fieldType.decodeEncodeFuncName()}())"
                 code("$lvalue = ${wrapperCtor(raw)}")
             }
 
@@ -317,13 +371,7 @@ class ModelToKotlinCommonGenerator(
 
             is FieldType.Message -> {
                 val internalClassName = fieldType.dec.value.internalClassFullName()
-                whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.LENGTH_DELIMITED") {
-                    // check if the the current sub message object
-                    ifBranch(condition = "!msg.presenceMask[${field.presenceIdx}]", ifBlock = {
-                        code("$lvalue = ${fieldType.dec.value.internalClassFullName()}()")
-                    })
-                    code("decoder.readMessage($lvalue.asInternal(), $internalClassName::decodeWith)")
-                }
+                code("decoder.readMessage($lvalue.asInternal(), $internalClassName::decodeWith)")
             }
 
             is FieldType.Map -> TODO()
@@ -373,7 +421,7 @@ class ModelToKotlinCommonGenerator(
                     field.dec.isPacked && !field.packedFixedSize ->
                         code(
                             "encoder.writePacked${encFunc!!}(fieldNr = $number, value = $valueVar, fieldSize = ${
-                                field.valueSizeCall(valueVar)
+                                field.type.valueSizeCall(valueVar, number, true)
                             })"
                         )
 
@@ -499,7 +547,7 @@ class ModelToKotlinCommonGenerator(
 
 
     private fun CodeGenerator.generateFieldComputeSizeCall(field: FieldDeclaration, variable: String) {
-        val valueSize by lazy { field.valueSizeCall(variable) }
+        val valueSize by lazy { field.type.valueSizeCall(variable, field.number, field.dec.isPacked) }
         val tagSize = tagSizeCall(field.number, field.type.wireType)
 
         when (field.type) {
@@ -540,24 +588,20 @@ class ModelToKotlinCommonGenerator(
         }
     }
 
-    private fun FieldDeclaration.valueSizeCall(variable: String): String {
-        val sizeFunName = type.decodeEncodeFuncName()?.decapitalize()
+    private fun FieldType.valueSizeCall(variable: String, number: Int, isPacked: Boolean = false): String {
+        val sizeFunName = decodeEncodeFuncName()?.decapitalize()
         val sizeFunc = "$PB_PKG.WireSize.$sizeFunName($variable)"
 
-        return when (type) {
+        return when (this) {
             is FieldType.IntegralType -> sizeFunc
 
             is FieldType.List -> when {
-                dec.isPacked -> sizeFunc
+                isPacked -> sizeFunc
                 else -> {
                     // calculate the size of the values within the list.
-                    val valueTypeSizeFunc = type.value.decodeEncodeFuncName()?.decapitalize()
-                    "$variable.sumOf { $PB_PKG.WireSize.$valueTypeSizeFunc(it) + ${
-                        tagSizeCall(
-                            number,
-                            type.value.wireType
-                        )
-                    } }"
+                    val valueSize = value.valueSizeCall("it", number)
+                    val tagSize = tagSizeCall(number, value.wireType)
+                    "$variable.sumOf { $valueSize + $tagSize }"
                 }
             }
 

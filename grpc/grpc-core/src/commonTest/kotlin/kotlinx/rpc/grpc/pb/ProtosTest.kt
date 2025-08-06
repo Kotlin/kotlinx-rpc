@@ -21,6 +21,7 @@ import test.recursive.Recursive
 import test.recursive.RecursiveInternal
 import test.recursive.RecursiveReq
 import test.recursive.invoke
+import test.submsg.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -65,12 +66,14 @@ class ProtosTest {
 
     @Test
     fun testRepeatedProto() {
+        val elem = { i: Int -> Repeated.Other { a = i } }
         val msg = Repeated {
             listFixed32 = listOf(1, 5, 3).map { it.toUInt() }
             listFixed32Packed = listOf(1, 2, 3).map { it.toUInt() }
             listInt32 = listOf(4, 7, 6)
             listInt32Packed = listOf(4, 5, 6)
             listString = listOf("a", "b", "c")
+            listMessage = listOf(elem(1), elem(2), elem(3))
         }
 
         val decoded = encodeDecode(msg, RepeatedInternal.CODEC)
@@ -78,6 +81,10 @@ class ProtosTest {
         assertEquals(msg.listInt32, decoded.listInt32)
         assertEquals(msg.listFixed32, decoded.listFixed32)
         assertEquals(msg.listString, decoded.listString)
+        assertEquals(msg.listMessage.size, decoded.listMessage.size)
+        for (i in msg.listMessage.indices) {
+            assertEquals(msg.listMessage[i].a, decoded.listMessage[i].a)
+        }
     }
 
     @Test
@@ -254,7 +261,32 @@ class ProtosTest {
             NestedOuterInternal.InnerInternal.SuperInnerInternal.DuperInnerInternal.EvenMoreInnerInternal.CantBelieveItsSoInnerInternal.CODEC
         )
         assertEquals(123456789, decodedInner.num)
+    }
 
+    @Test
+    fun testMessageMerging() {
+
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+
+        val firstPart = Other {
+            arg1 = "first"
+            arg2 = "second"
+        }
+        val secondPart = Other {
+            arg2 = "third"
+            arg3 = "fourth"
+        }
+
+        encoder.writeMessage(1, firstPart as OtherInternal) { encodeWith(encoder) }
+        encoder.flush()
+        encoder.writeMessage(1, secondPart as OtherInternal) { encodeWith(encoder) }
+        encoder.flush()
+
+        val decoded = ReferenceInternal.CODEC.decode(buffer)
+        assertEquals("first", decoded.other.arg1)
+        assertEquals("third", decoded.other.arg2)
+        assertEquals("fourth", decoded.other.arg3)
     }
 
 }
