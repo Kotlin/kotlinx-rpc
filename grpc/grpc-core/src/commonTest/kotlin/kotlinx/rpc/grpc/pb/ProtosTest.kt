@@ -22,10 +22,7 @@ import test.recursive.RecursiveInternal
 import test.recursive.RecursiveReq
 import test.recursive.invoke
 import test.submsg.*
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertNull
+import kotlin.test.*
 
 class ProtosTest {
 
@@ -155,6 +152,15 @@ class ProtosTest {
         }
         val decoded2 = encodeDecode(msg2, OneOfMsgInternal.CODEC)
         assertEquals(OneOfMsg.Field.Fixed(21u), decoded2.field)
+
+        val msg3 = OneOfMsg {
+            field = OneOfMsg.Field.Other(Other { arg2 = "test" })
+        }
+        val decoded3 = encodeDecode(msg3, OneOfMsgInternal.CODEC)
+        assertIs<OneOfMsg.Field.Other>(decoded3.field)
+        assertNull((decoded3.field as OneOfMsg.Field.Other).value.arg1)
+        assertEquals("test", (decoded3.field as OneOfMsg.Field.Other).value.arg2)
+        assertNull((decoded3.field as OneOfMsg.Field.Other).value.arg3)
     }
 
     @Test

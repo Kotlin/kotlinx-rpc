@@ -281,44 +281,68 @@ class ModelToKotlinCommonGenerator(
     private fun CodeGenerator.readMatchCase(
         field: FieldDeclaration,
         lvalue: String = "msg.${field.name}",
-        wrapperCtor: (String) -> String = { it }
+        wrapperCtor: (String) -> String = { it },
+        beforeValueDecoding: CodeGenerator.() -> Unit = {},
     ) {
         when (val fieldType = field.type) {
             is FieldType.IntegralType -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.${field.type.wireType.name}") {
+                beforeValueDecoding()
                 generateDecodeFieldValue(fieldType, lvalue, wrapperCtor = wrapperCtor)
             }
 
             is FieldType.List -> if (field.dec.isPacked) {
                 whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.LENGTH_DELIMITED") {
+                    beforeValueDecoding()
                     generateDecodeFieldValue(fieldType, lvalue, isPacked = true, wrapperCtor = wrapperCtor)
                 }
             } else {
                 whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.${fieldType.value.wireType.name}") {
+                    beforeValueDecoding()
                     generateDecodeFieldValue(fieldType, lvalue, isPacked = false, wrapperCtor = wrapperCtor)
                 }
             }
 
             is FieldType.Enum -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.VARINT") {
+                beforeValueDecoding()
                 generateDecodeFieldValue(fieldType, lvalue, wrapperCtor = wrapperCtor)
             }
 
             is FieldType.OneOf -> {
                 fieldType.dec.variants.forEach { variant ->
                     val variantName = "${fieldType.dec.name.safeFullName()}.${variant.name}"
-                    readMatchCase(
-                        field = variant,
-                        lvalue = lvalue,
-                        wrapperCtor = { "$variantName($it)" }
-                    )
+                    if (variant.type is FieldType.Message) {
+                        // in case of a message, we must construct an empty message before reading the message
+                        readMatchCase(
+                            field = variant,
+                            lvalue = "field.value",
+                            beforeValueDecoding = {
+                                beforeValueDecoding()
+                                scope("val field = ($lvalue as? $variantName) ?: $variantName(${variant.type.internalCtor()}).also") {
+                                    // write the constructed oneof variant to the field
+                                    code("$lvalue = it")
+                                }
+                            })
+                    } else {
+                        readMatchCase(
+                            field = variant,
+                            lvalue = lvalue,
+                            wrapperCtor = { "$variantName($it)" },
+                            beforeValueDecoding = beforeValueDecoding
+                        )
+                    }
                 }
             }
 
             is FieldType.Message -> {
                 whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.LENGTH_DELIMITED") {
-                    // check if the the current sub message object
-                    ifBranch(condition = "!msg.presenceMask[${field.presenceIdx}]", ifBlock = {
-                        code("$lvalue = ${fieldType.dec.value.internalClassFullName()}()")
-                    })
+                    if (field.presenceIdx != null) {
+                        // check if the current sub message object was already set, if not, set a new one
+                        // to set the field's presence tracker to true
+                        ifBranch(condition = "!msg.presenceMask[${field.presenceIdx}]", ifBlock = {
+                            code("$lvalue = ${fieldType.dec.value.internalClassFullName()}()")
+                        })
+                    }
+                    beforeValueDecoding()
                     generateDecodeFieldValue(fieldType, lvalue, wrapperCtor = wrapperCtor)
                 }
             }
@@ -818,6 +842,9 @@ class ModelToKotlinCommonGenerator(
             }
         }
     }
+
+    private fun FieldType.Message.internalCtor() =
+        dec.value.internalClassFullName() + "()"
 
     private fun MessageDeclaration.internalClassFullName(): String {
         return name.safeFullName(MSG_INTERNAL_SUFFIX)

@@ -1,6 +1,9 @@
+import "sub_message.proto";
+
 message OneOfMsg {
   oneof field {
     int32 sint = 2;
     fixed64 fixed = 3;
+    test.submsg.Other other = 4;
   }
 }
