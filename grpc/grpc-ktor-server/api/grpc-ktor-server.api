@@ -5,7 +5,7 @@ public final class kotlinx/rpc/grpc/ktor/server/GrpcConfigKeys {
 
 public final class kotlinx/rpc/grpc/ktor/server/ServerKt {
 	public static final fun getGrpcServerKey ()Lio/ktor/util/AttributeKey;
-	public static final fun grpc (Lio/ktor/server/application/Application;ILkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/GrpcServer;
-	public static synthetic fun grpc$default (Lio/ktor/server/application/Application;ILkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/GrpcServer;
+	public static final fun grpc (Lio/ktor/server/application/Application;ILkotlinx/rpc/grpc/codec/MessageCodecResolver;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/GrpcServer;
+	public static synthetic fun grpc$default (Lio/ktor/server/application/Application;ILkotlinx/rpc/grpc/codec/MessageCodecResolver;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/GrpcServer;
 }
 
