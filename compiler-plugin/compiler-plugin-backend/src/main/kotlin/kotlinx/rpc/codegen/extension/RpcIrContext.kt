@@ -6,8 +6,10 @@ package kotlinx.rpc.codegen.extension
 
 import kotlinx.rpc.codegen.VersionSpecificApi
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.ir.declarations.IrEnumEntry
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
+import org.jetbrains.kotlin.ir.symbols.IrEnumEntrySymbol
 import org.jetbrains.kotlin.ir.symbols.IrPropertySymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.makeNullable
@@ -16,6 +18,7 @@ import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.isVararg
 import org.jetbrains.kotlin.ir.util.nestedClasses
 import org.jetbrains.kotlin.ir.util.properties
+import org.jetbrains.kotlin.platform.jvm.isJvm
 import org.jetbrains.kotlin.platform.konan.isNative
 import org.jetbrains.kotlin.types.Variance
 
@@ -33,20 +36,8 @@ internal class RpcIrContext(
         irBuiltIns.arrayClass.typeWith(anyNullable, Variance.OUT_VARIANCE)
     }
 
-    val listOfAnnotations by lazy {
-        irBuiltIns.listClass.typeWith(irBuiltIns.annotationType)
-    }
-
-    val arrayOfAnnotations by lazy {
-        irBuiltIns.arrayClass.typeWith(irBuiltIns.annotationType, Variance.OUT_VARIANCE)
-    }
-
     val kTypeClass by lazy {
         getIrClassSymbol("kotlin.reflect", "KType")
-    }
-
-    val suspendFunction2 by lazy {
-        getIrClassSymbol("kotlin.coroutines", "SuspendFunction2")
     }
 
     val flow by lazy {
@@ -77,8 +68,56 @@ internal class RpcIrContext(
         getIrClassSymbol("kotlinx.rpc.grpc.descriptor", "GrpcServiceDescriptor")
     }
 
-    val grpcDelegate by lazy {
-        getIrClassSymbol("kotlinx.rpc.grpc.descriptor", "GrpcDelegate")
+    val grpcServiceDelegate by lazy {
+        getIrClassSymbol("kotlinx.rpc.grpc.descriptor", "GrpcServiceDelegate")
+    }
+
+    val grpcPlatformServiceDescriptor by lazy {
+        if (isJvmTarget()) {
+            getIrClassSymbol("io.grpc", "ServiceDescriptor")
+        } else {
+            getIrClassSymbol("kotlinx.rpc.grpc.internal", "ServiceDescriptor")
+        }
+    }
+
+    val grpcPlatformMethodDescriptor by lazy {
+        if (isJvmTarget()) {
+            getIrClassSymbol("io.grpc", "MethodDescriptor")
+        } else {
+            getIrClassSymbol("kotlinx.rpc.grpc.internal", "MethodDescriptor")
+        }
+    }
+
+    val grpcPlatformMethodType by lazy {
+        getIrClassSymbol("kotlinx.rpc.grpc.internal", "MethodType")
+    }
+
+    val grpcPlatformMethodTypeUnary by lazy {
+        grpcPlatformMethodType.enumEntry("UNARY")
+    }
+
+    val grpcPlatformMethodTypeServerStreaming by lazy {
+        grpcPlatformMethodType.enumEntry("SERVER_STREAMING")
+    }
+
+    val grpcPlatformMethodTypeClientStreaming by lazy {
+        grpcPlatformMethodType.enumEntry("CLIENT_STREAMING")
+    }
+
+    val grpcPlatformMethodTypeBidiStreaming by lazy {
+        grpcPlatformMethodType.enumEntry("BIDI_STREAMING")
+    }
+
+    val grpcMessageCodec by lazy {
+        getIrClassSymbol("kotlinx.rpc.grpc.codec", "MessageCodec")
+    }
+
+    val grpcMessageCodecResolver by lazy {
+        getIrClassSymbol("kotlinx.rpc.grpc.codec", "MessageCodecResolver")
+    }
+
+    val withCodecAnnotation by lazy {
+        getIrClassSymbol("kotlinx.rpc.grpc.codec", "WithCodec")
     }
 
     val rpcType by lazy {
@@ -105,8 +144,12 @@ internal class RpcIrContext(
         getRpcIrClassSymbol("RpcInvokator", "descriptor")
     }
 
-    val rpcInvokatorMethod by lazy {
-        rpcInvokator.subClass("Method")
+    val rpcInvokatorUnaryResponse by lazy {
+        rpcInvokator.subClass("UnaryResponse")
+    }
+
+    val rpcInvokatorFlowResponse by lazy {
+        rpcInvokator.subClass("FlowResponse")
     }
 
     val rpcParameter by lazy {
@@ -135,6 +178,10 @@ internal class RpcIrContext(
 
     fun isNativeTarget(): Boolean {
         return pluginContext.platform.isNative()
+    }
+
+    fun isJvmTarget(): Boolean {
+        return pluginContext.platform.isJvm()
     }
 
     fun isWasmTarget(): Boolean {
@@ -196,6 +243,22 @@ internal class RpcIrContext(
             namedFunction("kotlin", "to")
         }
 
+        val serviceDescriptor by lazy {
+            namedFunction("kotlinx.rpc.grpc.internal", "serviceDescriptor")
+        }
+
+        val methodDescriptor by lazy {
+            namedFunction("kotlinx.rpc.grpc.internal", "methodDescriptor")
+        }
+
+        val grpcServiceDescriptorDelegate by lazy {
+            grpcServiceDescriptor.namedFunction("delegate")
+        }
+
+        val grpcMessageCodecResolverResolve by lazy {
+            grpcMessageCodecResolver.namedFunction("resolve")
+        }
+
         private fun IrClassSymbol.namedFunction(name: String): IrSimpleFunction {
             return owner.functions.single { it.name.asString() == name }
         }
@@ -214,12 +277,20 @@ internal class RpcIrContext(
     val properties = Properties()
 
     inner class Properties {
+        val rpcServiceDescriptorSimpleName by lazy {
+            rpcServiceDescriptor.namedProperty("simpleName")
+        }
+
         val rpcServiceDescriptorFqName by lazy {
             rpcServiceDescriptor.namedProperty("fqName")
         }
 
-        val grpcServiceDescriptorDelegate by lazy {
-            grpcServiceDescriptor.namedProperty("delegate")
+        val rpcServiceDescriptorCallables by lazy {
+            rpcServiceDescriptor.namedProperty("callables")
+        }
+
+        val mapValues by lazy {
+            irBuiltIns.mapClass.namedProperty("values")
         }
 
         private fun IrClassSymbol.namedProperty(name: String): IrPropertySymbol {
@@ -229,6 +300,10 @@ internal class RpcIrContext(
 
     private fun IrClassSymbol.subClass(name: String): IrClassSymbol {
         return owner.nestedClasses.single { it.name.asString() == name }.symbol
+    }
+
+    private fun IrClassSymbol.enumEntry(name: String): IrEnumEntrySymbol {
+        return owner.declarations.filterIsInstance<IrEnumEntry>().single { it.name.asString() == name }.symbol
     }
 
     private fun getRpcIrClassSymbol(name: String, subpackage: String? = null): IrClassSymbol {

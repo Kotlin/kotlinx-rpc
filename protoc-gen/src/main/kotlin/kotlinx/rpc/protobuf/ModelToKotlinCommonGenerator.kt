@@ -14,6 +14,7 @@ private const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
 private const val MSG_INTERNAL_SUFFIX = "Internal"
 private const val PB_PKG = "kotlinx.rpc.grpc.pb"
 private const val INTERNAL_RPC_API_ANNO = "kotlinx.rpc.internal.utils.InternalRpcApi"
+private const val WITH_CODEC_ANNO = "kotlinx.rpc.grpc.codec.WithCodec"
 
 class ModelToKotlinCommonGenerator(
     private val model: Model,
@@ -160,7 +161,7 @@ class ModelToKotlinCommonGenerator(
         val internalClassName = declaration.internalClassName()
         clazz(
             name = internalClassName,
-            annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
+            annotations = listOf("@$INTERNAL_RPC_API_ANNO", "@$WITH_CODEC_ANNO($internalClassName.CODEC::class)"),
             declarationType = DeclarationType.Class,
             superTypes = listOf(
                 declaration.name.safeFullName(),
@@ -200,9 +201,7 @@ class ModelToKotlinCommonGenerator(
                 generateInternalMessage(nested)
             }
 
-            scope("companion object") {
-                generateCodecObject(declaration)
-            }
+            generateCodecObject(declaration)
         }
     }
 
@@ -226,7 +225,7 @@ class ModelToKotlinCommonGenerator(
             "\${value::class.simpleName} implements ${msgFqName}, which is prohibited."
         val sourceFqName = "kotlinx.io.Source"
         val bufferFqName = "kotlinx.io.Buffer"
-        scope("val CODEC = object : kotlinx.rpc.grpc.internal.MessageCodec<$msgFqName>") {
+        scope("object CODEC : kotlinx.rpc.grpc.codec.MessageCodec<$msgFqName>") {
             function("encode", modifiers = "override", args = "value: $msgFqName", returnType = sourceFqName) {
                 code("val msg = value as? ${declaration.internalClassFullName()} ?: error { \"$downCastErrorStr\" }")
                 code("val buffer = $bufferFqName()")
@@ -238,7 +237,7 @@ class ModelToKotlinCommonGenerator(
 
             function("decode", modifiers = "override", args = "stream: $sourceFqName", returnType = msgFqName) {
                 scope("$PB_PKG.WireDecoder(stream as $bufferFqName).use") {
-                    code("return ${declaration.internalClassFullName()}.decodeWith(it)")
+                    code("return ${declaration.internalClassFullName()}.CODEC.decodeWith(it)")
                 }
             }
         }
@@ -261,7 +260,7 @@ class ModelToKotlinCommonGenerator(
         name = "decodeWith",
         modifiers = "private",
         args = "decoder: $PB_PKG.WireDecoder",
-        contextReceiver = "${declaration.internalClassFullName()}.Companion",
+        contextReceiver = "${declaration.internalClassFullName()}.CODEC",
         returnType = declaration.internalClassName()
     ) {
         code("val msg = ${declaration.internalClassFullName()}()")

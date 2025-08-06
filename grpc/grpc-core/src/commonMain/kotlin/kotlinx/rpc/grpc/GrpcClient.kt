@@ -7,26 +7,34 @@ package kotlinx.rpc.grpc
 import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
-import kotlinx.rpc.grpc.descriptor.GrpcClientDelegate
+import kotlinx.rpc.grpc.codec.EmptyMessageCodecResolver
+import kotlinx.rpc.grpc.codec.MessageCodecResolver
+import kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
+import kotlinx.rpc.grpc.internal.*
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.time.Duration
+
+private typealias RequestClient = Any
 
 /**
  * GrpcClient manages gRPC communication by providing implementation for making asynchronous RPC calls.
  *
  * @field channel The [ManagedChannel] used to communicate with remote gRPC services.
  */
-public class GrpcClient internal constructor(private val channel: ManagedChannel) : RpcClient {
-    private val stubs = RpcInternalConcurrentHashMap<Long, GrpcClientDelegate>()
+public class GrpcClient internal constructor(
+    private val channel: ManagedChannel,
+    private val messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
+) : RpcClient {
+    private val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
 
     public fun shutdown() {
-        stubs.clear()
+        delegates.clear()
         channel.shutdown()
     }
 
     public fun shutdownNow() {
-        stubs.clear()
+        delegates.clear()
         channel.shutdownNow()
     }
 
@@ -34,19 +42,75 @@ public class GrpcClient internal constructor(private val channel: ManagedChannel
         channel.awaitTermination(duration)
     }
 
-    override suspend fun <T> call(call: RpcCall): T {
-        return call.delegate().call(call)
+    override suspend fun <T> call(call: RpcCall): T = withGrpcCall(call) { methodDescriptor, request ->
+        val callOptions = GrpcDefaultCallOptions
+        val trailers = GrpcTrailers()
+
+        return when (methodDescriptor.type) {
+            MethodType.UNARY -> unaryRpc(
+                channel = channel.platformApi,
+                descriptor = methodDescriptor,
+                request = request,
+                callOptions = callOptions,
+                trailers = trailers,
+            )
+
+            MethodType.CLIENT_STREAMING -> @Suppress("UNCHECKED_CAST") clientStreamingRpc(
+                channel = channel.platformApi,
+                descriptor = methodDescriptor,
+                requests = request as Flow<RequestClient>,
+                callOptions = callOptions,
+                trailers = trailers,
+            )
+
+            else -> error("Wrong method type ${methodDescriptor.type}")
+        }
     }
 
-    override fun <T> callServerStreaming(call: RpcCall): Flow<T> {
-        return call.delegate().callServerStreaming(call)
+    override fun <T> callServerStreaming(call: RpcCall): Flow<T> = withGrpcCall(call) { methodDescriptor, request ->
+        val callOptions = GrpcDefaultCallOptions
+        val trailers = GrpcTrailers()
+
+        when (methodDescriptor.type) {
+            MethodType.SERVER_STREAMING -> serverStreamingRpc(
+                channel = channel.platformApi,
+                descriptor = methodDescriptor,
+                request = request,
+                callOptions = callOptions,
+                trailers = trailers,
+            )
+
+            MethodType.BIDI_STREAMING -> @Suppress("UNCHECKED_CAST") bidirectionalStreamingRpc(
+                channel = channel.platformApi,
+                descriptor = methodDescriptor,
+                requests = request as Flow<RequestClient>,
+                callOptions = callOptions,
+                trailers = trailers,
+            )
+
+            else -> error("Wrong method type ${methodDescriptor.type}")
+        }
     }
 
-    private fun RpcCall.delegate(): GrpcClientDelegate {
-        val grpc = (descriptor as? GrpcServiceDescriptor<*>)
-            ?: error("Service ${descriptor.fqName} is not a gRPC service")
+    private inline fun <T, R> withGrpcCall(call: RpcCall, body: (MethodDescriptor<RequestClient, T>, Any) -> R): R {
+        require(call.arguments.size == 1) { "Call parameter size should be 1, but ${call.arguments.size}" }
 
-        return stubs.computeIfAbsent(serviceId) { grpc.delegate.clientProvider(channel) }
+        val delegate = delegates.computeIfAbsent(call.descriptor.fqName) {
+            val grpc = call.descriptor as? GrpcServiceDescriptor<*>
+                ?: error("Expected a gRPC service")
+
+            grpc.delegate(messageCodecResolver)
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        val methodDescriptor = delegate.getMethodDescriptor(call.callableName)
+                as? MethodDescriptor<RequestClient, T>
+            ?: error("Expected a gRPC method descriptor")
+
+        val request = call.arguments[0]
+            ?: error("Expected a single argument for a gRPC call")
+
+        return body(methodDescriptor, request)
     }
 }
 
@@ -56,10 +120,11 @@ public class GrpcClient internal constructor(private val channel: ManagedChannel
 public fun GrpcClient(
     hostname: String,
     port: Int,
+    messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
     configure: ManagedChannelBuilder<*>.() -> Unit = {},
 ): GrpcClient {
     val channel = ManagedChannelBuilder(hostname, port).apply(configure).buildChannel()
-    return GrpcClient(channel)
+    return GrpcClient(channel, messageCodecResolver)
 }
 
 /**
@@ -67,8 +132,9 @@ public fun GrpcClient(
  */
 public fun GrpcClient(
     target: String,
+    messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
     configure: ManagedChannelBuilder<*>.() -> Unit = {},
 ): GrpcClient {
     val channel = ManagedChannelBuilder(target).apply(configure).buildChannel()
-    return GrpcClient(channel)
+    return GrpcClient(channel, messageCodecResolver)
 }

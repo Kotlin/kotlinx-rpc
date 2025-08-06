@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.grpc.internal
 
+import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi

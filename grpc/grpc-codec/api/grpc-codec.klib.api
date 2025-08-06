@@ -1,0 +1,27 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, wasmWasi, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <org.jetbrains.kotlinx:grpc-codec>
+open annotation class kotlinx.rpc.grpc.codec/WithCodec : kotlin/Annotation { // kotlinx.rpc.grpc.codec/WithCodec|null[0]
+    constructor <init>(kotlin.reflect/KClass<out kotlinx.rpc.grpc.codec/MessageCodec<*>>) // kotlinx.rpc.grpc.codec/WithCodec.<init>|<init>(kotlin.reflect.KClass<out|kotlinx.rpc.grpc.codec.MessageCodec<*>>){}[0]
+
+    final val codec // kotlinx.rpc.grpc.codec/WithCodec.codec|{}codec[0]
+        final fun <get-codec>(): kotlin.reflect/KClass<out kotlinx.rpc.grpc.codec/MessageCodec<*>> // kotlinx.rpc.grpc.codec/WithCodec.codec.<get-codec>|<get-codec>(){}[0]
+}
+
+abstract fun interface kotlinx.rpc.grpc.codec/MessageCodecResolver { // kotlinx.rpc.grpc.codec/MessageCodecResolver|null[0]
+    abstract fun resolve(kotlin.reflect/KType): kotlinx.rpc.grpc.codec/MessageCodec<*> // kotlinx.rpc.grpc.codec/MessageCodecResolver.resolve|resolve(kotlin.reflect.KType){}[0]
+}
+
+abstract interface <#A: kotlin/Any?> kotlinx.rpc.grpc.codec/MessageCodec { // kotlinx.rpc.grpc.codec/MessageCodec|null[0]
+    abstract fun decode(kotlinx.io/Source): #A // kotlinx.rpc.grpc.codec/MessageCodec.decode|decode(kotlinx.io.Source){}[0]
+    abstract fun encode(#A): kotlinx.io/Source // kotlinx.rpc.grpc.codec/MessageCodec.encode|encode(1:0){}[0]
+}
+
+final object kotlinx.rpc.grpc.codec/EmptyMessageCodecResolver : kotlinx.rpc.grpc.codec/MessageCodecResolver { // kotlinx.rpc.grpc.codec/EmptyMessageCodecResolver|null[0]
+    final fun resolve(kotlin.reflect/KType): kotlinx.rpc.grpc.codec/MessageCodec<*> // kotlinx.rpc.grpc.codec/EmptyMessageCodecResolver.resolve|resolve(kotlin.reflect.KType){}[0]
+}

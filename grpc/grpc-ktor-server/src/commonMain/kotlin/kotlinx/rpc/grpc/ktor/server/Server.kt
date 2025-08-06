@@ -13,6 +13,8 @@ import io.ktor.util.AttributeKey
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.GrpcServer
 import kotlinx.rpc.grpc.ServerBuilder
+import kotlinx.rpc.grpc.codec.EmptyMessageCodecResolver
+import kotlinx.rpc.grpc.codec.MessageCodecResolver
 
 @Suppress("ConstPropertyName")
 public object GrpcConfigKeys {
@@ -49,6 +51,7 @@ public val GrpcServerKey: AttributeKey<GrpcServer> = AttributeKey<GrpcServer>("G
  */
 public fun Application.grpc(
     port: Int = environment.config.propertyOrNull(GrpcConfigKeys.grpcHostPortPath)?.getAs<Int>() ?: 8001,
+    messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
     configure: ServerBuilder<*>.() -> Unit = {},
     builder: RpcServer.() -> Unit,
 ): GrpcServer {
@@ -59,7 +62,13 @@ public fun Application.grpc(
     var newServer = false
     val server = attributes.computeIfAbsent(GrpcServerKey) {
         newServer = true
-        GrpcServer(port, configure, builder)
+        GrpcServer(
+            port = port,
+            messageCodecResolver = messageCodecResolver,
+            parentContext = coroutineContext,
+            configure = configure,
+            builder = builder,
+        )
     }
 
     if (!newServer) {

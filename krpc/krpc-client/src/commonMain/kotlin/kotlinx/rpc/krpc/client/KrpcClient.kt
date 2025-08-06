@@ -430,7 +430,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
         return when (serialFormat) {
             is StringFormat -> {
                 val stringValue = clientStreamContext.scoped(callId, call.serviceId) {
-                    serialFormat.encodeToString(parametersSerializer, call.parameters)
+                    serialFormat.encodeToString(parametersSerializer, call.arguments)
                 }
 
                 KrpcCallMessage.CallDataString(
@@ -447,7 +447,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
 
             is BinaryFormat -> {
                 val binaryValue = clientStreamContext.scoped(callId, call.serviceId) {
-                    serialFormat.encodeToByteArray(parametersSerializer, call.parameters)
+                    serialFormat.encodeToByteArray(parametersSerializer, call.arguments)
                 }
 
                 KrpcCallMessage.CallDataBinary(
@@ -576,9 +576,11 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
         config.serialFormatInitializer.applySerializersModuleAndBuild(module)
     }
 
+    @Suppress("SameReturnValue")
     private fun RpcCallable<*>.toMessageCallType(): KrpcCallMessage.CallType {
         return when (invokator) {
-            is RpcInvokator.Method -> KrpcCallMessage.CallType.Method
+            is RpcInvokator.FlowResponse -> KrpcCallMessage.CallType.Method
+            is RpcInvokator.UnaryResponse<*> -> KrpcCallMessage.CallType.Method
         }
     }
 }

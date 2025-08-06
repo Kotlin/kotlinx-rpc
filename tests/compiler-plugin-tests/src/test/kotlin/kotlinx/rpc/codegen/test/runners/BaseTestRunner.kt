@@ -16,6 +16,7 @@ fun TestConfigurationBuilder.commonFirWithPluginFrontendConfiguration() {
     defaultDirectives {
         +FirDiagnosticsDirectives.ENABLE_PLUGIN_PHASES
         +FirDiagnosticsDirectives.FIR_DUMP
+
         +JvmEnvironmentConfigurationDirectives.FULL_JDK
         +CodegenTestDirectives.IGNORE_DEXING
     }

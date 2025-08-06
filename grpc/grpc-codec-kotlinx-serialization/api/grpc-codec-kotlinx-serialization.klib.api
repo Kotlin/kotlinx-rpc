@@ -1,0 +1,15 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, wasmWasi, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <org.jetbrains.kotlinx:grpc-codec-kotlinx-serialization>
+final class kotlinx.rpc.grpc.codec.kotlinx.serialization/KotlinxSerializationCodecResolver : kotlinx.rpc.grpc.codec/MessageCodecResolver { // kotlinx.rpc.grpc.codec.kotlinx.serialization/KotlinxSerializationCodecResolver|null[0]
+    constructor <init>(kotlinx.serialization/SerialFormat) // kotlinx.rpc.grpc.codec.kotlinx.serialization/KotlinxSerializationCodecResolver.<init>|<init>(kotlinx.serialization.SerialFormat){}[0]
+
+    final fun resolve(kotlin.reflect/KType): kotlinx.rpc.grpc.codec/MessageCodec<*> // kotlinx.rpc.grpc.codec.kotlinx.serialization/KotlinxSerializationCodecResolver.resolve|resolve(kotlin.reflect.KType){}[0]
+}
+
+final fun (kotlinx.serialization/SerialFormat).kotlinx.rpc.grpc.codec.kotlinx.serialization/asCodecResolver(): kotlinx.rpc.grpc.codec/MessageCodecResolver // kotlinx.rpc.grpc.codec.kotlinx.serialization/asCodecResolver|asCodecResolver@kotlinx.serialization.SerialFormat(){}[0]

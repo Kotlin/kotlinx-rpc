@@ -6,6 +6,10 @@
 // - Show declarations: true
 
 // Library unique name: <org.jetbrains.kotlinx:grpc-core>
+open annotation class kotlinx.rpc.grpc.annotations/Grpc : kotlin/Annotation { // kotlinx.rpc.grpc.annotations/Grpc|null[0]
+    constructor <init>() // kotlinx.rpc.grpc.annotations/Grpc.<init>|<init>(){}[0]
+}
+
 final enum class kotlinx.rpc.grpc/StatusCode : kotlin/Enum<kotlinx.rpc.grpc/StatusCode> { // kotlinx.rpc.grpc/StatusCode|null[0]
     enum entry ABORTED // kotlinx.rpc.grpc/StatusCode.ABORTED|null[0]
     enum entry ALREADY_EXISTS // kotlinx.rpc.grpc/StatusCode.ALREADY_EXISTS|null[0]
@@ -36,21 +40,6 @@ final enum class kotlinx.rpc.grpc/StatusCode : kotlin/Enum<kotlinx.rpc.grpc/Stat
     final fun values(): kotlin/Array<kotlinx.rpc.grpc/StatusCode> // kotlinx.rpc.grpc/StatusCode.values|values#static(){}[0]
 }
 
-abstract interface <#A: kotlin/Any> kotlinx.rpc.grpc.descriptor/GrpcDelegate { // kotlinx.rpc.grpc.descriptor/GrpcDelegate|null[0]
-    abstract fun clientProvider(kotlinx.rpc.grpc/ManagedChannel): kotlinx.rpc.grpc.descriptor/GrpcClientDelegate // kotlinx.rpc.grpc.descriptor/GrpcDelegate.clientProvider|clientProvider(kotlinx.rpc.grpc.ManagedChannel){}[0]
-    abstract fun definitionFor(#A): kotlinx.rpc.grpc/ServerServiceDefinition // kotlinx.rpc.grpc.descriptor/GrpcDelegate.definitionFor|definitionFor(1:0){}[0]
-}
-
-abstract interface <#A: kotlin/Any> kotlinx.rpc.grpc.descriptor/GrpcServiceDescriptor : kotlinx.rpc.descriptor/RpcServiceDescriptor<#A> { // kotlinx.rpc.grpc.descriptor/GrpcServiceDescriptor|null[0]
-    abstract val delegate // kotlinx.rpc.grpc.descriptor/GrpcServiceDescriptor.delegate|{}delegate[0]
-        abstract fun <get-delegate>(): kotlinx.rpc.grpc.descriptor/GrpcDelegate<#A> // kotlinx.rpc.grpc.descriptor/GrpcServiceDescriptor.delegate.<get-delegate>|<get-delegate>(){}[0]
-}
-
-abstract interface kotlinx.rpc.grpc.descriptor/GrpcClientDelegate { // kotlinx.rpc.grpc.descriptor/GrpcClientDelegate|null[0]
-    abstract fun <#A1: kotlin/Any?> callServerStreaming(kotlinx.rpc/RpcCall): kotlinx.coroutines.flow/Flow<#A1> // kotlinx.rpc.grpc.descriptor/GrpcClientDelegate.callServerStreaming|callServerStreaming(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]
-    abstract suspend fun <#A1: kotlin/Any?> call(kotlinx.rpc/RpcCall): #A1 // kotlinx.rpc.grpc.descriptor/GrpcClientDelegate.call|call(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]
-}
-
 abstract interface kotlinx.rpc.grpc/ManagedChannel { // kotlinx.rpc.grpc/ManagedChannel|null[0]
     abstract val isShutdown // kotlinx.rpc.grpc/ManagedChannel.isShutdown|{}isShutdown[0]
         abstract fun <get-isShutdown>(): kotlin/Boolean // kotlinx.rpc.grpc/ManagedChannel.isShutdown.<get-isShutdown>|<get-isShutdown>(){}[0]
@@ -61,7 +50,7 @@ abstract interface kotlinx.rpc.grpc/ManagedChannel { // kotlinx.rpc.grpc/Managed
 
     abstract fun shutdown(): kotlinx.rpc.grpc/ManagedChannel // kotlinx.rpc.grpc/ManagedChannel.shutdown|shutdown(){}[0]
     abstract fun shutdownNow(): kotlinx.rpc.grpc/ManagedChannel // kotlinx.rpc.grpc/ManagedChannel.shutdownNow|shutdownNow(){}[0]
-    abstract suspend fun awaitTermination(kotlin.time/Duration): kotlin/Boolean // kotlinx.rpc.grpc/ManagedChannel.awaitTermination|awaitTermination(kotlin.time.Duration){}[0]
+    abstract suspend fun awaitTermination(kotlin.time/Duration = ...): kotlin/Boolean // kotlinx.rpc.grpc/ManagedChannel.awaitTermination|awaitTermination(kotlin.time.Duration){}[0]
 }
 
 abstract interface kotlinx.rpc.grpc/Server { // kotlinx.rpc.grpc/Server|null[0]
@@ -162,7 +151,7 @@ final class kotlinx.rpc.grpc/StatusRuntimeException : kotlin/RuntimeException { 
 final val kotlinx.rpc.grpc/code // kotlinx.rpc.grpc/code|@kotlinx.rpc.grpc.Status{}code[0]
     final fun (kotlinx.rpc.grpc/Status).<get-code>(): kotlinx.rpc.grpc/StatusCode // kotlinx.rpc.grpc/code.<get-code>|<get-code>@kotlinx.rpc.grpc.Status(){}[0]
 
-final fun kotlinx.rpc.grpc/GrpcClient(kotlin/String, kotlin/Function1<kotlinx.rpc.grpc/ManagedChannelBuilder<*>, kotlin/Unit> = ...): kotlinx.rpc.grpc/GrpcClient // kotlinx.rpc.grpc/GrpcClient|GrpcClient(kotlin.String;kotlin.Function1<kotlinx.rpc.grpc.ManagedChannelBuilder<*>,kotlin.Unit>){}[0]
-final fun kotlinx.rpc.grpc/GrpcClient(kotlin/String, kotlin/Int, kotlin/Function1<kotlinx.rpc.grpc/ManagedChannelBuilder<*>, kotlin/Unit> = ...): kotlinx.rpc.grpc/GrpcClient // kotlinx.rpc.grpc/GrpcClient|GrpcClient(kotlin.String;kotlin.Int;kotlin.Function1<kotlinx.rpc.grpc.ManagedChannelBuilder<*>,kotlin.Unit>){}[0]
-final fun kotlinx.rpc.grpc/GrpcServer(kotlin/Int, kotlin/Function1<kotlinx.rpc.grpc/ServerBuilder<*>, kotlin/Unit> = ..., kotlin/Function1<kotlinx.rpc/RpcServer, kotlin/Unit> = ...): kotlinx.rpc.grpc/GrpcServer // kotlinx.rpc.grpc/GrpcServer|GrpcServer(kotlin.Int;kotlin.Function1<kotlinx.rpc.grpc.ServerBuilder<*>,kotlin.Unit>;kotlin.Function1<kotlinx.rpc.RpcServer,kotlin.Unit>){}[0]
+final fun kotlinx.rpc.grpc/GrpcClient(kotlin/String, kotlin/Int, kotlinx.rpc.grpc.codec/MessageCodecResolver = ..., kotlin/Function1<kotlinx.rpc.grpc/ManagedChannelBuilder<*>, kotlin/Unit> = ...): kotlinx.rpc.grpc/GrpcClient // kotlinx.rpc.grpc/GrpcClient|GrpcClient(kotlin.String;kotlin.Int;kotlinx.rpc.grpc.codec.MessageCodecResolver;kotlin.Function1<kotlinx.rpc.grpc.ManagedChannelBuilder<*>,kotlin.Unit>){}[0]
+final fun kotlinx.rpc.grpc/GrpcClient(kotlin/String, kotlinx.rpc.grpc.codec/MessageCodecResolver = ..., kotlin/Function1<kotlinx.rpc.grpc/ManagedChannelBuilder<*>, kotlin/Unit> = ...): kotlinx.rpc.grpc/GrpcClient // kotlinx.rpc.grpc/GrpcClient|GrpcClient(kotlin.String;kotlinx.rpc.grpc.codec.MessageCodecResolver;kotlin.Function1<kotlinx.rpc.grpc.ManagedChannelBuilder<*>,kotlin.Unit>){}[0]
+final fun kotlinx.rpc.grpc/GrpcServer(kotlin/Int, kotlinx.rpc.grpc.codec/MessageCodecResolver = ..., kotlin.coroutines/CoroutineContext = ..., kotlin/Function1<kotlinx.rpc.grpc/ServerBuilder<*>, kotlin/Unit> = ..., kotlin/Function1<kotlinx.rpc/RpcServer, kotlin/Unit> = ...): kotlinx.rpc.grpc/GrpcServer // kotlinx.rpc.grpc/GrpcServer|GrpcServer(kotlin.Int;kotlinx.rpc.grpc.codec.MessageCodecResolver;kotlin.coroutines.CoroutineContext;kotlin.Function1<kotlinx.rpc.grpc.ServerBuilder<*>,kotlin.Unit>;kotlin.Function1<kotlinx.rpc.RpcServer,kotlin.Unit>){}[0]
 final fun kotlinx.rpc.grpc/Status(kotlinx.rpc.grpc/StatusCode, kotlin/String? = ..., kotlin/Throwable? = ...): kotlinx.rpc.grpc/Status // kotlinx.rpc.grpc/Status|Status(kotlinx.rpc.grpc.StatusCode;kotlin.String?;kotlin.Throwable?){}[0]

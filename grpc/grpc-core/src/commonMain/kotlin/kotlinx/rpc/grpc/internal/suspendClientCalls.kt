@@ -43,7 +43,7 @@ public suspend fun <Request, Response> unaryRpc(
         channel = channel,
         descriptor = descriptor,
         callOptions = callOptions,
-        headers = trailers,
+        trailers = trailers,
         request = ClientRequest.Unary(request)
     ).singleOrStatus("request", descriptor)
 }
@@ -54,7 +54,7 @@ public fun <Request, Response> serverStreamingRpc(
     descriptor: MethodDescriptor<Request, Response>,
     request: Request,
     callOptions: GrpcCallOptions = GrpcDefaultCallOptions,
-    headers: GrpcTrailers = GrpcTrailers(),
+    trailers: GrpcTrailers = GrpcTrailers(),
 ): Flow<Response> {
     val type = descriptor.type
     require(type == MethodType.SERVER_STREAMING) {
@@ -65,7 +65,7 @@ public fun <Request, Response> serverStreamingRpc(
         channel = channel,
         descriptor = descriptor,
         callOptions = callOptions,
-        headers = headers,
+        trailers = trailers,
         request = ClientRequest.Unary(request)
     )
 }
@@ -76,7 +76,7 @@ public suspend fun <Request, Response> clientStreamingRpc(
     descriptor: MethodDescriptor<Request, Response>,
     requests: Flow<Request>,
     callOptions: GrpcCallOptions = GrpcDefaultCallOptions,
-    headers: GrpcTrailers = GrpcTrailers(),
+    trailers: GrpcTrailers = GrpcTrailers(),
 ): Response {
     val type = descriptor.type
     require(type == MethodType.CLIENT_STREAMING) {
@@ -87,7 +87,7 @@ public suspend fun <Request, Response> clientStreamingRpc(
         channel = channel,
         descriptor = descriptor,
         callOptions = callOptions,
-        headers = headers,
+        trailers = trailers,
         request = ClientRequest.Flowing(requests)
     ).singleOrStatus("response", descriptor)
 }
@@ -98,7 +98,7 @@ public fun <Request, Response> bidirectionalStreamingRpc(
     descriptor: MethodDescriptor<Request, Response>,
     requests: Flow<Request>,
     callOptions: GrpcCallOptions = GrpcDefaultCallOptions,
-    headers: GrpcTrailers = GrpcTrailers(),
+    trailers: GrpcTrailers = GrpcTrailers(),
 ): Flow<Response> {
     val type = descriptor.type
     check(type == MethodType.BIDI_STREAMING) {
@@ -109,7 +109,7 @@ public fun <Request, Response> bidirectionalStreamingRpc(
         channel = channel,
         descriptor = descriptor,
         callOptions = callOptions,
-        headers = headers,
+        trailers = trailers,
         request = ClientRequest.Flowing(requests)
     )
 }
@@ -147,7 +147,7 @@ private fun <Request, Response> rpcImpl(
     channel: GrpcChannel,
     descriptor: MethodDescriptor<Request, Response>,
     callOptions: GrpcCallOptions,
-    headers: GrpcTrailers,
+    trailers: GrpcTrailers,
     request: ClientRequest<Request>,
 ): Flow<Response> = flow {
     coroutineScope {
@@ -161,7 +161,7 @@ private fun <Request, Response> rpcImpl(
         val responses = Channel<Response>(1)
         val ready = Ready { handler.isReady() }
 
-        handler.start(channelResponseListener(responses, ready), headers)
+        handler.start(channelResponseListener(responses, ready), trailers)
 
         val fullMethodName = descriptor.getFullMethodName()
         val sender = launch(CoroutineName("grpc-send-message-$fullMethodName")) {
