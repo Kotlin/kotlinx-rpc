@@ -3,9 +3,9 @@ public abstract interface class kotlinx/rpc/RemoteService {
 
 public final class kotlinx/rpc/RpcCall {
 	public fun <init> (Lkotlinx/rpc/descriptor/RpcServiceDescriptor;Ljava/lang/String;[Ljava/lang/Object;J)V
+	public final fun getArguments ()[Ljava/lang/Object;
 	public final fun getCallableName ()Ljava/lang/String;
 	public final fun getDescriptor ()Lkotlinx/rpc/descriptor/RpcServiceDescriptor;
-	public final fun getParameters ()[Ljava/lang/Object;
 	public final fun getServiceId ()J
 }
 
@@ -35,13 +35,20 @@ public abstract interface class kotlinx/rpc/descriptor/RpcCallable {
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getParameters ()[Lkotlinx/rpc/descriptor/RpcParameter;
 	public abstract fun getReturnType ()Lkotlinx/rpc/descriptor/RpcType;
-	public abstract fun isNonSuspendFunction ()Z
 }
 
 public abstract interface class kotlinx/rpc/descriptor/RpcInvokator {
 }
 
+public abstract interface class kotlinx/rpc/descriptor/RpcInvokator$FlowResponse : kotlinx/rpc/descriptor/RpcInvokator {
+	public abstract fun call (Ljava/lang/Object;[Ljava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
+}
+
 public abstract interface class kotlinx/rpc/descriptor/RpcInvokator$Method : kotlinx/rpc/descriptor/RpcInvokator {
+	public abstract fun call (Ljava/lang/Object;[Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class kotlinx/rpc/descriptor/RpcInvokator$UnaryResponse : kotlinx/rpc/descriptor/RpcInvokator {
 	public abstract fun call (Ljava/lang/Object;[Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
@@ -57,9 +64,12 @@ public abstract interface class kotlinx/rpc/descriptor/RpcServiceDescriptor {
 	public abstract fun getCallable (Ljava/lang/String;)Lkotlinx/rpc/descriptor/RpcCallable;
 	public abstract fun getCallables ()Ljava/util/Map;
 	public abstract fun getFqName ()Ljava/lang/String;
+	public abstract fun getSimpleName ()Ljava/lang/String;
 }
 
 public final class kotlinx/rpc/descriptor/RpcServiceDescriptorKt {
+	public static final fun getFlowInvokator (Lkotlinx/rpc/descriptor/RpcCallable;)Lkotlinx/rpc/descriptor/RpcInvokator$FlowResponse;
+	public static final fun getUnaryInvokator (Lkotlinx/rpc/descriptor/RpcCallable;)Lkotlinx/rpc/descriptor/RpcInvokator$UnaryResponse;
 	public static final fun serviceDescriptorOf (Lkotlin/reflect/KClass;)Lkotlinx/rpc/descriptor/RpcServiceDescriptor;
 	public static final fun serviceDescriptorOf (Lkotlin/reflect/KType;)Lkotlinx/rpc/descriptor/RpcServiceDescriptor;
 }

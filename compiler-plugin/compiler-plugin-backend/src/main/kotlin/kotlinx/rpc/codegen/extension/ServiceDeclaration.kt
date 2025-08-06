@@ -20,6 +20,7 @@ class ServiceDeclaration(
 ) {
     // todo change to extension after KRPC-178
     val isGrpc = service.hasAnnotation(RpcClassId.grpcAnnotation)
+    val simpleName = service.kotlinFqName.shortName().asString()
     val fqName = service.kotlinFqName.asString()
 
     val serviceType = service.defaultType

@@ -54,6 +54,8 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrTypeOperatorCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
 import org.jetbrains.kotlin.ir.expressions.putConstructorTypeArgument
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
+import org.jetbrains.kotlin.ir.symbols.IrPropertySymbol
+import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
 import org.jetbrains.kotlin.ir.types.IrSimpleType
@@ -86,6 +88,7 @@ private object Stub {
 private object Descriptor {
     const val CALLABLES = "callables"
     const val FQ_NAME = "fqName"
+    const val SIMPLE_NAME = "simpleName"
     const val GET_CALLABLE = "getCallable"
     const val CREATE_INSTANCE = "createInstance"
 }
@@ -336,7 +339,7 @@ internal class RpcStubGenerator(
      * __rpc_client.call(RpcCall(
      *     descriptor = Companion,
      *     callableName = "<method-name>",
-     *     parameters = arrayOf(<method-arg-0>, ...),
+     *     arguments = arrayOf(<method-arg-0>, ...),
      *     serviceId = __rpc_stub_id,
      * ))
      * ```
@@ -368,7 +371,7 @@ internal class RpcStubGenerator(
                     ctx.irBuiltIns.arrayOf
                 }
 
-                val parametersParameter = irCall(callee, type = ctx.arrayOfAnyNullable).apply arrayOfCall@{
+                val argumentsParameter = irCall(callee, type = ctx.arrayOfAnyNullable).apply arrayOfCall@{
                     if (arguments.isEmpty()) {
                         arguments {
                             types { +ctx.anyNullable }
@@ -401,7 +404,7 @@ internal class RpcStubGenerator(
 
                         +stringConst(method.function.name.asString())
 
-                        +parametersParameter
+                        +argumentsParameter
 
                         +irCallProperty(
                             clazz = stubClass,
@@ -528,6 +531,8 @@ internal class RpcStubGenerator(
     }
 
     private fun IrClass.generateCompanionObjectContent() {
+        generateSimpleName()
+
         generateFqName()
 
         generateInvokators()
@@ -535,6 +540,8 @@ internal class RpcStubGenerator(
         generateCallablesProperty()
 
         generateGetCallableFunction()
+
+        generateCallablesProperty()
 
         generateCreateInstanceFunction()
 
@@ -544,34 +551,33 @@ internal class RpcStubGenerator(
     }
 
     /**
+     * `simpleName` property of the descriptor.
+     *
+     * ```kotlin
+     * override val simpleName = "MyService"
+     * ```
+     */
+    private fun IrClass.generateSimpleName() {
+        generateStringOverriddenProperty(
+            propertyName = Descriptor.SIMPLE_NAME,
+            propertySymbol = ctx.properties.rpcServiceDescriptorSimpleName,
+            value = declaration.simpleName,
+        )
+    }
+
+    /**
      * `fqName` property of the descriptor.
      *
      * ```kotlin
-     * override val fqName = "MyService"
+     * override val fqName = "my.pkg.MyService"
      * ```
      */
     private fun IrClass.generateFqName() {
-        addProperty {
-            name = Name.identifier(Descriptor.FQ_NAME)
-            visibility = DescriptorVisibilities.PUBLIC
-        }.apply {
-            overriddenSymbols = listOf(ctx.properties.rpcServiceDescriptorFqName)
-
-            addBackingFieldUtil {
-                visibility = DescriptorVisibilities.PRIVATE
-                type = ctx.irBuiltIns.stringType
-                vsApi { isFinalVS = true }
-            }.apply {
-                initializer = factory.createExpressionBody(
-                    stringConst(declaration.fqName)
-                )
-            }
-
-            addDefaultGetter(this@generateFqName, ctx.irBuiltIns) {
-                visibility = DescriptorVisibilities.PUBLIC
-                overriddenSymbols = listOf(ctx.properties.rpcServiceDescriptorFqName.owner.getterOrFail.symbol)
-            }
-        }
+        generateStringOverriddenProperty(
+            propertyName = Descriptor.FQ_NAME,
+            propertySymbol = ctx.properties.rpcServiceDescriptorFqName,
+            value = declaration.fqName,
+        )
     }
 
     private val invokators = mutableMapOf<String, IrProperty>()
@@ -585,19 +591,31 @@ internal class RpcStubGenerator(
     /**
      * Generates an invokator (`RpcInvokator`) for this callable.
      *
-     * For methods:
+     * For suspend methods:
      * ```kotlin
-     * private val <method-name>Invokator = RpcInvokator.Method<MyService> {
-     *     service: MyService, parameters: Array<Any?> ->
+     * private val <method-name>Invokator = RpcInvokator.UnaryResponse<MyService> {
+     *     service: MyService, arguments: Array<Any?> ->
      *
-     *     service.<method-name>(parameters[0] as<?> <parameter-type-1>, ..., $completion)
+     *     service.<method-name>(arguments[0] as<?> <argument-type-1>, ...)
      * }
      * ```
      *
+     * For flow methods:
+     * ```kotlin
+     * private val <method-name>Invokator = RpcInvokator.FlowResponse<MyService> {
+     *     service: MyService, arguments: Array<Any?> ->
+     *
+     *     service.<method-name>(arguments[0] as<?> <argument-type-1>, ...)
+     * }
+     * ```
+     *
+     * Difference is:
+     * - for RpcInvokator.UnaryResponse the lambda is `suspend` and returns Any?
+     * - for RpcInvokator.FlowResponse the lambda is not `suspend` and returns Flow<Any?>
+     *
      * Where:
      *  - `<method-name>` - the name of the method
-     *  - <parameter-type-k> - type of the kth parameter
-     *  - `$completion` - Continuation<Any?> parameter
+     *  - <argument-type-k> - type of the kth argument
      */
     @Suppress(
         "detekt.NestedBlockDepth",
@@ -605,11 +623,25 @@ internal class RpcStubGenerator(
         "detekt.CyclomaticComplexMethod",
     )
     private fun IrClass.generateInvokator(callable: ServiceDeclaration.Callable) {
+        check(callable is ServiceDeclaration.Method) {
+            "Only methods are allowed here"
+        }
+
         invokators[callable.name] = addProperty {
             name = Name.identifier("${callable.name}Invokator")
             visibility = DescriptorVisibilities.PRIVATE
         }.apply {
-            val propertyType = ctx.rpcInvokatorMethod.typeWith(declaration.serviceType)
+            val returnsFlow = !callable.function.isSuspend
+
+            val propertyType = when {
+                returnsFlow -> ctx.rpcInvokatorFlowResponse.typeWith(declaration.serviceType)
+                else -> ctx.rpcInvokatorUnaryResponse.typeWith(declaration.serviceType)
+            }
+
+            val resultType = when {
+                returnsFlow -> ctx.flow.typeWith(ctx.anyNullable)
+                else -> ctx.anyNullable
+            }
 
             addBackingFieldUtil {
                 visibility = DescriptorVisibilities.PRIVATE
@@ -621,8 +653,8 @@ internal class RpcStubGenerator(
                     name = SpecialNames.ANONYMOUS
                     visibility = DescriptorVisibilities.LOCAL
                     modality = Modality.FINAL
-                    returnType = ctx.anyNullable
-                    if (callable is ServiceDeclaration.Method) {
+                    returnType = resultType
+                    if (!returnsFlow) {
                         isSuspend = true
                     }
                 }.apply {
@@ -633,11 +665,9 @@ internal class RpcStubGenerator(
                         type = declaration.serviceType
                     }
 
-                    val parametersParameter = when (callable) {
-                        is ServiceDeclaration.Method -> addValueParameter {
-                            name = Name.identifier("parameters")
-                            type = ctx.arrayOfAnyNullable
-                        }
+                    val argumentsParameter = addValueParameter {
+                        name = Name.identifier("arguments")
+                        type = ctx.arrayOfAnyNullable
                     }
 
                     body = irBuilder(symbol).irBlockBody {
@@ -647,14 +677,14 @@ internal class RpcStubGenerator(
 
                                 values {
                                     callable.arguments.forEachIndexed { argIndex, arg ->
-                                        val parameter = irCall(
+                                        val argument = irCall(
                                             callee = ctx.functions.arrayGet.symbol,
                                             type = ctx.anyNullable,
                                         ).apply {
                                             vsApi { originVS = IrStatementOrigin.GET_ARRAY_ELEMENT }
 
                                             arguments {
-                                                dispatchReceiver = irGet(parametersParameter)
+                                                dispatchReceiver = irGet(argumentsParameter)
 
                                                 values {
                                                     +intConst(argIndex)
@@ -663,9 +693,9 @@ internal class RpcStubGenerator(
                                         }
 
                                         if (vsApi { arg.type.isNullableVS() }) {
-                                            +irSafeAs(parameter, arg.type)
+                                            +irSafeAs(argument, arg.type)
                                         } else {
-                                            +irAs(parameter, arg.type)
+                                            +irAs(argument, arg.type)
                                         }
                                     }
                                 }
@@ -676,11 +706,17 @@ internal class RpcStubGenerator(
                     }
                 }
 
-                val lambdaType = when (callable) {
-                    is ServiceDeclaration.Method -> ctx.suspendFunction2.typeWith(
+                val lambdaType = when {
+                    returnsFlow -> ctx.irBuiltIns.functionN(2).typeWith(
                         declaration.serviceType, // service
-                        ctx.anyNullable, // data
-                        ctx.anyNullable, // returnType
+                        ctx.arrayOfAnyNullable, // data
+                        resultType, // returnType
+                    )
+
+                    else -> ctx.irBuiltIns.suspendFunctionN(2).typeWith(
+                        declaration.serviceType, // service
+                        ctx.arrayOfAnyNullable, // data
+                        resultType, // returnType
                     )
                 }
 
@@ -724,7 +760,7 @@ internal class RpcStubGenerator(
      *  )
      *
      *  // when n=0:
-     *  private val callables: Map<String, RpcCallable<MyService>> = emptyMap()
+     *  override val callables: Map<String, RpcCallable<MyService>> = emptyMap()
      * ```
      *
      * Where:
@@ -734,50 +770,28 @@ internal class RpcStubGenerator(
         val interfaceProperty = ctx.rpcServiceDescriptor.findPropertyByName(Descriptor.CALLABLES)
             ?: error("Expected RpcServiceDescriptor.callables property to exist")
 
-        callables = addProperty {
-            name = Name.identifier(Descriptor.CALLABLES)
-            visibility = DescriptorVisibilities.PRIVATE
-            modality = Modality.FINAL
-        }.apply {
+        callableMap = generateMapProperty(
+            propertyName = Descriptor.CALLABLES,
+            values = declaration.methods.memoryOptimizedMap { callable ->
+                stringConst(callable.name) to irRpcCallable(callable)
+            },
+            valueType = ctx.rpcCallable.typeWith(declaration.serviceType),
+        ).apply {
             overriddenSymbols = listOf(interfaceProperty)
 
-            val rpcCallableType = ctx.rpcCallable.typeWith(declaration.serviceType)
-            val mapType = ctx.irBuiltIns.mapClass.typeWith(ctx.irBuiltIns.stringType, rpcCallableType)
-
-            addBackingFieldUtil {
-                type = mapType
-                vsApi { isFinalVS = true }
-                visibility = DescriptorVisibilities.PRIVATE
-            }.apply {
-                val isEmpty = declaration.methods.isEmpty()
-
-                initializer = factory.createExpressionBody(
-                    irMapOf(
-                        keyType = ctx.irBuiltIns.stringType,
-                        valueType = rpcCallableType,
-                        elements = declaration.methods.map { callable ->
-                            stringConst(callable.name) to irRpcCallable(callable)
-                        },
-                        isEmpty = isEmpty,
-                    )
-                )
-            }
-
             addDefaultGetter(this@generateCallablesProperty, ctx.irBuiltIns) {
-                visibility =
-                    DescriptorVisibilities.PUBLIC
+                visibility = DescriptorVisibilities.PUBLIC
                 overriddenSymbols = listOf(ctx.rpcServiceDescriptor.getPropertyGetter(Descriptor.CALLABLES)!!)
             }
         }
     }
 
     /**
-     * A call to constructor of the RpcCallable.
+     * A call to constructor of the RpcCallableDefault.
      *
      * ```kotlin
-     * RpcCallable<MyService>(
+     * RpcCallableDefault<MyService>(
      *     name = "<callable-name>",
-     *     dataType = RpcCall(typeOf<<callable-data-type>>()),
      *     returnType = RpcCall(typeOf<<callable-return-type>>()),
      *     invokator = <callable-invokator>,
      *     parameters = arrayOf( // or emptyArray()
@@ -788,7 +802,6 @@ internal class RpcStubGenerator(
      *         ),
      *         ...
      *     ),
-     *     isNonSuspendFunction = !function.isSuspend,
      * )
      *```
      *
@@ -809,7 +822,7 @@ internal class RpcStubGenerator(
                 type = ctx.rpcCallable.typeWith(declaration.serviceType),
                 symbol = ctx.rpcCallableDefault.constructors.single(),
                 typeArgumentsCount = 1,
-                valueArgumentsCount = 5,
+                valueArgumentsCount = if (declaration.isGrpc) 5 else 4,
                 constructorTypeArgumentsCount = 1,
             )
         }.apply {
@@ -903,50 +916,24 @@ internal class RpcStubGenerator(
 
             arguments {
                 values {
+                    // name
                     +stringConst(callable.name)
 
+                    // returnType
                     +irRpcTypeCall(returnType)
 
+                    // invokator
                     +irCallProperty(stubCompanionObject.owner, invokator)
 
+                    // parameters
                     +arrayOfCall
-
-                    +booleanConst(!callable.function.isSuspend)
                 }
             }
         }
     }
 
     private fun irListOfAnnotations(container: IrAnnotationContainer): IrCallImpl {
-        val isEmpty = container.annotations.isEmpty()
-        return vsApi {
-            IrCallImplVS(
-                startOffset = UNDEFINED_OFFSET,
-                endOffset = UNDEFINED_OFFSET,
-                symbol = if (isEmpty) ctx.functions.emptyList else ctx.functions.listOf,
-                type = ctx.listOfAnnotations,
-                typeArgumentsCount = 1,
-                valueArgumentsCount = if (isEmpty) 0 else 1,
-            )
-        }.apply applyIrListOfAnnotations@{
-            arguments {
-                types { +ctx.irBuiltIns.annotationType }
-
-                if (isEmpty) {
-                    return@applyIrListOfAnnotations
-                }
-
-                values {
-                    +IrVarargImpl(
-                        startOffset = UNDEFINED_OFFSET,
-                        endOffset = UNDEFINED_OFFSET,
-                        type = ctx.arrayOfAnnotations,
-                        varargElementType = ctx.irBuiltIns.annotationType,
-                        elements = container.annotations,
-                    )
-                }
-            }
-        }
+        return irListOf(ctx.irBuiltIns.annotationType, container.annotations)
     }
 
     private fun IrSimpleFunction.isNonSuspendingWithFlowReturn(): Boolean {
@@ -962,49 +949,12 @@ internal class RpcStubGenerator(
      * ```
      */
     private fun IrClass.generateGetCallableFunction() {
-        val resultType = ctx.rpcCallable.createType(hasQuestionMark = true, emptyList())
-
-        addFunction {
-            name = Name.identifier(Descriptor.GET_CALLABLE)
-            visibility = DescriptorVisibilities.PUBLIC
-            modality = Modality.OPEN
-            returnType = resultType
-        }.apply {
-            overriddenSymbols = listOf(ctx.rpcServiceDescriptor.functionByName(Descriptor.GET_CALLABLE))
-
-            val functionThisReceiver = vsApi {
-                stubCompanionObjectThisReceiver.copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
-            }.also {
-                vsApi {
-                    dispatchReceiverParameterVS = it
-                }
-            }
-
-            val parameter = addValueParameter {
-                name = Name.identifier("name")
-                type = ctx.irBuiltIns.stringType
-            }
-
-            body = irBuilder(symbol).irBlockBody {
-                +irReturn(
-                    irCall(ctx.functions.mapGet.symbol, resultType).apply {
-                        vsApi { originVS = IrStatementOrigin.GET_ARRAY_ELEMENT }
-
-                        arguments {
-                            dispatchReceiver = irCallProperty(
-                                clazz = this@generateGetCallableFunction,
-                                property = callables,
-                                symbol = functionThisReceiver.symbol,
-                            )
-
-                            values {
-                                +irGet(parameter)
-                            }
-                        }
-                    }
-                )
-            }
-        }
+        generateGetFromStringMap(
+            functionName = Descriptor.GET_CALLABLE,
+            resultType = ctx.rpcCallable.createType(hasQuestionMark = true, emptyList()),
+            overriddenSymbol = ctx.rpcServiceDescriptor.functionByName(Descriptor.GET_CALLABLE),
+            mapProperty = callableMap,
+        )
     }
 
     /**
@@ -1059,37 +1009,287 @@ internal class RpcStubGenerator(
     }
 
     /**
-     * override val delegate: GrpcDelegate = MyServiceDelegate
+     * ```kotlin
+     * override fun delegate(resolver: MessageCodecResolver): GrpcServiceDelegate {
+     *     val methodDescriptorMap = ...
+     *     val serviceDescriptor = ...
+     *
+     *     return GrpcServiceDelegate(methodDescriptorMap, serviceDescriptor)
+     * }
+     * ```
      */
     private fun IrClass.generateGrpcDelegateProperty() {
-        addProperty {
+        addFunction {
             name = Name.identifier(GrpcDescriptor.DELEGATE)
+            modality = Modality.FINAL
             visibility = DescriptorVisibilities.PUBLIC
-        }.apply {
-            overriddenSymbols = listOf(ctx.properties.grpcServiceDescriptorDelegate)
+            returnType = ctx.grpcServiceDelegate.defaultType
+        }.apply delegate@{
+            overriddenSymbols = listOf(ctx.functions.grpcServiceDescriptorDelegate.symbol)
 
-            addBackingFieldUtil {
-                visibility = DescriptorVisibilities.PRIVATE
-                type = ctx.grpcDelegate.defaultType
-                vsApi { isFinalVS = true }
-            }.apply {
-                initializer = factory.createExpressionBody(
-                    IrGetObjectValueImpl(
-                        startOffset = UNDEFINED_OFFSET,
-                        endOffset = UNDEFINED_OFFSET,
-                        type = ctx.grpcDelegate.defaultType,
-                        symbol = ctx.getIrClassSymbol(
-                            declaration.service.packageFqName?.asString()
-                                ?: error("Expected package name fro service ${declaration.service.name}"),
-                            "${declaration.service.name.asString()}Delegate",
-                        ),
-                    )
-                )
+            vsApi {
+                dispatchReceiverParameterVS = stubCompanionObjectThisReceiver
+                    .copyToVS(this@delegate, origin = IrDeclarationOrigin.DEFINED)
             }
 
-            addDefaultGetter(this@generateGrpcDelegateProperty, ctx.irBuiltIns) {
-                visibility = DescriptorVisibilities.PUBLIC
-                overriddenSymbols = listOf(ctx.properties.grpcServiceDescriptorDelegate.owner.getterOrFail.symbol)
+            val resolver = addValueParameter {
+                name = Name.identifier("resolver")
+                type = ctx.grpcMessageCodecResolver.defaultType
+            }
+
+            body = irBuilder(symbol).irBlockBody {
+                val methodDescriptorMap = irTemporary(
+                    value = irMethodDescriptorMap(resolver),
+                    nameHint = "methodDescriptorMap",
+                )
+
+                val serviceDescriptor = irTemporary(
+                    value = irServiceDescriptor(methodDescriptorMap),
+                    nameHint = "serviceDescriptor",
+                )
+
+                +irReturn(
+                    irCall(
+                        callee = ctx.grpcServiceDelegate.owner.primaryConstructor!!.symbol,
+                        type = ctx.grpcServiceDelegate.defaultType,
+                    ).apply {
+                        arguments {
+                            values {
+                                +irGet(methodDescriptorMap)
+                                +irGet(serviceDescriptor)
+                            }
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    /**
+     * A map that holds MethodDescriptors.
+     *
+     * ```kotlin
+     *  mapOf<String, MethodDescriptors<*, *>>(
+     *      Pair("<callable-name-1>", methodDescriptor(...)),
+     *      ...
+     *      Pair("<callable-name-n>", methodDescriptor(...)),
+     *  )
+     *
+     *  // when n=0:
+     *  emptyMap<String, MethodDescriptors<*, *>>()
+     * ```
+     *
+     * Where:
+     *  - `<callable-name-k>` - the name of the k-th callable in the service
+     */
+    private fun irMethodDescriptorMap(resolver: IrValueParameter): IrCallImpl {
+        return irMapOf(
+            keyType = ctx.irBuiltIns.stringType,
+            valueType = ctx.grpcPlatformMethodDescriptor.starProjectedType,
+            declaration.methods.memoryOptimizedMap { callable ->
+                stringConst(callable.name) to irMethodDescriptor(callable, resolver)
+            },
+        )
+    }
+
+    /**
+     * Ir call to `serviceDescriptor`
+     *
+     * ```kotlin
+     * serviceDescriptor(
+     *     name = MyService, // simpleName
+     *     methods = methodDescriptorMap.values, // Collection<MethodDescriptor<*, *>>
+     *     schemaDescriptor = null, // for now, only null
+     * )
+     * ```
+     */
+    private fun irServiceDescriptor(methodDescriptorMap: IrVariable): IrCallImpl {
+        return vsApi {
+            IrCallImplVS(
+                startOffset = UNDEFINED_OFFSET,
+                endOffset = UNDEFINED_OFFSET,
+                type = ctx.grpcPlatformServiceDescriptor.defaultType,
+                symbol = ctx.functions.serviceDescriptor,
+                typeArgumentsCount = 0,
+                valueArgumentsCount = 3,
+            )
+        }.apply {
+            arguments {
+                values {
+                    +stringConst(declaration.simpleName)
+
+                    +irCallProperty(
+                        receiver = IrGetValueImpl(
+                            startOffset = UNDEFINED_OFFSET,
+                            endOffset = UNDEFINED_OFFSET,
+                            type = methodDescriptorMap.type,
+                            symbol = methodDescriptorMap.symbol,
+                        ),
+                        property = ctx.properties.mapValues.owner,
+                    )
+
+                    +nullConst(ctx.anyNullable)
+                }
+            }
+        }
+    }
+
+    /**
+     * gRPC Platform MethodDescriptor call
+     *
+     * ```kotlin
+     * // In scope: resolver: MessageCodecResolver
+     *
+     * methodDescriptor<<request-type>, <response-type>>(
+     *     fullMethodName = "${descriptor.simpleName}/${callable.name}",
+     *     requestCodec = <request-codec>,
+     *     responseCodec = <response-codec>,
+     *     type = MethodType.<method-type>,
+     *     schemaDescriptor = null, // null for now
+     *     // todo understand these values
+     *     idempotent = true,
+     *     safe = true,
+     *     sampledToLocalTracing = true,
+     * )
+     * ```
+     *
+     * Where:
+     *   - <request-type> - the type of the request, namely the first parameter, unwrapped if a Flow
+     *   - <response-type> - the type of the response, unwrapped if a Flow
+     *   - <method-name> - the name of the method
+     *   - <method-type> - one of MethodType.UNARY, MethodType.SERVER_STREAMING,
+     *   MethodType.CLIENT_STREAMING, MethodType.BIDI_STREAMING
+     *   - <request-codec>/<response-codec> - a MessageCodec getter, see [irCodec]
+     */
+    private fun irMethodDescriptor(callable: ServiceDeclaration.Callable, resolver: IrValueParameter): IrCall {
+        check(callable is ServiceDeclaration.Method) {
+            "Only methods are allowed here"
+        }
+
+        check(callable.arguments.size == 1) {
+            "Only single argument methods are allowed here"
+        }
+
+        val requestParameterType = callable.arguments[0].type
+        val responseParameterType = callable.function.returnType
+
+        val requestType: IrType = requestParameterType.unwrapFlow()
+        val responseType: IrType = responseParameterType.unwrapFlow()
+
+        val methodDescriptorType = ctx.grpcPlatformMethodDescriptor.typeWith(requestType, responseType)
+
+        return vsApi {
+            IrCallImplVS(
+                startOffset = UNDEFINED_OFFSET,
+                endOffset = UNDEFINED_OFFSET,
+                type = methodDescriptorType,
+                symbol = ctx.functions.methodDescriptor,
+                typeArgumentsCount = 2,
+                valueArgumentsCount = 8,
+            )
+        }.apply {
+            arguments {
+                types {
+                    +requestType
+                    +responseType
+                }
+
+                values {
+                    // fullMethodName
+                    +stringConst("${declaration.simpleName}/${callable.name}")
+
+                    // requestCodec
+                    +irCodec(requestType, resolver)
+
+                    // responseCodec
+                    +irCodec(responseType, resolver)
+
+                    // type
+                    +IrGetEnumValueImpl(
+                        startOffset = UNDEFINED_OFFSET,
+                        endOffset = UNDEFINED_OFFSET,
+                        type = ctx.grpcPlatformMethodType.defaultType,
+                        symbol = when {
+                            requestParameterType.classOrNull == ctx.flow && responseParameterType.classOrNull == ctx.flow -> {
+                                ctx.grpcPlatformMethodTypeBidiStreaming
+                            }
+
+                            requestParameterType.classOrNull == ctx.flow && responseParameterType.classOrNull != ctx.flow -> {
+                                ctx.grpcPlatformMethodTypeClientStreaming
+                            }
+
+                            requestParameterType.classOrNull != ctx.flow && responseParameterType.classOrNull == ctx.flow -> {
+                                ctx.grpcPlatformMethodTypeServerStreaming
+                            }
+
+                            else -> {
+                                ctx.grpcPlatformMethodTypeUnary
+                            }
+                        },
+                    )
+
+                    // schemaDescriptor
+                    +nullConst(ctx.anyNullable)
+
+                    // todo figure out these
+                    // idempotent
+                    +booleanConst(true)
+
+                    // safe
+                    +booleanConst(true)
+
+                    // sampledToLocalTracing
+                    +booleanConst(true)
+                }
+            }
+        }
+    }
+
+    /**
+     * If [type] is annotated with [RpcIrContext.withCodecAnnotation],
+     * we use its codec object
+     *
+     * If not, use [resolver].resolve()
+     */
+    private fun irCodec(type: IrType, resolver: IrValueParameter): IrExpression {
+        val owner = type.classOrFail.owner
+        val protobufMessage = owner.getAnnotation(ctx.withCodecAnnotation.owner.kotlinFqName)
+
+        return if (protobufMessage != null) {
+            val classReference = protobufMessage.arguments.single() as? IrClassReference
+                ?: error("Expected IrClassReference for ${ctx.withCodecAnnotation.owner.kotlinFqName} parameter")
+
+            val codec = classReference.classType
+
+            IrGetObjectValueImpl(
+                startOffset = UNDEFINED_OFFSET,
+                endOffset = UNDEFINED_OFFSET,
+                type = codec,
+                symbol = codec.classOrFail,
+            )
+        } else {
+            vsApi {
+                IrCallImplVS(
+                    startOffset = UNDEFINED_OFFSET,
+                    endOffset = UNDEFINED_OFFSET,
+                    type = ctx.grpcMessageCodec.typeWith(type),
+                    symbol = ctx.functions.grpcMessageCodecResolverResolve.symbol,
+                    typeArgumentsCount = 0,
+                    valueArgumentsCount = 1,
+                )
+            }.apply {
+                arguments {
+                    dispatchReceiver = IrGetValueImpl(
+                        startOffset = UNDEFINED_OFFSET,
+                        endOffset = UNDEFINED_OFFSET,
+                        type = resolver.type,
+                        symbol = resolver.symbol,
+                    )
+
+                    values {
+                        +irTypeOfCall(type)
+                    }
+                }
             }
         }
     }
@@ -1333,6 +1533,165 @@ internal class RpcStubGenerator(
         }
     }
 
+    private fun irListOf(
+        valueType: IrType,
+        elements: List<IrExpression>,
+        isEmpty: Boolean = elements.isEmpty(),
+    ): IrCallImpl {
+        return vsApi {
+            IrCallImplVS(
+                startOffset = UNDEFINED_OFFSET,
+                endOffset = UNDEFINED_OFFSET,
+                type = ctx.irBuiltIns.listClass.typeWith(valueType),
+                symbol = if (isEmpty) ctx.functions.emptyList else ctx.functions.listOf,
+                typeArgumentsCount = 1,
+                valueArgumentsCount = if (isEmpty) 0 else 1,
+            )
+        }.apply listApply@{
+            if (isEmpty) {
+                arguments {
+                    types {
+                        +valueType
+                    }
+                }
+
+                return@listApply
+            }
+
+            val varargType = ctx.irBuiltIns.arrayClass.typeWith(valueType, Variance.OUT_VARIANCE)
+
+            val vararg = IrVarargImpl(
+                startOffset = UNDEFINED_OFFSET,
+                endOffset = UNDEFINED_OFFSET,
+                type = varargType,
+                varargElementType = valueType,
+                elements = elements,
+            )
+
+            arguments {
+                types {
+                    +valueType
+                }
+
+                values {
+                    +vararg
+                }
+            }
+        }
+    }
+
+    private fun IrClass.generateStringOverriddenProperty(
+        propertyName: String,
+        propertySymbol: IrPropertySymbol,
+        value: String,
+    ) {
+        addProperty {
+            name = Name.identifier(propertyName)
+            visibility = DescriptorVisibilities.PUBLIC
+        }.apply {
+            overriddenSymbols = listOf(propertySymbol)
+
+            addBackingFieldUtil {
+                visibility = DescriptorVisibilities.PRIVATE
+                type = ctx.irBuiltIns.stringType
+                vsApi { isFinalVS = true }
+            }.apply {
+                initializer = factory.createExpressionBody(
+                    stringConst(value)
+                )
+            }
+
+            addDefaultGetter(this@generateStringOverriddenProperty, ctx.irBuiltIns) {
+                visibility = DescriptorVisibilities.PUBLIC
+                overriddenSymbols = listOf(propertySymbol.owner.getterOrFail.symbol)
+            }
+        }
+    }
+
+    private fun IrClass.generateMapProperty(
+        propertyName: String,
+        values: List<Pair<IrExpression, IrExpression>>,
+        valueType: IrType,
+    ): IrProperty {
+        return addProperty {
+            name = Name.identifier(propertyName)
+            visibility = DescriptorVisibilities.PRIVATE
+            modality = Modality.FINAL
+        }.apply {
+            val mapType = ctx.irBuiltIns.mapClass.typeWith(ctx.irBuiltIns.stringType, valueType)
+
+            addBackingFieldUtil {
+                type = mapType
+                vsApi { isFinalVS = true }
+                visibility = DescriptorVisibilities.PRIVATE
+            }.apply {
+                val isEmpty = values.isEmpty()
+
+                initializer = factory.createExpressionBody(
+                    irMapOf(
+                        keyType = ctx.irBuiltIns.stringType,
+                        valueType = valueType,
+                        elements = values,
+                        isEmpty = isEmpty,
+                    )
+                )
+            }
+
+            addDefaultGetter(this@generateMapProperty, ctx.irBuiltIns) {
+                visibility = DescriptorVisibilities.PRIVATE
+            }
+        }
+    }
+
+    private fun IrClass.generateGetFromStringMap(
+        functionName: String,
+        resultType: IrType,
+        overriddenSymbol: IrSimpleFunctionSymbol,
+        mapProperty: IrProperty,
+    ) {
+        addFunction {
+            name = Name.identifier(functionName)
+            visibility = DescriptorVisibilities.PUBLIC
+            modality = Modality.FINAL
+            returnType = resultType
+        }.apply {
+            overriddenSymbols = listOf(overriddenSymbol)
+
+            val functionThisReceiver = vsApi {
+                stubCompanionObjectThisReceiver.copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
+            }.also {
+                vsApi {
+                    dispatchReceiverParameterVS = it
+                }
+            }
+
+            val parameter = addValueParameter {
+                name = Name.identifier("name")
+                type = ctx.irBuiltIns.stringType
+            }
+
+            body = irBuilder(symbol).irBlockBody {
+                +irReturn(
+                    irCall(ctx.functions.mapGet.symbol, resultType).apply {
+                        vsApi { originVS = IrStatementOrigin.GET_ARRAY_ELEMENT }
+
+                        arguments {
+                            dispatchReceiver = irCallProperty(
+                                clazz = this@generateGetFromStringMap,
+                                property = mapProperty,
+                                symbol = functionThisReceiver.symbol,
+                            )
+
+                            values {
+                                +irGet(parameter)
+                            }
+                        }
+                    }
+                )
+            }
+        }
+    }
+
     // adds fake overrides for toString(), equals(), hashCode() for a class
     private fun IrClass.addAnyOverrides(parent: IrClass? = null) {
         val anyClass = ctx.irBuiltIns.anyClass.owner
@@ -1410,6 +1769,12 @@ internal class RpcStubGenerator(
         value = value,
     )
 
+    private fun nullConst(type: IrType) = IrConstImpl.constNull(
+        startOffset = UNDEFINED_OFFSET,
+        endOffset = UNDEFINED_OFFSET,
+        type = type,
+    )
+
     private fun intConst(value: Int) = IrConstImpl.int(
         startOffset = UNDEFINED_OFFSET,
         endOffset = UNDEFINED_OFFSET,
@@ -1423,6 +1788,14 @@ internal class RpcStubGenerator(
         type = ctx.irBuiltIns.booleanType,
         value = value,
     )
+
+    private fun IrType.unwrapFlow(): IrType {
+        return if (classOrNull == ctx.flow) {
+            (this as IrSimpleType).arguments[0].typeOrFail
+        } else {
+            this
+        }
+    }
 
     private inline fun <T> vsApi(body: VersionSpecificApi.() -> T): T {
         return ctx.versionSpecificApi.body()

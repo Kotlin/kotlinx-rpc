@@ -14,8 +14,8 @@ import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.io.readString
 import kotlinx.io.writeString
+import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.internal.GrpcChannel
-import kotlinx.rpc.grpc.internal.MessageCodec
 import kotlinx.rpc.grpc.internal.MethodDescriptor
 import kotlinx.rpc.grpc.internal.MethodType
 import kotlinx.rpc.grpc.internal.ServerMethodDefinition

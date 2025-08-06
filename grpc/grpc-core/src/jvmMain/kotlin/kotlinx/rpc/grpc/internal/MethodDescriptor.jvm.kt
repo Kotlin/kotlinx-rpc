@@ -7,6 +7,7 @@ package kotlinx.rpc.grpc.internal
 import kotlinx.io.asInputStream
 import kotlinx.io.asSource
 import kotlinx.io.buffered
+import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 internal actual typealias InputStream = java.io.InputStream
