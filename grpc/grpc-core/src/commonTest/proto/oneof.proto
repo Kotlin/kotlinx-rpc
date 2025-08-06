@@ -1,9 +1,11 @@
 import "sub_message.proto";
+import "enum.proto";
 
 message OneOfMsg {
   oneof field {
     int32 sint = 2;
     fixed64 fixed = 3;
     test.submsg.Other other = 4;
+    kotlinx.rpc.grpc.test.MyEnum enum = 5;
   }
 }

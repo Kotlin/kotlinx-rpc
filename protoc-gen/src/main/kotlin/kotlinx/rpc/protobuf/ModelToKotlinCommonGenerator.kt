@@ -219,8 +219,6 @@ class ModelToKotlinCommonGenerator(
 
     private fun CodeGenerator.generateCodecObject(declaration: MessageDeclaration) {
         val msgFqName = declaration.name.safeFullName()
-        val downCastErrorStr =
-            "\${value::class.simpleName} implements ${msgFqName}, which is prohibited."
         val sourceFqName = "kotlinx.io.Source"
         val bufferFqName = "kotlinx.io.Buffer"
         scope("object CODEC : kotlinx.rpc.grpc.codec.MessageCodec<$msgFqName>") {

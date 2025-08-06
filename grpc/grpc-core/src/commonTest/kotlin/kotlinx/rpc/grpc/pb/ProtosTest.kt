@@ -141,26 +141,40 @@ class ProtosTest {
 
     @Test
     fun testOneOf() {
-        val msg1 = OneOfMsg {
-            field = OneOfMsg.Field.Sint(23)
+        run {
+            val msg = OneOfMsg {
+                field = OneOfMsg.Field.Sint(23)
+            }
+            val decoded = encodeDecode(msg, OneOfMsgInternal.CODEC)
+            assertEquals(OneOfMsg.Field.Sint(23), decoded.field)
         }
-        val decoded1 = encodeDecode(msg1, OneOfMsgInternal.CODEC)
-        assertEquals(OneOfMsg.Field.Sint(23), decoded1.field)
 
-        val msg2 = OneOfMsg {
-            field = OneOfMsg.Field.Fixed(21u)
+        run {
+            val msg = OneOfMsg {
+                field = OneOfMsg.Field.Fixed(21u)
+            }
+            val decoded = encodeDecode(msg, OneOfMsgInternal.CODEC)
+            assertEquals(OneOfMsg.Field.Fixed(21u), decoded.field)
         }
-        val decoded2 = encodeDecode(msg2, OneOfMsgInternal.CODEC)
-        assertEquals(OneOfMsg.Field.Fixed(21u), decoded2.field)
 
-        val msg3 = OneOfMsg {
-            field = OneOfMsg.Field.Other(Other { arg2 = "test" })
+        run {
+            val msg = OneOfMsg {
+                field = OneOfMsg.Field.Other(Other { arg2 = "test" })
+            }
+            val decoded = encodeDecode(msg, OneOfMsgInternal.CODEC)
+            assertIs<OneOfMsg.Field.Other>(decoded.field)
+            assertNull((decoded.field as OneOfMsg.Field.Other).value.arg1)
+            assertEquals("test", (decoded.field as OneOfMsg.Field.Other).value.arg2)
+            assertNull((decoded.field as OneOfMsg.Field.Other).value.arg3)
         }
-        val decoded3 = encodeDecode(msg3, OneOfMsgInternal.CODEC)
-        assertIs<OneOfMsg.Field.Other>(decoded3.field)
-        assertNull((decoded3.field as OneOfMsg.Field.Other).value.arg1)
-        assertEquals("test", (decoded3.field as OneOfMsg.Field.Other).value.arg2)
-        assertNull((decoded3.field as OneOfMsg.Field.Other).value.arg3)
+
+        run {
+            val msg = OneOfMsg {
+                field = OneOfMsg.Field.Enum(MyEnum.ONE_SECOND)
+            }
+            val decoded = encodeDecode(msg, OneOfMsgInternal.CODEC)
+            assertEquals(MyEnum.ONE, (decoded.field as OneOfMsg.Field.Enum).value)
+        }
     }
 
     @Test
