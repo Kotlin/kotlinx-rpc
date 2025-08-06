@@ -922,8 +922,6 @@ internal class RpcStubGenerator(
                 visibility = DescriptorVisibilities.PUBLIC
                 modality = Modality.FINAL
             }.apply function@{
-                parameters = listOf(this@generateCallablesProperty.thisReceiver!!.copyTo(this))
-
                 val functionThisReceiver = vsApi {
                     stubCompanionObjectThisReceiver.copyToVS(this@function, origin = IrDeclarationOrigin.DEFINED)
                 }.also {
