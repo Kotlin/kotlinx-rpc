@@ -79,6 +79,7 @@ data class FieldDeclaration(
     val nullable: Boolean = (dec.hasPresence() && !dec.isRequired && !dec.hasDefaultValue()
             && !dec.isRepeated // repeated fields cannot be nullable (just empty)
             && dec.realContainingOneof == null // upper conditions would match oneof inner fields
+            && type !is FieldType.Message // messages must not be null (to conform protobuf standards)
             )
             || type is FieldType.OneOf // all OneOf fields are nullable
     val number: Int = dec.number

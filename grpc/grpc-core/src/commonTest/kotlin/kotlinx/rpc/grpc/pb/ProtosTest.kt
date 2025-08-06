@@ -11,11 +11,8 @@ import OuterInternal
 import invoke
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.codec.MessageCodec
-import kotlinx.rpc.grpc.test.Enum
-import kotlinx.rpc.grpc.test.UsingEnum
-import kotlinx.rpc.grpc.test.UsingEnumInternal
+import kotlinx.rpc.grpc.test.*
 import kotlinx.rpc.grpc.test.common.*
-import kotlinx.rpc.grpc.test.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -23,7 +20,7 @@ import kotlin.test.assertNull
 
 class ProtosTest {
 
-    private fun <M> decodeEncode(
+    private fun <M> encodeDecode(
         msg: M,
         codec: MessageCodec<M>
     ): M {
@@ -53,7 +50,7 @@ class ProtosTest {
 
         val msgObj = msg
 
-        val decoded = decodeEncode(msgObj, AllPrimitivesInternal.CODEC)
+        val decoded = encodeDecode(msgObj, AllPrimitivesInternal.CODEC)
 
         assertEquals(msg.double, decoded.double)
     }
@@ -68,7 +65,7 @@ class ProtosTest {
             listString = listOf("a", "b", "c")
         }
 
-        val decoded = decodeEncode(msg, RepeatedInternal.CODEC)
+        val decoded = encodeDecode(msg, RepeatedInternal.CODEC)
 
         assertEquals(msg.listInt32, decoded.listInt32)
         assertEquals(msg.listFixed32, decoded.listFixed32)
@@ -112,7 +109,7 @@ class ProtosTest {
             enum = Enum.ONE_SECOND
         }
 
-        val decodedMsg = decodeEncode(msg, UsingEnumInternal.CODEC)
+        val decodedMsg = encodeDecode(msg, UsingEnumInternal.CODEC)
         assertEquals(Enum.ONE, decodedMsg.enum)
         assertEquals(Enum.ONE_SECOND, decodedMsg.enum)
     }
@@ -135,13 +132,13 @@ class ProtosTest {
         val msg1 = OneOfMsg {
             field = OneOfMsg.Field.Sint(23)
         }
-        val decoded1 = decodeEncode(msg1, OneOfMsgInternal.CODEC)
+        val decoded1 = encodeDecode(msg1, OneOfMsgInternal.CODEC)
         assertEquals(OneOfMsg.Field.Sint(23), decoded1.field)
 
         val msg2 = OneOfMsg {
             field = OneOfMsg.Field.Fixed(21u)
         }
-        val decoded2 = decodeEncode(msg2, OneOfMsgInternal.CODEC)
+        val decoded2 = encodeDecode(msg2, OneOfMsgInternal.CODEC)
         assertEquals(OneOfMsg.Field.Fixed(21u), decoded2.field)
     }
 
@@ -175,8 +172,40 @@ class ProtosTest {
                 field = 12345678
             }
         }
-        val decoded = decodeEncode(msg, OuterInternal.CODEC)
+        val decoded = encodeDecode(msg, OuterInternal.CODEC)
         assertEquals(msg.inner.field, decoded.inner.field)
+    }
+
+    @Test
+    fun testRecursiveReqNotSet() {
+        assertFailsWith<IllegalStateException>("RecursiveReq is missing required field: rec") {
+            val msg = RecursiveReq {
+                rec = RecursiveReq {
+                    rec = RecursiveReq {
+
+                    }
+                    num = 3
+                }
+            }
+        }
+    }
+
+    @Test
+    fun testRecursive() {
+        val msg = Recursive {
+            rec = Recursive {
+                rec = Recursive {}
+                num = 3
+            }
+        }
+
+        assertEquals(null, msg.rec.rec.rec.rec.num)
+        assertEquals(3, msg.rec.num)
+
+        val decoded = encodeDecode(msg, RecursiveInternal.CODEC)
+
+        assertEquals(3, decoded.rec.num)
+        assertEquals(null, decoded.rec.rec.rec.rec.num)
     }
 
 }

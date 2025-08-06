@@ -182,20 +182,16 @@ class ModelToKotlinCommonGenerator(
                         "= null"
                     }
 
-                    field.type is FieldType.Message -> "= ${field.type.dec.internalClassFullName()}()"
+                    field.type is FieldType.Message ->
+                        "by MsgFieldDelegate(PresenceIndices.${field.name}) { ${field.type.dec.value.internalClassFullName()}() }"
 
                     else -> {
-                        "= ${field.type.defaultValue}"
+                        val fieldPresence = if (field.presenceIdx != null) "PresenceIndices.${field.name}" else ""
+                        "by MsgFieldDelegate($fieldPresence) { ${field.type.defaultValue} }"
                     }
                 }
 
                 code("override var $fieldDeclaration $value")
-                if (field.presenceIdx != null) {
-                    scope("set(value) ") {
-                        code("presenceMask[PresenceIndices.${field.name}] = true")
-                        code("field = value")
-                    }
-                }
                 newLine()
             }
 
@@ -320,11 +316,11 @@ class ModelToKotlinCommonGenerator(
             }
 
             is FieldType.Message -> {
-                val internalClassName = fieldType.dec.internalClassFullName()
+                val internalClassName = fieldType.dec.value.internalClassFullName()
                 whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.LENGTH_DELIMITED") {
                     // check if the the current sub message object
                     ifBranch(condition = "!msg.presenceMask[${field.presenceIdx}]", ifBlock = {
-                        code("$lvalue = ${fieldType.dec.internalClassFullName()}()")
+                        code("$lvalue = ${fieldType.dec.value.internalClassFullName()}()")
                     })
                     code("decoder.readMessage($lvalue.asInternal(), $internalClassName::decodeWith)")
                 }
@@ -356,7 +352,9 @@ class ModelToKotlinCommonGenerator(
                     writeFieldValue(field, field.name)
                 })
             } else {
-                writeFieldValue(field, field.name)
+                ifBranch(condition = "presenceMask[${field.presenceIdx}]", ifBlock = {
+                    writeFieldValue(field, field.name)
+                })
             }
         }
     }
@@ -379,7 +377,16 @@ class ModelToKotlinCommonGenerator(
                             })"
                         )
 
-                    else -> code("$valueVar.forEach { encoder.write${encFunc!!}($number, it) }")
+                    fieldType.value is FieldType.Message -> scope("$valueVar.forEach") {
+                        code("encoder.writeMessage(fieldNr = ${field.number}, value = it.asInternal()) { encodeWith(it) }")
+                    }
+
+                    else -> {
+                        require(encFunc != null) { "No encode function for list type: $fieldType" }
+                        scope("$valueVar.forEach") {
+                            code("encoder.write${encFunc}($number, it)")
+                        }
+                    }
                 }
             }
 
@@ -470,7 +477,9 @@ class ModelToKotlinCommonGenerator(
                         generateFieldComputeSizeCall(field, fieldName)
                     }
                 } else {
-                    generateFieldComputeSizeCall(field, fieldName)
+                    scope("if (presenceMask[${field.presenceIdx}])") {
+                        generateFieldComputeSizeCall(field, fieldName)
+                    }
                 }
             }
             code("return result")
@@ -613,7 +622,7 @@ class ModelToKotlinCommonGenerator(
     private fun FieldDeclaration.typeFqName(): String {
         return when (type) {
             is FieldType.Message -> {
-                type.dec.name.safeFullName()
+                type.dec.value.name.safeFullName()
             }
 
             is FieldType.Enum -> type.dec.name.safeFullName()
@@ -626,7 +635,7 @@ class ModelToKotlinCommonGenerator(
 
             is FieldType.List -> {
                 val fqValue = when (val value = type.value) {
-                    is FieldType.Message -> value.dec.name
+                    is FieldType.Message -> value.dec.value.name
                     is FieldType.IntegralType -> value.fqName
                     else -> error("Unsupported type: $value")
                 }
@@ -638,13 +647,13 @@ class ModelToKotlinCommonGenerator(
                 val entry by type.entry
 
                 val fqKey = when (val key = entry.key) {
-                    is FieldType.Message -> key.dec.name
+                    is FieldType.Message -> key.dec.value.name
                     is FieldType.IntegralType -> key.fqName
                     else -> error("Unsupported type: $key")
                 }
 
                 val fqValue = when (val value = entry.value) {
-                    is FieldType.Message -> value.dec.name
+                    is FieldType.Message -> value.dec.value.name
                     is FieldType.IntegralType -> value.fqName
                     else -> error("Unsupported type: $value")
                 }

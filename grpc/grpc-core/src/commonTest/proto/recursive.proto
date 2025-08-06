@@ -1,0 +1,13 @@
+syntax = "proto2";
+
+package kotlinx.rpc.grpc.test;
+
+message RecursiveReq {
+  required RecursiveReq rec = 1;
+  optional int32 num = 2;
+}
+
+message Recursive {
+  optional Recursive rec = 1;
+  optional int32 num = 2;
+}

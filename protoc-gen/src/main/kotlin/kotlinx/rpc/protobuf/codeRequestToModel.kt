@@ -9,6 +9,7 @@ import com.google.protobuf.Descriptors
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest
 import kotlinx.rpc.protobuf.model.*
 
+private val nameCache = mutableMapOf<Descriptors.GenericDescriptor, FqName>()
 private val modelCache = mutableMapOf<Descriptors.GenericDescriptor, Any>()
 
 /**
@@ -65,9 +66,10 @@ private fun DescriptorProtos.FileDescriptorProto.toDescriptor(
  * @return The fully qualified name represented as an instance of FqName, specific to the descriptor's context.
  */
 private fun Descriptors.GenericDescriptor.fqName(): FqName {
+    if (nameCache.containsKey(this)) return nameCache[this]!!
     val nameCapital = name.simpleProtoNameToKotlin(firstLetterUpper = true)
     val nameLower = name.simpleProtoNameToKotlin()
-    return when (this) {
+    val fqName = when (this) {
         is Descriptors.FileDescriptor -> FqName.Package.fromString(`package`)
         is Descriptors.Descriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
         is Descriptors.FieldDescriptor -> {
@@ -82,6 +84,8 @@ private fun Descriptors.GenericDescriptor.fqName(): FqName {
         is Descriptors.MethodDescriptor -> FqName.Declaration(nameLower, service?.fqName() ?: file.fqName())
         else -> error("Unknown generic descriptor: $this")
     }
+    nameCache[this] = fqName
+    return fqName
 }
 
 /**
@@ -246,7 +250,7 @@ private fun Descriptors.FieldDescriptor.modelType(): FieldType {
         Descriptors.FieldDescriptor.Type.SINT32 -> FieldType.IntegralType.SINT32
         Descriptors.FieldDescriptor.Type.SINT64 -> FieldType.IntegralType.SINT64
         Descriptors.FieldDescriptor.Type.ENUM -> FieldType.Enum(enumType.toModel())
-        Descriptors.FieldDescriptor.Type.MESSAGE -> FieldType.Message(messageType!!.toModel())
+        Descriptors.FieldDescriptor.Type.MESSAGE -> FieldType.Message(lazy { messageType!!.toModel() })
         Descriptors.FieldDescriptor.Type.GROUP -> error("GROUP type is unsupported")
     }
 
