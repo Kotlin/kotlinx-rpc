@@ -4,24 +4,21 @@
 
 package kotlinx.rpc.grpc.service
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.io.readString
 import kotlinx.io.writeString
-import kotlinx.rpc.grpc.GrpcClient
-import kotlinx.rpc.grpc.GrpcServer
 import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.codec.MessageCodecResolver
 import kotlinx.rpc.grpc.codec.WithCodec
-import kotlinx.rpc.grpc.codec.kotlinx.serialization.asCodecResolver
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 @WithCodec(Message.Companion::class)
@@ -30,14 +27,12 @@ class Message(val value: String) {
         override fun encode(value: Message): Source {
             return Buffer().apply { writeString(value.value) }
         }
+
         override fun decode(stream: Source): Message {
             return Message(stream.readString())
         }
     }
 }
-
-@Serializable
-class SerializableMessage(val value: String)
 
 @Grpc
 interface GrpcService {
@@ -46,20 +41,12 @@ interface GrpcService {
     suspend fun message(value: Message): Message
 
     suspend fun krpc173(unit: Unit)
-}
 
-@Grpc
-interface GrpcServiceSerializable {
-    suspend fun plainString(value: String): String
+    suspend fun clientStreaming(flow: Flow<String>): String
 
-    suspend fun serialization(value: SerializableMessage): SerializableMessage
+    fun serverStreaming(value: String): Flow<String>
 
-    suspend fun krpc173(unit: Unit)
-}
-
-private suspend fun doWork(): String {
-    delay(1)
-    return "qwerty"
+    fun bidiStreaming(flow: Flow<String>): Flow<String>
 }
 
 class GrpcServiceImpl : GrpcService {
@@ -74,23 +61,21 @@ class GrpcServiceImpl : GrpcService {
     override suspend fun krpc173(unit: Unit) {
         doWork()
     }
-}
 
-class GrpcServiceSerializableImpl : GrpcServiceSerializable {
-    override suspend fun plainString(value: String): String {
-        return "$value $value"
+    override suspend fun clientStreaming(flow: Flow<String>): String {
+        return flow.toList().joinToString(" ")
     }
 
-    override suspend fun serialization(value: SerializableMessage): SerializableMessage {
-        return SerializableMessage("${value.value} ${value.value}")
+    override fun serverStreaming(value: String): Flow<String> {
+        return flowOf(value, value)
     }
 
-    override suspend fun krpc173(unit: Unit) {
-        doWork()
+    override fun bidiStreaming(flow: Flow<String>): Flow<String> {
+        return flow.map { "$it $it" }
     }
 }
 
-class GrpcGeneratedServiceTest {
+class CustomResolverGrpcServiceTest : BaseGrpcServiceTest() {
     @Test
     fun testCodecResolver() = runServiceTest<GrpcService>(
         resolver = simpleResolver,
@@ -108,17 +93,7 @@ class GrpcGeneratedServiceTest {
     }
 
     @Test
-    fun testSerializationCodec() = runServiceTest<GrpcServiceSerializable>(
-        resolver = Json.asCodecResolver(),
-        impl = GrpcServiceSerializableImpl(),
-    ) { service ->
-        assertEquals("test test", service.plainString("test"))
-
-        assertEquals("test test", service.serialization(SerializableMessage("test")).value)
-    }
-
-    @Test
-    fun testKrpc173Plain() = runServiceTest<GrpcService>(
+    fun krpc173() = runServiceTest<GrpcService>(
         resolver = simpleResolver,
         impl = GrpcServiceImpl(),
     ) { service ->
@@ -126,46 +101,33 @@ class GrpcGeneratedServiceTest {
     }
 
     @Test
-    fun testKrpc173Serialization() = runServiceTest<GrpcServiceSerializable>(
-        resolver = Json.asCodecResolver(),
-        impl = GrpcServiceSerializableImpl(),
+    fun clientStreaming() = runServiceTest<GrpcService>(
+        resolver = simpleResolver,
+        impl = GrpcServiceImpl(),
     ) { service ->
-        assertEquals(Unit, service.krpc173(Unit))
+        assertEquals("test test", service.clientStreaming(flowOf("test", "test")))
     }
 
-    private inline fun <@Grpc reified Service : Any> runServiceTest(
-        resolver: MessageCodecResolver,
-        impl: Service,
-        crossinline block: suspend (Service) -> Unit,
-    ) = runTest {
-        val server = GrpcServer(
-            port = PORT,
-            messageCodecResolver = resolver,
-            parentContext = coroutineContext,
-            builder = {
-                registerService<Service> { impl }
-            }
+    @Test
+    fun serverStreaming() = runServiceTest<GrpcService>(
+        resolver = simpleResolver,
+        impl = GrpcServiceImpl(),
+    ) { service ->
+        assertEquals(listOf("test", "test"), service.serverStreaming("test").toList())
+    }
+
+    @Test
+    fun bidiStreaming() = runServiceTest<GrpcService>(
+        resolver = simpleResolver,
+        impl = GrpcServiceImpl(),
+    ) { service ->
+        assertContentEquals(
+            expected = listOf("test test", "test test"),
+            actual = service.bidiStreaming(flowOf("test", "test")).toList(),
         )
-
-        server.start()
-
-        val client = GrpcClient("localhost", PORT, messageCodecResolver = resolver) {
-            usePlaintext()
-        }
-
-        val service = client.withService<Service>()
-
-        block(service)
-
-        client.shutdown()
-        client.awaitTermination()
-        server.shutdown()
-        server.awaitTermination()
     }
 
     companion object {
-        private const val PORT = 8082
-
         private val simpleResolver = MessageCodecResolver { kType ->
             when (kType.classifier) {
                 Unit::class -> unitCodec
