@@ -96,7 +96,6 @@ object RpcStrictModeDiagnosticRendererFactory : BaseDiagnosticRendererFactory() 
     }
 
     private fun message(entityName: String): String {
-        return "$entityName is prohibited in @Rpc services in strict mode. " +
-                "Support will be removed completely in the 0.8.0 release."
+        return "$entityName is prohibited in @Rpc services. "
     }
 }

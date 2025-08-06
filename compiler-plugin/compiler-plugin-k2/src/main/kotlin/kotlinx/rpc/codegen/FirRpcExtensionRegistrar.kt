@@ -5,6 +5,7 @@
 package kotlinx.rpc.codegen
 
 import kotlinx.rpc.codegen.checkers.FirSerializablePropertiesProvider
+import kotlinx.rpc.codegen.checkers.diagnostics.registerDiagnosticRendererFactories
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CompilerConfiguration
@@ -20,5 +21,7 @@ class FirRpcExtensionRegistrar(private val configuration: CompilerConfiguration)
         +GFactory { FirRpcServiceGenerator(it, logger) }
         +CFactory { FirRpcAdditionalCheckers(it, configuration) }
         +SCFactory { FirSerializablePropertiesProvider(it) }
+
+        registerDiagnosticRendererFactories()
     }
 }
