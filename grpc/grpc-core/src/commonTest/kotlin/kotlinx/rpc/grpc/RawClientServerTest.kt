@@ -29,6 +29,7 @@ import kotlinx.rpc.grpc.internal.serverStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.internal.serviceDescriptor
 import kotlinx.rpc.grpc.internal.unaryRpc
 import kotlinx.rpc.grpc.internal.unaryServerMethodDefinition
+import kotlin.reflect.typeOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -40,7 +41,7 @@ class RawClientServerTest {
         methodName = "unary",
         type = MethodType.UNARY,
         methodDefinition = { descriptor ->
-            unaryServerMethodDefinition(descriptor) { it + it }
+            unaryServerMethodDefinition(descriptor, typeOf<String>()) { it + it }
         },
     ) { channel, descriptor ->
         val response = unaryRpc(channel, descriptor, "Hello")
@@ -53,7 +54,7 @@ class RawClientServerTest {
         methodName = "serverStreaming",
         type = MethodType.SERVER_STREAMING,
         methodDefinition = { descriptor ->
-            serverStreamingServerMethodDefinition(descriptor) {
+            serverStreamingServerMethodDefinition(descriptor, typeOf<String>()) {
                 flowOf(it, it)
             }
         }
@@ -68,7 +69,7 @@ class RawClientServerTest {
         methodName = "clientStreaming",
         type = MethodType.CLIENT_STREAMING,
         methodDefinition = { descriptor ->
-            clientStreamingServerMethodDefinition(descriptor) {
+            clientStreamingServerMethodDefinition(descriptor, typeOf<String>()) {
                 it.toList().joinToString(separator = "")
             }
         }
@@ -83,7 +84,7 @@ class RawClientServerTest {
         methodName = "bidirectionalStreaming",
         type = MethodType.BIDI_STREAMING,
         methodDefinition = { descriptor ->
-            bidiStreamingServerMethodDefinition(descriptor) {
+            bidiStreamingServerMethodDefinition(descriptor, typeOf<String>()) {
                 it.map { str -> str + str }
             }
         }

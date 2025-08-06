@@ -155,7 +155,7 @@ internal class KrpcServerService<@Rpc T : Any>(
                     is RpcInvokator.UnaryResponse -> {
                         val value = invokator.call(service, data).let { interceptedValue ->
                             // KRPC-173
-                            if (callable.returnType.kType == typeOf<Unit>()) {
+                            if (callable.returnType.kType == unitKType) {
                                 Unit
                             } else {
                                 interceptedValue
@@ -378,3 +378,5 @@ internal class RpcRequest(val handlerJob: Job, val streamContext: ServerStreamCo
         streamContext.removeCall(callId, cause)
     }
 }
+
+private  val unitKType = typeOf<Unit>()

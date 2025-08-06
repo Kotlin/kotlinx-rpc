@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.grpc.service
 
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.Buffer
 import kotlinx.io.Source
@@ -43,6 +44,8 @@ interface GrpcService {
     suspend fun plainString(value: String): String
 
     suspend fun message(value: Message): Message
+
+    suspend fun krpc173(unit: Unit)
 }
 
 @Grpc
@@ -50,6 +53,13 @@ interface GrpcServiceSerializable {
     suspend fun plainString(value: String): String
 
     suspend fun serialization(value: SerializableMessage): SerializableMessage
+
+    suspend fun krpc173(unit: Unit)
+}
+
+private suspend fun doWork(): String {
+    delay(1)
+    return "qwerty"
 }
 
 class GrpcServiceImpl : GrpcService {
@@ -59,6 +69,10 @@ class GrpcServiceImpl : GrpcService {
 
     override suspend fun message(value: Message): Message {
         return Message("${value.value} ${value.value}")
+    }
+
+    override suspend fun krpc173(unit: Unit) {
+        doWork()
     }
 }
 
@@ -70,12 +84,16 @@ class GrpcServiceSerializableImpl : GrpcServiceSerializable {
     override suspend fun serialization(value: SerializableMessage): SerializableMessage {
         return SerializableMessage("${value.value} ${value.value}")
     }
+
+    override suspend fun krpc173(unit: Unit) {
+        doWork()
+    }
 }
 
 class GrpcGeneratedServiceTest {
     @Test
     fun testCodecResolver() = runServiceTest<GrpcService>(
-        resolver = stringResolver,
+        resolver = simpleResolver,
         impl = GrpcServiceImpl(),
     ) { service ->
         assertEquals("test test", service.plainString("test"))
@@ -83,7 +101,7 @@ class GrpcGeneratedServiceTest {
 
     @Test
     fun testAnnotationCodec() = runServiceTest<GrpcService>(
-        resolver = stringResolver,
+        resolver = simpleResolver,
         impl = GrpcServiceImpl(),
     ) { service ->
         assertEquals("test test", service.message(Message("test")).value)
@@ -97,6 +115,22 @@ class GrpcGeneratedServiceTest {
         assertEquals("test test", service.plainString("test"))
 
         assertEquals("test test", service.serialization(SerializableMessage("test")).value)
+    }
+
+    @Test
+    fun testKrpc173Plain() = runServiceTest<GrpcService>(
+        resolver = simpleResolver,
+        impl = GrpcServiceImpl(),
+    ) { service ->
+        assertEquals(Unit, service.krpc173(Unit))
+    }
+
+    @Test
+    fun testKrpc173Serialization() = runServiceTest<GrpcServiceSerializable>(
+        resolver = Json.asCodecResolver(),
+        impl = GrpcServiceSerializableImpl(),
+    ) { service ->
+        assertEquals(Unit, service.krpc173(Unit))
     }
 
     private inline fun <@Grpc reified Service : Any> runServiceTest(
@@ -132,18 +166,31 @@ class GrpcGeneratedServiceTest {
     companion object {
         private const val PORT = 8082
 
-        private val stringResolver = MessageCodecResolver { kType ->
-            check(kType.classifier == String::class) { "Unsupported type: $kType" }
-            simpleCodec
+        private val simpleResolver = MessageCodecResolver { kType ->
+            when (kType.classifier) {
+                Unit::class -> unitCodec
+                String::class -> stringCodec
+                else -> error("Unsupported type: $kType")
+            }
         }
 
-        val simpleCodec = object : MessageCodec<String> {
+        val stringCodec = object : MessageCodec<String> {
             override fun encode(value: String): Source {
                 return Buffer().apply { writeString(value) }
             }
 
             override fun decode(stream: Source): String {
                 return stream.readString()
+            }
+        }
+
+        val unitCodec = object : MessageCodec<Unit> {
+            override fun encode(value: Unit): Source {
+                return Buffer().apply { writeString("Unit") }
+            }
+
+            override fun decode(stream: Source) {
+                assertEquals("Unit", stream.readString())
             }
         }
     }

@@ -112,26 +112,26 @@ public class GrpcServer internal constructor(
     ): ServerMethodDefinition<RequestServer, ResponseServer> {
         return when (descriptor.type) {
             MethodType.UNARY -> {
-                internalScope.unaryServerMethodDefinition(descriptor) { request ->
+                internalScope.unaryServerMethodDefinition(descriptor, returnType.kType) { request ->
                     unaryInvokator.call(service, arrayOf(request)) as ResponseServer
                 }
             }
 
             MethodType.CLIENT_STREAMING -> {
-                internalScope.clientStreamingServerMethodDefinition(descriptor) { requests ->
+                internalScope.clientStreamingServerMethodDefinition(descriptor, returnType.kType) { requests ->
                     unaryInvokator.call(service, arrayOf(requests)) as ResponseServer
                 }
             }
 
             MethodType.SERVER_STREAMING -> {
-                internalScope.serverStreamingServerMethodDefinition(descriptor) { request ->
+                internalScope.serverStreamingServerMethodDefinition(descriptor, returnType.kType) { request ->
                     @Suppress("UNCHECKED_CAST")
                     flowInvokator.call(service, arrayOf(request)) as Flow<ResponseServer>
                 }
             }
 
             MethodType.BIDI_STREAMING -> {
-                internalScope.bidiStreamingServerMethodDefinition(descriptor) { requests ->
+                internalScope.bidiStreamingServerMethodDefinition(descriptor, returnType.kType) { requests ->
                     @Suppress("UNCHECKED_CAST")
                     flowInvokator.call(service, arrayOf(requests)) as Flow<ResponseServer>
                 }
