@@ -52,7 +52,9 @@ private class KotlinxSerializationCodec<T>(
                 }
             }
 
-            else -> error("Only ${StringFormat::class.simpleName} and ${BinaryFormat::class.simpleName} are supported")
+            else -> {
+                error("Only ${StringFormat::class.simpleName} and ${BinaryFormat::class.simpleName} are supported")
+            }
         }
     }
 
@@ -66,7 +68,9 @@ private class KotlinxSerializationCodec<T>(
                 serialFormat.decodeFromByteArray(serializer, stream.readByteArray())
             }
 
-            else -> error("Only ${StringFormat::class.simpleName} and ${BinaryFormat::class.simpleName} are supported")
+            else -> {
+                error("Only ${StringFormat::class.simpleName} and ${BinaryFormat::class.simpleName} are supported")
+            }
         }
     }
 }
