@@ -17,29 +17,30 @@ public abstract class InternalMessage(fieldsWithPresence: Int) {
     public abstract val _size: Int
 }
 
+@InternalRpcApi
 public class MsgFieldDelegate<T : Any>(
     private val presenceIdx: Int? = null,
     private val defaultProvider: (() -> T)? = null
 ) : ReadWriteProperty<InternalMessage, T> {
 
     private var valueSet = false
-    private var _value: T? = null
+    private var value: T? = null
 
     override operator fun getValue(thisRef: InternalMessage, property: KProperty<*>): T {
         if (!valueSet) {
             if (defaultProvider != null) {
-                _value = defaultProvider.invoke()
+                value = defaultProvider.invoke()
                 valueSet = true
             } else {
                 error("Property ${property.name} not initialized")
             }
         }
-        return _value as T
+        return value as T
     }
 
     override operator fun setValue(thisRef: InternalMessage, property: KProperty<*>, value: T) {
         presenceIdx?.let { thisRef.presenceMask[it] = true }
-        _value = value
+        this@MsgFieldDelegate.value = value
         valueSet = true
     }
 }

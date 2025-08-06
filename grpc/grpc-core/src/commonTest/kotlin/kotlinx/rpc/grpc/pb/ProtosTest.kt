@@ -6,6 +6,7 @@ package kotlinx.rpc.grpc.pb
 
 import OneOfMsg
 import OneOfMsgInternal
+import OneOfWithRequired
 import Outer
 import OuterInternal
 import asInternal
@@ -87,10 +88,20 @@ class ProtosTest {
     }
 
     @Test
-    fun testPresenceCheckProto() {
+    fun testRepeatedWithRequiredSubField() {
+        assertFailsWith<IllegalStateException> {
+            RepeatedWithRequired {
+                // we construct the message using the internal class,
+                // so it is not invoking the checkRequired method on construction
+                msgList = listOf(PresenceCheck { RequiredPresence = 2 }, PresenceCheckInternal())
+            }
+        }
+    }
 
+    @Test
+    fun testPresenceCheckProto() {
         // Check a missing required field in a user-constructed message
-        assertFailsWith<IllegalStateException>("PresenceCheck is missing required field: RequiredPresence") {
+        assertFailsWith<IllegalStateException> {
             PresenceCheck {}
         }
 
@@ -100,7 +111,7 @@ class ProtosTest {
         encoder.writeFloat(2, 1f)
         encoder.flush()
 
-        assertFailsWith<IllegalStateException>("PresenceCheck is missing required field: RequiredPresence") {
+        assertFailsWith<IllegalStateException> {
             PresenceCheckInternal.CODEC.decode(buffer)
         }
     }
@@ -218,6 +229,17 @@ class ProtosTest {
     }
 
     @Test
+    fun testOneOfRequiredSubField() {
+        assertFailsWith<IllegalStateException> {
+            OneOfWithRequired {
+                // we construct the message using the internal class,
+                // so it is not invoking the checkRequired method on construction
+                field = OneOfWithRequired.Field.Msg(PresenceCheckInternal())
+            }
+        }
+    }
+
+    @Test
     fun testOneOfNull() {
         // write two values on the oneOf field.
         // the second value must be the one stored during decoding.
@@ -239,7 +261,7 @@ class ProtosTest {
 
     @Test
     fun testRecursiveReqNotSet() {
-        assertFailsWith<IllegalStateException>("RecursiveReq is missing required field: rec") {
+        assertFailsWith<IllegalStateException> {
             val msg = RecursiveReq {
                 rec = RecursiveReq {
                     rec = RecursiveReq {

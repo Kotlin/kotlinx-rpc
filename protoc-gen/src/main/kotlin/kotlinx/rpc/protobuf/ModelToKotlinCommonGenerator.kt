@@ -530,6 +530,35 @@ class ModelToKotlinCommonGenerator(
                 code("${field.name}.asInternal().checkRequiredFields()")
             })
         }
+
+        // check submessages in oneofs
+        declaration.fields().filter { it.second.type is FieldType.OneOf }.forEach { (_, field) ->
+            val oneOfType = field.type as FieldType.OneOf
+            val messageVariants = oneOfType.dec.variants.filter { it.type is FieldType.Message }
+            if (messageVariants.isEmpty()) return@forEach
+
+            scope("${field.name}?.also") {
+                whenBlock {
+                    messageVariants.forEach { variant ->
+                        val variantClassName = "${field.type.dec.name.safeFullName()}.${variant.name}"
+                        whenCase("it is $variantClassName") {
+                            code("it.value.asInternal().checkRequiredFields()")
+                        }
+                    }
+                }
+            }
+        }
+
+        // check submessages in lists
+        declaration.fields().filter { it.second.type is FieldType.List }.forEach { (_, field) ->
+            val listType = field.type as FieldType.List
+            if (listType.value !is FieldType.Message) return@forEach
+
+            scope("${field.name}.forEach") {
+                code("it.asInternal().checkRequiredFields()")
+            }
+        }
+
     }
 
     private fun CodeGenerator.generateInternalComputeSize(declaration: MessageDeclaration) {
