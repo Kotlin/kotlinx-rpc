@@ -4,17 +4,11 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.io.Source
+import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
 public expect abstract class InputStream
-
-@InternalRpcApi
-public interface MessageCodec<T> {
-    public fun encode(value: T): Source
-    public fun decode(stream: Source): T
-}
 
 @InternalRpcApi
 public expect class MethodDescriptor<Request, Response> {
@@ -56,11 +50,3 @@ public expect fun <Request, Response> methodDescriptor(
     safe: Boolean,
     sampledToLocalTracing: Boolean,
 ): MethodDescriptor<Request, Response>
-
-public val MethodType.clientSendsOneMessage: Boolean get() {
-    return this == MethodType.UNARY || this == MethodType.SERVER_STREAMING
-}
-
-public val MethodType.serverSendsOneMessage: Boolean get() {
-    return this == MethodType.SERVER_STREAMING || this == MethodType.CLIENT_STREAMING
-}

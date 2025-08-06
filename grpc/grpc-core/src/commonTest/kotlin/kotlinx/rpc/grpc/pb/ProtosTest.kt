@@ -8,7 +8,7 @@ import OneOfMsg
 import OneOfMsgInternal
 import invoke
 import kotlinx.io.Buffer
-import kotlinx.rpc.grpc.internal.MessageCodec
+import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.test.Enum
 import kotlinx.rpc.grpc.test.UsingEnum
 import kotlinx.rpc.grpc.test.UsingEnumInternal

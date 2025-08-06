@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.descriptor
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.internal.*
@@ -12,23 +13,23 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
 @ExperimentalRpcApi
-public inline fun <@Rpc reified T : Any> serviceDescriptorOf(): RpcServiceDescriptor<T> {
-    return serviceDescriptorOf(T::class)
+public inline fun <@Rpc reified Service : Any> serviceDescriptorOf(): RpcServiceDescriptor<Service> {
+    return serviceDescriptorOf(Service::class)
 }
 
 @ExperimentalRpcApi
-public fun <@Rpc T : Any> serviceDescriptorOf(kType: KType): RpcServiceDescriptor<T> {
+public fun <@Rpc Service : Any> serviceDescriptorOf(kType: KType): RpcServiceDescriptor<Service> {
     return serviceDescriptorOf(kType.rpcInternalKClass())
 }
 
 @ExperimentalRpcApi
-public fun <@Rpc T : Any> serviceDescriptorOf(kClass: KClass<T>): RpcServiceDescriptor<T> {
+public fun <@Rpc Service : Any> serviceDescriptorOf(kClass: KClass<Service>): RpcServiceDescriptor<Service> {
     val maybeDescriptor = internalServiceDescriptorOf(kClass)
         ?: internalRpcError("Unable to find a service descriptor of the $kClass")
 
     if (maybeDescriptor is RpcServiceDescriptor<*>) {
         @Suppress("UNCHECKED_CAST")
-        return maybeDescriptor as RpcServiceDescriptor<T>
+        return maybeDescriptor as RpcServiceDescriptor<Service>
     }
 
     internalRpcError(
@@ -39,30 +40,44 @@ public fun <@Rpc T : Any> serviceDescriptorOf(kClass: KClass<T>): RpcServiceDesc
 }
 
 @ExperimentalRpcApi
-public interface RpcServiceDescriptor<@Rpc T : Any> {
+public interface RpcServiceDescriptor<@Rpc Service : Any> {
+    public val simpleName: String
+
     public val fqName: String
 
-    public fun getCallable(name: String): RpcCallable<T>?
+    public fun getCallable(name: String): RpcCallable<Service>?
 
-    public val callables: Map<String, RpcCallable<T>>
+    public val callables: Map<String, RpcCallable<Service>>
 
-    public fun createInstance(serviceId: Long, client: RpcClient): T
+    public fun createInstance(serviceId: Long, client: RpcClient): Service
 }
 
 @ExperimentalRpcApi
-public interface RpcCallable<@Rpc T : Any> {
+public interface RpcCallable<@Rpc Service : Any> {
     public val name: String
     public val returnType: RpcType
-    public val invokator: RpcInvokator<T>
+    public val invokator: RpcInvokator<Service>
     public val parameters: Array<out RpcParameter>
-    public val isNonSuspendFunction: Boolean
 }
 
 @ExperimentalRpcApi
-public sealed interface RpcInvokator<@Rpc T : Any> {
+public val <@Rpc Service : Any> RpcCallable<Service>.unaryInvokator: RpcInvokator.UnaryResponse<Service>
+    get() = invokator as RpcInvokator.UnaryResponse<Service>
+
+@ExperimentalRpcApi
+public val <@Rpc Service : Any> RpcCallable<Service>.flowInvokator: RpcInvokator.FlowResponse<Service>
+    get() = invokator as RpcInvokator.FlowResponse<Service>
+
+@ExperimentalRpcApi
+public sealed interface RpcInvokator<@Rpc Service : Any> {
     @ExperimentalRpcApi
-    public fun interface Method<@Rpc T : Any> : RpcInvokator<T> {
-        public suspend fun call(service: T, parameters: Array<Any?>): Any?
+    public fun interface UnaryResponse<@Rpc Service : Any> : RpcInvokator<Service> {
+        public suspend fun call(service: Service, arguments: Array<Any?>): Any?
+    }
+
+    @ExperimentalRpcApi
+    public fun interface FlowResponse<@Rpc Service : Any> : RpcInvokator<Service> {
+        public fun call(service: Service, arguments: Array<Any?>): Flow<Any?>
     }
 }
 
