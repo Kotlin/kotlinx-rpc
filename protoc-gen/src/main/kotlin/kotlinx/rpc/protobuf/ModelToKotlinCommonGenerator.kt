@@ -586,7 +586,7 @@ class ModelToKotlinCommonGenerator(
 
         requiredFields.forEach { field ->
             ifBranch(condition = "!presenceMask[${field.presenceIdx}]", ifBlock = {
-                code("error(\"${declaration.name.simpleName} is missing required field: ${field.name}\")")
+                code("throw kotlinx.rpc.grpc.InvalidProtobufError.missingRequiredField(\"${declaration.name.simpleName}\", \"${field.name}\")")
             })
         }
 
