@@ -35,6 +35,24 @@ class ProtosTest {
     }
 
     @Test
+    fun testUnknownFieldsDontCrash() {
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+        // optional sint32 sint32 = 7
+        encoder.writeSInt32(7, 12)
+        // optional sint64 sint64 = 8; (unknown as wrong wire-type)
+        encoder.writeFloat(8, 2f)
+        // optional fixed32 fixed32 = 9;
+        encoder.writeFixed32(9, 1234u)
+        encoder.flush()
+
+        val decoded = AllPrimitivesInternal.CODEC.decode(buffer)
+        assertEquals(12, decoded.sint32)
+        assertNull(decoded.sint64)
+        assertEquals(1234u, decoded.fixed32)
+    }
+
+    @Test
     fun testAllPrimitiveProto() {
         val msg = AllPrimitives {
             int32 = 12
