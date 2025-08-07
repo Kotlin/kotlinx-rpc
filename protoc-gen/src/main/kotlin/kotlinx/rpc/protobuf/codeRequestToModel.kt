@@ -257,8 +257,9 @@ private fun Descriptors.FieldDescriptor.modelType(): FieldType {
     if (isMapField) {
         val keyType = messageType.findFieldByName("key").modelType()
         val valType = messageType.findFieldByName("value").modelType()
-        val mapEntry = FieldType.Map.Entry(keyType, valType)
-        return FieldType.Map(lazy { mapEntry })
+        val mapEntryDec = messageType.toModel()
+        val mapEntry = FieldType.Map.Entry(mapEntryDec, keyType, valType)
+        return FieldType.Map(mapEntry)
     }
 
     if (isRepeated) {
