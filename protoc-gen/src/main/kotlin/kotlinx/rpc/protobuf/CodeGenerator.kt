@@ -123,7 +123,7 @@ open class CodeGenerator(
         suffix: String = "",
         openingBracket: Boolean = true,
         nlAfterClosed: Boolean = true,
-        paramDecl: String = "",
+        paramDeclaration: String = "",
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
         if (block == null) {
@@ -141,7 +141,7 @@ open class CodeGenerator(
         }
 
         if (openingBracket) {
-            append(" { $paramDecl")
+            append(" { $paramDeclaration")
         }
         newLine()
         append(nested.build().trimEnd())

@@ -28,7 +28,7 @@ class ProtosTest {
 
     private fun <M> encodeDecode(
         msg: M,
-        codec: MessageCodec<M>
+        codec: MessageCodec<M>,
     ): M {
         val source = codec.encode(msg)
         return codec.decode(source)
@@ -361,7 +361,8 @@ class ProtosTest {
             primitives = mapOf("one" to 1, "two" to 2, "three" to 3)
             messages = mapOf(
                 1 to PresenceCheck { RequiredPresence = 1 },
-                2 to PresenceCheck { RequiredPresence = 2; OptionalPresence = 3F })
+                2 to PresenceCheck { RequiredPresence = 2; OptionalPresence = 3F }
+            )
         }
 
         val decoded = encodeDecode(msg, TestMapInternal.CODEC)

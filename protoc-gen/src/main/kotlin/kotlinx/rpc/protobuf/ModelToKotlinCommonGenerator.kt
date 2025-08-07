@@ -167,12 +167,14 @@ class ModelToKotlinCommonGenerator(
 
         val annotations = buildList {
             add("@$INTERNAL_RPC_API_ANNO")
-            if (declaration.isUserFacing)
+            if (declaration.isUserFacing) {
                 add("@$WITH_CODEC_ANNO($internalClassName.CODEC::class)")
+            }
         }
         val superTypes = buildList {
-            if (declaration.isUserFacing)
+            if (declaration.isUserFacing) {
                 add(declaration.name.safeFullName())
+            }
             add("$PB_PKG.InternalMessage(fieldsWithPresence = ${declaration.presenceMaskSize})")
         }
 
@@ -377,7 +379,7 @@ class ModelToKotlinCommonGenerator(
         fieldType: FieldType,
         lvalue: String,
         isPacked: Boolean = false,
-        wrapperCtor: (String) -> String = { it }
+        wrapperCtor: (String) -> String = { it },
     ) {
         when (fieldType) {
             is FieldType.IntegralType -> {
@@ -482,7 +484,7 @@ class ModelToKotlinCommonGenerator(
         type: FieldType,
         number: Int,
         isPacked: Boolean,
-        packedWithFixedSize: Boolean
+        packedWithFixedSize: Boolean,
     ) {
         var encFunc = type.decodeEncodeFuncName()
         when (val fieldType = type) {
@@ -696,7 +698,8 @@ class ModelToKotlinCommonGenerator(
 
             is FieldType.Message,
             FieldType.IntegralType.STRING,
-            FieldType.IntegralType.BYTES -> code("result += $valueSize.let { $tagSize + ${int32SizeCall("it")} + it }")
+            FieldType.IntegralType.BYTES,
+                -> code("result += $valueSize.let { $tagSize + ${int32SizeCall("it")} + it }")
 
             is FieldType.Map -> {
                 scope("result += ${field.name}.entries.sumOf", paramDecl = "kEntry ->") {
@@ -727,7 +730,8 @@ class ModelToKotlinCommonGenerator(
             FieldType.IntegralType.SINT32,
             FieldType.IntegralType.SINT64,
             FieldType.IntegralType.SFIXED32,
-            FieldType.IntegralType.SFIXED64 -> code("result += ($tagSize + $valueSize)")
+            FieldType.IntegralType.SFIXED64,
+                -> code("result += ($tagSize + $valueSize)")
         }
     }
 
