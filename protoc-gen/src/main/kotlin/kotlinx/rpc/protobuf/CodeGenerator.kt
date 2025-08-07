@@ -177,9 +177,13 @@ open class CodeGenerator(
         typeParameters: String = "",
         args: String = "",
         contextReceiver: String = "",
+        annotations: List<String> = emptyList(),
         returnType: String = "",
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
+        for (annotation in annotations) {
+            addLine(annotation)
+        }
         val modifiersString = if (modifiers.isEmpty()) "" else "$modifiers "
         val contextString = if (contextReceiver.isEmpty()) "" else "$contextReceiver."
         val returnTypeString = if (returnType.isEmpty()) "" else ": $returnType"
