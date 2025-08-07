@@ -260,6 +260,11 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
+    fun collectOnce() = runTest {
+        client.collectOnce(flowOf("test1", "test2", "test3"))
+    }
+
+    @Test
     fun incomingStreamSyncCollect() = runTest {
         val result = client.incomingStreamSyncCollect(flowOf("test1", "test2", "test3"))
 

@@ -63,6 +63,7 @@ interface KrpcTestService {
     suspend fun nullableParam(arg1: String?): String
     suspend fun nullableReturn(returnNull: Boolean): TestClass?
     suspend fun variance(arg2: TestList<in TestClass>, arg3: TestList2<TestClass>): TestList<out TestClass>?
+    suspend fun collectOnce(flow: Flow<String>)
 
     suspend fun nonSerializableClass(localDate: LocalDate): LocalDate
     suspend fun nonSerializableClassWithSerializer(
