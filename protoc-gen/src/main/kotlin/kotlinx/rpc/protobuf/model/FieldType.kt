@@ -20,16 +20,16 @@ sealed interface FieldType {
     val isPackable: Boolean get() = false
 
     data class List(val value: FieldType) : FieldType {
-        override val defaultValue: String = "arrayListOf()"
+        override val defaultValue: String = "mutableListOf()"
         override val wireType: WireType = value.wireType
         override val isPackable: Boolean = value.isPackable
     }
 
-    data class Map(val entry: Lazy<Entry>) : FieldType {
-        override val defaultValue: String = "emptyMap()"
+    data class Map(val entry: Entry) : FieldType {
+        override val defaultValue: String = "mutableMapOf()"
         override val wireType: WireType = WireType.LENGTH_DELIMITED
 
-        data class Entry(val key: FieldType, val value: FieldType)
+        data class Entry(val dec: MessageDeclaration, val key: FieldType, val value: FieldType)
     }
 
     data class Enum(val dec: EnumDeclaration) : FieldType {
