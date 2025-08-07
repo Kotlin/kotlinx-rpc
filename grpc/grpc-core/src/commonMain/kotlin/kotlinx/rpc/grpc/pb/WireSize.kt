@@ -4,10 +4,14 @@
 
 package kotlinx.rpc.grpc.pb
 
+import kotlinx.io.bytestring.encodeToByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
 public object WireSize
+
+public fun WireSize.tag(fieldNumber: Int, wireType: WireType): Int =
+    uInt32(KTag(fieldNumber, wireType).toRawKTag())
 
 @InternalRpcApi
 public expect fun WireSize.int32(value: Int): Int
@@ -28,10 +32,34 @@ public expect fun WireSize.sInt32(value: Int): Int
 public expect fun WireSize.sInt64(value: Long): Int
 
 @InternalRpcApi
+public fun WireSize.float(value: Float): Int = 32
+
+@InternalRpcApi
+public fun WireSize.double(value: Double): Int = 64
+
+@InternalRpcApi
+public fun WireSize.fixed32(value: UInt): Int = 32
+
+@InternalRpcApi
+public fun WireSize.fixed64(value: ULong): Int = 64
+
+@InternalRpcApi
+public fun WireSize.sFixed32(value: Int): Int = 32
+
+@InternalRpcApi
+public fun WireSize.sFixed64(value: Long): Int = 64
+
+@InternalRpcApi
 public fun WireSize.bool(value: Boolean): Int = int32(if (value) 1 else 0)
 
 @InternalRpcApi
 public fun WireSize.enum(value: Int): Int = int32(value)
+
+@InternalRpcApi
+public fun WireSize.bytes(value: ByteArray): Int = value.size
+
+@InternalRpcApi
+public fun WireSize.string(value: String): Int = value.encodeToByteString().size
 
 @InternalRpcApi
 public fun WireSize.packedInt32(value: List<Int>): Int = value.sumOf { int32(it) }
@@ -53,3 +81,21 @@ public fun WireSize.packedSInt64(value: List<Long>): Int = value.sumOf { sInt64(
 
 @InternalRpcApi
 public fun WireSize.packedEnum(value: List<Int>): Int = value.sumOf { enum(it) }
+
+@InternalRpcApi
+public fun WireSize.packedFloat(value: List<Float>): Int = value.size * 32
+
+@InternalRpcApi
+public fun WireSize.packedDouble(value: List<Double>): Int = value.size * 64
+
+@InternalRpcApi
+public fun WireSize.packedFixed32(value: List<UInt>): Int = value.size * 32
+
+@InternalRpcApi
+public fun WireSize.packedFixed64(value: List<ULong>): Int = value.size * 64
+
+@InternalRpcApi
+public fun WireSize.packedSFixed32(value: List<Int>): Int = value.size * 32
+
+@InternalRpcApi
+public fun WireSize.packedSFixed64(value: List<Long>): Int = value.size * 64

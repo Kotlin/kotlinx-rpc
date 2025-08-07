@@ -5,6 +5,8 @@
 package kotlinx.rpc.grpc.pb
 
 import kotlinx.io.Buffer
+import kotlinx.rpc.grpc.internal.popLimit
+import kotlinx.rpc.grpc.internal.pushLimit
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 // TODO: Evaluate if this buffer size is suitable for all targets (KRPC-186)
@@ -76,6 +78,16 @@ public interface WireDecoder : AutoCloseable {
     public fun readPackedFloat(): List<Float>
     public fun readPackedDouble(): List<Double>
     public fun readPackedEnum(): List<Int>
+
+    // TODO: Throw error instead of just returning
+    public fun <T : InternalMessage> readMessage(msg: T, decoder: (T, WireDecoder) -> Unit) {
+        val len = readInt32()
+        if (hadError()) return
+        if (len <= 0) return
+        val limit = pushLimit(len)
+        decoder(msg, this)
+        popLimit(limit)
+    }
 }
 
 /**

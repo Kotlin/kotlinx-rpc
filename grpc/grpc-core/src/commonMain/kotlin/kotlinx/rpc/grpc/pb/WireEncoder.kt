@@ -50,6 +50,13 @@ public interface WireEncoder {
     public fun writePackedDouble(fieldNr: Int, value: List<Double>): Boolean
     public fun writePackedEnum(fieldNr: Int, value: List<Int>, fieldSize: Int): Boolean =
         writePackedInt32(fieldNr, value, fieldSize)
+
+    public fun <T : InternalMessage> writeMessage(
+        fieldNr: Int,
+        value: T,
+        encode: T.(WireEncoder) -> Unit
+    )
+
 }
 
 
