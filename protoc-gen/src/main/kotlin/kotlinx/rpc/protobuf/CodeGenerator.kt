@@ -72,10 +72,11 @@ open class CodeGenerator(
         suffix: String = "",
         nlAfterClosed: Boolean = true,
         openingBracket: Boolean = true,
+        paramDecl: String = "",
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
         addLine(prefix)
-        scopeWithSuffix(suffix, openingBracket, nlAfterClosed, block)
+        scopeWithSuffix(suffix, openingBracket, nlAfterClosed, paramDecl, block)
     }
 
     internal fun ifBranch(
@@ -122,6 +123,7 @@ open class CodeGenerator(
         suffix: String = "",
         openingBracket: Boolean = true,
         nlAfterClosed: Boolean = true,
+        paramDeclaration: String = "",
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
         if (block == null) {
@@ -139,7 +141,7 @@ open class CodeGenerator(
         }
 
         if (openingBracket) {
-            append(" {")
+            append(" { $paramDeclaration")
         }
         newLine()
         append(nested.build().trimEnd())
