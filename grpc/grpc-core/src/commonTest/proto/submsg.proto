@@ -1,0 +1,8 @@
+message Outer {
+
+  required Inner inner = 1;
+
+  message Inner {
+    required int32 field = 1;
+  }
+}

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package kotlinx.rpc.grpc.test;
 
-enum Enum {
+enum MyEnum {
   option allow_alias = true;
   ZERO = 0;
   ONE = 1;
@@ -12,5 +12,5 @@ enum Enum {
 }
 
 message UsingEnum {
-  Enum enum = 1;
+  MyEnum enum = 1;
 }

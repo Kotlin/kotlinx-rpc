@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package test.submsg;
+
+message Other {
+  optional string arg1 = 1;
+  optional string arg2 = 2;
+  optional string arg3 = 3;
+}
+
+message Reference {
+  Other other = 1;
+}
