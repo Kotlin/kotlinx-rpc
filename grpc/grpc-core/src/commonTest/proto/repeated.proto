@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "presence_check.proto";
+
 package kotlinx.rpc.grpc.test.common;
 
 message Repeated {
@@ -8,4 +10,13 @@ message Repeated {
   repeated int32 listInt32 = 3 [packed = false];
   repeated int32 listInt32Packed = 4 [packed = true];
   repeated string listString = 5;
+  repeated Other listMessage = 6;
+
+  message Other {
+    int32 a = 1;
+  }
+}
+
+message RepeatedWithRequired {
+  repeated PresenceCheck msgList = 1;
 }
