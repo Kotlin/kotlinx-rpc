@@ -15,9 +15,7 @@ import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.psi.KtAnnotated
 import org.jetbrains.kotlin.psi.KtElement
-import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 
 // ###########################################################################
 // ###                     BIG WARNING, LISTEN CLOSELY!                    ###
