@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package kotlinx.rpc.grpc.test;
 
-import "reference_package.proto";
+import "presence_check.proto";
 
 message TestMap {
   map<string, int64> primitives = 1;
-  map<string, References> references = 2;
+  map<int32, kotlinx.rpc.grpc.test.common.PresenceCheck> messages = 2;
 }
