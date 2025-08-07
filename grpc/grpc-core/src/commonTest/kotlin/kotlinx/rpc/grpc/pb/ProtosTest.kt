@@ -14,11 +14,8 @@ import encodeWith
 import invoke
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.codec.MessageCodec
-import kotlinx.rpc.grpc.test.MyEnum
-import kotlinx.rpc.grpc.test.UsingEnum
-import kotlinx.rpc.grpc.test.UsingEnumInternal
+import kotlinx.rpc.grpc.test.*
 import kotlinx.rpc.grpc.test.common.*
-import kotlinx.rpc.grpc.test.invoke
 import test.nested.*
 import test.recursive.Recursive
 import test.recursive.RecursiveInternal
@@ -31,7 +28,7 @@ class ProtosTest {
 
     private fun <M> encodeDecode(
         msg: M,
-        codec: MessageCodec<M>
+        codec: MessageCodec<M>,
     ): M {
         val source = codec.encode(msg)
         return codec.decode(source)
@@ -355,6 +352,40 @@ class ProtosTest {
         assertEquals("first", decoded.other.arg1)
         assertEquals("third", decoded.other.arg2)
         assertEquals("fourth", decoded.other.arg3)
+    }
+
+
+    @Test
+    fun testMap() {
+        val msg = TestMap {
+            primitives = mapOf("one" to 1, "two" to 2, "three" to 3)
+            messages = mapOf(
+                1 to PresenceCheck { RequiredPresence = 1 },
+                2 to PresenceCheck { RequiredPresence = 2; OptionalPresence = 3F }
+            )
+        }
+
+        val decoded = encodeDecode(msg, TestMapInternal.CODEC)
+        assertEquals(msg.primitives, decoded.primitives)
+        assertEquals(msg.messages.size, decoded.messages.size)
+        for ((key, value) in msg.messages) {
+            assertEquals(value.RequiredPresence, decoded.messages[key]!!.RequiredPresence)
+            assertEquals(value.OptionalPresence, decoded.messages[key]!!.OptionalPresence)
+        }
+    }
+
+    @Test
+    fun testMapRequiredSubField() {
+        // we use the internal constructor to avoid a "missing required field" error during object construction
+        val missingRequiredMessage = PresenceCheckInternal()
+
+        assertFailsWith<IllegalStateException> {
+            val msg = TestMap {
+                messages = mapOf(
+                    2 to missingRequiredMessage
+                )
+            }
+        }
     }
 
 }

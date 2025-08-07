@@ -30,7 +30,10 @@ data class MessageDeclaration(
     val nestedDeclarations: List<MessageDeclaration>,
     val doc: String?,
     val dec: Descriptors.Descriptor,
-)
+) {
+    val isMapEntry = dec.options.mapEntry
+    val isUserFacing = !isMapEntry
+}
 
 data class EnumDeclaration(
     val name: FqName,
