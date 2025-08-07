@@ -88,6 +88,17 @@ public interface WireDecoder : AutoCloseable {
         decoder(msg, this)
         popLimit(limit)
     }
+
+    public fun skipValue(writeType: WireType) {
+        when (writeType) {
+            WireType.VARINT -> readInt64()
+            WireType.FIXED32 -> readFixed32()
+            WireType.FIXED64 -> readFixed64()
+            WireType.LENGTH_DELIMITED -> readBytes()
+            WireType.START_GROUP -> error("Unexpected START_GROUP wire type")
+            WireType.END_GROUP -> {} // nothing to do
+        }
+    }
 }
 
 /**

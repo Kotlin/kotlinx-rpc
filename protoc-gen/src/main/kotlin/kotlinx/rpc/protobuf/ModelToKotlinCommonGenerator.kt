@@ -288,7 +288,10 @@ class ModelToKotlinCommonGenerator(
             code("val tag = decoder.readTag() ?: break // EOF, we read the whole message")
             whenBlock {
                 declaration.fields().forEach { (_, field) -> readMatchCase(field) }
-                whenCase("else") { code("TODO(\"Handle unknown fields: \$tag\")") }
+                whenCase("else") {
+                    code("// we are currently just skipping unknown fields (KRPC-191)")
+                    code("decoder.skipValue(tag.wireType)")
+                }
             }
         }
         ifBranch(
