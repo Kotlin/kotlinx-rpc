@@ -100,6 +100,9 @@ dependencies {
     testImplementation(libs.junit5.platform.suite.api)
 
     testDataClasspath(projects.utils)
+    testDataClasspath(projects.grpc.grpcCodec)
+    testDataClasspath(projects.grpc.grpcCore)
+    testDataClasspath(libs.kotlinx.io.core)
     testDataClasspath(libs.coroutines.core)
 }
 

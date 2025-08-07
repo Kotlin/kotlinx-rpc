@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.diagnostics.error2
 import org.jetbrains.kotlin.diagnostics.error3
 import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.types.ConeClassLikeType
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtAnnotated
@@ -48,5 +49,18 @@ object FirRpcStrictModeDiagnostics : RpcKtDiagnosticsContainer() {
 
     override fun getRendererFactoryVs(): BaseDiagnosticRendererFactory {
         return RpcStrictModeDiagnosticRendererFactory
+    }
+}
+
+object FirGrpcDiagnostics : RpcKtDiagnosticsContainer() {
+    val NULLABLE_PARAMETER_IN_GRPC_SERVICE by error0<KtElement>()
+    val NULLABLE_RETURN_TYPE_IN_GRPC_SERVICE by error0<KtElement>()
+    val NON_TOP_LEVEL_CLIENT_STREAMING_IN_RPC_SERVICE by error0<KtElement>()
+    val MULTIPLE_PARAMETERS_IN_GRPC_SERVICE by error0<KtElement>()
+    val NOT_AN_OBJECT_REFERENCE_IN_WITH_CODEC_ANNOTATION by error0<KtElement>()
+    val CODEC_TYPE_MISMATCH by error2<KtElement, ConeClassLikeType, ConeKotlinType>()
+
+    override fun getRendererFactoryVs(): BaseDiagnosticRendererFactory {
+        return GrpcDiagnosticRendererFactory
     }
 }

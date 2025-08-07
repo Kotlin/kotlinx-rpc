@@ -1,0 +1,88 @@
+FILE: module_main_withCodec.kt
+    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)))
+    @R|kotlinx/rpc/grpc/codec/WithCodec|(codec = <getClass>(Q|TestCodec|)) public open class Test : R|kotlin/Any| {
+        public constructor(): R|Test| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|kotlinx/rpc/grpc/codec/WithCodec|(codec = <getClass>(Q|TestCodec|)) public final class Test1 : R|kotlin/Any| {
+        public constructor(): R|Test1| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|kotlinx/rpc/grpc/codec/WithCodec|(codec = <getClass>(Q|TestCodec|)) public final class Test2 : R|Test| {
+        public constructor(): R|Test2| {
+            super<R|Test|>()
+        }
+
+    }
+    public final object TestCodec : R|kotlinx/rpc/grpc/codec/MessageCodec<Test>| {
+        private constructor(): R|TestCodec| {
+            super<R|kotlin/Any|>()
+        }
+
+        public open override fun encode(value: R|Test|): R|kotlinx/io/Source| {
+            R|kotlin/error|(String(Not implemented))
+        }
+
+        public open override fun decode(stream: R|kotlinx/io/Source|): R|Test| {
+            R|kotlin/error|(String(Not implemented))
+        }
+
+    }
+    @R|kotlinx/rpc/grpc/codec/WithCodec|(codec = <getClass>(Q|TestCodec3|)) public final class Test3 : R|kotlin/Any| {
+        public constructor(): R|Test3| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class TestCodec3 : R|kotlinx/rpc/grpc/codec/MessageCodec<Test3>| {
+        public constructor(): R|TestCodec3| {
+            super<R|kotlin/Any|>()
+        }
+
+        public open override fun encode(value: R|Test3|): R|kotlinx/io/Source| {
+            R|kotlin/error|(String(Not implemented))
+        }
+
+        public open override fun decode(stream: R|kotlinx/io/Source|): R|Test3| {
+            R|kotlin/error|(String(Not implemented))
+        }
+
+    }
+    @R|kotlinx/rpc/grpc/codec/WithCodec|(codec = <getClass>(Q|TestCodec4|)) public final class Test4 : R|kotlin/Any| {
+        public constructor(): R|Test4| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final object TestCodec4 : R|ATestCodec4|, R|Whatever| {
+        private constructor(): R|TestCodec4| {
+            super<R|ATestCodec4|>()
+        }
+
+    }
+    public abstract interface Whatever : R|kotlin/Any| {
+    }
+    public abstract class ATestCodec4 : R|kotlinx/rpc/grpc/codec/MessageCodec<Test4>| {
+        public constructor(): R|ATestCodec4| {
+            super<R|kotlin/Any|>()
+        }
+
+        public open override fun encode(value: R|Test4|): R|kotlinx/io/Source| {
+            R|kotlin/error|(String(Not implemented))
+        }
+
+        public open override fun decode(stream: R|kotlinx/io/Source|): R|Test4| {
+            R|kotlin/error|(String(Not implemented))
+        }
+
+    }
+    @R|kotlinx/rpc/grpc/codec/WithCodec|(codec = <getClass>(Q|TestCodec4|)) public final class Test5 : R|kotlin/Any| {
+        public constructor(): R|Test5| {
+            super<R|kotlin/Any|>()
+        }
+
+    }

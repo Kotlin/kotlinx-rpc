@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.name.Name
 object RpcClassId {
     val rpcAnnotation = ClassId(FqName("kotlinx.rpc.annotations"), Name.identifier("Rpc"))
     val grpcAnnotation = ClassId(FqName("kotlinx.rpc.grpc.annotations"), Name.identifier("Grpc"))
+    val withCodecAnnotation = ClassId(FqName("kotlinx.rpc.grpc.codec"), Name.identifier("WithCodec"))
     val checkedTypeAnnotation = ClassId(FqName("kotlinx.rpc.annotations"), Name.identifier("CheckedTypeAnnotation"))
 
     val serializableAnnotation = ClassId(FqName("kotlinx.serialization"), Name.identifier("Serializable"))
@@ -19,6 +20,8 @@ object RpcClassId {
     val flow = ClassId(FqName("kotlinx.coroutines.flow"), Name.identifier("Flow"))
     val sharedFlow = ClassId(FqName("kotlinx.coroutines.flow"), Name.identifier("SharedFlow"))
     val stateFlow = ClassId(FqName("kotlinx.coroutines.flow"), Name.identifier("StateFlow"))
+
+    val messageCodec = ClassId(FqName("kotlinx.rpc.grpc.codec"), Name.identifier("MessageCodec"))
 }
 
 object RpcNames {
