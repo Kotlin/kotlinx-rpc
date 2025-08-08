@@ -112,7 +112,8 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
             return pw_encoder_write_string(raw, fieldNr, null, 0)
         }
         val cStr = value.cstr
-        return pw_encoder_write_string(raw, fieldNr, cStr.ptr, cStr.size)
+        val len = cStr.size - 1 // minus 1 as it also counts the null terminator
+        return pw_encoder_write_string(raw, fieldNr, cStr.ptr, len)
     }
 
     override fun writeBytes(fieldNr: Int, value: ByteArray): Boolean {
@@ -166,7 +167,7 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
     override fun <T : InternalMessage> writeMessage(
         fieldNr: Int,
         value: T,
-        encode: T.(WireEncoder) -> Unit
+        encode: T.(WireEncoder) -> Unit,
     ) {
         pw_encoder_write_tag(raw, fieldNr, WireType.LENGTH_DELIMITED.ordinal)
         pw_encoder_write_int32_no_tag(raw, value._size)
@@ -184,7 +185,7 @@ private inline fun <T> WireEncoderNative.writePackedInternal(
     fieldNr: Int,
     value: List<T>,
     fieldSize: Int,
-    crossinline writer: (CValuesRef<pw_encoder_t>?, T) -> Boolean
+    crossinline writer: (CValuesRef<pw_encoder_t>?, T) -> Boolean,
 ): Boolean {
     pw_encoder_write_tag(raw, fieldNr, WireType.LENGTH_DELIMITED.ordinal)
     // write the field size of the packed field
