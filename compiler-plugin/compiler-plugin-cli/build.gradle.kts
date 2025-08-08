@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 plugins {
     alias(libs.plugins.conventions.jvm)
     alias(libs.plugins.compiler.specific.module)
+    alias(libs.plugins.conventions.no.psi.element)
 }
 
 kotlin {

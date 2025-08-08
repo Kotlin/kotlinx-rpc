@@ -57,13 +57,14 @@ object FirWithCodecDeclarationChecker {
 
         val codecTargetClass = codecClassSymbol.findMessageCodecSuperType(context.session)
             .typeArguments.first().type
+            ?: error("Unexpected unresolved type argument for @WithCodec annotation")
 
-        if (codecTargetClass?.classId != declaration.symbol.classId) {
+        if (codecTargetClass.classId != declaration.symbol.classId) {
             reporter.reportOn(
                 source = withCodec.findArgumentByName(CODEC_ARGUMENT_NAME)?.source,
                 factory = FirGrpcDiagnostics.CODEC_TYPE_MISMATCH,
                 a = declaration.symbol.defaultType(),
-                b = kClassValue,
+                b = codecTargetClass,
                 context = context,
             )
         }

@@ -32,6 +32,7 @@ fun registerDiagnosticRendererFactories() {
 //##csm specific=[2.0.0...2.2.10]
     RootDiagnosticRendererFactory.registerFactory(FirRpcDiagnostics.getRendererFactoryVs())
     RootDiagnosticRendererFactory.registerFactory(FirRpcStrictModeDiagnostics.getRendererFactoryVs())
+    RootDiagnosticRendererFactory.registerFactory(FirGrpcDiagnostics.getRendererFactoryVs())
 //##csm /specific
 //##csm /registerDiagnosticRendererFactories
 }
