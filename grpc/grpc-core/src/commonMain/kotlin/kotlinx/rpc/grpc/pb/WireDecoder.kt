@@ -98,6 +98,8 @@ public interface WireDecoder : AutoCloseable {
     }
 }
 
+public expect fun checkForPlatformDecodeException(block: () -> Unit)
+
 /**
  * Creates a platform-specific [WireDecoder].
  *
@@ -108,4 +110,4 @@ public interface WireDecoder : AutoCloseable {
  *
  * @param source The buffer containing the encoded wire-format data.
  */
-internal expect fun WireDecoder(source: Buffer): WireDecoder
+public expect fun WireDecoder(source: Buffer): WireDecoder

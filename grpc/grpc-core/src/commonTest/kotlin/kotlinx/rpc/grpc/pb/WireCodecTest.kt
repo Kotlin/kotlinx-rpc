@@ -815,7 +815,9 @@ class WireCodecTest {
         buffer.writeByte(0)
 
         assertFailsWith<ProtobufDecodingException> {
-            WireDecoder(buffer).readTag()
+            checkForPlatformDecodeException {
+                WireDecoder(buffer).readTag()
+            }
         }
     }
 

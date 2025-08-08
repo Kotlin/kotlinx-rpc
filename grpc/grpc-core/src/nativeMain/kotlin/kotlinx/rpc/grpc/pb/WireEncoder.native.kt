@@ -178,7 +178,7 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
     }
 }
 
-internal actual fun WireEncoder(sink: Sink): WireEncoder = WireEncoderNative(sink)
+public actual fun WireEncoder(sink: Sink): WireEncoder = WireEncoderNative(sink)
 
 
 // the current implementation is slow, as it iterates through the list, to write each element individually,
@@ -208,4 +208,8 @@ private inline fun checked(crossinline block: () -> Boolean) {
     if (!block()) {
         throw ProtobufEncodingException("Failed to encode protobuf message.")
     }
+}
+
+public actual fun checkForPlatformEncodeException(block: () -> Unit) {
+    block() // nothing to check for on native
 }

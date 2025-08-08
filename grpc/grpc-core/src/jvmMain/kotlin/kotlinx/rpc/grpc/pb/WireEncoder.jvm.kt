@@ -17,71 +17,71 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
         codedOutputStream.flush()
     }
 
-    override fun writeBool(fieldNr: Int, value: Boolean) = checked {
+    override fun writeBool(fieldNr: Int, value: Boolean) {
         codedOutputStream.writeBool(fieldNr, value)
     }
 
-    override fun writeInt32(fieldNr: Int, value: Int) = checked {
+    override fun writeInt32(fieldNr: Int, value: Int) {
         codedOutputStream.writeInt32(fieldNr, value)
     }
 
-    override fun writeInt64(fieldNr: Int, value: Long) = checked {
+    override fun writeInt64(fieldNr: Int, value: Long) {
         codedOutputStream.writeInt64(fieldNr, value)
     }
 
-    override fun writeUInt32(fieldNr: Int, value: UInt) = checked {
+    override fun writeUInt32(fieldNr: Int, value: UInt) {
         // todo check java unsigned types
         codedOutputStream.writeUInt32(fieldNr, value.toInt())
     }
 
-    override fun writeUInt64(fieldNr: Int, value: ULong) = checked {
+    override fun writeUInt64(fieldNr: Int, value: ULong) {
         // todo check java unsigned types
         codedOutputStream.writeUInt64(fieldNr, value.toLong())
     }
 
-    override fun writeSInt32(fieldNr: Int, value: Int) = checked {
+    override fun writeSInt32(fieldNr: Int, value: Int) {
         codedOutputStream.writeSInt32(fieldNr, value)
     }
 
-    override fun writeSInt64(fieldNr: Int, value: Long) = checked {
+    override fun writeSInt64(fieldNr: Int, value: Long) {
         codedOutputStream.writeSInt64(fieldNr, value)
     }
 
-    override fun writeFixed32(fieldNr: Int, value: UInt) = checked {
+    override fun writeFixed32(fieldNr: Int, value: UInt) {
         // todo check java unsigned types
         codedOutputStream.writeFixed32(fieldNr, value.toInt())
     }
 
-    override fun writeFixed64(fieldNr: Int, value: ULong) = checked {
+    override fun writeFixed64(fieldNr: Int, value: ULong) {
         // todo check java unsigned types
         codedOutputStream.writeFixed64(fieldNr, value.toLong())
     }
 
-    override fun writeSFixed32(fieldNr: Int, value: Int) = checked {
+    override fun writeSFixed32(fieldNr: Int, value: Int) {
         codedOutputStream.writeSFixed32(fieldNr, value)
     }
 
-    override fun writeSFixed64(fieldNr: Int, value: Long) = checked {
+    override fun writeSFixed64(fieldNr: Int, value: Long) {
         codedOutputStream.writeSFixed64(fieldNr, value)
     }
 
-    override fun writeFloat(fieldNr: Int, value: Float) = checked {
+    override fun writeFloat(fieldNr: Int, value: Float) {
         codedOutputStream.writeFloat(fieldNr, value)
     }
 
-    override fun writeDouble(fieldNr: Int, value: Double) = checked {
+    override fun writeDouble(fieldNr: Int, value: Double) {
         codedOutputStream.writeDouble(fieldNr, value)
     }
 
-    override fun writeEnum(fieldNr: Int, value: Int) = checked {
+    override fun writeEnum(fieldNr: Int, value: Int) {
         codedOutputStream.writeEnum(fieldNr, value)
     }
 
-    override fun writeBytes(fieldNr: Int, value: ByteArray) = checked {
+    override fun writeBytes(fieldNr: Int, value: ByteArray) {
         codedOutputStream.writeByteArray(fieldNr, value)
     }
 
-    override fun writeString(fieldNr: Int, value: String) = checked {
+    override fun writeString(fieldNr: Int, value: String) {
         codedOutputStream.writeString(fieldNr, value)
     }
 
@@ -89,7 +89,7 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
         fieldNr: Int,
         value: List<Boolean>,
         fieldSize: Int,
-    ) = checked {
+    ) {
         writePackedInternal(fieldNr, value, fieldSize, CodedOutputStream::writeBoolNoTag)
     }
 
@@ -97,7 +97,7 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
         fieldNr: Int,
         value: List<Int>,
         fieldSize: Int,
-    ) = checked {
+    ) {
         writePackedInternal(fieldNr, value, fieldSize, CodedOutputStream::writeInt32NoTag)
     }
 
@@ -105,7 +105,7 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
         fieldNr: Int,
         value: List<Long>,
         fieldSize: Int,
-    ) = checked {
+    ) {
         writePackedInternal(fieldNr, value, fieldSize, CodedOutputStream::writeInt64NoTag)
     }
 
@@ -113,7 +113,7 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
         fieldNr: Int,
         value: List<UInt>,
         fieldSize: Int,
-    ) = checked {
+    ) {
         writePackedInternal(fieldNr, value, fieldSize) { codedOutputStream, v ->
             codedOutputStream.writeUInt32NoTag(v.toInt())
         }
@@ -123,7 +123,7 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
         fieldNr: Int,
         value: List<ULong>,
         fieldSize: Int,
-    ) = checked {
+    ) {
         writePackedInternal(fieldNr, value, fieldSize) { codedOutputStream, v ->
             codedOutputStream.writeUInt64NoTag(v.toLong())
         }
@@ -133,7 +133,7 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
         fieldNr: Int,
         value: List<Int>,
         fieldSize: Int,
-    ) = checked {
+    ) {
         writePackedInternal(fieldNr, value, fieldSize, CodedOutputStream::writeSInt32NoTag)
     }
 
@@ -141,35 +141,35 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
         fieldNr: Int,
         value: List<Long>,
         fieldSize: Int,
-    ) = checked {
+    ) {
         writePackedInternal(fieldNr, value, fieldSize, CodedOutputStream::writeSInt64NoTag)
     }
 
-    override fun writePackedFixed32(fieldNr: Int, value: List<UInt>) = checked {
+    override fun writePackedFixed32(fieldNr: Int, value: List<UInt>) {
         writePackedInternal(fieldNr, value, value.size * UInt.SIZE_BYTES) { codedOutputStream, v ->
             codedOutputStream.writeFixed32NoTag(v.toInt())
         }
     }
 
-    override fun writePackedFixed64(fieldNr: Int, value: List<ULong>) = checked {
+    override fun writePackedFixed64(fieldNr: Int, value: List<ULong>) {
         writePackedInternal(fieldNr, value, value.size * ULong.SIZE_BYTES) { codedOutputStream, v ->
             codedOutputStream.writeFixed64NoTag(v.toLong())
         }
     }
 
-    override fun writePackedSFixed32(fieldNr: Int, value: List<Int>) = checked {
+    override fun writePackedSFixed32(fieldNr: Int, value: List<Int>) {
         writePackedInternal(fieldNr, value, value.size * Int.SIZE_BYTES, CodedOutputStream::writeSFixed32NoTag)
     }
 
-    override fun writePackedSFixed64(fieldNr: Int, value: List<Long>) = checked {
+    override fun writePackedSFixed64(fieldNr: Int, value: List<Long>) {
         writePackedInternal(fieldNr, value, value.size * Long.SIZE_BYTES, CodedOutputStream::writeSFixed64NoTag)
     }
 
-    override fun writePackedFloat(fieldNr: Int, value: List<Float>) = checked {
+    override fun writePackedFloat(fieldNr: Int, value: List<Float>) {
         writePackedInternal(fieldNr, value, value.size * Float.SIZE_BYTES, CodedOutputStream::writeFloatNoTag)
     }
 
-    override fun writePackedDouble(fieldNr: Int, value: List<Double>) = checked {
+    override fun writePackedDouble(fieldNr: Int, value: List<Double>) {
         writePackedInternal(fieldNr, value, value.size * Double.SIZE_BYTES, CodedOutputStream::writeDoubleNoTag)
     }
 
@@ -188,7 +188,7 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
         value: List<T>,
         fieldSize: Int,
         crossinline writer: (CodedOutputStream, T) -> Unit,
-    ) = checked {
+    ) {
         codedOutputStream.writeTag(fieldNr, WireType.LENGTH_DELIMITED.ordinal)
         // write the field size of the packed field
         codedOutputStream.writeInt32NoTag(fieldSize)
@@ -198,14 +198,11 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
     }
 }
 
-internal actual fun WireEncoder(sink: Sink): WireEncoder {
+public actual fun WireEncoder(sink: Sink): WireEncoder {
     return WireEncoderJvm(sink)
 }
 
-/**
- * Wraps a [kotlinx.io.IOException] in our own [kotlinx.rpc.grpc.ProtobufEncodingException].
- */
-private inline fun checked(crossinline block: () -> Unit) {
+public actual fun checkForPlatformEncodeException(block: () -> Unit) {
     try {
         return block()
     } catch (e: IOException) {
