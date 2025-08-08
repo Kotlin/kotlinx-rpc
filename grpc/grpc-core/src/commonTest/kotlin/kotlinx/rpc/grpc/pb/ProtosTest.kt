@@ -13,7 +13,7 @@ import asInternal
 import encodeWith
 import invoke
 import kotlinx.io.Buffer
-import kotlinx.rpc.grpc.InvalidProtobufError
+import kotlinx.rpc.grpc.ProtobufDecodingException
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.test.*
 import kotlinx.rpc.grpc.test.common.*
@@ -105,7 +105,7 @@ class ProtosTest {
 
     @Test
     fun testRepeatedWithRequiredSubField() {
-        assertFailsWith<InvalidProtobufError> {
+        assertFailsWith<ProtobufDecodingException> {
             RepeatedWithRequired {
                 // we construct the message using the internal class,
                 // so it is not invoking the checkRequired method on construction
@@ -117,7 +117,7 @@ class ProtosTest {
     @Test
     fun testPresenceCheckProto() {
         // Check a missing required field in a user-constructed message
-        assertFailsWith<InvalidProtobufError> {
+        assertFailsWith<ProtobufDecodingException> {
             PresenceCheck {}
         }
 
@@ -127,7 +127,7 @@ class ProtosTest {
         encoder.writeFloat(2, 1f)
         encoder.flush()
 
-        assertFailsWith<InvalidProtobufError> {
+        assertFailsWith<ProtobufDecodingException> {
             PresenceCheckInternal.CODEC.decode(buffer)
         }
     }
@@ -246,7 +246,7 @@ class ProtosTest {
 
     @Test
     fun testOneOfRequiredSubField() {
-        assertFailsWith<InvalidProtobufError> {
+        assertFailsWith<ProtobufDecodingException> {
             OneOfWithRequired {
                 // we construct the message using the internal class,
                 // so it is not invoking the checkRequired method on construction
@@ -277,7 +277,7 @@ class ProtosTest {
 
     @Test
     fun testRecursiveReqNotSet() {
-        assertFailsWith<InvalidProtobufError> {
+        assertFailsWith<ProtobufDecodingException> {
             val msg = RecursiveReq {
                 rec = RecursiveReq {
                     rec = RecursiveReq {
@@ -398,7 +398,7 @@ class ProtosTest {
         // we use the internal constructor to avoid a "missing required field" error during object construction
         val missingRequiredMessage = PresenceCheckInternal()
 
-        assertFailsWith<InvalidProtobufError> {
+        assertFailsWith<ProtobufDecodingException> {
             val msg = TestMap {
                 messages = mapOf(
                     2 to missingRequiredMessage

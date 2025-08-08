@@ -95,7 +95,7 @@ public interface WireDecoder : AutoCloseable {
             WireType.FIXED32 -> readFixed32()
             WireType.FIXED64 -> readFixed64()
             WireType.LENGTH_DELIMITED -> readBytes()
-            WireType.START_GROUP -> error("Unexpected START_GROUP wire type")
+            WireType.START_GROUP -> error("Unexpected START_GROUP wire type (KRPC-193)")
             WireType.END_GROUP -> {} // nothing to do
         }
     }

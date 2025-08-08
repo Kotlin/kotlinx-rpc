@@ -7,6 +7,7 @@ package kotlinx.rpc.grpc.pb
 import kotlinx.cinterop.*
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.io.Buffer
+import kotlinx.rpc.grpc.ProtobufDecodingException
 import kotlinx.rpc.grpc.internal.ZeroCopyInputSource
 import kotlinx.rpc.grpc.internal.readPackedVarInternal
 import libprotowire.*
@@ -16,8 +17,6 @@ import kotlin.native.ref.createCleaner
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
-
-    private var hadError = false;
 
     // wraps the source in a class that allows to pass data from the source buffer to the C++ encoder
     // without copying it to an intermediate byte array.
@@ -62,12 +61,18 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
     }
 
     override fun hadError(): Boolean {
-        return hadError;
+        return false
     }
 
     override fun readTag(): KTag? {
         val tag = pw_decoder_read_tag(raw)
-        return KTag.fromOrNull(tag)
+        if (tag == 0u) {
+            if (!pw_decoder_consumed_entire_msg(raw)) {
+                throw ProtobufDecodingException.invalidTag()
+            }
+            return null
+        }
+        return KTag.from(tag)
     }
 
     override fun readBool(): Boolean = memScoped {
@@ -159,8 +164,8 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         val str = alloc<CPointerVar<pw_string_t>>()
         pw_decoder_read_string(raw, str.ptr).checkError()
         try {
-            if (hadError) return ""
-            return pw_string_c_str(str.value)?.toKString() ?: "".also { hadError = true }
+            return pw_string_c_str(str.value)?.toKString()
+                ?: throw ProtobufDecodingException.genericParsingError()
         } finally {
             pw_string_delete(str.value)
         }
@@ -169,17 +174,15 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
     // TODO: Should readBytes return a buffer, to prevent allocation of large contiguous memory blocks ? KRPC-182
     override fun readBytes(): ByteArray {
         val length = readInt32()
-        if (hadError) return ByteArray(0)
-        if (length < 0) return ByteArray(0).withError()
+        if (length < 0) throw ProtobufDecodingException.negativeSize()
         // check if the remaining buffer size is less than the set length,
         // we can early abort, without allocating unnecessary memory
-        if (source.size < length) return ByteArray(0).withError()
+        if (source.size < length) throw ProtobufDecodingException.truncatedMessage()
         if (length == 0) return ByteArray(0) // actually an empty array (no error)
         val bytes = ByteArray(length)
         bytes.usePinned {
             pw_decoder_read_raw_bytes(raw, it.addressOf(0), length).checkError()
         }
-        if (hadError) return ByteArray(0)
         return bytes
     }
 
@@ -236,9 +239,7 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
 
     private fun <T : Any> readPackedVarInternal(read: () -> T) = readPackedVarInternal(
         size = { source.size },
-        readFn = read,
-        withError = { hadError = true },
-        hadError = { hadError },
+        readFn = read
     )
 
     /*
@@ -254,14 +255,13 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         sizeBytes: Int,
         crossinline createArray: (Int) -> R,
         crossinline getAddress: Pinned<R>.(Int) -> COpaquePointer,
-        crossinline asList: (R) -> List<T>
+        crossinline asList: (R) -> List<T>,
     ): List<T> {
         // fetch the size of the packed repeated field
         var byteLen = readInt32()
-        if (hadError) return emptyList()
-        if (byteLen < 0) return emptyList<T>().withError()
-        if (source.size < byteLen) return emptyList<T>().withError()
-        if (byteLen % sizeBytes != 0) return emptyList<T>().withError()
+        if (byteLen < 0) throw ProtobufDecodingException.negativeSize()
+        if (source.size < byteLen) throw ProtobufDecodingException.truncatedMessage()
+        if (byteLen % sizeBytes != 0) throw ProtobufDecodingException.truncatedMessage()
         if (byteLen == 0) return emptyList()  // actually an empty list (no error)
 
         // allocate the buffer array (has at most MAX_PACKED_BULK_SIZE bytes)
@@ -284,7 +284,6 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
                     // copy data into the buffer.
                     val copySize = min(bufByteLen, byteLen)
                     pw_decoder_read_raw_bytes(raw, bufAddr, copySize).checkError()
-                    if (hadError) return emptyList()
 
                     // add buffer to the chunked list
                     chunkedList = if (copySize == bufByteLen) {
@@ -302,12 +301,7 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
     }
 
     private fun Boolean.checkError() {
-        hadError = !this || hadError;
-    }
-
-    private fun <T> T.withError(): T {
-        hadError = true
-        return this
+        if (!this) throw ProtobufDecodingException.genericParsingError()
     }
 }
 
