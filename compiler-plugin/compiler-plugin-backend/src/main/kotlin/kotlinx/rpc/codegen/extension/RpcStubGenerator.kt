@@ -1245,7 +1245,7 @@ internal class RpcStubGenerator(
         val protobufMessage = owner.getAnnotation(ctx.withCodecAnnotation.owner.kotlinFqName)
 
         return if (protobufMessage != null) {
-            val classReference = protobufMessage.arguments.single() as? IrClassReference
+            val classReference = vsApi{ protobufMessage.argumentsVS }.single() as? IrClassReference
                 ?: error("Expected IrClassReference for ${ctx.withCodecAnnotation.owner.kotlinFqName} parameter")
 
             val codec = classReference.classType
