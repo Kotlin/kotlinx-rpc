@@ -36,14 +36,14 @@ internal fun KTag.toRawKTag(): UInt {
     return (fieldNr.toUInt() shl KTag.Companion.K_TAG_TYPE_BITS) or wireType.ordinal.toUInt()
 }
 
-internal fun KTag.Companion.fromOrNull(rawKTag: UInt): KTag? {
+internal fun KTag.Companion.from(rawKTag: UInt): KTag {
     val type = (rawKTag and K_TAG_TYPE_MASK).toInt()
     val field = (rawKTag shr K_TAG_TYPE_BITS).toInt()
     if (!isValidFieldNr(field)) {
-        return null
+        error("Invalid field number: $field")
     }
     if (type >= WireType.entries.size) {
-        return null
+        error("Invalid wire type: $type")
     }
     return KTag(field, WireType.entries[type])
 }

@@ -5,8 +5,10 @@
 package kotlinx.rpc.grpc.pb
 
 import com.google.protobuf.CodedInputStream
+import com.google.protobuf.InvalidProtocolBufferException
 import kotlinx.io.Buffer
 import kotlinx.io.asInputStream
+import kotlinx.rpc.grpc.ProtobufDecodingException
 import kotlinx.rpc.grpc.internal.readPackedVarInternal
 
 internal class WireDecoderJvm(source: Buffer) : WireDecoder {
@@ -18,80 +20,79 @@ internal class WireDecoderJvm(source: Buffer) : WireDecoder {
         return false
     }
 
-    override fun readTag(): KTag? {
+    override fun readTag(): KTag? = checked {
         val tag = codedInputStream.readTag().toUInt()
         if (tag == 0u) {
             return null
         }
-
-        return KTag.fromOrNull(tag)
+        return KTag.from(tag)
     }
 
-    override fun readBool(): Boolean {
+    override fun readBool(): Boolean = checked {
         return codedInputStream.readBool()
     }
 
-    override fun readInt32(): Int {
+    override fun readInt32(): Int = checked {
         return codedInputStream.readInt32()
     }
 
-    override fun readInt64(): Long {
+    override fun readInt64(): Long = checked {
         return codedInputStream.readInt64()
     }
 
-    override fun readUInt32(): UInt {
+    override fun readUInt32(): UInt = checked {
         // todo check java unsigned types
         return codedInputStream.readUInt32().toUInt()
     }
 
-    override fun readUInt64(): ULong {
+    override fun readUInt64(): ULong = checked {
         // todo check java unsigned types
         return codedInputStream.readUInt64().toULong()
     }
 
-    override fun readSInt32(): Int {
+    override fun readSInt32(): Int = checked {
         return codedInputStream.readSInt32()
     }
 
-    override fun readSInt64(): Long {
+    override fun readSInt64(): Long = checked {
         return codedInputStream.readSInt64()
     }
 
-    override fun readFixed32(): UInt {
+    override fun readFixed32(): UInt = checked {
         // todo check java unsigned types
         return codedInputStream.readFixed32().toUInt()
     }
 
-    override fun readFixed64(): ULong {
+    override fun readFixed64(): ULong = checked {
         // todo check java unsigned types
         return codedInputStream.readFixed64().toULong()
     }
 
-    override fun readSFixed32(): Int {
+    override fun readSFixed32(): Int = checked {
         return codedInputStream.readSFixed32()
     }
 
-    override fun readSFixed64(): Long {
+    override fun readSFixed64(): Long = checked {
         return codedInputStream.readSFixed64()
     }
 
-    override fun readFloat(): Float {
+    override fun readFloat(): Float = checked {
         return codedInputStream.readFloat()
     }
 
-    override fun readDouble(): Double {
+    override fun readDouble(): Double = checked {
         return codedInputStream.readDouble()
     }
 
-    override fun readEnum(): Int {
+    override fun readEnum(): Int = checked {
         return codedInputStream.readEnum()
     }
 
-    override fun readString(): String {
+    override fun readString(): String = checked {
         return codedInputStream.readStringRequireUtf8()
     }
 
-    override fun readBytes(): ByteArray {
+    override fun readBytes(): ByteArray = checked {
         return codedInputStream.readByteArray()
     }
 
@@ -114,12 +115,25 @@ internal class WireDecoderJvm(source: Buffer) : WireDecoder {
 
     private fun <T : Any> readPackedInternal(read: () -> T) = readPackedVarInternal(
         size = { -1 },
-        readFn = read,
-        withError = { },
-        hadError = { false },
+        readFn = read
     )
 }
 
 internal actual fun WireDecoder(source: Buffer): WireDecoder {
     return WireDecoderJvm(source)
+}
+
+/**
+ * Turns a [InvalidProtocolBufferException] into our own [ProtobufDecodingException].
+ */
+private inline fun <reified T> checked(block: () -> T): T {
+    try {
+        return block()
+    } catch (e: InvalidProtocolBufferException) {
+        throw e.toDecodingException()
+    }
+}
+
+private fun InvalidProtocolBufferException.toDecodingException(): ProtobufDecodingException {
+    return ProtobufDecodingException(message ?: "Failed to decode protobuf message.", cause)
 }
