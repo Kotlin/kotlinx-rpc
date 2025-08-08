@@ -28,6 +28,7 @@ detekt-gradle-plugin = "1.23.8"
 kover = "0.9.1"
 develocity = "3.19.2"
 common-custom-user-data = "2.3"
+compat-patrouille = "0.0.0"
 
 [libraries]
 # kotlinx.rpc – references to the included builds
@@ -110,6 +111,7 @@ kover-gradle-plugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", ve
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradle-doctor-gradle-plugin = { module = "com.osacky.doctor:doctor-plugin", version.ref = "gradle-doctor" }
 gradle-publish-gradle-plugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "gradle-plugin-publish" }
+compat-patrouille-gradle-plugin = { module = "com.gradleup.compat.patrouille:compat-patrouille-gradle-plugin", version.ref = "compat-patrouille" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-lang" }
