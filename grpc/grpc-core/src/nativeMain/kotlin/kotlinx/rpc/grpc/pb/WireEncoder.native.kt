@@ -6,7 +6,6 @@ package kotlinx.rpc.grpc.pb
 
 import kotlinx.cinterop.*
 import kotlinx.io.Sink
-import kotlinx.rpc.grpc.ProtobufEncodingException
 import kotlinx.rpc.grpc.internal.writeFully
 import libprotowire.*
 import kotlin.experimental.ExperimentalNativeApi

@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.pb
 
 import kotlinx.io.Buffer
-import kotlinx.rpc.grpc.ProtobufDecodingException
 import kotlin.test.*
 
 enum class TestPlatform {

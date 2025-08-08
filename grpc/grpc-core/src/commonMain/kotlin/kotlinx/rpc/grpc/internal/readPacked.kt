@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.rpc.grpc.ProtobufDecodingException
+import kotlinx.rpc.grpc.pb.ProtobufDecodingException
 import kotlinx.rpc.grpc.pb.WireDecoder
 
 internal expect fun WireDecoder.pushLimit(byteLen: Int): Int

@@ -8,7 +8,6 @@ import com.google.protobuf.CodedOutputStream
 import kotlinx.io.IOException
 import kotlinx.io.Sink
 import kotlinx.io.asOutputStream
-import kotlinx.rpc.grpc.ProtobufEncodingException
 
 private class WireEncoderJvm(sink: Sink) : WireEncoder {
     private val codedOutputStream = CodedOutputStream.newInstance(sink.asOutputStream())
