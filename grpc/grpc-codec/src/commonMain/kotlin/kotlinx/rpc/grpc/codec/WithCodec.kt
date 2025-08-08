@@ -8,4 +8,5 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlin.reflect.KClass
 
 @ExperimentalRpcApi
+@Target(AnnotationTarget.CLASS)
 public annotation class WithCodec(val codec: KClass<out MessageCodec<*>>)

@@ -1,0 +1,36 @@
+FILE: module_main_grpc.kt
+    @R|kotlinx/rpc/grpc/annotations/Grpc|() public abstract interface MyService : R|kotlin/Any| {
+        public abstract suspend fun unary(value: R|kotlin/String|): R|kotlin/String|
+
+        public abstract suspend fun clientStreaming(flow: R|kotlinx/coroutines/flow/Flow<kotlin/String>|): R|kotlin/String|
+
+        public abstract fun serverStreaming(value: R|kotlin/String|): R|kotlinx/coroutines/flow/Flow<kotlin/String>|
+
+        public abstract fun bidiStreaming(flow: R|kotlinx/coroutines/flow/Flow<kotlin/String>|): R|kotlinx/coroutines/flow/Flow<kotlin/String>|
+
+        public abstract suspend fun zeroValues(): R|kotlin/Unit|
+
+        public abstract fun checkRegularDiagnosticsWork(): R|kotlin/Unit|
+
+        public abstract suspend fun multipleParams(param1: R|kotlin/String|, param2: R|kotlin/String|): R|kotlin/Unit|
+
+        public abstract suspend fun nullable(param1: R|kotlin/String?|): R|kotlin/String?|
+
+        public abstract suspend fun innerFlow(withFlow: R|WithFlow|): R|kotlin/Unit|
+
+        public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+    public final class WithFlow : R|kotlin/Any| {
+        public constructor(flow: R|kotlinx/coroutines/flow/Flow<kotlin/String>|): R|WithFlow| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val flow: R|kotlinx/coroutines/flow/Flow<kotlin/String>| = R|<local>/flow|
+            public get(): R|kotlinx/coroutines/flow/Flow<kotlin/String>|
+
+    }
