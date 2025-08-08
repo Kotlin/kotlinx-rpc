@@ -1155,11 +1155,11 @@ internal class RpcStubGenerator(
             "Only methods are allowed here"
         }
 
-        check(callable.arguments.size == 1) {
-            "Only single argument methods are allowed here"
+        check(callable.arguments.size <= 1) {
+            "Only single or none argument methods are allowed here"
         }
 
-        val requestParameterType = callable.arguments[0].type
+        val requestParameterType = callable.arguments.getOrNull(0)?.type ?: ctx.irBuiltIns.unitType
         val responseParameterType = callable.function.returnType
 
         val requestType: IrType = requestParameterType.unwrapFlow()
@@ -1262,7 +1262,7 @@ internal class RpcStubGenerator(
                     startOffset = UNDEFINED_OFFSET,
                     endOffset = UNDEFINED_OFFSET,
                     type = ctx.grpcMessageCodec.typeWith(type),
-                    symbol = ctx.functions.grpcMessageCodecResolverResolve.symbol,
+                    symbol = ctx.functions.grpcMessageCodecResolverResolveOrNull.symbol,
                     typeArgumentsCount = 0,
                     valueArgumentsCount = 1,
                 )
