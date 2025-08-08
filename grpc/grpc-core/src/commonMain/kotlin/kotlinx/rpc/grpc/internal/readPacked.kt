@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.grpc.internal
 
+import kotlinx.rpc.grpc.pb.ProtobufDecodingException
 import kotlinx.rpc.grpc.pb.WireDecoder
 
 internal expect fun WireDecoder.pushLimit(byteLen: Int): Int
@@ -13,20 +14,15 @@ internal expect fun WireDecoder.bytesUntilLimit(): Int
 internal inline fun <T : Any> WireDecoder.readPackedVarInternal(
     crossinline size: () -> Long,
     crossinline readFn: () -> T,
-    crossinline withError: () -> Unit,
-    crossinline hadError: () -> Boolean,
 ): List<T> {
     val byteLen = readInt32()
-    if (hadError()) {
-        return emptyList()
-    }
     if (byteLen < 0) {
-        return emptyList<T>().apply { withError() }
+        throw ProtobufDecodingException.negativeSize()
     }
     val size = size()
     // no size check on jvm
     if (size != -1L && size < byteLen) {
-        return emptyList<T>().apply { withError() }
+        throw ProtobufDecodingException.truncatedMessage()
     }
     if (byteLen == 0) {
         return emptyList() // actually an empty list (no error)
@@ -38,9 +34,6 @@ internal inline fun <T : Any> WireDecoder.readPackedVarInternal(
 
     while (bytesUntilLimit() > 0) {
         val elem = readFn()
-        if (hadError()) {
-            break
-        }
         result.add(elem)
     }
 

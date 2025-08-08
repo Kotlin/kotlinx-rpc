@@ -33,7 +33,7 @@ private fun io.grpc.Server.toKotlin(): Server {
         override val isTerminated: Boolean
             get() = this@toKotlin.isTerminated
 
-        override fun start() : Server {
+        override fun start(): Server {
             this@toKotlin.start()
             return this
         }
