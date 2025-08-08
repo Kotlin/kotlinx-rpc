@@ -1,9 +1,11 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:OptIn(ExperimentalAbiValidation::class)
 
+import compat.patrouille.configureJavaCompatibility
+import compat.patrouille.configureKotlinCompatibility
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import util.configureAbiFilters
 import util.enableAbiValidation
@@ -18,11 +20,10 @@ java {
     withSourcesJar()
 }
 
-kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
-    }
+configureJavaCompatibility(8)
+configureKotlinCompatibility("2.0.0")
 
+kotlin {
     explicitApi()
 
     abiValidation {
