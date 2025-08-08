@@ -20,7 +20,7 @@ import kotlinx.rpc.krpc.rpcServerConfig
  * @param builder Builder function to configure RPC server.
  */
 @KtorDsl
-public fun Route.rpc(path: String, builder: KrpcRoute.() -> Unit) {
+public fun Route.rpc(path: String, builder: suspend KrpcRoute.() -> Unit) {
     route(path) {
         rpc(builder)
     }
@@ -34,16 +34,19 @@ public fun Route.rpc(path: String, builder: KrpcRoute.() -> Unit) {
  * @param builder Builder function to configure RPC server.
  */
 @KtorDsl
-public fun Route.rpc(builder: KrpcRoute.() -> Unit) {
+public fun Route.rpc(builder: suspend KrpcRoute.() -> Unit) {
     createRpcServer(builder)
 }
 
-private fun Route.createRpcServer(rpcRouteBuilder: KrpcRoute.() -> Unit) {
+private fun Route.createRpcServer(rpcRouteBuilder: suspend KrpcRoute.() -> Unit) {
     application.pluginOrNull(WebSockets)
         ?: error("RPC for server requires $WebSockets plugin to be installed firstly")
 
     webSocket {
-        val rpcRoute = KrpcRoute(this).apply(rpcRouteBuilder)
+        val rpcRoute = KrpcRoute(this).apply {
+            rpcRouteBuilder()
+        }
+
         val pluginConfigBuilder = application.attributes.getOrNull(KrpcServerPluginAttributesKey)
         val rpcConfig = pluginConfigBuilder?.apply(rpcRoute.configBuilder)?.build()
             ?: rpcServerConfig(rpcRoute.configBuilder)

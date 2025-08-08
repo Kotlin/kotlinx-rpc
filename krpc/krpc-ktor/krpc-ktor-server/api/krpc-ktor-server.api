@@ -27,7 +27,7 @@ public final class kotlinx/rpc/krpc/ktor/server/KrpcRoute : io/ktor/server/webso
 }
 
 public final class kotlinx/rpc/krpc/ktor/server/KtorServerDslKt {
-	public static final fun rpc (Lio/ktor/server/routing/Route;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static final fun rpc (Lio/ktor/server/routing/Route;Lkotlin/jvm/functions/Function1;)V
+	public static final fun rpc (Lio/ktor/server/routing/Route;Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
+	public static final fun rpc (Lio/ktor/server/routing/Route;Lkotlin/jvm/functions/Function2;)V
 }
 
