@@ -28,7 +28,6 @@ class WireCodecTest {
         val decoder = WireDecoder(buffer)
 
         val tag = decoder.readTag()
-        assertFalse(decoder.hadError())
         assertNotNull(tag)
         assertEquals(WireType.VARINT, tag.wireType)
         assertEquals(fieldNr, tag.fieldNr)

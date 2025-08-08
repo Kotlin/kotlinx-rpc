@@ -5,6 +5,7 @@
 package kotlinx.rpc.grpc.pb
 
 import kotlinx.io.Buffer
+import kotlinx.rpc.grpc.ProtobufDecodingException
 import kotlinx.rpc.grpc.internal.popLimit
 import kotlinx.rpc.grpc.internal.pushLimit
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -41,8 +42,6 @@ internal const val MAX_PACKED_BULK_SIZE: Int = 1_000_000
  */
 @InternalRpcApi
 public interface WireDecoder : AutoCloseable {
-    public fun hadError(): Boolean
-
     /**
      * When the read tag is null, it indicates EOF and the parser may stop at this point.
      */
@@ -79,11 +78,9 @@ public interface WireDecoder : AutoCloseable {
     public fun readPackedDouble(): List<Double>
     public fun readPackedEnum(): List<Int>
 
-    // TODO: Throw error instead of just returning
     public fun <T : InternalMessage> readMessage(msg: T, decoder: (T, WireDecoder) -> Unit) {
         val len = readInt32()
-        if (hadError()) return
-        if (len <= 0) return
+        if (len < 0) throw ProtobufDecodingException.negativeSize()
         val limit = pushLimit(len)
         decoder(msg, this)
         popLimit(limit)
