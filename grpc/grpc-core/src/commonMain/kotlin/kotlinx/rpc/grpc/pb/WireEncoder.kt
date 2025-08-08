@@ -60,4 +60,6 @@ public interface WireEncoder {
 }
 
 
-internal expect fun WireEncoder(sink: Sink): WireEncoder
+public expect fun checkForPlatformEncodeException(block: () -> Unit)
+
+public expect fun WireEncoder(sink: Sink): WireEncoder

@@ -137,6 +137,7 @@ class ModelToKotlinCommonGenerator(
         clazz(
             name = declaration.name.simpleName,
             declarationType = DeclarationType.Interface,
+            annotations = listOf("@$WITH_CODEC_ANNO(${declaration.internalClassFullName()}.CODEC::class)")
         ) {
             declaration.fields().forEach { (fieldDeclaration, _) ->
                 code("val $fieldDeclaration")
@@ -167,9 +168,6 @@ class ModelToKotlinCommonGenerator(
 
         val annotations = buildList {
             add("@$INTERNAL_RPC_API_ANNO")
-            if (declaration.isUserFacing) {
-                add("@$WITH_CODEC_ANNO($internalClassName.CODEC::class)")
-            }
         }
         val superTypes = buildList {
             if (declaration.isUserFacing) {
@@ -244,7 +242,9 @@ class ModelToKotlinCommonGenerator(
             function("encode", modifiers = "override", args = "value: $msgFqName", returnType = sourceFqName) {
                 code("val buffer = $bufferFqName()")
                 code("val encoder = $PB_PKG.WireEncoder(buffer)")
-                code("value.asInternal().encodeWith(encoder)")
+                scope("$PB_PKG.checkForPlatformEncodeException", nlAfterClosed = false) {
+                    code("value.asInternal().encodeWith(encoder)")
+                }
                 code("encoder.flush()")
                 code("return buffer")
             }
@@ -252,7 +252,9 @@ class ModelToKotlinCommonGenerator(
             function("decode", modifiers = "override", args = "stream: $sourceFqName", returnType = msgFqName) {
                 scope("$PB_PKG.WireDecoder(stream as $bufferFqName).use") {
                     code("val msg = ${declaration.internalClassFullName()}()")
-                    code("${declaration.internalClassFullName()}.decodeWith(msg, it)")
+                    scope("$PB_PKG.checkForPlatformDecodeException", nlAfterClosed = false) {
+                        code("${declaration.internalClassFullName()}.decodeWith(msg, it)")
+                    }
                     code("msg.checkRequiredFields()")
                     code("return msg")
                 }

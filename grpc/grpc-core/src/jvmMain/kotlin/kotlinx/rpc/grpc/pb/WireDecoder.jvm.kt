@@ -15,7 +15,7 @@ internal class WireDecoderJvm(source: Buffer) : WireDecoder {
     // there is no way to omit coping here
     internal val codedInputStream: CodedInputStream = CodedInputStream.newInstance(source.asInputStream())
 
-    override fun readTag(): KTag? = checked {
+    override fun readTag(): KTag? {
         val tag = codedInputStream.readTag().toUInt()
         if (tag == 0u) {
             return null
@@ -23,71 +23,71 @@ internal class WireDecoderJvm(source: Buffer) : WireDecoder {
         return KTag.from(tag)
     }
 
-    override fun readBool(): Boolean = checked {
+    override fun readBool(): Boolean {
         return codedInputStream.readBool()
     }
 
-    override fun readInt32(): Int = checked {
+    override fun readInt32(): Int {
         return codedInputStream.readInt32()
     }
 
-    override fun readInt64(): Long = checked {
+    override fun readInt64(): Long {
         return codedInputStream.readInt64()
     }
 
-    override fun readUInt32(): UInt = checked {
+    override fun readUInt32(): UInt {
         // todo check java unsigned types
         return codedInputStream.readUInt32().toUInt()
     }
 
-    override fun readUInt64(): ULong = checked {
+    override fun readUInt64(): ULong {
         // todo check java unsigned types
         return codedInputStream.readUInt64().toULong()
     }
 
-    override fun readSInt32(): Int = checked {
+    override fun readSInt32(): Int {
         return codedInputStream.readSInt32()
     }
 
-    override fun readSInt64(): Long = checked {
+    override fun readSInt64(): Long {
         return codedInputStream.readSInt64()
     }
 
-    override fun readFixed32(): UInt = checked {
+    override fun readFixed32(): UInt {
         // todo check java unsigned types
         return codedInputStream.readFixed32().toUInt()
     }
 
-    override fun readFixed64(): ULong = checked {
+    override fun readFixed64(): ULong {
         // todo check java unsigned types
         return codedInputStream.readFixed64().toULong()
     }
 
-    override fun readSFixed32(): Int = checked {
+    override fun readSFixed32(): Int {
         return codedInputStream.readSFixed32()
     }
 
-    override fun readSFixed64(): Long = checked {
+    override fun readSFixed64(): Long {
         return codedInputStream.readSFixed64()
     }
 
-    override fun readFloat(): Float = checked {
+    override fun readFloat(): Float {
         return codedInputStream.readFloat()
     }
 
-    override fun readDouble(): Double = checked {
+    override fun readDouble(): Double {
         return codedInputStream.readDouble()
     }
 
-    override fun readEnum(): Int = checked {
+    override fun readEnum(): Int {
         return codedInputStream.readEnum()
     }
 
-    override fun readString(): String = checked {
+    override fun readString(): String {
         return codedInputStream.readStringRequireUtf8()
     }
 
-    override fun readBytes(): ByteArray = checked {
+    override fun readBytes(): ByteArray {
         return codedInputStream.readByteArray()
     }
 
@@ -114,19 +114,17 @@ internal class WireDecoderJvm(source: Buffer) : WireDecoder {
     )
 }
 
-internal actual fun WireDecoder(source: Buffer): WireDecoder {
-    return WireDecoderJvm(source)
-}
 
-/**
- * Turns a [InvalidProtocolBufferException] into our own [ProtobufDecodingException].
- */
-private inline fun <reified T> checked(block: () -> T): T {
+public actual fun checkForPlatformDecodeException(block: () -> Unit) {
     try {
         return block()
     } catch (e: InvalidProtocolBufferException) {
         throw e.toDecodingException()
     }
+}
+
+public actual fun WireDecoder(source: Buffer): WireDecoder {
+    return WireDecoderJvm(source)
 }
 
 private fun InvalidProtocolBufferException.toDecodingException(): ProtobufDecodingException {

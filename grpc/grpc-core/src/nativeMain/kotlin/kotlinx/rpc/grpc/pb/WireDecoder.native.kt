@@ -301,4 +301,8 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
     }
 }
 
-internal actual fun WireDecoder(source: Buffer): WireDecoder = WireDecoderNative(source)
+public actual fun WireDecoder(source: Buffer): WireDecoder = WireDecoderNative(source)
+
+public actual fun checkForPlatformDecodeException(block: () -> Unit) {
+    block()
+}
