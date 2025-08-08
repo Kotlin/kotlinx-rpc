@@ -1,0 +1,80 @@
+FILE: grpc.kt
+    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|), <getClass>(Q|kotlinx/rpc/internal/utils/InternalRpcApi|)))
+    @R|kotlinx/rpc/grpc/codec/WithCodec|(codec = <getClass>(Q|Custom.Companion|)) public final class Custom : R|kotlin/Any| {
+        public constructor(content: R|kotlin/String|): R|Custom| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val content: R|kotlin/String| = R|<local>/content|
+            public get(): R|kotlin/String|
+
+        public final companion object Companion : R|kotlinx/rpc/grpc/codec/MessageCodec<Custom>| {
+            private constructor(): R|Custom.Companion| {
+                super<R|kotlin/Any|>()
+            }
+
+            public open override fun encode(value: R|Custom|): R|kotlinx/io/Source| {
+                R|kotlin/TODO|(String(Not yet implemented))
+            }
+
+            public open override fun decode(stream: R|kotlinx/io/Source|): R|Custom| {
+                R|kotlin/TODO|(String(Not yet implemented))
+            }
+
+        }
+
+    }
+    @R|kotlinx/rpc/grpc/annotations/Grpc|() public abstract interface BoxService : R|kotlin/Any| {
+        public abstract suspend fun simple(value: R|kotlin/String|): R|kotlin/String|
+
+        public abstract suspend fun unit(): R|kotlin/Unit|
+
+        public abstract suspend fun clientStream(flow: R|kotlinx/coroutines/flow/Flow<kotlin/String>|): R|kotlin/Unit|
+
+        public abstract fun serverStream(): R|kotlinx/coroutines/flow/Flow<kotlin/Unit>|
+
+        public abstract fun bidiStream(flow: R|kotlinx/coroutines/flow/Flow<kotlinx/rpc/codegen/test/Message>|): R|kotlinx/coroutines/flow/Flow<kotlinx/rpc/codegen/test/Message>|
+
+        public abstract suspend fun custom(): R|Custom|
+
+        public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+    public final fun box(): R|kotlin/String| {
+        lval delegate: R|kotlinx/rpc/grpc/descriptor/GrpcServiceDelegate| = R|kotlinx/rpc/codegen/test/grpcDelegate|<R|BoxService|>()
+        when () {
+            !=(R|<local>/delegate|.R|kotlinx/rpc/grpc/descriptor/GrpcServiceDelegate.serviceDescriptor|.R|io/grpc/ServiceDescriptor.name|, String(BoxService)) ->  {
+                ^box <strcat>(String(Fail: Wrong service name: ), R|<local>/delegate|.R|kotlinx/rpc/grpc/descriptor/GrpcServiceDelegate.serviceDescriptor|.R|io/grpc/ServiceDescriptor.name|)
+            }
+        }
+
+        R|<local>/delegate|.R|kotlinx/rpc/grpc/descriptor/GrpcServiceDelegate.getMethodDescriptor|(String(simple))!!.R|kotlinx/rpc/codegen/test/checkMethod|(String(simple), Q|io/grpc/MethodDescriptor.MethodType|.R|io/grpc/MethodDescriptor.MethodType.UNARY|, String(BoxService))?.{ $subj$.R|kotlin/let|<R|kotlin/String|, R|kotlin/Nothing|>(<L> = let@fun <anonymous>(it: R|kotlin/String|): R|kotlin/Nothing| <inline=Inline, kind=EXACTLY_ONCE>  {
+            ^box <strcat>(String(Fail: ), R|<local>/it|)
+        }
+        ) }
+        R|<local>/delegate|.R|kotlinx/rpc/grpc/descriptor/GrpcServiceDelegate.getMethodDescriptor|(String(unit))!!.R|kotlinx/rpc/codegen/test/checkMethod|(String(unit), Q|io/grpc/MethodDescriptor.MethodType|.R|io/grpc/MethodDescriptor.MethodType.UNARY|, String(BoxService))?.{ $subj$.R|kotlin/let|<R|kotlin/String|, R|kotlin/Nothing|>(<L> = let@fun <anonymous>(it: R|kotlin/String|): R|kotlin/Nothing| <inline=Inline, kind=EXACTLY_ONCE>  {
+            ^box <strcat>(String(Fail: ), R|<local>/it|)
+        }
+        ) }
+        R|<local>/delegate|.R|kotlinx/rpc/grpc/descriptor/GrpcServiceDelegate.getMethodDescriptor|(String(custom))!!.R|kotlinx/rpc/codegen/test/checkMethod|(String(custom), Q|io/grpc/MethodDescriptor.MethodType|.R|io/grpc/MethodDescriptor.MethodType.UNARY|, String(BoxService))?.{ $subj$.R|kotlin/let|<R|kotlin/String|, R|kotlin/Nothing|>(<L> = let@fun <anonymous>(it: R|kotlin/String|): R|kotlin/Nothing| <inline=Inline, kind=EXACTLY_ONCE>  {
+            ^box <strcat>(String(Fail: ), R|<local>/it|)
+        }
+        ) }
+        R|<local>/delegate|.R|kotlinx/rpc/grpc/descriptor/GrpcServiceDelegate.getMethodDescriptor|(String(clientStream))!!.R|kotlinx/rpc/codegen/test/checkMethod|(String(clientStream), Q|io/grpc/MethodDescriptor.MethodType|.R|io/grpc/MethodDescriptor.MethodType.CLIENT_STREAMING|, String(BoxService))?.{ $subj$.R|kotlin/let|<R|kotlin/String|, R|kotlin/Nothing|>(<L> = let@fun <anonymous>(it: R|kotlin/String|): R|kotlin/Nothing| <inline=Inline, kind=EXACTLY_ONCE>  {
+            ^box <strcat>(String(Fail: ), R|<local>/it|)
+        }
+        ) }
+        R|<local>/delegate|.R|kotlinx/rpc/grpc/descriptor/GrpcServiceDelegate.getMethodDescriptor|(String(serverStream))!!.R|kotlinx/rpc/codegen/test/checkMethod|(String(serverStream), Q|io/grpc/MethodDescriptor.MethodType|.R|io/grpc/MethodDescriptor.MethodType.SERVER_STREAMING|, String(BoxService))?.{ $subj$.R|kotlin/let|<R|kotlin/String|, R|kotlin/Nothing|>(<L> = let@fun <anonymous>(it: R|kotlin/String|): R|kotlin/Nothing| <inline=Inline, kind=EXACTLY_ONCE>  {
+            ^box <strcat>(String(Fail: ), R|<local>/it|)
+        }
+        ) }
+        R|<local>/delegate|.R|kotlinx/rpc/grpc/descriptor/GrpcServiceDelegate.getMethodDescriptor|(String(bidiStream))!!.R|kotlinx/rpc/codegen/test/checkMethod|(String(bidiStream), Q|io/grpc/MethodDescriptor.MethodType|.R|io/grpc/MethodDescriptor.MethodType.BIDI_STREAMING|, String(BoxService))?.{ $subj$.R|kotlin/let|<R|kotlin/String|, R|kotlin/Nothing|>(<L> = let@fun <anonymous>(it: R|kotlin/String|): R|kotlin/Nothing| <inline=Inline, kind=EXACTLY_ONCE>  {
+            ^box <strcat>(String(Fail: ), R|<local>/it|)
+        }
+        ) }
+        ^box String(OK)
+    }

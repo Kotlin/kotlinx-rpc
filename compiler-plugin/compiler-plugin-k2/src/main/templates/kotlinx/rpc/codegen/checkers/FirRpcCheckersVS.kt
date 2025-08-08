@@ -140,3 +140,35 @@ class FirRpcStrictModeClassCheckerVS : FirRegularClassChecker(MppCheckerKind.Com
     //##csm /default
     //##csm /FirRpcStrictModeClassCheckerVS_context
 }
+
+class FirGrpcServiceDeclarationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
+    //##csm FirGrpcServiceDeclarationCheckerVS_context
+    //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
+    override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
+        FirGrpcServiceDeclarationChecker.check(declaration, context, reporter)
+    }
+    //##csm /specific
+    //##csm default
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    override fun check(declaration: FirRegularClass) {
+        FirGrpcServiceDeclarationChecker.check(declaration, context, reporter)
+    }
+    //##csm /default
+    //##csm /FirGrpcServiceDeclarationCheckerVS_context
+}
+
+class FirWithCodecDeclarationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
+    //##csm FirWithCodecDeclarationChecker_context
+    //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
+    override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
+        FirWithCodecDeclarationChecker.check(declaration, context, reporter)
+    }
+    //##csm /specific
+    //##csm default
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    override fun check(declaration: FirRegularClass) {
+        FirWithCodecDeclarationChecker.check(declaration, context, reporter)
+    }
+    //##csm /default
+    //##csm /FirWithCodecDeclarationChecker_context
+}
