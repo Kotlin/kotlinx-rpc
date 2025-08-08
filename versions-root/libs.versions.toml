@@ -158,6 +158,7 @@ conventions-npm = { id = "conventions-npm" }
 conventions-root = { id = "conventions-root" }
 conventions-dokka-spec = { id = "conventions-dokka-spec" }
 conventions-dokka-public = { id = "conventions-dokka-public" }
+conventions-no-psi-element = { id = "conventions-no-psi-element" }
 compiler-specific-module = { id = "compiler-specific-module" }
 
 # gradle-plugin project
