@@ -15,11 +15,6 @@ internal class WireDecoderJvm(source: Buffer) : WireDecoder {
     // there is no way to omit coping here
     internal val codedInputStream: CodedInputStream = CodedInputStream.newInstance(source.asInputStream())
 
-    // errors in jvm are exceptions
-    override fun hadError(): Boolean {
-        return false
-    }
-
     override fun readTag(): KTag? = checked {
         val tag = codedInputStream.readTag().toUInt()
         if (tag == 0u) {

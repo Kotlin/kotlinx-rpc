@@ -17,7 +17,7 @@ public class ProtobufDecodingException : GrpcException {
             ProtobufDecodingException("Message '$messageName' is missing a required field: $fieldName")
 
         internal fun negativeSize() = ProtobufDecodingException(
-            "CodedInputStream encountered an embedded string or message which claimed to have negative size."
+            "Decoder encountered an embedded string or message which claimed to have negative size."
         )
 
         internal fun invalidTag() = ProtobufDecodingException(

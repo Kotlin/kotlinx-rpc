@@ -60,10 +60,6 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         zeroCopyInput.dispose()
     }
 
-    override fun hadError(): Boolean {
-        return false
-    }
-
     override fun readTag(): KTag? {
         val tag = pw_decoder_read_tag(raw)
         if (tag == 0u) {

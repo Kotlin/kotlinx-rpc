@@ -284,7 +284,7 @@ class ModelToKotlinCommonGenerator(
         annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
         contextReceiver = "${declaration.internalClassFullName()}.Companion"
     ) {
-        whileBlock("!decoder.hadError()") {
+        whileBlock("true") {
             code("val tag = decoder.readTag() ?: break // EOF, we read the whole message")
             whenBlock {
                 declaration.fields().forEach { (_, field) -> readMatchCase(field) }
@@ -294,10 +294,6 @@ class ModelToKotlinCommonGenerator(
                 }
             }
         }
-        ifBranch(
-            condition = "decoder.hadError()",
-            ifBlock = { code("error(\"Error during decoding of ${declaration.name.simpleName}\")") }
-        )
 
         // TODO: Make lists and maps immutable (KRPC-190)
     }
