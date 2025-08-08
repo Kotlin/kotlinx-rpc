@@ -22,7 +22,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeBool(fieldNr, true))
+        encoder.writeBool(fieldNr, true)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -47,7 +47,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeInt32(fieldNr, testValue))
+        encoder.writeInt32(fieldNr, testValue)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -72,7 +72,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeInt64(fieldNr, testValue))
+        encoder.writeInt64(fieldNr, testValue)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -97,7 +97,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeUInt32(fieldNr, testValue))
+        encoder.writeUInt32(fieldNr, testValue)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -122,7 +122,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeUInt64(fieldNr, testValue))
+        encoder.writeUInt64(fieldNr, testValue)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -147,7 +147,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeSInt32(fieldNr, testValue))
+        encoder.writeSInt32(fieldNr, testValue)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -172,7 +172,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeSInt64(fieldNr, testValue))
+        encoder.writeSInt64(fieldNr, testValue)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -197,7 +197,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeFixed32(fieldNr, testValue))
+        encoder.writeFixed32(fieldNr, testValue)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -222,7 +222,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeFixed64(fieldNr, testValue))
+        encoder.writeFixed64(fieldNr, testValue)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -247,7 +247,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeSFixed32(fieldNr, testValue))
+        encoder.writeSFixed32(fieldNr, testValue)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -272,7 +272,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeSFixed64(fieldNr, testValue))
+        encoder.writeSFixed64(fieldNr, testValue)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -297,7 +297,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeEnum(fieldNr, testValue))
+        encoder.writeEnum(fieldNr, testValue)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -322,7 +322,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeString(fieldNr, testValue))
+        encoder.writeString(fieldNr, testValue)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -369,10 +369,10 @@ class WireCodecTest {
         val encoder = WireEncoder(buffer)
 
         // Write multiple fields of different types
-        assertTrue(encoder.writeBool(1, true))
-        assertTrue(encoder.writeInt32(2, 42))
-        assertTrue(encoder.writeString(3, "Hello"))
-        assertTrue(encoder.writeFixed64(4, 123456789uL))
+        encoder.writeBool(1, true)
+        encoder.writeInt32(2, 42)
+        encoder.writeString(3, "Hello")
+        encoder.writeFixed64(4, 123456789uL)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -428,7 +428,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeBool(fieldNr, true))
+        encoder.writeBool(fieldNr, true)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -448,11 +448,11 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeBool(1, true))
+        encoder.writeBool(1, true)
         encoder.flush()
 
         // Writing after flush should still work
-        assertTrue(encoder.writeInt32(2, 42))
+        encoder.writeInt32(2, 42)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -483,7 +483,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeString(fieldNr, testValue))
+        encoder.writeString(fieldNr, testValue)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -512,8 +512,8 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeBool(fieldNr, true))
-        assertTrue(encoder.writeBool(fieldNr + 1, true))
+        encoder.writeBool(fieldNr, true)
+        encoder.writeBool(fieldNr + 1, true)
         encoder.flush()
 
         WireDecoder(buffer).use { decoder ->
@@ -533,8 +533,8 @@ class WireCodecTest {
         val field2Str = "b".repeat(1000000)
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeString(field1Nr, field1Str))
-        assertTrue(encoder.writeString(field2Nr, field2Str))
+        encoder.writeString(field1Nr, field1Str)
+        encoder.writeString(field2Nr, field2Str)
         encoder.flush()
 
         WireDecoder(buffer).use { decoder ->
@@ -557,7 +557,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeString(1, ""))
+        encoder.writeString(1, "")
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -577,7 +577,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeBytes(1, ByteArray(0)))
+        encoder.writeBytes(1, ByteArray(0))
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -599,7 +599,7 @@ class WireCodecTest {
 
         val bytes = ByteArray(1000000) { it.toByte() }
 
-        assertTrue(encoder.writeBytes(1, bytes))
+        encoder.writeBytes(1, bytes)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -624,7 +624,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeDouble(fieldNr, testValue))
+        encoder.writeDouble(fieldNr, testValue)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -649,7 +649,7 @@ class WireCodecTest {
         val buffer = Buffer()
 
         val encoder = WireEncoder(buffer)
-        assertTrue(encoder.writeFloat(fieldNr, testValue))
+        encoder.writeFloat(fieldNr, testValue)
         encoder.flush()
 
         val decoder = WireDecoder(buffer)
@@ -669,12 +669,12 @@ class WireCodecTest {
 
     private fun <T> runPackedFixedTest(
         list: List<T>,
-        write: WireEncoder.(Int, List<T>) -> Boolean,
+        write: WireEncoder.(Int, List<T>) -> Unit,
         read: WireDecoder.() -> List<T>?,
     ) {
         val buf = Buffer()
         with(WireEncoder(buf)) {
-            assertTrue(write(1, list))
+            write(1, list)
             flush()
         }
         WireDecoder(buf).use { dec ->
@@ -733,12 +733,12 @@ class WireCodecTest {
     private fun <T> runPackedVarTest(
         list: List<T>,
         sizeFn: (List<T>) -> Int,
-        write: WireEncoder.(Int, List<T>, Int) -> Boolean,
+        write: WireEncoder.(Int, List<T>, Int) -> Unit,
         read: WireDecoder.() -> List<T>?,
     ) {
         val buf = Buffer()
         with(WireEncoder(buf)) {
-            assertTrue(write(1, list, sizeFn(list)))
+            write(1, list, sizeFn(list))
             flush()
         }
         WireDecoder(buf).use { dec ->
