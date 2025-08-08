@@ -7,7 +7,6 @@ package kotlinx.rpc.grpc.pb
 import kotlinx.cinterop.*
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.io.Buffer
-import kotlinx.rpc.grpc.ProtobufDecodingException
 import kotlinx.rpc.grpc.internal.ZeroCopyInputSource
 import kotlinx.rpc.grpc.internal.readPackedVarInternal
 import libprotowire.*

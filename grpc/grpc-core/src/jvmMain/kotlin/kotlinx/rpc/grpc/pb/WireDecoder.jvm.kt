@@ -8,7 +8,6 @@ import com.google.protobuf.CodedInputStream
 import com.google.protobuf.InvalidProtocolBufferException
 import kotlinx.io.Buffer
 import kotlinx.io.asInputStream
-import kotlinx.rpc.grpc.ProtobufDecodingException
 import kotlinx.rpc.grpc.internal.readPackedVarInternal
 
 internal class WireDecoderJvm(source: Buffer) : WireDecoder {
@@ -119,14 +118,10 @@ public actual fun checkForPlatformDecodeException(block: () -> Unit) {
     try {
         return block()
     } catch (e: InvalidProtocolBufferException) {
-        throw e.toDecodingException()
+        throw ProtobufDecodingException(e.message ?: "Failed to decode protobuf message.", e)
     }
 }
 
 public actual fun WireDecoder(source: Buffer): WireDecoder {
     return WireDecoderJvm(source)
-}
-
-private fun InvalidProtocolBufferException.toDecodingException(): ProtobufDecodingException {
-    return ProtobufDecodingException(message ?: "Failed to decode protobuf message.", cause)
 }

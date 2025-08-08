@@ -10,8 +10,11 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 /**
  * A platform-specific class that encodes values into protobuf's wire format.
  *
- * If one `write*()` method returns false, the encoding of the value failed
- * and no further encodings can be performed on this [WireEncoder].
+ * If one `write*()` method fails to encode the value in the buffer,
+ * it will throw a platform-specific exception.
+ *
+ * Wrap the encoding of a message with [checkForPlatformEncodeException] to
+ * turn all thrown platform-specific exceptions into [ProtobufEncodingException]s.
  *
  * [flush] must be called to ensure that all data is written to the [Sink].
  */
@@ -59,7 +62,11 @@ public interface WireEncoder {
 
 }
 
-
+/**
+ * Turns exceptions thrown by different platforms during encoding into [ProtobufEncodingException].
+ */
+@InternalRpcApi
 public expect fun checkForPlatformEncodeException(block: () -> Unit)
 
+@InternalRpcApi
 public expect fun WireEncoder(sink: Sink): WireEncoder

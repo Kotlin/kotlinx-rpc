@@ -2,14 +2,14 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc
+package kotlinx.rpc.grpc.pb
 
-public sealed class GrpcException : RuntimeException {
+public sealed class ProtobufException : RuntimeException {
     protected constructor(message: String, cause: Throwable? = null) : super(message, cause)
 }
 
 
-public class ProtobufDecodingException : GrpcException {
+public class ProtobufDecodingException : ProtobufException {
     internal constructor(message: String, cause: Throwable? = null) : super(message, cause)
 
     public companion object Companion {
@@ -35,6 +35,6 @@ public class ProtobufDecodingException : GrpcException {
     }
 }
 
-public class ProtobufEncodingException : GrpcException {
+public class ProtobufEncodingException : ProtobufException {
     internal constructor(message: String, cause: Throwable? = null) : super(message, cause)
 }

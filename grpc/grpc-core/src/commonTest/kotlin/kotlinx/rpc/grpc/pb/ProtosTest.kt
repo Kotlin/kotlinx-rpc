@@ -13,7 +13,6 @@ import asInternal
 import encodeWith
 import invoke
 import kotlinx.io.Buffer
-import kotlinx.rpc.grpc.ProtobufDecodingException
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.test.*
 import kotlinx.rpc.grpc.test.common.*

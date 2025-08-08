@@ -40,10 +40,10 @@ internal fun KTag.Companion.from(rawKTag: UInt): KTag {
     val type = (rawKTag and K_TAG_TYPE_MASK).toInt()
     val field = (rawKTag shr K_TAG_TYPE_BITS).toInt()
     if (!isValidFieldNr(field)) {
-        error("Invalid field number: $field")
+        throw ProtobufDecodingException("Invalid field number: $field")
     }
     if (type >= WireType.entries.size) {
-        error("Invalid wire type: $type")
+        throw ProtobufDecodingException("Invalid wire type: $type")
     }
     return KTag(field, WireType.entries[type])
 }
