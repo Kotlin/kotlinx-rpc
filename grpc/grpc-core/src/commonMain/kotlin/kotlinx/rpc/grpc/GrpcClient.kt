@@ -9,6 +9,8 @@ import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.grpc.codec.EmptyMessageCodecResolver
 import kotlinx.rpc.grpc.codec.MessageCodecResolver
+import kotlinx.rpc.grpc.codec.ThrowingMessageCodecResolver
+import kotlinx.rpc.grpc.codec.plus
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlinx.rpc.grpc.internal.*
@@ -24,9 +26,10 @@ private typealias RequestClient = Any
  */
 public class GrpcClient internal constructor(
     private val channel: ManagedChannel,
-    private val messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
+    messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
 ) : RpcClient {
     private val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
+    private val messageCodecResolver = messageCodecResolver + ThrowingMessageCodecResolver
 
     public fun shutdown() {
         delegates.clear()
@@ -93,7 +96,9 @@ public class GrpcClient internal constructor(
     }
 
     private inline fun <T, R> withGrpcCall(call: RpcCall, body: (MethodDescriptor<RequestClient, T>, Any) -> R): R {
-        require(call.arguments.size == 1) { "Call parameter size should be 1, but ${call.arguments.size}" }
+        require(call.arguments.size <= 1) {
+            "Call parameter size must be 0 or 1, but ${call.arguments.size}"
+        }
 
         val delegate = delegates.computeIfAbsent(call.descriptor.fqName) {
             val grpc = call.descriptor as? GrpcServiceDescriptor<*>
@@ -107,8 +112,7 @@ public class GrpcClient internal constructor(
                 as? MethodDescriptor<RequestClient, T>
             ?: error("Expected a gRPC method descriptor")
 
-        val request = call.arguments[0]
-            ?: error("Expected a single argument for a gRPC call")
+        val request = call.arguments.getOrNull(0) ?: Unit
 
         return body(methodDescriptor, request)
     }
