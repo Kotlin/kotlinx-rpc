@@ -17,12 +17,13 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.serializer
+import kotlinx.serialization.serializerOrNull
 import kotlin.reflect.KType
 
 @ExperimentalRpcApi
 public class KotlinxSerializationCodecResolver(private val serialFormat: SerialFormat) : MessageCodecResolver {
-    override fun resolve(kType: KType): MessageCodec<*> {
-        val serializer = serialFormat.serializersModule.serializer(kType)
+    override fun resolveOrNull(kType: KType): MessageCodec<*>? {
+        val serializer = serialFormat.serializersModule.serializerOrNull(kType) ?: return null
 
         return KotlinxSerializationCodec(serializer, serialFormat)
     }

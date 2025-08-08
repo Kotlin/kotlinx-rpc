@@ -255,8 +255,8 @@ internal class RpcIrContext(
             grpcServiceDescriptor.namedFunction("delegate")
         }
 
-        val grpcMessageCodecResolverResolve by lazy {
-            grpcMessageCodecResolver.namedFunction("resolve")
+        val grpcMessageCodecResolverResolveOrNull by lazy {
+            grpcMessageCodecResolver.namedFunction("resolveOrNull")
         }
 
         private fun IrClassSymbol.namedFunction(name: String): IrSimpleFunction {
