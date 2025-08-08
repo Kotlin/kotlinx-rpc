@@ -5,8 +5,10 @@
 package kotlinx.rpc.grpc.pb
 
 import com.google.protobuf.CodedOutputStream
+import kotlinx.io.IOException
 import kotlinx.io.Sink
 import kotlinx.io.asOutputStream
+import kotlinx.rpc.grpc.ProtobufEncodingException
 
 private class WireEncoderJvm(sink: Sink) : WireEncoder {
     private val codedOutputStream = CodedOutputStream.newInstance(sink.asOutputStream())
@@ -15,195 +17,166 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
         codedOutputStream.flush()
     }
 
-    override fun writeBool(fieldNr: Int, value: Boolean): Boolean {
+    override fun writeBool(fieldNr: Int, value: Boolean) = checked {
         codedOutputStream.writeBool(fieldNr, value)
-        return true
     }
 
-    override fun writeInt32(fieldNr: Int, value: Int): Boolean {
+    override fun writeInt32(fieldNr: Int, value: Int) = checked {
         codedOutputStream.writeInt32(fieldNr, value)
-        return true
     }
 
-    override fun writeInt64(fieldNr: Int, value: Long): Boolean {
+    override fun writeInt64(fieldNr: Int, value: Long) = checked {
         codedOutputStream.writeInt64(fieldNr, value)
-        return true
     }
 
-    override fun writeUInt32(fieldNr: Int, value: UInt): Boolean {
+    override fun writeUInt32(fieldNr: Int, value: UInt) = checked {
         // todo check java unsigned types
         codedOutputStream.writeUInt32(fieldNr, value.toInt())
-        return true
     }
 
-    override fun writeUInt64(fieldNr: Int, value: ULong): Boolean {
+    override fun writeUInt64(fieldNr: Int, value: ULong) = checked {
         // todo check java unsigned types
         codedOutputStream.writeUInt64(fieldNr, value.toLong())
-        return true
     }
 
-    override fun writeSInt32(fieldNr: Int, value: Int): Boolean {
+    override fun writeSInt32(fieldNr: Int, value: Int) = checked {
         codedOutputStream.writeSInt32(fieldNr, value)
-        return true
     }
 
-    override fun writeSInt64(fieldNr: Int, value: Long): Boolean {
+    override fun writeSInt64(fieldNr: Int, value: Long) = checked {
         codedOutputStream.writeSInt64(fieldNr, value)
-        return true
     }
 
-    override fun writeFixed32(fieldNr: Int, value: UInt): Boolean {
+    override fun writeFixed32(fieldNr: Int, value: UInt) = checked {
         // todo check java unsigned types
         codedOutputStream.writeFixed32(fieldNr, value.toInt())
-        return true
     }
 
-    override fun writeFixed64(fieldNr: Int, value: ULong): Boolean {
+    override fun writeFixed64(fieldNr: Int, value: ULong) = checked {
         // todo check java unsigned types
         codedOutputStream.writeFixed64(fieldNr, value.toLong())
-        return true
     }
 
-    override fun writeSFixed32(fieldNr: Int, value: Int): Boolean {
+    override fun writeSFixed32(fieldNr: Int, value: Int) = checked {
         codedOutputStream.writeSFixed32(fieldNr, value)
-        return true
     }
 
-    override fun writeSFixed64(fieldNr: Int, value: Long): Boolean {
+    override fun writeSFixed64(fieldNr: Int, value: Long) = checked {
         codedOutputStream.writeSFixed64(fieldNr, value)
-        return true
     }
 
-    override fun writeFloat(fieldNr: Int, value: Float): Boolean {
+    override fun writeFloat(fieldNr: Int, value: Float) = checked {
         codedOutputStream.writeFloat(fieldNr, value)
-        return true
     }
 
-    override fun writeDouble(fieldNr: Int, value: Double): Boolean {
+    override fun writeDouble(fieldNr: Int, value: Double) = checked {
         codedOutputStream.writeDouble(fieldNr, value)
-        return true
     }
 
-    override fun writeEnum(fieldNr: Int, value: Int): Boolean {
+    override fun writeEnum(fieldNr: Int, value: Int) = checked {
         codedOutputStream.writeEnum(fieldNr, value)
-        return true
     }
 
-    override fun writeBytes(fieldNr: Int, value: ByteArray): Boolean {
+    override fun writeBytes(fieldNr: Int, value: ByteArray) = checked {
         codedOutputStream.writeByteArray(fieldNr, value)
-        return true
     }
 
-    override fun writeString(fieldNr: Int, value: String): Boolean {
+    override fun writeString(fieldNr: Int, value: String) = checked {
         codedOutputStream.writeString(fieldNr, value)
-        return true
     }
 
     override fun writePackedBool(
         fieldNr: Int,
         value: List<Boolean>,
         fieldSize: Int,
-    ): Boolean {
+    ) = checked {
         writePackedInternal(fieldNr, value, fieldSize, CodedOutputStream::writeBoolNoTag)
-        return true
     }
 
     override fun writePackedInt32(
         fieldNr: Int,
         value: List<Int>,
         fieldSize: Int,
-    ): Boolean {
+    ) = checked {
         writePackedInternal(fieldNr, value, fieldSize, CodedOutputStream::writeInt32NoTag)
-        return true
     }
 
     override fun writePackedInt64(
         fieldNr: Int,
         value: List<Long>,
         fieldSize: Int,
-    ): Boolean {
+    ) = checked {
         writePackedInternal(fieldNr, value, fieldSize, CodedOutputStream::writeInt64NoTag)
-        return true
     }
 
     override fun writePackedUInt32(
         fieldNr: Int,
         value: List<UInt>,
         fieldSize: Int,
-    ): Boolean {
+    ) = checked {
         writePackedInternal(fieldNr, value, fieldSize) { codedOutputStream, v ->
             codedOutputStream.writeUInt32NoTag(v.toInt())
         }
-        return true
     }
 
     override fun writePackedUInt64(
         fieldNr: Int,
         value: List<ULong>,
         fieldSize: Int,
-    ): Boolean {
+    ) = checked {
         writePackedInternal(fieldNr, value, fieldSize) { codedOutputStream, v ->
             codedOutputStream.writeUInt64NoTag(v.toLong())
         }
-        return true
     }
 
     override fun writePackedSInt32(
         fieldNr: Int,
         value: List<Int>,
         fieldSize: Int,
-    ): Boolean {
+    ) = checked {
         writePackedInternal(fieldNr, value, fieldSize, CodedOutputStream::writeSInt32NoTag)
-        return true
     }
 
     override fun writePackedSInt64(
         fieldNr: Int,
         value: List<Long>,
         fieldSize: Int,
-    ): Boolean {
+    ) = checked {
         writePackedInternal(fieldNr, value, fieldSize, CodedOutputStream::writeSInt64NoTag)
-        return true
     }
 
-    override fun writePackedFixed32(fieldNr: Int, value: List<UInt>): Boolean {
+    override fun writePackedFixed32(fieldNr: Int, value: List<UInt>) = checked {
         writePackedInternal(fieldNr, value, value.size * UInt.SIZE_BYTES) { codedOutputStream, v ->
             codedOutputStream.writeFixed32NoTag(v.toInt())
         }
-        return true
     }
 
-    override fun writePackedFixed64(fieldNr: Int, value: List<ULong>): Boolean {
+    override fun writePackedFixed64(fieldNr: Int, value: List<ULong>) = checked {
         writePackedInternal(fieldNr, value, value.size * ULong.SIZE_BYTES) { codedOutputStream, v ->
             codedOutputStream.writeFixed64NoTag(v.toLong())
         }
-        return true
     }
 
-    override fun writePackedSFixed32(fieldNr: Int, value: List<Int>): Boolean {
+    override fun writePackedSFixed32(fieldNr: Int, value: List<Int>) = checked {
         writePackedInternal(fieldNr, value, value.size * Int.SIZE_BYTES, CodedOutputStream::writeSFixed32NoTag)
-        return true
     }
 
-    override fun writePackedSFixed64(fieldNr: Int, value: List<Long>): Boolean {
+    override fun writePackedSFixed64(fieldNr: Int, value: List<Long>) = checked {
         writePackedInternal(fieldNr, value, value.size * Long.SIZE_BYTES, CodedOutputStream::writeSFixed64NoTag)
-        return true
     }
 
-    override fun writePackedFloat(fieldNr: Int, value: List<Float>): Boolean {
+    override fun writePackedFloat(fieldNr: Int, value: List<Float>) = checked {
         writePackedInternal(fieldNr, value, value.size * Float.SIZE_BYTES, CodedOutputStream::writeFloatNoTag)
-        return true
     }
 
-    override fun writePackedDouble(fieldNr: Int, value: List<Double>): Boolean {
+    override fun writePackedDouble(fieldNr: Int, value: List<Double>) = checked {
         writePackedInternal(fieldNr, value, value.size * Double.SIZE_BYTES, CodedOutputStream::writeDoubleNoTag)
-        return true
     }
 
     override fun <T : InternalMessage> writeMessage(
         fieldNr: Int,
         value: T,
-        encode: T.(WireEncoder) -> Unit
+        encode: T.(WireEncoder) -> Unit,
     ) {
         codedOutputStream.writeTag(fieldNr, WireType.LENGTH_DELIMITED.ordinal)
         codedOutputStream.writeInt32NoTag(value._size)
@@ -215,17 +188,27 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
         value: List<T>,
         fieldSize: Int,
         crossinline writer: (CodedOutputStream, T) -> Unit,
-    ): Boolean {
+    ) = checked {
         codedOutputStream.writeTag(fieldNr, WireType.LENGTH_DELIMITED.ordinal)
         // write the field size of the packed field
         codedOutputStream.writeInt32NoTag(fieldSize)
         for (v in value) {
             writer(codedOutputStream, v)
         }
-        return true
     }
 }
 
 internal actual fun WireEncoder(sink: Sink): WireEncoder {
     return WireEncoderJvm(sink)
+}
+
+/**
+ * Wraps a [kotlinx.io.IOException] in our own [kotlinx.rpc.grpc.ProtobufEncodingException].
+ */
+private inline fun checked(crossinline block: () -> Unit) {
+    try {
+        return block()
+    } catch (e: IOException) {
+        throw ProtobufEncodingException("Failed to encode protobuf message.", e)
+    }
 }
