@@ -1,5 +1,9 @@
 
 
+/*
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package kotlinx.rpc.codegen.test.runners;
 
 import com.intellij.testFramework.TestDataPath;
@@ -27,6 +31,12 @@ public class DiagnosticTestGenerated extends AbstractDiagnosticTest {
   }
 
   @Test
+  @TestMetadata("grpc.kt")
+  public void testGrpc() {
+    runTest("src/testData/diagnostics/grpc.kt");
+  }
+
+  @Test
   @TestMetadata("rpcChecked.kt")
   public void testRpcChecked() {
     runTest("src/testData/diagnostics/rpcChecked.kt");
@@ -42,5 +52,11 @@ public class DiagnosticTestGenerated extends AbstractDiagnosticTest {
   @TestMetadata("strictMode.kt")
   public void testStrictMode() {
     runTest("src/testData/diagnostics/strictMode.kt");
+  }
+
+  @Test
+  @TestMetadata("withCodec.kt")
+  public void testWithCodec() {
+    runTest("src/testData/diagnostics/withCodec.kt");
   }
 }

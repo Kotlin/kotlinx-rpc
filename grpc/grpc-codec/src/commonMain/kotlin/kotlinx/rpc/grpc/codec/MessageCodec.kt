@@ -6,17 +6,25 @@ package kotlinx.rpc.grpc.codec
 
 import kotlinx.io.Source
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KType
 
 @ExperimentalRpcApi
 public fun interface MessageCodecResolver {
-    public fun resolve(kType: KType): MessageCodec<*>
+    public fun resolveOrNull(kType: KType): MessageCodec<*>?
 }
 
 @ExperimentalRpcApi
 public object EmptyMessageCodecResolver : MessageCodecResolver {
-    override fun resolve(kType: KType): MessageCodec<*> {
-        error("No codec found for type $kType")
+    override fun resolveOrNull(kType: KType): MessageCodec<*>? {
+        return null
+    }
+}
+
+@ExperimentalRpcApi
+public operator fun MessageCodecResolver.plus(other: MessageCodecResolver): MessageCodecResolver {
+    return MessageCodecResolver { kType ->
+        this.resolveOrNull(kType) ?: other.resolveOrNull(kType)
     }
 }
 
@@ -24,4 +32,11 @@ public object EmptyMessageCodecResolver : MessageCodecResolver {
 public interface MessageCodec<T> {
     public fun encode(value: T): Source
     public fun decode(stream: Source): T
+}
+
+@InternalRpcApi
+public object ThrowingMessageCodecResolver : MessageCodecResolver {
+    override fun resolveOrNull(kType: KType): MessageCodec<*> {
+        error("No codec found for type $kType")
+    }
 }

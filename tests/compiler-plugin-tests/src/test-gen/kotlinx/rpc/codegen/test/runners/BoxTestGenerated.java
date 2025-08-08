@@ -1,5 +1,9 @@
 
 
+/*
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package kotlinx.rpc.codegen.test.runners;
 
 import com.intellij.testFramework.TestDataPath;
@@ -30,6 +34,12 @@ public class BoxTestGenerated extends AbstractBoxTest {
   @TestMetadata("flowParameter.kt")
   public void testFlowParameter() {
     runTest("src/testData/box/flowParameter.kt");
+  }
+
+  @Test
+  @TestMetadata("grpc.kt")
+  public void testGrpc() {
+    runTest("src/testData/box/grpc.kt");
   }
 
   @Test
