@@ -12,6 +12,7 @@ dependencies {
     implementation(libs.dokka.gradle.plugin)
     implementation(libs.gradle.doctor.gradle.plugin)
     implementation(libs.gradle.publish.gradle.plugin)
+    implementation(libs.compat.patrouille.gradle.plugin)
 
     implementation(libs.kover.gradle.plugin)
 

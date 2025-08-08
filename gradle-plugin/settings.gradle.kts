@@ -14,7 +14,6 @@ pluginManagement {
 plugins {
     id("conventions-repositories")
     id("conventions-version-resolution")
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 includeRootAsPublic()
