@@ -6,6 +6,7 @@
 #define GRPCPP_C_H
 
 #include <stdint.h>
+#include <grpc/grpc.h>
 #include <grpc/slice.h>
 #include <grpc/byte_buffer.h>
 
@@ -58,6 +59,12 @@ void grpc_client_call_unary_callback(grpc_client_t *client, grpc_method_t *metho
 uint32_t pb_decode_greeter_sayhello_response(grpc_slice response);
 
 grpc_status_code_t grpc_byte_buffer_dump_to_single_slice(grpc_byte_buffer *byte_buffer, grpc_slice *slice);
+
+
+/////// CHANNEL ///////
+
+typedef struct grpc_channel grpc_channel_t;
+typedef struct grpc_channel_credentials grpc_channel_credentials_t;
 
 #ifdef __cplusplus
     }
