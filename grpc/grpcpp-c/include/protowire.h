@@ -95,6 +95,7 @@ extern "C" {
     void pw_decoder_close(pw_decoder_t *self);
 
     uint32_t pw_decoder_read_tag(pw_decoder_t *self);
+    bool pw_decoder_consumed_entire_msg(pw_decoder_t *self);
     bool pw_decoder_read_bool(pw_decoder_t *self, bool *value);
     bool pw_decoder_read_int32(pw_decoder_t *self, int32_t *value);
     bool pw_decoder_read_int64(pw_decoder_t *self, int64_t *value);
