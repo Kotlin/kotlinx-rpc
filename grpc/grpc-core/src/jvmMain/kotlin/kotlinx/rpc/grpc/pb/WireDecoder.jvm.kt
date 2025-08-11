@@ -5,6 +5,7 @@
 package kotlinx.rpc.grpc.pb
 
 import com.google.protobuf.CodedInputStream
+import com.google.protobuf.InvalidProtocolBufferException
 import kotlinx.io.Buffer
 import kotlinx.io.asInputStream
 import kotlinx.rpc.grpc.internal.readPackedVarInternal
@@ -13,18 +14,12 @@ internal class WireDecoderJvm(source: Buffer) : WireDecoder {
     // there is no way to omit coping here
     internal val codedInputStream: CodedInputStream = CodedInputStream.newInstance(source.asInputStream())
 
-    // errors in jvm are exceptions
-    override fun hadError(): Boolean {
-        return false
-    }
-
     override fun readTag(): KTag? {
         val tag = codedInputStream.readTag().toUInt()
         if (tag == 0u) {
             return null
         }
-
-        return KTag.fromOrNull(tag)
+        return KTag.from(tag)
     }
 
     override fun readBool(): Boolean {
@@ -114,12 +109,19 @@ internal class WireDecoderJvm(source: Buffer) : WireDecoder {
 
     private fun <T : Any> readPackedInternal(read: () -> T) = readPackedVarInternal(
         size = { -1 },
-        readFn = read,
-        withError = { },
-        hadError = { false },
+        readFn = read
     )
 }
 
-internal actual fun WireDecoder(source: Buffer): WireDecoder {
+
+public actual inline fun checkForPlatformDecodeException(block: () -> Unit) {
+    try {
+        return block()
+    } catch (e: InvalidProtocolBufferException) {
+        throw ProtobufDecodingException(e.message ?: "Failed to decode protobuf message.", e)
+    }
+}
+
+public actual fun WireDecoder(source: Buffer): WireDecoder {
     return WireDecoderJvm(source)
 }

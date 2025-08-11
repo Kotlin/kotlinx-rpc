@@ -35,6 +35,24 @@ class ProtosTest {
     }
 
     @Test
+    fun testUnknownFieldsDontCrash() {
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+        // optional sint32 sint32 = 7
+        encoder.writeSInt32(7, 12)
+        // optional sint64 sint64 = 8; (unknown as wrong wire-type)
+        encoder.writeFloat(8, 2f)
+        // optional fixed32 fixed32 = 9;
+        encoder.writeFixed32(9, 1234u)
+        encoder.flush()
+
+        val decoded = AllPrimitivesInternal.CODEC.decode(buffer)
+        assertEquals(12, decoded.sint32)
+        assertNull(decoded.sint64)
+        assertEquals(1234u, decoded.fixed32)
+    }
+
+    @Test
     fun testAllPrimitiveProto() {
         val msg = AllPrimitives {
             int32 = 12
@@ -86,7 +104,7 @@ class ProtosTest {
 
     @Test
     fun testRepeatedWithRequiredSubField() {
-        assertFailsWith<IllegalStateException> {
+        assertFailsWith<ProtobufDecodingException> {
             RepeatedWithRequired {
                 // we construct the message using the internal class,
                 // so it is not invoking the checkRequired method on construction
@@ -98,7 +116,7 @@ class ProtosTest {
     @Test
     fun testPresenceCheckProto() {
         // Check a missing required field in a user-constructed message
-        assertFailsWith<IllegalStateException> {
+        assertFailsWith<ProtobufDecodingException> {
             PresenceCheck {}
         }
 
@@ -108,7 +126,7 @@ class ProtosTest {
         encoder.writeFloat(2, 1f)
         encoder.flush()
 
-        assertFailsWith<IllegalStateException> {
+        assertFailsWith<ProtobufDecodingException> {
             PresenceCheckInternal.CODEC.decode(buffer)
         }
     }
@@ -227,7 +245,7 @@ class ProtosTest {
 
     @Test
     fun testOneOfRequiredSubField() {
-        assertFailsWith<IllegalStateException> {
+        assertFailsWith<ProtobufDecodingException> {
             OneOfWithRequired {
                 // we construct the message using the internal class,
                 // so it is not invoking the checkRequired method on construction
@@ -258,7 +276,7 @@ class ProtosTest {
 
     @Test
     fun testRecursiveReqNotSet() {
-        assertFailsWith<IllegalStateException> {
+        assertFailsWith<ProtobufDecodingException> {
             val msg = RecursiveReq {
                 rec = RecursiveReq {
                     rec = RecursiveReq {
@@ -379,7 +397,7 @@ class ProtosTest {
         // we use the internal constructor to avoid a "missing required field" error during object construction
         val missingRequiredMessage = PresenceCheckInternal()
 
-        assertFailsWith<IllegalStateException> {
+        assertFailsWith<ProtobufDecodingException> {
             val msg = TestMap {
                 messages = mapOf(
                     2 to missingRequiredMessage
