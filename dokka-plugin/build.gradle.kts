@@ -3,7 +3,6 @@
  */
 
 plugins {
-    alias(libs.plugins.conventions.gradle.doctor)
     alias(libs.plugins.kotlin.jvm)
 }
 

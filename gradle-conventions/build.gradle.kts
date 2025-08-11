@@ -10,7 +10,6 @@ dependencies {
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.detekt.gradle.plugin)
     implementation(libs.dokka.gradle.plugin)
-    implementation(libs.gradle.doctor.gradle.plugin)
     implementation(libs.gradle.publish.gradle.plugin)
     implementation(libs.compat.patrouille.gradle.plugin)
 
