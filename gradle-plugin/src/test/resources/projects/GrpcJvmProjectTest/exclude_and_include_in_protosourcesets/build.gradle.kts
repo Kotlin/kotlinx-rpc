@@ -27,5 +27,5 @@ protoSourceSets {
 }
 
 rpc {
-    grpc()
+    protoc()
 }

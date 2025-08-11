@@ -2,12 +2,13 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import kotlinx.rpc.buf.tasks.BufGenerateTask
-import kotlinx.rpc.proto.kotlinMultiplatform
+@file:OptIn(InternalRpcApi::class)
+
+import kotlinx.rpc.internal.InternalRpcApi
+import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -147,28 +148,4 @@ protoSourceSets {
     }
 }
 
-
-rpc {
-    grpc {
-        val globalRootDir: String by extra
-
-        protocPlugins.kotlinMultiplatform {
-            local {
-                javaJar("$globalRootDir/protoc-gen/build/libs/protoc-gen-$version-all.jar")
-            }
-        }
-
-        project.tasks.withType<BufGenerateTask>().configureEach {
-            if (name.endsWith("Test")) {
-                dependsOn(gradle.includedBuild("protoc-gen").task(":jar"))
-            }
-        }
-
-        // generate protos before compiling tests
-        project.tasks.withType<KotlinCompile>().configureEach {
-            if (name.startsWith("compileTest")) {
-                dependsOn(project.tasks.withType<BufGenerateTask>())
-            }
-        }
-    }
-}
+configureLocalProtocGenDevelopmentDependency()
