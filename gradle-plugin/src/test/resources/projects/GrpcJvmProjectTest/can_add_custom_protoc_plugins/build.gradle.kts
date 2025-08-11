@@ -12,7 +12,7 @@ plugins {
 
 rpc {
     protoc {
-        protocPlugins {
+        plugins {
             create("myPlugin") {
                 local {
                     executor("path", "to", "protoc-gen-myplugin.exe")
@@ -38,7 +38,7 @@ rpc {
 
 protoSourceSets {
     main {
-        protocPlugin(rpc.protoc.protocPlugins.named("myPlugin"))
-        protocPlugin(rpc.protoc.protocPlugins.named("myRemotePlugin"))
+        protocPlugin(rpc.protoc.plugins.named("myPlugin"))
+        protocPlugin(rpc.protoc.plugins.named("myRemotePlugin"))
     }
 }

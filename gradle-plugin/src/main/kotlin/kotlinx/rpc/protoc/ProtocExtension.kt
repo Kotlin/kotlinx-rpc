@@ -22,12 +22,12 @@ public interface ProtocExtension {
     /**
      * List of protoc plugins to be applied to the project.
      */
-    public val protocPlugins: NamedDomainObjectContainer<ProtocPlugin>
+    public val plugins: NamedDomainObjectContainer<ProtocPlugin>
 
     /**
      * Configures the protoc plugins.
      */
-    public fun protocPlugins(action: Action<NamedDomainObjectContainer<ProtocPlugin>>)
+    public fun plugins(action: Action<NamedDomainObjectContainer<ProtocPlugin>>)
 
     /**
      * Configuration for the Buf build tool.

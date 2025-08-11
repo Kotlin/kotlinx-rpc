@@ -34,13 +34,13 @@ internal open class DefaultProtocExtension @Inject constructor(
     objects: ObjectFactory,
     private val project: Project,
 ) : ProtocExtension {
-    override val protocPlugins: NamedDomainObjectContainer<ProtocPlugin> =
+    override val plugins: NamedDomainObjectContainer<ProtocPlugin> =
         objects.domainObjectContainer(ProtocPlugin::class.java) { name ->
             ProtocPlugin(name, project)
         }
 
-    override fun protocPlugins(action: Action<NamedDomainObjectContainer<ProtocPlugin>>) {
-        action.execute(protocPlugins)
+    override fun plugins(action: Action<NamedDomainObjectContainer<ProtocPlugin>>) {
+        action.execute(plugins)
     }
 
     override val buf: BufExtension = project.objects.newInstance<BufExtension>()
@@ -56,8 +56,8 @@ internal open class DefaultProtocExtension @Inject constructor(
         createDefaultProtocPlugins()
 
         project.protoSourceSets.forEach { protoSourceSet ->
-            protoSourceSet.protocPlugin(protocPlugins.kotlinMultiplatform)
-            protoSourceSet.protocPlugin(protocPlugins.grpcKotlinMultiplatform)
+            protoSourceSet.protocPlugin(plugins.kotlinMultiplatform)
+            protoSourceSet.protocPlugin(plugins.grpcKotlinMultiplatform)
         }
 
         project.afterEvaluate {
@@ -100,7 +100,7 @@ internal open class DefaultProtocExtension @Inject constructor(
         val protocPluginNames = (protoSourceSet.protocPlugins.get() + mainProtocPlugins).distinct()
 
         val includedProtocPlugins = protocPluginNames.map {
-            protocPlugins.findByName(it)
+            this@DefaultProtocExtension.plugins.findByName(it)
                 ?: throw GradleException("Protoc plugin $it not found")
         }
 
@@ -279,7 +279,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             project.the<KotlinBaseExtension>().explicitApi != ExplicitApiMode.Disabled
         }
 
-        protocPlugins.create(KOTLIN_MULTIPLATFORM) {
+        plugins.create(KOTLIN_MULTIPLATFORM) {
             local {
                 javaJar(project.kotlinMultiplatformProtocPluginJarPath)
             }
@@ -288,7 +288,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             options.put("explicitApiModeEnabled", explicitApiModeEnabled)
         }
 
-        protocPlugins.create(GRPC_KOTLIN_MULTIPLATFORM) {
+        plugins.create(GRPC_KOTLIN_MULTIPLATFORM) {
             local {
                 javaJar(project.grpcKotlinMultiplatformProtocPluginJarPath)
             }

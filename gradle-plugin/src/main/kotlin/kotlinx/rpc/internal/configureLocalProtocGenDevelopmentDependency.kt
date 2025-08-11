@@ -18,7 +18,7 @@ import org.gradle.kotlin.dsl.withType
 public fun Project.configureLocalProtocGenDevelopmentDependency() {
     val globalRootDir: String by extra
 
-    the<RpcExtension>().protoc.protocPlugins {
+    the<RpcExtension>().protoc.plugins {
         kotlinMultiplatform {
             local {
                 javaJar("$globalRootDir/protoc-gen/protobuf/build/libs/protobuf-$version-all.jar")

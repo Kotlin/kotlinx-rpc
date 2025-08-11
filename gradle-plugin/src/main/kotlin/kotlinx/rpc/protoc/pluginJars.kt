@@ -13,7 +13,7 @@ import org.gradle.api.provider.Provider
  *
  * Can be used to customize the java executable path:
  * ```kotlin
- * rpc.protoc.protocPlugins.kotlinMultiplatform {
+ * rpc.protoc.plugins.kotlinMultiplatform {
  *     local {
  *         javaJar(kotlinMultiplatformProtocPluginJarPath, provider { "my-path-to-java" })
  *     }
@@ -35,7 +35,7 @@ internal fun Project.configureKotlinMultiplatformPluginJarConfiguration() {
  *
  * Can be used to customize the java executable path:
  * ```kotlin
- * rpc.protoc.protocPlugins.grpcKotlinMultiplatform {
+ * rpc.protoc.plugins.grpcKotlinMultiplatform {
  *     local {
  *         javaJar(grpcKotlinMultiplatformProtocPluginJarPath, provider { "my-path-to-java" })
  *     }

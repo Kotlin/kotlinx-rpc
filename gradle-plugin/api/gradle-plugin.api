@@ -188,8 +188,8 @@ public abstract interface class kotlinx/rpc/protoc/ProtoSourceSet {
 public abstract interface class kotlinx/rpc/protoc/ProtocExtension {
 	public abstract fun buf (Lorg/gradle/api/Action;)V
 	public abstract fun getBuf ()Lkotlinx/rpc/buf/BufExtension;
-	public abstract fun getProtocPlugins ()Lorg/gradle/api/NamedDomainObjectContainer;
-	public abstract fun protocPlugins (Lorg/gradle/api/Action;)V
+	public abstract fun getPlugins ()Lorg/gradle/api/NamedDomainObjectContainer;
+	public abstract fun plugins (Lorg/gradle/api/Action;)V
 }
 
 public class kotlinx/rpc/protoc/ProtocPlugin {

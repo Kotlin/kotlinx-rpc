@@ -25,7 +25,7 @@ public interface ProtoSourceSet {
      *
      * Example:
      * ```kotlin
-     * protocPlugin(rpc.protoc.protocPlugins.myPlugin)
+     * protocPlugin(rpc.protoc.plugins.myPlugin)
      * ```
      */
     public fun protocPlugin(plugin: NamedDomainObjectProvider<ProtocPlugin>)
@@ -35,7 +35,7 @@ public interface ProtoSourceSet {
      *
      * Example:
      * ```kotlin
-     * protocPlugin(rpc.protoc.protocPlugins.myPlugin.get())
+     * protocPlugin(rpc.protoc.plugins.myPlugin.get())
      * ```
      */
     public fun protocPlugin(plugin: ProtocPlugin)
