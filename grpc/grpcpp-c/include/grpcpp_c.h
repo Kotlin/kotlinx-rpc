@@ -39,6 +39,14 @@ typedef enum StatusCode {
   GRPC_C_STATUS_DO_NOT_USE = -1
 } grpc_status_code_t;
 
+
+typedef struct {
+    grpc_completion_queue_functor functor;
+    void *user_data;
+} grpc_cb_tag;
+
+
+
 grpc_client_t *grpc_client_create_insecure(const char *target);
 void grpc_client_delete(const grpc_client_t *client);
 

@@ -93,7 +93,9 @@ kotlin {
     val buildGrpcppCLib = tasks.register<Exec>("buildGrpcppCLib") {
         group = "build"
         workingDir = grpcppCLib
-        commandLine("bash", "-c", "bazel build :grpcpp_c_static :protowire_static --config=release")
+
+        commandLine("bash", "-c", "bazel build :grpcpp_c_static :protowire_static")
+//        commandLine("bash", "-c", "bazel build :grpcpp_c_static :protowire_static --config=release")
         inputs.files(fileTree(grpcppCLib) { exclude("bazel-*/**") })
         outputs.dir(grpcppCLib.resolve("bazel-bin"))
 

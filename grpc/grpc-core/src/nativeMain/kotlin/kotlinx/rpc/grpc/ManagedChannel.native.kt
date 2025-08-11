@@ -61,7 +61,7 @@ internal class NativeManagedChannel(
     internal val raw: CPointer<grpc_channel> = grpc_channel_create(target, credentials.raw, null)
         ?: error("Failed to create channel")
     private val rawCleaner = createCleaner(raw) {
-        grpc_channel_destroy(raw)
+        grpc_channel_destroy(it)
     }
 
     override val platformApi: ManagedChannelPlatform = this
@@ -102,6 +102,6 @@ internal class GrpcCredentials(
     internal val raw: CPointer<grpc_channel_credentials_t>,
 ) {
     val rawCleaner = createCleaner(raw) {
-        grpc_channel_credentials_release(raw)
+        grpc_channel_credentials_release(it)
     }
 }
