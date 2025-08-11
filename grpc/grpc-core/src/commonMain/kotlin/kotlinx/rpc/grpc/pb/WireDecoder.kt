@@ -19,10 +19,12 @@ internal const val MAX_PACKED_BULK_SIZE: Int = 1_000_000
  * This decoder is used by first calling [readTag], than looking up the field based on the field number in the returned,
  * tag and then calling the actual `read*()` method to read the value to the corresponding field.
  *
- * [hadError] indicates an error during decoding. While calling `read*()` is safe, the returned values
- * are meaningless if [hadError] returns `true`.
+ * All `read*()` methods will throw an exception if the expected value couldn't be decoded.
+ * Because of optimization reasons, the exception is platform-dependent. To unify them
+ * wrap the decoding in a [checkForPlatformDecodeException] call, which turn platform-specific exceptions
+ * into a [ProtobufDecodingException].
  *
- * NOTE: If the [hadError] after a call to `read*()` returns `false`, it doesn't mean that the
+ * NOTE: If a call to `read*()` doesn't throw an error, it doesn't mean that the
  * value is correctly decoded. E.g., the following test will pass:
  * ```kt
  * val fieldNr = 1
@@ -32,17 +34,17 @@ internal const val MAX_PACKED_BULK_SIZE: Int = 1_000_000
  * assertTrue(encoder.writeInt32(fieldNr, 12312))
  * encoder.flush()
  *
- * WireDecoder(buffer).use { decoder ->
- *     decoder.readTag()
- *     decoder.readBool()
- *     assertFalse(decoder.hasError())
+ * checkForPlatformDecodeException {
+ *  WireDecoder(buffer).use { decoder ->
+ *      decoder.readTag()
+ *      decoder.readBool()
+ *      assertFalse(decoder.hasError())
+ *  }
  * }
  * ```
  */
 @InternalRpcApi
 public interface WireDecoder : AutoCloseable {
-    public fun hadError(): Boolean
-
     /**
      * When the read tag is null, it indicates EOF and the parser may stop at this point.
      */
@@ -79,16 +81,31 @@ public interface WireDecoder : AutoCloseable {
     public fun readPackedDouble(): List<Double>
     public fun readPackedEnum(): List<Int>
 
-    // TODO: Throw error instead of just returning
     public fun <T : InternalMessage> readMessage(msg: T, decoder: (T, WireDecoder) -> Unit) {
         val len = readInt32()
-        if (hadError()) return
-        if (len <= 0) return
+        if (len < 0) throw ProtobufDecodingException.negativeSize()
         val limit = pushLimit(len)
         decoder(msg, this)
         popLimit(limit)
     }
+
+    public fun skipValue(writeType: WireType) {
+        when (writeType) {
+            WireType.VARINT -> readInt64()
+            WireType.FIXED32 -> readFixed32()
+            WireType.FIXED64 -> readFixed64()
+            WireType.LENGTH_DELIMITED -> readBytes()
+            WireType.START_GROUP -> throw ProtobufDecodingException("Unexpected START_GROUP wire type (KRPC-193)")
+            WireType.END_GROUP -> {} // nothing to do
+        }
+    }
 }
+
+/**
+ * Turns exceptions thrown by different platforms during decoding into [ProtobufDecodingException].
+ */
+@InternalRpcApi
+public expect inline fun checkForPlatformDecodeException(block: () -> Unit)
 
 /**
  * Creates a platform-specific [WireDecoder].
@@ -100,4 +117,5 @@ public interface WireDecoder : AutoCloseable {
  *
  * @param source The buffer containing the encoded wire-format data.
  */
-internal expect fun WireDecoder(source: Buffer): WireDecoder
+@InternalRpcApi
+public expect fun WireDecoder(source: Buffer): WireDecoder

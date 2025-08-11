@@ -230,6 +230,10 @@ extern "C" {
         return self->codedInputStream.ReadTag();
     }
 
+    bool pw_decoder_consumed_entire_msg(pw_decoder_t *self) {
+        return self->codedInputStream.ConsumedEntireMessage();
+    }
+
 #define READ_VAL_FUNC( funcSuffix, wireTy, cTy) \
     bool pw_decoder_read_##funcSuffix(pw_decoder_t *self, cTy *value_ref) { \
         return WireFormatLite::ReadPrimitive<cTy, WireFormatLite::TYPE_##wireTy>(&self->codedInputStream, value_ref); \

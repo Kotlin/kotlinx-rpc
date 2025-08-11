@@ -51,75 +51,78 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
         pw_encoder_flush(raw)
     }
 
-    override fun writeBool(fieldNr: Int, value: Boolean): Boolean {
-        return pw_encoder_write_bool(raw, fieldNr, value)
+    override fun writeBool(fieldNr: Int, value: Boolean) = checked {
+        pw_encoder_write_bool(raw, fieldNr, value)
     }
 
-    override fun writeInt32(fieldNr: Int, value: Int): Boolean {
-        return pw_encoder_write_int32(raw, fieldNr, value)
+    override fun writeInt32(fieldNr: Int, value: Int) = checked {
+        pw_encoder_write_int32(raw, fieldNr, value)
     }
 
-    override fun writeInt64(fieldNr: Int, value: Long): Boolean {
-        return pw_encoder_write_int64(raw, fieldNr, value)
+    override fun writeInt64(fieldNr: Int, value: Long) = checked {
+        pw_encoder_write_int64(raw, fieldNr, value)
     }
 
-    override fun writeUInt32(fieldNr: Int, value: UInt): Boolean {
-        return pw_encoder_write_uint32(raw, fieldNr, value)
+    override fun writeUInt32(fieldNr: Int, value: UInt) = checked {
+        pw_encoder_write_uint32(raw, fieldNr, value)
     }
 
-    override fun writeUInt64(fieldNr: Int, value: ULong): Boolean {
-        return pw_encoder_write_uint64(raw, fieldNr, value)
+    override fun writeUInt64(fieldNr: Int, value: ULong) = checked {
+        pw_encoder_write_uint64(raw, fieldNr, value)
     }
 
-    override fun writeSInt32(fieldNr: Int, value: Int): Boolean {
-        return pw_encoder_write_sint32(raw, fieldNr, value)
+    override fun writeSInt32(fieldNr: Int, value: Int) = checked {
+        pw_encoder_write_sint32(raw, fieldNr, value)
     }
 
-    override fun writeSInt64(fieldNr: Int, value: Long): Boolean {
-        return pw_encoder_write_sint64(raw, fieldNr, value)
+    override fun writeSInt64(fieldNr: Int, value: Long) = checked {
+        pw_encoder_write_sint64(raw, fieldNr, value)
     }
 
-    override fun writeFixed32(fieldNr: Int, value: UInt): Boolean {
-        return pw_encoder_write_fixed32(raw, fieldNr, value)
+    override fun writeFixed32(fieldNr: Int, value: UInt) = checked {
+        pw_encoder_write_fixed32(raw, fieldNr, value)
     }
 
-    override fun writeFixed64(fieldNr: Int, value: ULong): Boolean {
-        return pw_encoder_write_fixed64(raw, fieldNr, value)
+    override fun writeFixed64(fieldNr: Int, value: ULong) = checked {
+        pw_encoder_write_fixed64(raw, fieldNr, value)
     }
 
-    override fun writeSFixed32(fieldNr: Int, value: Int): Boolean {
-        return pw_encoder_write_sfixed32(raw, fieldNr, value)
+    override fun writeSFixed32(fieldNr: Int, value: Int) = checked {
+        pw_encoder_write_sfixed32(raw, fieldNr, value)
     }
 
-    override fun writeSFixed64(fieldNr: Int, value: Long): Boolean {
-        return pw_encoder_write_sfixed64(raw, fieldNr, value)
+    override fun writeSFixed64(fieldNr: Int, value: Long) = checked {
+        pw_encoder_write_sfixed64(raw, fieldNr, value)
     }
 
-    override fun writeFloat(fieldNr: Int, value: Float): Boolean {
-        return pw_encoder_write_float(raw, fieldNr, value)
+    override fun writeFloat(fieldNr: Int, value: Float) = checked {
+        pw_encoder_write_float(raw, fieldNr, value)
     }
 
-    override fun writeDouble(fieldNr: Int, value: Double): Boolean {
-        return pw_encoder_write_double(raw, fieldNr, value)
+    override fun writeDouble(fieldNr: Int, value: Double) = checked {
+        pw_encoder_write_double(raw, fieldNr, value)
     }
 
-    override fun writeEnum(fieldNr: Int, value: Int): Boolean {
-        return pw_encoder_write_enum(raw, fieldNr, value)
+    override fun writeEnum(fieldNr: Int, value: Int) = checked {
+        pw_encoder_write_enum(raw, fieldNr, value)
     }
 
-    override fun writeString(fieldNr: Int, value: String): Boolean = memScoped {
-        if (value.isEmpty()) {
-            return pw_encoder_write_string(raw, fieldNr, null, 0)
+    override fun writeString(fieldNr: Int, value: String) = checked {
+        memScoped {
+            if (value.isEmpty()) {
+                return@checked pw_encoder_write_string(raw, fieldNr, null, 0)
+            }
+            val cStr = value.cstr
+            val len = cStr.size - 1 // minus 1 as it also counts the null terminator
+            return@checked pw_encoder_write_string(raw, fieldNr, cStr.ptr, len)
         }
-        val cStr = value.cstr
-        return pw_encoder_write_string(raw, fieldNr, cStr.ptr, cStr.size)
     }
 
-    override fun writeBytes(fieldNr: Int, value: ByteArray): Boolean {
+    override fun writeBytes(fieldNr: Int, value: ByteArray) = checked {
         if (value.isEmpty()) {
-            return pw_encoder_write_bytes(raw, fieldNr, null, 0)
+            return@checked pw_encoder_write_bytes(raw, fieldNr, null, 0)
         }
-        return value.usePinned {
+        return@checked value.usePinned {
             pw_encoder_write_bytes(raw, fieldNr, it.addressOf(0), value.size)
         }
     }
@@ -166,7 +169,7 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
     override fun <T : InternalMessage> writeMessage(
         fieldNr: Int,
         value: T,
-        encode: T.(WireEncoder) -> Unit
+        encode: T.(WireEncoder) -> Unit,
     ) {
         pw_encoder_write_tag(raw, fieldNr, WireType.LENGTH_DELIMITED.ordinal)
         pw_encoder_write_int32_no_tag(raw, value._size)
@@ -174,7 +177,7 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
     }
 }
 
-internal actual fun WireEncoder(sink: Sink): WireEncoder = WireEncoderNative(sink)
+public actual fun WireEncoder(sink: Sink): WireEncoder = WireEncoderNative(sink)
 
 
 // the current implementation is slow, as it iterates through the list, to write each element individually,
@@ -184,15 +187,28 @@ private inline fun <T> WireEncoderNative.writePackedInternal(
     fieldNr: Int,
     value: List<T>,
     fieldSize: Int,
-    crossinline writer: (CValuesRef<pw_encoder_t>?, T) -> Boolean
-): Boolean {
+    crossinline writer: (CValuesRef<pw_encoder_t>?, T) -> Boolean,
+) = checked {
     pw_encoder_write_tag(raw, fieldNr, WireType.LENGTH_DELIMITED.ordinal)
     // write the field size of the packed field
     pw_encoder_write_int32_no_tag(raw, fieldSize)
     for (v in value) {
         if (!writer(raw, v)) {
-            return false
+            return@checked false
         }
     }
-    return true
+    return@checked true
+}
+
+/**
+ * Checks the block's return value and throws an [ProtobufEncodingException] if its `false`.
+ */
+private inline fun checked(crossinline block: () -> Boolean) {
+    if (!block()) {
+        throw ProtobufEncodingException("Failed to encode protobuf message.")
+    }
+}
+
+public actual inline fun checkForPlatformEncodeException(block: () -> Unit) {
+    block() // nothing to check for on native
 }
