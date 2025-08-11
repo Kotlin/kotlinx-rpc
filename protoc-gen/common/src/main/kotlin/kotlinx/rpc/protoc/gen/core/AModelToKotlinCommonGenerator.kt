@@ -15,7 +15,7 @@ import org.slf4j.Logger
 
 const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
 const val MSG_INTERNAL_SUFFIX = "Internal"
-const val PB_PKG = "kotlinx.rpc.grpc.pb"
+const val PB_PKG = "kotlinx.rpc.protobuf.internal"
 const val INTERNAL_RPC_API_ANNO = "kotlinx.rpc.internal.utils.InternalRpcApi"
 const val WITH_CODEC_ANNO = "kotlinx.rpc.grpc.codec.WithCodec"
 
@@ -90,7 +90,7 @@ abstract class AModelToKotlinCommonGenerator(
 
             generateInternalDeclaredEntities(this@generateInternalKotlinFile)
 
-            import("kotlinx.rpc.grpc.pb.*")
+            import("$PB_PKG.*")
             import("kotlinx.rpc.internal.utils.*")
             import("kotlinx.coroutines.flow.*")
 

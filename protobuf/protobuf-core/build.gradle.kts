@@ -11,63 +11,45 @@ import util.configureCLibCInterop
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.kotlinx.rpc)
-    alias(libs.plugins.atomicfu)
-    alias(libs.plugins.serialization) // for tests
 }
 
 kotlin {
-    compilerOptions {
-        freeCompilerArgs.add("-Xexpect-actual-classes")
-    }
-
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.core)
                 api(projects.utils)
-                api(libs.coroutines.core)
-                api(projects.grpc.grpcCodec)
-
-                implementation(libs.atomicfu)
-                implementation(libs.kotlinx.io.core)
+                api(libs.kotlinx.io.core)
             }
         }
 
         commonTest {
             dependencies {
+                implementation(projects.grpc.grpcCodec)
+
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
-                implementation(libs.atomicfu)
-                implementation(libs.serialization.json)
-
-                implementation(projects.grpc.grpcCodecKotlinxSerialization)
             }
         }
 
         jvmMain {
             dependencies {
-                api(libs.grpc.api)
-                api(libs.grpc.util)
-                api(libs.grpc.stub)
-                api(libs.grpc.protobuf)
-                api(libs.grpc.protobuf.lite)
-                implementation(libs.grpc.kotlin.stub) // causes problems to jpms if api
+                api(libs.protobuf.java.util)
+                implementation(libs.protobuf.kotlin)
             }
         }
 
-        jvmTest {
+        nativeMain {
             dependencies {
-                implementation(libs.grpc.netty)
+                implementation(libs.kotlinx.collections.immutable)
             }
         }
     }
 
-    configureCLibCInterop(project, ":grpcpp_c_static") { cinteropCLib ->
+    configureCLibCInterop(project, ":protowire_static") { cinteropCLib ->
         @Suppress("unused")
-        val libgrpcpp_c by creating {
+        val libprotowire by creating  {
             includeDirs(
-                cinteropCLib.resolve("include"),
-                cinteropCLib.resolve("bazel-grpcpp-c/external/grpc+/include"),
+                cinteropCLib.resolve("include")
             )
             extraOpts(
                 "-libraryPath", "${cinteropCLib.resolve("bazel-out/darwin_arm64-opt/bin")}",
