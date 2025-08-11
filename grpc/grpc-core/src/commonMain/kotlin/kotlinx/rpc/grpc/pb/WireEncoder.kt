@@ -66,7 +66,7 @@ public interface WireEncoder {
  * Turns exceptions thrown by different platforms during encoding into [ProtobufEncodingException].
  */
 @InternalRpcApi
-public expect fun checkForPlatformEncodeException(block: () -> Unit)
+public expect inline fun checkForPlatformEncodeException(block: () -> Unit)
 
 @InternalRpcApi
 public expect fun WireEncoder(sink: Sink): WireEncoder

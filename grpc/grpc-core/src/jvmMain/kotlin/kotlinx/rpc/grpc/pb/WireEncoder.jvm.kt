@@ -201,7 +201,7 @@ public actual fun WireEncoder(sink: Sink): WireEncoder {
     return WireEncoderJvm(sink)
 }
 
-public actual fun checkForPlatformEncodeException(block: () -> Unit) {
+public actual inline fun checkForPlatformEncodeException(block: () -> Unit) {
     try {
         return block()
     } catch (e: IOException) {

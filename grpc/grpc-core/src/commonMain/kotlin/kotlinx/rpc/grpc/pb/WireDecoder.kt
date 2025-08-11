@@ -105,7 +105,7 @@ public interface WireDecoder : AutoCloseable {
  * Turns exceptions thrown by different platforms during decoding into [ProtobufDecodingException].
  */
 @InternalRpcApi
-public expect fun checkForPlatformDecodeException(block: () -> Unit)
+public expect inline fun checkForPlatformDecodeException(block: () -> Unit)
 
 /**
  * Creates a platform-specific [WireDecoder].

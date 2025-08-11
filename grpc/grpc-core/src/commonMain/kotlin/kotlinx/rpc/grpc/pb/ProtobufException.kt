@@ -10,7 +10,7 @@ public sealed class ProtobufException : RuntimeException {
 
 
 public class ProtobufDecodingException : ProtobufException {
-    internal constructor(message: String, cause: Throwable? = null) : super(message, cause)
+    public constructor(message: String, cause: Throwable? = null) : super(message, cause)
 
     public companion object Companion {
         internal fun missingRequiredField(messageName: String, fieldName: String) =
@@ -36,5 +36,5 @@ public class ProtobufDecodingException : ProtobufException {
 }
 
 public class ProtobufEncodingException : ProtobufException {
-    internal constructor(message: String, cause: Throwable? = null) : super(message, cause)
+    public constructor(message: String, cause: Throwable? = null) : super(message, cause)
 }

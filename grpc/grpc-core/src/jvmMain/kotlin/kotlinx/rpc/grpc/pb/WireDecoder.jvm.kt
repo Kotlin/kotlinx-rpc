@@ -114,7 +114,7 @@ internal class WireDecoderJvm(source: Buffer) : WireDecoder {
 }
 
 
-public actual fun checkForPlatformDecodeException(block: () -> Unit) {
+public actual inline fun checkForPlatformDecodeException(block: () -> Unit) {
     try {
         return block()
     } catch (e: InvalidProtocolBufferException) {

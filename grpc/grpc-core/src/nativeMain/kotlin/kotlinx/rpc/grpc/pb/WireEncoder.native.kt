@@ -209,6 +209,6 @@ private inline fun checked(crossinline block: () -> Boolean) {
     }
 }
 
-public actual fun checkForPlatformEncodeException(block: () -> Unit) {
+public actual inline fun checkForPlatformEncodeException(block: () -> Unit) {
     block() // nothing to check for on native
 }
