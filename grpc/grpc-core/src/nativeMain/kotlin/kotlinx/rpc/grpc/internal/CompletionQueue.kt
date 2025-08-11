@@ -9,7 +9,6 @@ package kotlinx.rpc.grpc.internal
 import cnames.structs.grpc_call
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.*
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.suspendCancellableCoroutine
 import libgrpcpp_c.*
 import platform.posix.memset
@@ -19,9 +18,20 @@ import kotlin.coroutines.resumeWithException
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
+/**
+ * A coroutine wrapper around the grpc completion_queue, which manages message operations.
+ * It is based on the "new" callback API; therefore, there are no kotlin-side threads required to poll
+ * the queue.
+ */
 internal class CompletionQueue {
 
-    // internal as it must be accessible from the SHUTDOWN_CB
+    private enum class State { OPEN, SHUTTING_DOWN, CLOSED }
+
+    private val state = atomic(State.OPEN)
+
+    // internal as it must be accessible from the SHUTDOWN_CB,
+    // but it shouldn't be used from outside this file.
+    @Suppress("PropertyName")
     internal val _shutdownDone = kotlinx.coroutines.CompletableDeferred<Unit>()
 
     // used for spinning lock. false means not used (available)
@@ -40,58 +50,94 @@ internal class CompletionQueue {
     private val thisStableRefCleaner = createCleaner(thisStableRef) { it.dispose() }
     private val shutdownFunctorCleaner = createCleaner(shutdownFunctor) { nativeHeap.free(it) }
 
-    suspend fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong) = coroutineScope {
-        suspendCancellableCoroutine<Unit> { cont ->
+    init {
+        // Assert grpc_iomgr_run_in_background() to guarantee that the event manager provides
+        // IO threads and supports the callback API.
+        require(kgrpc_iomgr_run_in_background()) { "The gRPC iomgr is not running background threads, required for callback based APIs." }
+    }
+
+    suspend fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong) =
+        suspendCancellableCoroutine<grpc_call_error> { cont ->
             val tag = newCbTag(cont, OPS_COMPLETE_CB)
 
+            var err = grpc_call_error.GRPC_CALL_ERROR
             // synchronizes access to grpc_call_start_batch
-            while (!batchStartGuard.compareAndSet(expect = false, update = true)) {
-                // could not be set to true (currently hold by different thread)
-            }
+            withBatchStartLock {
+                if (state.value != State.OPEN) {
+                    deleteCbTag(tag)
+                    cont.resume(grpc_call_error.GRPC_CALL_ERROR_COMPLETION_QUEUE_SHUTDOWN)
+                    return@suspendCancellableCoroutine
+                }
 
-            var err: UInt
-            try {
                 err = grpc_call_start_batch(call, ops, nOps, tag, null)
-            } finally {
-                batchStartGuard.value = false
             }
 
-            if (err != 0u) {
+            if (err != grpc_call_error.GRPC_CALL_OK) {
+                // if the call was not successful, the callback will not be invoked.
                 deleteCbTag(tag)
-                cont.resumeWithException(IllegalStateException("start_batch err=$err"))
+                cont.resume(err)
                 return@suspendCancellableCoroutine
             }
 
 
             cont.invokeOnCancellation {
-                this // keep reference, otherwise the cleaners might get cleaned before batch finishes
-                TODO("Implement call operation cancellation")
+                @Suppress("UnusedExpression")
+                // keep reference, otherwise the cleaners might get invoked before the batch finishes
+                this
+                // cancel the call if one of its batches is canceled.
+                // grpc_call_cancel is thread-safe and can be called several times.
+                // the callback is invoked anyway, so the tag doesn't get deleted here.
+                grpc_call_cancel(call, null)
             }
         }
-    }
 
     suspend fun shutdown() {
-        if (_shutdownDone.isCompleted) return
+        if (!state.compareAndSet(State.OPEN, State.SHUTTING_DOWN)) {
+            // the first call to shutdown() makes transition and to SHUTTING_DOWN and
+            // initiates shut down. all other invocations await the shutdown.
+            _shutdownDone.await()
+            return
+        }
+
+        // wait until all batch operations since the state transitions were started.
+        // this is required to prevent batches from starting after shutdown was initialized
+        withBatchStartLock { }
+
         grpc_completion_queue_shutdown(raw)
         _shutdownDone.await()
+        state.value = State.CLOSED
+    }
+
+    private inline fun withBatchStartLock(block: () -> Unit) {
+        try {
+            // spin until this thread occupies the guard
+            @Suppress("ControlFlowWithEmptyBody")
+            while (!batchStartGuard.compareAndSet(expect = false, update = true)) {
+            }
+            block()
+        } finally {
+            // set guard to "not occupied"
+            batchStartGuard.value = false
+        }
     }
 }
 
+// kq stands for kompletion_queue lol
 @CName("kq_ops_complete_cb")
 private fun opsCompleteCb(functor: CPointer<grpc_completion_queue_functor>?, ok: Int) {
     val tag = functor!!.reinterpret<grpc_cb_tag>()
-    val cont = tag.pointed.user_data!!.asStableRef<Continuation<Unit>>().get()
+    val cont = tag.pointed.user_data!!.asStableRef<Continuation<grpc_call_error>>().get()
     deleteCbTag(tag)
-    if (ok != 0) cont.resume(Unit) else cont.resumeWithException(IllegalStateException("batch failed"))
+    if (ok != 0) cont.resume(grpc_call_error.GRPC_CALL_OK)
+    else cont.resumeWithException(IllegalStateException("batch failed"))
 }
 
 @CName("kq_shutdown_cb")
 private fun shutdownCb(functor: CPointer<grpc_completion_queue_functor>?, ok: Int) {
     val tag = functor!!.reinterpret<grpc_cb_tag>()
     val cq = tag.pointed.user_data!!.asStableRef<CompletionQueue>().get()
-    check(ok != 0) { "CQ shutdown failed" }
-    grpc_completion_queue_destroy(cq.raw)
     cq._shutdownDone.complete(Unit)
+    grpc_completion_queue_destroy(cq.raw)
 }
 
 private val OPS_COMPLETE_CB = staticCFunction(::opsCompleteCb)

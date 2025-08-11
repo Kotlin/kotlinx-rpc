@@ -10,6 +10,7 @@
 #include <grpcpp/impl/client_unary_call.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
+#include "src/core/lib/iomgr/iomgr.h"
 
 namespace pb = google::protobuf;
 
@@ -203,7 +204,9 @@ extern "C" {
 
     //// CHANNEL ////
 
-
+    bool kgrpc_iomgr_run_in_background() {
+        return grpc_iomgr_run_in_background();
+    }
 
 }
 
