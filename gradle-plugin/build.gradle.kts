@@ -13,7 +13,6 @@ plugins {
     alias(libs.plugins.conventions.jvm)
     alias(libs.plugins.conventions.gradle.publish)
     alias(libs.plugins.gradle.plugin.publish)
-    alias(libs.plugins.conventions.gradle.doctor)
 }
 
 group = "org.jetbrains.kotlinx"

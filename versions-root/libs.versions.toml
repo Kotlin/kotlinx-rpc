@@ -18,7 +18,6 @@ kotlin-wrappers = "2025.6.11"
 junit4 = "4.13.2"
 junit5 = "5.13.2"
 intellij = "241.19416.19"
-gradle-doctor = "0.11.0"
 kotlinx-browser = "0.3"
 dokka = "2.0.0"
 puppeteer = "24.9.0"
@@ -109,7 +108,6 @@ common-custom-user-data = { module ="com.gradle:common-custom-user-data-gradle-p
 detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt-gradle-plugin" }
 kover-gradle-plugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
-gradle-doctor-gradle-plugin = { module = "com.osacky.doctor:doctor-plugin", version.ref = "gradle-doctor" }
 gradle-publish-gradle-plugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "gradle-plugin-publish" }
 compat-patrouille-gradle-plugin = { module = "com.gradleup.compat.patrouille:compat-patrouille-gradle-plugin", version.ref = "compat-patrouille" }
 
@@ -130,7 +128,6 @@ conventions-jvm = { id = "conventions-jvm" }
 conventions-kmp = { id = "conventions-kmp" }
 conventions-gradle-publish = { id = "conventions-gradle-publish" }
 conventions-kover = { id = "conventions-kover" }
-conventions-gradle-doctor = { id = "conventions-gradle-doctor" }
 conventions-npm = { id = "conventions-npm" }
 conventions-root = { id = "conventions-root" }
 conventions-dokka-spec = { id = "conventions-dokka-spec" }
