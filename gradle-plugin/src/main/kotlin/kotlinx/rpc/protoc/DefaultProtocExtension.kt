@@ -27,7 +27,7 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import javax.inject.Inject
 
 internal open class DefaultProtocExtension @Inject constructor(
@@ -176,7 +176,7 @@ internal open class DefaultProtocExtension @Inject constructor(
 
         protoSourceSet.generateTask.set(bufGenerateTask)
 
-        tasks.withType<KotlinCompile>().configureEach {
+        project.tasks.withType<KotlinCompilationTask<*>>().all {
             // compileKotlin - main
             // compileTestKotlin - test
             // compileKotlinJvm - jvmMain
@@ -191,7 +191,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             }
         }
 
-        tasks.withType<JavaCompile>().configureEach {
+        project.tasks.withType<JavaCompile>().all {
             // compileJvmTestJava - test (java, kmp)
             // compileJvmMainJava - main (java, kmp)
             // compileJava - main (java)

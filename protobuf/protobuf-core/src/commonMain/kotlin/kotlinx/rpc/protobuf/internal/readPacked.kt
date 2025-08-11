@@ -4,8 +4,6 @@
 
 package kotlinx.rpc.protobuf.internal
 
-import kotlinx.rpc.grpc.pb.ProtobufDecodingException
-
 internal expect fun WireDecoder.pushLimit(byteLen: Int): Int
 internal expect fun WireDecoder.popLimit(limit: Int)
 internal expect fun WireDecoder.bytesUntilLimit(): Int

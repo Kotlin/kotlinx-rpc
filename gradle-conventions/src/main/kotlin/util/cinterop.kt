@@ -23,7 +23,7 @@ import kotlin.io.resolve
 // works with the cinterop-c Bazel project
 fun KotlinMultiplatformExtension.configureCLibCInterop(
     project: Project,
-    bazelBuildArg: String,
+    bazelTask: String,
     configureCinterop: NamedDomainObjectContainer<DefaultCInteropSettings>.(cinteropCLib: File) -> Unit,
 ) {
     val globalRootDir: String by project.extra
@@ -46,7 +46,7 @@ fun KotlinMultiplatformExtension.configureCLibCInterop(
     val buildCinteropCLib = project.tasks.register<Exec>("buildCinteropCLib") {
         group = "build"
         workingDir = cinteropCLib
-        commandLine("bash", "-c", "bazel build $bazelBuildArg --config=release")
+        commandLine("bash", "-c", "bazel build $bazelTask --config=release")
         inputs.files(project.fileTree(cinteropCLib) { exclude("bazel-*/**") })
         outputs.dir(cinteropCLib.resolve("bazel-bin"))
 

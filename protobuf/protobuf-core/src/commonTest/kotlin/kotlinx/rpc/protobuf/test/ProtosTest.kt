@@ -18,6 +18,7 @@ import kotlinx.rpc.grpc.test.*
 import kotlinx.rpc.grpc.test.common.*
 import kotlinx.rpc.grpc.test.common.invoke
 import kotlinx.rpc.grpc.test.invoke
+import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import test.nested.*
 import test.nested.invoke

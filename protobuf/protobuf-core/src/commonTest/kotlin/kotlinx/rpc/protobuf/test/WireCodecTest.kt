@@ -5,10 +5,12 @@
 package kotlinx.rpc.protobuf.test
 
 import kotlinx.io.Buffer
+import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
+import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.packedEnum
 import kotlinx.rpc.protobuf.internal.packedInt32
 import kotlinx.rpc.protobuf.internal.packedInt64

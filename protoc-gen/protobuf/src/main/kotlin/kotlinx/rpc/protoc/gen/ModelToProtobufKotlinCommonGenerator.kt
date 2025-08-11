@@ -182,7 +182,7 @@ class ModelToProtobufKotlinCommonGenerator(
             function("encode", modifiers = "override", args = "value: $msgFqName", returnType = sourceFqName) {
                 code("val buffer = $bufferFqName()")
                 code("val encoder = $PB_PKG.WireEncoder(buffer)")
-                scope("${kotlinx.rpc.protobuf.PB_PKG}.checkForPlatformEncodeException", nlAfterClosed = false) {
+                scope("${PB_PKG}.checkForPlatformEncodeException", nlAfterClosed = false) {
                     code("value.asInternal().encodeWith(encoder)")
                 }
                 code("encoder.flush()")
@@ -192,7 +192,7 @@ class ModelToProtobufKotlinCommonGenerator(
             function("decode", modifiers = "override", args = "stream: $sourceFqName", returnType = msgFqName) {
                 scope("$PB_PKG.WireDecoder(stream as $bufferFqName).use") {
                     code("val msg = ${declaration.internalClassFullName()}()")
-                    scope("${kotlinx.rpc.protobuf.PB_PKG}.checkForPlatformDecodeException", nlAfterClosed = false) {
+                    scope("${PB_PKG}.checkForPlatformDecodeException", nlAfterClosed = false) {
                         code("${declaration.internalClassFullName()}.decodeWith(msg, it)")
                     }
                     code("msg.checkRequiredFields()")
@@ -525,7 +525,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
         requiredFields.forEach { field ->
             ifBranch(condition = "!presenceMask[${field.presenceIdx}]", ifBlock = {
-                code("throw ${kotlinx.rpc.protobuf.PB_PKG}.ProtobufDecodingException.missingRequiredField(\"${declaration.name.simpleName}\", \"${field.name}\")")
+                code("throw ${PB_PKG}.ProtobufDecodingException.missingRequiredField(\"${declaration.name.simpleName}\", \"${field.name}\")")
             })
         }
 

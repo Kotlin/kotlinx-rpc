@@ -67,7 +67,7 @@ kotlin {
         val libgrpcpp_c by creating {
             includeDirs(
                 cinteropCLib.resolve("include"),
-                cinteropCLib.resolve("bazel-grpcpp-c/external/grpc+/include"),
+                cinteropCLib.resolve("bazel-cinterop-c/external/grpc+/include"),
             )
             extraOpts(
                 "-libraryPath", "${cinteropCLib.resolve("bazel-out/darwin_arm64-opt/bin")}",
