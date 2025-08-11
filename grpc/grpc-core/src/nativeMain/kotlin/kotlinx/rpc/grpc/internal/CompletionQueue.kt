@@ -9,7 +9,6 @@ package kotlinx.rpc.grpc.internal
 import cnames.structs.grpc_call
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.*
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.suspendCancellableCoroutine
 import libgrpcpp_c.*
 import platform.posix.memset
@@ -20,6 +19,10 @@ import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
 internal class CompletionQueue {
+
+    private enum class State { OPEN, SHUTTING_DOWN, CLOSED }
+
+    private val state = atomic(State.OPEN)
 
     // internal as it must be accessible from the SHUTDOWN_CB
     internal val _shutdownDone = kotlinx.coroutines.CompletableDeferred<Unit>()
@@ -40,7 +43,7 @@ internal class CompletionQueue {
     private val thisStableRefCleaner = createCleaner(thisStableRef) { it.dispose() }
     private val shutdownFunctorCleaner = createCleaner(shutdownFunctor) { nativeHeap.free(it) }
 
-    suspend fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong) = coroutineScope {
+    suspend fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong) =
         suspendCancellableCoroutine<Unit> { cont ->
             val tag = newCbTag(cont, OPS_COMPLETE_CB)
 
@@ -49,8 +52,15 @@ internal class CompletionQueue {
                 // could not be set to true (currently hold by different thread)
             }
 
+
             var err: UInt
             try {
+                if (state.value != State.OPEN) {
+                    deleteCbTag(tag)
+                    cont.resumeWithException(IllegalStateException("CompletionQueue is shutting down"))
+                    return@suspendCancellableCoroutine
+                }
+
                 err = grpc_call_start_batch(call, ops, nOps, tag, null)
             } finally {
                 batchStartGuard.value = false
@@ -68,12 +78,24 @@ internal class CompletionQueue {
                 TODO("Implement call operation cancellation")
             }
         }
-    }
 
     suspend fun shutdown() {
-        if (_shutdownDone.isCompleted) return
+        if (state.compareAndSet(State.OPEN, State.SHUTTING_DOWN)) {
+            // the first call to shutdown() makes transition and to SHUTTING_DOWN and
+            // initiates shut down. all other invocations await the shutdown.
+            _shutdownDone.await()
+            return
+        }
+
+        // wait until all batch operations since the state transitions were started.
+        // this is required to prevent batches from starting after shutdown was initialized
+        while (!batchStartGuard.compareAndSet(false, true)) {
+        }
+        batchStartGuard.value = false
+
         grpc_completion_queue_shutdown(raw)
         _shutdownDone.await()
+        state.value = State.CLOSED
     }
 }
 
