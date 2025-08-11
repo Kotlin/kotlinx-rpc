@@ -59,7 +59,7 @@ fun KotlinMultiplatformExtension.configureCLibCInterop(
                 configureCinterop(cinteropCLib)
             }
 
-            cinterops.whenObjectAdded {
+            cinterops.all {
                 val interop = this
 
                 val interopTask = "cinterop${interop.name.capitalized()}${it.targetName.capitalized()}"
