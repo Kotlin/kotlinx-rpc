@@ -35,7 +35,7 @@
             interface Service {
                 val old: Flow&lt;Int&gt; // deprecated
 
-                suspend fun new(): Flow&lt;Int&gt; // store flow locally
+                fun new(): Flow&lt;Int&gt; // store flow locally
             }
         </code-block>
     </chapter>
