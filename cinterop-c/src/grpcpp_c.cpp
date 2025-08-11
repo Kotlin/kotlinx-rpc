@@ -27,6 +27,10 @@ struct grpc_context {
     std::unique_ptr<grpc::ClientContext> context;
 };
 
+// struct grpc_channel {
+//     std::shared_ptr<grpc::Channel> channel;
+// };
+
 extern "C" {
 
     grpc_client_t *grpc_client_create_insecure(const char *target) {
@@ -195,6 +199,11 @@ extern "C" {
         *slice = cc_slice.c_slice();
         return GRPC_C_STATUS_OK;
     }
+
+
+    //// CHANNEL ////
+
+
 
 }
 

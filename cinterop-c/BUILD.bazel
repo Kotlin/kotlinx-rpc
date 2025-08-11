@@ -1,13 +1,5 @@
 load("@rules_cc//cc:defs.bzl", "cc_library")
 
-cc_binary(
-    name = "testdemo",
-    srcs = ["src/main.cpp"],
-    deps = [
-        ":protowire",
-    ],
-)
-
 cc_static_library(
     name = "grpcpp_c_static",
     deps = [
@@ -24,6 +16,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         # TODO: Reduce the dependencies and only use required once. KRPC-185
+        "@com_github_grpc_grpc//:grpc",
         "@com_github_grpc_grpc//:channelz",
         "@com_github_grpc_grpc//:generic_stub",
         "@com_github_grpc_grpc//:grpc++",

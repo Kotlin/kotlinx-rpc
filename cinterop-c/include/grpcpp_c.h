@@ -6,6 +6,7 @@
 #define GRPCPP_C_H
 
 #include <stdint.h>
+#include <grpc/grpc.h>
 #include <grpc/slice.h>
 #include <grpc/byte_buffer.h>
 
@@ -38,6 +39,14 @@ typedef enum StatusCode {
   GRPC_C_STATUS_DO_NOT_USE = -1
 } grpc_status_code_t;
 
+
+typedef struct {
+    grpc_completion_queue_functor functor;
+    void *user_data;
+} grpc_cb_tag;
+
+
+
 grpc_client_t *grpc_client_create_insecure(const char *target);
 void grpc_client_delete(const grpc_client_t *client);
 
@@ -58,6 +67,12 @@ void grpc_client_call_unary_callback(grpc_client_t *client, grpc_method_t *metho
 uint32_t pb_decode_greeter_sayhello_response(grpc_slice response);
 
 grpc_status_code_t grpc_byte_buffer_dump_to_single_slice(grpc_byte_buffer *byte_buffer, grpc_slice *slice);
+
+
+/////// CHANNEL ///////
+
+typedef struct grpc_channel grpc_channel_t;
+typedef struct grpc_channel_credentials grpc_channel_credentials_t;
 
 #ifdef __cplusplus
     }
