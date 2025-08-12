@@ -113,6 +113,7 @@ grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
 grpc-util = { module = "io.grpc:grpc-util", version.ref = "grpc" }
 grpc-netty = { module = "io.grpc:grpc-netty", version.ref = "grpc" }
 grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
+grpc-protobuf-lite = { module = "io.grpc:grpc-protobuf-lite", version.ref = "grpc" }
 grpc-kotlin-stub = { module = "io.grpc:grpc-kotlin-stub", version.ref = "grpc-kotlin" }
 grpc-protoc-gen-java = { module = "io.grpc:protoc-gen-grpc-java", version.ref = "grpc" }
 grpc-protoc-gen-kotlin = { module = "io.grpc:protoc-gen-grpc-kotlin", version.ref = "grpc-kotlin" }
@@ -159,6 +160,7 @@ conventions-root = { id = "conventions-root" }
 conventions-dokka-spec = { id = "conventions-dokka-spec" }
 conventions-dokka-public = { id = "conventions-dokka-public" }
 conventions-no-psi-element = { id = "conventions-no-psi-element" }
+conventions-protoc-gen = { id = "conventions-protoc-gen" }
 compiler-specific-module = { id = "compiler-specific-module" }
 
 # gradle-plugin project

@@ -6,8 +6,8 @@
 
 package kotlinx.rpc
 
-import kotlinx.rpc.grpc.DefaultGrpcExtension
-import kotlinx.rpc.grpc.GrpcExtension
+import kotlinx.rpc.protoc.DefaultProtocExtension
+import kotlinx.rpc.protoc.ProtocExtension
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
@@ -45,21 +45,21 @@ public open class RpcExtension @Inject constructor(objects: ObjectFactory, priva
         configure.execute(strict)
     }
 
-    internal val grpcApplied = AtomicBoolean(false)
+    internal val protocApplied = AtomicBoolean(false)
 
     /**
-     * Grpc settings.
+     * Protoc settings.
      */
-    public val grpc: GrpcExtension by lazy {
-        grpcApplied.set(true)
-        objects.newInstance<DefaultGrpcExtension>()
+    public val protoc: ProtocExtension by lazy {
+        protocApplied.set(true)
+        objects.newInstance<DefaultProtocExtension>()
     }
 
     /**
-     * Grpc settings.
+     * Protoc settings.
      */
-    public fun grpc(configure: Action<GrpcExtension> = Action {}) {
-        configure.execute(grpc)
+    public fun protoc(configure: Action<ProtocExtension> = Action {}) {
+        configure.execute(protoc)
     }
 }
 

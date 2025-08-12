@@ -5,7 +5,7 @@
 package kotlinx.rpc.buf.tasks
 
 import kotlinx.rpc.buf.BUF_YAML
-import kotlinx.rpc.proto.PROTO_GROUP
+import kotlinx.rpc.protoc.PROTO_GROUP
 import kotlinx.rpc.util.ensureRegularFileExists
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
