@@ -10,11 +10,13 @@ package kotlinx.rpc.grpc
 import cnames.structs.grpc_channel
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.rpc.grpc.internal.ClientCall
-import kotlinx.rpc.grpc.internal.GrpcCallOptions
-import kotlinx.rpc.grpc.internal.GrpcChannel
-import kotlinx.rpc.grpc.internal.MethodDescriptor
-import libgrpcpp_c.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.rpc.grpc.internal.*
+import libgrpcpp_c.grpc_channel_create
+import libgrpcpp_c.grpc_channel_credentials_release
+import libgrpcpp_c.grpc_channel_credentials_t
+import libgrpcpp_c.grpc_channel_destroy
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 import kotlin.time.Duration
@@ -34,13 +36,15 @@ public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
 }
 
 internal actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
-    return NativeManagedChannel(
-        target = "localhost:50051",
-        credentials = GrpcCredentials(
-            grpc_insecure_credentials_create()
-                ?: error("Failed to create credentials")
-        )
-    )
+    TODO("Not yet implemented")
+//    return NativeManagedChannel(
+//        target = "localhost:50051",
+//        credentials = GrpcCredentials(
+//            grpc_insecure_credentials_create()
+//                ?: error("Failed to create credentials")
+//        ),
+//
+//    )
 }
 
 internal actual fun ManagedChannelBuilder(hostname: String, port: Int): ManagedChannelBuilder<*> {
@@ -56,7 +60,11 @@ internal class NativeManagedChannel(
     private val target: String,
     // we must store them, otherwise the credentials are getting released
     private val credentials: GrpcCredentials,
+    private val coroutineScope: CoroutineScope,
 ) : ManagedChannel, ManagedChannelPlatform() {
+
+    // the channel's completion queue, handling all request operations
+    private val cq = CompletionQueue()
 
     internal val raw: CPointer<grpc_channel> = grpc_channel_create(target, credentials.raw, null)
         ?: error("Failed to create channel")
@@ -72,11 +80,15 @@ internal class NativeManagedChannel(
         get() = TODO("Not yet implemented")
 
     override suspend fun awaitTermination(duration: Duration): Boolean {
-        TODO("Not yet implemented")
+        cq.shutdown()
+        return true
     }
 
     override fun shutdown(): ManagedChannel {
-        TODO("Not yet implemented")
+        coroutineScope.launch {
+            cq.shutdown()
+        }
+        TODO("Return managed channel")
     }
 
     override fun shutdownNow(): ManagedChannel {

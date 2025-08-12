@@ -47,7 +47,6 @@ typedef struct {
 } grpc_cb_tag;
 
 
-
 grpc_client_t *grpc_client_create_insecure(const char *target);
 void grpc_client_delete(const grpc_client_t *client);
 
@@ -76,6 +75,10 @@ typedef struct grpc_channel grpc_channel_t;
 typedef struct grpc_channel_credentials grpc_channel_credentials_t;
 
 bool kgrpc_iomgr_run_in_background();
+
+
+/////// UTILS ///////
+
 
 #ifdef __cplusplus
     }

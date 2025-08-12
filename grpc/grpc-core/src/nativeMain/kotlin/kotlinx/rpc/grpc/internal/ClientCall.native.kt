@@ -2,11 +2,15 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+
 package kotlinx.rpc.grpc.internal
 
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.rpc.grpc.GrpcTrailers
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlin.experimental.ExperimentalNativeApi
 
 @InternalRpcApi
 public actual abstract class ClientCall<Request, Response> {

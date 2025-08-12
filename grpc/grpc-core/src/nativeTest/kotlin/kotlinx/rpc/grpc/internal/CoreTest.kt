@@ -6,10 +6,17 @@
 package kotlinx.rpc.grpc.internal
 
 
+import HelloReply
+import HelloReplyInternal
+import HelloRequest
+import HelloRequestInternal
+import invoke
 import kotlinx.cinterop.*
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.io.Buffer
+import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.Status
 import libgrpcpp_c.*
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.test.Test
@@ -34,14 +41,9 @@ class GrpcCoreTest {
         println("Request bytes: ${reqBytes.toHexString()}")
 
         // make a grpc_slice from bytes (copied buffer)
-        val reqSlice = memScoped {
-            val ptr = allocArray<ByteVar>(reqBytes.size)
-            for (i in reqBytes.indices) ptr[i] = reqBytes[i]
-            grpc_slice_from_copied_buffer(ptr, reqBytes.size.toULong())
-        }
-
-        val reqSlicePtr = reqSlice.getPointer(arena)
-        val req_buf = grpc_raw_byte_buffer_create(reqSlicePtr, 1u)
+        val buf = Buffer()
+        buf.write(reqBytes)
+        val req_buf = buf.toGrpcByteBuffer()
 
         // Use a single batch (no RECV_INITIAL_METADATA to keep it minimal)
         val ops = arena.allocArray<grpc_op>(6)
@@ -69,7 +71,7 @@ class GrpcCoreTest {
         ops[4].data.recv_message.recv_message = recvBufPtr.ptr
 
         // RECV_STATUS_ON_CLIENT
-        val statusCode = arena.alloc<UIntVar>()
+        val statusCode = arena.alloc<grpc_status_code.Var>()
         val statusDetails = arena.alloc<grpc_slice>()
         val errorStr = arena.alloc<CPointerVar<ByteVar>>()
         ops[5].op = GRPC_OP_RECV_STATUS_ON_CLIENT
@@ -79,27 +81,24 @@ class GrpcCoreTest {
         // trailing metadata is optional; leave it null if not used
 
 
-        coroutineScope {
+        val err = cq.runBatch(call!!, ops, 6u)
 
-            launch {
-                println("Start continuation call")
-                cq.runBatch(call!!, ops, 6u)
-                println("Call continuation done")
-            }
-
-            launch {
-                println("Shutting down")
-                cq.shutdown()
-                println("Shutdown")
-            }
+        if (err != grpc_call_error.GRPC_CALL_OK) {
+            fail("Call failed")
         }
-
 
         println("Status code: ${statusCode.value}")
         println("Error string: ${errorStr.value?.toKString()}")
-        if (statusCode.value != GRPC_STATUS_OK) {
+        if (statusCode.value != grpc_status_code.GRPC_STATUS_OK) {
             fail("Call failed with status code ${statusCode.value}")
         }
+
+        val messageBuffer = recvBufPtr.value!!.toKotlin()
+        val message = HelloReplyInternal.CODEC.decode(messageBuffer)
+
+        println("message: ${message.message}")
+
+        cq.shutdown()
 
     }
 
@@ -121,6 +120,66 @@ class GrpcCoreTest {
             doCall(reqBytes)
         }
         grpc_shutdown()
+    }
+
+    @Test
+    fun grpcClientTest() {
+        grpc_init()
+
+        val fullName = "/helloworld.Greeter/SayHello"
+        val descriptor = methodDescriptor(
+            fullMethodName = fullName,
+            requestCodec = HelloRequestInternal.CODEC,
+            responseCodec = HelloReplyInternal.CODEC,
+            type = MethodType.UNARY,
+            schemaDescriptor = Unit,
+            idempotent = true,
+            safe = true,
+            sampledToLocalTracing = true,
+        )
+
+        val cq = CompletionQueue()
+
+        val creds = grpc_insecure_credentials_create()!!
+        val channel = grpc_channel_create("localhost:50051", creds, null)!!
+
+        val method = grpc_slice_from_copied_string("/helloworld.Greeter/SayHello")
+
+        val rawCall = grpc_channel_create_call(
+            channel, null, GRPC_PROPAGATE_DEFAULTS, cq.raw,
+            method, null, gpr_inf_future(GPR_CLOCK_REALTIME), null
+        )
+
+        val req = HelloRequest {
+            name = "world"
+        }
+
+        runBlocking {
+            val sem = Semaphore(1, acquiredPermits = 1)
+
+            val call = NativeClientCall(cq, rawCall!!, descriptor, this)
+            val listener = object : ClientCall.Listener<HelloReply>() {
+
+                override fun onMessage(message: HelloReply) {
+                    println("Received message: ${message.message}")
+                }
+
+                override fun onClose(status: Status, trailers: GrpcTrailers) {
+                    println("Status: ${status.statusCode}")
+                    println("Trailers: $trailers")
+                    sem.release()
+                }
+            }
+
+            println("Start call to $fullName")
+            call.start(listener, GrpcTrailers())
+            call.sendMessage(req)
+            call.halfClose()
+            call.request(1)
+
+            sem.acquire()
+            cq.shutdown()
+        }
     }
 
 }

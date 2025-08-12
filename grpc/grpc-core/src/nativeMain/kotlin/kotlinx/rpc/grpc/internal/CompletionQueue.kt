@@ -47,7 +47,10 @@ internal class CompletionQueue {
 
     val raw = grpc_completion_queue_create_for_callback(shutdownFunctor.ptr, null)
 
+    @Suppress("unused")
     private val thisStableRefCleaner = createCleaner(thisStableRef) { it.dispose() }
+
+    @Suppress("unused")
     private val shutdownFunctorCleaner = createCleaner(shutdownFunctor) { nativeHeap.free(it) }
 
     init {
@@ -55,6 +58,10 @@ internal class CompletionQueue {
         // IO threads and supports the callback API.
         require(kgrpc_iomgr_run_in_background()) { "The gRPC iomgr is not running background threads, required for callback based APIs." }
     }
+
+    // TODO: Remove this method
+    suspend fun runBatch(call: NativeClientCall<*, *>, ops: CPointer<grpc_op>, nOps: ULong) =
+        runBatch(call.raw, ops, nOps)
 
     suspend fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong) =
         suspendCancellableCoroutine<grpc_call_error> { cont ->
@@ -129,6 +136,7 @@ private fun opsCompleteCb(functor: CPointer<grpc_completion_queue_functor>?, ok:
     val cont = tag.pointed.user_data!!.asStableRef<Continuation<grpc_call_error>>().get()
     deleteCbTag(tag)
     if (ok != 0) cont.resume(grpc_call_error.GRPC_CALL_OK)
+    // TODO: How to handle non-successful op completions
     else cont.resumeWithException(IllegalStateException("batch failed"))
 }
 
