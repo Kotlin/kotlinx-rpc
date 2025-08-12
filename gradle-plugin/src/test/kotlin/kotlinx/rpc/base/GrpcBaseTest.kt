@@ -101,10 +101,16 @@ abstract class GrpcBaseTest : BaseTest() {
             }
 
             val fileContent = file.readLines().joinToString("\n") {
-                if (it.contains("protoc-gen-kotlin-multiplatform")) {
-                    it.replace(localPluginExecRegex, "[protoc-gen-kotlin-multiplatform]")
-                } else {
-                    it
+                when {
+                    it.contains("protoc-gen-kotlin-multiplatform") -> {
+                        it.replace(localPluginExecRegex, "[protoc-gen-kotlin-multiplatform]")
+                    }
+                    it.contains("protoc-gen-grpc-kotlin-multiplatform") -> {
+                        it.replace(localPluginExecRegex, "[protoc-gen-grpc-kotlin-multiplatform]")
+                    }
+                    else -> {
+                        it
+                    }
                 }
             }
 

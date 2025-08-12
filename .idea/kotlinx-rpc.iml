@@ -8,6 +8,13 @@
       <excludeFolder url="file://$MODULE_DIR$/docs/pages/api" />
       <excludeFolder url="file://$MODULE_DIR$/kotlin-js-store" />
       <excludeFolder url="file://$MODULE_DIR$/detekt/reports" />
+      <excludeFolder url="file://$MODULE_DIR$/cinterop-c/.bazelbsp" />
+      <excludeFolder url="file://$MODULE_DIR$/cinterop-c/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/cinterop-c/bazel-bin" />
+      <excludeFolder url="file://$MODULE_DIR$/cinterop-c/bazel-cinterop-c" />
+      <excludeFolder url="file://$MODULE_DIR$/cinterop-c/bazel-out" />
+      <excludeFolder url="file://$MODULE_DIR$/cinterop-c/bazel-testlogs" />
+      <excludeFolder url="file://$MODULE_DIR$/cinterop-c/.clwb" />
     </content>
   </component>
 </module>
