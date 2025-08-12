@@ -139,7 +139,11 @@ plugins:
     out: kotlin-multiplatform
     opt:
       - debugOutput=protoc-gen-kotlin-multiplatform.log
-      - messageMode=interface
+      - explicitApiModeEnabled=true
+  - local: [protoc-gen-grpc-kotlin-multiplatform]
+    out: grpc-kotlin-multiplatform
+    opt:
+      - debugOutput=protoc-gen-grpc-kotlin-multiplatform.log
       - explicitApiModeEnabled=true
   - local: [path, to, protoc-gen-myplugin.exe]
     out: myPlugin

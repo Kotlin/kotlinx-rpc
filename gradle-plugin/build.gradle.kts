@@ -54,7 +54,9 @@ tasks.test {
 
     useJUnitPlatform()
 
-    dependsOn(gradle.includedBuild("protoc-gen").task(":publishAllPublicationsToBuildRepoRepository"))
+    val includedBuild = gradle.includedBuild("protoc-gen")
+    dependsOn(includedBuild.task(":grpc:publishAllPublicationsToBuildRepoRepository"))
+    dependsOn(includedBuild.task(":protobuf:publishAllPublicationsToBuildRepoRepository"))
 }
 
 // This block is needed to show plugin tasks on --dry-run

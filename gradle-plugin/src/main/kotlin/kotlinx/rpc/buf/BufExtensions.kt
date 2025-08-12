@@ -5,7 +5,7 @@
 package kotlinx.rpc.buf
 
 import kotlinx.rpc.buf.tasks.BufExecTask
-import kotlinx.rpc.proto.ProtocPlugin
+import kotlinx.rpc.protoc.ProtocPlugin
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory

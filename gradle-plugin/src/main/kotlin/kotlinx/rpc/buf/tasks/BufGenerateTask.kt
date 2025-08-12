@@ -4,8 +4,9 @@
 
 package kotlinx.rpc.buf.tasks
 
-import kotlinx.rpc.proto.PROTO_GROUP
+import kotlinx.rpc.protoc.PROTO_GROUP
 import kotlinx.rpc.rpcExtension
+import kotlinx.rpc.protoc.ProtocPlugin
 import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -16,6 +17,7 @@ import org.gradle.api.tasks.TaskProvider
 import java.io.File
 import kotlinx.rpc.buf.BufGenerateExtension
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.InputFiles
 
 /**
  * Buf `generate` command.
@@ -30,6 +32,15 @@ public abstract class BufGenerateTask : BufExecTask() {
     // unsued, but required for Gradle to properly recognise inputs
     @get:InputDirectory
     internal abstract val importFilesDir: Property<File>
+
+    /**
+     * List of files used during `buf generate` command execution.
+     *
+     * @see [ProtocPlugin.Artifact.Local.executableFiles]
+     */
+    // unsued, but required for Gradle to properly recognise inputs
+    @get:InputFiles
+    public abstract val executableFiles: ListProperty<File>
 
     /**
      * Whether to include imports.
@@ -118,7 +129,7 @@ internal fun Project.registerBufGenerateTask(
         group = PROTO_GROUP
         description = "Generates code from .proto files using 'buf generate'"
 
-        val generate = project.rpcExtension().grpc.buf.generate
+        val generate = project.rpcExtension().protoc.buf.generate
 
         includeImports.set(generate.includeImports)
         includeWkt.set(generate.includeWkt)
