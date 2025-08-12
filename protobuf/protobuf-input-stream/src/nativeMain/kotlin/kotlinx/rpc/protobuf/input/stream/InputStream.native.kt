@@ -12,6 +12,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 @InternalRpcApi
 public abstract class BufferInputStream(public val buffer: Buffer)
 
+@InternalRpcApi
 public fun bufferInputStream(buffer: Buffer): BufferInputStream = object : BufferInputStream(buffer) {}
 
 @ExperimentalRpcApi
