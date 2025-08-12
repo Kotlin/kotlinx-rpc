@@ -95,7 +95,6 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
     }
 
     @Test
-    // todo remove after KRPC-180
     fun `No JVM Targets`() = runGrpcTest {
         runNonExistentTask(bufGenerateMain)
         runNonExistentTask(bufGenerateTest)
