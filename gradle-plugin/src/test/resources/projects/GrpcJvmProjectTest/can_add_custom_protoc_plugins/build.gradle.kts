@@ -3,7 +3,7 @@
  */
 
 import org.gradle.kotlin.dsl.version
-import kotlinx.rpc.proto.*
+import kotlinx.rpc.protoc.*
 
 plugins {
     kotlin("jvm") version "<kotlin-version>"
@@ -11,8 +11,8 @@ plugins {
 }
 
 rpc {
-    grpc {
-        protocPlugins {
+    protoc {
+        plugins {
             create("myPlugin") {
                 local {
                     executor("path", "to", "protoc-gen-myplugin.exe")
@@ -38,7 +38,7 @@ rpc {
 
 protoSourceSets {
     main {
-        protocPlugin(rpc.grpc.protocPlugins.named("myPlugin"))
-        protocPlugin(rpc.grpc.protocPlugins.named("myRemotePlugin"))
+        protocPlugin(rpc.protoc.plugins.named("myPlugin"))
+        protocPlugin(rpc.protoc.plugins.named("myRemotePlugin"))
     }
 }

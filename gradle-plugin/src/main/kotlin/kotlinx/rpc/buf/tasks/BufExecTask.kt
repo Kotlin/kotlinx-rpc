@@ -7,7 +7,7 @@ package kotlinx.rpc.buf.tasks
 import kotlinx.rpc.buf.BUF_EXECUTABLE_CONFIGURATION
 import kotlinx.rpc.buf.BufExtension
 import kotlinx.rpc.buf.execBuf
-import kotlinx.rpc.proto.PROTO_GROUP
+import kotlinx.rpc.protoc.PROTO_GROUP
 import kotlinx.rpc.rpcExtension
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
@@ -117,7 +117,7 @@ internal fun <T : BufExecTask> Project.registerBufExecTask(
     bufExecutable.set(executableConfiguration.singleFile)
     this.workingDir.set(workingDir)
 
-    val buf = project.rpcExtension().grpc.buf
+    val buf = project.rpcExtension().protoc.buf
     configFile.set(buf.configFile)
     logFormat.set(buf.logFormat)
     bufTimeoutInWholeSeconds.set(buf.timeout.map { it.inWholeSeconds })

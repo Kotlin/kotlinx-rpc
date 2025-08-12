@@ -3,7 +3,7 @@
  */
 
 import org.gradle.kotlin.dsl.version
-import kotlinx.rpc.proto.kotlinMultiplatform
+import kotlinx.rpc.protoc.kotlinMultiplatform
 
 plugins {
     kotlin("jvm") version "<kotlin-version>"
@@ -11,5 +11,5 @@ plugins {
 }
 
 rpc {
-    grpc()
+    protoc()
 }
