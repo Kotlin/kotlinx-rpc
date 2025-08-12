@@ -83,9 +83,6 @@ gradlePlugin {
 
 abstract class GeneratePluginVersionsTask @Inject constructor(
     @get:Input val libraryVersion: String,
-    @get:Input val protobufVersion: String,
-    @get:Input val grpcVersion: String,
-    @get:Input val grpcKotlinVersion: String,
     @get:Input val bufToolVersion: String,
     @get:OutputDirectory val sourcesDir: File
 ) : DefaultTask() {
@@ -103,24 +100,6 @@ package kotlinx.rpc
  * The version of the kotlinx.rpc library.
  */
 public const val LIBRARY_VERSION: String = "$libraryVersion"
-
-@Deprecated("Use kotlinx.rpc.LIBRARY_VERSION instead", ReplaceWith("kotlinx.rpc.LIBRARY_VERSION"))
-public const val PLUGIN_VERSION: String = LIBRARY_VERSION
-
-/**
- * The version of the protobuf library.
- */
-public const val PROTOBUF_VERSION: String = "$protobufVersion"
-
-/**
- * The version of the grpc java library.
- */
-public const val GRPC_VERSION: String = "$grpcVersion"
-
-/**
- * The version of the grpc kotlin library.
- */
-public const val GRPC_KOTLIN_VERSION: String = "$grpcKotlinVersion"
 
 /**
  * The version of the buf tool used to generate protobuf.
@@ -141,18 +120,12 @@ val sourcesDir = File(project.layout.buildDirectory.asFile.get(), "generated-sou
 val generatePluginVersionsTask = tasks.register<GeneratePluginVersionsTask>(
     GeneratePluginVersionsTask.NAME,
     version.toString(),
-    libs.versions.protobuf.asProvider().get(),
-    libs.versions.grpc.asProvider().get(),
-    libs.versions.grpc.kotlin.get(),
     libs.versions.buf.tool.get(),
     sourcesDir,
 )
 
 abstract class GenerateTestVersionTask @Inject constructor(
     @get:Input val kotlinVersion: String,
-    @get:Input val protobufVersion: String,
-    @get:Input val grpcVersion: String,
-    @get:Input val grpcKotlinVersion: String,
     @get:Input val buildRepo: String,
     @get:OutputDirectory val sourcesDir: File
 ) : DefaultTask() {
@@ -170,11 +143,6 @@ const val KOTLIN_VERSION: String = "$kotlinVersion"
 
 const val BUILD_REPO: String = "$buildRepo"
 
-// can't use from generatePluginVersionsTask bacause Gradle messes up caches
-const val TEST_PROTOBUF_VERSION: String = "$protobufVersion"
-const val TEST_GRPC_VERSION: String = "$grpcVersion"
-const val TEST_GRPC_KOTLIN_VERSION: String = "$grpcKotlinVersion"
-
 """.trimIndent()
         )
     }
@@ -191,9 +159,6 @@ val globalRootDir: String by extra
 val generateTestVersionsTask = tasks.register<GenerateTestVersionTask>(
     GenerateTestVersionTask.NAME,
     libs.versions.kotlin.lang.get(),
-    libs.versions.protobuf.asProvider().get(),
-    libs.versions.grpc.asProvider().get(),
-    libs.versions.grpc.kotlin.get(),
     File(globalRootDir).resolve("build/repo").absolutePath,
     testSourcesDir,
 )

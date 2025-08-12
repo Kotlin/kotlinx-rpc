@@ -24,6 +24,10 @@ class ModelToGrpcKotlinCommonGenerator(
 
     override fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) { }
 
+    init {
+        additionalPublicImports.add("kotlinx.coroutines.flow.Flow")
+    }
+
     @Suppress("detekt.LongMethod")
     private fun CodeGenerator.generatePublicService(service: ServiceDeclaration) {
         code("@kotlinx.rpc.grpc.annotations.Grpc")

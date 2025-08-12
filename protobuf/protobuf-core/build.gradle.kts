@@ -34,8 +34,7 @@ kotlin {
 
         jvmMain {
             dependencies {
-                api(libs.protobuf.java.util)
-                implementation(libs.protobuf.kotlin)
+                implementation(libs.protobuf.java.util)
             }
         }
 

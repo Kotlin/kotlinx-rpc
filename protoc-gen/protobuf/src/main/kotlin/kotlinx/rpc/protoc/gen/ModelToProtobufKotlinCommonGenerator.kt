@@ -586,7 +586,7 @@ class ModelToProtobufKotlinCommonGenerator(
             contextReceiver = declaration.internalClassFullName(),
             returnType = "Int",
         ) {
-            code("var result = 0")
+            code("var __result = 0")
             declaration.actualFields.forEach { field ->
                 val fieldName = field.name
                 if (field.nullable) {
@@ -603,7 +603,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     }
                 }
             }
-            code("return result")
+            code("return __result")
         }
     }
 
@@ -638,17 +638,17 @@ class ModelToProtobufKotlinCommonGenerator(
         when (field.type) {
             is FieldType.List -> when {
                 // packed fields also have the tag + len
-                field.dec.isPacked -> code("result += $valueSize.let { $tagSize + ${int32SizeCall("it")} + it }")
-                else -> code("result = $valueSize")
+                field.dec.isPacked -> code("__result += $valueSize.let { $tagSize + ${int32SizeCall("it")} + it }")
+                else -> code("__result = $valueSize")
             }
 
             is FieldType.Message,
             FieldType.IntegralType.STRING,
             FieldType.IntegralType.BYTES,
-                -> code("result += $valueSize.let { $tagSize + ${int32SizeCall("it")} + it }")
+                -> code("__result += $valueSize.let { $tagSize + ${int32SizeCall("it")} + it }")
 
             is FieldType.Map -> {
-                scope("result += ${field.name}.entries.sumOf", paramDecl = "kEntry ->") {
+                scope("__result += ${field.name}.entries.sumOf", paramDecl = "kEntry ->") {
                     generateMapConstruction(field.type as FieldType.Map, "kEntry.key", "kEntry.value")
                     code("._size")
                 }
@@ -677,7 +677,7 @@ class ModelToProtobufKotlinCommonGenerator(
             FieldType.IntegralType.SINT64,
             FieldType.IntegralType.SFIXED32,
             FieldType.IntegralType.SFIXED64,
-                -> code("result += ($tagSize + $valueSize)")
+                -> code("__result += ($tagSize + $valueSize)")
         }
     }
 

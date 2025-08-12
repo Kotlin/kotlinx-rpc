@@ -64,7 +64,6 @@ abstract class AModelToKotlinCommonGenerator(
             generatePublicDeclaredEntities(this@generatePublicKotlinFile)
 
             import("kotlinx.rpc.internal.utils.*")
-            import("kotlinx.coroutines.flow.*")
 
             additionalPublicImports.forEach {
                 import(it)
@@ -92,7 +91,6 @@ abstract class AModelToKotlinCommonGenerator(
 
             import("$PB_PKG.*")
             import("kotlinx.rpc.internal.utils.*")
-            import("kotlinx.coroutines.flow.*")
 
             additionalInternalImports.forEach {
                 import(it)
@@ -118,6 +116,7 @@ abstract class AModelToKotlinCommonGenerator(
                 val fqValue = when (val value = type.value) {
                     is FieldType.Message -> value.dec.value.name
                     is FieldType.IntegralType -> value.fqName
+                    is FieldType.Enum -> value.dec.name
                     else -> error("Unsupported type: $value")
                 }
 
@@ -136,6 +135,7 @@ abstract class AModelToKotlinCommonGenerator(
                 val fqValue = when (val value = entry.value) {
                     is FieldType.Message -> value.dec.value.name
                     is FieldType.IntegralType -> value.fqName
+                    is FieldType.Enum -> value.dec.name
                     else -> error("Unsupported type: $value")
                 }
 
@@ -160,6 +160,10 @@ abstract class AModelToKotlinCommonGenerator(
         nameToImport: String = declaration.simpleName,
         internalOnly: Boolean = false,
     ) {
+        if (declaration is FqName.Package) {
+            return
+        }
+
         if (declaration.parent == FqName.Package.Root && currentPackage != FqName.Package.Root && nameToImport.isNotBlank()) {
             additionalInternalImports.add(nameToImport)
             if (!internalOnly) {

@@ -11,7 +11,7 @@ import org.slf4j.helpers.NOPLogger
 open class CodeGenerator(
     private val indent: String,
     private val builder: StringBuilder = StringBuilder(),
-    private val logger: Logger = NOPLogger.NOP_LOGGER,
+    protected val logger: Logger = NOPLogger.NOP_LOGGER,
 ) {
     private var isEmpty: Boolean = true
     private var result: String? = null

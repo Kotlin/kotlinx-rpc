@@ -9,6 +9,7 @@ import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.FileAppender
+import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorResponse
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorResponse.Feature
@@ -29,6 +30,8 @@ abstract class ProtocGenPlugin {
 
         val factory = LoggerFactory.getILoggerFactory()
         (factory.getLogger(Logger.ROOT_LOGGER_NAME) as ch.qos.logback.classic.Logger).apply {
+            detachAndStopAllAppenders()
+
             val appender = FileAppender<ILoggingEvent>().apply {
                 isAppend = true
                 file = debugOutput
@@ -77,7 +80,14 @@ abstract class ProtocGenPlugin {
             .apply {
                 files.forEach(::addFile)
 
-                supportedFeatures = Feature.FEATURE_PROTO3_OPTIONAL_VALUE.toLong()
+                val features =
+                    Feature.FEATURE_PROTO3_OPTIONAL_VALUE or
+                            Feature.FEATURE_SUPPORTS_EDITIONS_VALUE
+
+                minimumEdition = DescriptorProtos.Edition.EDITION_PROTO2_VALUE
+                maximumEdition = DescriptorProtos.Edition.EDITION_MAX_VALUE
+
+                supportedFeatures = features.toLong()
             }
             .build()
     }

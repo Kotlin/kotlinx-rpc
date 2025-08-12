@@ -79,7 +79,7 @@ private fun Descriptors.GenericDescriptor.fqName(): FqName {
     val nameCapital = name.simpleProtoNameToKotlin(firstLetterUpper = true)
     val nameLower = name.simpleProtoNameToKotlin()
     val fqName = when (this) {
-        is Descriptors.FileDescriptor -> FqName.Package.fromString(`package`)
+        is Descriptors.FileDescriptor -> FqName.Package.fromString(kotlinPackage())
         is Descriptors.Descriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
         is Descriptors.FieldDescriptor -> {
             val usedName = if (realContainingOneof != null) nameCapital else nameLower
@@ -114,7 +114,7 @@ private inline fun <D, reified T> D.cached(block: (D) -> T): T
 private fun Descriptors.FileDescriptor.toModel(): FileDeclaration = cached {
     return FileDeclaration(
         name = kotlinFileName(),
-        packageName = FqName.Package.fromString(`package`),
+        packageName = FqName.Package.fromString(kotlinPackage()),
         dependencies = dependencies.map { it.toModel() },
         messageDeclarations = messageTypes.map { it.toModel() },
         enumDeclarations = enumTypes.map { it.toModel() },
@@ -284,23 +284,27 @@ private fun Descriptors.FileDescriptor.kotlinFileName(): String {
     return "${protoFileNameToKotlinName()}.kt"
 }
 
+private fun Descriptors.FileDescriptor.kotlinPackage(): String {
+    return if (options.hasJavaPackage()) {
+        options.javaPackage
+    } else {
+        `package`
+    }
+}
+
 private fun Descriptors.FileDescriptor.protoFileNameToKotlinName(): String {
     return name.removeSuffix(".proto").fullProtoNameToKotlin(firstLetterUpper = true)
 }
 
-
 private fun String.fullProtoNameToKotlin(firstLetterUpper: Boolean = false): String {
     val lastDelimiterIndex = indexOfLast { it == '.' || it == '/' }
     return if (lastDelimiterIndex != -1) {
-        val packageName = substring(0, lastDelimiterIndex)
         val name = substring(lastDelimiterIndex + 1)
-        val delimiter = this[lastDelimiterIndex]
-        return "$packageName$delimiter${name.simpleProtoNameToKotlin(firstLetterUpper = true)}"
+        return name.simpleProtoNameToKotlin(firstLetterUpper = true)
     } else {
         simpleProtoNameToKotlin(firstLetterUpper)
     }
 }
-
 
 private val snakeRegExp = "(_[a-z]|-[a-z])".toRegex()
 

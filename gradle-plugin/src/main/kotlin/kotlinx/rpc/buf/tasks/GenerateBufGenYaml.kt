@@ -14,6 +14,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
@@ -136,13 +137,13 @@ public abstract class GenerateBufGenYaml : DefaultTask() {
 internal fun Project.registerGenerateBufGenYamlTask(
     name: String,
     buildSourceSetsDir: File,
-    protocPlugins: Iterable<ProtocPlugin>,
+    protocPlugins: Provider<List<ProtocPlugin>>,
     configure: GenerateBufGenYaml.() -> Unit = {},
 ): TaskProvider<GenerateBufGenYaml> {
     val capitalizeName = name.replaceFirstChar { it.uppercase() }
     return project.tasks.register<GenerateBufGenYaml>("${GenerateBufGenYaml.NAME_PREFIX}$capitalizeName") {
         val pluginsProvider = project.provider {
-            protocPlugins.map { plugin ->
+            protocPlugins.get().map { plugin ->
                 if (!plugin.artifact.isPresent) {
                     throw GradleException(
                         "Artifact is not specified for protoc plugin ${plugin.name}. " +

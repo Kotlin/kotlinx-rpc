@@ -129,11 +129,11 @@ internal fun Project.registerBufGenerateTask(
         group = PROTO_GROUP
         description = "Generates code from .proto files using 'buf generate'"
 
-        val generate = project.rpcExtension().protoc.buf.generate
+        val generate = provider { rpcExtension().protoc.buf.generate }
 
-        includeImports.set(generate.includeImports)
-        includeWkt.set(generate.includeWkt)
-        errorFormat.set(generate.errorFormat)
+        includeImports.set(generate.flatMap { it.includeImports })
+        includeWkt.set(generate.flatMap { it.includeWkt })
+        errorFormat.set(generate.flatMap { it.errorFormat })
 
         this.outputDirectory.set(outputDirectory)
 
