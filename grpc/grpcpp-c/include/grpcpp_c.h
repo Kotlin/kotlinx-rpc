@@ -6,6 +6,7 @@
 #define GRPCPP_C_H
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <grpc/grpc.h>
 #include <grpc/slice.h>
 #include <grpc/byte_buffer.h>
@@ -73,6 +74,8 @@ grpc_status_code_t grpc_byte_buffer_dump_to_single_slice(grpc_byte_buffer *byte_
 
 typedef struct grpc_channel grpc_channel_t;
 typedef struct grpc_channel_credentials grpc_channel_credentials_t;
+
+bool kgrpc_iomgr_run_in_background();
 
 #ifdef __cplusplus
     }

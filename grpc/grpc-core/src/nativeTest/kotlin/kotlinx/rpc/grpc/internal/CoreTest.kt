@@ -19,12 +19,7 @@ class GrpcCoreTest {
     val GRPC_PROPAGATE_DEFAULTS = 0x0000FFFFu
 
     suspend fun doCall(reqBytes: ByteArray) = withArena { arena ->
-
-        val shutdownFunctor = arena.alloc<grpc_completion_queue_functor>()
-        shutdownFunctor.functor_run = staticCFunction { tag, success -> println("Shutting down") }
-
         val cq = CompletionQueue()
-//        val cq = grpc_completion_queue_create_for_callback(shutdownFunctor.ptr, null)
 
         val creds = grpc_insecure_credentials_create()!!
         val channel = grpc_channel_create("localhost:50051", creds, null)!!
@@ -87,17 +82,17 @@ class GrpcCoreTest {
         coroutineScope {
 
             launch {
-                println("Shutting down")
-                cq.shutdown()
-                println("Shutdown")
-            }
-
-            launch {
                 println("Start continuation call")
                 cq.runBatch(call!!, ops, 6u)
                 println("Call continuation done")
             }
-        }.join()
+
+            launch {
+                println("Shutting down")
+                cq.shutdown()
+                println("Shutdown")
+            }
+        }
 
 
         println("Status code: ${statusCode.value}")
