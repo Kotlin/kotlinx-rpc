@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package kotlinx.rpc.grpc.test.common;
+package kotlinx.rpc.protobuf.test;
 
 message AllPrimitives {
   double double = 1;

@@ -7,10 +7,15 @@ plugins {
 }
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     sourceSets {
         commonMain {
             dependencies {
                 api(projects.utils)
+                api(projects.protobuf.protobufInputStream)
                 api(libs.kotlinx.io.core)
             }
         }
