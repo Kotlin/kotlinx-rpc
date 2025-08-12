@@ -10,5 +10,5 @@ plugins {
 }
 
 rpc {
-    grpc()
+    protoc()
 }

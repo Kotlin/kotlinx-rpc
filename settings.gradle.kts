@@ -29,6 +29,9 @@ dependencyResolutionManagement {
     includeBuild("protoc-gen")
 }
 
+include(":protobuf")
+includePublic(":protobuf:protobuf-core")
+
 include(":grpc")
 includePublic(":grpc:grpc-core")
 includePublic(":grpc:grpc-ktor-server")

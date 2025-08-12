@@ -17,4 +17,6 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-includeRootAsPublic()
+include(":common") // NOT PUBLIC, grpc and protobuf are fat jars
+includePublic(":grpc") // protoc-gen-grpc-kotlin-multiplatform
+includePublic(":protobuf") // protoc-gen-kotlin-multiplatform

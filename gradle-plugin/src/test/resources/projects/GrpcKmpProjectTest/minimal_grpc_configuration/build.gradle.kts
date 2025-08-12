@@ -14,5 +14,5 @@ kotlin {
 }
 
 rpc {
-    grpc()
+    protoc()
 }

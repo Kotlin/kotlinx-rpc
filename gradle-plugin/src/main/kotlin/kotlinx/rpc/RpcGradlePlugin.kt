@@ -4,8 +4,8 @@
 
 package kotlinx.rpc
 
-import kotlinx.rpc.grpc.configurePluginProtections
-import kotlinx.rpc.proto.createProtoExtensions
+import kotlinx.rpc.protoc.configurePluginProtections
+import kotlinx.rpc.protoc.createProtoExtensions
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create

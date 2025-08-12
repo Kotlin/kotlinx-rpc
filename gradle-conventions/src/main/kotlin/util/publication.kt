@@ -18,7 +18,7 @@ import java.io.File
 
 const val KOTLINX_RPC_PREFIX = "kotlinx-rpc"
 const val PROTOC_GEN = "protoc-gen"
-const val PROTOC_GEN_KOTLIN_MULTIPLATFORM = "protoc-gen-kotlin-multiplatform"
+const val PROTOC_GEN_KOTLIN_MULTIPLATFORM = "kotlin-multiplatform"
 
 /**
  * Important to configure inside [KotlinTarget.mavenPublication]
@@ -28,8 +28,13 @@ const val PROTOC_GEN_KOTLIN_MULTIPLATFORM = "protoc-gen-kotlin-multiplatform"
 fun MavenPublication.setPublicArtifactId(project: Project) {
     val publication = this
 
-    if (publication.artifactId == PROTOC_GEN) {
-        publication.artifactId = PROTOC_GEN_KOTLIN_MULTIPLATFORM
+    if (project.rootProject.name == PROTOC_GEN) {
+        val middle = when (project.name) {
+            "grpc" -> "grpc-"
+            "protobuf" -> ""
+            else -> error("Unsupported project name in $PROTOC_GEN: ${project.name}")
+        }
+        publication.artifactId = "$PROTOC_GEN-$middle$PROTOC_GEN_KOTLIN_MULTIPLATFORM"
         project.logger.info("Altered artifactId for $name publication: $artifactId")
     } else if (!publication.artifactId.startsWith(KOTLINX_RPC_PREFIX)) {
         publication.artifactId = "$KOTLINX_RPC_PREFIX-$artifactId"

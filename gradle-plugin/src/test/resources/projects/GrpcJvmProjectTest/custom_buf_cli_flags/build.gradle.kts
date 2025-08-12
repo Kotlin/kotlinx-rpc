@@ -3,7 +3,7 @@
  */
 
 import org.gradle.kotlin.dsl.version
-import kotlinx.rpc.proto.*
+import kotlinx.rpc.protoc.*
 import kotlinx.rpc.buf.*
 import java.io.File
 import kotlin.time.Duration.Companion.seconds
@@ -14,7 +14,7 @@ plugins {
 }
 
 rpc {
-    grpc {
+    protoc {
         buf {
             configFile = File("some.buf.yaml")
             logFormat = BufExtension.LogFormat.Json
