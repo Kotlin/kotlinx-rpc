@@ -1,0 +1,460 @@
+@file:OptIn(ExperimentalRpcApi::class, kotlinx.rpc.internal.utils.InternalRpcApi::class)
+package com.google.protobuf.kotlin
+
+import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.protobuf.input.stream.asInputStream
+import kotlinx.rpc.protobuf.internal.*
+
+public class StructInternal: com.google.protobuf.kotlin.Struct, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public override val _size: Int by lazy { computeSize() }
+
+    public override var fields: Map<kotlin.String, com.google.protobuf.kotlin.Value> by MsgFieldDelegate { mutableMapOf() }
+
+    public class FieldsEntryInternal: kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 1) { 
+        private object PresenceIndices { 
+            public const val value: Int = 0
+        }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        public override val _size: Int by lazy { computeSize() }
+
+        public var key: String by MsgFieldDelegate { "" }
+        public var value: com.google.protobuf.kotlin.Value by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf.kotlin.ValueInternal() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        public companion object
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Struct> { 
+        public override fun encode(value: com.google.protobuf.kotlin.Struct): kotlinx.rpc.protobuf.input.stream.InputStream { 
+            val buffer = kotlinx.io.Buffer()
+            val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
+                value.asInternal().encodeWith(encoder)
+            }
+            encoder.flush()
+            return buffer.asInputStream()
+        }
+
+        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream): com.google.protobuf.kotlin.Struct { 
+            kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
+                val msg = com.google.protobuf.kotlin.StructInternal()
+                kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
+                    com.google.protobuf.kotlin.StructInternal.decodeWith(msg, it)
+                }
+                msg.checkRequiredFields()
+                return msg
+            }
+        }
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public companion object
+}
+
+public class ValueInternal: com.google.protobuf.kotlin.Value, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public override val _size: Int by lazy { computeSize() }
+
+    public override var kind: com.google.protobuf.kotlin.Value.Kind? = null
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Value> { 
+        public override fun encode(value: com.google.protobuf.kotlin.Value): kotlinx.rpc.protobuf.input.stream.InputStream { 
+            val buffer = kotlinx.io.Buffer()
+            val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
+                value.asInternal().encodeWith(encoder)
+            }
+            encoder.flush()
+            return buffer.asInputStream()
+        }
+
+        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream): com.google.protobuf.kotlin.Value { 
+            kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
+                val msg = com.google.protobuf.kotlin.ValueInternal()
+                kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
+                    com.google.protobuf.kotlin.ValueInternal.decodeWith(msg, it)
+                }
+                msg.checkRequiredFields()
+                return msg
+            }
+        }
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public companion object
+}
+
+public class ListValueInternal: com.google.protobuf.kotlin.ListValue, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public override val _size: Int by lazy { computeSize() }
+
+    public override var values: List<com.google.protobuf.kotlin.Value> by MsgFieldDelegate { mutableListOf() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.ListValue> { 
+        public override fun encode(value: com.google.protobuf.kotlin.ListValue): kotlinx.rpc.protobuf.input.stream.InputStream { 
+            val buffer = kotlinx.io.Buffer()
+            val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
+                value.asInternal().encodeWith(encoder)
+            }
+            encoder.flush()
+            return buffer.asInputStream()
+        }
+
+        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream): com.google.protobuf.kotlin.ListValue { 
+            kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
+                val msg = com.google.protobuf.kotlin.ListValueInternal()
+                kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
+                    com.google.protobuf.kotlin.ListValueInternal.decodeWith(msg, it)
+                }
+                msg.checkRequiredFields()
+                return msg
+            }
+        }
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public companion object
+}
+
+public operator fun com.google.protobuf.kotlin.Struct.Companion.invoke(body: com.google.protobuf.kotlin.StructInternal.() -> Unit): com.google.protobuf.kotlin.Struct { 
+    val msg = com.google.protobuf.kotlin.StructInternal().apply(body)
+    msg.checkRequiredFields()
+    return msg
+}
+
+public operator fun com.google.protobuf.kotlin.Value.Companion.invoke(body: com.google.protobuf.kotlin.ValueInternal.() -> Unit): com.google.protobuf.kotlin.Value { 
+    val msg = com.google.protobuf.kotlin.ValueInternal().apply(body)
+    msg.checkRequiredFields()
+    return msg
+}
+
+public operator fun com.google.protobuf.kotlin.ListValue.Companion.invoke(body: com.google.protobuf.kotlin.ListValueInternal.() -> Unit): com.google.protobuf.kotlin.ListValue { 
+    val msg = com.google.protobuf.kotlin.ListValueInternal().apply(body)
+    msg.checkRequiredFields()
+    return msg
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.StructInternal.checkRequiredFields() { 
+    // no required fields to check
+    fields.values.forEach { 
+        it.asInternal().checkRequiredFields()
+    }
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.StructInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+    if (fields.isNotEmpty()) { 
+        fields.forEach { kEntry ->
+            com.google.protobuf.kotlin.StructInternal.FieldsEntryInternal().apply { 
+                key = kEntry.key
+                value = kEntry.value
+            }
+            .also { entry ->
+                encoder.writeMessage(fieldNr = 1, value = entry.asInternal()) { encodeWith(it) }
+            }
+        }
+    }
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.StructInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.StructInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+    while (true) { 
+        val tag = decoder.readTag() ?: break // EOF, we read the whole message
+        when { 
+            tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                with(com.google.protobuf.kotlin.StructInternal.FieldsEntryInternal()) { 
+                    decoder.readMessage(this.asInternal(), com.google.protobuf.kotlin.StructInternal.FieldsEntryInternal::decodeWith)
+                    (msg.fields as MutableMap)[key] = value
+                }
+            }
+
+            else -> { 
+                // we are currently just skipping unknown fields (KRPC-191)
+                decoder.skipValue(tag.wireType)
+            }
+        }
+    }
+}
+
+private fun com.google.protobuf.kotlin.StructInternal.computeSize(): Int { 
+    var __result = 0
+    if (fields.isNotEmpty()) { 
+        __result += fields.entries.sumOf { kEntry ->
+            com.google.protobuf.kotlin.StructInternal.FieldsEntryInternal().apply { 
+                key = kEntry.key
+                value = kEntry.value
+            }
+            ._size
+        }
+    }
+
+    return __result
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.Struct.asInternal(): com.google.protobuf.kotlin.StructInternal { 
+    return this as? com.google.protobuf.kotlin.StructInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.ValueInternal.checkRequiredFields() { 
+    // no required fields to check
+    kind?.also { 
+        when { 
+            it is com.google.protobuf.kotlin.Value.Kind.StructValue -> { 
+                it.value.asInternal().checkRequiredFields()
+            }
+
+            it is com.google.protobuf.kotlin.Value.Kind.ListValue -> { 
+                it.value.asInternal().checkRequiredFields()
+            }
+        }
+    }
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.ValueInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+    kind?.also { 
+        when (val value = it) { 
+            is com.google.protobuf.kotlin.Value.Kind.NullValue -> { 
+                encoder.writeEnum(fieldNr = 1, value = value.value.number)
+            }
+
+            is com.google.protobuf.kotlin.Value.Kind.NumberValue -> { 
+                encoder.writeDouble(fieldNr = 2, value = value.value)
+            }
+
+            is com.google.protobuf.kotlin.Value.Kind.StringValue -> { 
+                encoder.writeString(fieldNr = 3, value = value.value)
+            }
+
+            is com.google.protobuf.kotlin.Value.Kind.BoolValue -> { 
+                encoder.writeBool(fieldNr = 4, value = value.value)
+            }
+
+            is com.google.protobuf.kotlin.Value.Kind.StructValue -> { 
+                encoder.writeMessage(fieldNr = 5, value = value.value.asInternal()) { encodeWith(it) }
+            }
+
+            is com.google.protobuf.kotlin.Value.Kind.ListValue -> { 
+                encoder.writeMessage(fieldNr = 6, value = value.value.asInternal()) { encodeWith(it) }
+            }
+        }
+    }
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.ValueInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.ValueInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+    while (true) { 
+        val tag = decoder.readTag() ?: break // EOF, we read the whole message
+        when { 
+            tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                msg.kind = com.google.protobuf.kotlin.Value.Kind.NullValue(com.google.protobuf.kotlin.NullValue.fromNumber(decoder.readEnum()))
+            }
+
+            tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED64 -> { 
+                msg.kind = com.google.protobuf.kotlin.Value.Kind.NumberValue(decoder.readDouble())
+            }
+
+            tag.fieldNr == 3 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.kind = com.google.protobuf.kotlin.Value.Kind.StringValue(decoder.readString())
+            }
+
+            tag.fieldNr == 4 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                msg.kind = com.google.protobuf.kotlin.Value.Kind.BoolValue(decoder.readBool())
+            }
+
+            tag.fieldNr == 5 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                val field = (msg.kind as? com.google.protobuf.kotlin.Value.Kind.StructValue) ?: com.google.protobuf.kotlin.Value.Kind.StructValue(com.google.protobuf.kotlin.StructInternal()).also { 
+                    msg.kind = it
+                }
+
+                decoder.readMessage(field.value.asInternal(), com.google.protobuf.kotlin.StructInternal::decodeWith)
+            }
+
+            tag.fieldNr == 6 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                val field = (msg.kind as? com.google.protobuf.kotlin.Value.Kind.ListValue) ?: com.google.protobuf.kotlin.Value.Kind.ListValue(com.google.protobuf.kotlin.ListValueInternal()).also { 
+                    msg.kind = it
+                }
+
+                decoder.readMessage(field.value.asInternal(), com.google.protobuf.kotlin.ListValueInternal::decodeWith)
+            }
+
+            else -> { 
+                // we are currently just skipping unknown fields (KRPC-191)
+                decoder.skipValue(tag.wireType)
+            }
+        }
+    }
+}
+
+private fun com.google.protobuf.kotlin.ValueInternal.computeSize(): Int { 
+    var __result = 0
+    kind?.also { 
+        when (val value = it) { 
+            is com.google.protobuf.kotlin.Value.Kind.NullValue -> { 
+                __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(1, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(value.value.number))
+            }
+
+            is com.google.protobuf.kotlin.Value.Kind.NumberValue -> { 
+                __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(2, kotlinx.rpc.protobuf.internal.WireType.FIXED64) + kotlinx.rpc.protobuf.internal.WireSize.double(value.value))
+            }
+
+            is com.google.protobuf.kotlin.Value.Kind.StringValue -> { 
+                __result += kotlinx.rpc.protobuf.internal.WireSize.string(value.value).let { kotlinx.rpc.protobuf.internal.WireSize.tag(3, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
+            }
+
+            is com.google.protobuf.kotlin.Value.Kind.BoolValue -> { 
+                __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(4, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.bool(value.value))
+            }
+
+            is com.google.protobuf.kotlin.Value.Kind.StructValue -> { 
+                __result += value.value.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(5, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
+            }
+
+            is com.google.protobuf.kotlin.Value.Kind.ListValue -> { 
+                __result += value.value.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(6, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
+            }
+        }
+    }
+
+    return __result
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.Value.asInternal(): com.google.protobuf.kotlin.ValueInternal { 
+    return this as? com.google.protobuf.kotlin.ValueInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.ListValueInternal.checkRequiredFields() { 
+    // no required fields to check
+    values.forEach { 
+        it.asInternal().checkRequiredFields()
+    }
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.ListValueInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+    if (values.isNotEmpty()) { 
+        values.forEach { 
+            encoder.writeMessage(fieldNr = 1, value = it.asInternal()) { encodeWith(it) }
+        }
+    }
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.ListValueInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.ListValueInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+    while (true) { 
+        val tag = decoder.readTag() ?: break // EOF, we read the whole message
+        when { 
+            tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                val elem = com.google.protobuf.kotlin.ValueInternal()
+                decoder.readMessage(elem.asInternal(), com.google.protobuf.kotlin.ValueInternal::decodeWith)
+                (msg.values as MutableList).add(elem)
+            }
+
+            else -> { 
+                // we are currently just skipping unknown fields (KRPC-191)
+                decoder.skipValue(tag.wireType)
+            }
+        }
+    }
+}
+
+private fun com.google.protobuf.kotlin.ListValueInternal.computeSize(): Int { 
+    var __result = 0
+    if (values.isNotEmpty()) { 
+        __result = values.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(1, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+    }
+
+    return __result
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.ListValue.asInternal(): com.google.protobuf.kotlin.ListValueInternal { 
+    return this as? com.google.protobuf.kotlin.ListValueInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.StructInternal.FieldsEntryInternal.checkRequiredFields() { 
+    // no required fields to check
+    if (presenceMask[0]) { 
+        value.asInternal().checkRequiredFields()
+    }
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.StructInternal.FieldsEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+    if (key.isNotEmpty()) { 
+        encoder.writeString(fieldNr = 1, value = key)
+    }
+
+    if (presenceMask[0]) { 
+        encoder.writeMessage(fieldNr = 2, value = value.asInternal()) { encodeWith(it) }
+    }
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.StructInternal.FieldsEntryInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.StructInternal.FieldsEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+    while (true) { 
+        val tag = decoder.readTag() ?: break // EOF, we read the whole message
+        when { 
+            tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.key = decoder.readString()
+            }
+
+            tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                if (!msg.presenceMask[0]) { 
+                    msg.value = com.google.protobuf.kotlin.ValueInternal()
+                }
+
+                decoder.readMessage(msg.value.asInternal(), com.google.protobuf.kotlin.ValueInternal::decodeWith)
+            }
+
+            else -> { 
+                // we are currently just skipping unknown fields (KRPC-191)
+                decoder.skipValue(tag.wireType)
+            }
+        }
+    }
+}
+
+private fun com.google.protobuf.kotlin.StructInternal.FieldsEntryInternal.computeSize(): Int { 
+    var __result = 0
+    if (key.isNotEmpty()) { 
+        __result += kotlinx.rpc.protobuf.internal.WireSize.string(key).let { kotlinx.rpc.protobuf.internal.WireSize.tag(1, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[0]) { 
+        __result += value.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(2, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
+    }
+
+    return __result
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.StructInternal.FieldsEntryInternal.asInternal(): com.google.protobuf.kotlin.StructInternal.FieldsEntryInternal { 
+    return this
+}
+
+@kotlinx.rpc.internal.utils.InternalRpcApi
+internal fun com.google.protobuf.kotlin.NullValue.Companion.fromNumber(number: Int): com.google.protobuf.kotlin.NullValue { 
+    return when (number) { 
+        0 -> { 
+            com.google.protobuf.kotlin.NullValue.NULL_VALUE
+        }
+
+        else -> { 
+            com.google.protobuf.kotlin.NullValue.UNRECOGNIZED(number)
+        }
+    }
+}
+

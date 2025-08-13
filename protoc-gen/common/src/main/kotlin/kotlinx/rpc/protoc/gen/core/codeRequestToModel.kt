@@ -285,11 +285,17 @@ private fun Descriptors.FileDescriptor.kotlinFileName(): String {
 }
 
 private fun Descriptors.FileDescriptor.kotlinPackage(): String {
-    return if (options.hasJavaPackage()) {
+    val requestedPackage = if (options.hasJavaPackage()) {
         options.javaPackage
     } else {
         `package`
     }
+
+    if (requestedPackage == "com.google.protobuf") {
+        return "com.google.protobuf.kotlin"
+    }
+
+    return requestedPackage
 }
 
 private fun Descriptors.FileDescriptor.protoFileNameToKotlinName(): String {

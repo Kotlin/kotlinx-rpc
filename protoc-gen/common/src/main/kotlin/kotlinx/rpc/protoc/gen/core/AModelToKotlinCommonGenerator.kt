@@ -22,6 +22,7 @@ const val WITH_CODEC_ANNO = "kotlinx.rpc.grpc.codec.WithCodec"
 abstract class AModelToKotlinCommonGenerator(
     protected val model: Model,
     protected val logger: Logger,
+    private val explicitApiModeEnabled: Boolean,
 ) {
     protected abstract fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration)
     protected abstract fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration)
@@ -50,7 +51,7 @@ abstract class AModelToKotlinCommonGenerator(
     private fun FileDeclaration.generatePublicKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(logger = logger) {
+        return file(logger = logger, explicitApiModeEnabled = explicitApiModeEnabled) {
             filename = this@generatePublicKotlinFile.name
             packageName = this@generatePublicKotlinFile.packageName.safeFullName()
             packagePath = this@generatePublicKotlinFile.packageName.safeFullName()
@@ -74,7 +75,7 @@ abstract class AModelToKotlinCommonGenerator(
     private fun FileDeclaration.generateInternalKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(logger = logger) {
+        return file(logger = logger, explicitApiModeEnabled = explicitApiModeEnabled) {
             filename = this@generateInternalKotlinFile.name
             packageName = this@generateInternalKotlinFile.packageName.safeFullName()
             packagePath =
