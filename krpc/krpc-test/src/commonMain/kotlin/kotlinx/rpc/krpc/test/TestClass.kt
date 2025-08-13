@@ -4,13 +4,39 @@
 
 package kotlinx.rpc.krpc.test
 
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 @Suppress("EqualsOrHashCode", "detekt.EqualsWithHashCodeExist")
 @Serializable
 open class TestClass(val value: Int = 0) {
     override fun equals(other: Any?): Boolean {
         if (other !is TestClass) return false
+        return value == other.value
+    }
+}
+
+@Suppress("EqualsOrHashCode", "detekt.EqualsWithHashCodeExist")
+@Serializable(with = TestClassThatThrowsWhileDeserialization.Serializer::class)
+class TestClassThatThrowsWhileDeserialization(val value: Int = 0) {
+    object Serializer : KSerializer<TestClassThatThrowsWhileDeserialization> {
+        override val descriptor = Int.serializer().descriptor
+
+        override fun serialize(encoder: Encoder, value: TestClassThatThrowsWhileDeserialization) {
+            encoder.encodeInt(value.value)
+        }
+
+        override fun deserialize(decoder: Decoder): TestClassThatThrowsWhileDeserialization {
+            throw SerializationException("Its TestClassThatThrowsWhileDeserialization")
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is TestClassThatThrowsWhileDeserialization) return false
         return value == other.value
     }
 }

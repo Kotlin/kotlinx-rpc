@@ -20,6 +20,7 @@ import kotlinx.rpc.krpc.server.KrpcServer
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -459,6 +460,16 @@ abstract class KrpcTransportTestBase {
     @Test
     fun testUnitFlow() = runTest {
         assertEquals(Unit, client.unitFlow().toList().single())
+    }
+
+    @Test
+    fun testPR445() = runTest {
+        assertFailsWith<SerializationException> {
+            val result = client.returnTestClassThatThrowsWhileDeserialization(42)
+            @Suppress("SENSELESS_COMPARISON")
+            if (result == null)
+                println("result must not be null")
+        }
     }
 }
 

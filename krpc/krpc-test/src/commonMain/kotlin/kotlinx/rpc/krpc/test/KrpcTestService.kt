@@ -64,6 +64,7 @@ interface KrpcTestService {
     suspend fun nullableReturn(returnNull: Boolean): TestClass?
     suspend fun variance(arg2: TestList<in TestClass>, arg3: TestList2<TestClass>): TestList<out TestClass>?
     suspend fun collectOnce(flow: Flow<String>)
+    suspend fun returnTestClassThatThrowsWhileDeserialization(value: Int): TestClassThatThrowsWhileDeserialization
 
     suspend fun nonSerializableClass(localDate: LocalDate): LocalDate
     suspend fun nonSerializableClassWithSerializer(
