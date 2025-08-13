@@ -11,12 +11,12 @@ import kotlinx.io.readString
 import kotlinx.io.writeString
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.codec.MessageCodecResolver
+import kotlinx.rpc.grpc.codec.SourcedMessageCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
-import kotlinx.serialization.serializer
 import kotlinx.serialization.serializerOrNull
 import kotlin.reflect.KType
 
@@ -36,8 +36,8 @@ public fun SerialFormat.asCodecResolver(): MessageCodecResolver =
 private class KotlinxSerializationCodec<T>(
     private val serializer: KSerializer<T>,
     private val serialFormat: SerialFormat,
-) : MessageCodec<T> {
-    override fun encode(value: T): Source {
+) : SourcedMessageCodec<T> {
+    override fun encodeToSource(value: T): Source {
         return when (serialFormat) {
             is StringFormat -> {
                 val stringValue = serialFormat.encodeToString(serializer, value)
@@ -59,7 +59,7 @@ private class KotlinxSerializationCodec<T>(
         }
     }
 
-    override fun decode(stream: Source): T {
+    override fun decodeFromSource(stream: Source): T {
         return when (serialFormat) {
             is StringFormat -> {
                 serialFormat.decodeFromString(serializer, stream.readString())

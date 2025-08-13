@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package kotlinx.rpc.grpc.test;
+package kotlinx.rpc.protobuf.test;
 
 enum MyEnum {
   option allow_alias = true;

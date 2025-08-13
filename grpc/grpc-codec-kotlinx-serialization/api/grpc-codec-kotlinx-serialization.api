@@ -1,6 +1,6 @@
 public final class kotlinx/rpc/grpc/codec/kotlinx/serialization/KotlinxSerializationCodecResolver : kotlinx/rpc/grpc/codec/MessageCodecResolver {
 	public fun <init> (Lkotlinx/serialization/SerialFormat;)V
-	public fun resolve (Lkotlin/reflect/KType;)Lkotlinx/rpc/grpc/codec/MessageCodec;
+	public fun resolveOrNull (Lkotlin/reflect/KType;)Lkotlinx/rpc/grpc/codec/MessageCodec;
 }
 
 public final class kotlinx/rpc/grpc/codec/kotlinx/serialization/KotlinxSerializationCodecResolverKt {
