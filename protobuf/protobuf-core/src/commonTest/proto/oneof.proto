@@ -7,13 +7,13 @@ message OneOfMsg {
     int32 sint = 2;
     fixed64 fixed = 3;
     test.submsg.Other other = 4;
-    kotlinx.rpc.grpc.test.MyEnum enum = 5;
+    kotlinx.rpc.protobuf.test.MyEnum enum = 5;
   }
 }
 
 message OneOfWithRequired {
   oneof field {
     int32 sint = 1;
-    kotlinx.rpc.grpc.test.common.PresenceCheck msg = 2;
+    kotlinx.rpc.protobuf.test.PresenceCheck msg = 2;
   }
 }
