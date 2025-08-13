@@ -89,7 +89,7 @@
             </li>
             <li>
                 <code>jvmMain</code> and <code>jvmTest</code> - source sets for Kotlin/Multiplatform projects.
-                Default source directories are <path>src/jsmMain/proto</path> and <path>src/jvmTest/proto</path>.
+                Default source directories are <path>src/jvmMain/proto</path> and <path>src/jvmTest/proto</path>.
                 <warning>
                     These will change to <path>src/commonMain/proto</path> and <path>src/commonTest/proto</path> in the
                     future.
