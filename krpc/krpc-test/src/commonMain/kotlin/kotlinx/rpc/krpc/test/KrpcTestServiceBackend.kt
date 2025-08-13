@@ -98,6 +98,10 @@ class KrpcTestServiceBackend : KrpcTestService {
         return arg1
     }
 
+    override suspend fun returnTestClassThatThrowsWhileDeserialization(value: Int): TestClassThatThrowsWhileDeserialization {
+        return TestClassThatThrowsWhileDeserialization(value)
+    }
+
     override suspend fun nullableParam(arg1: String?): String {
         return arg1 ?: "null"
     }

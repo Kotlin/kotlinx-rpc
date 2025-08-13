@@ -172,7 +172,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
 
     private val serverSupportedPlugins: CompletableDeferred<Set<KrpcPlugin>> = CompletableDeferred()
 
-    private val requestChannels = RpcInternalConcurrentHashMap<String, Channel<Any?>>()
+    private val requestChannels = RpcInternalConcurrentHashMap<String, Channel<Result<Any?>>>()
 
     @InternalRpcApi
     final override val supportedPlugins: Set<KrpcPlugin>
@@ -247,11 +247,11 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
 
             val callId = "$connectionId:${callable.name}:$id"
 
-            val channel = Channel<T>()
+            val channel = Channel<Result<T>>()
 
             try {
                 @Suppress("UNCHECKED_CAST")
-                requestChannels[callId] = channel as Channel<Any?>
+                requestChannels[callId] = channel as Channel<Result<Any?>>
 
                 val request = serializeRequest(
                     callId = callId,
@@ -308,7 +308,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
         }
     }
 
-    private suspend fun <T> FlowCollector<T>.consumeAndEmitServerMessages(channel: Channel<T>) {
+    private suspend fun <T> FlowCollector<T>.consumeAndEmitServerMessages(channel: Channel<Result<T>>) {
         while (true) {
             val element = channel.receiveCatching()
             if (element.isClosed) {
@@ -317,14 +317,22 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
             }
 
             if (!element.isFailure) {
-                emit(element.getOrThrow())
+                val result = element.getOrThrow()
+                result.fold(
+                    onSuccess = { value ->
+                        emit(value)
+                    },
+                    onFailure = { throwable ->
+                        throw throwable
+                    }
+                )
             }
         }
     }
 
     private suspend fun <T, @Rpc R : Any> handleServerStreamingMessage(
         message: KrpcCallMessage,
-        channel: Channel<T>,
+        channel: Channel<Result<T>>,
         callable: RpcCallable<R>,
     ) {
         when (message) {
@@ -355,7 +363,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 }
 
                 @Suppress("UNCHECKED_CAST")
-                channel.send(value.getOrNull() as T)
+                channel.send(value as Result<T>)
             }
 
             is KrpcCallMessage.StreamFinished -> {
