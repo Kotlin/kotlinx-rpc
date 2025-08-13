@@ -1,15 +1,31 @@
 public final class kotlinx/rpc/grpc/codec/EmptyMessageCodecResolver : kotlinx/rpc/grpc/codec/MessageCodecResolver {
 	public static final field INSTANCE Lkotlinx/rpc/grpc/codec/EmptyMessageCodecResolver;
-	public fun resolve (Lkotlin/reflect/KType;)Lkotlinx/rpc/grpc/codec/MessageCodec;
+	public fun resolveOrNull (Lkotlin/reflect/KType;)Lkotlinx/rpc/grpc/codec/MessageCodec;
 }
 
 public abstract interface class kotlinx/rpc/grpc/codec/MessageCodec {
-	public abstract fun decode (Lkotlinx/io/Source;)Ljava/lang/Object;
-	public abstract fun encode (Ljava/lang/Object;)Lkotlinx/io/Source;
+	public abstract fun decode (Ljava/io/InputStream;)Ljava/lang/Object;
+	public abstract fun encode (Ljava/lang/Object;)Ljava/io/InputStream;
+}
+
+public final class kotlinx/rpc/grpc/codec/MessageCodecKt {
+	public static final fun plus (Lkotlinx/rpc/grpc/codec/MessageCodecResolver;Lkotlinx/rpc/grpc/codec/MessageCodecResolver;)Lkotlinx/rpc/grpc/codec/MessageCodecResolver;
 }
 
 public abstract interface class kotlinx/rpc/grpc/codec/MessageCodecResolver {
-	public abstract fun resolve (Lkotlin/reflect/KType;)Lkotlinx/rpc/grpc/codec/MessageCodec;
+	public abstract fun resolveOrNull (Lkotlin/reflect/KType;)Lkotlinx/rpc/grpc/codec/MessageCodec;
+}
+
+public abstract interface class kotlinx/rpc/grpc/codec/SourcedMessageCodec : kotlinx/rpc/grpc/codec/MessageCodec {
+	public abstract fun decode (Ljava/io/InputStream;)Ljava/lang/Object;
+	public abstract fun decodeFromSource (Lkotlinx/io/Source;)Ljava/lang/Object;
+	public abstract fun encode (Ljava/lang/Object;)Ljava/io/InputStream;
+	public abstract fun encodeToSource (Ljava/lang/Object;)Lkotlinx/io/Source;
+}
+
+public final class kotlinx/rpc/grpc/codec/SourcedMessageCodec$DefaultImpls {
+	public static fun decode (Lkotlinx/rpc/grpc/codec/SourcedMessageCodec;Ljava/io/InputStream;)Ljava/lang/Object;
+	public static fun encode (Lkotlinx/rpc/grpc/codec/SourcedMessageCodec;Ljava/lang/Object;)Ljava/io/InputStream;
 }
 
 public abstract interface annotation class kotlinx/rpc/grpc/codec/WithCodec : java/lang/annotation/Annotation {

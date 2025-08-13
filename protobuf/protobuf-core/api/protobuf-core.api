@@ -1,0 +1,29 @@
+public final class kotlinx/rpc/protobuf/internal/ProtobufDecodingException : kotlinx/rpc/protobuf/internal/ProtobufException {
+	public static final field Companion Lkotlinx/rpc/protobuf/internal/ProtobufDecodingException$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class kotlinx/rpc/protobuf/internal/ProtobufDecodingException$Companion {
+}
+
+public final class kotlinx/rpc/protobuf/internal/ProtobufEncodingException : kotlinx/rpc/protobuf/internal/ProtobufException {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract class kotlinx/rpc/protobuf/internal/ProtobufException : java/lang/RuntimeException {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class kotlinx/rpc/protobuf/internal/WireDecoder_jvmKt {
+	public static final fun WireDecoder (Ljava/io/InputStream;)Lkotlinx/rpc/protobuf/internal/WireDecoder;
+	public static final fun checkForPlatformDecodeException (Lkotlin/jvm/functions/Function0;)V
+}
+
+public final class kotlinx/rpc/protobuf/internal/WireEncoder_jvmKt {
+	public static final fun WireEncoder (Lkotlinx/io/Sink;)Lkotlinx/rpc/protobuf/internal/WireEncoder;
+	public static final fun checkForPlatformEncodeException (Lkotlin/jvm/functions/Function0;)V
+}
+
