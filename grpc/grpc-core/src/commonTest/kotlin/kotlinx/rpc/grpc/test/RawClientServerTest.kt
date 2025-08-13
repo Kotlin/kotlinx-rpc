@@ -18,7 +18,7 @@ import kotlinx.rpc.grpc.ManagedChannelBuilder
 import kotlinx.rpc.grpc.Server
 import kotlinx.rpc.grpc.ServerBuilder
 import kotlinx.rpc.grpc.buildChannel
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.codec.SourcedMessageCodec
 import kotlinx.rpc.grpc.internal.GrpcChannel
 import kotlinx.rpc.grpc.internal.MethodDescriptor
 import kotlinx.rpc.grpc.internal.MethodType
@@ -151,12 +151,12 @@ class RawClientServerTest {
     companion object {
         private const val SERVICE_NAME = "TestService"
 
-        private val simpleCodec = object : MessageCodec<String> {
-            override fun encode(value: String): Source {
+        private val simpleCodec = object : SourcedMessageCodec<String> {
+            override fun encodeToSource(value: String): Source {
                 return Buffer().apply { writeString(value) }
             }
 
-            override fun decode(stream: Source): String {
+            override fun decodeFromSource(stream: Source): String {
                 return stream.readString()
             }
         }

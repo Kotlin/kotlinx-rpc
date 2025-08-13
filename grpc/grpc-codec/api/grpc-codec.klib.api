@@ -1,5 +1,6 @@
 // Klib ABI Dump
 // Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, wasmWasi, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Alias: native => [iosArm64, iosSimulatorArm64, iosX64, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
 // Rendering settings:
 // - Signature version: 2
 // - Show manifest properties: true
@@ -14,14 +15,42 @@ open annotation class kotlinx.rpc.grpc.codec/WithCodec : kotlin/Annotation { // 
 }
 
 abstract fun interface kotlinx.rpc.grpc.codec/MessageCodecResolver { // kotlinx.rpc.grpc.codec/MessageCodecResolver|null[0]
-    abstract fun resolve(kotlin.reflect/KType): kotlinx.rpc.grpc.codec/MessageCodec<*> // kotlinx.rpc.grpc.codec/MessageCodecResolver.resolve|resolve(kotlin.reflect.KType){}[0]
+    abstract fun resolveOrNull(kotlin.reflect/KType): kotlinx.rpc.grpc.codec/MessageCodec<*>? // kotlinx.rpc.grpc.codec/MessageCodecResolver.resolveOrNull|resolveOrNull(kotlin.reflect.KType){}[0]
 }
 
 abstract interface <#A: kotlin/Any?> kotlinx.rpc.grpc.codec/MessageCodec { // kotlinx.rpc.grpc.codec/MessageCodec|null[0]
-    abstract fun decode(kotlinx.io/Source): #A // kotlinx.rpc.grpc.codec/MessageCodec.decode|decode(kotlinx.io.Source){}[0]
-    abstract fun encode(#A): kotlinx.io/Source // kotlinx.rpc.grpc.codec/MessageCodec.encode|encode(1:0){}[0]
+    // Targets: [native]
+    abstract fun decode(kotlinx.rpc.protobuf.input.stream/BufferInputStream): #A // kotlinx.rpc.grpc.codec/MessageCodec.decode|decode(kotlinx.rpc.protobuf.input.stream.BufferInputStream){}[0]
+
+    // Targets: [native]
+    abstract fun encode(#A): kotlinx.rpc.protobuf.input.stream/BufferInputStream // kotlinx.rpc.grpc.codec/MessageCodec.encode|encode(1:0){}[0]
+
+    // Targets: [js, wasmJs, wasmWasi]
+    abstract fun decode(kotlinx.rpc.protobuf.input.stream/InputStream): #A // kotlinx.rpc.grpc.codec/MessageCodec.decode|decode(kotlinx.rpc.protobuf.input.stream.InputStream){}[0]
+
+    // Targets: [js, wasmJs, wasmWasi]
+    abstract fun encode(#A): kotlinx.rpc.protobuf.input.stream/InputStream // kotlinx.rpc.grpc.codec/MessageCodec.encode|encode(1:0){}[0]
+}
+
+abstract interface <#A: kotlin/Any?> kotlinx.rpc.grpc.codec/SourcedMessageCodec : kotlinx.rpc.grpc.codec/MessageCodec<#A> { // kotlinx.rpc.grpc.codec/SourcedMessageCodec|null[0]
+    abstract fun decodeFromSource(kotlinx.io/Source): #A // kotlinx.rpc.grpc.codec/SourcedMessageCodec.decodeFromSource|decodeFromSource(kotlinx.io.Source){}[0]
+    abstract fun encodeToSource(#A): kotlinx.io/Source // kotlinx.rpc.grpc.codec/SourcedMessageCodec.encodeToSource|encodeToSource(1:0){}[0]
+
+    // Targets: [native]
+    open fun decode(kotlinx.rpc.protobuf.input.stream/BufferInputStream): #A // kotlinx.rpc.grpc.codec/SourcedMessageCodec.decode|decode(kotlinx.rpc.protobuf.input.stream.BufferInputStream){}[0]
+
+    // Targets: [native]
+    open fun encode(#A): kotlinx.rpc.protobuf.input.stream/BufferInputStream // kotlinx.rpc.grpc.codec/SourcedMessageCodec.encode|encode(1:0){}[0]
+
+    // Targets: [js, wasmJs, wasmWasi]
+    open fun decode(kotlinx.rpc.protobuf.input.stream/InputStream): #A // kotlinx.rpc.grpc.codec/SourcedMessageCodec.decode|decode(kotlinx.rpc.protobuf.input.stream.InputStream){}[0]
+
+    // Targets: [js, wasmJs, wasmWasi]
+    open fun encode(#A): kotlinx.rpc.protobuf.input.stream/InputStream // kotlinx.rpc.grpc.codec/SourcedMessageCodec.encode|encode(1:0){}[0]
 }
 
 final object kotlinx.rpc.grpc.codec/EmptyMessageCodecResolver : kotlinx.rpc.grpc.codec/MessageCodecResolver { // kotlinx.rpc.grpc.codec/EmptyMessageCodecResolver|null[0]
-    final fun resolve(kotlin.reflect/KType): kotlinx.rpc.grpc.codec/MessageCodec<*> // kotlinx.rpc.grpc.codec/EmptyMessageCodecResolver.resolve|resolve(kotlin.reflect.KType){}[0]
+    final fun resolveOrNull(kotlin.reflect/KType): kotlinx.rpc.grpc.codec/MessageCodec<*>? // kotlinx.rpc.grpc.codec/EmptyMessageCodecResolver.resolveOrNull|resolveOrNull(kotlin.reflect.KType){}[0]
 }
+
+final fun (kotlinx.rpc.grpc.codec/MessageCodecResolver).kotlinx.rpc.grpc.codec/plus(kotlinx.rpc.grpc.codec/MessageCodecResolver): kotlinx.rpc.grpc.codec/MessageCodecResolver // kotlinx.rpc.grpc.codec/plus|plus@kotlinx.rpc.grpc.codec.MessageCodecResolver(kotlinx.rpc.grpc.codec.MessageCodecResolver){}[0]

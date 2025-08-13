@@ -26,8 +26,8 @@ abstract class AModelToKotlinCommonGenerator(
     protected abstract fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration)
     protected abstract fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration)
 
-    protected abstract val hasPublicGeneratedFiles: Boolean
-    protected abstract val hasInternalGeneratedFiles: Boolean
+    protected abstract val FileDeclaration.hasPublicGeneratedContent: Boolean
+    protected abstract val FileDeclaration.hasInternalGeneratedContent: Boolean
 
     protected var currentPackage: FqName = FqName.Package.Root
     protected val additionalPublicImports = mutableSetOf<String>()
@@ -42,8 +42,8 @@ abstract class AModelToKotlinCommonGenerator(
         additionalInternalImports.clear()
 
         return listOfNotNull(
-            if (hasPublicGeneratedFiles) generatePublicKotlinFile() else null,
-            if (hasInternalGeneratedFiles) generateInternalKotlinFile() else null,
+            if (hasPublicGeneratedContent) generatePublicKotlinFile() else null,
+            if (hasInternalGeneratedContent) generateInternalKotlinFile() else null,
         )
     }
 

@@ -5,7 +5,6 @@
 package kotlinx.rpc.codegen.checkers
 
 import kotlinx.rpc.codegen.FirRpcPredicates
-import kotlinx.rpc.codegen.FirVersionSpecificApiImpl.toClassSymbolVS
 import kotlinx.rpc.codegen.checkers.diagnostics.FirGrpcDiagnostics
 import kotlinx.rpc.codegen.common.RpcClassId
 import kotlinx.rpc.codegen.vsApi
@@ -20,7 +19,7 @@ import org.jetbrains.kotlin.fir.declarations.getAnnotationByClassId
 import org.jetbrains.kotlin.fir.declarations.getKClassArgument
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.resolve.defaultType
-import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
+import org.jetbrains.kotlin.fir.resolve.getSuperTypes
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.classId
@@ -55,9 +54,7 @@ object FirWithCodecDeclarationChecker {
                         "for declaration: ${declaration.symbol.classId.asSingleFqName()}"
             )
 
-        val codecTargetClass = codecClassSymbol.findMessageCodecSuperType(context.session)
-            .typeArguments.first().type
-            ?: error("Unexpected unresolved type argument for @WithCodec annotation")
+        val codecTargetClass = codecClassSymbol.resolveMessageCodecTypeArgument(context.session)
 
         if (codecTargetClass.classId != declaration.symbol.classId) {
             reporter.reportOn(
@@ -78,12 +75,13 @@ object FirWithCodecDeclarationChecker {
         }
     }
 
-    private fun FirClassSymbol<*>.findMessageCodecSuperType(session: FirSession): ConeKotlinType = vsApi {
-        return resolvedSuperTypes.find {
-            it.classId == RpcClassId.messageCodec
-        } ?: resolvedSuperTypes.firstNotNullOf {
-            it.toClassSymbolVS(session)?.findMessageCodecSuperType(session)
-        }
+    private fun FirClassSymbol<*>.resolveMessageCodecTypeArgument(session: FirSession): ConeKotlinType = vsApi {
+        val superTypes = getSuperTypes(session, recursive = true, lookupInterfaces = true, substituteSuperTypes = true)
+
+        return superTypes
+            .find { it.classId == RpcClassId.messageCodec }
+            ?.typeArguments?.single()?.type
+            ?: error("'MessageCodec' supertype not found for $classId")
     }
 
     private val CODEC_ARGUMENT_NAME = Name.identifier("codec")

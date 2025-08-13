@@ -6,6 +6,7 @@ package kotlinx.rpc.grpc
 
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
@@ -52,7 +53,7 @@ public class GrpcServer internal constructor(
     parentContext: CoroutineContext = EmptyCoroutineContext,
     configure: ServerBuilder<*>.() -> Unit,
 ) : RpcServer, Server {
-    private val internalContext = SupervisorJob(parentContext.job)
+    private val internalContext = SupervisorJob(parentContext[Job])
     private val internalScope = CoroutineScope(parentContext + internalContext)
 
     private val messageCodecResolver = messageCodecResolver + ThrowingMessageCodecResolver
