@@ -467,8 +467,9 @@ abstract class KrpcTransportTestBase {
         assertFailsWith<SerializationException> {
             val result = client.returnTestClassThatThrowsWhileDeserialization(42)
             @Suppress("SENSELESS_COMPARISON")
-            if (result == null)
-                println("result must not be null")
+            if (result == null) {
+                assertNotNull(result, "result must not be null")
+            }
         }
     }
 }
