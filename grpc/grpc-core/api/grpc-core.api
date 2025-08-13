@@ -99,13 +99,3 @@ public final class kotlinx/rpc/grpc/Status_jvmKt {
 public abstract interface annotation class kotlinx/rpc/grpc/annotations/Grpc : java/lang/annotation/Annotation {
 }
 
-public abstract interface class kotlinx/rpc/grpc/descriptor/GrpcClientDelegate {
-	public abstract fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun callServerStreaming (Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/flow/Flow;
-}
-
-public abstract interface class kotlinx/rpc/grpc/descriptor/GrpcDelegate {
-	public abstract fun clientProvider (Lkotlinx/rpc/grpc/ManagedChannel;)Lkotlinx/rpc/grpc/descriptor/GrpcClientDelegate;
-	public abstract fun definitionFor (Ljava/lang/Object;)Lio/grpc/ServerServiceDefinition;
-}
-

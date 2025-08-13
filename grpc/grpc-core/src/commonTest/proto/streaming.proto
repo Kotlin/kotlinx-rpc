@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "reference_package.proto";
+import "reference_package_grpc.proto";
 
 service StreamingTestService {
   rpc Server(kotlinx.rpc.grpc.test.References) returns (stream kotlinx.rpc.grpc.test.References);

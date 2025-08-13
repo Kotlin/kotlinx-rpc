@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+message Other {
+  string arg = 1;
+}
+
+message References {
+  Other other = 2;
+}
