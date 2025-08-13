@@ -1,0 +1,24 @@
+// Klib ABI Dump
+// Targets: [macosArm64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <org.jetbrains.kotlinx:protobuf-core>
+final class kotlinx.rpc.protobuf.internal/ProtobufDecodingException : kotlinx.rpc.protobuf.internal/ProtobufException { // kotlinx.rpc.protobuf.internal/ProtobufDecodingException|null[0]
+    constructor <init>(kotlin/String, kotlin/Throwable? = ...) // kotlinx.rpc.protobuf.internal/ProtobufDecodingException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+
+    final object Companion // kotlinx.rpc.protobuf.internal/ProtobufDecodingException.Companion|null[0]
+}
+
+final class kotlinx.rpc.protobuf.internal/ProtobufEncodingException : kotlinx.rpc.protobuf.internal/ProtobufException { // kotlinx.rpc.protobuf.internal/ProtobufEncodingException|null[0]
+    constructor <init>(kotlin/String, kotlin/Throwable? = ...) // kotlinx.rpc.protobuf.internal/ProtobufEncodingException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+}
+
+sealed class kotlinx.rpc.protobuf.internal/ProtobufException : kotlin/RuntimeException // kotlinx.rpc.protobuf.internal/ProtobufException|null[0]
+
+final fun kotlinx.rpc.protobuf.internal/WireDecoder(kotlinx.rpc.protobuf.input.stream/BufferInputStream): kotlinx.rpc.protobuf.internal/WireDecoder // kotlinx.rpc.protobuf.internal/WireDecoder|WireDecoder(kotlinx.rpc.protobuf.input.stream.BufferInputStream){}[0]
+final fun kotlinx.rpc.protobuf.internal/WireEncoder(kotlinx.io/Sink): kotlinx.rpc.protobuf.internal/WireEncoder // kotlinx.rpc.protobuf.internal/WireEncoder|WireEncoder(kotlinx.io.Sink){}[0]
+final inline fun kotlinx.rpc.protobuf.internal/checkForPlatformDecodeException(kotlin/Function0<kotlin/Unit>) // kotlinx.rpc.protobuf.internal/checkForPlatformDecodeException|checkForPlatformDecodeException(kotlin.Function0<kotlin.Unit>){}[0]
+final inline fun kotlinx.rpc.protobuf.internal/checkForPlatformEncodeException(kotlin/Function0<kotlin/Unit>) // kotlinx.rpc.protobuf.internal/checkForPlatformEncodeException|checkForPlatformEncodeException(kotlin.Function0<kotlin.Unit>){}[0]

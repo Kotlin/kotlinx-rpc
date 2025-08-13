@@ -23,11 +23,11 @@ FILE: module_main_withCodec.kt
             super<R|kotlin/Any|>()
         }
 
-        public open override fun encode(value: R|Test|): R|kotlinx/io/Source| {
+        public open override fun encode(value: R|Test|): R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream| {
             R|kotlin/error|(String(Not implemented))
         }
 
-        public open override fun decode(stream: R|kotlinx/io/Source|): R|Test| {
+        public open override fun decode(stream: R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream|): R|Test| {
             R|kotlin/error|(String(Not implemented))
         }
 
@@ -43,11 +43,11 @@ FILE: module_main_withCodec.kt
             super<R|kotlin/Any|>()
         }
 
-        public open override fun encode(value: R|Test3|): R|kotlinx/io/Source| {
+        public open override fun encode(value: R|Test3|): R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream| {
             R|kotlin/error|(String(Not implemented))
         }
 
-        public open override fun decode(stream: R|kotlinx/io/Source|): R|Test3| {
+        public open override fun decode(stream: R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream|): R|Test3| {
             R|kotlin/error|(String(Not implemented))
         }
 
@@ -71,11 +71,11 @@ FILE: module_main_withCodec.kt
             super<R|kotlin/Any|>()
         }
 
-        public open override fun encode(value: R|Test4|): R|kotlinx/io/Source| {
+        public open override fun encode(value: R|Test4|): R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream| {
             R|kotlin/error|(String(Not implemented))
         }
 
-        public open override fun decode(stream: R|kotlinx/io/Source|): R|Test4| {
+        public open override fun decode(stream: R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream|): R|Test4| {
             R|kotlin/error|(String(Not implemented))
         }
 
@@ -83,6 +83,80 @@ FILE: module_main_withCodec.kt
     @R|kotlinx/rpc/grpc/codec/WithCodec|(codec = <getClass>(Q|TestCodec4|)) public final class Test5 : R|kotlin/Any| {
         public constructor(): R|Test5| {
             super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|kotlinx/rpc/grpc/codec/WithCodec|(codec = <getClass>(Q|TestCodec6|)) public final class Test6 : R|kotlin/Any| {
+        public constructor(): R|Test6| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final object TestCodec6 : R|kotlinx/rpc/grpc/codec/SourcedMessageCodec<Test6>| {
+        private constructor(): R|TestCodec6| {
+            super<R|kotlin/Any|>()
+        }
+
+        public open override fun encodeToSource(value: R|Test6|): R|kotlinx/io/Source| {
+            R|kotlin/error|(String(Not implemented))
+        }
+
+        public open override fun decodeFromSource(stream: R|kotlinx/io/Source|): R|Test6| {
+            R|kotlin/error|(String(Not implemented))
+        }
+
+    }
+    @R|kotlinx/rpc/grpc/codec/WithCodec|(codec = <getClass>(Q|TestCodec6|)) public final class Test7 : R|kotlin/Any| {
+        public constructor(): R|Test7| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public abstract interface CustomCodec1<A> : R|kotlinx/rpc/grpc/codec/MessageCodec<A>| {
+    }
+    public abstract interface CustomCodec2<B> : R|kotlinx/rpc/grpc/codec/MessageCodec<B>| {
+    }
+    public abstract interface CustomCodec3<C> : R|CustomCodec2<C>| {
+    }
+    public abstract interface CustomCodec4<D> : R|CustomCodec3<D>|, R|CustomCodec1<D>| {
+    }
+    @R|kotlinx/rpc/grpc/codec/WithCodec|(codec = <getClass>(Q|TestCodec8|)) public final class Test8 : R|kotlin/Any| {
+        public constructor(): R|Test8| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final object TestCodec8 : R|CustomCodec4<Test8>| {
+        private constructor(): R|TestCodec8| {
+            super<R|kotlin/Any|>()
+        }
+
+        public open override fun encode(value: R|Test8|): R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream| {
+            R|kotlin/error|(String(Not implemented))
+        }
+
+        public open override fun decode(stream: R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream|): R|Test8| {
+            R|kotlin/error|(String(Not implemented))
+        }
+
+    }
+    @R|kotlinx/rpc/grpc/codec/WithCodec|(codec = <getClass>(Q|TestCodec9|)) public final class Test9 : R|kotlin/Any| {
+        public constructor(): R|Test9| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final object TestCodec9 : R|CustomCodec4<Test8>| {
+        private constructor(): R|TestCodec9| {
+            super<R|kotlin/Any|>()
+        }
+
+        public open override fun encode(value: R|Test8|): R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream| {
+            R|kotlin/error|(String(Not implemented))
+        }
+
+        public open override fun decode(stream: R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream|): R|Test8| {
+            R|kotlin/error|(String(Not implemented))
         }
 
     }

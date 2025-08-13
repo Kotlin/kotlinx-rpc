@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package kotlinx.rpc.grpc.test;
+
+import "reference_package_grpc.proto";
+
+message TestMap {
+  map<string, int64> primitives = 1;
+  map<string, References> references = 2;
+}
+

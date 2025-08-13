@@ -41,6 +41,7 @@ kotlin {
                 implementation(libs.serialization.json)
 
                 implementation(projects.grpc.grpcCodecKotlinxSerialization)
+                implementation(projects.protobuf.protobufCore)
             }
         }
 
@@ -72,14 +73,6 @@ kotlin {
             extraOpts(
                 "-libraryPath", "${cinteropCLib.resolve("bazel-out/darwin_arm64-opt/bin")}",
             )
-        }
-    }
-}
-
-protoSourceSets {
-    commonTest {
-        proto {
-            exclude("exclude/**")
         }
     }
 }

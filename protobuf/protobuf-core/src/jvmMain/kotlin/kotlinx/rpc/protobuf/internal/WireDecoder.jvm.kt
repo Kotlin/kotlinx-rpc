@@ -6,12 +6,11 @@ package kotlinx.rpc.protobuf.internal
 
 import com.google.protobuf.CodedInputStream
 import com.google.protobuf.InvalidProtocolBufferException
-import kotlinx.io.Buffer
-import kotlinx.io.asInputStream
+import java.io.InputStream
 
-internal class WireDecoderJvm(source: Buffer) : WireDecoder {
+internal class WireDecoderJvm(source: InputStream) : WireDecoder {
     // there is no way to omit coping here
-    internal val codedInputStream: CodedInputStream = CodedInputStream.newInstance(source.asInputStream())
+    internal val codedInputStream: CodedInputStream = CodedInputStream.newInstance(source)
 
     override fun readTag(): KTag? {
         val tag = codedInputStream.readTag().toUInt()
@@ -121,6 +120,6 @@ public actual inline fun checkForPlatformDecodeException(block: () -> Unit) {
     }
 }
 
-public actual fun WireDecoder(source: Buffer): WireDecoder {
+public actual fun WireDecoder(source: InputStream): WireDecoder {
     return WireDecoderJvm(source)
 }
