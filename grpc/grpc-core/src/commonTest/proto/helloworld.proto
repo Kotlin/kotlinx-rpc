@@ -4,7 +4,9 @@ syntax = "proto3";
 // The request message containing the user's name.
 message HelloRequest {
   string name = 1;
+  optional uint32 timeout = 2;
 }
+
 
 // The response message containing the greetings
 message HelloReply {

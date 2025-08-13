@@ -123,6 +123,9 @@ internal fun grpc_slice.len(): ULong {
     }
 }
 
+internal fun String.toGrpcSlice(): CValue<grpc_slice> {
+    return grpc_slice_from_copied_string(this)
+}
 
 internal fun grpc_status_code.toKotlin(): StatusCode = when (this) {
     grpc_status_code.GRPC_STATUS_OK -> StatusCode.OK
