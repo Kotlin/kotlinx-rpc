@@ -6,6 +6,7 @@ package kotlinx.rpc.protobuf.internal
 
 import kotlinx.io.Buffer
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.input.stream.InputStream
 
 // TODO: Evaluate if this buffer size is suitable for all targets (KRPC-186)
 // maximum buffer size to allocate as contiguous memory in bytes
@@ -116,4 +117,4 @@ public expect inline fun checkForPlatformDecodeException(block: () -> Unit)
  * @param source The buffer containing the encoded wire-format data.
  */
 @InternalRpcApi
-public expect fun WireDecoder(source: Buffer): WireDecoder
+public expect fun WireDecoder(source: InputStream): WireDecoder

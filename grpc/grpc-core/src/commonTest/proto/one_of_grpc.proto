@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package kotlinx.rpc.grpc.test;
 
-import "all_primitives.proto";
-import "reference_package.proto";
+import "all_primitives_grpc.proto";
+import "reference_package_grpc.proto";
 
 message OneOf {
   oneof primitives {
@@ -19,7 +19,7 @@ message OneOf {
 
   oneof mixed {
     int64 int64 = 6;
-    AllPrimitives allPrimitives = 7;
+    kotlinx.rpc.grpc.test.AllPrimitives allPrimitives = 7;
   }
 
   oneof single {

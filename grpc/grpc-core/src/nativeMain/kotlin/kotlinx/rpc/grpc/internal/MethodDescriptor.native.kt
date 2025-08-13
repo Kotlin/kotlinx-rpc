@@ -6,9 +6,7 @@ package kotlinx.rpc.grpc.internal
 
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.internal.utils.InternalRpcApi
-
-@InternalRpcApi
-public actual abstract class InputStream
+import kotlinx.rpc.protobuf.input.stream.InputStream
 
 @InternalRpcApi
 internal actual val MethodDescriptor<*, *>.type: MethodType

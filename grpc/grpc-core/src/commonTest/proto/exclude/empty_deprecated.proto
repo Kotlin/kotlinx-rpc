@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-package kotlinx.rpc.grpc.test;
-
-message EmptyDeprecated {
-  option deprecated = true;
-}

@@ -44,10 +44,6 @@ public abstract interface class kotlinx/rpc/descriptor/RpcInvokator$FlowResponse
 	public abstract fun call (Ljava/lang/Object;[Ljava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
 }
 
-public abstract interface class kotlinx/rpc/descriptor/RpcInvokator$Method : kotlinx/rpc/descriptor/RpcInvokator {
-	public abstract fun call (Ljava/lang/Object;[Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
 public abstract interface class kotlinx/rpc/descriptor/RpcInvokator$UnaryResponse : kotlinx/rpc/descriptor/RpcInvokator {
 	public abstract fun call (Ljava/lang/Object;[Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }

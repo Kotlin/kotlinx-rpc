@@ -7,6 +7,9 @@ package kotlinx.rpc.grpc.codec
 import kotlinx.io.Source
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.input.stream.InputStream
+import kotlinx.rpc.protobuf.input.stream.asInputStream
+import kotlinx.rpc.protobuf.input.stream.asSource
 import kotlin.reflect.KType
 
 @ExperimentalRpcApi
@@ -30,8 +33,22 @@ public operator fun MessageCodecResolver.plus(other: MessageCodecResolver): Mess
 
 @ExperimentalRpcApi
 public interface MessageCodec<T> {
-    public fun encode(value: T): Source
-    public fun decode(stream: Source): T
+    public fun encode(value: T): InputStream
+    public fun decode(stream: InputStream): T
+}
+
+@ExperimentalRpcApi
+public interface SourcedMessageCodec<T> : MessageCodec<T> {
+    public fun encodeToSource(value: T): Source
+    public fun decodeFromSource(stream: Source): T
+
+    override fun encode(value: T): InputStream {
+        return encodeToSource(value).asInputStream()
+    }
+
+    override fun decode(stream: InputStream): T {
+        return decodeFromSource(stream.asSource())
+    }
 }
 
 @InternalRpcApi

@@ -1,13 +1,13 @@
 syntax = "proto3";
 
-import "reference.proto";
-import "reference_package.proto";
-import "enum.proto";
-import "optional.proto";
-import "repeated.proto";
-import "nested.proto";
-import "test_map.proto";
-import "one_of.proto";
+import "reference_grpc.proto";
+import "reference_package_grpc.proto";
+import "enum_grpc.proto";
+import "optional_grpc.proto";
+import "repeated_grpc.proto";
+import "nested_grpc.proto";
+import "test_map_grpc.proto";
+import "one_of_grpc.proto";
 
 service ReferenceTestService {
   rpc Get(References) returns (kotlinx.rpc.grpc.test.References);

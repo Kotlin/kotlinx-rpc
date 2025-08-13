@@ -13,8 +13,8 @@ import kotlinx.io.Source
 import kotlinx.io.readString
 import kotlinx.io.writeString
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.codec.MessageCodecResolver
+import kotlinx.rpc.grpc.codec.SourcedMessageCodec
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -22,12 +22,12 @@ import kotlin.test.assertEquals
 
 @WithCodec(Message.Companion::class)
 class Message(val value: String) {
-    companion object : MessageCodec<Message> {
-        override fun encode(value: Message): Source {
+    companion object : SourcedMessageCodec<Message> {
+        override fun encodeToSource(value: Message): Source {
             return Buffer().apply { writeString(value.value) }
         }
 
-        override fun decode(stream: Source): Message {
+        override fun decodeFromSource(stream: Source): Message {
             return Message(stream.readString())
         }
     }
@@ -135,22 +135,22 @@ class CustomResolverGrpcServiceTest : BaseGrpcServiceTest() {
             }
         }
 
-        val stringCodec = object : MessageCodec<String> {
-            override fun encode(value: String): Source {
+        val stringCodec = object : SourcedMessageCodec<String> {
+            override fun encodeToSource(value: String): Source {
                 return Buffer().apply { writeString(value) }
             }
 
-            override fun decode(stream: Source): String {
+            override fun decodeFromSource(stream: Source): String {
                 return stream.readString()
             }
         }
 
-        val unitCodec = object : MessageCodec<Unit> {
-            override fun encode(value: Unit): Source {
+        val unitCodec = object : SourcedMessageCodec<Unit> {
+            override fun encodeToSource(value: Unit): Source {
                 return Buffer()
             }
 
-            override fun decode(stream: Source) {
+            override fun decodeFromSource(stream: Source) {
                 check(stream.exhausted())
             }
         }

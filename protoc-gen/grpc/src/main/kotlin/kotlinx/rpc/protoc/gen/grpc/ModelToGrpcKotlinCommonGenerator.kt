@@ -15,8 +15,8 @@ class ModelToGrpcKotlinCommonGenerator(
     model: Model,
     logger: Logger,
 ) : AModelToKotlinCommonGenerator(model, logger) {
-    override val hasPublicGeneratedFiles: Boolean = model.files.any { it.serviceDeclarations.isNotEmpty() }
-    override val hasInternalGeneratedFiles: Boolean = false
+    override val FileDeclaration.hasPublicGeneratedContent: Boolean get() = serviceDeclarations.isNotEmpty()
+    override val FileDeclaration.hasInternalGeneratedContent: Boolean get() = false
 
     override fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration) {
         fileDeclaration.serviceDeclarations.forEach { generatePublicService(it) }

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "presence_check.proto";
 
-package kotlinx.rpc.grpc.test.common;
+package kotlinx.rpc.protobuf.test;
 
 message Repeated {
   repeated fixed32 listFixed32 = 1 [packed = false];

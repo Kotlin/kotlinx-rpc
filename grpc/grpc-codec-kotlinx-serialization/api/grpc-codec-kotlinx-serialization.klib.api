@@ -9,7 +9,7 @@
 final class kotlinx.rpc.grpc.codec.kotlinx.serialization/KotlinxSerializationCodecResolver : kotlinx.rpc.grpc.codec/MessageCodecResolver { // kotlinx.rpc.grpc.codec.kotlinx.serialization/KotlinxSerializationCodecResolver|null[0]
     constructor <init>(kotlinx.serialization/SerialFormat) // kotlinx.rpc.grpc.codec.kotlinx.serialization/KotlinxSerializationCodecResolver.<init>|<init>(kotlinx.serialization.SerialFormat){}[0]
 
-    final fun resolve(kotlin.reflect/KType): kotlinx.rpc.grpc.codec/MessageCodec<*> // kotlinx.rpc.grpc.codec.kotlinx.serialization/KotlinxSerializationCodecResolver.resolve|resolve(kotlin.reflect.KType){}[0]
+    final fun resolveOrNull(kotlin.reflect/KType): kotlinx.rpc.grpc.codec/MessageCodec<*>? // kotlinx.rpc.grpc.codec.kotlinx.serialization/KotlinxSerializationCodecResolver.resolveOrNull|resolveOrNull(kotlin.reflect.KType){}[0]
 }
 
 final fun (kotlinx.serialization/SerialFormat).kotlinx.rpc.grpc.codec.kotlinx.serialization/asCodecResolver(): kotlinx.rpc.grpc.codec/MessageCodecResolver // kotlinx.rpc.grpc.codec.kotlinx.serialization/asCodecResolver|asCodecResolver@kotlinx.serialization.SerialFormat(){}[0]

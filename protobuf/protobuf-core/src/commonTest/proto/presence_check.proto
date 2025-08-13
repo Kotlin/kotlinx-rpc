@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-package kotlinx.rpc.grpc.test.common;
+package kotlinx.rpc.protobuf.test;
 
 message PresenceCheck {
   required int32 RequiredPresence = 1;

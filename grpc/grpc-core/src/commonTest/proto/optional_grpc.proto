@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package kotlinx.rpc.grpc.test;
 
-import 'reference_package.proto';
+import 'reference_package_grpc.proto';
 
 message OptionalTypes {
   optional string name = 1;

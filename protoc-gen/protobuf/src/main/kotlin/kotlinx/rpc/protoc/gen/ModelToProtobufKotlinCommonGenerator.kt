@@ -25,11 +25,11 @@ class ModelToProtobufKotlinCommonGenerator(
     model: Model,
     logger: Logger,
 ) : AModelToKotlinCommonGenerator(model, logger) {
-    override val hasPublicGeneratedFiles: Boolean = model.files.any {
-        it.enumDeclarations.isNotEmpty() || it.messageDeclarations.isNotEmpty()
-    }
+    override val FileDeclaration.hasPublicGeneratedContent: Boolean
+        get() = enumDeclarations.isNotEmpty() || messageDeclarations.isNotEmpty()
 
-    override val hasInternalGeneratedFiles: Boolean = hasPublicGeneratedFiles
+    override val FileDeclaration.hasInternalGeneratedContent: Boolean
+        get() = hasPublicGeneratedContent
 
     override fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration) {
         fileDeclaration.messageDeclarations.forEach { generatePublicMessage(it) }
@@ -176,21 +176,21 @@ class ModelToProtobufKotlinCommonGenerator(
         if (!declaration.isUserFacing) return
 
         val msgFqName = declaration.name.safeFullName()
-        val sourceFqName = "kotlinx.io.Source"
+        val inputStreamFqName = "kotlinx.rpc.protobuf.input.stream.InputStream"
         val bufferFqName = "kotlinx.io.Buffer"
         scope("object CODEC : kotlinx.rpc.grpc.codec.MessageCodec<$msgFqName>") {
-            function("encode", modifiers = "override", args = "value: $msgFqName", returnType = sourceFqName) {
+            function("encode", modifiers = "override", args = "value: $msgFqName", returnType = inputStreamFqName) {
                 code("val buffer = $bufferFqName()")
                 code("val encoder = $PB_PKG.WireEncoder(buffer)")
                 scope("${PB_PKG}.checkForPlatformEncodeException", nlAfterClosed = false) {
                     code("value.asInternal().encodeWith(encoder)")
                 }
                 code("encoder.flush()")
-                code("return buffer")
+                code("return buffer.asInputStream()")
             }
 
-            function("decode", modifiers = "override", args = "stream: $sourceFqName", returnType = msgFqName) {
-                scope("$PB_PKG.WireDecoder(stream as $bufferFqName).use") {
+            function("decode", modifiers = "override", args = "stream: $inputStreamFqName", returnType = msgFqName) {
+                scope("$PB_PKG.WireDecoder(stream).use") {
                     code("val msg = ${declaration.internalClassFullName()}()")
                     scope("${PB_PKG}.checkForPlatformDecodeException", nlAfterClosed = false) {
                         code("${declaration.internalClassFullName()}.decodeWith(msg, it)")
@@ -200,6 +200,8 @@ class ModelToProtobufKotlinCommonGenerator(
                 }
             }
         }
+
+        additionalInternalImports.add("kotlinx.rpc.protobuf.input.stream.asInputStream")
     }
 
     private fun CodeGenerator.generateMessageConstructor(declaration: MessageDeclaration) {

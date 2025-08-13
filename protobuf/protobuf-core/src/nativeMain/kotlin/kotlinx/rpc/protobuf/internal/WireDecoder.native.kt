@@ -7,6 +7,7 @@ package kotlinx.rpc.protobuf.internal
 import kotlinx.cinterop.*
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.io.Buffer
+import kotlinx.rpc.protobuf.input.stream.InputStream
 import libprotowire.*
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.math.min
@@ -298,7 +299,7 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
     }
 }
 
-public actual fun WireDecoder(source: Buffer): WireDecoder = WireDecoderNative(source)
+public actual fun WireDecoder(source: InputStream): WireDecoder = WireDecoderNative(source.buffer)
 
 public actual inline fun checkForPlatformDecodeException(block: () -> Unit) {
     block()

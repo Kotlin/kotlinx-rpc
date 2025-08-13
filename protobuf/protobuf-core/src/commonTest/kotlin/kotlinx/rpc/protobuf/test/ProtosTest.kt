@@ -14,10 +14,8 @@ import encodeWith
 import invoke
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.codec.MessageCodec
-import kotlinx.rpc.grpc.test.*
-import kotlinx.rpc.grpc.test.common.*
-import kotlinx.rpc.grpc.test.common.invoke
-import kotlinx.rpc.grpc.test.invoke
+import kotlinx.rpc.protobuf.input.stream.asInputStream
+import kotlinx.rpc.protobuf.input.stream.asSource
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import test.nested.*
@@ -53,7 +51,7 @@ class ProtosTest {
         encoder.writeFixed32(9, 1234u)
         encoder.flush()
 
-        val decoded = AllPrimitivesInternal.CODEC.decode(buffer)
+        val decoded = AllPrimitivesInternal.CODEC.decode(buffer.asInputStream())
         assertEquals(12, decoded.sint32)
         assertNull(decoded.sint64)
         assertEquals(1234u, decoded.fixed32)
@@ -134,7 +132,7 @@ class ProtosTest {
         encoder.flush()
 
         assertFailsWith<ProtobufDecodingException> {
-            PresenceCheckInternal.CODEC.decode(buffer)
+            PresenceCheckInternal.CODEC.decode(buffer.asInputStream())
         }
     }
 
@@ -146,7 +144,7 @@ class ProtosTest {
         encoder.writeEnum(1, 50)
         encoder.flush()
 
-        val decodedMsg = UsingEnumInternal.CODEC.decode(buffer)
+        val decodedMsg = UsingEnumInternal.CODEC.decode(buffer.asInputStream())
         assertEquals(MyEnum.UNRECOGNIZED(50), decodedMsg.enum)
     }
 
@@ -166,11 +164,11 @@ class ProtosTest {
         // create message without enum field set
         val msg = UsingEnum {}
 
-        val buffer = UsingEnumInternal.CODEC.encode(msg) as Buffer
+        val buffer = UsingEnumInternal.CODEC.encode(msg).asSource()
         // buffer should be empty (default is not in wire)
-        assertEquals(0, buffer.size)
+        assertTrue(buffer.exhausted())
 
-        val decoded = UsingEnumInternal.CODEC.decode(buffer)
+        val decoded = UsingEnumInternal.CODEC.decode(buffer.asInputStream())
         assertEquals(MyEnum.ZERO, decoded.enum)
     }
 
@@ -228,7 +226,7 @@ class ProtosTest {
         encoder.flush()
 
 
-        val decoded = OneOfMsgInternal.CODEC.decode(buffer)
+        val decoded = OneOfMsgInternal.CODEC.decode(buffer.asInputStream())
         assertIs<OneOfMsg.Field.Other>(decoded.field)
         val decodedOther = (decoded.field as OneOfMsg.Field.Other).value
         assertEquals("arg2", decodedOther.arg2)
@@ -246,7 +244,7 @@ class ProtosTest {
         encoder.writeFixed64(3, 123u)
         encoder.flush()
 
-        val decoded = OneOfMsgInternal.CODEC.decode(buffer)
+        val decoded = OneOfMsgInternal.CODEC.decode(buffer.asInputStream())
         assertEquals(OneOfMsg.Field.Fixed(123u), decoded.field)
     }
 
@@ -266,7 +264,7 @@ class ProtosTest {
         // write two values on the oneOf field.
         // the second value must be the one stored during decoding.
         val buffer = Buffer()
-        val decoded = OneOfMsgInternal.CODEC.decode(buffer)
+        val decoded = OneOfMsgInternal.CODEC.decode(buffer.asInputStream())
         assertNull(decoded.field)
     }
 
@@ -284,7 +282,7 @@ class ProtosTest {
     @Test
     fun testRecursiveReqNotSet() {
         assertFailsWith<ProtobufDecodingException> {
-            val msg = RecursiveReq {
+            RecursiveReq {
                 rec = RecursiveReq {
                     rec = RecursiveReq {
 
@@ -373,7 +371,7 @@ class ProtosTest {
         encoder.writeMessage(1, secondPart as OtherInternal) { encodeWith(encoder) }
         encoder.flush()
 
-        val decoded = ReferenceInternal.CODEC.decode(buffer)
+        val decoded = ReferenceInternal.CODEC.decode(buffer.asInputStream())
         assertEquals("first", decoded.other.arg1)
         assertEquals("third", decoded.other.arg2)
         assertEquals("fourth", decoded.other.arg3)
@@ -405,7 +403,7 @@ class ProtosTest {
         val missingRequiredMessage = PresenceCheckInternal()
 
         assertFailsWith<ProtobufDecodingException> {
-            val msg = TestMap {
+            TestMap {
                 messages = mapOf(
                     2 to missingRequiredMessage
                 )

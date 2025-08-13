@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package kotlinx.rpc.grpc.test;
+
+import 'reference_package_grpc.proto';
+
+message Repeated {
+  repeated string listString = 1;
+  repeated References listReference = 2;
+  repeated fixed32 listFixed32 = 3;
+  repeated int32 listInt32 = 4;
+}
