@@ -16,17 +16,20 @@ plugins {
     alias(libs.plugins.atomicfu)
 }
 
-tasks.withType<KotlinCompile> {
-    if (this.name.contains("Test")) {
-        compilerOptions {
-            // for kotlin.time.Clock API
-            languageVersion.set(KotlinVersion.KOTLIN_2_1)
-            apiVersion.set(KotlinVersion.KOTLIN_2_1)
+kotlin {
+    targets.all {
+        compilations.matching {
+            it.name.lowercase().endsWith("test")
+        }.all {
+            compileTaskProvider.configure {
+                compilerOptions {
+                    languageVersion.set(KotlinVersion.KOTLIN_2_1)
+                    apiVersion.set(KotlinVersion.KOTLIN_2_1)
+                }
+            }
         }
     }
-}
 
-kotlin {
     sourceSets {
         commonMain {
             dependencies {

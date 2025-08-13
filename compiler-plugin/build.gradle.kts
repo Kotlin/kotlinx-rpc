@@ -5,7 +5,7 @@
 import util.whenForIde
 
 plugins {
-    alias(libs.plugins.conventions.gradle.doctor)
+    id("empty") // resolve conventions classpath
 }
 
 val rpcVersion: String = libs.versions.kotlinx.rpc.get()
