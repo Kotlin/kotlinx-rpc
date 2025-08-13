@@ -10,8 +10,7 @@ package kotlinx.rpc.grpc
 import cnames.structs.grpc_channel
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.rpc.grpc.internal.*
 import libgrpcpp_c.grpc_channel_create
 import libgrpcpp_c.grpc_channel_credentials_release
@@ -60,8 +59,11 @@ internal class NativeManagedChannel(
     private val target: String,
     // we must store them, otherwise the credentials are getting released
     private val credentials: GrpcCredentials,
-    private val coroutineScope: CoroutineScope,
+    dispatcher: CoroutineDispatcher,
 ) : ManagedChannel, ManagedChannelPlatform() {
+
+    private val job = SupervisorJob()
+    private val coroutineScope = CoroutineScope(job + dispatcher)
 
     // the channel's completion queue, handling all request operations
     private val cq = CompletionQueue()
@@ -81,6 +83,7 @@ internal class NativeManagedChannel(
 
     override suspend fun awaitTermination(duration: Duration): Boolean {
         cq.shutdown()
+        job.join()
         return true
     }
 
@@ -92,7 +95,11 @@ internal class NativeManagedChannel(
     }
 
     override fun shutdownNow(): ManagedChannel {
-        TODO("Not yet implemented")
+        // cancel all ongoing requests
+        job.children.forEach { it.cancel("Channel (force) shutdown") }
+        // after all requests got canceled, we shut down the completion queue
+        shutdown()
+        TODO("Return managed channel")
     }
 
 

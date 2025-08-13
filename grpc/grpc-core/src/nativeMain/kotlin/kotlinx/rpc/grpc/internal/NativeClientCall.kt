@@ -34,6 +34,7 @@ internal class NativeClientCall<Request, Response>(
     private var listener: Listener<Response>? = null
     private var halfClosed = false
     private var cancelled = false
+    private var closed = false
 
     override fun start(
         responseListener: Listener<Response>,
@@ -99,12 +100,14 @@ internal class NativeClientCall<Request, Response>(
 
             val trailers = GrpcTrailers()
             listener.onClose(status, trailers)
+            closed = true
         }
     }
 
     override fun request(numMessages: Int) {
         val listener = checkNotNull(listener) { "Not yet started" }
         check(!cancelled) { "Already cancelled" }
+        check(!closed) { "Already closed." }
 
         coroutineScope.launch {
             repeat(numMessages) {
@@ -139,6 +142,7 @@ internal class NativeClientCall<Request, Response>(
     }
 
     override fun cancel(message: String?, cause: Throwable?) {
+        cancelled = true
         if (message != null) {
             grpc_call_cancel(raw, null)
         }
@@ -149,6 +153,7 @@ internal class NativeClientCall<Request, Response>(
     override fun halfClose() {
         check(!halfClosed) { "Already half closed." }
         check(!cancelled) { "Already cancelled." }
+        check(!closed) { "Already closed." }
         halfClosed = true
 
         coroutineScope.launch {
@@ -167,7 +172,8 @@ internal class NativeClientCall<Request, Response>(
 
     override fun sendMessage(message: Request) {
         checkNotNull(listener) { "Not yet started" }
-        check(!halfClosed) { "Already closed." }
+        check(!halfClosed) { "Already half closed." }
+        check(!closed) { "Already closed." }
 
         coroutineScope.launch {
             withArena { arena ->

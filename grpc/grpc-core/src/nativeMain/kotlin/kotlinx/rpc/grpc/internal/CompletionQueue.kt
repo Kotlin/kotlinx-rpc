@@ -9,7 +9,9 @@ package kotlinx.rpc.grpc.internal
 import cnames.structs.grpc_call
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.*
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import libgrpcpp_c.*
 import platform.posix.memset
 import kotlin.coroutines.Continuation
@@ -98,12 +100,13 @@ internal class CompletionQueue {
             }
         }
 
-    suspend fun shutdown() {
+    // must not be canceled as it cleans resources and sets the state to CLOSED
+    suspend fun shutdown() = withContext(NonCancellable) {
         if (!state.compareAndSet(State.OPEN, State.SHUTTING_DOWN)) {
             // the first call to shutdown() makes transition and to SHUTTING_DOWN and
             // initiates shut down. all other invocations await the shutdown.
             _shutdownDone.await()
-            return
+            return@withContext
         }
 
         // wait until all batch operations since the state transitions were started.
