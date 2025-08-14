@@ -50,126 +50,138 @@ internal class NativeClientCall<Request, Response>(
 
         listener = responseListener
 
-        // we directly launch the receiveStatus() operation, which will finish ones the call is finished
-        callScope.launch { receiveStatus() }
-            .invokeOnCompletion {
-                when (it) {
-                    null -> { /* nothing to do */
-                    }
+        // start receiving the status from the completion queue,
+        // which is bound to the lifecycle of the call.
+        receiveStatus()
 
-                    is CancellationException -> closeCall(
-                        Status(StatusCode.CANCELLED, "Call got cancelled."),
-                        GrpcTrailers()
-                    )
 
-                    else -> closeCall(Status(StatusCode.INTERNAL, "Call failed.", it), GrpcTrailers())
-                }
-            }
+        // sending and receiving initial metadata
+        val arena = Arena()
+        val opsNum = 2uL
+        val ops = arena.allocArray<grpc_op>(opsNum.convert())
 
-        callScope.launch {
-            withArena { arena ->
-                val opsNum = 2uL
-                val ops = arena.allocArray<grpc_op>(opsNum.convert())
+        // send initial meta data to server
+        // TODO: initial metadata
+        ops[0].op = GRPC_OP_SEND_INITIAL_METADATA
+        ops[0].data.send_initial_metadata.count = 0u
 
-                // send initial meta data to server
-                // TODO: initial metadata
-                ops[0].op = GRPC_OP_SEND_INITIAL_METADATA
-                ops[0].data.send_initial_metadata.count = 0u
+        val meta = arena.alloc<grpc_metadata_array>()
+        // TODO: make metadata array an object (for lifecycle management)
+        grpc_metadata_array_init(meta.ptr)
+        ops[1].op = GRPC_OP_RECV_INITIAL_METADATA
+        ops[1].data.recv_initial_metadata.recv_initial_metadata = meta.ptr
 
-                val meta = arena.alloc<grpc_metadata_array>()
-                // TODO: make metadata array an object (for lifecycle management)
-                grpc_metadata_array_init(meta.ptr)
-                ops[1].op = GRPC_OP_RECV_INITIAL_METADATA
-                ops[1].data.recv_initial_metadata.recv_initial_metadata = meta.ptr
-
-                runBatch(ops, opsNum) {
-                    // TODO: Send headers to listener
-                }
-
-                // TODO: destroy with metadata array wrapper (maybe using .use{} )
-                grpc_metadata_array_destroy(meta.ptr)
-            }
+        runBatch(ops, opsNum, cleanup = {
+            grpc_metadata_array_init(meta.ptr)
+            arena.clear()
+        }) {
+            // TODO: Send headers to listener
         }
     }
 
-    private suspend fun runBatch(
+    private fun runBatch(
         ops: CPointer<grpc_op>,
         nOps: ULong,
+        cleanup: () -> Unit = {},
         onSuccess: suspend () -> Unit = {},
     ) {
-        when (val result = cq.runBatch(this, ops, nOps)) {
-            BatchResult.Success -> onSuccess()
-            BatchResult.ResultError -> {
-                // do nothing, the client will receive the status from the completion queue
-            }
+        callScope.launch {
+            val result = cq.runBatch(this@NativeClientCall, ops, nOps).await()
+            when (result) {
+                BatchResult.Success -> onSuccess()
+                BatchResult.ResultError -> {
+                    // do nothing, the client will receive the status from the completion queue
+                }
 
-            BatchResult.CQShutdown -> {
-                cancelInternal(grpc_status_code.GRPC_STATUS_UNAVAILABLE, "Channel shutdown")
-            }
+                BatchResult.CQShutdown -> {
+                    cancelInternal(grpc_status_code.GRPC_STATUS_UNAVAILABLE, "Channel shutdown")
+                }
 
-            is BatchResult.CallError -> {
-                cancelInternal(grpc_status_code.GRPC_STATUS_INTERNAL, "Batch could not be submitted: ${result.error}")
+                is BatchResult.CallError -> {
+                    cancelInternal(
+                        grpc_status_code.GRPC_STATUS_INTERNAL,
+                        "Batch could not be submitted: ${result.error}"
+                    )
+                }
+            }
+        }.invokeOnCompletion {
+            cleanup()
+            if (it is CancellationException) {
+                if (callJob.isCancelled) {
+                    error("Call was already cancelled.")
+                } else if (callJob.isCompleted) {
+                    error("Call was already closed.")
+                }
             }
         }
     }
 
-    private suspend fun receiveStatus() = withContext(NonCancellable) {
-        withArena { arena ->
-            checkNotNull(listener) { "Not yet started" }
-            // this must not be canceled as it sets the call status.
-            // if the client itself got canceled, this will return fast.
-            val statusCode = arena.alloc<grpc_status_code.Var>()
-            val statusDetails = arena.alloc<grpc_slice>()
-            val errorStr = arena.alloc<CPointerVar<ByteVar>>()
-            val op = arena.alloc<grpc_op> {
-                op = GRPC_OP_RECV_STATUS_ON_CLIENT
-                data.recv_status_on_client.status = statusCode.ptr
-                data.recv_status_on_client.status_details = statusDetails.ptr
-                data.recv_status_on_client.error_string = errorStr.ptr
-                // TODO: trailing metadata
-                data.recv_status_on_client.trailing_metadata = null
+    private fun receiveStatus() {
+        val arena = Arena()
+        checkNotNull(listener) { "Not yet started" }
+        // this must not be canceled as it sets the call status.
+        // if the client itself got canceled, this will return fast.
+        val statusCode = arena.alloc<grpc_status_code.Var>()
+        val statusDetails = arena.alloc<grpc_slice>()
+        val errorStr = arena.alloc<CPointerVar<ByteVar>>()
+        val op = arena.alloc<grpc_op> {
+            op = GRPC_OP_RECV_STATUS_ON_CLIENT
+            data.recv_status_on_client.status = statusCode.ptr
+            data.recv_status_on_client.status_details = statusDetails.ptr
+            data.recv_status_on_client.error_string = errorStr.ptr
+            // TODO: trailing metadata
+            data.recv_status_on_client.trailing_metadata = null
+        }
+
+
+        val completion = cq.runBatch(this@NativeClientCall, op.ptr, 1u)
+        callScope.launch {
+            withContext(NonCancellable) {
+                // will never fail
+                completion.await()
+                val status = Status(errorStr.value?.toKString(), statusCode.value.toKotlin(), null)
+                val trailers = GrpcTrailers()
+                closeCall(status, trailers)
             }
+        }.invokeOnCompletion {
+            arena.clear()
+            when (it) {
+                null -> { /* nothing to do */
+                }
 
-            // will never fail
-            cq.runBatch(this@NativeClientCall, op.ptr, 1u)
+                is CancellationException -> closeCall(
+                    Status(StatusCode.CANCELLED, "Call got cancelled."),
+                    GrpcTrailers()
+                )
 
-            val status = Status(errorStr.value?.toKString(), statusCode.value.toKotlin(), null)
-            val trailers = GrpcTrailers()
-            closeCall(status, trailers)
+                else -> closeCall(Status(StatusCode.INTERNAL, "Call failed.", it), GrpcTrailers())
+            }
         }
     }
 
     override fun request(numMessages: Int) {
+        check(numMessages > 0) { "numMessages must be > 0" }
         val listener = checkNotNull(listener) { "Not yet started" }
         check(!cancelled) { "Already cancelled" }
         check(!closed.value) { "Already closed." }
 
-        callScope.launch {
-            repeat(numMessages) {
-                withArena { arena ->
-                    val recvBufferPtr = arena.alloc<CPointerVar<grpc_byte_buffer>>()
-
-                    val op = arena.alloc<grpc_op>() {
-                        op = GRPC_OP_RECV_MESSAGE
-                        data.recv_message.recv_message = recvBufferPtr.ptr
-                    }
-
-                    runBatch(op.ptr, 1u) {
-                        val recvBuf = recvBufferPtr.value
-                        if (recvBuf == null) {
-                            println("No more messages to receive")
-                            // TODO: what if we have no more messages to receive?
-                        } else {
-                            val messageBuffer = recvBuf.toKotlin()
-                            val message = methodDescriptor.getResponseMarshaller()
-                                .parse(messageBuffer.asInputStream())
-                            listener.onMessage(message)
-                        }
-                    }
-                }
+        fun once() {
+            val arena = Arena()
+            val recvPtr = arena.alloc<CPointerVar<grpc_byte_buffer>>()
+            val op = arena.alloc<grpc_op> {
+                op = GRPC_OP_RECV_MESSAGE
+                data.recv_message.recv_message = recvPtr.ptr
             }
-        }.checkNotCancelled()
-
+            runBatch(op.ptr, 1u, cleanup = { arena.clear() }) {
+                val buf = recvPtr.value
+                if (buf == null) return@runBatch // EOS
+                val msg = methodDescriptor.getResponseMarshaller()
+                    .parse(buf.toKotlin().asInputStream())
+                listener.onMessage(msg)
+                once() // post next only now
+            }
+        }
+        once()
     }
 
     override fun cancel(message: String?, cause: Throwable?) {
@@ -192,16 +204,14 @@ internal class NativeClientCall<Request, Response>(
         check(!closed.value) { "Already closed." }
         halfClosed = true
 
-        callScope.launch {
-            withArena { arena ->
-                val op = arena.alloc<grpc_op>()
-                op.op = GRPC_OP_SEND_CLOSE_FROM_CLIENT
+        val arena = Arena()
+        val op = arena.alloc<grpc_op>() {
+            op = GRPC_OP_SEND_CLOSE_FROM_CLIENT
+        }
 
-                runBatch(op.ptr, 1u) {
-                    // nothing to do here
-                }
-            }
-        }.checkNotCancelled()
+        runBatch(op.ptr, 1u, cleanup = { arena.clear() }) {
+            // nothing to do here
+        }
     }
 
     override fun sendMessage(message: Request) {
@@ -209,27 +219,19 @@ internal class NativeClientCall<Request, Response>(
         check(!halfClosed) { "Already half closed." }
         check(!closed.value) { "Already closed." }
 
-        callScope.launch {
-            withArena { arena ->
-                val inputStream = methodDescriptor.getRequestMarshaller().stream(message)
-                // TODO: handle non-byte buffer InputStream sources
-                val byteBuffer = (inputStream.source as Buffer).toGrpcByteBuffer()
-
-                try {
-                    val op = arena.alloc<grpc_op> {
-                        op = GRPC_OP_SEND_MESSAGE
-                        data.send_message.send_message = byteBuffer
-                    }
-
-                    runBatch(op.ptr, 1u) {
-                        // Nothing to do here
-                    }
-
-                } finally {
-                    grpc_byte_buffer_destroy(byteBuffer)
-                }
-            }
-        }.checkNotCancelled()
+        val arena = Arena()
+        val inputStream = methodDescriptor.getRequestMarshaller().stream(message)
+        val byteBuffer = (inputStream.source as Buffer).toGrpcByteBuffer()
+        val op = arena.alloc<grpc_op> {
+            op = GRPC_OP_SEND_MESSAGE
+            data.send_message.send_message = byteBuffer
+        }
+        runBatch(op.ptr, 1u, cleanup = {
+            grpc_byte_buffer_destroy(byteBuffer)
+            arena.clear()
+        }) {
+            // Nothing to do here
+        }
     }
 
     private fun closeCall(status: Status, trailers: GrpcTrailers) {
@@ -237,18 +239,6 @@ internal class NativeClientCall<Request, Response>(
         if (closed.compareAndSet(expect = false, update = true)) {
             val listener = checkNotNull(listener) { "Not yet started" }
             listener.onClose(status, trailers)
-        }
-    }
-
-    private fun Job.checkNotCancelled() {
-        invokeOnCompletion {
-            if (it is CancellationException) {
-                if (callJob.isCancelled) {
-                    error("Call was already cancelled.")
-                } else if (callJob.isCompleted) {
-                    error("Call was already closed.")
-                }
-            }
         }
     }
 }

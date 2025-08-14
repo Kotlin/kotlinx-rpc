@@ -92,33 +92,35 @@ internal class NativeManagedChannel(
     }
 
     override fun shutdown(): ManagedChannel {
-        channelScope.launch {
-            shutdownInternal(false)
-        }
+        shutdownInternal(false)
         return this
     }
 
     override fun shutdownNow(): ManagedChannel {
-        channelScope.launch {
-            shutdownInternal(true)
-        }
+        shutdownInternal(true)
         return this
     }
 
-    private suspend fun shutdownInternal(force: Boolean) {
+    private fun shutdownInternal(force: Boolean) {
         isShutdownInternal = true
         if (force) {
             callJobSupervisor.cancelChildren(CancellationException("Channel is shutting down"))
         }
-        // prevent any start() calls on already created jobs
-        callJobSupervisor.complete()
-        cq.shutdown(force)
-        // wait for child jobs to complete.
-        // should be immediate, as the completion queue is shutdown.
-        callJobSupervisor.join()
-        isTerminatedInternal.complete(Unit)
+        // prevent any start() calls on already call jobs
+        callJobSupervisor.children.forEach {
+            (it as CompletableJob).complete()
+        }
+        val shutdownCompletion = cq.shutdown(force)
+        channelScope.launch {
+            withContext(NonCancellable) {
+                shutdownCompletion.await()
+                // wait for child jobs to complete.
+                // should be immediate, as the completion queue is shutdown.
+                callJobSupervisor.join()
+                isTerminatedInternal.complete(Unit)
+            }
+        }
     }
-
 
     override fun <RequestT, ResponseT> newCall(
         methodDescriptor: MethodDescriptor<RequestT, ResponseT>,
@@ -126,8 +128,7 @@ internal class NativeManagedChannel(
     ): ClientCall<RequestT, ResponseT> {
         check(!isShutdown) { "Channel is shutdown" }
 
-        val parent = channelScope.coroutineContext[Job]!!
-        val callJob = Job(parent)
+        val callJob = Job(callJobSupervisor)
         val callScope = CoroutineScope(callJob)
 
         val methodNameSlice = methodDescriptor.getFullMethodName().toGrpcSlice()

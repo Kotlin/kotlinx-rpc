@@ -13,7 +13,6 @@ import HelloRequestInternal
 import invoke
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.*
@@ -27,7 +26,6 @@ class GrpcCoreTest {
 
     internal fun runHelloWorld(block: suspend (ManagedChannel, ClientCall<HelloRequest, HelloReply>) -> Unit) =
         runBlocking {
-            grpc_init()
 
             val fullName = "/helloworld.Greeter/SayHello"
             val descriptor = methodDescriptor(
@@ -51,11 +49,9 @@ class GrpcCoreTest {
 
             } finally {
                 channel.shutdown()
-                grpc_shutdown()
             }
         }
 
-    @Test
     fun grpcClientTest() = runHelloWorld { channel, call ->
         val req = HelloRequest {
             name = "world"
@@ -78,16 +74,12 @@ class GrpcCoreTest {
         call.start(listener, GrpcTrailers())
         call.sendMessage(req)
         call.halfClose()
-        delay(1)
         call.request(1)
 
-        channel.shutdown()
 
         withTimeout(10000) {
             val status = sem.await()
             val helloReply = helloReply.await()
-            println("status: ${status.statusCode} (${status.getDescription()})")
-            println("helloReply: $helloReply")
             assert(status.statusCode == StatusCode.OK)
             assert(helloReply.message == "Hello world")
         }
@@ -96,9 +88,12 @@ class GrpcCoreTest {
 
     @Test
     fun testNormalOften() {
+        grpc_init()
         for (i in 0..1000) {
+            println("test $i")
             grpcClientTest()
         }
+        grpc_shutdown()
     }
 
 }
