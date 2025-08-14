@@ -22,7 +22,7 @@ import kotlin.test.Test
 class GrpcCoreTest {
     val GRPC_PROPAGATE_DEFAULTS = 0x0000FFFFu
 
-    internal fun runHelloWorld(block: (ManagedChannel, ClientCall<HelloRequest, HelloReply>) -> Unit) {
+    private fun NativeManagedChannel.helloWorldCall(): ClientCall<HelloRequest, HelloReply> {
         val fullName = "/helloworld.Greeter/SayHello"
         val descriptor = methodDescriptor(
             fullMethodName = fullName,
@@ -34,33 +34,40 @@ class GrpcCoreTest {
             safe = true,
             sampledToLocalTracing = true,
         )
-        val channel = NativeManagedChannel(
+
+        return newCall(descriptor, GrpcCallOptions())
+    }
+
+    private fun createChannel(): NativeManagedChannel {
+        return NativeManagedChannel(
             "localhost:50051",
             GrpcInsecureCredentials(),
         )
+    }
 
-        try {
-            val call = channel.newCall(descriptor, GrpcCallOptions())
-            block(channel, call)
-
-        } finally {
-            channel.shutdown()
-            runBlocking {
-                channel.awaitTermination()
-            }
+    private fun helloReq(timeout: UInt = 0u): HelloRequest {
+        return HelloRequest {
+            name = "world"
+            this.timeout = timeout
         }
     }
 
-    @Test
-    fun grpcClientTest() = runHelloWorld { channel, call ->
-        val req = HelloRequest {
-            name = "world"
-            timeout = 0u
+    private fun shutdownAndWait(channel: NativeManagedChannel) {
+        channel.shutdown()
+        runBlocking {
+            channel.awaitTermination()
         }
+    }
+
+
+    @Test
+    fun normalUnaryCallTest() = repeat(1000) {
+        val channel = createChannel()
+        val call = channel.helloWorldCall()
+        val req = helloReq()
 
         val sem = CompletableDeferred<Status>()
         val helloReply = CompletableDeferred<HelloReply>()
-
         val listener = object : ClientCall.Listener<HelloReply>() {
             override fun onMessage(message: HelloReply) {
                 helloReply.complete(message)
@@ -74,25 +81,18 @@ class GrpcCoreTest {
         call.start(listener, GrpcTrailers())
         call.sendMessage(req)
         call.halfClose()
-        call.cancel("test", null)
+        call.request(1)
 
         runBlocking {
             withTimeout(10000) {
                 val status = sem.await()
-//            val helloReply = helloReply.await()
-                assert(status.statusCode == StatusCode.CANCELLED)
-//            assert(helloReply.message == "Hello world")
+                val helloReply = helloReply.await()
+                assert(status.statusCode == StatusCode.OK)
+                assert(helloReply.message == "Hello world")
             }
         }
-    }
 
-
-    @Test
-    fun testNormalOften() {
-        for (i in 0..1000) {
-            println("test $i")
-            grpcClientTest()
-        }
+        shutdownAndWait(channel)
     }
 
 }

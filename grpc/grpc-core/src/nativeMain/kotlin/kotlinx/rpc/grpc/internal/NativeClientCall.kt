@@ -107,7 +107,6 @@ internal class NativeClientCall<Request, Response>(
                 }
             }
         }.invokeOnCompletion {
-            println("Batch finished: ${ops.pointed.op}")
             cleanup()
             if (it is CancellationException) {
                 if (callJob.isCancelled) {
@@ -151,7 +150,6 @@ internal class NativeClientCall<Request, Response>(
             }
         }.invokeOnCompletion {
             arena.clear()
-            println("Completed with: ${it}")
             when (it) {
                 null -> { /* nothing to do */
                 }
@@ -169,7 +167,6 @@ internal class NativeClientCall<Request, Response>(
     override fun request(numMessages: Int) {
         check(numMessages > 0) { "numMessages must be > 0" }
         val listener = checkNotNull(listener) { "Not yet started" }
-        println("Is cancelled: $cancelled")
         check(!cancelled) { "Already cancelled" }
         check(!closed.value) { "Already closed." }
 
