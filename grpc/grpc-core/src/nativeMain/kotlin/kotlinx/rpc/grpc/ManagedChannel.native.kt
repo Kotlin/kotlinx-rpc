@@ -61,6 +61,10 @@ internal class NativeManagedChannel(
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : ManagedChannel, ManagedChannelPlatform() {
 
+    // A reference to make sure the grpc_init() was called. (it is released after shutdown)
+    @Suppress("unused")
+    private val rt = GrpcRuntime.acquire()
+
     private val channelJob = SupervisorJob()
     private val callJobSupervisor = SupervisorJob(channelJob)
     private val channelScope = CoroutineScope(channelJob + dispatcher)
@@ -80,7 +84,7 @@ internal class NativeManagedChannel(
 
     private var isShutdownInternal: Boolean = false
     override val isShutdown: Boolean = isShutdownInternal
-    private var isTerminatedInternal = CompletableDeferred(Unit)
+    private var isTerminatedInternal = CompletableDeferred<Unit>()
     override val isTerminated: Boolean
         get() = isTerminatedInternal.isCompleted
 
@@ -92,33 +96,41 @@ internal class NativeManagedChannel(
     }
 
     override fun shutdown(): ManagedChannel {
-        channelScope.launch {
-            shutdownInternal(false)
-        }
+        shutdownInternal(false)
         return this
     }
 
     override fun shutdownNow(): ManagedChannel {
-        channelScope.launch {
-            shutdownInternal(true)
-        }
+        shutdownInternal(true)
         return this
     }
 
-    private suspend fun shutdownInternal(force: Boolean) {
+    private fun shutdownInternal(force: Boolean) {
         isShutdownInternal = true
+        if (isTerminatedInternal.isCompleted) {
+            return
+        }
         if (force) {
             callJobSupervisor.cancelChildren(CancellationException("Channel is shutting down"))
         }
-        // prevent any start() calls on already created jobs
+        // prevent any start() calls on already call jobs
+        callJobSupervisor.children.forEach {
+            (it as CompletableJob).complete()
+        }
         callJobSupervisor.complete()
-        cq.shutdown(force)
-        // wait for child jobs to complete.
-        // should be immediate, as the completion queue is shutdown.
-        callJobSupervisor.join()
-        isTerminatedInternal.complete(Unit)
+        channelScope.launch {
+            withContext(NonCancellable) {
+                // wait for all child jobs to complete.
+                callJobSupervisor.join()
+                // wait for the completion queue to shut down.
+                cq.shutdown(force).await()
+                if (isTerminatedInternal.complete(Unit)) {
+                    // release the grpc runtime, so it might call grpc_shutdown()
+                    rt.close()
+                }
+            }
+        }
     }
-
 
     override fun <RequestT, ResponseT> newCall(
         methodDescriptor: MethodDescriptor<RequestT, ResponseT>,
@@ -126,9 +138,7 @@ internal class NativeManagedChannel(
     ): ClientCall<RequestT, ResponseT> {
         check(!isShutdown) { "Channel is shutdown" }
 
-        val parent = channelScope.coroutineContext[Job]!!
-        val callJob = Job(parent)
-        val callScope = CoroutineScope(callJob)
+        val callJob = Job(callJobSupervisor)
 
         val methodNameSlice = methodDescriptor.getFullMethodName().toGrpcSlice()
         val rawCall = grpc_channel_create_call(
@@ -137,7 +147,7 @@ internal class NativeManagedChannel(
         ) ?: error("Failed to create call")
 
         return NativeClientCall(
-            cq, rawCall, methodDescriptor, callScope
+            cq, rawCall, methodDescriptor, callJob
         )
     }
 

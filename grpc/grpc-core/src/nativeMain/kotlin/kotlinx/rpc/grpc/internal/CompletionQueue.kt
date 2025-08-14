@@ -8,14 +8,12 @@ package kotlinx.rpc.grpc.internal
 
 import cnames.structs.grpc_call
 import kotlinx.atomicfu.atomic
+import kotlinx.atomicfu.locks.SynchronizedObject
+import kotlinx.atomicfu.locks.synchronized
 import kotlinx.cinterop.*
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CompletableDeferred
 import libgrpcpp_c.*
 import platform.posix.memset
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
@@ -33,20 +31,24 @@ internal sealed interface BatchResult {
  */
 internal class CompletionQueue {
 
-    private enum class State { OPEN, SHUTTING_DOWN, CLOSED }
+    internal enum class State { OPEN, SHUTTING_DOWN, CLOSED }
 
     // if the queue was called with forceShutdown = true,
     // it will reject all new batches and wait for all current ones to finish.
     private var forceShutdown = false
-    private val state = atomic(State.OPEN)
 
     // internal as it must be accessible from the SHUTDOWN_CB,
     // but it shouldn't be used from outside this file.
     @Suppress("PropertyName")
-    internal val _shutdownDone = kotlinx.coroutines.CompletableDeferred<Unit>()
+    internal val _state = atomic(State.OPEN)
+
+    // internal as it must be accessible from the SHUTDOWN_CB,
+    // but it shouldn't be used from outside this file.
+    @Suppress("PropertyName")
+    internal val _shutdownDone = CompletableDeferred<Unit>()
 
     // used for spinning lock. false means not used (available)
-    private val batchStartGuard = atomic(false)
+    private val batchStartGuard = SynchronizedObject()
 
     private val thisStableRef = StableRef.create(this)
 
@@ -71,87 +73,56 @@ internal class CompletionQueue {
     }
 
     // TODO: Remove this method
-    suspend fun runBatch(call: NativeClientCall<*, *>, ops: CPointer<grpc_op>, nOps: ULong) =
+    fun runBatch(call: NativeClientCall<*, *>, ops: CPointer<grpc_op>, nOps: ULong) =
         runBatch(call.raw, ops, nOps)
 
-    suspend fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong): BatchResult =
-        suspendCancellableCoroutine<BatchResult> { cont ->
-            val tag = newCbTag(cont, OPS_COMPLETE_CB)
+    fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong): CompletableDeferred<BatchResult> {
+        val completion = CompletableDeferred<BatchResult>()
+        val tag = newCbTag(completion, OPS_COMPLETE_CB)
 
-            var err = grpc_call_error.GRPC_CALL_ERROR
+        var err = grpc_call_error.GRPC_CALL_ERROR
+        synchronized(batchStartGuard) {
             // synchronizes access to grpc_call_start_batch
-            withBatchStartLock {
-                if (forceShutdown || state.value == State.CLOSED) {
-                    // if the queue is either closed or in the process of a FORCE shutdown,
-                    // new batches will instantly fail.
-                    deleteCbTag(tag)
-                    cont.resume(BatchResult.CQShutdown)
-                    return@suspendCancellableCoroutine
-                }
-
-                err = grpc_call_start_batch(call, ops, nOps, tag, null)
-            }
-
-            if (err != grpc_call_error.GRPC_CALL_OK) {
-                // if the call was not successful, the callback will not be invoked.
+            if (forceShutdown || _state.value == State.CLOSED) {
+                // if the queue is either closed or in the process of a FORCE shutdown,
+                // new batches will instantly fail.
                 deleteCbTag(tag)
-                cont.resume(BatchResult.CallError(grpc_call_error.GRPC_CALL_ERROR))
-                return@suspendCancellableCoroutine
+                completion.complete(BatchResult.CQShutdown)
+                return completion
             }
 
-
-            cont.invokeOnCancellation {
-                @Suppress("UnusedExpression")
-                // keep reference, otherwise the cleaners might get invoked before the batch finishes
-                this
-                // cancel the call if one of its batches is canceled.
-                // grpc_call_cancel is thread-safe and can be called several times.
-                // the callback is invoked anyway, so the tag doesn't get deleted here.
-                if (it != null) {
-                    grpc_call_cancel_with_status(
-                        call,
-                        grpc_status_code.GRPC_STATUS_CANCELLED,
-                        "Call got cancelled: ${it.message}",
-                        null
-                    )
-                } else {
-                    grpc_call_cancel(call, null)
-                }
-            }
+            err = grpc_call_start_batch(call, ops, nOps, tag, null)
         }
 
+        if (err != grpc_call_error.GRPC_CALL_OK) {
+            // if the call was not successful, the callback will not be invoked.
+            deleteCbTag(tag)
+            completion.complete(BatchResult.CallError(err))
+            return completion
+        }
+
+        return completion
+    }
+
     // must not be canceled as it cleans resources and sets the state to CLOSED
-    suspend fun shutdown(force: Boolean = false) = withContext(NonCancellable) {
+    fun shutdown(force: Boolean = false): CompletableDeferred<Unit> {
         if (force) {
             forceShutdown = true
         }
-        if (!state.compareAndSet(State.OPEN, State.SHUTTING_DOWN)) {
+        if (!_state.compareAndSet(State.OPEN, State.SHUTTING_DOWN)) {
             // the first call to shutdown() makes transition and to SHUTTING_DOWN and
             // initiates shut down. all other invocations await the shutdown.
-            _shutdownDone.await()
-            return@withContext
+            return _shutdownDone
         }
 
         // wait until all batch operations since the state transitions were started.
-        // this is required to prevent batches from starting after shutdown was initialized
-        withBatchStartLock { }
-
-        grpc_completion_queue_shutdown(raw)
-        _shutdownDone.await()
-        state.value = State.CLOSED
-    }
-
-    private inline fun withBatchStartLock(block: () -> Unit) {
-        try {
-            // spin until this thread occupies the guard
-            @Suppress("ControlFlowWithEmptyBody")
-            while (!batchStartGuard.compareAndSet(expect = false, update = true)) {
-            }
-            block()
-        } finally {
-            // set guard to "not occupied"
-            batchStartGuard.value = false
+        // this is required to prevent batches from starting after shutdown was initialized.
+        // however, this lock will be available very fast, so it shouldn't be a problem.'
+        synchronized(batchStartGuard) {
+            grpc_completion_queue_shutdown(raw)
         }
+
+        return _shutdownDone
     }
 }
 
@@ -159,10 +130,10 @@ internal class CompletionQueue {
 @CName("kq_ops_complete_cb")
 private fun opsCompleteCb(functor: CPointer<grpc_completion_queue_functor>?, ok: Int) {
     val tag = functor!!.reinterpret<grpc_cb_tag>()
-    val cont = tag.pointed.user_data!!.asStableRef<Continuation<BatchResult>>().get()
+    val cont = tag.pointed.user_data!!.asStableRef<CompletableDeferred<BatchResult>>().get()
     deleteCbTag(tag)
-    if (ok != 0) cont.resume(BatchResult.Success)
-    else cont.resume(BatchResult.ResultError)
+    if (ok != 0) cont.complete(BatchResult.Success)
+    else cont.complete(BatchResult.ResultError)
 }
 
 @CName("kq_shutdown_cb")
@@ -170,6 +141,7 @@ private fun shutdownCb(functor: CPointer<grpc_completion_queue_functor>?, ok: In
     val tag = functor!!.reinterpret<grpc_cb_tag>()
     val cq = tag.pointed.user_data!!.asStableRef<CompletionQueue>().get()
     cq._shutdownDone.complete(Unit)
+    cq._state.value = CompletionQueue.State.CLOSED
     grpc_completion_queue_destroy(cq.raw)
 }
 

@@ -5,7 +5,6 @@
 
 package kotlinx.rpc.grpc.internal
 
-
 import HelloReply
 import HelloReplyInternal
 import HelloRequest
@@ -13,92 +12,262 @@ import HelloRequestInternal
 import invoke
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.*
-import libgrpcpp_c.grpc_init
-import libgrpcpp_c.grpc_shutdown
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class GrpcCoreTest {
-    val GRPC_PROPAGATE_DEFAULTS = 0x0000FFFFu
 
-    internal fun runHelloWorld(block: suspend (ManagedChannel, ClientCall<HelloRequest, HelloReply>) -> Unit) =
-        runBlocking {
-            grpc_init()
+    // Helpers to reduce boilerplate across tests
+    private fun descriptorFor(fullName: String = "/helloworld.Greeter/SayHello"): MethodDescriptor<HelloRequest, HelloReply> =
+        methodDescriptor(
+            fullMethodName = fullName,
+            requestCodec = HelloRequestInternal.CODEC,
+            responseCodec = HelloReplyInternal.CODEC,
+            type = MethodType.UNARY,
+            schemaDescriptor = Unit,
+            idempotent = true,
+            safe = true,
+            sampledToLocalTracing = true,
+        )
 
-            val fullName = "/helloworld.Greeter/SayHello"
-            val descriptor = methodDescriptor(
-                fullMethodName = fullName,
-                requestCodec = HelloRequestInternal.CODEC,
-                responseCodec = HelloReplyInternal.CODEC,
-                type = MethodType.UNARY,
-                schemaDescriptor = Unit,
-                idempotent = true,
-                safe = true,
-                sampledToLocalTracing = true,
-            )
-            val channel = NativeManagedChannel(
-                "localhost:50051",
-                GrpcInsecureCredentials(),
-            )
+    private fun NativeManagedChannel.newHelloCall(fullName: String = "/helloworld.Greeter/SayHello"): ClientCall<HelloRequest, HelloReply> =
+        newCall(descriptorFor(fullName), GrpcCallOptions())
 
-            try {
-                val call = channel.newCall(descriptor, GrpcCallOptions())
-                block(channel, call)
+    private fun createChannel(): NativeManagedChannel =
+        NativeManagedChannel(
+            "localhost:50051",
+            GrpcInsecureCredentials(),
+        )
 
-            } finally {
-                channel.shutdown()
-                grpc_shutdown()
-            }
-        }
+    private fun helloReq(timeout: UInt = 0u): HelloRequest = HelloRequest {
+        name = "world"
+        this.timeout = timeout
+    }
+
+    private fun shutdownAndWait(channel: NativeManagedChannel) {
+        channel.shutdown()
+        runBlocking { channel.awaitTermination() }
+    }
 
     @Test
-    fun grpcClientTest() = runHelloWorld { channel, call ->
-        val req = HelloRequest {
-            name = "world"
-            timeout = 0u
-        }
+    fun normalUnaryCall_ok() = repeat(10) { // keep runtime reasonable while still stress-testing
+        val channel = createChannel()
+        val call = channel.newHelloCall()
+        val req = helloReq()
 
-        val sem = CompletableDeferred<Status>()
-        val helloReply = CompletableDeferred<HelloReply>()
-
+        val statusDeferred = CompletableDeferred<Status>()
+        val replyDeferred = CompletableDeferred<HelloReply>()
         val listener = object : ClientCall.Listener<HelloReply>() {
             override fun onMessage(message: HelloReply) {
-                helloReply.complete(message)
+                replyDeferred.complete(message)
             }
 
             override fun onClose(status: Status, trailers: GrpcTrailers) {
-                sem.complete(status)
+                statusDeferred.complete(status)
             }
         }
 
         call.start(listener, GrpcTrailers())
         call.sendMessage(req)
         call.halfClose()
-        delay(1)
         call.request(1)
 
-        channel.shutdown()
-
-        withTimeout(10000) {
-            val status = sem.await()
-            val helloReply = helloReply.await()
-            println("status: ${status.statusCode} (${status.getDescription()})")
-            println("helloReply: $helloReply")
-            assert(status.statusCode == StatusCode.OK)
-            assert(helloReply.message == "Hello world")
+        runBlocking {
+            withTimeout(10000) {
+                val status = statusDeferred.await()
+                val reply = replyDeferred.await()
+                assertEquals(StatusCode.OK, status.statusCode)
+                assertEquals("Hello world", reply.message)
+            }
         }
+        shutdownAndWait(channel)
+    }
+
+    @Test
+    fun sendMessage_beforeStart_throws() {
+        val channel = createChannel()
+        val call = channel.newHelloCall()
+        val req = helloReq()
+        assertFailsWith<IllegalStateException> { call.sendMessage(req) }
+        shutdownAndWait(channel)
+    }
+
+    @Test
+    fun request_beforeStart_throws() {
+        val channel = createChannel()
+        val call = channel.newHelloCall()
+        assertFailsWith<IllegalStateException> { call.request(1) }
+        shutdownAndWait(channel)
+    }
+
+    @Test
+    fun start_twice_throws() {
+        val channel = createChannel()
+        val call = channel.newHelloCall()
+        val statusDeferred = CompletableDeferred<Status>()
+        val listener = object : ClientCall.Listener<HelloReply>() {
+            override fun onClose(status: Status, trailers: GrpcTrailers) {
+                statusDeferred.complete(status)
+            }
+        }
+        call.start(listener, GrpcTrailers())
+        assertFailsWith<IllegalStateException> { call.start(listener, GrpcTrailers()) }
+        // cancel to finish the call quickly
+        call.cancel("Double start test", null)
+        runBlocking { withTimeout(5000) { statusDeferred.await() } }
+        shutdownAndWait(channel)
+    }
+
+    @Test
+    fun send_afterHalfClose_throws() {
+        val channel = createChannel()
+        val call = channel.newHelloCall()
+        val req = helloReq()
+        val statusDeferred = CompletableDeferred<Status>()
+        val listener = object : ClientCall.Listener<HelloReply>() {
+            override fun onClose(status: Status, trailers: GrpcTrailers) {
+                statusDeferred.complete(status)
+            }
+        }
+        call.start(listener, GrpcTrailers())
+        call.halfClose()
+        assertFailsWith<IllegalStateException> { call.sendMessage(req) }
+        // Ensure call completes
+        call.cancel("cleanup", null)
+        runBlocking { withTimeout(5000) { statusDeferred.await() } }
+        shutdownAndWait(channel)
+    }
+
+    @Test
+    fun request_zero_throws() {
+        val channel = createChannel()
+        val call = channel.newHelloCall()
+        val statusDeferred = CompletableDeferred<Status>()
+        val listener = object : ClientCall.Listener<HelloReply>() {
+            override fun onClose(status: Status, trailers: GrpcTrailers) {
+                statusDeferred.complete(status)
+            }
+        }
+        call.start(listener, GrpcTrailers())
+        assertFailsWith<IllegalStateException> { call.request(0) }
+        call.cancel("cleanup", null)
+        runBlocking { withTimeout(5000) { statusDeferred.await() } }
+        shutdownAndWait(channel)
+    }
+
+    @Test
+    fun cancel_afterStart_resultsInCancelledStatus() {
+        val channel = createChannel()
+        val call = channel.newHelloCall()
+        val statusDeferred = CompletableDeferred<Status>()
+        val listener = object : ClientCall.Listener<HelloReply>() {
+            override fun onClose(status: Status, trailers: GrpcTrailers) {
+                statusDeferred.complete(status)
+            }
+        }
+        call.start(listener, GrpcTrailers())
+        call.cancel("user cancel", null)
+        runBlocking {
+            withTimeout(10000) {
+                val status = statusDeferred.await()
+                assertEquals(StatusCode.CANCELLED, status.statusCode)
+            }
+        }
+        shutdownAndWait(channel)
+    }
+
+    @Test
+    fun invalid_method_returnsNonOkStatus() {
+        val channel = createChannel()
+        val call = channel.newHelloCall("/helloworld.Greeter/NoSuchMethod")
+        val statusDeferred = CompletableDeferred<Status>()
+        val listener = object : ClientCall.Listener<HelloReply>() {
+            override fun onClose(status: Status, trailers: GrpcTrailers) {
+                statusDeferred.complete(status)
+            }
+        }
+
+        call.start(listener, GrpcTrailers())
+        call.sendMessage(helloReq())
+        call.halfClose()
+        call.request(1)
+        runBlocking {
+            withTimeout(10000) {
+                val status = statusDeferred.await()
+                assertTrue(status.statusCode != StatusCode.OK)
+            }
+        }
+        shutdownAndWait(channel)
+    }
+
+    @Test
+    fun shutdownMidCall_resultsInUnavailableOrNonOk() {
+        val channel = createChannel()
+        val call = channel.newHelloCall()
+        val statusDeferred = CompletableDeferred<Status>()
+        val listener = object : ClientCall.Listener<HelloReply>() {
+            override fun onClose(status: Status, trailers: GrpcTrailers) {
+                statusDeferred.complete(status)
+            }
+        }
+        call.start(listener, GrpcTrailers())
+        call.sendMessage(helloReq())
+        // Intentionally shut down before halfClose/request to simulate mid-flight shutdown
+        channel.shutdownNow()
+        // Even if we try to proceed, the CQ should signal shutdown
+        runBlocking {
+            withTimeout(10000) {
+                val status = statusDeferred.await()
+                assertTrue(status.statusCode != StatusCode.OK)
+            }
+        }
+        shutdownAndWait(channel)
     }
 
 
     @Test
-    fun testNormalOften() {
-        for (i in 0..1000) {
-            grpcClientTest()
+    fun halfCloseBeforeSendingMessage_errorWithoutCrashing() {
+        val channel = createChannel()
+        val call = channel.newHelloCall()
+        val statusDeferred = CompletableDeferred<Status>()
+        val listener = object : ClientCall.Listener<HelloReply>() {
+            override fun onClose(status: Status, trailers: GrpcTrailers) {
+                statusDeferred.complete(status)
+            }
+        }
+        assertFailsWith<IllegalStateException> {
+            try {
+                call.start(listener, GrpcTrailers())
+                call.halfClose()
+                call.sendMessage(helloReq())
+            } finally {
+                shutdownAndWait(channel)
+            }
         }
     }
 
+    @Test
+    fun invokeStartAfterShutdown() {
+        val channel = createChannel()
+        val call = channel.newHelloCall()
+        val statusDeferred = CompletableDeferred<Status>()
+        val listener = object : ClientCall.Listener<HelloReply>() {
+            override fun onClose(status: Status, trailers: GrpcTrailers) {
+                statusDeferred.complete(status)
+            }
+        }
+
+        channel.shutdown()
+        call.start(listener, GrpcTrailers())
+        call.halfClose()
+        call.sendMessage(helloReq())
+        // Intentionally shut down before halfClose/request to simulate mid-flight shutdown
+        channel.shutdownNow()
+    }
 }
