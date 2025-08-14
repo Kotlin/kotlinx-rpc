@@ -16,8 +16,10 @@ plugins {
 }
 
 kotlin {
+    // time API
     compilerOptions {
         apiVersion = KotlinVersion.KOTLIN_2_1
+        languageVersion = KotlinVersion.KOTLIN_2_1
     }
 
     sourceSets {
