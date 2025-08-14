@@ -31,7 +31,9 @@ internal class NativeClientCall<Request, Response>(
     }
 
     // the callJob is completed by the channel on shutdown to prevent start() calls after shutdown
-    private val callJob = callScope.coroutineContext[Job]!!
+    private val callJob = callScope.coroutineContext[Job]!! as CompletableJob
+    private val callBatchJob = Job(callJob)
+    private val callBatchScope = CoroutineScope(callBatchJob)
 
     private var listener: Listener<Response>? = null
     private var halfClosed = false
@@ -85,7 +87,7 @@ internal class NativeClientCall<Request, Response>(
         cleanup: () -> Unit = {},
         onSuccess: suspend () -> Unit = {},
     ) {
-        callScope.launch {
+        callBatchScope.launch {
             val result = cq.runBatch(this@NativeClientCall, ops, nOps).await()
             when (result) {
                 BatchResult.Success -> onSuccess()
@@ -105,6 +107,7 @@ internal class NativeClientCall<Request, Response>(
                 }
             }
         }.invokeOnCompletion {
+            println("Batch finished: ${ops.pointed.op}")
             cleanup()
             if (it is CancellationException) {
                 if (callJob.isCancelled) {
@@ -139,12 +142,16 @@ internal class NativeClientCall<Request, Response>(
             withContext(NonCancellable) {
                 // will never fail
                 completion.await()
+                callJob.complete()
+                callBatchJob.complete()
+                callBatchJob.join()
                 val status = Status(errorStr.value?.toKString(), statusCode.value.toKotlin(), null)
                 val trailers = GrpcTrailers()
                 closeCall(status, trailers)
             }
         }.invokeOnCompletion {
             arena.clear()
+            println("Completed with: ${it}")
             when (it) {
                 null -> { /* nothing to do */
                 }
@@ -162,6 +169,7 @@ internal class NativeClientCall<Request, Response>(
     override fun request(numMessages: Int) {
         check(numMessages > 0) { "numMessages must be > 0" }
         val listener = checkNotNull(listener) { "Not yet started" }
+        println("Is cancelled: $cancelled")
         check(!cancelled) { "Already cancelled" }
         check(!closed.value) { "Already closed." }
 
@@ -173,8 +181,7 @@ internal class NativeClientCall<Request, Response>(
                 data.recv_message.recv_message = recvPtr.ptr
             }
             runBatch(op.ptr, 1u, cleanup = { arena.clear() }) {
-                val buf = recvPtr.value
-                if (buf == null) return@runBatch // EOS
+                val buf = recvPtr.value ?: return@runBatch // EOS
                 val msg = methodDescriptor.getResponseMarshaller()
                     .parse(buf.toKotlin().asInputStream())
                 listener.onMessage(msg)
@@ -217,6 +224,7 @@ internal class NativeClientCall<Request, Response>(
     override fun sendMessage(message: Request) {
         checkNotNull(listener) { "Not yet started" }
         check(!halfClosed) { "Already half closed." }
+        check(!cancelled) { "Already cancelled." }
         check(!closed.value) { "Already closed." }
 
         val arena = Arena()
