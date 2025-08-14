@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.protoc.gen.core
 
+import kotlinx.rpc.protoc.gen.core.model.EnumDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FieldDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FieldType
 import kotlinx.rpc.protoc.gen.core.model.FileDeclaration

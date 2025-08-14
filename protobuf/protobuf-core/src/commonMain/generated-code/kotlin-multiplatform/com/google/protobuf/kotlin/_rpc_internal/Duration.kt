@@ -47,12 +47,12 @@ public operator fun com.google.protobuf.kotlin.Duration.Companion.invoke(body: c
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.DurationInternal.checkRequiredFields() { 
+public fun com.google.protobuf.kotlin.DurationInternal.checkRequiredFields() { 
     // no required fields to check
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.DurationInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+public fun com.google.protobuf.kotlin.DurationInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
     if (seconds != 0L) { 
         encoder.writeInt64(fieldNr = 1, value = seconds)
     }
@@ -63,7 +63,7 @@ internal fun com.google.protobuf.kotlin.DurationInternal.encodeWith(encoder: kot
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.DurationInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.DurationInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+public fun com.google.protobuf.kotlin.DurationInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.DurationInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -97,7 +97,7 @@ private fun com.google.protobuf.kotlin.DurationInternal.computeSize(): Int {
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.Duration.asInternal(): com.google.protobuf.kotlin.DurationInternal { 
+public fun com.google.protobuf.kotlin.Duration.asInternal(): com.google.protobuf.kotlin.DurationInternal { 
     return this as? com.google.protobuf.kotlin.DurationInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
 

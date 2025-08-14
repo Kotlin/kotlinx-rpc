@@ -20,6 +20,7 @@ import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
 import kotlinx.rpc.protoc.gen.core.model.WireType
 import org.slf4j.Logger
+import kotlin.collections.map
 
 class ModelToProtobufKotlinCommonGenerator(
     model: Model,
@@ -184,9 +185,15 @@ class ModelToProtobufKotlinCommonGenerator(
         }
 
         clazz("PresenceIndices", "private", declarationType = CodeGenerator.DeclarationType.Object) {
-            declaration.actualFields.forEach { field ->
+            declaration.actualFields.forEachIndexed { i, field ->
                 if (field.presenceIdx != null) {
-                    property(field.name, modifiers = "const", value = field.presenceIdx.toString(), type = "Int")
+                    property(
+                        field.name,
+                        modifiers = "const",
+                        value = field.presenceIdx.toString(),
+                        type = "Int",
+                        needsNewLineAfterDeclaration = i == declaration.actualFields.lastIndex,
+                    )
                 }
             }
         }
@@ -248,7 +255,6 @@ class ModelToProtobufKotlinCommonGenerator(
 
     private fun CodeGenerator.generateMessageDecoder(declaration: MessageDeclaration) = function(
         name = "decodeWith",
-        modifiers = "internal",
         args = "msg: ${declaration.internalClassFullName()}, decoder: $PB_PKG.WireDecoder",
         annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
         contextReceiver = "${declaration.internalClassFullName()}.Companion",
@@ -358,7 +364,13 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             is FieldType.List -> if (isPacked) {
-                code("$lvalue = decoder.readPacked${fieldType.value.decodeEncodeFuncName()}()")
+                val conversion = if (fieldType.value is FieldType.Enum){
+                    ".map { ${(fieldType.value as FieldType.Enum).dec.name.safeFullName()}.fromNumber(it) }"
+                } else {
+                    ""
+                }
+
+                code("$lvalue = decoder.readPacked${fieldType.value.decodeEncodeFuncName()}()$conversion")
             } else {
                 when (val elemType = fieldType.value) {
                     is FieldType.Message -> {
@@ -410,7 +422,6 @@ class ModelToProtobufKotlinCommonGenerator(
 
     private fun CodeGenerator.generateMessageEncoder(declaration: MessageDeclaration) = function(
         name = "encodeWith",
-        modifiers = "internal",
         annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
         args = "encoder: $PB_PKG.WireEncoder",
         contextReceiver = declaration.internalClassFullName(),
@@ -461,14 +472,20 @@ class ModelToProtobufKotlinCommonGenerator(
         when (type) {
             is FieldType.IntegralType -> code("encoder.write${encFunc!!}(fieldNr = $number, value = $valueVar)")
             is FieldType.List -> {
+                val packedValueVar = if (type.value is FieldType.Enum) {
+                    "$valueVar.map { it.number }"
+                } else {
+                    valueVar
+                }
+
                 encFunc = type.value.decodeEncodeFuncName()
                 when {
                     isPacked && packedWithFixedSize ->
-                        code("encoder.writePacked${encFunc!!}(fieldNr = $number, value = $valueVar)")
+                        code("encoder.writePacked${encFunc!!}(fieldNr = $number, value = $packedValueVar)")
 
                     isPacked && !packedWithFixedSize ->
                         code(
-                            "encoder.writePacked${encFunc!!}(fieldNr = $number, value = $valueVar, fieldSize = ${
+                            "encoder.writePacked${encFunc!!}(fieldNr = $number, value = $packedValueVar, fieldSize = ${
                                 type.valueSizeCall(valueVar, number, true)
                             })"
                         )
@@ -480,7 +497,8 @@ class ModelToProtobufKotlinCommonGenerator(
                     else -> {
                         require(encFunc != null) { "No encode function for list type: $type" }
                         scope("$valueVar.forEach") {
-                            code("encoder.write${encFunc}($number, it)")
+                            val enumSuffix = if (type.value is FieldType.Enum) ".number" else ""
+                            code("encoder.write${encFunc}($number, it$enumSuffix)")
                         }
                     }
                 }
@@ -517,8 +535,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
     private fun CodeGenerator.generateInternalEnumConstructor(enum: EnumDeclaration) {
         function(
-            "fromNumber",
-            modifiers = "internal",
+            name = "fromNumber",
             args = "number: Int",
             annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
             contextReceiver = "${enum.name.safeFullName()}.Companion",
@@ -542,7 +559,6 @@ class ModelToProtobufKotlinCommonGenerator(
      */
     private fun CodeGenerator.generateRequiredCheck(declaration: MessageDeclaration) = function(
         name = "checkRequiredFields",
-        modifiers = "internal",
         annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
         contextReceiver = declaration.internalClassFullName(),
         returnType = "Unit",
@@ -643,7 +659,6 @@ class ModelToProtobufKotlinCommonGenerator(
         // to avoid edge-cases when generating other code that uses the asInternal() extension.
         function(
             "asInternal",
-            modifiers = "internal",
             annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
             contextReceiver = ctxReceiver,
             returnType = internalClassName,
@@ -723,7 +738,14 @@ class ModelToProtobufKotlinCommonGenerator(
 
     private fun FieldType.valueSizeCall(variable: String, number: Int, isPacked: Boolean = false): String {
         val sizeFunName = decodeEncodeFuncName()?.replaceFirstChar { it.lowercase() }
-        val sizeFunc = "$PB_PKG.WireSize.$sizeFunName($variable)"
+
+        val convertedVariable = if (isPacked && this is FieldType.List && value is FieldType.Enum) {
+            "${variable}.map { it.number }"
+        } else {
+            variable
+        }
+
+        val sizeFunc = "$PB_PKG.WireSize.$sizeFunName($convertedVariable)"
 
         return when (this) {
             is FieldType.IntegralType -> sizeFunc

@@ -47,12 +47,12 @@ public operator fun com.google.protobuf.kotlin.Any.Companion.invoke(body: com.go
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.AnyInternal.checkRequiredFields() { 
+public fun com.google.protobuf.kotlin.AnyInternal.checkRequiredFields() { 
     // no required fields to check
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.AnyInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+public fun com.google.protobuf.kotlin.AnyInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
     if (typeUrl.isNotEmpty()) { 
         encoder.writeString(fieldNr = 1, value = typeUrl)
     }
@@ -63,7 +63,7 @@ internal fun com.google.protobuf.kotlin.AnyInternal.encodeWith(encoder: kotlinx.
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.AnyInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.AnyInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+public fun com.google.protobuf.kotlin.AnyInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.AnyInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -97,7 +97,7 @@ private fun com.google.protobuf.kotlin.AnyInternal.computeSize(): Int {
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.Any.asInternal(): com.google.protobuf.kotlin.AnyInternal { 
+public fun com.google.protobuf.kotlin.Any.asInternal(): com.google.protobuf.kotlin.AnyInternal { 
     return this as? com.google.protobuf.kotlin.AnyInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
 

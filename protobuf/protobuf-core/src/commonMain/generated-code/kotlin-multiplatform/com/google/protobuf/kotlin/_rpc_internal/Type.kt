@@ -241,7 +241,7 @@ public operator fun com.google.protobuf.kotlin.Option.Companion.invoke(body: com
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.TypeInternal.checkRequiredFields() { 
+public fun com.google.protobuf.kotlin.TypeInternal.checkRequiredFields() { 
     // no required fields to check
     if (presenceMask[0]) { 
         sourceContext.asInternal().checkRequiredFields()
@@ -257,7 +257,7 @@ internal fun com.google.protobuf.kotlin.TypeInternal.checkRequiredFields() {
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.TypeInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+public fun com.google.protobuf.kotlin.TypeInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
     if (name.isNotEmpty()) { 
         encoder.writeString(fieldNr = 1, value = name)
     }
@@ -294,7 +294,7 @@ internal fun com.google.protobuf.kotlin.TypeInternal.encodeWith(encoder: kotlinx
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.TypeInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.TypeInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+public fun com.google.protobuf.kotlin.TypeInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.TypeInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -377,12 +377,12 @@ private fun com.google.protobuf.kotlin.TypeInternal.computeSize(): Int {
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.Type.asInternal(): com.google.protobuf.kotlin.TypeInternal { 
+public fun com.google.protobuf.kotlin.Type.asInternal(): com.google.protobuf.kotlin.TypeInternal { 
     return this as? com.google.protobuf.kotlin.TypeInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.FieldInternal.checkRequiredFields() { 
+public fun com.google.protobuf.kotlin.FieldInternal.checkRequiredFields() { 
     // no required fields to check
     options.forEach { 
         it.asInternal().checkRequiredFields()
@@ -390,7 +390,7 @@ internal fun com.google.protobuf.kotlin.FieldInternal.checkRequiredFields() {
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.FieldInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+public fun com.google.protobuf.kotlin.FieldInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
     if (com.google.protobuf.kotlin.Field.Kind.TYPE_UNKNOWN != kind) { 
         encoder.writeEnum(fieldNr = 1, value = kind.number)
     }
@@ -435,7 +435,7 @@ internal fun com.google.protobuf.kotlin.FieldInternal.encodeWith(encoder: kotlin
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.FieldInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.FieldInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+public fun com.google.protobuf.kotlin.FieldInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.FieldInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -535,12 +535,12 @@ private fun com.google.protobuf.kotlin.FieldInternal.computeSize(): Int {
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.Field.asInternal(): com.google.protobuf.kotlin.FieldInternal { 
+public fun com.google.protobuf.kotlin.Field.asInternal(): com.google.protobuf.kotlin.FieldInternal { 
     return this as? com.google.protobuf.kotlin.FieldInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.EnumInternal.checkRequiredFields() { 
+public fun com.google.protobuf.kotlin.EnumInternal.checkRequiredFields() { 
     // no required fields to check
     if (presenceMask[0]) { 
         sourceContext.asInternal().checkRequiredFields()
@@ -556,7 +556,7 @@ internal fun com.google.protobuf.kotlin.EnumInternal.checkRequiredFields() {
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.EnumInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+public fun com.google.protobuf.kotlin.EnumInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
     if (name.isNotEmpty()) { 
         encoder.writeString(fieldNr = 1, value = name)
     }
@@ -587,7 +587,7 @@ internal fun com.google.protobuf.kotlin.EnumInternal.encodeWith(encoder: kotlinx
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.EnumInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.EnumInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+public fun com.google.protobuf.kotlin.EnumInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.EnumInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -661,12 +661,12 @@ private fun com.google.protobuf.kotlin.EnumInternal.computeSize(): Int {
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.Enum.asInternal(): com.google.protobuf.kotlin.EnumInternal { 
+public fun com.google.protobuf.kotlin.Enum.asInternal(): com.google.protobuf.kotlin.EnumInternal { 
     return this as? com.google.protobuf.kotlin.EnumInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.EnumValueInternal.checkRequiredFields() { 
+public fun com.google.protobuf.kotlin.EnumValueInternal.checkRequiredFields() { 
     // no required fields to check
     options.forEach { 
         it.asInternal().checkRequiredFields()
@@ -674,7 +674,7 @@ internal fun com.google.protobuf.kotlin.EnumValueInternal.checkRequiredFields() 
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.EnumValueInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+public fun com.google.protobuf.kotlin.EnumValueInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
     if (name.isNotEmpty()) { 
         encoder.writeString(fieldNr = 1, value = name)
     }
@@ -691,7 +691,7 @@ internal fun com.google.protobuf.kotlin.EnumValueInternal.encodeWith(encoder: ko
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.EnumValueInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.EnumValueInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+public fun com.google.protobuf.kotlin.EnumValueInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.EnumValueInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -735,12 +735,12 @@ private fun com.google.protobuf.kotlin.EnumValueInternal.computeSize(): Int {
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.EnumValue.asInternal(): com.google.protobuf.kotlin.EnumValueInternal { 
+public fun com.google.protobuf.kotlin.EnumValue.asInternal(): com.google.protobuf.kotlin.EnumValueInternal { 
     return this as? com.google.protobuf.kotlin.EnumValueInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.OptionInternal.checkRequiredFields() { 
+public fun com.google.protobuf.kotlin.OptionInternal.checkRequiredFields() { 
     // no required fields to check
     if (presenceMask[0]) { 
         value.asInternal().checkRequiredFields()
@@ -748,7 +748,7 @@ internal fun com.google.protobuf.kotlin.OptionInternal.checkRequiredFields() {
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.OptionInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+public fun com.google.protobuf.kotlin.OptionInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
     if (name.isNotEmpty()) { 
         encoder.writeString(fieldNr = 1, value = name)
     }
@@ -759,7 +759,7 @@ internal fun com.google.protobuf.kotlin.OptionInternal.encodeWith(encoder: kotli
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.OptionInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.OptionInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+public fun com.google.protobuf.kotlin.OptionInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.OptionInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -797,12 +797,12 @@ private fun com.google.protobuf.kotlin.OptionInternal.computeSize(): Int {
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.Option.asInternal(): com.google.protobuf.kotlin.OptionInternal { 
+public fun com.google.protobuf.kotlin.Option.asInternal(): com.google.protobuf.kotlin.OptionInternal { 
     return this as? com.google.protobuf.kotlin.OptionInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.Syntax.Companion.fromNumber(number: Int): com.google.protobuf.kotlin.Syntax { 
+public fun com.google.protobuf.kotlin.Syntax.Companion.fromNumber(number: Int): com.google.protobuf.kotlin.Syntax { 
     return when (number) { 
         0 -> { 
             com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2
@@ -823,7 +823,7 @@ internal fun com.google.protobuf.kotlin.Syntax.Companion.fromNumber(number: Int)
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.Field.Kind.Companion.fromNumber(number: Int): com.google.protobuf.kotlin.Field.Kind { 
+public fun com.google.protobuf.kotlin.Field.Kind.Companion.fromNumber(number: Int): com.google.protobuf.kotlin.Field.Kind { 
     return when (number) { 
         0 -> { 
             com.google.protobuf.kotlin.Field.Kind.TYPE_UNKNOWN
@@ -908,7 +908,7 @@ internal fun com.google.protobuf.kotlin.Field.Kind.Companion.fromNumber(number: 
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.Field.Cardinality.Companion.fromNumber(number: Int): com.google.protobuf.kotlin.Field.Cardinality { 
+public fun com.google.protobuf.kotlin.Field.Cardinality.Companion.fromNumber(number: Int): com.google.protobuf.kotlin.Field.Cardinality { 
     return when (number) { 
         0 -> { 
             com.google.protobuf.kotlin.Field.Cardinality.CARDINALITY_UNKNOWN

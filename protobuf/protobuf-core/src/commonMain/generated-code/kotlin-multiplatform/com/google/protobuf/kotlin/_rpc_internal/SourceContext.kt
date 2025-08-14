@@ -46,19 +46,19 @@ public operator fun com.google.protobuf.kotlin.SourceContext.Companion.invoke(bo
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.SourceContextInternal.checkRequiredFields() { 
+public fun com.google.protobuf.kotlin.SourceContextInternal.checkRequiredFields() { 
     // no required fields to check
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.SourceContextInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+public fun com.google.protobuf.kotlin.SourceContextInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
     if (fileName.isNotEmpty()) { 
         encoder.writeString(fieldNr = 1, value = fileName)
     }
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.SourceContextInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.SourceContextInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+public fun com.google.protobuf.kotlin.SourceContextInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.SourceContextInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -84,7 +84,7 @@ private fun com.google.protobuf.kotlin.SourceContextInternal.computeSize(): Int 
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.SourceContext.asInternal(): com.google.protobuf.kotlin.SourceContextInternal { 
+public fun com.google.protobuf.kotlin.SourceContext.asInternal(): com.google.protobuf.kotlin.SourceContextInternal { 
     return this as? com.google.protobuf.kotlin.SourceContextInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
 

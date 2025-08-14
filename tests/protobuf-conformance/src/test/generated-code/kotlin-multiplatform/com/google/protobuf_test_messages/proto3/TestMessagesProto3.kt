@@ -1,7 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf_test_messages.proto3
 
-import com.google.protobuf.*
+import com.google.protobuf.kotlin.*
 import kotlin.jvm.JvmInline
 import kotlinx.rpc.internal.utils.*
 
@@ -98,38 +98,38 @@ interface TestAllTypesProto3 {
     val mapStringForeignMessage: Map<kotlin.String, com.google.protobuf_test_messages.proto3.ForeignMessage>
     val mapStringNestedEnum: Map<kotlin.String, com.google.protobuf_test_messages.proto3.TestAllTypesProto3.NestedEnum>
     val mapStringForeignEnum: Map<kotlin.String, com.google.protobuf_test_messages.proto3.ForeignEnum>
-    val optionalBoolWrapper: com.google.protobuf.BoolValue
-    val optionalInt32Wrapper: com.google.protobuf.Int32Value
-    val optionalInt64Wrapper: com.google.protobuf.Int64Value
-    val optionalUint32Wrapper: com.google.protobuf.UInt32Value
-    val optionalUint64Wrapper: com.google.protobuf.UInt64Value
-    val optionalFloatWrapper: com.google.protobuf.FloatValue
-    val optionalDoubleWrapper: com.google.protobuf.DoubleValue
-    val optionalStringWrapper: com.google.protobuf.StringValue
-    val optionalBytesWrapper: com.google.protobuf.BytesValue
-    val repeatedBoolWrapper: List<com.google.protobuf.BoolValue>
-    val repeatedInt32Wrapper: List<com.google.protobuf.Int32Value>
-    val repeatedInt64Wrapper: List<com.google.protobuf.Int64Value>
-    val repeatedUint32Wrapper: List<com.google.protobuf.UInt32Value>
-    val repeatedUint64Wrapper: List<com.google.protobuf.UInt64Value>
-    val repeatedFloatWrapper: List<com.google.protobuf.FloatValue>
-    val repeatedDoubleWrapper: List<com.google.protobuf.DoubleValue>
-    val repeatedStringWrapper: List<com.google.protobuf.StringValue>
-    val repeatedBytesWrapper: List<com.google.protobuf.BytesValue>
-    val optionalDuration: com.google.protobuf.Duration
-    val optionalTimestamp: com.google.protobuf.Timestamp
-    val optionalFieldMask: com.google.protobuf.FieldMask
-    val optionalStruct: com.google.protobuf.Struct
-    val optionalAny: com.google.protobuf.Any
-    val optionalValue: com.google.protobuf.Value
-    val optionalNullValue: com.google.protobuf.NullValue
-    val repeatedDuration: List<com.google.protobuf.Duration>
-    val repeatedTimestamp: List<com.google.protobuf.Timestamp>
-    val repeatedFieldmask: List<com.google.protobuf.FieldMask>
-    val repeatedStruct: List<com.google.protobuf.Struct>
-    val repeatedAny: List<com.google.protobuf.Any>
-    val repeatedValue: List<com.google.protobuf.Value>
-    val repeatedListValue: List<com.google.protobuf.ListValue>
+    val optionalBoolWrapper: com.google.protobuf.kotlin.BoolValue
+    val optionalInt32Wrapper: com.google.protobuf.kotlin.Int32Value
+    val optionalInt64Wrapper: com.google.protobuf.kotlin.Int64Value
+    val optionalUint32Wrapper: com.google.protobuf.kotlin.UInt32Value
+    val optionalUint64Wrapper: com.google.protobuf.kotlin.UInt64Value
+    val optionalFloatWrapper: com.google.protobuf.kotlin.FloatValue
+    val optionalDoubleWrapper: com.google.protobuf.kotlin.DoubleValue
+    val optionalStringWrapper: com.google.protobuf.kotlin.StringValue
+    val optionalBytesWrapper: com.google.protobuf.kotlin.BytesValue
+    val repeatedBoolWrapper: List<com.google.protobuf.kotlin.BoolValue>
+    val repeatedInt32Wrapper: List<com.google.protobuf.kotlin.Int32Value>
+    val repeatedInt64Wrapper: List<com.google.protobuf.kotlin.Int64Value>
+    val repeatedUint32Wrapper: List<com.google.protobuf.kotlin.UInt32Value>
+    val repeatedUint64Wrapper: List<com.google.protobuf.kotlin.UInt64Value>
+    val repeatedFloatWrapper: List<com.google.protobuf.kotlin.FloatValue>
+    val repeatedDoubleWrapper: List<com.google.protobuf.kotlin.DoubleValue>
+    val repeatedStringWrapper: List<com.google.protobuf.kotlin.StringValue>
+    val repeatedBytesWrapper: List<com.google.protobuf.kotlin.BytesValue>
+    val optionalDuration: com.google.protobuf.kotlin.Duration
+    val optionalTimestamp: com.google.protobuf.kotlin.Timestamp
+    val optionalFieldMask: com.google.protobuf.kotlin.FieldMask
+    val optionalStruct: com.google.protobuf.kotlin.Struct
+    val optionalAny: com.google.protobuf.kotlin.Any
+    val optionalValue: com.google.protobuf.kotlin.Value
+    val optionalNullValue: com.google.protobuf.kotlin.NullValue
+    val repeatedDuration: List<com.google.protobuf.kotlin.Duration>
+    val repeatedTimestamp: List<com.google.protobuf.kotlin.Timestamp>
+    val repeatedFieldmask: List<com.google.protobuf.kotlin.FieldMask>
+    val repeatedStruct: List<com.google.protobuf.kotlin.Struct>
+    val repeatedAny: List<com.google.protobuf.kotlin.Any>
+    val repeatedValue: List<com.google.protobuf.kotlin.Value>
+    val repeatedListValue: List<com.google.protobuf.kotlin.ListValue>
     val fieldname1: Int
     val fieldName2: Int
     val FieldName3: Int
@@ -183,7 +183,9 @@ interface TestAllTypesProto3 {
         ): OneofField
 
         @JvmInline
-        value class OneofNullValue(val value: com.google.protobuf.NullValue): OneofField
+        value class OneofNullValue(
+            val value: com.google.protobuf.kotlin.NullValue,
+        ): OneofField
     }
 
     @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf_test_messages.proto3.TestAllTypesProto3Internal.NestedMessageInternal.CODEC::class)
@@ -221,8 +223,11 @@ interface TestAllTypesProto3 {
 
         companion object { 
             val MOO: AliasedEnum get() = ALIAS_BAZ
+
             val moo: AliasedEnum get() = ALIAS_BAZ
+
             val bAz: AliasedEnum get() = ALIAS_BAZ
+
             val entries: List<AliasedEnum> by lazy { listOf(ALIAS_FOO, ALIAS_BAR, ALIAS_BAZ) }
         }
     }
@@ -239,13 +244,11 @@ interface ForeignMessage {
 
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf_test_messages.proto3.NullHypothesisProto3Internal.CODEC::class)
 interface NullHypothesisProto3 { 
-
     companion object
 }
 
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf_test_messages.proto3.EnumOnlyProto3Internal.CODEC::class)
 interface EnumOnlyProto3 { 
-
     sealed class Bool(open val number: Int) { 
         object kFalse: Bool(number = 0)
 
