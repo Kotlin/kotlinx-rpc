@@ -7,6 +7,7 @@ package kotlinx.rpc.internal
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.protoc.grpcKotlinMultiplatform
 import kotlinx.rpc.protoc.kotlinMultiplatform
+import kotlinx.rpc.protoc.protoSourceSets
 import kotlinx.rpc.rpcExtension
 import org.gradle.api.Project
 import org.gradle.internal.extensions.core.extra
@@ -19,16 +20,21 @@ public fun Project.configureLocalProtocGenDevelopmentDependency(
 ) {
     val globalRootDir: String by extra
 
-    rpcExtension().protoc.plugins {
-        kotlinMultiplatform {
-            local {
-                javaJar("$globalRootDir/protoc-gen/protobuf/build/libs/protobuf-$version-all.jar")
-            }
-        }
+    // init
+    rpcExtension().protoc()
 
-        grpcKotlinMultiplatform {
-            local {
-                javaJar("$globalRootDir/protoc-gen/grpc/build/libs/grpc-$version-all.jar")
+    protoSourceSets.all {
+        plugins {
+            kotlinMultiplatform {
+                local {
+                    javaJar("$globalRootDir/protoc-gen/protobuf/build/libs/protobuf-$version-all.jar")
+                }
+            }
+
+            grpcKotlinMultiplatform {
+                local {
+                    javaJar("$globalRootDir/protoc-gen/grpc/build/libs/grpc-$version-all.jar")
+                }
             }
         }
     }
