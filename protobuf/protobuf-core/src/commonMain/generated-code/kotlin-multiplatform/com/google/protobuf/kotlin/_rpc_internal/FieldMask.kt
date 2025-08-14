@@ -46,12 +46,12 @@ public operator fun com.google.protobuf.kotlin.FieldMask.Companion.invoke(body: 
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.FieldMaskInternal.checkRequiredFields() { 
+public fun com.google.protobuf.kotlin.FieldMaskInternal.checkRequiredFields() { 
     // no required fields to check
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.FieldMaskInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+public fun com.google.protobuf.kotlin.FieldMaskInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
     if (paths.isNotEmpty()) { 
         paths.forEach { 
             encoder.writeString(1, it)
@@ -60,7 +60,7 @@ internal fun com.google.protobuf.kotlin.FieldMaskInternal.encodeWith(encoder: ko
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.FieldMaskInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.FieldMaskInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+public fun com.google.protobuf.kotlin.FieldMaskInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.FieldMaskInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -87,7 +87,7 @@ private fun com.google.protobuf.kotlin.FieldMaskInternal.computeSize(): Int {
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.FieldMask.asInternal(): com.google.protobuf.kotlin.FieldMaskInternal { 
+public fun com.google.protobuf.kotlin.FieldMask.asInternal(): com.google.protobuf.kotlin.FieldMaskInternal { 
     return this as? com.google.protobuf.kotlin.FieldMaskInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
 

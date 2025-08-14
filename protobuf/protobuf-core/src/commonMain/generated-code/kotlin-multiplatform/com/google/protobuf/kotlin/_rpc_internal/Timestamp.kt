@@ -47,12 +47,12 @@ public operator fun com.google.protobuf.kotlin.Timestamp.Companion.invoke(body: 
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.TimestampInternal.checkRequiredFields() { 
+public fun com.google.protobuf.kotlin.TimestampInternal.checkRequiredFields() { 
     // no required fields to check
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.TimestampInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+public fun com.google.protobuf.kotlin.TimestampInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
     if (seconds != 0L) { 
         encoder.writeInt64(fieldNr = 1, value = seconds)
     }
@@ -63,7 +63,7 @@ internal fun com.google.protobuf.kotlin.TimestampInternal.encodeWith(encoder: ko
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.TimestampInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.TimestampInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+public fun com.google.protobuf.kotlin.TimestampInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.TimestampInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -97,7 +97,7 @@ private fun com.google.protobuf.kotlin.TimestampInternal.computeSize(): Int {
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.kotlin.Timestamp.asInternal(): com.google.protobuf.kotlin.TimestampInternal { 
+public fun com.google.protobuf.kotlin.Timestamp.asInternal(): com.google.protobuf.kotlin.TimestampInternal { 
     return this as? com.google.protobuf.kotlin.TimestampInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
 

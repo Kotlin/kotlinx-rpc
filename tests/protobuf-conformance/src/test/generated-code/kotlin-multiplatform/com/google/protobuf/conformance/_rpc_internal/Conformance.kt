@@ -5,13 +5,16 @@ import kotlinx.rpc.internal.utils.*
 import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.internal.*
 
-@kotlinx.rpc.internal.utils.InternalRpcApi
 class TestStatusInternal: com.google.protobuf.conformance.TestStatus, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
-    override  var name: String by MsgFieldDelegate() { "" }
-    override  var failureMessage: String by MsgFieldDelegate() { "" }
-    override  var matchedName: String by MsgFieldDelegate() { "" }
-    object CODEC : kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.TestStatus> { 
+
+    override var name: String by MsgFieldDelegate { "" }
+    override var failureMessage: String by MsgFieldDelegate { "" }
+    override var matchedName: String by MsgFieldDelegate { "" }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.TestStatus> { 
         override fun encode(value: com.google.protobuf.conformance.TestStatus): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
@@ -34,14 +37,18 @@ class TestStatusInternal: com.google.protobuf.conformance.TestStatus, kotlinx.rp
         }
     }
 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     companion object
 }
 
-@kotlinx.rpc.internal.utils.InternalRpcApi
 class FailureSetInternal: com.google.protobuf.conformance.FailureSet, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
-    override  var test: List<com.google.protobuf.conformance.TestStatus> by MsgFieldDelegate() { mutableListOf() }
-    object CODEC : kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.FailureSet> { 
+
+    override var test: List<com.google.protobuf.conformance.TestStatus> by MsgFieldDelegate { mutableListOf() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.FailureSet> { 
         override fun encode(value: com.google.protobuf.conformance.FailureSet): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
@@ -64,23 +71,27 @@ class FailureSetInternal: com.google.protobuf.conformance.FailureSet, kotlinx.rp
         }
     }
 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     companion object
 }
 
-@kotlinx.rpc.internal.utils.InternalRpcApi
 class ConformanceRequestInternal: com.google.protobuf.conformance.ConformanceRequest, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 1) { 
     private object PresenceIndices { 
-        const val jspbEncodingOptions = 0
+        const val jspbEncodingOptions: Int = 0
     }
 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
-    override  var requestedOutputFormat: com.google.protobuf.conformance.WireFormat by MsgFieldDelegate() { com.google.protobuf.conformance.WireFormat.UNSPECIFIED }
-    override  var messageType: String by MsgFieldDelegate() { "" }
-    override  var testCategory: com.google.protobuf.conformance.TestCategory by MsgFieldDelegate() { com.google.protobuf.conformance.TestCategory.UNSPECIFIED_TEST }
-    override  var jspbEncodingOptions: com.google.protobuf.conformance.JspbEncodingConfig by MsgFieldDelegate(PresenceIndices.jspbEncodingOptions) { com.google.protobuf.conformance.JspbEncodingConfigInternal() }
-    override  var printUnknownFields: Boolean by MsgFieldDelegate() { false }
-    override  var payload: com.google.protobuf.conformance.ConformanceRequest.Payload? = null
-    object CODEC : kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.ConformanceRequest> { 
+
+    override var requestedOutputFormat: com.google.protobuf.conformance.WireFormat by MsgFieldDelegate { com.google.protobuf.conformance.WireFormat.UNSPECIFIED }
+    override var messageType: String by MsgFieldDelegate { "" }
+    override var testCategory: com.google.protobuf.conformance.TestCategory by MsgFieldDelegate { com.google.protobuf.conformance.TestCategory.UNSPECIFIED_TEST }
+    override var jspbEncodingOptions: com.google.protobuf.conformance.JspbEncodingConfig by MsgFieldDelegate(PresenceIndices.jspbEncodingOptions) { com.google.protobuf.conformance.JspbEncodingConfigInternal() }
+    override var printUnknownFields: Boolean by MsgFieldDelegate { false }
+    override var payload: com.google.protobuf.conformance.ConformanceRequest.Payload? = null
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.ConformanceRequest> { 
         override fun encode(value: com.google.protobuf.conformance.ConformanceRequest): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
@@ -103,14 +114,18 @@ class ConformanceRequestInternal: com.google.protobuf.conformance.ConformanceReq
         }
     }
 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     companion object
 }
 
-@kotlinx.rpc.internal.utils.InternalRpcApi
 class ConformanceResponseInternal: com.google.protobuf.conformance.ConformanceResponse, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
-    override  var result: com.google.protobuf.conformance.ConformanceResponse.Result? = null
-    object CODEC : kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.ConformanceResponse> { 
+
+    override var result: com.google.protobuf.conformance.ConformanceResponse.Result? = null
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.ConformanceResponse> { 
         override fun encode(value: com.google.protobuf.conformance.ConformanceResponse): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
@@ -133,14 +148,18 @@ class ConformanceResponseInternal: com.google.protobuf.conformance.ConformanceRe
         }
     }
 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     companion object
 }
 
-@kotlinx.rpc.internal.utils.InternalRpcApi
 class JspbEncodingConfigInternal: com.google.protobuf.conformance.JspbEncodingConfig, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
-    override  var useJspbArrayAnyFormat: Boolean by MsgFieldDelegate() { false }
-    object CODEC : kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.JspbEncodingConfig> { 
+
+    override var useJspbArrayAnyFormat: Boolean by MsgFieldDelegate { false }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.JspbEncodingConfig> { 
         override fun encode(value: com.google.protobuf.conformance.JspbEncodingConfig): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
@@ -163,6 +182,7 @@ class JspbEncodingConfigInternal: com.google.protobuf.conformance.JspbEncodingCo
         }
     }
 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     companion object
 }
 
@@ -197,12 +217,12 @@ operator fun com.google.protobuf.conformance.JspbEncodingConfig.Companion.invoke
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.TestStatusInternal.checkRequiredFields() { 
+fun com.google.protobuf.conformance.TestStatusInternal.checkRequiredFields() { 
     // no required fields to check
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.TestStatusInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf.conformance.TestStatusInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
     if (name.isNotEmpty()) { 
         encoder.writeString(fieldNr = 1, value = name)
     }
@@ -217,7 +237,7 @@ internal fun com.google.protobuf.conformance.TestStatusInternal.encodeWith(encod
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.TestStatusInternal.Companion.decodeWith(msg: com.google.protobuf.conformance.TestStatusInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf.conformance.TestStatusInternal.Companion.decodeWith(msg: com.google.protobuf.conformance.TestStatusInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -259,12 +279,12 @@ private fun com.google.protobuf.conformance.TestStatusInternal.computeSize(): In
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.TestStatus.asInternal(): com.google.protobuf.conformance.TestStatusInternal { 
+fun com.google.protobuf.conformance.TestStatus.asInternal(): com.google.protobuf.conformance.TestStatusInternal { 
     return this as? com.google.protobuf.conformance.TestStatusInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.FailureSetInternal.checkRequiredFields() { 
+fun com.google.protobuf.conformance.FailureSetInternal.checkRequiredFields() { 
     // no required fields to check
     test.forEach { 
         it.asInternal().checkRequiredFields()
@@ -272,7 +292,7 @@ internal fun com.google.protobuf.conformance.FailureSetInternal.checkRequiredFie
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.FailureSetInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf.conformance.FailureSetInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
     if (test.isNotEmpty()) { 
         test.forEach { 
             encoder.writeMessage(fieldNr = 2, value = it.asInternal()) { encodeWith(it) }
@@ -281,7 +301,7 @@ internal fun com.google.protobuf.conformance.FailureSetInternal.encodeWith(encod
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.FailureSetInternal.Companion.decodeWith(msg: com.google.protobuf.conformance.FailureSetInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf.conformance.FailureSetInternal.Companion.decodeWith(msg: com.google.protobuf.conformance.FailureSetInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -309,12 +329,12 @@ private fun com.google.protobuf.conformance.FailureSetInternal.computeSize(): In
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.FailureSet.asInternal(): com.google.protobuf.conformance.FailureSetInternal { 
+fun com.google.protobuf.conformance.FailureSet.asInternal(): com.google.protobuf.conformance.FailureSetInternal { 
     return this as? com.google.protobuf.conformance.FailureSetInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.ConformanceRequestInternal.checkRequiredFields() { 
+fun com.google.protobuf.conformance.ConformanceRequestInternal.checkRequiredFields() { 
     // no required fields to check
     if (presenceMask[0]) { 
         jspbEncodingOptions.asInternal().checkRequiredFields()
@@ -322,7 +342,7 @@ internal fun com.google.protobuf.conformance.ConformanceRequestInternal.checkReq
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.ConformanceRequestInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf.conformance.ConformanceRequestInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
     if (com.google.protobuf.conformance.WireFormat.UNSPECIFIED != requestedOutputFormat) { 
         encoder.writeEnum(fieldNr = 3, value = requestedOutputFormat.number)
     }
@@ -365,7 +385,7 @@ internal fun com.google.protobuf.conformance.ConformanceRequestInternal.encodeWi
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.ConformanceRequestInternal.Companion.decodeWith(msg: com.google.protobuf.conformance.ConformanceRequestInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf.conformance.ConformanceRequestInternal.Companion.decodeWith(msg: com.google.protobuf.conformance.ConformanceRequestInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -463,17 +483,17 @@ private fun com.google.protobuf.conformance.ConformanceRequestInternal.computeSi
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.ConformanceRequest.asInternal(): com.google.protobuf.conformance.ConformanceRequestInternal { 
+fun com.google.protobuf.conformance.ConformanceRequest.asInternal(): com.google.protobuf.conformance.ConformanceRequestInternal { 
     return this as? com.google.protobuf.conformance.ConformanceRequestInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.ConformanceResponseInternal.checkRequiredFields() { 
+fun com.google.protobuf.conformance.ConformanceResponseInternal.checkRequiredFields() { 
     // no required fields to check
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.ConformanceResponseInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf.conformance.ConformanceResponseInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
     result?.also { 
         when (val value = it) { 
             is com.google.protobuf.conformance.ConformanceResponse.Result.ParseError -> { 
@@ -516,7 +536,7 @@ internal fun com.google.protobuf.conformance.ConformanceResponseInternal.encodeW
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.ConformanceResponseInternal.Companion.decodeWith(msg: com.google.protobuf.conformance.ConformanceResponseInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf.conformance.ConformanceResponseInternal.Companion.decodeWith(msg: com.google.protobuf.conformance.ConformanceResponseInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -610,24 +630,24 @@ private fun com.google.protobuf.conformance.ConformanceResponseInternal.computeS
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.ConformanceResponse.asInternal(): com.google.protobuf.conformance.ConformanceResponseInternal { 
+fun com.google.protobuf.conformance.ConformanceResponse.asInternal(): com.google.protobuf.conformance.ConformanceResponseInternal { 
     return this as? com.google.protobuf.conformance.ConformanceResponseInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.JspbEncodingConfigInternal.checkRequiredFields() { 
+fun com.google.protobuf.conformance.JspbEncodingConfigInternal.checkRequiredFields() { 
     // no required fields to check
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.JspbEncodingConfigInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf.conformance.JspbEncodingConfigInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
     if (useJspbArrayAnyFormat != false) { 
         encoder.writeBool(fieldNr = 1, value = useJspbArrayAnyFormat)
     }
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.JspbEncodingConfigInternal.Companion.decodeWith(msg: com.google.protobuf.conformance.JspbEncodingConfigInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf.conformance.JspbEncodingConfigInternal.Companion.decodeWith(msg: com.google.protobuf.conformance.JspbEncodingConfigInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -653,12 +673,12 @@ private fun com.google.protobuf.conformance.JspbEncodingConfigInternal.computeSi
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.JspbEncodingConfig.asInternal(): com.google.protobuf.conformance.JspbEncodingConfigInternal { 
+fun com.google.protobuf.conformance.JspbEncodingConfig.asInternal(): com.google.protobuf.conformance.JspbEncodingConfigInternal { 
     return this as? com.google.protobuf.conformance.JspbEncodingConfigInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.WireFormat.Companion.fromNumber(number: Int): com.google.protobuf.conformance.WireFormat { 
+fun com.google.protobuf.conformance.WireFormat.Companion.fromNumber(number: Int): com.google.protobuf.conformance.WireFormat { 
     return when (number) { 
         0 -> { 
             com.google.protobuf.conformance.WireFormat.UNSPECIFIED
@@ -687,7 +707,7 @@ internal fun com.google.protobuf.conformance.WireFormat.Companion.fromNumber(num
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-internal fun com.google.protobuf.conformance.TestCategory.Companion.fromNumber(number: Int): com.google.protobuf.conformance.TestCategory { 
+fun com.google.protobuf.conformance.TestCategory.Companion.fromNumber(number: Int): com.google.protobuf.conformance.TestCategory { 
     return when (number) { 
         0 -> { 
             com.google.protobuf.conformance.TestCategory.UNSPECIFIED_TEST
