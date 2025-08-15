@@ -20,11 +20,13 @@ import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
 import kotlinx.rpc.protoc.gen.core.model.WireType
 import org.slf4j.Logger
+import kotlin.collections.map
 
 class ModelToProtobufKotlinCommonGenerator(
     model: Model,
     logger: Logger,
-) : AModelToKotlinCommonGenerator(model, logger) {
+    explicitApiModeEnabled: Boolean,
+) : AModelToKotlinCommonGenerator(model, logger, explicitApiModeEnabled) {
     override val FileDeclaration.hasPublicGeneratedContent: Boolean
         get() = enumDeclarations.isNotEmpty() || messageDeclarations.isNotEmpty()
 
@@ -63,11 +65,6 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
-
-    private fun MessageDeclaration.fields() = actualFields.map {
-        it.transformToFieldDeclaration() to it
-    }
-
     @Suppress("detekt.CyclomaticComplexMethod")
     private fun CodeGenerator.generatePublicMessage(declaration: MessageDeclaration) {
         if (!declaration.isUserFacing) return
@@ -77,12 +74,17 @@ class ModelToProtobufKotlinCommonGenerator(
             declarationType = CodeGenerator.DeclarationType.Interface,
             annotations = listOf("@$WITH_CODEC_ANNO(${declaration.internalClassFullName()}.CODEC::class)")
         ) {
-            declaration.fields().forEach { (fieldDeclaration, _) ->
-                code("val $fieldDeclaration")
-                newLine()
+            declaration.actualFields.forEachIndexed { i, field ->
+                property(
+                    name = field.name,
+                    type = field.typeFqName(),
+                    needsNewLineAfterDeclaration = i == declaration.actualFields.lastIndex,
+                )
             }
 
-            newLine()
+            if (declaration.actualFields.isNotEmpty()) {
+                newLine()
+            }
 
             declaration.oneOfDeclarations.forEach { oneOf ->
                 generateOneOfPublic(oneOf)
@@ -104,9 +106,6 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun CodeGenerator.generateInternalMessage(declaration: MessageDeclaration) {
         val internalClassName = declaration.internalClassName()
 
-        val annotations = buildList {
-            add("@$INTERNAL_RPC_API_ANNO")
-        }
         val superTypes = buildList {
             if (declaration.isUserFacing) {
                 add(declaration.name.safeFullName())
@@ -116,35 +115,52 @@ class ModelToProtobufKotlinCommonGenerator(
 
         clazz(
             name = internalClassName,
-            annotations = annotations,
             declarationType = CodeGenerator.DeclarationType.Class,
             superTypes = superTypes,
         ) {
 
             generatePresenceIndicesObject(declaration)
 
-            code("override val _size: Int by lazy { computeSize() }")
+            property(
+                name = "_size",
+                modifiers = "override",
+                annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
+                type = "Int",
+                propertyInitializer = CodeGenerator.PropertyInitializer.DELEGATE,
+                value = "lazy { computeSize() }"
+            )
 
-            val override = if (declaration.isUserFacing) "override " else ""
-            declaration.fields().forEach { (fieldDeclaration, field) ->
+            val override = if (declaration.isUserFacing) "override" else ""
+            declaration.actualFields.forEachIndexed { i, field ->
                 val value = when {
                     field.nullable -> {
-                        "= null"
+                        "null"
                     }
 
                     field.type is FieldType.Message ->
-                        "by MsgFieldDelegate(PresenceIndices.${field.name}) { " +
+                        "MsgFieldDelegate(PresenceIndices.${field.name}) { " +
                                 "${(field.type as FieldType.Message).dec.value.internalClassFullName()}() " +
                                 "}"
 
                     else -> {
-                        val fieldPresence = if (field.presenceIdx != null) "PresenceIndices.${field.name}" else ""
-                        "by MsgFieldDelegate($fieldPresence) { ${field.type.defaultValue} }"
+                        val fieldPresence = if (field.presenceIdx != null) "(PresenceIndices.${field.name})" else ""
+                        "MsgFieldDelegate$fieldPresence { ${field.type.defaultValue} }"
                     }
                 }
 
-                code("$override var $fieldDeclaration $value")
-                newLine()
+                property(
+                    name = field.name,
+                    modifiers = override,
+                    value = value,
+                    isVar = true,
+                    type = field.typeFqName(),
+                    propertyInitializer = if (field.nullable) {
+                        CodeGenerator.PropertyInitializer.PLAIN
+                    } else {
+                        CodeGenerator.PropertyInitializer.DELEGATE
+                    },
+                    needsNewLineAfterDeclaration = i == declaration.actualFields.lastIndex,
+                )
             }
 
             declaration.nestedDeclarations.forEach { nested ->
@@ -154,7 +170,12 @@ class ModelToProtobufKotlinCommonGenerator(
             generateCodecObject(declaration)
 
             // required for decodeWith extension
-            code("companion object")
+            clazz(
+                name = "",
+                modifiers = "companion",
+                annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
+                declarationType = CodeGenerator.DeclarationType.Object
+            )
         }
     }
 
@@ -162,11 +183,17 @@ class ModelToProtobufKotlinCommonGenerator(
         if (declaration.presenceMaskSize == 0) {
             return
         }
-        scope("private object PresenceIndices") {
-            declaration.fields().forEach { (_, field) ->
+
+        clazz("PresenceIndices", "private", declarationType = CodeGenerator.DeclarationType.Object) {
+            declaration.actualFields.forEachIndexed { i, field ->
                 if (field.presenceIdx != null) {
-                    code("const val ${field.name} = ${field.presenceIdx}")
-                    newLine()
+                    property(
+                        field.name,
+                        modifiers = "const",
+                        value = field.presenceIdx.toString(),
+                        type = "Int",
+                        needsNewLineAfterDeclaration = i == declaration.actualFields.lastIndex,
+                    )
                 }
             }
         }
@@ -178,7 +205,12 @@ class ModelToProtobufKotlinCommonGenerator(
         val msgFqName = declaration.name.safeFullName()
         val inputStreamFqName = "kotlinx.rpc.protobuf.input.stream.InputStream"
         val bufferFqName = "kotlinx.io.Buffer"
-        scope("object CODEC : kotlinx.rpc.grpc.codec.MessageCodec<$msgFqName>") {
+        clazz(
+            name = "CODEC",
+            annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
+            declarationType = CodeGenerator.DeclarationType.Object,
+            superTypes = listOf("kotlinx.rpc.grpc.codec.MessageCodec<$msgFqName>"),
+        ) {
             function("encode", modifiers = "override", args = "value: $msgFqName", returnType = inputStreamFqName) {
                 code("val buffer = $bufferFqName()")
                 code("val encoder = $PB_PKG.WireEncoder(buffer)")
@@ -223,15 +255,15 @@ class ModelToProtobufKotlinCommonGenerator(
 
     private fun CodeGenerator.generateMessageDecoder(declaration: MessageDeclaration) = function(
         name = "decodeWith",
-        modifiers = "internal",
         args = "msg: ${declaration.internalClassFullName()}, decoder: $PB_PKG.WireDecoder",
         annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
-        contextReceiver = "${declaration.internalClassFullName()}.Companion"
+        contextReceiver = "${declaration.internalClassFullName()}.Companion",
+        returnType = "Unit",
     ) {
         whileBlock("true") {
             code("val tag = decoder.readTag() ?: break // EOF, we read the whole message")
             whenBlock {
-                declaration.fields().forEach { (_, field) -> readMatchCase(field) }
+                declaration.actualFields.forEach { field -> readMatchCase(field) }
                 whenCase("else") {
                     code("// we are currently just skipping unknown fields (KRPC-191)")
                     code("decoder.skipValue(tag.wireType)")
@@ -332,7 +364,13 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             is FieldType.List -> if (isPacked) {
-                code("$lvalue = decoder.readPacked${fieldType.value.decodeEncodeFuncName()}()")
+                val conversion = if (fieldType.value is FieldType.Enum){
+                    ".map { ${(fieldType.value as FieldType.Enum).dec.name.safeFullName()}.fromNumber(it) }"
+                } else {
+                    ""
+                }
+
+                code("$lvalue = decoder.readPacked${fieldType.value.decodeEncodeFuncName()}()$conversion")
             } else {
                 when (val elemType = fieldType.value) {
                     is FieldType.Message -> {
@@ -384,17 +422,17 @@ class ModelToProtobufKotlinCommonGenerator(
 
     private fun CodeGenerator.generateMessageEncoder(declaration: MessageDeclaration) = function(
         name = "encodeWith",
-        modifiers = "internal",
         annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
         args = "encoder: $PB_PKG.WireEncoder",
         contextReceiver = declaration.internalClassFullName(),
+        returnType = "Unit",
     ) {
-        if (declaration.fields().isEmpty()) {
+        if (declaration.actualFields.isEmpty()) {
             code("// no fields to encode")
             return@function
         }
 
-        declaration.fields().forEach { (_, field) ->
+        declaration.actualFields.forEach { field ->
             val fieldName = field.name
             if (field.nullable) {
                 scope("$fieldName?.also") {
@@ -434,14 +472,20 @@ class ModelToProtobufKotlinCommonGenerator(
         when (type) {
             is FieldType.IntegralType -> code("encoder.write${encFunc!!}(fieldNr = $number, value = $valueVar)")
             is FieldType.List -> {
+                val packedValueVar = if (type.value is FieldType.Enum) {
+                    "$valueVar.map { it.number }"
+                } else {
+                    valueVar
+                }
+
                 encFunc = type.value.decodeEncodeFuncName()
                 when {
                     isPacked && packedWithFixedSize ->
-                        code("encoder.writePacked${encFunc!!}(fieldNr = $number, value = $valueVar)")
+                        code("encoder.writePacked${encFunc!!}(fieldNr = $number, value = $packedValueVar)")
 
                     isPacked && !packedWithFixedSize ->
                         code(
-                            "encoder.writePacked${encFunc!!}(fieldNr = $number, value = $valueVar, fieldSize = ${
+                            "encoder.writePacked${encFunc!!}(fieldNr = $number, value = $packedValueVar, fieldSize = ${
                                 type.valueSizeCall(valueVar, number, true)
                             })"
                         )
@@ -453,7 +497,8 @@ class ModelToProtobufKotlinCommonGenerator(
                     else -> {
                         require(encFunc != null) { "No encode function for list type: $type" }
                         scope("$valueVar.forEach") {
-                            code("encoder.write${encFunc}($number, it)")
+                            val enumSuffix = if (type.value is FieldType.Enum) ".number" else ""
+                            code("encoder.write${encFunc}($number, it$enumSuffix)")
                         }
                     }
                 }
@@ -490,8 +535,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
     private fun CodeGenerator.generateInternalEnumConstructor(enum: EnumDeclaration) {
         function(
-            "fromNumber",
-            modifiers = "internal",
+            name = "fromNumber",
             args = "number: Int",
             annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
             contextReceiver = "${enum.name.safeFullName()}.Companion",
@@ -515,9 +559,9 @@ class ModelToProtobufKotlinCommonGenerator(
      */
     private fun CodeGenerator.generateRequiredCheck(declaration: MessageDeclaration) = function(
         name = "checkRequiredFields",
-        modifiers = "internal",
         annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
         contextReceiver = declaration.internalClassFullName(),
+        returnType = "Unit",
     ) {
         val requiredFields = declaration.actualFields.filter { it.dec.isRequired }
 
@@ -586,7 +630,7 @@ class ModelToProtobufKotlinCommonGenerator(
             contextReceiver = declaration.internalClassFullName(),
             returnType = "Int",
         ) {
-            code("var result = 0")
+            code("var __result = 0")
             declaration.actualFields.forEach { field ->
                 val fieldName = field.name
                 if (field.nullable) {
@@ -603,7 +647,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     }
                 }
             }
-            code("return result")
+            code("return __result")
         }
     }
 
@@ -615,7 +659,6 @@ class ModelToProtobufKotlinCommonGenerator(
         // to avoid edge-cases when generating other code that uses the asInternal() extension.
         function(
             "asInternal",
-            modifiers = "internal",
             annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
             contextReceiver = ctxReceiver,
             returnType = internalClassName,
@@ -638,17 +681,17 @@ class ModelToProtobufKotlinCommonGenerator(
         when (field.type) {
             is FieldType.List -> when {
                 // packed fields also have the tag + len
-                field.dec.isPacked -> code("result += $valueSize.let { $tagSize + ${int32SizeCall("it")} + it }")
-                else -> code("result = $valueSize")
+                field.dec.isPacked -> code("__result += $valueSize.let { $tagSize + ${int32SizeCall("it")} + it }")
+                else -> code("__result = $valueSize")
             }
 
             is FieldType.Message,
             FieldType.IntegralType.STRING,
             FieldType.IntegralType.BYTES,
-                -> code("result += $valueSize.let { $tagSize + ${int32SizeCall("it")} + it }")
+                -> code("__result += $valueSize.let { $tagSize + ${int32SizeCall("it")} + it }")
 
             is FieldType.Map -> {
-                scope("result += ${field.name}.entries.sumOf", paramDecl = "kEntry ->") {
+                scope("__result += ${field.name}.entries.sumOf", paramDecl = "kEntry ->") {
                     generateMapConstruction(field.type as FieldType.Map, "kEntry.key", "kEntry.value")
                     code("._size")
                 }
@@ -677,7 +720,7 @@ class ModelToProtobufKotlinCommonGenerator(
             FieldType.IntegralType.SINT64,
             FieldType.IntegralType.SFIXED32,
             FieldType.IntegralType.SFIXED64,
-                -> code("result += ($tagSize + $valueSize)")
+                -> code("__result += ($tagSize + $valueSize)")
         }
     }
 
@@ -695,7 +738,14 @@ class ModelToProtobufKotlinCommonGenerator(
 
     private fun FieldType.valueSizeCall(variable: String, number: Int, isPacked: Boolean = false): String {
         val sizeFunName = decodeEncodeFuncName()?.replaceFirstChar { it.lowercase() }
-        val sizeFunc = "$PB_PKG.WireSize.$sizeFunName($variable)"
+
+        val convertedVariable = if (isPacked && this is FieldType.List && value is FieldType.Enum) {
+            "${variable}.map { it.number }"
+        } else {
+            variable
+        }
+
+        val sizeFunc = "$PB_PKG.WireSize.$sizeFunName($convertedVariable)"
 
         return when (this) {
             is FieldType.IntegralType -> sizeFunc
@@ -765,10 +815,6 @@ class ModelToProtobufKotlinCommonGenerator(
         is FieldType.Message -> null
     }
 
-    private fun FieldDeclaration.transformToFieldDeclaration(): String {
-        return "${name}: ${typeFqName()}"
-    }
-
     private fun CodeGenerator.generateOneOfPublic(declaration: OneOfDeclaration) {
         val interfaceName = declaration.name.simpleName
 
@@ -818,16 +864,22 @@ class ModelToProtobufKotlinCommonGenerator(
 
             clazz("", modifiers = "companion", declarationType = CodeGenerator.DeclarationType.Object) {
                 declaration.aliases.forEach { alias: EnumDeclaration.Alias ->
-                    code(
-                        "val ${alias.name.simpleName}: $className " +
-                                "get() = ${alias.original.name.simpleName}"
+                    property(
+                        name = alias.name.simpleName,
+                        type = className,
+                        propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
+                        value = alias.original.name.simpleName,
                     )
                 }
 
                 val entryNamesSorted = entriesSorted.joinToString(", ") { it.name.simpleName }
-                code("val entries: List<$className> by lazy { listOf($entryNamesSorted) }")
+                property(
+                    name = "entries",
+                    type = "List<$className>",
+                    propertyInitializer = CodeGenerator.PropertyInitializer.DELEGATE,
+                    value = "lazy { listOf($entryNamesSorted) }"
+                )
             }
-
         }
     }
 }

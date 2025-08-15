@@ -6,19 +6,22 @@ package kotlinx.rpc.protoc
 
 import kotlinx.rpc.buf.BufExtension
 import kotlinx.rpc.buf.configureBufExecutable
+import kotlinx.rpc.buf.tasks.BufGenerateTask
+import kotlinx.rpc.buf.tasks.GenerateBufGenYaml
+import kotlinx.rpc.buf.tasks.GenerateBufYaml
 import kotlinx.rpc.buf.tasks.registerBufExecTask
 import kotlinx.rpc.buf.tasks.registerBufGenerateTask
 import kotlinx.rpc.buf.tasks.registerGenerateBufGenYamlTask
 import kotlinx.rpc.buf.tasks.registerGenerateBufYamlTask
-import kotlinx.rpc.protoc.ProtocPlugin.Companion.GRPC_KOTLIN_MULTIPLATFORM
-import kotlinx.rpc.protoc.ProtocPlugin.Companion.KOTLIN_MULTIPLATFORM
 import kotlinx.rpc.util.ensureDirectoryExists
 import org.gradle.api.Action
 import org.gradle.api.GradleException
-import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
+import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.newInstance
@@ -28,21 +31,13 @@ import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+import java.io.File
 import javax.inject.Inject
 
 internal open class DefaultProtocExtension @Inject constructor(
     objects: ObjectFactory,
     private val project: Project,
 ) : ProtocExtension {
-    override val plugins: NamedDomainObjectContainer<ProtocPlugin> =
-        objects.domainObjectContainer(ProtocPlugin::class.java) { name ->
-            ProtocPlugin(name, project)
-        }
-
-    override fun plugins(action: Action<NamedDomainObjectContainer<ProtocPlugin>>) {
-        action.execute(plugins)
-    }
-
     override val buf: BufExtension = project.objects.newInstance<BufExtension>()
     override fun buf(action: Action<BufExtension>) {
         action.execute(buf)
@@ -53,21 +48,17 @@ internal open class DefaultProtocExtension @Inject constructor(
         project.configureKotlinMultiplatformPluginJarConfiguration()
         project.configureGrpcKotlinMultiplatformPluginJarConfiguration()
 
-        createDefaultProtocPlugins()
+        // ignore for bufGenerate task caching
+        project.normalization.runtimeClasspath.ignore("**/protoc-gen-kotlin-multiplatform.log")
+        project.normalization.runtimeClasspath.ignore("**/protoc-gen-grpc-kotlin-multiplatform.log")
+        project.normalization.runtimeClasspath.ignore("**/.keep")
 
-        project.protoSourceSets.forEach { protoSourceSet ->
-            protoSourceSet.protocPlugin(plugins.kotlinMultiplatform)
-            protoSourceSet.protocPlugin(plugins.grpcKotlinMultiplatform)
-        }
-
-        project.afterEvaluate {
-            project.protoSourceSets.forEach { sourceSet ->
-                if (sourceSet !is DefaultProtoSourceSet) {
-                    return@forEach
-                }
-
-                configureTasks(sourceSet)
+        project.protoSourceSets.all {
+            if (this !is DefaultProtoSourceSet) {
+                return@all
             }
+
+            project.configureTasks(this)
         }
     }
 
@@ -86,12 +77,8 @@ internal open class DefaultProtocExtension @Inject constructor(
 
         val pairSourceSet = protoSourceSet.correspondingMainSourceSetOrNull()
 
-        val mainProtocPlugins = pairSourceSet?.protocPlugins?.get().orEmpty()
-        val protocPluginNames = (protoSourceSet.protocPlugins.get() + mainProtocPlugins).distinct()
-
-        val includedProtocPlugins = protocPluginNames.map {
-            this@DefaultProtocExtension.plugins.findByName(it)
-                ?: throw GradleException("Protoc plugin $it not found")
+        val includedProtocPlugins = provider {
+            protoSourceSet.plugins.distinct()
         }
 
         val protoFiles = protoSourceSet.proto
@@ -137,28 +124,28 @@ internal open class DefaultProtocExtension @Inject constructor(
             dependsOn(generateBufYamlTask)
         }
 
-        val out = protoBuildDirGenerated.resolve(baseName)
-
-        val destinationFileTree = fileTree(buildSourceSetsProtoDir)
+        val sourceSetsProtoDirFileTree = fileTree(buildSourceSetsProtoDir)
 
         val bufGenerateTask = registerBufGenerateTask(
             name = baseName,
             workingDir = buildSourceSetsDir,
-            outputDirectory = out,
+            outputDirectory = protoBuildDirGenerated.resolve(baseName),
             protoFilesDir = buildSourceSetsProtoDir,
             importFilesDir = buildSourceSetsImportDir,
         ) {
-            includedProtocPlugins.forEach { plugin ->
-                executableFiles.addAll(
-                    plugin.artifact.map {
-                        if (it is ProtocPlugin.Artifact.Local) {
-                            it.executableFiles.get()
-                        } else {
-                            emptyList()
+            executableFiles.addAll(
+                includedProtocPlugins.map { list ->
+                    list.flatMap { plugin ->
+                        plugin.artifact.get().let {
+                            if (it is ProtocPlugin.Artifact.Local) {
+                                it.executableFiles.get()
+                            } else {
+                                emptyList()
+                            }
                         }
                     }
-                )
-            }
+                }
+            )
 
             dependsOn(generateBufGenYamlTask)
             dependsOn(generateBufYamlTask)
@@ -171,7 +158,7 @@ internal open class DefaultProtocExtension @Inject constructor(
                 dependsOn(pairSourceSet.generateTask)
             }
 
-            onlyIf { !destinationFileTree.filter { it.extension == "proto" }.isEmpty }
+            onlyIf { !sourceSetsProtoDirFileTree.filter { it.extension == "proto" }.isEmpty }
         }
 
         protoSourceSet.generateTask.set(bufGenerateTask)
@@ -210,7 +197,36 @@ internal open class DefaultProtocExtension @Inject constructor(
             }
         }
 
-        includedProtocPlugins.forEach { plugin ->
+        configureAfterEvaluate(
+            baseName = baseName,
+            protoSourceSet = protoSourceSet,
+            buildSourceSetsDir = buildSourceSetsDir,
+            includedProtocPlugins = includedProtocPlugins,
+            generateBufYamlTask = generateBufYamlTask,
+            generateBufGenYamlTask = generateBufGenYamlTask,
+            processProtoTask = processProtoTask,
+            processImportProtoTask = processImportProtoTask,
+            bufGenerateTask = bufGenerateTask,
+            sourceSetsProtoDirFileTree = sourceSetsProtoDirFileTree,
+        )
+    }
+
+    private fun Project.configureAfterEvaluate(
+        baseName: String,
+        protoSourceSet: DefaultProtoSourceSet,
+        buildSourceSetsDir: File,
+        includedProtocPlugins: Provider<List<ProtocPlugin>>,
+        generateBufYamlTask: TaskProvider<GenerateBufYaml>,
+        generateBufGenYamlTask: TaskProvider<GenerateBufGenYaml>,
+        processProtoTask: TaskProvider<ProcessProtoFiles>,
+        processImportProtoTask: TaskProvider<ProcessProtoFiles>?,
+        bufGenerateTask: TaskProvider<BufGenerateTask>,
+        sourceSetsProtoDirFileTree: ConfigurableFileTree,
+    ) = afterEvaluate {
+        val out = bufGenerateTask.get().outputDirectory.get()
+        val plugins = includedProtocPlugins.get()
+
+        plugins.forEach { plugin ->
             // locates correctly jvmMain, main jvmTest, test
             val javaSourceSet = extensions.findByType<JavaPluginExtension>()
                 ?.sourceSets?.findByName(baseName)?.java
@@ -245,7 +261,7 @@ internal open class DefaultProtocExtension @Inject constructor(
                     dependsOn(processImportProtoTask)
                 }
 
-                onlyIf { !destinationFileTree.filter { it.extension == "proto" }.isEmpty }
+                onlyIf { !sourceSetsProtoDirFileTree.filter { it.extension == "proto" }.isEmpty }
             }
 
             when {
@@ -262,35 +278,6 @@ internal open class DefaultProtocExtension @Inject constructor(
                 }
             }
         }
-    }
-
-    private fun createDefaultProtocPlugins() {
-        val explicitApiModeEnabled = project.provider {
-            project.the<KotlinBaseExtension>().explicitApi != ExplicitApiMode.Disabled
-        }
-
-        plugins.create(KOTLIN_MULTIPLATFORM) {
-            local {
-                javaJar(project.kotlinMultiplatformProtocPluginJarPath)
-            }
-
-            options.put("debugOutput", "protoc-gen-kotlin-multiplatform.log")
-            options.put("explicitApiModeEnabled", explicitApiModeEnabled)
-        }
-
-        plugins.create(GRPC_KOTLIN_MULTIPLATFORM) {
-            local {
-                javaJar(project.grpcKotlinMultiplatformProtocPluginJarPath)
-            }
-
-            options.put("debugOutput", "protoc-gen-grpc-kotlin-multiplatform.log")
-            options.put("explicitApiModeEnabled", explicitApiModeEnabled)
-        }
-
-        // ignore for bufGenerate task caching
-        project.normalization.runtimeClasspath.ignore("**/protoc-gen-kotlin-multiplatform.log")
-        project.normalization.runtimeClasspath.ignore("**/protoc-gen-grpc-kotlin-multiplatform.log")
-        project.normalization.runtimeClasspath.ignore("**/.keep")
     }
 
     private fun DefaultProtoSourceSet.correspondingMainSourceSetOrNull(): DefaultProtoSourceSet? {

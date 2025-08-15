@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.protoc.gen.core
 
+import kotlinx.rpc.protoc.gen.core.model.EnumDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FieldDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FieldType
 import kotlinx.rpc.protoc.gen.core.model.FileDeclaration
@@ -22,6 +23,7 @@ const val WITH_CODEC_ANNO = "kotlinx.rpc.grpc.codec.WithCodec"
 abstract class AModelToKotlinCommonGenerator(
     protected val model: Model,
     protected val logger: Logger,
+    private val explicitApiModeEnabled: Boolean,
 ) {
     protected abstract fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration)
     protected abstract fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration)
@@ -50,7 +52,7 @@ abstract class AModelToKotlinCommonGenerator(
     private fun FileDeclaration.generatePublicKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(logger = logger) {
+        return file(logger = logger, explicitApiModeEnabled = explicitApiModeEnabled) {
             filename = this@generatePublicKotlinFile.name
             packageName = this@generatePublicKotlinFile.packageName.safeFullName()
             packagePath = this@generatePublicKotlinFile.packageName.safeFullName()
@@ -64,7 +66,6 @@ abstract class AModelToKotlinCommonGenerator(
             generatePublicDeclaredEntities(this@generatePublicKotlinFile)
 
             import("kotlinx.rpc.internal.utils.*")
-            import("kotlinx.coroutines.flow.*")
 
             additionalPublicImports.forEach {
                 import(it)
@@ -75,7 +76,7 @@ abstract class AModelToKotlinCommonGenerator(
     private fun FileDeclaration.generateInternalKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(logger = logger) {
+        return file(logger = logger, explicitApiModeEnabled = explicitApiModeEnabled) {
             filename = this@generateInternalKotlinFile.name
             packageName = this@generateInternalKotlinFile.packageName.safeFullName()
             packagePath =
@@ -92,7 +93,6 @@ abstract class AModelToKotlinCommonGenerator(
 
             import("$PB_PKG.*")
             import("kotlinx.rpc.internal.utils.*")
-            import("kotlinx.coroutines.flow.*")
 
             additionalInternalImports.forEach {
                 import(it)
@@ -118,6 +118,7 @@ abstract class AModelToKotlinCommonGenerator(
                 val fqValue = when (val value = type.value) {
                     is FieldType.Message -> value.dec.value.name
                     is FieldType.IntegralType -> value.fqName
+                    is FieldType.Enum -> value.dec.name
                     else -> error("Unsupported type: $value")
                 }
 
@@ -136,6 +137,7 @@ abstract class AModelToKotlinCommonGenerator(
                 val fqValue = when (val value = entry.value) {
                     is FieldType.Message -> value.dec.value.name
                     is FieldType.IntegralType -> value.fqName
+                    is FieldType.Enum -> value.dec.name
                     else -> error("Unsupported type: $value")
                 }
 
@@ -160,6 +162,10 @@ abstract class AModelToKotlinCommonGenerator(
         nameToImport: String = declaration.simpleName,
         internalOnly: Boolean = false,
     ) {
+        if (declaration is FqName.Package) {
+            return
+        }
+
         if (declaration.parent == FqName.Package.Root && currentPackage != FqName.Package.Root && nameToImport.isNotBlank()) {
             additionalInternalImports.add(nameToImport)
             if (!internalOnly) {

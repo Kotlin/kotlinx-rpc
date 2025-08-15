@@ -1,0 +1,27 @@
+name: Verify Protobuf Well-Known Types are Up-to-Date
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-platforms-table:
+    name: Run Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Sources
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Run Protobuf Conformance Test Generation
+        run: ./gradlew :protobuf:protobuf-core:bufGenerateCommonMain --info --stacktrace
+      - name: Check if Well-Known Types are up-to-date
+        run: |
+          if [[ -n "$(git status --porcelain | grep protobuf/protobuf-core/)" ]]; then
+            echo "Well-Known Types are not up-to-date. Please run './gradlew :protobuf:protobuf-core:bufGenerateCommonMain' and commit changes"
+            exit 1
+          fi

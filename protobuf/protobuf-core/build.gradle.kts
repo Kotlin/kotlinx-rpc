@@ -4,6 +4,8 @@
 
 @file:OptIn(InternalRpcApi::class)
 
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import util.configureCLibCInterop
@@ -14,19 +16,25 @@ plugins {
 }
 
 kotlin {
+    // time API
+    compilerOptions {
+        apiVersion = KotlinVersion.KOTLIN_2_1
+        languageVersion = KotlinVersion.KOTLIN_2_1
+    }
+
     sourceSets {
         commonMain {
             dependencies {
                 api(projects.utils)
                 api(projects.protobuf.protobufInputStream)
+                api(projects.grpc.grpcCodec)
+
                 api(libs.kotlinx.io.core)
             }
         }
 
         commonTest {
             dependencies {
-                implementation(projects.grpc.grpcCodec)
-
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
             }
@@ -34,8 +42,7 @@ kotlin {
 
         jvmMain {
             dependencies {
-                api(libs.protobuf.java.util)
-                implementation(libs.protobuf.kotlin)
+                implementation(libs.protobuf.java.util)
             }
         }
 
@@ -67,4 +74,17 @@ protoSourceSets {
     }
 }
 
-configureLocalProtocGenDevelopmentDependency()
+configureLocalProtocGenDevelopmentDependency("Main", "Test")
+
+val generatedCodeDir = layout.projectDirectory
+    .dir("src")
+    .dir("commonMain")
+    .dir("generated-code")
+    .asFile
+
+tasks.withType<BufGenerateTask>().configureEach {
+    if (name.contains("Main")) {
+        includeWkt = true
+        outputDirectory = generatedCodeDir
+    }
+}

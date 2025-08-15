@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.protobuf.internal
 
-import kotlinx.io.Buffer
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.input.stream.InputStream
 
@@ -109,12 +108,9 @@ public expect inline fun checkForPlatformDecodeException(block: () -> Unit)
 /**
  * Creates a platform-specific [WireDecoder].
  *
- * This constructor takes a [Buffer] instead of a [kotlinx.io.Source] because
- * the native implementation (`WireDecoderNative`) depends on [Buffer]'s internal structure.
+ * NOTE: Do not use the [source] while the [WireDecoder] is still open.
  *
- * NOTE: Do not use the [source] buffer while the [WireDecoder] is still open.
- *
- * @param source The buffer containing the encoded wire-format data.
+ * @param source The stream containing the encoded wire-format data.
  */
 @InternalRpcApi
 public expect fun WireDecoder(source: InputStream): WireDecoder

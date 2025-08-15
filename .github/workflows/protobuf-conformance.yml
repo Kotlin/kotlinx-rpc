@@ -1,0 +1,27 @@
+name: Verify Protobuf Conformance is Up-to-Date
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-platforms-table:
+    name: Run Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Sources
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Run Protobuf Conformance Test Generation
+        run: ./gradlew tests:protobuf-conformance:bufGenerateTest --info --stacktrace
+      - name: Check if protobuf-conformance test is up-to-date
+        run: |
+          if [[ -n "$(git status --porcelain | grep tests/protobuf-conformance/)" ]]; then
+            echo "Protobuf conformance test is not up to date. Please run './gradlew tests:protobuf-conformance:bufGenerateTest' and commit changes"
+            exit 1
+          fi

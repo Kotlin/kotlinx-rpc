@@ -6,12 +6,11 @@ package kotlinx.rpc.protoc
 
 import kotlinx.rpc.buf.BufExtension
 import org.gradle.api.Action
-import org.gradle.api.NamedDomainObjectContainer
 
 /**
- * Configuration for the gRPC capabilities.
+ * Configuration for the Protoc capabilities.
  *
- * To enable the gRPC capabilities, add the following minimal code to your `build.gradle.kts`:
+ * To enable the Protoc capabilities, add the following minimal code to your `build.gradle.kts`:
  * ```kotlin
  * rpc {
  *     protoc()
@@ -19,16 +18,6 @@ import org.gradle.api.NamedDomainObjectContainer
  * ```
  */
 public interface ProtocExtension {
-    /**
-     * List of protoc plugins to be applied to the project.
-     */
-    public val plugins: NamedDomainObjectContainer<ProtocPlugin>
-
-    /**
-     * Configures the protoc plugins.
-     */
-    public fun plugins(action: Action<NamedDomainObjectContainer<ProtocPlugin>>)
-
     /**
      * Configuration for the Buf build tool.
      */
