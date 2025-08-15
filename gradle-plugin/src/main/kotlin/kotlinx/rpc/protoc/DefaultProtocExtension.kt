@@ -13,12 +13,9 @@ import kotlinx.rpc.buf.tasks.registerBufExecTask
 import kotlinx.rpc.buf.tasks.registerBufGenerateTask
 import kotlinx.rpc.buf.tasks.registerGenerateBufGenYamlTask
 import kotlinx.rpc.buf.tasks.registerGenerateBufYamlTask
-import kotlinx.rpc.protoc.ProtocPlugin.Companion.GRPC_KOTLIN_MULTIPLATFORM
-import kotlinx.rpc.protoc.ProtocPlugin.Companion.KOTLIN_MULTIPLATFORM
 import kotlinx.rpc.util.ensureDirectoryExists
 import org.gradle.api.Action
 import org.gradle.api.GradleException
-import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.model.ObjectFactory
@@ -41,15 +38,6 @@ internal open class DefaultProtocExtension @Inject constructor(
     objects: ObjectFactory,
     private val project: Project,
 ) : ProtocExtension {
-    override val plugins: NamedDomainObjectContainer<ProtocPlugin> =
-        objects.domainObjectContainer(ProtocPlugin::class.java) { name ->
-            ProtocPlugin(name, project)
-        }
-
-    override fun plugins(action: Action<NamedDomainObjectContainer<ProtocPlugin>>) {
-        action.execute(plugins)
-    }
-
     override val buf: BufExtension = project.objects.newInstance<BufExtension>()
     override fun buf(action: Action<BufExtension>) {
         action.execute(buf)
@@ -60,13 +48,10 @@ internal open class DefaultProtocExtension @Inject constructor(
         project.configureKotlinMultiplatformPluginJarConfiguration()
         project.configureGrpcKotlinMultiplatformPluginJarConfiguration()
 
-        createDefaultProtocPlugins()
-
-        project.protoSourceSets.all {
-            protocPlugin(plugins.kotlinMultiplatform)
-            protocPlugin(plugins.grpcKotlinMultiplatform)
-        }
-
+        // ignore for bufGenerate task caching
+        project.normalization.runtimeClasspath.ignore("**/protoc-gen-kotlin-multiplatform.log")
+        project.normalization.runtimeClasspath.ignore("**/protoc-gen-grpc-kotlin-multiplatform.log")
+        project.normalization.runtimeClasspath.ignore("**/.keep")
 
         project.protoSourceSets.all {
             if (this !is DefaultProtoSourceSet) {
@@ -92,16 +77,8 @@ internal open class DefaultProtocExtension @Inject constructor(
 
         val pairSourceSet = protoSourceSet.correspondingMainSourceSetOrNull()
 
-        val mainProtocPlugins = pairSourceSet?.protocPlugins ?: provider { emptyList() }
-        val protocPluginNames = protoSourceSet.protocPlugins
-            .zip(mainProtocPlugins) { left, right -> left + right }
-            .map { it.distinct() }
-
-        val includedProtocPlugins = protocPluginNames.map { list ->
-            list.map { pluginName ->
-                this@DefaultProtocExtension.plugins.findByName(pluginName)
-                    ?: throw GradleException("Protoc plugin $pluginName not found")
-            }
+        val includedProtocPlugins = provider {
+            protoSourceSet.plugins.distinct()
         }
 
         val protoFiles = protoSourceSet.proto
@@ -301,35 +278,6 @@ internal open class DefaultProtocExtension @Inject constructor(
                 }
             }
         }
-    }
-
-    private fun createDefaultProtocPlugins() {
-        val explicitApiModeEnabled = project.provider {
-            project.the<KotlinBaseExtension>().explicitApi != ExplicitApiMode.Disabled
-        }
-
-        plugins.create(KOTLIN_MULTIPLATFORM) {
-            local {
-                javaJar(project.kotlinMultiplatformProtocPluginJarPath)
-            }
-
-            options.put("debugOutput", "protoc-gen-kotlin-multiplatform.log")
-            options.put("explicitApiModeEnabled", explicitApiModeEnabled)
-        }
-
-        plugins.create(GRPC_KOTLIN_MULTIPLATFORM) {
-            local {
-                javaJar(project.grpcKotlinMultiplatformProtocPluginJarPath)
-            }
-
-            options.put("debugOutput", "protoc-gen-grpc-kotlin-multiplatform.log")
-            options.put("explicitApiModeEnabled", explicitApiModeEnabled)
-        }
-
-        // ignore for bufGenerate task caching
-        project.normalization.runtimeClasspath.ignore("**/protoc-gen-kotlin-multiplatform.log")
-        project.normalization.runtimeClasspath.ignore("**/protoc-gen-grpc-kotlin-multiplatform.log")
-        project.normalization.runtimeClasspath.ignore("**/.keep")
     }
 
     private fun DefaultProtoSourceSet.correspondingMainSourceSetOrNull(): DefaultProtoSourceSet? {

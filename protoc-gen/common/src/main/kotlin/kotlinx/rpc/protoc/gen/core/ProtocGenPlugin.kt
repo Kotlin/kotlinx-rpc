@@ -22,9 +22,11 @@ import java.io.File
 abstract class ProtocGenPlugin {
     companion object {
         private const val DEBUG_OUTPUT_OPTION = "debugOutput"
+        private const val EXPLICIT_API_MODE_ENABLED_OPTION = "explicitApiModeEnabled"
     }
 
     private var debugOutput: String? = null
+    private var explicitApiModeEnabled: Boolean = false
     private val logger: Logger by lazy {
         val debugOutput = debugOutput ?: return@lazy NOPLogger.NOP_LOGGER
 
@@ -57,6 +59,7 @@ abstract class ProtocGenPlugin {
         }
 
         debugOutput = parameters[DEBUG_OUTPUT_OPTION]
+        explicitApiModeEnabled = parameters[EXPLICIT_API_MODE_ENABLED_OPTION]?.toBooleanStrictOrNull() ?: false
 
         val files = input.runGeneration()
             .map { file ->
@@ -93,8 +96,16 @@ abstract class ProtocGenPlugin {
     }
 
     private fun CodeGeneratorRequest.runGeneration(): List<FileGenerator> {
-        return generateKotlinByModel(this.toModel(), logger)
+        return generateKotlinByModel(
+            model = this.toModel(),
+            logger = logger,
+            explicitApiModeEnabled = explicitApiModeEnabled,
+        )
     }
 
-    protected abstract fun generateKotlinByModel(model: Model, logger: Logger): List<FileGenerator>
+    protected abstract fun generateKotlinByModel(
+        model: Model,
+        logger: Logger,
+        explicitApiModeEnabled: Boolean,
+    ): List<FileGenerator>
 }

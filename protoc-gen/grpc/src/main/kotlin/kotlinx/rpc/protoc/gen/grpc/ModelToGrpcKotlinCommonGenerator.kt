@@ -14,7 +14,8 @@ import org.slf4j.Logger
 class ModelToGrpcKotlinCommonGenerator(
     model: Model,
     logger: Logger,
-) : AModelToKotlinCommonGenerator(model, logger) {
+    explicitApiModeEnabled: Boolean,
+) : AModelToKotlinCommonGenerator(model, logger, explicitApiModeEnabled) {
     override val FileDeclaration.hasPublicGeneratedContent: Boolean get() = serviceDeclarations.isNotEmpty()
     override val FileDeclaration.hasInternalGeneratedContent: Boolean get() = false
 
@@ -30,8 +31,11 @@ class ModelToGrpcKotlinCommonGenerator(
 
     @Suppress("detekt.LongMethod")
     private fun CodeGenerator.generatePublicService(service: ServiceDeclaration) {
-        code("@kotlinx.rpc.grpc.annotations.Grpc")
-        clazz(service.name.simpleName, declarationType = CodeGenerator.DeclarationType.Interface) {
+        clazz(
+            name = service.name.simpleName,
+            declarationType = CodeGenerator.DeclarationType.Interface,
+            annotations = listOf("@kotlinx.rpc.grpc.annotations.Grpc")
+        ) {
             service.methods.forEach { method ->
                 val inputType = method.inputType
                 val outputType = method.outputType

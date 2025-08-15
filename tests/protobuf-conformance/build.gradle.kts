@@ -31,7 +31,7 @@ val generatedCodeDir = project.layout.projectDirectory
 
 tasks.withType<BufGenerateTask>().configureEach {
     if (name.endsWith("Test")) {
-        outputDirectory.set(generatedCodeDir)
+        outputDirectory = generatedCodeDir
     }
 }
 
