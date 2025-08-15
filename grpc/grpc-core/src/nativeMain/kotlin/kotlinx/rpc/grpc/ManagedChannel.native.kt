@@ -58,16 +58,15 @@ internal class NativeManagedChannel(
     target: String,
     // we must store them, otherwise the credentials are getting released
     credentials: GrpcCredentials,
-    dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : ManagedChannel, ManagedChannelPlatform() {
 
-    // A reference to make sure the grpc_init() was called. (it is released after shutdown)
+    // a reference to make sure the grpc_init() was called. (it is released after shutdown)
     @Suppress("unused")
     private val rt = GrpcRuntime.acquire()
 
-    private val channelJob = SupervisorJob()
-    private val callJobSupervisor = SupervisorJob(channelJob)
-    private val channelScope = CoroutineScope(channelJob + dispatcher)
+    // job bundling all the call jobs created by this channel.
+    // this allows easy cancellation of ongoing calls.
+    private val callJobSupervisor = SupervisorJob()
 
     // the channel's completion queue, handling all request operations
     private val cq = CompletionQueue()
@@ -111,23 +110,15 @@ internal class NativeManagedChannel(
             return
         }
         if (force) {
+            // TODO: replace jobs by custom pendingCallClass.
             callJobSupervisor.cancelChildren(CancellationException("Channel is shutting down"))
         }
-        // prevent any start() calls on already call jobs
-        callJobSupervisor.children.forEach {
-            (it as CompletableJob).complete()
-        }
-        callJobSupervisor.complete()
-        channelScope.launch {
-            withContext(NonCancellable) {
-                // wait for all child jobs to complete.
-                callJobSupervisor.join()
-                // wait for the completion queue to shut down.
-                cq.shutdown(force).await()
-                if (isTerminatedInternal.complete(Unit)) {
-                    // release the grpc runtime, so it might call grpc_shutdown()
-                    rt.close()
-                }
+
+        // wait for the completion queue to shut down.
+        cq.shutdown(force).onComplete {
+            if (isTerminatedInternal.complete(Unit)) {
+                // release the grpc runtime, so it might call grpc_shutdown()
+                rt.close()
             }
         }
     }

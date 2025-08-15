@@ -6,22 +6,19 @@
 
 package kotlinx.rpc.grpc.internal
 
-import cnames.structs.grpc_call
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
 import kotlinx.cinterop.*
-import kotlinx.coroutines.CompletableDeferred
 import libgrpcpp_c.*
 import platform.posix.memset
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
 internal sealed interface BatchResult {
-    object Success : BatchResult
-    object ResultError : BatchResult
     object CQShutdown : BatchResult
     data class CallError(val error: grpc_call_error) : BatchResult
+    data class Called(val future: CallbackFuture<Boolean>) : BatchResult
 }
 
 /**
@@ -45,7 +42,7 @@ internal class CompletionQueue {
     // internal as it must be accessible from the SHUTDOWN_CB,
     // but it shouldn't be used from outside this file.
     @Suppress("PropertyName")
-    internal val _shutdownDone = CompletableDeferred<Unit>()
+    internal val _shutdownDone = CallbackFuture<Unit>()
 
     // used for spinning lock. false means not used (available)
     private val batchStartGuard = SynchronizedObject()
@@ -72,40 +69,41 @@ internal class CompletionQueue {
         require(kgrpc_iomgr_run_in_background()) { "The gRPC iomgr is not running background threads, required for callback based APIs." }
     }
 
-    // TODO: Remove this method
-    fun runBatch(call: NativeClientCall<*, *>, ops: CPointer<grpc_op>, nOps: ULong) =
-        runBatch(call.raw, ops, nOps)
-
-    fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong): CompletableDeferred<BatchResult> {
-        val completion = CompletableDeferred<BatchResult>()
+    fun runBatch(call: NativeClientCall<*, *>, ops: CPointer<grpc_op>, nOps: ULong): BatchResult {
+        val completion = CallbackFuture<Boolean>()
         val tag = newCbTag(completion, OPS_COMPLETE_CB)
 
         var err = grpc_call_error.GRPC_CALL_ERROR
+
         synchronized(batchStartGuard) {
-            // synchronizes access to grpc_call_start_batch
+            if (_state.value == State.SHUTTING_DOWN && ops.pointed.op == GRPC_OP_RECV_STATUS_ON_CLIENT) {
+                // if the queue is in the process of a SHUTDOWN,
+                // new call status receive batches will be rejected.
+                deleteCbTag(tag)
+                return BatchResult.CQShutdown
+            }
+
             if (forceShutdown || _state.value == State.CLOSED) {
                 // if the queue is either closed or in the process of a FORCE shutdown,
                 // new batches will instantly fail.
                 deleteCbTag(tag)
-                completion.complete(BatchResult.CQShutdown)
-                return completion
+                return BatchResult.CQShutdown
             }
 
-            err = grpc_call_start_batch(call, ops, nOps, tag, null)
+            err = grpc_call_start_batch(call.raw, ops, nOps, tag, null)
         }
 
         if (err != grpc_call_error.GRPC_CALL_OK) {
             // if the call was not successful, the callback will not be invoked.
             deleteCbTag(tag)
-            completion.complete(BatchResult.CallError(err))
-            return completion
+            return BatchResult.CallError(err)
         }
 
-        return completion
+        return BatchResult.Called(completion)
     }
 
     // must not be canceled as it cleans resources and sets the state to CLOSED
-    fun shutdown(force: Boolean = false): CompletableDeferred<Unit> {
+    fun shutdown(force: Boolean = false): CallbackFuture<Unit> {
         if (force) {
             forceShutdown = true
         }
@@ -130,10 +128,9 @@ internal class CompletionQueue {
 @CName("kq_ops_complete_cb")
 private fun opsCompleteCb(functor: CPointer<grpc_completion_queue_functor>?, ok: Int) {
     val tag = functor!!.reinterpret<grpc_cb_tag>()
-    val cont = tag.pointed.user_data!!.asStableRef<CompletableDeferred<BatchResult>>().get()
+    val cont = tag.pointed.user_data!!.asStableRef<CallbackFuture<Boolean>>().get()
     deleteCbTag(tag)
-    if (ok != 0) cont.complete(BatchResult.Success)
-    else cont.complete(BatchResult.ResultError)
+    cont.complete(ok != 0)
 }
 
 @CName("kq_shutdown_cb")

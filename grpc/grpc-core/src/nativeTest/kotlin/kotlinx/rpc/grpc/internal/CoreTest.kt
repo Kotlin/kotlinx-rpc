@@ -12,6 +12,7 @@ import HelloRequestInternal
 import invoke
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.*
@@ -23,7 +24,6 @@ import kotlin.test.assertTrue
 
 class GrpcCoreTest {
 
-    // Helpers to reduce boilerplate across tests
     private fun descriptorFor(fullName: String = "/helloworld.Greeter/SayHello"): MethodDescriptor<HelloRequest, HelloReply> =
         methodDescriptor(
             fullMethodName = fullName,
@@ -56,7 +56,7 @@ class GrpcCoreTest {
     }
 
     @Test
-    fun normalUnaryCall_ok() = repeat(10) { // keep runtime reasonable while still stress-testing
+    fun normalUnaryCall_ok() = repeat(1000) {
         val channel = createChannel()
         val call = channel.newHelloCall()
         val req = helloReq()
@@ -206,30 +206,6 @@ class GrpcCoreTest {
         shutdownAndWait(channel)
     }
 
-    @Test
-    fun shutdownMidCall_resultsInUnavailableOrNonOk() {
-        val channel = createChannel()
-        val call = channel.newHelloCall()
-        val statusDeferred = CompletableDeferred<Status>()
-        val listener = object : ClientCall.Listener<HelloReply>() {
-            override fun onClose(status: Status, trailers: GrpcTrailers) {
-                statusDeferred.complete(status)
-            }
-        }
-        call.start(listener, GrpcTrailers())
-        call.sendMessage(helloReq())
-        // Intentionally shut down before halfClose/request to simulate mid-flight shutdown
-        channel.shutdownNow()
-        // Even if we try to proceed, the CQ should signal shutdown
-        runBlocking {
-            withTimeout(10000) {
-                val status = statusDeferred.await()
-                assertTrue(status.statusCode != StatusCode.OK)
-            }
-        }
-        shutdownAndWait(channel)
-    }
-
 
     @Test
     fun halfCloseBeforeSendingMessage_errorWithoutCrashing() {
@@ -265,9 +241,41 @@ class GrpcCoreTest {
 
         channel.shutdown()
         call.start(listener, GrpcTrailers())
-        call.halfClose()
         call.sendMessage(helloReq())
-        // Intentionally shut down before halfClose/request to simulate mid-flight shutdown
-        channel.shutdownNow()
+        call.halfClose()
+        call.request(1)
+
+        runBlocking {
+            withTimeout(10000) {
+                val status = statusDeferred.await()
+                assertEquals(StatusCode.UNAVAILABLE, status.statusCode)
+            }
+        }
+    }
+
+    @Test
+    fun shutdownNowInMiddleOfCall() {
+        val channel = createChannel()
+        val call = channel.newHelloCall()
+        val statusDeferred = CompletableDeferred<Status>()
+        val listener = object : ClientCall.Listener<HelloReply>() {
+            override fun onClose(status: Status, trailers: GrpcTrailers) {
+                statusDeferred.complete(status)
+            }
+        }
+
+        call.start(listener, GrpcTrailers())
+        call.sendMessage(helloReq(1000u))
+        call.halfClose()
+        call.request(1)
+
+        runBlocking {
+            delay(100)
+            channel.shutdownNow()
+            withTimeout(10000) {
+                val status = statusDeferred.await()
+                assertEquals(StatusCode.CANCELLED, status.statusCode)
+            }
+        }
     }
 }
