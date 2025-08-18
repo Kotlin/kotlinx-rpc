@@ -11,7 +11,11 @@ plugins {
 }
 
 rpc {
-    protoc {
+    protoc()
+}
+
+protoSourceSets {
+    main {
         plugins {
             create("myPlugin") {
                 local {
@@ -33,12 +37,5 @@ rpc {
                 }
             }
         }
-    }
-}
-
-protoSourceSets {
-    main {
-        protocPlugin(rpc.protoc.plugins.named("myPlugin"))
-        protocPlugin(rpc.protoc.plugins.named("myRemotePlugin"))
     }
 }

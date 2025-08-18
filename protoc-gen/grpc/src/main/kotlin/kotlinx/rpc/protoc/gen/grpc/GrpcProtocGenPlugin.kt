@@ -13,7 +13,8 @@ object GrpcProtocGenPlugin : ProtocGenPlugin() {
     override fun generateKotlinByModel(
         model: Model,
         logger: Logger,
+        explicitApiModeEnabled: Boolean,
     ): List<FileGenerator> {
-        return ModelToGrpcKotlinCommonGenerator(model, logger).generateKotlinFiles()
+        return ModelToGrpcKotlinCommonGenerator(model, logger, explicitApiModeEnabled).generateKotlinFiles()
     }
 }

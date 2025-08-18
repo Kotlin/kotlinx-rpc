@@ -19,7 +19,8 @@ import org.gradle.kotlin.dsl.property
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
-internal fun Project.rpcExtension(): RpcExtension = extensions.findByType<RpcExtension>() ?: RpcExtension(objects, this)
+internal fun Project.rpcExtension(): RpcExtension = extensions.findByType<RpcExtension>()
+    ?: error("Rpc extension not found. Please apply the plugin to the project")
 
 public open class RpcExtension @Inject constructor(objects: ObjectFactory, private val project: Project) {
     /**
@@ -51,6 +52,10 @@ public open class RpcExtension @Inject constructor(objects: ObjectFactory, priva
      * Protoc settings.
      */
     public val protoc: ProtocExtension by lazy {
+        if (protocApplied.get()) {
+            error("Illegal access to protoc extension during DefaultProtocExtension.init")
+        }
+
         protocApplied.set(true)
         objects.newInstance<DefaultProtocExtension>()
     }
