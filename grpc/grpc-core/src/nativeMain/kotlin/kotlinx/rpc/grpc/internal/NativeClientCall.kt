@@ -11,10 +11,11 @@ import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableJob
-import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.GrpcTrailers
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.protobuf.input.stream.asInputStream
+import kotlinx.rpc.protobuf.input.stream.asSource
 import libgrpcpp_c.*
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
@@ -228,7 +229,7 @@ internal class NativeClientCall<Request, Response>(
 
         val arena = Arena()
         val inputStream = methodDescriptor.getRequestMarshaller().stream(message)
-        val byteBuffer = (inputStream.source as Buffer).toGrpcByteBuffer()
+        val byteBuffer = inputStream.asSource().toGrpcByteBuffer()
         val op = arena.alloc<grpc_op> {
             op = GRPC_OP_SEND_MESSAGE
             data.send_message.send_message = byteBuffer

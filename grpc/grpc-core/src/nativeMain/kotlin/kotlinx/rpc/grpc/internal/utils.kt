@@ -7,13 +7,28 @@
 package kotlinx.rpc.grpc.internal
 
 import kotlinx.cinterop.*
-import kotlinx.io.Buffer
-import kotlinx.io.Source
-import kotlinx.io.UnsafeIoApi
+import kotlinx.io.*
 import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.rpc.grpc.StatusCode
 import libgrpcpp_c.*
 import platform.posix.memcpy
+
+@OptIn(ExperimentalForeignApi::class, InternalIoApi::class, UnsafeIoApi::class)
+internal fun Sink.writeFully(buffer: CPointer<ByteVar>, offset: Long, length: Long) {
+    var consumed = 0L
+    while (consumed < length) {
+        UnsafeBufferOperations.writeToTail(this.buffer, 1) { array, start, endExclusive ->
+            val size = minOf(length - consumed, (endExclusive - start).toLong())
+
+            array.usePinned {
+                memcpy(it.addressOf(start), buffer + offset + consumed, size.convert())
+            }
+
+            consumed += size
+            size.toInt()
+        }
+    }
+}
 
 internal suspend fun withArena(block: suspend (Arena) -> Unit) =
     Arena().let { arena ->
@@ -23,8 +38,6 @@ internal suspend fun withArena(block: suspend (Arena) -> Unit) =
             arena.clear()
         }
     }
-
-internal fun Buffer.asInputStream(): InputStream = object : InputStream(this) {}
 
 internal fun CPointer<grpc_byte_buffer>.toKotlin(destroy: Boolean = true): Buffer = memScoped {
     val reader = alloc<grpc_byte_buffer_reader>()

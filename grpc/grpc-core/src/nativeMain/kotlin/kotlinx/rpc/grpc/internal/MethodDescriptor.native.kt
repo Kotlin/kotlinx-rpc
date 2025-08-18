@@ -4,14 +4,9 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.io.Source
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.input.stream.InputStream
-
-@InternalRpcApi
-internal actual val MethodDescriptor<*, *>.type: MethodType
-    get() = TODO("Not yet implemented")
 
 @InternalRpcApi
 public actual class MethodDescriptor<Request, Response> internal constructor(
@@ -72,23 +67,21 @@ public actual fun <Request, Response> methodDescriptor(
 ): MethodDescriptor<Request, Response> {
     val requestMarshaller = object : MethodDescriptor.Marshaller<Request> {
         override fun stream(value: Request): InputStream {
-            val source = requestCodec.encode(value)
-            return object : InputStream(source) {}
+            return requestCodec.encode(value)
         }
 
         override fun parse(stream: InputStream): Request {
-            return requestCodec.decode(stream.source)
+            return requestCodec.decode(stream)
         }
     }
 
     val responseMarshaller = object : MethodDescriptor.Marshaller<Response> {
         override fun stream(value: Response): InputStream {
-            val source = responseCodec.encode(value)
-            return object : InputStream(source) {}
+            return responseCodec.encode(value)
         }
 
         override fun parse(stream: InputStream): Response {
-            return responseCodec.decode(stream.source)
+            return responseCodec.decode(stream)
         }
     }
 
