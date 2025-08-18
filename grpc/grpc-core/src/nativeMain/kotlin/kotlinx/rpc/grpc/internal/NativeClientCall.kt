@@ -34,6 +34,7 @@ internal class NativeClientCall<Request, Response>(
     }
 
     init {
+        // cancel the call if the job is canceled.
         callJob.invokeOnCompletion {
             when (it) {
                 is CancellationException -> {
@@ -62,6 +63,9 @@ internal class NativeClientCall<Request, Response>(
     // holds the received status information returned by the RECV_STATUS_ON_CLIENT batch.
     // if null, the call is still in progress. otherwise, the call can be closed as soon as inFlight is 0.
     private val closeInfo = atomic<Pair<Status, GrpcTrailers>?>(null)
+
+    // we currently don't buffer messages, so after one `sendMessage` call, ready turns false.
+    private val ready = atomic(true)
 
     /**
      * Increments the [inFlight] counter by one.
@@ -113,6 +117,16 @@ internal class NativeClientCall<Request, Response>(
         }
     }
 
+    /**
+     * Sets the [ready] flag to true and calls the listener's onReady callback.
+     * This is called as soon as the RECV_MESSAGE batch is finished (or failed).
+     */
+    private fun turnReady() {
+        if (ready.compareAndSet(expect = false, update = true)) {
+            listener?.onReady()
+        }
+    }
+
 
     override fun start(
         responseListener: Listener<Response>,
@@ -124,13 +138,19 @@ internal class NativeClientCall<Request, Response>(
         listener = responseListener
 
         // start receiving the status from the completion queue,
-        // which is bound to the lifecycle of the call.
-        val success = initializeCallOnCQ()
+        // which is bound to the lifetime of the call.
+        val success = startRecvStatus()
         if (!success) return
 
+        // send and receive initial headers to/from the server
         sendAndReceiveInitialMetadata()
     }
 
+    /**
+     * Submits a batch operation to the [CompletionQueue] and handle the returned [BatchResult].
+     * If the batch was successfully submitted, [onSuccess] is called.
+     * In any case, [cleanup] is called.
+     */
     private fun runBatch(
         ops: CPointer<grpc_op>,
         nOps: ULong,
@@ -175,12 +195,19 @@ internal class NativeClientCall<Request, Response>(
         }
     }
 
+    /**
+     * Starts a batch operation to receive the status from the completion queue.
+     * This operation is bound to the lifetime of the call, so it will finish once all other operations are done.
+     * If this operation fails, it will call [markClosePending] with the corresponding error, as the entire call
+     * si considered failed.
+     *
+     * @return true if the batch was successfully submitted, false otherwise.
+     * In this case, the call is considered failed.
+     */
     @OptIn(ExperimentalStdlibApi::class)
-    private fun initializeCallOnCQ(): Boolean {
+    private fun startRecvStatus(): Boolean {
         checkNotNull(listener) { "Not yet started" }
         val arena = Arena()
-        // this must not be canceled as it sets the call status.
-        // if the client itself got canceled, this will return fast.
         val statusCode = arena.alloc<grpc_status_code.Var>()
         val statusDetails = arena.alloc<grpc_slice>()
         val errorStr = arena.alloc<CPointerVar<ByteVar>>()
@@ -253,12 +280,19 @@ internal class NativeClientCall<Request, Response>(
         }
     }
 
+    /**
+     * Requests [numMessages] messages from the server.
+     * This must only be called again after [numMessages] were received in the [Listener.onMessage] callback.
+     */
     override fun request(numMessages: Int) {
         check(numMessages > 0) { "numMessages must be > 0" }
         val listener = checkNotNull(listener) { "Not yet started" }
         check(!cancelled) { "Already cancelled" }
 
         var remainingMessages = numMessages
+
+        // we need to request only one message at a time, so we use a recursive function that
+        // requests one message and then calls itself again.
         fun post() {
             if (remainingMessages-- <= 0) return
 
@@ -272,13 +306,16 @@ internal class NativeClientCall<Request, Response>(
                 if (recvPtr.value != null) grpc_byte_buffer_destroy(recvPtr.value)
                 arena.clear()
             }) {
-                val buf = recvPtr.value ?: return@runBatch // EOS
+                // if the call was successful, but no message was received, we reached the end-of-stream.
+                val buf = recvPtr.value ?: return@runBatch
                 val msg = methodDescriptor.getResponseMarshaller()
                     .parse(buf.toKotlin().asInputStream())
                 listener.onMessage(msg)
-                post() // post next only now
+                post()
             }
         }
+
+        // start requesting messages
         post()
     }
 
@@ -310,19 +347,31 @@ internal class NativeClientCall<Request, Response>(
         }
     }
 
+    override fun isReady(): Boolean = ready.value
+
     override fun sendMessage(message: Request) {
         checkNotNull(listener) { "Not yet started" }
         check(!halfClosed) { "Already half closed." }
         check(!cancelled) { "Already cancelled." }
+        check(isReady()) { "Not yet ready." }
+
+        // set ready false, as only one message can be sent at a time.
+        ready.value = false
 
         val arena = Arena()
         val inputStream = methodDescriptor.getRequestMarshaller().stream(message)
         val byteBuffer = inputStream.asSource().toGrpcByteBuffer()
+
         val op = arena.alloc<grpc_op> {
             op = GRPC_OP_SEND_MESSAGE
             data.send_message.send_message = byteBuffer
         }
+
         runBatch(op.ptr, 1u, cleanup = {
+            // no mater what happens, we need to set ready to true again.
+            turnReady()
+
+            // actual cleanup
             grpc_byte_buffer_destroy(byteBuffer)
             arena.clear()
         }) {

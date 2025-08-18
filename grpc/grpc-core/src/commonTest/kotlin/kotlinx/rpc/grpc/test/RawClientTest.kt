@@ -14,7 +14,10 @@ import kotlinx.rpc.grpc.internal.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class CancellationClientTest {
+/**
+ * Tests for JVM and Native clients.
+ */
+class RawClientTest {
 
     @Test
     fun unaryEchoTest() = runTest(
@@ -39,8 +42,8 @@ class CancellationClientTest {
     }
 
     @Test
-    fun clientStreamingTest() = runTest(
-        methodName = "ServerStreamingEcho",
+    fun clientStreamingEchoTest() = runTest(
+        methodName = "ClientStreamingEcho",
         type = MethodType.CLIENT_STREAMING,
     ) { channel, descriptor ->
         val response = clientStreamingRpc(channel, descriptor, flow {
@@ -50,8 +53,27 @@ class CancellationClientTest {
                 emit(EchoRequest { message = "Eccchhooo" })
             }
         })
-        val expected = "Eccchhooo,Eccchhooo,Eccchhooo,Eccchhooo,Eccchhooo"
+        val expected = "Eccchhooo, Eccchhooo, Eccchhooo, Eccchhooo, Eccchhooo"
         assertEquals(expected, response.message)
+    }
+
+    @Test
+    fun bidirectionalStreamingEchoTest() = runTest(
+        methodName = "BidirectionalStreamingEcho",
+        type = MethodType.BIDI_STREAMING,
+    ) { channel, descriptor ->
+        val response = bidirectionalStreamingRpc(channel, descriptor, flow {
+            repeat(5) {
+                emit(EchoRequest { message = "Eccchhooo" })
+            }
+        })
+
+        var i = 0
+        response.collect {
+            i++
+            assertEquals("Eccchhooo", it.message)
+        }
+        assertEquals(5, i)
     }
 
     fun runTest(

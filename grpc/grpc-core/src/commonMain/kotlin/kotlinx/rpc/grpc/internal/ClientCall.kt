@@ -16,6 +16,12 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * Callback execution:
  * - On JVM it is guaranteed that callbacks aren't executed concurrently.
  * - On Native, it is only guaranteed that `onClose` is called after all other callbacks finished.
+ *
+ * Sending message readiness:
+ * - On JVM, it is possible to call [sendMessage] multiple times, without checking [isReady].
+ *   Internally, it buffers the messages.
+ * - On Native, you can only call [sendMessage] when [isReady] returns true. There is no buffering; therefore,
+ *   only one message can be sent at a time.
  */
 @InternalRpcApi
 public expect abstract class ClientCall<Request, Response> {

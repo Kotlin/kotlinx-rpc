@@ -15,16 +15,36 @@ import platform.posix.memset
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
+/**
+ * The result of a batch operation (see [CompletionQueue.runBatch]).
+ */
 internal sealed interface BatchResult {
+    /**
+     * Happens when a batch was submitted and...
+     * - the queue is closed
+     * - the queue is in the process of a force shutdown
+     * - the queue is in the process of a normal shutdown, and the batch is a new `RECV_STATUS_ON_CLIENT` batch.
+     */
     object CQShutdown : BatchResult
+
+    /**
+     * Happens when the batch couldn't be submitted for some reason.
+     */
     data class CallError(val error: grpc_call_error) : BatchResult
+
+    /**
+     * Happens when the batch was successfully submitted.
+     * The [future] will be completed with `true` if the batch was successful, `false` otherwise.
+     * In the case of `false`, the status of the `RECV_STATUS_ON_CLIENT` batch will provide the error details.
+     */
     data class Called(val future: CallbackFuture<Boolean>) : BatchResult
 }
 
 /**
- * A coroutine wrapper around the grpc completion_queue, which manages message operations.
+ * The Kotlin wrapper for the native grpc_completion_queue.
  * It is based on the "new" callback API; therefore, there are no kotlin-side threads required to poll
  * the queue.
+ * Users can attach to the returned [CallbackFuture] if the batch was successfully submitted (see [BatchResult]).
  */
 internal class CompletionQueue {
 
@@ -44,11 +64,13 @@ internal class CompletionQueue {
     @Suppress("PropertyName")
     internal val _shutdownDone = CallbackFuture<Unit>()
 
-    // used for spinning lock. false means not used (available)
+    // used to synchronize the start of a new batch operation.
     private val batchStartGuard = SynchronizedObject()
 
+    // a stable reference of this used as user_data in the shutdown callback.
     private val thisStableRef = StableRef.create(this)
 
+    // the shutdown functor/tag called when the queue is shut down.
     private val shutdownFunctor = nativeHeap.alloc<kgrpc_cb_tag> {
         functor.functor_run = SHUTDOWN_CB
         user_data = thisStableRef.asCPointer()
@@ -69,6 +91,10 @@ internal class CompletionQueue {
         require(kgrpc_iomgr_run_in_background()) { "The gRPC iomgr is not running background threads, required for callback based APIs." }
     }
 
+    /**
+     * Submits a batch operation to the queue.
+     * See [BatchResult] for possible outcomes.
+     */
     fun runBatch(call: NativeClientCall<*, *>, ops: CPointer<grpc_op>, nOps: ULong): BatchResult {
         val completion = CallbackFuture<Boolean>()
         val tag = newCbTag(completion, OPS_COMPLETE_CB)
@@ -102,7 +128,11 @@ internal class CompletionQueue {
         return BatchResult.Called(completion)
     }
 
-    // must not be canceled as it cleans resources and sets the state to CLOSED
+    /**
+     * Shuts down the queue.
+     * The method returns immediately, but the queue will be shut down asynchronously.
+     * The returned [CallbackFuture] will be completed with `Unit` when the queue is shut down.
+     */
     fun shutdown(force: Boolean = false): CallbackFuture<Unit> {
         if (force) {
             forceShutdown = true

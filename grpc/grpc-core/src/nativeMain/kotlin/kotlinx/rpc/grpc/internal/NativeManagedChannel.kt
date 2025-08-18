@@ -19,6 +19,9 @@ import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 import kotlin.time.Duration
 
+/**
+ * Wrapper for [grpc_channel_credentials].
+ */
 internal sealed class GrpcCredentials(
     internal val raw: CPointer<grpc_channel_credentials>,
 ) {
@@ -27,12 +30,21 @@ internal sealed class GrpcCredentials(
     }
 }
 
+/**
+ * Insecure credentials.
+ */
 internal class GrpcInsecureCredentials() :
     GrpcCredentials(grpc_insecure_credentials_create() ?: error("Failed to create credentials"))
 
-
+// default propagation mask for all calls.
 private const val GRPC_PROPAGATE_DEFAULTS = 0x0000FFFFu
 
+/**
+ * Native implementation of [ManagedChannel].
+ *
+ * @param target The target address to connect to.
+ * @param credentials The credentials to use for the connection.
+ */
 internal class NativeManagedChannel(
     target: String,
     // we must store them, otherwise the credentials are getting released
@@ -89,11 +101,14 @@ internal class NativeManagedChannel(
             return
         }
         if (force) {
+            // cancel all jobs, such that the shutdown is completing faster (not immediate).
             // TODO: replace jobs by custom pendingCallClass.
             callJobSupervisor.cancelChildren(CancellationException("Channel is shutting down"))
         }
 
         // wait for the completion queue to shut down.
+        // the completion queue will be shut down after all requests are completed.
+        // therefore, we don't have to wait for the callJobs to be completed.
         cq.shutdown(force).onComplete {
             if (isTerminatedInternal.complete(Unit)) {
                 // release the grpc runtime, so it might call grpc_shutdown()
