@@ -23,7 +23,7 @@ extern "C" {
 typedef struct {
     grpc_completion_queue_functor functor;
     void *user_data;
-} grpc_cb_tag;
+} kgrpc_cb_tag;
 
 /*
  * Call to grpc_iomgr_run_in_background(), which is not exposed as extern "C" and therefore must be wrapped.

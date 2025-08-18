@@ -10,7 +10,7 @@ import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
 import kotlinx.cinterop.*
-import libgrpcpp_c.*
+import libkgrpc.*
 import platform.posix.memset
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
@@ -49,7 +49,7 @@ internal class CompletionQueue {
 
     private val thisStableRef = StableRef.create(this)
 
-    private val shutdownFunctor = nativeHeap.alloc<grpc_cb_tag> {
+    private val shutdownFunctor = nativeHeap.alloc<kgrpc_cb_tag> {
         functor.functor_run = SHUTDOWN_CB
         user_data = thisStableRef.asCPointer()
     }.reinterpret<grpc_completion_queue_functor>()
@@ -127,7 +127,7 @@ internal class CompletionQueue {
 // kq stands for kompletion_queue lol
 @CName("kq_ops_complete_cb")
 private fun opsCompleteCb(functor: CPointer<grpc_completion_queue_functor>?, ok: Int) {
-    val tag = functor!!.reinterpret<grpc_cb_tag>()
+    val tag = functor!!.reinterpret<kgrpc_cb_tag>()
     val cont = tag.pointed.user_data!!.asStableRef<CallbackFuture<Boolean>>().get()
     deleteCbTag(tag)
     cont.complete(ok != 0)
@@ -135,7 +135,7 @@ private fun opsCompleteCb(functor: CPointer<grpc_completion_queue_functor>?, ok:
 
 @CName("kq_shutdown_cb")
 private fun shutdownCb(functor: CPointer<grpc_completion_queue_functor>?, ok: Int) {
-    val tag = functor!!.reinterpret<grpc_cb_tag>()
+    val tag = functor!!.reinterpret<kgrpc_cb_tag>()
     val cq = tag.pointed.user_data!!.asStableRef<CompletionQueue>().get()
     cq._shutdownDone.complete(Unit)
     cq._state.value = CompletionQueue.State.CLOSED
@@ -148,16 +148,16 @@ private val SHUTDOWN_CB = staticCFunction(::shutdownCb)
 private fun newCbTag(
     userData: Any,
     cb: CPointer<CFunction<(CPointer<grpc_completion_queue_functor>?, Int) -> Unit>>,
-): CPointer<grpc_cb_tag> {
-    val tag = nativeHeap.alloc<grpc_cb_tag>()
-    memset(tag.ptr, 0, sizeOf<grpc_cb_tag>().convert())
+): CPointer<kgrpc_cb_tag> {
+    val tag = nativeHeap.alloc<kgrpc_cb_tag>()
+    memset(tag.ptr, 0, sizeOf<kgrpc_cb_tag>().convert())
     tag.functor.functor_run = cb
     tag.user_data = StableRef.create(userData).asCPointer()
     return tag.ptr
 }
 
-@CName("grpc_cb_tag_destroy")
-private fun deleteCbTag(tag: CPointer<grpc_cb_tag>) {
+@CName("kgrpc_cb_tag_destroy")
+private fun deleteCbTag(tag: CPointer<kgrpc_cb_tag>) {
     tag.pointed.user_data!!.asStableRef<Any>().dispose()
     nativeHeap.free(tag)
 }

@@ -10,7 +10,7 @@ import kotlinx.cinterop.*
 import kotlinx.io.*
 import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.rpc.grpc.StatusCode
-import libgrpcpp_c.*
+import libkgrpc.*
 import platform.posix.memcpy
 
 @OptIn(ExperimentalForeignApi::class, InternalIoApi::class, UnsafeIoApi::class)

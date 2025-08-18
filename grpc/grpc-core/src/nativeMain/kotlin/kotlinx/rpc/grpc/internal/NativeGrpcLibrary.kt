@@ -10,8 +10,8 @@ import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
 import kotlinx.cinterop.ExperimentalForeignApi
-import libgrpcpp_c.grpc_init
-import libgrpcpp_c.grpc_shutdown
+import libkgrpc.grpc_init
+import libkgrpc.grpc_shutdown
 import kotlin.experimental.ExperimentalNativeApi
 
 internal object GrpcRuntime {
