@@ -4,36 +4,43 @@
 
 package kotlinx.rpc.internal
 
-import kotlinx.rpc.RpcExtension
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.protoc.grpcKotlinMultiplatform
 import kotlinx.rpc.protoc.kotlinMultiplatform
+import kotlinx.rpc.protoc.protoSourceSets
+import kotlinx.rpc.rpcExtension
 import org.gradle.api.Project
 import org.gradle.internal.extensions.core.extra
 import org.gradle.kotlin.dsl.provideDelegate
-import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 
 @InternalRpcApi
-public fun Project.configureLocalProtocGenDevelopmentDependency() {
+public fun Project.configureLocalProtocGenDevelopmentDependency(
+    vararg sourceSetSuffix: String = arrayOf("Test"),
+) {
     val globalRootDir: String by extra
 
-    the<RpcExtension>().protoc.plugins {
-        kotlinMultiplatform {
-            local {
-                javaJar("$globalRootDir/protoc-gen/protobuf/build/libs/protobuf-$version-all.jar")
-            }
-        }
+    // init
+    rpcExtension().protoc()
 
-        grpcKotlinMultiplatform {
-            local {
-                javaJar("$globalRootDir/protoc-gen/grpc/build/libs/grpc-$version-all.jar")
+    protoSourceSets.all {
+        plugins {
+            kotlinMultiplatform {
+                local {
+                    javaJar("$globalRootDir/protoc-gen/protobuf/build/libs/protobuf-$version-all.jar")
+                }
+            }
+
+            grpcKotlinMultiplatform {
+                local {
+                    javaJar("$globalRootDir/protoc-gen/grpc/build/libs/grpc-$version-all.jar")
+                }
             }
         }
     }
 
     tasks.withType<BufGenerateTask>().configureEach {
-        if (name.endsWith("Test")) {
+        if (sourceSetSuffix.any { name.endsWith(it) }) {
             val includedBuild = gradle.includedBuild("protoc-gen")
             dependsOn(includedBuild.task(":grpc:jar"))
             dependsOn(includedBuild.task(":protobuf:jar"))

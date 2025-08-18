@@ -102,3 +102,6 @@ public fun WireSize.packedSFixed32(value: List<Int>): Int = value.size * 32
 
 @InternalRpcApi
 public fun WireSize.packedSFixed64(value: List<Long>): Int = value.size * 64
+
+@InternalRpcApi
+public fun WireSize.packedBool(value: List<Boolean>): Int = packedSInt32(value.map { if (it) 1 else 0 })

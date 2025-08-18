@@ -11,15 +11,13 @@ plugins {
 }
 
 rpc {
-    protoc {
-        plugins {
-            create("myPlugin") {}
-        }
-    }
+    protoc()
 }
 
 protoSourceSets {
     main {
-        protocPlugin(rpc.protoc.plugins.named("myPlugin"))
+        plugins {
+            create("myPlugin") {}
+        }
     }
 }
