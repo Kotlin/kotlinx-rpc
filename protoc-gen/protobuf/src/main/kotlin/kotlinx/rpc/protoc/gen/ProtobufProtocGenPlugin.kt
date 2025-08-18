@@ -13,7 +13,8 @@ object ProtobufProtocGenPlugin : ProtocGenPlugin() {
     override fun generateKotlinByModel(
         model: Model,
         logger: Logger,
+        explicitApiModeEnabled: Boolean,
     ): List<FileGenerator> {
-        return ModelToProtobufKotlinCommonGenerator(model, logger).generateKotlinFiles()
+        return ModelToProtobufKotlinCommonGenerator(model, logger, explicitApiModeEnabled).generateKotlinFiles()
     }
 }

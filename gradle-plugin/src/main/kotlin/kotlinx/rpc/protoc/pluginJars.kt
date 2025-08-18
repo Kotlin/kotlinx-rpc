@@ -52,9 +52,9 @@ internal fun Project.configureGrpcKotlinMultiplatformPluginJarConfiguration() {
     )
 }
 
-private fun Project.jarPathAccessor(name: String): Provider<String> =
-    project.configurations.named(name)
-        .map { it.singleFile.absolutePath }
+private fun Project.jarPathAccessor(name: String): Provider<String> = project.provider {
+    configurations.named(name).get().singleFile.absolutePath
+}
 
 private fun Project.configureJarConfiguration(configurationName: String, pluginArtifactName: String) {
     configurations.create(configurationName)
