@@ -44,7 +44,6 @@ public class StructInternal: com.google.protobuf.kotlin.Struct, kotlinx.rpc.prot
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.StructInternal.decodeWith(msg, it)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -78,7 +77,6 @@ public class ValueInternal: com.google.protobuf.kotlin.Value, kotlinx.rpc.protob
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.ValueInternal.decodeWith(msg, it)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -112,7 +110,6 @@ public class ListValueInternal: com.google.protobuf.kotlin.ListValue, kotlinx.rp
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.ListValueInternal.decodeWith(msg, it)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -181,6 +178,8 @@ public fun com.google.protobuf.kotlin.StructInternal.Companion.decodeWith(msg: c
             }
         }
     }
+
+    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.StructInternal.computeSize(): Int { 
@@ -293,6 +292,8 @@ public fun com.google.protobuf.kotlin.ValueInternal.Companion.decodeWith(msg: co
             }
         }
     }
+
+    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.ValueInternal.computeSize(): Int { 
@@ -367,6 +368,8 @@ public fun com.google.protobuf.kotlin.ListValueInternal.Companion.decodeWith(msg
             }
         }
     }
+
+    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.ListValueInternal.computeSize(): Int { 
@@ -425,6 +428,8 @@ public fun com.google.protobuf.kotlin.StructInternal.FieldsEntryInternal.Compani
             }
         }
     }
+
+    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.StructInternal.FieldsEntryInternal.computeSize(): Int { 

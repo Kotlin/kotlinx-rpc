@@ -27,7 +27,6 @@ public class EmptyInternal: com.google.protobuf.kotlin.Empty, kotlinx.rpc.protob
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.EmptyInternal.decodeWith(msg, it)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -64,6 +63,8 @@ public fun com.google.protobuf.kotlin.EmptyInternal.Companion.decodeWith(msg: co
             }
         }
     }
+
+    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.EmptyInternal.computeSize(): Int { 

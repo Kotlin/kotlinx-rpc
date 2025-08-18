@@ -29,7 +29,6 @@ public class FieldMaskInternal: com.google.protobuf.kotlin.FieldMask, kotlinx.rp
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.FieldMaskInternal.decodeWith(msg, it)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -75,6 +74,8 @@ public fun com.google.protobuf.kotlin.FieldMaskInternal.Companion.decodeWith(msg
             }
         }
     }
+
+    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.FieldMaskInternal.computeSize(): Int { 

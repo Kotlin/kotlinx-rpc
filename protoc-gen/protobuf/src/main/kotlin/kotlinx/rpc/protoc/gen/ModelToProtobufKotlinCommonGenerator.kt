@@ -20,7 +20,6 @@ import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
 import kotlinx.rpc.protoc.gen.core.model.WireType
 import org.slf4j.Logger
-import kotlin.collections.map
 
 class ModelToProtobufKotlinCommonGenerator(
     model: Model,
@@ -227,7 +226,6 @@ class ModelToProtobufKotlinCommonGenerator(
                     scope("${PB_PKG}.checkForPlatformDecodeException", nlAfterClosed = false) {
                         code("${declaration.internalClassFullName()}.decodeWith(msg, it)")
                     }
-                    code("msg.checkRequiredFields()")
                     code("return msg")
                 }
             }
@@ -271,6 +269,8 @@ class ModelToProtobufKotlinCommonGenerator(
             }
         }
 
+        code("msg.checkRequiredFields()")
+
         // TODO: Make lists and maps immutable (KRPC-190)
     }
 
@@ -286,12 +286,17 @@ class ModelToProtobufKotlinCommonGenerator(
                 generateDecodeFieldValue(fieldType, lvalue, wrapperCtor = wrapperCtor)
             }
 
-            is FieldType.List -> if (field.dec.isPacked) {
-                whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.LENGTH_DELIMITED") {
-                    beforeValueDecoding()
-                    generateDecodeFieldValue(fieldType, lvalue, isPacked = true, wrapperCtor = wrapperCtor)
+            is FieldType.List -> {
+                // Protocol buffer parsers must be able
+                // to parse repeated fields that were compiled as packed as if they were not packed,
+                // and vice versa.
+                if (fieldType.value.isPackable) {
+                    whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.LENGTH_DELIMITED") {
+                        beforeValueDecoding()
+                        generateDecodeFieldValue(fieldType, lvalue, isPacked = true, wrapperCtor = wrapperCtor)
+                    }
                 }
-            } else {
+
                 whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.${fieldType.value.wireType.name}") {
                     beforeValueDecoding()
                     generateDecodeFieldValue(fieldType, lvalue, isPacked = false, wrapperCtor = wrapperCtor)
@@ -370,7 +375,11 @@ class ModelToProtobufKotlinCommonGenerator(
                     ""
                 }
 
-                code("$lvalue = decoder.readPacked${fieldType.value.decodeEncodeFuncName()}()$conversion")
+                // Note that although there’s usually no reason
+                // to encode more than one key-value pair for a packed repeated field,
+                // parsers must be prepared to accept multiple key-value pairs.
+                // In this case, the payloads should be concatenated.
+                code("$lvalue += decoder.readPacked${fieldType.value.decodeEncodeFuncName()}()$conversion")
             } else {
                 when (val elemType = fieldType.value) {
                     is FieldType.Message -> {
@@ -455,7 +464,9 @@ class ModelToProtobufKotlinCommonGenerator(
         valueVar: String,
     ) {
         generateEncodeFieldValue(
-            valueVar, field.type, number = field.number,
+            valueVar = valueVar,
+            type = field.type,
+            number = field.number,
             isPacked = field.dec.isPacked,
             packedWithFixedSize = field.packedFixedSize
         )
@@ -521,7 +532,9 @@ class ModelToProtobufKotlinCommonGenerator(
                         generateEncodeFieldValue(
                             valueVar = "entry",
                             type = FieldType.Message(lazy { type.entry.dec }),
-                            number = number, isPacked = false, packedWithFixedSize = false
+                            number = number,
+                            isPacked = false,
+                            packedWithFixedSize = false,
                         )
                     }
                 }

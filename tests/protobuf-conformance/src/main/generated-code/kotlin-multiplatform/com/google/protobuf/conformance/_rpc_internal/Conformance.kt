@@ -31,7 +31,6 @@ class TestStatusInternal: com.google.protobuf.conformance.TestStatus, kotlinx.rp
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.conformance.TestStatusInternal.decodeWith(msg, it)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -65,7 +64,6 @@ class FailureSetInternal: com.google.protobuf.conformance.FailureSet, kotlinx.rp
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.conformance.FailureSetInternal.decodeWith(msg, it)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -108,7 +106,6 @@ class ConformanceRequestInternal: com.google.protobuf.conformance.ConformanceReq
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.conformance.ConformanceRequestInternal.decodeWith(msg, it)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -142,7 +139,6 @@ class ConformanceResponseInternal: com.google.protobuf.conformance.ConformanceRe
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.conformance.ConformanceResponseInternal.decodeWith(msg, it)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -176,7 +172,6 @@ class JspbEncodingConfigInternal: com.google.protobuf.conformance.JspbEncodingCo
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.conformance.JspbEncodingConfigInternal.decodeWith(msg, it)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -259,6 +254,8 @@ fun com.google.protobuf.conformance.TestStatusInternal.Companion.decodeWith(msg:
             }
         }
     }
+
+    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.conformance.TestStatusInternal.computeSize(): Int { 
@@ -317,6 +314,8 @@ fun com.google.protobuf.conformance.FailureSetInternal.Companion.decodeWith(msg:
             }
         }
     }
+
+    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.conformance.FailureSetInternal.computeSize(): Int { 
@@ -435,6 +434,8 @@ fun com.google.protobuf.conformance.ConformanceRequestInternal.Companion.decodeW
             }
         }
     }
+
+    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.conformance.ConformanceRequestInternal.computeSize(): Int { 
@@ -582,6 +583,8 @@ fun com.google.protobuf.conformance.ConformanceResponseInternal.Companion.decode
             }
         }
     }
+
+    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.conformance.ConformanceResponseInternal.computeSize(): Int { 
@@ -661,6 +664,8 @@ fun com.google.protobuf.conformance.JspbEncodingConfigInternal.Companion.decodeW
             }
         }
     }
+
+    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.conformance.JspbEncodingConfigInternal.computeSize(): Int { 

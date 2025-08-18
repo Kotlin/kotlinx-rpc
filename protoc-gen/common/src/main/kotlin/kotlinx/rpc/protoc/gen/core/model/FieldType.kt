@@ -35,6 +35,7 @@ sealed interface FieldType {
     data class Enum(val dec: EnumDeclaration) : FieldType {
         override val defaultValue = dec.defaultEntry().name.fullName()
         override val wireType: WireType = WireType.VARINT
+        override val isPackable: Boolean = true
     }
 
     data class Message(val dec: Lazy<MessageDeclaration>) : FieldType {
