@@ -7,6 +7,7 @@
 package kotlinx.rpc.grpc.internal
 
 import cnames.structs.grpc_channel
+import cnames.structs.grpc_channel_credentials
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.*
@@ -19,7 +20,7 @@ import kotlin.native.ref.createCleaner
 import kotlin.time.Duration
 
 internal sealed class GrpcCredentials(
-    internal val raw: CPointer<grpc_channel_credentials_t>,
+    internal val raw: CPointer<grpc_channel_credentials>,
 ) {
     val rawCleaner = createCleaner(raw) {
         grpc_channel_credentials_release(it)
