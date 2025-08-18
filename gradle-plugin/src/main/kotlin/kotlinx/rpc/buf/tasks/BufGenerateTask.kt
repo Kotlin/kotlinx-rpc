@@ -56,6 +56,8 @@ public abstract class BufGenerateTask : BufExecTask() {
     /**
      * Whether to include Well-Known Types.
      *
+     * Automatically sets [includeImports] to `true`.
+     *
      * @see <a href="https://buf.build/docs/reference/cli/buf/generate/#include-wkt">buf generate --include-wkt</a>
      * @see [BufGenerateExtension.includeWkt]
      */
@@ -91,7 +93,7 @@ public abstract class BufGenerateTask : BufExecTask() {
             buildList {
                 add("--output"); add(outputDirectory.get().absolutePath)
 
-                if (includeImports.get()) {
+                if (includeImports.get() || includeWkt.get()) {
                     add("--include-imports")
                 }
 
@@ -129,11 +131,11 @@ internal fun Project.registerBufGenerateTask(
         group = PROTO_GROUP
         description = "Generates code from .proto files using 'buf generate'"
 
-        val generate = project.rpcExtension().protoc.buf.generate
+        val generate = provider { rpcExtension().protoc.buf.generate }
 
-        includeImports.set(generate.includeImports)
-        includeWkt.set(generate.includeWkt)
-        errorFormat.set(generate.errorFormat)
+        includeImports.set(generate.flatMap { it.includeImports })
+        includeWkt.set(generate.flatMap { it.includeWkt })
+        errorFormat.set(generate.flatMap { it.errorFormat })
 
         this.outputDirectory.set(outputDirectory)
 

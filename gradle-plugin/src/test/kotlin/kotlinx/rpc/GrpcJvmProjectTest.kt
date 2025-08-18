@@ -135,15 +135,15 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
 version: v2
 clean: true
 plugins:
-  - local: [protoc-gen-kotlin-multiplatform]
-    out: kotlin-multiplatform
-    opt:
-      - debugOutput=protoc-gen-kotlin-multiplatform.log
-      - explicitApiModeEnabled=true
   - local: [protoc-gen-grpc-kotlin-multiplatform]
     out: grpc-kotlin-multiplatform
     opt:
       - debugOutput=protoc-gen-grpc-kotlin-multiplatform.log
+      - explicitApiModeEnabled=true
+  - local: [protoc-gen-kotlin-multiplatform]
+    out: kotlin-multiplatform
+    opt:
+      - debugOutput=protoc-gen-kotlin-multiplatform.log
       - explicitApiModeEnabled=true
   - local: [path, to, protoc-gen-myplugin.exe]
     out: myPlugin
