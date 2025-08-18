@@ -15,13 +15,7 @@ cc_library(
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [
-        # TODO: Reduce the dependencies and only use required once. KRPC-185
-        "@com_github_grpc_grpc//:grpc",
-        "@com_github_grpc_grpc//:channelz",
-        "@com_github_grpc_grpc//:generic_stub",
-        "@com_github_grpc_grpc//:grpc++",
-        "@com_github_grpc_grpc//:grpc_credentials_util",
-        "@com_google_protobuf//:protobuf",
+        "@com_github_grpc_grpc//:grpc"
     ],
 )
 
