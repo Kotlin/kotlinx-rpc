@@ -117,11 +117,11 @@ internal fun <T : BufExecTask> Project.registerBufExecTask(
     bufExecutable.set(executableConfiguration.singleFile)
     this.workingDir.set(workingDir)
 
-    val buf = project.rpcExtension().protoc.buf
-    configFile.set(buf.configFile)
-    logFormat.set(buf.logFormat)
-    bufTimeoutInWholeSeconds.set(buf.timeout.map { it.inWholeSeconds })
-    debug.set(project.gradle.startParameter.logLevel == LogLevel.DEBUG)
+    val buf = provider { rpcExtension().protoc.buf }
+    configFile.set(buf.flatMap { it.configFile })
+    logFormat.set(buf.flatMap { it.logFormat })
+    bufTimeoutInWholeSeconds.set(buf.flatMap { it.timeout.map { duration -> duration.inWholeSeconds } })
+    debug.set(gradle.startParameter.logLevel == LogLevel.DEBUG)
 
     configuration()
 }

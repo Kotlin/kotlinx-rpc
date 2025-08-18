@@ -21,24 +21,14 @@ public interface ProtoSourceSet {
     public val name: String
 
     /**
-     * Adds a new protoc plugin.
-     *
-     * Example:
-     * ```kotlin
-     * protocPlugin(rpc.protoc.plugins.myPlugin)
-     * ```
+     * Container of protoc plugins to be applied to the source set.
      */
-    public fun protocPlugin(plugin: NamedDomainObjectProvider<ProtocPlugin>)
+    public val plugins: NamedDomainObjectContainer<ProtocPlugin>
 
     /**
-     * Adds a new protoc plugin.
-     *
-     * Example:
-     * ```kotlin
-     * protocPlugin(rpc.protoc.plugins.myPlugin.get())
-     * ```
+     * Configures the protoc plugins.
      */
-    public fun protocPlugin(plugin: ProtocPlugin)
+    public fun plugins(action: Action<NamedDomainObjectContainer<ProtocPlugin>>)
 
     /**
      * Default [SourceDirectorySet] for proto files.

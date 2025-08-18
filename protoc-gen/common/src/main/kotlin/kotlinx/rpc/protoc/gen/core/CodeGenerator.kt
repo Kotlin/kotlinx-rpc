@@ -7,15 +7,16 @@ package kotlinx.rpc.protoc.gen.core
 import org.slf4j.Logger
 import org.slf4j.helpers.NOPLogger
 
-
 open class CodeGenerator(
     private val indent: String,
     private val builder: StringBuilder = StringBuilder(),
-    private val logger: Logger = NOPLogger.NOP_LOGGER,
+    protected val logger: Logger = NOPLogger.NOP_LOGGER,
+    protected val explicitApiModeEnabled: Boolean,
 ) {
     private var isEmpty: Boolean = true
     private var result: String? = null
     private var lastIsDeclaration: Boolean = false
+    private var needsNewLineAfterDeclaration: Boolean = true
 
     @Suppress("FunctionName")
     private fun _append(
@@ -27,7 +28,10 @@ open class CodeGenerator(
         var addedNewLineBefore = false
 
         if (lastIsDeclaration) {
-            builder.appendLine()
+            if (needsNewLineAfterDeclaration) {
+                builder.appendLine()
+            }
+
             lastIsDeclaration = false
             addedNewLineBefore = true
         } else if (newLineIfAbsent) {
@@ -49,6 +53,7 @@ open class CodeGenerator(
         }
 
         isEmpty = false
+        needsNewLineAfterDeclaration = true
     }
 
     private fun append(value: String) {
@@ -64,7 +69,7 @@ open class CodeGenerator(
     }
 
     private fun withNextIndent(block: CodeGenerator.() -> Unit) {
-        CodeGenerator("$indent$ONE_INDENT", builder, logger).block()
+        CodeGenerator("$indent$ONE_INDENT", builder, logger, explicitApiModeEnabled).block()
     }
 
     fun scope(
@@ -126,12 +131,18 @@ open class CodeGenerator(
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
         if (block == null) {
-            newLine()
-            lastIsDeclaration = true
+            if (nlAfterClosed) {
+                newLine()
+            }
+            lastIsDeclaration = nlAfterClosed
             return
         }
 
-        val nested = CodeGenerator("$indent$ONE_INDENT", logger = logger).apply(block)
+        val nested = CodeGenerator(
+            indent = "$indent$ONE_INDENT",
+            logger = logger,
+            explicitApiModeEnabled = explicitApiModeEnabled,
+        ).apply(block)
 
         if (nested.isEmpty) {
             newLine()
@@ -160,16 +171,38 @@ open class CodeGenerator(
         name: String,
         modifiers: String = "",
         contextReceiver: String = "",
-        type: String = "",
-        delegate: Boolean = false,
+        annotations: List<String> = emptyList(),
+        type: String,
+        propertyInitializer: PropertyInitializer = PropertyInitializer.PLAIN,
         value: String = "",
+        isVar: Boolean = false,
+        needsNewLineAfterDeclaration: Boolean = true,
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
-        val modifiersString = if (modifiers.isEmpty()) "" else "$modifiers "
+        for (annotation in annotations) {
+            addLine(annotation)
+        }
+
+        val modifiersString = (if (modifiers.isEmpty()) "" else "$modifiers ").withVisibility()
         val contextString = if (contextReceiver.isEmpty()) "" else "$contextReceiver."
         val typeString = if (type.isEmpty()) "" else ": $type"
-        val delegateString = if (delegate) " by " else " = "
-        scope("${modifiersString}val $contextString$name$typeString$delegateString$value", block = block)
+        val initializer = when (propertyInitializer) {
+            PropertyInitializer.GETTER -> " get() = "
+            PropertyInitializer.DELEGATE -> " by "
+            PropertyInitializer.PLAIN -> " = "
+        }.takeIf { value.isNotEmpty() } ?: ""
+        val varString = if (isVar) "var" else "val"
+
+        scope(
+            "${modifiersString}$varString $contextString$name$typeString$initializer$value",
+            block = block,
+        )
+
+        this.needsNewLineAfterDeclaration = needsNewLineAfterDeclaration
+    }
+
+    enum class PropertyInitializer {
+        GETTER, DELEGATE, PLAIN;
     }
 
     fun function(
@@ -179,15 +212,15 @@ open class CodeGenerator(
         args: String = "",
         contextReceiver: String = "",
         annotations: List<String> = emptyList(),
-        returnType: String = "",
+        returnType: String,
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
         for (annotation in annotations) {
             addLine(annotation)
         }
-        val modifiersString = if (modifiers.isEmpty()) "" else "$modifiers "
+        val modifiersString = (if (modifiers.isEmpty()) "" else "$modifiers ").withVisibility()
         val contextString = if (contextReceiver.isEmpty()) "" else "$contextReceiver."
-        val returnTypeString = if (returnType.isEmpty()) "" else ": $returnType"
+        val returnTypeString = if (returnType.isEmpty() || returnType == "Unit") "" else ": $returnType"
         val typeParametersString = if (typeParameters.isEmpty()) "" else " <$typeParameters>"
         scope("${modifiersString}fun$typeParametersString $contextString$name($args)$returnTypeString", block = block)
     }
@@ -251,7 +284,7 @@ open class CodeGenerator(
             addLine(annotation)
         }
 
-        val modifiersString = if (modifiers.isEmpty()) "" else "$modifiers "
+        val modifiersString = (if (modifiers.isEmpty()) "" else "$modifiers ").withVisibility()
 
         val firstLine = "$modifiersString${declarationType.strValue}${if (name.isNotEmpty()) " " else ""}$name"
         addLine(firstLine)
@@ -263,7 +296,25 @@ open class CodeGenerator(
 
         val constructorArgsTransformed = constructorArgs.map { (arg, default) ->
             val defaultString = default?.let { " = $it" } ?: ""
-            "$arg$defaultString"
+            val modifierString = when {
+                !explicitApiModeEnabled -> ""
+
+                arg.contains("val") || arg.contains("var") -> when {
+                    modifiers.contains("internal") ||
+                            modifiers.contains("private") ||
+                            arg.contains("private ") ||
+                            arg.contains("protected ") ||
+                            arg.contains("internal ") ||
+                            arg.contains("public ") ||
+                            arg.contains("override ") -> ""
+
+                    else -> "public "
+                }
+
+                else -> ""
+            }
+
+            "$modifierString$arg$defaultString"
         }
 
         val constructorModifiersTransformed = if (constructorModifiers.isEmpty()) "" else
@@ -313,6 +364,20 @@ open class CodeGenerator(
         return result!!
     }
 
+    fun String.withVisibility(): String {
+        return if (explicitApiModeEnabled) {
+            when {
+                contains("public") -> this
+                contains("protected") -> this
+                contains("private") -> this
+                contains("internal") -> this
+                else -> "public $this"
+            }
+        } else {
+            this
+        }
+    }
+
     companion object {
         private const val ONE_INDENT = "    "
     }
@@ -324,7 +389,8 @@ class FileGenerator(
     var packagePath: String? = packageName,
     var fileOptIns: List<String> = emptyList(),
     logger: Logger = NOPLogger.NOP_LOGGER,
-) : CodeGenerator("", logger = logger) {
+    explicitApiModeEnabled: Boolean,
+) : CodeGenerator("", logger = logger, explicitApiModeEnabled = explicitApiModeEnabled) {
     private val imports = mutableListOf<String>()
 
     fun importPackage(name: String) {
@@ -369,6 +435,13 @@ fun file(
     name: String? = null,
     packageName: String? = null,
     logger: Logger = NOPLogger.NOP_LOGGER,
+    explicitApiModeEnabled: Boolean,
     block: FileGenerator.() -> Unit,
-): FileGenerator = FileGenerator(name, packageName, packageName, emptyList(), logger)
-    .apply(block)
+): FileGenerator = FileGenerator(
+    filename = name,
+    packageName = packageName,
+    packagePath = packageName,
+    fileOptIns = emptyList(),
+    logger = logger,
+    explicitApiModeEnabled = explicitApiModeEnabled,
+).apply(block)
