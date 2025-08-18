@@ -91,24 +91,6 @@ generateSource(
          */
         public const val LIBRARY_VERSION: String = "$version"
 
-        @Deprecated("Use kotlinx.rpc.LIBRARY_VERSION instead", ReplaceWith("kotlinx.rpc.LIBRARY_VERSION"))
-        public const val PLUGIN_VERSION: String = LIBRARY_VERSION
-
-        /**
-         * The version of the protobuf library.
-         */
-        public const val PROTOBUF_VERSION: String = "${libs.versions.protobuf.asProvider().get()}"
-        
-        /**
-         * The version of the grpc java library.
-         */
-        public const val GRPC_VERSION: String = "${libs.versions.grpc.asProvider().get()}"
-        
-        /**
-         * The version of the grpc kotlin library.
-         */
-        public const val GRPC_KOTLIN_VERSION: String = "${libs.versions.grpc.kotlin.get()}"
-        
         /**
          * The version of the buf tool used to generate protobuf.
          */
@@ -128,11 +110,6 @@ generateSource(
         const val KOTLIN_VERSION: String = "${libs.versions.kotlin.lang.get()}"
         
         const val BUILD_REPO: String = "${File(globalRootDir).resolve("build/repo").absolutePath}"
-        
-        // can't use from Versions.kt bacause Gradle messes up caches
-        const val TEST_PROTOBUF_VERSION: String = "${libs.versions.protobuf.asProvider().get()}"
-        const val TEST_GRPC_VERSION: String = "${libs.versions.grpc.asProvider().get()}"
-        const val TEST_GRPC_KOTLIN_VERSION: String = "${libs.versions.grpc.kotlin.get()}"
     """.trimIndent(),
     chooseSourceSet = { test }
 )

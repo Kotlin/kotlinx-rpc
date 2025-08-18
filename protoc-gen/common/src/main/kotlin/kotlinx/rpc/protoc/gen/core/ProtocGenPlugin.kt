@@ -9,6 +9,7 @@ import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.FileAppender
+import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorResponse
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorResponse.Feature
@@ -21,14 +22,18 @@ import java.io.File
 abstract class ProtocGenPlugin {
     companion object {
         private const val DEBUG_OUTPUT_OPTION = "debugOutput"
+        private const val EXPLICIT_API_MODE_ENABLED_OPTION = "explicitApiModeEnabled"
     }
 
     private var debugOutput: String? = null
+    private var explicitApiModeEnabled: Boolean = false
     private val logger: Logger by lazy {
         val debugOutput = debugOutput ?: return@lazy NOPLogger.NOP_LOGGER
 
         val factory = LoggerFactory.getILoggerFactory()
         (factory.getLogger(Logger.ROOT_LOGGER_NAME) as ch.qos.logback.classic.Logger).apply {
+            detachAndStopAllAppenders()
+
             val appender = FileAppender<ILoggingEvent>().apply {
                 isAppend = true
                 file = debugOutput
@@ -54,6 +59,7 @@ abstract class ProtocGenPlugin {
         }
 
         debugOutput = parameters[DEBUG_OUTPUT_OPTION]
+        explicitApiModeEnabled = parameters[EXPLICIT_API_MODE_ENABLED_OPTION]?.toBooleanStrictOrNull() ?: false
 
         val files = input.runGeneration()
             .map { file ->
@@ -77,14 +83,29 @@ abstract class ProtocGenPlugin {
             .apply {
                 files.forEach(::addFile)
 
-                supportedFeatures = Feature.FEATURE_PROTO3_OPTIONAL_VALUE.toLong()
+                val features =
+                    Feature.FEATURE_PROTO3_OPTIONAL_VALUE or
+                            Feature.FEATURE_SUPPORTS_EDITIONS_VALUE
+
+                minimumEdition = DescriptorProtos.Edition.EDITION_PROTO2_VALUE
+                maximumEdition = DescriptorProtos.Edition.EDITION_MAX_VALUE
+
+                supportedFeatures = features.toLong()
             }
             .build()
     }
 
     private fun CodeGeneratorRequest.runGeneration(): List<FileGenerator> {
-        return generateKotlinByModel(this.toModel(), logger)
+        return generateKotlinByModel(
+            model = this.toModel(),
+            logger = logger,
+            explicitApiModeEnabled = explicitApiModeEnabled,
+        )
     }
 
-    protected abstract fun generateKotlinByModel(model: Model, logger: Logger): List<FileGenerator>
+    protected abstract fun generateKotlinByModel(
+        model: Model,
+        logger: Logger,
+        explicitApiModeEnabled: Boolean,
+    ): List<FileGenerator>
 }
