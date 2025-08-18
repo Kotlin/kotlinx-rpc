@@ -39,7 +39,17 @@ internal suspend fun withArena(block: suspend (Arena) -> Unit) =
         }
     }
 
-internal fun CPointer<grpc_byte_buffer>.toKotlin(destroy: Boolean = true): Buffer = memScoped {
+internal fun grpc_slice.toByteArray(): ByteArray = memScoped {
+    val out = ByteArray(len().toInt())
+    if (out.isEmpty()) return out
+
+    out.usePinned {
+        memcpy(it.addressOf(0), startPtr(), len().convert())
+    }
+    return out
+}
+
+internal fun CPointer<grpc_byte_buffer>.toKotlin(): Buffer = memScoped {
     val reader = alloc<grpc_byte_buffer_reader>()
     check(grpc_byte_buffer_reader_init(reader.ptr, this@toKotlin) == 1)
     { "Failed to initialized byte buffer." }
@@ -55,13 +65,8 @@ internal fun CPointer<grpc_byte_buffer>.toKotlin(destroy: Boolean = true): Buffe
     }
 
     grpc_byte_buffer_reader_destroy(reader.ptr)
-    if (destroy) {
-        grpc_byte_buffer_destroy(this@toKotlin)
-    }
-
     return out
 }
-
 
 internal fun Source.toGrpcByteBuffer(): CPointer<grpc_byte_buffer> {
     if (this is Buffer) return toGrpcByteBuffer()

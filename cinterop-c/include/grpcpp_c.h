@@ -77,9 +77,6 @@ typedef struct grpc_channel_credentials grpc_channel_credentials_t;
 bool kgrpc_iomgr_run_in_background();
 
 
-/////// UTILS ///////
-
-
 #ifdef __cplusplus
     }
 #endif

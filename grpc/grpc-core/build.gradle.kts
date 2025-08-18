@@ -61,6 +61,13 @@ kotlin {
                 implementation(libs.grpc.netty)
             }
         }
+
+        nativeMain {
+            dependencies {
+                // required for status.proto
+                implementation(projects.protobuf.protobufCore)
+            }
+        }
     }
 
     configureCLibCInterop(project, ":grpcpp_c_static") { cinteropCLib ->

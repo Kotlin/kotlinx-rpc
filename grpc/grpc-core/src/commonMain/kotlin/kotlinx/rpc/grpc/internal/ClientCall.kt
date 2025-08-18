@@ -8,6 +8,15 @@ import kotlinx.rpc.grpc.GrpcTrailers
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
+/**
+ * This class represents a client-side call to a server.
+ * It provides the interface of the gRPC-Java ClientCall class; however, semantics are slightly different
+ * on JVM and Native platforms.
+ *
+ * Callback execution:
+ * - On JVM it is guaranteed that callbacks aren't executed concurrently.
+ * - On Native, it is only guaranteed that `onClose` is called after all other callbacks finished.
+ */
 @InternalRpcApi
 public expect abstract class ClientCall<Request, Response> {
     @InternalRpcApi

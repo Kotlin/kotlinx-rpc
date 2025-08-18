@@ -4,10 +4,10 @@
 
 @file:OptIn(InternalRpcApi::class)
 
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import util.configureCLibCInterop
 
 plugins {
@@ -28,6 +28,7 @@ kotlin {
                 api(projects.utils)
                 api(projects.protobuf.protobufInputStream)
                 api(projects.grpc.grpcCodec)
+                implementation("com.google.api.grpc:proto-google-common-protos:2.60.0")
 
                 api(libs.kotlinx.io.core)
             }
@@ -55,7 +56,7 @@ kotlin {
 
     configureCLibCInterop(project, ":protowire_static") { cinteropCLib ->
         @Suppress("unused")
-        val libprotowire by creating  {
+        val libprotowire by creating {
             includeDirs(
                 cinteropCLib.resolve("include")
             )

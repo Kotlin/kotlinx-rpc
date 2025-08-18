@@ -9,6 +9,10 @@ import HelloReply
 import HelloReplyInternal
 import HelloRequest
 import HelloRequestInternal
+import grpc.examples.echo.EchoRequest
+import grpc.examples.echo.EchoRequestInternal
+import grpc.examples.echo.EchoResponseInternal
+import grpc.examples.echo.invoke
 import invoke
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.CompletableDeferred
@@ -24,7 +28,7 @@ import kotlin.test.assertTrue
 
 class GrpcCoreTest {
 
-    private fun descriptorFor(fullName: String = "/helloworld.Greeter/SayHello"): MethodDescriptor<HelloRequest, HelloReply> =
+    private fun descriptorFor(fullName: String = "helloworld.Greeter/SayHello"): MethodDescriptor<HelloRequest, HelloReply> =
         methodDescriptor(
             fullMethodName = fullName,
             requestCodec = HelloRequestInternal.CODEC,
@@ -36,21 +40,20 @@ class GrpcCoreTest {
             sampledToLocalTracing = true,
         )
 
-    private fun NativeManagedChannel.newHelloCall(fullName: String = "/helloworld.Greeter/SayHello"): ClientCall<HelloRequest, HelloReply> =
-        newCall(descriptorFor(fullName), GrpcCallOptions())
+    private fun ManagedChannel.newHelloCall(fullName: String = "helloworld.Greeter/SayHello"): ClientCall<HelloRequest, HelloReply> =
+        platformApi.newCall(descriptorFor(fullName), GrpcCallOptions())
 
-    private fun createChannel(): NativeManagedChannel =
-        NativeManagedChannel(
-            "localhost:50051",
-            GrpcInsecureCredentials(),
-        )
+    private fun createChannel(): ManagedChannel = ManagedChannelBuilder("localhost:50051")
+        .usePlaintext()
+        .buildChannel()
+
 
     private fun helloReq(timeout: UInt = 0u): HelloRequest = HelloRequest {
         name = "world"
         this.timeout = timeout
     }
 
-    private fun shutdownAndWait(channel: NativeManagedChannel) {
+    private fun shutdownAndWait(channel: ManagedChannel) {
         channel.shutdown()
         runBlocking { channel.awaitTermination() }
     }
@@ -265,6 +268,7 @@ class GrpcCoreTest {
         }
 
         call.start(listener, GrpcTrailers())
+        // set timeout on the server to 1000 ms, to simulate a long-running call
         call.sendMessage(helloReq(1000u))
         call.halfClose()
         call.request(1)
@@ -277,5 +281,38 @@ class GrpcCoreTest {
                 assertEquals(StatusCode.CANCELLED, status.statusCode)
             }
         }
+    }
+
+    @Test
+    fun unaryCallTest() = runBlocking {
+        val ch = createChannel()
+        val desc = descriptorFor()
+        val req = helloReq()
+        repeat(1000) {
+            val res = unaryRpc(ch.platformApi, desc, req)
+            assertEquals("Hello world", res.message)
+        }
+    }
+
+
+    private fun echoDescriptor(methodName: String, type: MethodType) =
+        methodDescriptor(
+            fullMethodName = "grpc.examples.echo.Echo/$methodName",
+            requestCodec = EchoRequestInternal.CODEC,
+            responseCodec = EchoResponseInternal.CODEC,
+            type = type,
+            schemaDescriptor = Unit,
+            idempotent = true,
+            safe = true,
+            sampledToLocalTracing = true,
+        )
+
+    @Test
+    fun unaryEchoTest() = runBlocking {
+        val ch = createChannel()
+        val desc = echoDescriptor("UnaryEcho", MethodType.UNARY)
+        val req = EchoRequest { message = "Echoooo" }
+        unaryRpc(ch.platformApi, desc, req)
+        return@runBlocking
     }
 }

@@ -52,6 +52,68 @@ internal class NativeClientCall<Request, Response>(
     private var cancelled = false
     private var closed = atomic(false)
 
+    // tracks how many operations are in flight (not yet completed by the listener).
+    // if 0, there are no more operations (except for the RECV_STATUS_ON_CLIENT op).
+    // in this case, we can safely call onClose on the listener.
+    // we need this mechanism to ensure that onClose is not called while any other callback is still running
+    // on the listener.
+    private val inFlight = atomic(0)
+
+    // holds the received status information returned by the RECV_STATUS_ON_CLIENT batch.
+    // if null, the call is still in progress. otherwise, the call can be closed as soon as inFlight is 0.
+    private val closeInfo = atomic<Pair<Status, GrpcTrailers>?>(null)
+
+    /**
+     * Increments the [inFlight] counter by one.
+     * This should be called before starting a batch.
+     */
+    private fun beginOp() {
+        inFlight.incrementAndGet()
+    }
+
+    /**
+     * Decrements the [inFlight] counter by one.
+     * This should be called after a batch has finished (in case of success AND error)
+     * AND the corresponding listener callback returned.
+     *
+     * If the counter reaches 0, no more listener callbacks are executed, and the call can be closed by
+     * calling [tryDeliverClose].
+     */
+    private fun endOp() {
+        if (inFlight.decrementAndGet() == 0) {
+            tryDeliverClose()
+        }
+    }
+
+    /**
+     * Tries to close the call by invoking the listener's onClose callback.
+     *
+     * - If the call is already closed, this does nothing.
+     * - If the RECV_STATUS_ON_CLIENT batch is still in progress, this does nothing.
+     * - If the [inFlight] counter is not 0, this does nothing.
+     * - Otherwise, the listener's onClose callback is invoked and the call is closed.
+     */
+    private fun tryDeliverClose() {
+        val s = closeInfo.value ?: return
+        if (inFlight.value == 0 && closed.compareAndSet(expect = false, update = true)) {
+            val lst = checkNotNull(listener) { "Not yet started" }
+            // allows the managed channel to join for the call to finish.
+            callJob.complete()
+            lst.onClose(s.first, s.second)
+        }
+    }
+
+    /**
+     * Sets the [closeInfo] and calls [tryDeliverClose].
+     * This is called as soon as the RECV_STATUS_ON_CLIENT batch is finished.
+     */
+    private fun markClosePending(status: Status, trailers: GrpcTrailers) {
+        if (closeInfo.compareAndSet(null, Pair(status, trailers))) {
+            tryDeliverClose()
+        }
+    }
+
+
     override fun start(
         responseListener: Listener<Response>,
         headers: GrpcTrailers,
@@ -78,24 +140,33 @@ internal class NativeClientCall<Request, Response>(
         // we must not try to run a batch after the call is closed.
         if (closed.value) return cleanup()
 
+        // pre-book the batch, so onClose cannot be called before the batch finished.
+        beginOp()
+
         when (val callResult = cq.runBatch(this@NativeClientCall, ops, nOps)) {
             is BatchResult.Called -> {
                 callResult.future.onComplete { success ->
-                    if (success) {
-                        onSuccess()
+                    try {
+                        if (success) {
+                            onSuccess()
+                        }
+                    } finally {
+                        // ignore failure, as it is reflected in the client status op
+                        cleanup()
+                        endOp()
                     }
-                    // ignore failure, as it is reflected in the client status op
-                    cleanup()
                 }
             }
 
             BatchResult.CQShutdown -> {
                 cleanup()
+                endOp()
                 cancelInternal(grpc_status_code.GRPC_STATUS_UNAVAILABLE, "Channel shutdown")
             }
 
             is BatchResult.CallError -> {
                 cleanup()
+                endOp()
                 cancelInternal(
                     grpc_status_code.GRPC_STATUS_INTERNAL,
                     "Batch could not be submitted: ${callResult.error}"
@@ -104,6 +175,7 @@ internal class NativeClientCall<Request, Response>(
         }
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     private fun initializeCallOnCQ(): Boolean {
         checkNotNull(listener) { "Not yet started" }
         val arena = Arena()
@@ -124,23 +196,33 @@ internal class NativeClientCall<Request, Response>(
         when (val callResult = cq.runBatch(this@NativeClientCall, op.ptr, 1u)) {
             is BatchResult.Called -> {
                 callResult.future.onComplete {
-                    val status = Status(errorStr.value?.toKString(), statusCode.value.toKotlin(), null)
+                    val details = statusDetails.toByteArray().toKString()
+                    val status = Status(statusCode.value.toKotlin(), details, null)
                     val trailers = GrpcTrailers()
+
+                    // cleanup
+                    grpc_slice_unref(statusDetails.readValue())
+                    if (errorStr.value != null) gpr_free(errorStr.value)
                     arena.clear()
-                    closeCall(status, trailers)
+
+                    // set close info and try to close the call.
+                    markClosePending(status, trailers)
                 }
                 return true
             }
 
             BatchResult.CQShutdown -> {
                 arena.clear()
-                closeCall(Status(StatusCode.UNAVAILABLE, "Channel shutdown"), GrpcTrailers())
+                markClosePending(Status(StatusCode.UNAVAILABLE, "Channel shutdown"), GrpcTrailers())
                 return false
             }
 
             is BatchResult.CallError -> {
                 arena.clear()
-                closeCall(Status(StatusCode.INTERNAL, "Failed to start call: ${callResult.error}"), GrpcTrailers())
+                markClosePending(
+                    Status(StatusCode.INTERNAL, "Failed to start call: ${callResult.error}"),
+                    GrpcTrailers()
+                )
                 return false
             }
         }
@@ -164,7 +246,7 @@ internal class NativeClientCall<Request, Response>(
         ops[1].data.recv_initial_metadata.recv_initial_metadata = meta.ptr
 
         runBatch(ops, opsNum, cleanup = {
-            grpc_metadata_array_init(meta.ptr)
+            grpc_metadata_array_destroy(meta.ptr)
             arena.clear()
         }) {
             // TODO: Send headers to listener
@@ -176,22 +258,28 @@ internal class NativeClientCall<Request, Response>(
         val listener = checkNotNull(listener) { "Not yet started" }
         check(!cancelled) { "Already cancelled" }
 
-        fun once() {
+        var remainingMessages = numMessages
+        fun post() {
+            if (remainingMessages-- <= 0) return
+
             val arena = Arena()
             val recvPtr = arena.alloc<CPointerVar<grpc_byte_buffer>>()
             val op = arena.alloc<grpc_op> {
                 op = GRPC_OP_RECV_MESSAGE
                 data.recv_message.recv_message = recvPtr.ptr
             }
-            runBatch(op.ptr, 1u, cleanup = { arena.clear() }) {
+            runBatch(op.ptr, 1u, cleanup = {
+                if (recvPtr.value != null) grpc_byte_buffer_destroy(recvPtr.value)
+                arena.clear()
+            }) {
                 val buf = recvPtr.value ?: return@runBatch // EOS
                 val msg = methodDescriptor.getResponseMarshaller()
                     .parse(buf.toKotlin().asInputStream())
                 listener.onMessage(msg)
-                once() // post next only now
+                post() // post next only now
             }
         }
-        once()
+        post()
     }
 
     override fun cancel(message: String?, cause: Throwable?) {
@@ -203,7 +291,7 @@ internal class NativeClientCall<Request, Response>(
     private fun cancelInternal(statusCode: grpc_status_code, message: String) {
         val cancelResult = grpc_call_cancel_with_status(raw, statusCode, message, null)
         if (cancelResult != grpc_call_error.GRPC_CALL_OK) {
-            closeCall(Status(StatusCode.INTERNAL, "Failed to cancel call: $cancelResult"), GrpcTrailers())
+            markClosePending(Status(StatusCode.INTERNAL, "Failed to cancel call: $cancelResult"), GrpcTrailers())
         }
     }
 
@@ -213,7 +301,7 @@ internal class NativeClientCall<Request, Response>(
         halfClosed = true
 
         val arena = Arena()
-        val op = arena.alloc<grpc_op>() {
+        val op = arena.alloc<grpc_op> {
             op = GRPC_OP_SEND_CLOSE_FROM_CLIENT
         }
 
@@ -239,15 +327,6 @@ internal class NativeClientCall<Request, Response>(
             arena.clear()
         }) {
             // Nothing to do here
-        }
-    }
-
-    private fun closeCall(status: Status, trailers: GrpcTrailers) {
-        // only one close call must proceed
-        if (closed.compareAndSet(expect = false, update = true)) {
-            val listener = checkNotNull(listener) { "Not yet started" }
-            callJob.complete()
-            listener.onClose(status, trailers)
         }
     }
 }

@@ -8,12 +8,12 @@ public actual class StatusException : Exception {
     private val status: Status
     private val trailers: GrpcTrailers?
 
-    public actual constructor(status: Status) : super(status.getDescription()) {
-        this.status = status
-        this.trailers = null
-    }
+    public actual constructor(status: Status) : this(status, null)
 
-    public actual constructor(status: Status, trailers: GrpcTrailers?) : super(status.getDescription()) {
+    public actual constructor(status: Status, trailers: GrpcTrailers?) : super(
+        "${status.statusCode}: ${status.getDescription()}",
+        status.getCause()
+    ) {
         this.status = status
         this.trailers = trailers
     }
@@ -27,12 +27,12 @@ public actual class StatusRuntimeException : RuntimeException {
     private val status: Status
     private val trailers: GrpcTrailers?
 
-    public actual constructor(status: Status) : super(status.getDescription()) {
-        this.status = status
-        this.trailers = null
-    }
+    public actual constructor(status: Status) : this(status, null)
 
-    public actual constructor(status: Status, trailers: GrpcTrailers?) : super(status.getDescription()) {
+    public actual constructor(status: Status, trailers: GrpcTrailers?) : super(
+        "${status.statusCode}: ${status.getDescription()}",
+        status.getCause()
+    ) {
         this.status = status
         this.trailers = trailers
     }
