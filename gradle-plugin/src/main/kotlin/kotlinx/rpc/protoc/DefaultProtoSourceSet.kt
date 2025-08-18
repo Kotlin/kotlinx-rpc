@@ -5,6 +5,8 @@
 package kotlinx.rpc.protoc
 
 import kotlinx.rpc.buf.tasks.BufGenerateTask
+import kotlinx.rpc.protoc.ProtocPlugin.Companion.GRPC_KOTLIN_MULTIPLATFORM
+import kotlinx.rpc.protoc.ProtocPlugin.Companion.KOTLIN_MULTIPLATFORM
 import kotlinx.rpc.util.findOrCreate
 import kotlinx.rpc.util.withKotlinJvmExtension
 import kotlinx.rpc.util.withKotlinKmpExtension
@@ -17,6 +19,9 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.add
 import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.property
+import org.gradle.kotlin.dsl.the
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
 import javax.inject.Inject
 
 @Suppress("UNCHECKED_CAST")
@@ -34,17 +39,47 @@ internal open class DefaultProtoSourceSet @Inject constructor(
     internal val project: Project,
     override val name: String,
 ) : ProtoSourceSet {
+    override val plugins: NamedDomainObjectContainer<ProtocPlugin> =
+        project.objects.domainObjectContainer(ProtocPlugin::class.java) { name ->
+            ProtocPlugin(name, project)
+        }
+
+    override fun plugins(action: Action<NamedDomainObjectContainer<ProtocPlugin>>) {
+        action.execute(plugins)
+    }
+
+    init {
+        val explicitApiModeEnabled = project.provider {
+            project.the<KotlinBaseExtension>().explicitApi != ExplicitApiMode.Disabled
+        }
+
+        plugins.create(KOTLIN_MULTIPLATFORM) {
+            local {
+                javaJar(project.kotlinMultiplatformProtocPluginJarPath)
+            }
+
+            options.put("debugOutput", "protoc-gen-kotlin-multiplatform.log")
+
+            if (this@DefaultProtoSourceSet.name.lowercase().endsWith("main")) {
+                options.put("explicitApiModeEnabled", explicitApiModeEnabled)
+            }
+        }
+
+        plugins.create(GRPC_KOTLIN_MULTIPLATFORM) {
+            local {
+                javaJar(project.grpcKotlinMultiplatformProtocPluginJarPath)
+            }
+
+            options.put("debugOutput", "protoc-gen-grpc-kotlin-multiplatform.log")
+
+            if (this@DefaultProtoSourceSet.name.lowercase().endsWith("main")) {
+                options.put("explicitApiModeEnabled", explicitApiModeEnabled)
+            }
+        }
+    }
+
     val languageSourceSets: ListProperty<Any> = project.objects.listProperty<Any>()
-    val protocPlugins: ListProperty<String> = project.objects.listProperty<String>().convention(emptyList())
     val generateTask: Property<BufGenerateTask> = project.objects.property<BufGenerateTask>()
-
-    override fun protocPlugin(plugin: NamedDomainObjectProvider<ProtocPlugin>) {
-        protocPlugins.add(plugin.name)
-    }
-
-    override fun protocPlugin(plugin: ProtocPlugin) {
-        protocPlugins.add(plugin.name)
-    }
 
     override val proto: SourceDirectorySet = project.objects.sourceDirectorySet(
         PROTO_SOURCE_DIRECTORY_NAME,
