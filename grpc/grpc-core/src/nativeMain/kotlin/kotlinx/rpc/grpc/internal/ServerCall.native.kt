@@ -24,7 +24,8 @@ public actual abstract class ServerCall<Request, Response> {
     public actual abstract fun close(status: Status, trailers: GrpcTrailers)
 
     public actual open fun isReady(): Boolean {
-        TODO("Not yet implemented")
+        // Default implementation returns true - subclasses can override if they need flow control
+        return true
     }
 
     public actual abstract fun isCancelled(): Boolean
@@ -49,5 +50,25 @@ public actual fun <State, Message> serverCallListener(
     onComplete: (State) -> Unit,
     onReady: (State) -> Unit,
 ): ServerCall.Listener<Message> {
-    TODO("Not yet implemented")
+    return object : ServerCall.Listener<Message>() {
+        override fun onMessage(message: Message) {
+            onMessage(state, message)
+        }
+
+        override fun onHalfClose() {
+            onHalfClose(state)
+        }
+
+        override fun onCancel() {
+            onCancel(state)
+        }
+
+        override fun onComplete() {
+            onComplete(state)
+        }
+
+        override fun onReady() {
+            onReady(state)
+        }
+    }
 }
