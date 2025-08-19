@@ -1,34 +1,21 @@
 load("@rules_cc//cc:defs.bzl", "cc_library")
 
-cc_binary(
-    name = "testdemo",
-    srcs = ["src/main.cpp"],
-    deps = [
-        ":protowire",
-    ],
-)
-
 cc_static_library(
-    name = "grpcpp_c_static",
+    name = "kgrpc_static",
     deps = [
-        ":grpcpp_c",
+        ":kgrpc",
     ],
 )
 
 cc_library(
-    name = "grpcpp_c",
-    srcs = ["src/grpcpp_c.cpp"],
-    hdrs = glob(["include/**/*.h"]),
+    name = "kgrpc",
+    srcs = ["src/kgrpc.cpp"],
+    hdrs = glob(["include/kgrpc.h"]),
     copts = ["-std=c++20"],
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [
-        # TODO: Reduce the dependencies and only use required once. KRPC-185
-        "@com_github_grpc_grpc//:channelz",
-        "@com_github_grpc_grpc//:generic_stub",
-        "@com_github_grpc_grpc//:grpc++",
-        "@com_github_grpc_grpc//:grpc_credentials_util",
-        "@com_google_protobuf//:protobuf",
+        "@com_github_grpc_grpc//:grpc"
     ],
 )
 
@@ -42,7 +29,7 @@ cc_static_library(
 cc_library(
     name = "protowire",
     srcs = ["src/protowire.cpp"],
-    hdrs = glob(["include/*.h"]),
+    hdrs = glob(["include/protowire.h"]),
     copts = ["-std=c++20"],
     includes = ["include"],
     visibility = ["//visibility:public"],

@@ -5,37 +5,39 @@
 package kotlinx.rpc.grpc
 
 public actual class StatusException : Exception {
-    public actual fun getStatus(): Status {
-        TODO("Not yet implemented")
+    private val status: Status
+    private val trailers: GrpcTrailers?
+
+    public actual constructor(status: Status) : this(status, null)
+
+    public actual constructor(status: Status, trailers: GrpcTrailers?) : super(
+        "${status.statusCode}: ${status.getDescription()}",
+        status.getCause()
+    ) {
+        this.status = status
+        this.trailers = trailers
     }
 
-    public actual fun getTrailers(): GrpcTrailers? {
-        TODO("Not yet implemented")
-    }
+    public actual fun getStatus(): Status = status
 
-    public actual constructor(status: Status) {
-        TODO("Not yet implemented")
-    }
-
-    public actual constructor(status: Status, trailers: GrpcTrailers?) {
-        TODO("Not yet implemented")
-    }
+    public actual fun getTrailers(): GrpcTrailers? = trailers
 }
 
 public actual class StatusRuntimeException : RuntimeException {
-    public actual fun getStatus(): Status {
-        TODO("Not yet implemented")
+    private val status: Status
+    private val trailers: GrpcTrailers?
+
+    public actual constructor(status: Status) : this(status, null)
+
+    public actual constructor(status: Status, trailers: GrpcTrailers?) : super(
+        "${status.statusCode}: ${status.getDescription()}",
+        status.getCause()
+    ) {
+        this.status = status
+        this.trailers = trailers
     }
 
-    public actual fun getTrailers(): GrpcTrailers? {
-        TODO("Not yet implemented")
-    }
+    public actual fun getStatus(): Status = status
 
-    public actual constructor(status: Status) {
-        TODO("Not yet implemented")
-    }
-
-    public actual constructor(status: Status, trailers: GrpcTrailers?) {
-        TODO("Not yet implemented")
-    }
+    public actual fun getTrailers(): GrpcTrailers? = trailers
 }
