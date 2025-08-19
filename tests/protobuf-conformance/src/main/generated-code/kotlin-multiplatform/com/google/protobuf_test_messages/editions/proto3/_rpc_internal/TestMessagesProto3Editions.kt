@@ -48,7 +48,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
     override var optionalBytes: ByteArray by MsgFieldDelegate { byteArrayOf() }
     override var optionalNestedMessage: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedMessage by MsgFieldDelegate(PresenceIndices.optionalNestedMessage) { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.NestedMessageInternal() }
     override var optionalForeignMessage: com.google.protobuf_test_messages.editions.proto3.ForeignMessage by MsgFieldDelegate(PresenceIndices.optionalForeignMessage) { com.google.protobuf_test_messages.editions.proto3.ForeignMessageInternal() }
-    override var optionalNestedEnum: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum by MsgFieldDelegate { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.NEG }
+    override var optionalNestedEnum: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum by MsgFieldDelegate { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.FOO }
     override var optionalForeignEnum: com.google.protobuf_test_messages.editions.proto3.ForeignEnum by MsgFieldDelegate { com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO }
     override var optionalAliasedEnum: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.AliasedEnum by MsgFieldDelegate { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.AliasedEnum.ALIAS_FOO }
     override var optionalStringPiece: String by MsgFieldDelegate { "" }
@@ -412,7 +412,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         override val _size: Int by lazy { computeSize() }
 
         var key: String by MsgFieldDelegate { "" }
-        var value: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum by MsgFieldDelegate { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.NEG }
+        var value: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum by MsgFieldDelegate { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.FOO }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
@@ -815,15 +815,15 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
         encoder.writeMessage(fieldNr = 19, value = optionalForeignMessage.asInternal()) { encodeWith(it) }
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.NEG != optionalNestedEnum) { 
+    if (optionalNestedEnum != com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.FOO) { 
         encoder.writeEnum(fieldNr = 21, value = optionalNestedEnum.number)
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO != optionalForeignEnum) { 
+    if (optionalForeignEnum != com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO) { 
         encoder.writeEnum(fieldNr = 22, value = optionalForeignEnum.number)
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.AliasedEnum.ALIAS_FOO != optionalAliasedEnum) { 
+    if (optionalAliasedEnum != com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.AliasedEnum.ALIAS_FOO) { 
         encoder.writeEnum(fieldNr = 23, value = optionalAliasedEnum.number)
     }
 
@@ -1417,7 +1417,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
         encoder.writeMessage(fieldNr = 306, value = optionalValue.asInternal()) { encodeWith(it) }
     }
 
-    if (com.google.protobuf.kotlin.NullValue.NULL_VALUE != optionalNullValue) { 
+    if (optionalNullValue != com.google.protobuf.kotlin.NullValue.NULL_VALUE) { 
         encoder.writeEnum(fieldNr = 307, value = optionalNullValue.number)
     }
 
@@ -2657,15 +2657,15 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
         __result += optionalForeignMessage.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(19, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.NEG != optionalNestedEnum) { 
+    if (optionalNestedEnum != com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.FOO) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(21, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(optionalNestedEnum.number))
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO != optionalForeignEnum) { 
+    if (optionalForeignEnum != com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(22, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(optionalForeignEnum.number))
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.AliasedEnum.ALIAS_FOO != optionalAliasedEnum) { 
+    if (optionalAliasedEnum != com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.AliasedEnum.ALIAS_FOO) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(23, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(optionalAliasedEnum.number))
     }
 
@@ -3163,7 +3163,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
         __result += optionalValue.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(306, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
     }
 
-    if (com.google.protobuf.kotlin.NullValue.NULL_VALUE != optionalNullValue) { 
+    if (optionalNullValue != com.google.protobuf.kotlin.NullValue.NULL_VALUE) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(307, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(optionalNullValue.number))
     }
 
@@ -4492,7 +4492,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
         encoder.writeString(fieldNr = 1, value = key)
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.NEG != value) { 
+    if (value != com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.FOO) { 
         encoder.writeEnum(fieldNr = 2, value = value.number)
     }
 }
@@ -4526,7 +4526,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
         __result += kotlinx.rpc.protobuf.internal.WireSize.string(key).let { kotlinx.rpc.protobuf.internal.WireSize.tag(1, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.NEG != value) { 
+    if (value != com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.FOO) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(2, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(value.number))
     }
 
@@ -4549,7 +4549,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
         encoder.writeString(fieldNr = 1, value = key)
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO != value) { 
+    if (value != com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO) { 
         encoder.writeEnum(fieldNr = 2, value = value.number)
     }
 }
@@ -4583,7 +4583,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
         __result += kotlinx.rpc.protobuf.internal.WireSize.string(key).let { kotlinx.rpc.protobuf.internal.WireSize.tag(1, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO != value) { 
+    if (value != com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(2, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(value.number))
     }
 

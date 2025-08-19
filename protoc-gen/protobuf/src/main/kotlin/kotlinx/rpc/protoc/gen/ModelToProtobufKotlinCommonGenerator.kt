@@ -6,11 +6,14 @@
 
 package kotlinx.rpc.protoc.gen
 
+import com.google.protobuf.ByteString
+import com.google.protobuf.Descriptors
 import kotlinx.rpc.protoc.gen.core.AModelToKotlinCommonGenerator
 import kotlinx.rpc.protoc.gen.core.CodeGenerator
 import kotlinx.rpc.protoc.gen.core.INTERNAL_RPC_API_ANNO
 import kotlinx.rpc.protoc.gen.core.PB_PKG
 import kotlinx.rpc.protoc.gen.core.WITH_CODEC_ANNO
+import kotlinx.rpc.protoc.gen.core.fqName
 import kotlinx.rpc.protoc.gen.core.model.EnumDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FieldDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FieldType
@@ -19,6 +22,7 @@ import kotlinx.rpc.protoc.gen.core.model.MessageDeclaration
 import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
 import kotlinx.rpc.protoc.gen.core.model.WireType
+import kotlinx.rpc.protoc.gen.core.model.scalarDefaultSuffix
 import org.slf4j.Logger
 
 class ModelToProtobufKotlinCommonGenerator(
@@ -119,6 +123,7 @@ class ModelToProtobufKotlinCommonGenerator(
         ) {
 
             generatePresenceIndicesObject(declaration)
+            generateBytesDefaultsObject(declaration)
 
             property(
                 name = "_size",
@@ -143,7 +148,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
                     else -> {
                         val fieldPresence = if (field.presenceIdx != null) "(PresenceIndices.${field.name})" else ""
-                        "MsgFieldDelegate$fieldPresence { ${field.type.defaultValue} }"
+                        "MsgFieldDelegate$fieldPresence { ${field.safeDefaultValue()} }"
                     }
                 }
 
@@ -184,16 +189,50 @@ class ModelToProtobufKotlinCommonGenerator(
         }
 
         clazz("PresenceIndices", "private", declarationType = CodeGenerator.DeclarationType.Object) {
-            declaration.actualFields.forEachIndexed { i, field ->
-                if (field.presenceIdx != null) {
-                    property(
-                        field.name,
-                        modifiers = "const",
-                        value = field.presenceIdx.toString(),
-                        type = "Int",
-                        needsNewLineAfterDeclaration = i == declaration.actualFields.lastIndex,
-                    )
+            val fieldDeclarations = declaration.actualFields.filter { it.presenceIdx != null }
+            fieldDeclarations.forEachIndexed { i, field ->
+                property(
+                    field.name,
+                    modifiers = "const",
+                    value = field.presenceIdx.toString(),
+                    type = "Int",
+                    needsNewLineAfterDeclaration = i == fieldDeclarations.lastIndex,
+                )
+            }
+        }
+    }
+
+    private fun CodeGenerator.generateBytesDefaultsObject(declaration: MessageDeclaration) {
+        val fieldDeclarations = declaration.actualFields
+            .filter {
+                it.type == FieldType.IntegralType.BYTES &&
+                        it.dec.hasDefaultValue() &&
+                        !(it.dec.defaultValue as ByteString).isEmpty
+            }
+
+        if (fieldDeclarations.isEmpty()) {
+            return
+        }
+
+        clazz("BytesDefaults", "private", declarationType = CodeGenerator.DeclarationType.Object) {
+            fieldDeclarations.forEachIndexed { i, field ->
+                val value = if (field.dec.hasDefaultValue()) {
+                    val stringValue = (field.dec.defaultValue as ByteString).toString(Charsets.UTF_8)
+                    if (stringValue.isNotEmpty()) {
+                        "\"${stringValue}\".encodeToByteArray()"
+                    } else {
+                        FieldType.IntegralType.BYTES.defaultValue
+                    }
+                } else {
+                    FieldType.IntegralType.BYTES.defaultValue
                 }
+
+                property(
+                    name = field.name,
+                    value = value,
+                    type = "ByteArray",
+                    needsNewLineAfterDeclaration = i == fieldDeclarations.lastIndex,
+                )
             }
         }
     }
@@ -369,7 +408,7 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             is FieldType.List -> if (isPacked) {
-                val conversion = if (fieldType.value is FieldType.Enum){
+                val conversion = if (fieldType.value is FieldType.Enum) {
                     ".map { ${(fieldType.value as FieldType.Enum).dec.name.safeFullName()}.fromNumber(it) }"
                 } else {
                     ""
@@ -791,17 +830,55 @@ class ModelToProtobufKotlinCommonGenerator(
 
     private fun FieldDeclaration.notDefaultCheck(): String {
         return when (val fieldType = type) {
-            is FieldType.IntegralType -> when (fieldType) {
-                FieldType.IntegralType.BYTES, FieldType.IntegralType.STRING -> "$name.isNotEmpty()"
-                else -> "$name != ${fieldType.defaultValue}"
+            is FieldType.IntegralType -> {
+                val defaultValue = safeDefaultValue()
+                when {
+                    fieldType == FieldType.IntegralType.STRING &&
+                            defaultValue == FieldType.IntegralType.STRING.defaultValue -> "$name.isNotEmpty()"
+
+                    fieldType == FieldType.IntegralType.STRING -> "!$name.contentEquals($defaultValue)"
+
+                    fieldType == FieldType.IntegralType.BYTES &&
+                            defaultValue == FieldType.IntegralType.BYTES.defaultValue -> "$name.isNotEmpty()"
+
+                    fieldType == FieldType.IntegralType.BYTES -> "!$name.contentEquals($defaultValue)"
+
+                    else -> "$name != $defaultValue"
+                }
             }
 
-            is FieldType.List -> "$name.isNotEmpty()"
+            is FieldType.List, is FieldType.Map -> "$name.isNotEmpty()"
+
+            is FieldType.Enum -> {
+                "$name != ${safeDefaultValue()}"
+            }
+
             is FieldType.Message -> error("Message fields should not be checked for default values.")
+            is FieldType.OneOf -> "null"
+        }
+    }
 
-            is FieldType.Enum -> "${fieldType.defaultValue} != $name"
+    private fun FieldDeclaration.safeDefaultValue(): String {
+        if (!dec.hasDefaultValue()) {
+            return type.defaultValue ?: error("No default value for field $name")
+        }
 
-            else -> "$name.isNotEmpty()"
+        return when (val value = dec.defaultValue) {
+            is String -> {
+                "\"$value\""
+            }
+
+            is ByteString -> {
+                "BytesDefaults.$name"
+            }
+
+            is Descriptors.EnumValueDescriptor -> {
+                value.fqName().safeFullName()
+            }
+
+            else -> {
+                "${value}${type.scalarDefaultSuffix()}"
+            }
         }
     }
 

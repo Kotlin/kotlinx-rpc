@@ -191,7 +191,7 @@ public fun com.google.protobuf.kotlin.ApiInternal.encodeWith(encoder: kotlinx.rp
         }
     }
 
-    if (com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2 != syntax) { 
+    if (syntax != com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2) { 
         encoder.writeEnum(fieldNr = 7, value = syntax.number)
     }
 }
@@ -275,7 +275,7 @@ private fun com.google.protobuf.kotlin.ApiInternal.computeSize(): Int {
         __result = mixins.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(6, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
-    if (com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2 != syntax) { 
+    if (syntax != com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(7, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(syntax.number))
     }
 
@@ -323,7 +323,7 @@ public fun com.google.protobuf.kotlin.MethodInternal.encodeWith(encoder: kotlinx
         }
     }
 
-    if (com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2 != syntax) { 
+    if (syntax != com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2) { 
         encoder.writeEnum(fieldNr = 7, value = syntax.number)
     }
 }
@@ -399,7 +399,7 @@ private fun com.google.protobuf.kotlin.MethodInternal.computeSize(): Int {
         __result = options.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(6, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
-    if (com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2 != syntax) { 
+    if (syntax != com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(7, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(syntax.number))
     }
 
