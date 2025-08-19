@@ -39,8 +39,7 @@ protoSourceSets {
 
 configureLocalProtocGenDevelopmentDependency("Main")
 
-
-tasks.register<Jar>("testServicesJar") {
+val testServicesJar by tasks.registering(Jar::class) {
     archiveBaseName.set("testServices")
     archiveVersion.set("")
 

@@ -21,6 +21,7 @@ class RawClientTest {
 
     @Test
     fun unaryEchoTest() = runTest(
+        serviceMainClassName = "kotlinx.rpc.grpc.test.services.EchoServiceMain",
         methodName = "UnaryEcho",
         type = MethodType.UNARY,
     ) { channel, descriptor ->
@@ -30,6 +31,7 @@ class RawClientTest {
 
     @Test
     fun serverStreamingEchoTest() = runTest(
+        serviceMainClassName = "kotlinx.rpc.grpc.test.services.EchoServiceMain",
         methodName = "ServerStreamingEcho",
         type = MethodType.SERVER_STREAMING,
     ) { channel, descriptor ->
@@ -43,6 +45,7 @@ class RawClientTest {
 
     @Test
     fun clientStreamingEchoTest() = runTest(
+        serviceMainClassName = "kotlinx.rpc.grpc.test.services.EchoServiceMain",
         methodName = "ClientStreamingEcho",
         type = MethodType.CLIENT_STREAMING,
     ) { channel, descriptor ->
@@ -59,6 +62,7 @@ class RawClientTest {
 
     @Test
     fun bidirectionalStreamingEchoTest() = runTest(
+        serviceMainClassName = "kotlinx.rpc.grpc.test.services.EchoServiceMain",
         methodName = "BidirectionalStreamingEcho",
         type = MethodType.BIDI_STREAMING,
     ) { channel, descriptor ->
@@ -77,30 +81,33 @@ class RawClientTest {
     }
 
     fun runTest(
+        serviceMainClassName: String,
         methodName: String,
         type: MethodType,
         block: suspend (GrpcChannel, MethodDescriptor<EchoRequest, EchoResponse>) -> Unit,
     ) = runTest {
-        val channel = ManagedChannelBuilder("localhost:${BaseGrpcServiceTest.PORT}")
-            .usePlaintext()
-            .buildChannel()
+        ExternalTestService(serviceMainClassName).use {
+            val channel = ManagedChannelBuilder("localhost:${BaseGrpcServiceTest.PORT}")
+                .usePlaintext()
+                .buildChannel()
 
-        val methodDescriptor = methodDescriptor(
-            fullMethodName = "kotlinx.rpc.grpc.test.EchoService/$methodName",
-            requestCodec = EchoRequestInternal.CODEC,
-            responseCodec = EchoResponseInternal.CODEC,
-            type = type,
-            schemaDescriptor = Unit,
-            idempotent = true,
-            safe = true,
-            sampledToLocalTracing = true,
-        )
+            val methodDescriptor = methodDescriptor(
+                fullMethodName = "kotlinx.rpc.grpc.test.services.EchoService/$methodName",
+                requestCodec = EchoRequestInternal.CODEC,
+                responseCodec = EchoResponseInternal.CODEC,
+                type = type,
+                schemaDescriptor = Unit,
+                idempotent = true,
+                safe = true,
+                sampledToLocalTracing = true,
+            )
 
-        try {
-            block(channel.platformApi, methodDescriptor)
-        } finally {
-            channel.shutdown()
-            channel.awaitTermination()
+            try {
+                block(channel.platformApi, methodDescriptor)
+            } finally {
+                channel.shutdown()
+                channel.awaitTermination()
+            }
         }
     }
 }

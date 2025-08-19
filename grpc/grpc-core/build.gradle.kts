@@ -6,6 +6,8 @@
 
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
+import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 import util.configureCLibCInterop
 
 plugins {
@@ -85,3 +87,23 @@ kotlin {
 }
 
 configureLocalProtocGenDevelopmentDependency()
+
+// Ensure grpc-core test compilations and test tasks depend on grpc:grpc-test-services:testServicesJar
+// and expose the jar path to tests via a system property.
+tasks.withType<KotlinNativeTest>().configureEach {
+    val testServicesJarTask = project(":grpc:grpc-test-services").getTasksByName("testServicesJar", true)
+    dependsOn(testServicesJarTask)
+    doFirst {
+        val jarPath = testServicesJarTask.first().outputs.files.singleFile.absolutePath
+        environment("TEST_SERVICES_JAR", jarPath)
+    }
+}
+
+tasks.withType<KotlinJvmTest>().configureEach {
+    val testServicesJarTask = project(":grpc:grpc-test-services").getTasksByName("testServicesJar", true)
+    dependsOn(testServicesJarTask)
+    doFirst {
+        val jarPath = testServicesJarTask.first().outputs.files.singleFile.absolutePath
+        environment("TEST_SERVICES_JAR", jarPath)
+    }
+}
