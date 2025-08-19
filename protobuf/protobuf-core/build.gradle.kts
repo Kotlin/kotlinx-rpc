@@ -4,10 +4,10 @@
 
 @file:OptIn(InternalRpcApi::class)
 
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import util.configureCLibCInterop
 
 plugins {
@@ -55,7 +55,7 @@ kotlin {
 
     configureCLibCInterop(project, ":protowire_static") { cinteropCLib ->
         @Suppress("unused")
-        val libprotowire by creating  {
+        val libprotowire by creating {
             includeDirs(
                 cinteropCLib.resolve("include")
             )
