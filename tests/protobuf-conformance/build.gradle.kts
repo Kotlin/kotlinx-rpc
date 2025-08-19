@@ -8,6 +8,10 @@ import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import util.other.localProperties
+import util.tasks.CONFORMANCE_PB
+import util.tasks.GenerateConformanceFileDescriptorSet
+import util.tasks.PAYLOAD_PB
 import util.tasks.setupProtobufConformanceResources
 
 plugins {
@@ -86,6 +90,58 @@ val generateConformanceTests = tasks.register<JavaExec>("generateConformanceTest
     mainClass.set("kotlinx.rpc.protoc.gen.test.GenerateConformanceTestsKt")
 }
 
+val conformanceTest = properties.getOrDefault("conformance.test", "").toString()
+val conformanceTestDebug = properties.getOrDefault("conformance.test.debug", "false").toString().toBooleanStrictOrNull() ?: false
+
+val generateConformanceFileDescriptorSet = tasks
+    .withType<GenerateConformanceFileDescriptorSet>()
+
+tasks.register<JavaExec>("runConformanceTest") {
+    classpath = sourceSets.main.get().runtimeClasspath
+
+    dependsOn(mockClientJar)
+    dependsOn(tasks.named("bufGenerateMain"))
+    dependsOn(generateConformanceFileDescriptorSet)
+
+    args = listOfNotNull(
+        mockClientJar.get().archiveFile.get().asFile.absolutePath,
+        conformanceTest,
+        if (conformanceTestDebug) "--debug" else null
+    )
+
+    mainClass.set("kotlinx.rpc.protoc.gen.test.RunConformanceTestKt")
+
+    val protoscope = localProperties().getProperty("protoscope_path")
+        ?: throw GradleException("protoscope_path property is not set. Run ./setup_protoscope.sh")
+
+    environment("PROTOSCOPE_PATH", protoscope)
+
+    val pbFiles = generateConformanceFileDescriptorSet.map {
+        it.outputFile.get()
+    }
+
+    environment(
+        "CONFORMANCE_PB_PATH",
+        pbFiles.single { it.name == CONFORMANCE_PB }.absolutePath
+    )
+    environment(
+        "TEST_ALL_TYPES_PROTO3_PB_PATH",
+        pbFiles.single { it.name == PAYLOAD_PB }.absolutePath
+    )
+
+    doFirst {
+        if (!File(protoscope).exists()) {
+            throw GradleException(
+                """
+                    Protoscope is not found. Use the following command to install it: 
+                    
+                    $ brew install go
+                    $ go install github.com/protocolbuffers/protoscope/cmd/protoscope...@latest
+                """.trimIndent()
+            )
+        }
+    }
+}
 
 tasks.test {
     environment("MOCK_CLIENT_JAR", mockClientJar.get().archiveFile.get().asFile.absolutePath)
