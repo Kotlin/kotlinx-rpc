@@ -42,4 +42,3 @@ withKmpConfig {
 configureJvm(isKmp = true)
 
 configureJavaCompatibility(8)
-configureKotlinCompatibility("2.0.0")
