@@ -61,11 +61,18 @@ kotlin {
                 implementation(libs.grpc.netty)
             }
         }
+
+        nativeMain {
+            dependencies {
+                // required for status.proto
+                implementation(projects.protobuf.protobufCore)
+            }
+        }
     }
 
-    configureCLibCInterop(project, ":grpcpp_c_static") { cinteropCLib ->
+    configureCLibCInterop(project, ":kgrpc_static") { cinteropCLib ->
         @Suppress("unused")
-        val libgrpcpp_c by creating {
+        val libkgrpc by creating {
             includeDirs(
                 cinteropCLib.resolve("include"),
                 cinteropCLib.resolve("bazel-cinterop-c/external/grpc+/include"),

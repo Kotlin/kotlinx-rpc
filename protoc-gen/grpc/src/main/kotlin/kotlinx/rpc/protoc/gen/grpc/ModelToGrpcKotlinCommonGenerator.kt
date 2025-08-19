@@ -20,14 +20,11 @@ class ModelToGrpcKotlinCommonGenerator(
     override val FileDeclaration.hasInternalGeneratedContent: Boolean get() = false
 
     override fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration) {
+        additionalPublicImports.add("kotlinx.coroutines.flow.Flow")
         fileDeclaration.serviceDeclarations.forEach { generatePublicService(it) }
     }
 
-    override fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) { }
-
-    init {
-        additionalPublicImports.add("kotlinx.coroutines.flow.Flow")
-    }
+    override fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {}
 
     @Suppress("detekt.LongMethod")
     private fun CodeGenerator.generatePublicService(service: ServiceDeclaration) {

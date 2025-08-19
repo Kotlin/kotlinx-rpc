@@ -8,6 +8,25 @@ import kotlinx.rpc.grpc.GrpcTrailers
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
+/**
+ * This class represents a client-side call to a server.
+ * It provides the interface of the gRPC-Java ClientCall class; however, semantics are slightly different
+ * on JVM and Native platforms.
+ *
+ * Callback execution:
+ * - On JVM it is guaranteed that callbacks aren't executed concurrently.
+ * - On Native, it is only guaranteed that `onClose` is called after all other callbacks finished.
+ *
+ * Sending message readiness:
+ * - On JVM, it is possible to call [sendMessage] multiple times, without checking [isReady].
+ *   Internally, it buffers the messages.
+ * - On Native, you can only call [sendMessage] when [isReady] returns true. There is no buffering; therefore,
+ *   only one message can be sent at a time.
+ *
+ * Request message number:
+ * - On JVM, there is no limit on the number of messages you can [request].
+ * - On Native, you can only call [request] with up to `16`.
+ */
 @InternalRpcApi
 public expect abstract class ClientCall<Request, Response> {
     @InternalRpcApi

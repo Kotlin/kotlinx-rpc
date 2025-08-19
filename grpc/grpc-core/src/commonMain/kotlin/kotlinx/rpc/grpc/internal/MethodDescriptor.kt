@@ -37,6 +37,12 @@ public enum class MethodType {
     UNKNOWN,
 }
 
+/**
+ * Creates a new [MethodDescriptor] instance.
+ *
+ * @param fullMethodName the full name of the method, consisting of the service name followed by a forward slash
+ *      and the method name. It does not include a leading slash.
+ */
 @InternalRpcApi
 public expect fun <Request, Response> methodDescriptor(
     fullMethodName: String,
