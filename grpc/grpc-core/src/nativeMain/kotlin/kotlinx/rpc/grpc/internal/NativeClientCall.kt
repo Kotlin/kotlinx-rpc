@@ -99,6 +99,10 @@ internal class NativeClientCall<Request, Response>(
      */
     private fun tryToCloseCall() {
         val info = closeInfo.value ?: return
+        // If there is a `closeInfo`, it is impossible that `inFlight` is incremented again.
+        // This is because when the `RECV_STATUS_ON_CLIENT` op finishes in the completion queue,
+        // all other OP batches must already be done in the completion queue, and
+        // therefore their inFlight increment was also performed.
         if (inFlight.value == 0 && closed.compareAndSet(expect = false, update = true)) {
             val lst = checkNotNull(listener) { internalError("Not yet started") }
             // allows the managed channel to join for the call to finish.

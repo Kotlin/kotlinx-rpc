@@ -45,6 +45,8 @@ internal sealed interface BatchResult {
  * It is based on the "new" callback API; therefore, there are no kotlin-side threads required to poll
  * the queue.
  * Users can attach to the returned [CallbackFuture] if the batch was successfully submitted (see [BatchResult]).
+ *
+ * @see [grpc.h](https://grpc.github.io/grpc/cpp/grpc_8h.html)
  */
 internal class CompletionQueue {
 
