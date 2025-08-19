@@ -6,7 +6,7 @@
 
 package kotlinx.rpc.grpc
 
-import kotlinx.rpc.grpc.internal.GrpcChannel
+import kotlinx.rpc.grpc.internal.*
 
 /**
  * Same as [ManagedChannel], but is platform-exposed.
@@ -17,19 +17,41 @@ public actual abstract class ManagedChannelPlatform : GrpcChannel()
  * Builder class for [ManagedChannel].
  */
 public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>> {
-    public actual fun usePlaintext(): T {
-        TODO("Not yet implemented")
+    public actual open fun usePlaintext(): T {
+        error("Builder does not support usePlaintext()")
     }
 }
 
+internal class NativeManagedChannelBuilder(
+    private val target: String,
+) : ManagedChannelBuilder<NativeManagedChannelBuilder>() {
+    private var credentials: GrpcCredentials? = null
+
+    override fun usePlaintext(): NativeManagedChannelBuilder {
+        credentials = GrpcInsecureCredentials()
+        return this
+    }
+
+    fun buildChannel(): NativeManagedChannel {
+        return NativeManagedChannel(
+            target,
+            credentials = credentials ?: error("No credentials set"),
+        )
+    }
+
+}
+
 internal actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
-    error("Native target is not supported in gRPC")
+    check(this is NativeManagedChannelBuilder) { internalError("Wrong builder type, expected NativeManagedChannelBuilder") }
+    return buildChannel()
 }
 
 internal actual fun ManagedChannelBuilder(hostname: String, port: Int): ManagedChannelBuilder<*> {
-    error("Native target is not supported in gRPC")
+    return NativeManagedChannelBuilder(target = "$hostname:$port")
 }
 
 internal actual fun ManagedChannelBuilder(target: String): ManagedChannelBuilder<*> {
-    error("Native target is not supported in gRPC")
+    return NativeManagedChannelBuilder(target)
 }
+
+

@@ -2,11 +2,15 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+
 package kotlinx.rpc.grpc.internal
 
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.rpc.grpc.GrpcTrailers
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlin.experimental.ExperimentalNativeApi
 
 @InternalRpcApi
 public actual abstract class ClientCall<Request, Response> {
@@ -20,7 +24,8 @@ public actual abstract class ClientCall<Request, Response> {
     public actual abstract fun halfClose()
     public actual abstract fun sendMessage(message: Request)
     public actual open fun isReady(): Boolean {
-        TODO("Not yet implemented")
+        // Default implementation returns true - subclasses can override if they need flow control
+        return true
     }
 
     @InternalRpcApi
@@ -46,5 +51,21 @@ public actual fun <Message> clientCallListener(
     onClose: (status: Status, trailers: GrpcTrailers) -> Unit,
     onReady: () -> Unit,
 ): ClientCall.Listener<Message> {
-    TODO("Not yet implemented")
+    return object : ClientCall.Listener<Message>() {
+        override fun onHeaders(headers: GrpcTrailers) {
+            onHeaders(headers)
+        }
+
+        override fun onMessage(message: Message) {
+            onMessage(message)
+        }
+
+        override fun onClose(status: Status, trailers: GrpcTrailers) {
+            onClose(status, trailers)
+        }
+
+        override fun onReady() {
+            onReady()
+        }
+    }
 }

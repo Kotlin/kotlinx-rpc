@@ -7,16 +7,7 @@ package kotlinx.rpc.protoc.gen.core
 import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.Descriptors
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest
-import kotlinx.rpc.protoc.gen.core.model.EnumDeclaration
-import kotlinx.rpc.protoc.gen.core.model.FieldDeclaration
-import kotlinx.rpc.protoc.gen.core.model.FieldType
-import kotlinx.rpc.protoc.gen.core.model.FileDeclaration
-import kotlinx.rpc.protoc.gen.core.model.FqName
-import kotlinx.rpc.protoc.gen.core.model.MessageDeclaration
-import kotlinx.rpc.protoc.gen.core.model.MethodDeclaration
-import kotlinx.rpc.protoc.gen.core.model.Model
-import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
-import kotlinx.rpc.protoc.gen.core.model.ServiceDeclaration
+import kotlinx.rpc.protoc.gen.core.model.*
 
 private val nameCache = mutableMapOf<Descriptors.GenericDescriptor, FqName>()
 private val modelCache = mutableMapOf<Descriptors.GenericDescriptor, Any>()
@@ -51,7 +42,7 @@ fun CodeGeneratorRequest.toModel(): Model {
  */
 private fun DescriptorProtos.FileDescriptorProto.toDescriptor(
     protoFileMap: Map<String, DescriptorProtos.FileDescriptorProto>,
-    cache: MutableMap<String, Descriptors.FileDescriptor>
+    cache: MutableMap<String, Descriptors.FileDescriptor>,
 ): Descriptors.FileDescriptor {
     if (cache.containsKey(name)) return cache[name]!!
 

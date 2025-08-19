@@ -4,23 +4,13 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.onFailure
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.rpc.grpc.GrpcTrailers
-import kotlinx.rpc.grpc.Status
-import kotlinx.rpc.grpc.StatusCode
-import kotlinx.rpc.grpc.StatusException
-import kotlinx.rpc.grpc.code
+import kotlinx.rpc.grpc.*
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 // heavily inspired by
@@ -249,7 +239,7 @@ internal fun <T> Flow<T>.singleOrStatusFlow(
 
 internal suspend fun <T> Flow<T>.singleOrStatus(
     expected: String,
-    descriptor: Any
+    descriptor: Any,
 ): T = singleOrStatusFlow(expected, descriptor).single()
 
 internal class Ready(private val isReallyReady: () -> Boolean) {
