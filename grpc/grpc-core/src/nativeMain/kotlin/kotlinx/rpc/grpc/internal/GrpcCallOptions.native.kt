@@ -7,8 +7,9 @@ package kotlinx.rpc.grpc.internal
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
-public actual class GrpcCallOptions
+public actual class GrpcCallOptions {
+    // TODO: Do something with it
+}
 
 @InternalRpcApi
-public actual val GrpcDefaultCallOptions: GrpcCallOptions
-    get() = TODO("Not yet implemented")
+public actual val GrpcDefaultCallOptions: GrpcCallOptions = GrpcCallOptions()
