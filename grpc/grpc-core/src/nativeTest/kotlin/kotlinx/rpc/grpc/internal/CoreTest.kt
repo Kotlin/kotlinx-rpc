@@ -9,10 +9,6 @@ import HelloReply
 import HelloReplyInternal
 import HelloRequest
 import HelloRequestInternal
-import grpc.examples.echo.EchoRequest
-import grpc.examples.echo.EchoRequestInternal
-import grpc.examples.echo.EchoResponseInternal
-import grpc.examples.echo.invoke
 import invoke
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.CompletableDeferred
@@ -292,27 +288,5 @@ class GrpcCoreTest {
             val res = unaryRpc(ch.platformApi, desc, req)
             assertEquals("Hello world", res.message)
         }
-    }
-
-
-    private fun echoDescriptor(methodName: String, type: MethodType) =
-        methodDescriptor(
-            fullMethodName = "grpc.examples.echo.Echo/$methodName",
-            requestCodec = EchoRequestInternal.CODEC,
-            responseCodec = EchoResponseInternal.CODEC,
-            type = type,
-            schemaDescriptor = Unit,
-            idempotent = true,
-            safe = true,
-            sampledToLocalTracing = true,
-        )
-
-    @Test
-    fun unaryEchoTest() = runBlocking {
-        val ch = createChannel()
-        val desc = echoDescriptor("UnaryEcho", MethodType.UNARY)
-        val req = EchoRequest { message = "Echoooo" }
-        unaryRpc(ch.platformApi, desc, req)
-        return@runBlocking
     }
 }

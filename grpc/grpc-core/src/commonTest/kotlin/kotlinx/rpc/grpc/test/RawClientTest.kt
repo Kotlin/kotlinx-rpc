@@ -81,12 +81,12 @@ class RawClientTest {
         type: MethodType,
         block: suspend (GrpcChannel, MethodDescriptor<EchoRequest, EchoResponse>) -> Unit,
     ) = runTest {
-        val channel = ManagedChannelBuilder("localhost:50051")
+        val channel = ManagedChannelBuilder("localhost:${BaseGrpcServiceTest.PORT}")
             .usePlaintext()
             .buildChannel()
 
         val methodDescriptor = methodDescriptor(
-            fullMethodName = "grpc.examples.echo.Echo/$methodName",
+            fullMethodName = "kotlinx.rpc.grpc.test.EchoService/$methodName",
             requestCodec = EchoRequestInternal.CODEC,
             responseCodec = EchoResponseInternal.CODEC,
             type = type,
