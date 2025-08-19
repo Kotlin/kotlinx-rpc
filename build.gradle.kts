@@ -9,7 +9,6 @@ plugins {
     alias(libs.plugins.kotlinx.rpc) apply false
     alias(libs.plugins.atomicfu) apply false
     alias(libs.plugins.conventions.kover)
-    alias(libs.plugins.conventions.gradle.doctor)
     alias(libs.plugins.conventions.root)
 }
 

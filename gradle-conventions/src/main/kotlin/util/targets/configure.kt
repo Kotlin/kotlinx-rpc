@@ -60,10 +60,6 @@ fun KmpConfig.configureKotlinExtension(action: Action<KotlinMultiplatformExtensi
 
         configureDetekt(includedTargets)
 
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of(8))
-        }
-
         action.execute(this)
     }
 }

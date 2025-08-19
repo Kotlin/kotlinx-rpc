@@ -3,7 +3,6 @@
  */
 
 plugins {
-    alias(libs.plugins.conventions.gradle.doctor)
     alias(libs.plugins.kotlin.jvm)
 }
 
@@ -11,10 +10,6 @@ group = "org.jetbrains.kotlinx"
 version = libs.versions.kotlinx.rpc.get()
 
 logger.lifecycle("[Dokka Plugin] kotlinx.rpc project version: $version, Kotlin version: ${libs.versions.kotlin.lang.get()}")
-
-kotlin {
-    jvmToolchain(8)
-}
 
 dependencies {
     compileOnly(libs.dokka.core)

@@ -5,7 +5,7 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import util.other.libs
 import util.withKotlinJvmExtension
 import util.withKotlinKmpExtension
 
@@ -31,12 +31,11 @@ fun KotlinCommonCompilerOptions.setProjectLanguageVersion() {
 
 withKotlinJvmExtension {
     optInForRpcApi()
-
-    compilerOptions.setProjectLanguageVersion()
 }
 
 withKotlinKmpExtension {
     optInForRpcApi()
 
+    // We don't use `compat-patrouille` here because it sets stdlib version, and that breaks WASM tests.
     compilerOptions.setProjectLanguageVersion()
 }

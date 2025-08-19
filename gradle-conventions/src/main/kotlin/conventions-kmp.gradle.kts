@@ -4,6 +4,8 @@
 
 @file:OptIn(ExperimentalAbiValidation::class)
 
+import compat.patrouille.configureJavaCompatibility
+import compat.patrouille.configureKotlinCompatibility
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import util.*
 import util.targets.configureJs
@@ -38,3 +40,5 @@ withKmpConfig {
 }
 
 configureJvm(isKmp = true)
+
+configureJavaCompatibility(8)
