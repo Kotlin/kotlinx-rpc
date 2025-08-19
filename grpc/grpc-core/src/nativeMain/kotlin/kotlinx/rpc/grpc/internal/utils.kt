@@ -47,7 +47,7 @@ internal fun grpc_slice.toByteArray(): ByteArray = memScoped {
 internal fun CPointer<grpc_byte_buffer>.toKotlin(): Buffer = memScoped {
     val reader = alloc<grpc_byte_buffer_reader>()
     check(grpc_byte_buffer_reader_init(reader.ptr, this@toKotlin) == 1)
-    { "Failed to initialized byte buffer." }
+    { internalError("Failed to initialized byte buffer.") }
 
     val out = Buffer()
     val slice = alloc<grpc_slice>()

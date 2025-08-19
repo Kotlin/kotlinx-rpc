@@ -52,7 +52,7 @@ internal class CompletionQueue {
 
     // if the shutdown() was called with forceShutdown = true,
     // it will reject all new batches and wait for all current ones to finish.
-    private var forceShutdown = false
+    private val forceShutdown = atomic(false)
 
     // internal as it must be accessible from the SHUTDOWN_CB,
     // but it shouldn't be used from outside this file.
@@ -109,7 +109,7 @@ internal class CompletionQueue {
                 return BatchResult.CQShutdown
             }
 
-            if (forceShutdown || _state.value == State.CLOSED) {
+            if (forceShutdown.value || _state.value == State.CLOSED) {
                 // if the queue is either closed or in the process of a FORCE shutdown,
                 // new batches will instantly fail.
                 deleteCbTag(tag)
@@ -139,7 +139,7 @@ internal class CompletionQueue {
      */
     fun shutdown(force: Boolean = false): CallbackFuture<Unit> {
         if (force) {
-            forceShutdown = true
+            forceShutdown.value = true
         }
         if (!_state.compareAndSet(State.OPEN, State.SHUTTING_DOWN)) {
             // the first call to shutdown() makes transition and to SHUTTING_DOWN and

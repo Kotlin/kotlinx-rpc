@@ -6,10 +6,7 @@
 
 package kotlinx.rpc.grpc
 
-import kotlinx.rpc.grpc.internal.GrpcChannel
-import kotlinx.rpc.grpc.internal.GrpcCredentials
-import kotlinx.rpc.grpc.internal.GrpcInsecureCredentials
-import kotlinx.rpc.grpc.internal.NativeManagedChannel
+import kotlinx.rpc.grpc.internal.*
 
 /**
  * Same as [ManagedChannel], but is platform-exposed.
@@ -31,7 +28,6 @@ internal class NativeManagedChannelBuilder(
     private var credentials: GrpcCredentials? = null
 
     override fun usePlaintext(): NativeManagedChannelBuilder {
-        check(credentials == null) { "Credentials already set" }
         credentials = GrpcInsecureCredentials()
         return this
     }
@@ -46,7 +42,7 @@ internal class NativeManagedChannelBuilder(
 }
 
 internal actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
-    check(this is NativeManagedChannelBuilder) { "Wrong builder type, expected NativeManagedChannelBuilder" }
+    check(this is NativeManagedChannelBuilder) { internalError("Wrong builder type, expected NativeManagedChannelBuilder") }
     return buildChannel()
 }
 
