@@ -8,16 +8,18 @@ import kotlin.coroutines.CoroutineContext
 
 internal actual class GrpcContext
 
+private val currentGrpcContext = GrpcContext()
+
 internal actual val CurrentGrpcContext: GrpcContext
-    get() = TODO("Not yet implemented")
+    get() = currentGrpcContext
 
 internal actual class GrpcContextElement : CoroutineContext.Element {
     actual override val key: CoroutineContext.Key<GrpcContextElement>
-        get() = TODO("Not yet implemented")
+        get() = Key
 
     actual companion object Key : CoroutineContext.Key<GrpcContextElement> {
         actual fun current(): GrpcContextElement {
-            TODO("Not yet implemented")
+            return GrpcContextElement()
         }
     }
 }
