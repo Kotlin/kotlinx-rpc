@@ -17,6 +17,9 @@ import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.ProtobufException
+import java.nio.file.Path
+import kotlin.io.path.Path
+import kotlin.io.path.writeBytes
 import kotlin.reflect.KClass
 
 // Adapted from
@@ -211,7 +214,10 @@ internal class ConformanceClient {
         }
     }
 
-    private fun doTest(test: (ConformanceRequest) -> ConformanceResponse): Boolean {
+    private fun doTest(
+        dumpConfig: DumpConfig = DumpConfig.EMPTY,
+        test: (ConformanceRequest) -> ConformanceResponse,
+    ): Boolean {
         val bytes = readLittleEndianIntFromStdin()
 
         if (bytes == -1) {
@@ -223,6 +229,8 @@ internal class ConformanceClient {
         if (!readFromStdin(serializedInput, bytes)) {
             throw RuntimeException("Unexpected EOF from test program.")
         }
+
+        dumpConfig.dumpConformanceInputFile?.writeBytes(serializedInput)
 
         val request: ConformanceRequest = ConformanceRequestInternal.CODEC
             .decode(serializedInput.inputStream())
@@ -244,6 +252,8 @@ internal class ConformanceClient {
 
         val serializedOutput = ConformanceResponseInternal.CODEC
             .encode(response).readBytes()
+
+        dumpConfig.dumpConformanceOutputFile?.writeBytes(serializedOutput)
 
         writeLittleEndianIntToStdout(serializedOutput.size)
         writeToStdout(serializedOutput)
@@ -308,7 +318,7 @@ internal class ConformanceClient {
         -46, 41, 3, 97, 98, 99, -48, 41, 123, -46, 41, 3, 100, 101, 102, -48, 41, -56, 3
     )
 
-    fun runConformanceTest(): Boolean {
+    fun runConformanceTest(dumpConfig: DumpConfig): Boolean {
         //        typeRegistry =
 //            TypeRegistry.newBuilder()
 //                .add(TestMessagesProto3.TestAllTypesProto3.getDescriptor())
@@ -318,9 +328,14 @@ internal class ConformanceClient {
 //                )
 //                .build()
 
-        return doTest { request ->
+        return doTest(dumpConfig) { request ->
             val responseResult = runCatching {
                 doTest(request)
+            }
+
+            if (request.payload is ConformanceRequest.Payload.ProtobufPayload) {
+                dumpConfig.dumpPayloadInputFile
+                    ?.writeBytes((request.payload as ConformanceRequest.Payload.ProtobufPayload).value)
             }
 
             responseResult.fold(
@@ -338,17 +353,40 @@ internal class ConformanceClient {
                         }
                     }
                 }
-            )
+            ).apply {
+                if (result is ConformanceResponse.Result.ProtobufPayload) {
+                    dumpConfig.dumpPayloadOutputFile
+                        ?.writeBytes((result as ConformanceResponse.Result.ProtobufPayload).value)
+                }
+            }
         }
+    }
+}
+
+class DumpConfig(
+    val dumpConformanceInputFile: Path?,
+    val dumpConformanceOutputFile: Path?,
+    val dumpPayloadInputFile: Path?,
+    val dumpPayloadOutputFile: Path?,
+) {
+    companion object {
+        val EMPTY = DumpConfig(null, null, null, null)
     }
 }
 
 fun main(args: Array<String>) {
     val client = ConformanceClient()
 
-    if (args.size != 1) {
-        error("Expected one argument: run mode (mock|conformance).")
+    if (args.isEmpty()) {
+        error("Expected at least one argument: run mode (mock|conformance).")
     }
+
+    val dumpConfig = DumpConfig(
+        getDumpFile("DUMP_CONFORMANCE_INPUT_FILE"),
+        getDumpFile("DUMP_CONFORMANCE_OUTPUT_FILE"),
+        getDumpFile("DUMP_PAYLOAD_INPUT_FILE"),
+        getDumpFile("DUMP_PAYLOAD_OUTPUT_FILE"),
+    )
 
     if (args[0] == "mock") {
         do {
@@ -357,8 +395,17 @@ fun main(args: Array<String>) {
     } else if (args[0] == "conformance") {
         do {
             // test
-        } while (client.runConformanceTest())
+        } while (client.runConformanceTest(dumpConfig))
     } else {
         error("Invalid run mode: ${args[0]}")
+    }
+}
+
+private fun getDumpFile(propName: String): Path? {
+    val dumpFileProp = System.getenv(propName)
+    return if (dumpFileProp != null) {
+        Path(dumpFileProp)
+    } else {
+        null
     }
 }

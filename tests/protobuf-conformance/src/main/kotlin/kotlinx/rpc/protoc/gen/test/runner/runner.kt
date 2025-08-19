@@ -23,13 +23,17 @@ fun execConformanceTestRunner(
     failingTestsFile: Path?,
     textFormatFailingTestsFile: Path?,
     executable: String,
+    testName: String? = null,
 ): Result<RunResult> {
     val stdoutStream = Files.createTempFile("stdout", ".log")
     val errorStream = Files.createTempFile("error", ".log")
 
+    val testNameFilter = testName?.let { listOf("--test", it) } ?: emptyList()
+
     return runCatching {
         val process = ProcessBuilder(
             CONFORMANCE_EXECUTABLE_PATH,
+            *testNameFilter.toTypedArray(),
             "--maximum_edition", "MAX",
             "--enforce_recommended",
             "--failure_list", failingTestsFile.toString(),

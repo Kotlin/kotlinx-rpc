@@ -13,10 +13,14 @@ import kotlin.io.path.absolutePathString
 
 fun main(args: Array<String>) {
     val jarPath = args[0]
+    val testName = args[1]
+    val debug = args.size > 2 && args[2] == "--debug"
 
-    val outputDir = Path(CONFORMANCE_OUTPUT_DIR).resolve("mock")
+    println("Running conformance test: $testName with --debug=$debug")
 
-    val executable = getJavaClient(jarPath, "mock", outputDir)
+    val outputDir = Path(CONFORMANCE_OUTPUT_DIR).resolve("manual")
+
+    val executable = getJavaClient(jarPath, "conformance", outputDir, testName, debug = debug)
 
     val (failingTestsFile, textFormatFailingTestsFile) = createConformanceTestFiles(outputDir)
 
@@ -25,10 +29,11 @@ fun main(args: Array<String>) {
         failingTestsFile = failingTestsFile,
         textFormatFailingTestsFile = textFormatFailingTestsFile,
         executable = executable.absolutePathString(),
+        testName = testName,
     ).onFailure {
         throw it
     }.onSuccess {
-        if (it.exitCode != 1 && it.exitCode != 0) {
+        if (it.exitCode != 0) {
             println("""
                 |stdout: 
                 |    ${it.stdout.joinToString("${System.lineSeparator()}|    ")}
@@ -36,7 +41,7 @@ fun main(args: Array<String>) {
                 |    ${it.stderr.joinToString("${System.lineSeparator()}|    ")}
             """.trimMargin())
 
-            error("Mock tests failed with non 1 exit code: ${it.exitCode}")
+            error("Conformance test failed with non 0 exit code: ${it.exitCode}")
         }
     }
 }

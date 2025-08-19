@@ -363,6 +363,39 @@ TODO: write a guide about kRPC API check tests.
 
 Use `./publishLocal.sh` script. All artifacts will be in the local directory of `<REPO_ROOT>/build/repo/` .
 
+## How to debug tests/protobuf-conformance
+
+Prerequisite (Only macOS for now): 
+```bash
+./setup_protoscope.sh
+```
+It will install the `protoscope` utility: https://github.com/protocolbuffers/protoscope
+
+Now you can run tests:
+```bash
+gradle :tests:protobuf-conformance:runConformanceTest -Pconformance.test='<test_name>'
+```
+
+In the [manual](../tests/protobuf-conformance/build/protobuf-conformance/manual) directory 
+you will find files: 
+- dump_conformance_input.bin.txt - decoded ConformanceRequest protobuf message
+- dump_conformance_output.bin.txt - decoded ConformanceResponse protobuf message
+- dump_payload_input.bin.txt - decoded ConformanceRequest.payload (if protobuf)
+- dump_payload_output.bin.txt - decoded ConformanceResponse.result (if protobuf)
+
+IMPORTANT: `protoscope` only works with proto3 and not 'editions' messages. 
+For proto2 and editions this won't work.
+
+To debug tests, 
+use [ConformanceClient.kt](../tests/protobuf-conformance/src/main/kotlin/kotlinx/rpc/protoc/gen/test/ConformanceClient.kt)
+and this command:
+```bash
+gradle :tests:protobuf-conformance:runConformanceTest -Pconformance.test.debug='true' -Pconformance.test='<test_name>'
+```
+
+Then use IntelliJ 'Attach to Process' feature to attach to the process on port 5005.
+(kill the process if port is already in use: `kill $(lsof -t -i:5005)`)
+
 ### How to add a new public package repository
 
 We have repositories like `https://redirector.kotlinlang.org/maven/kxrpc-for-ide/` that users can comsume from.

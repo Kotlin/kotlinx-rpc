@@ -6,10 +6,14 @@ package util.tasks
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
+import org.gradle.api.file.FileTree
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Copy
+import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.accessors.runtime.addExternalModuleDependencyTo
@@ -21,8 +25,40 @@ import util.other.libs
 import java.io.File
 
 const val CONFORMANCE_TEST_RUNNER_CONFIGURATION = "conformanceTestRunner"
+const val PROTOC_TESTING_CONFIGURATION = "protoc_internalTesting"
 const val UNZIP_PROTOBUF_CONFORMANCE_TASK = "unzipProtobufConformance"
 const val WRITE_CONFORMANCE_EXECUTABLE_PATH_TASK = "writeConformanceExecutablePath"
+const val PAYLOAD_PB = "payload.pb"
+const val CONFORMANCE_PB = "conformance.pb"
+
+private fun Project.getBinFrom(configuration: String): File {
+    return configurations.getByName(configuration).map {
+        zipTree(it).matching { include("bin/**") }.files.first()
+    }.single()
+}
+
+private fun Project.getIncludeFrom(configuration: String): List<FileTree> {
+    return configurations.getByName(configuration).map {
+        zipTree(it).matching { include("include/**") }
+    }
+}
+
+private fun List<String>.commonPrefix(): String {
+    return fold(first()) { acc, s -> acc.commonPrefixWith(s) }
+}
+
+private fun Project.pbFile(name: String): File {
+    return layout.buildDirectory.get()
+        .dir("protobuf-conformance")
+        .file(name)
+        .asFile
+        .apply {
+            if (!exists()) {
+                parentFile.mkdirs()
+                createNewFile()
+            }
+        }
+}
 
 abstract class ConformanceExecutablePathWriter : DefaultTask() {
     @get:Input
@@ -64,6 +100,48 @@ abstract class ConformanceExecutablePathWriter : DefaultTask() {
     }
 }
 
+abstract class GenerateConformanceFileDescriptorSet : Exec() {
+    @get:InputFiles
+    abstract val wktFilesCollection: ListProperty<File>
+
+    @get:InputFiles
+    abstract val conformanceFilesCollection: ListProperty<File>
+
+    @get:InputFile
+    abstract val bin: Property<File>
+
+    @get:OutputFile
+    abstract val outputFile: Property<File>
+
+    @TaskAction
+    fun generate() {
+        val wktFiles = wktFilesCollection.get().map { it.absolutePath }
+        val conformanceFiles = conformanceFilesCollection.get().map { it.absolutePath }
+
+        val wktProtoPath = if (wktFiles.isEmpty()) {
+            emptyList()
+        } else {
+            listOf("--proto_path=${wktFiles.commonPrefix().substringBefore("/google/protobuf/")}")
+        }
+
+        val conformanceIncludeDir = conformanceFiles
+            .commonPrefix()
+            .substringBefore("/google/protobuf/")
+            .substringBefore("/conformance/")
+
+        val conformanceProtoPath = "--proto_path=$conformanceIncludeDir"
+
+        commandLine(
+            bin.get().absolutePath,
+            *wktProtoPath.toTypedArray(),
+            conformanceProtoPath,
+            "-o", outputFile.get().absolutePath,
+            *wktFiles.toTypedArray(),
+            *conformanceFiles.toTypedArray(),
+        )
+    }
+}
+
 fun Project.setupProtobufConformanceResources() {
     val os = System.getProperty("os.name").lowercase()
     val osPart = when {
@@ -79,7 +157,7 @@ fun Project.setupProtobufConformanceResources() {
 
     // https://stackoverflow.com/questions/23023069/gradle-download-and-unzip-file-from-url
     repositories.ivy {
-        name = "protobuf-conformance-github"
+        name = "github"
         url = uri("https://github.com")
 
         patternLayout {
@@ -93,6 +171,7 @@ fun Project.setupProtobufConformanceResources() {
     }
 
     configurations.create(CONFORMANCE_TEST_RUNNER_CONFIGURATION)
+    configurations.create(PROTOC_TESTING_CONFIGURATION)
 
     // https://docs.gradle.org/current/javadoc/org/gradle/api/artifacts/dsl/DependencyHandler.html
     dependencies {
@@ -115,10 +194,28 @@ fun Project.setupProtobufConformanceResources() {
         }
     }
 
+    dependencies {
+        addExternalModuleDependencyTo(
+            this,
+            PROTOC_TESTING_CONFIGURATION,
+            group = "protocolbuffers",
+            name = "protobuf",
+            version = libs.versions.protobuf.asProvider().get().substringAfter("."),
+            classifier = null,
+            ext = null,
+            configuration = null,
+        ) {
+            artifact {
+                name = "protoc"
+                type = "zip"
+                extension = "zip"
+                classifier = "$osPart-$archPart"
+            }
+        }
+    }
+
     val unzipProtobufConformance = tasks.register<Copy>(UNZIP_PROTOBUF_CONFORMANCE_TASK) {
-        from(configurations.getByName(CONFORMANCE_TEST_RUNNER_CONFIGURATION).map {
-            zipTree(it).matching { include("include/**") }
-        })
+        from(getIncludeFrom(CONFORMANCE_TEST_RUNNER_CONFIGURATION))
 
         val destDir = project.layout.projectDirectory
             .dir("src")
@@ -140,6 +237,34 @@ fun Project.setupProtobufConformanceResources() {
         }
     }
 
+    tasks.register<GenerateConformanceFileDescriptorSet>("generateConformanceFileDescriptorSet_conformance") {
+        wktFilesCollection.set(emptyList())
+
+        val conformanceFiles = project.getIncludeFrom(CONFORMANCE_TEST_RUNNER_CONFIGURATION).flatMap { it.files }
+            .filter { it.name == "conformance.proto" }
+
+        conformanceFilesCollection.set(conformanceFiles)
+
+        bin.set(getBinFrom(PROTOC_TESTING_CONFIGURATION))
+
+        outputFile.set(project.pbFile(CONFORMANCE_PB))
+    }
+
+    tasks.register<GenerateConformanceFileDescriptorSet>("generateConformanceFileDescriptorSet_payload") {
+        val wktFiles = project.getIncludeFrom(PROTOC_TESTING_CONFIGURATION).flatMap { it.files }
+        wktFilesCollection.set(wktFiles)
+
+        // editions are not supported in protoscope and proto2 fails
+        val conformanceFiles = project.getIncludeFrom(CONFORMANCE_TEST_RUNNER_CONFIGURATION).flatMap { it.files }
+            .filter { it.name == "test_messages_proto3.proto" }
+
+        conformanceFilesCollection.set(conformanceFiles)
+
+        bin.set(getBinFrom(PROTOC_TESTING_CONFIGURATION))
+
+        outputFile.set(project.pbFile(PAYLOAD_PB))
+    }
+
     val writeConformanceExecutablePath =
         tasks.register<ConformanceExecutablePathWriter>(WRITE_CONFORMANCE_EXECUTABLE_PATH_TASK) {
             outputDir.set(
@@ -156,11 +281,7 @@ fun Project.setupProtobufConformanceResources() {
                     .asFile
             )
 
-            executable.set(
-                configurations.getByName(CONFORMANCE_TEST_RUNNER_CONFIGURATION).map {
-                    zipTree(it).matching { include("bin/**") }.files.first()
-                }.single()
-            )
+            executable.set(getBinFrom(CONFORMANCE_TEST_RUNNER_CONFIGURATION))
 
             destination.set(
                 project.layout.buildDirectory.get()
