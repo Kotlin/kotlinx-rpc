@@ -30,18 +30,18 @@ internal sealed interface BatchResult {
     /**
      * Happens when the batch couldn't be submitted for some reason.
      */
-    data class CallError(val error: grpc_call_error) : BatchResult
+    data class SubmitError(val error: grpc_call_error) : BatchResult
 
     /**
      * Happens when the batch was successfully submitted.
      * The [future] will be completed with `true` if the batch was successful, `false` otherwise.
      * In the case of `false`, the status of the `RECV_STATUS_ON_CLIENT` batch will provide the error details.
      */
-    data class Called(val future: CallbackFuture<Boolean>) : BatchResult
+    data class Submitted(val future: CallbackFuture<Boolean>) : BatchResult
 }
 
 /**
- * The Kotlin wrapper for the native grpc_completion_queue.
+ * A thread-safe Kotlin wrapper for the native grpc_completion_queue.
  * It is based on the "new" callback API; therefore, there are no kotlin-side threads required to poll
  * the queue.
  * Users can attach to the returned [CallbackFuture] if the batch was successfully submitted (see [BatchResult]).
@@ -50,7 +50,7 @@ internal class CompletionQueue {
 
     internal enum class State { OPEN, SHUTTING_DOWN, CLOSED }
 
-    // if the queue was called with forceShutdown = true,
+    // if the shutdown() was called with forceShutdown = true,
     // it will reject all new batches and wait for all current ones to finish.
     private var forceShutdown = false
 
@@ -122,16 +122,20 @@ internal class CompletionQueue {
         if (err != grpc_call_error.GRPC_CALL_OK) {
             // if the call was not successful, the callback will not be invoked.
             deleteCbTag(tag)
-            return BatchResult.CallError(err)
+            return BatchResult.SubmitError(err)
         }
 
-        return BatchResult.Called(completion)
+        return BatchResult.Submitted(completion)
     }
 
     /**
      * Shuts down the queue.
      * The method returns immediately, but the queue will be shut down asynchronously.
      * The returned [CallbackFuture] will be completed with `Unit` when the queue is shut down.
+     *
+     * @param force if `true`, the queue will reject all new batches with [BatchResult.CQShutdown].
+     *        Otherwise, the queue allows submitting new batches and shutdown only when there are no more
+     *        ongoing batches.
      */
     fun shutdown(force: Boolean = false): CallbackFuture<Unit> {
         if (force) {

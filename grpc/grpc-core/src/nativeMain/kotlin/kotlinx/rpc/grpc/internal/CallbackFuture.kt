@@ -11,7 +11,7 @@ import kotlinx.atomicfu.atomic
  */
 internal class CallbackFuture<T : Any> {
     private sealed interface State<out T> {
-        data class Pending<T>(val cbs: List<(T) -> Unit> = emptyList()) : State<T>
+        data class Pending<T>(val callbacks: List<(T) -> Unit> = emptyList()) : State<T>
         data class Done<T>(val value: T) : State<T>
     }
 
@@ -22,7 +22,7 @@ internal class CallbackFuture<T : Any> {
         while (true) {
             when (val s = state.value) {
                 is State.Pending -> if (state.compareAndSet(s, State.Done(result))) {
-                    toInvoke = s.cbs
+                    toInvoke = s.callbacks
                     break
                 }
 
@@ -40,7 +40,7 @@ internal class CallbackFuture<T : Any> {
                 }
 
                 is State.Pending -> {
-                    val next = State.Pending(s.cbs + callback) // copy-on-write append
+                    val next = State.Pending(s.callbacks + callback) // copy-on-write append
                     if (state.compareAndSet(s, next)) return
                 }
             }

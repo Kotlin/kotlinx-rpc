@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.grpc.test
 
-import grpc.examples.echo.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
@@ -17,6 +16,7 @@ import kotlin.test.assertEquals
 /**
  * Tests for JVM and Native clients.
  */
+// TODO: Start echo service server automatically
 class RawClientTest {
 
     @Test
@@ -102,9 +102,5 @@ class RawClientTest {
             channel.shutdown()
             channel.awaitTermination()
         }
-
-
     }
-
-
 }

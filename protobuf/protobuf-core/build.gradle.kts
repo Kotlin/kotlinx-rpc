@@ -28,7 +28,6 @@ kotlin {
                 api(projects.utils)
                 api(projects.protobuf.protobufInputStream)
                 api(projects.grpc.grpcCodec)
-                implementation("com.google.api.grpc:proto-google-common-protos:2.60.0")
 
                 api(libs.kotlinx.io.core)
             }

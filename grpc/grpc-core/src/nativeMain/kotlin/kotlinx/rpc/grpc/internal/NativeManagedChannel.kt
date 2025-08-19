@@ -8,6 +8,7 @@ package kotlinx.rpc.grpc.internal
 
 import cnames.structs.grpc_channel
 import cnames.structs.grpc_channel_credentials
+import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.*
@@ -36,8 +37,6 @@ internal sealed class GrpcCredentials(
 internal class GrpcInsecureCredentials() :
     GrpcCredentials(grpc_insecure_credentials_create() ?: error("Failed to create credentials"))
 
-// default propagation mask for all calls.
-private const val GRPC_PROPAGATE_DEFAULTS = 0x0000FFFFu
 
 /**
  * Native implementation of [ManagedChannel].
@@ -72,9 +71,9 @@ internal class NativeManagedChannel(
 
     override val platformApi: ManagedChannelPlatform = this
 
-    private var isShutdownInternal: Boolean = false
-    override val isShutdown: Boolean = isShutdownInternal
-    private var isTerminatedInternal = CompletableDeferred<Unit>()
+    private var isShutdownInternal = atomic(false)
+    override val isShutdown: Boolean = isShutdownInternal.value
+    private val isTerminatedInternal = CompletableDeferred<Unit>()
     override val isTerminated: Boolean
         get() = isTerminatedInternal.isCompleted
 
@@ -96,7 +95,7 @@ internal class NativeManagedChannel(
     }
 
     private fun shutdownInternal(force: Boolean) {
-        isShutdownInternal = true
+        isShutdownInternal.value = true
         if (isTerminatedInternal.isCompleted) {
             return
         }
@@ -121,7 +120,7 @@ internal class NativeManagedChannel(
         methodDescriptor: MethodDescriptor<RequestT, ResponseT>,
         callOptions: GrpcCallOptions,
     ): ClientCall<RequestT, ResponseT> {
-        check(!isShutdown) { "Channel is shutdown" }
+        check(!isShutdown) { internalError("Channel is shutdown") }
 
         val callJob = Job(callJobSupervisor)
 
@@ -130,8 +129,14 @@ internal class NativeManagedChannel(
         // the user does not do this to align it with the java implementation.
         val methodNameSlice = "/$methodFullName".toGrpcSlice()
         val rawCall = grpc_channel_create_call(
-            channel = raw, parent_call = null, propagation_mask = GRPC_PROPAGATE_DEFAULTS, completion_queue = cq.raw,
-            method = methodNameSlice, host = null, deadline = gpr_inf_future(GPR_CLOCK_REALTIME), reserved = null
+            channel = raw,
+            parent_call = null,
+            propagation_mask = GRPC_PROPAGATE_DEFAULTS,
+            completion_queue = cq.raw,
+            method = methodNameSlice,
+            host = null,
+            deadline = gpr_inf_future(GPR_CLOCK_REALTIME),
+            reserved = null
         ) ?: error("Failed to create call")
 
         return NativeClientCall(

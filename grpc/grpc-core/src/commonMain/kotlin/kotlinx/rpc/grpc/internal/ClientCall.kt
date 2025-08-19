@@ -22,6 +22,10 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  *   Internally, it buffers the messages.
  * - On Native, you can only call [sendMessage] when [isReady] returns true. There is no buffering; therefore,
  *   only one message can be sent at a time.
+ *
+ * Request message number:
+ * - On JVM, there is no limit on the number of messages you can [request].
+ * - On Native, you can only call [request] with up to `16`.
  */
 @InternalRpcApi
 public expect abstract class ClientCall<Request, Response> {

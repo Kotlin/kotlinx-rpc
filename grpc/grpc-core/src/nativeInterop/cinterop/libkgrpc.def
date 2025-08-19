@@ -1,9 +1,9 @@
 headers = kgrpc.h grpc/grpc.h grpc/credentials.h grpc/byte_buffer_reader.h \
-    grpc/support/alloc.h
+    grpc/support/alloc.h grpc/impl/propagation_bits.h
 
 headerFilter= kgrpc.h grpc/slice.h grpc/byte_buffer.h grpc/grpc.h \
     grpc/impl/grpc_types.h grpc/credentials.h grpc/support/time.h grpc/byte_buffer_reader.h \
-    grpc/support/alloc.h
+    grpc/support/alloc.h grpc/impl/propagation_bits.h
 
 noStringConversion = grpc_slice_from_copied_buffer my_grpc_slice_from_copied_buffer
 strictEnums = grpc_status_code grpc_connectivity_state grpc_call_error

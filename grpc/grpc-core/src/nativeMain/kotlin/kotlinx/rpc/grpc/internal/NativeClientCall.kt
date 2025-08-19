@@ -54,7 +54,7 @@ internal class NativeClientCall<Request, Response>(
     private var closed = atomic(false)
 
     // tracks how many operations are in flight (not yet completed by the listener).
-    // if 0, there are no more operations (except for the RECV_STATUS_ON_CLIENT op).
+    // if 0 and we got a closeInfo (containing the status), there are no more ongoing operations.
     // in this case, we can safely call onClose on the listener.
     // we need this mechanism to ensure that onClose is not called while any other callback is still running
     // on the listener.
@@ -64,7 +64,7 @@ internal class NativeClientCall<Request, Response>(
     // if null, the call is still in progress. otherwise, the call can be closed as soon as inFlight is 0.
     private val closeInfo = atomic<Pair<Status, GrpcTrailers>?>(null)
 
-    // we currently don't buffer messages, so after one `sendMessage` call, ready turns false.
+    // we currently don't buffer messages, so after one `sendMessage` call, ready turns false. (KRPC-192)
     private val ready = atomic(true)
 
     /**
@@ -81,11 +81,11 @@ internal class NativeClientCall<Request, Response>(
      * AND the corresponding listener callback returned.
      *
      * If the counter reaches 0, no more listener callbacks are executed, and the call can be closed by
-     * calling [tryDeliverClose].
+     * calling [tryToCloseCall].
      */
     private fun endOp() {
         if (inFlight.decrementAndGet() == 0) {
-            tryDeliverClose()
+            tryToCloseCall()
         }
     }
 
@@ -97,23 +97,23 @@ internal class NativeClientCall<Request, Response>(
      * - If the [inFlight] counter is not 0, this does nothing.
      * - Otherwise, the listener's onClose callback is invoked and the call is closed.
      */
-    private fun tryDeliverClose() {
-        val s = closeInfo.value ?: return
+    private fun tryToCloseCall() {
+        val info = closeInfo.value ?: return
         if (inFlight.value == 0 && closed.compareAndSet(expect = false, update = true)) {
-            val lst = checkNotNull(listener) { "Not yet started" }
+            val lst = checkNotNull(listener) { internalError("Not yet started") }
             // allows the managed channel to join for the call to finish.
             callJob.complete()
-            lst.onClose(s.first, s.second)
+            lst.onClose(info.first, info.second)
         }
     }
 
     /**
-     * Sets the [closeInfo] and calls [tryDeliverClose].
-     * This is called as soon as the RECV_STATUS_ON_CLIENT batch is finished.
+     * Sets the [closeInfo] and calls [tryToCloseCall].
+     * This is called as soon as the RECV_STATUS_ON_CLIENT batch (started with [startRecvStatus]) finished.
      */
     private fun markClosePending(status: Status, trailers: GrpcTrailers) {
         if (closeInfo.compareAndSet(null, Pair(status, trailers))) {
-            tryDeliverClose()
+            tryToCloseCall()
         }
     }
 
@@ -132,8 +132,8 @@ internal class NativeClientCall<Request, Response>(
         responseListener: Listener<Response>,
         headers: GrpcTrailers,
     ) {
-        check(listener == null) { "Already started" }
-        check(!cancelled) { "Already cancelled." }
+        check(listener == null) { internalError("Already started") }
+        check(!cancelled) { internalError("Already cancelled.") }
 
         listener = responseListener
 
@@ -164,7 +164,7 @@ internal class NativeClientCall<Request, Response>(
         beginOp()
 
         when (val callResult = cq.runBatch(this@NativeClientCall, ops, nOps)) {
-            is BatchResult.Called -> {
+            is BatchResult.Submitted -> {
                 callResult.future.onComplete { success ->
                     try {
                         if (success) {
@@ -184,7 +184,7 @@ internal class NativeClientCall<Request, Response>(
                 cancelInternal(grpc_status_code.GRPC_STATUS_UNAVAILABLE, "Channel shutdown")
             }
 
-            is BatchResult.CallError -> {
+            is BatchResult.SubmitError -> {
                 cleanup()
                 endOp()
                 cancelInternal(
@@ -196,7 +196,7 @@ internal class NativeClientCall<Request, Response>(
     }
 
     /**
-     * Starts a batch operation to receive the status from the completion queue.
+     * Starts a batch operation to receive the status from the completion queue (RECV_STATUS_ON_CLIENT).
      * This operation is bound to the lifetime of the call, so it will finish once all other operations are done.
      * If this operation fails, it will call [markClosePending] with the corresponding error, as the entire call
      * si considered failed.
@@ -206,7 +206,7 @@ internal class NativeClientCall<Request, Response>(
      */
     @OptIn(ExperimentalStdlibApi::class)
     private fun startRecvStatus(): Boolean {
-        checkNotNull(listener) { "Not yet started" }
+        checkNotNull(listener) { internalError("Not yet started") }
         val arena = Arena()
         val statusCode = arena.alloc<grpc_status_code.Var>()
         val statusDetails = arena.alloc<grpc_slice>()
@@ -221,7 +221,7 @@ internal class NativeClientCall<Request, Response>(
         }
 
         when (val callResult = cq.runBatch(this@NativeClientCall, op.ptr, 1u)) {
-            is BatchResult.Called -> {
+            is BatchResult.Submitted -> {
                 callResult.future.onComplete {
                     val details = statusDetails.toByteArray().toKString()
                     val status = Status(statusCode.value.toKotlin(), details, null)
@@ -244,7 +244,7 @@ internal class NativeClientCall<Request, Response>(
                 return false
             }
 
-            is BatchResult.CallError -> {
+            is BatchResult.SubmitError -> {
                 arena.clear()
                 markClosePending(
                     Status(StatusCode.INTERNAL, "Failed to start call: ${callResult.error}"),
@@ -285,9 +285,11 @@ internal class NativeClientCall<Request, Response>(
      * This must only be called again after [numMessages] were received in the [Listener.onMessage] callback.
      */
     override fun request(numMessages: Int) {
-        check(numMessages > 0) { "numMessages must be > 0" }
-        val listener = checkNotNull(listener) { "Not yet started" }
-        check(!cancelled) { "Already cancelled" }
+        check(numMessages > 0) { internalError("numMessages must be > 0") }
+        // limit numMessages to prevent potential stack overflows
+        check(numMessages <= 16) { internalError("numMessages must be <= 16") }
+        val listener = checkNotNull(listener) { internalError("Not yet started") }
+        check(!cancelled) { internalError("Already cancelled") }
 
         var remainingMessages = numMessages
 
@@ -333,8 +335,8 @@ internal class NativeClientCall<Request, Response>(
     }
 
     override fun halfClose() {
-        check(!halfClosed) { "Already half closed." }
-        check(!cancelled) { "Already cancelled." }
+        check(!halfClosed) { internalError("Already half closed.") }
+        check(!cancelled) { internalError("Already cancelled.") }
         halfClosed = true
 
         val arena = Arena()
@@ -350,10 +352,10 @@ internal class NativeClientCall<Request, Response>(
     override fun isReady(): Boolean = ready.value
 
     override fun sendMessage(message: Request) {
-        checkNotNull(listener) { "Not yet started" }
-        check(!halfClosed) { "Already half closed." }
-        check(!cancelled) { "Already cancelled." }
-        check(isReady()) { "Not yet ready." }
+        checkNotNull(listener) { internalError("Not yet started") }
+        check(!halfClosed) { internalError("Already half closed.") }
+        check(!cancelled) { internalError("Already cancelled.") }
+        check(isReady()) { internalError("Not yet ready.") }
 
         // set ready false, as only one message can be sent at a time.
         ready.value = false
@@ -368,14 +370,12 @@ internal class NativeClientCall<Request, Response>(
         }
 
         runBatch(op.ptr, 1u, cleanup = {
-            // no mater what happens, we need to set ready to true again.
-            turnReady()
-
             // actual cleanup
             grpc_byte_buffer_destroy(byteBuffer)
             arena.clear()
         }) {
-            // Nothing to do here
+            // set ready true, as we can now send another message.
+            turnReady()
         }
     }
 }

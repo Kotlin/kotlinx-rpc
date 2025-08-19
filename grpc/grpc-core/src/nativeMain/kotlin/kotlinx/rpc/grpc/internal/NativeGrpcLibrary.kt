@@ -21,17 +21,16 @@ internal object GrpcRuntime {
     /** Acquire a runtime reference. Must be closed exactly once. */
     fun acquire(): AutoCloseable {
         refLock.withLock {
-            val prev = 0
-            refs++
+            val prev = refs++
             if (prev == 0) grpc_init()
         }
         return object : AutoCloseable {
-            private var done = atomic(false)
+            private val done = atomic(false)
             override fun close() {
                 if (!done.compareAndSet(expect = false, update = true)) return
                 refLock.withLock {
                     val now = --refs
-                    require(now >= 0) { "release() without matching acquire()" }
+                    require(now >= 0) { internalError("release() without matching acquire()") }
                     if (now == 0) {
                         grpc_shutdown()
                     }

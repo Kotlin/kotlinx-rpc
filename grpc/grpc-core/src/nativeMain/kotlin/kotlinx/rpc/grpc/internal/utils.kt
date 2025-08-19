@@ -13,6 +13,10 @@ import kotlinx.rpc.grpc.StatusCode
 import libkgrpc.*
 import platform.posix.memcpy
 
+internal fun internalError(message: String) {
+    error("Unexpected internal error: $message. Please, report the issue here: https://github.com/Kotlin/kotlinx-rpc/issues/new?template=bug_report.md")
+}
+
 @OptIn(ExperimentalForeignApi::class, InternalIoApi::class, UnsafeIoApi::class)
 internal fun Sink.writeFully(buffer: CPointer<ByteVar>, offset: Long, length: Long) {
     var consumed = 0L
@@ -29,15 +33,6 @@ internal fun Sink.writeFully(buffer: CPointer<ByteVar>, offset: Long, length: Lo
         }
     }
 }
-
-internal suspend fun withArena(block: suspend (Arena) -> Unit) =
-    Arena().let { arena ->
-        try {
-            block(arena)
-        } finally {
-            arena.clear()
-        }
-    }
 
 internal fun grpc_slice.toByteArray(): ByteArray = memScoped {
     val out = ByteArray(len().toInt())

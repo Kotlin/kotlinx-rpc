@@ -21,7 +21,7 @@ public actual abstract class ManagedChannelPlatform : GrpcChannel()
  */
 public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>> {
     public actual open fun usePlaintext(): T {
-        error("Builder does not override usePlaintext()")
+        error("Builder does not support usePlaintext()")
     }
 }
 
