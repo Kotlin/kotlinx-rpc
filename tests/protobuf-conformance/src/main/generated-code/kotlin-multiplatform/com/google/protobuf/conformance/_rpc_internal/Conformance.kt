@@ -321,7 +321,7 @@ fun com.google.protobuf.conformance.FailureSetInternal.Companion.decodeWith(msg:
 private fun com.google.protobuf.conformance.FailureSetInternal.computeSize(): Int { 
     var __result = 0
     if (test.isNotEmpty()) { 
-        __result = test.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(2, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += test.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(2, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     return __result

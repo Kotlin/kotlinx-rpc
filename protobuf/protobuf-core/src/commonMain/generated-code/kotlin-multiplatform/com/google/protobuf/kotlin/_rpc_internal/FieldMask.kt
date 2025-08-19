@@ -81,7 +81,7 @@ public fun com.google.protobuf.kotlin.FieldMaskInternal.Companion.decodeWith(msg
 private fun com.google.protobuf.kotlin.FieldMaskInternal.computeSize(): Int { 
     var __result = 0
     if (paths.isNotEmpty()) { 
-        __result = paths.sumOf { kotlinx.rpc.protobuf.internal.WireSize.string(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(1, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += paths.sumOf { kotlinx.rpc.protobuf.internal.WireSize.string(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(1, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     return __result

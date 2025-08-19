@@ -734,7 +734,7 @@ class ModelToProtobufKotlinCommonGenerator(
             is FieldType.List -> when {
                 // packed fields also have the tag + len
                 field.dec.isPacked -> code("__result += $valueSize.let { $tagSize + ${int32SizeCall("it")} + it }")
-                else -> code("__result = $valueSize")
+                else -> code("__result += $valueSize")
             }
 
             is FieldType.Message,
