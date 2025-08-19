@@ -24,9 +24,9 @@ class ConformanceTest {
         val jarPath = System.getenv("MOCK_CLIENT_JAR")
             ?: error("Expected environment variable 'MOCK_CLIENT_JAR' to be set")
 
-        val executable = getJavaClient(jarPath, "conformance")
-
         val outputDir = Path(CONFORMANCE_OUTPUT_DIR).resolve("conformance")
+
+        val executable = getJavaClient(jarPath, "conformance", outputDir)
 
         val (failingTestsFile, textFormatFailingTestsFile) = createConformanceTestFiles(outputDir)
 
