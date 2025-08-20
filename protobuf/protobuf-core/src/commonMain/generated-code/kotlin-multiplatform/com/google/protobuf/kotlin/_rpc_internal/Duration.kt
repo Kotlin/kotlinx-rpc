@@ -30,6 +30,7 @@ public class DurationInternal: com.google.protobuf.kotlin.Duration, kotlinx.rpc.
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.DurationInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -80,8 +81,6 @@ public fun com.google.protobuf.kotlin.DurationInternal.Companion.decodeWith(msg:
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.DurationInternal.computeSize(): Int { 

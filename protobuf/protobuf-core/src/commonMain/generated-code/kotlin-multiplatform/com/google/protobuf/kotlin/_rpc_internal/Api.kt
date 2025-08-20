@@ -39,6 +39,7 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.ApiInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -78,6 +79,7 @@ public class MethodInternal: com.google.protobuf.kotlin.Method, kotlinx.rpc.prot
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.MethodInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -112,6 +114,7 @@ public class MixinInternal: com.google.protobuf.kotlin.Mixin, kotlinx.rpc.protob
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.MixinInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -245,8 +248,6 @@ public fun com.google.protobuf.kotlin.ApiInternal.Companion.decodeWith(msg: com.
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.ApiInternal.computeSize(): Int { 
@@ -369,8 +370,6 @@ public fun com.google.protobuf.kotlin.MethodInternal.Companion.decodeWith(msg: c
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.MethodInternal.computeSize(): Int { 
@@ -446,8 +445,6 @@ public fun com.google.protobuf.kotlin.MixinInternal.Companion.decodeWith(msg: co
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.MixinInternal.computeSize(): Int { 

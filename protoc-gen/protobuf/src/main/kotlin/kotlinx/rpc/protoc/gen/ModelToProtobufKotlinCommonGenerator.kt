@@ -265,6 +265,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     scope("${PB_PKG}.checkForPlatformDecodeException", nlAfterClosed = false) {
                         code("${declaration.internalClassFullName()}.decodeWith(msg, it)")
                     }
+                    code("msg.checkRequiredFields()")
                     code("return msg")
                 }
             }
@@ -307,8 +308,6 @@ class ModelToProtobufKotlinCommonGenerator(
                 }
             }
         }
-
-        code("msg.checkRequiredFields()")
 
         // TODO: Make lists and maps immutable (KRPC-190)
     }

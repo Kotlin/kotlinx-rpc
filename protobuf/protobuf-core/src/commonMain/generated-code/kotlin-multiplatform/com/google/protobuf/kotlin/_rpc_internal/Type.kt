@@ -39,6 +39,7 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.TypeInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -81,6 +82,7 @@ public class FieldInternal: com.google.protobuf.kotlin.Field, kotlinx.rpc.protob
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.FieldInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -123,6 +125,7 @@ public class EnumInternal: com.google.protobuf.kotlin.Enum, kotlinx.rpc.protobuf
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.EnumInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -158,6 +161,7 @@ public class EnumValueInternal: com.google.protobuf.kotlin.EnumValue, kotlinx.rp
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.EnumValueInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -196,6 +200,7 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.OptionInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -336,8 +341,6 @@ public fun com.google.protobuf.kotlin.TypeInternal.Companion.decodeWith(msg: com
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.TypeInternal.computeSize(): Int { 
@@ -484,8 +487,6 @@ public fun com.google.protobuf.kotlin.FieldInternal.Companion.decodeWith(msg: co
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.FieldInternal.computeSize(): Int { 
@@ -628,8 +629,6 @@ public fun com.google.protobuf.kotlin.EnumInternal.Companion.decodeWith(msg: com
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.EnumInternal.computeSize(): Int { 
@@ -716,8 +715,6 @@ public fun com.google.protobuf.kotlin.EnumValueInternal.Companion.decodeWith(msg
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.EnumValueInternal.computeSize(): Int { 
@@ -784,8 +781,6 @@ public fun com.google.protobuf.kotlin.OptionInternal.Companion.decodeWith(msg: c
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.OptionInternal.computeSize(): Int { 

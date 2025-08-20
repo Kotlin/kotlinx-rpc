@@ -30,6 +30,7 @@ public class AnyInternal: com.google.protobuf.kotlin.Any, kotlinx.rpc.protobuf.i
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.AnyInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -80,8 +81,6 @@ public fun com.google.protobuf.kotlin.AnyInternal.Companion.decodeWith(msg: com.
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.AnyInternal.computeSize(): Int { 

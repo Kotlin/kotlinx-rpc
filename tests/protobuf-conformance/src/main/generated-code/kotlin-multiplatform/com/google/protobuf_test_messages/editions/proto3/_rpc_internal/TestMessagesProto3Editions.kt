@@ -203,6 +203,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
                     kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                         com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, it)
                     }
+                    msg.checkRequiredFields()
                     return msg
                 }
             }
@@ -447,6 +448,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -480,6 +482,7 @@ class ForeignMessageInternal: com.google.protobuf_test_messages.editions.proto3.
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf_test_messages.editions.proto3.ForeignMessageInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -511,6 +514,7 @@ class NullHypothesisProto3Internal: com.google.protobuf_test_messages.editions.p
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf_test_messages.editions.proto3.NullHypothesisProto3Internal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -542,6 +546,7 @@ class EnumOnlyProto3Internal: com.google.protobuf_test_messages.editions.proto3.
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf_test_messages.editions.proto3.EnumOnlyProto3Internal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -2583,8 +2588,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.computeSize(): Int { 
@@ -3346,8 +3349,6 @@ fun com.google.protobuf_test_messages.editions.proto3.ForeignMessageInternal.Com
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.ForeignMessageInternal.computeSize(): Int { 
@@ -3385,8 +3386,6 @@ fun com.google.protobuf_test_messages.editions.proto3.NullHypothesisProto3Intern
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.NullHypothesisProto3Internal.computeSize(): Int { 
@@ -3420,8 +3419,6 @@ fun com.google.protobuf_test_messages.editions.proto3.EnumOnlyProto3Internal.Com
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.EnumOnlyProto3Internal.computeSize(): Int { 
@@ -3476,8 +3473,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.NestedMessageInternal.computeSize(): Int { 
@@ -3533,8 +3528,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapInt32Int32EntryInternal.computeSize(): Int { 
@@ -3590,8 +3583,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapInt64Int64EntryInternal.computeSize(): Int { 
@@ -3647,8 +3638,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.computeSize(): Int { 
@@ -3704,8 +3693,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.computeSize(): Int { 
@@ -3761,8 +3748,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.computeSize(): Int { 
@@ -3818,8 +3803,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.computeSize(): Int { 
@@ -3875,8 +3858,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.computeSize(): Int { 
@@ -3932,8 +3913,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.computeSize(): Int { 
@@ -3989,8 +3968,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.computeSize(): Int { 
@@ -4046,8 +4023,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.computeSize(): Int { 
@@ -4103,8 +4078,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapInt32FloatEntryInternal.computeSize(): Int { 
@@ -4160,8 +4133,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.computeSize(): Int { 
@@ -4217,8 +4188,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapBoolBoolEntryInternal.computeSize(): Int { 
@@ -4274,8 +4243,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapStringStringEntryInternal.computeSize(): Int { 
@@ -4331,8 +4298,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapStringBytesEntryInternal.computeSize(): Int { 
@@ -4395,8 +4360,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.computeSize(): Int { 
@@ -4459,8 +4422,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.computeSize(): Int { 
@@ -4516,8 +4477,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.computeSize(): Int { 
@@ -4573,8 +4532,6 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.computeSize(): Int { 

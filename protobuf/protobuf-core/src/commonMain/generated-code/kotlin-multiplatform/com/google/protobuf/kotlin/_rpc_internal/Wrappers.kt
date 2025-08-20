@@ -29,6 +29,7 @@ public class DoubleValueInternal: com.google.protobuf.kotlin.DoubleValue, kotlin
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.DoubleValueInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -62,6 +63,7 @@ public class FloatValueInternal: com.google.protobuf.kotlin.FloatValue, kotlinx.
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.FloatValueInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -95,6 +97,7 @@ public class Int64ValueInternal: com.google.protobuf.kotlin.Int64Value, kotlinx.
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.Int64ValueInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -128,6 +131,7 @@ public class UInt64ValueInternal: com.google.protobuf.kotlin.UInt64Value, kotlin
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.UInt64ValueInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -161,6 +165,7 @@ public class Int32ValueInternal: com.google.protobuf.kotlin.Int32Value, kotlinx.
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.Int32ValueInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -194,6 +199,7 @@ public class UInt32ValueInternal: com.google.protobuf.kotlin.UInt32Value, kotlin
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.UInt32ValueInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -227,6 +233,7 @@ public class BoolValueInternal: com.google.protobuf.kotlin.BoolValue, kotlinx.rp
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.BoolValueInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -260,6 +267,7 @@ public class StringValueInternal: com.google.protobuf.kotlin.StringValue, kotlin
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.StringValueInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -293,6 +301,7 @@ public class BytesValueInternal: com.google.protobuf.kotlin.BytesValue, kotlinx.
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.BytesValueInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -383,8 +392,6 @@ public fun com.google.protobuf.kotlin.DoubleValueInternal.Companion.decodeWith(m
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.DoubleValueInternal.computeSize(): Int { 
@@ -428,8 +435,6 @@ public fun com.google.protobuf.kotlin.FloatValueInternal.Companion.decodeWith(ms
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.FloatValueInternal.computeSize(): Int { 
@@ -473,8 +478,6 @@ public fun com.google.protobuf.kotlin.Int64ValueInternal.Companion.decodeWith(ms
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.Int64ValueInternal.computeSize(): Int { 
@@ -518,8 +521,6 @@ public fun com.google.protobuf.kotlin.UInt64ValueInternal.Companion.decodeWith(m
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.UInt64ValueInternal.computeSize(): Int { 
@@ -563,8 +564,6 @@ public fun com.google.protobuf.kotlin.Int32ValueInternal.Companion.decodeWith(ms
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.Int32ValueInternal.computeSize(): Int { 
@@ -608,8 +607,6 @@ public fun com.google.protobuf.kotlin.UInt32ValueInternal.Companion.decodeWith(m
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.UInt32ValueInternal.computeSize(): Int { 
@@ -653,8 +650,6 @@ public fun com.google.protobuf.kotlin.BoolValueInternal.Companion.decodeWith(msg
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.BoolValueInternal.computeSize(): Int { 
@@ -698,8 +693,6 @@ public fun com.google.protobuf.kotlin.StringValueInternal.Companion.decodeWith(m
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.StringValueInternal.computeSize(): Int { 
@@ -743,8 +736,6 @@ public fun com.google.protobuf.kotlin.BytesValueInternal.Companion.decodeWith(ms
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.BytesValueInternal.computeSize(): Int { 

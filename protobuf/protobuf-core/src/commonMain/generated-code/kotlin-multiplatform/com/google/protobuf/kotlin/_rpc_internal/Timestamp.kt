@@ -30,6 +30,7 @@ public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rp
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.TimestampInternal.decodeWith(msg, it)
                 }
+                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -80,8 +81,6 @@ public fun com.google.protobuf.kotlin.TimestampInternal.Companion.decodeWith(msg
             }
         }
     }
-
-    msg.checkRequiredFields()
 }
 
 private fun com.google.protobuf.kotlin.TimestampInternal.computeSize(): Int { 
