@@ -84,6 +84,10 @@ public interface WireDecoder : AutoCloseable {
         if (len < 0) throw ProtobufDecodingException.negativeSize()
         val limit = pushLimit(len)
         decoder(msg, this)
+        if (bytesUntilLimit() != 0) {
+            throw ProtobufDecodingException.truncatedMessage()
+        }
+
         popLimit(limit)
     }
 

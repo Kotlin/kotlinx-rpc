@@ -65,7 +65,7 @@ private fun DescriptorProtos.FileDescriptorProto.toDescriptor(
  *
  * @return The fully qualified name represented as an instance of FqName, specific to the descriptor's context.
  */
-private fun Descriptors.GenericDescriptor.fqName(): FqName {
+fun Descriptors.GenericDescriptor.fqName(): FqName {
     if (nameCache.containsKey(this)) return nameCache[this]!!
     val nameCapital = name.simpleProtoNameToKotlin(firstLetterUpper = true)
     val nameLower = name.simpleProtoNameToKotlin()

@@ -178,7 +178,7 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
         encode: T.(WireEncoder) -> Unit,
     ) {
         codedOutputStream.writeTag(fieldNr, WireType.LENGTH_DELIMITED.ordinal)
-        codedOutputStream.writeInt32NoTag(value._size)
+        codedOutputStream.writeUInt32NoTag(value._size)
         value.encode(this)
     }
 
@@ -190,7 +190,7 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
     ) {
         codedOutputStream.writeTag(fieldNr, WireType.LENGTH_DELIMITED.ordinal)
         // write the field size of the packed field
-        codedOutputStream.writeInt32NoTag(fieldSize)
+        codedOutputStream.writeUInt32NoTag(fieldSize)
         for (v in value) {
             writer(codedOutputStream, v)
         }

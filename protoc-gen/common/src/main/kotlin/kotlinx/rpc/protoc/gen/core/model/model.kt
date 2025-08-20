@@ -44,7 +44,11 @@ data class EnumDeclaration(
 ) {
 
     fun defaultEntry(): Entry {
-        return originalEntries.minBy { it.dec.number }
+        // In proto3 and editions:
+        // The first value must be a zero value, so that we can use 0 as a numeric default value
+        // In proto2:
+        // We use the first value as the default value
+        return originalEntries.first()
     }
 
     data class Entry(

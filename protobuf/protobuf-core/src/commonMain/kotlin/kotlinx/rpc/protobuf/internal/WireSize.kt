@@ -35,22 +35,22 @@ public expect fun WireSize.sInt32(value: Int): Int
 public expect fun WireSize.sInt64(value: Long): Int
 
 @InternalRpcApi
-public fun WireSize.float(value: Float): Int = 32
+public fun WireSize.float(value: Float): Int = 4
 
 @InternalRpcApi
-public fun WireSize.double(value: Double): Int = 64
+public fun WireSize.double(value: Double): Int = 8
 
 @InternalRpcApi
-public fun WireSize.fixed32(value: UInt): Int = 32
+public fun WireSize.fixed32(value: UInt): Int = 4
 
 @InternalRpcApi
-public fun WireSize.fixed64(value: ULong): Int = 64
+public fun WireSize.fixed64(value: ULong): Int = 8
 
 @InternalRpcApi
-public fun WireSize.sFixed32(value: Int): Int = 32
+public fun WireSize.sFixed32(value: Int): Int = 4
 
 @InternalRpcApi
-public fun WireSize.sFixed64(value: Long): Int = 64
+public fun WireSize.sFixed64(value: Long): Int = 8
 
 @InternalRpcApi
 public fun WireSize.bool(value: Boolean): Int = int32(if (value) 1 else 0)
@@ -86,22 +86,22 @@ public fun WireSize.packedSInt64(value: List<Long>): Int = value.sumOf { sInt64(
 public fun WireSize.packedEnum(value: List<Int>): Int = value.sumOf { enum(it) }
 
 @InternalRpcApi
-public fun WireSize.packedFloat(value: List<Float>): Int = value.size * 32
+public fun WireSize.packedFloat(value: List<Float>): Int = value.size * 4
 
 @InternalRpcApi
-public fun WireSize.packedDouble(value: List<Double>): Int = value.size * 64
+public fun WireSize.packedDouble(value: List<Double>): Int = value.size * 8
 
 @InternalRpcApi
-public fun WireSize.packedFixed32(value: List<UInt>): Int = value.size * 32
+public fun WireSize.packedFixed32(value: List<UInt>): Int = value.size * 4
 
 @InternalRpcApi
-public fun WireSize.packedFixed64(value: List<ULong>): Int = value.size * 64
+public fun WireSize.packedFixed64(value: List<ULong>): Int = value.size * 8
 
 @InternalRpcApi
-public fun WireSize.packedSFixed32(value: List<Int>): Int = value.size * 32
+public fun WireSize.packedSFixed32(value: List<Int>): Int = value.size * 4
 
 @InternalRpcApi
-public fun WireSize.packedSFixed64(value: List<Long>): Int = value.size * 64
+public fun WireSize.packedSFixed64(value: List<Long>): Int = value.size * 8
 
 @InternalRpcApi
 public fun WireSize.packedBool(value: List<Boolean>): Int = packedSInt32(value.map { if (it) 1 else 0 })

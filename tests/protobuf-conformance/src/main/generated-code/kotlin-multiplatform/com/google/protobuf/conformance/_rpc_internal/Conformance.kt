@@ -322,7 +322,7 @@ fun com.google.protobuf.conformance.FailureSetInternal.Companion.decodeWith(msg:
 private fun com.google.protobuf.conformance.FailureSetInternal.computeSize(): Int { 
     var __result = 0
     if (test.isNotEmpty()) { 
-        __result = test.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(2, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += test.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(2, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     return __result
@@ -343,7 +343,7 @@ fun com.google.protobuf.conformance.ConformanceRequestInternal.checkRequiredFiel
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
 fun com.google.protobuf.conformance.ConformanceRequestInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
-    if (com.google.protobuf.conformance.WireFormat.UNSPECIFIED != requestedOutputFormat) { 
+    if (requestedOutputFormat != com.google.protobuf.conformance.WireFormat.UNSPECIFIED) { 
         encoder.writeEnum(fieldNr = 3, value = requestedOutputFormat.number)
     }
 
@@ -351,7 +351,7 @@ fun com.google.protobuf.conformance.ConformanceRequestInternal.encodeWith(encode
         encoder.writeString(fieldNr = 4, value = messageType)
     }
 
-    if (com.google.protobuf.conformance.TestCategory.UNSPECIFIED_TEST != testCategory) { 
+    if (testCategory != com.google.protobuf.conformance.TestCategory.UNSPECIFIED_TEST) { 
         encoder.writeEnum(fieldNr = 5, value = testCategory.number)
     }
 
@@ -439,7 +439,7 @@ fun com.google.protobuf.conformance.ConformanceRequestInternal.Companion.decodeW
 
 private fun com.google.protobuf.conformance.ConformanceRequestInternal.computeSize(): Int { 
     var __result = 0
-    if (com.google.protobuf.conformance.WireFormat.UNSPECIFIED != requestedOutputFormat) { 
+    if (requestedOutputFormat != com.google.protobuf.conformance.WireFormat.UNSPECIFIED) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(3, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(requestedOutputFormat.number))
     }
 
@@ -447,7 +447,7 @@ private fun com.google.protobuf.conformance.ConformanceRequestInternal.computeSi
         __result += kotlinx.rpc.protobuf.internal.WireSize.string(messageType).let { kotlinx.rpc.protobuf.internal.WireSize.tag(4, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
     }
 
-    if (com.google.protobuf.conformance.TestCategory.UNSPECIFIED_TEST != testCategory) { 
+    if (testCategory != com.google.protobuf.conformance.TestCategory.UNSPECIFIED_TEST) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(5, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(testCategory.number))
     }
 

@@ -174,7 +174,7 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
         encode: T.(WireEncoder) -> Unit,
     ) {
         pw_encoder_write_tag(raw, fieldNr, WireType.LENGTH_DELIMITED.ordinal)
-        pw_encoder_write_int32_no_tag(raw, value._size)
+        pw_encoder_write_uint32_no_tag(raw, value._size.toUInt())
         value.encode(this)
     }
 }
@@ -193,7 +193,7 @@ private inline fun <T> WireEncoderNative.writePackedInternal(
 ) = checked {
     pw_encoder_write_tag(raw, fieldNr, WireType.LENGTH_DELIMITED.ordinal)
     // write the field size of the packed field
-    pw_encoder_write_int32_no_tag(raw, fieldSize)
+    pw_encoder_write_uint32_no_tag(raw, fieldSize.toUInt())
     for (v in value) {
         if (!writer(raw, v)) {
             return@checked false

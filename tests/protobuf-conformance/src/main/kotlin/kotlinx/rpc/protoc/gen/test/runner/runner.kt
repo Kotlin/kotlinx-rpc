@@ -11,6 +11,7 @@ import kotlin.io.path.createFile
 import kotlin.io.path.createParentDirectories
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.readLines
+import kotlin.properties.Delegates
 
 class RunResult(
     val exitCode: Int,
@@ -30,8 +31,9 @@ fun execConformanceTestRunner(
 
     val testNameFilter = testName?.let { listOf("--test", it) } ?: emptyList()
 
+    var process: Process by Delegates.notNull()
     return runCatching {
-        val process = ProcessBuilder(
+        process = ProcessBuilder(
             CONFORMANCE_EXECUTABLE_PATH,
             *testNameFilter.toTypedArray(),
             "--maximum_edition", "MAX",
@@ -43,14 +45,23 @@ fun execConformanceTestRunner(
             executable,
         ).redirectError(errorStream.toFile())
             .redirectOutput(stdoutStream.toFile())
+            .start()
 
-        val exitCode = process.start().waitFor()
+        Runtime.getRuntime().addShutdownHook(Thread {
+            process.destroy()
+        })
+
+        val exitCode = process.waitFor()
 
         RunResult(
             exitCode = exitCode,
             stdout = stdoutStream.readLines(),
             stderr = errorStream.readLines(),
         )
+    }.onFailure {
+        if (process.isAlive) {
+            process.destroy()
+        }
     }
 }
 

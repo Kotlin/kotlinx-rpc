@@ -112,7 +112,6 @@ tasks.register<JavaExec>("runConformanceTest") {
     mainClass.set("kotlinx.rpc.protoc.gen.test.RunConformanceTestKt")
 
     val protoscope = localProperties().getProperty("protoscope_path")
-        ?: throw GradleException("protoscope_path property is not set. Run ./setup_protoscope.sh")
 
     environment("PROTOSCOPE_PATH", protoscope)
 
@@ -130,15 +129,8 @@ tasks.register<JavaExec>("runConformanceTest") {
     )
 
     doFirst {
-        if (!File(protoscope).exists()) {
-            throw GradleException(
-                """
-                    Protoscope is not found. Use the following command to install it: 
-                    
-                    $ brew install go
-                    $ go install github.com/protocolbuffers/protoscope/cmd/protoscope...@latest
-                """.trimIndent()
-            )
+        if (protoscope == null || !File(protoscope).exists()) {
+            throw GradleException("protoscope_path property is not set. Run ./setup_protoscope.sh")
         }
     }
 }

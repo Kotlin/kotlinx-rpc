@@ -35,6 +35,7 @@ sealed interface FieldType {
     data class Enum(val dec: EnumDeclaration) : FieldType {
         override val defaultValue = dec.defaultEntry().name.fullName()
         override val wireType: WireType = WireType.VARINT
+        override val isPackable: Boolean = true
     }
 
     data class Message(val dec: Lazy<MessageDeclaration>) : FieldType {
@@ -52,8 +53,7 @@ sealed interface FieldType {
         override val defaultValue: String,
         override val wireType: WireType,
         override val isPackable: Boolean = true
-    ) :
-        FieldType {
+    ) : FieldType {
         STRING("String", "\"\"", WireType.LENGTH_DELIMITED, false),
         BYTES("ByteArray", "byteArrayOf()", WireType.LENGTH_DELIMITED, false),
         BOOL("Boolean", "false", WireType.VARINT),
@@ -72,4 +72,21 @@ sealed interface FieldType {
 
         val fqName: FqName = FqName.Declaration(simpleName, FqName.Package.fromString("kotlin"))
     }
+}
+
+fun FieldType.scalarDefaultSuffix(): String = when (this) {
+    FieldType.IntegralType.BOOL -> ""
+    FieldType.IntegralType.FLOAT -> "f"
+    FieldType.IntegralType.DOUBLE ->  ""
+    FieldType.IntegralType.INT32 -> ""
+    FieldType.IntegralType.INT64 -> "L"
+    FieldType.IntegralType.UINT32 -> "u"
+    FieldType.IntegralType.UINT64 -> "uL"
+    FieldType.IntegralType.FIXED32 -> "u"
+    FieldType.IntegralType.FIXED64 -> "uL"
+    FieldType.IntegralType.SINT32 -> ""
+    FieldType.IntegralType.SINT64 -> "L"
+    FieldType.IntegralType.SFIXED32 -> ""
+    FieldType.IntegralType.SFIXED64 -> "L"
+    else -> error("Unsupported scalar type: ${this::class}")
 }
