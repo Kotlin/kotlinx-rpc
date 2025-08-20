@@ -10,6 +10,7 @@ import org.gradle.kotlin.dsl.provideDelegate
 import java.util.Properties
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.io.path.Path
+import kotlin.io.path.exists
 import kotlin.io.path.inputStream
 
 private val ref = AtomicReference<Properties>()
@@ -19,7 +20,13 @@ fun Project.localProperties(): Properties {
         ref.compareAndSet(null, Properties().apply {
             val globalRootDir: String by extra
 
-            load(Path(globalRootDir, "local.properties").inputStream())
+            val filepath = Path(globalRootDir, "local.properties")
+
+            if (!filepath.exists()) {
+                return@apply
+            }
+
+            load(filepath.inputStream())
         })
     }
 
