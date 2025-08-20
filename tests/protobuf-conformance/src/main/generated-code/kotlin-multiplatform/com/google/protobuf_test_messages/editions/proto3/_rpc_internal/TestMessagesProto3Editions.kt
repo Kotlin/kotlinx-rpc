@@ -48,7 +48,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
     override var optionalBytes: ByteArray by MsgFieldDelegate { byteArrayOf() }
     override var optionalNestedMessage: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedMessage by MsgFieldDelegate(PresenceIndices.optionalNestedMessage) { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.NestedMessageInternal() }
     override var optionalForeignMessage: com.google.protobuf_test_messages.editions.proto3.ForeignMessage by MsgFieldDelegate(PresenceIndices.optionalForeignMessage) { com.google.protobuf_test_messages.editions.proto3.ForeignMessageInternal() }
-    override var optionalNestedEnum: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum by MsgFieldDelegate { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.NEG }
+    override var optionalNestedEnum: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum by MsgFieldDelegate { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.FOO }
     override var optionalForeignEnum: com.google.protobuf_test_messages.editions.proto3.ForeignEnum by MsgFieldDelegate { com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO }
     override var optionalAliasedEnum: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.AliasedEnum by MsgFieldDelegate { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.AliasedEnum.ALIAS_FOO }
     override var optionalStringPiece: String by MsgFieldDelegate { "" }
@@ -413,7 +413,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         override val _size: Int by lazy { computeSize() }
 
         var key: String by MsgFieldDelegate { "" }
-        var value: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum by MsgFieldDelegate { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.NEG }
+        var value: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum by MsgFieldDelegate { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.FOO }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
@@ -820,15 +820,15 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
         encoder.writeMessage(fieldNr = 19, value = optionalForeignMessage.asInternal()) { encodeWith(it) }
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.NEG != optionalNestedEnum) { 
+    if (optionalNestedEnum != com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.FOO) { 
         encoder.writeEnum(fieldNr = 21, value = optionalNestedEnum.number)
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO != optionalForeignEnum) { 
+    if (optionalForeignEnum != com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO) { 
         encoder.writeEnum(fieldNr = 22, value = optionalForeignEnum.number)
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.AliasedEnum.ALIAS_FOO != optionalAliasedEnum) { 
+    if (optionalAliasedEnum != com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.AliasedEnum.ALIAS_FOO) { 
         encoder.writeEnum(fieldNr = 23, value = optionalAliasedEnum.number)
     }
 
@@ -1422,7 +1422,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
         encoder.writeMessage(fieldNr = 306, value = optionalValue.asInternal()) { encodeWith(it) }
     }
 
-    if (com.google.protobuf.kotlin.NullValue.NULL_VALUE != optionalNullValue) { 
+    if (optionalNullValue != com.google.protobuf.kotlin.NullValue.NULL_VALUE) { 
         encoder.writeEnum(fieldNr = 307, value = optionalNullValue.number)
     }
 
@@ -1695,55 +1695,120 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             tag.fieldNr == 31 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.repeatedInt32 = decoder.readPackedInt32()
+                msg.repeatedInt32 += decoder.readPackedInt32()
+            }
+
+            tag.fieldNr == 31 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = decoder.readInt32()
+                (msg.repeatedInt32 as MutableList).add(elem)
             }
 
             tag.fieldNr == 32 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.repeatedInt64 = decoder.readPackedInt64()
+                msg.repeatedInt64 += decoder.readPackedInt64()
+            }
+
+            tag.fieldNr == 32 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = decoder.readInt64()
+                (msg.repeatedInt64 as MutableList).add(elem)
             }
 
             tag.fieldNr == 33 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.repeatedUint32 = decoder.readPackedUInt32()
+                msg.repeatedUint32 += decoder.readPackedUInt32()
+            }
+
+            tag.fieldNr == 33 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = decoder.readUInt32()
+                (msg.repeatedUint32 as MutableList).add(elem)
             }
 
             tag.fieldNr == 34 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.repeatedUint64 = decoder.readPackedUInt64()
+                msg.repeatedUint64 += decoder.readPackedUInt64()
+            }
+
+            tag.fieldNr == 34 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = decoder.readUInt64()
+                (msg.repeatedUint64 as MutableList).add(elem)
             }
 
             tag.fieldNr == 35 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.repeatedSint32 = decoder.readPackedSInt32()
+                msg.repeatedSint32 += decoder.readPackedSInt32()
+            }
+
+            tag.fieldNr == 35 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = decoder.readSInt32()
+                (msg.repeatedSint32 as MutableList).add(elem)
             }
 
             tag.fieldNr == 36 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.repeatedSint64 = decoder.readPackedSInt64()
+                msg.repeatedSint64 += decoder.readPackedSInt64()
+            }
+
+            tag.fieldNr == 36 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = decoder.readSInt64()
+                (msg.repeatedSint64 as MutableList).add(elem)
             }
 
             tag.fieldNr == 37 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.repeatedFixed32 = decoder.readPackedFixed32()
+                msg.repeatedFixed32 += decoder.readPackedFixed32()
+            }
+
+            tag.fieldNr == 37 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED32 -> { 
+                val elem = decoder.readFixed32()
+                (msg.repeatedFixed32 as MutableList).add(elem)
             }
 
             tag.fieldNr == 38 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.repeatedFixed64 = decoder.readPackedFixed64()
+                msg.repeatedFixed64 += decoder.readPackedFixed64()
+            }
+
+            tag.fieldNr == 38 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED64 -> { 
+                val elem = decoder.readFixed64()
+                (msg.repeatedFixed64 as MutableList).add(elem)
             }
 
             tag.fieldNr == 39 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.repeatedSfixed32 = decoder.readPackedSFixed32()
+                msg.repeatedSfixed32 += decoder.readPackedSFixed32()
+            }
+
+            tag.fieldNr == 39 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED32 -> { 
+                val elem = decoder.readSFixed32()
+                (msg.repeatedSfixed32 as MutableList).add(elem)
             }
 
             tag.fieldNr == 40 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.repeatedSfixed64 = decoder.readPackedSFixed64()
+                msg.repeatedSfixed64 += decoder.readPackedSFixed64()
+            }
+
+            tag.fieldNr == 40 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED64 -> { 
+                val elem = decoder.readSFixed64()
+                (msg.repeatedSfixed64 as MutableList).add(elem)
             }
 
             tag.fieldNr == 41 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.repeatedFloat = decoder.readPackedFloat()
+                msg.repeatedFloat += decoder.readPackedFloat()
+            }
+
+            tag.fieldNr == 41 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED32 -> { 
+                val elem = decoder.readFloat()
+                (msg.repeatedFloat as MutableList).add(elem)
             }
 
             tag.fieldNr == 42 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.repeatedDouble = decoder.readPackedDouble()
+                msg.repeatedDouble += decoder.readPackedDouble()
+            }
+
+            tag.fieldNr == 42 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED64 -> { 
+                val elem = decoder.readDouble()
+                (msg.repeatedDouble as MutableList).add(elem)
             }
 
             tag.fieldNr == 43 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.repeatedBool = decoder.readPackedBool()
+                msg.repeatedBool += decoder.readPackedBool()
+            }
+
+            tag.fieldNr == 43 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = decoder.readBool()
+                (msg.repeatedBool as MutableList).add(elem)
             }
 
             tag.fieldNr == 44 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
@@ -1769,11 +1834,21 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             tag.fieldNr == 51 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.repeatedNestedEnum = decoder.readPackedEnum().map { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.fromNumber(it) }
+                msg.repeatedNestedEnum += decoder.readPackedEnum().map { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.fromNumber(it) }
+            }
+
+            tag.fieldNr == 51 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum())
+                (msg.repeatedNestedEnum as MutableList).add(elem)
             }
 
             tag.fieldNr == 52 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.repeatedForeignEnum = decoder.readPackedEnum().map { com.google.protobuf_test_messages.editions.proto3.ForeignEnum.fromNumber(it) }
+                msg.repeatedForeignEnum += decoder.readPackedEnum().map { com.google.protobuf_test_messages.editions.proto3.ForeignEnum.fromNumber(it) }
+            }
+
+            tag.fieldNr == 52 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = com.google.protobuf_test_messages.editions.proto3.ForeignEnum.fromNumber(decoder.readEnum())
+                (msg.repeatedForeignEnum as MutableList).add(elem)
             }
 
             tag.fieldNr == 54 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
@@ -1787,59 +1862,133 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             tag.fieldNr == 75 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.packedInt32 = decoder.readPackedInt32()
+                msg.packedInt32 += decoder.readPackedInt32()
+            }
+
+            tag.fieldNr == 75 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = decoder.readInt32()
+                (msg.packedInt32 as MutableList).add(elem)
             }
 
             tag.fieldNr == 76 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.packedInt64 = decoder.readPackedInt64()
+                msg.packedInt64 += decoder.readPackedInt64()
+            }
+
+            tag.fieldNr == 76 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = decoder.readInt64()
+                (msg.packedInt64 as MutableList).add(elem)
             }
 
             tag.fieldNr == 77 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.packedUint32 = decoder.readPackedUInt32()
+                msg.packedUint32 += decoder.readPackedUInt32()
+            }
+
+            tag.fieldNr == 77 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = decoder.readUInt32()
+                (msg.packedUint32 as MutableList).add(elem)
             }
 
             tag.fieldNr == 78 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.packedUint64 = decoder.readPackedUInt64()
+                msg.packedUint64 += decoder.readPackedUInt64()
+            }
+
+            tag.fieldNr == 78 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = decoder.readUInt64()
+                (msg.packedUint64 as MutableList).add(elem)
             }
 
             tag.fieldNr == 79 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.packedSint32 = decoder.readPackedSInt32()
+                msg.packedSint32 += decoder.readPackedSInt32()
+            }
+
+            tag.fieldNr == 79 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = decoder.readSInt32()
+                (msg.packedSint32 as MutableList).add(elem)
             }
 
             tag.fieldNr == 80 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.packedSint64 = decoder.readPackedSInt64()
+                msg.packedSint64 += decoder.readPackedSInt64()
+            }
+
+            tag.fieldNr == 80 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = decoder.readSInt64()
+                (msg.packedSint64 as MutableList).add(elem)
             }
 
             tag.fieldNr == 81 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.packedFixed32 = decoder.readPackedFixed32()
+                msg.packedFixed32 += decoder.readPackedFixed32()
+            }
+
+            tag.fieldNr == 81 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED32 -> { 
+                val elem = decoder.readFixed32()
+                (msg.packedFixed32 as MutableList).add(elem)
             }
 
             tag.fieldNr == 82 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.packedFixed64 = decoder.readPackedFixed64()
+                msg.packedFixed64 += decoder.readPackedFixed64()
+            }
+
+            tag.fieldNr == 82 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED64 -> { 
+                val elem = decoder.readFixed64()
+                (msg.packedFixed64 as MutableList).add(elem)
             }
 
             tag.fieldNr == 83 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.packedSfixed32 = decoder.readPackedSFixed32()
+                msg.packedSfixed32 += decoder.readPackedSFixed32()
+            }
+
+            tag.fieldNr == 83 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED32 -> { 
+                val elem = decoder.readSFixed32()
+                (msg.packedSfixed32 as MutableList).add(elem)
             }
 
             tag.fieldNr == 84 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.packedSfixed64 = decoder.readPackedSFixed64()
+                msg.packedSfixed64 += decoder.readPackedSFixed64()
+            }
+
+            tag.fieldNr == 84 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED64 -> { 
+                val elem = decoder.readSFixed64()
+                (msg.packedSfixed64 as MutableList).add(elem)
             }
 
             tag.fieldNr == 85 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.packedFloat = decoder.readPackedFloat()
+                msg.packedFloat += decoder.readPackedFloat()
+            }
+
+            tag.fieldNr == 85 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED32 -> { 
+                val elem = decoder.readFloat()
+                (msg.packedFloat as MutableList).add(elem)
             }
 
             tag.fieldNr == 86 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.packedDouble = decoder.readPackedDouble()
+                msg.packedDouble += decoder.readPackedDouble()
+            }
+
+            tag.fieldNr == 86 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED64 -> { 
+                val elem = decoder.readDouble()
+                (msg.packedDouble as MutableList).add(elem)
             }
 
             tag.fieldNr == 87 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.packedBool = decoder.readPackedBool()
+                msg.packedBool += decoder.readPackedBool()
+            }
+
+            tag.fieldNr == 87 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = decoder.readBool()
+                (msg.packedBool as MutableList).add(elem)
             }
 
             tag.fieldNr == 88 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
-                msg.packedNestedEnum = decoder.readPackedEnum().map { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.fromNumber(it) }
+                msg.packedNestedEnum += decoder.readPackedEnum().map { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.fromNumber(it) }
+            }
+
+            tag.fieldNr == 88 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+                val elem = com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum())
+                (msg.packedNestedEnum as MutableList).add(elem)
+            }
+
+            tag.fieldNr == 89 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.unpackedInt32 += decoder.readPackedInt32()
             }
 
             tag.fieldNr == 89 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
@@ -1847,9 +1996,17 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 (msg.unpackedInt32 as MutableList).add(elem)
             }
 
+            tag.fieldNr == 90 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.unpackedInt64 += decoder.readPackedInt64()
+            }
+
             tag.fieldNr == 90 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 val elem = decoder.readInt64()
                 (msg.unpackedInt64 as MutableList).add(elem)
+            }
+
+            tag.fieldNr == 91 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.unpackedUint32 += decoder.readPackedUInt32()
             }
 
             tag.fieldNr == 91 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
@@ -1857,9 +2014,17 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 (msg.unpackedUint32 as MutableList).add(elem)
             }
 
+            tag.fieldNr == 92 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.unpackedUint64 += decoder.readPackedUInt64()
+            }
+
             tag.fieldNr == 92 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 val elem = decoder.readUInt64()
                 (msg.unpackedUint64 as MutableList).add(elem)
+            }
+
+            tag.fieldNr == 93 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.unpackedSint32 += decoder.readPackedSInt32()
             }
 
             tag.fieldNr == 93 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
@@ -1867,9 +2032,17 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 (msg.unpackedSint32 as MutableList).add(elem)
             }
 
+            tag.fieldNr == 94 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.unpackedSint64 += decoder.readPackedSInt64()
+            }
+
             tag.fieldNr == 94 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 val elem = decoder.readSInt64()
                 (msg.unpackedSint64 as MutableList).add(elem)
+            }
+
+            tag.fieldNr == 95 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.unpackedFixed32 += decoder.readPackedFixed32()
             }
 
             tag.fieldNr == 95 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED32 -> { 
@@ -1877,9 +2050,17 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 (msg.unpackedFixed32 as MutableList).add(elem)
             }
 
+            tag.fieldNr == 96 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.unpackedFixed64 += decoder.readPackedFixed64()
+            }
+
             tag.fieldNr == 96 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED64 -> { 
                 val elem = decoder.readFixed64()
                 (msg.unpackedFixed64 as MutableList).add(elem)
+            }
+
+            tag.fieldNr == 97 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.unpackedSfixed32 += decoder.readPackedSFixed32()
             }
 
             tag.fieldNr == 97 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED32 -> { 
@@ -1887,9 +2068,17 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 (msg.unpackedSfixed32 as MutableList).add(elem)
             }
 
+            tag.fieldNr == 98 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.unpackedSfixed64 += decoder.readPackedSFixed64()
+            }
+
             tag.fieldNr == 98 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED64 -> { 
                 val elem = decoder.readSFixed64()
                 (msg.unpackedSfixed64 as MutableList).add(elem)
+            }
+
+            tag.fieldNr == 99 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.unpackedFloat += decoder.readPackedFloat()
             }
 
             tag.fieldNr == 99 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED32 -> { 
@@ -1897,14 +2086,26 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 (msg.unpackedFloat as MutableList).add(elem)
             }
 
+            tag.fieldNr == 100 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.unpackedDouble += decoder.readPackedDouble()
+            }
+
             tag.fieldNr == 100 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED64 -> { 
                 val elem = decoder.readDouble()
                 (msg.unpackedDouble as MutableList).add(elem)
             }
 
+            tag.fieldNr == 101 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.unpackedBool += decoder.readPackedBool()
+            }
+
             tag.fieldNr == 101 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 val elem = decoder.readBool()
                 (msg.unpackedBool as MutableList).add(elem)
+            }
+
+            tag.fieldNr == 102 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
+                msg.unpackedNestedEnum += decoder.readPackedEnum().map { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.fromNumber(it) }
             }
 
             tag.fieldNr == 102 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
@@ -2459,15 +2660,15 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
         __result += optionalForeignMessage.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(19, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.NEG != optionalNestedEnum) { 
+    if (optionalNestedEnum != com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.FOO) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(21, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(optionalNestedEnum.number))
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO != optionalForeignEnum) { 
+    if (optionalForeignEnum != com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(22, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(optionalForeignEnum.number))
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.AliasedEnum.ALIAS_FOO != optionalAliasedEnum) { 
+    if (optionalAliasedEnum != com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.AliasedEnum.ALIAS_FOO) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(23, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(optionalAliasedEnum.number))
     }
 
@@ -2536,19 +2737,19 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
     }
 
     if (repeatedString.isNotEmpty()) { 
-        __result = repeatedString.sumOf { kotlinx.rpc.protobuf.internal.WireSize.string(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(44, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedString.sumOf { kotlinx.rpc.protobuf.internal.WireSize.string(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(44, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedBytes.isNotEmpty()) { 
-        __result = repeatedBytes.sumOf { kotlinx.rpc.protobuf.internal.WireSize.bytes(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(45, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedBytes.sumOf { kotlinx.rpc.protobuf.internal.WireSize.bytes(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(45, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedNestedMessage.isNotEmpty()) { 
-        __result = repeatedNestedMessage.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(48, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedNestedMessage.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(48, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedForeignMessage.isNotEmpty()) { 
-        __result = repeatedForeignMessage.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(49, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedForeignMessage.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(49, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedNestedEnum.isNotEmpty()) { 
@@ -2560,11 +2761,11 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
     }
 
     if (repeatedStringPiece.isNotEmpty()) { 
-        __result = repeatedStringPiece.sumOf { kotlinx.rpc.protobuf.internal.WireSize.string(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(54, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedStringPiece.sumOf { kotlinx.rpc.protobuf.internal.WireSize.string(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(54, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedCord.isNotEmpty()) { 
-        __result = repeatedCord.sumOf { kotlinx.rpc.protobuf.internal.WireSize.string(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(55, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedCord.sumOf { kotlinx.rpc.protobuf.internal.WireSize.string(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(55, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (packedInt32.isNotEmpty()) { 
@@ -2624,59 +2825,59 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
     }
 
     if (unpackedInt32.isNotEmpty()) { 
-        __result = unpackedInt32.sumOf { kotlinx.rpc.protobuf.internal.WireSize.int32(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(89, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedInt32.sumOf { kotlinx.rpc.protobuf.internal.WireSize.int32(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(89, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
     }
 
     if (unpackedInt64.isNotEmpty()) { 
-        __result = unpackedInt64.sumOf { kotlinx.rpc.protobuf.internal.WireSize.int64(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(90, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedInt64.sumOf { kotlinx.rpc.protobuf.internal.WireSize.int64(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(90, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
     }
 
     if (unpackedUint32.isNotEmpty()) { 
-        __result = unpackedUint32.sumOf { kotlinx.rpc.protobuf.internal.WireSize.uInt32(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(91, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedUint32.sumOf { kotlinx.rpc.protobuf.internal.WireSize.uInt32(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(91, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
     }
 
     if (unpackedUint64.isNotEmpty()) { 
-        __result = unpackedUint64.sumOf { kotlinx.rpc.protobuf.internal.WireSize.uInt64(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(92, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedUint64.sumOf { kotlinx.rpc.protobuf.internal.WireSize.uInt64(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(92, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
     }
 
     if (unpackedSint32.isNotEmpty()) { 
-        __result = unpackedSint32.sumOf { kotlinx.rpc.protobuf.internal.WireSize.sInt32(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(93, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedSint32.sumOf { kotlinx.rpc.protobuf.internal.WireSize.sInt32(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(93, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
     }
 
     if (unpackedSint64.isNotEmpty()) { 
-        __result = unpackedSint64.sumOf { kotlinx.rpc.protobuf.internal.WireSize.sInt64(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(94, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedSint64.sumOf { kotlinx.rpc.protobuf.internal.WireSize.sInt64(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(94, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
     }
 
     if (unpackedFixed32.isNotEmpty()) { 
-        __result = unpackedFixed32.sumOf { kotlinx.rpc.protobuf.internal.WireSize.fixed32(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(95, kotlinx.rpc.protobuf.internal.WireType.FIXED32) }
+        __result += unpackedFixed32.sumOf { kotlinx.rpc.protobuf.internal.WireSize.fixed32(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(95, kotlinx.rpc.protobuf.internal.WireType.FIXED32) }
     }
 
     if (unpackedFixed64.isNotEmpty()) { 
-        __result = unpackedFixed64.sumOf { kotlinx.rpc.protobuf.internal.WireSize.fixed64(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(96, kotlinx.rpc.protobuf.internal.WireType.FIXED64) }
+        __result += unpackedFixed64.sumOf { kotlinx.rpc.protobuf.internal.WireSize.fixed64(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(96, kotlinx.rpc.protobuf.internal.WireType.FIXED64) }
     }
 
     if (unpackedSfixed32.isNotEmpty()) { 
-        __result = unpackedSfixed32.sumOf { kotlinx.rpc.protobuf.internal.WireSize.sFixed32(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(97, kotlinx.rpc.protobuf.internal.WireType.FIXED32) }
+        __result += unpackedSfixed32.sumOf { kotlinx.rpc.protobuf.internal.WireSize.sFixed32(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(97, kotlinx.rpc.protobuf.internal.WireType.FIXED32) }
     }
 
     if (unpackedSfixed64.isNotEmpty()) { 
-        __result = unpackedSfixed64.sumOf { kotlinx.rpc.protobuf.internal.WireSize.sFixed64(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(98, kotlinx.rpc.protobuf.internal.WireType.FIXED64) }
+        __result += unpackedSfixed64.sumOf { kotlinx.rpc.protobuf.internal.WireSize.sFixed64(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(98, kotlinx.rpc.protobuf.internal.WireType.FIXED64) }
     }
 
     if (unpackedFloat.isNotEmpty()) { 
-        __result = unpackedFloat.sumOf { kotlinx.rpc.protobuf.internal.WireSize.float(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(99, kotlinx.rpc.protobuf.internal.WireType.FIXED32) }
+        __result += unpackedFloat.sumOf { kotlinx.rpc.protobuf.internal.WireSize.float(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(99, kotlinx.rpc.protobuf.internal.WireType.FIXED32) }
     }
 
     if (unpackedDouble.isNotEmpty()) { 
-        __result = unpackedDouble.sumOf { kotlinx.rpc.protobuf.internal.WireSize.double(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(100, kotlinx.rpc.protobuf.internal.WireType.FIXED64) }
+        __result += unpackedDouble.sumOf { kotlinx.rpc.protobuf.internal.WireSize.double(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(100, kotlinx.rpc.protobuf.internal.WireType.FIXED64) }
     }
 
     if (unpackedBool.isNotEmpty()) { 
-        __result = unpackedBool.sumOf { kotlinx.rpc.protobuf.internal.WireSize.bool(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(101, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedBool.sumOf { kotlinx.rpc.protobuf.internal.WireSize.bool(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(101, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
     }
 
     if (unpackedNestedEnum.isNotEmpty()) { 
-        __result = unpackedNestedEnum.sumOf { kotlinx.rpc.protobuf.internal.WireSize.enum(it.number) + kotlinx.rpc.protobuf.internal.WireSize.tag(102, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedNestedEnum.sumOf { kotlinx.rpc.protobuf.internal.WireSize.enum(it.number) + kotlinx.rpc.protobuf.internal.WireSize.tag(102, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
     }
 
     if (mapInt32Int32.isNotEmpty()) { 
@@ -2906,39 +3107,39 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
     }
 
     if (repeatedBoolWrapper.isNotEmpty()) { 
-        __result = repeatedBoolWrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(211, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedBoolWrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(211, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedInt32Wrapper.isNotEmpty()) { 
-        __result = repeatedInt32Wrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(212, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedInt32Wrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(212, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedInt64Wrapper.isNotEmpty()) { 
-        __result = repeatedInt64Wrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(213, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedInt64Wrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(213, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedUint32Wrapper.isNotEmpty()) { 
-        __result = repeatedUint32Wrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(214, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedUint32Wrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(214, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedUint64Wrapper.isNotEmpty()) { 
-        __result = repeatedUint64Wrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(215, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedUint64Wrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(215, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedFloatWrapper.isNotEmpty()) { 
-        __result = repeatedFloatWrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(216, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedFloatWrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(216, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedDoubleWrapper.isNotEmpty()) { 
-        __result = repeatedDoubleWrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(217, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedDoubleWrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(217, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedStringWrapper.isNotEmpty()) { 
-        __result = repeatedStringWrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(218, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedStringWrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(218, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedBytesWrapper.isNotEmpty()) { 
-        __result = repeatedBytesWrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(219, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedBytesWrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(219, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (presenceMask[12]) { 
@@ -2965,36 +3166,36 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
         __result += optionalValue.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(306, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
     }
 
-    if (com.google.protobuf.kotlin.NullValue.NULL_VALUE != optionalNullValue) { 
+    if (optionalNullValue != com.google.protobuf.kotlin.NullValue.NULL_VALUE) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(307, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(optionalNullValue.number))
     }
 
     if (repeatedDuration.isNotEmpty()) { 
-        __result = repeatedDuration.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(311, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedDuration.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(311, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedTimestamp.isNotEmpty()) { 
-        __result = repeatedTimestamp.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(312, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedTimestamp.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(312, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedFieldmask.isNotEmpty()) { 
-        __result = repeatedFieldmask.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(313, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedFieldmask.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(313, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedStruct.isNotEmpty()) { 
-        __result = repeatedStruct.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(324, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedStruct.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(324, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedAny.isNotEmpty()) { 
-        __result = repeatedAny.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(315, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedAny.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(315, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedValue.isNotEmpty()) { 
-        __result = repeatedValue.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(316, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedValue.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(316, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (repeatedListValue.isNotEmpty()) { 
-        __result = repeatedListValue.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(317, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedListValue.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(317, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
     }
 
     if (fieldname1 != 0) { 
@@ -4252,7 +4453,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
         encoder.writeString(fieldNr = 1, value = key)
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.NEG != value) { 
+    if (value != com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.FOO) { 
         encoder.writeEnum(fieldNr = 2, value = value.number)
     }
 }
@@ -4284,7 +4485,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
         __result += kotlinx.rpc.protobuf.internal.WireSize.string(key).let { kotlinx.rpc.protobuf.internal.WireSize.tag(1, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.NEG != value) { 
+    if (value != com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.FOO) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(2, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(value.number))
     }
 
@@ -4307,7 +4508,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
         encoder.writeString(fieldNr = 1, value = key)
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO != value) { 
+    if (value != com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO) { 
         encoder.writeEnum(fieldNr = 2, value = value.number)
     }
 }
@@ -4339,7 +4540,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
         __result += kotlinx.rpc.protobuf.internal.WireSize.string(key).let { kotlinx.rpc.protobuf.internal.WireSize.tag(1, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
     }
 
-    if (com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO != value) { 
+    if (value != com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO) { 
         __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(2, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(value.number))
     }
 
