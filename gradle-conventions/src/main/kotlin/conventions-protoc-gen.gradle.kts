@@ -18,17 +18,19 @@ dependencies {
     testImplementation(libs.kotlin.test)
 }
 
-tasks.jar {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    archiveClassifier = "all"
+if (project.name != "common") {
+    tasks.jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        archiveClassifier = "all"
 
-    // Protoc plugins are all fat jars basically (the ones built on jvm)
-    // be really careful of what you put in the classpath here
-    from(
-        configurations.runtimeClasspath.map { prop ->
-            prop.map { if (it.isDirectory()) it else zipTree(it) }
-        }
-    )
+        // Protoc plugins are all fat jars basically (the ones built on jvm)
+        // be really careful of what you put in the classpath here
+        from(
+            configurations.runtimeClasspath.map { prop ->
+                prop.map { if (it.isDirectory()) it else zipTree(it) }
+            }
+        )
+    }
 }
 
 kotlin {

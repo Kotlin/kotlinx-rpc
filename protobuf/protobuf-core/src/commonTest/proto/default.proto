@@ -1,0 +1,32 @@
+syntax = "proto2";
+
+// https://protobuf.dev/programming-guides/proto2/#default
+message WithDefaults {
+  optional double double = 1 [default = 2.0];
+  optional float float = 2 [default = 2.0];
+  optional int32 int32 = 3 [default = 2];
+  optional int64 int64 = 4 [default = 2];
+  optional uint32 uint32 = 5 [default = 2];
+  optional uint64 uint64 = 6 [default = 2];
+  optional sint32 sint32 = 7 [default = 2];
+  optional sint64 sint64 = 8 [default = 2];
+  optional fixed32 fixed32 = 9 [default = 2];
+  optional fixed64 fixed64 = 10 [default = 2];
+  optional sfixed32 sfixed32 = 11 [default = 2];
+  optional sfixed64 sfixed64 = 12 [default = 2];
+  optional bool bool = 13 [default = true];
+  optional string string = 14 [default = "str"];
+  optional bytes bytes = 15 [default = "bytes"];
+
+  optional Custom1 enum1 = 16;
+  optional Custom2 enum2 = 17 [default = BAZ];
+
+  enum Custom1 {
+    FOO = 1; // default
+  }
+
+  enum Custom2 {
+    BAR = 1; // default
+    BAZ = 2; // default
+  }
+}
