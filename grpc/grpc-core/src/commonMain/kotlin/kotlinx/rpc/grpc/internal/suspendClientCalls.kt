@@ -201,7 +201,7 @@ private fun <Response> channelResponseListener(
     },
     onClose = { status: Status, trailers: GrpcTrailers ->
         val cause = when {
-            status.code == StatusCode.OK -> null
+            status.statusCode == StatusCode.OK -> null
             status.getCause() is CancellationException -> status.getCause()
             else -> StatusException(status, trailers)
         }
