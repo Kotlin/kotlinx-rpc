@@ -18,4 +18,6 @@ message AllPrimitives {
   optional bool bool = 13;
   optional string string = 14;
   optional bytes bytes = 15;
+  string requiredString = 16;
+  bytes requiredBytes = 17;
 }
