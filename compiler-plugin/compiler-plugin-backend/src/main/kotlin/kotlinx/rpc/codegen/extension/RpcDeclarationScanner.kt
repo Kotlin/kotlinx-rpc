@@ -11,8 +11,13 @@ import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
+import org.jetbrains.kotlin.ir.expressions.IrConst
+import org.jetbrains.kotlin.ir.expressions.IrConstKind
+import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.util.dumpKotlinLike
+import org.jetbrains.kotlin.ir.util.getAnnotation
 import org.jetbrains.kotlin.ir.util.hasDefaultValue
+import org.jetbrains.kotlin.ir.util.kotlinFqName
 
 /**
  * This class scans user declared RPC service
@@ -24,6 +29,9 @@ import org.jetbrains.kotlin.ir.util.hasDefaultValue
 internal object RpcDeclarationScanner {
     fun scanServiceDeclaration(service: IrClass, ctx: RpcIrContext, logger: MessageCollector): ServiceDeclaration {
         var stubClass: IrClass? = null
+
+        val grpcAnnotation = service.getAnnotation(ctx.grpcAnnotation.owner.kotlinFqName)
+        val protoPackage = grpcAnnotation?.arguments?.getOrNull(0)?.asConstString() ?: ""
 
         val declarations = service.declarations.memoryOptimizedMap { declaration ->
             when (declaration) {
@@ -75,6 +83,7 @@ internal object RpcDeclarationScanner {
             service = service,
             stubClass = stubClassNotNull,
             methods = declarations.filterNotNull(),
+            protoPackage = protoPackage.trim()
         )
     }
 }
@@ -87,3 +96,7 @@ private fun unsupportedDeclaration(service: IrClass, declaration: IrDeclaration,
 
     return null
 }
+
+fun IrExpression.asConstString(): String =
+    (this as? IrConst)?.takeIf { it.kind == IrConstKind.String }?.value as? String
+        ?: error("Expected IrConst of kind String, got ${dumpKotlinLike()}")

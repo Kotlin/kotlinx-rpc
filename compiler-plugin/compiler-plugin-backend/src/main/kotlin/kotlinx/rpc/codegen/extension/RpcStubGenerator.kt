@@ -35,6 +35,8 @@ private object Stub {
 private object Descriptor {
     const val CALLABLE_MAP = "callableMap"
     const val CALLABLES = "callables"
+
+    // the kotlin class name (derived from java_package and name)
     const val FQ_NAME = "fqName"
     const val SIMPLE_NAME = "simpleName"
     const val GET_CALLABLE = "getCallable"
@@ -1102,7 +1104,7 @@ internal class RpcStubGenerator(
         }.apply {
             arguments {
                 values {
-                    +stringConst(declaration.fqName)
+                    +stringConst(declaration.serviceFqName)
 
                     +irCallProperty(
                         receiver = IrGetValueImpl(
@@ -1127,7 +1129,7 @@ internal class RpcStubGenerator(
      * // In scope: resolver: MessageCodecResolver
      *
      * methodDescriptor<<request-type>, <response-type>>(
-     *     fullMethodName = "${descriptor.fqName}/${callable.name}",
+     *     fullMethodName = "${descriptor.serviceFqName}/${callable.name}",
      *     requestCodec = <request-codec>,
      *     responseCodec = <response-codec>,
      *     type = MethodType.<method-type>,
@@ -1182,7 +1184,7 @@ internal class RpcStubGenerator(
 
                 values {
                     // fullMethodName
-                    +stringConst("${declaration.fqName}/${callable.name}")
+                    +stringConst("${declaration.serviceFqName}/${callable.name}")
 
                     // requestCodec
                     +irCodec(requestType, resolver)
