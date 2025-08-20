@@ -224,6 +224,7 @@ internal class NativeClientCall<Request, Response>(
             is BatchResult.Submitted -> {
                 callResult.future.onComplete {
                     val details = statusDetails.toByteArray().toKString()
+                    println("details: $details")
                     val status = Status(statusCode.value.toKotlin(), details, null)
                     val trailers = GrpcTrailers()
 

@@ -1,10 +1,12 @@
 syntax = "proto3";
 
-package grpc.examples.echo;
+package kotlinx.rpc.grpc.test;
 
 // EchoRequest is the request for echo.
 message EchoRequest {
   string message = 1;
+  uint32 timeout = 2;
+  optional uint32 serverStreamReps = 3;
 }
 
 // EchoResponse is the response for echo.
@@ -13,7 +15,7 @@ message EchoResponse {
 }
 
 // Echo is the echo service.
-service Echo {
+service EchoService {
   // UnaryEcho is unary echo.
   rpc UnaryEcho(EchoRequest) returns (EchoResponse) {}
   // ServerStreamingEcho is server side streaming.
