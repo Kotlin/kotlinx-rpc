@@ -61,6 +61,7 @@ kotlin {
             )
             extraOpts(
                 "-libraryPath", "${cinteropCLib.resolve("bazel-out/darwin_arm64-opt/bin")}",
+                "-libraryPath", "${cinteropCLib.resolve("out")}",
             )
         }
     }
