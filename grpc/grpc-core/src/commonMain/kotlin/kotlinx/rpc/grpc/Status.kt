@@ -32,7 +32,7 @@ public expect class Status {
 
 public expect fun Status(code: StatusCode, description: String? = null, cause: Throwable? = null): Status
 
-public expect val Status.code: StatusCode
+public expect val Status.statusCode: StatusCode
 
 public enum class StatusCode(public val value: Int) {
     OK(0),

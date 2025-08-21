@@ -18,11 +18,7 @@ import org.jetbrains.kotlin.ir.builders.declarations.*
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
-import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
-import org.jetbrains.kotlin.ir.symbols.IrPropertySymbol
-import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
-import org.jetbrains.kotlin.ir.symbols.IrSymbol
-import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
+import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.Name
@@ -39,6 +35,8 @@ private object Stub {
 private object Descriptor {
     const val CALLABLE_MAP = "callableMap"
     const val CALLABLES = "callables"
+
+    // the kotlin class name
     const val FQ_NAME = "fqName"
     const val SIMPLE_NAME = "simpleName"
     const val GET_CALLABLE = "getCallable"
@@ -915,7 +913,8 @@ internal class RpcStubGenerator(
         }.apply {
             overriddenSymbols = listOf(ctx.properties.rpcServiceDescriptorCallables)
 
-            val collectionType = ctx.irBuiltIns.collectionClass.typeWith(ctx.rpcCallable.typeWith(declaration.serviceType))
+            val collectionType =
+                ctx.irBuiltIns.collectionClass.typeWith(ctx.rpcCallable.typeWith(declaration.serviceType))
 
             addGetter {
                 returnType = collectionType
@@ -1086,7 +1085,7 @@ internal class RpcStubGenerator(
      *
      * ```kotlin
      * serviceDescriptor(
-     *     name = MyService, // simpleName
+     *     name = my.proto.package.MyService, // $declaration.serviceFqName
      *     methods = methodDescriptorMap.values, // Collection<MethodDescriptor<*, *>>
      *     schemaDescriptor = null, // for now, only null
      * )
@@ -1105,7 +1104,7 @@ internal class RpcStubGenerator(
         }.apply {
             arguments {
                 values {
-                    +stringConst(declaration.simpleName)
+                    +stringConst(declaration.serviceFqName)
 
                     +irCallProperty(
                         receiver = IrGetValueImpl(
@@ -1130,7 +1129,7 @@ internal class RpcStubGenerator(
      * // In scope: resolver: MessageCodecResolver
      *
      * methodDescriptor<<request-type>, <response-type>>(
-     *     fullMethodName = "${descriptor.simpleName}/${callable.name}",
+     *     fullMethodName = "${descriptor.serviceFqName}/${callable.name}",
      *     requestCodec = <request-codec>,
      *     responseCodec = <response-codec>,
      *     type = MethodType.<method-type>,
@@ -1185,7 +1184,7 @@ internal class RpcStubGenerator(
 
                 values {
                     // fullMethodName
-                    +stringConst("${declaration.simpleName}/${callable.name}")
+                    +stringConst("${declaration.serviceFqName}/${callable.name}")
 
                     // requestCodec
                     +irCodec(requestType, resolver)
@@ -1245,7 +1244,7 @@ internal class RpcStubGenerator(
         val protobufMessage = owner.getAnnotation(ctx.withCodecAnnotation.owner.kotlinFqName)
 
         return if (protobufMessage != null) {
-            val classReference = vsApi{ protobufMessage.argumentsVS }.single() as? IrClassReference
+            val classReference = vsApi { protobufMessage.argumentsVS }.single() as? IrClassReference
                 ?: error("Expected IrClassReference for ${ctx.withCodecAnnotation.owner.kotlinFqName} parameter")
 
             val codec = classReference.classType

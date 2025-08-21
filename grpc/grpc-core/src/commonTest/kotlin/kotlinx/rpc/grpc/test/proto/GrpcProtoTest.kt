@@ -16,13 +16,13 @@ abstract class GrpcProtoTest {
 
     abstract fun RpcServer.registerServices()
 
-    protected fun runGrpcTest(test: suspend (GrpcClient) -> Unit, ) = runTest {
+    protected fun runGrpcTest(test: suspend (GrpcClient) -> Unit) = runTest {
         serverMutex.withLock {
-            val grpcClient = GrpcClient("localhost", 8080) {
+            val grpcClient = GrpcClient("localhost", PORT) {
                 usePlaintext()
             }
 
-            val grpcServer = GrpcServer(8080, builder = {
+            val grpcServer = GrpcServer(PORT, builder = {
                 registerServices()
             })
 
@@ -33,5 +33,9 @@ abstract class GrpcProtoTest {
             grpcClient.shutdown()
             grpcClient.awaitTermination()
         }
+    }
+
+    companion object {
+        const val PORT = 8080
     }
 }
