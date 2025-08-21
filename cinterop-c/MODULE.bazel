@@ -9,6 +9,9 @@ bazel_dep(
     version = "0.1.1",
 )
 
+# required to build for apple targets (like iOS)
+bazel_dep(name = "apple_support", version = "1.22.1", repo_name = "build_bazel_apple_support")
+
 # Protobuf
 bazel_dep(
     name = "protobuf",
@@ -19,7 +22,6 @@ bazel_dep(
 # gRPC library
 bazel_dep(
     name = "grpc",
-    version = "1.73.1",
+    version = "1.74.1",
     repo_name = "com_github_grpc_grpc",
 )
-bazel_dep(name = "apple_support", version = "1.22.1", repo_name = "build_bazel_apple_support")
