@@ -38,7 +38,7 @@ internal class NativeClientCall<Request, Response>(
         callJob.invokeOnCompletion {
             when (it) {
                 is CancellationException -> {
-                    cancelInternal(grpc_status_code.GRPC_STATUS_CANCELLED, "Call got cancelled.")
+                    cancelInternal(grpc_status_code.GRPC_STATUS_UNAVAILABLE, "Channel shutdownNow invoked")
                 }
 
                 is Throwable -> {
