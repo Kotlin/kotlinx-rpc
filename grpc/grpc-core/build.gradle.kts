@@ -77,10 +77,7 @@ kotlin {
                 cinteropCLib.resolve("include"),
                 cinteropCLib.resolve("bazel-cinterop-c/external/grpc+/include"),
             )
-            extraOpts(
-                "-libraryPath", "${cinteropCLib.resolve("bazel-out/darwin_arm64-opt/bin")}",
-                "-libraryPath", "${cinteropCLib.resolve("out")}",
-            )
+            extraOpts("-libraryPath", "${cinteropCLib.resolve("out")}")
         }
     }
 }

@@ -18,7 +18,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultCInteropSettings
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
 import java.io.File
-import kotlin.io.resolve
 
 // works with the cinterop-c Bazel project
 fun KotlinMultiplatformExtension.configureCLibCInterop(
@@ -46,9 +45,9 @@ fun KotlinMultiplatformExtension.configureCLibCInterop(
     val buildCinteropCLib = project.tasks.register<Exec>("buildCinteropCLib") {
         group = "build"
         workingDir = cinteropCLib
-        commandLine("bash", "-c", "bazel build $bazelTask --config=release")
-        inputs.files(project.fileTree(cinteropCLib) { exclude("bazel-*/**") })
-        outputs.dir(cinteropCLib.resolve("bazel-bin"))
+        commandLine("bash", "-c", "${cinteropCLib}/build_all_targets.sh $bazelTask out")
+        inputs.files(project.fileTree(cinteropCLib) { exclude("bazel-*/**", "out/**") })
+        outputs.dir(cinteropCLib.resolve("out"))
 
         dependsOn(checkBazel)
     }
