@@ -205,7 +205,7 @@ class GrpcCoreClientTest {
         )
 
         channel.shutdown()
-        runBlocking { delay(100) }
+        runBlocking { channel.awaitTermination() }
         call.start(listener, GrpcTrailers())
         call.sendMessage(helloReq())
         call.halfClose()
