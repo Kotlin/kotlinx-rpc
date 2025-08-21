@@ -7,14 +7,14 @@ package kotlinx.rpc.grpc
 public actual class Status internal constructor(
     private val description: String?,
     internal val statusCode: StatusCode,
-    private val cause: Throwable?
+    private val cause: Throwable?,
 ) {
     public actual fun getDescription(): String? = description
 
     public actual fun getCause(): Throwable? = cause
 }
 
-public actual val Status.code: StatusCode
+public actual val Status.statusCode: StatusCode
     get() = this.statusCode
 
 public actual fun Status(

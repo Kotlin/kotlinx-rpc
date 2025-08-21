@@ -5,11 +5,10 @@
 package kotlinx.rpc.grpc.annotations
 
 import kotlinx.rpc.annotations.Rpc
-import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
  * Annotation used for marking gRPC services.
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.TYPE_PARAMETER)
 @Rpc
-public annotation class Grpc
+public annotation class Grpc(val protoPackage: String = "")
