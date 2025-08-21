@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen.extension
 
+import kotlinx.rpc.codegen.common.RpcClassId
 import kotlinx.rpc.codegen.common.RpcNames
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -17,7 +18,6 @@ import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.util.dumpKotlinLike
 import org.jetbrains.kotlin.ir.util.getAnnotation
 import org.jetbrains.kotlin.ir.util.hasDefaultValue
-import org.jetbrains.kotlin.ir.util.kotlinFqName
 
 /**
  * This class scans user declared RPC service
@@ -30,7 +30,7 @@ internal object RpcDeclarationScanner {
     fun scanServiceDeclaration(service: IrClass, ctx: RpcIrContext, logger: MessageCollector): ServiceDeclaration {
         var stubClass: IrClass? = null
 
-        val grpcAnnotation = service.getAnnotation(ctx.grpcAnnotation.owner.kotlinFqName)
+        val grpcAnnotation = service.getAnnotation(RpcClassId.grpcAnnotation.asSingleFqName())
         val protoPackage = grpcAnnotation?.arguments?.getOrNull(0)?.asConstString() ?: ""
 
         val declarations = service.declarations.memoryOptimizedMap { declaration ->

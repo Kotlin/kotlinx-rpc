@@ -36,7 +36,7 @@ private object Descriptor {
     const val CALLABLE_MAP = "callableMap"
     const val CALLABLES = "callables"
 
-    // the kotlin class name (derived from java_package and name)
+    // the kotlin class name
     const val FQ_NAME = "fqName"
     const val SIMPLE_NAME = "simpleName"
     const val GET_CALLABLE = "getCallable"
@@ -1085,7 +1085,7 @@ internal class RpcStubGenerator(
      *
      * ```kotlin
      * serviceDescriptor(
-     *     name = MyService, // simpleName
+     *     name = my.proto.package.MyService, // $declaration.serviceFqName
      *     methods = methodDescriptorMap.values, // Collection<MethodDescriptor<*, *>>
      *     schemaDescriptor = null, // for now, only null
      * )
