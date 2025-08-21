@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+package kotlinx.rpc.grpc.test;
 
 // The request message containing the user's name.
 message HelloRequest {
@@ -11,4 +12,10 @@ message HelloRequest {
 // The response message containing the greetings
 message HelloReply {
   string message = 1;
+}
+
+// The greeting service definition.
+service GreeterService {
+  // Sends a greeting
+  rpc SayHello(HelloRequest) returns (HelloReply) {}
 }

@@ -10,6 +10,7 @@ import kotlinx.rpc.codegen.checkers.util.functionParametersRecursionCheck
 import kotlinx.rpc.codegen.common.RpcClassId
 import kotlinx.rpc.codegen.vsApi
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.descriptors.isAnnotationClass
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory0
 import org.jetbrains.kotlin.diagnostics.reportOn
@@ -26,7 +27,10 @@ object FirRpcStrictModeClassChecker {
         context: CheckerContext,
         reporter: DiagnosticReporter,
     ) {
-        if (!context.session.predicateBasedProvider.matches(FirRpcPredicates.rpc, declaration)) {
+        if (!context.session.predicateBasedProvider.matches(FirRpcPredicates.rpc, declaration)
+            // skip checks for annotation classes
+            || declaration.classKind.isAnnotationClass
+        ) {
             return
         }
 
@@ -37,7 +41,10 @@ object FirRpcStrictModeClassChecker {
                 }
 
                 is FirNamedFunctionSymbol -> {
-                    fun reportOn(element: KtSourceElement?, checker: FirRpcStrictModeDiagnostics.() -> KtDiagnosticFactory0) {
+                    fun reportOn(
+                        element: KtSourceElement?,
+                        checker: FirRpcStrictModeDiagnostics.() -> KtDiagnosticFactory0,
+                    ) {
                         reporter.reportOn(element, FirRpcStrictModeDiagnostics.checker(), context)
                     }
 
