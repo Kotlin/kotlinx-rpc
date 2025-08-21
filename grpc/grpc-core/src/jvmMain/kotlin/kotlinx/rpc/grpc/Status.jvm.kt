@@ -30,7 +30,7 @@ internal fun StatusCode.toJvm(): io.grpc.Status.Code {
 
 public actual typealias Status = io.grpc.Status
 
-public actual val Status.code: StatusCode
+public actual val Status.statusCode: StatusCode
     get() = when (this.code) {
         io.grpc.Status.Code.OK -> StatusCode.OK
         io.grpc.Status.Code.CANCELLED -> StatusCode.CANCELLED
