@@ -17,12 +17,15 @@ class ServiceDeclaration(
     val service: IrClass,
     val stubClass: IrClass,
     val methods: List<Method>,
+    val protoPackage: String,
 ) {
     // todo change to extension after KRPC-178
     val isGrpc = service.hasAnnotation(RpcClassId.grpcAnnotation)
     val simpleName = service.kotlinFqName.shortName().asString()
     val fqName = service.kotlinFqName.asString()
 
+    // the name of the service based on the proto file (or @Grpc annotation)
+    val serviceFqName = if (protoPackage.isNotEmpty()) "$protoPackage.$simpleName" else simpleName
     val serviceType = service.defaultType
 
     sealed interface Callable {

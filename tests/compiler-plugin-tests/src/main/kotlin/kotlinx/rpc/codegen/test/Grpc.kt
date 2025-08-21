@@ -18,6 +18,7 @@ import kotlin.reflect.KType
  * To check in methods:
  * ```
  * bareMethodName
+ * fullMethodName
  * type
  * serviceName
  * isSafe
@@ -43,6 +44,7 @@ inline fun <@Grpc reified T : Any> grpcDelegate(): GrpcServiceDelegate {
 
 fun MethodDescriptor<*, *>.checkMethod(
     expectedMethodName: String,
+    expectedFullMethodName: String,
     expectedMethodType: MethodDescriptor.MethodType,
     expectedServiceName: String,
     expectedIsSafe: Boolean = true,
@@ -51,6 +53,7 @@ fun MethodDescriptor<*, *>.checkMethod(
 ): String? {
     return when {
         bareMethodName != expectedMethodName -> "wrong bareMethodName: $bareMethodName"
+        fullMethodName != expectedFullMethodName -> "wrong bareMethodName: $fullMethodName"
         type != expectedMethodType -> "wrong type: $type"
         serviceName != expectedServiceName -> "wrong service name: $fullMethodName"
         isSafe != expectedIsSafe -> "wrong isSafe: $isSafe"

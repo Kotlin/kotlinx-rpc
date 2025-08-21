@@ -44,6 +44,13 @@ interface BoxService {
     suspend fun custom(): Custom
 }
 
+
+@Grpc(protoPackage = "my.proto." + "package")
+interface ProtoPkgService {
+    suspend fun unit()
+}
+
+
 fun box(): String {
     val delegate = grpcDelegate<BoxService>()
 
@@ -53,39 +60,60 @@ fun box(): String {
 
     delegate.getMethodDescriptor("simple")!!.checkMethod(
         expectedMethodName = "simple",
+        expectedFullMethodName = "BoxService/simple",
         expectedMethodType = MethodDescriptor.MethodType.UNARY,
         expectedServiceName = "BoxService",
-    )?.let { return "Fail: $it"}
+    )?.let { return "Fail: $it" }
 
     delegate.getMethodDescriptor("unit")!!.checkMethod(
         expectedMethodName = "unit",
+        expectedFullMethodName = "BoxService/unit",
         expectedMethodType = MethodDescriptor.MethodType.UNARY,
         expectedServiceName = "BoxService",
-    )?.let { return "Fail: $it"}
+    )?.let { return "Fail: $it" }
 
     delegate.getMethodDescriptor("custom")!!.checkMethod(
         expectedMethodName = "custom",
+        expectedFullMethodName = "BoxService/custom",
         expectedMethodType = MethodDescriptor.MethodType.UNARY,
         expectedServiceName = "BoxService",
-    )?.let { return "Fail: $it"}
+    )?.let { return "Fail: $it" }
 
     delegate.getMethodDescriptor("clientStream")!!.checkMethod(
         expectedMethodName = "clientStream",
+        expectedFullMethodName = "BoxService/clientStream",
         expectedMethodType = MethodDescriptor.MethodType.CLIENT_STREAMING,
         expectedServiceName = "BoxService",
-    )?.let { return "Fail: $it"}
+    )?.let { return "Fail: $it" }
 
     delegate.getMethodDescriptor("serverStream")!!.checkMethod(
         expectedMethodName = "serverStream",
+        expectedFullMethodName = "BoxService/serverStream",
         expectedMethodType = MethodDescriptor.MethodType.SERVER_STREAMING,
         expectedServiceName = "BoxService",
-    )?.let { return "Fail: $it"}
+    )?.let { return "Fail: $it" }
 
     delegate.getMethodDescriptor("bidiStream")!!.checkMethod(
         expectedMethodName = "bidiStream",
+        expectedFullMethodName = "BoxService/bidiStream",
         expectedMethodType = MethodDescriptor.MethodType.BIDI_STREAMING,
         expectedServiceName = "BoxService",
-    )?.let { return "Fail: $it"}
+    )?.let { return "Fail: $it" }
+
+
+    //  test ProtoPkgService
+    val protoPkgDelegate = grpcDelegate<ProtoPkgService>()
+
+    if (protoPkgDelegate.serviceDescriptor.name != "my.proto.package.ProtoPkgService") {
+        return "Fail: Wrong service name: ${protoPkgDelegate.serviceDescriptor.name}"
+    }
+
+    protoPkgDelegate.getMethodDescriptor("unit")!!.checkMethod(
+        expectedMethodName = "unit",
+        expectedFullMethodName = "my.proto.package.ProtoPkgService/unit",
+        expectedMethodType = MethodDescriptor.MethodType.UNARY,
+        expectedServiceName = "my.proto.package.ProtoPkgService",
+    )?.let { return "Fail: $it" }
 
     return "OK"
 }

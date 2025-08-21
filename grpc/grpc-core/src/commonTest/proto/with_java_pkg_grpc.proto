@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+// the package the service interface should be written to
+option java_package = "kotlinx.rpc.grpc.test.withJavaPkg";
+
+// the proto package used for the service's full name
+package protopackage;
+
+service TheService {
+  rpc TheMethod(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}

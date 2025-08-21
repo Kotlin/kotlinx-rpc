@@ -5,18 +5,27 @@
 package kotlinx.rpc.grpc.test
 
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
+import kotlinx.rpc.grpc.GrpcServer
 import kotlinx.rpc.grpc.ManagedChannelBuilder
 import kotlinx.rpc.grpc.buildChannel
 import kotlinx.rpc.grpc.internal.*
+import kotlinx.rpc.registerService
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Duration
+
+private const val PORT = 50051
 
 /**
  * Tests for JVM and Native clients.
+ *
+ * To run the tests you must first start the server with the [EchoServiceImpl.runServer] method on JVM.
  */
-// TODO: Start echo service server automatically
+// TODO: Start external service server automatically (KRPC-208)
 class RawClientTest {
 
     @Test
@@ -86,7 +95,7 @@ class RawClientTest {
             .buildChannel()
 
         val methodDescriptor = methodDescriptor(
-            fullMethodName = "grpc.examples.echo.Echo/$methodName",
+            fullMethodName = "kotlinx.rpc.grpc.test.EchoService/$methodName",
             requestCodec = EchoRequestInternal.CODEC,
             responseCodec = EchoResponseInternal.CODEC,
             type = type,
@@ -101,6 +110,58 @@ class RawClientTest {
         } finally {
             channel.shutdown()
             channel.awaitTermination()
+        }
+    }
+}
+
+
+class EchoServiceImpl : EchoService {
+
+    override suspend fun UnaryEcho(message: EchoRequest): EchoResponse {
+        delay(message.timeout.toLong())
+        return EchoResponse { this.message = message.message }
+    }
+
+    override fun ServerStreamingEcho(message: EchoRequest): Flow<EchoResponse> {
+        val count = message.serverStreamReps ?: 5u
+        return flow {
+            repeat(count.toInt()) {
+                emit(EchoResponse { this.message = message.message })
+            }
+        }
+    }
+
+    override suspend fun ClientStreamingEcho(message: Flow<EchoRequest>): EchoResponse {
+        val result = message.toList().joinToString(", ") { it.message }
+        return EchoResponse { this.message = result }
+    }
+
+    override fun BidirectionalStreamingEcho(message: Flow<EchoRequest>): Flow<EchoResponse> {
+        return flow {
+            message.collect {
+                emit(EchoResponse { this.message = it.message })
+            }
+        }
+    }
+
+
+    /**
+     * Run this on JVM before executing tests.
+     */
+    @Test
+    fun runServer() = runTest(timeout = Duration.INFINITE) {
+        val server = GrpcServer(
+            port = PORT,
+            builder = { registerService<EchoService> { EchoServiceImpl() } }
+        )
+
+        try {
+            server.start()
+            println("Server started")
+            server.awaitTermination()
+        } finally {
+            server.shutdown()
+            server.awaitTermination()
         }
     }
 }

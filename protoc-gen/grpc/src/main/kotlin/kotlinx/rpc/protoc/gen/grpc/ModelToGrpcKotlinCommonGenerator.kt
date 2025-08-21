@@ -28,10 +28,13 @@ class ModelToGrpcKotlinCommonGenerator(
 
     @Suppress("detekt.LongMethod")
     private fun CodeGenerator.generatePublicService(service: ServiceDeclaration) {
+        val pkg = service.dec.file.`package`.orEmpty()
+        val annotationParams = if (pkg.isNotEmpty()) """(protoPackage = "$pkg")""" else ""
+
         clazz(
             name = service.name.simpleName,
             declarationType = CodeGenerator.DeclarationType.Interface,
-            annotations = listOf("@kotlinx.rpc.grpc.annotations.Grpc")
+            annotations = listOf("@kotlinx.rpc.grpc.annotations.Grpc$annotationParams")
         ) {
             service.methods.forEach { method ->
                 val inputType = method.inputType
