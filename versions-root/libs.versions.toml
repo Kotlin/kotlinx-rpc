@@ -31,7 +31,7 @@ develocity = "4.2"
 common-custom-user-data = "2.4.0"
 compat-patrouille = "0.0.2"
 lincheck = "3.2"
-grpc = "1.73.0"
+grpc = "1.74.0"
 grpc-kotlin = "1.4.1"
 protobuf = "4.31.1"
 protobuf-gradle = "0.9.5"
@@ -63,7 +63,7 @@ serialization-plugin = { module = "org.jetbrains.kotlin:kotlin-serialization-com
 serialization-plugin-forIde = { module = "org.jetbrains.kotlin:kotlinx-serialization-compiler-plugin-for-ide", version.ref = "kotlin-compiler" }
 kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
-kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections"}
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections" }
 
 # serialization
 serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "serialization" }
@@ -129,7 +129,7 @@ kotlin-js-wrappers = { module = "org.jetbrains.kotlin-wrappers:kotlin-js", versi
 intellij-util = { module = "com.jetbrains.intellij.platform:util", version.ref = "intellij" }
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 develocity = { module = "com.gradle:develocity-gradle-plugin", version.ref = "develocity" }
-common-custom-user-data = { module ="com.gradle:common-custom-user-data-gradle-plugin", version.ref = "common-custom-user-data" }
+common-custom-user-data = { module = "com.gradle:common-custom-user-data-gradle-plugin", version.ref = "common-custom-user-data" }
 lincheck = { module = "org.jetbrains.lincheck:lincheck", version.ref = "lincheck" }
 
 # gradle plugins as lib deps

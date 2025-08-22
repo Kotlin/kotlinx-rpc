@@ -8,4 +8,11 @@ headerFilter= kgrpc.h grpc/slice.h grpc/byte_buffer.h grpc/grpc.h \
 noStringConversion = grpc_slice_from_copied_buffer my_grpc_slice_from_copied_buffer
 strictEnums = grpc_status_code grpc_connectivity_state grpc_call_error
 
-staticLibraries = libkgrpc_static.a
+
+staticLibraries.macos_arm64 = libkgrpc_static.macos_arm64.a
+staticLibraries.ios_arm64 = libkgrpc_static.ios_arm64.a
+staticLibraries.ios_simulator_arm64 = libkgrpc_static.ios_simulator_arm64.a
+staticLibraries.ios_simulator_x64 = libkgrpc_static.ios_simulator_x64.a
+# TODO: Uncomment when activating WatchOS
+# staticLibraries.watchos_arm64 = libkgrpc_static.watchos_arm64.a
+# staticLibraries.watchos_simulator_arm64 = libkgrpc_static.watchos_simulator_arm64.a
