@@ -25,6 +25,7 @@ CONFIG=release
 MACOS=@build_bazel_apple_support//platforms:macos_arm64
 IOS_DEV=@build_bazel_apple_support//platforms:ios_arm64
 IOS_SIM=@build_bazel_apple_support//platforms:ios_sim_arm64
+IOS_SIM_X64=@build_bazel_apple_support//platforms:ios_x86_64
 WATCHOS_ARM64_32_DEV=@build_bazel_apple_support//platforms:watchos_arm64_32
 WATCHOS_ARM64_SIM=@build_bazel_apple_support//platforms:watchos_arm64
 
@@ -45,6 +46,7 @@ build_one() {
 build_one "$MACOS" macos_arm64 macos
 build_one "$IOS_DEV" ios_arm64 ios
 build_one "$IOS_SIM" ios_sim_arm64 ios
+build_one "$IOS_SIM_X64" ios_sim_x64 ios
 # TODO: Uncomment when activating WatchOS
 #build_one "$WATCHOS_ARM64_32_DEV" watchos_arm64_32 watchos
 #build_one "$WATCHOS_ARM64_SIM" watchos_sim_arm64 watchos

@@ -7,6 +7,7 @@ noStringConversion = pw_encoder_write_string
 staticLibraries.macos_arm64 = libprotowire_static.macos_arm64.a
 staticLibraries.ios_arm64 = libprotowire_static.ios_arm64.a
 staticLibraries.ios_simulator_arm64 = libprotowire_static.ios_sim_arm64.a
+staticLibraries.ios_simulator_x64 = libprotowire_static.ios_sim_x64.a
 # TODO: Uncomment when activating WatchOS
 # staticLibraries.watchos_arm64 = libprotowire_static.watchos_arm64_32.a
 # staticLibraries.watchos_simulator_arm64 = libprotowire_static.watchos_sim_arm64.a
