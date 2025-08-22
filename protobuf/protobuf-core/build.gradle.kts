@@ -59,9 +59,7 @@ kotlin {
             includeDirs(
                 cinteropCLib.resolve("include")
             )
-            extraOpts(
-                "-libraryPath", "${cinteropCLib.resolve("bazel-out/darwin_arm64-opt/bin")}",
-            )
+            extraOpts("-libraryPath", "${cinteropCLib.resolve("out")}")
         }
     }
 }
