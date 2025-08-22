@@ -1,4 +1,4 @@
 # we build the cc_static library bundled with all dependencies
-build --experimental_cc_static_library
+build --experimental_cc_static_library  --experimental_platform_in_output_dir
 
 build:release --compilation_mode=opt --strip=always
