@@ -1,9 +1,11 @@
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
 load("@rules_cc//cc:defs.bzl", "cc_library")
 
 cc_static_library(
-    name = "kgrpc_static",
+    name = "kgrpc_fat",
     deps = [
         ":kgrpc",
+        "//grpc_dep:grpc_core_prebuilt",
     ],
 )
 
@@ -15,12 +17,12 @@ cc_library(
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [
-        "@com_github_grpc_grpc//:grpc",
+        "//grpc_dep:grpc_core_prebuilt",
     ],
 )
 
 cc_static_library(
-    name = "protowire_static",
+    name = "protowire_fat",
     deps = [
         ":protowire",
     ],
@@ -34,6 +36,13 @@ cc_library(
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [
-        "@com_google_protobuf//:protobuf_lite",
+        "@com_github_protobuffers_protobuf//:protobuf_lite",
+    ],
+)
+
+cc_binary(
+    name = "grpc_flat",
+    deps = [
+        "//grpc_dep:grpc_core_prebuilt",
     ],
 )

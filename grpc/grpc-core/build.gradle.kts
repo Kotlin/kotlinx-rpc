@@ -7,6 +7,7 @@
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import util.configureCLibCInterop
+import util.configureCLibDependency
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -70,16 +71,26 @@ kotlin {
         }
     }
 
-    configureCLibCInterop(project, ":kgrpc_static") { cinteropCLib ->
+    configureCLibCInterop(project, ":kgrpc_fat") { cLibSource, cLibOutDir ->
         @Suppress("unused")
         val libkgrpc by creating {
             includeDirs(
-                cinteropCLib.resolve("include"),
-                cinteropCLib.resolve("bazel-cinterop-c/external/grpc+/include"),
+                cLibSource.resolve("include"),
+                cLibSource.resolve("grpc_dep/include"),
+                cLibSource.resolve("bazel-cinterop-c/external/grpc+/include"),
             )
-            extraOpts("-libraryPath", "${cinteropCLib.resolve("out")}")
+            extraOpts("-libraryPath", "$cLibOutDir")
         }
     }
+
+    configureCLibDependency(
+        project,
+        bazelTask = "//grpc_dep:grpc_fat",
+        bazelIncludeZipTask = "//grpc_dep:grpc_include",
+        dependencyVersion = "v1.74.1",
+        dependencyNamespace = "com_github_grpc_grpc"
+    )
+
 }
 
 configureLocalProtocGenDevelopmentDependency()

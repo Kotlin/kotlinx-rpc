@@ -7,7 +7,11 @@ package util
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
+import org.gradle.api.file.Directory
+import org.gradle.api.file.RegularFile
 import org.gradle.api.tasks.Exec
+import org.gradle.api.tasks.TaskContainer
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -16,17 +20,21 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
 import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.konan.target.KonanTarget
+import util.other.localProperties
+import util.tasks.BazelBuildTask
+import util.tasks.PublishCLibDependencyTask
 import java.io.File
 
 // works with the cinterop-c Bazel project
 fun KotlinMultiplatformExtension.configureCLibCInterop(
     project: Project,
     bazelTask: String,
-    configureCinterop: NamedDomainObjectContainer<DefaultCInteropSettings>.(cinteropCLib: File) -> Unit,
+    configureCinterop: NamedDomainObjectContainer<DefaultCInteropSettings>.(cLibSource: File, cLibOutDir: File) -> Unit,
 ) {
-    val globalRootDir: String by project.extra
+    val buildTargetName = bazelTask.split(":").last()
+    val cLibSource = project.cinteropLibDir
+    val cLibOutDir = project.bazelBuildDir.dir(buildTargetName).asFile
 
-    val cinteropCLib = project.layout.projectDirectory.dir("$globalRootDir/cinterop-c").asFile
 
     // TODO: Replace function implementation, so it does not use an internal API
     fun findProgram(name: String) = org.gradle.internal.os.OperatingSystem.current().findInPath(name)
@@ -42,31 +50,22 @@ fun KotlinMultiplatformExtension.configureCLibCInterop(
     }
 
     targets.withType<KotlinNativeTarget>().configureEach {
-        val buildTargetName = bazelTask.split(":").last()
-        // bazel library build task
-        val taskName = "buildCLib${buildTargetName.capitalized()}_$targetName"
-        val buildCinteropCLib = project.tasks.register<Exec>(taskName) {
-            val platform = bazelPlatformName
-            val os = bazelOsName
+        // the name used for the static library files (e.g. iosSimulatorArm64 -> ios_simulator_arm64)
+        val platformShortName = konanTarget.visibleName
+        val fileName = "lib$buildTargetName.$platformShortName.a"
+        val outFile = project.bazelBuildDir.file("$buildTargetName/$fileName")
 
-            // the name used for the static library files (e.g. iosSimulatorArm64 -> ios_simulator_arm64)
-            val platformShortName = konanTarget.visibleName
-            val fileName = "lib$buildTargetName.$platformShortName.a"
-            val outFile = cinteropCLib.resolve("out").resolve(fileName)
-
-            group = "build"
-            workingDir = cinteropCLib
-            commandLine("bash", "-c", "./build_target.sh $bazelTask $outFile $platform $os")
-            inputs.files(project.fileTree(cinteropCLib) { exclude("bazel-*/**", "out/**") })
-            outputs.files(outFile)
-
-            dependsOn(checkBazel)
-        }
+        val buildCinteropCLib = project.tasks.registerBuildClibTask(
+            name = "build${canonicalCLibTaskPostfix(buildTargetName)}",
+            bazelTask = bazelTask,
+            outFile = outFile,
+            target = this,
+        )
 
         // cinterop klib build config
         compilations.getByName("main") {
             cinterops {
-                configureCinterop(cinteropCLib)
+                configureCinterop(cLibSource, cLibOutDir)
             }
 
             cinterops.all {
@@ -80,6 +79,109 @@ fun KotlinMultiplatformExtension.configureCLibCInterop(
         }
     }
 }
+
+
+/**
+ * Creates tasks to build and publish a C library dependency on the
+ * [Jetbrains Space package repository](https://jetbrains.team/p/krpc/packages/files/bazel-build-deps).
+ *
+ * @param project The Gradle project in which this configuration is applied.
+ * @param bazelTask The Bazel task responsible for building the C library.
+ * @param dependencyVersion The version of the C library dependency to be published.
+ * @param dependencyNamespace The namespace under which the C library dependency will be published.
+ */
+fun KotlinMultiplatformExtension.configureCLibDependency(
+    project: Project,
+    bazelTask: String,
+    bazelIncludeZipTask: String,
+    dependencyVersion: String,
+    dependencyNamespace: String,
+) {
+    val cinteropCLib = project.cinteropLibDir
+    val buildTargetName = bazelTask.split(":").last()
+
+    targets.withType<KotlinNativeTarget>().configureEach {
+        val platformShortName = konanTarget.visibleName
+        val fileName = "lib$buildTargetName.$platformShortName.a"
+
+        val buildCLib = project.tasks.registerBuildClibTask(
+            name = "build${canonicalCLibTaskPostfix(buildTargetName)}",
+            bazelTask = bazelTask,
+            outFile = project.bazelBuildDir.file("${buildTargetName}/$fileName"),
+            target = this,
+        )
+
+        val publishTaskName = "publish${canonicalCLibTaskPostfix(buildTargetName)}"
+        project.tasks.register<PublishCLibDependencyTask>(publishTaskName) {
+            dependsOn(buildCLib)
+
+            file = buildCLib.get().outputs.files.singleFile
+            namespace = dependencyNamespace
+            version = dependencyVersion
+            artifactName = fileName
+            token = project.localProperties().getProperty("kotlinx.rpc.team.space.packages.token")
+        }
+    }
+
+    val bundleInclude = project.tasks.register<BazelBuildTask>("bundleIncludeZip${buildTargetName.capitalized()}") {
+        bazelProjectDir = cinteropCLib
+        bazelBuildTask = bazelIncludeZipTask
+        outputFile = project.bazelBuildDir.file("${buildTargetName}/include.zip").asFile
+    }
+
+    val publishInclude =
+        project.tasks.register<PublishCLibDependencyTask>("publishIncludeZip${buildTargetName.capitalized()}") {
+            dependsOn(bundleInclude)
+            file = bundleInclude.get().outputFile
+            namespace = dependencyNamespace
+            version = dependencyVersion
+            artifactName = "include.zip"
+            token = project.localProperties().getProperty("kotlinx.rpc.team.space.packages.token")
+        }
+
+    project.tasks.register("publishAllTargetsForCLib${buildTargetName.capitalized()}ToSpace") {
+        group = "publishing"
+        dependsOn(publishInclude)
+        targets.withType<KotlinNativeTarget>().forEach { target ->
+            dependsOn("publish${target.canonicalCLibTaskPostfix(buildTargetName)}")
+        }
+    }
+}
+
+private val Project.bazelBuildDir: Directory
+    get() = layout.buildDirectory.dir("bazel-out").get()
+
+
+private fun KotlinNativeTarget.canonicalCLibTaskPostfix(buildTargetName: String): String {
+    return "CLib${buildTargetName.capitalized()}_$targetName"
+}
+
+private fun TaskContainer.registerBuildClibTask(
+    name: String,
+    bazelTask: String,
+    outFile: RegularFile,
+    target: KotlinNativeTarget,
+): TaskProvider<Exec> {
+    return register<Exec>(name) {
+        val platform = target.bazelPlatformName
+        val os = target.bazelOsName
+
+        group = "build"
+        workingDir = project.cinteropLibDir
+        commandLine("bash", "-c", "./build_target.sh $bazelTask $outFile $platform $os")
+        inputs.files(project.fileTree(project.cinteropLibDir) { exclude("bazel-*/**", "out/**") })
+        outputs.files(outFile)
+
+        // TODO: how to register the task idempotently?
+        // dependsOn(checkBazel)
+    }
+}
+
+private val Project.cinteropLibDir: File
+    get() {
+        val globalRootDir: String by project.extra
+        return layout.projectDirectory.dir("$globalRootDir/cinterop-c").asFile
+    }
 
 /**
  * Returns the Bazel platform name for the given [KotlinNativeTarget].
