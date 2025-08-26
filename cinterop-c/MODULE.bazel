@@ -3,8 +3,6 @@ module(
     version = "0.1",
 )
 
-http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
-
 # rules_cc for cc_library support
 bazel_dep(
     name = "rules_cc",
@@ -36,37 +34,4 @@ bazel_dep(
     name = "grpc",
     version = GRPC_VERSION,
     repo_name = "com_github_grpc_grpc",
-)
-
-## gRPC pre-built
-
-local_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:local.bzl", "local_repository")
-
-local_repository(
-    name = "prebuilt_deps",
-    path = "prebuilt-deps",
-)
-
-http_file(
-    name = "grpc_ios_arm64",
-    sha256 = "7bc13a15c59850048e77b5719ea262a6fcc22884ab42c9f14f38859200faac9b",
-    urls = [GRPC_BASE + "ios_arm64.a"],
-)
-
-http_file(
-    name = "grpc_ios_sim_arm64",
-    sha256 = "55fde875508372860125ee8505ef4e84b95c9620744378a99f8f4095292dcae5",
-    urls = [GRPC_BASE + "ios_simulator_arm64.a"],
-)
-
-http_file(
-    name = "grpc_ios_x64",
-    sha256 = "7544113fe9b6c9d0a57c8b8864b5272e01e3a64ea36cd0802d4a76e98ad5e232",
-    urls = [GRPC_BASE + "ios_x64.a"],
-)
-
-http_file(
-    name = "grpc_macos_arm64",
-    sha256 = "6cf466a285832ecd0f41041164c412e9b541388210058310d7bb59f6a27d09de",
-    urls = [GRPC_BASE + "macos_arm64.a"],
 )

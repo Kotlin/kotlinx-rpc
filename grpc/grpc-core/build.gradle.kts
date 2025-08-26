@@ -79,7 +79,6 @@ kotlin {
             includeDirs(
                 cLibSource.resolve("include"),
                 cLibSource.resolve("$grpcPrebuiltDir/include"),
-                cLibSource.resolve("bazel-cinterop-c/external/grpc+/include"),
             )
             extraOpts("-libraryPath", "$grpcPrebuiltDir")
             extraOpts("-libraryPath", "$cLibOutDir")
@@ -88,7 +87,8 @@ kotlin {
 
     configureCLibDependency(
         project,
-        bazelTask = "//prebuilt-deps/grpc_fat:grpc_fat"
+        bazelTask = "//prebuilt-deps/grpc_fat:grpc_fat",
+        bazelExtractIncludeTask = "//prebuilt-deps/grpc_fat:grpc_include_dir"
     )
 
 }

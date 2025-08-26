@@ -4,7 +4,6 @@
 
 package util
 
-import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
@@ -30,20 +29,6 @@ fun KotlinMultiplatformExtension.configureCLibCInterop(
     val buildTargetName = bazelTask.split(":").last()
     val cLibSource = project.cinteropLibDir
     val cLibOutDir = project.bazelBuildDir.dir(buildTargetName).asFile
-
-
-    // TODO: Replace function implementation, so it does not use an internal API
-    fun findProgram(name: String) = org.gradle.internal.os.OperatingSystem.current().findInPath(name)
-    val checkBazel = project.tasks.register("checkBazel") {
-        doLast {
-            val bazelPath = findProgram("bazel")
-            if (bazelPath != null) {
-                logger.debug("bazel: {}", bazelPath)
-            } else {
-                throw GradleException("'bazel' not found on PATH. Please install Bazel (https://bazel.build/).")
-            }
-        }
-    }
 
     targets.withType<KotlinNativeTarget>().configureEach {
         // the name used for the static library files (e.g. iosSimulatorArm64 -> ios_simulator_arm64)
@@ -118,6 +103,7 @@ fun KotlinMultiplatformExtension.configureCLibDependency(
 
     if (bazelExtractIncludeTask != null) {
         project.tasks.register<Exec>("buildIncludeDirCLib${buildTargetName.capitalized()}") {
+            dependsOn("checkBazel")
             group = "build"
             workingDir = project.cinteropLibDir
             commandLine(
@@ -169,8 +155,7 @@ private fun TaskContainer.registerBuildClibTask(
         inputs.files(project.fileTree(project.cinteropLibDir) { exclude("bazel-*/**", "prebuilt-deps/**") })
         outputs.files(outFile)
 
-        // TODO: how to register the task idempotently?
-        // dependsOn(checkBazel)
+        dependsOn("checkBazel")
     }
 }
 

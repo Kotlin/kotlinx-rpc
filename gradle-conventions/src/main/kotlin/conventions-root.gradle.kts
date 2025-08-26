@@ -2,23 +2,12 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import util.other.capitalized
 import util.other.isPublicModule
 import util.other.libs
-import util.other.maybeNamed
 import util.setupPage
-import util.tasks.ValidatePublishedArtifactsTask
-import util.tasks.configureNpm
-import util.tasks.registerChangelogTask
-import util.tasks.registerDumpPlatformTableTask
-import util.tasks.registerVerifyPlatformTableTask
-import kotlin.io.path.exists
-import kotlin.io.path.isDirectory
-import kotlin.io.path.listDirectoryEntries
-import kotlin.io.path.name
-import kotlin.io.path.readText
+import util.tasks.*
 import java.nio.file.Path
-import kotlin.io.path.createFile
+import kotlin.io.path.*
 
 plugins {
     id("org.jetbrains.dokka")
@@ -118,6 +107,20 @@ gradle.afterProject {
                 "'gradle.properties' file in ${parent.name} included project is not up-to-date with root. " +
                         "Please, run `./gradlew ${updateProperties.name}"
             )
+        }
+    }
+}
+
+
+tasks.register<Exec>("checkBazel") {
+    commandLine("which", "bazel")
+    isIgnoreExitValue = true
+    doLast {
+        if (executionResult.get().exitValue == 0) {
+            val path = standardOutput.toString().trim()
+            logger.debug("bazel: {}", path)
+        } else {
+            throw GradleException("'bazel' not found on PATH. Please install Bazel (https://bazel.build/).")
         }
     }
 }

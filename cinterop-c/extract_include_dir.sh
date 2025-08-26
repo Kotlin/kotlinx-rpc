@@ -6,14 +6,14 @@
 set -Eeuo pipefail
 trap 'echo "ERROR: Build failed at ${BASH_SOURCE}:${LINENO}" >&2' ERR
 
-# Builds a static library for a specific platform (os/arch).
+# Extract all headers in the /include directory of the given target.
 #
 # Usage:
-#   ./build_target.sh //path:libtarget out_dir <platform> <short> <os>
+#   ./extract_include_dir.sh <target> <output-directory>
 # Example:
-#   ./build_target.sh :protowire_static out @build_bazel_apple_support//platforms:ios_arm64 ios_arm64 ios
+#   ./extract_include_dir.sh //prebuilt-deps/grpc_fat:grpc_fat prebuilt-deps/grpc_fat
 #
-# The example will produce ./out/libprotowire_static.ios_arm64.a
+# The example will produce the prebuilt-deps/grpc_fat/include directory with all headers.
 
 LABEL="${1:?need bazel target label}"
 DST="${2:?need output destination}"
