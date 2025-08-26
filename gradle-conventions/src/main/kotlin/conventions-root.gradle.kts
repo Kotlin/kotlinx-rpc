@@ -6,7 +6,6 @@ import util.other.isPublicModule
 import util.other.libs
 import util.setupPage
 import util.tasks.*
-import java.io.OutputStream
 import java.nio.file.Path
 import kotlin.io.path.*
 
@@ -116,7 +115,7 @@ gradle.afterProject {
 tasks.register<Exec>("checkBazel") {
     commandLine("which", "bazel")
     isIgnoreExitValue = true
-    standardOutput = OutputStream.nullOutputStream()
+//    standardOutput = ByteArrayOutputStream()
     doLast {
         if (executionResult.get().exitValue != 0) {
             throw GradleException("'bazel' not found on PATH. Please install Bazel (https://bazel.build/).")

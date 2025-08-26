@@ -7,6 +7,7 @@ package util
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
@@ -76,7 +77,11 @@ fun KotlinMultiplatformExtension.configureCLibDependency(
     project: Project,
     bazelTask: String,
     bazelExtractIncludeTask: String? = null,
+    bazelExtractIncludeOutputDir: Provider<Directory>? = null,
 ) {
+    require((bazelExtractIncludeTask == null) == (bazelExtractIncludeOutputDir == null)) {
+        "Either both bazelExtractIncludeTask and bazelExtractIncludeOutputDir must be specified or neither."
+    }
     val buildTargetName = bazelTask.split(":").last()
     val prebuiltLibDir = project.cLibPrebuiltDepsDir.resolve(buildTargetName)
 
@@ -102,6 +107,7 @@ fun KotlinMultiplatformExtension.configureCLibDependency(
     }
 
     if (bazelExtractIncludeTask != null) {
+        val includeDir = bazelExtractIncludeOutputDir!!.get().asFile
         project.tasks.register<Exec>("buildIncludeDirCLib${buildTargetName.capitalized()}") {
             dependsOn(":checkBazel")
             group = "build"
@@ -109,9 +115,9 @@ fun KotlinMultiplatformExtension.configureCLibDependency(
             commandLine(
                 "bash",
                 "-c",
-                "./extract_include_dir.sh //prebuilt-deps/grpc_fat:grpc_include_dir $prebuiltLibDir"
+                "./extract_include_dir.sh //prebuilt-deps/grpc_fat:grpc_include_dir $includeDir"
             )
-            outputs.dir(prebuiltLibDir.resolve("include"))
+            outputs.dir(includeDir.resolve("include"))
         }
     }
 

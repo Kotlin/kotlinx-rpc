@@ -28,6 +28,8 @@ def _include_dir_impl(ctx):
     outdir = ctx.actions.declare_directory(ctx.label.name + "_includes")
 
     ctx.actions.write(manifest, "\n".join([f.path for f in hdrs]))
+
+    # copy them to some output directory
     ctx.actions.run_shell(
         inputs = hdrs + [manifest],
         outputs = [outdir],
@@ -57,9 +59,33 @@ PY
         HeaderInfo(headers_dir = outdir, headers = depset(hdrs)),
     ]
 
+# rule to copy the include directory of some target to some location
 include_dir = rule(
     implementation = _include_dir_impl,
     attrs = {
         "target": attr.label(mandatory = True),
     },
+)
+
+def _cc_headers_only_impl(ctx):
+    dep_cc = ctx.attr.dep[CcInfo].compilation_context
+
+    # keep only source headers; this skips generated headers and their actions.
+    all_hdrs = dep_cc.headers.to_list()
+    src_hdrs = [f for f in all_hdrs if getattr(f, "is_source", False)]
+    cc_ctx = cc_common.create_compilation_context(
+        headers = depset(src_hdrs),
+        includes = dep_cc.includes,
+        quote_includes = dep_cc.quote_includes,
+        system_includes = dep_cc.system_includes,
+        framework_includes = dep_cc.framework_includes,
+        defines = dep_cc.defines,
+    )
+    return [CcInfo(compilation_context = cc_ctx)]
+
+# rule to build a CcInfo that only contains the headers of a given CcInfo target.
+# this allows us to combine the headers of the dependency sources with our pre-compiled dependencies.
+cc_headers_only = rule(
+    implementation = _cc_headers_only_impl,
+    attrs = {"dep": attr.label(mandatory = True, providers = [CcInfo])},
 )

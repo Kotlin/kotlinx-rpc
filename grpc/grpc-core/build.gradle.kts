@@ -71,6 +71,8 @@ kotlin {
         }
     }
 
+
+    val grpcIncludeDir = project.layout.buildDirectory.dir("bazel-out/grpc-include")
     configureCLibCInterop(project, ":kgrpc") { cLibSource, cLibOutDir ->
         val grpcPrebuiltDir = cLibSource.resolve("prebuilt-deps/grpc_fat")
 
@@ -88,7 +90,8 @@ kotlin {
     configureCLibDependency(
         project,
         bazelTask = "//prebuilt-deps/grpc_fat:grpc_fat",
-        bazelExtractIncludeTask = "//prebuilt-deps/grpc_fat:grpc_include_dir"
+        bazelExtractIncludeTask = "//prebuilt-deps/grpc_fat:grpc_include_dir",
+        bazelExtractIncludeOutputDir = grpcIncludeDir,
     )
 
 }

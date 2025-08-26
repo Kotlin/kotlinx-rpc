@@ -1,5 +1,5 @@
 load("@rules_cc//cc:defs.bzl", "cc_import", "cc_library")
-load("//:tools/collect_headers.bzl", "include_dir")
+load("//:tools/collect_headers.bzl", "cc_headers_only", "include_dir")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -19,19 +19,24 @@ include_dir(
 
 #### Targets for pre-built dependency ####
 
+# extract only the header files from grpc without compiling it
+cc_headers_only(
+    name = "grpc_hdrs_ccinfo",
+    dep = "@com_github_grpc_grpc//:grpc",
+)
+
 cc_library(
     name = "grpc_core_prebuilt",
-    hdrs = glob(["include/**"]),
-    includes = ["include"],
     visibility = ["//visibility:public"],
-    # pick the right prebuilt .a:
-    deps = select({
-        ":ios_device_arm64": [":grpc_core_ios_arm64"],
-        ":ios_simulator_arm64": [":grpc_core_ios_sim_arm64"],
-        ":ios_simulator_x64": [":grpc_core_ios_x64"],
-        ":macos_arm64": [":grpc_core_macos_arm64"],
-        "//conditions:default": [],
-    }),
+    deps = [":grpc_hdrs_ccinfo"] +
+           # pick the right prebuilt .a:
+           select({
+               ":ios_device_arm64": [":grpc_core_ios_arm64"],
+               ":ios_simulator_arm64": [":grpc_core_ios_sim_arm64"],
+               ":ios_simulator_x64": [":grpc_core_ios_x64"],
+               ":macos_arm64": [":grpc_core_macos_arm64"],
+               "//conditions:default": [],
+           }),
 )
 
 config_setting(

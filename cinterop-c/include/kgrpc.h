@@ -23,6 +23,12 @@ typedef struct {
     void *user_data;
 } kgrpc_cb_tag;
 
+
+ /*
+ * Call to grpc_iomgr_run_in_background(), which is not exposed as extern "C" and therefore must be wrapped.
+ */
+ bool kgrpc_iomgr_run_in_background();
+
 #ifdef __cplusplus
     }
 #endif
