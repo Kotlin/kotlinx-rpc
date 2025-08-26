@@ -25,6 +25,7 @@ import java.io.File
 fun KotlinMultiplatformExtension.configureCLibCInterop(
     project: Project,
     bazelTask: String,
+    cinteropTaskDependsOn: List<Any> = emptyList(),
     configureCinterop: NamedDomainObjectContainer<DefaultCInteropSettings>.(cLibSource: File, cLibOutDir: File) -> Unit,
 ) {
     val buildTargetName = bazelTask.split(":").last()
@@ -56,6 +57,7 @@ fun KotlinMultiplatformExtension.configureCLibCInterop(
                 val interopTask = "cinterop${interop.name.capitalized()}${this@configureEach.targetName.capitalized()}"
                 project.tasks.named(interopTask, CInteropProcess::class) {
                     dependsOn(buildCinteropCLib)
+                    cinteropTaskDependsOn.forEach { dependsOn(it) }
                 }
             }
         }
@@ -76,12 +78,7 @@ fun KotlinMultiplatformExtension.configureCLibCInterop(
 fun KotlinMultiplatformExtension.configureCLibDependency(
     project: Project,
     bazelTask: String,
-    bazelExtractIncludeTask: String? = null,
-    bazelExtractIncludeOutputDir: Provider<Directory>? = null,
 ) {
-    require((bazelExtractIncludeTask == null) == (bazelExtractIncludeOutputDir == null)) {
-        "Either both bazelExtractIncludeTask and bazelExtractIncludeOutputDir must be specified or neither."
-    }
     val buildTargetName = bazelTask.split(":").last()
     val prebuiltLibDir = project.cLibPrebuiltDepsDir.resolve(buildTargetName)
 
@@ -106,21 +103,6 @@ fun KotlinMultiplatformExtension.configureCLibDependency(
         }
     }
 
-    if (bazelExtractIncludeTask != null) {
-        val includeDir = bazelExtractIncludeOutputDir!!.get().asFile
-        project.tasks.register<Exec>("buildIncludeDirCLib${buildTargetName.capitalized()}") {
-            dependsOn(":checkBazel")
-            group = "build"
-            workingDir = project.cinteropLibDir
-            commandLine(
-                "bash",
-                "-c",
-                "./extract_include_dir.sh //prebuilt-deps/grpc_fat:grpc_include_dir $includeDir"
-            )
-            outputs.dir(includeDir.resolve("include"))
-        }
-    }
-
     project.tasks.register("buildDependencyAllTargetsForCLib${buildTargetName.capitalized()}") {
         group = "build"
         targets.withType<KotlinNativeTarget>().forEach { target ->
@@ -134,6 +116,26 @@ fun KotlinMultiplatformExtension.configureCLibDependency(
         }
     }
 }
+
+fun Project.registerBuildCLibIncludeDirTask(
+    bazelTask: String,
+    bazelExtractIncludeOutputDir: Provider<Directory>,
+): TaskProvider<Exec> {
+    val buildTargetName = bazelTask.split(":").last()
+    val includeDir = bazelExtractIncludeOutputDir.get().asFile
+    return project.tasks.register<Exec>("buildIncludeDirCLib${buildTargetName.capitalized()}") {
+        dependsOn(":checkBazel")
+        group = "build"
+        workingDir = project.cinteropLibDir
+        commandLine(
+            "bash",
+            "-c",
+            "./extract_include_dir.sh //prebuilt-deps/grpc_fat:grpc_include_dir $includeDir"
+        )
+        outputs.dir(includeDir.resolve("include"))
+    }
+}
+
 
 private val Project.cLibPrebuiltDepsDir: File get() = cinteropLibDir.resolve("prebuilt-deps")
 
