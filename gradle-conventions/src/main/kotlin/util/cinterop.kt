@@ -103,7 +103,7 @@ fun KotlinMultiplatformExtension.configureCLibDependency(
 
     if (bazelExtractIncludeTask != null) {
         project.tasks.register<Exec>("buildIncludeDirCLib${buildTargetName.capitalized()}") {
-            dependsOn("checkBazel")
+            dependsOn(":checkBazel")
             group = "build"
             workingDir = project.cinteropLibDir
             commandLine(
@@ -155,7 +155,7 @@ private fun TaskContainer.registerBuildClibTask(
         inputs.files(project.fileTree(project.cinteropLibDir) { exclude("bazel-*/**", "prebuilt-deps/**") })
         outputs.files(outFile)
 
-        dependsOn("checkBazel")
+        dependsOn(":checkBazel")
     }
 }
 
