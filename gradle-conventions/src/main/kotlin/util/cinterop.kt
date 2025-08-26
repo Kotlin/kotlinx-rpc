@@ -8,7 +8,6 @@ import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
-import org.gradle.api.file.RegularFile
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
@@ -20,9 +19,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
 import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.konan.target.KonanTarget
-import util.other.localProperties
-import util.tasks.BazelBuildTask
-import util.tasks.PublishCLibDependencyTask
 import java.io.File
 
 // works with the cinterop-c Bazel project
@@ -58,7 +54,7 @@ fun KotlinMultiplatformExtension.configureCLibCInterop(
         val buildCinteropCLib = project.tasks.registerBuildClibTask(
             name = "build${canonicalCLibTaskPostfix(buildTargetName)}",
             bazelTask = bazelTask,
-            outFile = outFile,
+            outFile = outFile.asFile,
             target = this,
         )
 
@@ -82,71 +78,72 @@ fun KotlinMultiplatformExtension.configureCLibCInterop(
 
 
 /**
- * Creates tasks to build and publish a C library dependency on the
- * [Jetbrains Space package repository](https://jetbrains.team/p/krpc/packages/files/bazel-build-deps).
+ * Creates tasks to build a C library dependency and places it to
+ * the `prebuilt-deps` directory in the cinterop-c Bazel project.
+ *
+ * It also creates tasks to compute the SHA256 checksum of the library and
+ * extract the include directory.
  *
  * @param project The Gradle project in which this configuration is applied.
  * @param bazelTask The Bazel task responsible for building the C library.
- * @param dependencyVersion The version of the C library dependency to be published.
- * @param dependencyNamespace The namespace under which the C library dependency will be published.
  */
 fun KotlinMultiplatformExtension.configureCLibDependency(
     project: Project,
     bazelTask: String,
-    bazelIncludeZipTask: String,
-    dependencyVersion: String,
-    dependencyNamespace: String,
+    bazelExtractIncludeTask: String? = null,
 ) {
-    val cinteropCLib = project.cinteropLibDir
     val buildTargetName = bazelTask.split(":").last()
+    val prebuiltLibDir = project.cLibPrebuiltDepsDir.resolve(buildTargetName)
 
     targets.withType<KotlinNativeTarget>().configureEach {
         val platformShortName = konanTarget.visibleName
         val fileName = "lib$buildTargetName.$platformShortName.a"
+        val staticLibFile = prebuiltLibDir.resolve(fileName)
 
-        val buildCLib = project.tasks.registerBuildClibTask(
-            name = "build${canonicalCLibTaskPostfix(buildTargetName)}",
+        project.tasks.registerBuildClibTask(
+            name = "buildDependency${canonicalCLibTaskPostfix(buildTargetName)}",
             bazelTask = bazelTask,
-            outFile = project.bazelBuildDir.file("${buildTargetName}/$fileName"),
+            outFile = staticLibFile,
             target = this,
         )
 
-        val publishTaskName = "publish${canonicalCLibTaskPostfix(buildTargetName)}"
-        project.tasks.register<PublishCLibDependencyTask>(publishTaskName) {
-            dependsOn(buildCLib)
-
-            file = buildCLib.get().outputs.files.singleFile
-            namespace = dependencyNamespace
-            version = dependencyVersion
-            artifactName = fileName
-            token = project.localProperties().getProperty("kotlinx.rpc.team.space.packages.token")
+        project.tasks.register<Exec>("computeSha256${canonicalCLibTaskPostfix(buildTargetName)}") {
+            val shaFile = prebuiltLibDir.resolve("$fileName.sha256")
+            workingDir = prebuiltLibDir
+            commandLine("bash", "-c", "sha256sum $staticLibFile | awk '{print $1}' > $shaFile")
+            inputs.files(staticLibFile)
+            outputs.file(shaFile)
         }
     }
 
-    val bundleInclude = project.tasks.register<BazelBuildTask>("bundleIncludeZip${buildTargetName.capitalized()}") {
-        bazelProjectDir = cinteropCLib
-        bazelBuildTask = bazelIncludeZipTask
-        outputFile = project.bazelBuildDir.file("${buildTargetName}/include.zip").asFile
+    if (bazelExtractIncludeTask != null) {
+        project.tasks.register<Exec>("buildIncludeDirCLib${buildTargetName.capitalized()}") {
+            group = "build"
+            workingDir = project.cinteropLibDir
+            commandLine(
+                "bash",
+                "-c",
+                "./extract_include_dir.sh //prebuilt-deps/grpc_fat:grpc_include_dir $prebuiltLibDir"
+            )
+            outputs.dir(prebuiltLibDir.resolve("include"))
+        }
     }
 
-    val publishInclude =
-        project.tasks.register<PublishCLibDependencyTask>("publishIncludeZip${buildTargetName.capitalized()}") {
-            dependsOn(bundleInclude)
-            file = bundleInclude.get().outputFile
-            namespace = dependencyNamespace
-            version = dependencyVersion
-            artifactName = "include.zip"
-            token = project.localProperties().getProperty("kotlinx.rpc.team.space.packages.token")
-        }
-
-    project.tasks.register("publishAllTargetsForCLib${buildTargetName.capitalized()}ToSpace") {
-        group = "publishing"
-        dependsOn(publishInclude)
+    project.tasks.register("buildDependencyAllTargetsForCLib${buildTargetName.capitalized()}") {
+        group = "build"
         targets.withType<KotlinNativeTarget>().forEach { target ->
-            dependsOn("publish${target.canonicalCLibTaskPostfix(buildTargetName)}")
+            dependsOn("buildDependency${target.canonicalCLibTaskPostfix(buildTargetName)}")
+        }
+    }
+
+    project.tasks.register("computeSha256AllTargetsForCLib${buildTargetName.capitalized()}") {
+        targets.withType<KotlinNativeTarget>().forEach { target ->
+            dependsOn("computeSha256${target.canonicalCLibTaskPostfix(buildTargetName)}")
         }
     }
 }
+
+private val Project.cLibPrebuiltDepsDir: File get() = cinteropLibDir.resolve("prebuilt-deps")
 
 private val Project.bazelBuildDir: Directory
     get() = layout.buildDirectory.dir("bazel-out").get()
@@ -159,7 +156,7 @@ private fun KotlinNativeTarget.canonicalCLibTaskPostfix(buildTargetName: String)
 private fun TaskContainer.registerBuildClibTask(
     name: String,
     bazelTask: String,
-    outFile: RegularFile,
+    outFile: File,
     target: KotlinNativeTarget,
 ): TaskProvider<Exec> {
     return register<Exec>(name) {
@@ -169,7 +166,7 @@ private fun TaskContainer.registerBuildClibTask(
         group = "build"
         workingDir = project.cinteropLibDir
         commandLine("bash", "-c", "./build_target.sh $bazelTask $outFile $platform $os")
-        inputs.files(project.fileTree(project.cinteropLibDir) { exclude("bazel-*/**", "out/**") })
+        inputs.files(project.fileTree(project.cinteropLibDir) { exclude("bazel-*/**", "prebuilt-deps/**") })
         outputs.files(outFile)
 
         // TODO: how to register the task idempotently?
@@ -180,7 +177,7 @@ private fun TaskContainer.registerBuildClibTask(
 private val Project.cinteropLibDir: File
     get() {
         val globalRootDir: String by project.extra
-        return layout.projectDirectory.dir("$globalRootDir/cinterop-c").asFile
+        return layout.projectDirectory.dir("$globalRootDir/cinterop-c").asFile.absoluteFile
     }
 
 /**

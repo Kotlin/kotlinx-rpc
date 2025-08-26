@@ -40,6 +40,13 @@ bazel_dep(
 
 ## gRPC pre-built
 
+local_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:local.bzl", "local_repository")
+
+local_repository(
+    name = "prebuilt_deps",
+    path = "prebuilt-deps",
+)
+
 http_file(
     name = "grpc_ios_arm64",
     sha256 = "7bc13a15c59850048e77b5719ea262a6fcc22884ab42c9f14f38859200faac9b",

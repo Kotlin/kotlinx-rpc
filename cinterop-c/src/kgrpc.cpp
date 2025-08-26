@@ -4,12 +4,6 @@
 
 extern "C" {
 
-
-    void test() {
-        grpc_slice test = grpc_slice_from_static_string("test");
-        grpc_slice_unref(test);
-    }
-
 }
 
 

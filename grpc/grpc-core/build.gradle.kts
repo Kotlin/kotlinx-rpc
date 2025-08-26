@@ -71,24 +71,24 @@ kotlin {
         }
     }
 
-    configureCLibCInterop(project, ":kgrpc_fat") { cLibSource, cLibOutDir ->
+    configureCLibCInterop(project, ":kgrpc") { cLibSource, cLibOutDir ->
+        val grpcPrebuiltDir = cLibSource.resolve("prebuilt-deps/grpc_fat")
+
         @Suppress("unused")
         val libkgrpc by creating {
             includeDirs(
                 cLibSource.resolve("include"),
-                cLibSource.resolve("grpc_dep/include"),
+                cLibSource.resolve("$grpcPrebuiltDir/include"),
                 cLibSource.resolve("bazel-cinterop-c/external/grpc+/include"),
             )
+            extraOpts("-libraryPath", "$grpcPrebuiltDir")
             extraOpts("-libraryPath", "$cLibOutDir")
         }
     }
 
     configureCLibDependency(
         project,
-        bazelTask = "//grpc_dep:grpc_fat",
-        bazelIncludeZipTask = "//grpc_dep:grpc_include",
-        dependencyVersion = "v1.74.1",
-        dependencyNamespace = "com_github_grpc_grpc"
+        bazelTask = "//prebuilt-deps/grpc_fat:grpc_fat"
     )
 
 }
