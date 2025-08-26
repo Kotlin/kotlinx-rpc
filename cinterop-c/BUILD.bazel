@@ -31,3 +31,10 @@ cc_library(
         "@com_github_protobuffers_protobuf//:protobuf_lite",
     ],
 )
+
+platform(
+    name = "my_target_platform",
+    constraint_values = [
+        "@platforms//os:linux",
+    ],
+)
