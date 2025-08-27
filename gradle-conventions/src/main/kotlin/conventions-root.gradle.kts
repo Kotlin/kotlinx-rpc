@@ -112,13 +112,7 @@ gradle.afterProject {
 }
 
 
-tasks.register<Exec>("checkBazel") {
-    commandLine("which", "bazel")
-    isIgnoreExitValue = true
-//    standardOutput = ByteArrayOutputStream()
-    doLast {
-        if (executionResult.get().exitValue != 0) {
-            throw GradleException("'bazel' not found on PATH. Please install Bazel (https://bazel.build/).")
-        }
-    }
+tasks.register<CheckExecutableTask>("checkBazel") {
+    exec = "bazel"
+    helpMessage = "Install Bazel: https://bazel.build/"
 }

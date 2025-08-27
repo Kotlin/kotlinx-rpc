@@ -84,6 +84,12 @@ internal class CompletionQueue {
 
     @Suppress("unused")
     private val shutdownFunctorCleaner = createCleaner(shutdownFunctor) { nativeHeap.free(it) }
+    
+    init {
+        // Assert grpc_iomgr_run_in_background() to guarantee that the event manager provides
+        // IO threads and supports the callback API.
+        require(kgrpc_iomgr_run_in_background()) { "The gRPC iomgr is not running background threads, required for callback based APIs." }
+    }
 
     /**
      * Submits a batch operation to the queue.
