@@ -23,11 +23,6 @@ bazel_dep(
 # gRPC library
 GRPC_VERSION = "1.74.1"
 
-GRPC_BASE = (
-    "https://packages.jetbrains.team/files/p/" +
-    "krpc/bazel-build-deps/com_github_grpc_grpc/v" + GRPC_VERSION + "/libgrpc_fat."
-)
-
 ## gRPC source dependency
 
 bazel_dep(
