@@ -11,7 +11,9 @@ strictEnums = grpc_status_code grpc_connectivity_state grpc_call_error
 staticLibraries.macos_arm64 = libkgrpc.macos_arm64.a libgrpc_fat.macos_arm64.a
 staticLibraries.ios_arm64 = libkgrpc.ios_arm64.a libgrpc_fat.ios_arm64.a
 staticLibraries.ios_simulator_arm64 = libkgrpc.ios_simulator_arm64.a libgrpc_fat.ios_simulator_arm64.a
-staticLibraries.ios_simulator_x64 = libkgrpc.ios_simulator_x64.a libgrpc_fat.ios_simulator_x64.a
+staticLibraries.ios_x64 = libkgrpc.ios_x64.a libgrpc_fat.ios_x64.a
+staticLibraries.linux_arm64 = libkgrpc.linux_arm64.a libgrpc_fat.linux_arm64.a
+staticLibraries.linux_x64 = libkgrpc.linux_x64.a libgrpc_fat.linux_x64.a
 # TODO: Uncomment when activating WatchOS
 # staticLibraries.watchos_arm64 = libkgrpc_fat.watchos_arm64.a
 # staticLibraries.watchos_simulator_arm64 = libkgrpc_fat.watchos_simulator_arm64.a
