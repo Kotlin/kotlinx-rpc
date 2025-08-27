@@ -48,6 +48,7 @@ interface KrpcTestService {
     fun nonSuspendBidirectional(flow: Flow<Int>): Flow<Int>
     fun nonSuspendBidirectionalPayload(payloadWithStream: PayloadWithStream): Flow<Int>
 
+    fun slowConsumer(): Flow<Int>
     suspend fun empty()
     suspend fun returnType(): String
     suspend fun simpleWithParams(name: String): String

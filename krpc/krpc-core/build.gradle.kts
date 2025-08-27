@@ -24,5 +24,23 @@ kotlin {
                 implementation(libs.kotlin.reflect)
             }
         }
+
+        commonTest {
+            dependencies {
+                implementation(libs.kotlin.test)
+                implementation(libs.coroutines.test)
+                implementation(libs.serialization.json)
+            }
+        }
+
+        jvmTest {
+            dependencies {
+                implementation(libs.lincheck)
+            }
+        }
     }
+}
+
+tasks.jvmTest {
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
 }

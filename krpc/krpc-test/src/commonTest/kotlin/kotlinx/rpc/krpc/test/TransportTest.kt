@@ -16,7 +16,6 @@ import kotlinx.rpc.krpc.KrpcConfigBuilder
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.client.KrpcClient
 import kotlinx.rpc.krpc.internal.KrpcProtocolMessage
-import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
 import kotlinx.rpc.krpc.rpcClientConfig
@@ -61,11 +60,20 @@ class TransportTest {
         serialization {
             json()
         }
+
+        connector {
+            perCallBufferSize = 100
+        }
     }
 
     private val serverConfig = rpcServerConfig {
         serialization {
             json()
+        }
+
+        connector {
+            // todo try with size 10, see logs and an error and check that test fails?
+            perCallBufferSize = 100
         }
     }
 
@@ -81,12 +89,13 @@ class TransportTest {
         return KrpcTestServer(serverConfig, localTransport.server)
     }
 
-    private fun runTest(block: suspend TestScope.(logs: List<String>) -> Unit): TestResult =
-        kotlinx.coroutines.test.runTest(timeout = 20.seconds) {
-            debugCoroutines()
+    private fun runTest(
+        times: Int = 1000,
+        block: suspend TestScope.(logs: List<String>) -> Unit,
+    ): TestResult = kotlinx.coroutines.test.runTest(timeout = 60.seconds) {
+        debugCoroutines()
 
-            val logger = RpcInternalCommonLogger.logger("TransportTest")
-
+        repeat(times) {
             val logs = mutableListOf<String>()
             val logsChannel = Channel<String>(Channel.UNLIMITED)
 
@@ -102,7 +111,6 @@ class TransportTest {
                 override fun dump(vararg tags: String, message: () -> String) {
                     val message = "${tags.joinToString(" ") { "[$it]" }} ${message()}"
                     logsChannel.trySend(message)
-                    logger.info { message }
                 }
             })
 
@@ -112,6 +120,7 @@ class TransportTest {
             logsJob.cancelAndJoin()
             logsChannel.close()
         }
+    }
 
     @Test
     fun testUsingWrongService() = runTest {
@@ -129,7 +138,10 @@ class TransportTest {
                 json()
             }
 
-            waitForServices = false
+            connector {
+                waitTimeout = dontWait()
+                perCallBufferSize = 10
+            }
         }
         server.registerService<Echo> { EchoImpl() }
 
@@ -266,7 +278,7 @@ class TransportTest {
     private val configInitialized = atomic(0)
 
     @Test
-    fun transportInitializedOnlyOnce() = runTest { logs ->
+    fun transportInitializedOnlyOnce() = runTest(times = 1) { logs ->
         val localTransport = LocalTransport()
         val client = object : KrpcClient() {
             override suspend fun initializeTransport(): KrpcTransport {
