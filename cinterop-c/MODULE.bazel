@@ -32,22 +32,21 @@ bazel_dep(
 
 bazel_dep(name = "toolchains_llvm", version = "1.4.0")
 
-## The sysroot for linux cross compilation
-
-http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-http_archive(
-    name = "org_chromium_sysroot_linux_x64",
-    build_file_content = 'filegroup(name="sysroot", srcs=glob(["**"]), visibility=["//visibility:public"])',
-    sha256 = "1be60e7c456abc590a613c64fab4eac7632c81ec6f22734a61b53669a4407346",
-    urls = ["http://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain/2028cdaf24259d23adcff95393b8cc4f0eef714b/debian_bullseye_amd64_sysroot.tar.xz"],
+new_local_repository = use_repo_rule(
+    "@bazel_tools//tools/build_defs/repo:local.bzl",
+    "new_local_repository",
 )
 
-http_archive(
-    name = "org_chromium_sysroot_linux_arm64",
+new_local_repository(
+    name = "konan_linux_aarch64_sysroot",
     build_file_content = 'filegroup(name="sysroot", srcs=glob(["**"]), visibility=["//visibility:public"])',
-    sha256 = "e4a9ae49ffa75c5fabe41c1a73209769fcfd202c786a1cb52057ddbd68b91c45",
-    urls = ["http://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain/286feb74e2209a7a70add5497609ac27685022fa/debian_bullseye_arm64_sysroot.tar.xz"],
+    path = "/Users/johannes.zottele/.konan/dependencies/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2/aarch64-unknown-linux-gnu/sysroot",
+)
+
+new_local_repository(
+    name = "konan_linux_x64_sysroot",
+    build_file_content = 'filegroup(name="sysroot", srcs=glob(["**"]), visibility=["//visibility:public"])',
+    path = "/Users/johannes.zottele/.konan/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/sysroot",
 )
 
 ## The toolchain setup using the sysroot
@@ -55,21 +54,21 @@ http_archive(
 llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
 llvm.toolchain(
     name = "llvm_toolchain",
-    llvm_version = "15.0.7",
+    llvm_version = "17.0.1",
     stdlib = {
-        "linux-x86_64": "stdc++",
-        "linux-aarch64": "stdc++",
+        "linux-aarch64": "libc++",
+        "linux-x86_64": "libc++",
     },
 )
 llvm.sysroot(
     name = "llvm_toolchain",
-    label = "@org_chromium_sysroot_linux_x64//:sysroot",
-    targets = ["linux-x86_64"],
+    label = "@konan_linux_aarch64_sysroot//:sysroot",
+    targets = ["linux-aarch64"],
 )
 llvm.sysroot(
     name = "llvm_toolchain",
-    label = "@org_chromium_sysroot_linux_arm64//:sysroot",
-    targets = ["linux-aarch64"],
+    label = "@konan_linux_x64_sysroot//:sysroot",
+    targets = ["linux-x86_64"],
 )
 use_repo(llvm, "llvm_toolchain")
 
