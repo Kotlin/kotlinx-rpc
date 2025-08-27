@@ -64,6 +64,7 @@ class CancellationTest {
     }
 
     @Test
+    // todo Unsupported CANCELLATION_TYPE CANCELLATION_ACK for client, only 'endpoint' type may be sent by a server
     fun testCancelClient() = runCancellationTest {
         val firstRequestJob = launch {
             service.serverDelay(300)

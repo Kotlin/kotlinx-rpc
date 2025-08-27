@@ -70,7 +70,7 @@ public abstract class KrpcServer(
         KrpcServerConnector(
             serialFormat = config.serialFormatInitializer.build(),
             transport = transport,
-            waitForServices = config.waitForServices,
+            config = config.connector,
         )
     }
 
@@ -175,7 +175,7 @@ public abstract class KrpcServer(
             else -> {
                 logger.warn {
                     "Unsupported ${KrpcPluginKey.CANCELLATION_TYPE} $type for server, " +
-                            "only 'endpoint' type may be sent by a server"
+                            "only 'endpoint' type may be sent by a client"
                 }
             }
         }

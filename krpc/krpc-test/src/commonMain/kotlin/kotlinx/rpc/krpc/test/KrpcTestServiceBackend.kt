@@ -42,6 +42,15 @@ class KrpcTestServiceBackend : KrpcTestService {
         return payloadWithStream.stream.map { it.length }
     }
 
+    override fun slowConsumer(): Flow<Int> {
+        return flow {
+            repeat(10) {
+                delay(100)
+                emit(it)
+            }
+        }
+    }
+
     @Suppress("detekt.EmptyFunctionBlock")
     override suspend fun empty() {}
 

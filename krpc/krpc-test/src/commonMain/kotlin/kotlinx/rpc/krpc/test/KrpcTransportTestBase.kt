@@ -284,6 +284,23 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
+    fun slowConsumer() = runTest {
+        val foreverAwait = CompletableDeferred<Unit>()
+        val collectFirst = CompletableDeferred<Unit>()
+        val slow = launch {
+            client.slowConsumer().collect {
+                collectFirst.complete(Unit)
+                foreverAwait.await()
+            }
+        }
+
+        collectFirst.await()
+        val fast = client.simpleWithParams("test")
+        assertEquals(fast, "tset")
+        slow.cancelAndJoin()
+    }
+
+    @Test
     fun outgoingStream() = runTest {
         val result = client.outgoingStream()
         assertEquals(listOf("a", "b", "c"), result.toList(mutableListOf()))
