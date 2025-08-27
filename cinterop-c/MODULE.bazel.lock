@@ -915,7 +915,7 @@
     "@@toolchains_llvm+//toolchain/extensions:llvm.bzl%llvm": {
       "general": {
         "bzlTransitiveDigest": "n8WR0DxEQ5FgfuREm47KayUAJKtFHcMNZLKerT+ixFY=",
-        "usagesDigest": "ufDZ19b6sBxw/41bfIhVmlQikBzleUnuFGqgkzW4BlM=",
+        "usagesDigest": "rRraf0uu/qnG/0gh9+20W1cRWyZMblNsyWsMOLKFxvE=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -930,7 +930,7 @@
               "exec_os": "",
               "libclang_rt": {},
               "llvm_mirror": "",
-              "llvm_version": "15.0.7",
+              "llvm_version": "17.0.1",
               "llvm_versions": {},
               "netrc": "",
               "sha256": {},
@@ -958,20 +958,20 @@
               "link_flags": {},
               "link_libs": {},
               "llvm_versions": {
-                "": "15.0.7"
+                "": "17.0.1"
               },
               "opt_compile_flags": {},
               "opt_link_flags": {},
               "stdlib": {
-                "linux-x86_64": "stdc++",
-                "linux-aarch64": "stdc++"
+                "linux-aarch64": "libc++",
+                "linux-x86_64": "libc++"
               },
               "target_settings": {},
               "unfiltered_compile_flags": {},
               "toolchain_roots": {},
               "sysroot": {
-                "linux-x86_64": "'@@+_repo_rules+org_chromium_sysroot_linux_x64//:sysroot'",
-                "linux-aarch64": "'@@+_repo_rules+org_chromium_sysroot_linux_arm64//:sysroot'"
+                "linux-aarch64": "'@@+_repo_rules+konan_linux_aarch64_sysroot//:sysroot'",
+                "linux-x86_64": "'@@+_repo_rules+konan_linux_x64_sysroot//:sysroot'"
               }
             }
           }
@@ -979,13 +979,13 @@
         "recordedRepoMappingEntries": [
           [
             "",
-            "org_chromium_sysroot_linux_arm64",
-            "+_repo_rules+org_chromium_sysroot_linux_arm64"
+            "konan_linux_aarch64_sysroot",
+            "+_repo_rules+konan_linux_aarch64_sysroot"
           ],
           [
             "",
-            "org_chromium_sysroot_linux_x64",
-            "+_repo_rules+org_chromium_sysroot_linux_x64"
+            "konan_linux_x64_sysroot",
+            "+_repo_rules+konan_linux_x64_sysroot"
           ],
           [
             "toolchains_llvm+",
