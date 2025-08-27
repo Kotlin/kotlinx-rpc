@@ -23,7 +23,7 @@ import kotlinx.rpc.withService
 import kotlin.time.Duration.Companion.seconds
 
 fun runCancellationTest(body: suspend CancellationToolkit.() -> Unit): TestResult {
-    return runTest(timeout = 15.seconds) {
+    return runTest(timeout = 3.seconds) {
         debugCoroutines()
         CancellationToolkit(this).apply {
             body()
@@ -44,7 +44,7 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
         })
     }
 
-    private val serializationConfig: KrpcConfigBuilder.() -> Unit = {
+    private val configBuilder: KrpcConfigBuilder.() -> Unit = {
         serialization {
             json()
         }
@@ -54,7 +54,7 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
 
     val client by lazy {
         KrpcTestClient(rpcClientConfig {
-            serializationConfig()
+            configBuilder()
         }, transport.client)
     }
 
@@ -64,7 +64,7 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
     private val firstServerInstance = CompletableDeferred<CancellationServiceImpl>()
     suspend fun serverInstance(): CancellationServiceImpl = firstServerInstance.await()
 
-    val server = KrpcTestServer(rpcServerConfig { serializationConfig() }, transport.server).apply {
+    val server = KrpcTestServer(rpcServerConfig { configBuilder() }, transport.server).apply {
         registerService<CancellationService> {
             CancellationServiceImpl().also { impl ->
                 if (!firstServerInstance.isCompleted) {

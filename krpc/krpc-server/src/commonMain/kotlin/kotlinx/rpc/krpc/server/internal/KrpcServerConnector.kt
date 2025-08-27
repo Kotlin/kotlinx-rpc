@@ -1,61 +1,47 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.server.internal
 
+import kotlinx.rpc.krpc.KrpcConfig
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.internal.*
 import kotlinx.serialization.SerialFormat
 
-internal sealed interface MessageKey {
-    data class Service(val serviceTypeString: String): MessageKey
-
-    data object Protocol: MessageKey
-
-    data object Generic: MessageKey
-}
-
 internal class KrpcServerConnector private constructor(
-    private val connector: KrpcConnector<MessageKey>,
+    private val connector: KrpcConnector,
 ): KrpcMessageSender by connector {
     constructor(
         serialFormat: SerialFormat,
         transport: KrpcTransport,
-        waitForServices: Boolean = false,
+        config: KrpcConfig.Connector,
     ) : this(
-        KrpcConnector(serialFormat, transport, waitForServices, isServer = true) {
-            when (this) {
-                is KrpcCallMessage -> MessageKey.Service(serviceType)
-                is KrpcProtocolMessage -> MessageKey.Protocol
-                is KrpcGenericMessage -> MessageKey.Generic
-            }
-        }
+        KrpcConnector(serialFormat, transport, config, isServer = true)
     )
 
-    fun unsubscribeFromServiceMessages(serviceTypeString: String, callback: () -> Unit = {}) {
-        connector.unsubscribeFromMessages(MessageKey.Service(serviceTypeString), callback)
+    fun unsubscribeFromServiceMessages(serviceTypeString: String, callback: suspend () -> Unit = {}) {
+        connector.unsubscribeFromMessages(HandlerKey.Service(serviceTypeString), callback)
     }
 
     suspend fun subscribeToServiceMessages(
         serviceTypeString: String,
         subscription: suspend (KrpcCallMessage) -> Unit,
     ) {
-        connector.subscribeToMessages(MessageKey.Service(serviceTypeString)) {
-            subscription(it as KrpcCallMessage)
+        connector.subscribeToMessages(HandlerKey.Service(serviceTypeString)) {
+            subscription(it)
         }
     }
 
     suspend fun subscribeToProtocolMessages(subscription: suspend (KrpcProtocolMessage) -> Unit) {
-        connector.subscribeToMessages(MessageKey.Protocol) {
-            subscription(it as KrpcProtocolMessage)
+        connector.subscribeToMessages(HandlerKey.Protocol) {
+            subscription(it)
         }
     }
 
-    @Suppress("unused")
     suspend fun subscribeToGenericMessages(subscription: suspend (KrpcGenericMessage) -> Unit) {
-        connector.subscribeToMessages(MessageKey.Generic) {
-            subscription(it as KrpcGenericMessage)
+        connector.subscribeToMessages(HandlerKey.Generic) {
+            subscription(it)
         }
     }
 }

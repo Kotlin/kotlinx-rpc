@@ -11,5 +11,5 @@ actual inline fun runThreadIfPossible(runner: () -> Unit) {
 }
 
 @Suppress("detekt.EmptyFunctionBlock")
-internal actual fun TestScope.debugCoroutines() {
+internal actual fun debugCoroutines() {
 }

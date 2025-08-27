@@ -13,6 +13,6 @@ actual fun runThreadIfPossible(runner: () -> Unit) {
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal actual fun TestScope.debugCoroutines() {
+internal actual fun debugCoroutines() {
     DebugProbes.install()
 }

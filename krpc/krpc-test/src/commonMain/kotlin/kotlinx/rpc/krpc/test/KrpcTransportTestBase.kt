@@ -11,7 +11,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.TestResult
+import kotlinx.coroutines.test.TestScope
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
@@ -29,6 +30,7 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.modules.SerializersModule
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.*
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 internal object LocalDateSerializer : KSerializer<LocalDate> {
@@ -284,6 +286,23 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
+    fun slowConsumer() = runTest {
+        val foreverAwait = CompletableDeferred<Unit>()
+        val collectFirst = CompletableDeferred<Unit>()
+        val slow = launch {
+            client.slowConsumer().collect {
+                collectFirst.complete(Unit)
+                foreverAwait.await()
+            }
+        }
+
+        collectFirst.await()
+        val fast = client.simpleWithParams("test")
+        assertEquals(fast, "tset")
+        slow.cancelAndJoin()
+    }
+
+    @Test
     fun outgoingStream() = runTest {
         val result = client.outgoingStream()
         assertEquals(listOf("a", "b", "c"), result.toList(mutableListOf()))
@@ -471,6 +490,11 @@ abstract class KrpcTransportTestBase {
                 assertNotNull(result, "result must not be null")
             }
         }
+    }
+
+    private fun runTest(timeout: Duration = 10.seconds, testBody: suspend TestScope.() -> Unit): TestResult {
+        debugCoroutines()
+        return kotlinx.coroutines.test.runTest(timeout = timeout, testBody = testBody)
     }
 }
 

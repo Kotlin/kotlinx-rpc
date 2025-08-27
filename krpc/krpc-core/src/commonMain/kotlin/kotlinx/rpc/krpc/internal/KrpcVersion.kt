@@ -10,5 +10,5 @@ package kotlinx.rpc.krpc.internal
 internal enum class KrpcVersion {
     V_0_1_0_BETA,
     V_0_6_0,
-    V_0_8_0,
+    V_0_10_0,
 }

@@ -10,5 +10,5 @@ actual inline fun runThreadIfPossible(runner: () -> Unit) {
     runner()
 }
 
-internal actual fun TestScope.debugCoroutines() {
+internal actual fun debugCoroutines() {
 }

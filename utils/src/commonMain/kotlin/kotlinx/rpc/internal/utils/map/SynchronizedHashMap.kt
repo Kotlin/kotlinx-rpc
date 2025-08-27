@@ -54,4 +54,10 @@ internal class SynchronizedHashMap<K : Any, V: Any> : RpcInternalConcurrentHashM
 
     override val values: Collection<V>
         get() = synchronized(this) { map.values }
+
+    override fun <T> withKeys(block: (Set<K>) -> T): T {
+        synchronized(this) {
+            return block(map.keys)
+        }
+    }
 }

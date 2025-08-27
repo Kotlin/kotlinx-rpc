@@ -31,3 +31,8 @@ internal expect class DeserializedException(
 ) : Throwable {
     override val message: String
 }
+
+internal fun illegalStateException(message: String, cause: Throwable? = null): IllegalStateException = when (cause) {
+    null -> IllegalStateException(message)
+    else -> IllegalStateException(message, cause)
+}

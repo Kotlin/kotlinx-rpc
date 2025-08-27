@@ -13,8 +13,6 @@ import kotlinx.rpc.annotations.Rpc
 interface CancellationService {
     suspend fun longRequest()
 
-    suspend fun serverDelay(millis: Long)
-
     suspend fun callException()
 
     fun incomingStream(): Flow<Int>
@@ -31,7 +29,16 @@ interface CancellationService {
 }
 
 class CancellationServiceImpl : CancellationService {
-    val delayCounter = atomic(0)
+    val waitCounter = atomic(0)
+
+    suspend fun awaitWaitCounter(value: Int) {
+        while (waitCounter.value != value) {
+           yield()
+        }
+    }
+
+    val successCounter = atomic(0)
+
     val consumedIncomingValues = mutableListOf<Int>()
     val firstIncomingConsumed = CompletableDeferred<Int>()
     val consumedAll = CompletableDeferred<Unit>()
@@ -39,12 +46,9 @@ class CancellationServiceImpl : CancellationService {
 
     override suspend fun longRequest() {
         firstIncomingConsumed.complete(0)
+        waitCounter.incrementAndGet()
         fence.await()
-    }
-
-    override suspend fun serverDelay(millis: Long) {
-        delay(millis)
-        delayCounter.incrementAndGet()
+        successCounter.incrementAndGet()
     }
 
     override suspend fun callException() {

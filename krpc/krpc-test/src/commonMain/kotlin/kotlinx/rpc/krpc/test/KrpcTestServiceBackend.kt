@@ -42,6 +42,15 @@ class KrpcTestServiceBackend : KrpcTestService {
         return payloadWithStream.stream.map { it.length }
     }
 
+    override fun slowConsumer(): Flow<Int> {
+        return flow {
+            repeat(10) {
+                delay(100)
+                emit(it)
+            }
+        }
+    }
+
     @Suppress("detekt.EmptyFunctionBlock")
     override suspend fun empty() {}
 
@@ -253,4 +262,4 @@ class KrpcTestServiceBackend : KrpcTestService {
 
 internal expect fun runThreadIfPossible(runner: () -> Unit)
 
-internal expect fun TestScope.debugCoroutines()
+internal expect fun debugCoroutines()

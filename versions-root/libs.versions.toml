@@ -28,6 +28,7 @@ kover = "0.9.1"
 develocity = "3.19.2"
 common-custom-user-data = "2.3"
 compat-patrouille = "0.0.1"
+lincheck = "3.2"
 
 [libraries]
 # kotlinx.rpc – references to the included builds
@@ -103,6 +104,7 @@ intellij-util = { module = "com.jetbrains.intellij.platform:util", version.ref =
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 develocity = { module = "com.gradle:develocity-gradle-plugin", version.ref = "develocity" }
 common-custom-user-data = { module ="com.gradle:common-custom-user-data-gradle-plugin", version.ref = "common-custom-user-data" }
+lincheck = { module = "org.jetbrains.lincheck:lincheck", version.ref = "lincheck" }
 
 # gradle plugins as lib deps
 detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt-gradle-plugin" }

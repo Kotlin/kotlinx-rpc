@@ -85,8 +85,6 @@ class KtorTransportTest {
                             ignoreUnknownKeys = true
                         }
                     }
-
-                    waitForServices = true
                 }
 
                 registerService<NewService> { NewServiceImpl(call) }

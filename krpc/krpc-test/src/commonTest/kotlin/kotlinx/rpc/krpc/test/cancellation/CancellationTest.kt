@@ -17,19 +17,20 @@ class CancellationTest {
     @Test
     fun testCancelRequestScope() = runCancellationTest {
         val cancellingRequestJob = launch {
-            service.serverDelay(100)
+            service.longRequest()
         }
 
         val aliveRequestJob = launch {
-            service.serverDelay(300)
+            service.longRequest()
         }
 
         cancellingRequestJob.cancelAndJoin()
+        serverInstance().fence.complete(Unit)
         aliveRequestJob.join()
 
         assertFalse(aliveRequestJob.isCancelled, "Expected aliveRequestJob not to be cancelled")
         assertTrue(cancellingRequestJob.isCancelled, "Expected cancellingRequestJob to be cancelled")
-        assertEquals(1, serverInstances.single().delayCounter.value, "Expected one request to be cancelled")
+        assertEquals(1, serverInstances.single().waitCounter.value, "Expected one request to be cancelled")
 
         checkAlive()
         stopAllAndJoin()
@@ -38,8 +39,10 @@ class CancellationTest {
     @Test
     fun testCallException() = runCancellationTest {
         val requestJob = launch {
-            service.serverDelay(300)
+            service.longRequest()
         }
+
+        serverInstance().firstIncomingConsumed.await()
 
         val exceptionRequestJob = launch {
             try {
@@ -52,12 +55,13 @@ class CancellationTest {
         }
 
         exceptionRequestJob.join()
+        serverInstance().fence.complete(Unit)
         requestJob.join()
 
         assertFalse(requestJob.isCancelled, "Expected requestJob not to be cancelled")
         assertTrue(exceptionRequestJob.isCancelled, "Expected exception in callException call")
 
-        assertEquals(1, serverInstances.single().delayCounter.value, "Error should not cancel parallel request")
+        assertEquals(1, serverInstances.single().waitCounter.value, "Error should not cancel parallel request")
 
         checkAlive()
         stopAllAndJoin()
@@ -66,16 +70,16 @@ class CancellationTest {
     @Test
     fun testCancelClient() = runCancellationTest {
         val firstRequestJob = launch {
-            service.serverDelay(300)
+            service.longRequest()
         }
 
         val secondService = client.withService<CancellationService>()
 
         val secondRequestJob = launch {
-            secondService.serverDelay(300)
+            secondService.longRequest()
         }
 
-        unskippableDelay(150) // wait for requests to reach server
+        serverInstance().awaitWaitCounter(2)
         client.close()
         firstRequestJob.join()
         secondRequestJob.join()
@@ -83,7 +87,7 @@ class CancellationTest {
         assertTrue(firstRequestJob.isCancelled, "Expected firstRequestJob to be cancelled")
         assertTrue(secondRequestJob.isCancelled, "Expected secondRequestJob to be cancelled")
 
-        assertEquals(0, serverInstances.sumOf { it.delayCounter.value }, "Expected no requests to succeed")
+        assertEquals(0, serverInstances.sumOf { it.successCounter.value }, "Expected no requests to succeed")
 
         client.awaitCompletion()
         server.awaitCompletion()
@@ -95,16 +99,16 @@ class CancellationTest {
     @Test
     fun testCancelServer() = runCancellationTest {
         val firstRequestJob = launch {
-            service.serverDelay(300)
+            service.longRequest()
         }
 
         val secondService = client.withService<CancellationService>()
 
         val secondRequestJob = launch {
-            secondService.serverDelay(300)
+            secondService.longRequest()
         }
 
-        unskippableDelay(150) // wait for requests to reach server
+        serverInstance().awaitWaitCounter(2) // wait for requests to reach server
         server.close()
         firstRequestJob.join()
         secondRequestJob.join()
@@ -112,7 +116,7 @@ class CancellationTest {
         assertTrue(firstRequestJob.isCancelled, "Expected firstRequestJob to be cancelled")
         assertTrue(secondRequestJob.isCancelled, "Expected secondRequestJob to be cancelled")
 
-        assertEquals(0, serverInstances.sumOf { it.delayCounter.value }, "Expected no requests to succeed")
+        assertEquals(0, serverInstances.sumOf { it.successCounter.value }, "Expected no requests to succeed")
 
         client.awaitCompletion()
         server.awaitCompletion()

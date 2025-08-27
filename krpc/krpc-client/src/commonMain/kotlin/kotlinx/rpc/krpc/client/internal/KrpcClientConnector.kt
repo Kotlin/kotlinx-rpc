@@ -1,43 +1,27 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.client.internal
 
+import kotlinx.rpc.krpc.KrpcConfig
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.internal.*
 import kotlinx.serialization.SerialFormat
 
-internal sealed interface CallSubscriptionId {
-    data class Service(
-        val serviceTypeString: String,
-        val callId: String,
-    ) : CallSubscriptionId
-
-    data object Protocol : CallSubscriptionId
-
-    data object Generic : CallSubscriptionId
-}
-
 internal class KrpcClientConnector private constructor(
-    private val connector: KrpcConnector<CallSubscriptionId>
+    private val connector: KrpcConnector
 ) : KrpcMessageSender by connector {
     constructor(
         serialFormat: SerialFormat,
         transport: KrpcTransport,
-        waitForServices: Boolean = false,
+        config: KrpcConfig.Connector,
     ) : this(
-        KrpcConnector(serialFormat, transport, waitForServices, isServer = false) {
-            when (this) {
-                is KrpcCallMessage -> CallSubscriptionId.Service(serviceType, callId)
-                is KrpcProtocolMessage -> CallSubscriptionId.Protocol
-                is KrpcGenericMessage -> CallSubscriptionId.Generic
-            }
-        }
+        KrpcConnector(serialFormat, transport, config, isServer = false)
     )
 
-    fun unsubscribeFromMessages(serviceTypeString: String, callId: String, callback: () -> Unit = {}) {
-        connector.unsubscribeFromMessages(CallSubscriptionId.Service(serviceTypeString, callId), callback)
+    fun unsubscribeFromMessages(serviceTypeString: String, callId: String, callback: suspend () -> Unit = {}) {
+        connector.unsubscribeFromMessages(HandlerKey.ServiceCall(serviceTypeString, callId), callback)
     }
 
     suspend fun subscribeToCallResponse(
@@ -45,21 +29,20 @@ internal class KrpcClientConnector private constructor(
         callId: String,
         subscription: suspend (KrpcCallMessage) -> Unit,
     ) {
-        connector.subscribeToMessages(CallSubscriptionId.Service(serviceTypeString, callId)) {
-            subscription(it as KrpcCallMessage)
+        connector.subscribeToMessages(HandlerKey.ServiceCall(serviceTypeString, callId)) {
+            subscription(it)
         }
     }
 
     suspend fun subscribeToProtocolMessages(subscription: suspend (KrpcProtocolMessage) -> Unit) {
-        connector.subscribeToMessages(CallSubscriptionId.Protocol) {
-            subscription(it as KrpcProtocolMessage)
+        connector.subscribeToMessages(HandlerKey.Protocol) {
+            subscription(it)
         }
     }
 
-    @Suppress("unused")
     suspend fun subscribeToGenericMessages(subscription: suspend (KrpcGenericMessage) -> Unit) {
-        connector.subscribeToMessages(CallSubscriptionId.Generic) {
-            subscription(it as KrpcGenericMessage)
+        connector.subscribeToMessages(HandlerKey.Generic) {
+            subscription(it)
         }
     }
 }

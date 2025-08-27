@@ -157,7 +157,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
     private val connector by lazy {
         checkTransportReadiness()
 
-        KrpcClientConnector(config.serialFormatInitializer.build(), transport, config.waitForServices)
+        KrpcClientConnector(config.serialFormatInitializer.build(), transport, config.connector)
     }
 
     private var connectionId: Long? = null
