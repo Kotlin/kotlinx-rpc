@@ -1,8 +1,15 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
 load("@rules_cc//cc:defs.bzl", "cc_library")
 
-cc_library(
+cc_static_library(
     name = "kgrpc",
+    deps = [
+        ":kgrpc_lib",
+    ],
+)
+
+cc_library(
+    name = "kgrpc_lib",
     srcs = ["src/kgrpc.cpp"],
     hdrs = glob(["include/kgrpc.h"]),
     includes = ["include"],
@@ -23,7 +30,6 @@ cc_library(
     name = "protowire",
     srcs = ["src/protowire.cpp"],
     hdrs = glob(["include/protowire.h"]),
-    copts = ["-std=c++20"],
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [

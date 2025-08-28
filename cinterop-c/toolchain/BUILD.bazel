@@ -1,0 +1,41 @@
+#load("@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl", "cc_toolchain_config", "tool_path")
+#load("@rules_cc//cc/private/toolchain:cc_toolchain_config.bzl", "cc_toolchain_config")
+#load("@rules_cc//cc/private/toolchain:cc_toolchain_config_lib.bzl", "tool_path")
+load(":cc_toolchain_config.bzl", "cc_toolchain_config")
+
+cc_toolchain_config(name = "cfg_linux_x64_konan")
+
+filegroup(
+    name = "wrappers",
+    srcs = [
+        "cxxshim/version",
+        "run_konan_ar.sh",
+        "run_konan_clang.sh",
+        "run_konan_clangxx.sh",
+    ],
+)
+
+cc_toolchain(
+    name = "tc_linux_x64_konan",
+    all_files = ":wrappers",
+    ar_files = ":wrappers",
+    compiler_files = ":wrappers",
+    dwp_files = ":wrappers",
+    linker_files = ":wrappers",
+    objcopy_files = ":wrappers",
+    strip_files = ":wrappers",
+    supports_param_files = 1,
+    toolchain_config = ":cfg_linux_x64_konan",
+    toolchain_identifier = "konan_linux_x64",
+)
+
+toolchain(
+    name = "toolchain_linux_x64_konan",
+    exec_compatible_with = ["@platforms//os:macos"],
+    target_compatible_with = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+    toolchain = ":tc_linux_x64_konan",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
