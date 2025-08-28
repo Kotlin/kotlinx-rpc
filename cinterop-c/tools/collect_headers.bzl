@@ -1,3 +1,18 @@
+# This files contains Bazel rules to collect headers by Bazel CcInfo targets.
+#
+# The 'include_dir' rule is used to extract the include headers
+# from the dependency, so we can use them for our cinterop bindings.
+# The target is called by the extract_include_dir.sh script, which
+# is executed by the ./gradlew bundleIncludeDirLibC* task.
+#
+# The 'cc_header_only` rule returns a CcInfo that only contains the
+# header files of the compilation dependency. This allows a
+# library to depend on the header files, without compiling
+# the whole dependency.
+# E.g. it is used to bundle the
+# //prebuilt-deps/grpc_fat:grpc_core_prebuilt
+# target including the grpc headers.
+
 HeaderInfo = provider(fields = ["headers_dir", "headers"])
 
 # determines if the file is in the given repository
