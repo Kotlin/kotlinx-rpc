@@ -156,6 +156,8 @@ private fun TaskContainer.registerBuildClibTask(
 
         group = "build"
         workingDir = project.cinteropLibDir
+        // TODO: find KONAN_HOME automatically
+        environment("KONAN_HOME", "/Users/johannes.zottele/.konan/kotlin-native-prebuilt-macos-aarch64-2.0.20/")
         commandLine("bash", "-c", "./build_target.sh $bazelTask $outFile $konanTarget")
         inputs.files(project.fileTree(project.cinteropLibDir) { exclude("bazel-*/**", "prebuilt-deps/**") })
         outputs.files(outFile)
