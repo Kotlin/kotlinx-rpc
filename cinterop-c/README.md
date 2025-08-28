@@ -21,3 +21,12 @@ The binary can be updated by running
 ```bash
 ./gradlew :grpc:grpc-core:buildDependencyCLibGrpc_fat_iosArm64
 ```
+
+### Compiling for Linux
+
+To produce K/N compatible static libraries, we use the Konan toolchain for compilation.
+The Bazel toolchain is specified in `toolchain/` and requires the user to specify the
+`KONAN_HOME` variable like
+```bash
+bazel build //:protowire --config=linux_arm64 --define=KONAN_HOME=$HOME/.konan/kotlin-native-prebuilt-macos-aarch64-2.2.10
+```

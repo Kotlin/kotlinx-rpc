@@ -1,3 +1,0 @@
-#pragma once
-// Shim for libstdc++ 8 that lacks <version>. Abseil uses it to read
-// feature-test macros; we rely on -std=c++17 and Abseil’s fallbacks.

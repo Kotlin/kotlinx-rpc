@@ -1,28 +1,22 @@
-#load("@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl", "cc_toolchain_config", "tool_path")
-#load("@rules_cc//cc/private/toolchain:cc_toolchain_config.bzl", "cc_toolchain_config")
-#load("@rules_cc//cc/private/toolchain:cc_toolchain_config_lib.bzl", "tool_path")
-load(":cc_toolchain_config.bzl", "cc_toolchain_config", "cc_toolchain_config_exec")
+load(":cc_toolchain_config.bzl", "cc_toolchain_config")
 
-cc_toolchain_config(name = "cfg_linux_x64_konan")
+cc_toolchain_config(
+    name = "cfg_linux_x64_konan",
+    target = "linux_x64",
+)
 
-cc_toolchain_config_exec(name = "cfg_exec_macos_konan")
+cc_toolchain_config(
+    name = "cfg_linux_arm64_konan",
+    target = "linux_arm64",
+)
 
 filegroup(
     name = "wrappers",
     srcs = [
-        "cxxshim/version",
+        "run_konan",
         "run_konan_ar.sh",
         "run_konan_clang.sh",
         "run_konan_clangxx.sh",
-    ],
-)
-
-filegroup(
-    name = "host_wrappers",
-    srcs = [
-        "run_konan_host_ar.sh",
-        "run_konan_host_clang.sh",
-        "run_konan_host_clangxx.sh",
     ],
 )
 
@@ -39,6 +33,19 @@ cc_toolchain(
     toolchain_identifier = "konan_linux_x64",
 )
 
+cc_toolchain(
+    name = "tc_linux_arm64_konan",
+    all_files = ":wrappers",
+    ar_files = ":wrappers",
+    compiler_files = ":wrappers",
+    dwp_files = ":wrappers",
+    linker_files = ":wrappers",
+    objcopy_files = ":wrappers",
+    strip_files = ":wrappers",
+    toolchain_config = ":cfg_linux_arm64_konan",
+    toolchain_identifier = "konan_linux_arm64",
+)
+
 toolchain(
     name = "toolchain_linux_x64_konan",
     target_compatible_with = [
@@ -49,25 +56,12 @@ toolchain(
     toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
 )
 
-cc_toolchain(
-    name = "tc_exec_macos_konan",
-    all_files = ":host_wrappers",
-    ar_files = ":host_wrappers",
-    compiler_files = ":host_wrappers",
-    dwp_files = ":host_wrappers",
-    linker_files = ":host_wrappers",
-    objcopy_files = ":host_wrappers",
-    strip_files = ":host_wrappers",
-    toolchain_config = ":cfg_exec_macos_konan",  # your cc_toolchain_config
-    toolchain_identifier = "konan_exec_macos",
-)
-
 toolchain(
-    name = "exec_macos_konan",
-    exec_compatible_with = [
-        "@platforms//os:macos",
+    name = "toolchain_linux_arm64_konan",
+    target_compatible_with = [
+        "@platforms//os:linux",
         "@platforms//cpu:arm64",
     ],
-    toolchain = ":tc_exec_macos_konan",
+    toolchain = ":tc_linux_arm64_konan",
     toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
 )

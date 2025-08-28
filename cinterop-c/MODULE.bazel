@@ -29,10 +29,7 @@ bazel_dep(
 
 # Linux toolchain setup (cross-compile)
 
-#TODO: Remove
-bazel_dep(name = "toolchains_llvm", version = "1.4.0")
-
 register_toolchains(
     "//toolchain:toolchain_linux_x64_konan",
-    #    "//toolchain:exec_macos_konan",
+    "//toolchain:toolchain_linux_arm64_konan",
 )

@@ -12,11 +12,16 @@ import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.internal.extensions.stdlib.capitalized
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.extra
+import org.gradle.kotlin.dsl.named
+import org.gradle.kotlin.dsl.provideDelegate
+import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultCInteropSettings
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
+import util.other.libs
 import java.io.File
 
 // works with the cinterop-c Bazel project
@@ -153,12 +158,11 @@ private fun TaskContainer.registerBuildClibTask(
 ): TaskProvider<Exec> {
     return register<Exec>(name) {
         val konanTarget = target.konanTarget.visibleName
+        val konanHome = project.findKonanHome()
 
         group = "build"
         workingDir = project.cinteropLibDir
-        // TODO: find KONAN_HOME automatically
-        environment("KONAN_HOME", "/Users/johannes.zottele/.konan/kotlin-native-prebuilt-macos-aarch64-2.0.20/")
-        commandLine("bash", "-c", "./build_target.sh $bazelTask $outFile $konanTarget")
+        commandLine("bash", "-c", "./build_target.sh $bazelTask $outFile $konanTarget $konanHome")
         inputs.files(project.fileTree(project.cinteropLibDir) { exclude("bazel-*/**", "prebuilt-deps/**") })
         outputs.files(outFile)
 
@@ -171,3 +175,23 @@ private val Project.cinteropLibDir: File
         val globalRootDir: String by project.extra
         return layout.projectDirectory.dir("$globalRootDir/cinterop-c").asFile.absoluteFile
     }
+
+private fun Project.findKonanHome(): String {
+    val userHome = System.getProperty("user.home")
+    val osName = System.getProperty("os.name").lowercase()
+    val hostOs = when {
+        osName.contains("mac") -> "macos"
+        osName.contains("linux") -> "linux"
+        osName.contains("windows") -> "windows"
+        else -> error("Unsupported OS: $osName")
+    }
+    val hostArch = System.getProperty("os.arch").lowercase().let {
+        when {
+            it.contains("aarch64") || it.contains("arm64") -> "aarch64"
+            it.contains("x86_64") || it.contains("amd64") -> "x64"
+            else -> error("Unsupported arch: $it")
+        }
+    }
+    val kotlinVersion = project.libs.versions.kotlin.compiler.get()
+    return "$userHome/.konan/kotlin-native-prebuilt-$hostOs-$hostArch-$kotlinVersion"
+}

@@ -9,7 +9,6 @@
 
 #include <stdbool.h>
 #include <grpc/grpc.h>
-#include <version>
 
 #ifdef __cplusplus
 extern "C" {
