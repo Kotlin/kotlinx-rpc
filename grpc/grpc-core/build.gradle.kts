@@ -7,6 +7,8 @@
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import util.configureCLibCInterop
+import util.configureCLibDependency
+import util.registerBuildCLibIncludeDirTask
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -70,14 +72,32 @@ kotlin {
         }
     }
 
-    configureCLibCInterop(project, ":kgrpc_static") { cinteropCLib ->
+
+    // configure task to extract the include dir from the gRPC core library
+    val grpcIncludeDir = project.layout.buildDirectory.dir("bazel-out/grpc-include")
+    val grpcIncludeDirTask = project.registerBuildCLibIncludeDirTask(
+        "//prebuilt-deps/grpc_fat:grpc_include_dir",
+        grpcIncludeDir
+    )
+
+    // configure pre-built gRPC core library
+    configureCLibDependency(project, "//prebuilt-deps/grpc_fat:grpc_fat")
+
+    configureCLibCInterop(
+        project, ":kgrpc",
+        // depends on the grpc include dir
+        cinteropTaskDependsOn = listOf(grpcIncludeDirTask)
+    ) { cLibSource, cLibOutDir ->
+        val grpcPrebuiltDir = cLibSource.resolve("prebuilt-deps/grpc_fat")
+
         @Suppress("unused")
         val libkgrpc by creating {
             includeDirs(
-                cinteropCLib.resolve("include"),
-                cinteropCLib.resolve("bazel-cinterop-c/external/grpc+/include"),
+                cLibSource.resolve("include"),
+                cLibSource.resolve("${grpcIncludeDir.get()}/include"),
             )
-            extraOpts("-libraryPath", "${cinteropCLib.resolve("out")}")
+            extraOpts("-libraryPath", "$grpcPrebuiltDir")
+            extraOpts("-libraryPath", "$cLibOutDir")
         }
     }
 }
