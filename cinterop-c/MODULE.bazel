@@ -21,7 +21,6 @@ bazel_dep(
 GRPC_VERSION = "1.74.1"
 
 ## gRPC source dependency
-
 bazel_dep(
     name = "grpc",
     version = GRPC_VERSION,

@@ -17,19 +17,6 @@ def _impl(ctx):
         tool_path(name = "strip", path = "/usr/bin/true"),
     ]
 
-    features = [
-        feature(
-            name = "add_shim_include",
-            enabled = True,
-            flag_sets = [
-                flag_set(
-                    actions = ["c++-compile", "cpp-compile", "c-compile"],
-                    flag_groups = [flag_group(flags = ["-isystem", "toolchain/cxxshim"])],
-                ),
-            ],
-        ),
-    ]
-
     deps = ctx.var.get("KONAN_DEPS")
     if not deps:
         fail("Set --define=KONAN_DEPS=/path/to/.konan/dependencies")
@@ -44,7 +31,6 @@ def _impl(ctx):
         target_cpu = "x86_64",
         target_system_name = "linux",
         tool_paths = tool_paths,
-        features = features,
         cxx_builtin_include_directories = [
             deps + "/apple-llvm-20200714-macos-aarch64-essentials/lib/clang/11.1.0/include",
             deps + "/llvm-19-aarch64-macos-essentials-75/lib/clang/19/include",
