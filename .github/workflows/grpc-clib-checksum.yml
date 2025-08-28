@@ -1,0 +1,27 @@
+name: Verify gRPC CLib Checksum is Up-to-Date
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-platforms-table:
+    name: Run Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Sources
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Run gRPC Checksum Generation
+        run: ./gradlew grpc:grpc-core:computeSha256AllTargetsForCLibGrpc_fat --info --stacktrace
+      - name: Check if prebuilt gRPC library checksum is up-to-date
+        run: |
+          if [[ -n "$(git status --porcelain | grep cinterop-c/prebuilt-deps/grpc_fat/)" ]]; then
+            echo "Prebuilt gRPC library checksum is not up to date. Please run './gradlew grpc:grpc-core:computeSha256AllTargetsForCLibGrpc_fat' and commit changes"
+            exit 1
+          fi

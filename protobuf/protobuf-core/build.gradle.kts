@@ -53,13 +53,13 @@ kotlin {
         }
     }
 
-    configureCLibCInterop(project, ":protowire_static") { cinteropCLib ->
+    configureCLibCInterop(project, ":protowire_fat") { cLibSource, cLibOutDir ->
         @Suppress("unused")
         val libprotowire by creating {
             includeDirs(
-                cinteropCLib.resolve("include")
+                cLibSource.resolve("include")
             )
-            extraOpts("-libraryPath", "${cinteropCLib.resolve("out")}")
+            extraOpts("-libraryPath", "$cLibOutDir")
         }
     }
 }
