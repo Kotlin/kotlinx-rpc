@@ -32,4 +32,7 @@ bazel_dep(
 #TODO: Remove
 bazel_dep(name = "toolchains_llvm", version = "1.4.0")
 
-register_toolchains("//toolchain:toolchain_linux_x64_konan")
+register_toolchains(
+    "//toolchain:toolchain_linux_x64_konan",
+    #    "//toolchain:exec_macos_konan",
+)

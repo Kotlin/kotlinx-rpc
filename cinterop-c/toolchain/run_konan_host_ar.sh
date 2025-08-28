@@ -2,4 +2,5 @@
 set -euo pipefail
 : "${KONAN_HOME:?KONAN_HOME must be set}"
 
-exec "$KONAN_HOME/bin/run_konan" clang clang linux_x64 "$@"
+exec "$KONAN_HOME/bin/run_konan" llvm llvm-ar "$@"
+

@@ -12,9 +12,9 @@ def _impl(ctx):
         tool_path(name = "cpp", path = "run_konan_clang.sh"),
         tool_path(name = "ar", path = "run_konan_ar.sh"),
         tool_path(name = "ld", path = "/usr/bin/false"),
-        tool_path(name = "nm", path = "/usr/bin/true"),
-        tool_path(name = "objdump", path = "/usr/bin/true"),
-        tool_path(name = "strip", path = "/usr/bin/true"),
+        tool_path(name = "nm", path = "/usr/bin/false"),
+        tool_path(name = "objdump", path = "/usr/bin/false"),
+        tool_path(name = "strip", path = "/usr/bin/false"),
     ]
 
     deps = ctx.var.get("KONAN_DEPS")
@@ -43,6 +43,45 @@ def _impl(ctx):
 
 cc_toolchain_config = rule(
     implementation = _impl,
+    attrs = {},
+    provides = [CcToolchainConfigInfo],
+)
+
+def _impl_exec_macos(ctx):
+    tool_paths = [
+        tool_path(name = "gcc", path = "run_konan_host_clang.sh"),
+        tool_path(name = "cpp", path = "run_konan_host_clang.sh"),
+        tool_path(name = "ar", path = "run_konan_host_ar.sh"),
+        tool_path(name = "ld", path = "/usr/bin/false"),
+        tool_path(name = "nm", path = "/usr/bin/true"),
+        tool_path(name = "objdump", path = "/usr/bin/true"),
+        tool_path(name = "strip", path = "/usr/bin/true"),
+    ]
+
+    deps = ctx.var.get("KONAN_DEPS")
+    if not deps:
+        fail("Set --define=KONAN_DEPS=/path/to/.konan/dependencies")
+
+    return cc_common.create_cc_toolchain_config_info(
+        ctx = ctx,
+        toolchain_identifier = "konan_exec_macos",
+        compiler = "clang",
+        host_system_name = "local",
+        target_system_name = "darwin",
+        target_cpu = "darwin",
+        abi_version = "none",
+        abi_libc_version = "none",
+        tool_paths = tool_paths,
+        cxx_builtin_include_directories = [
+            deps + "/llvm-19-aarch64-macos-essentials-75/lib/clang/19/include",
+            deps + "/apple-llvm-20200714-macos-aarch64-essentials/lib/clang/11.1.0/include",
+            deps + "/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/sysroot/usr/include",
+            deps + "/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/include/",
+        ],
+    )
+
+cc_toolchain_config_exec = rule(
+    implementation = _impl_exec_macos,
     attrs = {},
     provides = [CcToolchainConfigInfo],
 )

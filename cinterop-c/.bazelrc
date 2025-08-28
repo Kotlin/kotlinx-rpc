@@ -1,5 +1,6 @@
 build --experimental_cc_static_library  --experimental_platform_in_output_dir
 build --action_env=KONAN_HOME
+build --host_action_env=KONAN_HOME
 build --cxxopt=-std=c++17
 build --host_cxxopt=-std=c++17
 
