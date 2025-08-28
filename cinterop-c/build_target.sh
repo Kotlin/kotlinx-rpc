@@ -33,4 +33,4 @@ out="$(bazel cquery "$LABEL" --platforms="$PLATFORM" --apple_platform_type="$OS"
 
 cp -f "$out" "$DST"
 
-echo "Done. Binary written to: $DST"
+echo "Done. Binary written to: $DST" >&2
