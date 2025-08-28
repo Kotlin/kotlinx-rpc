@@ -31,7 +31,10 @@ cc_toolchain(
 
 toolchain(
     name = "toolchain_linux_x64_konan",
-    exec_compatible_with = ["@platforms//os:macos"],
+    exec_compatible_with = [
+        "@platforms//os:macos",
+        "@platforms//os:linux",
+    ],
     target_compatible_with = [
         "@platforms//os:linux",
         "@platforms//cpu:x86_64",
