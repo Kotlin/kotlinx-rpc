@@ -1,4 +1,12 @@
-# we build the cc_static library bundled with all dependencies
 build --experimental_cc_static_library  --experimental_platform_in_output_dir
 
 build:release --compilation_mode=opt --strip=always
+
+build:macos_arm64 --platforms=@build_bazel_apple_support//platforms:macos_arm64 --apple_platform_type=macos
+build:macos_x64 --platforms=@build_bazel_apple_support//platforms:macos_x86_64 --apple_platform_type=macos
+build:ios_arm64 --platforms=@build_bazel_apple_support//platforms:ios_arm64 --apple_platform_type=ios
+build:ios_simulator_arm64 --platforms=@build_bazel_apple_support//platforms:ios_sim_arm64 --apple_platform_type=ios
+build:ios_x64 --platforms=@build_bazel_apple_support//platforms:ios_x86_64 --apple_platform_type=ios
+
+build:linux_arm64 --platforms=//platforms:linux_arm64
+build:linux_x64 --platforms=//platforms:linux_x86_64
