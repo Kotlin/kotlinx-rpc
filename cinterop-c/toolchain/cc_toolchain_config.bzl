@@ -21,6 +21,9 @@ ALL_ACTIONS = [
     ACTION_NAMES.cpp_link_static_library,
 ]
 
+# Constructs the toolchain configuration by defining all necessary flags and toolchain wrapper scripts.
+# The wrapper scripts call Konan which delegates all requests to the corresponding clang/llvm tools.
+# Additionally it includes all built-in include directories from the Konan toolchain and sysroot.
 def _impl(ctx):
     target = ctx.attr.target
     home = ctx.var.get("KONAN_HOME")

@@ -9,6 +9,7 @@ noStringConversion = grpc_slice_from_copied_buffer my_grpc_slice_from_copied_buf
 strictEnums = grpc_status_code grpc_connectivity_state grpc_call_error
 
 staticLibraries.macos_arm64 = libkgrpc.macos_arm64.a libgrpc_fat.macos_arm64.a
+staticLibraries.macos_x64 = libkgrpc.macos_x64.a libgrpc_fat.macos_x64.a
 staticLibraries.ios_arm64 = libkgrpc.ios_arm64.a libgrpc_fat.ios_arm64.a
 staticLibraries.ios_simulator_arm64 = libkgrpc.ios_simulator_arm64.a libgrpc_fat.ios_simulator_arm64.a
 staticLibraries.ios_x64 = libkgrpc.ios_x64.a libgrpc_fat.ios_x64.a
