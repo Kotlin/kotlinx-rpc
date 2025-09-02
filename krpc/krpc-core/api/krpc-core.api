@@ -1,19 +1,34 @@
 public abstract interface class kotlinx/rpc/krpc/KrpcConfig {
+	public abstract fun getConnector ()Lkotlinx/rpc/krpc/KrpcConfig$Connector;
 	public abstract fun getSerialFormatInitializer ()Lkotlinx/rpc/krpc/serialization/KrpcSerialFormatBuilder;
 	public abstract fun getWaitForServices ()Z
 }
 
 public final class kotlinx/rpc/krpc/KrpcConfig$Client : kotlinx/rpc/krpc/KrpcConfig {
+	public fun getConnector ()Lkotlinx/rpc/krpc/KrpcConfig$Connector;
 	public fun getSerialFormatInitializer ()Lkotlinx/rpc/krpc/serialization/KrpcSerialFormatBuilder;
 	public fun getWaitForServices ()Z
 }
 
+public final class kotlinx/rpc/krpc/KrpcConfig$Connector {
+	public final fun getCallTimeout-UwyO8pc ()J
+	public final fun getPerCallBufferSize ()I
+	public final fun getWaitTimeout-UwyO8pc ()J
+}
+
+public final class kotlinx/rpc/krpc/KrpcConfig$DefaultImpls {
+	public static fun getWaitForServices (Lkotlinx/rpc/krpc/KrpcConfig;)Z
+}
+
 public final class kotlinx/rpc/krpc/KrpcConfig$Server : kotlinx/rpc/krpc/KrpcConfig {
+	public fun getConnector ()Lkotlinx/rpc/krpc/KrpcConfig$Connector;
 	public fun getSerialFormatInitializer ()Lkotlinx/rpc/krpc/serialization/KrpcSerialFormatBuilder;
 	public fun getWaitForServices ()Z
 }
 
 public abstract class kotlinx/rpc/krpc/KrpcConfigBuilder {
+	public final fun buildConnector ()Lkotlinx/rpc/krpc/KrpcConfig$Connector;
+	public final fun connector (Lkotlin/jvm/functions/Function1;)V
 	public final fun getWaitForServices ()Z
 	protected final fun rpcSerialFormat ()Lkotlinx/rpc/krpc/serialization/KrpcSerialFormatBuilder;
 	public final fun serialization (Lkotlin/jvm/functions/Function1;)V
@@ -23,6 +38,17 @@ public abstract class kotlinx/rpc/krpc/KrpcConfigBuilder {
 public final class kotlinx/rpc/krpc/KrpcConfigBuilder$Client : kotlinx/rpc/krpc/KrpcConfigBuilder {
 	public fun <init> ()V
 	public final fun build ()Lkotlinx/rpc/krpc/KrpcConfig$Client;
+}
+
+public final class kotlinx/rpc/krpc/KrpcConfigBuilder$Connector {
+	public fun <init> ()V
+	public final fun dontWait-UwyO8pc ()J
+	public final fun getCallTimeout-UwyO8pc ()J
+	public final fun getPerCallBufferSize ()I
+	public final fun getWaitTimeout-UwyO8pc ()J
+	public final fun setCallTimeout-LRDsOJo (J)V
+	public final fun setPerCallBufferSize (I)V
+	public final fun setWaitTimeout-LRDsOJo (J)V
 }
 
 public final class kotlinx/rpc/krpc/KrpcConfigBuilder$Server : kotlinx/rpc/krpc/KrpcConfigBuilder {

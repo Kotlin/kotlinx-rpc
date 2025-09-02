@@ -87,6 +87,9 @@ public sealed class KrpcConfigBuilder protected constructor() {
         public var perCallBufferSize: Int = 1
     }
 
+    @Deprecated("Use connector { } instead", level = DeprecationLevel.ERROR)
+    public var waitForServices: Boolean = true
+
     /**
      * @see [KrpcConfigBuilder]
      */
@@ -155,6 +158,9 @@ public sealed interface KrpcConfig {
     public val serialFormatInitializer: KrpcSerialFormatBuilder<*, *>
 
     public val connector: Connector
+
+    @Deprecated("Use connector instead", level = DeprecationLevel.ERROR)
+    public val waitForServices: Boolean get() = true
 
     /**
      * @see KrpcConfigBuilder.connector
