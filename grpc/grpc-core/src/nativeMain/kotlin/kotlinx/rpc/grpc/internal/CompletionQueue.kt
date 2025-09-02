@@ -9,8 +9,30 @@ package kotlinx.rpc.grpc.internal
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
-import kotlinx.cinterop.*
-import libkgrpc.*
+import kotlinx.cinterop.CFunction
+import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.StableRef
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.asStableRef
+import kotlinx.cinterop.convert
+import kotlinx.cinterop.free
+import kotlinx.cinterop.nativeHeap
+import kotlinx.cinterop.pointed
+import kotlinx.cinterop.ptr
+import kotlinx.cinterop.reinterpret
+import kotlinx.cinterop.sizeOf
+import kotlinx.cinterop.staticCFunction
+import libkgrpc.GRPC_OP_RECV_STATUS_ON_CLIENT
+import libkgrpc.grpc_call_error
+import libkgrpc.grpc_call_start_batch
+import libkgrpc.grpc_completion_queue_create_for_callback
+import libkgrpc.grpc_completion_queue_destroy
+import libkgrpc.grpc_completion_queue_functor
+import libkgrpc.grpc_completion_queue_shutdown
+import libkgrpc.grpc_op
+import libkgrpc.kgrpc_cb_tag
+import libkgrpc.kgrpc_iomgr_run_in_background
 import platform.posix.memset
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
@@ -84,7 +106,7 @@ internal class CompletionQueue {
 
     @Suppress("unused")
     private val shutdownFunctorCleaner = createCleaner(shutdownFunctor) { nativeHeap.free(it) }
-    
+
     init {
         // Assert grpc_iomgr_run_in_background() to guarantee that the event manager provides
         // IO threads and supports the callback API.

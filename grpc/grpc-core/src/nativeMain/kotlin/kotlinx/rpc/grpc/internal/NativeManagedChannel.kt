@@ -11,19 +11,30 @@ import cnames.structs.grpc_channel_credentials
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.grpc.ManagedChannel
 import kotlinx.rpc.grpc.ManagedChannelPlatform
-import libkgrpc.*
+import libkgrpc.GPR_CLOCK_REALTIME
+import libkgrpc.GRPC_PROPAGATE_DEFAULTS
+import libkgrpc.gpr_inf_future
+import libkgrpc.grpc_channel_create
+import libkgrpc.grpc_channel_create_call
+import libkgrpc.grpc_channel_credentials_release
+import libkgrpc.grpc_channel_destroy
+import libkgrpc.grpc_insecure_credentials_create
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 import kotlin.time.Duration
 
 /**
- * Wrapper for [grpc_channel_credentials].
+ * Wrapper for [cnames.structs.grpc_channel_credentials].
  */
-internal sealed class GrpcCredentials(
+internal sealed class GrpcChannelCredentials(
     internal val raw: CPointer<grpc_channel_credentials>,
 ) {
     val rawCleaner = createCleaner(raw) {
@@ -34,8 +45,8 @@ internal sealed class GrpcCredentials(
 /**
  * Insecure credentials.
  */
-internal class GrpcInsecureCredentials() :
-    GrpcCredentials(grpc_insecure_credentials_create() ?: error("Failed to create credentials"))
+internal class GrpcInsecureChannelCredentials() :
+    GrpcChannelCredentials(grpc_insecure_credentials_create() ?: error("Failed to create channel credentials"))
 
 
 /**
@@ -47,7 +58,7 @@ internal class GrpcInsecureCredentials() :
 internal class NativeManagedChannel(
     target: String,
     // we must store them, otherwise the credentials are getting released
-    credentials: GrpcCredentials,
+    credentials: GrpcChannelCredentials,
 ) : ManagedChannel, ManagedChannelPlatform() {
 
     // a reference to make sure the grpc_init() was called. (it is released after shutdown)
