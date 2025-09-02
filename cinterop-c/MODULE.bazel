@@ -4,10 +4,7 @@ module(
 )
 
 # rules_cc for cc_library support
-bazel_dep(
-    name = "rules_cc",
-    version = "0.1.1",
-)
+bazel_dep(name = "rules_cc", version = "0.2.0")
 
 # required to build for apple targets (like iOS)
 bazel_dep(name = "apple_support", version = "1.22.1", repo_name = "build_bazel_apple_support")
@@ -24,9 +21,15 @@ bazel_dep(
 GRPC_VERSION = "1.74.1"
 
 ## gRPC source dependency
-
 bazel_dep(
     name = "grpc",
     version = GRPC_VERSION,
     repo_name = "com_github_grpc_grpc",
+)
+
+# Linux toolchain setup (cross-compile)
+
+register_toolchains(
+    "//toolchain:toolchain_linux_x64_konan",
+    "//toolchain:toolchain_linux_arm64_konan",
 )
