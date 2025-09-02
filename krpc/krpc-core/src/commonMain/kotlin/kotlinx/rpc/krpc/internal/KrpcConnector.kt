@@ -110,25 +110,34 @@ public class KrpcConnector(
         }.sendMessage(message)
     }
 
-    public fun unsubscribeFromMessages(key: HandlerKey<*>, callback: suspend () -> Unit = {}) {
-        transportScope.launch(CoroutineName("krpc-connector-unsubscribe-$key")) {
-            withLockForKey(key) {
-                if (key is HandlerKey.Service) {
-                    receiveHandlers.withKeys { keys ->
-                        keys
-                            .filter { it is HandlerKey.ServiceCall && it.serviceType == key.serviceType }
-                            .forEach {
-                                cleanForKey(it)
-                            }
-                    }
+    public fun unsubscribeFromMessagesAsync(key: HandlerKey<*>, callback: suspend () -> Unit = {}) {
+        if (!keyLocks.containsKey(key)) {
+            println("Key $key is not registered")
+            return
+        }
 
-                    serviceSubscriptions.remove(key)
-                } else {
-                    cleanForKey(key)
-                }
-            }
+        transportScope.launch(CoroutineName("krpc-connector-unsubscribe-$key")) {
+            unsubscribeFromMessages(key)
 
             callback()
+        }
+    }
+
+    public suspend fun unsubscribeFromMessages(key: HandlerKey<*>) {
+        withLockForKey(key, createKey = false) {
+            if (key is HandlerKey.Service) {
+                receiveHandlers.withKeys { keys ->
+                    keys
+                        .filter { it is HandlerKey.ServiceCall && it.serviceType == key.serviceType }
+                        .forEach {
+                            cleanForKey(it)
+                        }
+                }
+
+                serviceSubscriptions.remove(key)
+            } else {
+                cleanForKey(key)
+            }
         }
     }
 
@@ -141,23 +150,25 @@ public class KrpcConnector(
     public suspend fun <Message : KrpcMessage> subscribeToMessages(
         key: HandlerKey<Message>,
         subscription: KrpcMessageSubscription<Message>,
-    ): Unit = withLockForKey(key) {
-        if (key is HandlerKey.Service) {
-            serviceSubscriptions.computeIfAbsent(key) {
-                @Suppress("UNCHECKED_CAST")
-                subscription as KrpcMessageSubscription<KrpcCallMessage>
-            }
+    ) {
+        withLockForKey(key, createKey = true) {
+            if (key is HandlerKey.Service) {
+                serviceSubscriptions.computeIfAbsent(key) {
+                    @Suppress("UNCHECKED_CAST")
+                    subscription as KrpcMessageSubscription<KrpcCallMessage>
+                }
 
-            receiveHandlers.withKeys { keys ->
-                keys
-                    .filter { it is HandlerKey.ServiceCall && it.serviceType == key.serviceType }
-                    .forEach {
-                        @Suppress("UNCHECKED_CAST")
-                        subscribeWithActingHandlerPerTrack(it as HandlerKey<Message>, subscription)
-                    }
+                receiveHandlers.withKeys { keys ->
+                    keys
+                        .filter { it is HandlerKey.ServiceCall && it.serviceType == key.serviceType }
+                        .forEach {
+                            @Suppress("UNCHECKED_CAST")
+                            subscribeWithActingHandlerPerTrack(it as HandlerKey<Message>, subscription)
+                        }
+                }
+            } else {
+                subscribeWithActingHandlerPerTrack(key, subscription)
             }
-        } else {
-            subscribeWithActingHandlerPerTrack(key, subscription)
         }
     }
 
@@ -366,7 +377,7 @@ public class KrpcConnector(
             sendHandlers[HandlerKey.Protocol]?.updateWindowSize(sendBufferSize ?: -1)
         }
 
-        withLockForKey(key) {
+        withLockForKey(key, createKey = true) {
             val handler = handlerFor(key)
 
             handler.handle(message) { cause ->
@@ -378,7 +389,7 @@ public class KrpcConnector(
 
                 sendMessage(failure)
             }
-        }.onFailure {
+        }?.onFailure {
             if (message.isException) {
                 return@onFailure
             }
@@ -390,13 +401,13 @@ public class KrpcConnector(
             )
 
             sendMessage(failure)
-        }.onClosed {
+        }?.onClosed {
             // do nothing; it's a service message, meaning that the service is dead
         }
     }
 
     private suspend fun processServiceMessage(message: KrpcCallMessage, key: HandlerKey<KrpcCallMessage>) {
-        val (handler, result) = withLockForKey(key) {
+        val (handler, result) = withLockForKey(key, createKey = true) {
             val handler = receiveHandlers[key]
                 ?: if (config.waitTimeout.isPositive()) {
                     handlerFor(key)
@@ -419,7 +430,7 @@ public class KrpcConnector(
             }
 
             handler to result
-        }
+        } ?: error("unreachable, as we create a lock for the key")
 
         result.onFailure {
             if (message.isException) {
@@ -445,20 +456,22 @@ public class KrpcConnector(
             transportScope.launch(CoroutineName("krpc-connector-discard-if-unprocessed-$key")) {
                 delay(config.waitTimeout)
 
-                withLockForKey(key) {
+                withLockForKey(key, createKey = false) {
                     if (handler.processingStarted || receiveHandlers[key] != handler) {
                         return@launch
                     }
 
                     receiveHandlers.remove(key)
-                    handler.close(
-                        key = key,
-                        e = illegalStateException(
-                            "Waiting limit of ${config.waitTimeout} " +
-                                    "is exceeded for unprocessed messages with $key"
-                        ),
-                    )
+                    keyLocks.remove(key)
                 }
+
+                handler.close(
+                    key = key,
+                    e = illegalStateException(
+                        "Waiting limit of ${config.waitTimeout} " +
+                                "is exceeded for unprocessed messages with $key"
+                    ),
+                )
             }
         }
     }
@@ -477,15 +490,22 @@ public class KrpcConnector(
 
     private suspend inline fun <T> withLockForKey(
         key: HandlerKey<*>,
+        createKey: Boolean,
         action: () -> T,
-    ): T {
+    ): T? {
         val lockKey = if (key is HandlerKey.ServiceCall && role == SERVER_ROLE) {
             HandlerKey.Service(key.serviceType)
         } else {
             key
         }
 
-        return keyLocks.computeIfAbsent(lockKey) { Mutex() }.withLock(action = action)
+        val mutex = if (createKey) {
+            keyLocks.computeIfAbsent(lockKey) { Mutex() }
+        } else {
+            keyLocks[lockKey]
+        }
+
+        return mutex?.withLock(action = action)
     }
 
     internal companion object {

@@ -20,8 +20,8 @@ internal class KrpcClientConnector private constructor(
         KrpcConnector(serialFormat, transport, config, isServer = false)
     )
 
-    fun unsubscribeFromMessages(serviceTypeString: String, callId: String, callback: suspend () -> Unit = {}) {
-        connector.unsubscribeFromMessages(HandlerKey.ServiceCall(serviceTypeString, callId), callback)
+    suspend fun unsubscribeFromMessages(serviceTypeString: String, callId: String) {
+        connector.unsubscribeFromMessages(HandlerKey.ServiceCall(serviceTypeString, callId))
     }
 
     suspend fun subscribeToCallResponse(

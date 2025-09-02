@@ -193,6 +193,8 @@ internal class KrpcServerService<@Rpc T : Any>(
                     connectionId = callData.connectionId,
                     serviceId = callData.serviceId,
                 ).also { connector.sendMessage(it) }
+            } finally {
+                connector.unsubscribeFromCallMessages(callData.serviceType, callData.callId)
             }
 
             if (failure != null) {

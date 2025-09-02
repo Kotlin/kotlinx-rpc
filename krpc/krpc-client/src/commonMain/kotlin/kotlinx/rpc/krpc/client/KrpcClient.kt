@@ -295,15 +295,15 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
 
                     sendCancellation(CancellationType.REQUEST, call.descriptor.fqName, callId)
 
-                    connector.unsubscribeFromMessages(call.descriptor.fqName, callId) {
-                        cancellingRequests.remove(callId)
-                    }
+                    connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
+                    cancellingRequests.remove(callId)
                 }
 
                 throw e
             } finally {
                 channel.close()
                 requestChannels.remove(callId)
+                connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
             }
         }
     }
