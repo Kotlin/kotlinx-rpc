@@ -4,65 +4,16 @@
 
 package kotlinx.rpc.krpc.test.stress
 
-import kotlinx.atomicfu.atomic
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
-import kotlinx.rpc.annotations.Rpc
-import kotlinx.rpc.krpc.rpcClientConfig
-import kotlinx.rpc.krpc.rpcServerConfig
-import kotlinx.rpc.krpc.serialization.json.json
-import kotlinx.rpc.krpc.test.KrpcTestClient
-import kotlinx.rpc.krpc.test.KrpcTestServer
-import kotlinx.rpc.krpc.test.LocalTransport
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
+import kotlinx.rpc.krpc.test.BaseServiceTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-@Rpc
-interface StressService {
-    suspend fun unary(n: Int): Int
-    fun serverStreaming(num: Int): Flow<Int>
-    suspend fun clientStreaming(n: Flow<Int>): Int
-    fun bidiStreaming(flow1: Flow<Int>, flow2: Flow<Int>): Flow<Int>
-}
-
-class StressServiceImpl : StressService {
-    val unaryInvocations = atomic(0)
-    val serverStreamingInvocations = atomic(0)
-    val clientStreamingInvocations = atomic(0)
-    val bidiStreamingInvocations = atomic(0)
-
-    override suspend fun unary(n: Int): Int {
-        unaryInvocations.incrementAndGet()
-        return n
-    }
-
-    override fun serverStreaming(num: Int): Flow<Int> {
-        serverStreamingInvocations.incrementAndGet()
-        return (1..num).asFlow()
-    }
-
-    override suspend fun clientStreaming(n: Flow<Int>): Int {
-        clientStreamingInvocations.incrementAndGet()
-        return n.toList().sum()
-    }
-
-    override fun bidiStreaming(flow1: Flow<Int>, flow2: Flow<Int>): Flow<Int> {
-        bidiStreamingInvocations.incrementAndGet()
-        return flow1.zip(flow2) { a, b -> a + b }
-    }
-}
-
-//
 class StressTest : BaseStressTest() {
     // ~30 sec, 300_000 messages
     @Test
@@ -117,14 +68,14 @@ class StressTest : BaseStressTest() {
 }
 
 
-abstract class BaseStressTest {
+abstract class BaseStressTest : BaseServiceTest() {
     // (launches * iterationsPerLaunch) ^ 2 * 2 messages
     protected fun testBidiStreaming(
         perCallBufferSize: Int,
         timeout: Duration,
         launches: Int,
         iterationsPerLaunch: Int,
-    ) = runTest(perCallBufferSize, timeout) { service, impl ->
+    ) = runTest(perCallBufferSize, timeout) {
         List(launches) { id ->
             val i = id + 1
             launch {
@@ -150,7 +101,7 @@ abstract class BaseStressTest {
         timeout: Duration,
         launches: Int,
         iterationsPerLaunch: Int,
-    ) = runTest(perCallBufferSize, timeout) { service, impl ->
+    ) = runTest(perCallBufferSize, timeout) {
         List(launches) { id ->
             val i = id + 1
             launch {
@@ -173,7 +124,7 @@ abstract class BaseStressTest {
         timeout: Duration,
         launches: Int,
         iterationsPerLaunch: Int,
-    ) = runTest(perCallBufferSize, timeout) { service, impl ->
+    ) = runTest(perCallBufferSize, timeout) {
         List(launches) { id ->
             val i = id + 1
             launch {
@@ -197,7 +148,7 @@ abstract class BaseStressTest {
         timeout: Duration,
         launches: Int,
         iterationsPerLaunch: Int,
-    ) = runTest(perCallBufferSize, timeout) { service, impl ->
+    ) = runTest(perCallBufferSize, timeout) {
         List(launches) { id ->
             launch {
                 repeat(iterationsPerLaunch) { iter ->
@@ -212,43 +163,8 @@ abstract class BaseStressTest {
     private fun runTest(
         perCallBufferSize: Int = 100,
         timeout: Duration = 120.seconds,
-        body: suspend TestScope.(StressService, StressServiceImpl) -> Unit,
+        body: suspend Env.() -> Unit,
     ) = kotlinx.coroutines.test.runTest(timeout = timeout) {
-        val transport = LocalTransport(coroutineContext, recordTimestamps = false)
-
-        val clientConfig = rpcClientConfig {
-            serialization {
-                json()
-            }
-
-            connector {
-                this.perCallBufferSize = perCallBufferSize
-            }
-        }
-
-        val serverConfig = rpcServerConfig {
-            serialization {
-                json()
-            }
-
-            connector {
-                this.perCallBufferSize = perCallBufferSize
-            }
-        }
-
-        val client = KrpcTestClient(clientConfig, transport.client)
-        val service = client.withService<StressService>()
-
-        val server = KrpcTestServer(serverConfig, transport.server)
-        val impl = StressServiceImpl()
-        server.registerService<StressService> { impl }
-
-        body(service, impl)
-
-        client.close()
-        server.close()
-        client.awaitCompletion()
-        server.awaitCompletion()
-        transport.coroutineContext.cancelAndJoin()
+        runServiceTest(coroutineContext, perCallBufferSize, body)
     }
 }

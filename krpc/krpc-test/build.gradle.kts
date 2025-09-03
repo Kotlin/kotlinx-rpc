@@ -6,7 +6,6 @@ import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Files
 
 plugins {
@@ -71,11 +70,17 @@ kotlin {
                 implementation(libs.slf4j.api)
                 implementation(libs.logback.classic)
                 implementation(libs.coroutines.debug)
+                implementation(libs.lincheck)
             }
         }
     }
 
     explicitApi = ExplicitApiMode.Disabled
+}
+
+tasks.jvmTest {
+    // lincheck agent
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
 }
 
 tasks.withType<KotlinJvmTest> {

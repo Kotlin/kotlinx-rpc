@@ -221,9 +221,11 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                             message.errorMessage
                 }
 
-                serverSupportedPlugins.completeExceptionally(
-                    IllegalStateException("Server failed to process protocol message: ${message.failedMessage}")
-                )
+                if (!serverSupportedPlugins.isCompleted) {
+                    serverSupportedPlugins.completeExceptionally(
+                        IllegalStateException("Server failed to process protocol message: ${message.failedMessage}")
+                    )
+                }
             }
         }
     }
