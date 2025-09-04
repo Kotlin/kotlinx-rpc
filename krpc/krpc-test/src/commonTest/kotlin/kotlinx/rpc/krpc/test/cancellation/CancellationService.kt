@@ -15,7 +15,13 @@ interface CancellationService {
 
     suspend fun callException()
 
+    suspend fun serverCancellation()
+
     fun incomingStream(): Flow<Int>
+
+    fun cancellationInIncomingStream(): Flow<Int>
+
+    suspend fun cancellationInOutgoingStream(stream: Flow<Int>, cancelled: Flow<Int>)
 
     suspend fun outgoingStream(stream: Flow<Int>)
 
@@ -23,21 +29,19 @@ interface CancellationService {
 
     suspend fun outgoingStreamWithDelayedResponse(stream: Flow<Int>)
 
-    suspend fun outgoingStreamWithException(stream: Flow<Int>)
-
     fun nonSuspendable(): Flow<Int>
 }
 
 class CancellationServiceImpl : CancellationService {
     val waitCounter = atomic(0)
+    val successCounter = atomic(0)
+    val cancellationsCounter = atomic(0)
 
-    suspend fun awaitWaitCounter(value: Int) {
-        while (waitCounter.value != value) {
-           yield()
+    suspend fun awaitCounter(value: Int, counter: CancellationServiceImpl.() -> Int) {
+        while (counter() != value) {
+            yield()
         }
     }
-
-    val successCounter = atomic(0)
 
     val consumedIncomingValues = mutableListOf<Int>()
     val firstIncomingConsumed = CompletableDeferred<Int>()
@@ -45,10 +49,19 @@ class CancellationServiceImpl : CancellationService {
     val fence = CompletableDeferred<Unit>()
 
     override suspend fun longRequest() {
-        firstIncomingConsumed.complete(0)
-        waitCounter.incrementAndGet()
-        fence.await()
-        successCounter.incrementAndGet()
+        try {
+            firstIncomingConsumed.complete(0)
+            waitCounter.incrementAndGet()
+            fence.await()
+            successCounter.incrementAndGet()
+        } catch (e: CancellationException) {
+            cancellationsCounter.incrementAndGet()
+            throw e
+        }
+    }
+
+    override suspend fun serverCancellation() {
+        throw CancellationException("serverCancellation")
     }
 
     override suspend fun callException() {
@@ -57,6 +70,34 @@ class CancellationServiceImpl : CancellationService {
 
     override fun incomingStream(): Flow<Int> {
         return resumableFlow(fence)
+    }
+
+    override fun cancellationInIncomingStream(): Flow<Int> {
+        return flow {
+            emit(1)
+            throw CancellationException("cancellationInIncomingStream")
+        }
+    }
+
+    override suspend fun cancellationInOutgoingStream(stream: Flow<Int>, cancelled: Flow<Int>) {
+        supervisorScope {
+            launch {
+                consume(stream)
+            }
+
+            launch {
+                try {
+                    cancelled.collect {
+                        if (it == 0) {
+                            firstIncomingConsumed.complete(it)
+                        }
+                    }
+                } catch (e: CancellationException) {
+                    cancellationsCounter.incrementAndGet()
+                    throw e
+                }
+            }
+        }
     }
 
     override suspend fun outgoingStream(stream: Flow<Int>) {
@@ -73,18 +114,14 @@ class CancellationServiceImpl : CancellationService {
     }
 
     override suspend fun outgoingStreamWithDelayedResponse(stream: Flow<Int>) {
-        consume(stream)
+        try {
+            consume(stream)
 
-        unskippableDelay(10000)
-    }
-
-    override suspend fun outgoingStreamWithException(stream: Flow<Int>) {
-        consume(stream)
-
-        unskippableDelay(300)
-
-        // it will not cancel launch collector
-        error("exception in request")
+            fence.await()
+        } catch (e: CancellationException) {
+            cancellationsCounter.incrementAndGet()
+            throw e
+        }
     }
 
     private suspend fun consume(stream: Flow<Int>) {

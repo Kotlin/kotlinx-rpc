@@ -133,7 +133,7 @@ public abstract class KrpcServer(
         }
     }
 
-    override fun <@Rpc Service : Any> deregisterService(serviceKClass: KClass<Service>) {
+    final override fun <@Rpc Service : Any> deregisterService(serviceKClass: KClass<Service>) {
         connector.unsubscribeFromServiceMessages(serviceDescriptorOf(serviceKClass).fqName)
         rpcServices.remove(serviceDescriptorOf(serviceKClass).fqName)
     }

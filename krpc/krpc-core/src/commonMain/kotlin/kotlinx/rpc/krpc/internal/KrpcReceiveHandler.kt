@@ -182,7 +182,11 @@ internal class KrpcActingReceiveHandler(
 
     override fun close(key: HandlerKey<*>, e: Throwable?) {
         if (e != null) {
-            job.cancel(CancellationException(null, e))
+            if (e is CancellationException) {
+                job.cancel(e)
+            } else {
+                job.cancel(CancellationException(null, e))
+            }
         } else {
             job.cancel()
         }
@@ -191,24 +195,14 @@ internal class KrpcActingReceiveHandler(
     }
 
     private suspend fun tryHandle(message: KrpcMessage): HandlerResult {
-        val result = runCatching {
+        try {
             callHandler(message)
-        }
 
-        return when {
-            result.isFailure -> {
-                val exception = result.exceptionOrNull()
-
-                if (exception is CancellationException) {
-                    throw exception
-                }
-
-                HandlerResult.Failure(exception)
-            }
-
-            else -> {
-                HandlerResult.Success
-            }
+            return HandlerResult.Success
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
+            return HandlerResult.Failure(e)
         }
     }
 

@@ -5,12 +5,27 @@
 package kotlinx.rpc.krpc.client
 
 import kotlinx.atomicfu.atomic
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.RpcCall
@@ -21,7 +36,8 @@ import kotlinx.rpc.descriptor.RpcInvokator
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.internal.utils.getOrNull
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
-import kotlinx.rpc.krpc.*
+import kotlinx.rpc.krpc.KrpcConfig
+import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.client.internal.ClientStreamContext
 import kotlinx.rpc.krpc.client.internal.ClientStreamSerializer
 import kotlinx.rpc.krpc.client.internal.KrpcClientConnector
@@ -35,7 +51,6 @@ import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
 import kotlin.collections.first
 import kotlin.concurrent.Volatile
-import kotlin.coroutines.cancellation.CancellationException
 import kotlin.properties.Delegates
 
 /**
@@ -343,17 +358,8 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
             }
 
             is KrpcCallMessage.CallException -> {
-                val cause = runCatching {
-                    message.cause.deserialize()
-                }
-
-                val result = if (cause.isFailure) {
-                    cause.exceptionOrNull()!!
-                } else {
-                    cause.getOrNull()!!
-                }
-
-                channel.close(result)
+                val cause = message.cause.deserialize()
+                channel.close(cause)
             }
 
             is KrpcCallMessage.CallSuccess, is KrpcCallMessage.StreamMessage -> {
@@ -458,6 +464,21 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 serviceTypeString = serviceTypeString,
             )
         } catch (e: CancellationException) {
+            currentCoroutineContext().ensureActive()
+
+            val wrapped = ManualCancellationException(e)
+            val serializedReason = serializeException(wrapped)
+            val message = KrpcCallMessage.StreamCancel(
+                callId = outgoingStream.callId,
+                serviceType = serviceTypeString,
+                streamId = outgoingStream.streamId,
+                cause = serializedReason,
+                connectionId = outgoingStream.connectionId,
+                serviceId = outgoingStream.serviceId,
+            )
+            sender.sendMessage(message)
+
+            // stop the flow and its coroutine, other flows are not affected
             throw e
         } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
             val serializedReason = serializeException(cause)

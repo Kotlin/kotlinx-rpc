@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
 import kotlinx.rpc.krpc.test.BaseServiceTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -165,6 +166,7 @@ abstract class BaseStressTest : BaseServiceTest() {
         timeout: Duration = 120.seconds,
         body: suspend Env.() -> Unit,
     ) = kotlinx.coroutines.test.runTest(timeout = timeout) {
+        RpcInternalDumpLoggerContainer.set(null)
         runServiceTest(coroutineContext, perCallBufferSize, body)
     }
 }

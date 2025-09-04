@@ -11,7 +11,7 @@ import kotlinx.serialization.SerialFormat
 
 internal class KrpcServerConnector private constructor(
     private val connector: KrpcConnector,
-): KrpcMessageSender by connector {
+) : KrpcMessageSender by connector {
     constructor(
         serialFormat: SerialFormat,
         transport: KrpcTransport,

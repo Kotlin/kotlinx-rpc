@@ -76,11 +76,3 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
         }
     }
 }
-
-/**
- * [runTest] can skip delays, and sometimes it prevents from writing a test
- * running delay on [Dispatchers.Default] fixes delay, for questions refer to [runTest] documentation.
- */
-suspend fun unskippableDelay(millis: Long) {
-    withContext(Dispatchers.Default) { delay(millis) }
-}
