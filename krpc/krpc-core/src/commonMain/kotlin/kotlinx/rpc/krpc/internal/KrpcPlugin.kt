@@ -57,7 +57,7 @@ public enum class KrpcPlugin(
     /**
      * Clients don't require cancellation acknowledgement from the peer server.
      */
-    NO_ACK_CANCELLATION(4, KrpcVersion.V_0_10_0),
+    NO_ACK_CANCELLATION(4, KrpcVersion.V_0_8_0),
 
     /**
      * Backpressure mechanism.
