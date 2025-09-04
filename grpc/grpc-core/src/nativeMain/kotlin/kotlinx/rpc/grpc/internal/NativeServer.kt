@@ -56,6 +56,9 @@ internal class GrpcServerCredentials(
     }
 }
 
+// TODO: don't hardcode the host
+private val HOST = "0.0.0.0"
+
 internal class NativeServer(
     override val port: Int,
     // we must reference them, otherwise the credentials are getting garbage collected
@@ -77,7 +80,7 @@ internal class NativeServer(
 
     init {
         grpc_server_register_completion_queue(raw, cq.raw, null)
-        grpc_server_add_http2_port(raw, "localhost:$port", credentials.raw)
+        grpc_server_add_http2_port(raw, "$HOST:$port", credentials.raw)
         addUnknownService()
     }
 
@@ -113,10 +116,10 @@ internal class NativeServer(
             // to construct a valid HTTP/2 path, we must prepend the name with a slash.
             // the user does not do this to align it with the java implementation.
             val name = "/" + desc.getFullMethodName()
-            // TODO: don't hardcode localhost
             val tag = grpc_server_register_method(
                 server = raw,
                 method = name,
+                // TODO: don't hardcode localhost
                 host = "localhost:$port",
                 payload_handling = grpc_server_register_method_payload_handling.GRPC_SRM_PAYLOAD_NONE,
                 flags = 0u

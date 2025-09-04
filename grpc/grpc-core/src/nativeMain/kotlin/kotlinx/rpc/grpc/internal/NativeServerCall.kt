@@ -199,17 +199,17 @@ internal class NativeServerCall<Request, Response>(
                     }
                 }
             } else {
-                val msg = methodDescriptor.getRequestMarshaller()
-                    .parse(buf.toKotlin().asInputStream())
-
-                // destroy the buffer, we don't need it anymore
-                grpc_byte_buffer_destroy(buf)
-
-                // Mark that we have received at least one request message
-                receivedFirstMessage = true
-
-                callbackMutex.withLock {
-                    listener.onMessage(msg)
+                try {
+                    val msg = methodDescriptor.getRequestMarshaller()
+                        .parse(buf.toKotlin().asInputStream())
+                    // Mark that we have received at least one request message
+                    receivedFirstMessage = true
+                    callbackMutex.withLock {
+                        listener.onMessage(msg)
+                    }
+                } finally {
+                    // destroy the buffer, we don't need it anymore
+                    grpc_byte_buffer_destroy(buf)
                 }
             }
         }
@@ -306,7 +306,6 @@ private class DeferredCallListener<T> : ServerCall.Listener<T>() {
             // fast path (delegate is already set)
             f(d); return
         }
-        println("delivering to queue...")
         // slow path: re-check under lock
         val dd = mutex.withLock {
             val cur = delegate
