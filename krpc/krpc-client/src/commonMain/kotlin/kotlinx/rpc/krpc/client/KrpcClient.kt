@@ -480,7 +480,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
 
             // stop the flow and its coroutine, other flows are not affected
             throw e
-        } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
+        } catch (cause: Throwable) {
             val serializedReason = serializeException(cause)
             val message = KrpcCallMessage.StreamCancel(
                 callId = outgoingStream.callId,

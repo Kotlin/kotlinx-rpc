@@ -243,7 +243,9 @@ internal fun decodeWindow(message: KrpcGenericMessage): WindowResult {
     }
 
     val updateParam = windowParam.toIntOrNull()
-        ?: return WindowResult.Failure("Window param must be of the form <available>/<windowId> and in form of two longs")
+        ?: return WindowResult.Failure(
+            "Window param must be of the form <available>/<windowId> and in form of two longs"
+        )
 
     val windowKey = message.pluginParams[KrpcPluginKey.WINDOW_KEY]?.split("/").orEmpty()
     val serviceType = windowKey.getOrNull(0)

@@ -35,6 +35,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import kotlin.test.fail
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -276,7 +277,7 @@ class KrpcConnectorTest : KrpcConnectorBaseTest() {
         client.subscribeToMessages(HandlerKey.Protocol) {
             if (it is KrpcProtocolMessage.Failure) {
                 if (!hsResult.clientShookHands.isCompleted) {
-                    throw IllegalStateException("Handshake must be first message, but got: $it")
+                    fail("Handshake must be first message, but got: $it")
                 }
 
                 clientExceptionsChannel.send(it)
@@ -288,7 +289,7 @@ class KrpcConnectorTest : KrpcConnectorBaseTest() {
         server.subscribeToMessages(HandlerKey.Protocol) {
             if (it is KrpcProtocolMessage.Failure) {
                 if (!hsResult.serverShookHands.isCompleted) {
-                    throw IllegalStateException("Handshake must be first message, but got: $it")
+                    fail("Handshake must be first message, but got: $it")
                 }
 
                 serverExceptionsChannel.send(it)

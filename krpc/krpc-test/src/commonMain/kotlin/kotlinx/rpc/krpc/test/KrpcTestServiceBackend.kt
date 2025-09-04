@@ -6,7 +6,6 @@ package kotlinx.rpc.krpc.test
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.test.TestScope
 import kotlinx.serialization.Serializable
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertContentEquals
@@ -107,7 +106,9 @@ class KrpcTestServiceBackend : KrpcTestService {
         return arg1
     }
 
-    override suspend fun returnTestClassThatThrowsWhileDeserialization(value: Int): TestClassThatThrowsWhileDeserialization {
+    override suspend fun returnTestClassThatThrowsWhileDeserialization(
+        value: Int,
+    ): TestClassThatThrowsWhileDeserialization {
         return TestClassThatThrowsWhileDeserialization(value)
     }
 

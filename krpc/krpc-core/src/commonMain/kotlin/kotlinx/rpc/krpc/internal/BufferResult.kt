@@ -6,7 +6,7 @@ package kotlinx.rpc.krpc.internal
 
 internal sealed interface BufferResult<T> {
     class Success<T>(val message: T) : BufferResult<T>
-    class Failure<T>() : BufferResult<T>
+    class Failure<T> : BufferResult<T>
     class Closed<T>(val cause: Throwable?) : BufferResult<T>
 }
 

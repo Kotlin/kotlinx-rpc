@@ -287,7 +287,10 @@ public class KrpcConnector(
                 }
 
                 else -> {
-                    logger.error { "Unsupported serialization format: ${serialFormat::class} for ${transportMessage::class}" }
+                    logger.error {
+                        "Unsupported serialization format: ${serialFormat::class} for ${transportMessage::class}"
+                    }
+
                     return null
                 }
             }

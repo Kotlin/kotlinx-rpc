@@ -38,7 +38,7 @@ class LincheckTest : BaseLincheckTest() {
     }
 }
 
-abstract class BaseLincheckTest() : BaseServiceTest() {
+abstract class BaseLincheckTest : BaseServiceTest() {
     fun createDispatcher(nThreads: Int): ExecutorCoroutineDispatcher = Executors
         .newFixedThreadPool(nThreads)
         .asCoroutineDispatcher()

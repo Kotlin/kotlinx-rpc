@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.krpc.test
 
-import kotlinx.coroutines.test.TestScope
 import kotlin.native.concurrent.ObsoleteWorkersApi
 import kotlin.native.concurrent.Worker
 

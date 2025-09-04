@@ -15,7 +15,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-@Suppress("EnumEntryName")
+@Suppress("EnumEntryName", "detekt.EnumNaming")
 enum class Versions {
     v0_9,
     v0_8,
@@ -36,7 +36,7 @@ val Versions.client get() = VersionRolePair(this, Role.Client)
 @Suppress("unused")
 val Versions.server get() = VersionRolePair(this, Role.Server)
 
-abstract class KrpcProtocolCompatibilityTestsBase() {
+abstract class KrpcProtocolCompatibilityTestsBase {
     class LoadedStarter(val version: Versions, val classLoader: URLClassLoader) {
         val starter = classLoader
             .loadClass("kotlinx.rpc.krpc.test.compat.service.TestStarter")

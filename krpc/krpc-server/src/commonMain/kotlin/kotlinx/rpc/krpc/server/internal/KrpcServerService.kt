@@ -187,7 +187,7 @@ internal class KrpcServerService<@Rpc T : Any>(
                 val wrapped = ManualCancellationException(cause)
 
                 failure = wrapped
-            } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
+            } catch (cause: Throwable) {
                 failure = cause
             } finally {
                 if (failure != null) {
@@ -309,7 +309,7 @@ internal class KrpcServerService<@Rpc T : Any>(
             )
         } catch (cause: CancellationException) {
             throw cause
-        } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
+        } catch (cause: Throwable) {
             val serializedCause = serializeException(cause)
             connector.sendMessage(
                 KrpcCallMessage.StreamCancel(
