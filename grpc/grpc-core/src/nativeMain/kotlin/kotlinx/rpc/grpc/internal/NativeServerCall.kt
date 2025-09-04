@@ -58,6 +58,9 @@ internal class NativeServerCall<Request, Response>(
     private var cancelled = false
     private var finalized = atomic(false)
 
+    // Tracks whether at least one request message has been received on this call.
+    private var receivedFirstMessage = false
+
     // we currently don't buffer messages, so after one `sendMessage` call, ready turns false. (KRPC-192)
     private val ready = atomic(true)
 
@@ -184,8 +187,16 @@ internal class NativeServerCall<Request, Response>(
             // and thus the client half-closed.
             val buf = recvPtr.value
             if (buf == null) {
-                callbackMutex.withLock {
-                    listener.onHalfClose()
+                // end-of-stream observed. for UNARY, absence of any request is a protocol violation.
+                if (methodDescriptor.type == MethodType.UNARY && !receivedFirstMessage) {
+                    cancelCall(
+                        grpc_status_code.GRPC_STATUS_INTERNAL,
+                        "Unary call half-closed before receiving a request message"
+                    )
+                } else {
+                    callbackMutex.withLock {
+                        listener.onHalfClose()
+                    }
                 }
             } else {
                 val msg = methodDescriptor.getRequestMarshaller()
@@ -193,6 +204,9 @@ internal class NativeServerCall<Request, Response>(
 
                 // destroy the buffer, we don't need it anymore
                 grpc_byte_buffer_destroy(buf)
+
+                // Mark that we have received at least one request message
+                receivedFirstMessage = true
 
                 callbackMutex.withLock {
                     listener.onMessage(msg)

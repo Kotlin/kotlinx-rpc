@@ -193,8 +193,7 @@ class GrpcCoreClientTest {
     @Test
     fun halfCloseBeforeSendingMessage_errorWithoutCrashing() {
         val channel = createChannel()
-//        val call = channel.newHelloCall()
-        val call = channel.newHelloCall(fullName = "helloworld.Greeter/SayHello")
+        val call = channel.newHelloCall()
         val listener = createClientCallListener<HelloReply>(
             onClose = { status, _ -> println("Status: ${status.statusCode}, Message: ${status.getDescription()}") }
         )
