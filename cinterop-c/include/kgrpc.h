@@ -24,13 +24,71 @@ typedef struct {
 } kgrpc_cb_tag;
 
 
- /*
- * Call to grpc_iomgr_run_in_background(), which is not exposed as extern "C" and therefore must be wrapped.
+// This is a duplicate of the RegisteredCallAllocation, which is defined in
+// https://github.com/grpc/grpc/blob/893bdadd56dbb75fb156175afdaa2b0d47e1c15b/src/core/server/server.h#L150-L157.
+// This is required, as RegisteredCallAllocation is not part of the exposed C API.
+typedef struct {
+    void *tag;
+    grpc_call **call;
+    grpc_metadata_array *initial_metadata;
+    gpr_timespec *deadline;
+    grpc_byte_buffer **optional_payload;
+    grpc_completion_queue *cq;
+} kgrpc_registered_call_allocation;
+
+typedef struct {
+    void* tag;
+    grpc_call** call;
+    grpc_metadata_array* initial_metadata;
+    grpc_call_details* details;
+    grpc_completion_queue* cq;
+} kgrpc_batch_call_allocation;
+
+typedef kgrpc_registered_call_allocation (*kgrpc_registered_call_allocator)(void* ctx);
+typedef kgrpc_batch_call_allocation (*kgrpc_batch_call_allocator)(void* ctx);
+
+/*
+* Call to grpc_iomgr_run_in_background(), which is not exposed as extern "C" and therefore must be wrapped.
+*/
+bool kgrpc_iomgr_run_in_background();
+
+/**
+ * Registers a C-style allocator callback for accepting gRPC calls to a specific method.
+ *
+ * Wraps the internal C++ API `Server::SetRegisteredMethodAllocator()` to enable
+ * callback-driven method dispatch via the Core C API.
+ *
+ * When the gRPC Core needs to accept a new call for the specified method, it invokes:
+ *   kgrpc_registered_call_allocation alloc = allocator();
+ * to retrieve the accept context, including `tag`, `grpc_call*`, metadata, deadline,
+ * optional payload, and the completion queue.
+ *
+ * This omits the need of handling pre-registering requests using `grpc_server_request_registered_call`.
+ *
+ * @param server         The gRPC C `grpc_server*` instance.
+ * @param cq             A callback-style `grpc_completion_queue*` (must be registered earlier).
+ * @param method_tag     Opaque identifier from `grpc_server_register_method()` for the RPC method.
+ * @param allocator_ctx  The context for the callback to pass all necessary objects to the static function.
+ * @param allocator      Function providing new accept contexts (`kgrpc_registered_call_allocation`).
  */
- bool kgrpc_iomgr_run_in_background();
+void kgrpc_server_set_register_method_allocator(
+        grpc_server *server,
+        grpc_completion_queue *cq,
+        void *method_tag,
+        void *allocator_ctx,
+        kgrpc_registered_call_allocator allocator
+);
+
+void kgrpc_server_set_batch_method_allocator(
+    grpc_server *server,
+    grpc_completion_queue *cq,
+    void *allocator_ctx,
+    kgrpc_batch_call_allocator allocator
+);
+
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
 #endif //GRPCPP_C_H

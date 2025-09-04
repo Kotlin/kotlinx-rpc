@@ -6,11 +6,41 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.cinterop.*
-import kotlinx.io.*
+import kotlinx.cinterop.ByteVar
+import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.CValue
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.allocArray
+import kotlinx.cinterop.convert
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.plus
+import kotlinx.cinterop.ptr
+import kotlinx.cinterop.readValue
+import kotlinx.cinterop.reinterpret
+import kotlinx.cinterop.sizeOf
+import kotlinx.cinterop.useContents
+import kotlinx.cinterop.usePinned
+import kotlinx.io.Buffer
+import kotlinx.io.InternalIoApi
+import kotlinx.io.Sink
+import kotlinx.io.Source
+import kotlinx.io.UnsafeIoApi
 import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.rpc.grpc.StatusCode
-import libkgrpc.*
+import libkgrpc.grpc_byte_buffer
+import libkgrpc.grpc_byte_buffer_reader
+import libkgrpc.grpc_byte_buffer_reader_destroy
+import libkgrpc.grpc_byte_buffer_reader_init
+import libkgrpc.grpc_byte_buffer_reader_next
+import libkgrpc.grpc_raw_byte_buffer_create
+import libkgrpc.grpc_slice
+import libkgrpc.grpc_slice_from_copied_buffer
+import libkgrpc.grpc_slice_from_copied_string
+import libkgrpc.grpc_slice_malloc
+import libkgrpc.grpc_slice_unref
+import libkgrpc.grpc_status_code
 import platform.posix.memcpy
 
 internal fun internalError(message: String) {
@@ -43,6 +73,7 @@ internal fun grpc_slice.toByteArray(): ByteArray = memScoped {
     }
     return out
 }
+
 
 internal fun CPointer<grpc_byte_buffer>.toKotlin(): Buffer = memScoped {
     val reader = alloc<grpc_byte_buffer_reader>()
@@ -159,4 +190,24 @@ internal fun grpc_status_code.toKotlin(): StatusCode = when (this) {
     grpc_status_code.GRPC_STATUS_DATA_LOSS -> StatusCode.DATA_LOSS
     grpc_status_code.GRPC_STATUS_UNAUTHENTICATED -> StatusCode.UNAUTHENTICATED
     grpc_status_code.GRPC_STATUS__DO_NOT_USE -> error("Invalid status code: ${this.ordinal}")
+}
+
+internal fun StatusCode.toRaw(): grpc_status_code = when (this) {
+    StatusCode.OK -> grpc_status_code.GRPC_STATUS_OK
+    StatusCode.CANCELLED -> grpc_status_code.GRPC_STATUS_CANCELLED
+    StatusCode.UNKNOWN -> grpc_status_code.GRPC_STATUS_UNKNOWN
+    StatusCode.INVALID_ARGUMENT -> grpc_status_code.GRPC_STATUS_INVALID_ARGUMENT
+    StatusCode.DEADLINE_EXCEEDED -> grpc_status_code.GRPC_STATUS_DEADLINE_EXCEEDED
+    StatusCode.NOT_FOUND -> grpc_status_code.GRPC_STATUS_NOT_FOUND
+    StatusCode.ALREADY_EXISTS -> grpc_status_code.GRPC_STATUS_ALREADY_EXISTS
+    StatusCode.PERMISSION_DENIED -> grpc_status_code.GRPC_STATUS_PERMISSION_DENIED
+    StatusCode.RESOURCE_EXHAUSTED -> grpc_status_code.GRPC_STATUS_RESOURCE_EXHAUSTED
+    StatusCode.FAILED_PRECONDITION -> grpc_status_code.GRPC_STATUS_FAILED_PRECONDITION
+    StatusCode.ABORTED -> grpc_status_code.GRPC_STATUS_ABORTED
+    StatusCode.OUT_OF_RANGE -> grpc_status_code.GRPC_STATUS_OUT_OF_RANGE
+    StatusCode.UNIMPLEMENTED -> grpc_status_code.GRPC_STATUS_UNIMPLEMENTED
+    StatusCode.INTERNAL -> grpc_status_code.GRPC_STATUS_INTERNAL
+    StatusCode.UNAVAILABLE -> grpc_status_code.GRPC_STATUS_UNAVAILABLE
+    StatusCode.DATA_LOSS -> grpc_status_code.GRPC_STATUS_DATA_LOSS
+    StatusCode.UNAUTHENTICATED -> grpc_status_code.GRPC_STATUS_UNAUTHENTICATED
 }

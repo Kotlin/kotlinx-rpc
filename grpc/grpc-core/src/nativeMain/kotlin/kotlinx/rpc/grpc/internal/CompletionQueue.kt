@@ -6,6 +6,7 @@
 
 package kotlinx.rpc.grpc.internal
 
+import cnames.structs.grpc_call
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
@@ -117,7 +118,7 @@ internal class CompletionQueue {
      * Submits a batch operation to the queue.
      * See [BatchResult] for possible outcomes.
      */
-    fun runBatch(call: NativeClientCall<*, *>, ops: CPointer<grpc_op>, nOps: ULong): BatchResult {
+    fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong): BatchResult {
         val completion = CallbackFuture<Boolean>()
         val tag = newCbTag(completion, OPS_COMPLETE_CB)
 
@@ -138,7 +139,7 @@ internal class CompletionQueue {
                 return BatchResult.CQShutdown
             }
 
-            err = grpc_call_start_batch(call.raw, ops, nOps, tag, null)
+            err = grpc_call_start_batch(call, ops, nOps, tag, null)
         }
 
         if (err != grpc_call_error.GRPC_CALL_OK) {
@@ -217,3 +218,27 @@ private fun deleteCbTag(tag: CPointer<kgrpc_cb_tag>) {
     tag.pointed.user_data!!.asStableRef<Any>().dispose()
     nativeHeap.free(tag)
 }
+
+internal interface CallbackTag {
+    fun run(ok: Boolean)
+
+    fun toCbTag(): CPointer<kgrpc_cb_tag> {
+        return newCbTag(this, staticCFunction { functor, ok ->
+            val tag = functor!!.reinterpret<kgrpc_cb_tag>()
+            val callbackTag = tag.pointed.user_data!!.asStableRef<CallbackTag>().get()
+            deleteCbTag(tag)
+            callbackTag.run(ok != 0)
+        })
+    }
+
+    companion object {
+        fun anonymous(run: (ok: Boolean) -> Unit): CPointer<kgrpc_cb_tag> {
+            return object : CallbackTag {
+                override fun run(ok: Boolean) {
+                    run(ok)
+                }
+            }.toCbTag()
+        }
+    }
+}
+

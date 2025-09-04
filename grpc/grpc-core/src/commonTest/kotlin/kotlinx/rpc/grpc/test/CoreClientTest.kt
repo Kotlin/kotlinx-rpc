@@ -8,8 +8,20 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
-import kotlinx.rpc.grpc.*
-import kotlinx.rpc.grpc.internal.*
+import kotlinx.rpc.grpc.GrpcServer
+import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.ManagedChannel
+import kotlinx.rpc.grpc.ManagedChannelBuilder
+import kotlinx.rpc.grpc.Status
+import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.grpc.buildChannel
+import kotlinx.rpc.grpc.internal.ClientCall
+import kotlinx.rpc.grpc.internal.GrpcDefaultCallOptions
+import kotlinx.rpc.grpc.internal.MethodDescriptor
+import kotlinx.rpc.grpc.internal.MethodType
+import kotlinx.rpc.grpc.internal.clientCallListener
+import kotlinx.rpc.grpc.internal.methodDescriptor
+import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.registerService
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -57,7 +69,7 @@ class GrpcCoreClientTest {
     }
 
     @Test
-    fun normalUnaryCall_ok() = repeat(1000) {
+    fun normalUnaryCall_ok() = repeat(10000) {
         val channel = createChannel()
         val call = channel.newHelloCall()
         val req = helloReq()

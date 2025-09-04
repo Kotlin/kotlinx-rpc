@@ -83,7 +83,8 @@ internal class NativeManagedChannel(
     override val platformApi: ManagedChannelPlatform = this
 
     private var isShutdownInternal = atomic(false)
-    override val isShutdown: Boolean = isShutdownInternal.value
+    override val isShutdown: Boolean
+        get() = isShutdownInternal.value
     private val isTerminatedInternal = CompletableDeferred<Unit>()
     override val isTerminated: Boolean
         get() = isTerminatedInternal.isCompleted
