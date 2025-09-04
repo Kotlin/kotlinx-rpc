@@ -5,7 +5,6 @@ package kotlinx.rpc.grpc.test
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.GrpcServer
@@ -62,8 +61,12 @@ class GrpcCoreClientTest {
         this.timeout = timeout
     }
 
-    private fun shutdownAndWait(channel: ManagedChannel) {
-        channel.shutdown()
+    private fun shutdownAndWait(channel: ManagedChannel, now: Boolean = false) {
+        if (now) {
+            channel.shutdownNow()
+        } else {
+            channel.shutdown()
+        }
         runBlocking { channel.awaitTermination() }
     }
 
@@ -190,10 +193,10 @@ class GrpcCoreClientTest {
     @Test
     fun halfCloseBeforeSendingMessage_errorWithoutCrashing() {
         val channel = createChannel()
-        val call = channel.newHelloCall()
-        val statusDeferred = CompletableDeferred<Status>()
+//        val call = channel.newHelloCall()
+        val call = channel.newHelloCall(fullName = "helloworld.Greeter/SayHello")
         val listener = createClientCallListener<HelloReply>(
-            onClose = { status, _ -> statusDeferred.complete(status) }
+            onClose = { status, _ -> println("Status: ${status.statusCode}, Message: ${status.getDescription()}") }
         )
         assertFailsWith<IllegalStateException> {
             try {
@@ -277,24 +280,15 @@ class GreeterServiceImpl : GreeterService {
                 builder = { registerService<GreeterService> { GreeterServiceImpl() } }
             )
 
-            launch {
-                println("Terminating in 10 seconds")
-                delay(10000)
-                server.shutdown()
-                server.awaitTermination()
-            }
-
-            launch {
+            try {
                 server.start()
                 println("Server started")
                 server.awaitTermination()
+            } finally {
+                server.shutdown()
+                server.awaitTermination()
             }
         }
-
-//        runBlocking {
-//            println("Waiting, so GC is collecting stuff")
-//            delay(20000)
-//        }
     }
 
 }

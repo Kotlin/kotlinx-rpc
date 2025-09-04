@@ -181,6 +181,7 @@ internal class NativeServerCall<Request, Response>(
             arena.clear()
         }) {
             // if the call was successful, but no message was received, we reached the end-of-stream.
+            // and thus the client half-closed.
             val buf = recvPtr.value
             if (buf == null) {
                 callbackMutex.withLock {
