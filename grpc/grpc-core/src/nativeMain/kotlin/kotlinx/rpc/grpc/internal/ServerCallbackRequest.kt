@@ -56,22 +56,25 @@ internal class ServerCallbackRequest<Request, Response>(
     }
 
     override fun run(ok: Boolean) {
-        if (!ok) {
-            // the call has been shutdown.
-            // free up the request.
-            dispose()
-            return
-        }
+        try {
+            if (!ok) {
+                // the call has been shutdown.\
+                return
+            }
 
-        // TODO: The NativeServerCall must call dispose() ones the call is completed.
-        // create a NativeServerCall to control the underlying core call.
-        // ownership of the core call is transferred to the NativeServerCall.
-        val call = NativeServerCall(rawCall.value!!, this, method.getMethodDescriptor())
-        // TODO: Implement trailers.
-        val trailers = GrpcTrailers()
-        // start the actual call.
-        val listener = method.getServerCallHandler().startCall(call, trailers)
-        call.setListener(listener)
+            // create a NativeServerCall to control the underlying core call.
+            // ownership of the core call is transferred to the NativeServerCall.
+            val call = NativeServerCall(rawCall.value!!, cq, method.getMethodDescriptor())
+            // TODO: Turn metadata into a kotlin GrpcTrailers.
+            val trailers = GrpcTrailers()
+            // start the actual call.
+            val listener = method.getServerCallHandler().startCall(call, trailers)
+            call.setListener(listener)
+        } finally {
+            // at this point, all return values have been transformed into kotlin ones,
+            // so we can safely clear all resources.
+            dispose()
+        }
     }
 }
 

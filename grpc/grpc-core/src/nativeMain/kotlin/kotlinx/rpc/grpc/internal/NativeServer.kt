@@ -8,6 +8,7 @@ package kotlinx.rpc.grpc.internal
 
 import cnames.structs.grpc_server
 import cnames.structs.grpc_server_credentials
+import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CValue
@@ -55,15 +56,9 @@ internal class GrpcServerCredentials(
     }
 }
 
-internal typealias MethodTag = COpaquePointer
-
-internal data class RegisteredMethod(
-    val methodDescriptor: ServerMethodDefinition<*, *>,
-    val tag: MethodTag,
-)
-
 internal class NativeServer(
     override val port: Int,
+    // we must reference them, otherwise the credentials are getting garbage collected
     @Suppress("Redundant")
     private val credentials: GrpcServerCredentials,
 ) : Server {
@@ -76,19 +71,9 @@ internal class NativeServer(
 
     val raw: CPointer<grpc_server> = grpc_server_create(null, null)!!
 
-    @Suppress("unused")
-    private val rawCleaner = createCleaner(raw) {
-        grpc_server_destroy(it)
-    }
-
     // holds all stable references to MethodAllocationCtx objects.
     // the stable references must eventually be disposed.
     private val methodAllocationCtxs = mutableSetOf<StableRef<MethodAllocationCtx>>()
-
-    @Suppress("unused")
-    private val methodAllocationCtxCleaner = createCleaner(methodAllocationCtxs) { refs ->
-        refs.forEach { it.dispose() }
-    }
 
     init {
         grpc_server_register_completion_queue(raw, cq.raw, null)
@@ -97,9 +82,9 @@ internal class NativeServer(
     }
 
     private var started = false
-    private var isShutdownInternal = false
+    private var isShutdownInternal = atomic(false)
     override val isShutdown: Boolean
-        get() = isShutdownInternal
+        get() = isShutdownInternal.value
 
     private val isTerminatedInternal = CompletableDeferred<Unit>()
     override val isTerminated: Boolean
@@ -110,6 +95,14 @@ internal class NativeServer(
         started = true
         grpc_server_start(raw)
         return this
+    }
+
+    private fun dispose() {
+        // disposed with completion of shutdown
+        grpc_server_destroy(raw)
+        methodAllocationCtxs.forEach { it.dispose() }
+        // release the grpc runtime, so grpc is shutdown if no other grpc servers are running.
+        rt.close()
     }
 
     fun addService(service: ServerServiceDefinition) {
@@ -137,7 +130,7 @@ internal class NativeServer(
                 )
             )
             methodAllocationCtxs.add(ctx)
-            
+
             kgrpc_server_set_register_method_allocator(
                 server = raw,
                 cq = cq.raw,
@@ -167,14 +160,14 @@ internal class NativeServer(
 
 
     override fun shutdown(): Server {
-        if (isShutdownInternal) {
+        if (!isShutdownInternal.compareAndSet(expect = false, update = true)) {
+            // shutdown only once
             return this
         }
-        isShutdownInternal = true
 
         grpc_server_shutdown_and_notify(raw, cq.raw, CallbackTag.anonymous {
             cq.shutdown().onComplete {
-                methodAllocationCtxs.forEach { it.dispose() }
+                dispose()
                 isTerminatedInternal.complete(Unit)
             }
         })

@@ -31,7 +31,6 @@ import libkgrpc.GRPC_OP_SEND_STATUS_FROM_SERVER
 import libkgrpc.grpc_byte_buffer
 import libkgrpc.grpc_byte_buffer_destroy
 import libkgrpc.grpc_call_cancel_with_status
-import libkgrpc.grpc_call_ref
 import libkgrpc.grpc_call_unref
 import libkgrpc.grpc_op
 import libkgrpc.grpc_slice
@@ -42,12 +41,11 @@ import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
 internal class NativeServerCall<Request, Response>(
+    // ownership is transferred to the call
     val raw: CPointer<grpc_call>,
-    val request: ServerCallbackRequest<Request, Response>,
+    val cq: CompletionQueue,
     val methodDescriptor: MethodDescriptor<Request, Response>,
 ) : ServerCall<Request, Response>() {
-
-    private val cq = request.cq
 
     @Suppress("unused")
     private val rawCleaner = createCleaner(raw) {
@@ -64,8 +62,6 @@ internal class NativeServerCall<Request, Response>(
     private val ready = atomic(true)
 
     init {
-        // take ownership of the raw pointer
-        grpc_call_ref(raw)
         initialize()
     }
 
@@ -85,11 +81,14 @@ internal class NativeServerCall<Request, Response>(
         val result = cq.runBatch(raw, op.ptr, 1u)
         if (result !is BatchResult.Submitted) {
             // we couldn't submit the initialization batch, so nothing can be done.
+            arena.clear()
             finalize(true)
         } else {
             initialized = true
             result.future.onComplete {
-                finalize(cancelled.value == 1)
+                val cancelled = cancelled.value == 1
+                arena.clear()
+                finalize(cancelled)
             }
         }
     }
@@ -99,7 +98,6 @@ internal class NativeServerCall<Request, Response>(
      */
     private fun finalize(cancelled: Boolean) {
         if (finalized.compareAndSet(expect = false, update = true)) {
-            request.dispose()
             if (cancelled) {
                 this.cancelled = true
                 callbackMutex.withLock {
@@ -179,7 +177,9 @@ internal class NativeServerCall<Request, Response>(
             data.recv_message.recv_message = recvPtr.ptr
         }
 
-        runBatch(op.ptr, 1u, cleanup = { arena.clear() }) {
+        runBatch(op.ptr, 1u, cleanup = {
+            arena.clear()
+        }) {
             // if the call was successful, but no message was received, we reached the end-of-stream.
             val buf = recvPtr.value
             if (buf == null) {
@@ -189,6 +189,10 @@ internal class NativeServerCall<Request, Response>(
             } else {
                 val msg = methodDescriptor.getRequestMarshaller()
                     .parse(buf.toKotlin().asInputStream())
+
+                // destroy the buffer, we don't need it anymore
+                grpc_byte_buffer_destroy(buf)
+
                 callbackMutex.withLock {
                     listener.onMessage(msg)
                 }
@@ -272,7 +276,6 @@ private class DeferredCallListener<T> : ServerCall.Listener<T>() {
     private val q = ArrayDeque<(ServerCall.Listener<T>) -> Unit>()
 
     fun setDelegate(d: ServerCall.Listener<T>) {
-        println("setting delegate...")
         mutex.withLock {
             if (delegate != null) return
             delegate = d

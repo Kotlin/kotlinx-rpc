@@ -5,8 +5,8 @@ package kotlinx.rpc.grpc.test
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.GrpcServer
 import kotlinx.rpc.grpc.GrpcTrailers
@@ -27,7 +27,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
-import kotlin.time.Duration
 
 private const val PORT = 50051
 
@@ -271,20 +270,31 @@ class GreeterServiceImpl : GreeterService {
      * Run this on JVM before executing tests.
      */
     @Test
-    fun runServer() = runTest(timeout = Duration.INFINITE) {
-        val server = GrpcServer(
-            port = PORT,
-            builder = { registerService<GreeterService> { GreeterServiceImpl() } }
-        )
+    fun runServer() {
+        runBlocking {
+            val server = GrpcServer(
+                port = PORT,
+                builder = { registerService<GreeterService> { GreeterServiceImpl() } }
+            )
 
-        try {
-            server.start()
-            println("Server started")
-            server.awaitTermination()
-        } finally {
-            server.shutdown()
-            server.awaitTermination()
+            launch {
+                println("Terminating in 10 seconds")
+                delay(10000)
+                server.shutdown()
+                server.awaitTermination()
+            }
+
+            launch {
+                server.start()
+                println("Server started")
+                server.awaitTermination()
+            }
         }
+
+//        runBlocking {
+//            println("Waiting, so GC is collecting stuff")
+//            delay(20000)
+//        }
     }
 
 }
