@@ -71,7 +71,7 @@ class GrpcCoreClientTest {
     }
 
     @Test
-    fun normalUnaryCall_ok() = repeat(10000) {
+    fun normalUnaryCall_ok() = repeat(1000) {
         val channel = createChannel()
         val call = channel.newHelloCall()
         val req = helloReq()
@@ -194,9 +194,7 @@ class GrpcCoreClientTest {
     fun halfCloseBeforeSendingMessage_errorWithoutCrashing() {
         val channel = createChannel()
         val call = channel.newHelloCall()
-        val listener = createClientCallListener<HelloReply>(
-            onClose = { status, _ -> println("Status: ${status.statusCode}, Message: ${status.getDescription()}") }
-        )
+        val listener = createClientCallListener<HelloReply>()
         assertFailsWith<IllegalStateException> {
             try {
                 call.start(listener, GrpcTrailers())

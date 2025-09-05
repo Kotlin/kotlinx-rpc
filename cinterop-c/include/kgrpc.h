@@ -63,8 +63,6 @@ bool kgrpc_iomgr_run_in_background();
  * to retrieve the accept context, including `tag`, `grpc_call*`, metadata, deadline,
  * optional payload, and the completion queue.
  *
- * This omits the need of handling pre-registering requests using `grpc_server_request_registered_call`.
- *
  * @param server         The gRPC C `grpc_server*` instance.
  * @param cq             A callback-style `grpc_completion_queue*` (must be registered earlier).
  * @param method_tag     Opaque identifier from `grpc_server_register_method()` for the RPC method.
@@ -79,6 +77,10 @@ void kgrpc_server_set_register_method_allocator(
         kgrpc_registered_call_allocator allocator
 );
 
+/**
+ * Like kgrpc_server_set_register_method_allocator but instead of registered methods,
+ * it sets an allocation callback for unknown method calls.
+ */
 void kgrpc_server_set_batch_method_allocator(
     grpc_server *server,
     grpc_completion_queue *cq,
