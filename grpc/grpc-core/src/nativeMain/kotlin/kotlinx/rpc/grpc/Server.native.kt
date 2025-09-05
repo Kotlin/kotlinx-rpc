@@ -4,8 +4,9 @@
 
 package kotlinx.rpc.grpc
 
-import kotlinx.rpc.grpc.internal.GrpcServerCredentials
+import kotlinx.rpc.grpc.internal.GrpcInsecureServerCredentials
 import kotlinx.rpc.grpc.internal.NativeServer
+import kotlinx.rpc.grpc.internal.ServerMethodDefinition
 
 /**
  * Platform-specific gRPC server builder.
@@ -23,8 +24,9 @@ private class NativeServerBuilder(
 ) : ServerBuilder<NativeServerBuilder>() {
 
     // TODO: Add actual credentials
-    private val credentials = GrpcServerCredentials.createInsecure()
+    private val credentials = GrpcInsecureServerCredentials()
     private val services = mutableListOf<ServerServiceDefinition>()
+    private var fallbackRegistry: HandlerRegistry = DefaultFallbackRegistry
 
     override fun addService(service: ServerServiceDefinition): NativeServerBuilder {
         services.add(service)
@@ -32,17 +34,12 @@ private class NativeServerBuilder(
     }
 
     override fun fallbackHandlerRegistry(registry: HandlerRegistry?): NativeServerBuilder {
-        TODO("Not yet implemented")
+        fallbackRegistry = registry ?: DefaultFallbackRegistry
+        return this
     }
 
     override fun build(): Server {
-        val server = NativeServer(port, credentials)
-
-        for (service in services) {
-            server.addService(service)
-        }
-
-        return server
+        return NativeServer(port, credentials, services, fallbackRegistry)
     }
 
 }
@@ -53,4 +50,18 @@ internal actual fun ServerBuilder(port: Int): ServerBuilder<*> {
 
 internal actual fun Server(builder: ServerBuilder<*>): Server {
     return builder.build()
+}
+
+private object DefaultFallbackRegistry : HandlerRegistry() {
+    override fun getServices(): List<ServerServiceDefinition> {
+        return listOf()
+    }
+
+    override fun lookupMethod(
+        methodName: String,
+        authority: String?,
+    ): ServerMethodDefinition<*, *>? {
+        return null
+    }
+
 }

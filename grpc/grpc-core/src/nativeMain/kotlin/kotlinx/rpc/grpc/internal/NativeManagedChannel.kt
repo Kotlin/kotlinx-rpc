@@ -26,6 +26,7 @@ import libkgrpc.grpc_channel_create_call
 import libkgrpc.grpc_channel_credentials_release
 import libkgrpc.grpc_channel_destroy
 import libkgrpc.grpc_insecure_credentials_create
+import libkgrpc.grpc_slice_unref
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
@@ -150,6 +151,8 @@ internal class NativeManagedChannel(
             deadline = gpr_inf_future(GPR_CLOCK_REALTIME),
             reserved = null
         ) ?: error("Failed to create call")
+
+        grpc_slice_unref(methodNameSlice)
 
         return NativeClientCall(
             cq, rawCall, methodDescriptor, callJob

@@ -44,8 +44,15 @@ internal class NativeServerCall<Request, Response>(
     // ownership is transferred to the call
     val raw: CPointer<grpc_call>,
     val cq: CompletionQueue,
-    val methodDescriptor: MethodDescriptor<Request, Response>,
 ) : ServerCall<Request, Response>() {
+
+    constructor(
+        raw: CPointer<grpc_call>,
+        cq: CompletionQueue,
+        methodDescriptor: MethodDescriptor<Request, Response>,
+    ) : this(raw, cq) {
+        setMethodDescriptor(methodDescriptor)
+    }
 
     @Suppress("unused")
     private val rawCleaner = createCleaner(raw) {
@@ -53,6 +60,7 @@ internal class NativeServerCall<Request, Response>(
     }
 
     private var listener = DeferredCallListener<Request>()
+    private var methodDescriptor: MethodDescriptor<Request, Response>? = null
     private var callbackMutex = ReentrantLock()
     private var initialized = false
     private var cancelled = false
@@ -68,6 +76,18 @@ internal class NativeServerCall<Request, Response>(
         initialize()
     }
 
+    /**
+     * Sets the method descriptor for this call.
+     * It must be set before invoking [ServerCallHandler.startCall].
+     */
+    fun setMethodDescriptor(methodDescriptor: MethodDescriptor<Request, Response>) {
+        this.methodDescriptor = methodDescriptor
+    }
+
+    /**
+     * Set the listener created from [ServerCallHandler.startCall].
+     * This must be set directly after receiving the listener from the `startCall` invocation.
+     */
     fun setListener(listener: Listener<Request>) {
         this.listener.setDelegate(listener)
     }
@@ -114,7 +134,7 @@ internal class NativeServerCall<Request, Response>(
         }
     }
 
-    private fun cancelCall(status: grpc_status_code, message: String) {
+    fun cancel(status: grpc_status_code, message: String) {
         grpc_call_cancel_with_status(raw, status, message, null)
     }
 
@@ -146,7 +166,7 @@ internal class NativeServerCall<Request, Response>(
                     try {
                         onSuccess()
                     } catch (e: Throwable) {
-                        cancelCall(grpc_status_code.GRPC_STATUS_INTERNAL, e.message ?: "Unknown error")
+                        cancel(grpc_status_code.GRPC_STATUS_INTERNAL, e.message ?: "Unknown error")
                     } finally {
                         cleanup()
                     }
@@ -155,12 +175,12 @@ internal class NativeServerCall<Request, Response>(
 
             BatchResult.CQShutdown -> {
                 cleanup()
-                cancelCall(grpc_status_code.GRPC_STATUS_UNAVAILABLE, "Server shutdown")
+                cancel(grpc_status_code.GRPC_STATUS_UNAVAILABLE, "Server shutdown")
             }
 
             is BatchResult.SubmitError -> {
                 cleanup()
-                cancelCall(
+                cancel(
                     grpc_status_code.GRPC_STATUS_INTERNAL,
                     "Batch could not be submitted: ${result.error}"
                 )
@@ -172,6 +192,7 @@ internal class NativeServerCall<Request, Response>(
         check(initialized) { internalError("Call not initialized") }
         // TODO: Remove the num constraint
         require(numMessages == 1) { internalError("numMessages must be 1") }
+        val methodDescriptor = checkNotNull(methodDescriptor) { internalError("Method descriptor not set") }
 
         val arena = Arena()
         val recvPtr = arena.alloc<CPointerVar<grpc_byte_buffer>>()
@@ -189,7 +210,7 @@ internal class NativeServerCall<Request, Response>(
             if (buf == null) {
                 // end-of-stream observed. for UNARY, absence of any request is a protocol violation.
                 if (methodDescriptor.type == MethodType.UNARY && !receivedFirstMessage) {
-                    cancelCall(
+                    cancel(
                         grpc_status_code.GRPC_STATUS_INTERNAL,
                         "Unary call half-closed before receiving a request message"
                     )
@@ -208,7 +229,6 @@ internal class NativeServerCall<Request, Response>(
                         listener.onMessage(msg)
                     }
                 } finally {
-                    // destroy the buffer, we don't need it anymore
                     grpc_byte_buffer_destroy(buf)
                 }
             }
@@ -218,6 +238,7 @@ internal class NativeServerCall<Request, Response>(
     override fun sendHeaders(headers: GrpcTrailers) {
         check(initialized) { internalError("Call not initialized") }
         val arena = Arena()
+        // TODO: Implement header metadata operation
         val op = arena.alloc<grpc_op> {
             op = GRPC_OP_SEND_INITIAL_METADATA
             data.send_initial_metadata.count = 0u
@@ -232,6 +253,8 @@ internal class NativeServerCall<Request, Response>(
     override fun sendMessage(message: Response) {
         check(initialized) { internalError("Call not initialized") }
         check(isReady()) { internalError("Not yet ready.") }
+        val methodDescriptor = checkNotNull(methodDescriptor) { internalError("Method descriptor not set") }
+
         val arena = Arena()
         val inputStream = methodDescriptor.getResponseMarshaller().stream(message)
         val byteBuffer = inputStream.asSource().toGrpcByteBuffer()
@@ -261,7 +284,7 @@ internal class NativeServerCall<Request, Response>(
         }
         val op = arena.alloc<grpc_op> {
             op = GRPC_OP_SEND_STATUS_FROM_SERVER
-            data.send_status_from_server.status = status.statusCode.toRaw()
+            data.send_status_from_server.status = status.statusCode.toRawCallAllocation()
             data.send_status_from_server.status_details = details?.ptr
             data.send_status_from_server.trailing_metadata_count = 0u
             data.send_status_from_server.trailing_metadata = null
@@ -280,10 +303,19 @@ internal class NativeServerCall<Request, Response>(
     }
 
     override fun getMethodDescriptor(): MethodDescriptor<Request, Response> {
+        val methodDescriptor = checkNotNull(methodDescriptor) { internalError("Method descriptor not set") }
         return methodDescriptor
     }
 }
 
+/**
+ * A listener implementation that defers execution of its methods until a delegate is set.
+ *
+ * This class extends `ServerCall.Listener`, allowing it to serve as a listener for server calls.
+ * Initially, incoming method calls (e.g., `onMessage`, `onHalfClose`, etc.) are queued until a delegate
+ * is assigned through the `setDelegate` method. Once the delegate is set, queued methods are delivered
+ * in order and all future method calls are forwarded directly to the delegate.
+ */
 private class DeferredCallListener<T> : ServerCall.Listener<T>() {
     @Volatile
     private var delegate: ServerCall.Listener<T>? = null

@@ -219,19 +219,42 @@ private fun deleteCbTag(tag: CPointer<kgrpc_cb_tag>) {
     nativeHeap.free(tag)
 }
 
+/**
+ * Represents a callback tag for completion queues constructed with
+ * [grpc_completion_queue_create_for_callback].
+ *
+ * The [run] method will be invoked onces the completion queue signals the completion of the operation.
+ * It is guaranteed that the [run] method will be only invoked once.
+ *
+ * `this` object is guaranteed to be not garbage collected until the [run] method was executed.
+ */
 internal interface CallbackTag {
     fun run(ok: Boolean)
 
+    /**
+     * Creates a pointer to a gRPC callback tag that encapsulates the given `run` function.
+     * It can be passed to callback-based grpc_completion_queue.
+     */
     fun toCbTag(): CPointer<kgrpc_cb_tag> {
         return newCbTag(this, staticCFunction { functor, ok ->
             val tag = functor!!.reinterpret<kgrpc_cb_tag>()
             val callbackTag = tag.pointed.user_data!!.asStableRef<CallbackTag>().get()
+            // free the tag memory and release the stable reference to `this`
             deleteCbTag(tag)
             callbackTag.run(ok != 0)
         })
     }
 
     companion object {
+        /**
+         * Creates a pointer to a gRPC callback tag that encapsulates the given `run` function.
+         *
+         * The `run` function will be invoked when the callback is triggered with a boolean
+         * value that indicates the success or failure of the operation.
+         *
+         * @return A pointer to the newly created gRPC callback tag.
+         *         It can be passed to callback-based grpc_completion_queue.
+         */
         fun anonymous(run: (ok: Boolean) -> Unit): CPointer<kgrpc_cb_tag> {
             return object : CallbackTag {
                 override fun run(ok: Boolean) {

@@ -10,11 +10,18 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 
 public actual class ServerServiceDefinition internal constructor(
     private val serviceDescriptor: ServiceDescriptor,
-    private val methods: Collection<ServerMethodDefinition<*, *>>,
+    private val methods: Map<String, ServerMethodDefinition<*, *>>,
 ) {
+
+    internal constructor(serviceDescriptor: ServiceDescriptor, methods: Collection<ServerMethodDefinition<*, *>>) :
+            this(serviceDescriptor, methods.associateBy { it.getMethodDescriptor().getFullMethodName() })
+
     public actual fun getServiceDescriptor(): ServiceDescriptor = serviceDescriptor
 
-    public actual fun getMethods(): Collection<ServerMethodDefinition<*, *>> = methods
+    public actual fun getMethods(): Collection<ServerMethodDefinition<*, *>> = methods.values
+
+    public actual fun getMethod(methodName: String): ServerMethodDefinition<*, *>? = methods[methodName]
+
 }
 
 @InternalRpcApi

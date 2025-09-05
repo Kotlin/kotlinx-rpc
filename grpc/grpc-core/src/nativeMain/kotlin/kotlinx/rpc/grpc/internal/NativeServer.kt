@@ -18,6 +18,7 @@ import kotlinx.cinterop.asStableRef
 import kotlinx.cinterop.staticCFunction
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.rpc.grpc.HandlerRegistry
 import kotlinx.rpc.grpc.Server
 import kotlinx.rpc.grpc.ServerServiceDefinition
 import libkgrpc.grpc_insecure_server_credentials_create
@@ -42,28 +43,25 @@ import kotlin.time.Duration
 /**
  * Wrapper for [grpc_server_credentials].
  */
-internal class GrpcServerCredentials(
+internal sealed class GrpcServerCredentials(
     internal val raw: CPointer<grpc_server_credentials>,
 ) {
     val rawCleaner = createCleaner(raw) {
         grpc_server_credentials_release(it)
     }
-
-    companion object {
-        fun createInsecure(): GrpcServerCredentials = GrpcServerCredentials(
-            grpc_insecure_server_credentials_create() ?: error("Failed to create server credentials")
-        )
-    }
 }
 
-// TODO: don't hardcode the host
-private val HOST = "0.0.0.0"
+internal class GrpcInsecureServerCredentials :
+    GrpcServerCredentials(grpc_insecure_server_credentials_create() ?: error("Failed to create server credentials"))
+
 
 internal class NativeServer(
     override val port: Int,
     // we must reference them, otherwise the credentials are getting garbage collected
     @Suppress("Redundant")
     private val credentials: GrpcServerCredentials,
+    services: List<ServerServiceDefinition>,
+    val fallbackRegistry: HandlerRegistry,
 ) : Server {
 
     // a reference to make sure the grpc_init() was called. (it is released after shutdown)
@@ -76,12 +74,13 @@ internal class NativeServer(
 
     // holds all stable references to MethodAllocationCtx objects.
     // the stable references must eventually be disposed.
-    private val methodAllocationCtxs = mutableSetOf<StableRef<MethodAllocationCtx>>()
+    private val callAllocationCtxs = mutableSetOf<StableRef<CallAllocationCtx>>()
 
     init {
         grpc_server_register_completion_queue(raw, cq.raw, null)
-        grpc_server_add_http2_port(raw, "$HOST:$port", credentials.raw)
-        addUnknownService()
+        grpc_server_add_http2_port(raw, "0.0.0.0:$port", credentials.raw)
+        registerServices(services)
+        setLookupCallAllocatorCallback()
     }
 
     private var started = false
@@ -103,64 +102,10 @@ internal class NativeServer(
     private fun dispose() {
         // disposed with completion of shutdown
         grpc_server_destroy(raw)
-        methodAllocationCtxs.forEach { it.dispose() }
+        callAllocationCtxs.forEach { it.dispose() }
         // release the grpc runtime, so grpc is shutdown if no other grpc servers are running.
         rt.close()
     }
-
-    fun addService(service: ServerServiceDefinition) {
-        check(!started) { internalError("Server already started") }
-
-        service.getMethods().forEach {
-            val desc = it.getMethodDescriptor()
-            // to construct a valid HTTP/2 path, we must prepend the name with a slash.
-            // the user does not do this to align it with the java implementation.
-            val name = "/" + desc.getFullMethodName()
-            val tag = grpc_server_register_method(
-                server = raw,
-                method = name,
-                // TODO: don't hardcode localhost
-                host = "localhost:$port",
-                payload_handling = grpc_server_register_method_payload_handling.GRPC_SRM_PAYLOAD_NONE,
-                flags = 0u
-            ) ?: error("Failed to register method: $name")
-
-            val ctx = StableRef.create(
-                RegisteredMethodAllocationCtx(
-                    server = this,
-                    method = it,
-                    cq = cq,
-                )
-            )
-            methodAllocationCtxs.add(ctx)
-
-            kgrpc_server_set_register_method_allocator(
-                server = raw,
-                cq = cq.raw,
-                method_tag = tag,
-                allocator_ctx = ctx.asCPointer(),
-                allocator = staticCFunction(::methodAllocationCallback)
-            )
-        }
-    }
-
-    private fun addUnknownService() {
-        val ctx = StableRef.create(
-            MethodAllocationCtx(
-                server = this,
-                cq = cq,
-            )
-        )
-        methodAllocationCtxs.add(ctx)
-
-        kgrpc_server_set_batch_method_allocator(
-            server = raw,
-            cq = cq.raw,
-            allocator_ctx = ctx.asCPointer(),
-            allocator = staticCFunction(::batchMethodAllocationCallback)
-        )
-    }
-
 
     override fun shutdown(): Server {
         if (!isShutdownInternal.compareAndSet(expect = false, update = true)) {
@@ -189,31 +134,110 @@ internal class NativeServer(
         }
         return this
     }
+
+    /**
+     * Registers a list of server service definitions with the server.
+     */
+    private fun registerServices(services: List<ServerServiceDefinition>) {
+        check(!started) { internalError("Server already started") }
+
+        services.flatMap { it.getMethods() }.forEach {
+            val desc = it.getMethodDescriptor()
+            // to construct a valid HTTP/2 path, we must prepend the name with a slash.
+            // the user does not do this to align it with the java implementation.
+            val name = "/" + desc.getFullMethodName()
+            val tag = grpc_server_register_method(
+                server = raw,
+                method = name,
+                host = null,
+                // we currently don't optimize unary calls by reading the message on connection
+                payload_handling = grpc_server_register_method_payload_handling.GRPC_SRM_PAYLOAD_NONE,
+                flags = 0u
+            ) ?: error("Failed to register method: $name")
+
+            val ctx = StableRef.create(
+                RegisteredCallAllocationCtx(
+                    server = this,
+                    method = it,
+                    cq = cq,
+                )
+            )
+            callAllocationCtxs.add(ctx)
+
+            // register the allocation callback for the method.
+            // it is invoked by the grpc runtime to allocate a new call context for incoming requests.
+            kgrpc_server_set_register_method_allocator(
+                server = raw,
+                cq = cq.raw,
+                method_tag = tag,
+                allocator_ctx = ctx.asCPointer(),
+                allocator = staticCFunction(::registeredCallAllocationCallback)
+            )
+        }
+    }
+
+    /**
+     * Configures the server with a callback to handle the allocation of method calls for incoming requests,
+     * which were not registered before the server started (via [registerServices]).
+     */
+    private fun setLookupCallAllocatorCallback() {
+        val ctx = StableRef.create(
+            CallAllocationCtx(
+                server = this,
+                cq = cq,
+            )
+        )
+        callAllocationCtxs.add(ctx)
+
+        kgrpc_server_set_batch_method_allocator(
+            server = raw,
+            cq = cq.raw,
+            allocator_ctx = ctx.asCPointer(),
+            allocator = staticCFunction(::lookupCallAllocationCallback)
+        )
+    }
+
 }
 
+/**
+ * Allocates and returns a registered call allocation for a given call context.
+ */
 @CName("kgrpc_method_allocation_callback")
-private fun methodAllocationCallback(ctx: COpaquePointer?): CValue<kgrpc_registered_call_allocation> {
-    val ctx = ctx!!.asStableRef<RegisteredMethodAllocationCtx>().get()
-    val request = ServerCallbackRequest(ctx.server, ctx.method, ctx.cq)
-    return request.toRaw()
+private fun registeredCallAllocationCallback(ctx: COpaquePointer?): CValue<kgrpc_registered_call_allocation> {
+    val ctx = ctx!!.asStableRef<RegisteredCallAllocationCtx>().get()
+    val request = RegisteredServerCallTag(ctx.cq, ctx.method)
+    return request.toRawCallAllocation()
 }
 
+/**
+ * A static callback that is invoked by the grpc runtime to allocate a new [kgrpc_registered_call_allocation].
+ * As the [LookupServerCallTag] is a [CallbackTag] it won't be garbage collected until the callback is executed.
+ *
+ * @param ctx A pointer to a [CallAllocationCtx] object
+ */
 @CName("kgrpc_method_allocation_callback")
-private fun batchMethodAllocationCallback(ctx: COpaquePointer?): CValue<kgrpc_batch_call_allocation> {
-    val ctx = ctx!!.asStableRef<MethodAllocationCtx>().get()
-    val request = BatchedCallbackRequest(ctx.server, ctx.cq)
-    return request.toRaw()
+private fun lookupCallAllocationCallback(ctx: COpaquePointer?): CValue<kgrpc_batch_call_allocation> {
+    val ctx = ctx!!.asStableRef<CallAllocationCtx>().get()
+    val request = LookupServerCallTag(ctx.cq, ctx.server.fallbackRegistry)
+    return request.toRawCallAllocation()
 }
 
-private open class MethodAllocationCtx(
+/**
+ * A context to pass dynamic information to the [lookupCallAllocationCallback] and
+ * [registeredCallAllocationCallback] callbacks.
+ */
+private open class CallAllocationCtx(
     val server: NativeServer,
     val cq: CompletionQueue,
 )
 
-private class RegisteredMethodAllocationCtx(
+/**
+ * A context to pass dynamic information to the [registeredCallAllocationCallback] callback.
+ */
+private class RegisteredCallAllocationCtx(
     server: NativeServer,
     cq: CompletionQueue,
     val method: ServerMethodDefinition<*, *>,
-) : MethodAllocationCtx(server, cq)
+) : CallAllocationCtx(server, cq)
 
 
