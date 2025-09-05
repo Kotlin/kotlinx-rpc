@@ -157,6 +157,9 @@ public sealed interface KrpcConfig {
      */
     public val serialFormatInitializer: KrpcSerialFormatBuilder<*, *>
 
+    /**
+     * @see KrpcConfigBuilder.connector
+     */
     public val connector: Connector
 
     @Deprecated("Use connector instead", level = DeprecationLevel.ERROR)
