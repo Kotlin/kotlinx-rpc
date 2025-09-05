@@ -77,8 +77,10 @@ internal abstract class KrpcReceiveBufferBaseTest {
             bufferSize = { bufferSize },
         )
 
-        body(buffer)
-
-        buffer.close(null)
+        try {
+            body(buffer)
+        } finally {
+            buffer.close(null)
+        }
     }
 }

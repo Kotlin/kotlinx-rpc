@@ -352,9 +352,11 @@ abstract class KrpcConnectorBaseTest {
             isServer = true,
         )
 
-        body(clientConnector, serverConnector)
-
-        transport.coroutineContext.job.cancelAndJoin()
+        try {
+            body(clientConnector, serverConnector)
+        } finally {
+            transport.coroutineContext.job.cancelAndJoin()
+        }
     }
 }
 

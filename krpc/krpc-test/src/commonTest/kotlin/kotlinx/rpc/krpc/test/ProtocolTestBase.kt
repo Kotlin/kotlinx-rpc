@@ -39,9 +39,13 @@ abstract class ProtocolTestBase {
         block: suspend TestBody.() -> Unit,
     ): TestResult {
         return kotlinx.coroutines.test.runTest {
-            val finished = TestBody(clientConfig, serverConfig, this).apply { block() }
+            val finished = TestBody(clientConfig, serverConfig, this)
 
-            finished.transport.coroutineContext.job.cancelAndJoin()
+            try {
+                finished.block()
+            } finally {
+                finished.transport.coroutineContext.job.cancelAndJoin()
+            }
         }
     }
 

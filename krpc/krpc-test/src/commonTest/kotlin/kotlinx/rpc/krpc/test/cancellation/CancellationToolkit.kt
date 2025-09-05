@@ -11,6 +11,7 @@ import kotlinx.rpc.krpc.KrpcConfigBuilder
 import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
+import kotlinx.rpc.krpc.internal.logging.dumpLogger
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
@@ -25,8 +26,11 @@ import kotlin.time.Duration.Companion.seconds
 fun runCancellationTest(body: suspend CancellationToolkit.() -> Unit): TestResult {
     return runTest(timeout = 3.seconds) {
         debugCoroutines()
-        CancellationToolkit(this).apply {
-            body()
+        val toolkit = CancellationToolkit(this)
+        try {
+            body(toolkit)
+        } finally {
+            toolkit.close()
         }
     }
 }
@@ -35,13 +39,7 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
     private val logger = RpcInternalCommonLogger.logger("CancellationTest")
 
     init {
-        RpcInternalDumpLoggerContainer.set(object : RpcInternalDumpLogger {
-            override val isEnabled: Boolean = true
-
-            override fun dump(vararg tags: String, message: () -> String) {
-                logger.info { "${tags.joinToString(" ") { "[$it]" }} ${message()}" }
-            }
-        })
+        RpcInternalDumpLoggerContainer.set(logger.dumpLogger())
     }
 
     private val configBuilder: KrpcConfigBuilder.() -> Unit = {
@@ -74,5 +72,14 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
                 serverInstances.add(impl)
             }
         }
+    }
+
+    suspend fun close() {
+        RpcInternalDumpLoggerContainer.set(null)
+        client.close()
+        server.close()
+        client.awaitCompletion()
+        server.awaitCompletion()
+        transport.coroutineContext.job.cancelAndJoin()
     }
 }

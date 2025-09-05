@@ -257,13 +257,15 @@ internal abstract class KrpcReceiveHandlerBaseTest {
         val handler = KrpcStoringReceiveHandler(buffer, sender)
         val config = TestConfig(handler, buffer, channel, sender, this)
 
-        body(config)
-
-        handler.close(HandlerKey.Generic, null)
-        buffer.close(null)
-        channel.cancel()
-        channel.close()
-        senderJob.cancelAndJoin()
+        try {
+            body(config)
+        } finally {
+            handler.close(HandlerKey.Generic, null)
+            buffer.close(null)
+            channel.cancel()
+            channel.close()
+            senderJob.cancelAndJoin()
+        }
     }
 }
 

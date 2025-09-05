@@ -105,11 +105,13 @@ class TransportTest {
                 }
             })
 
-            block(logs)
-
-            RpcInternalDumpLoggerContainer.set(null)
-            logsJob.cancelAndJoin()
-            logsChannel.close()
+            try {
+                block(logs)
+            } finally {
+                RpcInternalDumpLoggerContainer.set(null)
+                logsJob.cancelAndJoin()
+                logsChannel.close()
+            }
         }
     }
 

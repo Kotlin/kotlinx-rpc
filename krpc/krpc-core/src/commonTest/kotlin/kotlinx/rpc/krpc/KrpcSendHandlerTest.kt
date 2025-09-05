@@ -120,10 +120,13 @@ internal abstract class KrpcSendHandlerBaseTest {
         )
 
         val handler = KrpcSendHandler(channel)
-        body(channel, handler)
-        handler.close()
-        channel.cancel()
-        channel.close()
+        try {
+            body(channel, handler)
+        } finally {
+            handler.close()
+            channel.cancel()
+            channel.close()
+        }
     }
 }
 

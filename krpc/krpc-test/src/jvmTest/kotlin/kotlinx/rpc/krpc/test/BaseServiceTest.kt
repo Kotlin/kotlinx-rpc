@@ -58,12 +58,14 @@ abstract class BaseServiceTest {
         server.registerService<TestService> { impl }
 
         val env = Env(service, impl, client, server, transport, this)
-        body(env)
-
-        client.close()
-        server.close()
-        client.awaitCompletion()
-        server.awaitCompletion()
-        transport.coroutineContext.cancelAndJoin()
+        try {
+            body(env)
+        } finally {
+            client.close()
+            server.close()
+            client.awaitCompletion()
+            server.awaitCompletion()
+            transport.coroutineContext.cancelAndJoin()
+        }
     }
 }
