@@ -11,6 +11,7 @@ import cnames.structs.grpc_channel_credentials
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.memScoped
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -27,13 +28,14 @@ import libkgrpc.grpc_channel_credentials_release
 import libkgrpc.grpc_channel_destroy
 import libkgrpc.grpc_insecure_credentials_create
 import libkgrpc.grpc_slice_unref
+import libkgrpc.grpc_ssl_credentials_create_ex
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 import kotlin.time.Duration
 
 /**
- * Wrapper for [cnames.structs.grpc_channel_credentials].
+ * Wrapper for [grpc_channel_credentials].
  */
 internal sealed class GrpcChannelCredentials(
     internal val raw: CPointer<grpc_channel_credentials>,
@@ -47,8 +49,28 @@ internal sealed class GrpcChannelCredentials(
  * Insecure credentials.
  */
 internal class GrpcInsecureChannelCredentials() :
-    GrpcChannelCredentials(grpc_insecure_credentials_create() ?: error("Failed to create channel credentials"))
+    GrpcChannelCredentials(
+        grpc_insecure_credentials_create() ?: error("grpc_insecure_credentials_create() returned null")
+    )
 
+/**
+ * SSL credentials.
+ */
+internal class GrpcSslChannelCredentials(
+    raw: CPointer<grpc_channel_credentials>,
+) : GrpcChannelCredentials(raw) {
+
+    constructor() : this(
+        memScoped {
+            grpc_ssl_credentials_create_ex(
+                null,
+                null,
+                null,
+                null
+            ) ?: error("grpc_ssl_credentials_create() returned null")
+        }
+    )
+}
 
 /**
  * Native implementation of [ManagedChannel].

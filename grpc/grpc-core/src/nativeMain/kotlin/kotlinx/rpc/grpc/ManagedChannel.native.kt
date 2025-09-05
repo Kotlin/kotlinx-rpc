@@ -9,6 +9,7 @@ package kotlinx.rpc.grpc
 import kotlinx.rpc.grpc.internal.GrpcChannel
 import kotlinx.rpc.grpc.internal.GrpcChannelCredentials
 import kotlinx.rpc.grpc.internal.GrpcInsecureChannelCredentials
+import kotlinx.rpc.grpc.internal.GrpcSslChannelCredentials
 import kotlinx.rpc.grpc.internal.NativeManagedChannel
 import kotlinx.rpc.grpc.internal.internalError
 
@@ -29,17 +30,17 @@ public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
 internal class NativeManagedChannelBuilder(
     private val target: String,
 ) : ManagedChannelBuilder<NativeManagedChannelBuilder>() {
-    private var credentials: GrpcChannelCredentials? = null
+    private var credentials: Lazy<GrpcChannelCredentials> = lazy { GrpcSslChannelCredentials() }
 
     override fun usePlaintext(): NativeManagedChannelBuilder {
-        credentials = GrpcInsecureChannelCredentials()
+        credentials = lazy { GrpcInsecureChannelCredentials() }
         return this
     }
 
     fun buildChannel(): NativeManagedChannel {
         return NativeManagedChannel(
             target,
-            credentials = credentials ?: error("No credentials set"),
+            credentials = credentials.value,
         )
     }
 
