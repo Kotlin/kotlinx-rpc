@@ -73,7 +73,7 @@
 <td>core</td>
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
-<td><list><li>wasmJs<list><li>browser</li><li>d8</li><li>node</li></list></li><li>wasmWasi<list><li>node</li></list></li></list></td>
+<td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li><li>wasmWasi<list><li>node</li></list></li></list></td>
 <td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
 </tr>
 
@@ -81,7 +81,7 @@
 <td>utils</td>
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
-<td><list><li>wasmJs<list><li>browser</li><li>d8</li><li>node</li></list></li><li>wasmWasi<list><li>node</li></list></li></list></td>
+<td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li><li>wasmWasi<list><li>node</li></list></li></list></td>
 <td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
 </tr>
 
@@ -89,7 +89,7 @@
 <td>krpc-client</td>
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
-<td><list><li>wasmJs<list><li>browser</li><li>d8</li><li>node</li></list></li></list></td>
+<td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li></list></td>
 <td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
 </tr>
 
@@ -97,7 +97,7 @@
 <td>krpc-core</td>
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
-<td><list><li>wasmJs<list><li>browser</li><li>d8</li><li>node</li></list></li></list></td>
+<td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li></list></td>
 <td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
 </tr>
 
@@ -105,7 +105,7 @@
 <td>krpc-logging</td>
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
-<td><list><li>wasmJs<list><li>browser</li><li>d8</li><li>node</li></list></li></list></td>
+<td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li></list></td>
 <td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
 </tr>
 
@@ -113,7 +113,7 @@
 <td>krpc-server</td>
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
-<td><list><li>wasmJs<list><li>browser</li><li>d8</li><li>node</li></list></li></list></td>
+<td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li></list></td>
 <td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
 </tr>
 
@@ -129,7 +129,7 @@
 <td>krpc-ktor-client</td>
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
-<td><list><li>wasmJs<list><li>browser</li><li>d8</li><li>node</li></list></li></list></td>
+<td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li></list></td>
 <td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
 </tr>
 
@@ -137,7 +137,7 @@
 <td>krpc-ktor-core</td>
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
-<td><list><li>wasmJs<list><li>browser</li><li>d8</li><li>node</li></list></li></list></td>
+<td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li></list></td>
 <td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
 </tr>
 
@@ -145,7 +145,7 @@
 <td>krpc-ktor-server</td>
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
-<td><list><li>wasmJs<list><li>browser</li><li>d8</li><li>node</li></list></li></list></td>
+<td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li></list></td>
 <td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
 </tr>
 
@@ -153,7 +153,7 @@
 <td>krpc-serialization-cbor</td>
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
-<td><list><li>wasmJs<list><li>browser</li><li>d8</li><li>node</li></list></li></list></td>
+<td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li></list></td>
 <td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
 </tr>
 
@@ -161,7 +161,7 @@
 <td>krpc-serialization-core</td>
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
-<td><list><li>wasmJs<list><li>browser</li><li>d8</li><li>node</li></list></li></list></td>
+<td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li></list></td>
 <td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
 </tr>
 
@@ -169,7 +169,7 @@
 <td>krpc-serialization-json</td>
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
-<td><list><li>wasmJs<list><li>browser</li><li>d8</li><li>node</li></list></li></list></td>
+<td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li></list></td>
 <td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
 </tr>
 
@@ -177,7 +177,7 @@
 <td>krpc-serialization-protobuf</td>
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
-<td><list><li>wasmJs<list><li>browser</li><li>d8</li><li>node</li></list></li></list></td>
+<td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li></list></td>
 <td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
 </tr>
 

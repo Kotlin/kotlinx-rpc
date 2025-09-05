@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.krpc.compatibility
 
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.job
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
@@ -68,7 +70,15 @@ class KrpcCompatibilityTests {
                     val client = KrpcTestClient(rpcClientConfig, localTransport.client)
                     clientServer.server.serveAllInterfaces(server)
 
-                    test(client)
+                    try {
+                        test(client)
+                    } finally {
+                        server.close()
+                        client.close()
+                        server.awaitCompletion()
+                        client.awaitCompletion()
+                        localTransport.coroutineContext.job.cancelAndJoin()
+                    }
                 }
             }
         }.stream()

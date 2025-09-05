@@ -1,10 +1,9 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.internal
 
-import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
 
@@ -37,8 +36,7 @@ internal actual fun Throwable.stackElements(): List<StackElement> = stackTrace.m
     )
 }
 
-@InternalRpcApi
-public actual fun SerializedException.deserialize(): Throwable {
+internal actual fun SerializedException.deserializeUnsafe(): Throwable {
     try {
         val clazz = Class.forName(className)
         val fieldsCount = clazz.fieldsCountOrDefault(throwableFields)

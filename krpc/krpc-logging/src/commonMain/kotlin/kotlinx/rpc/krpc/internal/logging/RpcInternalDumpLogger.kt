@@ -14,6 +14,17 @@ public interface RpcInternalDumpLogger {
 }
 
 @InternalRpcApi
+public fun RpcInternalCommonLogger.dumpLogger(): RpcInternalDumpLogger {
+    return object : RpcInternalDumpLogger {
+        override val isEnabled: Boolean = true
+
+        override fun dump(vararg tags: String, message: () -> String) {
+            this@dumpLogger.info { "${tags.joinToString(" ") { "[$it]" }} ${message()}" }
+        }
+    }
+}
+
+@InternalRpcApi
 public object RpcInternalDumpLoggerContainer {
     private var logger: RpcInternalDumpLogger? = null
 

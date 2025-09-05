@@ -6,7 +6,6 @@ import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Files
 
 plugins {
@@ -71,6 +70,7 @@ kotlin {
                 implementation(libs.slf4j.api)
                 implementation(libs.logback.classic)
                 implementation(libs.coroutines.debug)
+                implementation(libs.lincheck)
             }
         }
     }
@@ -79,6 +79,8 @@ kotlin {
 }
 
 tasks.withType<KotlinJvmTest> {
+    // lincheck agent
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
     environment("LIBRARY_VERSION", libs.versions.kotlinx.rpc.get())
 }
 

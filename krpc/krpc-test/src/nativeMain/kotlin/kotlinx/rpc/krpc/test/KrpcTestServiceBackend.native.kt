@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.krpc.test
 
-import kotlinx.coroutines.test.TestScope
 import kotlin.native.concurrent.ObsoleteWorkersApi
 import kotlin.native.concurrent.Worker
 
@@ -14,5 +13,5 @@ actual fun runThreadIfPossible(runner: () -> Unit) {
 }
 
 @Suppress("detekt.EmptyFunctionBlock")
-internal actual fun TestScope.debugCoroutines() {
+internal actual fun debugCoroutines() {
 }

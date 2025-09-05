@@ -4,7 +4,9 @@
 
 package kotlinx.rpc.krpc.test
 
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.job
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import kotlinx.rpc.krpc.rpcClientConfig
@@ -51,9 +53,17 @@ class CoroutineContextPropagationTest {
                 }
             }
         }
-        withContext(CoroutineElement("client")) {
-            client.withService(Echo::class).echo("request")
+        try {
+            withContext(CoroutineElement("client")) {
+                client.withService(Echo::class).echo("request")
+            }
+            assertEquals(CoroutineElement("transport"), actualContext)
+        } finally {
+            server.close()
+            client.close()
+            server.awaitCompletion()
+            client.awaitCompletion()
+            transport.coroutineContext.job.cancelAndJoin()
         }
-        assertEquals(CoroutineElement("transport"), actualContext)
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.internal
@@ -59,7 +59,7 @@ public sealed interface KrpcProtocolMessage : KrpcMessage {
     public data class Handshake(
         val supportedPlugins: Set<KrpcPlugin>,
         override val connectionId: Long? = null,
-        override val pluginParams: Map<KrpcPluginKey, String> = emptyMap(),
+        override val pluginParams: MutableMap<KrpcPluginKey, String> = mutableMapOf(),
     ) : KrpcProtocolMessage
 
     @InternalRpcApi

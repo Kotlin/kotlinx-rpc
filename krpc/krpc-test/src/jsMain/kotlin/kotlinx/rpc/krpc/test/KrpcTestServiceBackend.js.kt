@@ -4,12 +4,10 @@
 
 package kotlinx.rpc.krpc.test
 
-import kotlinx.coroutines.test.TestScope
-
 actual inline fun runThreadIfPossible(runner: () -> Unit) {
     runner()
 }
 
 @Suppress("detekt.EmptyFunctionBlock")
-internal actual fun TestScope.debugCoroutines() {
+internal actual fun debugCoroutines() {
 }

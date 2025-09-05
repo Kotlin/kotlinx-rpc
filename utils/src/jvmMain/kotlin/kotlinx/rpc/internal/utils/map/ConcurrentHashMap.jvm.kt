@@ -52,4 +52,8 @@ private class ConcurrentHashMapJvm<K : Any, V: Any>(initialSize: Int) : RpcInter
 
     override val values: Collection<V>
         get() = map.values
+
+    override fun <T> withKeys(block: (Set<K>) -> T): T {
+        return block(map.keys)
+    }
 }

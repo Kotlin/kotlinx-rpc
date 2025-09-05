@@ -18,6 +18,7 @@ import kotlin.time.ExperimentalTime
 
 class LocalTransport(
     parentContext: CoroutineContext? = null,
+    private val recordTimestamps: Boolean = true,
 ) : CoroutineScope {
     override val coroutineContext = SupervisorJob(parentContext?.get(Job))
 
@@ -34,7 +35,9 @@ class LocalTransport(
 
         @OptIn(ExperimentalTime::class)
         override suspend fun send(message: KrpcTransportMessage) {
-            lastMessageSentOnClient.getAndSet(Clock.System.now().toEpochMilliseconds())
+            if (recordTimestamps) {
+                lastMessageSentOnClient.getAndSet(Clock.System.now().toEpochMilliseconds())
+            }
             serverIncoming.send(message)
         }
 
@@ -50,7 +53,9 @@ class LocalTransport(
 
         @OptIn(ExperimentalTime::class)
         override suspend fun send(message: KrpcTransportMessage) {
-            lastMessageSentOnServer.getAndSet(Clock.System.now().toEpochMilliseconds())
+            if (recordTimestamps) {
+                lastMessageSentOnServer.getAndSet(Clock.System.now().toEpochMilliseconds())
+            }
             clientIncoming.send(message)
         }
 

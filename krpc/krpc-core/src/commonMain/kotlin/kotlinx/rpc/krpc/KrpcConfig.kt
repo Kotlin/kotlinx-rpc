@@ -7,6 +7,8 @@ package kotlinx.rpc.krpc
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormat
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormatBuilder
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Builder for [KrpcConfig]. Provides DSL to configure parameters for KrpcClient and/or KrpcServer.
@@ -32,11 +34,60 @@ public sealed class KrpcConfigBuilder protected constructor() {
     }
 
     /**
-     * A flag indicating whether a client or a server should wait for subscribers
-     * if no service is available to process a message immediately.
-     * If `false`, the endpoint that sent the unprocessed message will receive a call exception
-     * saying there were no services to process the message.
+     * DSL for connector configuration.
+     *
+     * Connector is responsible for handling all messages transferring.
+     * Example usage:
+     * ```kotlin
+     * connector {
+     *     waitTimeout = 10.seconds
+     *     callTimeout = 10.seconds
+     *     perCallBufferSize = 1000
+     * }
+     * ```
      */
+    public fun connector(builder: Connector.() -> Unit) {
+        connector.builder()
+    }
+
+    /**
+     * Configuration for RPC connector - a handler for all messages transferring.
+     */
+    public class Connector {
+        /**
+         * A flag indicating how long a client or a server should wait for subscribers
+         * if no service is available to process a message immediately.
+         * If negative ([dontWait]) or when timeout is exceeded,
+         * the endpoint that sent the unprocessed message will receive a call exception
+         * saying there were no services to process the message.
+         */
+        public var waitTimeout: Duration = Duration.INFINITE
+
+        /**
+         * A flag indicating that a client or a server should not wait for subscribers
+         *
+         * @see Connector.waitTimeout
+         */
+        public fun dontWait(): Duration = (-1).seconds
+
+        /**
+         * A timeout for a call.
+         * If a call is not completed in this time, it will be cancelled with a call exception.
+         */
+        public var callTimeout: Duration = Duration.INFINITE
+
+        /**
+         * A buffer size for a single call.
+         *
+         * The default value is 1,
+         * meaning that only after one message is handled - the next one will be sent.
+         *
+         * This buffer also applies to how many messages are cached with [waitTimeout]
+         */
+        public var perCallBufferSize: Int = 1
+    }
+
+    @Deprecated("Use connector { } instead", level = DeprecationLevel.ERROR)
     public var waitForServices: Boolean = true
 
     /**
@@ -46,7 +97,7 @@ public sealed class KrpcConfigBuilder protected constructor() {
         public fun build(): KrpcConfig.Client {
             return KrpcConfig.Client(
                 serialFormatInitializer = rpcSerialFormat(),
-                waitForServices = waitForServices,
+                connector = buildConnector(),
             )
         }
     }
@@ -58,7 +109,7 @@ public sealed class KrpcConfigBuilder protected constructor() {
         public fun build(): KrpcConfig.Server {
             return KrpcConfig.Server(
                 serialFormatInitializer = rpcSerialFormat(),
-                waitForServices = waitForServices,
+                connector = buildConnector(),
             )
         }
     }
@@ -72,6 +123,12 @@ public sealed class KrpcConfigBuilder protected constructor() {
      */
 
     private var serialFormatInitializer: KrpcSerialFormatBuilder<*, *>? = null
+
+    private val connector = Connector()
+
+    public fun buildConnector(): KrpcConfig.Connector {
+        return KrpcConfig.Connector(connector.waitTimeout, connector.callTimeout, connector.perCallBufferSize)
+    }
 
     private val configuration = object : KrpcSerialFormatConfiguration {
         override fun register(rpcSerialFormatInitializer: KrpcSerialFormatBuilder.Binary<*, *>) {
@@ -101,9 +158,36 @@ public sealed interface KrpcConfig {
     public val serialFormatInitializer: KrpcSerialFormatBuilder<*, *>
 
     /**
-     * @see KrpcConfigBuilder.waitForServices
+     * @see KrpcConfigBuilder.connector
      */
-    public val waitForServices: Boolean
+    public val connector: Connector
+
+    @Deprecated("Use connector instead", level = DeprecationLevel.ERROR)
+    public val waitForServices: Boolean get() = true
+
+    /**
+     * @see KrpcConfigBuilder.connector
+     */
+    public class Connector internal constructor(
+        /**
+         * @see KrpcConfigBuilder.Connector.waitTimeout
+         */
+        public val waitTimeout: Duration,
+
+        /**
+         * @see KrpcConfigBuilder.Connector.callTimeout
+         */
+        public val callTimeout: Duration,
+
+        /**
+         * @see KrpcConfigBuilder.Connector.perCallBufferSize
+         */
+        public val perCallBufferSize: Int,
+    ) {
+        init {
+            require(perCallBufferSize != 0) { "perCallBufferSize must not be zero" }
+        }
+    }
 
     /**
      * @see [KrpcConfig]
@@ -113,10 +197,8 @@ public sealed interface KrpcConfig {
          * @see KrpcConfigBuilder.serialization
          */
         override val serialFormatInitializer: KrpcSerialFormatBuilder<*, *>,
-        /**
-         * @see KrpcConfigBuilder.waitForServices
-         */
-        override val waitForServices: Boolean,
+
+        override val connector: Connector,
     ) : KrpcConfig
 
     /**
@@ -127,10 +209,11 @@ public sealed interface KrpcConfig {
          * @see KrpcConfigBuilder.serialization
          */
         override val serialFormatInitializer: KrpcSerialFormatBuilder<*, *>,
+
         /**
-         * @see KrpcConfigBuilder.waitForServices
+         * @see KrpcConfigBuilder.connector
          */
-        override val waitForServices: Boolean,
+        override val connector: Connector,
     ) : KrpcConfig
 }
 

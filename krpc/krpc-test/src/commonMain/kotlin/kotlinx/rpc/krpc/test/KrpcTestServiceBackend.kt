@@ -6,7 +6,6 @@ package kotlinx.rpc.krpc.test
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.test.TestScope
 import kotlinx.serialization.Serializable
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertContentEquals
@@ -40,6 +39,15 @@ class KrpcTestServiceBackend : KrpcTestService {
 
     override fun nonSuspendBidirectionalPayload(payloadWithStream: PayloadWithStream): Flow<Int> {
         return payloadWithStream.stream.map { it.length }
+    }
+
+    override fun slowConsumer(): Flow<Int> {
+        return flow {
+            repeat(10) {
+                delay(100)
+                emit(it)
+            }
+        }
     }
 
     @Suppress("detekt.EmptyFunctionBlock")
@@ -98,7 +106,9 @@ class KrpcTestServiceBackend : KrpcTestService {
         return arg1
     }
 
-    override suspend fun returnTestClassThatThrowsWhileDeserialization(value: Int): TestClassThatThrowsWhileDeserialization {
+    override suspend fun returnTestClassThatThrowsWhileDeserialization(
+        value: Int,
+    ): TestClassThatThrowsWhileDeserialization {
         return TestClassThatThrowsWhileDeserialization(value)
     }
 
@@ -253,4 +263,4 @@ class KrpcTestServiceBackend : KrpcTestService {
 
 internal expect fun runThreadIfPossible(runner: () -> Unit)
 
-internal expect fun TestScope.debugCoroutines()
+internal expect fun debugCoroutines()

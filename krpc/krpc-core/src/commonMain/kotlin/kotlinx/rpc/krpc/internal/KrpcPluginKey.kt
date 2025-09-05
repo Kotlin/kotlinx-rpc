@@ -51,6 +51,16 @@ public enum class KrpcPluginKey(
      * Marks a request as a one doesn't suspend and returns a flow.
      */
     NON_SUSPENDING_SERVER_FLOW_MARKER(5, KrpcPlugin.NON_SUSPENDING_SERVER_FLOWS),
+
+    /**
+     * Represents the update to the window size from the peer endpoint.
+     */
+    WINDOW_UPDATE(6, KrpcPlugin.BACKPRESSURE),
+
+    /**
+     * Represents the call id of the current [WINDOW_UPDATE].
+     */
+    WINDOW_KEY(7, KrpcPlugin.BACKPRESSURE),
     ;
 
     init {

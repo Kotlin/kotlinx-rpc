@@ -41,25 +41,26 @@ internal class KrpcServerService<@Rpc T : Any>(
             val exception = result.exceptionOrNull()
                 ?: error("Expected exception value")
 
-            cancelRequest(
+            closeReceiving(
                 callId = message.callId,
                 message = "Cancelled after failed to process message: $message, error message: ${exception.message}",
                 cause = exception,
             )
 
             if (exception is CancellationException) {
-                return
+                currentCoroutineContext().ensureActive()
             }
 
-            val error = serializeException(exception)
+            val serialized = serializeException(exception)
             val errorMessage = KrpcCallMessage.CallException(
                 callId = message.callId,
                 serviceType = message.serviceType,
-                cause = error,
+                cause = serialized,
                 connectionId = message.connectionId,
             )
 
             connector.sendMessage(errorMessage)
+            unsubscribeFromCallMessages(message.callId)
         }
     }
 
@@ -72,7 +73,7 @@ internal class KrpcServerService<@Rpc T : Any>(
             }
 
             is KrpcCallMessage.CallException -> {
-                cancelRequest(
+                closeReceiving(
                     callId = message.callId,
                     message = "Cancelled after KrpcCallMessage.CallException received",
                     cause = message.cause.deserialize(),
@@ -181,30 +182,42 @@ internal class KrpcServerService<@Rpc T : Any>(
                     sendMessages(serialFormat, returnSerializer, value, callData)
                 }
             } catch (cause: CancellationException) {
-                throw cause
-            } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
+                currentCoroutineContext().ensureActive()
+
+                val wrapped = ManualCancellationException(cause)
+
+                failure = wrapped
+            } catch (cause: Throwable) {
                 failure = cause
+            } finally {
+                if (failure != null) {
+                    val serializedCause = serializeException(failure)
+                    val exceptionMessage = KrpcCallMessage.CallException(
+                        callId = callId,
+                        serviceType = descriptor.fqName,
+                        cause = serializedCause,
+                        connectionId = callData.connectionId,
+                        serviceId = callData.serviceId,
+                    )
 
-                val serializedCause = serializeException(cause)
-                KrpcCallMessage.CallException(
-                    callId = callId,
-                    serviceType = descriptor.fqName,
-                    cause = serializedCause,
-                    connectionId = callData.connectionId,
-                    serviceId = callData.serviceId,
-                ).also { connector.sendMessage(it) }
-            }
+                    connector.sendMessage(exceptionMessage)
 
-            if (failure != null) {
-                cancelRequest(callId, "Server request failed", failure, fromJob = true)
-            } else {
-                cancelRequest(callId, fromJob = true)
+                    closeReceiving(callId, "Server request failed", failure, fromJob = true)
+                } else {
+                    closeReceiving(callId, fromJob = true)
+                }
+
+                unsubscribeFromCallMessages(callId)
             }
         }
 
         requestMap[callId] = RpcRequest(requestJob, serverStreamContext)
 
         requestJob.start()
+    }
+
+    suspend fun unsubscribeFromCallMessages(callId: String) {
+        connector.unsubscribeFromCallMessages(descriptor.fqName, callId)
     }
 
     private suspend fun sendMessages(
@@ -296,7 +309,7 @@ internal class KrpcServerService<@Rpc T : Any>(
             )
         } catch (cause: CancellationException) {
             throw cause
-        } catch (@Suppress("detekt.TooGenericExceptionCaught") cause: Throwable) {
+        } catch (cause: Throwable) {
             val serializedCause = serializeException(cause)
             connector.sendMessage(
                 KrpcCallMessage.StreamCancel(
@@ -311,7 +324,7 @@ internal class KrpcServerService<@Rpc T : Any>(
         }
     }
 
-    suspend fun cancelRequest(
+    suspend fun closeReceiving(
         callId: String,
         message: String? = null,
         cause: Throwable? = null,
@@ -325,7 +338,7 @@ internal class KrpcServerService<@Rpc T : Any>(
         message: String? = null,
         cause: Throwable? = null,
     ) {
-        cancelRequest(callId, message, cause, fromJob = false)
+        closeReceiving(callId, message, cause, fromJob = false)
 
         if (!supportedPlugins.contains(KrpcPlugin.NO_ACK_CANCELLATION)) {
             connector.sendMessage(
@@ -339,6 +352,8 @@ internal class KrpcServerService<@Rpc T : Any>(
                 )
             )
         }
+
+        unsubscribeFromCallMessages(callId)
     }
 
     private val serverStreamContext: ServerStreamContext = ServerStreamContext()
