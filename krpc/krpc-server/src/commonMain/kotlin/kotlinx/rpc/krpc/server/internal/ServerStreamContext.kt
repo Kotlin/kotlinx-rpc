@@ -55,7 +55,7 @@ internal class ServerStreamContext {
     fun prepareClientStream(streamId: String, elementKind: KSerializer<Any?>): Flow<Any?> {
         val callId = currentCallId.get() ?: error("No call id")
 
-        val channel = Channel<Any?>(Channel.UNLIMITED)
+        val channel = Channel<Any?>()
 
         @Suppress("UNCHECKED_CAST")
         val map = streams.computeIfAbsent(callId) { RpcInternalConcurrentHashMap() }
