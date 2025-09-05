@@ -57,6 +57,7 @@ bool kgrpc_iomgr_run_in_background();
  *
  * Wraps the internal C++ API `Server::SetRegisteredMethodAllocator()` to enable
  * callback-driven method dispatch via the Core C API.
+ * If the C++ API is exposed to the C API, this can be removed (https://github.com/grpc/grpc/issues/40632).
  *
  * When the gRPC Core needs to accept a new call for the specified method, it invokes:
  *   kgrpc_registered_call_allocation alloc = allocator();

@@ -70,7 +70,8 @@ internal class NativeServer(
 
     private val cq = CompletionQueue()
 
-    val raw: CPointer<grpc_server> = grpc_server_create(null, null)!!
+    val raw: CPointer<grpc_server> = grpc_server_create(null, null)
+        ?: error("Failed to create server")
 
     // holds all stable references to MethodAllocationCtx objects.
     // the stable references must eventually be disposed.

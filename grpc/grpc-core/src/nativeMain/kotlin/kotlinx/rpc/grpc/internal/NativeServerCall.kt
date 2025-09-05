@@ -59,12 +59,12 @@ internal class NativeServerCall<Request, Response>(
         grpc_call_unref(it)
     }
 
-    private var listener = DeferredCallListener<Request>()
+    private val listener = DeferredCallListener<Request>()
     private var methodDescriptor: MethodDescriptor<Request, Response>? = null
-    private var callbackMutex = ReentrantLock()
+    private val callbackMutex = ReentrantLock()
     private var initialized = false
     private var cancelled = false
-    private var finalized = atomic(false)
+    private val finalized = atomic(false)
 
     // Tracks whether at least one request message has been received on this call.
     private var receivedFirstMessage = false
@@ -190,7 +190,7 @@ internal class NativeServerCall<Request, Response>(
 
     override fun request(numMessages: Int) {
         check(initialized) { internalError("Call not initialized") }
-        // TODO: Remove the num constraint
+        // TODO: Remove the num constraint (KRPC-213)
         require(numMessages == 1) { internalError("numMessages must be 1") }
         val methodDescriptor = checkNotNull(methodDescriptor) { internalError("Method descriptor not set") }
 
@@ -320,7 +320,7 @@ private class DeferredCallListener<T> : ServerCall.Listener<T>() {
     @Volatile
     private var delegate: ServerCall.Listener<T>? = null
     private val mutex = ReentrantLock()
-    private val q = ArrayDeque<(ServerCall.Listener<T>) -> Unit>()
+    private val queue = ArrayDeque<(ServerCall.Listener<T>) -> Unit>()
 
     fun setDelegate(d: ServerCall.Listener<T>) {
         mutex.withLock {
@@ -328,26 +328,26 @@ private class DeferredCallListener<T> : ServerCall.Listener<T>() {
             delegate = d
         }
         // drain the queue
-        q.forEach { it(d) }
-        q.clear()
+        queue.forEach { it(d) }
+        queue.clear()
     }
 
-    private inline fun deliver(crossinline f: (ServerCall.Listener<T>) -> Unit) {
-        val d = delegate
-        if (d != null) {
+    private inline fun deliver(crossinline invokeListener: (ServerCall.Listener<T>) -> Unit) {
+        val currentDelegate = delegate
+        if (currentDelegate != null) {
             // fast path (delegate is already set)
-            f(d); return
+            invokeListener(currentDelegate); return
         }
         // slow path: re-check under lock
-        val dd = mutex.withLock {
+        val safeCurrentDelegate = mutex.withLock {
             val cur = delegate
             if (cur == null) {
-                q.addLast { f(it) }
+                queue.addLast { invokeListener(it) }
                 null
             } else cur
         }
         // if the delegate was already set, call it
-        if (dd != null) f(dd)
+        if (safeCurrentDelegate != null) invokeListener(safeCurrentDelegate)
     }
 
     override fun onMessage(message: T) = deliver { it.onMessage(message) }

@@ -6,6 +6,7 @@ package kotlinx.rpc.grpc.test
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.GrpcServer
 import kotlinx.rpc.grpc.GrpcTrailers
@@ -270,21 +271,20 @@ class GreeterServiceImpl : GreeterService {
      * Run this on JVM before executing tests.
      */
     @Test
-    fun runServer() {
-        runBlocking {
-            val server = GrpcServer(
-                port = PORT,
-                builder = { registerService<GreeterService> { GreeterServiceImpl() } }
-            )
+    fun runServer() = runTest {
+        val server = GrpcServer(
+            port = PORT,
+            builder = { registerService<GreeterService> { GreeterServiceImpl() } }
+        )
 
-            try {
-                server.start()
-                println("Server started")
-                server.awaitTermination()
-            } finally {
-                server.shutdown()
-                server.awaitTermination()
-            }
+        try {
+            server.start()
+            println("Server started")
+            server.awaitTermination()
+        } finally {
+            server.shutdown()
+            server.awaitTermination()
+
         }
     }
 
