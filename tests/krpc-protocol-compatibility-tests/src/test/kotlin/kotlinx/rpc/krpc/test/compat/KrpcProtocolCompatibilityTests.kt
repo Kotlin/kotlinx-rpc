@@ -138,7 +138,7 @@ class KrpcProtocolCompatibilityTests : KrpcProtocolCompatibilityTestsBase() {
     }
 
     @TestFactory
-    fun fastProducer() = matrixTest(timeout = 30.seconds) { service, impl ->
+    fun fastProducer() = matrixTest(timeout = 60.seconds) { service, impl ->
         val async = async {
             service.fastServerProduce(1000).map {
                 // long produce

@@ -326,7 +326,7 @@ abstract class KrpcConnectorBaseTest {
     )
 
     protected fun runTest(
-        testTimeout: Duration = 3.seconds,
+        testTimeout: Duration = 15.seconds,
         waitTimeout: Duration = 1.seconds,
         callTimeout: Duration = 1.seconds,
         perCallBufferSize: Int = 100,

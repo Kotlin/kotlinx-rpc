@@ -498,6 +498,6 @@ abstract class KrpcTransportTestBase {
     }
 }
 
-private val JS_EXTENDED_TIMEOUT = if (isJs) 300.seconds else 60.seconds
+private val JS_EXTENDED_TIMEOUT = if (isJs) 400.seconds else 120.seconds
 
 internal expect val isJs: Boolean

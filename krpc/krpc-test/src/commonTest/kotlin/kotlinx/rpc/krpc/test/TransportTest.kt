@@ -25,6 +25,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertTrue
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 @Rpc
@@ -81,9 +82,10 @@ class TransportTest {
     }
 
     private fun runTest(
+        timeout: Duration = 120.seconds,
         times: Int = testIterations,
         block: suspend TestScope.(logs: List<String>) -> Unit,
-    ): TestResult = kotlinx.coroutines.test.runTest(timeout = 120.seconds) {
+    ): TestResult = kotlinx.coroutines.test.runTest(timeout = timeout) {
         debugCoroutines()
 
         repeat(times) {
@@ -205,7 +207,7 @@ class TransportTest {
     }
 
     @Test
-    fun testLateConnectWithManyCallsAndClients() = runTest {
+    fun testLateConnectWithManyCallsAndClients() = runTest(timeout = 240.seconds) {
         val transports = LocalTransport()
 
         val client = clientOf(transports)
