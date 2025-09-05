@@ -101,9 +101,10 @@ kotlin {
         }
     }
 
+    // configures linkReleaseTest task to build and link the test binary in RELEASE mode.
+    // this can be useful for performance analysis.
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
         binaries {
-            // Ensure test binaries are created for both debug and release
             test(
                 buildTypes = listOf(
                     org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.RELEASE
