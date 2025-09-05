@@ -183,7 +183,11 @@ public sealed interface KrpcConfig {
          * @see KrpcConfigBuilder.Connector.perCallBufferSize
          */
         public val perCallBufferSize: Int,
-    )
+    ) {
+        init {
+            require(perCallBufferSize != 0) { "perCallBufferSize must not be zero" }
+        }
+    }
 
     /**
      * @see [KrpcConfig]
