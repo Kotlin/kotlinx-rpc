@@ -78,12 +78,9 @@ kotlin {
     explicitApi = ExplicitApiMode.Disabled
 }
 
-tasks.jvmTest {
+tasks.withType<KotlinJvmTest> {
     // lincheck agent
     jvmArgs("-XX:+EnableDynamicAgentLoading")
-}
-
-tasks.withType<KotlinJvmTest> {
     environment("LIBRARY_VERSION", libs.versions.kotlinx.rpc.get())
 }
 
