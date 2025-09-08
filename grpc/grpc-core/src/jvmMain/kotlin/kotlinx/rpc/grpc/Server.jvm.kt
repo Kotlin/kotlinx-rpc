@@ -14,7 +14,8 @@ import kotlin.time.Duration
  */
 public actual typealias ServerBuilder<T> = io.grpc.ServerBuilder<T>
 
-internal actual fun ServerBuilder(port: Int): ServerBuilder<*> {
+internal actual fun ServerBuilder(port: Int, credentials: ServerCredentials?): ServerBuilder<*> {
+    if (credentials != null) return io.grpc.Grpc.newServerBuilderForPort(port, credentials)
     return io.grpc.ServerBuilder.forPort(port)
 }
 

@@ -13,7 +13,14 @@ import kotlinx.rpc.grpc.codec.ThrowingMessageCodecResolver
 import kotlinx.rpc.grpc.codec.plus
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
-import kotlinx.rpc.grpc.internal.*
+import kotlinx.rpc.grpc.internal.GrpcDefaultCallOptions
+import kotlinx.rpc.grpc.internal.MethodDescriptor
+import kotlinx.rpc.grpc.internal.MethodType
+import kotlinx.rpc.grpc.internal.bidirectionalStreamingRpc
+import kotlinx.rpc.grpc.internal.clientStreamingRpc
+import kotlinx.rpc.grpc.internal.serverStreamingRpc
+import kotlinx.rpc.grpc.internal.type
+import kotlinx.rpc.grpc.internal.unaryRpc
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.time.Duration
 
@@ -124,10 +131,11 @@ public class GrpcClient internal constructor(
 public fun GrpcClient(
     hostname: String,
     port: Int,
+    credentials: ChannelCredentials? = null,
     messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
     configure: ManagedChannelBuilder<*>.() -> Unit = {},
 ): GrpcClient {
-    val channel = ManagedChannelBuilder(hostname, port).apply(configure).buildChannel()
+    val channel = ManagedChannelBuilder(hostname, port, credentials).apply(configure).buildChannel()
     return GrpcClient(channel, messageCodecResolver)
 }
 
@@ -136,9 +144,10 @@ public fun GrpcClient(
  */
 public fun GrpcClient(
     target: String,
+    credentials: ChannelCredentials? = null,
     messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
     configure: ManagedChannelBuilder<*>.() -> Unit = {},
 ): GrpcClient {
-    val channel = ManagedChannelBuilder(target).apply(configure).buildChannel()
+    val channel = ManagedChannelBuilder(target, credentials).apply(configure).buildChannel()
     return GrpcClient(channel, messageCodecResolver)
 }
