@@ -8,35 +8,55 @@ public actual typealias ChannelCredentials = io.grpc.ChannelCredentials
 
 public actual typealias ServerCredentials = io.grpc.ServerCredentials
 
-
 // we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
 // java constructor.
 public actual typealias InsecureChannelCredentials = io.grpc.InsecureChannelCredentials
 public actual typealias InsecureServerCredentials = io.grpc.InsecureServerCredentials
 
-public actual typealias TlsServerCredentials = io.grpc.TlsServerCredentials
 public actual typealias TlsChannelCredentials = io.grpc.TlsChannelCredentials
+public actual typealias TlsServerCredentials = io.grpc.TlsServerCredentials
 
-public actual fun TlsChannelCredentials(): ChannelCredentials {
-    return TlsChannelCredentialsBuilder().build()
-}
+internal actual fun TlsChannelCredentialsBuilder(): TlsChannelCredentialsBuilder =
+    object : TlsChannelCredentialsBuilder {
+        private var cb = TlsChannelCredentials.newBuilder()
 
-public actual fun TlsServerCredentials(
+
+        override fun trustManager(rootCertsPem: String): TlsChannelCredentialsBuilder {
+            cb.trustManager(rootCertsPem.byteInputStream())
+            return this
+        }
+
+        override fun keyManager(
+            certChainPem: String,
+            privateKeyPem: String,
+        ): TlsChannelCredentialsBuilder {
+            cb.keyManager(certChainPem.byteInputStream(), privateKeyPem.byteInputStream())
+            return this
+        }
+
+        override fun build(): ChannelCredentials {
+            return cb.build()
+        }
+    }
+
+internal actual fun TlsServerCredentialsBuilder(
     certChain: String,
     privateKey: String,
-): ServerCredentials {
-    return TlsServerCredentialsBuilder().keyManager(certChain, privateKey).build()
-}
-
-public actual fun TlsServerCredentialsBuilder(): TlsServerCredentialsBuilder = object : TlsServerCredentialsBuilder {
+): TlsServerCredentialsBuilder = object : TlsServerCredentialsBuilder {
     private var sb = TlsServerCredentials.newBuilder()
 
-    override fun keyManager(
-        certChainPem: String,
-        privateKeyPem: String,
-    ): TlsServerCredentialsBuilder {
-        sb.keyManager(certChainPem.byteInputStream(), privateKeyPem.byteInputStream())
+    override fun trustManager(rootCertsPem: String): TlsServerCredentialsBuilder {
+        sb.trustManager(rootCertsPem.byteInputStream())
         return this
+    }
+
+    override fun clientAuth(clientAuth: TlsClientAuth): TlsServerCredentialsBuilder {
+        sb.clientAuth(clientAuth.toJava())
+        return this
+    }
+
+    init {
+        sb.keyManager(certChain.byteInputStream(), privateKey.byteInputStream())
     }
 
     override fun build(): ServerCredentials {
@@ -44,17 +64,10 @@ public actual fun TlsServerCredentialsBuilder(): TlsServerCredentialsBuilder = o
     }
 }
 
-public actual fun TlsChannelCredentialsBuilder(): TlsChannelCredentialsBuilder = object : TlsChannelCredentialsBuilder {
-    private var cb = TlsChannelCredentials.newBuilder()
-
-    override fun trustManager(rootCertsPem: String): TlsChannelCredentialsBuilder {
-        cb.trustManager(rootCertsPem.byteInputStream())
-        return this
-    }
-
-    override fun build(): ChannelCredentials {
-        return cb.build()
-    }
+private fun TlsClientAuth.toJava(): io.grpc.TlsServerCredentials.ClientAuth = when (this) {
+    TlsClientAuth.NONE -> io.grpc.TlsServerCredentials.ClientAuth.NONE
+    TlsClientAuth.OPTIONAL -> io.grpc.TlsServerCredentials.ClientAuth.OPTIONAL
+    TlsClientAuth.REQUIRE -> io.grpc.TlsServerCredentials.ClientAuth.REQUIRE
 }
 
 

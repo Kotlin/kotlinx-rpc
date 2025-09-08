@@ -22,6 +22,8 @@ public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
     public actual open fun usePlaintext(): T {
         error("Builder does not support usePlaintext()")
     }
+
+    public actual abstract fun overrideAuthority(authority: String): T
 }
 
 internal class NativeManagedChannelBuilder(
@@ -29,14 +31,22 @@ internal class NativeManagedChannelBuilder(
     private var credentials: Lazy<ChannelCredentials>,
 ) : ManagedChannelBuilder<NativeManagedChannelBuilder>() {
 
+    private var authority: String? = null
+
     override fun usePlaintext(): NativeManagedChannelBuilder {
         credentials = lazy { InsecureChannelCredentials() }
+        return this
+    }
+
+    override fun overrideAuthority(authority: String): NativeManagedChannelBuilder {
+        this.authority = authority
         return this
     }
 
     fun buildChannel(): NativeManagedChannel {
         return NativeManagedChannel(
             target,
+            authority = authority,
             credentials = credentials.value,
         )
     }

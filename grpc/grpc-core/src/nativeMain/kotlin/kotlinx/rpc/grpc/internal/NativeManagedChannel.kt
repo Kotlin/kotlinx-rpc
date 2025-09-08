@@ -39,6 +39,7 @@ import kotlin.time.Duration
  */
 internal class NativeManagedChannel(
     target: String,
+    val authority: String?,
     // we must store them, otherwise the credentials are getting released
     credentials: ChannelCredentials,
 ) : ManagedChannel, ManagedChannelPlatform() {
@@ -122,26 +123,29 @@ internal class NativeManagedChannel(
         // to construct a valid HTTP/2 path, we must prepend the name with a slash.
         // the user does not do this to align it with the java implementation.
         val methodNameSlice = "/$methodFullName".toGrpcSlice()
+        val authoritySlice = authority?.toGrpcSlice()
+
         val rawCall = grpc_channel_create_call(
             channel = raw,
             parent_call = null,
             propagation_mask = GRPC_PROPAGATE_DEFAULTS,
             completion_queue = cq.raw,
             method = methodNameSlice,
-            host = null,
+            host = authoritySlice,
             deadline = gpr_inf_future(GPR_CLOCK_REALTIME),
             reserved = null
         ) ?: error("Failed to create call")
 
         grpc_slice_unref(methodNameSlice)
+        authoritySlice?.let { grpc_slice_unref(it) }
 
         return NativeClientCall(
             cq, rawCall, methodDescriptor, callJob
         )
     }
 
-    override fun authority(): String {
-        TODO("Not yet implemented")
+    override fun authority(): String? {
+        return authority
     }
 
 }

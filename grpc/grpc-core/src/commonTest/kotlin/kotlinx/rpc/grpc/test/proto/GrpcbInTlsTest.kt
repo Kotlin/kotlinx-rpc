@@ -10,8 +10,9 @@ import hello.invoke
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.grpc.GrpcClient
 import kotlinx.rpc.grpc.GrpcServer
-import kotlinx.rpc.grpc.TlsChannelCredentialsBuilder
-import kotlinx.rpc.grpc.TlsServerCredentialsBuilder
+import kotlinx.rpc.grpc.TlsChannelCredentials
+import kotlinx.rpc.grpc.TlsClientAuth
+import kotlinx.rpc.grpc.TlsServerCredentials
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
@@ -27,6 +28,7 @@ class GrpcbInTlsTest {
 
     @Test
     fun testTlsCall() = runTest {
+        // uses default TLS credentials
         val grpcClient = GrpcClient("grpcb.in", 9001)
         val service = grpcClient.withService<HelloService>()
         val request = HelloRequest {
@@ -35,14 +37,16 @@ class GrpcbInTlsTest {
         val result = service.SayHello(request)
 
         println(result.reply)
+
+        // Ensure we don't leak the client channel between tests
+        grpcClient.shutdown()
+        grpcClient.awaitTermination()
     }
 
 
     @Test
-    fun testLocalTls() = runTest {
-        val serverTls = TlsServerCredentialsBuilder()
-            .keyManager(SERVER_CERT_PEM, SERVER_KEY_PEM)
-            .build()
+    fun testCustomTls() = runTest {
+        val serverTls = TlsServerCredentials(SERVER_CERT_PEM, SERVER_KEY_PEM)
 
         val grpcServer = GrpcServer(
             PORT,
@@ -52,9 +56,9 @@ class GrpcbInTlsTest {
             })
         grpcServer.start()
 
-        val clientTls = TlsChannelCredentialsBuilder()
-            .trustManager(SERVER_CERT_PEM)
-            .build()
+        val clientTls = TlsChannelCredentials {
+            trustManager(SERVER_CERT_PEM)
+        }
 
         val grpcClient = GrpcClient(
             "localhost", PORT,
@@ -80,94 +84,182 @@ class GrpcbInTlsTest {
         }
     }
 
+    @Test
+    fun testCustomMTls() = runTest {
+        val serverTls = TlsServerCredentials(SERVER_CERT_PEM, SERVER_KEY_PEM) {
+            trustManager(CA_PEM)
+            clientAuth(TlsClientAuth.REQUIRE)
+        }
+
+        val grpcServer = GrpcServer(
+            PORT,
+            credentials = serverTls,
+            builder = {
+                registerService<EchoService> { EchoServiceImpl() }
+            })
+        grpcServer.start()
+
+        val clientTls = TlsChannelCredentials {
+            keyManager(CLIENT_CERT_PEM, CLIENT_KEY_PEM)
+            trustManager(CA_PEM)
+        }
+
+        val grpcClient = GrpcClient(
+            "localhost", PORT,
+            credentials = clientTls,
+        ) {
+            overrideAuthority("foo.test.google.fr")
+        }
+
+        val service = grpcClient.withService<EchoService>()
+        val request = EchoRequest {
+            message = "Postman"
+        }
+
+        try {
+            service.UnaryEcho(request)
+        } catch (t: Throwable) {
+            println("[DEBUG_LOG] TLS test failed: ${t::class.simpleName}: ${t.message}")
+            t.printStackTrace()
+            throw t
+        } finally {
+            grpcServer.shutdown()
+            grpcServer.awaitTermination()
+            grpcClient.shutdown()
+            grpcClient.awaitTermination()
+        }
+    }
+
+    private val CA_PEM = """
+    -----BEGIN CERTIFICATE-----
+    MIIDWjCCAkKgAwIBAgIUWrP0VvHcy+LP6UuYNtiL9gBhD5owDQYJKoZIhvcNAQEL
+    BQAwVjELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoM
+    GEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDEPMA0GA1UEAwwGdGVzdGNhMB4XDTIw
+    MDMxNzE4NTk1MVoXDTMwMDMxNTE4NTk1MVowVjELMAkGA1UEBhMCQVUxEzARBgNV
+    BAgMClNvbWUtU3RhdGUxITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0
+    ZDEPMA0GA1UEAwwGdGVzdGNhMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+    AQEAsGL0oXflF0LzoM+Bh+qUU9yhqzw2w8OOX5mu/iNCyUOBrqaHi7mGHx73GD01
+    diNzCzvlcQqdNIH6NQSL7DTpBjca66jYT9u73vZe2MDrr1nVbuLvfu9850cdxiUO
+    Inv5xf8+sTHG0C+a+VAvMhsLiRjsq+lXKRJyk5zkbbsETybqpxoJ+K7CoSy3yc/k
+    QIY3TipwEtwkKP4hzyo6KiGd/DPexie4nBUInN3bS1BUeNZ5zeaIC2eg3bkeeW7c
+    qT55b+Yen6CxY0TEkzBK6AKt/WUialKMgT0wbTxRZO7kUCH3Sq6e/wXeFdJ+HvdV
+    LPlAg5TnMaNpRdQih/8nRFpsdwIDAQABoyAwHjAMBgNVHRMEBTADAQH/MA4GA1Ud
+    DwEB/wQEAwICBDANBgkqhkiG9w0BAQsFAAOCAQEAkTrKZjBrJXHps/HrjNCFPb5a
+    THuGPCSsepe1wkKdSp1h4HGRpLoCgcLysCJ5hZhRpHkRihhef+rFHEe60UePQO3S
+    CVTtdJB4CYWpcNyXOdqefrbJW5QNljxgi6Fhvs7JJkBqdXIkWXtFk2eRgOIP2Eo9
+    /OHQHlYnwZFrk6sp4wPyR+A95S0toZBcyDVz7u+hOW0pGK3wviOe9lvRgj/H3Pwt
+    bewb0l+MhRig0/DVHamyVxrDRbqInU1/GTNCwcZkXKYFWSf92U+kIcTth24Q1gcw
+    eZiLl5FfrWokUNytFElXob0V0a5/kbhiLc3yWmvWqHTpqCALbVyF+rKJo2f5Kw==
+    -----END CERTIFICATE-----
+    """.trimIndent()
 
     private val SERVER_CERT_PEM = """
     -----BEGIN CERTIFICATE-----
-    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
-    ubFotuU6gIPvra9MI/NUSpA=
+    MIIDtDCCApygAwIBAgIUbJfTREJ6k6/+oInWhV1O1j3ZT0IwDQYJKoZIhvcNAQEL
+    BQAwVjELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoM
+    GEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDEPMA0GA1UEAwwGdGVzdGNhMB4XDTIw
+    MDMxODAzMTA0MloXDTMwMDMxNjAzMTA0MlowZTELMAkGA1UEBhMCVVMxETAPBgNV
+    BAgMCElsbGlub2lzMRAwDgYDVQQHDAdDaGljYWdvMRUwEwYDVQQKDAxFeGFtcGxl
+    LCBDby4xGjAYBgNVBAMMESoudGVzdC5nb29nbGUuY29tMIIBIjANBgkqhkiG9w0B
+    AQEFAAOCAQ8AMIIBCgKCAQEA5xOONxJJ8b8Qauvob5/7dPYZfIcd+uhAWL2ZlTPz
+    Qvu4oF0QI4iYgP5iGgry9zEtCM+YQS8UhiAlPlqa6ANxgiBSEyMHH/xE8lo/+caY
+    GeACqy640Jpl/JocFGo3xd1L8DCawjlaj6eu7T7T/tpAV2qq13b5710eNRbCAfFe
+    8yALiGQemx0IYhlZXNbIGWLBNhBhvVjJh7UvOqpADk4xtl8o5j0xgMIRg6WJGK6c
+    6ffSIg4eP1XmovNYZ9LLEJG68tF0Q/yIN43B4dt1oq4jzSdCbG4F1EiykT2TmwPV
+    YDi8tml6DfOCDGnit8svnMEmBv/fcPd31GSbXjF8M+KGGQIDAQABo2swaTAJBgNV
+    HRMEAjAAMAsGA1UdDwQEAwIF4DBPBgNVHREESDBGghAqLnRlc3QuZ29vZ2xlLmZy
+    ghh3YXRlcnpvb2kudGVzdC5nb29nbGUuYmWCEioudGVzdC55b3V0dWJlLmNvbYcE
+    wKgBAzANBgkqhkiG9w0BAQsFAAOCAQEAS8hDQA8PSgipgAml7Q3/djwQ644ghWQv
+    C2Kb+r30RCY1EyKNhnQnIIh/OUbBZvh0M0iYsy6xqXgfDhCB93AA6j0i5cS8fkhH
+    Jl4RK0tSkGQ3YNY4NzXwQP/vmUgfkw8VBAZ4Y4GKxppdATjffIW+srbAmdDruIRM
+    wPeikgOoRrXf0LA1fi4TqxARzeRwenQpayNfGHTvVF9aJkl8HoaMunTAdG5pIVcr
+    9GKi/gEMpXUJbbVv3U5frX1Wo4CFo+rZWJ/LyCMeb0jciNLxSdMwj/E/ZuExlyeZ
+    gc9ctPjSMvgSyXEKv6Vwobleeg88V2ZgzenziORoWj4KszG/lbQZvg==
     -----END CERTIFICATE-----
     """.trimIndent()
 
     private val SERVER_KEY_PEM = """
     -----BEGIN PRIVATE KEY-----
-    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
-    paLEjX+8kznUisDokSzJ7iHoZgmN
+    MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDnE443EknxvxBq
+    6+hvn/t09hl8hx366EBYvZmVM/NC+7igXRAjiJiA/mIaCvL3MS0Iz5hBLxSGICU+
+    WproA3GCIFITIwcf/ETyWj/5xpgZ4AKrLrjQmmX8mhwUajfF3UvwMJrCOVqPp67t
+    PtP+2kBXaqrXdvnvXR41FsIB8V7zIAuIZB6bHQhiGVlc1sgZYsE2EGG9WMmHtS86
+    qkAOTjG2XyjmPTGAwhGDpYkYrpzp99IiDh4/Veai81hn0ssQkbry0XRD/Ig3jcHh
+    23WiriPNJ0JsbgXUSLKRPZObA9VgOLy2aXoN84IMaeK3yy+cwSYG/99w93fUZJte
+    MXwz4oYZAgMBAAECggEBAIVn2Ncai+4xbH0OLWckabwgyJ4IM9rDc0LIU368O1kU
+    koais8qP9dujAWgfoh3sGh/YGgKn96VnsZjKHlyMgF+r4TaDJn3k2rlAOWcurGlj
+    1qaVlsV4HiEzp7pxiDmHhWvp4672Bb6iBG+bsjCUOEk/n9o9KhZzIBluRhtxCmw5
+    nw4Do7z00PTvN81260uPWSc04IrytvZUiAIx/5qxD72bij2xJ8t/I9GI8g4FtoVB
+    8pB6S/hJX1PZhh9VlU6Yk+TOfOVnbebG4W5138LkB835eqk3Zz0qsbc2euoi8Hxi
+    y1VGwQEmMQ63jXz4c6g+X55ifvUK9Jpn5E8pq+pMd7ECgYEA93lYq+Cr54K4ey5t
+    sWMa+ye5RqxjzgXj2Kqr55jb54VWG7wp2iGbg8FMlkQwzTJwebzDyCSatguEZLuB
+    gRGroRnsUOy9vBvhKPOch9bfKIl6qOgzMJB267fBVWx5ybnRbWN/I7RvMQf3k+9y
+    biCIVnxDLEEYyx7z85/5qxsXg/MCgYEA7wmWKtCTn032Hy9P8OL49T0X6Z8FlkDC
+    Rk42ygrc/MUbugq9RGUxcCxoImOG9JXUpEtUe31YDm2j+/nbvrjl6/bP2qWs0V7l
+    dTJl6dABP51pCw8+l4cWgBBX08Lkeen812AAFNrjmDCjX6rHjWHLJcpS18fnRRkP
+    V1d/AHWX7MMCgYEA6Gsw2guhp0Zf2GCcaNK5DlQab8OL4Hwrpttzo4kuTlwtqNKp
+    Q9H4al9qfF4Cr1TFya98+EVYf8yFRM3NLNjZpe3gwYf2EerlJj7VLcahw0KKzoN1
+    QBENfwgPLRk5sDkx9VhSmcfl/diLroZdpAwtv3vo4nEoxeuGFbKTGx3Qkf0CgYEA
+    xyR+dcb05Ygm3w4klHQTowQ10s1H80iaUcZBgQuR1ghEtDbUPZHsoR5t1xCB02ys
+    DgAwLv1bChIvxvH/L6KM8ovZ2LekBX4AviWxoBxJnfz/EVau98B0b1auRN6eSC83
+    FRuGldlSOW1z/nSh8ViizSYE5H5HX1qkXEippvFRE88CgYB3Bfu3YQY60ITWIShv
+    nNkdcbTT9eoP9suaRJjw92Ln+7ZpALYlQMKUZmJ/5uBmLs4RFwUTQruLOPL4yLTH
+    awADWUzs3IRr1fwn9E+zM8JVyKCnUEM3w4N5UZskGO2klashAd30hWO+knRv/y0r
+    uGIYs9Ek7YXlXIRVrzMwcsrt1w==
+    -----END PRIVATE KEY-----
+    """.trimIndent()
+
+    private val CLIENT_CERT_PEM = """
+    -----BEGIN CERTIFICATE-----
+    MIIDNzCCAh8CFGyX00RCepOv/qCJ1oVdTtY92U83MA0GCSqGSIb3DQEBCwUAMFYx
+    CzAJBgNVBAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRl
+    cm5ldCBXaWRnaXRzIFB0eSBMdGQxDzANBgNVBAMMBnRlc3RjYTAeFw0yMDAzMTgw
+    MTA2MTBaFw0zMDAzMTYwMTA2MTBaMFoxCzAJBgNVBAYTAkFVMRMwEQYDVQQIDApT
+    b21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQxEzAR
+    BgNVBAMMCnRlc3RjbGllbnQwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+    AQCyqYRp+DXVp72NFbQH8hdhTZLycZXOlJhmMsrJmrjn2p7pI/8mTZ/0FC+SGWBG
+    ZV+ELiHrmCX5zfaILr9Iuw7Ghr3Vzoefi8r62rLupVPNi/qdqyjWk2dECHC9Z3+A
+    g3KzKTyerXWjKcvyKVmM0ZxE0RXhDW/RoQbqZsU2GKg1B2rhUU8KN0gVmKn0rJHO
+    xzRVSYeYLYp5Yn7KrtPJcKyo9aVuEr7dGANzpyF6lg/nYBWc+9SGwkoLdFvKvABY
+    JMyrbNhHUQfv0fzaZ0P86dfTENrDxzALrzGnqcx3KTrwJjkZ/aSr1tyD0/tXvukR
+    FiPxWBJhjHQ70GqTFQY19RbhAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAFXCewK8
+    cWT+zWxXyGFnouFSBzTi0BMBJRrhsiNoiQxkqityJHWFExiQZie+7CA+EabXCQUB
+    +JwMSWM29j3mSw10DTfmC3rhheQqGxy304BZyUpdpvI2dt3p/mcsE7O+p4sQrSep
+    gijiDssKAfxTAmUM93N6+Q8yJK5immxlbeYfijoBvmkzyB/B+qNRPsx0n7aFGnfv
+    oWfkW296iPhWLiwknpC3xB6oK3vRbK4Zj1OaGb0grK7VN8EyhBix2xVF61i4dzCK
+    kMIpl7CUpw1Mb2z8q3F2bHBS7iF7g1Ccn5VGcO+aJ+6PWydaeqJ6VEBF0Nwv9woe
+    mL5AluNRLaqjZvE=
+    -----END CERTIFICATE-----
+    """.trimIndent()
+
+    private val CLIENT_KEY_PEM = """
+    -----BEGIN PRIVATE KEY-----
+    MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCyqYRp+DXVp72N
+    FbQH8hdhTZLycZXOlJhmMsrJmrjn2p7pI/8mTZ/0FC+SGWBGZV+ELiHrmCX5zfaI
+    Lr9Iuw7Ghr3Vzoefi8r62rLupVPNi/qdqyjWk2dECHC9Z3+Ag3KzKTyerXWjKcvy
+    KVmM0ZxE0RXhDW/RoQbqZsU2GKg1B2rhUU8KN0gVmKn0rJHOxzRVSYeYLYp5Yn7K
+    rtPJcKyo9aVuEr7dGANzpyF6lg/nYBWc+9SGwkoLdFvKvABYJMyrbNhHUQfv0fza
+    Z0P86dfTENrDxzALrzGnqcx3KTrwJjkZ/aSr1tyD0/tXvukRFiPxWBJhjHQ70GqT
+    FQY19RbhAgMBAAECggEAIL8JUhL4awyvpWhQ8xPgTSlWwbEn8BE0TacJnCILuhNM
+    BRdf8LlRk/8PKQwVpVF3TFbYSMI+U6b4hMVssfv3HVQc/083dHq+3XOwUCVlUstR
+    SAzTE2E5EDMr1stdh0SQhV4Nilfos9s5Uk1Z6IGSztoz1GgOErIc/mGPy/aA/hbr
+    fRWHvTp35+MbCJSvZuOeevX2iLs0dNzqdk6DiOWIH/BVGirVPtO6ykrkuTj1FWiN
+    hyZ3MBChShlNH2poNX46ntOc7nEus0qteOgxBK8lummFEtlehCA7hd/8xuvYlP0k
+    7aN684LCRDajmAGpoZO57NSDYQhAFGZeUZ93SMFucQKBgQDe7GGkzZFEiv91u1q9
+    lgMy1h5dZjIZKgQaOarPC6wCQMUdqCf6cSLsAPr4T8EDoWsnY7dSnrTZ6YCIFL1T
+    idg8M3BQXipICCJkFORS76pKKZ0wMn3/NgkSepsmNct91WHr6okvx4tOaoRCtdzU
+    g7jt4Mr3sfLCiZtqTQyySdMUEwKBgQDNK+ZFKL0XhkWZP+PGKjWG8LWpPiK3d78/
+    wYBFXzSTGlkr6FvRmYtZeNwXWRYLB4UxZ9At4hbJVEdi/2dITOz/sehVDyCAjjs3
+    gycsc3UJqiZbcw5XKhI5TWBuWxkKENdbMSayogVbp2aSYoRblH764//t0ACmbfTW
+    KUQRQPB/uwKBgQC5QjjjfPL8w4cJkGoYpFKELO2PMR7xSrmeEc6hwlFwjeNCgjy3
+    JM6g0y++rIj7O2qRkY0IXFxvvF3UuWedxTCu1xC/uYHp2ti506LsScB7YZoAM/YB
+    4iYn9Tx6xLoYGP0H0iGwU2SyBlNkHT8oXU+SYP5MWtYkVbeS3/VtNWz1gQKBgQCA
+    6Nk4kN0mH7YxEKRzSOfyzeDF4oV7kuB2FYUbkTL+TirC3K58JiYY5Egc31trOKFm
+    Jlz1xz0b6DkmKWTiV3r9OPHKJ8P7IeJxAZWmZzCdDuwkv0i+WW+z0zsIe3JjEavN
+    3zb6O7R0HtziksWoqMeTqZeO+wa9iw6vVKQw1wWEqwKBgFHfahFs0DZ5cUTpGpBt
+    F/AQG7ukgipB6N6AkB9kDbgCs1FLgd199MQrEncug5hfpq8QerbyMatmA+GXoGMb
+    7vztKEH85yzp4n02FNL6H7xL4VVILvyZHdolmiORJ4qT2hZnl8pEQ2TYuF4RlHUd
+    nSwXX+2o0J/nF85fm4AwWKAc
     -----END PRIVATE KEY-----
     """.trimIndent()
 

@@ -15,11 +15,13 @@ import libkgrpc.grpc_channel_credentials_release
 import libkgrpc.grpc_insecure_credentials_create
 import libkgrpc.grpc_insecure_server_credentials_create
 import libkgrpc.grpc_server_credentials_release
+import libkgrpc.grpc_ssl_client_certificate_request_type
 import libkgrpc.grpc_tls_certificate_provider_release
 import libkgrpc.grpc_tls_certificate_provider_static_data_create
 import libkgrpc.grpc_tls_credentials_create
 import libkgrpc.grpc_tls_credentials_options_create
 import libkgrpc.grpc_tls_credentials_options_destroy
+import libkgrpc.grpc_tls_credentials_options_set_cert_request_type
 import libkgrpc.grpc_tls_credentials_options_set_certificate_provider
 import libkgrpc.grpc_tls_credentials_options_watch_identity_key_cert_pairs
 import libkgrpc.grpc_tls_credentials_options_watch_root_certs
@@ -76,44 +78,51 @@ public fun InsecureServerCredentials(): ServerCredentials {
     )
 }
 
-public actual fun TlsChannelCredentials(): ChannelCredentials {
-    val raw = grpc_tls_credentials_options_create()?.let {
-        grpc_tls_credentials_create(it)
-    } ?: error("Failed to create TLS credentials")
-    return TlsChannelCredentials(raw)
-}
+internal actual fun TlsChannelCredentialsBuilder(): TlsChannelCredentialsBuilder =
+    object : TlsChannelCredentialsBuilder {
+        var optionsBuilder = TlsCredentialsOptionsBuilder()
 
-public actual fun TlsServerCredentials(
+        override fun trustManager(rootCertsPem: String): TlsChannelCredentialsBuilder {
+            optionsBuilder.trustManager(rootCertsPem)
+            return this
+        }
+
+        override fun keyManager(
+            certChainPem: String,
+            privateKeyPem: String,
+        ): TlsChannelCredentialsBuilder {
+            optionsBuilder.keyManager(certChainPem, privateKeyPem)
+            return this
+        }
+
+        override fun build(): ChannelCredentials {
+            val opts = optionsBuilder.build()
+            val creds = grpc_tls_credentials_create(opts)
+                ?: run {
+                    grpc_tls_credentials_options_destroy(opts);
+                    error("TLS channel credential creation failed")
+                }
+            return TlsChannelCredentials(creds)
+        }
+    }
+
+internal actual fun TlsServerCredentialsBuilder(
     certChain: String,
     privateKey: String,
-): ServerCredentials {
-    return TlsServerCredentialsBuilder().keyManager(certChain, privateKey).build()
-}
-
-public actual fun TlsChannelCredentialsBuilder(): TlsChannelCredentialsBuilder = object : TlsChannelCredentialsBuilder {
+): TlsServerCredentialsBuilder = object : TlsServerCredentialsBuilder {
     var optionsBuilder = TlsCredentialsOptionsBuilder()
 
-    override fun trustManager(rootCertsPem: String): TlsChannelCredentialsBuilder {
+    init {
+        optionsBuilder.keyManager(certChain, privateKey)
+    }
+
+    override fun trustManager(rootCertsPem: String): TlsServerCredentialsBuilder {
         optionsBuilder.trustManager(rootCertsPem)
         return this
     }
 
-    override fun build(): ChannelCredentials {
-        val opts = optionsBuilder.build()
-        val creds = grpc_tls_credentials_create(opts)
-            ?: run {
-                grpc_tls_credentials_options_destroy(opts);
-                error("TLS channel credential creation failed")
-            }
-        return TlsChannelCredentials(creds)
-    }
-}
-
-public actual fun TlsServerCredentialsBuilder(): TlsServerCredentialsBuilder = object : TlsServerCredentialsBuilder {
-    var optionsBuilder = TlsCredentialsOptionsBuilder()
-
-    override fun keyManager(certChainPem: String, privateKeyPem: String): TlsServerCredentialsBuilder {
-        optionsBuilder.keyManager(certChainPem, privateKeyPem)
+    override fun clientAuth(clientAuth: TlsClientAuth): TlsServerCredentialsBuilder {
+        optionsBuilder.clientAuth(clientAuth)
         return this
     }
 
@@ -134,9 +143,18 @@ private class TlsCredentialsOptionsBuilder {
     private var cert: String? = null
     private var key: String? = null
 
-    fun trustManager(rootCertsPem: String) = apply { roots = rootCertsPem }
+    private var clientAuth: TlsClientAuth? = null
+
+    fun trustManager(rootCertsPem: String) {
+        roots = rootCertsPem
+    }
+
     fun keyManager(certChainPem: String, privateKeyPem: String) = apply {
         cert = certChainPem; key = privateKeyPem
+    }
+
+    fun clientAuth(clientAuth: TlsClientAuth) {
+        this.clientAuth = clientAuth
     }
 
     fun build(): CPointer<grpc_tls_credentials_options> {
@@ -160,6 +178,15 @@ private class TlsCredentialsOptionsBuilder {
         if (pairs != null) grpc_tls_credentials_options_watch_identity_key_cert_pairs(opts)
         if (roots != null) grpc_tls_credentials_options_watch_root_certs(opts)
 
+        val clientAuth = clientAuth
+        if (clientAuth != null) grpc_tls_credentials_options_set_cert_request_type(opts, clientAuth.toRaw())
+
         return opts
     }
+}
+
+private fun TlsClientAuth.toRaw(): grpc_ssl_client_certificate_request_type = when (this) {
+    TlsClientAuth.NONE -> grpc_ssl_client_certificate_request_type.GRPC_SSL_DONT_REQUEST_CLIENT_CERTIFICATE
+    TlsClientAuth.OPTIONAL -> grpc_ssl_client_certificate_request_type.GRPC_SSL_REQUEST_CLIENT_CERTIFICATE_AND_VERIFY
+    TlsClientAuth.REQUIRE -> grpc_ssl_client_certificate_request_type.GRPC_SSL_REQUEST_AND_REQUIRE_CLIENT_CERTIFICATE_AND_VERIFY
 }

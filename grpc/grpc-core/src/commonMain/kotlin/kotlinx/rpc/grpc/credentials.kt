@@ -15,19 +15,53 @@ public expect class InsecureServerCredentials : ServerCredentials
 public expect class TlsChannelCredentials : ChannelCredentials
 public expect class TlsServerCredentials : ServerCredentials
 
-public expect fun TlsChannelCredentials(): ChannelCredentials
-public expect fun TlsServerCredentials(certChain: String, privateKey: String): ServerCredentials
+public fun TlsChannelCredentials(configure: TlsChannelCredentialsBuilder.() -> Unit = {}): ChannelCredentials {
+    val builder = TlsChannelCredentialsBuilder()
+    builder.configure()
+    return builder.build()
+}
+
+public fun TlsServerCredentials(
+    certChain: String,
+    privateKey: String,
+    configure: TlsServerCredentialsBuilder.() -> Unit = {},
+): ServerCredentials {
+    val builder = TlsServerCredentialsBuilder(certChain, privateKey)
+    builder.configure()
+    return builder.build()
+}
 
 public interface TlsChannelCredentialsBuilder {
     public fun trustManager(rootCertsPem: String): TlsChannelCredentialsBuilder
+    public fun keyManager(certChainPem: String, privateKeyPem: String): TlsChannelCredentialsBuilder
     public fun build(): ChannelCredentials
 }
 
+public enum class TlsClientAuth {
+    /** Clients will not present any identity.  */
+    NONE,
+
+    /**
+     * Clients are requested to present their identity, but clients without identities are
+     * permitted.
+     */
+    OPTIONAL,
+
+    /**
+     * Clients are requested to present their identity, and are required to provide a valid
+     * identity.
+     */
+    REQUIRE
+}
+
 public interface TlsServerCredentialsBuilder {
-    public fun keyManager(certChainPem: String, privateKeyPem: String): TlsServerCredentialsBuilder
+    public fun trustManager(rootCertsPem: String): TlsServerCredentialsBuilder
+    public fun clientAuth(clientAuth: TlsClientAuth): TlsServerCredentialsBuilder
     public fun build(): ServerCredentials
 }
 
-
-public expect fun TlsChannelCredentialsBuilder(): TlsChannelCredentialsBuilder
-public expect fun TlsServerCredentialsBuilder(): TlsServerCredentialsBuilder
+internal expect fun TlsChannelCredentialsBuilder(): TlsChannelCredentialsBuilder
+internal expect fun TlsServerCredentialsBuilder(
+    certChain: String,
+    privateKey: String,
+): TlsServerCredentialsBuilder

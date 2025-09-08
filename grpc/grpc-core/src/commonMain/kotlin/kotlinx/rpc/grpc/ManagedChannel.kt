@@ -69,6 +69,8 @@ public interface ManagedChannel {
  */
 public expect abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>> {
     public fun usePlaintext(): T
+
+    public abstract fun overrideAuthority(authority: String): T
 }
 
 internal expect fun ManagedChannelBuilder(
