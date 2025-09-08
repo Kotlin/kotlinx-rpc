@@ -7,16 +7,15 @@
 package kotlinx.rpc.grpc.internal
 
 import cnames.structs.grpc_channel
-import cnames.structs.grpc_channel_credentials
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.memScoped
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.rpc.grpc.ChannelCredentials
 import kotlinx.rpc.grpc.ManagedChannel
 import kotlinx.rpc.grpc.ManagedChannelPlatform
 import libkgrpc.GPR_CLOCK_REALTIME
@@ -24,53 +23,13 @@ import libkgrpc.GRPC_PROPAGATE_DEFAULTS
 import libkgrpc.gpr_inf_future
 import libkgrpc.grpc_channel_create
 import libkgrpc.grpc_channel_create_call
-import libkgrpc.grpc_channel_credentials_release
 import libkgrpc.grpc_channel_destroy
-import libkgrpc.grpc_insecure_credentials_create
 import libkgrpc.grpc_slice_unref
-import libkgrpc.grpc_ssl_credentials_create_ex
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 import kotlin.time.Duration
 
-/**
- * Wrapper for [grpc_channel_credentials].
- */
-internal sealed class GrpcChannelCredentials(
-    internal val raw: CPointer<grpc_channel_credentials>,
-) {
-    val rawCleaner = createCleaner(raw) {
-        grpc_channel_credentials_release(it)
-    }
-}
-
-/**
- * Insecure credentials.
- */
-internal class GrpcInsecureChannelCredentials() :
-    GrpcChannelCredentials(
-        grpc_insecure_credentials_create() ?: error("grpc_insecure_credentials_create() returned null")
-    )
-
-/**
- * SSL credentials.
- */
-internal class GrpcSslChannelCredentials(
-    raw: CPointer<grpc_channel_credentials>,
-) : GrpcChannelCredentials(raw) {
-
-    constructor() : this(
-        memScoped {
-            grpc_ssl_credentials_create_ex(
-                null,
-                null,
-                null,
-                null
-            ) ?: error("grpc_ssl_credentials_create() returned null")
-        }
-    )
-}
 
 /**
  * Native implementation of [ManagedChannel].
@@ -81,7 +40,7 @@ internal class GrpcSslChannelCredentials(
 internal class NativeManagedChannel(
     target: String,
     // we must store them, otherwise the credentials are getting released
-    credentials: GrpcChannelCredentials,
+    credentials: ChannelCredentials,
 ) : ManagedChannel, ManagedChannelPlatform() {
 
     // a reference to make sure the grpc_init() was called. (it is released after shutdown)

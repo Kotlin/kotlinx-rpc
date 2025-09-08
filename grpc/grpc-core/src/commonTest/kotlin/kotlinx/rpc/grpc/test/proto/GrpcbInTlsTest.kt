@@ -9,6 +9,7 @@ import hello.HelloService
 import hello.invoke
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.grpc.GrpcClient
+import kotlinx.rpc.grpc.TlsChannelCredentials
 import kotlinx.rpc.withService
 import kotlin.test.Test
 
@@ -22,6 +23,8 @@ class GrpcbInTlsTest {
     @Test
     fun testTlsCall() = runTest {
         val service = grpcClient.withService<HelloService>()
+
+        TlsChannelCredentials.create()
 
         val request = HelloRequest {
             greeting = "Postman"

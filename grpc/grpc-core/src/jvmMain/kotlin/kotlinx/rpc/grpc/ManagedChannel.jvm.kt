@@ -28,7 +28,9 @@ internal actual fun ManagedChannelBuilder(hostname: String, port: Int): ManagedC
     return io.grpc.ManagedChannelBuilder.forAddress(hostname, port)
 }
 
-internal actual fun ManagedChannelBuilder(target: String): ManagedChannelBuilder<*> {
+internal actual fun ManagedChannelBuilder(
+    target: String,
+): ManagedChannelBuilder<*> {
     return io.grpc.ManagedChannelBuilder.forTarget(target)
 }
 
