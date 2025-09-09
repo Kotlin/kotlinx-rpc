@@ -76,12 +76,12 @@ public expect abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
 internal expect fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
-    credentials: ChannelCredentials? = null,
+    credentials: ClientCredentials? = null,
 ): ManagedChannelBuilder<*>
 
 internal expect fun ManagedChannelBuilder(
     target: String,
-    credentials: ChannelCredentials? = null,
+    credentials: ClientCredentials? = null,
 ): ManagedChannelBuilder<*>
 
 internal expect fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel

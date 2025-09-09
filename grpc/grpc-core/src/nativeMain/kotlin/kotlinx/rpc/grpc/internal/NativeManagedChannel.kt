@@ -19,7 +19,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlinx.rpc.grpc.ChannelCredentials
+import kotlinx.rpc.grpc.ClientCredentials
 import kotlinx.rpc.grpc.ManagedChannel
 import kotlinx.rpc.grpc.ManagedChannelPlatform
 import libkgrpc.GPR_CLOCK_REALTIME
@@ -48,7 +48,7 @@ internal class NativeManagedChannel(
     target: String,
     val authority: String?,
     // we must store them, otherwise the credentials are getting released
-    credentials: ChannelCredentials,
+    credentials: ClientCredentials,
 ) : ManagedChannel, ManagedChannelPlatform() {
 
     // a reference to make sure the grpc_init() was called. (it is released after shutdown)

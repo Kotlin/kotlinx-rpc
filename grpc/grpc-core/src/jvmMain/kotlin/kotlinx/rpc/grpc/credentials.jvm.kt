@@ -4,24 +4,24 @@
 
 package kotlinx.rpc.grpc
 
-public actual typealias ChannelCredentials = io.grpc.ChannelCredentials
+public actual typealias ClientCredentials = io.grpc.ChannelCredentials
 
 public actual typealias ServerCredentials = io.grpc.ServerCredentials
 
 // we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
 // java constructor.
-public actual typealias InsecureChannelCredentials = io.grpc.InsecureChannelCredentials
+public actual typealias InsecureClientCredentials = io.grpc.InsecureChannelCredentials
 public actual typealias InsecureServerCredentials = io.grpc.InsecureServerCredentials
 
-public actual typealias TlsChannelCredentials = io.grpc.TlsChannelCredentials
+public actual typealias TlsClientCredentials = io.grpc.TlsChannelCredentials
 public actual typealias TlsServerCredentials = io.grpc.TlsServerCredentials
 
-internal actual fun TlsChannelCredentialsBuilder(): TlsChannelCredentialsBuilder =
-    object : TlsChannelCredentialsBuilder {
-        private var cb = TlsChannelCredentials.newBuilder()
+internal actual fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder =
+    object : TlsClientCredentialsBuilder {
+        private var cb = TlsClientCredentials.newBuilder()
 
 
-        override fun trustManager(rootCertsPem: String): TlsChannelCredentialsBuilder {
+        override fun trustManager(rootCertsPem: String): TlsClientCredentialsBuilder {
             cb.trustManager(rootCertsPem.byteInputStream())
             return this
         }
@@ -29,12 +29,12 @@ internal actual fun TlsChannelCredentialsBuilder(): TlsChannelCredentialsBuilder
         override fun keyManager(
             certChainPem: String,
             privateKeyPem: String,
-        ): TlsChannelCredentialsBuilder {
+        ): TlsClientCredentialsBuilder {
             cb.keyManager(certChainPem.byteInputStream(), privateKeyPem.byteInputStream())
             return this
         }
 
-        override fun build(): ChannelCredentials {
+        override fun build(): ClientCredentials {
             return cb.build()
         }
     }

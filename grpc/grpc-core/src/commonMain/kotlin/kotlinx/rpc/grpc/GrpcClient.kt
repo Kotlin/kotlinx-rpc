@@ -131,7 +131,7 @@ public class GrpcClient internal constructor(
 public fun GrpcClient(
     hostname: String,
     port: Int,
-    credentials: ChannelCredentials? = null,
+    credentials: ClientCredentials? = null,
     messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
     configure: ManagedChannelBuilder<*>.() -> Unit = {},
 ): GrpcClient {
@@ -144,7 +144,7 @@ public fun GrpcClient(
  */
 public fun GrpcClient(
     target: String,
-    credentials: ChannelCredentials? = null,
+    credentials: ClientCredentials? = null,
     messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
     configure: ManagedChannelBuilder<*>.() -> Unit = {},
 ): GrpcClient {

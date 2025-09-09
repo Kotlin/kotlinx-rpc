@@ -8,7 +8,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.grpc.ChannelCredentials
+import kotlinx.rpc.grpc.ClientCredentials
 import kotlinx.rpc.grpc.GrpcClient
 import kotlinx.rpc.grpc.GrpcServer
 import kotlinx.rpc.grpc.ServerCredentials
@@ -20,7 +20,7 @@ abstract class GrpcProtoTest {
 
     protected fun runGrpcTest(
         serverCreds: ServerCredentials? = null,
-        clientCreds: ChannelCredentials? = null,
+        clientCreds: ClientCredentials? = null,
         overrideAuthority: String? = null,
         test: suspend (GrpcClient) -> Unit,
     ) = runTest {

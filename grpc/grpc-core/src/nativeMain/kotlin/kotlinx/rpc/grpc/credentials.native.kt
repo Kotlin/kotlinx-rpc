@@ -31,7 +31,7 @@ import libkgrpc.grpc_tls_server_credentials_create
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
-public actual abstract class ChannelCredentials internal constructor(
+public actual abstract class ClientCredentials internal constructor(
     internal val raw: CPointer<grpc_channel_credentials>,
 ) {
     @Suppress("unused")
@@ -49,25 +49,25 @@ public actual abstract class ServerCredentials internal constructor(
     }
 }
 
-public actual class InsecureChannelCredentials internal constructor(
+public actual class InsecureClientCredentials internal constructor(
     raw: CPointer<grpc_channel_credentials>,
-) : ChannelCredentials(raw)
+) : ClientCredentials(raw)
 
 public actual class InsecureServerCredentials internal constructor(
     raw: CPointer<grpc_server_credentials>,
 ) : ServerCredentials(raw)
 
-public actual class TlsChannelCredentials internal constructor(
+public actual class TlsClientCredentials internal constructor(
     raw: CPointer<grpc_channel_credentials>,
-) : ChannelCredentials(raw)
+) : ClientCredentials(raw)
 
 public actual class TlsServerCredentials(
     raw: CPointer<grpc_server_credentials>,
 ) : ServerCredentials(raw)
 
 
-public fun InsecureChannelCredentials(): ChannelCredentials {
-    return InsecureChannelCredentials(
+public fun InsecureChannelCredentials(): ClientCredentials {
+    return InsecureClientCredentials(
         grpc_insecure_credentials_create() ?: error("grpc_insecure_credentials_create() returned null")
     )
 }
@@ -78,11 +78,11 @@ public fun InsecureServerCredentials(): ServerCredentials {
     )
 }
 
-internal actual fun TlsChannelCredentialsBuilder(): TlsChannelCredentialsBuilder =
-    object : TlsChannelCredentialsBuilder {
+internal actual fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder =
+    object : TlsClientCredentialsBuilder {
         var optionsBuilder = TlsCredentialsOptionsBuilder()
 
-        override fun trustManager(rootCertsPem: String): TlsChannelCredentialsBuilder {
+        override fun trustManager(rootCertsPem: String): TlsClientCredentialsBuilder {
             optionsBuilder.trustManager(rootCertsPem)
             return this
         }
@@ -90,19 +90,19 @@ internal actual fun TlsChannelCredentialsBuilder(): TlsChannelCredentialsBuilder
         override fun keyManager(
             certChainPem: String,
             privateKeyPem: String,
-        ): TlsChannelCredentialsBuilder {
+        ): TlsClientCredentialsBuilder {
             optionsBuilder.keyManager(certChainPem, privateKeyPem)
             return this
         }
 
-        override fun build(): ChannelCredentials {
+        override fun build(): ClientCredentials {
             val opts = optionsBuilder.build()
             val creds = grpc_tls_credentials_create(opts)
                 ?: run {
                     grpc_tls_credentials_options_destroy(opts);
                     error("TLS channel credential creation failed")
                 }
-            return TlsChannelCredentials(creds)
+            return TlsClientCredentials(creds)
         }
     }
 

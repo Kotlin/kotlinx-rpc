@@ -28,7 +28,7 @@ public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
 
 internal class NativeManagedChannelBuilder(
     private val target: String,
-    private var credentials: Lazy<ChannelCredentials>,
+    private var credentials: Lazy<ClientCredentials>,
 ) : ManagedChannelBuilder<NativeManagedChannelBuilder>() {
 
     private var authority: String? = null
@@ -61,14 +61,14 @@ internal actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
 internal actual fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
-    credentials: ChannelCredentials?,
+    credentials: ClientCredentials?,
 ): ManagedChannelBuilder<*> {
-    val credentials = if (credentials == null) lazy { TlsChannelCredentials() } else lazy { credentials }
+    val credentials = if (credentials == null) lazy { TlsClientCredentials() } else lazy { credentials }
     return NativeManagedChannelBuilder(target = "$hostname:$port", credentials)
 }
 
-internal actual fun ManagedChannelBuilder(target: String, credentials: ChannelCredentials?): ManagedChannelBuilder<*> {
-    val credentials = if (credentials == null) lazy { TlsChannelCredentials() } else lazy { credentials }
+internal actual fun ManagedChannelBuilder(target: String, credentials: ClientCredentials?): ManagedChannelBuilder<*> {
+    val credentials = if (credentials == null) lazy { TlsClientCredentials() } else lazy { credentials }
     return NativeManagedChannelBuilder(target, credentials)
 }
 
