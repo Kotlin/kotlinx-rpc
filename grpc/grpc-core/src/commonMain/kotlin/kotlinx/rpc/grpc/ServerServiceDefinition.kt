@@ -16,10 +16,12 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 public expect class ServerServiceDefinition {
     public fun getServiceDescriptor(): ServiceDescriptor
     public fun getMethods(): Collection<ServerMethodDefinition<*, *>>
+
+    public fun getMethod(methodName: String): ServerMethodDefinition<*, *>?
 }
 
 @InternalRpcApi
 public expect fun serverServiceDefinition(
     serviceDescriptor: ServiceDescriptor,
-    methods: Collection<ServerMethodDefinition<*, *>>
+    methods: Collection<ServerMethodDefinition<*, *>>,
 ): ServerServiceDefinition
