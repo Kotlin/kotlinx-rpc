@@ -44,6 +44,8 @@ public enum class TlsClientAuth {
     /**
      * Clients are requested to present their identity, but clients without identities are
      * permitted.
+     * Also, if the client certificate is provided but cannot be verified,
+     * the client is permitted.
      */
     OPTIONAL,
 
