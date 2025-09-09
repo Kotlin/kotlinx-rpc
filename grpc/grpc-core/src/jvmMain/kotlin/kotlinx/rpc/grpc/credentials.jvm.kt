@@ -16,34 +16,48 @@ public actual typealias InsecureServerCredentials = io.grpc.InsecureServerCreden
 public actual typealias TlsClientCredentials = io.grpc.TlsChannelCredentials
 public actual typealias TlsServerCredentials = io.grpc.TlsServerCredentials
 
-internal actual fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder =
-    object : TlsClientCredentialsBuilder {
-        private var cb = TlsClientCredentials.newBuilder()
-
-
-        override fun trustManager(rootCertsPem: String): TlsClientCredentialsBuilder {
-            cb.trustManager(rootCertsPem.byteInputStream())
-            return this
-        }
-
-        override fun keyManager(
-            certChainPem: String,
-            privateKeyPem: String,
-        ): TlsClientCredentialsBuilder {
-            cb.keyManager(certChainPem.byteInputStream(), privateKeyPem.byteInputStream())
-            return this
-        }
-
-        override fun build(): ClientCredentials {
-            return cb.build()
-        }
-    }
-
+internal actual fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder = JvmTlsCLientCredentialBuilder()
 internal actual fun TlsServerCredentialsBuilder(
     certChain: String,
     privateKey: String,
-): TlsServerCredentialsBuilder = object : TlsServerCredentialsBuilder {
+): TlsServerCredentialsBuilder = JvmTlsServerCredentialBuilder(certChain, privateKey)
+
+internal actual fun TlsClientCredentialsBuilder.build(): ClientCredentials {
+    return (this as JvmTlsCLientCredentialBuilder).build()
+}
+
+internal actual fun TlsServerCredentialsBuilder.build(): ServerCredentials {
+    return (this as JvmTlsServerCredentialBuilder).build()
+}
+
+private class JvmTlsCLientCredentialBuilder : TlsClientCredentialsBuilder {
+    private var cb = TlsClientCredentials.newBuilder()
+
+
+    override fun trustManager(rootCertsPem: String): TlsClientCredentialsBuilder {
+        cb.trustManager(rootCertsPem.byteInputStream())
+        return this
+    }
+
+    override fun keyManager(
+        certChainPem: String,
+        privateKeyPem: String,
+    ): TlsClientCredentialsBuilder {
+        cb.keyManager(certChainPem.byteInputStream(), privateKeyPem.byteInputStream())
+        return this
+    }
+
+    fun build(): ClientCredentials {
+        return cb.build()
+    }
+}
+
+private class JvmTlsServerCredentialBuilder(certChain: String, privateKey: String) : TlsServerCredentialsBuilder {
     private var sb = TlsServerCredentials.newBuilder()
+
+    init {
+        sb.keyManager(certChain.byteInputStream(), privateKey.byteInputStream())
+    }
 
     override fun trustManager(rootCertsPem: String): TlsServerCredentialsBuilder {
         sb.trustManager(rootCertsPem.byteInputStream())
@@ -55,14 +69,12 @@ internal actual fun TlsServerCredentialsBuilder(
         return this
     }
 
-    init {
-        sb.keyManager(certChain.byteInputStream(), privateKey.byteInputStream())
-    }
 
-    override fun build(): ServerCredentials {
+    fun build(): ServerCredentials {
         return sb.build()
     }
 }
+
 
 private fun TlsClientAuth.toJava(): io.grpc.TlsServerCredentials.ClientAuth = when (this) {
     TlsClientAuth.NONE -> io.grpc.TlsServerCredentials.ClientAuth.NONE

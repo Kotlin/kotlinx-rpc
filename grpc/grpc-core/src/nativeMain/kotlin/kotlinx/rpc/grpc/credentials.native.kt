@@ -78,38 +78,48 @@ public fun InsecureServerCredentials(): ServerCredentials {
     )
 }
 
-internal actual fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder =
-    object : TlsClientCredentialsBuilder {
-        var optionsBuilder = TlsCredentialsOptionsBuilder()
-
-        override fun trustManager(rootCertsPem: String): TlsClientCredentialsBuilder {
-            optionsBuilder.trustManager(rootCertsPem)
-            return this
-        }
-
-        override fun keyManager(
-            certChainPem: String,
-            privateKeyPem: String,
-        ): TlsClientCredentialsBuilder {
-            optionsBuilder.keyManager(certChainPem, privateKeyPem)
-            return this
-        }
-
-        override fun build(): ClientCredentials {
-            val opts = optionsBuilder.build()
-            val creds = grpc_tls_credentials_create(opts)
-                ?: run {
-                    grpc_tls_credentials_options_destroy(opts);
-                    error("TLS channel credential creation failed")
-                }
-            return TlsClientCredentials(creds)
-        }
-    }
-
+internal actual fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder = NativeTlsClientCredentialsBuilder()
 internal actual fun TlsServerCredentialsBuilder(
     certChain: String,
     privateKey: String,
-): TlsServerCredentialsBuilder = object : TlsServerCredentialsBuilder {
+): TlsServerCredentialsBuilder = NativeTlsServerCredentialsBuilder(certChain, privateKey)
+
+internal actual fun TlsClientCredentialsBuilder.build(): ClientCredentials {
+    return (this as NativeTlsClientCredentialsBuilder).build()
+}
+
+internal actual fun TlsServerCredentialsBuilder.build(): ServerCredentials {
+    return (this as NativeTlsServerCredentialsBuilder).build()
+}
+
+private class NativeTlsClientCredentialsBuilder : TlsClientCredentialsBuilder {
+    var optionsBuilder = TlsCredentialsOptionsBuilder()
+
+    override fun trustManager(rootCertsPem: String): TlsClientCredentialsBuilder {
+        optionsBuilder.trustManager(rootCertsPem)
+        return this
+    }
+
+    override fun keyManager(
+        certChainPem: String,
+        privateKeyPem: String,
+    ): TlsClientCredentialsBuilder {
+        optionsBuilder.keyManager(certChainPem, privateKeyPem)
+        return this
+    }
+
+    fun build(): ClientCredentials {
+        val opts = optionsBuilder.build()
+        val creds = grpc_tls_credentials_create(opts)
+            ?: run {
+                grpc_tls_credentials_options_destroy(opts);
+                error("TLS channel credential creation failed")
+            }
+        return TlsClientCredentials(creds)
+    }
+}
+
+private class NativeTlsServerCredentialsBuilder(certChain: String, privateKey: String) : TlsServerCredentialsBuilder {
     var optionsBuilder = TlsCredentialsOptionsBuilder()
 
     init {
@@ -126,7 +136,7 @@ internal actual fun TlsServerCredentialsBuilder(
         return this
     }
 
-    override fun build(): TlsServerCredentials {
+    fun build(): TlsServerCredentials {
         val opts = optionsBuilder.build()
         val creds = grpc_tls_server_credentials_create(opts)
             ?: run {

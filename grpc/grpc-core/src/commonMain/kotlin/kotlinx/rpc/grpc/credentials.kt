@@ -34,7 +34,6 @@ public fun TlsServerCredentials(
 public interface TlsClientCredentialsBuilder {
     public fun trustManager(rootCertsPem: String): TlsClientCredentialsBuilder
     public fun keyManager(certChainPem: String, privateKeyPem: String): TlsClientCredentialsBuilder
-    public fun build(): ClientCredentials
 }
 
 public enum class TlsClientAuth {
@@ -59,7 +58,6 @@ public enum class TlsClientAuth {
 public interface TlsServerCredentialsBuilder {
     public fun trustManager(rootCertsPem: String): TlsServerCredentialsBuilder
     public fun clientAuth(clientAuth: TlsClientAuth): TlsServerCredentialsBuilder
-    public fun build(): ServerCredentials
 }
 
 internal expect fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder
@@ -67,3 +65,6 @@ internal expect fun TlsServerCredentialsBuilder(
     certChain: String,
     privateKey: String,
 ): TlsServerCredentialsBuilder
+
+internal expect fun TlsClientCredentialsBuilder.build(): ClientCredentials
+internal expect fun TlsServerCredentialsBuilder.build(): ServerCredentials
