@@ -6,7 +6,11 @@
 
 package kotlinx.rpc.grpc
 
-import kotlinx.rpc.grpc.internal.*
+import kotlinx.rpc.grpc.internal.GrpcChannel
+import kotlinx.rpc.grpc.internal.GrpcChannelCredentials
+import kotlinx.rpc.grpc.internal.GrpcInsecureChannelCredentials
+import kotlinx.rpc.grpc.internal.NativeManagedChannel
+import kotlinx.rpc.grpc.internal.internalError
 
 /**
  * Same as [ManagedChannel], but is platform-exposed.
@@ -25,10 +29,10 @@ public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
 internal class NativeManagedChannelBuilder(
     private val target: String,
 ) : ManagedChannelBuilder<NativeManagedChannelBuilder>() {
-    private var credentials: GrpcCredentials? = null
+    private var credentials: GrpcChannelCredentials? = null
 
     override fun usePlaintext(): NativeManagedChannelBuilder {
-        credentials = GrpcInsecureCredentials()
+        credentials = GrpcInsecureChannelCredentials()
         return this
     }
 
