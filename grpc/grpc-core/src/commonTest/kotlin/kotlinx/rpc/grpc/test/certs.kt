@@ -2,135 +2,11 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.test.proto
+package kotlinx.rpc.grpc.test
 
-import hello.HelloRequest
-import hello.HelloService
-import hello.invoke
-import kotlinx.coroutines.test.runTest
-import kotlinx.rpc.grpc.GrpcClient
-import kotlinx.rpc.grpc.GrpcServer
-import kotlinx.rpc.grpc.TlsChannelCredentials
-import kotlinx.rpc.grpc.TlsClientAuth
-import kotlinx.rpc.grpc.TlsServerCredentials
-import kotlinx.rpc.grpc.test.EchoRequest
-import kotlinx.rpc.grpc.test.EchoService
-import kotlinx.rpc.grpc.test.EchoServiceImpl
-import kotlinx.rpc.grpc.test.invoke
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
-import kotlin.test.Test
+// Certs are taken from grpc-java/testing/src/main/resources/certs
 
-private const val PORT = 50051
-
-class GrpcbInTlsTest {
-
-
-    @Test
-    fun testTlsCall() = runTest {
-        // uses default TLS credentials
-        val grpcClient = GrpcClient("grpcb.in", 9001)
-        val service = grpcClient.withService<HelloService>()
-        val request = HelloRequest {
-            greeting = "Postman"
-        }
-        val result = service.SayHello(request)
-
-        println(result.reply)
-
-        // Ensure we don't leak the client channel between tests
-        grpcClient.shutdown()
-        grpcClient.awaitTermination()
-    }
-
-
-    @Test
-    fun testCustomTls() = runTest {
-        val serverTls = TlsServerCredentials(SERVER_CERT_PEM, SERVER_KEY_PEM)
-
-        val grpcServer = GrpcServer(
-            PORT,
-            credentials = serverTls,
-            builder = {
-                registerService<EchoService> { EchoServiceImpl() }
-            })
-        grpcServer.start()
-
-        val clientTls = TlsChannelCredentials {
-            trustManager(SERVER_CERT_PEM)
-        }
-
-        val grpcClient = GrpcClient(
-            "localhost", PORT,
-            credentials = clientTls,
-        ) {}
-
-        val service = grpcClient.withService<EchoService>()
-        val request = EchoRequest {
-            message = "Postman"
-        }
-
-        try {
-            service.UnaryEcho(request)
-        } catch (t: Throwable) {
-            println("[DEBUG_LOG] TLS test failed: ${t::class.simpleName}: ${t.message}")
-            t.printStackTrace()
-            throw t
-        } finally {
-            grpcServer.shutdown()
-            grpcServer.awaitTermination()
-            grpcClient.shutdown()
-            grpcClient.awaitTermination()
-        }
-    }
-
-    @Test
-    fun testCustomMTls() = runTest {
-        val serverTls = TlsServerCredentials(SERVER_CERT_PEM, SERVER_KEY_PEM) {
-            trustManager(CA_PEM)
-            clientAuth(TlsClientAuth.REQUIRE)
-        }
-
-        val grpcServer = GrpcServer(
-            PORT,
-            credentials = serverTls,
-            builder = {
-                registerService<EchoService> { EchoServiceImpl() }
-            })
-        grpcServer.start()
-
-        val clientTls = TlsChannelCredentials {
-            keyManager(CLIENT_CERT_PEM, CLIENT_KEY_PEM)
-            trustManager(CA_PEM)
-        }
-
-        val grpcClient = GrpcClient(
-            "localhost", PORT,
-            credentials = clientTls,
-        ) {
-            overrideAuthority("foo.test.google.fr")
-        }
-
-        val service = grpcClient.withService<EchoService>()
-        val request = EchoRequest {
-            message = "Postman"
-        }
-
-        try {
-            service.UnaryEcho(request)
-        } catch (t: Throwable) {
-            println("[DEBUG_LOG] TLS test failed: ${t::class.simpleName}: ${t.message}")
-            t.printStackTrace()
-            throw t
-        } finally {
-            grpcServer.shutdown()
-            grpcServer.awaitTermination()
-            grpcClient.shutdown()
-            grpcClient.awaitTermination()
-        }
-    }
-
-    private val CA_PEM = """
+val CA_PEM = """
     -----BEGIN CERTIFICATE-----
     MIIDWjCCAkKgAwIBAgIUWrP0VvHcy+LP6UuYNtiL9gBhD5owDQYJKoZIhvcNAQEL
     BQAwVjELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoM
@@ -153,7 +29,7 @@ class GrpcbInTlsTest {
     -----END CERTIFICATE-----
     """.trimIndent()
 
-    private val SERVER_CERT_PEM = """
+val SERVER_CERT_PEM = """
     -----BEGIN CERTIFICATE-----
     MIIDtDCCApygAwIBAgIUbJfTREJ6k6/+oInWhV1O1j3ZT0IwDQYJKoZIhvcNAQEL
     BQAwVjELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoM
@@ -178,7 +54,7 @@ class GrpcbInTlsTest {
     -----END CERTIFICATE-----
     """.trimIndent()
 
-    private val SERVER_KEY_PEM = """
+val SERVER_KEY_PEM = """
     -----BEGIN PRIVATE KEY-----
     MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDnE443EknxvxBq
     6+hvn/t09hl8hx366EBYvZmVM/NC+7igXRAjiJiA/mIaCvL3MS0Iz5hBLxSGICU+
@@ -209,7 +85,7 @@ class GrpcbInTlsTest {
     -----END PRIVATE KEY-----
     """.trimIndent()
 
-    private val CLIENT_CERT_PEM = """
+val CLIENT_CERT_PEM = """
     -----BEGIN CERTIFICATE-----
     MIIDNzCCAh8CFGyX00RCepOv/qCJ1oVdTtY92U83MA0GCSqGSIb3DQEBCwUAMFYx
     CzAJBgNVBAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRl
@@ -232,7 +108,7 @@ class GrpcbInTlsTest {
     -----END CERTIFICATE-----
     """.trimIndent()
 
-    private val CLIENT_KEY_PEM = """
+val CLIENT_KEY_PEM = """
     -----BEGIN PRIVATE KEY-----
     MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCyqYRp+DXVp72N
     FbQH8hdhTZLycZXOlJhmMsrJmrjn2p7pI/8mTZ/0FC+SGWBGZV+ELiHrmCX5zfaI
@@ -262,5 +138,3 @@ class GrpcbInTlsTest {
     nSwXX+2o0J/nF85fm4AwWKAc
     -----END PRIVATE KEY-----
     """.trimIndent()
-
-}

@@ -10,6 +10,10 @@ import cnames.structs.grpc_channel
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.cstr
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -21,6 +25,9 @@ import kotlinx.rpc.grpc.ManagedChannelPlatform
 import libkgrpc.GPR_CLOCK_REALTIME
 import libkgrpc.GRPC_PROPAGATE_DEFAULTS
 import libkgrpc.gpr_inf_future
+import libkgrpc.grpc_arg
+import libkgrpc.grpc_arg_type
+import libkgrpc.grpc_channel_args
 import libkgrpc.grpc_channel_create
 import libkgrpc.grpc_channel_create_call
 import libkgrpc.grpc_channel_destroy
@@ -55,8 +62,22 @@ internal class NativeManagedChannel(
     // the channel's completion queue, handling all request operations
     private val cq = CompletionQueue()
 
-    internal val raw: CPointer<grpc_channel> = grpc_channel_create(target, credentials.raw, null)
-        ?: error("Failed to create channel")
+    internal val raw: CPointer<grpc_channel> = memScoped {
+        val args = authority?.let {
+            var authorityOverride = alloc<grpc_arg> {
+                type = grpc_arg_type.GRPC_ARG_STRING
+                key = "grpc.ssl_target_name_override".cstr.ptr
+                value.string = authority.cstr.ptr
+            }
+
+            alloc<grpc_channel_args> {
+                num_args = 1u
+                args = authorityOverride.ptr
+            }
+        }
+        grpc_channel_create(target, credentials.raw, args?.ptr)
+            ?: error("Failed to create channel")
+    }
 
     @Suppress("unused")
     private val rawCleaner = createCleaner(raw) {
@@ -123,7 +144,6 @@ internal class NativeManagedChannel(
         // to construct a valid HTTP/2 path, we must prepend the name with a slash.
         // the user does not do this to align it with the java implementation.
         val methodNameSlice = "/$methodFullName".toGrpcSlice()
-        val authoritySlice = authority?.toGrpcSlice()
 
         val rawCall = grpc_channel_create_call(
             channel = raw,
@@ -131,13 +151,12 @@ internal class NativeManagedChannel(
             propagation_mask = GRPC_PROPAGATE_DEFAULTS,
             completion_queue = cq.raw,
             method = methodNameSlice,
-            host = authoritySlice,
+            host = null,
             deadline = gpr_inf_future(GPR_CLOCK_REALTIME),
             reserved = null
         ) ?: error("Failed to create call")
 
         grpc_slice_unref(methodNameSlice)
-        authoritySlice?.let { grpc_slice_unref(it) }
 
         return NativeClientCall(
             cq, rawCall, methodDescriptor, callJob
