@@ -8,14 +8,25 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
-import kotlinx.rpc.grpc.*
-import kotlinx.rpc.grpc.internal.*
+import kotlinx.rpc.grpc.GrpcServer
+import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.ManagedChannel
+import kotlinx.rpc.grpc.ManagedChannelBuilder
+import kotlinx.rpc.grpc.Status
+import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.grpc.buildChannel
+import kotlinx.rpc.grpc.internal.ClientCall
+import kotlinx.rpc.grpc.internal.GrpcDefaultCallOptions
+import kotlinx.rpc.grpc.internal.MethodDescriptor
+import kotlinx.rpc.grpc.internal.MethodType
+import kotlinx.rpc.grpc.internal.clientCallListener
+import kotlinx.rpc.grpc.internal.methodDescriptor
+import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.registerService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
-import kotlin.time.Duration
 
 private const val PORT = 50051
 
@@ -51,8 +62,12 @@ class GrpcCoreClientTest {
         this.timeout = timeout
     }
 
-    private fun shutdownAndWait(channel: ManagedChannel) {
-        channel.shutdown()
+    private fun shutdownAndWait(channel: ManagedChannel, now: Boolean = false) {
+        if (now) {
+            channel.shutdownNow()
+        } else {
+            channel.shutdown()
+        }
         runBlocking { channel.awaitTermination() }
     }
 
@@ -180,10 +195,7 @@ class GrpcCoreClientTest {
     fun halfCloseBeforeSendingMessage_errorWithoutCrashing() {
         val channel = createChannel()
         val call = channel.newHelloCall()
-        val statusDeferred = CompletableDeferred<Status>()
-        val listener = createClientCallListener<HelloReply>(
-            onClose = { status, _ -> statusDeferred.complete(status) }
-        )
+        val listener = createClientCallListener<HelloReply>()
         assertFailsWith<IllegalStateException> {
             try {
                 call.start(listener, GrpcTrailers())
@@ -259,7 +271,7 @@ class GreeterServiceImpl : GreeterService {
      * Run this on JVM before executing tests.
      */
     @Test
-    fun runServer() = runTest(timeout = Duration.INFINITE) {
+    fun runServer() = runTest {
         val server = GrpcServer(
             port = PORT,
             builder = { registerService<GreeterService> { GreeterServiceImpl() } }
@@ -272,6 +284,7 @@ class GreeterServiceImpl : GreeterService {
         } finally {
             server.shutdown()
             server.awaitTermination()
+
         }
     }
 

@@ -100,6 +100,18 @@ kotlin {
             extraOpts("-libraryPath", "$cLibOutDir")
         }
     }
+
+    // configures linkReleaseTest task to build and link the test binary in RELEASE mode.
+    // this can be useful for performance analysis.
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
+        binaries {
+            test(
+                buildTypes = listOf(
+                    org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.RELEASE
+                )
+            )
+        }
+    }
 }
 
 configureLocalProtocGenDevelopmentDependency()

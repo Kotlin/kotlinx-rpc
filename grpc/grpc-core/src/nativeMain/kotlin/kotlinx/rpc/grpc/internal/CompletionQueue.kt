@@ -6,11 +6,34 @@
 
 package kotlinx.rpc.grpc.internal
 
+import cnames.structs.grpc_call
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
-import kotlinx.cinterop.*
-import libkgrpc.*
+import kotlinx.cinterop.CFunction
+import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.StableRef
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.asStableRef
+import kotlinx.cinterop.convert
+import kotlinx.cinterop.free
+import kotlinx.cinterop.nativeHeap
+import kotlinx.cinterop.pointed
+import kotlinx.cinterop.ptr
+import kotlinx.cinterop.reinterpret
+import kotlinx.cinterop.sizeOf
+import kotlinx.cinterop.staticCFunction
+import libkgrpc.GRPC_OP_RECV_STATUS_ON_CLIENT
+import libkgrpc.grpc_call_error
+import libkgrpc.grpc_call_start_batch
+import libkgrpc.grpc_completion_queue_create_for_callback
+import libkgrpc.grpc_completion_queue_destroy
+import libkgrpc.grpc_completion_queue_functor
+import libkgrpc.grpc_completion_queue_shutdown
+import libkgrpc.grpc_op
+import libkgrpc.kgrpc_cb_tag
+import libkgrpc.kgrpc_iomgr_run_in_background
 import platform.posix.memset
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
@@ -84,7 +107,7 @@ internal class CompletionQueue {
 
     @Suppress("unused")
     private val shutdownFunctorCleaner = createCleaner(shutdownFunctor) { nativeHeap.free(it) }
-    
+
     init {
         // Assert grpc_iomgr_run_in_background() to guarantee that the event manager provides
         // IO threads and supports the callback API.
@@ -95,7 +118,7 @@ internal class CompletionQueue {
      * Submits a batch operation to the queue.
      * See [BatchResult] for possible outcomes.
      */
-    fun runBatch(call: NativeClientCall<*, *>, ops: CPointer<grpc_op>, nOps: ULong): BatchResult {
+    fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong): BatchResult {
         val completion = CallbackFuture<Boolean>()
         val tag = newCbTag(completion, OPS_COMPLETE_CB)
 
@@ -116,7 +139,7 @@ internal class CompletionQueue {
                 return BatchResult.CQShutdown
             }
 
-            err = grpc_call_start_batch(call.raw, ops, nOps, tag, null)
+            err = grpc_call_start_batch(call, ops, nOps, tag, null)
         }
 
         if (err != grpc_call_error.GRPC_CALL_OK) {
@@ -195,3 +218,50 @@ private fun deleteCbTag(tag: CPointer<kgrpc_cb_tag>) {
     tag.pointed.user_data!!.asStableRef<Any>().dispose()
     nativeHeap.free(tag)
 }
+
+/**
+ * Represents a callback tag for completion queues constructed with
+ * [grpc_completion_queue_create_for_callback].
+ *
+ * The [run] method will be invoked onces the completion queue signals the completion of the operation.
+ * It is guaranteed that the [run] method will be only invoked once.
+ *
+ * `this` object is guaranteed to be not garbage collected until the [run] method was executed.
+ */
+internal interface CallbackTag {
+    fun run(ok: Boolean)
+
+    /**
+     * Creates a pointer to a gRPC callback tag that encapsulates the given `run` function.
+     * It can be passed to callback-based grpc_completion_queue.
+     */
+    fun toCbTag(): CPointer<kgrpc_cb_tag> {
+        return newCbTag(this, staticCFunction { functor, ok ->
+            val tag = functor!!.reinterpret<kgrpc_cb_tag>()
+            val callbackTag = tag.pointed.user_data!!.asStableRef<CallbackTag>().get()
+            // free the tag memory and release the stable reference to `this`
+            deleteCbTag(tag)
+            callbackTag.run(ok != 0)
+        })
+    }
+
+    companion object {
+        /**
+         * Creates a pointer to a gRPC callback tag that encapsulates the given `run` function.
+         *
+         * The `run` function will be invoked when the callback is triggered with a boolean
+         * value that indicates the success or failure of the operation.
+         *
+         * @return A pointer to the newly created gRPC callback tag.
+         *         It can be passed to callback-based grpc_completion_queue.
+         */
+        fun anonymous(run: (ok: Boolean) -> Unit): CPointer<kgrpc_cb_tag> {
+            return object : CallbackTag {
+                override fun run(ok: Boolean) {
+                    run(ok)
+                }
+            }.toCbTag()
+        }
+    }
+}
+

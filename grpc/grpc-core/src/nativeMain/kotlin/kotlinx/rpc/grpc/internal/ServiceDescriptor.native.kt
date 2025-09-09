@@ -7,18 +7,16 @@ package kotlinx.rpc.grpc.internal
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
-public actual class ServiceDescriptor {
-    public actual fun getName(): String {
-        TODO("Not yet implemented")
-    }
+public actual class ServiceDescriptor internal constructor(
+    private val name: String,
+    private val methods: Collection<MethodDescriptor<*, *>>,
+    private val schemaDescriptor: Any?,
+) {
+    public actual fun getName(): String = name
 
-    public actual fun getMethods(): Collection<MethodDescriptor<*, *>> {
-        TODO("Not yet implemented")
-    }
+    public actual fun getMethods(): Collection<MethodDescriptor<*, *>> = methods
 
-    public actual fun getSchemaDescriptor(): Any? {
-        TODO("Not yet implemented")
-    }
+    public actual fun getSchemaDescriptor(): Any? = schemaDescriptor
 }
 
 @InternalRpcApi
@@ -27,5 +25,5 @@ public actual fun serviceDescriptor(
     methods: Collection<MethodDescriptor<*, *>>,
     schemaDescriptor: Any?,
 ): ServiceDescriptor {
-    TODO("Not yet implemented")
+    return ServiceDescriptor(name, methods, schemaDescriptor)
 }
