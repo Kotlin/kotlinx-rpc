@@ -40,7 +40,7 @@ sealed interface FieldType {
 
     data class Message(val dec: Lazy<MessageDeclaration>) : FieldType {
         override val defaultValue: String? = null
-        override val wireType: WireType = WireType.LENGTH_DELIMITED
+        override val wireType: WireType by lazy { if (dec.value.isGroup) WireType.START_GROUP else WireType.LENGTH_DELIMITED }
     }
 
     data class OneOf(val dec: OneOfDeclaration) : FieldType {

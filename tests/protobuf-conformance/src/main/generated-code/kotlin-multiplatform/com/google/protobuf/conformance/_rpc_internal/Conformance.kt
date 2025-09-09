@@ -450,7 +450,7 @@ fun com.google.protobuf.conformance.ConformanceRequestInternal.Companion.decodeW
                 msg.testCategory = com.google.protobuf.conformance.TestCategory.fromNumber(decoder.readEnum())
             }
 
-            tag.fieldNr == 6 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 6 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[0]) {
                     msg.jspbEncodingOptions = com.google.protobuf.conformance.JspbEncodingConfigInternal()
                 }

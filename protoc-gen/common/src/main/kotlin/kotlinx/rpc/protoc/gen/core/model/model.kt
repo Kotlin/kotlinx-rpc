@@ -87,7 +87,7 @@ data class FieldDeclaration(
     // this cannot be the number, as only fields with hasPresence == true are part of the presenceMask
     val presenceIdx: Int? = null,
 ) {
-    val packedFixedSize = type.wireType == WireType.FIXED64 || type.wireType == WireType.FIXED32
+    val packedFixedSize by lazy { type.wireType == WireType.FIXED64 || type.wireType == WireType.FIXED32 }
 
     val isPartOfOneof: Boolean = dec.realContainingOneof != null
 

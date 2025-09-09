@@ -1805,7 +1805,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 msg.optionalBytes = decoder.readBytes()
             }
 
-            tag.fieldNr == 18 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 18 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[0]) {
                     msg.optionalNestedMessage =
                         com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.NestedMessageInternal()
@@ -1817,7 +1817,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 )
             }
 
-            tag.fieldNr == 19 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 19 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[1]) {
                     msg.optionalForeignMessage =
                         com.google.protobuf_test_messages.editions.proto3.ForeignMessageInternal()
@@ -1852,7 +1852,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 msg.optionalCord = decoder.readString()
             }
 
-            tag.fieldNr == 27 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 27 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[2]) {
                     msg.recursiveMessage =
                         com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal()
@@ -2487,7 +2487,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 }
             }
 
-            tag.fieldNr == 201 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 201 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[3]) {
                     msg.optionalBoolWrapper = com.google.protobuf.kotlin.BoolValueInternal()
                 }
@@ -2498,7 +2498,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 )
             }
 
-            tag.fieldNr == 202 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 202 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[4]) {
                     msg.optionalInt32Wrapper = com.google.protobuf.kotlin.Int32ValueInternal()
                 }
@@ -2509,7 +2509,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 )
             }
 
-            tag.fieldNr == 203 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 203 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[5]) {
                     msg.optionalInt64Wrapper = com.google.protobuf.kotlin.Int64ValueInternal()
                 }
@@ -2520,7 +2520,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 )
             }
 
-            tag.fieldNr == 204 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 204 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[6]) {
                     msg.optionalUint32Wrapper = com.google.protobuf.kotlin.UInt32ValueInternal()
                 }
@@ -2531,7 +2531,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 )
             }
 
-            tag.fieldNr == 205 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 205 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[7]) {
                     msg.optionalUint64Wrapper = com.google.protobuf.kotlin.UInt64ValueInternal()
                 }
@@ -2542,7 +2542,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 )
             }
 
-            tag.fieldNr == 206 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 206 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[8]) {
                     msg.optionalFloatWrapper = com.google.protobuf.kotlin.FloatValueInternal()
                 }
@@ -2553,7 +2553,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 )
             }
 
-            tag.fieldNr == 207 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 207 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[9]) {
                     msg.optionalDoubleWrapper = com.google.protobuf.kotlin.DoubleValueInternal()
                 }
@@ -2564,7 +2564,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 )
             }
 
-            tag.fieldNr == 208 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 208 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[10]) {
                     msg.optionalStringWrapper = com.google.protobuf.kotlin.StringValueInternal()
                 }
@@ -2575,7 +2575,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 )
             }
 
-            tag.fieldNr == 209 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 209 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[11]) {
                     msg.optionalBytesWrapper = com.google.protobuf.kotlin.BytesValueInternal()
                 }
@@ -2640,7 +2640,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 (msg.repeatedBytesWrapper as MutableList).add(elem)
             }
 
-            tag.fieldNr == 301 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 301 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[12]) {
                     msg.optionalDuration = com.google.protobuf.kotlin.DurationInternal()
                 }
@@ -2651,7 +2651,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 )
             }
 
-            tag.fieldNr == 302 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 302 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[13]) {
                     msg.optionalTimestamp = com.google.protobuf.kotlin.TimestampInternal()
                 }
@@ -2662,7 +2662,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 )
             }
 
-            tag.fieldNr == 303 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 303 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[14]) {
                     msg.optionalFieldMask = com.google.protobuf.kotlin.FieldMaskInternal()
                 }
@@ -2673,7 +2673,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 )
             }
 
-            tag.fieldNr == 304 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 304 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[15]) {
                     msg.optionalStruct = com.google.protobuf.kotlin.StructInternal()
                 }
@@ -2684,7 +2684,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 )
             }
 
-            tag.fieldNr == 305 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 305 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[16]) {
                     msg.optionalAny = com.google.protobuf.kotlin.AnyInternal()
                 }
@@ -2692,7 +2692,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 decoder.readMessage(msg.optionalAny.asInternal(), com.google.protobuf.kotlin.AnyInternal::decodeWith)
             }
 
-            tag.fieldNr == 306 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 306 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[17]) {
                     msg.optionalValue = com.google.protobuf.kotlin.ValueInternal()
                 }
@@ -2826,7 +2826,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.OneofField.OneofUint32(decoder.readUInt32())
             }
 
-            tag.fieldNr == 112 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 112 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 val field =
                     (msg.oneofField as? com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.OneofField.OneofNestedMessage)
                         ?: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.OneofField.OneofNestedMessage(
@@ -4380,7 +4380,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 msg.a = decoder.readInt32()
             }
 
-            tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[0]) {
                     msg.corecursive = com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal()
                 }
@@ -5457,7 +5457,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 msg.key = decoder.readString()
             }
 
-            tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[0]) {
                     msg.value =
                         com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.NestedMessageInternal()
@@ -5538,7 +5538,7 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                 msg.key = decoder.readString()
             }
 
-            tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[0]) {
                     msg.value = com.google.protobuf_test_messages.editions.proto3.ForeignMessageInternal()
                 }

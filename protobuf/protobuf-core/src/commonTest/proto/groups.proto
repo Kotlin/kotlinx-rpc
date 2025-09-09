@@ -2,4 +2,14 @@ message WithGroups {
   required group FirstGroup = 1 {
     required fixed32 value = 2;
   }
+
+  repeated group SecondGroup = 2 {
+    required string value = 2;
+  }
+
+  //  oneof test {
+  //    group TestGroup = 3 {
+  //      required fixed32 value = 2;
+  //    }
+  //  }
 }

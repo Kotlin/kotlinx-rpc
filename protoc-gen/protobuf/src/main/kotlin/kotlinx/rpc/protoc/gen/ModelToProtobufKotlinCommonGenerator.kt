@@ -312,15 +312,16 @@ class ModelToProtobufKotlinCommonGenerator(
             returnType = "Unit",
         ) {
             whileBlock("true") {
-                code("val tag = decoder.readTag() ?: break // EOF, we read the whole message")
-
                 if (declaration.isGroup) {
+                    code("val tag = decoder.readTag() ?: throw ProtobufDecodingException(\"Missing END_GROUP tag for field: \${startGroup.fieldNr}.\")")
                     ifBranch(condition = "tag.wireType == $PB_PKG.WireType.END_GROUP", ifBlock = {
                         ifBranch(condition = "tag.fieldNr != startGroup.fieldNr", ifBlock = {
-                            code("throw ProtobufDecodingException(\"Wrong end group tag. Expected \${startGroup.fieldNr}, got \${tag.fieldNr}.\")")
+                            code("throw ProtobufDecodingException(\"Wrong END_GROUP tag. Expected \${startGroup.fieldNr}, got \${tag.fieldNr}.\")")
                         })
                         code("return")
                     })
+                } else {
+                    code("val tag = decoder.readTag() ?: break // EOF, we read the whole message")
                 }
 
                 whenBlock {
@@ -399,13 +400,8 @@ class ModelToProtobufKotlinCommonGenerator(
 
             is FieldType.Message -> {
                 val msg = fieldType.dec.value
-                val condition = if (msg.isUserFacing) {
-                    "tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.START_GROUP"
-                } else {
-                    "tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.LENGTH_DELIMITED"
-                }
 
-                whenCase(condition) {
+                whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.${fieldType.wireType.name}") {
                     if (field.presenceIdx != null) {
                         // check if the current sub message object was already set, if not, set a new one
                         // to set the field's presence tracker to true
@@ -563,7 +559,8 @@ class ModelToProtobufKotlinCommonGenerator(
                     valueVar
                 }
 
-                encFunc = type.value.decodeEncodeFuncName()
+                val innerType = type.value
+                encFunc = innerType.decodeEncodeFuncName()
                 when {
                     isPacked && packedWithFixedSize ->
                         code("encoder.writePacked${encFunc!!}(fieldNr = $number, value = $packedValueVar)")
@@ -575,8 +572,8 @@ class ModelToProtobufKotlinCommonGenerator(
                             })"
                         )
 
-                    type.value is FieldType.Message -> scope("$valueVar.forEach") {
-                        code("encoder.writeMessage(fieldNr = ${number}, value = it.asInternal()) { encodeWith(it) }")
+                    innerType is FieldType.Message -> scope("$valueVar.forEach") {
+                        generateEncodeFieldValue("it", innerType, number, isPacked = false, packedWithFixedSize = false)
                     }
 
                     else -> {

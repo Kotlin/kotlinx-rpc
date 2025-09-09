@@ -337,7 +337,7 @@ public fun com.google.protobuf.kotlin.TypeInternal.Companion.decodeWith(
                 (msg.options as MutableList).add(elem)
             }
 
-            tag.fieldNr == 5 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 5 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[0]) {
                     msg.sourceContext = com.google.protobuf.kotlin.SourceContextInternal()
                 }
@@ -709,7 +709,7 @@ public fun com.google.protobuf.kotlin.EnumInternal.Companion.decodeWith(
                 (msg.options as MutableList).add(elem)
             }
 
-            tag.fieldNr == 4 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 4 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[0]) {
                     msg.sourceContext = com.google.protobuf.kotlin.SourceContextInternal()
                 }
@@ -921,7 +921,7 @@ public fun com.google.protobuf.kotlin.OptionInternal.Companion.decodeWith(
                 msg.name = decoder.readString()
             }
 
-            tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[0]) {
                     msg.value = com.google.protobuf.kotlin.AnyInternal()
                 }

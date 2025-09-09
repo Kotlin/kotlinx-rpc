@@ -240,7 +240,7 @@ public fun com.google.protobuf.kotlin.ApiInternal.Companion.decodeWith(
                 msg.version = decoder.readString()
             }
 
-            tag.fieldNr == 5 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 5 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[0]) {
                     msg.sourceContext = com.google.protobuf.kotlin.SourceContextInternal()
                 }

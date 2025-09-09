@@ -297,7 +297,7 @@ public fun com.google.protobuf.kotlin.ValueInternal.Companion.decodeWith(
                 msg.kind = com.google.protobuf.kotlin.Value.Kind.BoolValue(decoder.readBool())
             }
 
-            tag.fieldNr == 5 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 5 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 val field = (msg.kind as? com.google.protobuf.kotlin.Value.Kind.StructValue)
                     ?: com.google.protobuf.kotlin.Value.Kind.StructValue(com.google.protobuf.kotlin.StructInternal())
                         .also {
@@ -307,7 +307,7 @@ public fun com.google.protobuf.kotlin.ValueInternal.Companion.decodeWith(
                 decoder.readMessage(field.value.asInternal(), com.google.protobuf.kotlin.StructInternal::decodeWith)
             }
 
-            tag.fieldNr == 6 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 6 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 val field = (msg.kind as? com.google.protobuf.kotlin.Value.Kind.ListValue)
                     ?: com.google.protobuf.kotlin.Value.Kind.ListValue(com.google.protobuf.kotlin.ListValueInternal())
                         .also {
@@ -478,7 +478,7 @@ public fun com.google.protobuf.kotlin.StructInternal.FieldsEntryInternal.Compani
                 msg.key = decoder.readString()
             }
 
-            tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> {
+            tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> {
                 if (!msg.presenceMask[0]) {
                     msg.value = com.google.protobuf.kotlin.ValueInternal()
                 }
