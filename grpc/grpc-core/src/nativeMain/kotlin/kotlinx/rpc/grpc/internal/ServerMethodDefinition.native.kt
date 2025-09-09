@@ -7,13 +7,16 @@ package kotlinx.rpc.grpc.internal
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
-public actual class ServerMethodDefinition<Request, Response> {
+public actual class ServerMethodDefinition<Request, Response> internal constructor(
+    private val methodDescriptor: MethodDescriptor<Request, Response>,
+    private val serverCallHandler: ServerCallHandler<Request, Response>,
+) {
     public actual fun getMethodDescriptor(): MethodDescriptor<Request, Response> {
-        TODO("Not yet implemented")
+        return methodDescriptor
     }
 
     public actual fun getServerCallHandler(): ServerCallHandler<Request, Response> {
-        TODO("Not yet implemented")
+        return serverCallHandler
     }
 }
 
@@ -21,5 +24,5 @@ public actual fun <Request, Response> serverMethodDefinition(
     descriptor: MethodDescriptor<Request, Response>,
     handler: ServerCallHandler<Request, Response>,
 ): ServerMethodDefinition<Request, Response> {
-    TODO("Not yet implemented")
+    return ServerMethodDefinition(descriptor, handler)
 }
