@@ -22,12 +22,7 @@ public actual class MethodDescriptor<Request, Response> internal constructor(
     public actual fun getFullMethodName(): String = fullMethodName
 
     private val serviceName: String? by lazy {
-        val index = fullMethodName.lastIndexOf('/')
-        if (index == -1) {
-            null
-        } else {
-            fullMethodName.substring(0, index)
-        }
+        extractFullServiceName(fullMethodName)
     }
 
     public actual fun getServiceName(): String? = serviceName
@@ -47,6 +42,17 @@ public actual class MethodDescriptor<Request, Response> internal constructor(
     public actual interface Marshaller<T> {
         public actual fun stream(value: T): InputStream
         public actual fun parse(stream: InputStream): T
+    }
+
+    public companion object {
+        public fun extractFullServiceName(fullMethodName: String): String? {
+            val index = fullMethodName.lastIndexOf('/')
+            return if (index == -1) {
+                null
+            } else {
+                fullMethodName.take(index)
+            }
+        }
     }
 }
 

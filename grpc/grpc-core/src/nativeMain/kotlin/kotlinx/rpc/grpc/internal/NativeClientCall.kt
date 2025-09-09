@@ -8,7 +8,19 @@ package kotlinx.rpc.grpc.internal
 
 import cnames.structs.grpc_call
 import kotlinx.atomicfu.atomic
-import kotlinx.cinterop.*
+import kotlinx.cinterop.Arena
+import kotlinx.cinterop.ByteVar
+import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.CPointerVar
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.allocArray
+import kotlinx.cinterop.convert
+import kotlinx.cinterop.get
+import kotlinx.cinterop.ptr
+import kotlinx.cinterop.readValue
+import kotlinx.cinterop.toKString
+import kotlinx.cinterop.value
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableJob
 import kotlinx.rpc.grpc.GrpcTrailers
@@ -16,7 +28,25 @@ import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.input.stream.asSource
-import libkgrpc.*
+import libkgrpc.GRPC_OP_RECV_INITIAL_METADATA
+import libkgrpc.GRPC_OP_RECV_MESSAGE
+import libkgrpc.GRPC_OP_RECV_STATUS_ON_CLIENT
+import libkgrpc.GRPC_OP_SEND_CLOSE_FROM_CLIENT
+import libkgrpc.GRPC_OP_SEND_INITIAL_METADATA
+import libkgrpc.GRPC_OP_SEND_MESSAGE
+import libkgrpc.gpr_free
+import libkgrpc.grpc_byte_buffer
+import libkgrpc.grpc_byte_buffer_destroy
+import libkgrpc.grpc_call_cancel_with_status
+import libkgrpc.grpc_call_error
+import libkgrpc.grpc_call_unref
+import libkgrpc.grpc_metadata_array
+import libkgrpc.grpc_metadata_array_destroy
+import libkgrpc.grpc_metadata_array_init
+import libkgrpc.grpc_op
+import libkgrpc.grpc_slice
+import libkgrpc.grpc_slice_unref
+import libkgrpc.grpc_status_code
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
@@ -163,7 +193,7 @@ internal class NativeClientCall<Request, Response>(
         // pre-book the batch, so onClose cannot be called before the batch finished.
         beginOp()
 
-        when (val callResult = cq.runBatch(this@NativeClientCall, ops, nOps)) {
+        when (val callResult = cq.runBatch(this@NativeClientCall.raw, ops, nOps)) {
             is BatchResult.Submitted -> {
                 callResult.future.onComplete { success ->
                     try {
@@ -220,7 +250,7 @@ internal class NativeClientCall<Request, Response>(
             data.recv_status_on_client.trailing_metadata = null
         }
 
-        when (val callResult = cq.runBatch(this@NativeClientCall, op.ptr, 1u)) {
+        when (val callResult = cq.runBatch(this@NativeClientCall.raw, op.ptr, 1u)) {
             is BatchResult.Submitted -> {
                 callResult.future.onComplete {
                     val details = statusDetails.toByteArray().toKString()
