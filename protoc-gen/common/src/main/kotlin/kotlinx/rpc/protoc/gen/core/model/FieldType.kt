@@ -52,7 +52,7 @@ sealed interface FieldType {
         simpleName: String,
         override val defaultValue: String,
         override val wireType: WireType,
-        override val isPackable: Boolean = true
+        override val isPackable: Boolean = true,
     ) : FieldType {
         STRING("String", "\"\"", WireType.LENGTH_DELIMITED, false),
         BYTES("ByteArray", "byteArrayOf()", WireType.LENGTH_DELIMITED, false),
@@ -77,7 +77,7 @@ sealed interface FieldType {
 fun FieldType.scalarDefaultSuffix(): String = when (this) {
     FieldType.IntegralType.BOOL -> ""
     FieldType.IntegralType.FLOAT -> "f"
-    FieldType.IntegralType.DOUBLE ->  ""
+    FieldType.IntegralType.DOUBLE -> ""
     FieldType.IntegralType.INT32 -> ""
     FieldType.IntegralType.INT64 -> "L"
     FieldType.IntegralType.UINT32 -> "u"

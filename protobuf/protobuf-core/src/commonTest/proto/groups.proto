@@ -1,0 +1,5 @@
+message WithGroups {
+  required group FirstGroup = 1 {
+    required fixed32 value = 2;
+  }
+}

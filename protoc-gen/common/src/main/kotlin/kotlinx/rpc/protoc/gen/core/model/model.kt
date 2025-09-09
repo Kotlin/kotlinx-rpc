@@ -33,6 +33,13 @@ data class MessageDeclaration(
 ) {
     val isMapEntry = dec.options.mapEntry
     val isUserFacing = !isMapEntry
+
+    val isGroup by lazy {
+        val parent = dec.containingType ?: return@lazy false // top-level types can’t be groups
+        parent.fields.any { f ->
+            f.type == Descriptors.FieldDescriptor.Type.GROUP && f.messageType == dec
+        }
+    }
 }
 
 data class EnumDeclaration(
@@ -68,7 +75,7 @@ data class EnumDeclaration(
 data class OneOfDeclaration(
     val name: FqName,
     val variants: List<FieldDeclaration>,
-    val dec: Descriptors.OneofDescriptor
+    val dec: Descriptors.OneofDescriptor,
 )
 
 data class FieldDeclaration(
@@ -78,7 +85,7 @@ data class FieldDeclaration(
     val dec: Descriptors.FieldDescriptor,
     // defines the index in the presenceMask of the Message.
     // this cannot be the number, as only fields with hasPresence == true are part of the presenceMask
-    val presenceIdx: Int? = null
+    val presenceIdx: Int? = null,
 ) {
     val packedFixedSize = type.wireType == WireType.FIXED64 || type.wireType == WireType.FIXED32
 
