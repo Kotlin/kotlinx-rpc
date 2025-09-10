@@ -911,17 +911,44 @@ class ModelToProtobufKotlinCommonGenerator(
             return type.defaultValue ?: error("No default value for field $name")
         }
 
-        return when (val value = dec.defaultValue) {
-            is String -> {
+        val value = dec.defaultValue
+        return when {
+            value is String -> {
                 "\"$value\""
             }
 
-            is ByteString -> {
+            value is ByteString -> {
                 "BytesDefaults.$name"
             }
 
-            is Descriptors.EnumValueDescriptor -> {
+            value is Descriptors.EnumValueDescriptor -> {
                 value.fqName().safeFullName()
+            }
+
+            value is Int && (type == FieldType.IntegralType.UINT32 || type == FieldType.IntegralType.FIXED32) -> {
+                Integer.toUnsignedString(value) + "u"
+            }
+
+            value is Long && (type == FieldType.IntegralType.UINT64 || type == FieldType.IntegralType.FIXED64) -> {
+                java.lang.Long.toUnsignedString(value) + "uL"
+            }
+
+            value is Float -> {
+                when (value.toString()) {
+                    "Infinity" -> "Float.POSITIVE_INFINITY"
+                    "-Infinity" -> "Float.NEGATIVE_INFINITY"
+                    "NaN" -> "Float.NaN"
+                    else -> value.toString() + "f"
+                }
+            }
+
+            value is Double -> {
+                when (value.toString()) {
+                    "Infinity" -> "Double.POSITIVE_INFINITY"
+                    "-Infinity" -> "Double.NEGATIVE_INFINITY"
+                    "NaN" -> "Double.NaN"
+                    else -> value.toString()
+                }
             }
 
             else -> {
@@ -929,6 +956,7 @@ class ModelToProtobufKotlinCommonGenerator(
             }
         }
     }
+
 
     private fun FieldType.decodeEncodeFuncName(): String? = when (this) {
         FieldType.IntegralType.STRING -> "String"

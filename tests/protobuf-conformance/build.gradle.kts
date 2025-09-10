@@ -51,7 +51,7 @@ tasks.withType<BufGenerateTask>().configureEach {
 protoSourceSets {
     main {
         proto {
-            exclude("**/test_messages_proto2.proto")
+//            exclude("**/test_messages_proto2.proto")
             exclude("**/test_messages_proto2_editions.proto")
             exclude("**/test_messages_edition2023.proto")
         }
@@ -91,7 +91,8 @@ val generateConformanceTests = tasks.register<JavaExec>("generateConformanceTest
 }
 
 val conformanceTest = properties.getOrDefault("conformance.test", "").toString()
-val conformanceTestDebug = properties.getOrDefault("conformance.test.debug", "false").toString().toBooleanStrictOrNull() ?: false
+val conformanceTestDebug =
+    properties.getOrDefault("conformance.test.debug", "false").toString().toBooleanStrictOrNull() ?: false
 
 val generateConformanceFileDescriptorSet = tasks
     .withType<GenerateConformanceFileDescriptorSet>()

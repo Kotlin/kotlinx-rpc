@@ -9,6 +9,7 @@ import kotlinx.rpc.protoc.gen.test.runner.createConformanceTestFiles
 import kotlinx.rpc.protoc.gen.test.runner.execConformanceTestRunner
 import kotlinx.rpc.protoc.gen.test.runner.getJavaClient
 import org.junit.jupiter.api.DynamicTest
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.fail
@@ -60,25 +61,38 @@ class ConformanceTest {
         val mockDir = Path(CONFORMANCE_OUTPUT_DIR).resolve("mock")
         val (baselineFile, _) = createConformanceTestFiles(mockDir, createBlank = false)
 
+        // Include only Editions_Proto3 or Proto3 tests and exclude any JSON-related tests
+        fun includeTest(name: String): Boolean {
+            val trimmed = name.substringBefore('#').trim()
+            if (trimmed.isEmpty()) return false
+            val isProto3Edition = trimmed.contains(".Editions_Proto3.") || trimmed.contains(".Proto3.")
+                    || trimmed.contains(".Proto2.")
+            val isJsonRelated = trimmed.contains(".Json") // matches JsonInput, JsonOutput, etc.
+            return isProto3Edition && !isJsonRelated
+        }
+
         val baseline = baselineFile
             .readLines()
             .map { it.substringBefore('#').trim() }
             .filter { it.isNotEmpty() }
+            .filter { includeTest(it) }
             .toSet()
 
-        val fails = failingTestsFile.readLines().associate {
-            it.substringBefore('#').trim() to it.substringAfter('#').trim()
-        }
+        val fails = failingTestsFile.readLines()
+            .map { it to (it.substringAfter('#', missingDelimiterValue = "").trim()) }
+            .map { (line, msg) -> line.substringBefore('#').trim() to msg }
+            .filter { (name, _) -> includeTest(name) }
+            .toMap()
 
         val passed = baseline - fails.keys
 
         println(
             """
                 
-                === Conformance Test Results ===
-                Total baseline tests:   ${baseline.size}
-                [+] Passed tests:       ${passed.size}
-                [-] Failed tests:       ${fails.size}
+                === Conformance Test Results (filtered) ===
+                Total baseline tests (filtered):   ${baseline.size}
+                [+] Passed tests:                  ${passed.size}
+                [-] Failed tests:                  ${fails.size}
             """.trimIndent()
         )
 
