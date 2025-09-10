@@ -50,9 +50,7 @@ tasks.withType<BufGenerateTask>().configureEach {
 
 protoSourceSets {
     main {
-        proto {
-            exclude("**/test_messages_edition2023.proto")
-        }
+        proto { }
     }
 }
 

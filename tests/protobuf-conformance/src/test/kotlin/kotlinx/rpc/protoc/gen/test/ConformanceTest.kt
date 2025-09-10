@@ -61,14 +61,11 @@ class ConformanceTest {
         val mockDir = Path(CONFORMANCE_OUTPUT_DIR).resolve("mock")
         val (baselineFile, _) = createConformanceTestFiles(mockDir, createBlank = false)
 
-        // Include only Editions_Proto3 or Proto3 tests and exclude any JSON-related tests
+        // TODO: Remove once we support JSON encoding (KRPC-195)
+        // Exclude any JSON-related tests
         fun includeTest(name: String): Boolean {
             val trimmed = name.substringBefore('#').trim()
-            if (trimmed.isEmpty()) return false
-            val isProto3Edition = trimmed.contains(".Editions_Proto3.") || trimmed.contains(".Proto3.")
-                    || trimmed.contains(".Editions_Proto2.") || trimmed.contains(".Proto2.")
-            val isJsonRelated = trimmed.contains(".Json") // matches JsonInput, JsonOutput, etc.
-            return isProto3Edition && !isJsonRelated
+            return !trimmed.contains(".Json")
         }
 
         val baseline = baselineFile
