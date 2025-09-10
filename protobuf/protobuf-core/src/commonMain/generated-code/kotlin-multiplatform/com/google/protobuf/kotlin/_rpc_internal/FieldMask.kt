@@ -70,8 +70,12 @@ public fun com.google.protobuf.kotlin.FieldMaskInternal.Companion.decodeWith(msg
             }
 
             else -> { 
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag.wireType)
+                decoder.skipValue(tag)
             }
         }
     }

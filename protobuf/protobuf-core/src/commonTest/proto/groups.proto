@@ -1,0 +1,18 @@
+package test.groups;
+
+message WithGroups {
+  required group FirstGroup = 1 {
+    required fixed32 value = 2;
+  }
+
+  repeated group SecondGroup = 2 {
+    required string value = 2;
+  }
+
+  oneof oneOfWithGroup {
+    int32 anInt32 = 4;
+    group TestGroup = 3 {
+      required fixed32 value = 2;
+    }
+  }
+}
