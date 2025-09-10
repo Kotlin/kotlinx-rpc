@@ -91,14 +91,29 @@ public interface WireDecoder : AutoCloseable {
         popLimit(limit)
     }
 
-    public fun skipValue(writeType: WireType) {
-        when (writeType) {
+    public fun skipValue(tag: KTag) {
+        when (tag.wireType) {
             WireType.VARINT -> readInt64()
             WireType.FIXED32 -> readFixed32()
             WireType.FIXED64 -> readFixed64()
             WireType.LENGTH_DELIMITED -> readBytes()
-            WireType.START_GROUP -> throw ProtobufDecodingException("Unexpected START_GROUP wire type (KRPC-193)")
+            WireType.START_GROUP -> skipGroup(tag.fieldNr)
             WireType.END_GROUP -> {} // nothing to do
+        }
+    }
+
+    private fun skipGroup(startField: Int) {
+        // read until END_GROUP with the same field number
+        while (true) {
+            val t = readTag() ?: throw ProtobufDecodingException.truncatedMessage()
+            if (t.wireType == WireType.END_GROUP) {
+                if (t.fieldNr != startField) {
+                    throw ProtobufDecodingException("Mismatched END_GROUP: got ${t.fieldNr}, want $startField")
+                }
+                return
+            }
+            // recursively skip nested values (groups can nest)
+            skipValue(t)
         }
     }
 }
