@@ -88,6 +88,10 @@ public fun com.google.protobuf.kotlin.TimestampInternal.Companion.decodeWith(
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }

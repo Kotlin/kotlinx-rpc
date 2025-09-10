@@ -327,6 +327,12 @@ class ModelToProtobufKotlinCommonGenerator(
                 whenBlock {
                     declaration.actualFields.forEach { field -> readMatchCase(field) }
                     whenCase("else") {
+                        if (!declaration.isGroup) {
+                            // fail if we come across an END_GROUP in a normal message
+                            ifBranch(condition = "tag.wireType == $PB_PKG.WireType.END_GROUP", ifBlock = {
+                                code("throw $PB_PKG.ProtobufDecodingException(\"Unexpected END_GROUP tag.\")")
+                            })
+                        }
                         code("// we are currently just skipping unknown fields (KRPC-191)")
                         code("decoder.skipValue(tag)")
                     }

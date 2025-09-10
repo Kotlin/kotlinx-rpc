@@ -2888,6 +2888,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -4248,6 +4252,10 @@ fun com.google.protobuf_test_messages.editions.proto3.ForeignMessageInternal.Com
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -4292,6 +4300,10 @@ fun com.google.protobuf_test_messages.editions.proto3.NullHypothesisProto3Intern
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -4329,6 +4341,10 @@ fun com.google.protobuf_test_messages.editions.proto3.EnumOnlyProto3Internal.Com
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -4392,6 +4408,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -4461,6 +4481,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -4527,6 +4551,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -4593,6 +4621,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -4659,6 +4691,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -4725,6 +4761,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -4791,6 +4831,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -4857,6 +4901,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -4923,6 +4971,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -4989,6 +5041,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -5055,6 +5111,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -5121,6 +5181,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -5187,6 +5251,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -5253,6 +5321,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -5319,6 +5391,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -5389,6 +5465,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -5470,6 +5550,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -5550,6 +5634,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -5621,6 +5709,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
@@ -5689,6 +5781,10 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
             }
 
             else -> {
+                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) {
+                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
                 // we are currently just skipping unknown fields (KRPC-191)
                 decoder.skipValue(tag)
             }
