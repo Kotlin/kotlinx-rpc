@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc
 
-import kotlinx.rpc.grpc.internal.GrpcInsecureServerCredentials
+
 import kotlinx.rpc.grpc.internal.NativeServer
 import kotlinx.rpc.grpc.internal.ServerMethodDefinition
 
@@ -21,10 +21,8 @@ public actual abstract class ServerBuilder<T : ServerBuilder<T>> {
 
 private class NativeServerBuilder(
     val port: Int,
+    val credentials: ServerCredentials,
 ) : ServerBuilder<NativeServerBuilder>() {
-
-    // TODO: Add actual credentials
-    private val credentials = GrpcInsecureServerCredentials()
     private val services = mutableListOf<ServerServiceDefinition>()
     private var fallbackRegistry: HandlerRegistry = DefaultFallbackRegistry
 
@@ -44,8 +42,8 @@ private class NativeServerBuilder(
 
 }
 
-internal actual fun ServerBuilder(port: Int): ServerBuilder<*> {
-    return NativeServerBuilder(port)
+internal actual fun ServerBuilder(port: Int, credentials: ServerCredentials?): ServerBuilder<*> {
+    return NativeServerBuilder(port, credentials ?: InsecureServerCredentials())
 }
 
 internal actual fun Server(builder: ServerBuilder<*>): Server {
