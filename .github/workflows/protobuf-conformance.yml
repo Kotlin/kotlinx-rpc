@@ -22,6 +22,7 @@ jobs:
       - name: Check if protobuf-conformance test is up-to-date
         run: |
           if [[ -n "$(git status --porcelain | grep tests/protobuf-conformance/)" ]]; then
+            git diff -- tests/protobuf-conformance/ || true
             echo "Protobuf conformance test is not up to date. Please run './gradlew tests:protobuf-conformance:bufGenerateMain' and commit changes"
             exit 1
           fi
