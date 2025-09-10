@@ -9,8 +9,6 @@ import OneOfMsgInternal
 import OneOfWithRequired
 import Outer
 import OuterInternal
-import WithGroups
-import WithGroupsInternal
 import asInternal
 import encodeWith
 import invoke
@@ -20,6 +18,9 @@ import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.input.stream.asSource
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireEncoder
+import test.groups.WithGroups
+import test.groups.WithGroupsInternal
+import test.groups.invoke
 import test.nested.NestedOuter
 import test.nested.NestedOuterInternal
 import test.nested.NotInside
@@ -436,6 +437,9 @@ class ProtosTest {
                     value = "Second Item"
                 }
             )
+            oneOfWithGroup = WithGroups.OneOfWithGroup.Testgroup(WithGroups.TestGroup {
+                value = 42u
+            })
         }
 
         val decoded = encodeDecode(msg, WithGroupsInternal.CODEC)
@@ -443,5 +447,10 @@ class ProtosTest {
         for ((i, group) in msg.secondgroup.withIndex()) {
             assertEquals(group.value, decoded.secondgroup[i].value)
         }
+        assertTrue(decoded.oneOfWithGroup is WithGroups.OneOfWithGroup.Testgroup)
+        assertEquals(
+            (msg.oneOfWithGroup as WithGroups.OneOfWithGroup.Testgroup).value.value,
+            (decoded.oneOfWithGroup as WithGroups.OneOfWithGroup.Testgroup).value.value
+        )
     }
 }
