@@ -60,6 +60,12 @@ public interface WireEncoder {
         encode: T.(WireEncoder) -> Unit,
     )
 
+    public fun <T : InternalMessage> writeGroupMessage(
+        fieldNr: Int,
+        value: T,
+        encode: T.(WireEncoder) -> Unit,
+    )
+
 }
 
 /**

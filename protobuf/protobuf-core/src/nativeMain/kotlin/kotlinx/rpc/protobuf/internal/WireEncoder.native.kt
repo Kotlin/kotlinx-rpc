@@ -4,9 +4,53 @@
 
 package kotlinx.rpc.protobuf.internal
 
-import kotlinx.cinterop.*
+import kotlinx.cinterop.ByteVar
+import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.CValuesRef
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.StableRef
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.asStableRef
+import kotlinx.cinterop.cstr
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.reinterpret
+import kotlinx.cinterop.staticCFunction
+import kotlinx.cinterop.usePinned
 import kotlinx.io.Sink
-import libprotowire.*
+import libprotowire.pw_encoder_delete
+import libprotowire.pw_encoder_flush
+import libprotowire.pw_encoder_new
+import libprotowire.pw_encoder_t
+import libprotowire.pw_encoder_write_bool
+import libprotowire.pw_encoder_write_bool_no_tag
+import libprotowire.pw_encoder_write_bytes
+import libprotowire.pw_encoder_write_double
+import libprotowire.pw_encoder_write_double_no_tag
+import libprotowire.pw_encoder_write_enum
+import libprotowire.pw_encoder_write_fixed32
+import libprotowire.pw_encoder_write_fixed32_no_tag
+import libprotowire.pw_encoder_write_fixed64
+import libprotowire.pw_encoder_write_fixed64_no_tag
+import libprotowire.pw_encoder_write_float
+import libprotowire.pw_encoder_write_float_no_tag
+import libprotowire.pw_encoder_write_int32
+import libprotowire.pw_encoder_write_int32_no_tag
+import libprotowire.pw_encoder_write_int64
+import libprotowire.pw_encoder_write_int64_no_tag
+import libprotowire.pw_encoder_write_sfixed32
+import libprotowire.pw_encoder_write_sfixed32_no_tag
+import libprotowire.pw_encoder_write_sfixed64
+import libprotowire.pw_encoder_write_sfixed64_no_tag
+import libprotowire.pw_encoder_write_sint32
+import libprotowire.pw_encoder_write_sint32_no_tag
+import libprotowire.pw_encoder_write_sint64
+import libprotowire.pw_encoder_write_sint64_no_tag
+import libprotowire.pw_encoder_write_string
+import libprotowire.pw_encoder_write_tag
+import libprotowire.pw_encoder_write_uint32
+import libprotowire.pw_encoder_write_uint32_no_tag
+import libprotowire.pw_encoder_write_uint64
+import libprotowire.pw_encoder_write_uint64_no_tag
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
@@ -176,6 +220,12 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
         pw_encoder_write_tag(raw, fieldNr, WireType.LENGTH_DELIMITED.ordinal)
         pw_encoder_write_uint32_no_tag(raw, value._size.toUInt())
         value.encode(this)
+    }
+
+    override fun <T : InternalMessage> writeGroupMessage(fieldNr: Int, value: T, encode: T.(WireEncoder) -> Unit) {
+        pw_encoder_write_tag(raw, fieldNr, WireType.START_GROUP.ordinal)
+        value.encode(this)
+        pw_encoder_write_tag(raw, fieldNr, WireType.END_GROUP.ordinal)
     }
 }
 

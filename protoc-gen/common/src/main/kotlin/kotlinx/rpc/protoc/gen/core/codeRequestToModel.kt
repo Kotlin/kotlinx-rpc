@@ -7,7 +7,16 @@ package kotlinx.rpc.protoc.gen.core
 import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.Descriptors
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest
-import kotlinx.rpc.protoc.gen.core.model.*
+import kotlinx.rpc.protoc.gen.core.model.EnumDeclaration
+import kotlinx.rpc.protoc.gen.core.model.FieldDeclaration
+import kotlinx.rpc.protoc.gen.core.model.FieldType
+import kotlinx.rpc.protoc.gen.core.model.FileDeclaration
+import kotlinx.rpc.protoc.gen.core.model.FqName
+import kotlinx.rpc.protoc.gen.core.model.MessageDeclaration
+import kotlinx.rpc.protoc.gen.core.model.MethodDeclaration
+import kotlinx.rpc.protoc.gen.core.model.Model
+import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
+import kotlinx.rpc.protoc.gen.core.model.ServiceDeclaration
 
 private val nameCache = mutableMapOf<Descriptors.GenericDescriptor, FqName>()
 private val modelCache = mutableMapOf<Descriptors.GenericDescriptor, Any>()
@@ -251,7 +260,7 @@ private fun Descriptors.FieldDescriptor.modelType(): FieldType {
         Descriptors.FieldDescriptor.Type.SINT64 -> FieldType.IntegralType.SINT64
         Descriptors.FieldDescriptor.Type.ENUM -> FieldType.Enum(enumType.toModel())
         Descriptors.FieldDescriptor.Type.MESSAGE -> FieldType.Message(lazy { messageType!!.toModel() })
-        Descriptors.FieldDescriptor.Type.GROUP -> error("GROUP type is unsupported")
+        Descriptors.FieldDescriptor.Type.GROUP -> FieldType.Message(lazy { messageType!!.toModel() })
     }
 
     if (isMapField) {

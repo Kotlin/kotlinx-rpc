@@ -18,16 +18,29 @@ import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.input.stream.asSource
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireEncoder
-import test.nested.*
+import test.groups.WithGroups
+import test.groups.WithGroupsInternal
+import test.groups.invoke
+import test.nested.NestedOuter
+import test.nested.NestedOuterInternal
+import test.nested.NotInside
+import test.nested.NotInsideInternal
 import test.nested.invoke
 import test.recursive.Recursive
 import test.recursive.RecursiveInternal
 import test.recursive.RecursiveReq
 import test.recursive.invoke
-import test.submsg.*
+import test.submsg.Other
+import test.submsg.OtherInternal
+import test.submsg.ReferenceInternal
+import test.submsg.encodeWith
 import test.submsg.invoke
-import kotlin.collections.iterator
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class ProtosTest {
 
@@ -411,4 +424,33 @@ class ProtosTest {
         }
     }
 
+    @Test
+    fun testGroup() {
+        val msg = WithGroups {
+            firstgroup = WithGroups.FirstGroup {
+                value = 23u
+            }
+            secondgroup = listOf(
+                WithGroups.SecondGroup {
+                    value = "First Item"
+                }, WithGroups.SecondGroup {
+                    value = "Second Item"
+                }
+            )
+            oneOfWithGroup = WithGroups.OneOfWithGroup.Testgroup(WithGroups.TestGroup {
+                value = 42u
+            })
+        }
+
+        val decoded = encodeDecode(msg, WithGroupsInternal.CODEC)
+        assertEquals(msg.firstgroup.value, decoded.firstgroup.value)
+        for ((i, group) in msg.secondgroup.withIndex()) {
+            assertEquals(group.value, decoded.secondgroup[i].value)
+        }
+        assertTrue(decoded.oneOfWithGroup is WithGroups.OneOfWithGroup.Testgroup)
+        assertEquals(
+            (msg.oneOfWithGroup as WithGroups.OneOfWithGroup.Testgroup).value.value,
+            (decoded.oneOfWithGroup as WithGroups.OneOfWithGroup.Testgroup).value.value
+        )
+    }
 }
