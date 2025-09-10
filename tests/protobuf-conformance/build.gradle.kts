@@ -48,12 +48,6 @@ tasks.withType<BufGenerateTask>().configureEach {
     }
 }
 
-protoSourceSets {
-    main {
-        proto { }
-    }
-}
-
 val mockClientJar = tasks.register<Jar>("mockClientJar") {
     archiveBaseName.set("mockClient")
     archiveVersion.set("")

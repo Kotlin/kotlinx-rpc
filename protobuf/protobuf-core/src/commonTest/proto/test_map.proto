@@ -1,5 +1,3 @@
-//syntax = "proto3";
-
 package kotlinx.rpc.protobuf.test;
 
 import "presence_check.proto";
