@@ -64,7 +64,10 @@ internal class NativeManagedChannel(
 
     internal val raw: CPointer<grpc_channel> = memScoped {
         val args = authority?.let {
-            var authorityOverride = alloc<grpc_arg> {
+            // the C Core API doesn't have a way to override the authority (used for TLS SNI) as it
+            // is available in the Java gRPC implementation.
+            // instead, it can be done by setting the "grpc.ssl_target_name_override" argument.
+            val authorityOverride = alloc<grpc_arg> {
                 type = grpc_arg_type.GRPC_ARG_STRING
                 key = "grpc.ssl_target_name_override".cstr.ptr
                 value.string = authority.cstr.ptr
