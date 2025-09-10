@@ -84,11 +84,11 @@ class ConformanceTest {
 
         return (fails.entries.map { (test, message) ->
             DynamicTest.dynamicTest(test.testDisplayName()) {
-                fail("FAILED: '${test.testDisplayName()}' with: $message")
+                fail("FAILED: '${test}' with: $message")
             }
         } + passed.map { test ->
             DynamicTest.dynamicTest(test.testDisplayName()) {
-                println("PASSED: '${test.testDisplayName()}'")
+                println("PASSED: '${test}'")
             }
         }).stream()
     }
