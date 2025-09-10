@@ -76,7 +76,7 @@ internal class ConformanceClient {
             "protobuf_test_messages.proto2.TestAllTypesProto2" -> com.google.protobuf_test_messages.proto2.TestAllTypesProto2::class
 //            "protobuf_test_messages.editions.TestAllTypesEdition2023" -> return TestAllTypesEdition2023::class.java
             "protobuf_test_messages.editions.proto3.TestAllTypesProto3" -> com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3::class
-//            "protobuf_test_messages.editions.proto2.TestAllTypesProto2" -> return TestMessagesProto2Editions.TestAllTypesProto2::class.java
+            "protobuf_test_messages.editions.proto2.TestAllTypesProto2" -> com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2::class
             else -> error(
                 "Protobuf request has unexpected payload type: $messageType"
             )

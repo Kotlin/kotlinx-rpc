@@ -66,7 +66,7 @@ class ConformanceTest {
             val trimmed = name.substringBefore('#').trim()
             if (trimmed.isEmpty()) return false
             val isProto3Edition = trimmed.contains(".Editions_Proto3.") || trimmed.contains(".Proto3.")
-                    || trimmed.contains(".Proto2.")
+                    || trimmed.contains(".Editions_Proto2.") || trimmed.contains(".Proto2.")
             val isJsonRelated = trimmed.contains(".Json") // matches JsonInput, JsonOutput, etc.
             return isProto3Edition && !isJsonRelated
         }
