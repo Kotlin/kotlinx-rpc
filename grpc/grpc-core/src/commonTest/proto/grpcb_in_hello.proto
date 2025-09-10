@@ -1,0 +1,22 @@
+syntax = "proto2";
+
+//    grpc://grpcb.in:9000 (without TLS)
+//    grpc://grpcb.in:9001 (with TLS)
+
+
+package hello;
+
+service HelloService {
+  rpc SayHello(HelloRequest) returns (HelloResponse);
+  rpc LotsOfReplies(HelloRequest) returns (stream HelloResponse);
+  rpc LotsOfGreetings(stream HelloRequest) returns (HelloResponse);
+  rpc BidiHello(stream HelloRequest) returns (stream HelloResponse);
+}
+
+message HelloRequest {
+  optional string greeting = 1;
+}
+
+message HelloResponse {
+  required string reply = 1;
+}

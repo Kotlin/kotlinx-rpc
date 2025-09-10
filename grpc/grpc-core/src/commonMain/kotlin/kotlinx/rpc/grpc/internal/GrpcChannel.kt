@@ -13,5 +13,5 @@ public expect abstract class GrpcChannel {
         callOptions: GrpcCallOptions,
     ): ClientCall<RequestT, ResponseT>
 
-    public abstract fun authority(): String
+    public abstract fun authority(): String?
 }

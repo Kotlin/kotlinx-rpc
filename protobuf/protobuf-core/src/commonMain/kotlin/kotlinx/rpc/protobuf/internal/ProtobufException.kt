@@ -13,7 +13,7 @@ public class ProtobufDecodingException : ProtobufException {
     public constructor(message: String, cause: Throwable? = null) : super(message, cause)
 
     public companion object Companion {
-        internal fun missingRequiredField(messageName: String, fieldName: String) =
+        public fun missingRequiredField(messageName: String, fieldName: String): ProtobufDecodingException =
             ProtobufDecodingException("Message '$messageName' is missing a required field: $fieldName")
 
         internal fun negativeSize() = ProtobufDecodingException(

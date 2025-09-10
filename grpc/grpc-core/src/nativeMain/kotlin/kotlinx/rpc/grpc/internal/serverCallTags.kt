@@ -120,9 +120,6 @@ internal class LookupServerCallTag(
                 return
             }
 
-            // TODO: check authority
-            // val host = rawDetails.host.toByteArray().decodeToString()
-
             var method = rawDetails.method.toByteArray().decodeToString()
 
             // gRPC preserves the '/' character in the method name,

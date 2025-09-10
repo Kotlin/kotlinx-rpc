@@ -31,7 +31,7 @@ public expect abstract class ServerBuilder<T : ServerBuilder<T>> {
     public abstract fun fallbackHandlerRegistry(registry: HandlerRegistry?): T
 }
 
-internal expect fun ServerBuilder(port: Int): ServerBuilder<*>
+internal expect fun ServerBuilder(port: Int, credentials: ServerCredentials? = null): ServerBuilder<*>
 
 /**
  * Server for listening for and dispatching incoming calls.
