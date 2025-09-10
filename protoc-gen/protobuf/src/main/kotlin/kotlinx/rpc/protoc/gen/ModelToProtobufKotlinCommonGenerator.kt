@@ -911,17 +911,40 @@ class ModelToProtobufKotlinCommonGenerator(
             return type.defaultValue ?: error("No default value for field $name")
         }
 
-        return when (val value = dec.defaultValue) {
-            is String -> {
+        val value = dec.defaultValue
+        return when {
+            value is String -> {
                 "\"$value\""
             }
 
-            is ByteString -> {
+            value is ByteString -> {
                 "BytesDefaults.$name"
             }
 
-            is Descriptors.EnumValueDescriptor -> {
+            value is Descriptors.EnumValueDescriptor -> {
                 value.fqName().safeFullName()
+            }
+
+            value is Int && (type == FieldType.IntegralType.UINT32 || type == FieldType.IntegralType.FIXED32) -> {
+                Integer.toUnsignedString(value) + "u"
+            }
+
+            value is Long && (type == FieldType.IntegralType.UINT64 || type == FieldType.IntegralType.FIXED64) -> {
+                java.lang.Long.toUnsignedString(value) + "uL"
+            }
+
+            value is Float -> when {
+                value.isNaN() -> "Float.NaN"
+                value == Float.POSITIVE_INFINITY -> "Float.POSITIVE_INFINITY"
+                value == Float.NEGATIVE_INFINITY -> "Float.NEGATIVE_INFINITY"
+                else -> "Float.fromBits(0x%08X)".format(java.lang.Float.floatToRawIntBits(value))
+            }
+
+            value is Double -> when {
+                value.isNaN() -> "Double.NaN"
+                value == Double.POSITIVE_INFINITY -> "Double.POSITIVE_INFINITY"
+                value == Double.NEGATIVE_INFINITY -> "Double.NEGATIVE_INFINITY"
+                else -> "Double.fromBits(0x%016XL)".format(java.lang.Double.doubleToRawLongBits(value))
             }
 
             else -> {
@@ -929,6 +952,7 @@ class ModelToProtobufKotlinCommonGenerator(
             }
         }
     }
+
 
     private fun FieldType.decodeEncodeFuncName(): String? = when (this) {
         FieldType.IntegralType.STRING -> "String"

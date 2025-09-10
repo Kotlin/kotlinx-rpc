@@ -91,11 +91,14 @@ data class FieldDeclaration(
 
     val isPartOfOneof: Boolean = dec.realContainingOneof != null
 
+    val isPartOfMapEntry = dec.containingType.options.mapEntry
+
     // aligns with edition settings and backward compatibility with proto2 and proto3
     val nullable: Boolean = (dec.hasPresence() && !dec.isRequired && !dec.hasDefaultValue()
             && !dec.isRepeated // repeated fields cannot be nullable (just empty)
             && !isPartOfOneof // upper conditions would match oneof inner fields
             && type !is FieldType.Message // messages must not be null (to conform protobuf standards)
+            && !isPartOfMapEntry // map entry fields cannot be null
             )
             || type is FieldType.OneOf // all OneOf fields are nullable
     val number: Int = dec.number
