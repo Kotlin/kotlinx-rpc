@@ -10,7 +10,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.job
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.descriptor.RpcCallable
 import kotlinx.rpc.descriptor.flowInvokator
@@ -49,6 +48,7 @@ private typealias ResponseServer = Any
  */
 public class GrpcServer internal constructor(
     override val port: Int = 8080,
+    credentials: ServerCredentials? = null,
     messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
     parentContext: CoroutineContext = EmptyCoroutineContext,
     configure: ServerBuilder<*>.() -> Unit,
@@ -61,7 +61,7 @@ public class GrpcServer internal constructor(
     private var isBuilt = false
     private lateinit var internalServer: Server
 
-    private val serverBuilder: ServerBuilder<*> = ServerBuilder(port).apply(configure)
+    private val serverBuilder: ServerBuilder<*> = ServerBuilder(port, credentials).apply(configure)
     private val registry: MutableHandlerRegistry by lazy {
         MutableHandlerRegistry().apply { serverBuilder.fallbackHandlerRegistry(this) }
     }
@@ -192,10 +192,12 @@ public class GrpcServer internal constructor(
  */
 public fun GrpcServer(
     port: Int,
+    credentials: ServerCredentials? = null,
     messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
     parentContext: CoroutineContext = EmptyCoroutineContext,
     configure: ServerBuilder<*>.() -> Unit = {},
     builder: RpcServer.() -> Unit = {},
 ): GrpcServer {
-    return GrpcServer(port, messageCodecResolver, parentContext, configure).apply(builder).apply { build() }
+    return GrpcServer(port, credentials, messageCodecResolver, parentContext, configure).apply(builder)
+        .apply { build() }
 }

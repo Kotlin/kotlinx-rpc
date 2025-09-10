@@ -7,7 +7,6 @@
 package kotlinx.rpc.grpc.internal
 
 import cnames.structs.grpc_server
-import cnames.structs.grpc_server_credentials
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.CPointer
@@ -20,12 +19,11 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.grpc.HandlerRegistry
 import kotlinx.rpc.grpc.Server
+import kotlinx.rpc.grpc.ServerCredentials
 import kotlinx.rpc.grpc.ServerServiceDefinition
-import libkgrpc.grpc_insecure_server_credentials_create
 import libkgrpc.grpc_server_add_http2_port
 import libkgrpc.grpc_server_cancel_all_calls
 import libkgrpc.grpc_server_create
-import libkgrpc.grpc_server_credentials_release
 import libkgrpc.grpc_server_destroy
 import libkgrpc.grpc_server_register_completion_queue
 import libkgrpc.grpc_server_register_method
@@ -37,29 +35,13 @@ import libkgrpc.kgrpc_registered_call_allocation
 import libkgrpc.kgrpc_server_set_batch_method_allocator
 import libkgrpc.kgrpc_server_set_register_method_allocator
 import kotlin.experimental.ExperimentalNativeApi
-import kotlin.native.ref.createCleaner
 import kotlin.time.Duration
-
-/**
- * Wrapper for [grpc_server_credentials].
- */
-internal sealed class GrpcServerCredentials(
-    internal val raw: CPointer<grpc_server_credentials>,
-) {
-    val rawCleaner = createCleaner(raw) {
-        grpc_server_credentials_release(it)
-    }
-}
-
-internal class GrpcInsecureServerCredentials :
-    GrpcServerCredentials(grpc_insecure_server_credentials_create() ?: error("Failed to create server credentials"))
-
 
 internal class NativeServer(
     override val port: Int,
     // we must reference them, otherwise the credentials are getting garbage collected
     @Suppress("Redundant")
-    private val credentials: GrpcServerCredentials,
+    private val credentials: ServerCredentials,
     services: List<ServerServiceDefinition>,
     val fallbackRegistry: HandlerRegistry,
 ) : Server {
