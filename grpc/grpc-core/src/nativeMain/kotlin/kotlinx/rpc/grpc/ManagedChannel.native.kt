@@ -7,8 +7,6 @@
 package kotlinx.rpc.grpc
 
 import kotlinx.rpc.grpc.internal.GrpcChannel
-import kotlinx.rpc.grpc.internal.GrpcChannelCredentials
-import kotlinx.rpc.grpc.internal.GrpcInsecureChannelCredentials
 import kotlinx.rpc.grpc.internal.NativeManagedChannel
 import kotlinx.rpc.grpc.internal.internalError
 
@@ -24,22 +22,32 @@ public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
     public actual open fun usePlaintext(): T {
         error("Builder does not support usePlaintext()")
     }
+
+    public actual abstract fun overrideAuthority(authority: String): T
 }
 
 internal class NativeManagedChannelBuilder(
     private val target: String,
+    private var credentials: Lazy<ClientCredentials>,
 ) : ManagedChannelBuilder<NativeManagedChannelBuilder>() {
-    private var credentials: GrpcChannelCredentials? = null
+
+    private var authority: String? = null
 
     override fun usePlaintext(): NativeManagedChannelBuilder {
-        credentials = GrpcInsecureChannelCredentials()
+        credentials = lazy { InsecureChannelCredentials() }
+        return this
+    }
+
+    override fun overrideAuthority(authority: String): NativeManagedChannelBuilder {
+        this.authority = authority
         return this
     }
 
     fun buildChannel(): NativeManagedChannel {
         return NativeManagedChannel(
             target,
-            credentials = credentials ?: error("No credentials set"),
+            authority = authority,
+            credentials = credentials.value,
         )
     }
 
@@ -50,12 +58,18 @@ internal actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
     return buildChannel()
 }
 
-internal actual fun ManagedChannelBuilder(hostname: String, port: Int): ManagedChannelBuilder<*> {
-    return NativeManagedChannelBuilder(target = "$hostname:$port")
+internal actual fun ManagedChannelBuilder(
+    hostname: String,
+    port: Int,
+    credentials: ClientCredentials?,
+): ManagedChannelBuilder<*> {
+    val credentials = if (credentials == null) lazy { TlsClientCredentials() } else lazy { credentials }
+    return NativeManagedChannelBuilder(target = "$hostname:$port", credentials)
 }
 
-internal actual fun ManagedChannelBuilder(target: String): ManagedChannelBuilder<*> {
-    return NativeManagedChannelBuilder(target)
+internal actual fun ManagedChannelBuilder(target: String, credentials: ClientCredentials?): ManagedChannelBuilder<*> {
+    val credentials = if (credentials == null) lazy { TlsClientCredentials() } else lazy { credentials }
+    return NativeManagedChannelBuilder(target, credentials)
 }
 
 
