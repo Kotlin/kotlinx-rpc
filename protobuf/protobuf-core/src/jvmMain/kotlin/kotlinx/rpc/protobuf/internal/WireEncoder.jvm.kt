@@ -182,6 +182,16 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
         value.encode(this)
     }
 
+    override fun <T : InternalMessage> writeGroupMessage(
+        fieldNr: Int,
+        value: T,
+        encode: T.(WireEncoder) -> Unit,
+    ) {
+        codedOutputStream.writeTag(fieldNr, WireType.START_GROUP.ordinal)
+        value.encode(this)
+        codedOutputStream.writeTag(fieldNr, WireType.END_GROUP.ordinal)
+    }
+
     private inline fun <T> writePackedInternal(
         fieldNr: Int,
         value: List<T>,

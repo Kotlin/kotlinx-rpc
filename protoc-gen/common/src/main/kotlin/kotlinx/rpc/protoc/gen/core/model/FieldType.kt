@@ -40,7 +40,7 @@ sealed interface FieldType {
 
     data class Message(val dec: Lazy<MessageDeclaration>) : FieldType {
         override val defaultValue: String? = null
-        override val wireType: WireType = WireType.LENGTH_DELIMITED
+        override val wireType: WireType by lazy { if (dec.value.isGroup) WireType.START_GROUP else WireType.LENGTH_DELIMITED }
     }
 
     data class OneOf(val dec: OneOfDeclaration) : FieldType {
@@ -52,7 +52,7 @@ sealed interface FieldType {
         simpleName: String,
         override val defaultValue: String,
         override val wireType: WireType,
-        override val isPackable: Boolean = true
+        override val isPackable: Boolean = true,
     ) : FieldType {
         STRING("String", "\"\"", WireType.LENGTH_DELIMITED, false),
         BYTES("ByteArray", "byteArrayOf()", WireType.LENGTH_DELIMITED, false),
@@ -77,7 +77,7 @@ sealed interface FieldType {
 fun FieldType.scalarDefaultSuffix(): String = when (this) {
     FieldType.IntegralType.BOOL -> ""
     FieldType.IntegralType.FLOAT -> "f"
-    FieldType.IntegralType.DOUBLE ->  ""
+    FieldType.IntegralType.DOUBLE -> ""
     FieldType.IntegralType.INT32 -> ""
     FieldType.IntegralType.INT64 -> "L"
     FieldType.IntegralType.UINT32 -> "u"
