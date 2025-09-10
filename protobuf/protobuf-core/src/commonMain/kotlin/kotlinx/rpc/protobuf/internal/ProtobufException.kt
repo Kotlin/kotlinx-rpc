@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.protobuf.internal
 
+import kotlinx.rpc.internal.utils.InternalRpcApi
+
 public sealed class ProtobufException : RuntimeException {
     protected constructor(message: String, cause: Throwable? = null) : super(message, cause)
 }
@@ -13,6 +15,7 @@ public class ProtobufDecodingException : ProtobufException {
     public constructor(message: String, cause: Throwable? = null) : super(message, cause)
 
     public companion object Companion {
+        @InternalRpcApi
         public fun missingRequiredField(messageName: String, fieldName: String): ProtobufDecodingException =
             ProtobufDecodingException("Message '$messageName' is missing a required field: $fieldName")
 
