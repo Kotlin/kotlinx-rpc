@@ -933,22 +933,18 @@ class ModelToProtobufKotlinCommonGenerator(
                 java.lang.Long.toUnsignedString(value) + "uL"
             }
 
-            value is Float -> {
-                when (value.toString()) {
-                    "Infinity" -> "Float.POSITIVE_INFINITY"
-                    "-Infinity" -> "Float.NEGATIVE_INFINITY"
-                    "NaN" -> "Float.NaN"
-                    else -> value.toString() + "f"
-                }
+            value is Float -> when {
+                value.isNaN() -> "Float.NaN"
+                value == Float.POSITIVE_INFINITY -> "Float.POSITIVE_INFINITY"
+                value == Float.NEGATIVE_INFINITY -> "Float.NEGATIVE_INFINITY"
+                else -> "Float.fromBits(0x%08X)".format(java.lang.Float.floatToRawIntBits(value))
             }
 
-            value is Double -> {
-                when (value.toString()) {
-                    "Infinity" -> "Double.POSITIVE_INFINITY"
-                    "-Infinity" -> "Double.NEGATIVE_INFINITY"
-                    "NaN" -> "Double.NaN"
-                    else -> value.toString()
-                }
+            value is Double -> when {
+                value.isNaN() -> "Double.NaN"
+                value == Double.POSITIVE_INFINITY -> "Double.POSITIVE_INFINITY"
+                value == Double.NEGATIVE_INFINITY -> "Double.NEGATIVE_INFINITY"
+                else -> "Double.fromBits(0x%016XL)".format(java.lang.Double.doubleToRawLongBits(value))
             }
 
             else -> {

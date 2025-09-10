@@ -178,8 +178,8 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.editions.pro
     override var defaultFixed64: ULong by MsgFieldDelegate(PresenceIndices.defaultFixed64) { 10123456789123456789uL }
     override var defaultSfixed32: Int by MsgFieldDelegate(PresenceIndices.defaultSfixed32) { -123456789 }
     override var defaultSfixed64: Long by MsgFieldDelegate(PresenceIndices.defaultSfixed64) { -9123456789123456789L }
-    override var defaultFloat: Float by MsgFieldDelegate(PresenceIndices.defaultFloat) { 9.0E9f }
-    override var defaultDouble: Double by MsgFieldDelegate(PresenceIndices.defaultDouble) { 7.0E22 }
+    override var defaultFloat: Float by MsgFieldDelegate(PresenceIndices.defaultFloat) { Float.fromBits(0x50061C46) }
+    override var defaultDouble: Double by MsgFieldDelegate(PresenceIndices.defaultDouble) { Double.fromBits(0x44ADA56A4B0835C0L) }
     override var defaultBool: Boolean by MsgFieldDelegate(PresenceIndices.defaultBool) { true }
     override var defaultString: String by MsgFieldDelegate(PresenceIndices.defaultString) { "Rosebud" }
     override var defaultBytes: ByteArray by MsgFieldDelegate(PresenceIndices.defaultBytes) { BytesDefaults.defaultBytes }
@@ -1148,8 +1148,8 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.edit
     override var defaultFixed64: ULong by MsgFieldDelegate(PresenceIndices.defaultFixed64) { 10123456789123456789uL }
     override var defaultSfixed32: Int by MsgFieldDelegate(PresenceIndices.defaultSfixed32) { -123456789 }
     override var defaultSfixed64: Long by MsgFieldDelegate(PresenceIndices.defaultSfixed64) { -9123456789123456789L }
-    override var defaultFloat: Float by MsgFieldDelegate(PresenceIndices.defaultFloat) { 9.0E9f }
-    override var defaultDouble: Double by MsgFieldDelegate(PresenceIndices.defaultDouble) { 7.0E22 }
+    override var defaultFloat: Float by MsgFieldDelegate(PresenceIndices.defaultFloat) { Float.fromBits(0x50061C46) }
+    override var defaultDouble: Double by MsgFieldDelegate(PresenceIndices.defaultDouble) { Double.fromBits(0x44ADA56A4B0835C0L) }
     override var defaultBool: Boolean by MsgFieldDelegate(PresenceIndices.defaultBool) { true }
     override var defaultString: String by MsgFieldDelegate(PresenceIndices.defaultString) { "Rosebud" }
     override var defaultBytes: ByteArray by MsgFieldDelegate(PresenceIndices.defaultBytes) { BytesDefaults.defaultBytes }
