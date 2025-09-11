@@ -86,3 +86,14 @@ tasks.withType<BufGenerateTask>().configureEach {
         outputDirectory = generatedCodeDir
     }
 }
+
+// TODO: What is the correct way to declare this dependency?
+//  (without it fails when executing "publishAllPublicationsToBuildRepository")"
+val bufGenerateCommonMain = tasks.named("bufGenerateCommonMain")
+
+tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
+    // Only for sources jars
+    if (archiveClassifier.orNull == "sources" || name.endsWith("SourcesJar")) {
+        dependsOn(bufGenerateCommonMain)
+    }
+}
