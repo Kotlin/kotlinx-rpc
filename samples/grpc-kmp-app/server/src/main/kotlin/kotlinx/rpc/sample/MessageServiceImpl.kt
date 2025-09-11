@@ -19,7 +19,6 @@ class MessageServiceImpl: MessageService {
     private val bus = MutableSharedFlow<ChatEntry>(extraBufferCapacity = 64, replay = 0)
 
     override suspend fun SendMessage(message: SendMessageRequest): SendMessageResponse {
-        // ensure server timestamp / id if you carry those
         val entry = ChatEntry {
             user = message.user
             text = message.text
@@ -30,7 +29,6 @@ class MessageServiceImpl: MessageService {
     }
 
     override fun ReceiveMessages(message: ReceiveMessagesRequest): Flow<ChatEntry> {
-        // broadcast to everyone
         return bus.asSharedFlow()
             .filter { it.user != message.user }
     }

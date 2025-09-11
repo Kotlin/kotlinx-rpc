@@ -95,7 +95,6 @@ private fun ChatScreen(service: MessageService) {
         }
     }
 
-    // Start/refresh the server stream whenever "me" changes
     LaunchedEffect(me) {
         messages.clear()
         val req = ReceiveMessagesRequest { user = me }
@@ -155,17 +154,14 @@ fun MessageBubble(
 ) {
     val isMe = message.user == me
 
-    // bubble colors
     val bubbleColor = if (isMe) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
     val textColor = if (isMe) Color.White else Color.Black
 
-    // formatted time
     val local = Instant.fromEpochMilliseconds(message.tsMillis)
         .toLocalDateTime(TimeZone.currentSystemDefault())
     // e.g. "14:05"
     val timeText = "${local.hour.toString().padStart(2, '0')}:${local.minute.toString().padStart(2, '0')}"
 
-    // alignment: messages from me align to right, others to left
     Row(
         modifier = modifier
             .fillMaxWidth()
