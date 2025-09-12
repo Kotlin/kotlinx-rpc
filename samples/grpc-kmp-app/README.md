@@ -1,22 +1,13 @@
-This is a Kotlin Multiplatform project targeting iOS, Desktop (JVM), Server.
+This is a Kotlin Multiplatform project targeting iOS, Desktop (JVM), Server, demonstrating the `kotlinx.rpc` library 
+for gRPC.
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+* [/composeApp](./composeApp/src) is for code that will be shared across Compose Multiplatform applications.
+  - [commonMain](./composeApp/src/commonMain/kotlin) contains all the relevant gRPC client application code for all platforms.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
-
-* [/server](./server/src/main/kotlin) is for the Ktor server application.
+* [/server](./server/src/main/kotlin) is for the gRPC server application.
 
 * [/shared](./shared/src) is for the code that will be shared between all targets in the project.
-  The most important subfolder is [commonMain](./shared/src/commonMain/kotlin). If preferred, you
-  can add code to the platform-specific folders here too.
+  It contains the proto files and the generated code used by both, the server and the client applications.
 
 ### Build and Run Desktop (JVM) Application
 
@@ -33,7 +24,7 @@ in your IDE’s toolbar or run it directly from the terminal:
 
 ### Build and Run Server
 
-To build and run the development version of the server, use the run configuration from the run widget
+To build and run the server, use the run configuration from the run widget
 in your IDE’s toolbar or run it directly from the terminal:
 - on macOS/Linux
   ```shell
