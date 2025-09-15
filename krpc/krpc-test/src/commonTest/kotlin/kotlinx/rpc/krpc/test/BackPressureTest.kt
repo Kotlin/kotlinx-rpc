@@ -138,10 +138,10 @@ abstract class BackPressureTestBase {
                 repeat(1000) {
                     impl.clientStreamCounter.incrementAndGet()
                     emit(it)
-                }
-                counter++
-                if (counter % 10 == 0) {
-                    println("Iteration: $counter")
+                    counter++
+                    if (counter % 10 == 0) {
+                        println("Iteration: $counter")
+                    }
                 }
             })
         }
