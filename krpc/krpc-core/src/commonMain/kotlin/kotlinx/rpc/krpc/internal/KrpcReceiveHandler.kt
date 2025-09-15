@@ -149,10 +149,15 @@ internal class KrpcActingReceiveHandler(
         while (true) {
             val (message, onMessageFailure) = storingHandler.receiveCatching().getOrNull() ?: break
 
-            val result = withTimeoutOrNull(timeout) { tryHandle(message) }
-                ?: HandlerResult.Failure(
+            val result = if (timeout == Duration.INFINITE) {
+                tryHandle(message)
+            } else {
+                withTimeoutOrNull(timeout) {
+                    tryHandle(message)
+                } ?: HandlerResult.Failure(
                     illegalStateException("Timeout while processing message")
                 )
+            }
 
             if (result is HandlerResult.Failure) {
                 onMessageFailure(result.cause)
