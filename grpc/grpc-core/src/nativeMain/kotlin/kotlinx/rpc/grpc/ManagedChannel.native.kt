@@ -34,7 +34,7 @@ internal class NativeManagedChannelBuilder(
     private var authority: String? = null
 
     override fun usePlaintext(): NativeManagedChannelBuilder {
-        credentials = lazy { InsecureChannelCredentials() }
+        credentials = lazy { createInsecureClientCredentials() }
         return this
     }
 

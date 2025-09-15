@@ -43,7 +43,7 @@ private class NativeServerBuilder(
 }
 
 internal actual fun ServerBuilder(port: Int, credentials: ServerCredentials?): ServerBuilder<*> {
-    return NativeServerBuilder(port, credentials ?: InsecureServerCredentials())
+    return NativeServerBuilder(port, credentials ?: createInsecureServerCredentials())
 }
 
 internal actual fun Server(builder: ServerBuilder<*>): Server {
