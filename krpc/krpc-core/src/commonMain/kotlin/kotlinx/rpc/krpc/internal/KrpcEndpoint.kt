@@ -5,6 +5,7 @@
 package kotlinx.rpc.krpc.internal
 
 import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.launch
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
@@ -43,7 +44,11 @@ public interface KrpcEndpoint {
                 ).toMap()
             )
 
-            sender.sendMessage(message)
+            try {
+                sender.sendMessage(message)
+            } catch (_: ClosedSendChannelException) {
+                // ignore, call was already closed
+            }
         }
 
         if (closeTransportAfterSending) {

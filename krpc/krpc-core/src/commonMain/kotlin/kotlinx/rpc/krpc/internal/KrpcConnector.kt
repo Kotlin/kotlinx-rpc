@@ -9,7 +9,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -67,6 +69,15 @@ public class KrpcConnector(
     private var peerSupportsBackPressure = false
 
     private val dumpLogger by lazy { RpcInternalDumpLoggerContainer.provide() }
+
+    // prevent errors ping-pong
+    private suspend fun sendMessageIgnoreClosure(message: KrpcMessage) {
+        try {
+            sendMessage(message)
+        } catch (_: ClosedSendChannelException) {
+            // ignore
+        }
+    }
 
     override suspend fun sendMessage(message: KrpcMessage) {
         if (message is KrpcProtocolMessage.Handshake) {
@@ -271,6 +282,13 @@ public class KrpcConnector(
                 processMessage(transport.receiveCatching().getOrNull() ?: break)
             }
         }
+
+        transportScope.coroutineContext.job.invokeOnCompletion {
+            receiveHandlers.clear()
+            keyLocks.clear()
+            serviceSubscriptions.clear()
+            sendHandlers.clear()
+        }
     }
 
     private fun decodeMessage(transportMessage: KrpcTransportMessage): KrpcMessage? {
@@ -344,7 +362,7 @@ public class KrpcConnector(
             }
 
             is WindowResult.Failure -> {
-                sendMessage(
+                sendMessageIgnoreClosure(
                     KrpcProtocolMessage.Failure(
                         errorMessage = result.message,
                         connectionId = message.connectionId,
@@ -384,13 +402,18 @@ public class KrpcConnector(
             val handler = handlerFor(key)
 
             handler.handle(message) { cause ->
+                if (message.isException) {
+                    return@handle
+                }
+
                 val failure = KrpcProtocolMessage.Failure(
                     connectionId = message.connectionId,
                     errorMessage = "Failed to process $key, error: ${cause?.message}",
                     failedMessage = message,
                 )
 
-                sendMessage(failure)
+                // too late for exceptions
+                sendMessageIgnoreClosure(failure)
             }
         }?.onFailure {
             if (message.isException) {
@@ -403,7 +426,8 @@ public class KrpcConnector(
                 failedMessage = message,
             )
 
-            sendMessage(failure)
+            // too late for exceptions
+            sendMessageIgnoreClosure(failure)
         }?.onClosed {
             // do nothing; it's a service message, meaning that the service is dead
         }
@@ -424,6 +448,10 @@ public class KrpcConnector(
                 }
 
             val result = handler.handle(message) { initialCause ->
+                if (message.isException) {
+                    return@handle
+                }
+
                 val cause = illegalStateException(
                     message = "Failed to process call ${message.callId} for service ${message.serviceType}",
                     cause = initialCause,
