@@ -34,6 +34,7 @@ import kotlinx.rpc.krpc.internal.isFailure
 import kotlinx.rpc.krpc.internal.isSuccess
 import kotlinx.rpc.krpc.internal.onClosed
 import kotlinx.rpc.krpc.internal.onFailure
+import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -232,16 +233,14 @@ internal abstract class KrpcReceiveHandlerBaseTest {
         bufferSize: Int,
         timeout: Duration = 30.seconds,
         body: suspend TestConfig.() -> Unit,
-    ) = kotlinx.coroutines.test.runTest(timeout = timeout) {
-        debugCoroutines()
-
+    ) = runTestWithCoroutinesProbes(timeout = timeout) {
         val buffer = KrpcReceiveBuffer(
             bufferSize = { bufferSize },
         )
 
         val channel = Channel<KrpcMessage>(Channel.UNLIMITED)
 
-        val senderJob = Job(this@runTest.coroutineContext.job)
+        val senderJob = Job(this@runTestWithCoroutinesProbes.coroutineContext.job)
         val sender = object : KrpcMessageSender {
             override suspend fun sendMessage(message: KrpcMessage) {
                 channel.send(message)

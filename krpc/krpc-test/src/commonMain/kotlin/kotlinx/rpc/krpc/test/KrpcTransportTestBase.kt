@@ -19,6 +19,7 @@ import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration
 import kotlinx.rpc.krpc.server.KrpcServer
 import kotlinx.rpc.registerService
+import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlinx.rpc.withService
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
@@ -493,8 +494,7 @@ abstract class KrpcTransportTestBase {
     }
 
     private fun runTest(timeout: Duration = 10.seconds, testBody: suspend TestScope.() -> Unit): TestResult {
-        debugCoroutines()
-        return kotlinx.coroutines.test.runTest(timeout = timeout, testBody = testBody)
+        return runTestWithCoroutinesProbes(timeout = timeout, body = testBody)
     }
 }
 

@@ -74,6 +74,7 @@ dependencies {
     testImplementation(projects.krpc.krpcServer)
     testImplementation(projects.krpc.krpcClient)
     testImplementation(projects.krpc.krpcSerialization.krpcSerializationJson)
+    testImplementation(projects.tests.testUtils)
 
     testImplementation(libs.coroutines.test)
     testImplementation(libs.kotlin.test.junit5)

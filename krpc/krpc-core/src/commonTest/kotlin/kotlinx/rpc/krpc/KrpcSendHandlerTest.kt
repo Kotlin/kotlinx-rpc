@@ -12,6 +12,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.yield
 import kotlinx.rpc.krpc.internal.KrpcSendHandler
+import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
@@ -112,9 +113,7 @@ internal abstract class KrpcSendHandlerBaseTest {
     protected fun runTest(
         timeout: Duration = 10.seconds,
         body: suspend TestScope.(Channel<KrpcTransportMessage>, KrpcSendHandler) -> Unit,
-    ) = kotlinx.coroutines.test.runTest(timeout = timeout) {
-        debugCoroutines()
-
+    ) = runTestWithCoroutinesProbes(timeout = timeout) {
         val channel = Channel<KrpcTransportMessage>(
             capacity = Channel.UNLIMITED,
         )

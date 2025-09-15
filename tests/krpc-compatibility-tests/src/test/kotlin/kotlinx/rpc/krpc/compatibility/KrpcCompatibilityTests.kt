@@ -6,14 +6,15 @@ package kotlinx.rpc.krpc.compatibility
 
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.job
-import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
+import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
 import java.net.URLClassLoader
 import java.util.stream.Stream
+import kotlin.time.Duration.Companion.seconds
 
 class KrpcCompatibilityTests {
     private class ClientServer(private val clientClassLoader: URLClassLoader, val serverClassLoader: URLClassLoader) :
@@ -64,7 +65,7 @@ class KrpcCompatibilityTests {
     private fun compatibilityTests(clientServer: ClientServer): Stream<DynamicTest> {
         return clientServer.client.getAllTests().map { (name, test) ->
             DynamicTest.dynamicTest(name) {
-                runTest {
+                runTestWithCoroutinesProbes(timeout = 60.seconds) {
                     val localTransport = LocalTransport()
                     val server = KrpcTestServer(rpcServerConfig, localTransport.server)
                     val client = KrpcTestClient(rpcClientConfig, localTransport.client)

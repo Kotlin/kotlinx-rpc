@@ -6,10 +6,8 @@ package kotlinx.rpc.krpc.test.cancellation
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.TestResult
-import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.krpc.KrpcConfigBuilder
 import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
-import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
 import kotlinx.rpc.krpc.internal.logging.dumpLogger
 import kotlinx.rpc.krpc.rpcClientConfig
@@ -18,14 +16,13 @@ import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.krpc.test.KrpcTestClient
 import kotlinx.rpc.krpc.test.KrpcTestServer
 import kotlinx.rpc.krpc.test.LocalTransport
-import kotlinx.rpc.krpc.test.debugCoroutines
 import kotlinx.rpc.registerService
+import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlinx.rpc.withService
 import kotlin.time.Duration.Companion.seconds
 
 fun runCancellationTest(body: suspend CancellationToolkit.() -> Unit): TestResult {
-    return runTest(timeout = 15.seconds) {
-        debugCoroutines()
+    return runTestWithCoroutinesProbes(timeout = 15.seconds) {
         val toolkit = CancellationToolkit(this)
         try {
             body(toolkit)

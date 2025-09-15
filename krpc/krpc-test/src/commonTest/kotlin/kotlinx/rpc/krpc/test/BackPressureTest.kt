@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.job
-import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.yield
 import kotlinx.rpc.annotations.Rpc
@@ -22,6 +21,7 @@ import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.registerService
+import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -157,7 +157,7 @@ abstract class BackPressureTestBase {
         perCallBufferSize: Int,
         timeout: Duration = 10.seconds,
         body: suspend TestScope.(BackPressure, BackPressureImpl) -> Unit,
-    ): TestResult = kotlinx.coroutines.test.runTest(timeout = timeout) {
+    ) = runTestWithCoroutinesProbes(timeout = timeout) {
         val transport = LocalTransport(coroutineContext, recordTimestamps = false)
         val clientConfig = rpcClientConfig {
             serialization {

@@ -6,6 +6,8 @@ package kotlinx.rpc.krpc.test.compat
 
 import ch.qos.logback.classic.Logger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.test.TestScope
 import org.junit.jupiter.api.DynamicTest
 import org.slf4j.LoggerFactory
@@ -70,6 +72,7 @@ abstract class KrpcProtocolCompatibilityTestsBase {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun runTest(
         role: Role,
         exclude: List<Versions>,
@@ -79,15 +82,17 @@ abstract class KrpcProtocolCompatibilityTestsBase {
         return prepareStarters(exclude).map {
             DynamicTest.dynamicTest("$role ${it.version}") {
                 kotlinx.coroutines.test.runTest(timeout = timeout) {
-                    val root = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
-                    val testAppender = root.getAppender("TEST") as TestLogAppender
-                    testAppender.events.clear()
-                    try {
-                        val env = TestEnv(it.starter, it.starter, testAppender, this)
-                        body(env)
-                    } finally {
+                    DebugProbes.withDebugProbes {
+                        val root = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
+                        val testAppender = root.getAppender("TEST") as TestLogAppender
                         testAppender.events.clear()
-                        it.close()
+                        try {
+                            val env = TestEnv(it.starter, it.starter, testAppender, this)
+                            body(env)
+                        } finally {
+                            testAppender.events.clear()
+                            it.close()
+                        }
                     }
                 }
             }

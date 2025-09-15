@@ -6,6 +6,7 @@ package kotlinx.rpc.krpc.test
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import kotlinx.rpc.test.runThreadIfPossible
 import kotlinx.serialization.Serializable
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertContentEquals
@@ -267,7 +268,3 @@ class KrpcTestServiceBackend : KrpcTestService {
         }
     }
 }
-
-internal expect fun runThreadIfPossible(runner: () -> Unit)
-
-internal expect fun debugCoroutines()

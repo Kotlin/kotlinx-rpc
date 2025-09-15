@@ -27,6 +27,7 @@ kotlin {
                 implementation(projects.krpc.krpcKtor.krpcKtorServer)
                 implementation(projects.krpc.krpcKtor.krpcKtorClient)
                 implementation(projects.krpc.krpcLogging)
+                implementation(projects.tests.testUtils)
 
                 implementation(libs.kotlin.test)
                 implementation(libs.ktor.server.netty)

@@ -28,6 +28,7 @@ import kotlinx.rpc.krpc.internal.KrpcPlugin
 import kotlinx.rpc.krpc.internal.KrpcPluginKey
 import kotlinx.rpc.krpc.internal.KrpcProtocolMessage
 import kotlinx.rpc.krpc.internal.deserialize
+import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlinx.serialization.json.Json
 import kotlin.coroutines.CoroutineContext
 import kotlin.js.JsName
@@ -331,9 +332,7 @@ abstract class KrpcConnectorBaseTest {
         callTimeout: Duration = 1.seconds,
         perCallBufferSize: Int = 100,
         body: suspend TestScope.(clientConnector: KrpcConnector, serverConnector: KrpcConnector) -> Unit,
-    ) = kotlinx.coroutines.test.runTest(timeout = testTimeout) {
-        debugCoroutines()
-
+    ) = runTestWithCoroutinesProbes(timeout = testTimeout) {
         val connectorConfig = KrpcConfig.Connector(waitTimeout, callTimeout, perCallBufferSize)
 
         val transport = LocalTransport(coroutineContext)

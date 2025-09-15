@@ -12,6 +12,7 @@ import kotlinx.rpc.krpc.internal.KrpcReceiveBuffer
 import kotlinx.rpc.krpc.internal.isClosed
 import kotlinx.rpc.krpc.internal.isFailure
 import kotlinx.rpc.krpc.internal.isSuccess
+import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -70,9 +71,7 @@ internal abstract class KrpcReceiveBufferBaseTest {
         bufferSize: Int,
         timeout: Duration = 10.seconds,
         body: suspend TestScope.(KrpcReceiveBuffer) -> Unit,
-    ) = kotlinx.coroutines.test.runTest(timeout = timeout) {
-        debugCoroutines()
-
+    ) = runTestWithCoroutinesProbes(timeout = timeout) {
         val buffer = KrpcReceiveBuffer(
             bufferSize = { bufferSize },
         )

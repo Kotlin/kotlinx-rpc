@@ -52,6 +52,7 @@ includePublic(":krpc:krpc-ktor:krpc-ktor-server")
 includePublic(":krpc:krpc-ktor:krpc-ktor-client")
 
 include(":tests")
+include(":tests:test-utils")
 include(":tests:krpc-compatibility-tests")
 include(":tests:krpc-protocol-compatibility-tests")
 

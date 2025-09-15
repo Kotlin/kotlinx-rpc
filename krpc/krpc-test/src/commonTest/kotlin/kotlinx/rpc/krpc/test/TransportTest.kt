@@ -21,6 +21,7 @@ import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
+import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -85,9 +86,7 @@ class TransportTest {
         timeout: Duration = 120.seconds,
         times: Int = testIterations,
         block: suspend TestScope.(logs: List<String>) -> Unit,
-    ): TestResult = kotlinx.coroutines.test.runTest(timeout = timeout) {
-        debugCoroutines()
-
+    ): TestResult = runTestWithCoroutinesProbes(timeout = timeout) {
         repeat(times) {
             val logs = mutableListOf<String>()
             val logsChannel = Channel<String>(Channel.UNLIMITED)

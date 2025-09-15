@@ -37,6 +37,8 @@ kotlin {
                 api(projects.krpc.krpcClient)
                 api(projects.krpc.krpcLogging)
 
+                implementation(projects.tests.testUtils)
+
                 implementation(projects.krpc.krpcSerialization.krpcSerializationJson)
 
                 implementation(libs.serialization.core)

@@ -21,8 +21,10 @@ import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.krpc.server.KrpcServer
 import kotlinx.rpc.registerService
+import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlinx.rpc.withService
 import kotlinx.serialization.BinaryFormat
+import kotlin.time.Duration.Companion.seconds
 
 abstract class ProtocolTestBase {
     protected fun runTest(
@@ -38,7 +40,7 @@ abstract class ProtocolTestBase {
         },
         block: suspend TestBody.() -> Unit,
     ): TestResult {
-        return kotlinx.coroutines.test.runTest {
+        return runTestWithCoroutinesProbes(timeout = 60.seconds) {
             val finished = TestBody(clientConfig, serverConfig, this)
 
             try {
