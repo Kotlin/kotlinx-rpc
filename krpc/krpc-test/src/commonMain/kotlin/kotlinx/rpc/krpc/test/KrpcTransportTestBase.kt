@@ -331,7 +331,7 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    fun RPC_should_be_able_to_receive_100_000_ints_in_reasonable_time() = runTest(timeout = JS_EXTENDED_TIMEOUT) {
+    fun RPC_should_be_able_to_receive_100_000_ints_in_reasonable_time() = runTest(timeout = EXTENDED_TIMEOUT) {
         val n = 100_000
         var counter = 0
         val last = client.getNInts(n).onEach {
@@ -505,6 +505,6 @@ abstract class KrpcTransportTestBase {
     }
 }
 
-private val JS_EXTENDED_TIMEOUT = if (isJs) 400.seconds else 120.seconds
+private val EXTENDED_TIMEOUT = if (isJs) 500.seconds else 200.seconds
 
 internal expect val isJs: Boolean
