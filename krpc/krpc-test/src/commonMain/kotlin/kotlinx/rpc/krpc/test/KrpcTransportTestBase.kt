@@ -333,7 +333,14 @@ abstract class KrpcTransportTestBase {
     @Test
     fun RPC_should_be_able_to_receive_100_000_ints_in_reasonable_time() = runTest(timeout = JS_EXTENDED_TIMEOUT) {
         val n = 100_000
-        assertEquals(client.getNInts(n).last(), n)
+        var counter = 0
+        val last = client.getNInts(n).onEach {
+            counter++
+            if (counter % 1000 == 0) {
+                println("Iteration: $counter")
+            }
+        }.last()
+        assertEquals(n, last)
     }
 
     @Test

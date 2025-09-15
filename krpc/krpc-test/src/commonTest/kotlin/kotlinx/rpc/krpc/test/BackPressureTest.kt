@@ -99,11 +99,16 @@ abstract class BackPressureTestBase {
         perCallBufferSize: Int,
         timeout: Duration = 10.seconds,
     ) = runTest(perCallBufferSize, timeout) { service, impl ->
+        var counter = 0
         val flowList = async {
             service.serverStream(1000).map {
                 if (it == 0) {
                     impl.entered.complete(Unit)
                     impl.fence.await()
+                }
+                counter++
+                if (counter % 10 == 0) {
+                    println("Iteration: $counter")
                 }
             }.toList()
         }
@@ -127,11 +132,16 @@ abstract class BackPressureTestBase {
         perCallBufferSize: Int,
         timeout: Duration = 10.seconds,
     ) = runTest(perCallBufferSize, timeout) { service, impl ->
+        var counter = 0
         val flowList = async {
             service.clientStream(flow {
                 repeat(1000) {
                     impl.clientStreamCounter.incrementAndGet()
                     emit(it)
+                }
+                counter++
+                if (counter % 10 == 0) {
+                    println("Iteration: $counter")
                 }
             })
         }

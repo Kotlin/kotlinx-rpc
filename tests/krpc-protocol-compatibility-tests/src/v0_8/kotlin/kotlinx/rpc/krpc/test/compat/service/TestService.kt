@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.flow.zip
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.test.compat.CompatServiceImpl
 import kotlin.coroutines.cancellation.CancellationException
@@ -20,7 +19,7 @@ interface TestService {
     suspend fun unary(n: Int): Int
     fun serverStreaming(num: Int): Flow<Int>
     suspend fun clientStreaming(n: Flow<Int>): Int
-    fun bidiStreaming(flow1: Flow<Int>, flow2: Flow<Int>): Flow<Int>
+    fun bidiStreaming(flow: Flow<Int>): Flow<Int>
 
     suspend fun requestCancellation()
     fun serverStreamCancellation(): Flow<Int>
@@ -42,8 +41,8 @@ class TestServiceImpl : TestService, CompatServiceImpl {
         return n.toList().sum()
     }
 
-    override fun bidiStreaming(flow1: Flow<Int>, flow2: Flow<Int>): Flow<Int> {
-        return flow1.zip(flow2) { a, b -> a + b }
+    override fun bidiStreaming(flow: Flow<Int>): Flow<Int> {
+        return flow
     }
 
     private val _exitMethod = atomic(0)

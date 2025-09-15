@@ -22,7 +22,7 @@ interface CompatService {
     suspend fun unary(n: Int): Int
     fun serverStreaming(num: Int): Flow<Int>
     suspend fun clientStreaming(n: Flow<Int>): Int
-    fun bidiStreaming(flow1: Flow<Int>, flow2: Flow<Int>): Flow<Int>
+    fun bidiStreaming(flow: Flow<Int>): Flow<Int>
 
     suspend fun requestCancellation()
     fun serverStreamCancellation(): Flow<Int>

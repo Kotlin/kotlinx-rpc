@@ -8,7 +8,6 @@ import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.flow.zip
 import kotlinx.rpc.annotations.Rpc
 
 @Rpc
@@ -16,7 +15,7 @@ interface TestService {
     suspend fun unary(n: Int): Int
     fun serverStreaming(num: Int): Flow<Int>
     suspend fun clientStreaming(n: Flow<Int>): Int
-    fun bidiStreaming(flow1: Flow<Int>, flow2: Flow<Int>): Flow<Int>
+    fun bidiStreaming(flow: Flow<Int>): Flow<Int>
 }
 
 class TestServiceImpl : TestService {
@@ -40,8 +39,8 @@ class TestServiceImpl : TestService {
         return n.toList().sum()
     }
 
-    override fun bidiStreaming(flow1: Flow<Int>, flow2: Flow<Int>): Flow<Int> {
+    override fun bidiStreaming(flow: Flow<Int>): Flow<Int> {
         bidiStreamingInvocations.incrementAndGet()
-        return flow1.zip(flow2) { a, b -> a + b }
+        return flow
     }
 }

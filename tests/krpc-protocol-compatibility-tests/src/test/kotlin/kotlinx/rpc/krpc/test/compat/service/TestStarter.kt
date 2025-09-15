@@ -68,11 +68,8 @@ class TestStarter : Starter {
                 return service.clientStreaming(n)
             }
 
-            override fun bidiStreaming(
-                flow1: Flow<Int>,
-                flow2: Flow<Int>,
-            ): Flow<Int> {
-                return service.bidiStreaming(flow1, flow2)
+            override fun bidiStreaming(flow: Flow<Int>): Flow<Int> {
+                return service.bidiStreaming(flow)
             }
 
             override suspend fun requestCancellation() {

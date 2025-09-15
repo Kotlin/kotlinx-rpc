@@ -62,11 +62,19 @@ class TransportTest {
         serialization {
             json()
         }
+
+        connector {
+            waitTimeout = Duration.INFINITE
+        }
     }
 
     private val serverConfig = rpcServerConfig {
         serialization {
             json()
+        }
+
+        connector {
+            waitTimeout = Duration.INFINITE
         }
     }
 

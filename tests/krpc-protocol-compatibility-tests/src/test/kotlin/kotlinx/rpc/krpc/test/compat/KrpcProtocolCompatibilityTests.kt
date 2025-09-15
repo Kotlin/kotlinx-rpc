@@ -62,15 +62,15 @@ class KrpcProtocolCompatibilityTests : KrpcProtocolCompatibilityTestsBase() {
     @TestFactory
     fun bidiStreamCalls() = matrixTest { service, _ ->
         assertEquals(
-            2,
-            service.bidiStreaming((1..1).asFlow(), (1..1).asFlow()).toList().sum()
+            1,
+            service.bidiStreaming((1..1).asFlow()).toList().sum()
         )
 
         List(100) {
             launch {
                 assertEquals(
-                    (it + 1) * (it + 2),
-                    service.bidiStreaming((1..it + 1).asFlow(), (1..it + 1).asFlow()).toList().sum(),
+                    (it + 1) * (it + 2) / 2,
+                    service.bidiStreaming((1..it + 1).asFlow()).toList().sum(),
                 )
             }
         }.joinAll()

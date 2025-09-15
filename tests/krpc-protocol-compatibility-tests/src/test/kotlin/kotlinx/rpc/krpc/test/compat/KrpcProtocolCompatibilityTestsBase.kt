@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.test.TestScope
+import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import org.junit.jupiter.api.DynamicTest
 import org.slf4j.LoggerFactory
 import java.net.URLClassLoader
@@ -81,7 +82,7 @@ abstract class KrpcProtocolCompatibilityTestsBase {
     ): Stream<DynamicTest> {
         return prepareStarters(exclude).map {
             DynamicTest.dynamicTest("$role ${it.version}") {
-                kotlinx.coroutines.test.runTest(timeout = timeout) {
+                runTestWithCoroutinesProbes(timeout = timeout) {
                     DebugProbes.withDebugProbes {
                         val root = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
                         val testAppender = root.getAppender("TEST") as TestLogAppender

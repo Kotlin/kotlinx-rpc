@@ -17,8 +17,6 @@ abstract class BaseServiceTest {
     class Env(
         val service: TestService,
         val impl: TestServiceImpl,
-        val client: KrpcTestClient,
-        val server: KrpcTestServer,
         val transport: LocalTransport,
         testScope: CoroutineScope,
     ) : CoroutineScope by testScope
@@ -57,7 +55,7 @@ abstract class BaseServiceTest {
         val impl = TestServiceImpl()
         server.registerService<TestService> { impl }
 
-        val env = Env(service, impl, client, server, transport, this)
+        val env = Env(service, impl, transport, this)
         try {
             body(env)
         } finally {
