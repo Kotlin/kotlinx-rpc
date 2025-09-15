@@ -8,8 +8,7 @@ import com.google.protobuf.kotlin.Empty
 import com.google.protobuf.kotlin.EmptyInternal
 import com.google.protobuf.kotlin.invoke
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.grpc.ManagedChannelBuilder
-import kotlinx.rpc.grpc.buildChannel
+import kotlinx.rpc.grpc.GrpcClient
 import kotlinx.rpc.grpc.internal.MethodType
 import kotlinx.rpc.grpc.internal.methodDescriptor
 import kotlinx.rpc.grpc.internal.unaryRpc
@@ -35,11 +34,7 @@ class JavaPackageOptionTest : GrpcProtoTest() {
      * Tests that the generated service descriptor uses the `package` name.
      */
     @Test
-    fun testJavaPackageOptionRaw() = runGrpcTest { _ ->
-        val channel = ManagedChannelBuilder("localhost", PORT)
-            .usePlaintext()
-            .buildChannel()
-
+    fun testJavaPackageOptionRaw() = runGrpcTest { client ->
         val descriptor = methodDescriptor(
             fullMethodName = "protopackage.TheService/TheMethod",
             requestCodec = EmptyInternal.CODEC,
@@ -51,7 +46,7 @@ class JavaPackageOptionTest : GrpcProtoTest() {
             sampledToLocalTracing = true,
         )
 
-        unaryRpc(channel.platformApi, descriptor, Empty {})
+        client.unaryRpc(descriptor, Empty {})
 
         // just reach this without an error
     }

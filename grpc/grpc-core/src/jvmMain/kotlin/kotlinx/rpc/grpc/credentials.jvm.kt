@@ -16,6 +16,11 @@ public actual typealias InsecureServerCredentials = io.grpc.InsecureServerCreden
 public actual typealias TlsClientCredentials = io.grpc.TlsChannelCredentials
 public actual typealias TlsServerCredentials = io.grpc.TlsServerCredentials
 
+
+internal actual fun createInsecureClientCredentials(): ClientCredentials {
+    return InsecureClientCredentials.create()
+}
+
 internal actual fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder = JvmTlsCLientCredentialBuilder()
 internal actual fun TlsServerCredentialsBuilder(
     certChain: String,
@@ -81,5 +86,3 @@ private fun TlsClientAuth.toJava(): io.grpc.TlsServerCredentials.ClientAuth = wh
     TlsClientAuth.OPTIONAL -> io.grpc.TlsServerCredentials.ClientAuth.OPTIONAL
     TlsClientAuth.REQUIRE -> io.grpc.TlsServerCredentials.ClientAuth.REQUIRE
 }
-
-

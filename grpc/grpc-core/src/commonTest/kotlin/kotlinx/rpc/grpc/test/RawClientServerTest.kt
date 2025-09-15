@@ -14,10 +14,9 @@ import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.io.readString
 import kotlinx.io.writeString
-import kotlinx.rpc.grpc.ManagedChannelBuilder
+import kotlinx.rpc.grpc.GrpcClient
 import kotlinx.rpc.grpc.Server
 import kotlinx.rpc.grpc.ServerBuilder
-import kotlinx.rpc.grpc.buildChannel
 import kotlinx.rpc.grpc.codec.SourcedMessageCodec
 import kotlinx.rpc.grpc.internal.GrpcChannel
 import kotlinx.rpc.grpc.internal.MethodDescriptor
@@ -48,8 +47,8 @@ class RawClientServerTest {
         methodDefinition = { descriptor ->
             unaryServerMethodDefinition(descriptor, typeOf<String>()) { it + it }
         },
-    ) { channel, descriptor ->
-        val response = unaryRpc(channel, descriptor, "Hello")
+    ) { client, descriptor ->
+        val response = client.unaryRpc(descriptor, "Hello")
 
         assertEquals("HelloHello", response)
     }
@@ -63,8 +62,8 @@ class RawClientServerTest {
                 flowOf(it, it)
             }
         }
-    ) { channel, descriptor ->
-        val response = serverStreamingRpc(channel, descriptor, "Hello")
+    ) { client, descriptor ->
+        val response = client.serverStreamingRpc(descriptor, "Hello")
 
         assertEquals(listOf("Hello", "Hello"), response.toList())
     }
@@ -78,40 +77,41 @@ class RawClientServerTest {
                 it.toList().joinToString(separator = "")
             }
         }
-    ) { channel, descriptor ->
-        val response = clientStreamingRpc(channel, descriptor, flowOf("Hello", "World"))
+    ) { client, descriptor ->
+        val response = client.clientStreamingRpc(descriptor, flowOf("Hello", "World"))
 
         assertEquals("HelloWorld", response)
     }
 
     @Test
-    fun bidirectionalStreamingCall() = runTest(
-        methodName = "bidirectionalStreaming",
-        type = MethodType.BIDI_STREAMING,
-        methodDefinition = { descriptor ->
-            bidiStreamingServerMethodDefinition(descriptor, typeOf<String>()) {
-                it.map { str -> str + str }
+    fun bidirectionalStreamingCall() {
+        runTest(
+            methodName = "bidirectionalStreaming",
+            type = MethodType.BIDI_STREAMING,
+            methodDefinition = { descriptor ->
+                bidiStreamingServerMethodDefinition(descriptor, typeOf<String>()) {
+                    it.map { str -> str + str }
+                }
             }
+        ) { client, descriptor ->
+            val response = client.bidirectionalStreamingRpc(descriptor, flowOf("Hello", "World"))
+                .toList()
+
+            assertEquals(listOf("HelloHello", "WorldWorld"), response)
         }
-    ) { channel, descriptor ->
-        val response = bidirectionalStreamingRpc(channel, descriptor, flowOf("Hello", "World"))
-            .toList()
-
-        assertEquals(listOf("HelloHello", "WorldWorld"), response)
     }
-
     private fun runTest(
         methodName: String,
         type: MethodType,
         methodDefinition: CoroutineScope.(MethodDescriptor<String, String>) -> ServerMethodDefinition<String, String>,
-        block: suspend (GrpcChannel, MethodDescriptor<String, String>) -> Unit,
+        block: suspend (GrpcClient, MethodDescriptor<String, String>) -> Unit,
     ) = kotlinx.coroutines.test.runTest {
         val serverJob = Job()
         val serverScope = CoroutineScope(serverJob)
 
-        val clientChannel = ManagedChannelBuilder("localhost", PORT).apply {
+        val client = GrpcClient("localhost", PORT) {
             usePlaintext()
-        }.buildChannel()
+        }
 
         val descriptor = methodDescriptor(
             fullMethodName = "${SERVICE_NAME}/$methodName",
@@ -139,11 +139,11 @@ class RawClientServerTest {
         val server = Server(builder)
         server.start()
 
-        block(clientChannel.platformApi, descriptor)
+        block(client, descriptor)
 
         serverJob.cancelAndJoin()
-        clientChannel.shutdown()
-        clientChannel.awaitTermination()
+        client.shutdown()
+        client.awaitTermination()
         server.shutdown()
         server.awaitTermination()
     }
