@@ -10,6 +10,8 @@ public expect abstract class ServerCredentials
 public expect class InsecureClientCredentials : ClientCredentials
 public expect class InsecureServerCredentials : ServerCredentials
 
+internal expect fun createInsecureClientCredentials(): ClientCredentials
+
 public expect class TlsClientCredentials : ClientCredentials
 public expect class TlsServerCredentials : ServerCredentials
 

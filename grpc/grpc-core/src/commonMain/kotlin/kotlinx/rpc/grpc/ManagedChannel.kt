@@ -68,6 +68,8 @@ public interface ManagedChannel {
  * Builder class for [ManagedChannel].
  */
 public expect abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>> {
+
+    // TODO: Not used anymore
     public fun usePlaintext(): T
 
     public abstract fun overrideAuthority(authority: String): T

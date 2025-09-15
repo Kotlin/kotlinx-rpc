@@ -39,7 +39,8 @@ abstract class BaseGrpcServiceTest {
 
         server.start()
 
-        val client = GrpcClient("localhost", PORT, messageCodecResolver = resolver) {
+        val client = GrpcClient("localhost", PORT) {
+            useMessageCodecResolver(messageCodecResolver)
             usePlaintext()
         }
 

@@ -32,8 +32,9 @@ private typealias RequestClient = Any
  * @field channel The [ManagedChannel] used to communicate with remote gRPC services.
  */
 public class GrpcClient internal constructor(
-    private val channel: ManagedChannel,
+    internal val channel: ManagedChannel,
     messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
+    internal val interceptors: List<ClientInterceptor>,
 ) : RpcClient {
     private val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
     private val messageCodecResolver = messageCodecResolver + ThrowingMessageCodecResolver
@@ -58,7 +59,6 @@ public class GrpcClient internal constructor(
 
         return when (methodDescriptor.type) {
             MethodType.UNARY -> unaryRpc(
-                channel = channel.platformApi,
                 descriptor = methodDescriptor,
                 request = request,
                 callOptions = callOptions,
@@ -66,7 +66,6 @@ public class GrpcClient internal constructor(
             )
 
             MethodType.CLIENT_STREAMING -> @Suppress("UNCHECKED_CAST") clientStreamingRpc(
-                channel = channel.platformApi,
                 descriptor = methodDescriptor,
                 requests = request as Flow<RequestClient>,
                 callOptions = callOptions,
@@ -83,7 +82,6 @@ public class GrpcClient internal constructor(
 
         when (methodDescriptor.type) {
             MethodType.SERVER_STREAMING -> serverStreamingRpc(
-                channel = channel.platformApi,
                 descriptor = methodDescriptor,
                 request = request,
                 callOptions = callOptions,
@@ -91,7 +89,6 @@ public class GrpcClient internal constructor(
             )
 
             MethodType.BIDI_STREAMING -> @Suppress("UNCHECKED_CAST") bidirectionalStreamingRpc(
-                channel = channel.platformApi,
                 descriptor = methodDescriptor,
                 requests = request as Flow<RequestClient>,
                 callOptions = callOptions,
@@ -131,12 +128,10 @@ public class GrpcClient internal constructor(
 public fun GrpcClient(
     hostname: String,
     port: Int,
-    credentials: ClientCredentials? = null,
-    messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
-    configure: ManagedChannelBuilder<*>.() -> Unit = {},
+    configure: GrpcClientConfiguration.() -> Unit = {},
 ): GrpcClient {
-    val channel = ManagedChannelBuilder(hostname, port, credentials).apply(configure).buildChannel()
-    return GrpcClient(channel, messageCodecResolver)
+    val config = GrpcClientConfiguration().apply(configure)
+    return GrpcClient(ManagedChannelBuilder(hostname, port, config.credentials), config)
 }
 
 /**
@@ -144,10 +139,46 @@ public fun GrpcClient(
  */
 public fun GrpcClient(
     target: String,
-    credentials: ClientCredentials? = null,
-    messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
-    configure: ManagedChannelBuilder<*>.() -> Unit = {},
+    configure: GrpcClientConfiguration.() -> Unit = {},
 ): GrpcClient {
-    val channel = ManagedChannelBuilder(target, credentials).apply(configure).buildChannel()
-    return GrpcClient(channel, messageCodecResolver)
+    val config = GrpcClientConfiguration().apply(configure)
+    return GrpcClient(ManagedChannelBuilder(target, config.credentials), config)
+}
+
+private fun GrpcClient(
+    builder: ManagedChannelBuilder<*>,
+    config: GrpcClientConfiguration,
+): GrpcClient {
+    val channel = builder.apply {
+        config.overrideAuthority?.let { overrideAuthority(it) }
+    }.buildChannel()
+    return GrpcClient(channel, config.messageCodecResolver, config.interceptors)
+}
+
+public class GrpcClientConfiguration internal constructor() {
+    internal var messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver
+    internal var credentials: ClientCredentials? = null
+    internal var overrideAuthority: String? = null
+    internal val interceptors: MutableList<ClientInterceptor> = mutableListOf()
+
+    public fun usePlaintext() {
+        credentials = createInsecureClientCredentials()
+    }
+
+    public fun useCredentials(credentials: ClientCredentials) {
+        this@GrpcClientConfiguration.credentials = credentials
+    }
+
+    public fun overrideAuthority(authority: String) {
+        overrideAuthority = authority
+    }
+
+    public fun useMessageCodecResolver(messageCodecResolver: MessageCodecResolver) {
+        this.messageCodecResolver = messageCodecResolver
+    }
+
+    public fun intercept(vararg interceptors: ClientInterceptor) {
+        this.interceptors.addAll(interceptors)
+    }
+
 }
