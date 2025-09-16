@@ -4,20 +4,24 @@
 
 package kotlinx.rpc.krpc.test.cancellation
 
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.test.WaitCounter
 
 @Rpc
 interface CancellationService {
     suspend fun longRequest()
 
-    suspend fun serverDelay(millis: Long)
-
     suspend fun callException()
 
+    suspend fun serverCancellation()
+
     fun incomingStream(): Flow<Int>
+
+    fun cancellationInIncomingStream(): Flow<Int>
+
+    suspend fun cancellationInOutgoingStream(stream: Flow<Int>, cancelled: Flow<Int>)
 
     suspend fun outgoingStream(stream: Flow<Int>)
 
@@ -25,26 +29,33 @@ interface CancellationService {
 
     suspend fun outgoingStreamWithDelayedResponse(stream: Flow<Int>)
 
-    suspend fun outgoingStreamWithException(stream: Flow<Int>)
-
     fun nonSuspendable(): Flow<Int>
 }
 
 class CancellationServiceImpl : CancellationService {
-    val delayCounter = atomic(0)
+    val waitCounter = WaitCounter()
+    val successCounter = WaitCounter()
+    val cancellationsCounter = WaitCounter()
+
     val consumedIncomingValues = mutableListOf<Int>()
     val firstIncomingConsumed = CompletableDeferred<Int>()
     val consumedAll = CompletableDeferred<Unit>()
     val fence = CompletableDeferred<Unit>()
 
     override suspend fun longRequest() {
-        firstIncomingConsumed.complete(0)
-        fence.await()
+        try {
+            firstIncomingConsumed.complete(0)
+            waitCounter.increment()
+            fence.await()
+            successCounter.increment()
+        } catch (e: CancellationException) {
+            cancellationsCounter.increment()
+            throw e
+        }
     }
 
-    override suspend fun serverDelay(millis: Long) {
-        delay(millis)
-        delayCounter.incrementAndGet()
+    override suspend fun serverCancellation() {
+        throw CancellationException("serverCancellation")
     }
 
     override suspend fun callException() {
@@ -53,6 +64,34 @@ class CancellationServiceImpl : CancellationService {
 
     override fun incomingStream(): Flow<Int> {
         return resumableFlow(fence)
+    }
+
+    override fun cancellationInIncomingStream(): Flow<Int> {
+        return flow {
+            emit(1)
+            throw CancellationException("cancellationInIncomingStream")
+        }
+    }
+
+    override suspend fun cancellationInOutgoingStream(stream: Flow<Int>, cancelled: Flow<Int>) {
+        supervisorScope {
+            launch {
+                consume(stream)
+            }
+
+            launch {
+                try {
+                    cancelled.collect {
+                        if (it == 0) {
+                            firstIncomingConsumed.complete(it)
+                        }
+                    }
+                } catch (e: CancellationException) {
+                    cancellationsCounter.increment()
+                    throw e
+                }
+            }
+        }
     }
 
     override suspend fun outgoingStream(stream: Flow<Int>) {
@@ -69,18 +108,14 @@ class CancellationServiceImpl : CancellationService {
     }
 
     override suspend fun outgoingStreamWithDelayedResponse(stream: Flow<Int>) {
-        consume(stream)
+        try {
+            consume(stream)
 
-        unskippableDelay(10000)
-    }
-
-    override suspend fun outgoingStreamWithException(stream: Flow<Int>) {
-        consume(stream)
-
-        unskippableDelay(300)
-
-        // it will not cancel launch collector
-        error("exception in request")
+            fence.await()
+        } catch (e: CancellationException) {
+            cancellationsCounter.increment()
+            throw e
+        }
     }
 
     private suspend fun consume(stream: Flow<Int>) {

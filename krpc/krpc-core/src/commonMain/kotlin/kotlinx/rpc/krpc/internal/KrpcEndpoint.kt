@@ -1,11 +1,11 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.krpc.internal
 
 import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.launch
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
@@ -25,13 +25,15 @@ public interface KrpcEndpoint {
     ) {
         if (!supportedPlugins.contains(KrpcPlugin.CANCELLATION)) {
             if (closeTransportAfterSending) {
-                sender.cancel("Transport finished")
+                sender.drainSendQueueAndClose("Transport finished")
             }
 
             return
         }
 
-        val sendJob = sender.launch(CoroutineName("krpc-endpoint-cancellation-$serviceId-$cancellationId")) {
+        val sendJob = sender.transportScope.launch(
+            CoroutineName("krpc-endpoint-cancellation-$serviceId-$cancellationId"),
+        ) {
             val message = KrpcGenericMessage(
                 connectionId = null,
                 pluginParams = listOfNotNull(
@@ -42,12 +44,16 @@ public interface KrpcEndpoint {
                 ).toMap()
             )
 
-            sender.sendMessage(message)
+            try {
+                sender.sendMessage(message)
+            } catch (_: ClosedSendChannelException) {
+                // ignore, call was already closed
+            }
         }
 
         if (closeTransportAfterSending) {
             sendJob.invokeOnCompletion {
-                sender.cancel("Transport finished")
+                sender.drainSendQueueAndClose("Transport finished")
             }
         }
     }

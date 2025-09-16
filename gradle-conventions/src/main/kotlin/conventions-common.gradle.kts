@@ -51,11 +51,3 @@ afterEvaluate {
         })
     }
 }
-
-apply(plugin = "org.jetbrains.kotlinx.kover")
-
-val thisProject = project
-
-rootProject.configurations.matching { it.name == "kover" }.all {
-    rootProject.dependencies.add("kover", thisProject)
-}

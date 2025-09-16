@@ -1,12 +1,10 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:Suppress("detekt.MatchingDeclarationName")
 
 package kotlinx.rpc.krpc.internal
-
-import kotlinx.rpc.internal.utils.InternalRpcApi
 
 internal actual class DeserializedException actual constructor(
     private val toStringMessage: String,
@@ -24,7 +22,7 @@ internal actual class DeserializedException actual constructor(
 
 internal actual fun Throwable.stackElements(): List<StackElement> = emptyList()
 
-@InternalRpcApi
-public actual fun SerializedException.deserialize(): Throwable {
-    return DeserializedException(toStringMessage, message, stacktrace, cause, className)
+internal actual fun SerializedException.deserializeUnsafe(): Throwable {
+    return nonJvmManualCancellationExceptionDeserialize()
+        ?: DeserializedException(toStringMessage, message, stacktrace, cause, className)
 }

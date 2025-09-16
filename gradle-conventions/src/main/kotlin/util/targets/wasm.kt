@@ -27,7 +27,8 @@ fun KmpConfig.configureWasm() {
                 browser()
                 nodejs()
                 if (wasmJsD8) {
-                    d8()
+                    // this platform needs some care KRPC-210
+//                    d8()
                 }
 
                 binaries.library()

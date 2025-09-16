@@ -18,21 +18,20 @@ import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.debug.DebugProbes
-import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.client.KrpcClient
-import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLogger
+import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
+import kotlinx.rpc.krpc.internal.logging.dumpLogger
 import kotlinx.rpc.krpc.ktor.client.installKrpc
 import kotlinx.rpc.krpc.ktor.client.rpc
 import kotlinx.rpc.krpc.ktor.client.rpcConfig
 import kotlinx.rpc.krpc.ktor.server.Krpc
 import kotlinx.rpc.krpc.ktor.server.rpc
 import kotlinx.rpc.krpc.serialization.json.json
+import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlinx.rpc.withService
 import org.junit.Assert.assertEquals
-import org.junit.platform.commons.logging.Logger
-import org.junit.platform.commons.logging.LoggerFactory
 import java.net.ServerSocket
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -85,8 +84,6 @@ class KtorTransportTest {
                             ignoreUnknownKeys = true
                         }
                     }
-
-                    waitForServices = true
                 }
 
                 registerService<NewService> { NewServiceImpl(call) }
@@ -138,7 +135,7 @@ class KtorTransportTest {
     @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
     @Test
     @Ignore("Wait for Ktor fix (https://github.com/ktorio/ktor/pull/4927) or apply workaround if rejected")
-    fun testEndpointsTerminateWhenWsDoes() = runTest(timeout = 15.seconds) {
+    fun testEndpointsTerminateWhenWsDoes() = runTestWithCoroutinesProbes(timeout = 15.seconds) {
         DebugProbes.install()
 
         val logger = setupLogger()
@@ -247,17 +244,10 @@ class KtorTransportTest {
         return port
     }
 
-    private fun setupLogger(): Logger {
-        val logger = LoggerFactory.getLogger(KtorTransportTest::class.java)
+    private fun setupLogger(): RpcInternalCommonLogger {
+        val logger = RpcInternalCommonLogger.logger(KtorTransportTest::class)
 
-        RpcInternalDumpLoggerContainer.set(object : RpcInternalDumpLogger {
-
-            override val isEnabled: Boolean = true
-
-            override fun dump(vararg tags: String, message: () -> String) {
-                logger.info { "[${tags.joinToString()}] ${message()}" }
-            }
-        })
+        RpcInternalDumpLoggerContainer.set(logger.dumpLogger())
 
         return logger
     }

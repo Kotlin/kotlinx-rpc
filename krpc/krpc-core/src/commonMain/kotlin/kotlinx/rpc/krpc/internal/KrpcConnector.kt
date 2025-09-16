@@ -4,63 +4,86 @@
 
 package kotlinx.rpc.krpc.internal
 
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.rpc.internal.internalRpcError
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
+import kotlinx.rpc.krpc.KrpcConfig
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.KrpcTransportMessage
 import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
 import kotlinx.rpc.krpc.receiveCatching
 import kotlinx.serialization.*
-import kotlin.time.Duration.Companion.seconds
 
 @InternalRpcApi
-public interface KrpcMessageSender : CoroutineScope {
+public interface KrpcMessageSender {
+    public val transportScope: CoroutineScope
+
     public suspend fun sendMessage(message: KrpcMessage)
+
+    public fun drainSendQueueAndClose(message: String)
 }
 
-private typealias KrpcMessageHandler = suspend (KrpcMessage) -> Unit
+internal typealias KrpcMessageSubscription<Message> = suspend (Message) -> Unit
 
 /**
  * Represents a connector for remote procedure call (RPC) communication.
  * This class is responsible for sending and receiving [KrpcMessage] over a specified transport.
  *
- * @param SubscriptionKey the type of the subscription key used for message subscriptions.
- * @param serialFormat the serial format used for encoding and decoding [KrpcMessage].
- * @param transport the transport used for sending and receiving encoded RPC messages.
- * @param waitForSubscribers a flag indicating whether the connector should wait for subscribers
- * if no service is available to process the message immediately.
- * If false, the endpoint that sent the message will receive a [KrpcCallMessage.CallException]
- * that says that there were no services to process its message.
- * @param isServer flag indication whether this is a server or a client.
- * @param getKey a lambda function that returns the subscription key for a given [KrpcCallMessage].
  * DO NOT use actual dumper in production!
  */
 @InternalRpcApi
-public class KrpcConnector<SubscriptionKey : Any>(
+public class KrpcConnector(
     private val serialFormat: SerialFormat,
     private val transport: KrpcTransport,
-    private val waitForSubscribers: Boolean = true,
+    private val config: KrpcConfig.Connector,
     isServer: Boolean,
-    private val getKey: KrpcMessage.() -> SubscriptionKey,
-) : KrpcMessageSender, CoroutineScope by transport {
-    private val role = if (isServer) SERVER_ROLE else CLIENT_ROLE
-    private val logger = RpcInternalCommonLogger.logger(rpcInternalObjectId(role))
+) : KrpcMessageSender {
+    override val transportScope: CoroutineScope = transport
 
-    private val waiting = RpcInternalConcurrentHashMap<SubscriptionKey, MutableList<KrpcMessage>>()
-    private val subscriptions = RpcInternalConcurrentHashMap<SubscriptionKey, KrpcMessageHandler>()
-    private val processWaitersLocks = RpcInternalConcurrentHashMap<SubscriptionKey, Mutex>()
+    private val role = if (isServer) SERVER_ROLE else CLIENT_ROLE
+    private val logger = RpcInternalCommonLogger.logger("$role Connector")
+
+    private val receiveHandlers = RpcInternalConcurrentHashMap<HandlerKey<*>, KrpcReceiveHandler>()
+    private val keyLocks = RpcInternalConcurrentHashMap<HandlerKey<*>, Mutex>()
+    private val serviceSubscriptions =
+        RpcInternalConcurrentHashMap<HandlerKey.Service, KrpcMessageSubscription<KrpcCallMessage>>()
+
+    private val sendHandlers = RpcInternalConcurrentHashMap<HandlerKey<*>, KrpcSendHandler>()
+    private val sendChannel = Channel<KrpcTransportMessage>(Channel.UNLIMITED)
+
+    private var receiveBufferSize: Int? = null
+    private var sendBufferSize: Int? = null
+
+    private var peerSupportsBackPressure = false
 
     private val dumpLogger by lazy { RpcInternalDumpLoggerContainer.provide() }
 
+    // prevent errors ping-pong
+    private suspend fun sendMessageIgnoreClosure(message: KrpcMessage) {
+        try {
+            sendMessage(message)
+        } catch (_: ClosedSendChannelException) {
+            // ignore
+        }
+    }
+
     override suspend fun sendMessage(message: KrpcMessage) {
+        if (message is KrpcProtocolMessage.Handshake) {
+            message.pluginParams[KrpcPluginKey.WINDOW_UPDATE] = "${config.perCallBufferSize}"
+        }
+
         val transportMessage = when (serialFormat) {
             is StringFormat -> {
                 KrpcTransportMessage.StringMessage(serialFormat.encodeToString(message))
@@ -79,177 +102,442 @@ public class KrpcConnector<SubscriptionKey : Any>(
             dumpLogger.dump(role, SEND_PHASE) { transportMessage.dump() }
         }
 
-        transport.send(transportMessage)
+        sendTransportMessage(message.handlerKey(), transportMessage)
     }
 
-    public fun unsubscribeFromMessages(key: SubscriptionKey, callback: () -> Unit = {}) {
-        launch(CoroutineName("krpc-connector-unsubscribe-$key")) {
-            delay(15.seconds)
-            subscriptions.remove(key)
-            processWaitersLocks.remove(key)
-        }.invokeOnCompletion {
+    private suspend fun sendTransportMessage(key: HandlerKey<*>, message: KrpcTransportMessage) {
+        sendHandlers.computeIfAbsent(key) {
+            KrpcSendHandler(sendChannel).also {
+                // - fallback to unlimited buffer if no buffer size is specified
+                // this is for backwards compatibility
+                // - use unlimited size for protocol messages
+                val initialSize = when (key) {
+                    HandlerKey.Protocol, HandlerKey.Generic -> -1
+                    else -> sendBufferSize ?: -1
+                }
+
+                it.updateWindowSize(initialSize)
+            }
+        }.sendMessage(message)
+    }
+
+    public fun unsubscribeFromMessagesAsync(key: HandlerKey<*>, callback: suspend () -> Unit = {}) {
+        if (!keyLocks.containsKey(key)) {
+            println("Key $key is not registered")
+            return
+        }
+
+        transportScope.launch(CoroutineName("krpc-connector-unsubscribe-$key")) {
+            unsubscribeFromMessages(key)
+
             callback()
         }
     }
 
-    public suspend fun subscribeToMessages(key: SubscriptionKey, handler: KrpcMessageHandler) {
-        subscriptions[key] = handler
-        processWaiters(key, handler)
+    public suspend fun unsubscribeFromMessages(key: HandlerKey<*>) {
+        withLockForKey(key, createKey = false) {
+            if (key is HandlerKey.Service) {
+                receiveHandlers.withKeys { keys ->
+                    keys
+                        .filter { it is HandlerKey.ServiceCall && it.serviceType == key.serviceType }
+                        .forEach {
+                            cleanForKey(it)
+                        }
+                }
+
+                serviceSubscriptions.remove(key)
+            } else {
+                cleanForKey(key)
+            }
+        }
+    }
+
+    private fun cleanForKey(key: HandlerKey<*>) {
+        sendHandlers.remove(key)?.close(null)
+        receiveHandlers.remove(key)?.close(key, null)
+        keyLocks.remove(key)
+    }
+
+    public suspend fun <Message : KrpcMessage> subscribeToMessages(
+        key: HandlerKey<Message>,
+        subscription: KrpcMessageSubscription<Message>,
+    ) {
+        withLockForKey(key, createKey = true) {
+            if (key is HandlerKey.Service) {
+                serviceSubscriptions.computeIfAbsent(key) {
+                    @Suppress("UNCHECKED_CAST")
+                    subscription as KrpcMessageSubscription<KrpcCallMessage>
+                }
+
+                receiveHandlers.withKeys { keys ->
+                    keys
+                        .filter { it is HandlerKey.ServiceCall && it.serviceType == key.serviceType }
+                        .forEach {
+                            @Suppress("UNCHECKED_CAST")
+                            subscribeWithActingHandlerPerTrack(it as HandlerKey<Message>, subscription)
+                        }
+                }
+            } else {
+                subscribeWithActingHandlerPerTrack(key, subscription)
+            }
+        }
+    }
+
+    // per track:
+    // - call id is a track
+    // - generic is a track
+    // - protocol is a track
+    // - service is **not** a track
+    private fun <Message : KrpcMessage> subscribeWithActingHandlerPerTrack(
+        key: HandlerKey<Message>,
+        subscription: KrpcMessageSubscription<Message>,
+    ) {
+        val storingHandler = handlerFor(key)
+
+        if (storingHandler !is KrpcStoringReceiveHandler) {
+            internalRpcError("Already subscribed to messages with key $key")
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        val handler = KrpcActingReceiveHandler(
+            callHandler = subscription as KrpcMessageSubscription<KrpcMessage>,
+            storingHandler = storingHandler,
+            key = key,
+            sender = this,
+            timeout = config.callTimeout,
+            broadcastUpdates = peerSupportsBackPressure,
+        )
+
+        receiveHandlers[key] = handler
+    }
+
+    private fun <Message : KrpcMessage> handlerFor(key: HandlerKey<Message>): KrpcReceiveHandler {
+        if (key is HandlerKey.Service) {
+            internalRpcError("Wrong key type for a handler: $key")
+        }
+
+        return receiveHandlers.computeIfAbsent(key) {
+            val storing = KrpcStoringReceiveHandler(
+                buffer = KrpcReceiveBuffer {
+                    // - fallback to unlimited buffer if no buffer size is specified
+                    // this is for backwards compatibility
+                    // - use unlimited size for protocol messages
+                    when (key) {
+                        HandlerKey.Protocol, HandlerKey.Generic -> Channel.UNLIMITED
+                        else -> receiveBufferSize ?: Channel.UNLIMITED
+                    }
+                },
+                sender = this,
+            )
+
+            if (key is HandlerKey.ServiceCall && role == SERVER_ROLE) {
+                val serviceKey = HandlerKey.Service(key.serviceType)
+                val subscription = serviceSubscriptions[serviceKey]
+                if (subscription != null) {
+                    @Suppress("UNCHECKED_CAST")
+                    KrpcActingReceiveHandler(
+                        callHandler = subscription as KrpcMessageSubscription<KrpcMessage>,
+                        storingHandler = storing,
+                        key = key,
+                        sender = this,
+                        timeout = config.callTimeout,
+                        broadcastUpdates = peerSupportsBackPressure,
+                    )
+                } else {
+                    storing
+                }
+            } else {
+                storing
+            }
+        }
+    }
+
+    @Suppress("JoinDeclarationAndAssignment")
+    private val sendJob: Job
+
+    override fun drainSendQueueAndClose(message: String) {
+        // don't close receive handlers, as
+        // we don't want to send 'unprocessed messages' messages
+        // because peer is closing entirely anyway
+        //
+        // don't close send handlers, as we want to process them all
+
+        // close for receiving new messages
+        sendChannel.close()
+
+        sendJob.invokeOnCompletion {
+            transportScope.cancel(message)
+        }
     }
 
     init {
-        launch(CoroutineName("krpc-connector-receive-loop")) {
+        sendJob = transportScope.launch(CoroutineName("krpc-connector-send-loop")) {
+            while (true) {
+                transport.send(sendChannel.receiveCatching().getOrNull() ?: break)
+            }
+        }
+
+        transportScope.launch(CoroutineName("krpc-connector-receive-loop")) {
             while (true) {
                 processMessage(transport.receiveCatching().getOrNull() ?: break)
             }
         }
+
+        transportScope.coroutineContext.job.invokeOnCompletion {
+            receiveHandlers.clear()
+            keyLocks.clear()
+            serviceSubscriptions.clear()
+            sendHandlers.clear()
+        }
+    }
+
+    private fun decodeMessage(transportMessage: KrpcTransportMessage): KrpcMessage? {
+        try {
+            return when {
+                serialFormat is StringFormat && transportMessage is KrpcTransportMessage.StringMessage -> {
+                    // otherwise KrpcMessage? is inferred which leads to decode exception
+                    serialFormat.decodeFromString<KrpcMessage>(transportMessage.value)
+                }
+
+                serialFormat is BinaryFormat && transportMessage is KrpcTransportMessage.BinaryMessage -> {
+                    // otherwise KrpcMessage? is inferred which leads to decode exception
+                    serialFormat.decodeFromByteArray<KrpcMessage>(transportMessage.value)
+                }
+
+                else -> {
+                    logger.error {
+                        "Unsupported serialization format: ${serialFormat::class} for ${transportMessage::class}"
+                    }
+
+                    return null
+                }
+            }
+        } catch (e: SerializationException) {
+            logger.error(e) { "Failed to decode transport message" }
+            logger.debug { "Failed message: ${transportMessage.dump()}" }
+        } catch (e: IllegalArgumentException) {
+            logger.error(e) { "Decoded message is not a valid ${KrpcMessage::class}" }
+            logger.debug { "Invalid message: ${transportMessage.dump()}" }
+        }
+
+        return null
     }
 
     private suspend fun processMessage(transportMessage: KrpcTransportMessage) {
-        val message: KrpcMessage = when {
-            serialFormat is StringFormat && transportMessage is KrpcTransportMessage.StringMessage -> {
-                serialFormat.decodeFromString(transportMessage.value)
-            }
-
-            serialFormat is BinaryFormat && transportMessage is KrpcTransportMessage.BinaryMessage -> {
-                serialFormat.decodeFromByteArray(transportMessage.value)
-            }
-
-            else -> {
-                return
-            }
-        }
+        val message = decodeMessage(transportMessage) ?: return
 
         if (dumpLogger.isEnabled) {
             dumpLogger.dump(role, RECEIVE_PHASE) { transportMessage.dump() }
         }
 
-        processMessage(message)
+        processMessage(message, message.handlerKey())
     }
 
-    private suspend fun processMessage(message: KrpcMessage) = withLockForKey(message.getKey()) {
-        when (message) {
-            is KrpcCallMessage -> processServiceMessage(message)
-            is KrpcProtocolMessage, is KrpcGenericMessage -> processNonServiceMessage(message)
-        }
-    }
-
-    private suspend fun processNonServiceMessage(message: KrpcMessage) {
-        when (val result = tryHandle(message)) {
-            is HandlerResult.Failure -> {
-                val failure = KrpcProtocolMessage.Failure(
-                    connectionId = message.connectionId,
-                    errorMessage = "Failed to process ${message::class.simpleName}, error: ${result.cause?.message}",
-                    failedMessage = message,
-                )
-
-                sendMessage(failure)
+    private suspend fun processMessage(message: KrpcMessage, key: HandlerKey<*>) {
+        when {
+            message is KrpcCallMessage -> {
+                @Suppress("UNCHECKED_CAST")
+                processServiceMessage(message, key as HandlerKey<KrpcCallMessage>)
             }
 
-            HandlerResult.NoSubscription -> {
-                waiting.computeIfAbsent(message.getKey()) { mutableListOf() }.add(message)
+            message is KrpcGenericMessage && message.pluginParams.orEmpty().contains(KrpcPluginKey.WINDOW_UPDATE) -> {
+                processWindow(message)
             }
 
-            HandlerResult.Success -> {} // ok
-        }
-    }
-
-    private suspend fun processServiceMessage(message: KrpcCallMessage) {
-        val result = tryHandle(message)
-
-        // todo better exception processing probably
-        if (result != HandlerResult.Success) {
-            if (waitForSubscribers) {
-                waiting.computeIfAbsent(message.getKey()) { mutableListOf() }.add(message)
-
-                val reason = when (result) {
-                    is HandlerResult.Failure -> {
-                        "Unhandled exception while processing ${result.cause?.message}"
-                    }
-
-                    is HandlerResult.NoSubscription -> {
-                        "No service with key '${message.getKey()}' and '${message.serviceType}' type was registered. " +
-                                "Available: keys: [${subscriptions.keys.joinToString()}]"
-                    }
-
-                    else -> {
-                        "Unknown"
-                    }
-                }
-
-                logger.warn((result as? HandlerResult.Failure)?.cause) {
-                    "No registered service of ${message.serviceType} service type " +
-                            "was able to process message ($message) at the moment. Waiting for new services. " +
-                            "Reason: $reason"
-                }
-
-                return
-            }
-
-            val initialCause = (result as? HandlerResult.Failure)?.cause
-
-            val cause = IllegalStateException(
-                "Failed to process call ${message.callId} for service ${message.serviceType}, " +
-                        "${subscriptions.values.size} attempts failed",
-                initialCause,
-            )
-
-            val callException = KrpcCallMessage.CallException(
-                callId = message.callId,
-                serviceType = message.serviceType,
-                cause = serializeException(cause),
-                connectionId = message.connectionId,
-                serviceId = message.serviceId,
-            )
-
-            sendMessage(callException)
-        }
-    }
-
-    private suspend fun tryHandle(
-        message: KrpcMessage,
-        handler: KrpcMessageHandler? = null,
-    ): HandlerResult {
-        val key = message.getKey()
-        val subscriber = handler ?: subscriptions[key] ?: return HandlerResult.NoSubscription
-
-        val result = runCatching {
-            subscriber(message)
-        }
-
-        return when {
-            result.isFailure -> {
-                val exception = result.exceptionOrNull()
-                if (exception !is CancellationException) {
-                    logger.error(exception) { "Failed to handle message with key $key" }
-                }
-                HandlerResult.Failure(exception)
+            message is KrpcProtocolMessage || message is KrpcGenericMessage -> {
+                processNonServiceMessage(message, key)
             }
 
             else -> {
-                HandlerResult.Success
+                logger.error { "Received message of unknown processing: $message" }
             }
         }
     }
 
-    private suspend fun processWaiters(key: SubscriptionKey, handler: KrpcMessageHandler) {
-        withLockForKey(key) {
-            if (waiting.values.isEmpty()) return
+    private suspend fun processWindow(message: KrpcGenericMessage) {
+        when (val result = decodeWindow(message)) {
+            is WindowResult.Success -> {
+                // must be 'key' from 'result'
+                sendHandlers[result.key]?.updateWindowSize(result.update)
+            }
 
-            val iterator = waiting[key]?.iterator() ?: return
-            while (iterator.hasNext()) {
-                val message = iterator.next()
+            is WindowResult.Failure -> {
+                sendMessageIgnoreClosure(
+                    KrpcProtocolMessage.Failure(
+                        errorMessage = result.message,
+                        connectionId = message.connectionId,
+                        failedMessage = message,
+                    )
+                )
+            }
+        }
+    }
 
-                val tryHandle = tryHandle(message, handler)
-                if (tryHandle == HandlerResult.Success) {
-                    iterator.remove()
+    private suspend fun processNonServiceMessage(message: KrpcMessage, key: HandlerKey<*>) {
+        // should be the first message we receive
+        if (message is KrpcProtocolMessage.Handshake) {
+            if (message.supportedPlugins.contains(KrpcPlugin.BACKPRESSURE)) {
+                peerSupportsBackPressure = true
+
+                // If it is a new version peer, it will be set to the buffer size from the config
+                receiveBufferSize = config.perCallBufferSize
+
+                val windowParam = message.pluginParams[KrpcPluginKey.WINDOW_UPDATE]
+                    ?.toIntOrNull()
+
+                // -1 for an unlimited buffer size for old peers
+                sendBufferSize = windowParam ?: -1
+            } else {
+                // UNLIMITED for backwards compatibility
+                receiveBufferSize = Channel.UNLIMITED
+                // -1 for an unlimited buffer size for old peers for backwards compatibility
+                sendBufferSize = -1
+            }
+
+            // update this if present, as this is the only sender that has -1 even for new clients
+            sendHandlers[HandlerKey.Protocol]?.updateWindowSize(sendBufferSize ?: -1)
+        }
+
+        withLockForKey(key, createKey = true) {
+            val handler = handlerFor(key)
+
+            handler.handle(message) { cause ->
+                if (message.isException) {
+                    return@handle
                 }
+
+                val failure = KrpcProtocolMessage.Failure(
+                    connectionId = message.connectionId,
+                    errorMessage = "Failed to process $key, error: ${cause?.message}",
+                    failedMessage = message,
+                )
+
+                // too late for exceptions
+                sendMessageIgnoreClosure(failure)
+            }
+        }?.onFailure {
+            if (message.isException) {
+                return@onFailure
+            }
+
+            val failure = KrpcProtocolMessage.Failure(
+                connectionId = message.connectionId,
+                errorMessage = "Message limit of ${config.perCallBufferSize} is exceeded for $key.",
+                failedMessage = message,
+            )
+
+            // too late for exceptions
+            sendMessageIgnoreClosure(failure)
+        }?.onClosed {
+            // do nothing; it's a service message, meaning that the service is dead
+        }
+    }
+
+    private suspend fun processServiceMessage(message: KrpcCallMessage, key: HandlerKey<KrpcCallMessage>) {
+        val (handler, result) = withLockForKey(key, createKey = true) {
+            val handler = receiveHandlers[key]
+                ?: if (config.waitTimeout.isPositive()) {
+                    handlerFor(key)
+                } else {
+                    val errorMessage = "No registered service of ${message.serviceType} service type " +
+                            "was able to process message ($key) at the moment. " +
+                            "Available: keys: [${receiveHandlers.keys.joinToString()}]."
+
+                    sendCallException(message, illegalStateException(errorMessage))
+                    return
+                }
+
+            val result = handler.handle(message) { initialCause ->
+                if (message.isException) {
+                    return@handle
+                }
+
+                val cause = illegalStateException(
+                    message = "Failed to process call ${message.callId} for service ${message.serviceType}",
+                    cause = initialCause,
+                )
+
+                sendCallException(message, cause)
+            }
+
+            handler to result
+        } ?: error("unreachable, as we create a lock for the key")
+
+        result.onFailure {
+            if (message.isException) {
+                return@onFailure
+            }
+
+            sendCallException(
+                message = message,
+                cause = illegalStateException("Message limit of ${config.perCallBufferSize} is exceeded for $key"),
+            )
+        }.onClosed {
+            if (message.isException) {
+                return@onClosed
+            }
+
+            sendCallException(
+                message = message,
+                cause = illegalStateException("Service $key is dead"),
+            )
+        }
+
+        if (handler is KrpcStoringReceiveHandler && result.isSuccess) {
+            transportScope.launch(CoroutineName("krpc-connector-discard-if-unprocessed-$key")) {
+                delay(config.waitTimeout)
+
+                withLockForKey(key, createKey = false) {
+                    if (handler.processingStarted || receiveHandlers[key] != handler) {
+                        return@launch
+                    }
+
+                    receiveHandlers.remove(key)
+                    keyLocks.remove(key)
+                }
+
+                handler.close(
+                    key = key,
+                    e = illegalStateException(
+                        "Waiting limit of ${config.waitTimeout} " +
+                                "is exceeded for unprocessed messages with $key"
+                    ),
+                )
             }
         }
     }
 
-    private suspend inline fun <T> withLockForKey(key: SubscriptionKey, action: () -> T): T =
-        processWaitersLocks.computeIfAbsent(key) { Mutex() }.withLock(action = action)
+    private suspend fun sendCallException(message: KrpcCallMessage, cause: Throwable) {
+        val callException = KrpcCallMessage.CallException(
+            callId = message.callId,
+            serviceType = message.serviceType,
+            cause = serializeException(cause),
+            connectionId = message.connectionId,
+            serviceId = message.serviceId,
+        )
+
+        sendMessage(callException)
+    }
+
+    private suspend inline fun <T> withLockForKey(
+        key: HandlerKey<*>,
+        createKey: Boolean,
+        action: () -> T,
+    ): T? {
+        val lockKey = if (key is HandlerKey.ServiceCall && role == SERVER_ROLE) {
+            HandlerKey.Service(key.serviceType)
+        } else {
+            key
+        }
+
+        val mutex = if (createKey) {
+            keyLocks.computeIfAbsent(lockKey) { Mutex() }
+        } else {
+            keyLocks[lockKey]
+        }
+
+        return mutex?.withLock(action = action)
+    }
 
     internal companion object {
         const val SEND_PHASE = "Send"
@@ -268,10 +556,8 @@ public class KrpcConnector<SubscriptionKey : Any>(
     }
 }
 
-private sealed interface HandlerResult {
-    data object Success : HandlerResult
-
-    data object NoSubscription : HandlerResult
-
-    data class Failure(val cause: Throwable?) : HandlerResult
-}
+internal val KrpcMessage.isException
+    get() = when (this) {
+        is KrpcCallMessage.CallException, is KrpcProtocolMessage.Failure -> true
+        else -> false
+    }

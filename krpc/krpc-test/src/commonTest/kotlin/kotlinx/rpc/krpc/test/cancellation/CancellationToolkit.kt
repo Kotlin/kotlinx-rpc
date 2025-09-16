@@ -6,27 +6,28 @@ package kotlinx.rpc.krpc.test.cancellation
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.TestResult
-import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.krpc.KrpcConfigBuilder
 import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
-import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
+import kotlinx.rpc.krpc.internal.logging.dumpLogger
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.krpc.test.KrpcTestClient
 import kotlinx.rpc.krpc.test.KrpcTestServer
 import kotlinx.rpc.krpc.test.LocalTransport
-import kotlinx.rpc.krpc.test.debugCoroutines
 import kotlinx.rpc.registerService
+import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlinx.rpc.withService
 import kotlin.time.Duration.Companion.seconds
 
 fun runCancellationTest(body: suspend CancellationToolkit.() -> Unit): TestResult {
-    return runTest(timeout = 15.seconds) {
-        debugCoroutines()
-        CancellationToolkit(this).apply {
-            body()
+    return runTestWithCoroutinesProbes(timeout = 15.seconds) {
+        val toolkit = CancellationToolkit(this)
+        try {
+            body(toolkit)
+        } finally {
+            toolkit.close()
         }
     }
 }
@@ -35,16 +36,10 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
     private val logger = RpcInternalCommonLogger.logger("CancellationTest")
 
     init {
-        RpcInternalDumpLoggerContainer.set(object : RpcInternalDumpLogger {
-            override val isEnabled: Boolean = true
-
-            override fun dump(vararg tags: String, message: () -> String) {
-                logger.info { "${tags.joinToString(" ") { "[$it]" }} ${message()}" }
-            }
-        })
+        RpcInternalDumpLoggerContainer.set(logger.dumpLogger())
     }
 
-    private val serializationConfig: KrpcConfigBuilder.() -> Unit = {
+    private val configBuilder: KrpcConfigBuilder.() -> Unit = {
         serialization {
             json()
         }
@@ -54,7 +49,7 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
 
     val client by lazy {
         KrpcTestClient(rpcClientConfig {
-            serializationConfig()
+            configBuilder()
         }, transport.client)
     }
 
@@ -64,7 +59,7 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
     private val firstServerInstance = CompletableDeferred<CancellationServiceImpl>()
     suspend fun serverInstance(): CancellationServiceImpl = firstServerInstance.await()
 
-    val server = KrpcTestServer(rpcServerConfig { serializationConfig() }, transport.server).apply {
+    val server = KrpcTestServer(rpcServerConfig { configBuilder() }, transport.server).apply {
         registerService<CancellationService> {
             CancellationServiceImpl().also { impl ->
                 if (!firstServerInstance.isCompleted) {
@@ -75,12 +70,13 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
             }
         }
     }
-}
 
-/**
- * [runTest] can skip delays, and sometimes it prevents from writing a test
- * running delay on [Dispatchers.Default] fixes delay, for questions refer to [runTest] documentation.
- */
-suspend fun unskippableDelay(millis: Long) {
-    withContext(Dispatchers.Default) { delay(millis) }
+    suspend fun close() {
+        RpcInternalDumpLoggerContainer.set(null)
+        client.close()
+        server.close()
+        client.awaitCompletion()
+        server.awaitCompletion()
+        transport.coroutineContext.job.cancelAndJoin()
+    }
 }

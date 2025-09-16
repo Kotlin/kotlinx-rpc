@@ -11,35 +11,50 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.withService
-import kotlin.test.*
+import kotlin.test.Ignore
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
+import kotlin.test.fail
 
 class CancellationTest {
     @Test
     fun testCancelRequestScope() = runCancellationTest {
         val cancellingRequestJob = launch {
-            service.serverDelay(100)
+            service.longRequest()
         }
 
         val aliveRequestJob = launch {
-            service.serverDelay(300)
+            service.longRequest()
         }
 
+        serverInstance().waitCounter.await(2)
         cancellingRequestJob.cancelAndJoin()
+        serverInstance().cancellationsCounter.await(1)
+        serverInstance().fence.complete(Unit)
         aliveRequestJob.join()
 
         assertFalse(aliveRequestJob.isCancelled, "Expected aliveRequestJob not to be cancelled")
         assertTrue(cancellingRequestJob.isCancelled, "Expected cancellingRequestJob to be cancelled")
-        assertEquals(1, serverInstances.single().delayCounter.value, "Expected one request to be cancelled")
+        assertEquals(1, serverInstance().successCounter.value, "Expected one request to be cancelled")
 
         checkAlive()
         stopAllAndJoin()
+
+        assertEquals(1, serverInstance().successCounter.value, "Expected one request to succeed")
+        assertEquals(1, serverInstance().cancellationsCounter.value, "Expected one request to be cancelled")
     }
 
     @Test
     fun testCallException() = runCancellationTest {
         val requestJob = launch {
-            service.serverDelay(300)
+            service.longRequest()
         }
+
+        serverInstance().firstIncomingConsumed.await()
 
         val exceptionRequestJob = launch {
             try {
@@ -52,73 +67,149 @@ class CancellationTest {
         }
 
         exceptionRequestJob.join()
+        serverInstance().fence.complete(Unit)
         requestJob.join()
 
         assertFalse(requestJob.isCancelled, "Expected requestJob not to be cancelled")
         assertTrue(exceptionRequestJob.isCancelled, "Expected exception in callException call")
 
-        assertEquals(1, serverInstances.single().delayCounter.value, "Error should not cancel parallel request")
+        assertEquals(1, serverInstance().successCounter.value, "Error should not cancel parallel request")
+
+        checkAlive()
+        stopAllAndJoin()
+
+        assertEquals(0, serverInstance().cancellationsCounter.value, "Expected no requests to be cancelled")
+    }
+
+    @Test
+    fun testServerRequestCancellation() = runCancellationTest {
+        supervisorScope {
+            val requestJob = launch {
+                service.serverCancellation()
+            }
+
+            requestJob.join()
+
+            assertTrue(requestJob.isCancelled, "Expected requestJob to be cancelled")
+        }
 
         checkAlive()
         stopAllAndJoin()
     }
 
     @Test
+    fun testCancellationInServerStream() = runCancellationTest {
+        supervisorScope {
+            var ex: CancellationException? = null
+            val requestJob = launch {
+                try {
+                    service.cancellationInIncomingStream().toList()
+                } catch (e: CancellationException) {
+                    ex = e
+                    throw e
+                }
+            }
+
+            requestJob.join()
+
+            assertTrue(requestJob.isCancelled, "Expected requestJob to be cancelled")
+            assertNotNull(ex, "Expected requestJob to be cancelled with a CancellationException")
+        }
+
+        checkAlive()
+        stopAllAndJoin()
+    }
+
+    @Test
+    fun testCancellationInClientStream() = runCancellationTest {
+        supervisorScope {
+            val requestJob = launch {
+                service.cancellationInOutgoingStream(
+                    stream = flow {
+                        emit(42)
+                        emit(43)
+                    },
+                    cancelled = flow {
+                        emit(1)
+                        serverInstance().firstIncomingConsumed.await()
+                        throw CancellationException("cancellationInClientStream")
+                    },
+                )
+            }
+
+            requestJob.join()
+            serverInstance().consumedAll.await()
+
+            assertFalse(requestJob.isCancelled, "Expected requestJob not to be cancelled")
+            assertContentEquals(listOf(42, 43), serverInstance().consumedIncomingValues)
+        }
+
+        checkAlive()
+        stopAllAndJoin()
+
+        assertEquals(1, serverInstance().cancellationsCounter.value, "Expected 1 request to be cancelled")
+    }
+
+    @Test
     fun testCancelClient() = runCancellationTest {
         val firstRequestJob = launch {
-            service.serverDelay(300)
+            service.longRequest()
         }
 
         val secondService = client.withService<CancellationService>()
 
         val secondRequestJob = launch {
-            secondService.serverDelay(300)
+            secondService.longRequest()
         }
 
-        unskippableDelay(150) // wait for requests to reach server
+        serverInstance().waitCounter.await(2)
         client.close()
+        client.awaitCompletion()
+        server.awaitCompletion()
         firstRequestJob.join()
         secondRequestJob.join()
+        serverInstance().cancellationsCounter.await(2)
 
         assertTrue(firstRequestJob.isCancelled, "Expected firstRequestJob to be cancelled")
         assertTrue(secondRequestJob.isCancelled, "Expected secondRequestJob to be cancelled")
 
-        assertEquals(0, serverInstances.sumOf { it.delayCounter.value }, "Expected no requests to succeed")
-
-        client.awaitCompletion()
-        server.awaitCompletion()
+        assertEquals(0, serverInstances.sumOf { it.successCounter.value }, "Expected no requests to succeed")
 
         checkAlive(clientAlive = false, serverAlive = false)
         stopAllAndJoin()
+
+        assertEquals(2, serverInstance().cancellationsCounter.value, "Expected 2 requests to be cancelled")
     }
 
     @Test
     fun testCancelServer() = runCancellationTest {
         val firstRequestJob = launch {
-            service.serverDelay(300)
+            service.longRequest()
         }
 
         val secondService = client.withService<CancellationService>()
 
         val secondRequestJob = launch {
-            secondService.serverDelay(300)
+            secondService.longRequest()
         }
 
-        unskippableDelay(150) // wait for requests to reach server
+        serverInstance().waitCounter.await(2) // wait for requests to reach server
         server.close()
+        server.awaitCompletion()
+        client.awaitCompletion()
         firstRequestJob.join()
         secondRequestJob.join()
+        serverInstance().cancellationsCounter.await(2)
 
         assertTrue(firstRequestJob.isCancelled, "Expected firstRequestJob to be cancelled")
         assertTrue(secondRequestJob.isCancelled, "Expected secondRequestJob to be cancelled")
 
-        assertEquals(0, serverInstances.sumOf { it.delayCounter.value }, "Expected no requests to succeed")
-
-        client.awaitCompletion()
-        server.awaitCompletion()
+        assertEquals(0, serverInstances.sumOf { it.successCounter.value }, "Expected no requests to succeed")
 
         checkAlive(clientAlive = false, serverAlive = false)
         stopAllAndJoin()
+
+        assertEquals(2, serverInstance().cancellationsCounter.value, "Expected 2 requests to be cancelled")
     }
 
     @Test
@@ -191,6 +282,8 @@ class CancellationTest {
         // close by request cancel and not scope closure
         serverInstance().consumedAll.await()
 
+        serverInstance().cancellationsCounter.await(1)
+
         assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
 
         stopAllAndJoin()
@@ -214,6 +307,8 @@ class CancellationTest {
 
         // close by request cancel and not scope closure
         serverInstance().consumedAll.await()
+
+        serverInstance().cancellationsCounter.await(1)
 
         val result = flow.toList()
 
@@ -277,6 +372,8 @@ class CancellationTest {
         }
 
         stopAllAndJoin()
+
+        assertEquals(1, serverInstance().cancellationsCounter.value, "Expected 1 request to be cancelled")
     }
 
     @Test

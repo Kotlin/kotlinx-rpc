@@ -67,6 +67,8 @@ dependencies {
     testImplementation(libs.slf4j.api)
     testImplementation(libs.logback.classic)
     testImplementation(libs.coroutines.debug)
+
+    testImplementation(projects.tests.testUtils)
 }
 
 kotlin {

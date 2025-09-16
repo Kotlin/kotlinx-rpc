@@ -12,23 +12,34 @@ abstract interface kotlinx.rpc.krpc/KrpcTransport : kotlinx.coroutines/Coroutine
 }
 
 sealed interface kotlinx.rpc.krpc/KrpcConfig { // kotlinx.rpc.krpc/KrpcConfig|null[0]
+    abstract val connector // kotlinx.rpc.krpc/KrpcConfig.connector|{}connector[0]
+        abstract fun <get-connector>(): kotlinx.rpc.krpc/KrpcConfig.Connector // kotlinx.rpc.krpc/KrpcConfig.connector.<get-connector>|<get-connector>(){}[0]
     abstract val serialFormatInitializer // kotlinx.rpc.krpc/KrpcConfig.serialFormatInitializer|{}serialFormatInitializer[0]
         abstract fun <get-serialFormatInitializer>(): kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder<*, *> // kotlinx.rpc.krpc/KrpcConfig.serialFormatInitializer.<get-serialFormatInitializer>|<get-serialFormatInitializer>(){}[0]
-    abstract val waitForServices // kotlinx.rpc.krpc/KrpcConfig.waitForServices|{}waitForServices[0]
-        abstract fun <get-waitForServices>(): kotlin/Boolean // kotlinx.rpc.krpc/KrpcConfig.waitForServices.<get-waitForServices>|<get-waitForServices>(){}[0]
+    open val waitForServices // kotlinx.rpc.krpc/KrpcConfig.waitForServices|{}waitForServices[0]
+        open fun <get-waitForServices>(): kotlin/Boolean // kotlinx.rpc.krpc/KrpcConfig.waitForServices.<get-waitForServices>|<get-waitForServices>(){}[0]
 
     final class Client : kotlinx.rpc.krpc/KrpcConfig { // kotlinx.rpc.krpc/KrpcConfig.Client|null[0]
+        final val connector // kotlinx.rpc.krpc/KrpcConfig.Client.connector|{}connector[0]
+            final fun <get-connector>(): kotlinx.rpc.krpc/KrpcConfig.Connector // kotlinx.rpc.krpc/KrpcConfig.Client.connector.<get-connector>|<get-connector>(){}[0]
         final val serialFormatInitializer // kotlinx.rpc.krpc/KrpcConfig.Client.serialFormatInitializer|{}serialFormatInitializer[0]
             final fun <get-serialFormatInitializer>(): kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder<*, *> // kotlinx.rpc.krpc/KrpcConfig.Client.serialFormatInitializer.<get-serialFormatInitializer>|<get-serialFormatInitializer>(){}[0]
-        final val waitForServices // kotlinx.rpc.krpc/KrpcConfig.Client.waitForServices|{}waitForServices[0]
-            final fun <get-waitForServices>(): kotlin/Boolean // kotlinx.rpc.krpc/KrpcConfig.Client.waitForServices.<get-waitForServices>|<get-waitForServices>(){}[0]
+    }
+
+    final class Connector { // kotlinx.rpc.krpc/KrpcConfig.Connector|null[0]
+        final val callTimeout // kotlinx.rpc.krpc/KrpcConfig.Connector.callTimeout|{}callTimeout[0]
+            final fun <get-callTimeout>(): kotlin.time/Duration // kotlinx.rpc.krpc/KrpcConfig.Connector.callTimeout.<get-callTimeout>|<get-callTimeout>(){}[0]
+        final val perCallBufferSize // kotlinx.rpc.krpc/KrpcConfig.Connector.perCallBufferSize|{}perCallBufferSize[0]
+            final fun <get-perCallBufferSize>(): kotlin/Int // kotlinx.rpc.krpc/KrpcConfig.Connector.perCallBufferSize.<get-perCallBufferSize>|<get-perCallBufferSize>(){}[0]
+        final val waitTimeout // kotlinx.rpc.krpc/KrpcConfig.Connector.waitTimeout|{}waitTimeout[0]
+            final fun <get-waitTimeout>(): kotlin.time/Duration // kotlinx.rpc.krpc/KrpcConfig.Connector.waitTimeout.<get-waitTimeout>|<get-waitTimeout>(){}[0]
     }
 
     final class Server : kotlinx.rpc.krpc/KrpcConfig { // kotlinx.rpc.krpc/KrpcConfig.Server|null[0]
+        final val connector // kotlinx.rpc.krpc/KrpcConfig.Server.connector|{}connector[0]
+            final fun <get-connector>(): kotlinx.rpc.krpc/KrpcConfig.Connector // kotlinx.rpc.krpc/KrpcConfig.Server.connector.<get-connector>|<get-connector>(){}[0]
         final val serialFormatInitializer // kotlinx.rpc.krpc/KrpcConfig.Server.serialFormatInitializer|{}serialFormatInitializer[0]
             final fun <get-serialFormatInitializer>(): kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder<*, *> // kotlinx.rpc.krpc/KrpcConfig.Server.serialFormatInitializer.<get-serialFormatInitializer>|<get-serialFormatInitializer>(){}[0]
-        final val waitForServices // kotlinx.rpc.krpc/KrpcConfig.Server.waitForServices|{}waitForServices[0]
-            final fun <get-waitForServices>(): kotlin/Boolean // kotlinx.rpc.krpc/KrpcConfig.Server.waitForServices.<get-waitForServices>|<get-waitForServices>(){}[0]
     }
 }
 
@@ -53,6 +64,8 @@ sealed class kotlinx.rpc.krpc/KrpcConfigBuilder { // kotlinx.rpc.krpc/KrpcConfig
         final fun <get-waitForServices>(): kotlin/Boolean // kotlinx.rpc.krpc/KrpcConfigBuilder.waitForServices.<get-waitForServices>|<get-waitForServices>(){}[0]
         final fun <set-waitForServices>(kotlin/Boolean) // kotlinx.rpc.krpc/KrpcConfigBuilder.waitForServices.<set-waitForServices>|<set-waitForServices>(kotlin.Boolean){}[0]
 
+    final fun buildConnector(): kotlinx.rpc.krpc/KrpcConfig.Connector // kotlinx.rpc.krpc/KrpcConfigBuilder.buildConnector|buildConnector(){}[0]
+    final fun connector(kotlin/Function1<kotlinx.rpc.krpc/KrpcConfigBuilder.Connector, kotlin/Unit>) // kotlinx.rpc.krpc/KrpcConfigBuilder.connector|connector(kotlin.Function1<kotlinx.rpc.krpc.KrpcConfigBuilder.Connector,kotlin.Unit>){}[0]
     final fun rpcSerialFormat(): kotlinx.rpc.krpc.serialization/KrpcSerialFormatBuilder<*, *> // kotlinx.rpc.krpc/KrpcConfigBuilder.rpcSerialFormat|rpcSerialFormat(){}[0]
     final fun serialization(kotlin/Function1<kotlinx.rpc.krpc.serialization/KrpcSerialFormatConfiguration, kotlin/Unit>) // kotlinx.rpc.krpc/KrpcConfigBuilder.serialization|serialization(kotlin.Function1<kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration,kotlin.Unit>){}[0]
 
@@ -60,6 +73,22 @@ sealed class kotlinx.rpc.krpc/KrpcConfigBuilder { // kotlinx.rpc.krpc/KrpcConfig
         constructor <init>() // kotlinx.rpc.krpc/KrpcConfigBuilder.Client.<init>|<init>(){}[0]
 
         final fun build(): kotlinx.rpc.krpc/KrpcConfig.Client // kotlinx.rpc.krpc/KrpcConfigBuilder.Client.build|build(){}[0]
+    }
+
+    final class Connector { // kotlinx.rpc.krpc/KrpcConfigBuilder.Connector|null[0]
+        constructor <init>() // kotlinx.rpc.krpc/KrpcConfigBuilder.Connector.<init>|<init>(){}[0]
+
+        final var callTimeout // kotlinx.rpc.krpc/KrpcConfigBuilder.Connector.callTimeout|{}callTimeout[0]
+            final fun <get-callTimeout>(): kotlin.time/Duration // kotlinx.rpc.krpc/KrpcConfigBuilder.Connector.callTimeout.<get-callTimeout>|<get-callTimeout>(){}[0]
+            final fun <set-callTimeout>(kotlin.time/Duration) // kotlinx.rpc.krpc/KrpcConfigBuilder.Connector.callTimeout.<set-callTimeout>|<set-callTimeout>(kotlin.time.Duration){}[0]
+        final var perCallBufferSize // kotlinx.rpc.krpc/KrpcConfigBuilder.Connector.perCallBufferSize|{}perCallBufferSize[0]
+            final fun <get-perCallBufferSize>(): kotlin/Int // kotlinx.rpc.krpc/KrpcConfigBuilder.Connector.perCallBufferSize.<get-perCallBufferSize>|<get-perCallBufferSize>(){}[0]
+            final fun <set-perCallBufferSize>(kotlin/Int) // kotlinx.rpc.krpc/KrpcConfigBuilder.Connector.perCallBufferSize.<set-perCallBufferSize>|<set-perCallBufferSize>(kotlin.Int){}[0]
+        final var waitTimeout // kotlinx.rpc.krpc/KrpcConfigBuilder.Connector.waitTimeout|{}waitTimeout[0]
+            final fun <get-waitTimeout>(): kotlin.time/Duration // kotlinx.rpc.krpc/KrpcConfigBuilder.Connector.waitTimeout.<get-waitTimeout>|<get-waitTimeout>(){}[0]
+            final fun <set-waitTimeout>(kotlin.time/Duration) // kotlinx.rpc.krpc/KrpcConfigBuilder.Connector.waitTimeout.<set-waitTimeout>|<set-waitTimeout>(kotlin.time.Duration){}[0]
+
+        final fun dontWait(): kotlin.time/Duration // kotlinx.rpc.krpc/KrpcConfigBuilder.Connector.dontWait|dontWait(){}[0]
     }
 
     final class Server : kotlinx.rpc.krpc/KrpcConfigBuilder { // kotlinx.rpc.krpc/KrpcConfigBuilder.Server|null[0]

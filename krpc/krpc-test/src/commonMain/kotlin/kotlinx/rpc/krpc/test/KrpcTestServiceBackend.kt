@@ -6,7 +6,7 @@ package kotlinx.rpc.krpc.test
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.test.TestScope
+import kotlinx.rpc.test.runThreadIfPossible
 import kotlinx.serialization.Serializable
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertContentEquals
@@ -40,6 +40,15 @@ class KrpcTestServiceBackend : KrpcTestService {
 
     override fun nonSuspendBidirectionalPayload(payloadWithStream: PayloadWithStream): Flow<Int> {
         return payloadWithStream.stream.map { it.length }
+    }
+
+    override fun slowConsumer(): Flow<Int> {
+        return flow {
+            repeat(10) {
+                delay(100)
+                emit(it)
+            }
+        }
     }
 
     @Suppress("detekt.EmptyFunctionBlock")
@@ -98,7 +107,9 @@ class KrpcTestServiceBackend : KrpcTestService {
         return arg1
     }
 
-    override suspend fun returnTestClassThatThrowsWhileDeserialization(value: Int): TestClassThatThrowsWhileDeserialization {
+    override suspend fun returnTestClassThatThrowsWhileDeserialization(
+        value: Int,
+    ): TestClassThatThrowsWhileDeserialization {
         return TestClassThatThrowsWhileDeserialization(value)
     }
 
@@ -147,12 +158,19 @@ class KrpcTestServiceBackend : KrpcTestService {
         return arg1.count()
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
+    @Suppress("detekt.GlobalCoroutineUsage")
     override suspend fun incomingStreamSyncCollectMultiple(
         arg1: Flow<String>,
         arg2: Flow<String>,
         arg3: Flow<String>,
     ): Int {
-        return arg1.count() + arg2.count() + arg3.count()
+        // buffer of size 1 may cause lock here without multiple coroutines
+        return listOf(
+            GlobalScope.async { arg1.count() },
+            GlobalScope.async { arg2.count() },
+            GlobalScope.async { arg3.count() },
+        ).awaitAll().sum()
     }
 
     override fun outgoingStream(): Flow<String> {
@@ -250,7 +268,3 @@ class KrpcTestServiceBackend : KrpcTestService {
         }
     }
 }
-
-internal expect fun runThreadIfPossible(runner: () -> Unit)
-
-internal expect fun TestScope.debugCoroutines()

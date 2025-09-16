@@ -32,6 +32,9 @@ public interface RpcInternalConcurrentHashMap<K : Any, V : Any> {
 
     public val values: Collection<V>
 
+    // ConcurrentModificationException safe
+    public fun <T> withKeys(block: (Set<K>) -> T): T
+
     public data class Entry<K : Any, V : Any>(
         val key: K,
         val value: V,

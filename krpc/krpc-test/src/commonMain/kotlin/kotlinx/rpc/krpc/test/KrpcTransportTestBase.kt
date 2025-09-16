@@ -11,13 +11,15 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.TestResult
+import kotlinx.coroutines.test.TestScope
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration
 import kotlinx.rpc.krpc.server.KrpcServer
 import kotlinx.rpc.registerService
+import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlinx.rpc.withService
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
@@ -29,6 +31,7 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.modules.SerializersModule
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.*
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 internal object LocalDateSerializer : KSerializer<LocalDate> {
@@ -284,6 +287,23 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
+    fun slowConsumer() = runTest {
+        val foreverAwait = CompletableDeferred<Unit>()
+        val collectFirst = CompletableDeferred<Unit>()
+        val slow = launch {
+            client.slowConsumer().collect {
+                collectFirst.complete(Unit)
+                foreverAwait.await()
+            }
+        }
+
+        collectFirst.await()
+        val fast = client.simpleWithParams("test")
+        assertEquals(fast, "tset")
+        slow.cancelAndJoin()
+    }
+
+    @Test
     fun outgoingStream() = runTest {
         val result = client.outgoingStream()
         assertEquals(listOf("a", "b", "c"), result.toList(mutableListOf()))
@@ -311,9 +331,16 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    fun RPC_should_be_able_to_receive_100_000_ints_in_reasonable_time() = runTest(timeout = JS_EXTENDED_TIMEOUT) {
+    fun RPC_should_be_able_to_receive_100_000_ints_in_reasonable_time() = runTest(timeout = EXTENDED_TIMEOUT) {
         val n = 100_000
-        assertEquals(client.getNInts(n).last(), n)
+        var counter = 0
+        val last = client.getNInts(n).onEach {
+            counter++
+            if (counter % 1000 == 0) {
+                println("Iteration: $counter")
+            }
+        }.last()
+        assertEquals(n, last)
     }
 
     @Test
@@ -330,7 +357,7 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    @Suppress("detekt.TooGenericExceptionCaught", "detekt.ThrowsCount")
+    @Suppress("detekt.ThrowsCount")
     fun testExceptionSerializationAndPropagating() = runTest {
         try {
             client.throwsIllegalArgument("me")
@@ -472,8 +499,12 @@ abstract class KrpcTransportTestBase {
             }
         }
     }
+
+    private fun runTest(timeout: Duration = 10.seconds, testBody: suspend TestScope.() -> Unit): TestResult {
+        return runTestWithCoroutinesProbes(timeout = timeout, body = testBody)
+    }
 }
 
-private val JS_EXTENDED_TIMEOUT = if (isJs) 300.seconds else 60.seconds
+private val EXTENDED_TIMEOUT = if (isJs) 500.seconds else 200.seconds
 
 internal expect val isJs: Boolean

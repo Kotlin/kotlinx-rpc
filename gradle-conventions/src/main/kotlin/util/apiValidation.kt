@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 private val excludedProjects = setOf(
     "krpc-test",
     "krpc-compatibility-tests",
+    "krpc-protocol-compatibility-tests",
     "compiler-plugin-tests",
 )
 
