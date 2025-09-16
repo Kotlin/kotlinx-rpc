@@ -44,14 +44,14 @@ private typealias ResponseServer = Any
  *
  * @property port Specifies the port used by the server to listen for incoming connections.
  * @param parentContext
- * @param configure exposes platform-specific Server builder.
+ * @param serverBuilder exposes platform-specific Server builder.
  */
 public class GrpcServer internal constructor(
-    override val port: Int = 8080,
-    credentials: ServerCredentials? = null,
+    override val port: Int,
+    private val serverBuilder: ServerBuilder<*>,
+    private val interceptors: List<ServerInterceptor>,
     messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
     parentContext: CoroutineContext = EmptyCoroutineContext,
-    configure: ServerBuilder<*>.() -> Unit,
 ) : RpcServer, Server {
     private val internalContext = SupervisorJob(parentContext[Job])
     private val internalScope = CoroutineScope(parentContext + internalContext)
@@ -61,9 +61,8 @@ public class GrpcServer internal constructor(
     private var isBuilt = false
     private lateinit var internalServer: Server
 
-    private val serverBuilder: ServerBuilder<*> = ServerBuilder(port, credentials).apply(configure)
     private val registry: MutableHandlerRegistry by lazy {
-        MutableHandlerRegistry().apply { serverBuilder.fallbackHandlerRegistry(this) }
+        MutableHandlerRegistry().apply { this@GrpcServer.serverBuilder.fallbackHandlerRegistry(this) }
     }
 
     private val localRegistry = RpcInternalConcurrentHashMap<KClass<*>, ServerServiceDefinition>()
@@ -79,7 +78,7 @@ public class GrpcServer internal constructor(
         if (isBuilt) {
             registry.addService(definition)
         } else {
-            serverBuilder.addService(definition)
+            this@GrpcServer.serverBuilder.addService(definition)
         }
     }
 
@@ -105,7 +104,8 @@ public class GrpcServer internal constructor(
                     as? MethodDescriptor<RequestServer, ResponseServer>
                 ?: error("Expected a gRPC method descriptor")
 
-            it.toDefinitionOn(methodDescriptor, service)
+            // TODO: support per service and per method interceptors (KRPC-222)
+            it.toDefinitionOn(methodDescriptor, service, interceptors)
         }
 
         return serverServiceDefinition(delegate.serviceDescriptor, methods)
@@ -114,29 +114,40 @@ public class GrpcServer internal constructor(
     private fun <@Grpc Service : Any> RpcCallable<Service>.toDefinitionOn(
         descriptor: MethodDescriptor<RequestServer, ResponseServer>,
         service: Service,
+        interceptors: List<ServerInterceptor>,
     ): ServerMethodDefinition<RequestServer, ResponseServer> {
         return when (descriptor.type) {
             MethodType.UNARY -> {
-                internalScope.unaryServerMethodDefinition(descriptor, returnType.kType) { request ->
+                internalScope.unaryServerMethodDefinition(descriptor, returnType.kType, interceptors) { request ->
                     unaryInvokator.call(service, arrayOf(request)) as ResponseServer
                 }
             }
 
             MethodType.CLIENT_STREAMING -> {
-                internalScope.clientStreamingServerMethodDefinition(descriptor, returnType.kType) { requests ->
+                internalScope.clientStreamingServerMethodDefinition(
+                    descriptor,
+                    returnType.kType,
+                    interceptors
+                ) { requests ->
                     unaryInvokator.call(service, arrayOf(requests)) as ResponseServer
                 }
             }
 
             MethodType.SERVER_STREAMING -> {
-                internalScope.serverStreamingServerMethodDefinition(descriptor, returnType.kType) { request ->
+                internalScope.serverStreamingServerMethodDefinition(
+                    descriptor, returnType.kType, interceptors
+                ) { request ->
                     @Suppress("UNCHECKED_CAST")
                     flowInvokator.call(service, arrayOf(request)) as Flow<ResponseServer>
                 }
             }
 
             MethodType.BIDI_STREAMING -> {
-                internalScope.bidiStreamingServerMethodDefinition(descriptor, returnType.kType) { requests ->
+                internalScope.bidiStreamingServerMethodDefinition(
+                    descriptor,
+                    returnType.kType,
+                    interceptors
+                ) { requests ->
                     @Suppress("UNCHECKED_CAST")
                     flowInvokator.call(service, arrayOf(requests)) as Flow<ResponseServer>
                 }
@@ -152,7 +163,7 @@ public class GrpcServer internal constructor(
 
     internal fun build() {
         if (buildLock.compareAndSet(expect = false, update = true)) {
-            internalServer = Server(serverBuilder)
+            internalServer = Server(this@GrpcServer.serverBuilder)
             isBuilt = true
         }
     }
@@ -192,12 +203,36 @@ public class GrpcServer internal constructor(
  */
 public fun GrpcServer(
     port: Int,
-    credentials: ServerCredentials? = null,
-    messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
     parentContext: CoroutineContext = EmptyCoroutineContext,
-    configure: ServerBuilder<*>.() -> Unit = {},
+    configure: GrpcServerConfiguration.() -> Unit = {},
     builder: RpcServer.() -> Unit = {},
 ): GrpcServer {
-    return GrpcServer(port, credentials, messageCodecResolver, parentContext, configure).apply(builder)
+    val config = GrpcServerConfiguration().apply(configure)
+    val serverBuilder = ServerBuilder(port, config.credentials).apply {
+        config.fallbackHandlerRegistry?.let { fallbackHandlerRegistry(it) }
+    }
+    return GrpcServer(port, serverBuilder, config.interceptors, config.messageCodecResolver, parentContext)
+        .apply(builder)
         .apply { build() }
+}
+
+public class GrpcServerConfiguration internal constructor() {
+    internal var messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver
+    internal var credentials: ServerCredentials? = null
+    internal val interceptors: MutableList<ServerInterceptor> = mutableListOf()
+    internal var fallbackHandlerRegistry: HandlerRegistry? = null
+    internal var services: ServerBuilder<*>? = null
+
+    public fun useCredentials(credentials: ServerCredentials) {
+        this.credentials = credentials
+    }
+
+    public fun useMessageCodecResolver(messageCodecResolver: MessageCodecResolver) {
+        this.messageCodecResolver = messageCodecResolver
+    }
+
+    public fun intercept(vararg interceptors: ServerInterceptor) {
+        this.interceptors.addAll(interceptors)
+    }
+
 }

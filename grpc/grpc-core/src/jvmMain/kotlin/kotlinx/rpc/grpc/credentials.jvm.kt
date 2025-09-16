@@ -21,6 +21,10 @@ internal actual fun createInsecureClientCredentials(): ClientCredentials {
     return InsecureClientCredentials.create()
 }
 
+internal actual fun createInsecureServerCredentials(): ServerCredentials {
+    return InsecureServerCredentials.create()
+}
+
 internal actual fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder = JvmTlsCLientCredentialBuilder()
 internal actual fun TlsServerCredentialsBuilder(
     certChain: String,
