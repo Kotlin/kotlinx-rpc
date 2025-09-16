@@ -13,6 +13,7 @@ import kotlinx.rpc.grpc.ClientInterceptor
 import kotlinx.rpc.grpc.GrpcClient
 import kotlinx.rpc.grpc.GrpcServer
 import kotlinx.rpc.grpc.ServerCredentials
+import kotlinx.rpc.grpc.ServerInterceptor
 
 abstract class GrpcProtoTest {
     private val serverMutex = Mutex()
@@ -24,6 +25,7 @@ abstract class GrpcProtoTest {
         clientCreds: ClientCredentials? = null,
         overrideAuthority: String? = null,
         clientInterceptors: List<ClientInterceptor> = emptyList(),
+        serverInterceptors: List<ServerInterceptor> = emptyList(),
         test: suspend (GrpcClient) -> Unit,
     ) = runTest {
         serverMutex.withLock {
@@ -38,7 +40,10 @@ abstract class GrpcProtoTest {
 
             val grpcServer = GrpcServer(
                 PORT,
-                credentials = serverCreds,
+                configure = {
+                    serverCreds?.let { useCredentials(it) }
+                    serverInterceptors.forEach { intercept(it) }
+                },
                 builder = {
                     registerServices()
                 })

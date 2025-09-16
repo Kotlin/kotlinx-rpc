@@ -71,7 +71,7 @@ internal actual fun createInsecureClientCredentials(): ClientCredentials {
     )
 }
 
-internal fun createInsecureServerCredentials(): ServerCredentials {
+internal actual fun createInsecureServerCredentials(): ServerCredentials {
     return InsecureServerCredentials(
         grpc_insecure_server_credentials_create() ?: error("grpc_insecure_server_credentials_create() returned null")
     )

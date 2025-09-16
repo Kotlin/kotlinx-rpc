@@ -66,7 +66,7 @@ public fun Application.grpc(
             port = port,
             messageCodecResolver = messageCodecResolver,
             parentContext = coroutineContext,
-            configure = configure,
+            serverBuilder = configure,
             builder = builder,
         )
     }

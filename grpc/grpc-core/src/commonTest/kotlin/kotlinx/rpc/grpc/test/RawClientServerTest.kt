@@ -18,7 +18,6 @@ import kotlinx.rpc.grpc.GrpcClient
 import kotlinx.rpc.grpc.Server
 import kotlinx.rpc.grpc.ServerBuilder
 import kotlinx.rpc.grpc.codec.SourcedMessageCodec
-import kotlinx.rpc.grpc.internal.GrpcChannel
 import kotlinx.rpc.grpc.internal.MethodDescriptor
 import kotlinx.rpc.grpc.internal.MethodType
 import kotlinx.rpc.grpc.internal.ServerMethodDefinition
@@ -45,7 +44,7 @@ class RawClientServerTest {
         methodName = "unary",
         type = MethodType.UNARY,
         methodDefinition = { descriptor ->
-            unaryServerMethodDefinition(descriptor, typeOf<String>()) { it + it }
+            unaryServerMethodDefinition(descriptor, typeOf<String>(), emptyList()) { it + it }
         },
     ) { client, descriptor ->
         val response = client.unaryRpc(descriptor, "Hello")
@@ -58,7 +57,7 @@ class RawClientServerTest {
         methodName = "serverStreaming",
         type = MethodType.SERVER_STREAMING,
         methodDefinition = { descriptor ->
-            serverStreamingServerMethodDefinition(descriptor, typeOf<String>()) {
+            serverStreamingServerMethodDefinition(descriptor, typeOf<String>(), emptyList()) {
                 flowOf(it, it)
             }
         }
@@ -73,7 +72,7 @@ class RawClientServerTest {
         methodName = "clientStreaming",
         type = MethodType.CLIENT_STREAMING,
         methodDefinition = { descriptor ->
-            clientStreamingServerMethodDefinition(descriptor, typeOf<String>()) {
+            clientStreamingServerMethodDefinition(descriptor, typeOf<String>(), emptyList()) {
                 it.toList().joinToString(separator = "")
             }
         }
@@ -89,7 +88,7 @@ class RawClientServerTest {
             methodName = "bidirectionalStreaming",
             type = MethodType.BIDI_STREAMING,
             methodDefinition = { descriptor ->
-                bidiStreamingServerMethodDefinition(descriptor, typeOf<String>()) {
+                bidiStreamingServerMethodDefinition(descriptor, typeOf<String>(), emptyList()) {
                     it.map { str -> str + str }
                 }
             }
@@ -100,6 +99,7 @@ class RawClientServerTest {
             assertEquals(listOf("HelloHello", "WorldWorld"), response)
         }
     }
+
     private fun runTest(
         methodName: String,
         type: MethodType,
