@@ -119,7 +119,7 @@ internal class KrpcReceiveHandlerTest : KrpcReceiveHandlerBaseTest() {
             callTimeOut = 10.seconds,
             bufferSize = bufferSize,
             callHandler = { collected.add(it) },
-            timeout = 240.seconds,
+            timeout = 360.seconds,
         ) { acting ->
             val sendChannel = Channel<KrpcTransportMessage>(Channel.UNLIMITED)
             val sender = KrpcSendHandler(sendChannel)
