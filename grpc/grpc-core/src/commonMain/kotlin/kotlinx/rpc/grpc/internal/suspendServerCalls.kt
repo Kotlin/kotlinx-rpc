@@ -159,11 +159,12 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
 
     val serverCallScope = ServerCallScopeImpl(
         method = descriptor,
-        responseHeaders = GrpcTrailers(),
         interceptors = interceptors,
         implementation = implementation,
         requestHeaders = requestHeaders,
+        serverCall = handler,
     )
+
     val rpcJob = launch(GrpcContextElement.current()) {
         val mutex = Mutex()
         val headersSent = AtomicBoolean(false) // enforces only sending headers once
@@ -219,13 +220,13 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
 
         mutex.withLock {
             handler.close(closeStatus, trailers)
+            serverCallScope.onCloseFuture.complete(Pair(closeStatus, trailers))
         }
     }
 
     return serverCallListener(
         state = ServerCallListenerState(),
         onCancel = {
-            serverCallScope.onCancelFuture.complete(Unit)
             rpcJob.cancel("Cancellation received from client")
         },
         onMessage = { state, message: Request ->
@@ -251,9 +252,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         onReady = {
             ready.onReady()
         },
-        onComplete = {
-            serverCallScope.onCompleteFuture.complete(Unit)
-        }
+        onComplete = { }
     )
 }
 
@@ -270,29 +269,33 @@ private val unitKType = typeOf<Unit>()
 
 private class ServerCallScopeImpl<Request, Response>(
     override val method: MethodDescriptor<Request, Response>,
-    override val responseHeaders: GrpcTrailers,
     val interceptors: List<ServerInterceptor>,
     val implementation: (Flow<Request>) -> Flow<Response>,
-    val requestHeaders: GrpcTrailers,
+    override val requestHeaders: GrpcTrailers,
+    val serverCall: ServerCall<Request, Response>,
 ) : ServerCallScope<Request, Response> {
 
-    val onCancelFuture = CallbackFuture<Unit>()
-    val onCompleteFuture = CallbackFuture<Unit>()
-    val onCloseFuture = CallbackFuture<Pair<Status, GrpcTrailers>>()
-    var interceptorIndex = 0
+    override val responseHeaders: GrpcTrailers = GrpcTrailers()
+    override val responseTrailers: GrpcTrailers = GrpcTrailers()
 
-    override fun onCancel(block: () -> Unit) {
-        onCancelFuture.onComplete { block() }
+    // keeps track of already processed interceptors
+    var interceptorIndex = 0
+    val onCloseFuture = CallbackFuture<Pair<Status, GrpcTrailers>>()
+
+    override fun onClose(block: (Status, GrpcTrailers) -> Unit) {
+        onCloseFuture.onComplete { block(it.first, it.second) }
     }
 
-    override fun onComplete(block: () -> Unit) {
-        onCompleteFuture.onComplete { block() }
+    override fun close(status: Status, trailers: GrpcTrailers): Nothing {
+        // this will be cached by the rpcImpl() runCatching{} and turns it into a close()
+        throw StatusException(status, trailers)
     }
 
     override fun proceed(request: Flow<Request>): Flow<Response> {
         return if (interceptorIndex < interceptors.size) {
-            interceptors[interceptorIndex++]
-                .intercept(this, requestHeaders, request)
+            with(interceptors[interceptorIndex++]) {
+                intercept(request)
+            }
         } else {
             implementation(request)
         }
