@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc
@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.gradle.utils.loadPropertyFromResources
 
 internal object RpcPluginConst {
     const val GROUP_ID = "org.jetbrains.kotlinx"
-    const val PLUGIN_ID = "kotlinx-rpc"
+    const val PLUGIN_ID = "org.jetbrains.kotlinx.rpc"
     const val COMPILER_PLUGIN_ARTIFACT_ID = "kotlinx-rpc-compiler-plugin"
 
     const val INTERNAL_DEVELOPMENT_PROPERTY = "kotlinx.rpc.plugin.internalDevelopment"
