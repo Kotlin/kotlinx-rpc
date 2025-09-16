@@ -4,16 +4,20 @@
 
 package kotlinx.rpc.krpc
 
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.job
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import kotlinx.rpc.krpc.internal.HandlerKey
 import kotlinx.rpc.krpc.internal.KrpcActingReceiveHandler
@@ -162,12 +166,24 @@ internal class KrpcReceiveHandlerTest : KrpcReceiveHandlerBaseTest() {
                 }
             }
 
+            val counter = Counter()
+            val printJob = launch {
+                while (true) {
+                    withContext(Dispatchers.Default) {
+                        delay(5.seconds)
+                    }
+                    println("Collected: ${collected.size}, launches: ${counter.launches.value}, total: ${counter.total.value}")
+                }
+            }
+
             val iterations = stressIterations
             List(iterations) {
                 launch {
                     repeat(100) {
                         sender.sendMessage(KrpcTransportMessage.StringMessage("Hello"))
+                        counter.total.incrementAndGet()
                     }
+                    counter.launches.incrementAndGet()
                 }
             }.joinAll()
 
@@ -179,11 +195,17 @@ internal class KrpcReceiveHandlerTest : KrpcReceiveHandlerBaseTest() {
             actorJob.cancelAndJoin()
             senderJob.cancelAndJoin()
             windowJob.cancelAndJoin()
+            printJob.cancelAndJoin()
         }
     }
 }
 
 internal abstract class KrpcReceiveHandlerBaseTest {
+    class Counter {
+        val launches = atomic(0)
+        val total = atomic(0)
+    }
+
     protected fun String.asMessage() = KrpcGenericMessage(
         connectionId = null,
         pluginParams = mapOf(KrpcPluginKey.WINDOW_KEY to this)

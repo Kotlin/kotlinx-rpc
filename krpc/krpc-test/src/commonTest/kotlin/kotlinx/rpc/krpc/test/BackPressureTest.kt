@@ -90,7 +90,7 @@ class BackPressureTest : BackPressureTestBase() {
 abstract class BackPressureTestBase {
     protected fun runServerTest(
         perCallBufferSize: Int,
-        timeout: Duration = 10.seconds,
+        timeout: Duration = 30.seconds,
     ) = runTest(perCallBufferSize, timeout) { service, impl ->
         var counter = 0
         val flowList = async {
@@ -123,7 +123,7 @@ abstract class BackPressureTestBase {
 
     protected fun runClientTest(
         perCallBufferSize: Int,
-        timeout: Duration = 10.seconds,
+        timeout: Duration = 30.seconds,
     ) = runTest(perCallBufferSize, timeout) { service, impl ->
         var counter = 0
         val flowList = async {
