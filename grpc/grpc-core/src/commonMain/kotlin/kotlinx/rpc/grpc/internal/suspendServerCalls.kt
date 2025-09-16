@@ -17,6 +17,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.ServerCallScope
+import kotlinx.rpc.grpc.ServerInterceptor
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
@@ -29,6 +31,7 @@ import kotlin.reflect.typeOf
 public fun <Request, Response> CoroutineScope.unaryServerMethodDefinition(
     descriptor: MethodDescriptor<Request, Response>,
     responseKType: KType,
+    interceptors: List<ServerInterceptor>,
     implementation: suspend (request: Request) -> Response,
 ): ServerMethodDefinition<Request, Response> {
     val type = descriptor.type
@@ -36,7 +39,7 @@ public fun <Request, Response> CoroutineScope.unaryServerMethodDefinition(
         "Expected a unary method descriptor but got $descriptor"
     }
 
-    return serverMethodDefinition(descriptor, responseKType) { requests ->
+    return serverMethodDefinition(descriptor, responseKType, interceptors) { requests ->
         requests
             .singleOrStatusFlow("request", descriptor)
             .map { implementation(it) }
@@ -47,6 +50,7 @@ public fun <Request, Response> CoroutineScope.unaryServerMethodDefinition(
 public fun <Request, Response> CoroutineScope.clientStreamingServerMethodDefinition(
     descriptor: MethodDescriptor<Request, Response>,
     responseKType: KType,
+    interceptors: List<ServerInterceptor>,
     implementation: suspend (requests: Flow<Request>) -> Response,
 ): ServerMethodDefinition<Request, Response> {
     val type = descriptor.type
@@ -54,7 +58,7 @@ public fun <Request, Response> CoroutineScope.clientStreamingServerMethodDefinit
         "Expected a client streaming method descriptor but got $descriptor"
     }
 
-    return serverMethodDefinition(descriptor, responseKType) { requests ->
+    return serverMethodDefinition(descriptor, responseKType, interceptors) { requests ->
         flow {
             val response = implementation(requests)
             emit(response)
@@ -66,6 +70,7 @@ public fun <Request, Response> CoroutineScope.clientStreamingServerMethodDefinit
 public fun <Request, Response> CoroutineScope.serverStreamingServerMethodDefinition(
     descriptor: MethodDescriptor<Request, Response>,
     responseKType: KType,
+    interceptors: List<ServerInterceptor>,
     implementation: (request: Request) -> Flow<Response>,
 ): ServerMethodDefinition<Request, Response> {
     val type = descriptor.type
@@ -73,7 +78,7 @@ public fun <Request, Response> CoroutineScope.serverStreamingServerMethodDefinit
         "Expected a server streaming method descriptor but got $descriptor"
     }
 
-    return serverMethodDefinition(descriptor, responseKType) { requests ->
+    return serverMethodDefinition(descriptor, responseKType, interceptors) { requests ->
         flow {
             requests
                 .singleOrStatusFlow("request", descriptor)
@@ -90,6 +95,7 @@ public fun <Request, Response> CoroutineScope.serverStreamingServerMethodDefinit
 public fun <Request, Response> CoroutineScope.bidiStreamingServerMethodDefinition(
     descriptor: MethodDescriptor<Request, Response>,
     responseKType: KType,
+    interceptors: List<ServerInterceptor>,
     implementation: (requests: Flow<Request>) -> Flow<Response>,
 ): ServerMethodDefinition<Request, Response> {
     val type = descriptor.type
@@ -97,29 +103,36 @@ public fun <Request, Response> CoroutineScope.bidiStreamingServerMethodDefinitio
         "Expected a bidi streaming method descriptor but got $descriptor"
     }
 
-    return serverMethodDefinition(descriptor, responseKType, implementation)
+    return serverMethodDefinition(descriptor, responseKType, interceptors, implementation)
 }
 
 private fun <Request, Response> CoroutineScope.serverMethodDefinition(
     descriptor: MethodDescriptor<Request, Response>,
     responseKType: KType,
+    interceptors: List<ServerInterceptor>,
     implementation: (Flow<Request>) -> Flow<Response>,
-): ServerMethodDefinition<Request, Response> = serverMethodDefinition(descriptor, serverCallHandler(responseKType, implementation))
+): ServerMethodDefinition<Request, Response> =
+    serverMethodDefinition(descriptor, serverCallHandler(descriptor, responseKType, interceptors, implementation))
 
 private fun <Request, Response> CoroutineScope.serverCallHandler(
+    descriptor: MethodDescriptor<Request, Response>,
     responseKType: KType,
+    interceptors: List<ServerInterceptor>,
     implementation: (Flow<Request>) -> Flow<Response>,
 ): ServerCallHandler<Request, Response> =
-    ServerCallHandler { call, _ ->
-        serverCallListenerImpl(call, responseKType, implementation)
+    ServerCallHandler { call, headers ->
+        serverCallListenerImpl(descriptor, call, responseKType, interceptors, implementation, headers)
     }
 
 private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
+    descriptor: MethodDescriptor<Request, Response>,
     handler: ServerCall<Request, Response>,
     responseKType: KType,
+    interceptors: List<ServerInterceptor>,
     implementation: (Flow<Request>) -> Flow<Response>,
+    requestHeaders: GrpcTrailers,
 ): ServerCall.Listener<Request> {
-    val ready = Ready { handler.isReady()}
+    val ready = Ready { handler.isReady() }
     val requestsChannel = Channel<Request>(1)
 
     val requestsStarted = AtomicBoolean(false) // enforces read-once
@@ -144,11 +157,18 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         }
     }
 
+    val serverCallScope = ServerCallScopeImpl(
+        method = descriptor,
+        responseHeaders = GrpcTrailers(),
+        interceptors = interceptors,
+        implementation = implementation,
+        requestHeaders = requestHeaders,
+    )
     val rpcJob = launch(GrpcContextElement.current()) {
         val mutex = Mutex()
         val headersSent = AtomicBoolean(false) // enforces only sending headers once
         val failure = runCatching {
-            implementation(requests).collect { response ->
+            serverCallScope.proceed(requests).collect { response ->
                 @Suppress("UNCHECKED_CAST")
                 // fix for KRPC-173
                 val value = if (responseKType == unitKType) Unit as Response else response
@@ -205,6 +225,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
     return serverCallListener(
         state = ServerCallListenerState(),
         onCancel = {
+            serverCallScope.onCancelFuture.complete(Unit)
             rpcJob.cancel("Cancellation received from client")
         },
         onMessage = { state, message: Request ->
@@ -230,7 +251,9 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         onReady = {
             ready.onReady()
         },
-        onComplete = {}
+        onComplete = {
+            serverCallScope.onCompleteFuture.complete(Unit)
+        }
     )
 }
 
@@ -242,4 +265,36 @@ private class ServerCallListenerState {
     var isReceiving = true
 }
 
-private  val unitKType = typeOf<Unit>()
+private val unitKType = typeOf<Unit>()
+
+
+private class ServerCallScopeImpl<Request, Response>(
+    override val method: MethodDescriptor<Request, Response>,
+    override val responseHeaders: GrpcTrailers,
+    val interceptors: List<ServerInterceptor>,
+    val implementation: (Flow<Request>) -> Flow<Response>,
+    val requestHeaders: GrpcTrailers,
+) : ServerCallScope<Request, Response> {
+
+    val onCancelFuture = CallbackFuture<Unit>()
+    val onCompleteFuture = CallbackFuture<Unit>()
+    val onCloseFuture = CallbackFuture<Pair<Status, GrpcTrailers>>()
+    var interceptorIndex = 0
+
+    override fun onCancel(block: () -> Unit) {
+        onCancelFuture.onComplete { block() }
+    }
+
+    override fun onComplete(block: () -> Unit) {
+        onCompleteFuture.onComplete { block() }
+    }
+
+    override fun proceed(request: Flow<Request>): Flow<Response> {
+        return if (interceptorIndex < interceptors.size) {
+            interceptors[interceptorIndex++]
+                .intercept(this, requestHeaders, request)
+        } else {
+            implementation(request)
+        }
+    }
+}
