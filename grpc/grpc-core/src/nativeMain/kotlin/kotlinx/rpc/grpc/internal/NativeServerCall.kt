@@ -354,4 +354,5 @@ private class DeferredCallListener<T> : ServerCall.Listener<T>() {
     override fun onHalfClose() = deliver { it.onHalfClose() }
     override fun onCancel() = deliver { it.onCancel() }
     override fun onComplete() = deliver { it.onComplete() }
+    override fun onReady() = deliver { it.onReady() }
 }
