@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.krpc.test
 
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelAndJoin
@@ -14,13 +13,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.job
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.yield
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.registerService
+import kotlinx.rpc.test.WaitCounter
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlinx.rpc.withService
 import kotlin.test.Test
@@ -38,26 +37,20 @@ interface BackPressure {
 }
 
 class BackPressureImpl : BackPressure {
-    val plainCounter = atomic(0)
-    val serverStreamCounter = atomic(0)
-    val clientStreamCounter = atomic(0)
+    val plainCounter = WaitCounter()
+    val serverStreamCounter = WaitCounter()
+    val clientStreamCounter = WaitCounter()
     val entered = CompletableDeferred<Unit>()
     val fence = CompletableDeferred<Unit>()
 
-    suspend fun awaitCounter(value: Int, counter: BackPressureImpl.() -> Int) {
-        while (counter() != value) {
-            yield()
-        }
-    }
-
     override suspend fun plain() {
-        plainCounter.incrementAndGet()
+        plainCounter.increment()
     }
 
     override fun serverStream(num: Int): Flow<Int> {
         return flow {
             repeat(num) {
-                serverStreamCounter.incrementAndGet()
+                serverStreamCounter.increment()
                 emit(it)
             }
         }
@@ -114,17 +107,17 @@ abstract class BackPressureTestBase {
         }
 
         impl.entered.await()
-        impl.awaitCounter(perCallBufferSize + 2) { serverStreamCounter.value }
+        impl.serverStreamCounter.await(perCallBufferSize + 2)
 
         repeat(1000) {
             service.plain()
         }
 
-        impl.awaitCounter(1000) { plainCounter.value }
+        impl.plainCounter.await(1000)
 
         assertEquals(perCallBufferSize + 2, impl.serverStreamCounter.value)
         impl.fence.complete(Unit)
-        impl.awaitCounter(1000) { serverStreamCounter.value }
+        impl.serverStreamCounter.await(1000)
         assertEquals(1000, flowList.await().size)
     }
 
@@ -136,7 +129,7 @@ abstract class BackPressureTestBase {
         val flowList = async {
             service.clientStream(flow {
                 repeat(1000) {
-                    impl.clientStreamCounter.incrementAndGet()
+                    impl.clientStreamCounter.increment()
                     emit(it)
                     counter++
                     if (counter % 10 == 0) {
@@ -147,18 +140,18 @@ abstract class BackPressureTestBase {
         }
 
         impl.entered.await()
-        impl.awaitCounter(perCallBufferSize + 2) { clientStreamCounter.value }
+        impl.clientStreamCounter.await(perCallBufferSize + 2)
 
         repeat(1000) {
             service.plain()
         }
 
-        impl.awaitCounter(1000) { plainCounter.value }
+        impl.plainCounter.await(1000)
 
         assertEquals(0, impl.consumed.size)
         assertEquals(perCallBufferSize + 2, impl.clientStreamCounter.value)
         impl.fence.complete(Unit)
-        impl.awaitCounter(1000) { clientStreamCounter.value }
+        impl.clientStreamCounter.await(1000)
         flowList.await()
         assertEquals(1000, impl.consumed.size)
     }

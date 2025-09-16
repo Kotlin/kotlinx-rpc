@@ -4,4 +4,4 @@
 
 package kotlinx.rpc.test
 
-internal actual inline fun runThreadIfPossible(runner: () -> Unit) = runner()
+actual inline fun runThreadIfPossible(runner: () -> Unit) = runner()

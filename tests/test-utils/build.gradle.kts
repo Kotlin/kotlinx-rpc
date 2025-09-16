@@ -6,12 +6,14 @@ import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 
 plugins {
     alias(libs.plugins.conventions.kmp)
+    alias(libs.plugins.atomicfu)
 }
 
 kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                implementation(libs.coroutines.core)
                 implementation(libs.coroutines.test)
             }
         }

@@ -7,7 +7,7 @@ package kotlinx.rpc.krpc.test.compat
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.yield
+import kotlinx.rpc.test.WaitCounter
 
 interface CompatTransport : CoroutineScope {
     suspend fun send(message: String)
@@ -32,16 +32,10 @@ interface CompatService {
 }
 
 interface CompatServiceImpl {
-    val exitMethod: Int
-    val cancelled: Int
+    val exitMethod: WaitCounter
+    val cancelled: WaitCounter
     val entered: CompletableDeferred<Unit>
     val fence: CompletableDeferred<Unit>
-
-    suspend fun awaitCounter(num: Int, counter: CompatServiceImpl.() -> Int) {
-        while (counter() != num) {
-            yield()
-        }
-    }
 }
 
 interface Starter {

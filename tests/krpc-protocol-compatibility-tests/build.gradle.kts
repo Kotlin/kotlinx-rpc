@@ -58,10 +58,12 @@ fun DependencyHandlerScope.versioned(configuration: Configuration, version: Stri
     add(configuration.name, "org.jetbrains.kotlinx:kotlinx-rpc-krpc-server:$version")
     add(configuration.name, "org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json:$version")
     add(configuration.name, libs.atomicfu)
+    add(configuration.name, projects.tests.testUtils)
 }
 
 dependencies {
     api(libs.atomicfu)
+    api(projects.tests.testUtils)
     implementation(libs.serialization.core)
     implementation(libs.coroutines.core)
     implementation(libs.kotlin.reflect)

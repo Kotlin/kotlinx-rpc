@@ -4,10 +4,10 @@
 
 package kotlinx.rpc.krpc.test.cancellation
 
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.test.WaitCounter
 
 @Rpc
 interface CancellationService {
@@ -33,15 +33,9 @@ interface CancellationService {
 }
 
 class CancellationServiceImpl : CancellationService {
-    val waitCounter = atomic(0)
-    val successCounter = atomic(0)
-    val cancellationsCounter = atomic(0)
-
-    suspend fun awaitCounter(value: Int, counter: CancellationServiceImpl.() -> Int) {
-        while (counter() != value) {
-            yield()
-        }
-    }
+    val waitCounter = WaitCounter()
+    val successCounter = WaitCounter()
+    val cancellationsCounter = WaitCounter()
 
     val consumedIncomingValues = mutableListOf<Int>()
     val firstIncomingConsumed = CompletableDeferred<Int>()
@@ -51,11 +45,11 @@ class CancellationServiceImpl : CancellationService {
     override suspend fun longRequest() {
         try {
             firstIncomingConsumed.complete(0)
-            waitCounter.incrementAndGet()
+            waitCounter.increment()
             fence.await()
-            successCounter.incrementAndGet()
+            successCounter.increment()
         } catch (e: CancellationException) {
-            cancellationsCounter.incrementAndGet()
+            cancellationsCounter.increment()
             throw e
         }
     }
@@ -93,7 +87,7 @@ class CancellationServiceImpl : CancellationService {
                         }
                     }
                 } catch (e: CancellationException) {
-                    cancellationsCounter.incrementAndGet()
+                    cancellationsCounter.increment()
                     throw e
                 }
             }
@@ -119,7 +113,7 @@ class CancellationServiceImpl : CancellationService {
 
             fence.await()
         } catch (e: CancellationException) {
-            cancellationsCounter.incrementAndGet()
+            cancellationsCounter.increment()
             throw e
         }
     }

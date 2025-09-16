@@ -31,9 +31,9 @@ class CancellationTest {
             service.longRequest()
         }
 
-        serverInstance().awaitCounter(2) { waitCounter.value }
+        serverInstance().waitCounter.await(2)
         cancellingRequestJob.cancelAndJoin()
-        serverInstance().awaitCounter(1) { cancellationsCounter.value }
+        serverInstance().cancellationsCounter.await(1)
         serverInstance().fence.complete(Unit)
         aliveRequestJob.join()
 
@@ -162,19 +162,18 @@ class CancellationTest {
             secondService.longRequest()
         }
 
-        serverInstance().awaitCounter(2) { waitCounter.value }
+        serverInstance().waitCounter.await(2)
         client.close()
+        client.awaitCompletion()
+        server.awaitCompletion()
         firstRequestJob.join()
         secondRequestJob.join()
-        serverInstance().awaitCounter(2) { cancellationsCounter.value }
+        serverInstance().cancellationsCounter.await(2)
 
         assertTrue(firstRequestJob.isCancelled, "Expected firstRequestJob to be cancelled")
         assertTrue(secondRequestJob.isCancelled, "Expected secondRequestJob to be cancelled")
 
         assertEquals(0, serverInstances.sumOf { it.successCounter.value }, "Expected no requests to succeed")
-
-        client.awaitCompletion()
-        server.awaitCompletion()
 
         checkAlive(clientAlive = false, serverAlive = false)
         stopAllAndJoin()
@@ -194,19 +193,18 @@ class CancellationTest {
             secondService.longRequest()
         }
 
-        serverInstance().awaitCounter(2) { waitCounter.value } // wait for requests to reach server
+        serverInstance().waitCounter.await(2) // wait for requests to reach server
         server.close()
+        server.awaitCompletion()
+        client.awaitCompletion()
         firstRequestJob.join()
         secondRequestJob.join()
-        serverInstance().awaitCounter(2) { cancellationsCounter.value }
+        serverInstance().cancellationsCounter.await(2)
 
         assertTrue(firstRequestJob.isCancelled, "Expected firstRequestJob to be cancelled")
         assertTrue(secondRequestJob.isCancelled, "Expected secondRequestJob to be cancelled")
 
         assertEquals(0, serverInstances.sumOf { it.successCounter.value }, "Expected no requests to succeed")
-
-        client.awaitCompletion()
-        server.awaitCompletion()
 
         checkAlive(clientAlive = false, serverAlive = false)
         stopAllAndJoin()
@@ -284,7 +282,7 @@ class CancellationTest {
         // close by request cancel and not scope closure
         serverInstance().consumedAll.await()
 
-        serverInstance().awaitCounter(1) { cancellationsCounter.value }
+        serverInstance().cancellationsCounter.await(1)
 
         assertContentEquals(listOf(0), serverInstance().consumedIncomingValues)
 
@@ -310,7 +308,7 @@ class CancellationTest {
         // close by request cancel and not scope closure
         serverInstance().consumedAll.await()
 
-        serverInstance().awaitCounter(1) { cancellationsCounter.value }
+        serverInstance().cancellationsCounter.await(1)
 
         val result = flow.toList()
 

@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.krpc.test.compat.service
 
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
@@ -12,6 +11,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.test.compat.CompatServiceImpl
+import kotlinx.rpc.test.WaitCounter
 import kotlin.coroutines.cancellation.CancellationException
 
 @Rpc
@@ -44,11 +44,8 @@ class TestServiceImpl : TestService, CompatServiceImpl {
         return flow
     }
 
-    private val _exitMethod = atomic(0)
-    override val exitMethod: Int get() = _exitMethod.value
-
-    private val _cancelled = atomic(0)
-    override val cancelled: Int get() = _cancelled.value
+    override val exitMethod: WaitCounter = WaitCounter()
+    override val cancelled: WaitCounter = WaitCounter()
 
     override val entered: CompletableDeferred<Unit> = CompletableDeferred()
     override val fence: CompletableDeferred<Unit> = CompletableDeferred()
@@ -57,9 +54,9 @@ class TestServiceImpl : TestService, CompatServiceImpl {
         try {
             entered.complete(Unit)
             fence.await()
-            _exitMethod.incrementAndGet()
+            exitMethod.increment()
         } catch (e: CancellationException) {
-            _cancelled.incrementAndGet()
+            cancelled.increment()
             throw e
         }
     }
@@ -72,7 +69,7 @@ class TestServiceImpl : TestService, CompatServiceImpl {
                 fence.await()
                 emit(2)
             } catch (e: CancellationException) {
-                _cancelled.incrementAndGet()
+                cancelled.increment()
                 throw e
             }
         }
@@ -86,7 +83,7 @@ class TestServiceImpl : TestService, CompatServiceImpl {
                 }
             }
         } catch (e: CancellationException) {
-            _cancelled.incrementAndGet()
+            cancelled.increment()
             throw e
         }
     }

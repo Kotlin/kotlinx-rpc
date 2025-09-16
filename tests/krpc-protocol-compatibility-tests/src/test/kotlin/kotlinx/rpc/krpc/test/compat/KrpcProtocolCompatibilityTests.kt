@@ -86,18 +86,18 @@ class KrpcProtocolCompatibilityTests : KrpcProtocolCompatibilityTestsBase() {
 
         impl.entered.await()
         job.cancelAndJoin()
-        impl.awaitCounter(1) { cancelled }
-        assertEquals(0, impl.exitMethod)
+        impl.cancelled.await(1)
+        assertEquals(0, impl.exitMethod.value)
 
         val followup = launch {
             service.requestCancellation()
         }
         impl.fence.complete(Unit)
         followup.join()
-        assertEquals(1, impl.exitMethod)
+        assertEquals(1, impl.exitMethod.value)
 
         assertNoErrorsInLogs()
-        assertEquals(1, impl.cancelled)
+        assertEquals(1, impl.cancelled.value)
     }
 
     @TestFactory
@@ -108,8 +108,8 @@ class KrpcProtocolCompatibilityTests : KrpcProtocolCompatibilityTestsBase() {
 
         impl.entered.await()
         job.cancelAndJoin()
-        impl.awaitCounter(1) { cancelled }
-        assertEquals(0, impl.exitMethod)
+        impl.cancelled.await(1)
+        assertEquals(0, impl.exitMethod.value)
 
         val followup = async {
             service.serverStreamCancellation().toList()
@@ -118,7 +118,7 @@ class KrpcProtocolCompatibilityTests : KrpcProtocolCompatibilityTestsBase() {
         assertEquals(listOf(1, 2), followup.await())
 
         assertNoErrorsInLogs()
-        assertEquals(1, impl.cancelled)
+        assertEquals(1, impl.cancelled.value)
     }
 
     @TestFactory
@@ -132,7 +132,7 @@ class KrpcProtocolCompatibilityTests : KrpcProtocolCompatibilityTestsBase() {
 
         impl.entered.await()
         job.cancelAndJoin()
-        impl.awaitCounter(1) { cancelled }
+        impl.cancelled.await(1)
 
         assertNoErrorsInLogs()
     }
