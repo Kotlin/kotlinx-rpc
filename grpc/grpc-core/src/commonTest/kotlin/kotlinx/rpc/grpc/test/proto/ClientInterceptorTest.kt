@@ -67,6 +67,7 @@ class ClientInterceptorTest: GrpcProtoTest() {
             runGrpcTest(clientInterceptors = interceptor, test = ::unaryCall)
         }
 
+        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
         assertIs<IllegalStateException>(error.cause)
         assertEquals("Failing in onHeader", error.cause?.message)
     }
@@ -83,6 +84,7 @@ class ClientInterceptorTest: GrpcProtoTest() {
             runGrpcTest(clientInterceptors = interceptor, test = ::unaryCall)
         }
 
+        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
         assertIs<IllegalStateException>(error.cause)
         assertEquals("Failing in onClose", error.cause?.message)
     }
@@ -129,13 +131,13 @@ class ClientInterceptorTest: GrpcProtoTest() {
     }
 
     @Test
-    fun `append a response message once closed`() = repeat(1000) {
+    fun `append a response message once closed`() {
         val interceptor = interceptor { scope, req -> channelFlow {
             scope.proceed(req).collect {
                 trySend(it)
             }
-            scope.onClose { _, _ ->
-                trySend(EchoResponse { message = "Appended-after-close" })
+            scope.onClose { status, _ ->
+                trySend(EchoResponse { message = "Appended-after-close-with-${status.statusCode}" })
             }
         } }
 
@@ -148,10 +150,8 @@ class ClientInterceptorTest: GrpcProtoTest() {
                             emit(EchoRequest { message = "Eccchhooo" })
                         }
                     }).toList()
-
-            println("Respone messages: ${responses.map { it.message }}")
             assertEquals(6, responses.size)
-            assertTrue(responses.any { it.message == "Appended-after-close" })
+            assertTrue(responses.any { it.message == "Appended-after-close-with-OK" })
         }
     }
 

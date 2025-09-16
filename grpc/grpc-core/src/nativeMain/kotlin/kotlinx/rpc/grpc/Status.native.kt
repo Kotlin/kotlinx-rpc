@@ -12,6 +12,10 @@ public actual class Status internal constructor(
     public actual fun getDescription(): String? = description
 
     public actual fun getCause(): Throwable? = cause
+
+    override fun toString(): String {
+        return "Status(description=$description, statusCode=$statusCode, cause=$cause)"
+    }
 }
 
 public actual val Status.statusCode: StatusCode
