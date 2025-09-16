@@ -307,7 +307,7 @@ private class ClientCallScopeImpl<Request, Response>(
             } catch (exception: Throwable) {
                 cause = exception
                 if (exception !is StatusException) {
-                    val status = Status(StatusCode.INTERNAL, "Interceptor threw an error", exception)
+                    val status = Status(StatusCode.CANCELLED, "Interceptor threw an error", exception)
                     cause = StatusException(status)
                 }
             }
