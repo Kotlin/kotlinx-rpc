@@ -84,6 +84,12 @@ tasks.withType<KotlinJvmTest> {
     // lincheck agent
     jvmArgs("-XX:+EnableDynamicAgentLoading")
     environment("LIBRARY_VERSION", libs.versions.kotlinx.rpc.get())
+
+    if (project.hasProperty("stressTests") && project.property("stressTests") == "true") {
+        include("kotlinx/rpc/krpc/test/stress/**")
+    } else {
+        exclude("kotlinx/rpc/krpc/test/stress/**")
+    }
 }
 
 val resourcesPath = projectDir.resolve("src/jvmTest/resources")
