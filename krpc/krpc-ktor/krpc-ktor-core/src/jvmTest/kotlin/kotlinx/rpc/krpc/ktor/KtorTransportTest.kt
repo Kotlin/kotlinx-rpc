@@ -8,6 +8,7 @@ package kotlinx.rpc.krpc.ktor
 
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.server.application.*
@@ -17,9 +18,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.rpc.annotations.Rpc
-import kotlinx.rpc.krpc.client.KrpcClient
 import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
 import kotlinx.rpc.krpc.internal.logging.dumpLogger
@@ -32,12 +31,12 @@ import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlinx.rpc.withService
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import java.net.ServerSocket
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.test.Ignore
 import kotlin.test.Test
+import kotlin.test.fail
 import kotlin.time.Duration.Companion.seconds
 
 @Rpc
@@ -62,13 +61,14 @@ interface SlowService {
 
 class SlowServiceImpl : SlowService {
     val received = CompletableDeferred<Unit>()
+    val fence = CompletableDeferred<Unit>()
 
     override suspend fun verySlow(): String {
         received.complete(Unit)
 
-        delay(Int.MAX_VALUE.toLong())
+        fence.await()
 
-        error("Must not be called")
+        return "hello"
     }
 }
 
@@ -134,10 +134,7 @@ class KtorTransportTest {
 
     @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
     @Test
-    @Ignore("Wait for Ktor fix (https://github.com/ktorio/ktor/pull/4927) or apply workaround if rejected")
-    fun testEndpointsTerminateWhenWsDoes() = runTestWithCoroutinesProbes(timeout = 15.seconds) {
-        DebugProbes.install()
-
+    fun testClientTerminatesWhenServerWsDoes() = runTestWithCoroutinesProbes(timeout = 60.seconds) {
         val logger = setupLogger()
 
         val port: Int = findFreePort()
@@ -147,7 +144,7 @@ class KtorTransportTest {
         val serverReady = CompletableDeferred<Unit>()
         val dropServer = CompletableDeferred<Unit>()
 
-        val service = SlowServiceImpl()
+        val impl = SlowServiceImpl()
 
         @Suppress("detekt.GlobalCoroutineUsage")
         val serverJob = GlobalScope.launch(CoroutineName("server")) {
@@ -171,22 +168,27 @@ class KtorTransportTest {
                                 }
                             }
 
-                            registerService<SlowService> { service }
+                            registerService<SlowService> { impl }
                         }
                     }
-                }.start(wait = false)
+                }.startSuspend(wait = false)
 
                 serverReady.complete(Unit)
 
                 dropServer.await()
 
-                server.stop(shutdownGracePeriod = 100L, shutdownTimeout = 100L, timeUnit = TimeUnit.MILLISECONDS)
+                server.stopSuspend(gracePeriodMillis = 100L, timeoutMillis = 300L)
             }
 
             logger.info { "Server stopped" }
         }
 
         val ktorClient = HttpClient(CIO) {
+            install(HttpRequestRetry) {
+                retryOnServerErrors(maxRetries = 5)
+                exponentialDelay()
+            }
+
             installKrpc {
                 serialization {
                     json()
@@ -200,17 +202,18 @@ class KtorTransportTest {
 
         val rpcClient = ktorClient.rpc("ws://0.0.0.0:$port/rpc")
 
-        launch {
+        var cancellationExceptionCaught = false
+        val job = launch {
             try {
                 rpcClient.withService<SlowService>().verySlow()
-                error("Must not be called")
+                fail("Must not be called")
             } catch (_: CancellationException) {
-                logger.info { "Cancellation exception caught for RPC request" }
+                cancellationExceptionCaught = true
                 ensureActive()
             }
         }
 
-        service.received.await()
+        impl.received.await()
 
         logger.info { "Received RPC request" }
 
@@ -218,14 +221,132 @@ class KtorTransportTest {
 
         logger.info { "Waiting for RPC client to complete" }
 
-        (rpcClient as KrpcClient).awaitCompletion()
+        rpcClient.awaitCompletion()
+
+        job.join()
+
+        assertTrue(cancellationExceptionCaught)
 
         logger.info { "RPC client completed" }
 
         ktorClient.close()
-        newPool.close()
 
-        serverJob.cancel()
+        serverJob.join()
+        newPool.close()
+    }
+
+    @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
+    @Test
+    fun testServerTerminatesWhenClientWsDoes() = runTestWithCoroutinesProbes(timeout = 60.seconds) {
+        val logger = setupLogger()
+
+        val port: Int = findFreePort()
+
+        val newPool = Executors.newCachedThreadPool().asCoroutineDispatcher()
+
+        val serverReady = CompletableDeferred<Unit>()
+        val dropServer = CompletableDeferred<Unit>()
+
+        val impl = SlowServiceImpl()
+        val sessionFinished = CompletableDeferred<Unit>()
+
+        @Suppress("detekt.GlobalCoroutineUsage")
+        val serverJob = GlobalScope.launch(CoroutineName("server")) {
+            withContext(newPool) {
+                val server = embeddedServer(
+                    factory = Netty,
+                    port = port,
+                    parentCoroutineContext = newPool,
+                ) {
+                    install(Krpc)
+
+                    routing {
+                        get {
+                            call.respondText("hello")
+                        }
+
+                        rpc("/rpc") {
+                            coroutineContext.job.invokeOnCompletion {
+                                sessionFinished.complete(Unit)
+                            }
+
+                            rpcConfig {
+                                serialization {
+                                    json()
+                                }
+                            }
+
+                            registerService<SlowService> { impl }
+                        }
+                    }
+                }.startSuspend(wait = false)
+
+                serverReady.complete(Unit)
+
+                dropServer.await()
+
+                server.stopSuspend(gracePeriodMillis = 100L, timeoutMillis = 300L)
+            }
+
+            logger.info { "Server stopped" }
+        }
+
+        val ktorClient = HttpClient(CIO) {
+            install(HttpRequestRetry) {
+                retryOnServerErrors(maxRetries = 5)
+                exponentialDelay()
+            }
+
+            installKrpc {
+                serialization {
+                    json()
+                }
+            }
+        }
+
+        serverReady.await()
+
+        assertEquals("hello", ktorClient.get("http://0.0.0.0:$port").bodyAsText())
+
+        val rpcClient = ktorClient.rpc("ws://0.0.0.0:$port/rpc")
+
+        var cancellationExceptionCaught = false
+        val job = launch {
+            try {
+                rpcClient.withService<SlowService>().verySlow()
+                fail("Must not be called")
+            } catch (_: CancellationException) {
+                cancellationExceptionCaught = true
+                ensureActive()
+            }
+        }
+
+        impl.received.await()
+
+        logger.info { "Received RPC request, Dropping client" }
+
+        ktorClient.cancel()
+
+        logger.info { "Waiting for RPC client to complete" }
+
+        rpcClient.awaitCompletion()
+
+        logger.info { "Waiting for request to complete" }
+
+        job.join()
+
+        assertTrue(cancellationExceptionCaught)
+
+        logger.info { "RPC client and request completed" }
+
+        sessionFinished.await()
+
+        logger.info { "Session finished" }
+
+        dropServer.complete(Unit)
+        serverJob.join()
+
+        newPool.close()
     }
 
     private fun findFreePort(): Int {
