@@ -38,3 +38,6 @@ interface MyServiceT<!TYPE_PARAMETERS_IN_RPC_INTERFACE!><T><!>
 
 @Rpc
 interface MyServiceT2<!TYPE_PARAMETERS_IN_RPC_INTERFACE!><T, R, A, B><!>
+
+/* GENERATED_FIR_TAGS: annotationUseSiteTargetFile, classReference, functionDeclaration, interfaceDeclaration,
+nullableType, suspend, typeConstraint, typeParameter */

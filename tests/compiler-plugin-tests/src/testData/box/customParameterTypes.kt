@@ -25,3 +25,6 @@ fun box(): String = runBlocking {
 
     if (test1 == "call_42" && test2 == "call_42") "OK" else "Fail: test1=$test1, test2=$test2"
 }
+
+/* GENERATED_FIR_TAGS: classDeclaration, data, functionDeclaration, interfaceDeclaration, primaryConstructor,
+propertyDeclaration, suspend */
