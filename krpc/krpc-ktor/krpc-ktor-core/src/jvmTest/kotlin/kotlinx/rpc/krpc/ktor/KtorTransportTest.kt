@@ -9,6 +9,7 @@ package kotlinx.rpc.krpc.ktor
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.HttpRequestRetry
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.server.application.*
@@ -188,6 +189,9 @@ class KtorTransportTest {
                 retryOnServerErrors(maxRetries = 5)
                 exponentialDelay()
             }
+            install(HttpTimeout) {
+                requestTimeoutMillis = 10000
+            }
 
             installKrpc {
                 serialization {
@@ -295,6 +299,9 @@ class KtorTransportTest {
             install(HttpRequestRetry) {
                 retryOnServerErrors(maxRetries = 5)
                 exponentialDelay()
+            }
+            install(HttpTimeout) {
+                requestTimeoutMillis = 10000
             }
 
             installKrpc {
