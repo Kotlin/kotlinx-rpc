@@ -147,7 +147,7 @@ private fun <Request, Response> GrpcClient.rpcImpl(
     val clientCallScope = ClientCallScopeImpl(
         client = this,
         method = descriptor,
-        metadata = trailers,
+        requestHeaders = trailers,
         callOptions = callOptions,
     )
     return clientCallScope.proceed(request)
@@ -205,7 +205,7 @@ internal class Ready(private val isReallyReady: () -> Boolean) {
 private class ClientCallScopeImpl<Request, Response>(
     val client: GrpcClient,
     override val method: MethodDescriptor<Request, Response>,
-    override val metadata: GrpcMetadata,
+    override val requestHeaders: GrpcMetadata,
     override val callOptions: GrpcCallOptions,
 ) : ClientCallScope<Request, Response> {
 
@@ -250,7 +250,7 @@ private class ClientCallScopeImpl<Request, Response>(
             val responses = Channel<Response>(1)
             val ready = Ready { call.isReady() }
 
-            call.start(channelResponseListener(responses, ready), metadata)
+            call.start(channelResponseListener(responses, ready), requestHeaders)
 
             suspend fun Flow<Request>.send() {
                 if (method.type == MethodType.UNARY || method.type == MethodType.SERVER_STREAMING) {
