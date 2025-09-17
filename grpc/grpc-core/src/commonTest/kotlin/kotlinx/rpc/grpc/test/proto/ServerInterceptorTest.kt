@@ -5,6 +5,7 @@
 package kotlinx.rpc.grpc.test.proto
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.GrpcClient
@@ -16,6 +17,7 @@ import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.grpc.test.EchoRequest
+import kotlinx.rpc.grpc.test.EchoResponse
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
 import kotlinx.rpc.grpc.test.invoke
@@ -61,7 +63,7 @@ class ServerInterceptorTest : GrpcProtoTest() {
         }
 
         assertEquals(StatusCode.UNAUTHENTICATED, error.getStatus().statusCode)
-        assertContains(error.message!!, "Close in interceptor")
+        assertContains(error.getStatus().getDescription()!!, "Close in interceptor")
     }
 
     @Test
@@ -108,6 +110,42 @@ class ServerInterceptorTest : GrpcProtoTest() {
 
         assertEquals(StatusCode.UNAUTHENTICATED, error.getStatus().statusCode)
         assertContains(error.message!!, "Close in onClose")
+    }
+
+    @Test
+    fun `dont proceed and return custom message - should succeed on client`() {
+        val interceptor = interceptor {
+            flowOf(EchoResponse { message = "Custom message" })
+        }
+        runGrpcTest(serverInterceptors = interceptor) {
+            val service = it.withService<EchoService>()
+            val response = service.UnaryEcho(EchoRequest { message = "Hello" })
+            assertEquals("Custom message", response.message)
+        }
+    }
+
+    @Test
+    fun `manipulate request - should succeed on client`() {
+        val interceptor = interceptor {
+            proceed(it.map { EchoRequest { message = "Modified" } })
+        }
+        runGrpcTest(serverInterceptors = interceptor) {
+            val service = it.withService<EchoService>()
+            val response = service.UnaryEcho(EchoRequest { message = "Hello" })
+            assertEquals("Modified", response.message)
+        }
+    }
+
+    @Test
+    fun `manipulate response - should succeed on client`() {
+        val interceptor = interceptor {
+            proceed(it).map { EchoResponse { message = "Modified" } }
+        }
+        runGrpcTest(serverInterceptors = interceptor) {
+            val service = it.withService<EchoService>()
+            val response = service.UnaryEcho(EchoRequest { message = "Hello" })
+            assertEquals("Modified", response.message)
+        }
     }
 
     private suspend fun unaryCall(grpcClient: GrpcClient) {
