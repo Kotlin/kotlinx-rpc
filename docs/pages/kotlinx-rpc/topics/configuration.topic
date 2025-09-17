@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  - Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  - Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
   -->
 
 <!DOCTYPE topic
@@ -28,7 +28,7 @@
 
     <code-block lang="kotlin">
         val config: KrpcConfig.Client = rpcClientConfig { // same for KrpcConfig.Server with rpcServerConfig
-            waitForServices = true // default parameter
+            // configuration here
         }
     </code-block>
     <p>
@@ -67,19 +67,54 @@
             You can also define a custom format.
         </p>
     </chapter>
-    <chapter id="waitforservices-dsl">
+    <chapter id="connector-dsl">
         <title>
-            <code>waitForServices</code> DSL
+            <code>connector</code> DSL
         </title>
         <p>
-            <code>waitForServices</code> parameter is available for both client and server.
-            It specifies the behavior for an endpoint in situations
-            when the message for a service is received,
-            but the service is not present in <code>KrpcClient</code> or <code>KrpcServer</code>.
-            If set to <code>true</code>, the message will be stored in memory,
-            otherwise, the error will be sent to a peer endpoint,
-            saying that the message was not handled.
-            Default value is <code>true</code>.
+            Connector is a part of kRPC that is responsible for sending and receiving data over the network.
+            You can configure the following parameters:
         </p>
+        <list>
+            <li>
+                <code>waitTimeout</code> - timeout for waiting for a service to be registered.
+                Sometimes services can be registered after the server starts,
+                and after the first requests starts to arrive from a peer.
+                This parameter defines how long the server will wait for a service to be registered.
+                <br/>
+                The default value is <code>Duration.INFINITE</code>.
+                <br/>
+                Also, available a value of <code>dontWait()</code>.
+            </li>
+            <li>
+                <code>callTimeout</code> - timeout for processing one message.
+                <br/>
+                The default value is <code>Duration.INFINITE</code>.
+            </li>
+            <li>
+                <code>perCallBufferSize</code> - size of the buffer for one call.
+                Call can be a stream or a single message.
+                This effectively provides a backpressure mechanism.
+                If a peer is slow to process the message during a call,
+                the buffer will be filled up and
+                the sender will wait before sending more messages.
+                <br/>
+                Note that this is <b>per call</b>, not per connection.
+                <br/>
+                The default value is <code>1</code>.
+            </li>
+        </list>
+        <p>
+            Example:
+        </p>
+        <code-block lang="kotlin">
+            rpcClientConfig {
+                connector {
+                    waitTimeout = 10.seconds
+                    callTimeout = 60.seconds
+                    perCallBufferSize = 1000
+                }
+            }
+        </code-block>
     </chapter>
 </topic>
