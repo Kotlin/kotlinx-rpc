@@ -9,16 +9,16 @@ package kotlinx.rpc.grpc
  */
 public expect class StatusException : Exception {
     public constructor(status: Status)
-    public constructor(status: Status, trailers: GrpcTrailers?)
+    public constructor(status: Status, trailers: GrpcMetadata?)
 
     public fun getStatus(): Status
-    public fun getTrailers(): GrpcTrailers?
+    public fun getTrailers(): GrpcMetadata?
 }
 
 public expect class StatusRuntimeException : RuntimeException {
     public constructor(status: Status)
-    public constructor(status: Status, trailers: GrpcTrailers?)
+    public constructor(status: Status, trailers: GrpcMetadata?)
 
     public fun getStatus(): Status
-    public fun getTrailers(): GrpcTrailers?
+    public fun getTrailers(): GrpcMetadata?
 }

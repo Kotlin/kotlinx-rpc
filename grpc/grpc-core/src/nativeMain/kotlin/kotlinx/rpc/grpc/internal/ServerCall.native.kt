@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
@@ -12,16 +12,16 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 public actual fun interface ServerCallHandler<Request, Response> {
     public actual fun startCall(
         call: ServerCall<Request, Response>,
-        headers: GrpcTrailers,
+        headers: GrpcMetadata,
     ): ServerCall.Listener<Request>
 }
 
 @InternalRpcApi
 public actual abstract class ServerCall<Request, Response> {
     public actual abstract fun request(numMessages: Int)
-    public actual abstract fun sendHeaders(headers: GrpcTrailers)
+    public actual abstract fun sendHeaders(headers: GrpcMetadata)
     public actual abstract fun sendMessage(message: Response)
-    public actual abstract fun close(status: Status, trailers: GrpcTrailers)
+    public actual abstract fun close(status: Status, trailers: GrpcMetadata)
 
     public actual open fun isReady(): Boolean {
         // Default implementation returns true - subclasses can override if they need flow control

@@ -7,7 +7,7 @@
 package kotlinx.rpc.grpc.internal
 
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.experimental.ExperimentalNativeApi
@@ -16,7 +16,7 @@ import kotlin.experimental.ExperimentalNativeApi
 public actual abstract class ClientCall<Request, Response> {
     public actual abstract fun start(
         responseListener: Listener<Response>,
-        headers: GrpcTrailers,
+        headers: GrpcMetadata,
     )
 
     public actual abstract fun request(numMessages: Int)
@@ -30,10 +30,10 @@ public actual abstract class ClientCall<Request, Response> {
 
     @InternalRpcApi
     public actual abstract class Listener<Message> {
-        public actual open fun onHeaders(headers: GrpcTrailers) {
+        public actual open fun onHeaders(headers: GrpcMetadata) {
         }
 
-        public actual open fun onClose(status: Status, trailers: GrpcTrailers) {
+        public actual open fun onClose(status: Status, trailers: GrpcMetadata) {
         }
 
         public actual open fun onMessage(message: Message) {
@@ -46,13 +46,13 @@ public actual abstract class ClientCall<Request, Response> {
 
 @InternalRpcApi
 public actual fun <Message> clientCallListener(
-    onHeaders: (headers: GrpcTrailers) -> Unit,
+    onHeaders: (headers: GrpcMetadata) -> Unit,
     onMessage: (message: Message) -> Unit,
-    onClose: (status: Status, trailers: GrpcTrailers) -> Unit,
+    onClose: (status: Status, trailers: GrpcMetadata) -> Unit,
     onReady: () -> Unit,
 ): ClientCall.Listener<Message> {
     return object : ClientCall.Listener<Message>() {
-        override fun onHeaders(headers: GrpcTrailers) {
+        override fun onHeaders(headers: GrpcMetadata) {
             onHeaders(headers)
         }
 
@@ -60,7 +60,7 @@ public actual fun <Message> clientCallListener(
             onMessage(message)
         }
 
-        override fun onClose(status: Status, trailers: GrpcTrailers) {
+        override fun onClose(status: Status, trailers: GrpcMetadata) {
             onClose(status, trailers)
         }
 

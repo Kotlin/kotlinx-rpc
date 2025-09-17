@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.ClientCallScope
 import kotlinx.rpc.grpc.GrpcClient
-import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
@@ -34,7 +34,7 @@ public suspend fun <Request, Response> GrpcClient.unaryRpc(
     descriptor: MethodDescriptor<Request, Response>,
     request: Request,
     callOptions: GrpcCallOptions = GrpcDefaultCallOptions,
-    trailers: GrpcTrailers = GrpcTrailers(),
+    trailers: GrpcMetadata = GrpcMetadata(),
 ): Response {
     val type = descriptor.type
     require(type == MethodType.UNARY) {
@@ -54,7 +54,7 @@ public fun <Request, Response> GrpcClient.serverStreamingRpc(
     descriptor: MethodDescriptor<Request, Response>,
     request: Request,
     callOptions: GrpcCallOptions = GrpcDefaultCallOptions,
-    trailers: GrpcTrailers = GrpcTrailers(),
+    trailers: GrpcMetadata = GrpcMetadata(),
 ): Flow<Response> {
     val type = descriptor.type
     require(type == MethodType.SERVER_STREAMING) {
@@ -74,7 +74,7 @@ public suspend fun <Request, Response> GrpcClient.clientStreamingRpc(
     descriptor: MethodDescriptor<Request, Response>,
     requests: Flow<Request>,
     callOptions: GrpcCallOptions = GrpcDefaultCallOptions,
-    trailers: GrpcTrailers = GrpcTrailers(),
+    trailers: GrpcMetadata = GrpcMetadata(),
 ): Response {
     val type = descriptor.type
     require(type == MethodType.CLIENT_STREAMING) {
@@ -94,7 +94,7 @@ public fun <Request, Response> GrpcClient.bidirectionalStreamingRpc(
     descriptor: MethodDescriptor<Request, Response>,
     requests: Flow<Request>,
     callOptions: GrpcCallOptions = GrpcDefaultCallOptions,
-    trailers: GrpcTrailers = GrpcTrailers(),
+    trailers: GrpcMetadata = GrpcMetadata(),
 ): Flow<Response> {
     val type = descriptor.type
     check(type == MethodType.BIDI_STREAMING) {
@@ -141,7 +141,7 @@ private sealed interface ClientRequest<Request> {
 private fun <Request, Response> GrpcClient.rpcImpl(
     descriptor: MethodDescriptor<Request, Response>,
     callOptions: GrpcCallOptions,
-    trailers: GrpcTrailers,
+    trailers: GrpcMetadata,
     request: Flow<Request>,
 ): Flow<Response> {
     val clientCallScope = ClientCallScopeImpl(
@@ -205,22 +205,22 @@ internal class Ready(private val isReallyReady: () -> Boolean) {
 private class ClientCallScopeImpl<Request, Response>(
     val client: GrpcClient,
     override val method: MethodDescriptor<Request, Response>,
-    override val metadata: GrpcTrailers,
+    override val metadata: GrpcMetadata,
     override val callOptions: GrpcCallOptions,
 ) : ClientCallScope<Request, Response> {
 
     val call = client.channel.platformApi.newCall(method, callOptions)
     val interceptors = client.interceptors
-    val onHeadersFuture = CallbackFuture<GrpcTrailers>()
-    val onCloseFuture = CallbackFuture<Pair<Status, GrpcTrailers>>()
+    val onHeadersFuture = CallbackFuture<GrpcMetadata>()
+    val onCloseFuture = CallbackFuture<Pair<Status, GrpcMetadata>>()
 
     var interceptorIndex = 0
 
-    override fun onHeaders(block: (GrpcTrailers) -> Unit) {
+    override fun onHeaders(block: (GrpcMetadata) -> Unit) {
         onHeadersFuture.onComplete { block(it) }
     }
 
-    override fun onClose(block: (Status, GrpcTrailers) -> Unit) {
+    override fun onClose(block: (Status, GrpcMetadata) -> Unit) {
         onCloseFuture.onComplete { block(it.first, it.second) }
     }
 
@@ -308,7 +308,7 @@ private class ClientCallScopeImpl<Request, Response>(
                 throw e ?: AssertionError("onMessage should never be called until responses is ready")
             }
         },
-        onClose = { status: Status, trailers: GrpcTrailers ->
+        onClose = { status: Status, trailers: GrpcMetadata ->
             var cause = when {
                 status.statusCode == StatusCode.OK -> null
                 status.getCause() is CancellationException -> status.getCause()
