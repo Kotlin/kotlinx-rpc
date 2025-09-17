@@ -4,24 +4,17 @@
 
 package kotlinx.rpc.grpc.test.proto
 
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.ClientCallScope
 import kotlinx.rpc.grpc.ClientInterceptor
 import kotlinx.rpc.grpc.GrpcClient
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
-import kotlinx.rpc.grpc.internal.bidirectionalStreamingRpc
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoResponse
@@ -37,7 +30,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
-class ClientInterceptorTest: GrpcProtoTest() {
+class ClientInterceptorTest : GrpcProtoTest() {
 
     override fun RpcServer.registerServices() {
         registerService<EchoService> { EchoServiceImpl() }
@@ -46,7 +39,7 @@ class ClientInterceptorTest: GrpcProtoTest() {
     @Test
     fun `throw during intercept - should fail with thrown exception`() {
         val error = assertFailsWith<IllegalStateException> {
-            val interceptor = interceptor { _, _ ->
+            val interceptor = interceptor {
                 throw IllegalStateException("Failing in interceptor")
             }
             runGrpcTest(clientInterceptors = interceptor, test = ::unaryCall)
@@ -58,11 +51,11 @@ class ClientInterceptorTest: GrpcProtoTest() {
     @Test
     fun `throw during onHeader - should fail with status exception containing the thrown exception`() {
         val error = assertFailsWith<StatusException> {
-            val interceptor = interceptor { scope, req ->
-                scope.onHeaders {
+            val interceptor = interceptor {
+                onHeaders {
                     throw IllegalStateException("Failing in onHeader")
                 }
-                scope.proceed(req)
+                proceed(it)
             }
             runGrpcTest(clientInterceptors = interceptor, test = ::unaryCall)
         }
@@ -75,11 +68,11 @@ class ClientInterceptorTest: GrpcProtoTest() {
     @Test
     fun `throw during onClose - should fail with status exception containing the thrown exception`() {
         val error = assertFailsWith<StatusException> {
-            val interceptor = interceptor { scope, req ->
-                scope.onClose { _, _ ->
+            val interceptor = interceptor {
+                onClose { _, _ ->
                     throw IllegalStateException("Failing in onClose")
                 }
-                scope.proceed(req)
+                proceed(it)
             }
             runGrpcTest(clientInterceptors = interceptor, test = ::unaryCall)
         }
@@ -92,9 +85,9 @@ class ClientInterceptorTest: GrpcProtoTest() {
     @Test
     fun `cancel in intercept - should fail with cancellation`() {
         val error = assertFailsWith<StatusException> {
-            val interceptor = interceptor { scope, req ->
-                scope.cancel("Canceling in interceptor", IllegalStateException("Cancellation cause"))
-                scope.proceed(req)
+            val interceptor = interceptor {
+                cancel("Canceling in interceptor", IllegalStateException("Cancellation cause"))
+                proceed(it)
             }
             runGrpcTest(clientInterceptors = interceptor, test = ::unaryCall)
         }
@@ -107,9 +100,9 @@ class ClientInterceptorTest: GrpcProtoTest() {
 
     @Test
     fun `modify request message - should return modified message`() {
-        val interceptor = interceptor { scope, req ->
-            val modified = req.map { EchoRequest { message = "Modified" } }
-            scope.proceed(modified)
+        val interceptor = interceptor {
+            val modified = it.map { EchoRequest { message = "Modified" } }
+            proceed(modified)
         }
         runGrpcTest(clientInterceptors = interceptor) {
             val service = it.withService<EchoService>()
@@ -120,8 +113,8 @@ class ClientInterceptorTest: GrpcProtoTest() {
 
     @Test
     fun `modify response message - should return modified message`() {
-        val interceptor = interceptor { scope, req ->
-            scope.proceed(req).map { EchoResponse { message = "Modified" } }
+        val interceptor = interceptor {
+            proceed(it).map { EchoResponse { message = "Modified" } }
         }
         runGrpcTest(clientInterceptors = interceptor) {
             val service = it.withService<EchoService>()
@@ -132,24 +125,26 @@ class ClientInterceptorTest: GrpcProtoTest() {
 
     @Test
     fun `append a response message once closed`() {
-        val interceptor = interceptor { scope, req -> channelFlow {
-            scope.proceed(req).collect {
-                trySend(it)
+        val interceptor = interceptor {
+            channelFlow {
+                proceed(it).collect {
+                    trySend(it)
+                }
+                onClose { status, _ ->
+                    trySend(EchoResponse { message = "Appended-after-close-with-${status.statusCode}" })
+                }
             }
-            scope.onClose { status, _ ->
-                trySend(EchoResponse { message = "Appended-after-close-with-${status.statusCode}" })
-            }
-        } }
+        }
 
         runGrpcTest(
             clientInterceptors = interceptor
         ) { client ->
             val svc = client.withService<EchoService>()
             val responses = svc.BidirectionalStreamingEcho(flow {
-                        repeat(5) {
-                            emit(EchoRequest { message = "Eccchhooo" })
-                        }
-                    }).toList()
+                repeat(5) {
+                    emit(EchoRequest { message = "Eccchhooo" })
+                }
+            }).toList()
             assertEquals(6, responses.size)
             assertTrue(responses.any { it.message == "Appended-after-close-with-OK" })
         }
@@ -164,15 +159,16 @@ class ClientInterceptorTest: GrpcProtoTest() {
 }
 
 private fun interceptor(
-    block: (ClientCallScope<Any, Any> , Flow<Any>) -> Flow<Any>
+    block: ClientCallScope<Any, Any>.(Flow<Any>) -> Flow<Any>,
 ): List<ClientInterceptor> {
     return listOf(object : ClientInterceptor {
         @Suppress("UNCHECKED_CAST")
-        override fun <Req, Resp> intercept(
-            scope: ClientCallScope<Req, Resp>,
+        override fun <Req, Resp> ClientCallScope<Req, Resp>.intercept(
             request: Flow<Req>,
         ): Flow<Resp> {
-            return block(scope as ClientCallScope<Any, Any>, request as Flow<Any>) as Flow<Resp>
+            with(this as ClientCallScope<Any, Any>) {
+                return block(request as Flow<Any>) as Flow<Resp>
+            }
         }
     })
 }
