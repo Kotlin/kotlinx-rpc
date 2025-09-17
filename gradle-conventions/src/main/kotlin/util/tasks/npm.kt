@@ -10,11 +10,14 @@ import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootEnvSpec
+import org.jetbrains.kotlin.gradle.targets.wasm.nodejs.WasmNodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnPlugin
 import org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnRootEnvSpec
+import org.jetbrains.kotlin.gradle.targets.web.nodejs.BaseNodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.web.yarn.BaseYarnRootEnvSpec
 import org.jetbrains.kotlin.gradle.targets.web.yarn.CommonYarnPlugin
 import util.other.optionalProperty
@@ -25,12 +28,13 @@ import java.io.File
 private inline fun <
     reified Plugin : CommonYarnPlugin,
     reified Spec : BaseYarnRootEnvSpec,
+    reified NodeJsExtension: BaseNodeJsRootExtension,
 > Project.registerCustomNpmTasks(
     target: String,
     useProxy: Boolean,
 ) {
     val capitalizedTarget = target.replaceFirstChar { it.titlecase() }
-    tasks.register("execute${capitalizedTarget}NpmLogin") {
+    val login = tasks.register("execute${capitalizedTarget}NpmLogin") {
         if (!useProxyRepositories) {
             return@register
         }
@@ -82,6 +86,12 @@ private inline fun <
                 downloadBaseUrl = "https://packages.jetbrains.team/files/p/krpc/build-deps/"
             }
         }
+
+        extensions.configure<NodeJsExtension> {
+            npmInstallTaskProvider.configure {
+                dependsOn(login)
+            }
+        }
     }
 }
 
@@ -100,8 +110,8 @@ fun Project.configureNpm() {
     val kotlinMasterBuild by optionalProperty()
     val useProxy = useProxyRepositories
 
-    registerCustomNpmTasks<YarnPlugin, YarnRootEnvSpec>("js", useProxy)
-    registerCustomNpmTasks<WasmYarnPlugin, WasmYarnRootEnvSpec>("wasm", useProxy)
+    registerCustomNpmTasks<YarnPlugin, YarnRootEnvSpec, NodeJsRootExtension>("js", useProxy)
+    registerCustomNpmTasks<WasmYarnPlugin, WasmYarnRootEnvSpec, WasmNodeJsRootExtension>("wasm", useProxy)
 
     // necessary for CI js tests
     rootProject.plugins.withType<YarnPlugin> {
