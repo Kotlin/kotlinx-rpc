@@ -60,7 +60,10 @@ internal class KrpcServerService<@Rpc T : Any>(
                 connectionId = message.connectionId,
             )
 
-            connector.sendMessage(errorMessage)
+            connector.sendMessageChecked(errorMessage) {
+                // ignore, the client probably already disconnected
+            }
+
             unsubscribeFromCallMessages(message.callId)
         }
     }
@@ -180,7 +183,7 @@ internal class KrpcServerService<@Rpc T : Any>(
 
                     sendFlowMessages(serialFormat, returnSerializer, value, callData)
                 } else {
-                    sendMessages(serialFormat, returnSerializer, value, callData)
+                    sendMessageValue(serialFormat, returnSerializer, value, callData)
                 }
             } catch (cause: CancellationException) {
                 currentCoroutineContext().ensureActive()
@@ -201,9 +204,7 @@ internal class KrpcServerService<@Rpc T : Any>(
                         serviceId = callData.serviceId,
                     )
 
-                    try {
-                        connector.sendMessage(exceptionMessage)
-                    } catch (_: ClosedSendChannelException) {
+                    connector.sendMessageChecked(exceptionMessage) {
                         // ignore, the client probably already disconnected
                     }
 
@@ -225,7 +226,7 @@ internal class KrpcServerService<@Rpc T : Any>(
         connector.unsubscribeFromCallMessages(descriptor.fqName, callId)
     }
 
-    private suspend fun sendMessages(
+    private suspend fun sendMessageValue(
         serialFormat: SerialFormat,
         returnSerializer: KSerializer<Any?>,
         value: Any?,
@@ -303,7 +304,7 @@ internal class KrpcServerService<@Rpc T : Any>(
                 connector.sendMessage(result)
             }
 
-            connector.sendMessage(
+            connector.sendMessageChecked(
                 KrpcCallMessage.StreamFinished(
                     callId = callData.callId,
                     serviceType = descriptor.fqName,
@@ -311,12 +312,14 @@ internal class KrpcServerService<@Rpc T : Any>(
                     serviceId = callData.serviceId,
                     streamId = SINGLE_STREAM_ID,
                 )
-            )
+            ) {
+                // do nothing
+            }
         } catch (cause: CancellationException) {
             throw cause
         } catch (cause: Throwable) {
             val serializedCause = serializeException(cause)
-            connector.sendMessage(
+            connector.sendMessageChecked(
                 KrpcCallMessage.StreamCancel(
                     callId = callData.callId,
                     serviceType = descriptor.fqName,
@@ -325,7 +328,9 @@ internal class KrpcServerService<@Rpc T : Any>(
                     streamId = SINGLE_STREAM_ID,
                     cause = serializedCause,
                 )
-            )
+            ) {
+                // do nothing
+            }
         }
     }
 
@@ -351,7 +356,7 @@ internal class KrpcServerService<@Rpc T : Any>(
         closeReceiving(callId, message, cause, fromJob = false)
 
         if (!supportedPlugins.contains(KrpcPlugin.NO_ACK_CANCELLATION)) {
-            connector.sendMessage(
+            connector.sendMessageChecked(
                 KrpcGenericMessage(
                     connectionId = null,
                     pluginParams = mapOf(
@@ -360,7 +365,9 @@ internal class KrpcServerService<@Rpc T : Any>(
                         KrpcPluginKey.CANCELLATION_ID to callId,
                     )
                 )
-            )
+            ) {
+                // do nothing
+            }
         }
 
         unsubscribeFromCallMessages(callId)

@@ -216,7 +216,9 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 connector.subscribeToGenericMessages(::handleGenericMessage)
                 connector.subscribeToProtocolMessages(::handleProtocolMessage)
 
-                connector.sendMessage(KrpcProtocolMessage.Handshake(KrpcPlugin.ALL))
+                connector.sendMessageChecked(KrpcProtocolMessage.Handshake(KrpcPlugin.ALL)) {
+                    // ignore, we are already cancelled and have a cause
+                }
             }
         }
 
@@ -477,7 +479,9 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 connectionId = outgoingStream.connectionId,
                 serviceId = outgoingStream.serviceId,
             )
-            sendException(message)
+            connector.sendMessageChecked(message) {
+                // ignore, we are already cancelled and have a cause
+            }
 
             // stop the flow and its coroutine, other flows are not affected
             throw e
@@ -491,7 +495,9 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 connectionId = outgoingStream.connectionId,
                 serviceId = outgoingStream.serviceId,
             )
-            sendException(message)
+            connector.sendMessageChecked(message) {
+                // ignore, we are already cancelled and have a cause
+            }
 
             throw cause
         }
@@ -505,14 +511,6 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
         )
 
         sender.sendMessage(message)
-    }
-
-    private suspend fun sendException(message: KrpcMessage) {
-        try {
-            sender.sendMessage(message)
-        } catch (_: ClosedSendChannelException) {
-            // ignore, we are already cancelled and have a cause
-        }
     }
 
     private suspend fun collectAndSendOutgoingStream(
@@ -552,9 +550,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 }
             }
 
-            try {
-                sender.sendMessage(message)
-            } catch (e: ClosedSendChannelException) {
+            sender.sendMessageChecked(message) { e ->
                 throw CancellationException("Request cancelled", e)
             }
         }

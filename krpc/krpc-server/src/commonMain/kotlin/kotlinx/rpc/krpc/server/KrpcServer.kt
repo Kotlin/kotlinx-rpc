@@ -104,7 +104,9 @@ public abstract class KrpcServer(
         when (message) {
             is KrpcProtocolMessage.Handshake -> {
                 supportedPlugins = message.supportedPlugins
-                connector.sendMessage(KrpcProtocolMessage.Handshake(KrpcPlugin.ALL, connectionId = 1))
+                connector.sendMessageChecked(KrpcProtocolMessage.Handshake(KrpcPlugin.ALL, connectionId = 1)) {
+                    // ignore the closed connection
+                }
             }
 
             is KrpcProtocolMessage.Failure -> {
