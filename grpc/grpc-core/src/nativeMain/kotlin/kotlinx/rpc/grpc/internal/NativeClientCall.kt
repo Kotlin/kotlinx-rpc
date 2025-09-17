@@ -23,7 +23,7 @@ import kotlinx.cinterop.toKString
 import kotlinx.cinterop.value
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableJob
-import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.protobuf.input.stream.asInputStream
@@ -92,7 +92,7 @@ internal class NativeClientCall<Request, Response>(
 
     // holds the received status information returned by the RECV_STATUS_ON_CLIENT batch.
     // if null, the call is still in progress. otherwise, the call can be closed as soon as inFlight is 0.
-    private val closeInfo = atomic<Pair<Status, GrpcTrailers>?>(null)
+    private val closeInfo = atomic<Pair<Status, GrpcMetadata>?>(null)
 
     // we currently don't buffer messages, so after one `sendMessage` call, ready turns false. (KRPC-192)
     private val ready = atomic(true)
@@ -143,7 +143,7 @@ internal class NativeClientCall<Request, Response>(
      * Sets the [closeInfo] and calls [tryToCloseCall].
      * This is called as soon as the RECV_STATUS_ON_CLIENT batch (started with [startRecvStatus]) finished.
      */
-    private fun markClosePending(status: Status, trailers: GrpcTrailers) {
+    private fun markClosePending(status: Status, trailers: GrpcMetadata) {
         closeInfo.compareAndSet(null, Pair(status, trailers))
         tryToCloseCall()
     }
@@ -163,7 +163,7 @@ internal class NativeClientCall<Request, Response>(
 
     override fun start(
         responseListener: Listener<Response>,
-        headers: GrpcTrailers,
+        headers: GrpcMetadata,
     ) {
         check(listener == null) { internalError("Already started") }
 
@@ -258,7 +258,7 @@ internal class NativeClientCall<Request, Response>(
                     val details = statusDetails.toByteArray().toKString()
                     val kStatusCode = statusCode.value.toKotlin()
                     val status = Status(kStatusCode, details, null)
-                    val trailers = GrpcTrailers()
+                    val trailers = GrpcMetadata()
 
                     // cleanup
                     grpc_slice_unref(statusDetails.readValue())
@@ -273,7 +273,7 @@ internal class NativeClientCall<Request, Response>(
 
             BatchResult.CQShutdown -> {
                 arena.clear()
-                markClosePending(Status(StatusCode.UNAVAILABLE, "Channel shutdown"), GrpcTrailers())
+                markClosePending(Status(StatusCode.UNAVAILABLE, "Channel shutdown"), GrpcMetadata())
                 return false
             }
 
@@ -281,7 +281,7 @@ internal class NativeClientCall<Request, Response>(
                 arena.clear()
                 markClosePending(
                     Status(StatusCode.INTERNAL, "Failed to start call: ${callResult.error}"),
-                    GrpcTrailers()
+                    GrpcMetadata()
                 )
                 return false
             }
@@ -310,7 +310,7 @@ internal class NativeClientCall<Request, Response>(
             arena.clear()
         }) {
             safeUserCode("Failed to call onHeaders.") {
-                listener?.onHeaders(GrpcTrailers())
+                listener?.onHeaders(GrpcMetadata())
             }
         }
     }
@@ -366,7 +366,7 @@ internal class NativeClientCall<Request, Response>(
         val status = Status(StatusCode.CANCELLED, message ?: "Call cancelled", cause)
         // user side cancellation must always win over any other status (even if the call is already completed).
         // this will also preserve the cancellation cause, which cannot be passed to the grpc-core.
-        closeInfo.value = Pair(status, GrpcTrailers())
+        closeInfo.value = Pair(status, GrpcMetadata())
         cancelInternal(
             grpc_status_code.GRPC_STATUS_CANCELLED,
             message ?: "Call cancelled with cause: ${cause?.message}"
@@ -376,7 +376,7 @@ internal class NativeClientCall<Request, Response>(
     private fun cancelInternal(statusCode: grpc_status_code, message: String) {
         val cancelResult = grpc_call_cancel_with_status(raw, statusCode, message, null)
         if (cancelResult != grpc_call_error.GRPC_CALL_OK) {
-            markClosePending(Status(StatusCode.INTERNAL, "Failed to cancel call: $cancelResult"), GrpcTrailers())
+            markClosePending(Status(StatusCode.INTERNAL, "Failed to cancel call: $cancelResult"), GrpcMetadata())
         }
     }
 

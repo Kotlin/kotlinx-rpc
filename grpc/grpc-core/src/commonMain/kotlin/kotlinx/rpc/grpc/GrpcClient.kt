@@ -55,7 +55,7 @@ public class GrpcClient internal constructor(
 
     override suspend fun <T> call(call: RpcCall): T = withGrpcCall(call) { methodDescriptor, request ->
         val callOptions = GrpcDefaultCallOptions
-        val trailers = GrpcTrailers()
+        val trailers = GrpcMetadata()
 
         return when (methodDescriptor.type) {
             MethodType.UNARY -> unaryRpc(
@@ -78,7 +78,7 @@ public class GrpcClient internal constructor(
 
     override fun <T> callServerStreaming(call: RpcCall): Flow<T> = withGrpcCall(call) { methodDescriptor, request ->
         val callOptions = GrpcDefaultCallOptions
-        val trailers = GrpcTrailers()
+        val trailers = GrpcMetadata()
 
         when (methodDescriptor.type) {
             MethodType.SERVER_STREAMING -> serverStreamingRpc(

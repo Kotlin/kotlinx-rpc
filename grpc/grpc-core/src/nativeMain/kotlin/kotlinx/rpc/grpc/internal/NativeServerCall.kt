@@ -21,7 +21,7 @@ import kotlinx.cinterop.convert
 import kotlinx.cinterop.get
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
-import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
@@ -243,7 +243,7 @@ internal class NativeServerCall<Request, Response>(
         }
     }
 
-    override fun sendHeaders(headers: GrpcTrailers) {
+    override fun sendHeaders(headers: GrpcMetadata) {
         check(initialized) { internalError("Call not initialized") }
         val arena = Arena()
         // TODO: Implement header metadata operation
@@ -284,7 +284,7 @@ internal class NativeServerCall<Request, Response>(
         }
     }
 
-    override fun close(status: Status, trailers: GrpcTrailers) {
+    override fun close(status: Status, trailers: GrpcMetadata) {
         check(initialized) { internalError("Call not initialized") }
         val arena = Arena()
 

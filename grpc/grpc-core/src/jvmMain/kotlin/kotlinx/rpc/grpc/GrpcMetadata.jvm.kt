@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc
 
-@Suppress("RedundantConstructorKeyword")
-public expect class GrpcTrailers constructor() {
-    public fun merge(trailers: GrpcTrailers)
-}
+import kotlinx.rpc.internal.utils.InternalRpcApi
+
+@InternalRpcApi
+public actual typealias GrpcMetadata = io.grpc.Metadata
