@@ -4,14 +4,26 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.onFailure
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
-import kotlinx.rpc.grpc.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.rpc.grpc.ClientCallScope
+import kotlinx.rpc.grpc.GrpcClient
+import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.Status
+import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 // heavily inspired by
@@ -218,8 +230,9 @@ private class ClientCallScopeImpl<Request, Response>(
 
     override fun proceed(request: Flow<Request>): Flow<Response> {
         return if (interceptorIndex < interceptors.size) {
-            interceptors[interceptorIndex++]
-                .intercept(this, request)
+            with(interceptors[interceptorIndex++]) {
+                intercept(request)
+            }
         } else {
             // if the interceptor chain is exhausted, we start the actual call
             doCall(request)
