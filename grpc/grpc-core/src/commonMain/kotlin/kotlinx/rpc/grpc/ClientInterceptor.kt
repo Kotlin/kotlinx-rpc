@@ -14,7 +14,7 @@ public interface ClientCallScope<Request, Response> {
     public val callOptions: GrpcCallOptions
     public fun onHeaders(block: (GrpcMetadata) -> Unit)
     public fun onClose(block: (Status, GrpcMetadata) -> Unit)
-    public fun cancel(message: String, cause: Throwable? = null)
+    public fun cancel(message: String, cause: Throwable? = null): Nothing
     public fun proceed(request: Flow<Request>): Flow<Response>
 }
 

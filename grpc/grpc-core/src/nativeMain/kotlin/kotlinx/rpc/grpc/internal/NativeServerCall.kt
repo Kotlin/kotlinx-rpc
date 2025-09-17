@@ -101,6 +101,7 @@ internal class NativeServerCall<Request, Response>(
     }
 
     private fun initialize() {
+        println("Initializing native server call")
         // finishes if the whole connection is closed.
         // this triggers onClose()/onCanceled() callback.
         val arena = Arena()

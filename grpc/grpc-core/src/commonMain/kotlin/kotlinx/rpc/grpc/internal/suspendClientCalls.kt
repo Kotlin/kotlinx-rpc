@@ -224,8 +224,8 @@ private class ClientCallScopeImpl<Request, Response>(
         onCloseFuture.onComplete { block(it.first, it.second) }
     }
 
-    override fun cancel(message: String, cause: Throwable?) {
-        call.cancel(message, cause)
+    override fun cancel(message: String, cause: Throwable?): Nothing {
+        throw StatusException(Status(StatusCode.CANCELLED, message, cause))
     }
 
     override fun proceed(request: Flow<Request>): Flow<Response> {
@@ -302,7 +302,15 @@ private class ClientCallScopeImpl<Request, Response>(
         responses: Channel<Response>,
         ready: Ready,
     ) = clientCallListener(
-        onHeaders = { onHeadersFuture.complete(it) },
+        onHeaders = {
+            try {
+                onHeadersFuture.complete(it)
+            } catch (e: StatusException) {
+                // if a client interceptor called cancel, we throw a StatusException.
+                // as the JVM implementation treats them differently, we need to catch them here.
+                call.cancel(e.message, e.cause)
+            }
+        },
         onMessage = { message: Response ->
             responses.trySend(message).onFailure { e ->
                 throw e ?: AssertionError("onMessage should never be called until responses is ready")
