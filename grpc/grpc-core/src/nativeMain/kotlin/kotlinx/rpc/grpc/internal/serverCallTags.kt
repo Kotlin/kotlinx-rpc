@@ -15,7 +15,7 @@ import kotlinx.cinterop.alloc
 import kotlinx.cinterop.cValue
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
-import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.HandlerRegistry
 import libkgrpc.gpr_timespec
 import libkgrpc.grpc_call_details
@@ -62,7 +62,7 @@ internal class RegisteredServerCallTag<Request, Response>(
             // ownership of the core call is transferred to the NativeServerCall.
             val call = NativeServerCall(rawCall.value!!, cq, method.getMethodDescriptor())
             // TODO: Turn metadata into a kotlin GrpcTrailers.
-            val trailers = GrpcTrailers()
+            val trailers = GrpcMetadata()
             // start the actual call.
             val listener = method.getServerCallHandler().startCall(call, trailers)
             call.setListener(listener)
@@ -141,7 +141,7 @@ internal class LookupServerCallTag(
                         definition.getMethodDescriptor() as MethodDescriptor<Any, Any>
                     )
                     // TODO: Turn metadata into a kotlin GrpcTrailers.
-                    val metadata = GrpcTrailers()
+                    val metadata = GrpcMetadata()
                     val listener = callHandler.startCall(call, metadata)
                     call.setListener(listener)
                 }

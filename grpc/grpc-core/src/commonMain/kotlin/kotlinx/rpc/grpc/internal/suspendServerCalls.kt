@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.ServerCallScope
 import kotlinx.rpc.grpc.ServerInterceptor
 import kotlinx.rpc.grpc.Status
@@ -130,7 +130,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
     responseKType: KType,
     interceptors: List<ServerInterceptor>,
     implementation: (Flow<Request>) -> Flow<Response>,
-    requestHeaders: GrpcTrailers,
+    requestHeaders: GrpcMetadata,
 ): ServerCall.Listener<Request> {
     val ready = Ready { handler.isReady() }
     val requestsChannel = Channel<Request>(1)
@@ -177,7 +177,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
                 // once we have a response message, check if we've sent headers yet - if not, do so
                 if (headersSent.value.compareAndSet(expect = false, update = true)) {
                     mutex.withLock {
-                        handler.sendHeaders(GrpcTrailers())
+                        handler.sendHeaders(GrpcMetadata())
                     }
                 }
                 ready.suspendUntilReady()
@@ -190,7 +190,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         // no elements or threw an exception, then we wouldn't have sent them
         if (failure == null && headersSent.value.compareAndSet(expect = false, update = true)) {
             mutex.withLock {
-                handler.sendHeaders(GrpcTrailers())
+                handler.sendHeaders(GrpcMetadata())
             }
         }
 
@@ -216,7 +216,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
                     null
                 }
             }
-        } ?: GrpcTrailers()
+        } ?: GrpcMetadata()
 
         mutex.withLock {
             handler.close(closeStatus, trailers)
@@ -271,22 +271,22 @@ private class ServerCallScopeImpl<Request, Response>(
     override val method: MethodDescriptor<Request, Response>,
     val interceptors: List<ServerInterceptor>,
     val implementation: (Flow<Request>) -> Flow<Response>,
-    override val requestHeaders: GrpcTrailers,
+    override val requestHeaders: GrpcMetadata,
     val serverCall: ServerCall<Request, Response>,
 ) : ServerCallScope<Request, Response> {
 
-    override val responseHeaders: GrpcTrailers = GrpcTrailers()
-    override val responseTrailers: GrpcTrailers = GrpcTrailers()
+    override val responseHeaders: GrpcMetadata = GrpcMetadata()
+    override val responseTrailers: GrpcMetadata = GrpcMetadata()
 
     // keeps track of already processed interceptors
     var interceptorIndex = 0
-    val onCloseFuture = CallbackFuture<Pair<Status, GrpcTrailers>>()
+    val onCloseFuture = CallbackFuture<Pair<Status, GrpcMetadata>>()
 
-    override fun onClose(block: (Status, GrpcTrailers) -> Unit) {
+    override fun onClose(block: (Status, GrpcMetadata) -> Unit) {
         onCloseFuture.onComplete { block(it.first, it.second) }
     }
 
-    override fun close(status: Status, trailers: GrpcTrailers): Nothing {
+    override fun close(status: Status, trailers: GrpcMetadata): Nothing {
         // this will be cached by the rpcImpl() runCatching{} and turns it into a close()
         throw StatusException(status, trailers)
     }

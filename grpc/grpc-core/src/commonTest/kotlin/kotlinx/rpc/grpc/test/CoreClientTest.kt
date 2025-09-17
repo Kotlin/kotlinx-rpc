@@ -9,7 +9,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.GrpcServer
-import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.ManagedChannel
 import kotlinx.rpc.grpc.ManagedChannelBuilder
 import kotlinx.rpc.grpc.Status
@@ -84,7 +84,7 @@ class GrpcCoreClientTest {
             onClose = { status, _ -> statusDeferred.complete(status) }
         )
 
-        call.start(listener, GrpcTrailers())
+        call.start(listener, GrpcMetadata())
         call.sendMessage(req)
         call.halfClose()
         call.request(1)
@@ -108,8 +108,8 @@ class GrpcCoreClientTest {
         val listener = createClientCallListener<HelloReply>(
             onClose = { status, _ -> statusDeferred.complete(status) }
         )
-        call.start(listener, GrpcTrailers())
-        assertFailsWith<IllegalStateException> { call.start(listener, GrpcTrailers()) }
+        call.start(listener, GrpcMetadata())
+        assertFailsWith<IllegalStateException> { call.start(listener, GrpcMetadata()) }
         // cancel to finish the call quickly
         call.cancel("Double start test", null)
         runBlocking { withTimeout(5000) { statusDeferred.await() } }
@@ -125,7 +125,7 @@ class GrpcCoreClientTest {
         val listener = createClientCallListener<HelloReply>(
             onClose = { status, _ -> statusDeferred.complete(status) }
         )
-        call.start(listener, GrpcTrailers())
+        call.start(listener, GrpcMetadata())
         call.halfClose()
         assertFailsWith<IllegalStateException> { call.sendMessage(req) }
         // Ensure call completes
@@ -142,7 +142,7 @@ class GrpcCoreClientTest {
         val listener = createClientCallListener<HelloReply>(
             onClose = { status, _ -> statusDeferred.complete(status) }
         )
-        call.start(listener, GrpcTrailers())
+        call.start(listener, GrpcMetadata())
         assertFails { call.request(-1) }
         call.cancel("cleanup", null)
         runBlocking { withTimeout(5000) { statusDeferred.await() } }
@@ -157,7 +157,7 @@ class GrpcCoreClientTest {
         val listener = createClientCallListener<HelloReply>(
             onClose = { status, _ -> statusDeferred.complete(status) }
         )
-        call.start(listener, GrpcTrailers())
+        call.start(listener, GrpcMetadata())
         call.cancel("user cancel", null)
         runBlocking {
             withTimeout(10000) {
@@ -177,7 +177,7 @@ class GrpcCoreClientTest {
             onClose = { status, _ -> statusDeferred.complete(status) }
         )
 
-        call.start(listener, GrpcTrailers())
+        call.start(listener, GrpcMetadata())
         call.sendMessage(helloReq())
         call.halfClose()
         call.request(1)
@@ -198,7 +198,7 @@ class GrpcCoreClientTest {
         val listener = createClientCallListener<HelloReply>()
         assertFailsWith<IllegalStateException> {
             try {
-                call.start(listener, GrpcTrailers())
+                call.start(listener, GrpcMetadata())
                 call.halfClose()
                 call.sendMessage(helloReq())
             } finally {
@@ -218,7 +218,7 @@ class GrpcCoreClientTest {
 
         channel.shutdown()
         runBlocking { channel.awaitTermination() }
-        call.start(listener, GrpcTrailers())
+        call.start(listener, GrpcMetadata())
         call.sendMessage(helloReq())
         call.halfClose()
         call.request(1)
@@ -240,7 +240,7 @@ class GrpcCoreClientTest {
             onClose = { status, _ -> statusDeferred.complete(status) }
         )
 
-        call.start(listener, GrpcTrailers())
+        call.start(listener, GrpcMetadata())
         // set timeout on the server to 1000 ms, to simulate a long-running call
         call.sendMessage(helloReq(1000u))
         call.halfClose()
@@ -292,9 +292,9 @@ class GreeterServiceImpl : GreeterService {
 
 
 private fun <T> createClientCallListener(
-    onHeaders: (headers: GrpcTrailers) -> Unit = {},
+    onHeaders: (headers: GrpcMetadata) -> Unit = {},
     onMessage: (message: T) -> Unit = {},
-    onClose: (status: Status, trailers: GrpcTrailers) -> Unit = { _, _ -> },
+    onClose: (status: Status, trailers: GrpcMetadata) -> Unit = { _, _ -> },
     onReady: () -> Unit = {},
 ) = clientCallListener(
     onHeaders = onHeaders,
