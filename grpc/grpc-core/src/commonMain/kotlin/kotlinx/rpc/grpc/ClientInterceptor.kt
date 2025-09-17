@@ -10,10 +10,10 @@ import kotlinx.rpc.grpc.internal.MethodDescriptor
 
 public interface ClientCallScope<Request, Response> {
     public val method: MethodDescriptor<Request, Response>
-    public val metadata: GrpcMetadata
+    public val requestHeaders: GrpcMetadata
     public val callOptions: GrpcCallOptions
-    public fun onHeaders(block: (GrpcMetadata) -> Unit)
-    public fun onClose(block: (Status, GrpcMetadata) -> Unit)
+    public fun onHeaders(block: (responseHeaders: GrpcMetadata) -> Unit)
+    public fun onClose(block: (closeStatus: Status, responseTrailers: GrpcMetadata) -> Unit)
     public fun cancel(message: String, cause: Throwable? = null): Nothing
     public fun proceed(request: Flow<Request>): Flow<Response>
 }
