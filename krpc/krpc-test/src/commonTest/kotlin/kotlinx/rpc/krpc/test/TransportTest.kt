@@ -258,12 +258,12 @@ class TransportTest {
 
         val server = serverOf(transports)
 
-        delay(1000)
+        withContext(Dispatchers.Default) { delay(1000) }
         val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl() }
         assertEquals("foo", firstResult.await())
         assertEquals(1, echoServices.single().received.value)
 
-        delay(1000)
+        withContext(Dispatchers.Default) { delay(1000) }
         val secondServices = server.registerServiceAndReturn<Second, _> { SecondServer() }
         assertEquals("bar", secondResult.await())
         assertEquals(1, secondServices.single().received.value)
@@ -272,6 +272,7 @@ class TransportTest {
     }
 
     private val handshakeClassSerialName = KrpcProtocolMessage.Handshake.serializer().descriptor.serialName
+
     @Suppress("RegExpRedundantEscape") // fails on js otherwise
     private val clientHandshake = ".*\\[Client\\] \\[Send\\] \\{\"type\":\"$handshakeClassSerialName\".*".toRegex()
 
@@ -299,7 +300,7 @@ class TransportTest {
         server.registerServiceAndReturn<Second, _> { SecondServer() }
 
         client.withService<Echo>().apply { echo("foo"); echo("bar") }
-        client.withService<Second>().apply{ second("bar"); second("baz") }
+        client.withService<Second>().apply { second("bar"); second("baz") }
 
         assertEquals(1, transportInitialized.value)
         assertEquals(1, configInitialized.value)

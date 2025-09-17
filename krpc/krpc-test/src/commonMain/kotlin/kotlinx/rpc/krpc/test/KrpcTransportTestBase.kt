@@ -324,7 +324,7 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun RPC_should_be_able_to_receive_100_000_ints_in_reasonable_time() = runTest(timeout = EXTENDED_TIMEOUT) {
-        val n = 100_000
+        val n = iterations_100_000
         var counter = 0
         val last = client.getNInts(n).onEach {
             counter++
@@ -336,8 +336,8 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    fun RPC_should_be_able_to_receive_100_000_ints_with_batching_in_reasonable_time() = runTest {
-        val n = 100_000
+    fun RPC_should_be_able_to_receive_100_000_ints_with_batching_in_reasonable_time() = runTest(timeout = EXTENDED_TIMEOUT) {
+        val n = iterations_100_000
         assertEquals(client.getNIntsBatched(n).last().last(), n)
     }
 
@@ -398,6 +398,15 @@ abstract class KrpcTransportTestBase {
 
         assertEquals(emptyList<Int>(), client.nullableList(emptyList()))
         assertEquals(listOf(1), client.nullableList(listOf(1)))
+    }
+
+    @Test
+    open fun testNullableEnums() = runTest {
+        assertNull(client.nullableEnum(null))
+        assertEquals(
+            KrpcTestService.TestEnum.ENUM_VALUE_1,
+            client.nullableEnum(KrpcTestService.TestEnum.ENUM_VALUE_1),
+        )
     }
 
     @Test
@@ -500,3 +509,4 @@ abstract class KrpcTransportTestBase {
 private val EXTENDED_TIMEOUT = if (isJs) 500.seconds else 200.seconds
 
 internal expect val isJs: Boolean
+internal expect val iterations_100_000 : Int

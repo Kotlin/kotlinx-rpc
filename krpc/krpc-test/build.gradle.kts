@@ -100,14 +100,6 @@ tasks.named<Delete>("clean") {
     delete(resourcesPath.walk().filter { it.isFile && it.extension == tmpExt }.toList())
 }
 
-tasks.withType<KotlinJsTest> {
-    onlyIf {
-        // for some reason browser tests don't wait for the test to complete and end immediately
-        // KRPC-166
-        !targetName.orEmpty().endsWith("browser")
-    }
-}
-
 tasks.register("moveToGold") {
     doLast {
         resourcesPath.walk().forEach {

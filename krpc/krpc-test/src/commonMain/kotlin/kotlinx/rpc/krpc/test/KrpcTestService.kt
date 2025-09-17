@@ -94,6 +94,7 @@ interface KrpcTestService {
 
     suspend fun nullableInt(v: Int?): Int?
     suspend fun nullableList(v: List<Int>?): List<Int>?
+    suspend fun nullableEnum(enum: TestEnum?): TestEnum?
     fun delayForever(): Flow<Boolean>
 
     suspend fun answerToAnything(arg: String): Int
@@ -101,4 +102,9 @@ interface KrpcTestService {
     suspend fun krpc173()
 
     fun unitFlow(): Flow<Unit>
+
+    @Serializable
+    enum class TestEnum {
+        ENUM_VALUE_1, ENUM_VALUE_2
+    }
 }

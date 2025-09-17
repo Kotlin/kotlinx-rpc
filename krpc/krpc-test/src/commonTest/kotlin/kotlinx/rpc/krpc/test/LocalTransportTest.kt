@@ -65,4 +65,7 @@ class ProtoBufLocalTransportTest : LocalTransportTest() {
 
     @Test
     override fun testNullableLists(): TestResult = runTest { }
+
+    @Test
+    override fun testNullableEnums(): TestResult = runTest { }
 }
