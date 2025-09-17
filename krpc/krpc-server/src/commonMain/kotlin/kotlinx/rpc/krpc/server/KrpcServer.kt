@@ -135,7 +135,7 @@ public abstract class KrpcServer(
 
     final override fun <@Rpc Service : Any> deregisterService(serviceKClass: KClass<Service>) {
         connector.unsubscribeFromServiceMessages(serviceDescriptorOf(serviceKClass).fqName)
-        rpcServices.remove(serviceDescriptorOf(serviceKClass).fqName)
+        rpcServices.remove(serviceDescriptorOf(serviceKClass).fqName)?.close()
     }
 
     private fun <@Rpc Service : Any> createNewServiceInstance(
@@ -159,6 +159,11 @@ public abstract class KrpcServer(
                 cancelledByClient = true
 
                 internalScope.cancel("Server cancelled by client")
+
+                rpcServices.values.forEach { service ->
+                    service.close()
+                }
+
                 rpcServices.clear()
             }
 

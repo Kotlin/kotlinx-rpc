@@ -5,6 +5,7 @@
 package kotlinx.rpc.krpc.server.internal
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.descriptor.RpcInvokator
@@ -200,7 +201,11 @@ internal class KrpcServerService<@Rpc T : Any>(
                         serviceId = callData.serviceId,
                     )
 
-                    connector.sendMessage(exceptionMessage)
+                    try {
+                        connector.sendMessage(exceptionMessage)
+                    } catch (_: ClosedSendChannelException) {
+                        // ignore, the client probably already disconnected
+                    }
 
                     closeReceiving(callId, "Server request failed", failure, fromJob = true)
                 } else {
@@ -324,7 +329,12 @@ internal class KrpcServerService<@Rpc T : Any>(
         }
     }
 
-    suspend fun closeReceiving(
+    fun close() {
+        requestMap.entries.forEach { (callId, request) -> request.cancelAndClose(callId) }
+        requestMap.clear()
+    }
+
+    fun closeReceiving(
         callId: String,
         message: String? = null,
         cause: Throwable? = null,
@@ -377,7 +387,7 @@ internal class KrpcServerService<@Rpc T : Any>(
 }
 
 internal class RpcRequest(val handlerJob: Job, val streamContext: ServerStreamContext) {
-    suspend fun cancelAndClose(
+    fun cancelAndClose(
         callId: String,
         message: String? = null,
         cause: Throwable? = null,
@@ -389,8 +399,6 @@ internal class RpcRequest(val handlerJob: Job, val streamContext: ServerStreamCo
                 message != null -> handlerJob.cancel(message)
                 else -> handlerJob.cancel()
             }
-
-            handlerJob.join()
         }
 
         streamContext.removeCall(callId, cause)

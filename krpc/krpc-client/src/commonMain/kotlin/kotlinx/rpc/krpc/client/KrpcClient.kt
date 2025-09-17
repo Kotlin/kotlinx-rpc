@@ -16,6 +16,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
@@ -476,7 +477,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 connectionId = outgoingStream.connectionId,
                 serviceId = outgoingStream.serviceId,
             )
-            sender.sendMessage(message)
+            sendException(message)
 
             // stop the flow and its coroutine, other flows are not affected
             throw e
@@ -490,7 +491,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 connectionId = outgoingStream.connectionId,
                 serviceId = outgoingStream.serviceId,
             )
-            sender.sendMessage(message)
+            sendException(message)
 
             throw cause
         }
@@ -504,6 +505,14 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
         )
 
         sender.sendMessage(message)
+    }
+
+    private suspend fun sendException(message: KrpcMessage) {
+        try {
+            sender.sendMessage(message)
+        } catch (_: ClosedSendChannelException) {
+            // ignore, we are already cancelled and have a cause
+        }
     }
 
     private suspend fun collectAndSendOutgoingStream(
@@ -543,7 +552,11 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 }
             }
 
-            sender.sendMessage(message)
+            try {
+                sender.sendMessage(message)
+            } catch (e: ClosedSendChannelException) {
+                throw CancellationException("Request cancelled", e)
+            }
         }
     }
 

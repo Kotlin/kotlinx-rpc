@@ -46,7 +46,7 @@ public interface RpcInternalCommonLogger {
         }
 
         public fun <T : Any> logger(kClass: KClass<T>): RpcInternalCommonLogger {
-            return logger(kClass.qualifiedName ?: kClass.toString())
+            return logger(kClass.simpleName ?: kClass.toString())
         }
 
         public inline fun <reified T : Any> logger(): RpcInternalCommonLogger {
