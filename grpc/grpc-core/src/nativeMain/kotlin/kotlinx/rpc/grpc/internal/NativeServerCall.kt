@@ -16,11 +16,15 @@ import kotlinx.cinterop.CPointerVar
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.IntVar
 import kotlinx.cinterop.alloc
+import kotlinx.cinterop.allocArray
+import kotlinx.cinterop.convert
+import kotlinx.cinterop.get
 import kotlinx.cinterop.ptr
-import kotlinx.cinterop.readValue
 import kotlinx.cinterop.value
 import kotlinx.rpc.grpc.GrpcTrailers
 import kotlinx.rpc.grpc.Status
+import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.input.stream.asSource
 import libkgrpc.GRPC_OP_RECV_CLOSE_ON_SERVER
@@ -33,7 +37,6 @@ import libkgrpc.grpc_byte_buffer_destroy
 import libkgrpc.grpc_call_cancel_with_status
 import libkgrpc.grpc_call_unref
 import libkgrpc.grpc_op
-import libkgrpc.grpc_slice
 import libkgrpc.grpc_slice_unref
 import libkgrpc.grpc_status_code
 import kotlin.concurrent.Volatile
@@ -66,7 +69,12 @@ internal class NativeServerCall<Request, Response>(
     private var cancelled = false
     private val finalized = atomic(false)
 
-    // Tracks whether at least one request message has been received on this call.
+    // tracks whether the initial metadata has been sent.
+    // this is used to determine if we have to send the initial metadata
+    // when we try to close the call.
+    private var sentInitialMetadata = false
+
+    // tracks whether at least one request message has been received on this call.
     private var receivedFirstMessage = false
 
     // we currently don't buffer messages, so after one `sendMessage` call, ready turns false. (KRPC-192)
@@ -245,6 +253,7 @@ internal class NativeServerCall<Request, Response>(
             data.send_initial_metadata.metadata = null
         }
 
+        sentInitialMetadata = true
         runBatch(op.ptr, 1u, cleanup = { arena.clear() }) {
             // nothing to do here
         }
@@ -256,20 +265,22 @@ internal class NativeServerCall<Request, Response>(
         val methodDescriptor = checkNotNull(methodDescriptor) { internalError("Method descriptor not set") }
 
         val arena = Arena()
-        val inputStream = methodDescriptor.getResponseMarshaller().stream(message)
-        val byteBuffer = inputStream.asSource().toGrpcByteBuffer()
-        ready.value = false
+        tryRun {
+            val inputStream = methodDescriptor.getResponseMarshaller().stream(message)
+            val byteBuffer = inputStream.asSource().toGrpcByteBuffer()
+            ready.value = false
 
-        val op = arena.alloc<grpc_op> {
-            op = GRPC_OP_SEND_MESSAGE
-            data.send_message.send_message = byteBuffer
-        }
+            val op = arena.alloc<grpc_op> {
+                op = GRPC_OP_SEND_MESSAGE
+                data.send_message.send_message = byteBuffer
+            }
 
-        runBatch(op.ptr, 1u, cleanup = {
-            arena.clear()
-            grpc_byte_buffer_destroy(byteBuffer)
-        }) {
-            turnReady()
+            runBatch(op.ptr, 1u, cleanup = {
+                arena.clear()
+                grpc_byte_buffer_destroy(byteBuffer)
+            }) {
+                turnReady()
+            }
         }
     }
 
@@ -277,21 +288,29 @@ internal class NativeServerCall<Request, Response>(
         check(initialized) { internalError("Call not initialized") }
         val arena = Arena()
 
-        val details = status.getDescription()?.let {
-            arena.alloc<grpc_slice> {
-                it.toGrpcSlice()
-            }
-        }
-        val op = arena.alloc<grpc_op> {
-            op = GRPC_OP_SEND_STATUS_FROM_SERVER
-            data.send_status_from_server.status = status.statusCode.toRawCallAllocation()
-            data.send_status_from_server.status_details = details?.ptr
-            data.send_status_from_server.trailing_metadata_count = 0u
-            data.send_status_from_server.trailing_metadata = null
+        val details = status.getDescription()?.toGrpcSlice()
+        val detailsPtr = details?.getPointer(arena)
+
+        val nOps = if (sentInitialMetadata) 1uL else 2uL
+
+        val ops = arena.allocArray<grpc_op>(nOps.convert())
+
+        ops[0].op = GRPC_OP_SEND_STATUS_FROM_SERVER
+        ops[0].data.send_status_from_server.status = status.statusCode.toRaw()
+        ops[0].data.send_status_from_server.status_details = detailsPtr
+        ops[0].data.send_status_from_server.trailing_metadata_count = 0u
+        ops[0].data.send_status_from_server.trailing_metadata = null
+
+        if (!sentInitialMetadata) {
+            // if we haven't sent GRPC_OP_SEND_INITIAL_METADATA yet,
+            // so we must do it together with the close operation.
+            ops[1].op = GRPC_OP_SEND_INITIAL_METADATA
+            ops[1].data.send_initial_metadata.count = 0u
+            ops[1].data.send_initial_metadata.metadata = null
         }
 
-        runBatch(op.ptr, 1u, cleanup = {
-            if (details != null) grpc_slice_unref(details.readValue())
+        runBatch(ops, nOps, cleanup = {
+            if (details != null) grpc_slice_unref(details)
             arena.clear()
         }) {
             // nothing to do here
@@ -305,6 +324,25 @@ internal class NativeServerCall<Request, Response>(
     override fun getMethodDescriptor(): MethodDescriptor<Request, Response> {
         val methodDescriptor = checkNotNull(methodDescriptor) { internalError("Method descriptor not set") }
         return methodDescriptor
+    }
+
+
+    private fun <T> tryRun(block: () -> T): T {
+        try {
+            return block()
+        } catch (e: Throwable) {
+            // TODO: Log internal error as warning
+            val status = when (e) {
+                is StatusException -> e.getStatus()
+                else -> Status(
+                    StatusCode.INTERNAL,
+                    description = "Internal error, so canceling the stream",
+                    cause = e
+                )
+            }
+            cancel(status.statusCode.toRaw(), status.getDescription() ?: "Unknown error")
+            throw StatusException(status, trailers = null)
+        }
     }
 }
 

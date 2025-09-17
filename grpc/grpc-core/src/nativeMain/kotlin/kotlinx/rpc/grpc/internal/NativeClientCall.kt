@@ -367,7 +367,10 @@ internal class NativeClientCall<Request, Response>(
         // user side cancellation must always win over any other status (even if the call is already completed).
         // this will also preserve the cancellation cause, which cannot be passed to the grpc-core.
         closeInfo.value = Pair(status, GrpcTrailers())
-        cancelInternal(grpc_status_code.GRPC_STATUS_CANCELLED, message ?: "Call cancelled with cause: ${cause?.message}")
+        cancelInternal(
+            grpc_status_code.GRPC_STATUS_CANCELLED,
+            message ?: "Call cancelled with cause: ${cause?.message}"
+        )
     }
 
     private fun cancelInternal(statusCode: grpc_status_code, message: String) {
