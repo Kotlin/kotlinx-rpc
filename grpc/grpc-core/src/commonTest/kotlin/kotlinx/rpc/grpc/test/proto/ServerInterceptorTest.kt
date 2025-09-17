@@ -148,6 +148,27 @@ class ServerInterceptorTest : GrpcProtoTest() {
         }
     }
 
+    @Test
+    fun `proceedFlow - should succeed on client`() {
+        val interceptor = interceptor {
+            kotlinx.coroutines.flow.flow {
+                proceedFlow(it)
+            }
+        }
+        runGrpcTest(serverInterceptors = interceptor, test = ::unaryCall)
+    }
+
+    @Test
+    fun `method descriptor - full method name is exposed`() {
+        var methodName: String? = null
+        val interceptor = interceptor {
+            methodName = method.getFullMethodName()
+            proceed(it)
+        }
+        runGrpcTest(serverInterceptors = interceptor, test = ::unaryCall)
+        assertContains(methodName!!, "EchoService/UnaryEcho")
+    }
+
     private suspend fun unaryCall(grpcClient: GrpcClient) {
         val service = grpcClient.withService<EchoService>()
         val response = service.UnaryEcho(EchoRequest { message = "Hello" })

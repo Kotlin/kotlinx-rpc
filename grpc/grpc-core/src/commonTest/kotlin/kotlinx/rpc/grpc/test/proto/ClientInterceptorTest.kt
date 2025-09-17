@@ -87,13 +87,91 @@ class ClientInterceptorTest : GrpcProtoTest() {
         val error = assertFailsWith<StatusException> {
             val interceptor = interceptor {
                 cancel("Canceling in interceptor", IllegalStateException("Cancellation cause"))
-                proceed(it)
             }
             runGrpcTest(clientInterceptors = interceptor, test = ::unaryCall)
         }
 
         assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
         assertContains(error.message!!, "Canceling in interceptor")
+        assertIs<IllegalStateException>(error.cause)
+        assertEquals("Cancellation cause", error.cause?.message)
+    }
+
+    @Test
+    fun `cancel in request flow - should fail with cancellation`() {
+        val error = assertFailsWith<StatusException> {
+            val interceptor = interceptor {
+                proceed(it.map {
+                    val msg = it as EchoRequest
+                    if (msg.message == "Echo-3") {
+                        cancel("Canceling in request flow", IllegalStateException("Cancellation cause"))
+                    }
+                    it
+                })
+            }
+            runGrpcTest(clientInterceptors = interceptor, test = ::bidiStream)
+        }
+
+        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
+        assertContains(error.message!!, "Canceling in request flow")
+        assertIs<IllegalStateException>(error.cause)
+        assertEquals("Cancellation cause", error.cause?.message)
+    }
+
+    @Test
+    fun `cancel in response flow - should fail with cancellation`() {
+        val error = assertFailsWith<StatusException> {
+            val interceptor = interceptor {
+                flow {
+                    proceed(it).collect { resp ->
+                        val msg = resp as EchoResponse
+                        if (msg.message == "Echo-3") {
+                            cancel("Canceling in response flow", IllegalStateException("Cancellation cause"))
+                        }
+                        emit(resp)
+                    }
+                }
+            }
+            runGrpcTest(clientInterceptors = interceptor, test = ::bidiStream)
+        }
+
+        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
+        assertContains(error.message!!, "Canceling in response flow")
+        assertIs<IllegalStateException>(error.cause)
+        assertEquals("Cancellation cause", error.cause?.message)
+    }
+
+    @Test
+    fun `cancel onHeaders - should fail with cancellation`() {
+        val error = assertFailsWith<StatusException> {
+            val interceptor = interceptor {
+                this.onHeaders {
+                    cancel("Canceling in headers", IllegalStateException("Cancellation cause"))
+                }
+                proceed(it)
+            }
+            runGrpcTest(clientInterceptors = interceptor, test = ::bidiStream)
+        }
+
+        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
+        assertContains(error.message!!, "Canceling in headers")
+        assertIs<IllegalStateException>(error.cause)
+        assertEquals("Cancellation cause", error.cause?.message)
+    }
+
+    @Test
+    fun `cancel onClose - should fail with cancellation`() {
+        val error = assertFailsWith<StatusException> {
+            val interceptor = interceptor {
+                this.onClose { _, _ ->
+                    cancel("Canceling in onClose", IllegalStateException("Cancellation cause"))
+                }
+                proceed(it)
+            }
+            runGrpcTest(clientInterceptors = interceptor, test = ::bidiStream)
+        }
+        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
+        assertContains(error.message!!, "Canceling in onClose")
         assertIs<IllegalStateException>(error.cause)
         assertEquals("Cancellation cause", error.cause?.message)
     }
@@ -154,6 +232,19 @@ class ClientInterceptorTest : GrpcProtoTest() {
         val service = grpcClient.withService<EchoService>()
         val response = service.UnaryEcho(EchoRequest { message = "Hello" })
         assertEquals("Hello", response.message)
+    }
+
+    private suspend fun bidiStream(grpcClient: GrpcClient) {
+        val service = grpcClient.withService<EchoService>()
+        val responses = service.BidirectionalStreamingEcho(flow {
+            repeat(5) {
+                emit(EchoRequest { message = "Echo-$it" })
+            }
+        }).toList()
+        assertEquals(5, responses.size)
+        repeat(5) {
+            assertEquals("Echo-$it", responses[it].message)
+        }
     }
 
 }
