@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package kotlinx.rpc.grpc.test;
+
+message Message {
+  string message = 1;
+}
+
+service Idempotency {
+  rpc Idempotent(Message) returns (Message) {
+    option idempotency_level = IDEMPOTENT;
+  }
+  rpc Safe(Message) returns (Message) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+}
