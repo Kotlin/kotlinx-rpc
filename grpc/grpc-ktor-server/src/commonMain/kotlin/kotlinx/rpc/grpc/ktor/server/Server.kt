@@ -4,17 +4,13 @@
 
 package kotlinx.rpc.grpc.ktor.server
 
-import io.ktor.server.application.Application
-import io.ktor.server.application.ApplicationStopped
-import io.ktor.server.application.ApplicationStopping
-import io.ktor.server.application.log
-import io.ktor.server.config.getAs
-import io.ktor.util.AttributeKey
+import io.ktor.server.application.*
+import io.ktor.server.config.*
+import io.ktor.util.*
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.GrpcServer
+import kotlinx.rpc.grpc.GrpcServerConfiguration
 import kotlinx.rpc.grpc.ServerBuilder
-import kotlinx.rpc.grpc.codec.EmptyMessageCodecResolver
-import kotlinx.rpc.grpc.codec.MessageCodecResolver
 
 @Suppress("ConstPropertyName")
 public object GrpcConfigKeys {
@@ -51,8 +47,7 @@ public val GrpcServerKey: AttributeKey<GrpcServer> = AttributeKey<GrpcServer>("G
  */
 public fun Application.grpc(
     port: Int = environment.config.propertyOrNull(GrpcConfigKeys.grpcHostPortPath)?.getAs<Int>() ?: 8001,
-    messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
-    configure: ServerBuilder<*>.() -> Unit = {},
+    configure: GrpcServerConfiguration.() -> Unit = {},
     builder: RpcServer.() -> Unit,
 ): GrpcServer {
     if (attributes.contains(GrpcServerKey)) {
@@ -64,9 +59,8 @@ public fun Application.grpc(
         newServer = true
         GrpcServer(
             port = port,
-            messageCodecResolver = messageCodecResolver,
             parentContext = coroutineContext,
-            serverBuilder = configure,
+            configure = configure,
             builder = builder,
         )
     }
