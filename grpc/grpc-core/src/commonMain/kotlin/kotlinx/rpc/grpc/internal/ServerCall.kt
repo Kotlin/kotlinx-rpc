@@ -6,6 +6,7 @@ package kotlinx.rpc.grpc.internal
 
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
@@ -38,7 +39,7 @@ public expect abstract class ServerCall<Request, Response> {
 @InternalRpcApi
 public expect fun <State, Message> serverCallListener(
     state: State,
-    onMessage: (State ,message: Message) -> Unit,
+    onMessage: (State, message: Message) -> Unit,
     onHalfClose: (State) -> Unit,
     onCancel: (State) -> Unit,
     onComplete: (State) -> Unit,

@@ -17,6 +17,7 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.HandlerRegistry
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import libkgrpc.gpr_timespec
 import libkgrpc.grpc_call_details
 import libkgrpc.grpc_call_details_destroy

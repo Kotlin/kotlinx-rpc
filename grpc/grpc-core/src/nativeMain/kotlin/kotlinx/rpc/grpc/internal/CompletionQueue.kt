@@ -24,6 +24,7 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.sizeOf
 import kotlinx.cinterop.staticCFunction
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import libkgrpc.GRPC_OP_RECV_STATUS_ON_CLIENT
 import libkgrpc.grpc_call_error
 import libkgrpc.grpc_call_start_batch
@@ -41,26 +42,27 @@ import kotlin.native.ref.createCleaner
 /**
  * The result of a batch operation (see [CompletionQueue.runBatch]).
  */
-internal sealed interface BatchResult {
+@InternalRpcApi
+public sealed interface BatchResult {
     /**
      * Happens when a batch was submitted and...
      * - the queue is closed
      * - the queue is in the process of a force shutdown
      * - the queue is in the process of a normal shutdown, and the batch is a new `RECV_STATUS_ON_CLIENT` batch.
      */
-    object CQShutdown : BatchResult
+    public object CQShutdown : BatchResult
 
     /**
      * Happens when the batch couldn't be submitted for some reason.
      */
-    data class SubmitError(val error: grpc_call_error) : BatchResult
+    public data class SubmitError(val error: grpc_call_error) : BatchResult
 
     /**
      * Happens when the batch was successfully submitted.
      * The [future] will be completed with `true` if the batch was successful, `false` otherwise.
      * In the case of `false`, the status of the `RECV_STATUS_ON_CLIENT` batch will provide the error details.
      */
-    data class Submitted(val future: CallbackFuture<Boolean>) : BatchResult
+    public data class Submitted(val future: CallbackFuture<Boolean>) : BatchResult
 }
 
 /**
@@ -69,7 +71,8 @@ internal sealed interface BatchResult {
  * the queue.
  * Users can attach to the returned [CallbackFuture] if the batch was successfully submitted (see [BatchResult]).
  */
-internal class CompletionQueue {
+@InternalRpcApi
+public class CompletionQueue {
 
     internal enum class State { OPEN, SHUTTING_DOWN, CLOSED }
 
@@ -100,7 +103,9 @@ internal class CompletionQueue {
     }.reinterpret<grpc_completion_queue_functor>()
 
 
-    val raw = grpc_completion_queue_create_for_callback(shutdownFunctor.ptr, null)
+    @InternalRpcApi
+    public val raw: CPointer<cnames.structs.grpc_completion_queue>? =
+        grpc_completion_queue_create_for_callback(shutdownFunctor.ptr, null)
 
     @Suppress("unused")
     private val thisStableRefCleaner = createCleaner(thisStableRef) { it.dispose() }
@@ -118,7 +123,7 @@ internal class CompletionQueue {
      * Submits a batch operation to the queue.
      * See [BatchResult] for possible outcomes.
      */
-    fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong): BatchResult {
+    public fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong): BatchResult {
         val completion = CallbackFuture<Boolean>()
         val tag = newCbTag(completion, OPS_COMPLETE_CB)
 
@@ -160,7 +165,7 @@ internal class CompletionQueue {
      *        Otherwise, the queue allows submitting new batches and shutdown only when there are no more
      *        ongoing batches.
      */
-    fun shutdown(force: Boolean = false): CallbackFuture<Unit> {
+    public fun shutdown(force: Boolean = false): CallbackFuture<Unit> {
         if (force) {
             forceShutdown.value = true
         }

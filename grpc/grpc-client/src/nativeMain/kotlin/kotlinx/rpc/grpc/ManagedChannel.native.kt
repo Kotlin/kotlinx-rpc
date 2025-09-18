@@ -9,6 +9,7 @@ package kotlinx.rpc.grpc
 import kotlinx.rpc.grpc.internal.GrpcChannel
 import kotlinx.rpc.grpc.internal.NativeManagedChannel
 import kotlinx.rpc.grpc.internal.internalError
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
  * Same as [ManagedChannel], but is platform-exposed.
@@ -53,12 +54,14 @@ internal class NativeManagedChannelBuilder(
 
 }
 
-internal actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
+@InternalRpcApi
+public actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
     check(this is NativeManagedChannelBuilder) { internalError("Wrong builder type, expected NativeManagedChannelBuilder") }
     return buildChannel()
 }
 
-internal actual fun ManagedChannelBuilder(
+@InternalRpcApi
+public actual fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
     credentials: ClientCredentials?,
@@ -67,7 +70,8 @@ internal actual fun ManagedChannelBuilder(
     return NativeManagedChannelBuilder(target = "$hostname:$port", credentials)
 }
 
-internal actual fun ManagedChannelBuilder(target: String, credentials: ClientCredentials?): ManagedChannelBuilder<*> {
+@InternalRpcApi
+public actual fun ManagedChannelBuilder(target: String, credentials: ClientCredentials?): ManagedChannelBuilder<*> {
     val credentials = if (credentials == null) lazy { TlsClientCredentials() } else lazy { credentials }
     return NativeManagedChannelBuilder(target, credentials)
 }

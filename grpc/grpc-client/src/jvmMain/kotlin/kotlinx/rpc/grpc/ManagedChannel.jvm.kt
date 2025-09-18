@@ -6,38 +6,44 @@
 
 package kotlinx.rpc.grpc
 
+import io.grpc.Grpc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.rpc.internal.utils.InternalRpcApi
+import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 
 /**
- * Same as [ManagedChannel], but is platform-exposed.
+ * Same as [kotlinx.rpc.grpc.ManagedChannel], but is platform-exposed.
  */
 public actual typealias ManagedChannelPlatform = io.grpc.ManagedChannel
 
 /**
- * Builder class for [ManagedChannel].
+ * Builder class for [kotlinx.rpc.grpc.ManagedChannel].
  */
 public actual typealias ManagedChannelBuilder<T> = io.grpc.ManagedChannelBuilder<T>
 
-internal actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
+@InternalRpcApi
+public actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
     return build().toKotlin()
 }
 
-internal actual fun ManagedChannelBuilder(
+@InternalRpcApi
+public actual fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
     credentials: ClientCredentials?,
 ): ManagedChannelBuilder<*> {
-    if (credentials != null) return io.grpc.Grpc.newChannelBuilderForAddress(hostname, port, credentials)
+    if (credentials != null) return Grpc.newChannelBuilderForAddress(hostname, port, credentials)
     return io.grpc.ManagedChannelBuilder.forAddress(hostname, port)
 }
 
-internal actual fun ManagedChannelBuilder(
+@InternalRpcApi
+public actual fun ManagedChannelBuilder(
     target: String,
     credentials: ClientCredentials?,
 ): ManagedChannelBuilder<*> {
-    if (credentials != null) return io.grpc.Grpc.newChannelBuilder(target, credentials)
+    if (credentials != null) return Grpc.newChannelBuilder(target, credentials)
     return io.grpc.ManagedChannelBuilder.forTarget(target)
 }
 
@@ -54,7 +60,7 @@ private class JvmManagedChannel(private val channel: io.grpc.ManagedChannel) : M
 
     override suspend fun awaitTermination(duration: Duration): Boolean {
         return withContext(Dispatchers.IO) {
-            channel.awaitTermination(duration.inWholeNanoseconds, java.util.concurrent.TimeUnit.NANOSECONDS)
+            channel.awaitTermination(duration.inWholeNanoseconds, TimeUnit.NANOSECONDS)
         }
     }
 

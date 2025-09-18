@@ -26,6 +26,7 @@ import kotlinx.coroutines.CompletableJob
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.input.stream.asSource
 import libkgrpc.GRPC_OP_RECV_INITIAL_METADATA

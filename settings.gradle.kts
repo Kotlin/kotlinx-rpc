@@ -34,6 +34,7 @@ includePublic(":protobuf:protobuf-input-stream")
 
 include(":grpc")
 includePublic(":grpc:grpc-core")
+includePublic("grpc:grpc-client")
 includePublic(":grpc:grpc-ktor-server")
 includePublic(":grpc:grpc-codec")
 includePublic(":grpc:grpc-codec-kotlinx-serialization")

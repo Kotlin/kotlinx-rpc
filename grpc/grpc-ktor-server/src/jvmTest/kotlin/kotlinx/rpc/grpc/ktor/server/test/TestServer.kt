@@ -8,7 +8,6 @@ import io.ktor.server.testing.testApplication
 import kotlinx.rpc.grpc.GrpcClient
 import kotlin.test.Test
 import kotlinx.rpc.grpc.ktor.server.grpc
-import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.minutes

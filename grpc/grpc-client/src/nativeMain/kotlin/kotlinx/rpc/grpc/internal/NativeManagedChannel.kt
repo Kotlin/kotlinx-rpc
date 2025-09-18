@@ -22,6 +22,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.grpc.ClientCredentials
 import kotlinx.rpc.grpc.ManagedChannel
 import kotlinx.rpc.grpc.ManagedChannelPlatform
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import libkgrpc.GPR_CLOCK_REALTIME
 import libkgrpc.GRPC_PROPAGATE_DEFAULTS
 import libkgrpc.gpr_inf_future
@@ -39,7 +40,7 @@ import kotlin.time.Duration
 
 
 /**
- * Native implementation of [ManagedChannel].
+ * Native implementation of [kotlinx.rpc.grpc.ManagedChannel].
  *
  * @param target The target address to connect to.
  * @param credentials The credentials to use for the connection.

@@ -6,9 +6,6 @@
 
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
-import util.configureCLibCInterop
-import util.configureCLibDependency
-import util.registerBuildCLibIncludeDirTask
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -28,7 +25,7 @@ kotlin {
                 api(projects.core)
                 api(projects.utils)
                 api(libs.coroutines.core)
-                api(projects.grpc.grpcCodec)
+                api(projects.grpc.grpcCore)
 
                 implementation(libs.atomicfu)
                 implementation(libs.kotlinx.io.core)
@@ -44,7 +41,6 @@ kotlin {
 
                 implementation(projects.grpc.grpcCodecKotlinxSerialization)
                 implementation(projects.protobuf.protobufCore)
-                implementation(projects.grpc.grpcClient)
             }
         }
 
@@ -70,47 +66,6 @@ kotlin {
                 // required for status.proto
                 implementation(projects.protobuf.protobufCore)
             }
-        }
-    }
-
-
-    // configure task to extract the include dir from the gRPC core library
-    val grpcIncludeDir = project.layout.buildDirectory.dir("bazel-out/grpc-include")
-    val grpcIncludeDirTask = project.registerBuildCLibIncludeDirTask(
-        "//prebuilt-deps/grpc_fat:grpc_include_dir",
-        grpcIncludeDir
-    )
-
-    // configure pre-built gRPC core library
-    configureCLibDependency(project, "//prebuilt-deps/grpc_fat:grpc_fat")
-
-    configureCLibCInterop(
-        project, ":kgrpc",
-        // depends on the grpc include dir
-        cinteropTaskDependsOn = listOf(grpcIncludeDirTask)
-    ) { cLibSource, cLibOutDir ->
-        val grpcPrebuiltDir = cLibSource.resolve("prebuilt-deps/grpc_fat")
-
-        @Suppress("unused")
-        val libkgrpc by creating {
-            includeDirs(
-                cLibSource.resolve("include"),
-                cLibSource.resolve("${grpcIncludeDir.get()}/include"),
-            )
-            extraOpts("-libraryPath", "$grpcPrebuiltDir")
-            extraOpts("-libraryPath", "$cLibOutDir")
-        }
-    }
-
-    // configures linkReleaseTest task to build and link the test binary in RELEASE mode.
-    // this can be useful for performance analysis.
-    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
-        binaries {
-            test(
-                buildTypes = listOf(
-                    org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.RELEASE
-                )
-            )
         }
     }
 }

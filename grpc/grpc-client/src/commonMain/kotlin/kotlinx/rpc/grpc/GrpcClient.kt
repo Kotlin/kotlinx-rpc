@@ -13,13 +13,13 @@ import kotlinx.rpc.grpc.codec.ThrowingMessageCodecResolver
 import kotlinx.rpc.grpc.codec.plus
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.MethodType
+import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.internal.GrpcDefaultCallOptions
-import kotlinx.rpc.grpc.internal.MethodDescriptor
-import kotlinx.rpc.grpc.internal.MethodType
 import kotlinx.rpc.grpc.internal.bidirectionalStreamingRpc
 import kotlinx.rpc.grpc.internal.clientStreamingRpc
 import kotlinx.rpc.grpc.internal.serverStreamingRpc
-import kotlinx.rpc.grpc.internal.type
 import kotlinx.rpc.grpc.internal.unaryRpc
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.time.Duration
@@ -57,7 +57,7 @@ public class GrpcClient internal constructor(
         val callOptions = GrpcDefaultCallOptions
         val trailers = GrpcMetadata()
 
-        return when (methodDescriptor.type) {
+        return when (methodDescriptor.methodType) {
             MethodType.UNARY -> unaryRpc(
                 descriptor = methodDescriptor,
                 request = request,
@@ -72,7 +72,7 @@ public class GrpcClient internal constructor(
                 trailers = trailers,
             )
 
-            else -> error("Wrong method type ${methodDescriptor.type}")
+            else -> error("Wrong method type ${methodDescriptor.methodType}")
         }
     }
 
@@ -80,7 +80,7 @@ public class GrpcClient internal constructor(
         val callOptions = GrpcDefaultCallOptions
         val trailers = GrpcMetadata()
 
-        when (methodDescriptor.type) {
+        when (methodDescriptor.methodType) {
             MethodType.SERVER_STREAMING -> serverStreamingRpc(
                 descriptor = methodDescriptor,
                 request = request,
@@ -95,7 +95,7 @@ public class GrpcClient internal constructor(
                 trailers = trailers,
             )
 
-            else -> error("Wrong method type ${methodDescriptor.type}")
+            else -> error("Wrong method type ${methodDescriptor.methodType}")
         }
     }
 

@@ -4,7 +4,12 @@
 
 package kotlinx.rpc.grpc.internal
 
+import io.grpc.CallOptions
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
-public actual typealias GrpcChannel = io.grpc.Channel
+public actual typealias GrpcCallOptions = CallOptions
+
+@InternalRpcApi
+public actual val GrpcDefaultCallOptions: GrpcCallOptions
+    get() = GrpcCallOptions.DEFAULT

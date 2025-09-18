@@ -4,13 +4,14 @@
 
 package kotlinx.rpc.grpc.internal
 
-import io.grpc.Metadata
 import io.grpc.ClientCall
+import io.grpc.Metadata
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
-internal actual typealias ClientCall<Request, Response> = ClientCall<Request, Response>
+@InternalRpcApi
+public actual typealias ClientCall<Request, Response> = ClientCall<Request, Response>
 
 @InternalRpcApi
 public actual inline fun <Message> clientCallListener(

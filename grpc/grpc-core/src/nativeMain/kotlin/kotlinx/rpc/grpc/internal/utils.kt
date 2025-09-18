@@ -29,6 +29,7 @@ import kotlinx.io.Source
 import kotlinx.io.UnsafeIoApi
 import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import libkgrpc.grpc_byte_buffer
 import libkgrpc.grpc_byte_buffer_reader
 import libkgrpc.grpc_byte_buffer_reader_destroy
@@ -43,7 +44,8 @@ import libkgrpc.grpc_slice_unref
 import libkgrpc.grpc_status_code
 import platform.posix.memcpy
 
-internal fun internalError(message: String): Nothing {
+@InternalRpcApi
+public fun internalError(message: String): Nothing {
     error("Unexpected internal error: $message. Please, report the issue here: https://github.com/Kotlin/kotlinx-rpc/issues/new?template=bug_report.md")
 }
 
@@ -64,7 +66,8 @@ internal fun Sink.writeFully(buffer: CPointer<ByteVar>, offset: Long, length: Lo
     }
 }
 
-internal fun grpc_slice.toByteArray(): ByteArray = memScoped {
+@InternalRpcApi
+public fun grpc_slice.toByteArray(): ByteArray = memScoped {
     val out = ByteArray(len().toInt())
     if (out.isEmpty()) return out
 
@@ -74,8 +77,8 @@ internal fun grpc_slice.toByteArray(): ByteArray = memScoped {
     return out
 }
 
-
-internal fun CPointer<grpc_byte_buffer>.toKotlin(): Buffer = memScoped {
+@InternalRpcApi
+public fun CPointer<grpc_byte_buffer>.toKotlin(): Buffer = memScoped {
     val reader = alloc<grpc_byte_buffer_reader>()
     check(grpc_byte_buffer_reader_init(reader.ptr, this@toKotlin) == 1)
     { internalError("Failed to initialized byte buffer.") }
@@ -94,7 +97,8 @@ internal fun CPointer<grpc_byte_buffer>.toKotlin(): Buffer = memScoped {
     return out
 }
 
-internal fun Source.toGrpcByteBuffer(): CPointer<grpc_byte_buffer> {
+@InternalRpcApi
+public fun Source.toGrpcByteBuffer(): CPointer<grpc_byte_buffer> {
     if (this is Buffer) return toGrpcByteBuffer()
 
     val tmp = ByteArray(8192)
@@ -111,8 +115,9 @@ internal fun Source.toGrpcByteBuffer(): CPointer<grpc_byte_buffer> {
     return slices.toGrpcByteBuffer()
 }
 
+@InternalRpcApi
 @OptIn(UnsafeIoApi::class)
-internal fun Buffer.toGrpcByteBuffer(): CPointer<grpc_byte_buffer> {
+public fun Buffer.toGrpcByteBuffer(): CPointer<grpc_byte_buffer> {
     val slices = ArrayList<CValue<grpc_slice>>(4)
 
     while (size > 0L) {
@@ -151,7 +156,8 @@ private fun ArrayList<CValue<grpc_slice>>.toGrpcByteBuffer(): CPointer<grpc_byte
     return buf
 }
 
-internal fun grpc_slice.startPtr(): CPointer<ByteVar> {
+@InternalRpcApi
+public fun grpc_slice.startPtr(): CPointer<ByteVar> {
     return if (this.refcount != null) {
         this.data.refcounted.bytes!!.reinterpret()
     } else {
@@ -159,7 +165,8 @@ internal fun grpc_slice.startPtr(): CPointer<ByteVar> {
     }
 }
 
-internal fun grpc_slice.len(): ULong {
+@InternalRpcApi
+public fun grpc_slice.len(): ULong {
     return if (this.refcount != null) {
         this.data.refcounted.length
     } else {
@@ -167,11 +174,13 @@ internal fun grpc_slice.len(): ULong {
     }
 }
 
-internal fun String.toGrpcSlice(): CValue<grpc_slice> {
+@InternalRpcApi
+public fun String.toGrpcSlice(): CValue<grpc_slice> {
     return grpc_slice_from_copied_string(this)
 }
 
-internal fun grpc_status_code.toKotlin(): StatusCode = when (this) {
+@InternalRpcApi
+public fun grpc_status_code.toKotlin(): StatusCode = when (this) {
     grpc_status_code.GRPC_STATUS_OK -> StatusCode.OK
     grpc_status_code.GRPC_STATUS_CANCELLED -> StatusCode.CANCELLED
     grpc_status_code.GRPC_STATUS_UNKNOWN -> StatusCode.UNKNOWN

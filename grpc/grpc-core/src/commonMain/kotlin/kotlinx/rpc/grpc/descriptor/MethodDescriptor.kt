@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.internal
+package kotlinx.rpc.grpc.descriptor
 
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -26,7 +26,7 @@ public expect class MethodDescriptor<Request, Response> {
 }
 
 @InternalRpcApi
-internal expect val MethodDescriptor<*, *>.type: MethodType
+public expect val MethodDescriptor<*, *>.methodType: MethodType
 
 @InternalRpcApi
 public enum class MethodType {
