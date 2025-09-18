@@ -6,8 +6,8 @@ package kotlinx.rpc.grpc.test
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
-import kotlinx.rpc.grpc.GrpcClient
-import kotlinx.rpc.grpc.GrpcServer
+import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.codec.MessageCodecResolver
 import kotlinx.rpc.withService
