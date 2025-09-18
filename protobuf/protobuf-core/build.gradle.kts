@@ -87,7 +87,7 @@ tasks.withType<BufGenerateTask>().configureEach {
     }
 }
 
-// TODO: What is the correct way to declare this dependency?
+// TODO: What is the correct way to declare this dependency? (KRPC-223)
 //  (without it fails when executing "publishAllPublicationsToBuildRepository")"
 val bufGenerateCommonMain = tasks.named("bufGenerateCommonMain")
 
