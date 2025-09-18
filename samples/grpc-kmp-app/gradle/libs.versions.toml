@@ -7,6 +7,7 @@ kotlin = "2.2.10"
 kotlinx-coroutines = "1.10.2"
 ktor = "3.2.3"
 logback = "1.5.18"
+# TODO: Set correct version once we publish grpc-common
 kotlinx-rpc = "0.10.0-SNAPSHOT"
 grpc = "1.75.0"
 kotlinx-datatime = "0.7.1"
