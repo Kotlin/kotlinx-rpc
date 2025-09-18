@@ -65,7 +65,9 @@ FILE: module_main_grpc.kt
 
         @R|kotlinx/rpc/grpc/annotations/Grpc.Method|(name = <strcat>(String(wrongName), String(+3))) public abstract suspend fun wrongName3(): R|kotlin/Unit|
 
-        @R|kotlinx/rpc/grpc/annotations/Grpc.Method|(safe = Boolean(true), idempotent = Boolean(false)) public abstract suspend fun wrongSafeIdempotent(): R|kotlin/Unit|
+        @R|kotlinx/rpc/grpc/annotations/Grpc.Method|(safe = Boolean(true), idempotent = Boolean(false)) public abstract suspend fun wrongSafeIdempotent1(): R|kotlin/Unit|
+
+        @R|kotlinx/rpc/grpc/annotations/Grpc.Method|(safe = Boolean(true)) public abstract suspend fun wrongSafeIdempotent2(): R|kotlin/Unit|
 
         public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {

@@ -115,7 +115,8 @@ object GrpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
 
         map.put(
             factory = FirGrpcDiagnostics.WRONG_SAFE_IDEMPOTENT_COMBINATION,
-            message = "'safe = true' and 'idempotent = false' are mutually exclusive.",
+            message = "'safe = true' and 'idempotent = false' are mutually exclusive. " +
+                    "If the method is safe, write explicitly 'idempotent = true'.",
         )
 
         map.put(

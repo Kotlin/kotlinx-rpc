@@ -53,5 +53,8 @@ interface WrongAnnotations4 {
     suspend fun wrongName3()
 
     @Grpc.Method<!WRONG_SAFE_IDEMPOTENT_COMBINATION!>(safe = true, idempotent = false)<!>
-    suspend fun wrongSafeIdempotent()
+    suspend fun wrongSafeIdempotent1()
+
+    @Grpc.Method<!WRONG_SAFE_IDEMPOTENT_COMBINATION!>(safe = true)<!>
+    suspend fun wrongSafeIdempotent2()
 }
