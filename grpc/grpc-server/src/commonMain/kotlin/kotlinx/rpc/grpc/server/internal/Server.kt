@@ -4,36 +4,13 @@
 
 @file:Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 
-package kotlinx.rpc.grpc.server
+package kotlinx.rpc.grpc.server.internal
 
+import kotlinx.rpc.grpc.server.HandlerRegistry
+import kotlinx.rpc.grpc.server.ServerCredentials
+import kotlinx.rpc.grpc.server.ServerServiceDefinition
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.time.Duration
-
-/**
- * Platform-specific gRPC server builder.
- */
-public expect abstract class ServerBuilder<T : ServerBuilder<T>> {
-    /**
-     * Adds a service implementation to the handler registry.
-     *
-     * @return `this`
-     */
-    public abstract fun addService(service: ServerServiceDefinition): T
-
-    /**
-     * Sets a fallback handler registry that will be looked up in if a method is not found in the
-     * primary registry.
-     * The primary registry (configured via [addService]) is faster but immutable.
-     * The fallback registry is more flexible and allows implementations to mutate over
-     * time and load services on-demand.
-     *
-     * @return `this`
-     */
-    public abstract fun fallbackHandlerRegistry(registry: HandlerRegistry?): T
-}
-
-@InternalRpcApi
-public expect fun ServerBuilder(port: Int, credentials: ServerCredentials? = null): ServerBuilder<*>
 
 /**
  * Server for listening for and dispatching incoming calls.
@@ -114,3 +91,30 @@ public interface Server {
 
 @InternalRpcApi
 public expect fun Server(builder: ServerBuilder<*>): Server
+
+/**
+ * Platform-specific gRPC server builder.
+ */
+@InternalRpcApi
+public expect abstract class ServerBuilder<T : ServerBuilder<T>> {
+    /**
+     * Adds a service implementation to the handler registry.
+     *
+     * @return `this`
+     */
+    public abstract fun addService(service: ServerServiceDefinition): T
+
+    /**
+     * Sets a fallback handler registry that will be looked up in if a method is not found in the
+     * primary registry.
+     * The primary registry (configured via [addService]) is faster but immutable.
+     * The fallback registry is more flexible and allows implementations to mutate over
+     * time and load services on-demand.
+     *
+     * @return `this`
+     */
+    public abstract fun fallbackHandlerRegistry(registry: HandlerRegistry?): T
+}
+
+@InternalRpcApi
+public expect fun ServerBuilder(port: Int, credentials: ServerCredentials? = null): ServerBuilder<*>

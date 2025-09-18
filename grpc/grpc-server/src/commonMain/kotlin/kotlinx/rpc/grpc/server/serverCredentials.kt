@@ -8,10 +8,6 @@ package kotlinx.rpc.grpc.server
 public expect abstract class ServerCredentials
 public expect class InsecureServerCredentials : ServerCredentials
 
-// we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
-// java constructor.
-internal expect fun createInsecureServerCredentials(): ServerCredentials
-
 public expect class TlsServerCredentials : ServerCredentials
 
 public enum class TlsClientAuth {
@@ -47,6 +43,10 @@ public interface TlsServerCredentialsBuilder {
     public fun trustManager(rootCertsPem: String): TlsServerCredentialsBuilder
     public fun clientAuth(clientAuth: TlsClientAuth): TlsServerCredentialsBuilder
 }
+
+// we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
+// java constructor.
+internal expect fun createInsecureServerCredentials(): ServerCredentials
 
 internal expect fun TlsServerCredentialsBuilder(
     certChain: String,

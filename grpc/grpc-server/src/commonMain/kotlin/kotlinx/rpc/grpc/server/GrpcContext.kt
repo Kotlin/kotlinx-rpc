@@ -2,16 +2,16 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.server.internal
+package kotlinx.rpc.grpc.server
 
 import kotlin.coroutines.CoroutineContext
 
 public expect class GrpcContext
 
-internal expect val CurrentGrpcContext: kotlinx.rpc.grpc.server.internal.GrpcContext
+internal expect val CurrentGrpcContext: GrpcContext
 
 internal expect class GrpcContextElement : CoroutineContext.Element {
-    val grpcContext: kotlinx.rpc.grpc.server.internal.GrpcContext
+    val grpcContext: GrpcContext
 
     companion object Key : CoroutineContext.Key<GrpcContextElement> {
         fun current(): GrpcContextElement

@@ -2,11 +2,13 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.server
+package kotlinx.rpc.grpc.server.internal
 
 
-import kotlinx.rpc.grpc.server.internal.NativeServer
-import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
+import kotlinx.rpc.grpc.server.HandlerRegistry
+import kotlinx.rpc.grpc.server.ServerCredentials
+import kotlinx.rpc.grpc.server.ServerServiceDefinition
+import kotlinx.rpc.grpc.server.createInsecureServerCredentials
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**

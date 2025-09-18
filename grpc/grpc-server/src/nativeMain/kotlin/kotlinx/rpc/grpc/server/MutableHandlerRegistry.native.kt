@@ -8,6 +8,7 @@ package kotlinx.rpc.grpc.server
 
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 
 /**
@@ -18,16 +19,18 @@ public actual abstract class HandlerRegistry {
      * Returns the [ServerServiceDefinition]s provided by the registry, or an empty list if not
      * supported by the implementation.
      */
+    @InternalRpcApi
     public abstract fun getServices(): List<ServerServiceDefinition>
 
     /**
-     * Lookup a [ServerMethodDefinition] by its fully-qualified name.
+     * Lookup a [kotlinx.rpc.grpc.server.internal.ServerMethodDefinition] by its fully-qualified name.
      *
-     * @param methodName to lookup [ServerMethodDefinition] for.
+     * @param methodName to lookup [kotlinx.rpc.grpc.server.internal.ServerMethodDefinition] for.
      * @param authority the authority for the desired method (to do virtual hosting). If `null`
      * the first matching method will be returned.
      * @return the resolved method or `null` if no method for that name exists.
      */
+    @InternalRpcApi
     public abstract fun lookupMethod(
         methodName: String, authority: String?,
     ): ServerMethodDefinition<*, *>?
@@ -38,6 +41,7 @@ public actual abstract class HandlerRegistry {
      * @param methodName to lookup [ServerMethodDefinition] for.
      * @return the resolved method or `null` if no method for that name exists.
      */
+    @InternalRpcApi
     public fun lookupMethod(methodName: String): ServerMethodDefinition<*, *>? {
         return lookupMethod(methodName, null)
     }

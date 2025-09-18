@@ -24,8 +24,8 @@ import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
 import kotlinx.rpc.grpc.internal.serviceDescriptor
-import kotlinx.rpc.grpc.server.Server
-import kotlinx.rpc.grpc.server.ServerBuilder
+import kotlinx.rpc.grpc.server.internal.Server
+import kotlinx.rpc.grpc.server.internal.ServerBuilder
 import kotlinx.rpc.grpc.server.internal.bidiStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.clientStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.serverStreamingServerMethodDefinition

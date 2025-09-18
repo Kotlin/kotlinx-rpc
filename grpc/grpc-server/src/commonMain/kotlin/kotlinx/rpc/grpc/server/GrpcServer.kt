@@ -24,6 +24,8 @@ import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
 import kotlinx.rpc.grpc.descriptor.methodType
+import kotlinx.rpc.grpc.server.internal.Server
+import kotlinx.rpc.grpc.server.internal.ServerBuilder
 import kotlinx.rpc.grpc.server.internal.bidiStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.clientStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.serverStreamingServerMethodDefinition
@@ -38,7 +40,7 @@ private typealias RequestServer = Any
 private typealias ResponseServer = Any
 
 /**
- * GrpcServer is an implementation of both [RpcServer] and [Server] interfaces,
+ * GrpcServer is an implementation of both [RpcServer] and [kotlinx.rpc.grpc.server.internal.Server] interfaces,
  * providing the ability to host gRPC services.
  *
  * @property port Specifies the port used by the server to listen for incoming connections.

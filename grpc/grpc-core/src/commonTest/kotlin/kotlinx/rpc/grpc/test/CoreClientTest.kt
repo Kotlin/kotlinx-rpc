@@ -11,9 +11,9 @@ import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
-import kotlinx.rpc.grpc.client.ManagedChannel
-import kotlinx.rpc.grpc.client.ManagedChannelBuilder
-import kotlinx.rpc.grpc.client.buildChannel
+import kotlinx.rpc.grpc.client.internal.ManagedChannel
+import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
+import kotlinx.rpc.grpc.client.internal.buildChannel
 import kotlinx.rpc.grpc.client.internal.ClientCall
 import kotlinx.rpc.grpc.client.internal.GrpcDefaultCallOptions
 import kotlinx.rpc.grpc.client.internal.clientCallListener

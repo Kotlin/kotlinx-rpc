@@ -20,8 +20,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.grpc.client.ClientCredentials
-import kotlinx.rpc.grpc.client.ManagedChannel
-import kotlinx.rpc.grpc.client.ManagedChannelPlatform
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.GrpcRuntime

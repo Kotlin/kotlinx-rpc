@@ -27,6 +27,8 @@ import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.internal.CallbackFuture
 import kotlinx.rpc.grpc.internal.Ready
 import kotlinx.rpc.grpc.internal.singleOrStatusFlow
+import kotlinx.rpc.grpc.server.GrpcContext
+import kotlinx.rpc.grpc.server.GrpcContextElement
 import kotlinx.rpc.grpc.server.ServerCallScope
 import kotlinx.rpc.grpc.server.ServerInterceptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -166,7 +168,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         }
     }
 
-    val context = _root_ide_package_.kotlinx.rpc.grpc.server.internal.GrpcContextElement.Key.current()
+    val context = GrpcContextElement.Key.current()
     val serverCallScope = _root_ide_package_.kotlinx.rpc.grpc.server.internal.ServerCallScopeImpl(
         method = descriptor,
         interceptors = interceptors,
@@ -285,7 +287,7 @@ private class ServerCallScopeImpl<Request, Response>(
     val implementation: (Flow<Request>) -> Flow<Response>,
     override val requestHeaders: GrpcMetadata,
     val serverCall: kotlinx.rpc.grpc.server.internal.ServerCall<Request, Response>,
-    override val grpcContext: kotlinx.rpc.grpc.server.internal.GrpcContext,
+    override val grpcContext: GrpcContext,
 ) : ServerCallScope<Request, Response> {
 
     override val responseHeaders: GrpcMetadata = GrpcMetadata()

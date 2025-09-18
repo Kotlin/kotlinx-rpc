@@ -21,6 +21,7 @@ public actual class ServerMethodDefinition<Request, Response> internal construct
     }
 }
 
+@InternalRpcApi
 public actual fun <Request, Response> serverMethodDefinition(
     descriptor: MethodDescriptor<Request, Response>,
     handler: ServerCallHandler<Request, Response>,

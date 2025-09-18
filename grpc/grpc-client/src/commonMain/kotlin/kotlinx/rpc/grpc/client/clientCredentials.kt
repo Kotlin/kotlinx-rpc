@@ -8,10 +8,6 @@ public expect abstract class ClientCredentials
 
 public expect class InsecureClientCredentials : ClientCredentials
 
-// we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
-// java constructor.
-internal expect fun createInsecureClientCredentials(): ClientCredentials
-
 public expect class TlsClientCredentials : ClientCredentials
 
 public fun TlsClientCredentials(configure: TlsClientCredentialsBuilder.() -> Unit = {}): ClientCredentials {
@@ -24,6 +20,10 @@ public interface TlsClientCredentialsBuilder {
     public fun trustManager(rootCertsPem: String): TlsClientCredentialsBuilder
     public fun keyManager(certChainPem: String, privateKeyPem: String): TlsClientCredentialsBuilder
 }
+
+// we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
+// java constructor.
+internal expect fun createInsecureClientCredentials(): ClientCredentials
 
 internal expect fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder
 

@@ -13,6 +13,7 @@ public expect class ServerMethodDefinition<Request, Response> {
     public fun getServerCallHandler(): kotlinx.rpc.grpc.server.internal.ServerCallHandler<Request, Response>
 }
 
+@InternalRpcApi
 public expect fun <Request, Response> serverMethodDefinition(
     descriptor: MethodDescriptor<Request, Response>,
     handler: kotlinx.rpc.grpc.server.internal.ServerCallHandler<Request, Response>,

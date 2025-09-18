@@ -47,12 +47,12 @@ public interface ServerCallScope<Request, Response> {
     public val responseTrailers: GrpcMetadata
 
     /**
-     * The [kotlinx.rpc.grpc.server.internal.GrpcContext] associated with this call.
+     * The [GrpcContext] associated with this call.
      *
      * It can be used by the interceptor to provide call-scoped information about
      * the current call, such as the identity of the caller or the current authentication state.
      */
-    public val grpcContext: kotlinx.rpc.grpc.server.internal.GrpcContext
+    public val grpcContext: GrpcContext
 
     /**
      * Register a callback invoked when the call is closed (successfully or exceptionally).
