@@ -189,7 +189,8 @@ internal fun grpc_status_code.toKotlin(): StatusCode = when (this) {
     grpc_status_code.GRPC_STATUS_UNAVAILABLE -> StatusCode.UNAVAILABLE
     grpc_status_code.GRPC_STATUS_DATA_LOSS -> StatusCode.DATA_LOSS
     grpc_status_code.GRPC_STATUS_UNAUTHENTICATED -> StatusCode.UNAUTHENTICATED
-    grpc_status_code.GRPC_STATUS__DO_NOT_USE -> error("Invalid status code: ${this.ordinal}")
+    grpc_status_code.GRPC_STATUS__DO_NOT_USE -> error("Invalid status code: $this")
+    else -> error("Invalid status code: $this")
 }
 
 internal fun StatusCode.toRawCallAllocation(): grpc_status_code = when (this) {
