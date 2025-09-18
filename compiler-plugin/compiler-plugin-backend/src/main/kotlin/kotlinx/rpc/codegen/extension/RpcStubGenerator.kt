@@ -1822,20 +1822,7 @@ internal class RpcStubGenerator(
         check(expression.type == ifNull.type || ifNull.type == ctx.irBuiltIns.nothingType) {
             "Type mismatch: ${expression.type.dumpKotlinLike()} != ${ifNull.type.dumpKotlinLike()}"
         }
-//              BLOCK type=kotlin.Int origin=ELVIS
-//          VAR IR_TEMPORARY_VARIABLE name:tmp_0 type:kotlin.Int? [val]
-//            GET_VAR 'val some: kotlin.Int? declared in <root>.test' type=kotlin.Int? origin=null
-//          WHEN type=kotlin.Int origin=null
-//            BRANCH
-//              if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-//                ARG arg0: GET_VAR 'val tmp_0: kotlin.Int? declared in <root>.test' type=kotlin.Int? origin=null
-//                ARG arg1: CONST Null type=kotlin.Nothing? value=null
-//              then: THROW type=kotlin.Nothing
-//                CONSTRUCTOR_CALL 'public constructor <init> (p0: @[FlexibleNullability] kotlin.String?) declared in java.lang.IllegalStateException' type=java.lang.IllegalStateException origin=null
-//                  ARG p0: CONST String type=kotlin.String value="some is null"
-//            BRANCH
-//              if: CONST Boolean type=kotlin.Boolean value=true
-//              then: GET_VAR 'val tmp_0: kotlin.Int? declared in <root>.test' type=kotlin.Int? origin=null
+
         return irBlock(origin = IrStatementOrigin.ELVIS, resultType = expression.type.makeNotNull()) {
             val temp = irTemporary(
                 value = expression,
