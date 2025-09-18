@@ -41,6 +41,7 @@ internal object RpcDeclarationScanner {
                     }
 
                     ServiceDeclaration.Method(
+                        ctx = ctx,
                         function = declaration,
                         arguments = ctx.versionSpecificApi.run {
                             declaration.valueParametersVS().memoryOptimizedMap { param ->

@@ -64,6 +64,14 @@ internal class RpcIrContext(
         getRpcIrClassSymbol("RpcServiceDescriptor", "descriptor")
     }
 
+    val grpcAnnotation by lazy {
+        getIrClassSymbol("kotlinx.rpc.grpc.annotations", "Grpc")
+    }
+
+    val grpcMethodAnnotation by lazy {
+        grpcAnnotation.subClass("Method")
+    }
+
     val grpcServiceDescriptor by lazy {
         getIrClassSymbol("kotlinx.rpc.grpc.descriptor", "GrpcServiceDescriptor")
     }

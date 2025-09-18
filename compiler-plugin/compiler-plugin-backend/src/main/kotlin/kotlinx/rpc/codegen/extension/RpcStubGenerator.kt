@@ -7,7 +7,6 @@ package kotlinx.rpc.codegen.extension
 import kotlinx.rpc.codegen.VersionSpecificApi
 import kotlinx.rpc.codegen.common.RpcClassId
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
-import org.jetbrains.kotlin.backend.common.lower.irThrow
 import org.jetbrains.kotlin.backend.jvm.functionByName
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
@@ -1076,7 +1075,7 @@ internal class RpcStubGenerator(
             keyType = ctx.irBuiltIns.stringType,
             valueType = ctx.grpcPlatformMethodDescriptor.starProjectedType,
             declaration.methods.memoryOptimizedMap { callable ->
-                stringConst(callable.name) to irMethodDescriptor(callable, resolver)
+                stringConst(callable.grpcName) to irMethodDescriptor(callable, resolver)
             },
         )
     }
@@ -1130,15 +1129,14 @@ internal class RpcStubGenerator(
      * // In scope: resolver: MessageCodecResolver
      *
      * methodDescriptor<<request-type>, <response-type>>(
-     *     fullMethodName = "${descriptor.serviceFqName}/${callable.name}",
+     *     fullMethodName = "${descriptor.serviceFqName}/${<from Grpc.Method annotation> ?: callable.name}",
      *     requestCodec = <request-codec>,
      *     responseCodec = <response-codec>,
      *     type = MethodType.<method-type>,
      *     schemaDescriptor = null, // null for now
-     *     // todo understand these values
-     *     idempotent = true,
-     *     safe = true,
-     *     sampledToLocalTracing = true,
+     *     idempotent = <from Grpc.Method annotation>,
+     *     safe = <from Grpc.Method annotation>,
+     *     sampledToLocalTracing = <from Grpc.Method annotation>,
      * )
      * ```
      *
@@ -1183,9 +1181,12 @@ internal class RpcStubGenerator(
                     +responseType
                 }
 
+                val grpcMethodAnnotation = callable.function
+                    .getAnnotation(ctx.grpcMethodAnnotation.owner.kotlinFqName)
+
                 values {
                     // fullMethodName
-                    +stringConst("${declaration.serviceFqName}/${callable.name}")
+                    +stringConst("${declaration.serviceFqName}/${callable.grpcName}")
 
                     // requestCodec
                     +irCodec(requestType, resolver)
@@ -1220,15 +1221,26 @@ internal class RpcStubGenerator(
                     // schemaDescriptor
                     +nullConst(ctx.anyNullable)
 
-                    // todo figure out these
+                    val idempotentArgument = grpcMethodAnnotation
+                        ?.getValueArgument(Name.identifier("idempotent"))
+                    val idempotent = (idempotentArgument as? IrConst)?.value as? Boolean ?: false
+
                     // idempotent
-                    +booleanConst(true)
+                    +booleanConst(idempotent)
+
+                    val safeArgument = grpcMethodAnnotation
+                        ?.getValueArgument(Name.identifier("safe"))
+                    val safe = (safeArgument as? IrConst)?.value as? Boolean ?: false
 
                     // safe
-                    +booleanConst(true)
+                    +booleanConst(safe)
+
+                    val sampledToLocalTracingArgument = grpcMethodAnnotation
+                        ?.getValueArgument(Name.identifier("sampledToLocalTracing"))
+                    val sampledToLocalTracing = (sampledToLocalTracingArgument as? IrConst)?.value as? Boolean ?: true
 
                     // sampledToLocalTracing
-                    +booleanConst(true)
+                    +booleanConst(sampledToLocalTracing)
                 }
             }
         }
