@@ -4,8 +4,6 @@
 
 package kotlinx.rpc.grpc.server
 
-import kotlinx.rpc.grpc.TlsClientAuth
-
 
 public actual typealias ServerCredentials = io.grpc.ServerCredentials
 

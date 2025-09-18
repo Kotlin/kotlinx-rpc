@@ -6,5 +6,5 @@ package kotlinx.rpc.grpc
 
 @Suppress(names = ["RedundantConstructorKeyword"])
 public actual class GrpcMetadata actual constructor() {
-    public actual fun merge(trailers: GrpcMetadata) {}
+    public actual fun merge(metadata: GrpcMetadata) {}
 }

@@ -6,5 +6,5 @@ package kotlinx.rpc.grpc
 
 @Suppress("RedundantConstructorKeyword")
 public expect class GrpcMetadata constructor() {
-    public fun merge(trailers: GrpcMetadata)
+    public fun merge(metadata: GrpcMetadata)
 }

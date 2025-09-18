@@ -28,7 +28,7 @@ public class TlsCredentialsOptionsBuilder {
     private var cert: String? = null
     private var key: String? = null
 
-    private var clientAuth: TlsClientAuth? = null
+    private var clientAuth: grpc_ssl_client_certificate_request_type? = null
 
     public fun trustManager(rootCertsPem: String) {
         roots = rootCertsPem
@@ -38,7 +38,7 @@ public class TlsCredentialsOptionsBuilder {
         cert = certChainPem; key = privateKeyPem
     }
 
-    public fun clientAuth(clientAuth: TlsClientAuth) {
+    public fun clientAuth(clientAuth: grpc_ssl_client_certificate_request_type) {
         this.clientAuth = clientAuth
     }
 
@@ -64,14 +64,8 @@ public class TlsCredentialsOptionsBuilder {
         if (roots != null) grpc_tls_credentials_options_watch_root_certs(opts)
 
         val clientAuth = clientAuth
-        if (clientAuth != null) grpc_tls_credentials_options_set_cert_request_type(opts, clientAuth.toRaw())
+        if (clientAuth != null) grpc_tls_credentials_options_set_cert_request_type(opts, clientAuth)
 
         return opts
     }
-}
-
-private fun TlsClientAuth.toRaw(): grpc_ssl_client_certificate_request_type = when (this) {
-    TlsClientAuth.NONE -> grpc_ssl_client_certificate_request_type.GRPC_SSL_DONT_REQUEST_CLIENT_CERTIFICATE
-    TlsClientAuth.OPTIONAL -> grpc_ssl_client_certificate_request_type.GRPC_SSL_REQUEST_CLIENT_CERTIFICATE_BUT_DONT_VERIFY
-    TlsClientAuth.REQUIRE -> grpc_ssl_client_certificate_request_type.GRPC_SSL_REQUEST_AND_REQUIRE_CLIENT_CERTIFICATE_AND_VERIFY
 }

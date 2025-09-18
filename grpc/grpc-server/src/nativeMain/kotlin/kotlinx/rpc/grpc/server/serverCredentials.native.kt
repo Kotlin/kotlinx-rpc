@@ -9,10 +9,10 @@ package kotlinx.rpc.grpc.server
 import cnames.structs.grpc_server_credentials
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.rpc.grpc.TlsClientAuth
 import kotlinx.rpc.grpc.TlsCredentialsOptionsBuilder
 import libkgrpc.grpc_insecure_server_credentials_create
 import libkgrpc.grpc_server_credentials_release
+import libkgrpc.grpc_ssl_client_certificate_request_type
 import libkgrpc.grpc_tls_credentials_options_destroy
 import libkgrpc.grpc_tls_server_credentials_create
 import kotlin.experimental.ExperimentalNativeApi
@@ -63,7 +63,7 @@ private class NativeTlsServerCredentialsBuilder(certChain: String, privateKey: S
     }
 
     override fun clientAuth(clientAuth: TlsClientAuth): TlsServerCredentialsBuilder {
-        optionsBuilder.clientAuth(clientAuth)
+        optionsBuilder.clientAuth(clientAuth.toRaw())
         return this
     }
 
@@ -76,4 +76,10 @@ private class NativeTlsServerCredentialsBuilder(certChain: String, privateKey: S
             }
         return TlsServerCredentials(creds)
     }
+}
+
+private fun TlsClientAuth.toRaw(): grpc_ssl_client_certificate_request_type = when (this) {
+    TlsClientAuth.NONE -> grpc_ssl_client_certificate_request_type.GRPC_SSL_DONT_REQUEST_CLIENT_CERTIFICATE
+    TlsClientAuth.OPTIONAL -> grpc_ssl_client_certificate_request_type.GRPC_SSL_REQUEST_CLIENT_CERTIFICATE_BUT_DONT_VERIFY
+    TlsClientAuth.REQUIRE -> grpc_ssl_client_certificate_request_type.GRPC_SSL_REQUEST_AND_REQUIRE_CLIENT_CERTIFICATE_AND_VERIFY
 }
