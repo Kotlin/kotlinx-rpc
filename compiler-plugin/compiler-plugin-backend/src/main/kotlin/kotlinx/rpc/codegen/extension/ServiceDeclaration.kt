@@ -8,12 +8,16 @@ import kotlinx.rpc.codegen.common.RpcClassId
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.declarations.IrValueParameter
+import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.defaultType
+import org.jetbrains.kotlin.ir.util.getAnnotation
+import org.jetbrains.kotlin.ir.util.getValueArgument
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.kotlinFqName
+import org.jetbrains.kotlin.name.Name
 
-class ServiceDeclaration(
+internal class ServiceDeclaration(
     val service: IrClass,
     val stubClass: IrClass,
     val methods: List<Method>,
@@ -37,6 +41,17 @@ class ServiceDeclaration(
         val arguments: List<Argument>,
     ) : Callable {
         override val name: String = function.name.asString()
+        val grpcName by lazy {
+            val grpcMethodAnnotation = function.getAnnotation(
+                RpcClassId.grpcMethodAnnotation.asSingleFqName(),
+            )
+
+            val nameArgument = grpcMethodAnnotation?.getValueArgument(Name.identifier("name"))
+
+            ((nameArgument as? IrConst)?.value as? String)
+                ?.takeIf { it.isNotBlank() }
+                ?: name
+        }
 
         class Argument(
             val value: IrValueParameter,
