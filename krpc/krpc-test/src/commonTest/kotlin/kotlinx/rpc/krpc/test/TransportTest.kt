@@ -258,12 +258,18 @@ class TransportTest {
 
         val server = serverOf(transports)
 
-        withContext(Dispatchers.Default) { delay(1000) }
+        repeat(10) {
+            // give way to requests
+            yield()
+        }
         val echoServices = server.registerServiceAndReturn<Echo, _> { EchoImpl() }
         assertEquals("foo", firstResult.await())
         assertEquals(1, echoServices.single().received.value)
 
-        withContext(Dispatchers.Default) { delay(1000) }
+        repeat(10) {
+            // give way to requests
+            yield()
+        }
         val secondServices = server.registerServiceAndReturn<Second, _> { SecondServer() }
         assertEquals("bar", secondResult.await())
         assertEquals(1, secondServices.single().received.value)
