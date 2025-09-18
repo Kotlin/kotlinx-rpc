@@ -5,7 +5,11 @@
 package kotlinx.rpc.grpc.test.proto
 
 import StreamingTestService
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectIndexed
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.registerService

@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
-import kotlinx.rpc.grpc.server.internal.GrpcContext
 
 /**
  * Th scope of a single incoming gRPC server call observed by a [ServerInterceptor].

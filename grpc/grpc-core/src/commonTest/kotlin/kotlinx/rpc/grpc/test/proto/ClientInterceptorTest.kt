@@ -10,11 +10,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.client.ClientCallScope
 import kotlinx.rpc.grpc.client.ClientInterceptor
 import kotlinx.rpc.grpc.client.GrpcClient
-import kotlinx.rpc.grpc.StatusCode
-import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoResponse

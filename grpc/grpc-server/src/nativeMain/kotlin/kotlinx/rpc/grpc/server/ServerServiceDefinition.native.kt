@@ -4,8 +4,8 @@
 
 package kotlinx.rpc.grpc.server
 
-import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
 import kotlinx.rpc.grpc.internal.ServiceDescriptor
+import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 public actual class ServerServiceDefinition internal constructor(

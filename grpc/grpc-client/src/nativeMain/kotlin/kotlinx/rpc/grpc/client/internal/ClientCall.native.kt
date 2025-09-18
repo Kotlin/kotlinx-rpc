@@ -9,7 +9,6 @@ package kotlinx.rpc.grpc.client.internal
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
-import kotlinx.rpc.grpc.client.internal.ClientCall
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 

@@ -9,9 +9,9 @@ import hello.HelloService
 import hello.invoke
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.TlsClientAuth
+import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.client.TlsClientCredentials
 import kotlinx.rpc.grpc.server.TlsServerCredentials
 import kotlinx.rpc.grpc.test.CA_PEM

@@ -17,12 +17,12 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.rpc.grpc.client.ClientCallScope
-import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.client.ClientCallScope
+import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
 import kotlinx.rpc.grpc.descriptor.methodType

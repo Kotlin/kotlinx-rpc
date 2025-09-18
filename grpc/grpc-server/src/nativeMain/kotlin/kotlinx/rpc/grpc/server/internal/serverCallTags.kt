@@ -16,11 +16,11 @@ import kotlinx.cinterop.cValue
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.server.HandlerRegistry
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.internal.CallbackTag
 import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.toByteArray
+import kotlinx.rpc.grpc.server.HandlerRegistry
 import libkgrpc.gpr_timespec
 import libkgrpc.grpc_call_details
 import libkgrpc.grpc_call_details_destroy

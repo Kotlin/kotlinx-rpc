@@ -17,8 +17,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.server.ServerCallScope
-import kotlinx.rpc.grpc.server.ServerInterceptor
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
@@ -29,9 +27,8 @@ import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.internal.CallbackFuture
 import kotlinx.rpc.grpc.internal.Ready
 import kotlinx.rpc.grpc.internal.singleOrStatusFlow
-import kotlinx.rpc.grpc.server.internal.serverCallHandler
-import kotlinx.rpc.grpc.server.internal.serverCallListenerImpl
-import kotlinx.rpc.grpc.server.internal.serverMethodDefinition
+import kotlinx.rpc.grpc.server.ServerCallScope
+import kotlinx.rpc.grpc.server.ServerInterceptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf

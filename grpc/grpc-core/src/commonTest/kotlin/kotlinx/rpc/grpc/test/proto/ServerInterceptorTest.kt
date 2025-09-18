@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.server.ServerCallScope
-import kotlinx.rpc.grpc.server.ServerInterceptor
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.server.ServerCallScope
+import kotlinx.rpc.grpc.server.ServerInterceptor
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoResponse
