@@ -28,6 +28,12 @@ import kotlin.test.assertEquals
  * platform you want to measure client performance for (e.g., JVM or Native).
  */
 class GrpcCustomStressClientRunner {
+
+    val concurrency = 60
+    val iterationsPerWorker = 150
+    val clientStreamBatch = 100
+    val bidiBatch = 50
+
     data class Metrics(
         var unaryOk: Long = 0,
         var serverStreamMsgs: Long = 0,
@@ -36,126 +42,147 @@ class GrpcCustomStressClientRunner {
         var failures: Long = 0,
     )
 
+    private suspend fun runStress(
+        id: Int,
+        label: String,
+        concurrency: Int,
+        iterationsPerWorker: Int,
+        unary: suspend (Metrics) -> Unit,
+        serverStreaming: suspend (Metrics) -> Unit,
+        clientStreaming: suspend (Metrics) -> Unit,
+        bidiStreaming: suspend (Metrics) -> Unit,
+    ) {
+        val totalIterations = concurrency * iterationsPerWorker
+        var completedIterations = 0L
+        var liveFailures = 0L
+        val progressLock = Mutex()
+
+        val aggregate = Metrics()
+        val lock = Mutex()
+
+        coroutineScope {
+            // Periodic progress reporter
+            val reporter = launch {
+                while (true) {
+                    delay(1_000)
+                    val (done, fails) = progressLock.withLock { completedIterations to liveFailures }
+                    val percent = if (totalIterations == 0) 100 else (done * 100 / totalIterations)
+                    println("[GrpcCustomStressClientRunner-$id][$label][progress] $done/$totalIterations ($percent%) failures=$fails")
+                    if (done >= totalIterations.toLong()) break
+                }
+            }
+
+            repeat(concurrency) { idx ->
+                launch {
+                    val rnd = Random(idx)
+                    val local = Metrics()
+                    repeat(iterationsPerWorker) {
+                        val choice = rnd.nextInt(4)
+                        try {
+                            when (choice) {
+                                0 -> unary(local)
+                                1 -> serverStreaming(local)
+                                2 -> clientStreaming(local)
+                                else -> bidiStreaming(local)
+                            }
+                        } catch (ce: CancellationException) {
+                            throw ce
+                        } catch (t: Throwable) {
+                            local.failures++
+                            progressLock.withLock { liveFailures++ }
+                        } finally {
+                            progressLock.withLock { completedIterations++ }
+                        }
+                    }
+                    lock.withLock {
+                        aggregate.unaryOk += local.unaryOk
+                        aggregate.serverStreamMsgs += local.serverStreamMsgs
+                        aggregate.clientStreamOk += local.clientStreamOk
+                        aggregate.bidiMsgs += local.bidiMsgs
+                        aggregate.failures += local.failures
+                    }
+                }
+            }
+
+            // Ensure reporter finishes before leaving the scope
+            reporter.join()
+        }
+
+        println(
+            "[GrpcCustomStressClientRunner-$id][$label] unaryOk=${aggregate.unaryOk}, " +
+                    "serverStreamMsgs=${aggregate.serverStreamMsgs}, clientStreamOk=${aggregate.clientStreamOk}, " +
+                    "bidiMsgs=${aggregate.bidiMsgs}, failures=${aggregate.failures}"
+        )
+
+        val totalOps = aggregate.unaryOk + aggregate.clientStreamOk + aggregate.serverStreamMsgs + aggregate.bidiMsgs
+        require(totalOps > 0) { "No operations completed in stress client" }
+        assertEquals(0, aggregate.failures.toInt(), "Some operations failed during stress client")
+    }
+
+    // =====================
+    // kotlinx-rpc runners
+    // =====================
     @Test
-    fun runMultipleClients() {
+    fun runMultipleClientsKotlinx() {
         val n = 10
         repeat(n) {
-            runClient()
+            runClientKotlinx()
         }
     }
 
     @Test
-    fun runMultipleClientsConcurrently() = runBlocking {
+    fun runMultipleClientsConcurrentlyKotlinx() = runBlocking {
         val n = 10
         repeat(n) {
             launch {
-                runTest(it)
+                runTestKotlinx(it)
             }
         }
     }
 
     @Test
-    fun runClient() = runBlocking { runTest() }
+    fun runClientKotlinx() = runBlocking { runTestKotlinx() }
 
-    suspend fun runTest(id: Int = 0) {
+    suspend fun runTestKotlinx(id: Int = 0) {
         val host = "localhost"
-        val port = 18080
+        val port = 50051 // Proto EchoService server
 
-        val grpcClient = GrpcClient(host, port) {
-            usePlaintext()
-        }
-
-        println("[GrpcCustomStressClientRunner-$id] Connecting to $host:$port ...")
-
+        val grpcClient = GrpcClient(host, port) { usePlaintext() }
+        println("[GrpcCustomStressClientRunner-$id][kotlinx] Connecting to $host:$port ...")
         try {
-            val svc = grpcClient.withService<CustomEchoService>()
-            val concurrency = 60
-            val iterationsPerWorker = 150
-            val clientStreamBatch = 100
-            val bidiBatch = 50
+            val svc = grpcClient.withService<EchoService>()
 
-            val totalIterations = concurrency * iterationsPerWorker
-            var completedIterations = 0L
-            var liveFailures = 0L
-            val progressLock = Mutex()
+            suspend fun unary(m: Metrics) = unaryEchoOnce(svc, m)
+            suspend fun server(m: Metrics) = serverStreamingOnce(svc, m)
+            suspend fun client(m: Metrics) = clientStreamingOnce(svc, clientStreamBatch, m)
+            suspend fun bidi(m: Metrics) = bidiStreamingOnce(svc, bidiBatch, m)
 
-            val aggregate = Metrics()
-            val lock = Mutex()
-
-            coroutineScope {
-                // Periodic progress reporter
-                val reporter = launch {
-                    while (true) {
-                        delay(1_000)
-                        val (done, fails) = progressLock.withLock { completedIterations to liveFailures }
-                        val percent = if (totalIterations == 0) 100 else (done * 100 / totalIterations)
-                        println("[GrpcCustomStressClientRunner-$id][progress] $done/$totalIterations ($percent%) failures=$fails")
-                        if (done >= totalIterations.toLong()) break
-                    }
-                }
-
-                repeat(concurrency) { idx ->
-                    launch {
-                        val rnd = Random(idx)
-                        val local = Metrics()
-                        repeat(iterationsPerWorker) {
-                            val choice = rnd.nextInt(4)
-                            try {
-                                when (choice) {
-                                    0 -> unaryEchoOnce(svc, local)
-                                    1 -> serverStreamingOnce(svc, local)
-                                    2 -> clientStreamingOnce(svc, clientStreamBatch, local)
-                                    else -> bidiStreamingOnce(svc, bidiBatch, local)
-                                }
-                            } catch (ce: CancellationException) {
-                                throw ce
-                            } catch (t: Throwable) {
-                                local.failures++
-                                progressLock.withLock { liveFailures++ }
-                            } finally {
-                                progressLock.withLock { completedIterations++ }
-                            }
-                        }
-                        lock.withLock {
-                            aggregate.unaryOk += local.unaryOk
-                            aggregate.serverStreamMsgs += local.serverStreamMsgs
-                            aggregate.clientStreamOk += local.clientStreamOk
-                            aggregate.bidiMsgs += local.bidiMsgs
-                            aggregate.failures += local.failures
-                        }
-                    }
-                }
-
-                // Ensure reporter finishes before leaving the scope
-                reporter.join()
-            }
-
-            println(
-                "[GrpcCustomStressClientRunner-$id] unaryOk=${aggregate.unaryOk}, " +
-                        "serverStreamMsgs=${aggregate.serverStreamMsgs}, clientStreamOk=${aggregate.clientStreamOk}, " +
-                        "bidiMsgs=${aggregate.bidiMsgs}, failures=${aggregate.failures}"
+            runStress(
+                id = id,
+                label = "kotlinx",
+                concurrency = concurrency,
+                iterationsPerWorker = iterationsPerWorker,
+                unary = ::unary,
+                serverStreaming = ::server,
+                clientStreaming = ::client,
+                bidiStreaming = ::bidi,
             )
-
-            val totalOps =
-                aggregate.unaryOk + aggregate.clientStreamOk + aggregate.serverStreamMsgs + aggregate.bidiMsgs
-            require(totalOps > 0) { "No operations completed in stress client" }
-            assertEquals(0, aggregate.failures.toInt(), "Some operations failed during stress client")
         } finally {
             grpcClient.shutdown()
             grpcClient.awaitTermination()
         }
     }
 
-    private suspend fun unaryEchoOnce(svc: CustomEchoService, m: Metrics) {
+    private suspend fun unaryEchoOnce(svc: EchoService, m: Metrics) {
         val msg = "hello"
-        val res: EchoMsgResponse = svc.UnaryEcho(EchoMsgRequest(message = msg))
+        val res: EchoResponse = svc.UnaryEcho(EchoRequest { message = msg })
         assertEquals(msg, res.message)
         m.unaryOk++
     }
 
-    private suspend fun serverStreamingOnce(svc: CustomEchoService, m: Metrics) {
+    private suspend fun serverStreamingOnce(svc: EchoService, m: Metrics) {
         val msg = "pong"
-        val flow = svc.ServerStreamingEcho(EchoMsgRequest(message = msg))
+        val flow = svc.ServerStreamingEcho(EchoRequest { message = msg })
         var c = 0
         flow.onEach {
             assertEquals(msg, it.message)
@@ -165,10 +192,10 @@ class GrpcCustomStressClientRunner {
         m.serverStreamMsgs += c
     }
 
-    private suspend fun clientStreamingOnce(svc: CustomEchoService, batch: Int, m: Metrics) {
+    private suspend fun clientStreamingOnce(svc: EchoService, batch: Int, m: Metrics) {
         val res = svc.ClientStreamingEcho(flow {
             repeat(batch) { i ->
-                emit(EchoMsgRequest(message = "m$i"))
+                emit(EchoRequest { message = "m$i" })
             }
         })
         val expected = (0 until batch).joinToString(", ") { "m$it" }
@@ -176,10 +203,109 @@ class GrpcCustomStressClientRunner {
         m.clientStreamOk++
     }
 
-    private suspend fun bidiStreamingOnce(svc: CustomEchoService, batch: Int, m: Metrics) {
-        val incoming: Flow<EchoMsgResponse> = svc.BidirectionalStreamingEcho(flow {
+    private suspend fun bidiStreamingOnce(svc: EchoService, batch: Int, m: Metrics) {
+        val incoming: Flow<EchoResponse> = svc.BidirectionalStreamingEcho(flow {
             repeat(batch) {
-                emit(EchoMsgRequest(message = "z"))
+                emit(EchoRequest { message = "z" })
+            }
+        })
+        var c = 0
+        incoming.onEach { resp ->
+            assertEquals("z", resp.message)
+            c++
+        }.collect()
+        assertEquals(batch, c)
+        m.bidiMsgs += c
+    }
+
+    // =====================
+    // grpc-kmp runners
+    // =====================
+    @Test
+    fun runMultipleClientsKmp() {
+        val n = 10
+        repeat(n) {
+            runClientKmp()
+        }
+    }
+
+    @Test
+    fun runMultipleClientsConcurrentlyKmp() = runBlocking {
+        val n = 10
+        repeat(n) {
+            launch {
+                runTestKmp(it)
+            }
+        }
+    }
+
+    @Test
+    fun runClientKmp() = runBlocking { runTestKmp() }
+
+    suspend fun runTestKmp(id: Int = 0) {
+        val host = "localhost"
+        val port = 50051 // Proto EchoService server (see RawClientTest.runServer)
+
+        val channel = io.github.timortel.kmpgrpc.core.Channel.Builder
+            .forAddress(host, port)
+            .usePlaintext()
+            .build()
+        val stub = EchoGrpc.EchoServiceStub(channel)
+
+        println("[GrpcCustomStressClientRunner-$id][kmp] Connecting to $host:$port ...")
+
+        suspend fun unary(m: Metrics) = unaryEchoOnceKmp(stub, m)
+        suspend fun server(m: Metrics) = serverStreamingOnceKmp(stub, m)
+        suspend fun client(m: Metrics) = clientStreamingOnceKmp(stub, clientStreamBatch, m)
+        suspend fun bidi(m: Metrics) = bidiStreamingOnceKmp(stub, bidiBatch, m)
+
+        runStress(
+            id = id,
+            label = "kmp",
+            concurrency = concurrency,
+            iterationsPerWorker = iterationsPerWorker,
+            unary = ::unary,
+            serverStreaming = ::server,
+            clientStreaming = ::client,
+            bidiStreaming = ::bidi,
+        )
+    }
+
+    private suspend fun unaryEchoOnceKmp(stub: EchoGrpc.EchoServiceStub, m: Metrics) {
+        val msg = "hello"
+        val res = stub.UnaryEcho(echoRequest { message = msg })
+        assertEquals(msg, res.message)
+        m.unaryOk++
+    }
+
+    private suspend fun serverStreamingOnceKmp(stub: EchoGrpc.EchoServiceStub, m: Metrics) {
+        val msg = "pong"
+        val flow = stub.ServerStreamingEcho(echoRequest { message = msg; serverStreamReps = 5u })
+        var c = 0
+        flow.onEach {
+            assertEquals(msg, it.message)
+            c++
+        }.collect()
+        // default repetitions in server implementation assumed 5
+        assertEquals(5, c)
+        m.serverStreamMsgs += c
+    }
+
+    private suspend fun clientStreamingOnceKmp(stub: EchoGrpc.EchoServiceStub, batch: Int, m: Metrics) {
+        val res = stub.ClientStreamingEcho(flow {
+            repeat(batch) { i ->
+                emit(echoRequest { message = "m$i" })
+            }
+        })
+        val expected = (0 until batch).joinToString(", ") { "m$it" }
+        assertEquals(expected, res.message)
+        m.clientStreamOk++
+    }
+
+    private suspend fun bidiStreamingOnceKmp(stub: EchoGrpc.EchoServiceStub, batch: Int, m: Metrics) {
+        val incoming = stub.BidirectionalStreamingEcho(flow {
+            repeat(batch) {
+                emit(echoRequest { message = "z" })
             }
         })
         var c = 0

@@ -5,6 +5,7 @@
 package kotlinx.rpc.grpc.test
 
 import io.github.timortel.kmpgrpc.core.Channel
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.rpc.grpc.GrpcClient
 import kotlinx.rpc.withService
@@ -20,6 +21,7 @@ class KmpGrpcTest {
 
         val request = echoRequest {
             message = "Echo"
+            serverStreamReps = 5u
         }
 
         val channel = Channel.Builder
@@ -30,14 +32,14 @@ class KmpGrpcTest {
         val stub = EchoGrpc.EchoServiceStub(channel)
 
         repeat(COUNT) {
-            val response = stub.UnaryEcho(request)
-            assertEquals("Echo", response.message)
+            val response = stub.ServerStreamingEcho(request).toList()
+            assertEquals(5, response.size)
         }
     }
 
     @Test
     fun kotlinxRun() = runBlocking {
-        val request = EchoRequest { message = "Echo" }
+        val request = EchoRequest { message = "Echo"; serverStreamReps = 5u }
 
         val client = GrpcClient("localhost", 50051) {
             usePlaintext()

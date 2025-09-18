@@ -20,11 +20,11 @@ class GrpcCustomStressServerRunner {
 
     @Test
     fun runServer() = runBlocking {
-        val port = 18080
+        val port = 50051
         val server = GrpcServer(
             port = port,
             builder = {
-                registerService<CustomEchoService> { CustomEchoServiceImpl() }
+                registerService<EchoService> { EchoServiceImpl() }
             }
         )
 
