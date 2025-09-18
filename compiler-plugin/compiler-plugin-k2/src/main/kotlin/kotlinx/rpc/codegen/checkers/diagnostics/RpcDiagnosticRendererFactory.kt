@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen.checkers.diagnostics
 
+import kotlinx.rpc.codegen.checkers.IdentifierRegexes
 import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
 import org.jetbrains.kotlin.diagnostics.rendering.Renderer
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
@@ -102,6 +103,21 @@ object RpcStrictModeDiagnosticRendererFactory : BaseDiagnosticRendererFactory() 
 
 object GrpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
     override val MAP by RpcKtDiagnosticFactoryToRendererMap("Grpc") { map ->
+        map.put(
+            factory = FirGrpcDiagnostics.WRONG_PROTO_PACKAGE_VALUE,
+            message = "'protoPackage' parameter value must be a valid package name (${IdentifierRegexes.packageIdentifierRegex.pattern}) or empty",
+        )
+
+        map.put(
+            factory = FirGrpcDiagnostics.WRONG_PROTO_METHOD_NAME_VALUE,
+            message = "'name' parameter value must be a valid identifier (${IdentifierRegexes.identifierRegex.pattern}) or empty",
+        )
+
+        map.put(
+            factory = FirGrpcDiagnostics.WRONG_SAFE_IDEMPOTENT_COMBINATION,
+            message = "'safe = true' and 'idempotent = false' are mutually exclusive.",
+        )
+
         map.put(
             factory = FirGrpcDiagnostics.NULLABLE_PARAMETER_IN_GRPC_SERVICE,
             message = "Nullable type is not allowed in @Grpc service function parameters.",

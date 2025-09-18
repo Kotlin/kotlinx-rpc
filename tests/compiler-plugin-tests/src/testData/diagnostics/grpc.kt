@@ -31,3 +31,27 @@ interface MyService {
 }
 
 class WithFlow(val flow: Flow<String>)
+
+@Grpc(<!WRONG_PROTO_PACKAGE_VALUE!>"-invalid name"<!>)
+interface WrongAnnotations1
+
+@Grpc(protoPackage = <!WRONG_PROTO_PACKAGE_VALUE!>"-invalid name"<!>)
+interface WrongAnnotations2
+
+@Grpc(protoPackage = <!WRONG_PROTO_PACKAGE_VALUE!>"invalid.name" + " "<!>)
+interface WrongAnnotations3
+
+@Grpc
+interface WrongAnnotations4 {
+    @Grpc.Method(<!WRONG_PROTO_METHOD_NAME_VALUE!>"wrongName+1"<!>)
+    suspend fun wrongName1()
+
+    @Grpc.Method(name = <!WRONG_PROTO_METHOD_NAME_VALUE!>"wrongName+2"<!>)
+    suspend fun wrongName2()
+
+    @Grpc.Method(name = <!WRONG_PROTO_METHOD_NAME_VALUE!>"wrongName" + "+3"<!>)
+    suspend fun wrongName3()
+
+    @Grpc.Method<!WRONG_SAFE_IDEMPOTENT_COMBINATION!>(safe = true, idempotent = false)<!>
+    suspend fun wrongSafeIdempotent()
+}

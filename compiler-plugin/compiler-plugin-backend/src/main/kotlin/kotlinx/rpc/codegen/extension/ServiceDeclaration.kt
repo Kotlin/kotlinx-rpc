@@ -44,7 +44,7 @@ internal class ServiceDeclaration(
         override val name: String = function.name.asString()
         val grpcName by lazy {
             val grpcMethodAnnotation = function.getAnnotation(
-                ctx.grpcMethodAnnotation.owner.kotlinFqName
+                RpcClassId.grpcMethodAnnotation.asSingleFqName(),
             )
 
             val nameArgument = grpcMethodAnnotation?.getValueArgument(Name.identifier("name"))

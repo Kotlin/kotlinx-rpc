@@ -1182,7 +1182,7 @@ internal class RpcStubGenerator(
                 }
 
                 val grpcMethodAnnotation = callable.function
-                    .getAnnotation(ctx.grpcMethodAnnotation.owner.kotlinFqName)
+                    .getAnnotation(RpcClassId.grpcMethodAnnotation.asSingleFqName())
 
                 values {
                     // fullMethodName
