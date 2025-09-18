@@ -7,6 +7,7 @@ package kotlinx.rpc.codegen.extension
 import kotlinx.rpc.codegen.VersionSpecificApi
 import kotlinx.rpc.codegen.common.RpcClassId
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
+import org.jetbrains.kotlin.backend.common.lower.irThrow
 import org.jetbrains.kotlin.backend.jvm.functionByName
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
@@ -1070,7 +1071,7 @@ internal class RpcStubGenerator(
      * Where:
      *  - `<callable-name-k>` - the name of the k-th callable in the service
      */
-    private fun irMethodDescriptorMap(resolver: IrValueParameter): IrCallImpl {
+    private fun IrBlockBodyBuilder.irMethodDescriptorMap(resolver: IrValueParameter): IrCallImpl {
         return irMapOf(
             keyType = ctx.irBuiltIns.stringType,
             valueType = ctx.grpcPlatformMethodDescriptor.starProjectedType,
@@ -1149,7 +1150,10 @@ internal class RpcStubGenerator(
      *   MethodType.CLIENT_STREAMING, MethodType.BIDI_STREAMING
      *   - <request-codec>/<response-codec> - a MessageCodec getter, see [irCodec]
      */
-    private fun irMethodDescriptor(callable: ServiceDeclaration.Callable, resolver: IrValueParameter): IrCall {
+    private fun IrBlockBodyBuilder.irMethodDescriptor(
+        callable: ServiceDeclaration.Callable,
+        resolver: IrValueParameter,
+    ): IrCall {
         check(callable is ServiceDeclaration.Method) {
             "Only methods are allowed here"
         }
@@ -1167,13 +1171,10 @@ internal class RpcStubGenerator(
         val methodDescriptorType = ctx.grpcPlatformMethodDescriptor.typeWith(requestType, responseType)
 
         return vsApi {
-            IrCallImplVS(
-                startOffset = UNDEFINED_OFFSET,
-                endOffset = UNDEFINED_OFFSET,
+            irCall(
                 type = methodDescriptorType,
-                symbol = ctx.functions.methodDescriptor,
+                callee = ctx.functions.methodDescriptor,
                 typeArgumentsCount = 2,
-                valueArgumentsCount = 8,
             )
         }.apply {
             arguments {
@@ -1234,13 +1235,13 @@ internal class RpcStubGenerator(
     }
 
     /**
-     * If [type] is annotated with [RpcIrContext.withCodecAnnotation],
+     * If [messageType] is annotated with [RpcIrContext.withCodecAnnotation],
      * we use its codec object
      *
-     * If not, use [resolver].resolve()
+     * If not, use [resolver].resolveOrNull()
      */
-    private fun irCodec(type: IrType, resolver: IrValueParameter): IrExpression {
-        val owner = type.classOrFail.owner
+    private fun IrBlockBodyBuilder.irCodec(messageType: IrType, resolver: IrValueParameter): IrExpression {
+        val owner = messageType.classOrFail.owner
         val protobufMessage = owner.getAnnotation(ctx.withCodecAnnotation.owner.kotlinFqName)
 
         return if (protobufMessage != null) {
@@ -1256,14 +1257,12 @@ internal class RpcStubGenerator(
                 symbol = codec.classOrFail,
             )
         } else {
-            vsApi {
-                IrCallImplVS(
-                    startOffset = UNDEFINED_OFFSET,
-                    endOffset = UNDEFINED_OFFSET,
-                    type = ctx.grpcMessageCodec.typeWith(type),
-                    symbol = ctx.functions.grpcMessageCodecResolverResolveOrNull.symbol,
+            val codecType = ctx.grpcMessageCodec.typeWith(messageType)
+            val codecCall = vsApi {
+                irCall(
+                    type = codecType.makeNullable(),
+                    callee = ctx.functions.grpcMessageCodecResolverResolveOrNull.symbol,
                     typeArgumentsCount = 0,
-                    valueArgumentsCount = 1,
                 )
             }.apply {
                 arguments {
@@ -1275,10 +1274,21 @@ internal class RpcStubGenerator(
                     )
 
                     values {
-                        +irTypeOfCall(type)
+                        +irTypeOfCall(messageType)
                     }
                 }
             }
+
+            irElvis(
+                expression = codecCall,
+                ifNull = irCall(ctx.irBuiltIns.illegalArgumentExceptionSymbol).apply {
+                    arguments {
+                        values {
+                            +stringConst("No codec found for ${messageType.classFqName}")
+                        }
+                    }
+                },
+            )
         }
     }
 
@@ -1795,4 +1805,44 @@ internal class RpcStubGenerator(
 
     fun IrBuilderWithScope.irSafeAs(argument: IrExpression, type: IrType) =
         IrTypeOperatorCallImpl(startOffset, endOffset, type, IrTypeOperator.SAFE_CAST, type, argument)
+
+    fun IrBlockBodyBuilder.irElvis(expression: IrExpression, ifNull: IrExpression): IrExpression {
+        check(expression.type == ifNull.type || ifNull.type == ctx.irBuiltIns.nothingType) {
+            "Type mismatch: ${expression.type.dumpKotlinLike()} != ${ifNull.type.dumpKotlinLike()}"
+        }
+//              BLOCK type=kotlin.Int origin=ELVIS
+//          VAR IR_TEMPORARY_VARIABLE name:tmp_0 type:kotlin.Int? [val]
+//            GET_VAR 'val some: kotlin.Int? declared in <root>.test' type=kotlin.Int? origin=null
+//          WHEN type=kotlin.Int origin=null
+//            BRANCH
+//              if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+//                ARG arg0: GET_VAR 'val tmp_0: kotlin.Int? declared in <root>.test' type=kotlin.Int? origin=null
+//                ARG arg1: CONST Null type=kotlin.Nothing? value=null
+//              then: THROW type=kotlin.Nothing
+//                CONSTRUCTOR_CALL 'public constructor <init> (p0: @[FlexibleNullability] kotlin.String?) declared in java.lang.IllegalStateException' type=java.lang.IllegalStateException origin=null
+//                  ARG p0: CONST String type=kotlin.String value="some is null"
+//            BRANCH
+//              if: CONST Boolean type=kotlin.Boolean value=true
+//              then: GET_VAR 'val tmp_0: kotlin.Int? declared in <root>.test' type=kotlin.Int? origin=null
+        return irBlock(origin = IrStatementOrigin.ELVIS, resultType = expression.type.makeNotNull()) {
+            val temp = irTemporary(
+                value = expression,
+                nameHint = "elvis_left_hand_side",
+                isMutable = false,
+            )
+            +irWhen(
+                type = expression.type,
+                branches = listOf(
+                    irBranch(
+                        condition = irEqualsNull(irGet(temp)),
+                        result = ifNull,
+                    ),
+                    irBranch(
+                        condition = irTrue(),
+                        result = irGet(temp),
+                    ),
+                ),
+            )
+        }
+    }
 }
