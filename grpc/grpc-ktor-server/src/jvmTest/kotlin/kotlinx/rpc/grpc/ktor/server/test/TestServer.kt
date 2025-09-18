@@ -4,11 +4,11 @@
 
 package kotlinx.rpc.grpc.ktor.server.test
 
-import io.ktor.server.testing.testApplication
-import kotlinx.rpc.grpc.GrpcClient
-import kotlin.test.Test
+import io.ktor.server.testing.*
+import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.ktor.server.grpc
 import kotlinx.rpc.withService
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.minutes
 

@@ -1,7 +1,7 @@
 package kotlinx.rpc.sample
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.rpc.grpc.GrpcServer
+import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.registerService
 import kotlinx.rpc.sample.messages.MessageService

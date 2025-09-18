@@ -8,8 +8,8 @@ import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.util.*
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.grpc.GrpcServer
-import kotlinx.rpc.grpc.GrpcServerConfiguration
+import kotlinx.rpc.grpc.server.GrpcServer
+import kotlinx.rpc.grpc.server.GrpcServerConfiguration
 
 @Suppress("ConstPropertyName")
 public object GrpcConfigKeys {

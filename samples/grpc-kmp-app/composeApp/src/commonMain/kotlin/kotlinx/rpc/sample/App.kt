@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlinx.rpc.grpc.GrpcClient
+import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.sample.messages.ChatEntry
 import kotlinx.rpc.sample.messages.MessageService
@@ -45,6 +45,7 @@ import kotlinx.rpc.sample.messages.SendMessageRequest
 import kotlinx.rpc.sample.messages.invoke
 import kotlinx.rpc.withService
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -72,14 +73,14 @@ fun App() {
 private fun ChatScreen(service: MessageService) {
     val scope = rememberCoroutineScope()
 
-    var me by remember { mutableStateOf("me") }
+    var me by remember { mutableStateOf("user-" + Random.nextInt(1000)) }
     var input by remember { mutableStateOf("") }
     val messages = remember { mutableStateListOf<ChatEntry>() }
 
     fun sendMessage() {
         scope.launch {
             val result = service.SendMessage(
-                SendMessageRequest{
+                SendMessageRequest {
                     user = me
                     text = input
                 }
@@ -103,10 +104,11 @@ private fun ChatScreen(service: MessageService) {
         }
     }
 
-    Column(Modifier
-        .fillMaxSize()
-        .windowInsetsPadding(WindowInsets.safeDrawing)
-        .padding(16.dp)
+    Column(
+        Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .padding(16.dp)
     ) {
         OutlinedTextField(
             value = me,
@@ -123,13 +125,14 @@ private fun ChatScreen(service: MessageService) {
             contentPadding = PaddingValues(8.dp)
         ) {
             items(messages) { m ->
-               MessageBubble(m, me)
+                MessageBubble(m, me)
             }
         }
 
         Spacer(Modifier.height(8.dp))
 
-        Row(Modifier.fillMaxWidth(),
+        Row(
+            Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -150,7 +153,7 @@ private fun ChatScreen(service: MessageService) {
 fun MessageBubble(
     message: ChatEntry,
     me: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val isMe = message.user == me
 
