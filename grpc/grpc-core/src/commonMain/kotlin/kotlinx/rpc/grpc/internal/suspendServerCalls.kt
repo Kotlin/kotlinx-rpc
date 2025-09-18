@@ -157,15 +157,17 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         }
     }
 
+    val context = GrpcContextElement.current()
     val serverCallScope = ServerCallScopeImpl(
         method = descriptor,
         interceptors = interceptors,
         implementation = implementation,
         requestHeaders = requestHeaders,
         serverCall = handler,
+        grpcContext = context.grpcContext,
     )
 
-    val rpcJob = launch(GrpcContextElement.current()) {
+    val rpcJob = launch() {
         val mutex = Mutex()
         val headersSent = AtomicBoolean(false) // enforces only sending headers once
         val failure = runCatching {
@@ -273,6 +275,7 @@ private class ServerCallScopeImpl<Request, Response>(
     val implementation: (Flow<Request>) -> Flow<Response>,
     override val requestHeaders: GrpcMetadata,
     val serverCall: ServerCall<Request, Response>,
+    override val grpcContext: GrpcContext,
 ) : ServerCallScope<Request, Response> {
 
     override val responseHeaders: GrpcMetadata = GrpcMetadata()
