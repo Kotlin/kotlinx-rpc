@@ -5,10 +5,11 @@
 package kotlinx.rpc.grpc.internal
 
 import io.grpc.ServerCall
+import io.grpc.ServerCallHandler
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
-public actual typealias ServerCallHandler<Request, Response> = io.grpc.ServerCallHandler<Request, Response>
+public actual typealias ServerCallHandler<Request, Response> = ServerCallHandler<Request, Response>
 
 @InternalRpcApi
 public actual typealias ServerCall<Request, Response> = ServerCall<Request, Response>

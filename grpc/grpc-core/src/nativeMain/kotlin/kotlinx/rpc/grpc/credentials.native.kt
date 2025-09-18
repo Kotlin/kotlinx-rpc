@@ -6,88 +6,21 @@
 
 package kotlinx.rpc.grpc
 
-import cnames.structs.grpc_server_credentials
 import cnames.structs.grpc_tls_credentials_options
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import libkgrpc.grpc_insecure_server_credentials_create
-import libkgrpc.grpc_server_credentials_release
 import libkgrpc.grpc_ssl_client_certificate_request_type
 import libkgrpc.grpc_tls_certificate_provider_release
 import libkgrpc.grpc_tls_certificate_provider_static_data_create
 import libkgrpc.grpc_tls_credentials_options_create
-import libkgrpc.grpc_tls_credentials_options_destroy
 import libkgrpc.grpc_tls_credentials_options_set_cert_request_type
 import libkgrpc.grpc_tls_credentials_options_set_certificate_provider
 import libkgrpc.grpc_tls_credentials_options_watch_identity_key_cert_pairs
 import libkgrpc.grpc_tls_credentials_options_watch_root_certs
 import libkgrpc.grpc_tls_identity_pairs_add_pair
 import libkgrpc.grpc_tls_identity_pairs_create
-import libkgrpc.grpc_tls_server_credentials_create
 import kotlin.experimental.ExperimentalNativeApi
-import kotlin.native.ref.createCleaner
-
-public actual abstract class ServerCredentials internal constructor(
-    internal val raw: CPointer<grpc_server_credentials>,
-) {
-    @Suppress("unused")
-    internal val rawCleaner = createCleaner(raw) {
-        grpc_server_credentials_release(it)
-    }
-}
-
-public actual class InsecureServerCredentials internal constructor(
-    raw: CPointer<grpc_server_credentials>,
-) : ServerCredentials(raw)
-
-public actual class TlsServerCredentials internal constructor(
-    raw: CPointer<grpc_server_credentials>,
-) : ServerCredentials(raw)
-
-internal actual fun createInsecureServerCredentials(): ServerCredentials {
-    return InsecureServerCredentials(
-        grpc_insecure_server_credentials_create() ?: error("grpc_insecure_server_credentials_create() returned null")
-    )
-}
-
-internal actual fun TlsServerCredentialsBuilder(
-    certChain: String,
-    privateKey: String,
-): TlsServerCredentialsBuilder = NativeTlsServerCredentialsBuilder(certChain, privateKey)
-
-internal actual fun TlsServerCredentialsBuilder.build(): ServerCredentials {
-    return (this as NativeTlsServerCredentialsBuilder).build()
-}
-
-private class NativeTlsServerCredentialsBuilder(certChain: String, privateKey: String) : TlsServerCredentialsBuilder {
-    var optionsBuilder = TlsCredentialsOptionsBuilder()
-
-    init {
-        optionsBuilder.keyManager(certChain, privateKey)
-    }
-
-    override fun trustManager(rootCertsPem: String): TlsServerCredentialsBuilder {
-        optionsBuilder.trustManager(rootCertsPem)
-        return this
-    }
-
-    override fun clientAuth(clientAuth: TlsClientAuth): TlsServerCredentialsBuilder {
-        optionsBuilder.clientAuth(clientAuth)
-        return this
-    }
-
-    fun build(): TlsServerCredentials {
-        val opts = optionsBuilder.build()
-        val creds = grpc_tls_server_credentials_create(opts)
-            ?: run {
-                grpc_tls_credentials_options_destroy(opts);
-                error("TLS server credential creation failed")
-            }
-        return TlsServerCredentials(creds)
-    }
-}
-
 
 @InternalRpcApi
 public class TlsCredentialsOptionsBuilder {

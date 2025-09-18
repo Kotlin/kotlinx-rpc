@@ -160,7 +160,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         }
     }
 
-    val context = GrpcContextElement.current()
+    val context = GrpcContextElement.Key.current()
     val serverCallScope = ServerCallScopeImpl(
         method = descriptor,
         interceptors = interceptors,

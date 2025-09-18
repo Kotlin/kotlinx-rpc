@@ -202,7 +202,8 @@ public fun grpc_status_code.toKotlin(): StatusCode = when (this) {
     else -> error("Invalid status code: $this")
 }
 
-internal fun StatusCode.toRaw(): grpc_status_code = when (this) {
+@InternalRpcApi
+public fun StatusCode.toRaw(): grpc_status_code = when (this) {
     StatusCode.OK -> grpc_status_code.GRPC_STATUS_OK
     StatusCode.CANCELLED -> grpc_status_code.GRPC_STATUS_CANCELLED
     StatusCode.UNKNOWN -> grpc_status_code.GRPC_STATUS_UNKNOWN

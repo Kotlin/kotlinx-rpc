@@ -10,7 +10,6 @@ import io.ktor.util.*
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.GrpcServer
 import kotlinx.rpc.grpc.GrpcServerConfiguration
-import kotlinx.rpc.grpc.ServerBuilder
 
 @Suppress("ConstPropertyName")
 public object GrpcConfigKeys {
@@ -18,7 +17,7 @@ public object GrpcConfigKeys {
 }
 
 /**
- * Key used to store and retrieve the [GrpcServer] instance within the application's attributes.
+ * Key used to store and retrieve the [kotlinx.rpc.grpc.GrpcServer] instance within the application's attributes.
  */
 public val GrpcServerKey: AttributeKey<GrpcServer> = AttributeKey<GrpcServer>("GrpcServerPluginAttributesKey")
 
@@ -39,9 +38,9 @@ public val GrpcServerKey: AttributeKey<GrpcServer> = AttributeKey<GrpcServer>("G
  *
  * @param port The port on which the gRPC server will listen for incoming connections.
  * Defaults to the value specified in the `ktor.deployment.grpcPort` configuration, or 8001 if not configured.
- * @param configure Allows additional configuration of the gRPC server using a platform-specific [ServerBuilder].
+ * @param configure Allows additional configuration of the gRPC server using a platform-specific [kotlinx.rpc.grpc.ServerBuilder].
  * @param builder A block used to define and register gRPC services for the gRPC server.
- * @return The instance of the initialized and running [GrpcServer].
+ * @return The instance of the initialized and running [kotlinx.rpc.grpc.GrpcServer].
  * @throws IllegalStateException if a gRPC server is already installed or the specified port conflicts with
  * an existing HTTP/HTTPS server port.
  */

@@ -96,7 +96,7 @@ internal class NativeServer(
             return this
         }
 
-        grpc_server_shutdown_and_notify(raw, cq.raw, CallbackTag.anonymous {
+        grpc_server_shutdown_and_notify(raw, cq.raw, CallbackTag.Companion.anonymous {
             cq.shutdown().onComplete {
                 dispose()
                 isTerminatedInternal.complete(Unit)

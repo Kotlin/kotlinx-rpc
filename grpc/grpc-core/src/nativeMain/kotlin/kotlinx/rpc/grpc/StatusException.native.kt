@@ -11,7 +11,7 @@ public actual class StatusException : Exception {
     public actual constructor(status: Status) : this(status, null)
 
     public actual constructor(status: Status, trailers: GrpcMetadata?) : super(
-        "${status.statusCode}: ${status.getDescription()}",
+        "${status.code}: ${status.getDescription()}",
         status.getCause()
     ) {
         this.status = status
@@ -30,7 +30,7 @@ public actual class StatusRuntimeException : RuntimeException {
     public actual constructor(status: Status) : this(status, null)
 
     public actual constructor(status: Status, trailers: GrpcMetadata?) : super(
-        "${status.statusCode}: ${status.getDescription()}",
+        "${status.code}: ${status.getDescription()}",
         status.getCause()
     ) {
         this.status = status

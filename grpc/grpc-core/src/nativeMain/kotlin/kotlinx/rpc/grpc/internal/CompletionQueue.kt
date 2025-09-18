@@ -233,14 +233,17 @@ private fun deleteCbTag(tag: CPointer<kgrpc_cb_tag>) {
  *
  * `this` object is guaranteed to be not garbage collected until the [run] method was executed.
  */
-internal interface CallbackTag {
-    fun run(ok: Boolean)
+@InternalRpcApi
+public interface CallbackTag {
+    @InternalRpcApi
+    public fun run(ok: Boolean)
 
     /**
      * Creates a pointer to a gRPC callback tag that encapsulates the given `run` function.
      * It can be passed to callback-based grpc_completion_queue.
      */
-    fun toCbTag(): CPointer<kgrpc_cb_tag> {
+    @InternalRpcApi
+    public fun toCbTag(): CPointer<kgrpc_cb_tag> {
         return newCbTag(this, staticCFunction { functor, ok ->
             val tag = functor!!.reinterpret<kgrpc_cb_tag>()
             val callbackTag = tag.pointed.user_data!!.asStableRef<CallbackTag>().get()
@@ -250,7 +253,8 @@ internal interface CallbackTag {
         })
     }
 
-    companion object {
+    @InternalRpcApi
+    public companion object {
         /**
          * Creates a pointer to a gRPC callback tag that encapsulates the given `run` function.
          *
@@ -260,7 +264,8 @@ internal interface CallbackTag {
          * @return A pointer to the newly created gRPC callback tag.
          *         It can be passed to callback-based grpc_completion_queue.
          */
-        fun anonymous(run: (ok: Boolean) -> Unit): CPointer<kgrpc_cb_tag> {
+        @InternalRpcApi
+        public fun anonymous(run: (ok: Boolean) -> Unit): CPointer<kgrpc_cb_tag> {
             return object : CallbackTag {
                 override fun run(ok: Boolean) {
                     run(ok)

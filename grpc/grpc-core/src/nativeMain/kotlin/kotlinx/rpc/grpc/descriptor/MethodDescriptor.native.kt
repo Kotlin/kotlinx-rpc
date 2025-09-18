@@ -13,7 +13,7 @@ public actual class MethodDescriptor<Request, Response> internal constructor(
     private val fullMethodName: String,
     private val requestMarshaller: Marshaller<Request>,
     private val responseMarshaller: Marshaller<Response>,
-    internal val methodType: MethodType,
+    internal val type: MethodType,
     private val schemaDescriptor: Any?,
     private val idempotent: Boolean,
     private val safe: Boolean,
@@ -58,7 +58,7 @@ public actual class MethodDescriptor<Request, Response> internal constructor(
 
 @InternalRpcApi
 public actual val MethodDescriptor<*, *>.methodType: MethodType
-    get() = this.methodType
+    get() = this.type
 
 @InternalRpcApi
 public actual fun <Request, Response> methodDescriptor(
@@ -95,7 +95,7 @@ public actual fun <Request, Response> methodDescriptor(
         fullMethodName = fullMethodName,
         requestMarshaller = requestMarshaller,
         responseMarshaller = responseMarshaller,
-        methodType = type,
+        type = type,
         schemaDescriptor = schemaDescriptor,
         idempotent = idempotent,
         safe = safe,
