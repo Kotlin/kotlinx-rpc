@@ -26,11 +26,11 @@ CONFIG=release
 mkdir -p "$(dirname "$DST")"
 
 echo "==> Building $LABEL to $DST" >&2
-KONAN_DEP="--define=KONAN_DEPS=/Users/johannes.zottele/.konan//dependencies"
-bazel build "$LABEL" --config="$KONAN_TARGET" --config="$CONFIG" $KONAN_DEP "--define=KONAN_HOME=$KONAN_HOME" >/dev/null
+KONAN_DEP="--define=KONAN_DEPS=$HOME/.konan/dependencies"
+bazel build "$LABEL" --config="$KONAN_TARGET" --config="$CONFIG" "$KONAN_DEP" "--define=KONAN_HOME=$KONAN_HOME"
 
 # Ask Bazel what file(s) this target produced under this platform
-out="$(bazel cquery "$LABEL" --config="$KONAN_TARGET" --config="$CONFIG" $KONAN_DEP "--define=KONAN_HOME=$KONAN_HOME" --output=files | head -n1)"
+out="$(bazel cquery "$LABEL" --config="$KONAN_TARGET" --config="$CONFIG" "$KONAN_DEP" "--define=KONAN_HOME=$KONAN_HOME" --output=files | head -n1)"
 [[ -n "$out" ]] || { echo "No output for $LABEL ($SHORT)"; exit 1; }
 
 cp -f "$out" "$DST"

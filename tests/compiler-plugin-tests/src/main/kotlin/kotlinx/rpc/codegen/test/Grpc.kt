@@ -47,8 +47,8 @@ fun MethodDescriptor<*, *>.checkMethod(
     expectedFullMethodName: String,
     expectedMethodType: MethodDescriptor.MethodType,
     expectedServiceName: String,
-    expectedIsSafe: Boolean = true,
-    expectedIsIdempotent: Boolean = true,
+    expectedIsSafe: Boolean = false,
+    expectedIsIdempotent: Boolean = false,
     expectedIsSampledToLocalTracing: Boolean = true,
 ): String? {
     return when {
