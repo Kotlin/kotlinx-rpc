@@ -1,0 +1,26 @@
+syntax = "proto3";
+package kotlinx.rpc.sample.messages;
+
+message ChatEntry {
+  string user = 1;
+  string text = 2;
+  int64 ts_millis = 3;
+}
+
+message SendMessageRequest {
+  string user = 1;
+  string text = 2;
+}
+
+message SendMessageResponse {
+  bool success = 1;
+}
+
+message ReceiveMessagesRequest {
+  string user = 1;
+}
+
+service MessageService {
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
+  rpc ReceiveMessages(ReceiveMessagesRequest) returns (stream ChatEntry);
+}
