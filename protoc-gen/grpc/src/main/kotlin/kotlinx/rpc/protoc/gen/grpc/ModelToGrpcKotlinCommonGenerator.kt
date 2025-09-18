@@ -4,9 +4,11 @@
 
 package kotlinx.rpc.protoc.gen.grpc
 
+import com.google.protobuf.DescriptorProtos
 import kotlinx.rpc.protoc.gen.core.AModelToKotlinCommonGenerator
 import kotlinx.rpc.protoc.gen.core.CodeGenerator
 import kotlinx.rpc.protoc.gen.core.model.FileDeclaration
+import kotlinx.rpc.protoc.gen.core.model.FqName
 import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.ServiceDeclaration
 import org.slf4j.Logger
@@ -21,15 +23,15 @@ class ModelToGrpcKotlinCommonGenerator(
 
     override fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration) {
         additionalPublicImports.add("kotlinx.coroutines.flow.Flow")
-        fileDeclaration.serviceDeclarations.forEach { generatePublicService(it) }
+        fileDeclaration.serviceDeclarations.forEach { generatePublicService(it, fileDeclaration.packageName) }
     }
 
     override fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {}
 
     @Suppress("detekt.LongMethod")
-    private fun CodeGenerator.generatePublicService(service: ServiceDeclaration) {
+    private fun CodeGenerator.generatePublicService(service: ServiceDeclaration, packageName: FqName.Package) {
         val pkg = service.dec.file.`package`.orEmpty()
-        val annotationParams = if (pkg.isNotEmpty()) """(protoPackage = "$pkg")""" else ""
+        val annotationParams = if (pkg.isNotEmpty() && pkg != packageName.safeFullName()) """(protoPackage = "$pkg")""" else ""
 
         clazz(
             name = service.name.simpleName,
@@ -39,10 +41,17 @@ class ModelToGrpcKotlinCommonGenerator(
             service.methods.forEach { method ->
                 val inputType = method.inputType
                 val outputType = method.outputType
+                val annotations = when (method.dec.options.idempotencyLevel) {
+                    null, DescriptorProtos.MethodOptions.IdempotencyLevel.IDEMPOTENCY_UNKNOWN -> emptyList()
+                    DescriptorProtos.MethodOptions.IdempotencyLevel.IDEMPOTENT -> listOf("@kotlinx.rpc.grpc.annotations.Grpc.Method(idempotent = true)")
+                    DescriptorProtos.MethodOptions.IdempotencyLevel.NO_SIDE_EFFECTS -> listOf("@kotlinx.rpc.grpc.annotations.Grpc.Method(idempotent = true, safe = true)")
+                }
+
                 function(
                     name = method.name,
                     modifiers = if (method.dec.isServerStreaming) "" else "suspend",
                     args = "message: ${inputType.name.safeFullName().wrapInFlowIf(method.dec.isClientStreaming)}",
+                    annotations = annotations,
                     returnType = outputType.name.safeFullName().wrapInFlowIf(method.dec.isServerStreaming),
                 )
             }
