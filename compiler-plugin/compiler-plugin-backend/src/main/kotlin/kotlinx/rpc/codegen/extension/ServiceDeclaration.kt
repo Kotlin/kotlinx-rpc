@@ -37,7 +37,6 @@ internal class ServiceDeclaration(
     }
 
     class Method(
-        val ctx: RpcIrContext,
         val function: IrSimpleFunction,
         val arguments: List<Argument>,
     ) : Callable {
