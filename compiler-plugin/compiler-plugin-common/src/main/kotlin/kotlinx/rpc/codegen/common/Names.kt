@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.name.Name
 object RpcClassId {
     val rpcAnnotation = ClassId(FqName("kotlinx.rpc.annotations"), Name.identifier("Rpc"))
     val grpcAnnotation = ClassId(FqName("kotlinx.rpc.grpc.annotations"), Name.identifier("Grpc"))
+    val grpcMethodAnnotation = ClassId(FqName("kotlinx.rpc.grpc.annotations"), Name.identifier("Grpc.Method"))
     val withCodecAnnotation = ClassId(FqName("kotlinx.rpc.grpc.codec"), Name.identifier("WithCodec"))
     val checkedTypeAnnotation = ClassId(FqName("kotlinx.rpc.annotations"), Name.identifier("CheckedTypeAnnotation"))
 

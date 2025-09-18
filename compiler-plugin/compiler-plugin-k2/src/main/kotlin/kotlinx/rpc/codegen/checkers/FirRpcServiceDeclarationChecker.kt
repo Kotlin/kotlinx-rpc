@@ -62,7 +62,7 @@ object FirRpcServiceDeclarationChecker {
         }
             .groupBy { it.name }
             .filter { (_, list) -> list.size > 1 }
-            .forEach { name, functions ->
+            .forEach { (name, functions) ->
                 functions.forEach { function ->
                     reporter.reportOn(
                         source = function.source,

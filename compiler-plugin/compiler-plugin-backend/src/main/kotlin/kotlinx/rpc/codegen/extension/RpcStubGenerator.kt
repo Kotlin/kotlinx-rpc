@@ -1084,12 +1084,12 @@ internal class RpcStubGenerator(
      * Where:
      *  - `<callable-name-k>` - the name of the k-th callable in the service
      */
-    private fun irMethodDescriptorMap(resolver: IrValueParameter): IrCallImpl {
+    private fun IrBlockBodyBuilder.irMethodDescriptorMap(resolver: IrValueParameter): IrCallImpl {
         return irMapOf(
             keyType = ctx.irBuiltIns.stringType,
             valueType = ctx.grpcPlatformMethodDescriptor.starProjectedType,
             declaration.methods.memoryOptimizedMap { callable ->
-                stringConst(callable.name) to irMethodDescriptor(callable, resolver)
+                stringConst(callable.grpcName) to irMethodDescriptor(callable, resolver)
             },
         )
     }
@@ -1143,15 +1143,14 @@ internal class RpcStubGenerator(
      * // In scope: resolver: MessageCodecResolver
      *
      * methodDescriptor<<request-type>, <response-type>>(
-     *     fullMethodName = "${descriptor.serviceFqName}/${callable.name}",
+     *     fullMethodName = "${descriptor.serviceFqName}/${<from Grpc.Method annotation> ?: callable.name}",
      *     requestCodec = <request-codec>,
      *     responseCodec = <response-codec>,
      *     type = MethodType.<method-type>,
      *     schemaDescriptor = null, // null for now
-     *     // todo understand these values
-     *     idempotent = true,
-     *     safe = true,
-     *     sampledToLocalTracing = true,
+     *     idempotent = <from Grpc.Method annotation>,
+     *     safe = <from Grpc.Method annotation>,
+     *     sampledToLocalTracing = <from Grpc.Method annotation>,
      * )
      * ```
      *
@@ -1163,7 +1162,10 @@ internal class RpcStubGenerator(
      *   MethodType.CLIENT_STREAMING, MethodType.BIDI_STREAMING
      *   - <request-codec>/<response-codec> - a MessageCodec getter, see [irCodec]
      */
-    private fun irMethodDescriptor(callable: ServiceDeclaration.Callable, resolver: IrValueParameter): IrCall {
+    private fun IrBlockBodyBuilder.irMethodDescriptor(
+        callable: ServiceDeclaration.Callable,
+        resolver: IrValueParameter,
+    ): IrCall {
         check(callable is ServiceDeclaration.Method) {
             "Only methods are allowed here"
         }
@@ -1181,13 +1183,10 @@ internal class RpcStubGenerator(
         val methodDescriptorType = ctx.grpcPlatformMethodDescriptor.typeWith(requestType, responseType)
 
         return vsApi {
-            IrCallImplVS(
-                startOffset = UNDEFINED_OFFSET,
-                endOffset = UNDEFINED_OFFSET,
+            irCall(
                 type = methodDescriptorType,
-                symbol = ctx.functions.methodDescriptor,
+                callee = ctx.functions.methodDescriptor,
                 typeArgumentsCount = 2,
-                valueArgumentsCount = 8,
             )
         }.apply {
             arguments {
@@ -1196,9 +1195,12 @@ internal class RpcStubGenerator(
                     +responseType
                 }
 
+                val grpcMethodAnnotation = callable.function
+                    .getAnnotation(RpcClassId.grpcMethodAnnotation.asSingleFqName())
+
                 values {
                     // fullMethodName
-                    +stringConst("${declaration.serviceFqName}/${callable.name}")
+                    +stringConst("${declaration.serviceFqName}/${callable.grpcName}")
 
                     // requestCodec
                     +irCodec(requestType, resolver)
@@ -1233,28 +1235,39 @@ internal class RpcStubGenerator(
                     // schemaDescriptor
                     +nullConst(ctx.anyNullable)
 
-                    // todo figure out these
+                    val idempotentArgument = grpcMethodAnnotation
+                        ?.getValueArgument(Name.identifier("idempotent"))
+                    val idempotent = (idempotentArgument as? IrConst)?.value as? Boolean ?: false
+
                     // idempotent
-                    +booleanConst(true)
+                    +booleanConst(idempotent)
+
+                    val safeArgument = grpcMethodAnnotation
+                        ?.getValueArgument(Name.identifier("safe"))
+                    val safe = (safeArgument as? IrConst)?.value as? Boolean ?: false
 
                     // safe
-                    +booleanConst(true)
+                    +booleanConst(safe)
+
+                    val sampledToLocalTracingArgument = grpcMethodAnnotation
+                        ?.getValueArgument(Name.identifier("sampledToLocalTracing"))
+                    val sampledToLocalTracing = (sampledToLocalTracingArgument as? IrConst)?.value as? Boolean ?: true
 
                     // sampledToLocalTracing
-                    +booleanConst(true)
+                    +booleanConst(sampledToLocalTracing)
                 }
             }
         }
     }
 
     /**
-     * If [type] is annotated with [RpcIrContext.withCodecAnnotation],
+     * If [messageType] is annotated with [RpcIrContext.withCodecAnnotation],
      * we use its codec object
      *
-     * If not, use [resolver].resolve()
+     * If not, use [resolver].resolveOrNull()
      */
-    private fun irCodec(type: IrType, resolver: IrValueParameter): IrExpression {
-        val owner = type.classOrFail.owner
+    private fun IrBlockBodyBuilder.irCodec(messageType: IrType, resolver: IrValueParameter): IrExpression {
+        val owner = messageType.classOrFail.owner
         val protobufMessage = owner.getAnnotation(ctx.withCodecAnnotation.owner.kotlinFqName)
 
         return if (protobufMessage != null) {
@@ -1270,14 +1283,12 @@ internal class RpcStubGenerator(
                 symbol = codec.classOrFail,
             )
         } else {
-            vsApi {
-                IrCallImplVS(
-                    startOffset = UNDEFINED_OFFSET,
-                    endOffset = UNDEFINED_OFFSET,
-                    type = ctx.grpcMessageCodec.typeWith(type),
-                    symbol = ctx.functions.grpcMessageCodecResolverResolveOrNull.symbol,
+            val codecType = ctx.grpcMessageCodec.typeWith(messageType)
+            val codecCall = vsApi {
+                irCall(
+                    type = codecType.makeNullable(),
+                    callee = ctx.functions.grpcMessageCodecResolverResolveOrNull.symbol,
                     typeArgumentsCount = 0,
-                    valueArgumentsCount = 1,
                 )
             }.apply {
                 arguments {
@@ -1289,10 +1300,21 @@ internal class RpcStubGenerator(
                     )
 
                     values {
-                        +irTypeOfCall(type)
+                        +irTypeOfCall(messageType)
                     }
                 }
             }
+
+            irElvis(
+                expression = codecCall,
+                ifNull = irCall(ctx.irBuiltIns.illegalArgumentExceptionSymbol).apply {
+                    arguments {
+                        values {
+                            +stringConst("No codec found for ${messageType.classFqName}")
+                        }
+                    }
+                },
+            )
         }
     }
 
@@ -1813,4 +1835,31 @@ internal class RpcStubGenerator(
 
     fun IrBuilderWithScope.irSafeAs(argument: IrExpression, type: IrType) =
         IrTypeOperatorCallImpl(startOffset, endOffset, type, IrTypeOperator.SAFE_CAST, type, argument)
+
+    fun IrBlockBodyBuilder.irElvis(expression: IrExpression, ifNull: IrExpression): IrExpression {
+        check(expression.type == ifNull.type || ifNull.type == ctx.irBuiltIns.nothingType) {
+            "Type mismatch: ${expression.type.dumpKotlinLike()} != ${ifNull.type.dumpKotlinLike()}"
+        }
+
+        return irBlock(origin = IrStatementOrigin.ELVIS, resultType = expression.type.makeNotNull()) {
+            val temp = irTemporary(
+                value = expression,
+                nameHint = "elvis_left_hand_side",
+                isMutable = false,
+            )
+            +irWhen(
+                type = expression.type,
+                branches = listOf(
+                    irBranch(
+                        condition = irEqualsNull(irGet(temp)),
+                        result = ifNull,
+                    ),
+                    irBranch(
+                        condition = irTrue(),
+                        result = irGet(temp),
+                    ),
+                ),
+            )
+        }
+    }
 }

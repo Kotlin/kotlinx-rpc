@@ -34,3 +34,45 @@ FILE: module_main_grpc.kt
             public get(): R|kotlinx/coroutines/flow/Flow<kotlin/String>|
 
     }
+    @R|kotlinx/rpc/grpc/annotations/Grpc|(protoPackage = String(-invalid name)) public abstract interface WrongAnnotations1 : R|kotlin/Any| {
+        public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+    @R|kotlinx/rpc/grpc/annotations/Grpc|(protoPackage = String(-invalid name)) public abstract interface WrongAnnotations2 : R|kotlin/Any| {
+        public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+    @R|kotlinx/rpc/grpc/annotations/Grpc|(protoPackage = <strcat>(String(invalid.name), String( ))) public abstract interface WrongAnnotations3 : R|kotlin/Any| {
+        public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+    @R|kotlinx/rpc/grpc/annotations/Grpc|() public abstract interface WrongAnnotations4 : R|kotlin/Any| {
+        @R|kotlinx/rpc/grpc/annotations/Grpc.Method|(name = String(wrongName+1)) public abstract suspend fun wrongName1(): R|kotlin/Unit|
+
+        @R|kotlinx/rpc/grpc/annotations/Grpc.Method|(name = String(wrongName+2)) public abstract suspend fun wrongName2(): R|kotlin/Unit|
+
+        @R|kotlinx/rpc/grpc/annotations/Grpc.Method|(name = <strcat>(String(wrongName), String(+3))) public abstract suspend fun wrongName3(): R|kotlin/Unit|
+
+        @R|kotlinx/rpc/grpc/annotations/Grpc.Method|(safe = Boolean(true), idempotent = Boolean(false)) public abstract suspend fun wrongSafeIdempotent1(): R|kotlin/Unit|
+
+        @R|kotlinx/rpc/grpc/annotations/Grpc.Method|(safe = Boolean(true)) public abstract suspend fun wrongSafeIdempotent2(): R|kotlin/Unit|
+
+        public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }

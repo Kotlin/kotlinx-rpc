@@ -51,6 +51,9 @@ object FirRpcStrictModeDiagnostics : RpcKtDiagnosticsContainer() {
 }
 
 object FirGrpcDiagnostics : RpcKtDiagnosticsContainer() {
+    val WRONG_PROTO_PACKAGE_VALUE by error0<KtElement>()
+    val WRONG_PROTO_METHOD_NAME_VALUE by error0<KtElement>()
+    val WRONG_SAFE_IDEMPOTENT_COMBINATION by error0<KtElement>()
     val NULLABLE_PARAMETER_IN_GRPC_SERVICE by error0<KtElement>()
     val NULLABLE_RETURN_TYPE_IN_GRPC_SERVICE by error0<KtElement>()
     val NON_TOP_LEVEL_CLIENT_STREAMING_IN_RPC_SERVICE by error0<KtElement>()
