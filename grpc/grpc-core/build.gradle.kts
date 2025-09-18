@@ -15,12 +15,15 @@ plugins {
     alias(libs.plugins.kotlinx.rpc)
     alias(libs.plugins.atomicfu)
     alias(libs.plugins.serialization) // for tests
+    id("io.github.timortel.kmpgrpc.plugin") version "1.2.0"
 }
 
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
+
+    applyDefaultHierarchyTemplate()
 
     sourceSets {
         commonMain {
@@ -44,6 +47,8 @@ kotlin {
 
                 implementation(projects.grpc.grpcCodecKotlinxSerialization)
                 implementation(projects.protobuf.protobufCore)
+
+                implementation("io.github.timortel:kmp-grpc-core:1.2.0")
             }
         }
 
@@ -112,6 +117,14 @@ kotlin {
             )
         }
     }
+}
+
+kmpGrpc {
+    common()
+    jvm()
+    native()
+    includeWellKnownTypes = false
+    protoSourceFolders = project.files("src/commonTest/kmpProto")
 }
 
 configureLocalProtocGenDevelopmentDependency()
