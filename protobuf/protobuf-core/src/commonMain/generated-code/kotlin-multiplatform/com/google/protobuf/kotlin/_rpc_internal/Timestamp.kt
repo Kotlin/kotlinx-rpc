@@ -104,4 +104,3 @@ private fun com.google.protobuf.kotlin.TimestampInternal.computeSize(): Int {
 public fun com.google.protobuf.kotlin.Timestamp.asInternal(): com.google.protobuf.kotlin.TimestampInternal { 
     return this as? com.google.protobuf.kotlin.TimestampInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
-

@@ -7665,4 +7665,3 @@ fun com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2
         }
     }
 }
-

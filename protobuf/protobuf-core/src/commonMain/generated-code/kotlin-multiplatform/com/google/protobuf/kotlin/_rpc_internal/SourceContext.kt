@@ -91,4 +91,3 @@ private fun com.google.protobuf.kotlin.SourceContextInternal.computeSize(): Int 
 public fun com.google.protobuf.kotlin.SourceContext.asInternal(): com.google.protobuf.kotlin.SourceContextInternal { 
     return this as? com.google.protobuf.kotlin.SourceContextInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
-
