@@ -291,7 +291,6 @@ internal class NativeServerCall<Request, Response>(
 
     override fun close(status: Status, trailers: GrpcMetadata) {
         check(initialized) { internalError("Call not initialized") }
-        closed = true
 
         val arena = Arena()
 
@@ -320,6 +319,7 @@ internal class NativeServerCall<Request, Response>(
             if (details != null) grpc_slice_unref(details)
             arena.clear()
         }) {
+            closed = true
             // nothing to do here
         }
     }

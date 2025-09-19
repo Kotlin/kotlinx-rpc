@@ -154,7 +154,7 @@ internal class NativeClientCall<Request, Response>(
      */
     private fun turnReady() {
         if (ready.compareAndSet(expect = false, update = true)) {
-            safeUserCode("Failed to call onClose.") {
+            safeUserCode("Failed to call onReady.") {
                 listener?.onReady()
             }
         }
@@ -200,6 +200,7 @@ internal class NativeClientCall<Request, Response>(
                 callResult.future.onComplete { success ->
                     try {
                         if (success) {
+                            // if the batch doesn't succeed, this is reflected in the recv status op batch.
                             onSuccess()
                         }
                     } finally {

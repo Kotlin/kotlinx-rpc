@@ -177,6 +177,57 @@ class ClientInterceptorTest : GrpcProtoTest() {
     }
 
     @Test
+    fun `cancel in two interceptors - should fail with cancellation`() {
+        val error = assertFailsWith<StatusException> {
+            val interceptor1 = interceptor {
+                onClose { _, _ -> cancel("[1] Canceling in onClose", IllegalStateException("Cancellation cause")) }
+                proceed(it)
+            }
+            val interceptor2 = interceptor {
+                onClose { _, _ -> cancel("[2] Canceling in onClose", IllegalStateException("Cancellation cause")) }
+                proceed(it)
+            }
+            runGrpcTest(clientInterceptors = interceptor1 + interceptor2, test = ::unaryCall)
+        }
+
+        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
+        assertContains(error.message!!, "[1] Canceling in onClose")
+        assertIs<IllegalStateException>(error.cause)
+        assertEquals("Cancellation cause", error.cause?.message)
+    }
+
+    @Test
+    fun `cancel in two interceptors withing response stream - should fail with cancellation`() {
+        val error = assertFailsWith<StatusException> {
+            val interceptor1 = interceptor {
+                proceed(it).map {
+                    val msg = it as EchoResponse
+                    if (msg.message == "Echo-3") {
+                        cancel("[1] Canceling in response flow", IllegalStateException("Cancellation cause"))
+                    }
+                    it
+                }
+            }
+            val interceptor2 = interceptor {
+                proceed(it).map {
+                    val msg = it as EchoResponse
+                    // this is cancelled before the first one
+                    if (msg.message == "Echo-2") {
+                        cancel("[2] Canceling in response flow", IllegalStateException("Cancellation cause"))
+                    }
+                    it
+                }
+            }
+            runGrpcTest(clientInterceptors = interceptor1 + interceptor2, test = ::bidiStream)
+        }
+
+        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
+        assertContains(error.message!!, "[2] Canceling in response flow")
+        assertIs<IllegalStateException>(error.cause)
+        assertEquals("Cancellation cause", error.cause?.message)
+    }
+
+    @Test
     fun `modify request message - should return modified message`() {
         val interceptor = interceptor {
             val modified = it.map { EchoRequest { message = "Modified" } }
