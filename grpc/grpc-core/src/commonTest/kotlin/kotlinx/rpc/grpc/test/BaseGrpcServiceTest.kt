@@ -31,19 +31,18 @@ abstract class BaseGrpcServiceTest {
         val server = GrpcServer(
             port = PORT,
             parentContext = coroutineContext,
-            configure = {
-                useMessageCodecResolver(resolver)
-            },
-            builder = {
+        ) {
+            messageCodecResolver = resolver
+            services {
                 registerService(kClass) { impl }
             }
-        )
+        }
 
         server.start()
 
         val client = GrpcClient("localhost", PORT) {
-            useMessageCodecResolver(messageCodecResolver)
-            usePlaintext()
+            messageCodecResolver = resolver
+            credentials = plaintext()
         }
 
         val service = client.withService(kClass)

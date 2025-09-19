@@ -198,41 +198,147 @@ public class GrpcServer internal constructor(
     }
 }
 
+
 /**
- * Constructor function for the [GrpcServer] class.
+ * Creates and configures a gRPC server instance.
+ *
+ * This function initializes a gRPC server with the provided port and a configuration block
+ * ([GrpcServerConfiguration]).
+ *
+ * To start the server, call the [GrpcServer.start] method.
+ * To clean up resources, call the [GrpcServer.shutdown] or [GrpcServer.shutdownNow] methods.
+ *
+ * ```kt
+ * GrpcServer(port) {
+ *     credentials = tls(myCertChain, myPrivateKey)
+ *     services {
+ *         registerService(MyService())
+ *         registerService(MyOtherService())
+ *     }
+ * }
+ * ```
+ *
+ * @param port The port number where the gRPC server will listen for incoming connections.
+ *             This must be a valid and available port on the host system.
+ * @param parentContext The parent coroutine context used for managing server-related operations.
+ *                      Defaults to an empty coroutine context if not specified.
+ * @param configure A configuration lambda receiver,
+ *                  allowing customization of server behavior such as credentials, interceptors,
+ *                  codecs, and service registration logic.
+ * @return A fully configured `GrpcServer` instance, which must be started explicitly to handle requests.
  */
 public fun GrpcServer(
     port: Int,
     parentContext: CoroutineContext = EmptyCoroutineContext,
     configure: GrpcServerConfiguration.() -> Unit = {},
-    builder: RpcServer.() -> Unit = {},
 ): GrpcServer {
     val config = GrpcServerConfiguration().apply(configure)
     val serverBuilder = ServerBuilder(port, config.credentials).apply {
         config.fallbackHandlerRegistry?.let { fallbackHandlerRegistry(it) }
     }
     return GrpcServer(port, serverBuilder, config.interceptors, config.messageCodecResolver, parentContext)
-        .apply(builder)
+        .apply(config.serviceBuilder)
         .apply { build() }
 }
 
+/**
+ * A configuration class for setting up a gRPC server.
+ *
+ * This class provides an API to configure various server parameters, such as message codecs,
+ * security credentials, server-side interceptors, and service registration.
+ */
 public class GrpcServerConfiguration internal constructor() {
-    internal var messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver
-    internal var credentials: ServerCredentials? = null
+
     internal val interceptors: MutableList<ServerInterceptor> = mutableListOf()
-    internal var fallbackHandlerRegistry: HandlerRegistry? = null
-    internal var services: ServerBuilder<*>? = null
+    internal var serviceBuilder: RpcServer.() -> Unit = { }
 
-    public fun useCredentials(credentials: ServerCredentials) {
-        this.credentials = credentials
-    }
 
-    public fun useMessageCodecResolver(messageCodecResolver: MessageCodecResolver) {
-        this.messageCodecResolver = messageCodecResolver
-    }
+    /**
+     * Sets the credentials to be used by the gRPC server for secure communication.
+     *
+     * By default, the server does not have any credentials configured and the communication is plaintext.
+     * To set up transport-layer security provide a [TlsServerCredentials] by constructing it with the
+     * [tls] function.
+     *
+     * @see TlsServerCredentials
+     * @see tls
+     */
+    public var credentials: ServerCredentials? = null
 
+    /**
+     * Sets a custom [MessageCodecResolver] to be used by the gRPC server for resolving the appropriate
+     * codec for message serialization and deserialization.
+     *
+     * When not explicitly set, a default [EmptyMessageCodecResolver] is used, which may not perform
+     * any specific resolution.
+     * Provide a custom [MessageCodecResolver] to resolve codecs based on the message's `KType`.
+     */
+    public var messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver
+
+
+    /**
+     * Sets a custom [HandlerRegistry] to be used by the gRPC server for resolving service implementations
+     * that were not registered before via the [services] configuration block.
+     *
+     * If not set, unknown services not registered will cause a `UNIMPLEMENTED` status
+     * to be returned to the client.
+     */
+    public var fallbackHandlerRegistry: HandlerRegistry? = null
+
+    /**
+     * Registers one or more server-side interceptors for the gRPC server.
+     *
+     * Interceptors allow observing and modifying incoming gRPC calls before they reach the service
+     * implementation logic.
+     * They are commonly used to implement cross-cutting concerns like
+     * authentication, logging, metrics, or custom request/response transformations.
+     *
+     * @param interceptors One or more instances of [ServerInterceptor] to be applied to incoming calls.
+     * @see ServerInterceptor
+     */
     public fun intercept(vararg interceptors: ServerInterceptor) {
         this.interceptors.addAll(interceptors)
     }
 
+    /**
+     * Configures the gRPC server to register services.
+     *
+     * This method allows defining a block of logic to configure an [RpcServer] instance,
+     * where multiple services can be registered:
+     * ```kt
+     * GrpcServer(port) {
+     *     services {
+     *         registerService(MyService())
+     *         registerService(MyOtherService())
+     *     }
+     * }
+     * ```
+     *
+     * @param block A lambda with [RpcServer] as its receiver, allowing service registration.
+     */
+    public fun services(block: RpcServer.() -> Unit) {
+        serviceBuilder = block
+    }
+
+    /**
+     * Configures and creates TLS (Transport Layer Security) credentials for the gRPC server.
+     *
+     * This method allows specifying the server's certificate chain, private key, and additional
+     * configurations needed for setting up a secure communication channel over TLS.
+     *
+     * @param certificateChain A string representing the PEM-encoded certificate chain for the server.
+     * @param privateKey A string representing the PKCS#8 formatted private key corresponding to the certificate.
+     * @param configure A lambda to further customize the [TlsServerCredentialsBuilder], enabling configurations
+     *                  like setting trusted root certificates or enabling client authentication.
+     * @return An instance of [ServerCredentials] representing the configured TLS credentials that must be passed
+     * to [credentials].
+     *
+     * @see credentials
+     */
+    public fun tls(
+        certificateChain: String,
+        privateKey: String,
+        configure: TlsServerCredentialsBuilder.() -> Unit,
+    ): ServerCredentials =
+        TlsServerCredentials(certificateChain, privateKey, configure)
 }

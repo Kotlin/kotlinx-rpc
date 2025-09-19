@@ -30,23 +30,18 @@ abstract class GrpcProtoTest {
     ) = runTest {
         serverMutex.withLock {
             val grpcClient = GrpcClient("localhost", PORT) {
-                if (clientCreds != null) useCredentials(clientCreds)
-                if (overrideAuthority != null) overrideAuthority(overrideAuthority)
-                if (clientCreds == null) {
-                    usePlaintext()
-                }
+                credentials = clientCreds ?: plaintext()
+                if (overrideAuthority != null) this.overrideAuthority = overrideAuthority
                 clientInterceptors.forEach { intercept(it) }
             }
 
             val grpcServer = GrpcServer(
                 PORT,
-                configure = {
-                    serverCreds?.let { useCredentials(it) }
-                    serverInterceptors.forEach { intercept(it) }
-                },
-                builder = {
-                    registerServices()
-                })
+            ) {
+                credentials = serverCreds
+                serverInterceptors.forEach { intercept(it) }
+                services { registerServices() }
+            }
 
             grpcServer.start()
             try {

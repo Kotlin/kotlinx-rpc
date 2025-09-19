@@ -11,7 +11,13 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.grpc.GrpcClient
 import kotlinx.rpc.grpc.GrpcServer
-import kotlinx.rpc.grpc.internal.*
+import kotlinx.rpc.grpc.internal.MethodDescriptor
+import kotlinx.rpc.grpc.internal.MethodType
+import kotlinx.rpc.grpc.internal.bidirectionalStreamingRpc
+import kotlinx.rpc.grpc.internal.clientStreamingRpc
+import kotlinx.rpc.grpc.internal.methodDescriptor
+import kotlinx.rpc.grpc.internal.serverStreamingRpc
+import kotlinx.rpc.grpc.internal.unaryRpc
 import kotlinx.rpc.registerService
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -90,7 +96,7 @@ class RawClientTest {
         block: suspend (GrpcClient, MethodDescriptor<EchoRequest, EchoResponse>) -> Unit,
     ) = runTest {
         val client = GrpcClient("localhost:50051") {
-            usePlaintext()
+            credentials = plaintext()
         }
 
         val methodDescriptor = methodDescriptor(
@@ -151,8 +157,7 @@ class EchoServiceImpl : EchoService {
     fun runServer() = runTest(timeout = Duration.INFINITE) {
         val server = GrpcServer(
             port = PORT,
-            builder = { registerService<EchoService> { EchoServiceImpl() } }
-        )
+        ) { services { registerService<EchoService> { EchoServiceImpl() } } }
 
         try {
             server.start()

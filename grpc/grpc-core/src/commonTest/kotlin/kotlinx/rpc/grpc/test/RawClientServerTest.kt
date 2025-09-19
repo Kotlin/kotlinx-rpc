@@ -110,7 +110,7 @@ class RawClientServerTest {
         val serverScope = CoroutineScope(serverJob)
 
         val client = GrpcClient("localhost", PORT) {
-            usePlaintext()
+            credentials = plaintext()
         }
 
         val descriptor = methodDescriptor(

@@ -8,7 +8,6 @@ import com.google.protobuf.kotlin.Empty
 import com.google.protobuf.kotlin.EmptyInternal
 import com.google.protobuf.kotlin.invoke
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.grpc.GrpcClient
 import kotlinx.rpc.grpc.internal.MethodType
 import kotlinx.rpc.grpc.internal.methodDescriptor
 import kotlinx.rpc.grpc.internal.unaryRpc
