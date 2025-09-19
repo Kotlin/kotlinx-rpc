@@ -23,5 +23,7 @@ jobs:
         run: |
           if [[ -n "$(git status --porcelain | grep protobuf/protobuf-core/)" ]]; then
             echo "Well-Known Types are not up-to-date. Please run './gradlew :protobuf:protobuf-core:bufGenerateCommonMain' and commit changes"
+            git status --porcelain
+            git diff --minimal | cat
             exit 1
           fi
