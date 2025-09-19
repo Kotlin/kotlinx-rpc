@@ -5,8 +5,10 @@
 package kotlinx.rpc.grpc.test.proto
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.GrpcClient
 import kotlinx.rpc.grpc.GrpcMetadata
@@ -184,11 +186,59 @@ class ServerInterceptorTest : GrpcProtoTest() {
     @Test
     fun `proceedFlow - should succeed on client`() {
         val interceptor = interceptor {
-            kotlinx.coroutines.flow.flow {
-                proceedFlow(it)
+            flow {
+                proceedUnmodified(it)
             }
         }
         runGrpcTest(serverInterceptors = interceptor, test = ::unaryCall)
+    }
+
+    @Test
+    fun `test exact order of interceptor execution`() {
+        val order = mutableListOf<Int>()
+        val interceptor1 = interceptor { request ->
+            flow {
+                order.add(1)
+                var i1 = 0
+                val ids = listOf(3, 7)
+                val req = request.map { order.add(ids[i1++]); it }
+
+                var i2 = 0
+                val respIds = listOf(6, 10)
+                proceed(req).collect {
+                    order.add(respIds[i2++])
+                    emit(it)
+                }
+
+                order.add(12)
+            }
+        }
+
+        val interceptor2 = interceptor { request ->
+            flow {
+                order.add(2)
+                var i1 = 0
+                val reqIds = listOf(4, 8)
+                val req = request.map { order.add(reqIds[i1++]); it }
+
+                var i2 = 0
+                val respIds = listOf(5, 9)
+                proceed(req).collect {
+                    order.add(respIds[i2++])
+                    emit(it)
+                }
+
+                order.add(11)
+            }
+        }
+        val both = interceptor1 + interceptor2
+
+        runGrpcTest(serverInterceptors = both) { bidiStream(it, 2) }
+
+        assertEquals(
+            listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12),
+            order
+        )
     }
 
     @Test
@@ -207,6 +257,20 @@ class ServerInterceptorTest : GrpcProtoTest() {
         val response = service.UnaryEcho(EchoRequest { message = "Hello" })
         assertEquals("Hello", response.message)
     }
+
+    private suspend fun bidiStream(grpcClient: GrpcClient, count: Int = 5) {
+        val service = grpcClient.withService<EchoService>()
+        val responses = service.BidirectionalStreamingEcho(flow {
+            repeat(count) {
+                emit(EchoRequest { message = "Echo-$it" })
+            }
+        }).toList()
+        assertEquals(count, responses.size)
+        repeat(count) {
+            assertEquals("Echo-$it", responses[it].message)
+        }
+    }
+
 }
 
 

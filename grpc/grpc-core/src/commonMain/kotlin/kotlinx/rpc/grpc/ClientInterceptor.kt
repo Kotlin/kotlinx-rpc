@@ -77,6 +77,9 @@ public interface ClientCallScope<Request, Response> {
     /**
      * Cancel the call locally, providing a human-readable [message] and an optional [cause].
      * This method won't return and abort all further processing.
+     *
+     * We made cancel throw a [StatusException] instead of returning, so control flow is explicit and
+     * race conditions between interceptors and the transport layer are avoided.
      */
     public fun cancel(message: String, cause: Throwable? = null): Nothing
 

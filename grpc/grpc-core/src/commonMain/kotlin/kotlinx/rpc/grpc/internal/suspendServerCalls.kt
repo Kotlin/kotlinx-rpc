@@ -164,7 +164,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         implementation = implementation,
         requestHeaders = requestHeaders,
         serverCall = handler,
-        grpcContext = context.grpcContext,
+        context = context.grpcContext,
     )
 
     val rpcJob = launch(context) {
@@ -275,7 +275,7 @@ private class ServerCallScopeImpl<Request, Response>(
     val implementation: (Flow<Request>) -> Flow<Response>,
     override val requestHeaders: GrpcMetadata,
     val serverCall: ServerCall<Request, Response>,
-    override val grpcContext: GrpcContext,
+    override val context: GrpcContext,
 ) : ServerCallScope<Request, Response> {
 
     override val responseHeaders: GrpcMetadata = GrpcMetadata()

@@ -51,7 +51,7 @@ public interface ServerCallScope<Request, Response> {
      * It can be used by the interceptor to provide call-scoped information about
      * the current call, such as the identity of the caller or the current authentication state.
      */
-    public val grpcContext: GrpcContext
+    public val context: GrpcContext
 
     /**
      * Register a callback invoked when the call is closed (successfully or exceptionally).
@@ -64,6 +64,9 @@ public interface ServerCallScope<Request, Response> {
      *
      * This method does not return (declared as [Nothing]). After calling it, no further messages will be processed
      * or sent. Prefer setting [responseHeaders]/[responseTrailers] before closing if you need to include metadata.
+     *
+     * We made close throw a [StatusException] instead of returning, so control flow is explicit and race conditions
+     * between interceptors and the service implementation are avoided.
      */
     public fun close(status: Status, trailers: GrpcMetadata = GrpcMetadata()): Nothing
 
@@ -83,8 +86,22 @@ public interface ServerCallScope<Request, Response> {
     /**
      * Convenience for flow builders: proceeds with [request] and emits the resulting response elements into this
      * [FlowCollector]. Useful inside `flow {}` blocks within interceptors.
+     *
+     * ```
+     * val myAuthInterceptor = object : ServerInterceptor {
+     *     override fun <Request, Response> ServerCallScope<Request, Response>.intercept(request: Flow<Request>): Flow<Response> =
+     *         flow {
+     *             val authorized = mySuspendAuth(requestHeaders)
+     *             if (!authorized) {
+     *                 close(Status(StatusCode.UNAUTHENTICATED, "Not authorized"))
+     *             }
+     *
+     *             proceedUnmodified(request)
+     *         }
+     *      }
+     * ```
      */
-    public suspend fun FlowCollector<Response>.proceedFlow(request: Flow<Request>) {
+    public suspend fun FlowCollector<Response>.proceedUnmodified(request: Flow<Request>) {
         proceed(request).collect {
             emit(it)
         }
@@ -115,7 +132,7 @@ public interface ServerInterceptor {
      * - Read [ServerCallScope.requestHeaders] and populate [ServerCallScope.responseHeaders]/[ServerCallScope.responseTrailers].
      * - Register [ServerCallScope.onClose] callbacks.
      * - Transform the [request] flow or wrap the resulting response flow.
-     * - Append information to the [ServerCallScope.grpcContext].
+     * - Append information to the [ServerCallScope.context].
      *
      * IMPORTANT: You must eventually call [ServerCallScope.proceed] to actually invoke the service logic and produce
      * the response [Flow]. If [ServerCallScope.proceed] is omitted, the call will never reach the service.
