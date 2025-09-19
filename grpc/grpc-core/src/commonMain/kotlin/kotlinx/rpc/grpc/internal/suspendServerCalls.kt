@@ -167,7 +167,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         grpcContext = context.grpcContext,
     )
 
-    val rpcJob = launch() {
+    val rpcJob = launch(context) {
         val mutex = Mutex()
         val headersSent = AtomicBoolean(false) // enforces only sending headers once
         val failure = runCatching {
