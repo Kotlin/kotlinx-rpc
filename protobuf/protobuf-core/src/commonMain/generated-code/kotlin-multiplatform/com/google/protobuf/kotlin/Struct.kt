@@ -34,8 +34,14 @@ public interface Struct {
 */
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.ValueInternal.CODEC::class)
 public interface Value { 
+    /**
+    * The kind of value.
+    */
     public val kind: com.google.protobuf.kotlin.Value.Kind?
 
+    /**
+    * The kind of value.
+    */
     public sealed interface Kind { 
         /**
         * Represents a null value.

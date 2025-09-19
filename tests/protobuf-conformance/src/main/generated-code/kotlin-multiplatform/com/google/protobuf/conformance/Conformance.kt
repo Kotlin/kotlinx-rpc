@@ -71,8 +71,18 @@ interface ConformanceRequest {
     * unknown fields instead of ignore. This feature is optional.
     */
     val printUnknownFields: Boolean
+    /**
+    * The payload (whether protobuf of JSON) is always for a
+    * protobuf_test_messages.proto3.TestAllTypes proto (as defined in
+    * src/google/protobuf/proto3_test_messages.proto).
+    */
     val payload: com.google.protobuf.conformance.ConformanceRequest.Payload?
 
+    /**
+    * The payload (whether protobuf of JSON) is always for a
+    * protobuf_test_messages.proto3.TestAllTypes proto (as defined in
+    * src/google/protobuf/proto3_test_messages.proto).
+    */
     sealed interface Payload { 
         @JvmInline
         value class ProtobufPayload(val value: ByteArray): Payload
