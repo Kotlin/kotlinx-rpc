@@ -1,0 +1,93 @@
+// detached syntax
+
+
+// leading syntax
+syntax = "proto3";
+
+// detached package
+
+// leading package
+package some;
+
+// detached Some
+
+// leading Some 1
+// leading Some 2
+/* leading
+
+
+Some
+
+
+3
+
+funky indents:
+ - option 1
+   - suboption 2
+*/
+message Some {
+  // trailing Some
+
+  // detached field1 1.1
+  // detached field1 1.2
+
+
+  // detached field1 2.1
+
+  // leading field1
+  Nested.Nested.Nested field1 = 1;
+  // trailing field1
+
+  SomeEnum field2 = 2; // trailing field2
+
+  // leading SomeEnum
+  enum SomeEnum {
+    // trailing SomeEnum
+
+    option allow_alias = true;
+
+    // leading SomeEnum.value
+    value = 0;
+
+    // leading SomeEnum.value_alias
+    value_alias = 0;
+  }
+
+  // leading Nested
+  message Nested {
+    // leading Nested.Nested
+    message Nested {
+      message Nested { /* trailing Nested.Nested.Nested */
+        // leading Nested.Nested.Nested.nested
+        string nested = 1;
+      }
+    }
+  }
+
+  // leading choice
+  oneof choice {
+    // leading red
+    int32 red = 3;
+    // leading blue
+    int32 blue = 4;
+
+    int32 yellow = 5; // leading blue
+  }
+}
+
+// detached Service
+
+// leading Service
+service Service {
+  // trailing Service
+
+  // leading Method1
+  rpc Method1(Some) returns (Some);
+  // trailing Method1
+
+  // leading Method2
+  rpc Method2(Some) returns (Some);
+  // trailing Method2
+
+  rpc Method3(Some) returns (Some); // leading Method3
+}
