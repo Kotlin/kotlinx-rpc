@@ -67,6 +67,7 @@ internal class NativeServerCall<Request, Response>(
     private val callbackMutex = ReentrantLock()
     private var initialized = false
     private var cancelled = false
+    private var closed = false
     private val finalized = atomic(false)
 
     // tracks whether the initial metadata has been sent.
@@ -143,6 +144,7 @@ internal class NativeServerCall<Request, Response>(
     }
 
     fun cancel(status: grpc_status_code, message: String) {
+        cancelled = true
         grpc_call_cancel_with_status(raw, status, message, null)
     }
 
@@ -168,6 +170,9 @@ internal class NativeServerCall<Request, Response>(
         cleanup: () -> Unit = {},
         onSuccess: () -> Unit = {},
     ) {
+        // if we are already closed, we cannot run any more batches.
+        if (closed || cancelled) return cleanup()
+
         when (val result = cq.runBatch(raw, ops, nOps)) {
             is BatchResult.Submitted -> {
                 result.future.onComplete {
@@ -286,6 +291,8 @@ internal class NativeServerCall<Request, Response>(
 
     override fun close(status: Status, trailers: GrpcMetadata) {
         check(initialized) { internalError("Call not initialized") }
+        closed = true
+
         val arena = Arena()
 
         val details = status.getDescription()?.toGrpcSlice()
@@ -327,7 +334,7 @@ internal class NativeServerCall<Request, Response>(
     }
 
 
-    private fun <T> tryRun(block: () -> T): T {
+    private inline fun <T> tryRun(crossinline block: () -> T): T {
         try {
             return block()
         } catch (e: Throwable) {
