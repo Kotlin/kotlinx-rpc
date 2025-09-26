@@ -279,21 +279,58 @@ class ClientInterceptorTest : GrpcProtoTest() {
         }
     }
 
+    @Test
+    fun `test exact order of interceptor execution`() {
+        val order = mutableListOf<Int>()
+        val interceptor1 = interceptor { request ->
+            order.add(1)
+            flow {
+                order.add(2)
+                val req = request.map { order.add(5); it }
+                proceed(req).collect {
+                    order.add(8)
+                    emit(it)
+                }
+                order.add(10)
+            }
+        }
+        val interceptor2 = interceptor { request ->
+            order.add(3)
+            flow {
+                order.add(4)
+                val req = request.map { order.add(6); it }
+                proceed(req).collect {
+                    order.add(7)
+                    emit(it)
+                }
+                order.add(9)
+            }
+        }
+
+        val both = interceptor1 + interceptor2
+        runGrpcTest(clientInterceptors = both) { unaryCall(it) }
+
+        assertEquals(
+            listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+            order
+        )
+    }
+
     private suspend fun unaryCall(grpcClient: GrpcClient) {
         val service = grpcClient.withService<EchoService>()
         val response = service.UnaryEcho(EchoRequest { message = "Hello" })
         assertEquals("Hello", response.message)
     }
 
-    private suspend fun bidiStream(grpcClient: GrpcClient) {
+    private suspend fun bidiStream(grpcClient: GrpcClient, count: Int = 5) {
         val service = grpcClient.withService<EchoService>()
         val responses = service.BidirectionalStreamingEcho(flow {
-            repeat(5) {
+            repeat(count) {
                 emit(EchoRequest { message = "Echo-$it" })
             }
         }).toList()
-        assertEquals(5, responses.size)
-        repeat(5) {
+        assertEquals(count, responses.size)
+        repeat(count) {
             assertEquals("Echo-$it", responses[it].message)
         }
     }
