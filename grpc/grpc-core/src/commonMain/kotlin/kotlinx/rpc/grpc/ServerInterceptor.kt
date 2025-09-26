@@ -93,7 +93,7 @@ public interface ServerCallScope<Request, Response> {
      *         flow {
      *             val authorized = mySuspendAuth(requestHeaders)
      *             if (!authorized) {
-     *                 close(Status(StatusCode.UNAUTHENTICATED, "Not authorized"))
+     *                 close(Status(StatusCode.PERMISSION_DENIED, "Not authorized"))
      *             }
      *
      *             proceedUnmodified(request)

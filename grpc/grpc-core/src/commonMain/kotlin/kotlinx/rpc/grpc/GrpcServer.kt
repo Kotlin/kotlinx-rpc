@@ -198,7 +198,6 @@ public class GrpcServer internal constructor(
     }
 }
 
-
 /**
  * Creates and configures a gRPC server instance.
  *
@@ -212,8 +211,8 @@ public class GrpcServer internal constructor(
  * GrpcServer(port) {
  *     credentials = tls(myCertChain, myPrivateKey)
  *     services {
- *         registerService(MyService())
- *         registerService(MyOtherService())
+ *         registerService<MyService> { MyServiceImpl() }
+ *         registerService<MyOtherService> { MyOtherServiceImpl() }
  *     }
  * }
  * ```
@@ -308,8 +307,8 @@ public class GrpcServerConfiguration internal constructor() {
      * ```kt
      * GrpcServer(port) {
      *     services {
-     *         registerService(MyService())
-     *         registerService(MyOtherService())
+     *         registerService<MyService> { MyServiceImpl() }
+     *         registerService<MyOtherService> { MyOtherServiceImpl() }
      *     }
      * }
      * ```

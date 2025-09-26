@@ -62,7 +62,6 @@ class RawClientTest {
     ) { client, descriptor ->
         val response = client.clientStreamingRpc(descriptor, flow {
             repeat(5) {
-                delay(100)
                 println("Sending: ${it + 1}")
                 emit(EchoRequest { message = "Eccchhooo" })
             }
