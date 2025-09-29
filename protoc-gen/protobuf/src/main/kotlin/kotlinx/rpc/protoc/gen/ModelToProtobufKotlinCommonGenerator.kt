@@ -145,7 +145,7 @@ class ModelToProtobufKotlinCommonGenerator(
             val override = if (declaration.isUserFacing) "override" else ""
             declaration.actualFields.forEachIndexed { i, field ->
                 val value = when {
-                    field.nullable -> {
+                    field.nullable && field.presenceIdx == null -> {
                         "null"
                     }
 
@@ -166,7 +166,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     value = value,
                     isVar = true,
                     type = field.typeFqName(),
-                    propertyInitializer = if (field.nullable) {
+                    propertyInitializer = if (field.nullable && field.presenceIdx == null) {
                         CodeGenerator.PropertyInitializer.PLAIN
                     } else {
                         CodeGenerator.PropertyInitializer.DELEGATE
@@ -174,6 +174,11 @@ class ModelToProtobufKotlinCommonGenerator(
                     needsNewLineAfterDeclaration = i == declaration.actualFields.lastIndex,
                 )
             }
+
+            generateHashCode(declaration)
+            generateOneOfHashCode(declaration)
+            generateEquals(declaration)
+            generateToString(declaration)
 
             declaration.nestedDeclarations.forEach { nested ->
                 generateInternalMessage(nested)
@@ -188,6 +193,185 @@ class ModelToProtobufKotlinCommonGenerator(
                 annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
                 declarationType = CodeGenerator.DeclarationType.Object
             )
+        }
+    }
+
+    private fun CodeGenerator.generateHashCode(declaration: MessageDeclaration) {
+        val fields = declaration.actualFields
+        function(
+            name = "hashCode",
+            modifiers = "override",
+            returnType = "kotlin.Int",
+        ) {
+            addLine("checkRequiredFields()")
+            when {
+                fields.size == 1 -> {
+                    val expr = fields[0].hashExprForHashCode()
+                    addLine("return $expr")
+                }
+
+                fields.isNotEmpty() -> {
+                    addLine("var result = ${fields.first().hashExprForHashCode()}")
+                    fields.drop(1).forEach { f ->
+                        addLine("result = 31 * result + ${f.hashExprForHashCode()}")
+                    }
+                    addLine("return result")
+                }
+
+                else -> {
+                    addLine("return this::class.hashCode()")
+                }
+            }
+        }
+    }
+
+    private fun FieldDeclaration.hashExprForHashCode(): String {
+        return when (val t = type) {
+            is FieldType.IntegralType -> {
+                when (t) {
+                    FieldType.IntegralType.BYTES -> {
+                        if (nullable) "(${name}?.contentHashCode() ?: 0)" else "${name}.contentHashCode()"
+                    }
+                    else -> {
+                        if (nullable) "(${name}?.hashCode() ?: 0)" else "${name}.hashCode()"
+                    }
+                }
+            }
+
+            is FieldType.OneOf -> {
+                if (nullable) "(${name}?.oneOfHashCode() ?: 0)" else "${name}.oneOfHashCode() + "
+            }
+
+            is FieldType.Message, is FieldType.Enum, is FieldType.List, is FieldType.Map -> {
+                if (nullable) "(${name}?.hashCode() ?: 0)" else "${name}.hashCode()"
+            }
+        }.let {
+            if (presenceIdx != null) {
+                "if (presenceMask[${presenceIdx}]) $it else 0"
+            } else {
+                it
+            }
+        }
+    }
+
+    private fun CodeGenerator.generateOneOfHashCode(declaration: MessageDeclaration) {
+        declaration.oneOfDeclarations.forEach { oneOf ->
+            function(
+                name = "oneOfHashCode",
+                returnType = "kotlin.Int",
+                contextReceiver = oneOf.name.safeFullName(),
+            ) {
+                whenBlock(prefix = "val offset = ", condition = "this") {
+                    oneOf.variants.forEachIndexed { index, variant ->
+                        val variantName = "${oneOf.name.safeFullName()}.${variant.name}"
+                        addLine("is $variantName -> $index")
+                    }
+                }
+                addLine("return hashCode() + offset")
+            }
+        }
+    }
+
+    private fun CodeGenerator.generateEquals(declaration: MessageDeclaration) {
+        val fields = declaration.actualFields
+        function(
+            name = "equals",
+            modifiers = "override",
+            args = "other: kotlin.Any?",
+            returnType = "kotlin.Boolean",
+        ) {
+            addLine("checkRequiredFields()")
+            addLine("if (this === other) return true")
+            addLine("if (other == null || this::class != other::class) return false")
+            addLine("other as ${declaration.internalClassName()}")
+            addLine("other.checkRequiredFields()")
+            if (fields.isNotEmpty()) {
+                fields.forEach { field ->
+                    if (field.presenceIdx != null) {
+                        fieldEqualsCheck(
+                            presenceCheck = "presenceMask[${field.presenceIdx}] != other.presenceMask[${field.presenceIdx}] || presenceMask[${field.presenceIdx}] && ",
+                            field = field,
+                        )
+                    } else {
+                        fieldEqualsCheck(presenceCheck = "", field = field)
+                    }
+                }
+            }
+            addLine("return true")
+        }
+    }
+
+    private fun CodeGenerator.fieldEqualsCheck(presenceCheck: String, field: FieldDeclaration) {
+        when (val t = field.type) {
+            is FieldType.IntegralType -> {
+                if (t == FieldType.IntegralType.BYTES) {
+                    if (field.nullable) {
+                        addLine("if ($presenceCheck((${field.name} != null && (other.${field.name} == null || !${field.name}!!.contentEquals(other.${field.name}!!))) || other.${field.name} != null)) return false")
+                    } else {
+                        addLine("if ($presenceCheck!${field.name}.contentEquals(other.${field.name})) return false")
+                    }
+                } else {
+                    addLine("if ($presenceCheck${field.name} != other.${field.name}) return false")
+                }
+            }
+            is FieldType.Message,
+            is FieldType.Enum,
+            is FieldType.OneOf,
+            is FieldType.List,
+            is FieldType.Map -> {
+                addLine("if ($presenceCheck${field.name} != other.${field.name}) return false")
+            }
+        }
+    }
+
+    private fun CodeGenerator.generateToString(declaration: MessageDeclaration) {
+        function(
+            name = "toString",
+            modifiers = "override",
+            returnType = "kotlin.String",
+        ) {
+            addLine("return asString()")
+        }
+
+        function(
+            name = "asString",
+            args = "indent: kotlin.Int = 0",
+            returnType = "kotlin.String",
+        ) {
+            addLine("checkRequiredFields()")
+            addLine("val indentString = \" \".repeat(indent)")
+            addLine("val nextIndentString = \" \".repeat(indent + ${config.indentSize})")
+            scope("return buildString") {
+                addLine("appendLine(\"${declaration.name}(\")")
+                declaration.actualFields.forEach {
+                    val suffix = when (it.type) {
+                        FieldType.IntegralType.BYTES -> {
+                            ".contentToString()"
+                        }
+                        is FieldType.Message -> {
+                            ".asInternal().asString(indent = indent + ${config.indentSize})"
+                        }
+                        else -> {
+                            ""
+                        }
+                    }
+
+                    val valueBuilder: CodeGenerator.() -> Unit = {
+                        addLine("appendLine(\"\${nextIndentString}${it.name}=\${${it.name}$suffix},\")")
+                    }
+
+                    if (it.presenceIdx != null) {
+                        ifBranch(condition = "presenceMask[${it.presenceIdx}]", ifBlock = {
+                            valueBuilder()
+                        }) {
+                            addLine("appendLine(\"\${nextIndentString}${it.name}=<unset>,\")")
+                        }
+                    } else {
+                        valueBuilder()
+                    }
+                }
+                addLine("append(\"\${indentString})\")")
+            }
         }
     }
 
@@ -908,6 +1092,10 @@ class ModelToProtobufKotlinCommonGenerator(
     }
 
     private fun FieldDeclaration.safeDefaultValue(): String {
+        if (nullable) {
+            return "null"
+        }
+
         if (!dec.hasDefaultValue()) {
             return type.defaultValue ?: error("No default value for field $name")
         }
@@ -1018,6 +1206,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 clazz(
                     name = variant.name.simpleName,
                     comment = variant.doc,
+                    modifiers = "data",
                     declarationType = CodeGenerator.DeclarationType.Object,
                     superTypes = listOf("$className(number = ${variant.dec.number})"),
                     deprecation = if (variant.deprecated) DeprecationLevel.WARNING else null,
