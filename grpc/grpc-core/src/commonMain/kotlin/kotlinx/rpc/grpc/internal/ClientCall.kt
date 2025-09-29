@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
@@ -31,13 +31,13 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 public expect abstract class ClientCall<Request, Response> {
     @InternalRpcApi
     public abstract class Listener<Message> {
-        public open fun onHeaders(headers: GrpcTrailers)
+        public open fun onHeaders(headers: GrpcMetadata)
         public open fun onMessage(message: Message)
-        public open fun onClose(status: Status, trailers: GrpcTrailers)
+        public open fun onClose(status: Status, trailers: GrpcMetadata)
         public open fun onReady()
     }
 
-    public abstract fun start(responseListener: Listener<Response>, headers: GrpcTrailers)
+    public abstract fun start(responseListener: Listener<Response>, headers: GrpcMetadata)
     public abstract fun request(numMessages: Int)
     public abstract fun cancel(message: String?, cause: Throwable?)
     public abstract fun halfClose()
@@ -47,8 +47,8 @@ public expect abstract class ClientCall<Request, Response> {
 
 @InternalRpcApi
 public expect fun <Message> clientCallListener(
-    onHeaders: (headers: GrpcTrailers) -> Unit,
+    onHeaders: (headers: GrpcMetadata) -> Unit,
     onMessage: (message: Message) -> Unit,
-    onClose: (status: Status, trailers: GrpcTrailers) -> Unit,
+    onClose: (status: Status, trailers: GrpcMetadata) -> Unit,
     onReady: () -> Unit,
 ): ClientCall.Listener<Message>

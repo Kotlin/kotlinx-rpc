@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.util.dumpKotlinLike
 import org.jetbrains.kotlin.ir.util.getAnnotation
 import org.jetbrains.kotlin.ir.util.hasDefaultValue
+import org.jetbrains.kotlin.ir.util.packageFqName
 
 /**
  * This class scans user declared RPC service
@@ -31,7 +32,9 @@ internal object RpcDeclarationScanner {
         var stubClass: IrClass? = null
 
         val grpcAnnotation = service.getAnnotation(RpcClassId.grpcAnnotation.asSingleFqName())
-        val protoPackage = grpcAnnotation?.arguments?.getOrNull(0)?.asConstString() ?: ""
+        // if the protoPackage is not set by the annotation, we use the service kotlin package name
+        val protoPackage = grpcAnnotation?.arguments?.getOrNull(0)?.asConstString()
+            ?: service.packageFqName?.asString() ?: ""
 
         val declarations = service.declarations.memoryOptimizedMap { declaration ->
             when (declaration) {

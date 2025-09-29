@@ -119,6 +119,8 @@ internal class CompletionQueue {
      * See [BatchResult] for possible outcomes.
      */
     fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong): BatchResult {
+        if (_shutdownDone.isCompleted) return BatchResult.CQShutdown
+
         val completion = CallbackFuture<Boolean>()
         val tag = newCbTag(completion, OPS_COMPLETE_CB)
 
@@ -194,8 +196,8 @@ private fun opsCompleteCb(functor: CPointer<grpc_completion_queue_functor>?, ok:
 private fun shutdownCb(functor: CPointer<grpc_completion_queue_functor>?, ok: Int) {
     val tag = functor!!.reinterpret<kgrpc_cb_tag>()
     val cq = tag.pointed.user_data!!.asStableRef<CompletionQueue>().get()
-    cq._shutdownDone.complete(Unit)
     cq._state.value = CompletionQueue.State.CLOSED
+    cq._shutdownDone.complete(Unit)
     grpc_completion_queue_destroy(cq.raw)
 }
 
