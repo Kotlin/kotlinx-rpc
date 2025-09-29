@@ -6,10 +6,13 @@ package kotlinx.rpc.grpc.internal
 
 import kotlin.coroutines.CoroutineContext
 
-internal expect class GrpcContext
+public expect class GrpcContext
+
 internal expect val CurrentGrpcContext: GrpcContext
 
 internal expect class GrpcContextElement : CoroutineContext.Element {
+    val grpcContext: GrpcContext
+
     companion object Key : CoroutineContext.Key<GrpcContextElement> {
         fun current(): GrpcContextElement
     }

@@ -4,13 +4,13 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.rpc.grpc.GrpcTrailers
+import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
 public expect fun interface ServerCallHandler<Request, Response> {
-    public fun startCall(call: ServerCall<Request, Response>, headers: GrpcTrailers): ServerCall.Listener<Request>
+    public fun startCall(call: ServerCall<Request, Response>, headers: GrpcMetadata): ServerCall.Listener<Request>
 }
 
 @InternalRpcApi
@@ -25,9 +25,9 @@ public expect abstract class ServerCall<Request, Response> {
     }
 
     public abstract fun request(numMessages: Int)
-    public abstract fun sendHeaders(headers: GrpcTrailers)
+    public abstract fun sendHeaders(headers: GrpcMetadata)
     public abstract fun sendMessage(message: Response)
-    public abstract fun close(status: Status, trailers: GrpcTrailers)
+    public abstract fun close(status: Status, trailers: GrpcMetadata)
 
     public open fun isReady(): Boolean
     public abstract fun isCancelled(): Boolean
