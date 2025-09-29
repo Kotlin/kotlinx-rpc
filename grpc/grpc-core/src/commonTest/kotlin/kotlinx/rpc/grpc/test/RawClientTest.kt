@@ -9,10 +9,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
+import kotlinx.rpc.grpc.GrpcClient
 import kotlinx.rpc.grpc.GrpcServer
-import kotlinx.rpc.grpc.ManagedChannelBuilder
-import kotlinx.rpc.grpc.buildChannel
-import kotlinx.rpc.grpc.internal.*
+import kotlinx.rpc.grpc.internal.MethodDescriptor
+import kotlinx.rpc.grpc.internal.MethodType
+import kotlinx.rpc.grpc.internal.bidirectionalStreamingRpc
+import kotlinx.rpc.grpc.internal.clientStreamingRpc
+import kotlinx.rpc.grpc.internal.methodDescriptor
+import kotlinx.rpc.grpc.internal.serverStreamingRpc
+import kotlinx.rpc.grpc.internal.unaryRpc
 import kotlinx.rpc.registerService
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -32,8 +37,8 @@ class RawClientTest {
     fun unaryEchoTest() = runTest(
         methodName = "UnaryEcho",
         type = MethodType.UNARY,
-    ) { channel, descriptor ->
-        val response = unaryRpc(channel, descriptor, EchoRequest { message = "Eccchhooo" })
+    ) { client, descriptor ->
+        val response = client.unaryRpc(descriptor, EchoRequest { message = "Eccchhooo" })
         assertEquals("Eccchhooo", response.message)
     }
 
@@ -41,8 +46,8 @@ class RawClientTest {
     fun serverStreamingEchoTest() = runTest(
         methodName = "ServerStreamingEcho",
         type = MethodType.SERVER_STREAMING,
-    ) { channel, descriptor ->
-        val response = serverStreamingRpc(channel, descriptor, EchoRequest { message = "Eccchhooo" })
+    ) { client, descriptor ->
+        val response = client.serverStreamingRpc(descriptor, EchoRequest { message = "Eccchhooo" })
         var i = 0
         response.collect {
             println("Received: ${i++}")
@@ -54,10 +59,9 @@ class RawClientTest {
     fun clientStreamingEchoTest() = runTest(
         methodName = "ClientStreamingEcho",
         type = MethodType.CLIENT_STREAMING,
-    ) { channel, descriptor ->
-        val response = clientStreamingRpc(channel, descriptor, flow {
+    ) { client, descriptor ->
+        val response = client.clientStreamingRpc(descriptor, flow {
             repeat(5) {
-                delay(100)
                 println("Sending: ${it + 1}")
                 emit(EchoRequest { message = "Eccchhooo" })
             }
@@ -70,8 +74,8 @@ class RawClientTest {
     fun bidirectionalStreamingEchoTest() = runTest(
         methodName = "BidirectionalStreamingEcho",
         type = MethodType.BIDI_STREAMING,
-    ) { channel, descriptor ->
-        val response = bidirectionalStreamingRpc(channel, descriptor, flow {
+    ) { client, descriptor ->
+        val response = client.bidirectionalStreamingRpc(descriptor, flow {
             repeat(5) {
                 emit(EchoRequest { message = "Eccchhooo" })
             }
@@ -88,11 +92,11 @@ class RawClientTest {
     fun runTest(
         methodName: String,
         type: MethodType,
-        block: suspend (GrpcChannel, MethodDescriptor<EchoRequest, EchoResponse>) -> Unit,
+        block: suspend (GrpcClient, MethodDescriptor<EchoRequest, EchoResponse>) -> Unit,
     ) = runTest {
-        val channel = ManagedChannelBuilder("localhost:50051")
-            .usePlaintext()
-            .buildChannel()
+        val client = GrpcClient("localhost:50051") {
+            credentials = plaintext()
+        }
 
         val methodDescriptor = methodDescriptor(
             fullMethodName = "kotlinx.rpc.grpc.test.EchoService/$methodName",
@@ -106,10 +110,10 @@ class RawClientTest {
         )
 
         try {
-            block(channel.platformApi, methodDescriptor)
+            block(client, methodDescriptor)
         } finally {
-            channel.shutdown()
-            channel.awaitTermination()
+            client.shutdown()
+            client.awaitTermination()
         }
     }
 }
@@ -152,8 +156,7 @@ class EchoServiceImpl : EchoService {
     fun runServer() = runTest(timeout = Duration.INFINITE) {
         val server = GrpcServer(
             port = PORT,
-            builder = { registerService<EchoService> { EchoServiceImpl() } }
-        )
+        ) { services { registerService<EchoService> { EchoServiceImpl() } } }
 
         try {
             server.start()
