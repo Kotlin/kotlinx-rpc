@@ -74,27 +74,27 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
-    override var optionalInt32: Int? = null
-    override var optionalInt64: Long? = null
-    override var optionalUint32: UInt? = null
-    override var optionalUint64: ULong? = null
-    override var optionalSint32: Int? = null
-    override var optionalSint64: Long? = null
-    override var optionalFixed32: UInt? = null
-    override var optionalFixed64: ULong? = null
-    override var optionalSfixed32: Int? = null
-    override var optionalSfixed64: Long? = null
-    override var optionalFloat: Float? = null
-    override var optionalDouble: Double? = null
-    override var optionalBool: Boolean? = null
-    override var optionalString: String? = null
-    override var optionalBytes: ByteArray? = null
+    override var optionalInt32: Int? by MsgFieldDelegate(PresenceIndices.optionalInt32) { null }
+    override var optionalInt64: Long? by MsgFieldDelegate(PresenceIndices.optionalInt64) { null }
+    override var optionalUint32: UInt? by MsgFieldDelegate(PresenceIndices.optionalUint32) { null }
+    override var optionalUint64: ULong? by MsgFieldDelegate(PresenceIndices.optionalUint64) { null }
+    override var optionalSint32: Int? by MsgFieldDelegate(PresenceIndices.optionalSint32) { null }
+    override var optionalSint64: Long? by MsgFieldDelegate(PresenceIndices.optionalSint64) { null }
+    override var optionalFixed32: UInt? by MsgFieldDelegate(PresenceIndices.optionalFixed32) { null }
+    override var optionalFixed64: ULong? by MsgFieldDelegate(PresenceIndices.optionalFixed64) { null }
+    override var optionalSfixed32: Int? by MsgFieldDelegate(PresenceIndices.optionalSfixed32) { null }
+    override var optionalSfixed64: Long? by MsgFieldDelegate(PresenceIndices.optionalSfixed64) { null }
+    override var optionalFloat: Float? by MsgFieldDelegate(PresenceIndices.optionalFloat) { null }
+    override var optionalDouble: Double? by MsgFieldDelegate(PresenceIndices.optionalDouble) { null }
+    override var optionalBool: Boolean? by MsgFieldDelegate(PresenceIndices.optionalBool) { null }
+    override var optionalString: String? by MsgFieldDelegate(PresenceIndices.optionalString) { null }
+    override var optionalBytes: ByteArray? by MsgFieldDelegate(PresenceIndices.optionalBytes) { null }
     override var optionalNestedMessage: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage by MsgFieldDelegate(PresenceIndices.optionalNestedMessage) { com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.NestedMessageInternal() }
     override var optionalForeignMessage: com.google.protobuf_test_messages.proto2.ForeignMessageProto2 by MsgFieldDelegate(PresenceIndices.optionalForeignMessage) { com.google.protobuf_test_messages.proto2.ForeignMessageProto2Internal() }
-    override var optionalNestedEnum: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedEnum? = null
-    override var optionalForeignEnum: com.google.protobuf_test_messages.proto2.ForeignEnumProto2? = null
-    override var optionalStringPiece: String? = null
-    override var optionalCord: String? = null
+    override var optionalNestedEnum: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedEnum? by MsgFieldDelegate(PresenceIndices.optionalNestedEnum) { null }
+    override var optionalForeignEnum: com.google.protobuf_test_messages.proto2.ForeignEnumProto2? by MsgFieldDelegate(PresenceIndices.optionalForeignEnum) { null }
+    override var optionalStringPiece: String? by MsgFieldDelegate(PresenceIndices.optionalStringPiece) { null }
+    override var optionalCord: String? by MsgFieldDelegate(PresenceIndices.optionalCord) { null }
     override var recursiveMessage: com.google.protobuf_test_messages.proto2.TestAllTypesProto2 by MsgFieldDelegate(PresenceIndices.recursiveMessage) { com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal() }
     override var repeatedInt32: List<kotlin.Int> by MsgFieldDelegate { mutableListOf() }
     override var repeatedInt64: List<kotlin.Long> by MsgFieldDelegate { mutableListOf() }
@@ -183,26 +183,747 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
     override var defaultBool: Boolean by MsgFieldDelegate(PresenceIndices.defaultBool) { true }
     override var defaultString: String by MsgFieldDelegate(PresenceIndices.defaultString) { "Rosebud" }
     override var defaultBytes: ByteArray by MsgFieldDelegate(PresenceIndices.defaultBytes) { BytesDefaults.defaultBytes }
-    override var fieldname1: Int? = null
-    override var fieldName2: Int? = null
-    override var FieldName3: Int? = null
-    override var field_Name4_: Int? = null
-    override var field0name5: Int? = null
-    override var field_0Name6: Int? = null
-    override var fieldName7: Int? = null
-    override var FieldName8: Int? = null
-    override var field_Name9: Int? = null
-    override var Field_Name10: Int? = null
-    override var FIELD_NAME11: Int? = null
-    override var FIELDName12: Int? = null
-    override var _FieldName13: Int? = null
-    override var __FieldName14: Int? = null
-    override var field_Name15: Int? = null
-    override var field__Name16: Int? = null
-    override var fieldName17__: Int? = null
-    override var FieldName18__: Int? = null
+    override var fieldname1: Int? by MsgFieldDelegate(PresenceIndices.fieldname1) { null }
+    override var fieldName2: Int? by MsgFieldDelegate(PresenceIndices.fieldName2) { null }
+    override var FieldName3: Int? by MsgFieldDelegate(PresenceIndices.FieldName3) { null }
+    override var field_Name4_: Int? by MsgFieldDelegate(PresenceIndices.field_Name4_) { null }
+    override var field0name5: Int? by MsgFieldDelegate(PresenceIndices.field0name5) { null }
+    override var field_0Name6: Int? by MsgFieldDelegate(PresenceIndices.field_0Name6) { null }
+    override var fieldName7: Int? by MsgFieldDelegate(PresenceIndices.fieldName7) { null }
+    override var FieldName8: Int? by MsgFieldDelegate(PresenceIndices.FieldName8) { null }
+    override var field_Name9: Int? by MsgFieldDelegate(PresenceIndices.field_Name9) { null }
+    override var Field_Name10: Int? by MsgFieldDelegate(PresenceIndices.Field_Name10) { null }
+    override var FIELD_NAME11: Int? by MsgFieldDelegate(PresenceIndices.FIELD_NAME11) { null }
+    override var FIELDName12: Int? by MsgFieldDelegate(PresenceIndices.FIELDName12) { null }
+    override var _FieldName13: Int? by MsgFieldDelegate(PresenceIndices._FieldName13) { null }
+    override var __FieldName14: Int? by MsgFieldDelegate(PresenceIndices.__FieldName14) { null }
+    override var field_Name15: Int? by MsgFieldDelegate(PresenceIndices.field_Name15) { null }
+    override var field__Name16: Int? by MsgFieldDelegate(PresenceIndices.field__Name16) { null }
+    override var fieldName17__: Int? by MsgFieldDelegate(PresenceIndices.fieldName17__) { null }
+    override var FieldName18__: Int? by MsgFieldDelegate(PresenceIndices.FieldName18__) { null }
     override var messageSetCorrect: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect by MsgFieldDelegate(PresenceIndices.messageSetCorrect) { com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectInternal() }
     override var oneofField: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.OneofField? = null
+
+    override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = if (presenceMask[0]) (optionalInt32?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[1]) (optionalInt64?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[2]) (optionalUint32?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[3]) (optionalUint64?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[4]) (optionalSint32?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[5]) (optionalSint64?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[6]) (optionalFixed32?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[7]) (optionalFixed64?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[8]) (optionalSfixed32?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[9]) (optionalSfixed64?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[10]) (optionalFloat?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[11]) (optionalDouble?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[12]) (optionalBool?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[13]) (optionalString?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[14]) (optionalBytes?.contentHashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[15]) optionalNestedMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[16]) optionalForeignMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[17]) (optionalNestedEnum?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[18]) (optionalForeignEnum?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[19]) (optionalStringPiece?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[20]) (optionalCord?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[21]) recursiveMessage.hashCode() else 0
+        result = 31 * result + repeatedInt32.hashCode()
+        result = 31 * result + repeatedInt64.hashCode()
+        result = 31 * result + repeatedUint32.hashCode()
+        result = 31 * result + repeatedUint64.hashCode()
+        result = 31 * result + repeatedSint32.hashCode()
+        result = 31 * result + repeatedSint64.hashCode()
+        result = 31 * result + repeatedFixed32.hashCode()
+        result = 31 * result + repeatedFixed64.hashCode()
+        result = 31 * result + repeatedSfixed32.hashCode()
+        result = 31 * result + repeatedSfixed64.hashCode()
+        result = 31 * result + repeatedFloat.hashCode()
+        result = 31 * result + repeatedDouble.hashCode()
+        result = 31 * result + repeatedBool.hashCode()
+        result = 31 * result + repeatedString.hashCode()
+        result = 31 * result + repeatedBytes.hashCode()
+        result = 31 * result + repeatedNestedMessage.hashCode()
+        result = 31 * result + repeatedForeignMessage.hashCode()
+        result = 31 * result + repeatedNestedEnum.hashCode()
+        result = 31 * result + repeatedForeignEnum.hashCode()
+        result = 31 * result + repeatedStringPiece.hashCode()
+        result = 31 * result + repeatedCord.hashCode()
+        result = 31 * result + packedInt32.hashCode()
+        result = 31 * result + packedInt64.hashCode()
+        result = 31 * result + packedUint32.hashCode()
+        result = 31 * result + packedUint64.hashCode()
+        result = 31 * result + packedSint32.hashCode()
+        result = 31 * result + packedSint64.hashCode()
+        result = 31 * result + packedFixed32.hashCode()
+        result = 31 * result + packedFixed64.hashCode()
+        result = 31 * result + packedSfixed32.hashCode()
+        result = 31 * result + packedSfixed64.hashCode()
+        result = 31 * result + packedFloat.hashCode()
+        result = 31 * result + packedDouble.hashCode()
+        result = 31 * result + packedBool.hashCode()
+        result = 31 * result + packedNestedEnum.hashCode()
+        result = 31 * result + unpackedInt32.hashCode()
+        result = 31 * result + unpackedInt64.hashCode()
+        result = 31 * result + unpackedUint32.hashCode()
+        result = 31 * result + unpackedUint64.hashCode()
+        result = 31 * result + unpackedSint32.hashCode()
+        result = 31 * result + unpackedSint64.hashCode()
+        result = 31 * result + unpackedFixed32.hashCode()
+        result = 31 * result + unpackedFixed64.hashCode()
+        result = 31 * result + unpackedSfixed32.hashCode()
+        result = 31 * result + unpackedSfixed64.hashCode()
+        result = 31 * result + unpackedFloat.hashCode()
+        result = 31 * result + unpackedDouble.hashCode()
+        result = 31 * result + unpackedBool.hashCode()
+        result = 31 * result + unpackedNestedEnum.hashCode()
+        result = 31 * result + mapInt32Int32.hashCode()
+        result = 31 * result + mapInt64Int64.hashCode()
+        result = 31 * result + mapUint32Uint32.hashCode()
+        result = 31 * result + mapUint64Uint64.hashCode()
+        result = 31 * result + mapSint32Sint32.hashCode()
+        result = 31 * result + mapSint64Sint64.hashCode()
+        result = 31 * result + mapFixed32Fixed32.hashCode()
+        result = 31 * result + mapFixed64Fixed64.hashCode()
+        result = 31 * result + mapSfixed32Sfixed32.hashCode()
+        result = 31 * result + mapSfixed64Sfixed64.hashCode()
+        result = 31 * result + mapInt32Bool.hashCode()
+        result = 31 * result + mapInt32Float.hashCode()
+        result = 31 * result + mapInt32Double.hashCode()
+        result = 31 * result + mapInt32NestedMessage.hashCode()
+        result = 31 * result + mapBoolBool.hashCode()
+        result = 31 * result + mapStringString.hashCode()
+        result = 31 * result + mapStringBytes.hashCode()
+        result = 31 * result + mapStringNestedMessage.hashCode()
+        result = 31 * result + mapStringForeignMessage.hashCode()
+        result = 31 * result + mapStringNestedEnum.hashCode()
+        result = 31 * result + mapStringForeignEnum.hashCode()
+        result = 31 * result + if (presenceMask[22]) data.hashCode() else 0
+        result = 31 * result + if (presenceMask[23]) multiwordgroupfield.hashCode() else 0
+        result = 31 * result + if (presenceMask[24]) defaultInt32.hashCode() else 0
+        result = 31 * result + if (presenceMask[25]) defaultInt64.hashCode() else 0
+        result = 31 * result + if (presenceMask[26]) defaultUint32.hashCode() else 0
+        result = 31 * result + if (presenceMask[27]) defaultUint64.hashCode() else 0
+        result = 31 * result + if (presenceMask[28]) defaultSint32.hashCode() else 0
+        result = 31 * result + if (presenceMask[29]) defaultSint64.hashCode() else 0
+        result = 31 * result + if (presenceMask[30]) defaultFixed32.hashCode() else 0
+        result = 31 * result + if (presenceMask[31]) defaultFixed64.hashCode() else 0
+        result = 31 * result + if (presenceMask[32]) defaultSfixed32.hashCode() else 0
+        result = 31 * result + if (presenceMask[33]) defaultSfixed64.hashCode() else 0
+        result = 31 * result + if (presenceMask[34]) defaultFloat.hashCode() else 0
+        result = 31 * result + if (presenceMask[35]) defaultDouble.hashCode() else 0
+        result = 31 * result + if (presenceMask[36]) defaultBool.hashCode() else 0
+        result = 31 * result + if (presenceMask[37]) defaultString.hashCode() else 0
+        result = 31 * result + if (presenceMask[38]) defaultBytes.contentHashCode() else 0
+        result = 31 * result + if (presenceMask[39]) (fieldname1?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[40]) (fieldName2?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[41]) (FieldName3?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[42]) (field_Name4_?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[43]) (field0name5?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[44]) (field_0Name6?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[45]) (fieldName7?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[46]) (FieldName8?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[47]) (field_Name9?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[48]) (Field_Name10?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[49]) (FIELD_NAME11?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[50]) (FIELDName12?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[51]) (_FieldName13?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[52]) (__FieldName14?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[53]) (field_Name15?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[54]) (field__Name16?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[55]) (fieldName17__?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[56]) (FieldName18__?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[57]) messageSetCorrect.hashCode() else 0
+        result = 31 * result + (oneofField?.oneOfHashCode() ?: 0)
+        return result
+    }
+
+    fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.OneofField.oneOfHashCode(): kotlin.Int { 
+        val offset = when (this) { 
+            is com.google.protobuf_test_messages.proto2.TestAllTypesProto2.OneofField.OneofUint32 -> 0
+            is com.google.protobuf_test_messages.proto2.TestAllTypesProto2.OneofField.OneofNestedMessage -> 1
+            is com.google.protobuf_test_messages.proto2.TestAllTypesProto2.OneofField.OneofString -> 2
+            is com.google.protobuf_test_messages.proto2.TestAllTypesProto2.OneofField.OneofBytes -> 3
+            is com.google.protobuf_test_messages.proto2.TestAllTypesProto2.OneofField.OneofBool -> 4
+            is com.google.protobuf_test_messages.proto2.TestAllTypesProto2.OneofField.OneofUint64 -> 5
+            is com.google.protobuf_test_messages.proto2.TestAllTypesProto2.OneofField.OneofFloat -> 6
+            is com.google.protobuf_test_messages.proto2.TestAllTypesProto2.OneofField.OneofDouble -> 7
+            is com.google.protobuf_test_messages.proto2.TestAllTypesProto2.OneofField.OneofEnum -> 8
+        }
+
+        return hashCode() + offset
+    }
+
+    override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as TestAllTypesProto2Internal
+        other.checkRequiredFields()
+        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && optionalInt32 != other.optionalInt32) return false
+        if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && optionalInt64 != other.optionalInt64) return false
+        if (presenceMask[2] != other.presenceMask[2] || presenceMask[2] && optionalUint32 != other.optionalUint32) return false
+        if (presenceMask[3] != other.presenceMask[3] || presenceMask[3] && optionalUint64 != other.optionalUint64) return false
+        if (presenceMask[4] != other.presenceMask[4] || presenceMask[4] && optionalSint32 != other.optionalSint32) return false
+        if (presenceMask[5] != other.presenceMask[5] || presenceMask[5] && optionalSint64 != other.optionalSint64) return false
+        if (presenceMask[6] != other.presenceMask[6] || presenceMask[6] && optionalFixed32 != other.optionalFixed32) return false
+        if (presenceMask[7] != other.presenceMask[7] || presenceMask[7] && optionalFixed64 != other.optionalFixed64) return false
+        if (presenceMask[8] != other.presenceMask[8] || presenceMask[8] && optionalSfixed32 != other.optionalSfixed32) return false
+        if (presenceMask[9] != other.presenceMask[9] || presenceMask[9] && optionalSfixed64 != other.optionalSfixed64) return false
+        if (presenceMask[10] != other.presenceMask[10] || presenceMask[10] && optionalFloat != other.optionalFloat) return false
+        if (presenceMask[11] != other.presenceMask[11] || presenceMask[11] && optionalDouble != other.optionalDouble) return false
+        if (presenceMask[12] != other.presenceMask[12] || presenceMask[12] && optionalBool != other.optionalBool) return false
+        if (presenceMask[13] != other.presenceMask[13] || presenceMask[13] && optionalString != other.optionalString) return false
+        if (presenceMask[14] != other.presenceMask[14] || presenceMask[14] && ((optionalBytes != null && (other.optionalBytes == null || !optionalBytes!!.contentEquals(other.optionalBytes!!))) || other.optionalBytes != null)) return false
+        if (presenceMask[15] != other.presenceMask[15] || presenceMask[15] && optionalNestedMessage != other.optionalNestedMessage) return false
+        if (presenceMask[16] != other.presenceMask[16] || presenceMask[16] && optionalForeignMessage != other.optionalForeignMessage) return false
+        if (presenceMask[17] != other.presenceMask[17] || presenceMask[17] && optionalNestedEnum != other.optionalNestedEnum) return false
+        if (presenceMask[18] != other.presenceMask[18] || presenceMask[18] && optionalForeignEnum != other.optionalForeignEnum) return false
+        if (presenceMask[19] != other.presenceMask[19] || presenceMask[19] && optionalStringPiece != other.optionalStringPiece) return false
+        if (presenceMask[20] != other.presenceMask[20] || presenceMask[20] && optionalCord != other.optionalCord) return false
+        if (presenceMask[21] != other.presenceMask[21] || presenceMask[21] && recursiveMessage != other.recursiveMessage) return false
+        if (repeatedInt32 != other.repeatedInt32) return false
+        if (repeatedInt64 != other.repeatedInt64) return false
+        if (repeatedUint32 != other.repeatedUint32) return false
+        if (repeatedUint64 != other.repeatedUint64) return false
+        if (repeatedSint32 != other.repeatedSint32) return false
+        if (repeatedSint64 != other.repeatedSint64) return false
+        if (repeatedFixed32 != other.repeatedFixed32) return false
+        if (repeatedFixed64 != other.repeatedFixed64) return false
+        if (repeatedSfixed32 != other.repeatedSfixed32) return false
+        if (repeatedSfixed64 != other.repeatedSfixed64) return false
+        if (repeatedFloat != other.repeatedFloat) return false
+        if (repeatedDouble != other.repeatedDouble) return false
+        if (repeatedBool != other.repeatedBool) return false
+        if (repeatedString != other.repeatedString) return false
+        if (repeatedBytes != other.repeatedBytes) return false
+        if (repeatedNestedMessage != other.repeatedNestedMessage) return false
+        if (repeatedForeignMessage != other.repeatedForeignMessage) return false
+        if (repeatedNestedEnum != other.repeatedNestedEnum) return false
+        if (repeatedForeignEnum != other.repeatedForeignEnum) return false
+        if (repeatedStringPiece != other.repeatedStringPiece) return false
+        if (repeatedCord != other.repeatedCord) return false
+        if (packedInt32 != other.packedInt32) return false
+        if (packedInt64 != other.packedInt64) return false
+        if (packedUint32 != other.packedUint32) return false
+        if (packedUint64 != other.packedUint64) return false
+        if (packedSint32 != other.packedSint32) return false
+        if (packedSint64 != other.packedSint64) return false
+        if (packedFixed32 != other.packedFixed32) return false
+        if (packedFixed64 != other.packedFixed64) return false
+        if (packedSfixed32 != other.packedSfixed32) return false
+        if (packedSfixed64 != other.packedSfixed64) return false
+        if (packedFloat != other.packedFloat) return false
+        if (packedDouble != other.packedDouble) return false
+        if (packedBool != other.packedBool) return false
+        if (packedNestedEnum != other.packedNestedEnum) return false
+        if (unpackedInt32 != other.unpackedInt32) return false
+        if (unpackedInt64 != other.unpackedInt64) return false
+        if (unpackedUint32 != other.unpackedUint32) return false
+        if (unpackedUint64 != other.unpackedUint64) return false
+        if (unpackedSint32 != other.unpackedSint32) return false
+        if (unpackedSint64 != other.unpackedSint64) return false
+        if (unpackedFixed32 != other.unpackedFixed32) return false
+        if (unpackedFixed64 != other.unpackedFixed64) return false
+        if (unpackedSfixed32 != other.unpackedSfixed32) return false
+        if (unpackedSfixed64 != other.unpackedSfixed64) return false
+        if (unpackedFloat != other.unpackedFloat) return false
+        if (unpackedDouble != other.unpackedDouble) return false
+        if (unpackedBool != other.unpackedBool) return false
+        if (unpackedNestedEnum != other.unpackedNestedEnum) return false
+        if (mapInt32Int32 != other.mapInt32Int32) return false
+        if (mapInt64Int64 != other.mapInt64Int64) return false
+        if (mapUint32Uint32 != other.mapUint32Uint32) return false
+        if (mapUint64Uint64 != other.mapUint64Uint64) return false
+        if (mapSint32Sint32 != other.mapSint32Sint32) return false
+        if (mapSint64Sint64 != other.mapSint64Sint64) return false
+        if (mapFixed32Fixed32 != other.mapFixed32Fixed32) return false
+        if (mapFixed64Fixed64 != other.mapFixed64Fixed64) return false
+        if (mapSfixed32Sfixed32 != other.mapSfixed32Sfixed32) return false
+        if (mapSfixed64Sfixed64 != other.mapSfixed64Sfixed64) return false
+        if (mapInt32Bool != other.mapInt32Bool) return false
+        if (mapInt32Float != other.mapInt32Float) return false
+        if (mapInt32Double != other.mapInt32Double) return false
+        if (mapInt32NestedMessage != other.mapInt32NestedMessage) return false
+        if (mapBoolBool != other.mapBoolBool) return false
+        if (mapStringString != other.mapStringString) return false
+        if (mapStringBytes != other.mapStringBytes) return false
+        if (mapStringNestedMessage != other.mapStringNestedMessage) return false
+        if (mapStringForeignMessage != other.mapStringForeignMessage) return false
+        if (mapStringNestedEnum != other.mapStringNestedEnum) return false
+        if (mapStringForeignEnum != other.mapStringForeignEnum) return false
+        if (presenceMask[22] != other.presenceMask[22] || presenceMask[22] && data != other.data) return false
+        if (presenceMask[23] != other.presenceMask[23] || presenceMask[23] && multiwordgroupfield != other.multiwordgroupfield) return false
+        if (presenceMask[24] != other.presenceMask[24] || presenceMask[24] && defaultInt32 != other.defaultInt32) return false
+        if (presenceMask[25] != other.presenceMask[25] || presenceMask[25] && defaultInt64 != other.defaultInt64) return false
+        if (presenceMask[26] != other.presenceMask[26] || presenceMask[26] && defaultUint32 != other.defaultUint32) return false
+        if (presenceMask[27] != other.presenceMask[27] || presenceMask[27] && defaultUint64 != other.defaultUint64) return false
+        if (presenceMask[28] != other.presenceMask[28] || presenceMask[28] && defaultSint32 != other.defaultSint32) return false
+        if (presenceMask[29] != other.presenceMask[29] || presenceMask[29] && defaultSint64 != other.defaultSint64) return false
+        if (presenceMask[30] != other.presenceMask[30] || presenceMask[30] && defaultFixed32 != other.defaultFixed32) return false
+        if (presenceMask[31] != other.presenceMask[31] || presenceMask[31] && defaultFixed64 != other.defaultFixed64) return false
+        if (presenceMask[32] != other.presenceMask[32] || presenceMask[32] && defaultSfixed32 != other.defaultSfixed32) return false
+        if (presenceMask[33] != other.presenceMask[33] || presenceMask[33] && defaultSfixed64 != other.defaultSfixed64) return false
+        if (presenceMask[34] != other.presenceMask[34] || presenceMask[34] && defaultFloat != other.defaultFloat) return false
+        if (presenceMask[35] != other.presenceMask[35] || presenceMask[35] && defaultDouble != other.defaultDouble) return false
+        if (presenceMask[36] != other.presenceMask[36] || presenceMask[36] && defaultBool != other.defaultBool) return false
+        if (presenceMask[37] != other.presenceMask[37] || presenceMask[37] && defaultString != other.defaultString) return false
+        if (presenceMask[38] != other.presenceMask[38] || presenceMask[38] && !defaultBytes.contentEquals(other.defaultBytes)) return false
+        if (presenceMask[39] != other.presenceMask[39] || presenceMask[39] && fieldname1 != other.fieldname1) return false
+        if (presenceMask[40] != other.presenceMask[40] || presenceMask[40] && fieldName2 != other.fieldName2) return false
+        if (presenceMask[41] != other.presenceMask[41] || presenceMask[41] && FieldName3 != other.FieldName3) return false
+        if (presenceMask[42] != other.presenceMask[42] || presenceMask[42] && field_Name4_ != other.field_Name4_) return false
+        if (presenceMask[43] != other.presenceMask[43] || presenceMask[43] && field0name5 != other.field0name5) return false
+        if (presenceMask[44] != other.presenceMask[44] || presenceMask[44] && field_0Name6 != other.field_0Name6) return false
+        if (presenceMask[45] != other.presenceMask[45] || presenceMask[45] && fieldName7 != other.fieldName7) return false
+        if (presenceMask[46] != other.presenceMask[46] || presenceMask[46] && FieldName8 != other.FieldName8) return false
+        if (presenceMask[47] != other.presenceMask[47] || presenceMask[47] && field_Name9 != other.field_Name9) return false
+        if (presenceMask[48] != other.presenceMask[48] || presenceMask[48] && Field_Name10 != other.Field_Name10) return false
+        if (presenceMask[49] != other.presenceMask[49] || presenceMask[49] && FIELD_NAME11 != other.FIELD_NAME11) return false
+        if (presenceMask[50] != other.presenceMask[50] || presenceMask[50] && FIELDName12 != other.FIELDName12) return false
+        if (presenceMask[51] != other.presenceMask[51] || presenceMask[51] && _FieldName13 != other._FieldName13) return false
+        if (presenceMask[52] != other.presenceMask[52] || presenceMask[52] && __FieldName14 != other.__FieldName14) return false
+        if (presenceMask[53] != other.presenceMask[53] || presenceMask[53] && field_Name15 != other.field_Name15) return false
+        if (presenceMask[54] != other.presenceMask[54] || presenceMask[54] && field__Name16 != other.field__Name16) return false
+        if (presenceMask[55] != other.presenceMask[55] || presenceMask[55] && fieldName17__ != other.fieldName17__) return false
+        if (presenceMask[56] != other.presenceMask[56] || presenceMask[56] && FieldName18__ != other.FieldName18__) return false
+        if (presenceMask[57] != other.presenceMask[57] || presenceMask[57] && messageSetCorrect != other.messageSetCorrect) return false
+        if (oneofField != other.oneofField) return false
+        return true
+    }
+
+    override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2(")
+            if (presenceMask[0]) { 
+                appendLine("${nextIndentString}optionalInt32=${optionalInt32},")
+            } else { 
+                appendLine("${nextIndentString}optionalInt32=<unset>,")
+            }
+
+            if (presenceMask[1]) { 
+                appendLine("${nextIndentString}optionalInt64=${optionalInt64},")
+            } else { 
+                appendLine("${nextIndentString}optionalInt64=<unset>,")
+            }
+
+            if (presenceMask[2]) { 
+                appendLine("${nextIndentString}optionalUint32=${optionalUint32},")
+            } else { 
+                appendLine("${nextIndentString}optionalUint32=<unset>,")
+            }
+
+            if (presenceMask[3]) { 
+                appendLine("${nextIndentString}optionalUint64=${optionalUint64},")
+            } else { 
+                appendLine("${nextIndentString}optionalUint64=<unset>,")
+            }
+
+            if (presenceMask[4]) { 
+                appendLine("${nextIndentString}optionalSint32=${optionalSint32},")
+            } else { 
+                appendLine("${nextIndentString}optionalSint32=<unset>,")
+            }
+
+            if (presenceMask[5]) { 
+                appendLine("${nextIndentString}optionalSint64=${optionalSint64},")
+            } else { 
+                appendLine("${nextIndentString}optionalSint64=<unset>,")
+            }
+
+            if (presenceMask[6]) { 
+                appendLine("${nextIndentString}optionalFixed32=${optionalFixed32},")
+            } else { 
+                appendLine("${nextIndentString}optionalFixed32=<unset>,")
+            }
+
+            if (presenceMask[7]) { 
+                appendLine("${nextIndentString}optionalFixed64=${optionalFixed64},")
+            } else { 
+                appendLine("${nextIndentString}optionalFixed64=<unset>,")
+            }
+
+            if (presenceMask[8]) { 
+                appendLine("${nextIndentString}optionalSfixed32=${optionalSfixed32},")
+            } else { 
+                appendLine("${nextIndentString}optionalSfixed32=<unset>,")
+            }
+
+            if (presenceMask[9]) { 
+                appendLine("${nextIndentString}optionalSfixed64=${optionalSfixed64},")
+            } else { 
+                appendLine("${nextIndentString}optionalSfixed64=<unset>,")
+            }
+
+            if (presenceMask[10]) { 
+                appendLine("${nextIndentString}optionalFloat=${optionalFloat},")
+            } else { 
+                appendLine("${nextIndentString}optionalFloat=<unset>,")
+            }
+
+            if (presenceMask[11]) { 
+                appendLine("${nextIndentString}optionalDouble=${optionalDouble},")
+            } else { 
+                appendLine("${nextIndentString}optionalDouble=<unset>,")
+            }
+
+            if (presenceMask[12]) { 
+                appendLine("${nextIndentString}optionalBool=${optionalBool},")
+            } else { 
+                appendLine("${nextIndentString}optionalBool=<unset>,")
+            }
+
+            if (presenceMask[13]) { 
+                appendLine("${nextIndentString}optionalString=${optionalString},")
+            } else { 
+                appendLine("${nextIndentString}optionalString=<unset>,")
+            }
+
+            if (presenceMask[14]) { 
+                appendLine("${nextIndentString}optionalBytes=${optionalBytes.contentToString()},")
+            } else { 
+                appendLine("${nextIndentString}optionalBytes=<unset>,")
+            }
+
+            if (presenceMask[15]) { 
+                appendLine("${nextIndentString}optionalNestedMessage=${optionalNestedMessage.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}optionalNestedMessage=<unset>,")
+            }
+
+            if (presenceMask[16]) { 
+                appendLine("${nextIndentString}optionalForeignMessage=${optionalForeignMessage.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}optionalForeignMessage=<unset>,")
+            }
+
+            if (presenceMask[17]) { 
+                appendLine("${nextIndentString}optionalNestedEnum=${optionalNestedEnum},")
+            } else { 
+                appendLine("${nextIndentString}optionalNestedEnum=<unset>,")
+            }
+
+            if (presenceMask[18]) { 
+                appendLine("${nextIndentString}optionalForeignEnum=${optionalForeignEnum},")
+            } else { 
+                appendLine("${nextIndentString}optionalForeignEnum=<unset>,")
+            }
+
+            if (presenceMask[19]) { 
+                appendLine("${nextIndentString}optionalStringPiece=${optionalStringPiece},")
+            } else { 
+                appendLine("${nextIndentString}optionalStringPiece=<unset>,")
+            }
+
+            if (presenceMask[20]) { 
+                appendLine("${nextIndentString}optionalCord=${optionalCord},")
+            } else { 
+                appendLine("${nextIndentString}optionalCord=<unset>,")
+            }
+
+            if (presenceMask[21]) { 
+                appendLine("${nextIndentString}recursiveMessage=${recursiveMessage.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}recursiveMessage=<unset>,")
+            }
+
+            appendLine("${nextIndentString}repeatedInt32=${repeatedInt32},")
+            appendLine("${nextIndentString}repeatedInt64=${repeatedInt64},")
+            appendLine("${nextIndentString}repeatedUint32=${repeatedUint32},")
+            appendLine("${nextIndentString}repeatedUint64=${repeatedUint64},")
+            appendLine("${nextIndentString}repeatedSint32=${repeatedSint32},")
+            appendLine("${nextIndentString}repeatedSint64=${repeatedSint64},")
+            appendLine("${nextIndentString}repeatedFixed32=${repeatedFixed32},")
+            appendLine("${nextIndentString}repeatedFixed64=${repeatedFixed64},")
+            appendLine("${nextIndentString}repeatedSfixed32=${repeatedSfixed32},")
+            appendLine("${nextIndentString}repeatedSfixed64=${repeatedSfixed64},")
+            appendLine("${nextIndentString}repeatedFloat=${repeatedFloat},")
+            appendLine("${nextIndentString}repeatedDouble=${repeatedDouble},")
+            appendLine("${nextIndentString}repeatedBool=${repeatedBool},")
+            appendLine("${nextIndentString}repeatedString=${repeatedString},")
+            appendLine("${nextIndentString}repeatedBytes=${repeatedBytes},")
+            appendLine("${nextIndentString}repeatedNestedMessage=${repeatedNestedMessage},")
+            appendLine("${nextIndentString}repeatedForeignMessage=${repeatedForeignMessage},")
+            appendLine("${nextIndentString}repeatedNestedEnum=${repeatedNestedEnum},")
+            appendLine("${nextIndentString}repeatedForeignEnum=${repeatedForeignEnum},")
+            appendLine("${nextIndentString}repeatedStringPiece=${repeatedStringPiece},")
+            appendLine("${nextIndentString}repeatedCord=${repeatedCord},")
+            appendLine("${nextIndentString}packedInt32=${packedInt32},")
+            appendLine("${nextIndentString}packedInt64=${packedInt64},")
+            appendLine("${nextIndentString}packedUint32=${packedUint32},")
+            appendLine("${nextIndentString}packedUint64=${packedUint64},")
+            appendLine("${nextIndentString}packedSint32=${packedSint32},")
+            appendLine("${nextIndentString}packedSint64=${packedSint64},")
+            appendLine("${nextIndentString}packedFixed32=${packedFixed32},")
+            appendLine("${nextIndentString}packedFixed64=${packedFixed64},")
+            appendLine("${nextIndentString}packedSfixed32=${packedSfixed32},")
+            appendLine("${nextIndentString}packedSfixed64=${packedSfixed64},")
+            appendLine("${nextIndentString}packedFloat=${packedFloat},")
+            appendLine("${nextIndentString}packedDouble=${packedDouble},")
+            appendLine("${nextIndentString}packedBool=${packedBool},")
+            appendLine("${nextIndentString}packedNestedEnum=${packedNestedEnum},")
+            appendLine("${nextIndentString}unpackedInt32=${unpackedInt32},")
+            appendLine("${nextIndentString}unpackedInt64=${unpackedInt64},")
+            appendLine("${nextIndentString}unpackedUint32=${unpackedUint32},")
+            appendLine("${nextIndentString}unpackedUint64=${unpackedUint64},")
+            appendLine("${nextIndentString}unpackedSint32=${unpackedSint32},")
+            appendLine("${nextIndentString}unpackedSint64=${unpackedSint64},")
+            appendLine("${nextIndentString}unpackedFixed32=${unpackedFixed32},")
+            appendLine("${nextIndentString}unpackedFixed64=${unpackedFixed64},")
+            appendLine("${nextIndentString}unpackedSfixed32=${unpackedSfixed32},")
+            appendLine("${nextIndentString}unpackedSfixed64=${unpackedSfixed64},")
+            appendLine("${nextIndentString}unpackedFloat=${unpackedFloat},")
+            appendLine("${nextIndentString}unpackedDouble=${unpackedDouble},")
+            appendLine("${nextIndentString}unpackedBool=${unpackedBool},")
+            appendLine("${nextIndentString}unpackedNestedEnum=${unpackedNestedEnum},")
+            appendLine("${nextIndentString}mapInt32Int32=${mapInt32Int32},")
+            appendLine("${nextIndentString}mapInt64Int64=${mapInt64Int64},")
+            appendLine("${nextIndentString}mapUint32Uint32=${mapUint32Uint32},")
+            appendLine("${nextIndentString}mapUint64Uint64=${mapUint64Uint64},")
+            appendLine("${nextIndentString}mapSint32Sint32=${mapSint32Sint32},")
+            appendLine("${nextIndentString}mapSint64Sint64=${mapSint64Sint64},")
+            appendLine("${nextIndentString}mapFixed32Fixed32=${mapFixed32Fixed32},")
+            appendLine("${nextIndentString}mapFixed64Fixed64=${mapFixed64Fixed64},")
+            appendLine("${nextIndentString}mapSfixed32Sfixed32=${mapSfixed32Sfixed32},")
+            appendLine("${nextIndentString}mapSfixed64Sfixed64=${mapSfixed64Sfixed64},")
+            appendLine("${nextIndentString}mapInt32Bool=${mapInt32Bool},")
+            appendLine("${nextIndentString}mapInt32Float=${mapInt32Float},")
+            appendLine("${nextIndentString}mapInt32Double=${mapInt32Double},")
+            appendLine("${nextIndentString}mapInt32NestedMessage=${mapInt32NestedMessage},")
+            appendLine("${nextIndentString}mapBoolBool=${mapBoolBool},")
+            appendLine("${nextIndentString}mapStringString=${mapStringString},")
+            appendLine("${nextIndentString}mapStringBytes=${mapStringBytes},")
+            appendLine("${nextIndentString}mapStringNestedMessage=${mapStringNestedMessage},")
+            appendLine("${nextIndentString}mapStringForeignMessage=${mapStringForeignMessage},")
+            appendLine("${nextIndentString}mapStringNestedEnum=${mapStringNestedEnum},")
+            appendLine("${nextIndentString}mapStringForeignEnum=${mapStringForeignEnum},")
+            if (presenceMask[22]) { 
+                appendLine("${nextIndentString}data=${data.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}data=<unset>,")
+            }
+
+            if (presenceMask[23]) { 
+                appendLine("${nextIndentString}multiwordgroupfield=${multiwordgroupfield.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}multiwordgroupfield=<unset>,")
+            }
+
+            if (presenceMask[24]) { 
+                appendLine("${nextIndentString}defaultInt32=${defaultInt32},")
+            } else { 
+                appendLine("${nextIndentString}defaultInt32=<unset>,")
+            }
+
+            if (presenceMask[25]) { 
+                appendLine("${nextIndentString}defaultInt64=${defaultInt64},")
+            } else { 
+                appendLine("${nextIndentString}defaultInt64=<unset>,")
+            }
+
+            if (presenceMask[26]) { 
+                appendLine("${nextIndentString}defaultUint32=${defaultUint32},")
+            } else { 
+                appendLine("${nextIndentString}defaultUint32=<unset>,")
+            }
+
+            if (presenceMask[27]) { 
+                appendLine("${nextIndentString}defaultUint64=${defaultUint64},")
+            } else { 
+                appendLine("${nextIndentString}defaultUint64=<unset>,")
+            }
+
+            if (presenceMask[28]) { 
+                appendLine("${nextIndentString}defaultSint32=${defaultSint32},")
+            } else { 
+                appendLine("${nextIndentString}defaultSint32=<unset>,")
+            }
+
+            if (presenceMask[29]) { 
+                appendLine("${nextIndentString}defaultSint64=${defaultSint64},")
+            } else { 
+                appendLine("${nextIndentString}defaultSint64=<unset>,")
+            }
+
+            if (presenceMask[30]) { 
+                appendLine("${nextIndentString}defaultFixed32=${defaultFixed32},")
+            } else { 
+                appendLine("${nextIndentString}defaultFixed32=<unset>,")
+            }
+
+            if (presenceMask[31]) { 
+                appendLine("${nextIndentString}defaultFixed64=${defaultFixed64},")
+            } else { 
+                appendLine("${nextIndentString}defaultFixed64=<unset>,")
+            }
+
+            if (presenceMask[32]) { 
+                appendLine("${nextIndentString}defaultSfixed32=${defaultSfixed32},")
+            } else { 
+                appendLine("${nextIndentString}defaultSfixed32=<unset>,")
+            }
+
+            if (presenceMask[33]) { 
+                appendLine("${nextIndentString}defaultSfixed64=${defaultSfixed64},")
+            } else { 
+                appendLine("${nextIndentString}defaultSfixed64=<unset>,")
+            }
+
+            if (presenceMask[34]) { 
+                appendLine("${nextIndentString}defaultFloat=${defaultFloat},")
+            } else { 
+                appendLine("${nextIndentString}defaultFloat=<unset>,")
+            }
+
+            if (presenceMask[35]) { 
+                appendLine("${nextIndentString}defaultDouble=${defaultDouble},")
+            } else { 
+                appendLine("${nextIndentString}defaultDouble=<unset>,")
+            }
+
+            if (presenceMask[36]) { 
+                appendLine("${nextIndentString}defaultBool=${defaultBool},")
+            } else { 
+                appendLine("${nextIndentString}defaultBool=<unset>,")
+            }
+
+            if (presenceMask[37]) { 
+                appendLine("${nextIndentString}defaultString=${defaultString},")
+            } else { 
+                appendLine("${nextIndentString}defaultString=<unset>,")
+            }
+
+            if (presenceMask[38]) { 
+                appendLine("${nextIndentString}defaultBytes=${defaultBytes.contentToString()},")
+            } else { 
+                appendLine("${nextIndentString}defaultBytes=<unset>,")
+            }
+
+            if (presenceMask[39]) { 
+                appendLine("${nextIndentString}fieldname1=${fieldname1},")
+            } else { 
+                appendLine("${nextIndentString}fieldname1=<unset>,")
+            }
+
+            if (presenceMask[40]) { 
+                appendLine("${nextIndentString}fieldName2=${fieldName2},")
+            } else { 
+                appendLine("${nextIndentString}fieldName2=<unset>,")
+            }
+
+            if (presenceMask[41]) { 
+                appendLine("${nextIndentString}FieldName3=${FieldName3},")
+            } else { 
+                appendLine("${nextIndentString}FieldName3=<unset>,")
+            }
+
+            if (presenceMask[42]) { 
+                appendLine("${nextIndentString}field_Name4_=${field_Name4_},")
+            } else { 
+                appendLine("${nextIndentString}field_Name4_=<unset>,")
+            }
+
+            if (presenceMask[43]) { 
+                appendLine("${nextIndentString}field0name5=${field0name5},")
+            } else { 
+                appendLine("${nextIndentString}field0name5=<unset>,")
+            }
+
+            if (presenceMask[44]) { 
+                appendLine("${nextIndentString}field_0Name6=${field_0Name6},")
+            } else { 
+                appendLine("${nextIndentString}field_0Name6=<unset>,")
+            }
+
+            if (presenceMask[45]) { 
+                appendLine("${nextIndentString}fieldName7=${fieldName7},")
+            } else { 
+                appendLine("${nextIndentString}fieldName7=<unset>,")
+            }
+
+            if (presenceMask[46]) { 
+                appendLine("${nextIndentString}FieldName8=${FieldName8},")
+            } else { 
+                appendLine("${nextIndentString}FieldName8=<unset>,")
+            }
+
+            if (presenceMask[47]) { 
+                appendLine("${nextIndentString}field_Name9=${field_Name9},")
+            } else { 
+                appendLine("${nextIndentString}field_Name9=<unset>,")
+            }
+
+            if (presenceMask[48]) { 
+                appendLine("${nextIndentString}Field_Name10=${Field_Name10},")
+            } else { 
+                appendLine("${nextIndentString}Field_Name10=<unset>,")
+            }
+
+            if (presenceMask[49]) { 
+                appendLine("${nextIndentString}FIELD_NAME11=${FIELD_NAME11},")
+            } else { 
+                appendLine("${nextIndentString}FIELD_NAME11=<unset>,")
+            }
+
+            if (presenceMask[50]) { 
+                appendLine("${nextIndentString}FIELDName12=${FIELDName12},")
+            } else { 
+                appendLine("${nextIndentString}FIELDName12=<unset>,")
+            }
+
+            if (presenceMask[51]) { 
+                appendLine("${nextIndentString}_FieldName13=${_FieldName13},")
+            } else { 
+                appendLine("${nextIndentString}_FieldName13=<unset>,")
+            }
+
+            if (presenceMask[52]) { 
+                appendLine("${nextIndentString}__FieldName14=${__FieldName14},")
+            } else { 
+                appendLine("${nextIndentString}__FieldName14=<unset>,")
+            }
+
+            if (presenceMask[53]) { 
+                appendLine("${nextIndentString}field_Name15=${field_Name15},")
+            } else { 
+                appendLine("${nextIndentString}field_Name15=<unset>,")
+            }
+
+            if (presenceMask[54]) { 
+                appendLine("${nextIndentString}field__Name16=${field__Name16},")
+            } else { 
+                appendLine("${nextIndentString}field__Name16=<unset>,")
+            }
+
+            if (presenceMask[55]) { 
+                appendLine("${nextIndentString}fieldName17__=${fieldName17__},")
+            } else { 
+                appendLine("${nextIndentString}fieldName17__=<unset>,")
+            }
+
+            if (presenceMask[56]) { 
+                appendLine("${nextIndentString}FieldName18__=${FieldName18__},")
+            } else { 
+                appendLine("${nextIndentString}FieldName18__=<unset>,")
+            }
+
+            if (presenceMask[57]) { 
+                appendLine("${nextIndentString}messageSetCorrect=${messageSetCorrect.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}messageSetCorrect=<unset>,")
+            }
+
+            appendLine("${nextIndentString}oneofField=${oneofField},")
+            append("${indentString})")
+        }
+    }
 
     class NestedMessageInternal: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 2) { 
         private object PresenceIndices { 
@@ -213,8 +934,52 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
-        override var a: Int? = null
+        override var a: Int? by MsgFieldDelegate(PresenceIndices.a) { null }
         override var corecursive: com.google.protobuf_test_messages.proto2.TestAllTypesProto2 by MsgFieldDelegate(PresenceIndices.corecursive) { com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal() }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) (a?.hashCode() ?: 0) else 0
+            result = 31 * result + if (presenceMask[1]) corecursive.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as NestedMessageInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && a != other.a) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && corecursive != other.corecursive) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}a=${a},")
+                } else { 
+                    appendLine("${nextIndentString}a=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}corecursive=${corecursive.asInternal().asString(indent = indent + 4)},")
+                } else { 
+                    appendLine("${nextIndentString}corecursive=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage> { 
@@ -256,6 +1021,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
 
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapInt32Int32EntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapInt32Int32Entry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
+
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
     }
@@ -271,6 +1080,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapInt64Int64EntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapInt64Int64Entry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
@@ -288,6 +1141,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         var key: UInt by MsgFieldDelegate(PresenceIndices.key) { 0u }
         var value: UInt by MsgFieldDelegate(PresenceIndices.value) { 0u }
 
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapUint32Uint32EntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapUint32Uint32Entry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
+
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
     }
@@ -303,6 +1200,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         var key: ULong by MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var value: ULong by MsgFieldDelegate(PresenceIndices.value) { 0uL }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapUint64Uint64EntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapUint64Uint64Entry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
@@ -320,6 +1261,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
 
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapSint32Sint32EntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapSint32Sint32Entry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
+
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
     }
@@ -335,6 +1320,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapSint64Sint64EntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapSint64Sint64Entry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
@@ -352,6 +1381,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         var key: UInt by MsgFieldDelegate(PresenceIndices.key) { 0u }
         var value: UInt by MsgFieldDelegate(PresenceIndices.value) { 0u }
 
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapFixed32Fixed32EntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapFixed32Fixed32Entry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
+
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
     }
@@ -367,6 +1440,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         var key: ULong by MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var value: ULong by MsgFieldDelegate(PresenceIndices.value) { 0uL }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapFixed64Fixed64EntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapFixed64Fixed64Entry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
@@ -384,6 +1501,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
 
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapSfixed32Sfixed32EntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapSfixed32Sfixed32Entry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
+
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
     }
@@ -399,6 +1560,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapSfixed64Sfixed64EntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapSfixed64Sfixed64Entry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
@@ -416,6 +1621,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Boolean by MsgFieldDelegate(PresenceIndices.value) { false }
 
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapInt32BoolEntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapInt32BoolEntry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
+
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
     }
@@ -431,6 +1680,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Float by MsgFieldDelegate(PresenceIndices.value) { 0.0f }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapInt32FloatEntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapInt32FloatEntry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
@@ -448,6 +1741,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Double by MsgFieldDelegate(PresenceIndices.value) { 0.0 }
 
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapInt32DoubleEntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapInt32DoubleEntry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
+
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
     }
@@ -463,6 +1800,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.NestedMessageInternal() }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapInt32NestedMessageEntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapInt32NestedMessageEntry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value.asInternal().asString(indent = indent + 4)},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
@@ -480,6 +1861,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         var key: Boolean by MsgFieldDelegate(PresenceIndices.key) { false }
         var value: Boolean by MsgFieldDelegate(PresenceIndices.value) { false }
 
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapBoolBoolEntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapBoolBoolEntry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
+
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
     }
@@ -495,6 +1920,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: String by MsgFieldDelegate(PresenceIndices.value) { "" }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapStringStringEntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapStringStringEntry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
@@ -512,6 +1981,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: ByteArray by MsgFieldDelegate(PresenceIndices.value) { byteArrayOf() }
 
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.contentHashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapStringBytesEntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && !value.contentEquals(other.value)) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapStringBytesEntry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value.contentToString()},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
+
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
     }
@@ -527,6 +2040,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.NestedMessageInternal() }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapStringNestedMessageEntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapStringNestedMessageEntry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value.asInternal().asString(indent = indent + 4)},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
@@ -544,6 +2101,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: com.google.protobuf_test_messages.proto2.ForeignMessageProto2 by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.proto2.ForeignMessageProto2Internal() }
 
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapStringForeignMessageEntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapStringForeignMessageEntry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value.asInternal().asString(indent = indent + 4)},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
+
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
     }
@@ -559,6 +2160,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedEnum by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedEnum.FOO }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapStringNestedEnumEntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapStringNestedEnumEntry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
@@ -576,6 +2221,50 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: com.google.protobuf_test_messages.proto2.ForeignEnumProto2 by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.proto2.ForeignEnumProto2.FOREIGN_FOO }
 
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapStringForeignEnumEntryInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MapStringForeignEnumEntry(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}key=${key},")
+                } else { 
+                    appendLine("${nextIndentString}key=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}value=${value},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
+
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
     }
@@ -589,8 +2278,52 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
-        override var groupInt32: Int? = null
-        override var groupUint32: UInt? = null
+        override var groupInt32: Int? by MsgFieldDelegate(PresenceIndices.groupInt32) { null }
+        override var groupUint32: UInt? by MsgFieldDelegate(PresenceIndices.groupUint32) { null }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) (groupInt32?.hashCode() ?: 0) else 0
+            result = 31 * result + if (presenceMask[1]) (groupUint32?.hashCode() ?: 0) else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as DataInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && groupInt32 != other.groupInt32) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && groupUint32 != other.groupUint32) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Data(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}groupInt32=${groupInt32},")
+                } else { 
+                    appendLine("${nextIndentString}groupInt32=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}groupUint32=${groupUint32},")
+                } else { 
+                    appendLine("${nextIndentString}groupUint32=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
@@ -605,8 +2338,52 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
-        override var groupInt32: Int? = null
-        override var groupUint32: UInt? = null
+        override var groupInt32: Int? by MsgFieldDelegate(PresenceIndices.groupInt32) { null }
+        override var groupUint32: UInt? by MsgFieldDelegate(PresenceIndices.groupUint32) { null }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) (groupInt32?.hashCode() ?: 0) else 0
+            result = 31 * result + if (presenceMask[1]) (groupUint32?.hashCode() ?: 0) else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MultiWordGroupFieldInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && groupInt32 != other.groupInt32) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && groupUint32 != other.groupUint32) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MultiWordGroupField(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}groupInt32=${groupInt32},")
+                } else { 
+                    appendLine("${nextIndentString}groupInt32=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}groupUint32=${groupUint32},")
+                } else { 
+                    appendLine("${nextIndentString}groupUint32=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
@@ -615,6 +2392,34 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
     class MessageSetCorrectInternal: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            return this::class.hashCode()
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MessageSetCorrectInternal
+            other.checkRequiredFields()
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect(")
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect> { 
@@ -652,7 +2457,42 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
-        override var str: String? = null
+        override var str: String? by MsgFieldDelegate(PresenceIndices.str) { null }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            return if (presenceMask[0]) (str?.hashCode() ?: 0) else 0
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MessageSetCorrectExtension1Internal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && str != other.str) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}str=${str},")
+                } else { 
+                    appendLine("${nextIndentString}str=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1> { 
@@ -690,7 +2530,42 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
-        override var i: Int? = null
+        override var i: Int? by MsgFieldDelegate(PresenceIndices.i) { null }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            return if (presenceMask[0]) (i?.hashCode() ?: 0) else 0
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MessageSetCorrectExtension2Internal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && i != other.i) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}i=${i},")
+                } else { 
+                    appendLine("${nextIndentString}i=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2> { 
@@ -725,6 +2600,45 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         override val _size: Int by lazy { computeSize() }
 
         override var oneofField: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOneof.OneofField? = null
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            return (oneofField?.oneOfHashCode() ?: 0)
+        }
+
+        fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOneof.OneofField.oneOfHashCode(): kotlin.Int { 
+            val offset = when (this) { 
+                is com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOneof.OneofField.A -> 0
+                is com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOneof.OneofField.B -> 1
+            }
+
+            return hashCode() + offset
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as ExtensionWithOneofInternal
+            other.checkRequiredFields()
+            if (oneofField != other.oneofField) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOneof(")
+                appendLine("${nextIndentString}oneofField=${oneofField},")
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOneof> { 
@@ -790,7 +2704,42 @@ class ForeignMessageProto2Internal: com.google.protobuf_test_messages.proto2.For
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
-    override var c: Int? = null
+    override var c: Int? by MsgFieldDelegate(PresenceIndices.c) { null }
+
+    override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return if (presenceMask[0]) (c?.hashCode() ?: 0) else 0
+    }
+
+    override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as ForeignMessageProto2Internal
+        other.checkRequiredFields()
+        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && c != other.c) return false
+        return true
+    }
+
+    override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf_test_messages.proto2.ForeignMessageProto2(")
+            if (presenceMask[0]) { 
+                appendLine("${nextIndentString}c=${c},")
+            } else { 
+                appendLine("${nextIndentString}c=<unset>,")
+            }
+
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.ForeignMessageProto2> { 
@@ -829,8 +2778,52 @@ class GroupFieldInternal: com.google.protobuf_test_messages.proto2.GroupField, k
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
-    override var groupInt32: Int? = null
-    override var groupUint32: UInt? = null
+    override var groupInt32: Int? by MsgFieldDelegate(PresenceIndices.groupInt32) { null }
+    override var groupUint32: UInt? by MsgFieldDelegate(PresenceIndices.groupUint32) { null }
+
+    override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = if (presenceMask[0]) (groupInt32?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[1]) (groupUint32?.hashCode() ?: 0) else 0
+        return result
+    }
+
+    override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as GroupFieldInternal
+        other.checkRequiredFields()
+        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && groupInt32 != other.groupInt32) return false
+        if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && groupUint32 != other.groupUint32) return false
+        return true
+    }
+
+    override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf_test_messages.proto2.GroupField(")
+            if (presenceMask[0]) { 
+                appendLine("${nextIndentString}groupInt32=${groupInt32},")
+            } else { 
+                appendLine("${nextIndentString}groupInt32=<unset>,")
+            }
+
+            if (presenceMask[1]) { 
+                appendLine("${nextIndentString}groupUint32=${groupUint32},")
+            } else { 
+                appendLine("${nextIndentString}groupUint32=<unset>,")
+            }
+
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.GroupField> { 
@@ -872,12 +2865,83 @@ class UnknownToTestAllTypesInternal: com.google.protobuf_test_messages.proto2.Un
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
-    override var optionalInt32: Int? = null
-    override var optionalString: String? = null
+    override var optionalInt32: Int? by MsgFieldDelegate(PresenceIndices.optionalInt32) { null }
+    override var optionalString: String? by MsgFieldDelegate(PresenceIndices.optionalString) { null }
     override var nestedMessage: com.google.protobuf_test_messages.proto2.ForeignMessageProto2 by MsgFieldDelegate(PresenceIndices.nestedMessage) { com.google.protobuf_test_messages.proto2.ForeignMessageProto2Internal() }
     override var optionalgroup: com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.OptionalGroup by MsgFieldDelegate(PresenceIndices.optionalgroup) { com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal.OptionalGroupInternal() }
-    override var optionalBool: Boolean? = null
+    override var optionalBool: Boolean? by MsgFieldDelegate(PresenceIndices.optionalBool) { null }
     override var repeatedInt32: List<kotlin.Int> by MsgFieldDelegate { mutableListOf() }
+
+    override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = if (presenceMask[0]) (optionalInt32?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[1]) (optionalString?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[2]) nestedMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[3]) optionalgroup.hashCode() else 0
+        result = 31 * result + if (presenceMask[4]) (optionalBool?.hashCode() ?: 0) else 0
+        result = 31 * result + repeatedInt32.hashCode()
+        return result
+    }
+
+    override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as UnknownToTestAllTypesInternal
+        other.checkRequiredFields()
+        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && optionalInt32 != other.optionalInt32) return false
+        if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && optionalString != other.optionalString) return false
+        if (presenceMask[2] != other.presenceMask[2] || presenceMask[2] && nestedMessage != other.nestedMessage) return false
+        if (presenceMask[3] != other.presenceMask[3] || presenceMask[3] && optionalgroup != other.optionalgroup) return false
+        if (presenceMask[4] != other.presenceMask[4] || presenceMask[4] && optionalBool != other.optionalBool) return false
+        if (repeatedInt32 != other.repeatedInt32) return false
+        return true
+    }
+
+    override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes(")
+            if (presenceMask[0]) { 
+                appendLine("${nextIndentString}optionalInt32=${optionalInt32},")
+            } else { 
+                appendLine("${nextIndentString}optionalInt32=<unset>,")
+            }
+
+            if (presenceMask[1]) { 
+                appendLine("${nextIndentString}optionalString=${optionalString},")
+            } else { 
+                appendLine("${nextIndentString}optionalString=<unset>,")
+            }
+
+            if (presenceMask[2]) { 
+                appendLine("${nextIndentString}nestedMessage=${nestedMessage.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}nestedMessage=<unset>,")
+            }
+
+            if (presenceMask[3]) { 
+                appendLine("${nextIndentString}optionalgroup=${optionalgroup.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}optionalgroup=<unset>,")
+            }
+
+            if (presenceMask[4]) { 
+                appendLine("${nextIndentString}optionalBool=${optionalBool},")
+            } else { 
+                appendLine("${nextIndentString}optionalBool=<unset>,")
+            }
+
+            appendLine("${nextIndentString}repeatedInt32=${repeatedInt32},")
+            append("${indentString})")
+        }
+    }
 
     class OptionalGroupInternal: com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.OptionalGroup, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 1) { 
         private object PresenceIndices { 
@@ -887,7 +2951,42 @@ class UnknownToTestAllTypesInternal: com.google.protobuf_test_messages.proto2.Un
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
-        override var a: Int? = null
+        override var a: Int? by MsgFieldDelegate(PresenceIndices.a) { null }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            return if (presenceMask[0]) (a?.hashCode() ?: 0) else 0
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as OptionalGroupInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && a != other.a) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.OptionalGroup(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}a=${a},")
+                } else { 
+                    appendLine("${nextIndentString}a=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
@@ -925,6 +3024,34 @@ class NullHypothesisProto2Internal: com.google.protobuf_test_messages.proto2.Nul
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
+    override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return this::class.hashCode()
+    }
+
+    override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as NullHypothesisProto2Internal
+        other.checkRequiredFields()
+        return true
+    }
+
+    override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf_test_messages.proto2.NullHypothesisProto2(")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.NullHypothesisProto2> { 
         override fun encode(value: com.google.protobuf_test_messages.proto2.NullHypothesisProto2): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -956,6 +3083,34 @@ class NullHypothesisProto2Internal: com.google.protobuf_test_messages.proto2.Nul
 class EnumOnlyProto2Internal: com.google.protobuf_test_messages.proto2.EnumOnlyProto2, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
+
+    override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return this::class.hashCode()
+    }
+
+    override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as EnumOnlyProto2Internal
+        other.checkRequiredFields()
+        return true
+    }
+
+    override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf_test_messages.proto2.EnumOnlyProto2(")
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.EnumOnlyProto2> { 
@@ -993,7 +3148,42 @@ class OneStringProto2Internal: com.google.protobuf_test_messages.proto2.OneStrin
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
-    override var data: String? = null
+    override var data: String? by MsgFieldDelegate(PresenceIndices.data) { null }
+
+    override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return if (presenceMask[0]) (data?.hashCode() ?: 0) else 0
+    }
+
+    override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as OneStringProto2Internal
+        other.checkRequiredFields()
+        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && data != other.data) return false
+        return true
+    }
+
+    override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf_test_messages.proto2.OneStringProto2(")
+            if (presenceMask[0]) { 
+                appendLine("${nextIndentString}data=${data},")
+            } else { 
+                appendLine("${nextIndentString}data=<unset>,")
+            }
+
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.OneStringProto2> { 
@@ -1032,9 +3222,56 @@ class ProtoWithKeywordsInternal: com.google.protobuf_test_messages.proto2.ProtoW
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
-    override var inline: Int? = null
-    override var concept: String? = null
+    override var inline: Int? by MsgFieldDelegate(PresenceIndices.inline) { null }
+    override var concept: String? by MsgFieldDelegate(PresenceIndices.concept) { null }
     override var requires: List<kotlin.String> by MsgFieldDelegate { mutableListOf() }
+
+    override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = if (presenceMask[0]) (inline?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[1]) (concept?.hashCode() ?: 0) else 0
+        result = 31 * result + requires.hashCode()
+        return result
+    }
+
+    override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as ProtoWithKeywordsInternal
+        other.checkRequiredFields()
+        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && inline != other.inline) return false
+        if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && concept != other.concept) return false
+        if (requires != other.requires) return false
+        return true
+    }
+
+    override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf_test_messages.proto2.ProtoWithKeywords(")
+            if (presenceMask[0]) { 
+                appendLine("${nextIndentString}inline=${inline},")
+            } else { 
+                appendLine("${nextIndentString}inline=<unset>,")
+            }
+
+            if (presenceMask[1]) { 
+                appendLine("${nextIndentString}concept=${concept},")
+            } else { 
+                appendLine("${nextIndentString}concept=<unset>,")
+            }
+
+            appendLine("${nextIndentString}requires=${requires},")
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.ProtoWithKeywords> { 
@@ -1154,6 +3391,346 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
     override var defaultString: String by MsgFieldDelegate(PresenceIndices.defaultString) { "Rosebud" }
     override var defaultBytes: ByteArray by MsgFieldDelegate(PresenceIndices.defaultBytes) { BytesDefaults.defaultBytes }
 
+    override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = if (presenceMask[0]) requiredInt32.hashCode() else 0
+        result = 31 * result + if (presenceMask[1]) requiredInt64.hashCode() else 0
+        result = 31 * result + if (presenceMask[2]) requiredUint32.hashCode() else 0
+        result = 31 * result + if (presenceMask[3]) requiredUint64.hashCode() else 0
+        result = 31 * result + if (presenceMask[4]) requiredSint32.hashCode() else 0
+        result = 31 * result + if (presenceMask[5]) requiredSint64.hashCode() else 0
+        result = 31 * result + if (presenceMask[6]) requiredFixed32.hashCode() else 0
+        result = 31 * result + if (presenceMask[7]) requiredFixed64.hashCode() else 0
+        result = 31 * result + if (presenceMask[8]) requiredSfixed32.hashCode() else 0
+        result = 31 * result + if (presenceMask[9]) requiredSfixed64.hashCode() else 0
+        result = 31 * result + if (presenceMask[10]) requiredFloat.hashCode() else 0
+        result = 31 * result + if (presenceMask[11]) requiredDouble.hashCode() else 0
+        result = 31 * result + if (presenceMask[12]) requiredBool.hashCode() else 0
+        result = 31 * result + if (presenceMask[13]) requiredString.hashCode() else 0
+        result = 31 * result + if (presenceMask[14]) requiredBytes.contentHashCode() else 0
+        result = 31 * result + if (presenceMask[15]) requiredNestedMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[16]) requiredForeignMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[17]) requiredNestedEnum.hashCode() else 0
+        result = 31 * result + if (presenceMask[18]) requiredForeignEnum.hashCode() else 0
+        result = 31 * result + if (presenceMask[19]) requiredStringPiece.hashCode() else 0
+        result = 31 * result + if (presenceMask[20]) requiredCord.hashCode() else 0
+        result = 31 * result + if (presenceMask[21]) recursiveMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[22]) optionalRecursiveMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[23]) data.hashCode() else 0
+        result = 31 * result + if (presenceMask[24]) defaultInt32.hashCode() else 0
+        result = 31 * result + if (presenceMask[25]) defaultInt64.hashCode() else 0
+        result = 31 * result + if (presenceMask[26]) defaultUint32.hashCode() else 0
+        result = 31 * result + if (presenceMask[27]) defaultUint64.hashCode() else 0
+        result = 31 * result + if (presenceMask[28]) defaultSint32.hashCode() else 0
+        result = 31 * result + if (presenceMask[29]) defaultSint64.hashCode() else 0
+        result = 31 * result + if (presenceMask[30]) defaultFixed32.hashCode() else 0
+        result = 31 * result + if (presenceMask[31]) defaultFixed64.hashCode() else 0
+        result = 31 * result + if (presenceMask[32]) defaultSfixed32.hashCode() else 0
+        result = 31 * result + if (presenceMask[33]) defaultSfixed64.hashCode() else 0
+        result = 31 * result + if (presenceMask[34]) defaultFloat.hashCode() else 0
+        result = 31 * result + if (presenceMask[35]) defaultDouble.hashCode() else 0
+        result = 31 * result + if (presenceMask[36]) defaultBool.hashCode() else 0
+        result = 31 * result + if (presenceMask[37]) defaultString.hashCode() else 0
+        result = 31 * result + if (presenceMask[38]) defaultBytes.contentHashCode() else 0
+        return result
+    }
+
+    override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as TestAllRequiredTypesProto2Internal
+        other.checkRequiredFields()
+        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && requiredInt32 != other.requiredInt32) return false
+        if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && requiredInt64 != other.requiredInt64) return false
+        if (presenceMask[2] != other.presenceMask[2] || presenceMask[2] && requiredUint32 != other.requiredUint32) return false
+        if (presenceMask[3] != other.presenceMask[3] || presenceMask[3] && requiredUint64 != other.requiredUint64) return false
+        if (presenceMask[4] != other.presenceMask[4] || presenceMask[4] && requiredSint32 != other.requiredSint32) return false
+        if (presenceMask[5] != other.presenceMask[5] || presenceMask[5] && requiredSint64 != other.requiredSint64) return false
+        if (presenceMask[6] != other.presenceMask[6] || presenceMask[6] && requiredFixed32 != other.requiredFixed32) return false
+        if (presenceMask[7] != other.presenceMask[7] || presenceMask[7] && requiredFixed64 != other.requiredFixed64) return false
+        if (presenceMask[8] != other.presenceMask[8] || presenceMask[8] && requiredSfixed32 != other.requiredSfixed32) return false
+        if (presenceMask[9] != other.presenceMask[9] || presenceMask[9] && requiredSfixed64 != other.requiredSfixed64) return false
+        if (presenceMask[10] != other.presenceMask[10] || presenceMask[10] && requiredFloat != other.requiredFloat) return false
+        if (presenceMask[11] != other.presenceMask[11] || presenceMask[11] && requiredDouble != other.requiredDouble) return false
+        if (presenceMask[12] != other.presenceMask[12] || presenceMask[12] && requiredBool != other.requiredBool) return false
+        if (presenceMask[13] != other.presenceMask[13] || presenceMask[13] && requiredString != other.requiredString) return false
+        if (presenceMask[14] != other.presenceMask[14] || presenceMask[14] && !requiredBytes.contentEquals(other.requiredBytes)) return false
+        if (presenceMask[15] != other.presenceMask[15] || presenceMask[15] && requiredNestedMessage != other.requiredNestedMessage) return false
+        if (presenceMask[16] != other.presenceMask[16] || presenceMask[16] && requiredForeignMessage != other.requiredForeignMessage) return false
+        if (presenceMask[17] != other.presenceMask[17] || presenceMask[17] && requiredNestedEnum != other.requiredNestedEnum) return false
+        if (presenceMask[18] != other.presenceMask[18] || presenceMask[18] && requiredForeignEnum != other.requiredForeignEnum) return false
+        if (presenceMask[19] != other.presenceMask[19] || presenceMask[19] && requiredStringPiece != other.requiredStringPiece) return false
+        if (presenceMask[20] != other.presenceMask[20] || presenceMask[20] && requiredCord != other.requiredCord) return false
+        if (presenceMask[21] != other.presenceMask[21] || presenceMask[21] && recursiveMessage != other.recursiveMessage) return false
+        if (presenceMask[22] != other.presenceMask[22] || presenceMask[22] && optionalRecursiveMessage != other.optionalRecursiveMessage) return false
+        if (presenceMask[23] != other.presenceMask[23] || presenceMask[23] && data != other.data) return false
+        if (presenceMask[24] != other.presenceMask[24] || presenceMask[24] && defaultInt32 != other.defaultInt32) return false
+        if (presenceMask[25] != other.presenceMask[25] || presenceMask[25] && defaultInt64 != other.defaultInt64) return false
+        if (presenceMask[26] != other.presenceMask[26] || presenceMask[26] && defaultUint32 != other.defaultUint32) return false
+        if (presenceMask[27] != other.presenceMask[27] || presenceMask[27] && defaultUint64 != other.defaultUint64) return false
+        if (presenceMask[28] != other.presenceMask[28] || presenceMask[28] && defaultSint32 != other.defaultSint32) return false
+        if (presenceMask[29] != other.presenceMask[29] || presenceMask[29] && defaultSint64 != other.defaultSint64) return false
+        if (presenceMask[30] != other.presenceMask[30] || presenceMask[30] && defaultFixed32 != other.defaultFixed32) return false
+        if (presenceMask[31] != other.presenceMask[31] || presenceMask[31] && defaultFixed64 != other.defaultFixed64) return false
+        if (presenceMask[32] != other.presenceMask[32] || presenceMask[32] && defaultSfixed32 != other.defaultSfixed32) return false
+        if (presenceMask[33] != other.presenceMask[33] || presenceMask[33] && defaultSfixed64 != other.defaultSfixed64) return false
+        if (presenceMask[34] != other.presenceMask[34] || presenceMask[34] && defaultFloat != other.defaultFloat) return false
+        if (presenceMask[35] != other.presenceMask[35] || presenceMask[35] && defaultDouble != other.defaultDouble) return false
+        if (presenceMask[36] != other.presenceMask[36] || presenceMask[36] && defaultBool != other.defaultBool) return false
+        if (presenceMask[37] != other.presenceMask[37] || presenceMask[37] && defaultString != other.defaultString) return false
+        if (presenceMask[38] != other.presenceMask[38] || presenceMask[38] && !defaultBytes.contentEquals(other.defaultBytes)) return false
+        return true
+    }
+
+    override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2(")
+            if (presenceMask[0]) { 
+                appendLine("${nextIndentString}requiredInt32=${requiredInt32},")
+            } else { 
+                appendLine("${nextIndentString}requiredInt32=<unset>,")
+            }
+
+            if (presenceMask[1]) { 
+                appendLine("${nextIndentString}requiredInt64=${requiredInt64},")
+            } else { 
+                appendLine("${nextIndentString}requiredInt64=<unset>,")
+            }
+
+            if (presenceMask[2]) { 
+                appendLine("${nextIndentString}requiredUint32=${requiredUint32},")
+            } else { 
+                appendLine("${nextIndentString}requiredUint32=<unset>,")
+            }
+
+            if (presenceMask[3]) { 
+                appendLine("${nextIndentString}requiredUint64=${requiredUint64},")
+            } else { 
+                appendLine("${nextIndentString}requiredUint64=<unset>,")
+            }
+
+            if (presenceMask[4]) { 
+                appendLine("${nextIndentString}requiredSint32=${requiredSint32},")
+            } else { 
+                appendLine("${nextIndentString}requiredSint32=<unset>,")
+            }
+
+            if (presenceMask[5]) { 
+                appendLine("${nextIndentString}requiredSint64=${requiredSint64},")
+            } else { 
+                appendLine("${nextIndentString}requiredSint64=<unset>,")
+            }
+
+            if (presenceMask[6]) { 
+                appendLine("${nextIndentString}requiredFixed32=${requiredFixed32},")
+            } else { 
+                appendLine("${nextIndentString}requiredFixed32=<unset>,")
+            }
+
+            if (presenceMask[7]) { 
+                appendLine("${nextIndentString}requiredFixed64=${requiredFixed64},")
+            } else { 
+                appendLine("${nextIndentString}requiredFixed64=<unset>,")
+            }
+
+            if (presenceMask[8]) { 
+                appendLine("${nextIndentString}requiredSfixed32=${requiredSfixed32},")
+            } else { 
+                appendLine("${nextIndentString}requiredSfixed32=<unset>,")
+            }
+
+            if (presenceMask[9]) { 
+                appendLine("${nextIndentString}requiredSfixed64=${requiredSfixed64},")
+            } else { 
+                appendLine("${nextIndentString}requiredSfixed64=<unset>,")
+            }
+
+            if (presenceMask[10]) { 
+                appendLine("${nextIndentString}requiredFloat=${requiredFloat},")
+            } else { 
+                appendLine("${nextIndentString}requiredFloat=<unset>,")
+            }
+
+            if (presenceMask[11]) { 
+                appendLine("${nextIndentString}requiredDouble=${requiredDouble},")
+            } else { 
+                appendLine("${nextIndentString}requiredDouble=<unset>,")
+            }
+
+            if (presenceMask[12]) { 
+                appendLine("${nextIndentString}requiredBool=${requiredBool},")
+            } else { 
+                appendLine("${nextIndentString}requiredBool=<unset>,")
+            }
+
+            if (presenceMask[13]) { 
+                appendLine("${nextIndentString}requiredString=${requiredString},")
+            } else { 
+                appendLine("${nextIndentString}requiredString=<unset>,")
+            }
+
+            if (presenceMask[14]) { 
+                appendLine("${nextIndentString}requiredBytes=${requiredBytes.contentToString()},")
+            } else { 
+                appendLine("${nextIndentString}requiredBytes=<unset>,")
+            }
+
+            if (presenceMask[15]) { 
+                appendLine("${nextIndentString}requiredNestedMessage=${requiredNestedMessage.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}requiredNestedMessage=<unset>,")
+            }
+
+            if (presenceMask[16]) { 
+                appendLine("${nextIndentString}requiredForeignMessage=${requiredForeignMessage.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}requiredForeignMessage=<unset>,")
+            }
+
+            if (presenceMask[17]) { 
+                appendLine("${nextIndentString}requiredNestedEnum=${requiredNestedEnum},")
+            } else { 
+                appendLine("${nextIndentString}requiredNestedEnum=<unset>,")
+            }
+
+            if (presenceMask[18]) { 
+                appendLine("${nextIndentString}requiredForeignEnum=${requiredForeignEnum},")
+            } else { 
+                appendLine("${nextIndentString}requiredForeignEnum=<unset>,")
+            }
+
+            if (presenceMask[19]) { 
+                appendLine("${nextIndentString}requiredStringPiece=${requiredStringPiece},")
+            } else { 
+                appendLine("${nextIndentString}requiredStringPiece=<unset>,")
+            }
+
+            if (presenceMask[20]) { 
+                appendLine("${nextIndentString}requiredCord=${requiredCord},")
+            } else { 
+                appendLine("${nextIndentString}requiredCord=<unset>,")
+            }
+
+            if (presenceMask[21]) { 
+                appendLine("${nextIndentString}recursiveMessage=${recursiveMessage.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}recursiveMessage=<unset>,")
+            }
+
+            if (presenceMask[22]) { 
+                appendLine("${nextIndentString}optionalRecursiveMessage=${optionalRecursiveMessage.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}optionalRecursiveMessage=<unset>,")
+            }
+
+            if (presenceMask[23]) { 
+                appendLine("${nextIndentString}data=${data.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}data=<unset>,")
+            }
+
+            if (presenceMask[24]) { 
+                appendLine("${nextIndentString}defaultInt32=${defaultInt32},")
+            } else { 
+                appendLine("${nextIndentString}defaultInt32=<unset>,")
+            }
+
+            if (presenceMask[25]) { 
+                appendLine("${nextIndentString}defaultInt64=${defaultInt64},")
+            } else { 
+                appendLine("${nextIndentString}defaultInt64=<unset>,")
+            }
+
+            if (presenceMask[26]) { 
+                appendLine("${nextIndentString}defaultUint32=${defaultUint32},")
+            } else { 
+                appendLine("${nextIndentString}defaultUint32=<unset>,")
+            }
+
+            if (presenceMask[27]) { 
+                appendLine("${nextIndentString}defaultUint64=${defaultUint64},")
+            } else { 
+                appendLine("${nextIndentString}defaultUint64=<unset>,")
+            }
+
+            if (presenceMask[28]) { 
+                appendLine("${nextIndentString}defaultSint32=${defaultSint32},")
+            } else { 
+                appendLine("${nextIndentString}defaultSint32=<unset>,")
+            }
+
+            if (presenceMask[29]) { 
+                appendLine("${nextIndentString}defaultSint64=${defaultSint64},")
+            } else { 
+                appendLine("${nextIndentString}defaultSint64=<unset>,")
+            }
+
+            if (presenceMask[30]) { 
+                appendLine("${nextIndentString}defaultFixed32=${defaultFixed32},")
+            } else { 
+                appendLine("${nextIndentString}defaultFixed32=<unset>,")
+            }
+
+            if (presenceMask[31]) { 
+                appendLine("${nextIndentString}defaultFixed64=${defaultFixed64},")
+            } else { 
+                appendLine("${nextIndentString}defaultFixed64=<unset>,")
+            }
+
+            if (presenceMask[32]) { 
+                appendLine("${nextIndentString}defaultSfixed32=${defaultSfixed32},")
+            } else { 
+                appendLine("${nextIndentString}defaultSfixed32=<unset>,")
+            }
+
+            if (presenceMask[33]) { 
+                appendLine("${nextIndentString}defaultSfixed64=${defaultSfixed64},")
+            } else { 
+                appendLine("${nextIndentString}defaultSfixed64=<unset>,")
+            }
+
+            if (presenceMask[34]) { 
+                appendLine("${nextIndentString}defaultFloat=${defaultFloat},")
+            } else { 
+                appendLine("${nextIndentString}defaultFloat=<unset>,")
+            }
+
+            if (presenceMask[35]) { 
+                appendLine("${nextIndentString}defaultDouble=${defaultDouble},")
+            } else { 
+                appendLine("${nextIndentString}defaultDouble=<unset>,")
+            }
+
+            if (presenceMask[36]) { 
+                appendLine("${nextIndentString}defaultBool=${defaultBool},")
+            } else { 
+                appendLine("${nextIndentString}defaultBool=<unset>,")
+            }
+
+            if (presenceMask[37]) { 
+                appendLine("${nextIndentString}defaultString=${defaultString},")
+            } else { 
+                appendLine("${nextIndentString}defaultString=<unset>,")
+            }
+
+            if (presenceMask[38]) { 
+                appendLine("${nextIndentString}defaultBytes=${defaultBytes.contentToString()},")
+            } else { 
+                appendLine("${nextIndentString}defaultBytes=<unset>,")
+            }
+
+            append("${indentString})")
+        }
+    }
+
     class NestedMessageInternal: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMessage, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 3) { 
         private object PresenceIndices { 
             const val a: Int = 0
@@ -1167,6 +3744,58 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
         override var a: Int by MsgFieldDelegate(PresenceIndices.a) { 0 }
         override var corecursive: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2 by MsgFieldDelegate(PresenceIndices.corecursive) { com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal() }
         override var optionalCorecursive: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2 by MsgFieldDelegate(PresenceIndices.optionalCorecursive) { com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal() }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) a.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) corecursive.hashCode() else 0
+            result = 31 * result + if (presenceMask[2]) optionalCorecursive.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as NestedMessageInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && a != other.a) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && corecursive != other.corecursive) return false
+            if (presenceMask[2] != other.presenceMask[2] || presenceMask[2] && optionalCorecursive != other.optionalCorecursive) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMessage(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}a=${a},")
+                } else { 
+                    appendLine("${nextIndentString}a=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}corecursive=${corecursive.asInternal().asString(indent = indent + 4)},")
+                } else { 
+                    appendLine("${nextIndentString}corecursive=<unset>,")
+                }
+
+                if (presenceMask[2]) { 
+                    appendLine("${nextIndentString}optionalCorecursive=${optionalCorecursive.asInternal().asString(indent = indent + 4)},")
+                } else { 
+                    appendLine("${nextIndentString}optionalCorecursive=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMessage> { 
@@ -1208,6 +3837,50 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
         override var groupInt32: Int by MsgFieldDelegate(PresenceIndices.groupInt32) { 0 }
         override var groupUint32: UInt by MsgFieldDelegate(PresenceIndices.groupUint32) { 0u }
 
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = if (presenceMask[0]) groupInt32.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) groupUint32.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as DataInternal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && groupInt32 != other.groupInt32) return false
+            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && groupUint32 != other.groupUint32) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.Data(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}groupInt32=${groupInt32},")
+                } else { 
+                    appendLine("${nextIndentString}groupInt32=<unset>,")
+                }
+
+                if (presenceMask[1]) { 
+                    appendLine("${nextIndentString}groupUint32=${groupUint32},")
+                } else { 
+                    appendLine("${nextIndentString}groupUint32=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
+
         @kotlinx.rpc.internal.utils.InternalRpcApi
         companion object
     }
@@ -1215,6 +3888,34 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
     class MessageSetCorrectInternal: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            return this::class.hashCode()
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MessageSetCorrectInternal
+            other.checkRequiredFields()
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect(")
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect> { 
@@ -1254,6 +3955,41 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
 
         override var str: String by MsgFieldDelegate(PresenceIndices.str) { "" }
 
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            return if (presenceMask[0]) str.hashCode() else 0
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MessageSetCorrectExtension1Internal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && str != other.str) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}str=${str},")
+                } else { 
+                    appendLine("${nextIndentString}str=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
+
         @kotlinx.rpc.internal.utils.InternalRpcApi
         object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1> { 
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -1291,6 +4027,41 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
         override val _size: Int by lazy { computeSize() }
 
         override var i: Int by MsgFieldDelegate(PresenceIndices.i) { 0 }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            return if (presenceMask[0]) i.hashCode() else 0
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MessageSetCorrectExtension2Internal
+            other.checkRequiredFields()
+            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && i != other.i) return false
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2(")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}i=${i},")
+                } else { 
+                    appendLine("${nextIndentString}i=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2> { 
@@ -1354,9 +4125,79 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
 
     override var largeOneof: com.google.protobuf_test_messages.proto2.TestLargeOneof.LargeOneof? = null
 
+    override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return (largeOneof?.oneOfHashCode() ?: 0)
+    }
+
+    fun com.google.protobuf_test_messages.proto2.TestLargeOneof.LargeOneof.oneOfHashCode(): kotlin.Int { 
+        val offset = when (this) { 
+            is com.google.protobuf_test_messages.proto2.TestLargeOneof.LargeOneof.A1 -> 0
+            is com.google.protobuf_test_messages.proto2.TestLargeOneof.LargeOneof.A2 -> 1
+            is com.google.protobuf_test_messages.proto2.TestLargeOneof.LargeOneof.A3 -> 2
+            is com.google.protobuf_test_messages.proto2.TestLargeOneof.LargeOneof.A4 -> 3
+            is com.google.protobuf_test_messages.proto2.TestLargeOneof.LargeOneof.A5 -> 4
+        }
+
+        return hashCode() + offset
+    }
+
+    override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as TestLargeOneofInternal
+        other.checkRequiredFields()
+        if (largeOneof != other.largeOneof) return false
+        return true
+    }
+
+    override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf_test_messages.proto2.TestLargeOneof(")
+            appendLine("${nextIndentString}largeOneof=${largeOneof},")
+            append("${indentString})")
+        }
+    }
+
     class A1Internal: com.google.protobuf_test_messages.proto2.TestLargeOneof.A1, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            return this::class.hashCode()
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as A1Internal
+            other.checkRequiredFields()
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestLargeOneof.A1(")
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.TestLargeOneof.A1> { 
@@ -1390,6 +4231,34 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            return this::class.hashCode()
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as A2Internal
+            other.checkRequiredFields()
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestLargeOneof.A2(")
+                append("${indentString})")
+            }
+        }
+
         @kotlinx.rpc.internal.utils.InternalRpcApi
         object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.TestLargeOneof.A2> { 
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestLargeOneof.A2): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -1421,6 +4290,34 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
     class A3Internal: com.google.protobuf_test_messages.proto2.TestLargeOneof.A3, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            return this::class.hashCode()
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as A3Internal
+            other.checkRequiredFields()
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestLargeOneof.A3(")
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.TestLargeOneof.A3> { 
@@ -1454,6 +4351,34 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            return this::class.hashCode()
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as A4Internal
+            other.checkRequiredFields()
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestLargeOneof.A4(")
+                append("${indentString})")
+            }
+        }
+
         @kotlinx.rpc.internal.utils.InternalRpcApi
         object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.TestLargeOneof.A4> { 
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestLargeOneof.A4): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -1485,6 +4410,34 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
     class A5Internal: com.google.protobuf_test_messages.proto2.TestLargeOneof.A5, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            return this::class.hashCode()
+        }
+
+        override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as A5Internal
+            other.checkRequiredFields()
+            return true
+        }
+
+        override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf_test_messages.proto2.TestLargeOneof.A5(")
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf_test_messages.proto2.TestLargeOneof.A5> { 

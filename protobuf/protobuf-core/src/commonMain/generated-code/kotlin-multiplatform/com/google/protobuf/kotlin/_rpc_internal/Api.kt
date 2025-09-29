@@ -21,6 +21,60 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
     public override var mixins: List<com.google.protobuf.kotlin.Mixin> by MsgFieldDelegate { mutableListOf() }
     public override var syntax: com.google.protobuf.kotlin.Syntax by MsgFieldDelegate { com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2 }
 
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = name.hashCode()
+        result = 31 * result + methods.hashCode()
+        result = 31 * result + options.hashCode()
+        result = 31 * result + version.hashCode()
+        result = 31 * result + if (presenceMask[0]) sourceContext.hashCode() else 0
+        result = 31 * result + mixins.hashCode()
+        result = 31 * result + syntax.hashCode()
+        return result
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as ApiInternal
+        other.checkRequiredFields()
+        if (name != other.name) return false
+        if (methods != other.methods) return false
+        if (options != other.options) return false
+        if (version != other.version) return false
+        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && sourceContext != other.sourceContext) return false
+        if (mixins != other.mixins) return false
+        if (syntax != other.syntax) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.Api(")
+            appendLine("${nextIndentString}name=${name},")
+            appendLine("${nextIndentString}methods=${methods},")
+            appendLine("${nextIndentString}options=${options},")
+            appendLine("${nextIndentString}version=${version},")
+            if (presenceMask[0]) { 
+                appendLine("${nextIndentString}sourceContext=${sourceContext.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}sourceContext=<unset>,")
+            }
+
+            appendLine("${nextIndentString}mixins=${mixins},")
+            appendLine("${nextIndentString}syntax=${syntax},")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Api> { 
         public override fun encode(value: com.google.protobuf.kotlin.Api): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -61,6 +115,55 @@ public class MethodInternal: com.google.protobuf.kotlin.Method, kotlinx.rpc.prot
     public override var options: List<com.google.protobuf.kotlin.Option> by MsgFieldDelegate { mutableListOf() }
     public override var syntax: com.google.protobuf.kotlin.Syntax by MsgFieldDelegate { com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2 }
 
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = name.hashCode()
+        result = 31 * result + requestTypeUrl.hashCode()
+        result = 31 * result + requestStreaming.hashCode()
+        result = 31 * result + responseTypeUrl.hashCode()
+        result = 31 * result + responseStreaming.hashCode()
+        result = 31 * result + options.hashCode()
+        result = 31 * result + syntax.hashCode()
+        return result
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as MethodInternal
+        other.checkRequiredFields()
+        if (name != other.name) return false
+        if (requestTypeUrl != other.requestTypeUrl) return false
+        if (requestStreaming != other.requestStreaming) return false
+        if (responseTypeUrl != other.responseTypeUrl) return false
+        if (responseStreaming != other.responseStreaming) return false
+        if (options != other.options) return false
+        if (syntax != other.syntax) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.Method(")
+            appendLine("${nextIndentString}name=${name},")
+            appendLine("${nextIndentString}requestTypeUrl=${requestTypeUrl},")
+            appendLine("${nextIndentString}requestStreaming=${requestStreaming},")
+            appendLine("${nextIndentString}responseTypeUrl=${responseTypeUrl},")
+            appendLine("${nextIndentString}responseStreaming=${responseStreaming},")
+            appendLine("${nextIndentString}options=${options},")
+            appendLine("${nextIndentString}syntax=${syntax},")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Method> { 
         public override fun encode(value: com.google.protobuf.kotlin.Method): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -95,6 +198,40 @@ public class MixinInternal: com.google.protobuf.kotlin.Mixin, kotlinx.rpc.protob
 
     public override var name: String by MsgFieldDelegate { "" }
     public override var root: String by MsgFieldDelegate { "" }
+
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = name.hashCode()
+        result = 31 * result + root.hashCode()
+        return result
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as MixinInternal
+        other.checkRequiredFields()
+        if (name != other.name) return false
+        if (root != other.root) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.Mixin(")
+            appendLine("${nextIndentString}name=${name},")
+            appendLine("${nextIndentString}root=${root},")
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Mixin> { 

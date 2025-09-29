@@ -229,16 +229,16 @@ interface TestAllTypesProto3 {
     }
 
     sealed class NestedEnum(open val number: Int) { 
-        object FOO: NestedEnum(number = 0)
+        data object FOO: NestedEnum(number = 0)
 
-        object BAR: NestedEnum(number = 1)
+        data object BAR: NestedEnum(number = 1)
 
-        object BAZ: NestedEnum(number = 2)
+        data object BAZ: NestedEnum(number = 2)
 
         /**
         * Intentionally negative.
         */
-        object NEG: NestedEnum(number = -1)
+        data object NEG: NestedEnum(number = -1)
 
         data class UNRECOGNIZED(override val number: Int): NestedEnum(number)
 
@@ -248,11 +248,11 @@ interface TestAllTypesProto3 {
     }
 
     sealed class AliasedEnum(open val number: Int) { 
-        object ALIAS_FOO: AliasedEnum(number = 0)
+        data object ALIAS_FOO: AliasedEnum(number = 0)
 
-        object ALIAS_BAR: AliasedEnum(number = 1)
+        data object ALIAS_BAR: AliasedEnum(number = 1)
 
-        object ALIAS_BAZ: AliasedEnum(number = 2)
+        data object ALIAS_BAZ: AliasedEnum(number = 2)
 
         data class UNRECOGNIZED(override val number: Int): AliasedEnum(number)
 
@@ -285,9 +285,9 @@ interface NullHypothesisProto3 {
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf_test_messages.proto3.EnumOnlyProto3Internal.CODEC::class)
 interface EnumOnlyProto3 { 
     sealed class Bool(open val number: Int) { 
-        object kFalse: Bool(number = 0)
+        data object kFalse: Bool(number = 0)
 
-        object kTrue: Bool(number = 1)
+        data object kTrue: Bool(number = 1)
 
         data class UNRECOGNIZED(override val number: Int): Bool(number)
 
@@ -300,11 +300,11 @@ interface EnumOnlyProto3 {
 }
 
 sealed class ForeignEnum(open val number: Int) { 
-    object FOREIGN_FOO: ForeignEnum(number = 0)
+    data object FOREIGN_FOO: ForeignEnum(number = 0)
 
-    object FOREIGN_BAR: ForeignEnum(number = 1)
+    data object FOREIGN_BAR: ForeignEnum(number = 1)
 
-    object FOREIGN_BAZ: ForeignEnum(number = 2)
+    data object FOREIGN_BAZ: ForeignEnum(number = 2)
 
     data class UNRECOGNIZED(override val number: Int): ForeignEnum(number)
 

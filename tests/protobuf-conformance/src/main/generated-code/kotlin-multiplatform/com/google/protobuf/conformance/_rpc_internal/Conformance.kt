@@ -13,6 +13,43 @@ class TestStatusInternal: com.google.protobuf.conformance.TestStatus, kotlinx.rp
     override var failureMessage: String by MsgFieldDelegate { "" }
     override var matchedName: String by MsgFieldDelegate { "" }
 
+    override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = name.hashCode()
+        result = 31 * result + failureMessage.hashCode()
+        result = 31 * result + matchedName.hashCode()
+        return result
+    }
+
+    override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as TestStatusInternal
+        other.checkRequiredFields()
+        if (name != other.name) return false
+        if (failureMessage != other.failureMessage) return false
+        if (matchedName != other.matchedName) return false
+        return true
+    }
+
+    override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.conformance.TestStatus(")
+            appendLine("${nextIndentString}name=${name},")
+            appendLine("${nextIndentString}failureMessage=${failureMessage},")
+            appendLine("${nextIndentString}matchedName=${matchedName},")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.TestStatus> { 
         override fun encode(value: com.google.protobuf.conformance.TestStatus): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -46,6 +83,36 @@ class FailureSetInternal: com.google.protobuf.conformance.FailureSet, kotlinx.rp
     override val _size: Int by lazy { computeSize() }
 
     override var test: List<com.google.protobuf.conformance.TestStatus> by MsgFieldDelegate { mutableListOf() }
+
+    override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return test.hashCode()
+    }
+
+    override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as FailureSetInternal
+        other.checkRequiredFields()
+        if (test != other.test) return false
+        return true
+    }
+
+    override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.conformance.FailureSet(")
+            appendLine("${nextIndentString}test=${test},")
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.FailureSet> { 
@@ -90,6 +157,68 @@ class ConformanceRequestInternal: com.google.protobuf.conformance.ConformanceReq
     override var printUnknownFields: Boolean by MsgFieldDelegate { false }
     override var payload: com.google.protobuf.conformance.ConformanceRequest.Payload? = null
 
+    override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = requestedOutputFormat.hashCode()
+        result = 31 * result + messageType.hashCode()
+        result = 31 * result + testCategory.hashCode()
+        result = 31 * result + if (presenceMask[0]) jspbEncodingOptions.hashCode() else 0
+        result = 31 * result + printUnknownFields.hashCode()
+        result = 31 * result + (payload?.oneOfHashCode() ?: 0)
+        return result
+    }
+
+    fun com.google.protobuf.conformance.ConformanceRequest.Payload.oneOfHashCode(): kotlin.Int { 
+        val offset = when (this) { 
+            is com.google.protobuf.conformance.ConformanceRequest.Payload.ProtobufPayload -> 0
+            is com.google.protobuf.conformance.ConformanceRequest.Payload.JsonPayload -> 1
+            is com.google.protobuf.conformance.ConformanceRequest.Payload.JspbPayload -> 2
+            is com.google.protobuf.conformance.ConformanceRequest.Payload.TextPayload -> 3
+        }
+
+        return hashCode() + offset
+    }
+
+    override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as ConformanceRequestInternal
+        other.checkRequiredFields()
+        if (requestedOutputFormat != other.requestedOutputFormat) return false
+        if (messageType != other.messageType) return false
+        if (testCategory != other.testCategory) return false
+        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && jspbEncodingOptions != other.jspbEncodingOptions) return false
+        if (printUnknownFields != other.printUnknownFields) return false
+        if (payload != other.payload) return false
+        return true
+    }
+
+    override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.conformance.ConformanceRequest(")
+            appendLine("${nextIndentString}requestedOutputFormat=${requestedOutputFormat},")
+            appendLine("${nextIndentString}messageType=${messageType},")
+            appendLine("${nextIndentString}testCategory=${testCategory},")
+            if (presenceMask[0]) { 
+                appendLine("${nextIndentString}jspbEncodingOptions=${jspbEncodingOptions.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}jspbEncodingOptions=<unset>,")
+            }
+
+            appendLine("${nextIndentString}printUnknownFields=${printUnknownFields},")
+            appendLine("${nextIndentString}payload=${payload},")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.ConformanceRequest> { 
         override fun encode(value: com.google.protobuf.conformance.ConformanceRequest): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -124,6 +253,52 @@ class ConformanceResponseInternal: com.google.protobuf.conformance.ConformanceRe
 
     override var result: com.google.protobuf.conformance.ConformanceResponse.Result? = null
 
+    override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return (result?.oneOfHashCode() ?: 0)
+    }
+
+    fun com.google.protobuf.conformance.ConformanceResponse.Result.oneOfHashCode(): kotlin.Int { 
+        val offset = when (this) { 
+            is com.google.protobuf.conformance.ConformanceResponse.Result.ParseError -> 0
+            is com.google.protobuf.conformance.ConformanceResponse.Result.SerializeError -> 1
+            is com.google.protobuf.conformance.ConformanceResponse.Result.TimeoutError -> 2
+            is com.google.protobuf.conformance.ConformanceResponse.Result.RuntimeError -> 3
+            is com.google.protobuf.conformance.ConformanceResponse.Result.ProtobufPayload -> 4
+            is com.google.protobuf.conformance.ConformanceResponse.Result.JsonPayload -> 5
+            is com.google.protobuf.conformance.ConformanceResponse.Result.Skipped -> 6
+            is com.google.protobuf.conformance.ConformanceResponse.Result.JspbPayload -> 7
+            is com.google.protobuf.conformance.ConformanceResponse.Result.TextPayload -> 8
+        }
+
+        return hashCode() + offset
+    }
+
+    override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as ConformanceResponseInternal
+        other.checkRequiredFields()
+        if (result != other.result) return false
+        return true
+    }
+
+    override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.conformance.ConformanceResponse(")
+            appendLine("${nextIndentString}result=${result},")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.ConformanceResponse> { 
         override fun encode(value: com.google.protobuf.conformance.ConformanceResponse): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -157,6 +332,36 @@ class JspbEncodingConfigInternal: com.google.protobuf.conformance.JspbEncodingCo
     override val _size: Int by lazy { computeSize() }
 
     override var useJspbArrayAnyFormat: Boolean by MsgFieldDelegate { false }
+
+    override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return useJspbArrayAnyFormat.hashCode()
+    }
+
+    override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as JspbEncodingConfigInternal
+        other.checkRequiredFields()
+        if (useJspbArrayAnyFormat != other.useJspbArrayAnyFormat) return false
+        return true
+    }
+
+    override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.conformance.JspbEncodingConfig(")
+            appendLine("${nextIndentString}useJspbArrayAnyFormat=${useJspbArrayAnyFormat},")
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.JspbEncodingConfig> { 
