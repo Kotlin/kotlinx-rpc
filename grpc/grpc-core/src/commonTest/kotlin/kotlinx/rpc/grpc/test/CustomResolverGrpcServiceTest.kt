@@ -20,24 +20,25 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
-@WithCodec(Message.Companion::class)
-class Message(val value: String) {
-    companion object : SourcedMessageCodec<Message> {
-        override fun encodeToSource(value: Message): Source {
+@WithCodec(CustomResolverMessage.Companion::class)
+class CustomResolverMessage(val value: String) {
+    companion object Companion : SourcedMessageCodec<CustomResolverMessage> {
+        override fun encodeToSource(value: CustomResolverMessage): Source {
             return Buffer().apply { writeString(value.value) }
         }
 
-        override fun decodeFromSource(stream: Source): Message {
-            return Message(stream.readString())
+        override fun decodeFromSource(stream: Source): CustomResolverMessage {
+            return CustomResolverMessage(stream.readString())
         }
     }
 }
+
 
 @Grpc
 interface GrpcService {
     suspend fun plainString(value: String): String
 
-    suspend fun message(value: Message): Message
+    suspend fun message(value: CustomResolverMessage): CustomResolverMessage
 
     suspend fun krpc173()
 
@@ -53,8 +54,8 @@ class GrpcServiceImpl : GrpcService {
         return "$value $value"
     }
 
-    override suspend fun message(value: Message): Message {
-        return Message("${value.value} ${value.value}")
+    override suspend fun message(value: CustomResolverMessage): CustomResolverMessage {
+        return CustomResolverMessage("${value.value} ${value.value}")
     }
 
     override suspend fun krpc173() {
@@ -88,7 +89,7 @@ class CustomResolverGrpcServiceTest : BaseGrpcServiceTest() {
         resolver = simpleResolver,
         impl = GrpcServiceImpl(),
     ) { service ->
-        assertEquals("test test", service.message(Message("test")).value)
+        assertEquals("test test", service.message(CustomResolverMessage("test")).value)
     }
 
     @Test

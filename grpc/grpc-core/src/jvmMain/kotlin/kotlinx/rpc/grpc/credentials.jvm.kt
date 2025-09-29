@@ -8,13 +8,22 @@ public actual typealias ClientCredentials = io.grpc.ChannelCredentials
 
 public actual typealias ServerCredentials = io.grpc.ServerCredentials
 
-// we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
-// java constructor.
 public actual typealias InsecureClientCredentials = io.grpc.InsecureChannelCredentials
 public actual typealias InsecureServerCredentials = io.grpc.InsecureServerCredentials
 
 public actual typealias TlsClientCredentials = io.grpc.TlsChannelCredentials
 public actual typealias TlsServerCredentials = io.grpc.TlsServerCredentials
+
+
+// we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
+// java constructor.
+internal actual fun createInsecureClientCredentials(): ClientCredentials {
+    return InsecureClientCredentials.create()
+}
+
+internal actual fun createInsecureServerCredentials(): ServerCredentials {
+    return InsecureServerCredentials.create()
+}
 
 internal actual fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder = JvmTlsCLientCredentialBuilder()
 internal actual fun TlsServerCredentialsBuilder(
@@ -81,5 +90,3 @@ private fun TlsClientAuth.toJava(): io.grpc.TlsServerCredentials.ClientAuth = wh
     TlsClientAuth.OPTIONAL -> io.grpc.TlsServerCredentials.ClientAuth.OPTIONAL
     TlsClientAuth.REQUIRE -> io.grpc.TlsServerCredentials.ClientAuth.REQUIRE
 }
-
-

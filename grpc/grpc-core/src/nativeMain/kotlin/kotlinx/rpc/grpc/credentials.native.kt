@@ -61,18 +61,17 @@ public actual class TlsClientCredentials internal constructor(
     raw: CPointer<grpc_channel_credentials>,
 ) : ClientCredentials(raw)
 
-public actual class TlsServerCredentials(
+public actual class TlsServerCredentials internal constructor(
     raw: CPointer<grpc_server_credentials>,
 ) : ServerCredentials(raw)
 
-
-public fun InsecureChannelCredentials(): ClientCredentials {
+internal actual fun createInsecureClientCredentials(): ClientCredentials {
     return InsecureClientCredentials(
         grpc_insecure_credentials_create() ?: error("grpc_insecure_credentials_create() returned null")
     )
 }
 
-public fun InsecureServerCredentials(): ServerCredentials {
+internal actual fun createInsecureServerCredentials(): ServerCredentials {
     return InsecureServerCredentials(
         grpc_insecure_server_credentials_create() ?: error("grpc_insecure_server_credentials_create() returned null")
     )

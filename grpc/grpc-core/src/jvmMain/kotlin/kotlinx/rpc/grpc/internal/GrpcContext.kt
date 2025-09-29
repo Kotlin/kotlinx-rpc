@@ -8,12 +8,12 @@ import io.grpc.Context
 import kotlinx.coroutines.ThreadContextElement
 import kotlin.coroutines.CoroutineContext
 
-internal actual typealias GrpcContext = Context
+public actual typealias GrpcContext = Context
 
 internal actual val CurrentGrpcContext: GrpcContext
     get() = GrpcContext.current()
 
-internal actual class GrpcContextElement(private val grpcContext: GrpcContext) : ThreadContextElement<GrpcContext> {
+internal actual class GrpcContextElement(actual val grpcContext: GrpcContext) : ThreadContextElement<GrpcContext> {
     actual companion object Key : CoroutineContext.Key<GrpcContextElement> {
         actual fun current(): GrpcContextElement = GrpcContextElement(CurrentGrpcContext)
     }

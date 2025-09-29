@@ -19,10 +19,6 @@ public actual abstract class ManagedChannelPlatform : GrpcChannel()
  * Builder class for [ManagedChannel].
  */
 public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>> {
-    public actual open fun usePlaintext(): T {
-        error("Builder does not support usePlaintext()")
-    }
-
     public actual abstract fun overrideAuthority(authority: String): T
 }
 
@@ -32,11 +28,6 @@ internal class NativeManagedChannelBuilder(
 ) : ManagedChannelBuilder<NativeManagedChannelBuilder>() {
 
     private var authority: String? = null
-
-    override fun usePlaintext(): NativeManagedChannelBuilder {
-        credentials = lazy { InsecureChannelCredentials() }
-        return this
-    }
 
     override fun overrideAuthority(authority: String): NativeManagedChannelBuilder {
         this.authority = authority

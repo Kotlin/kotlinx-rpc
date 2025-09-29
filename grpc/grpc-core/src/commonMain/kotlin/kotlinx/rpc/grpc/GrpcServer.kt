@@ -44,14 +44,14 @@ private typealias ResponseServer = Any
  *
  * @property port Specifies the port used by the server to listen for incoming connections.
  * @param parentContext
- * @param configure exposes platform-specific Server builder.
+ * @param serverBuilder exposes platform-specific Server builder.
  */
 public class GrpcServer internal constructor(
-    override val port: Int = 8080,
-    credentials: ServerCredentials? = null,
+    override val port: Int,
+    private val serverBuilder: ServerBuilder<*>,
+    private val interceptors: List<ServerInterceptor>,
     messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
     parentContext: CoroutineContext = EmptyCoroutineContext,
-    configure: ServerBuilder<*>.() -> Unit,
 ) : RpcServer, Server {
     private val internalContext = SupervisorJob(parentContext[Job])
     private val internalScope = CoroutineScope(parentContext + internalContext)
@@ -61,9 +61,8 @@ public class GrpcServer internal constructor(
     private var isBuilt = false
     private lateinit var internalServer: Server
 
-    private val serverBuilder: ServerBuilder<*> = ServerBuilder(port, credentials).apply(configure)
     private val registry: MutableHandlerRegistry by lazy {
-        MutableHandlerRegistry().apply { serverBuilder.fallbackHandlerRegistry(this) }
+        MutableHandlerRegistry().apply { this@GrpcServer.serverBuilder.fallbackHandlerRegistry(this) }
     }
 
     private val localRegistry = RpcInternalConcurrentHashMap<KClass<*>, ServerServiceDefinition>()
@@ -79,7 +78,7 @@ public class GrpcServer internal constructor(
         if (isBuilt) {
             registry.addService(definition)
         } else {
-            serverBuilder.addService(definition)
+            this@GrpcServer.serverBuilder.addService(definition)
         }
     }
 
@@ -105,7 +104,8 @@ public class GrpcServer internal constructor(
                     as? MethodDescriptor<RequestServer, ResponseServer>
                 ?: error("Expected a gRPC method descriptor")
 
-            it.toDefinitionOn(methodDescriptor, service)
+            // TODO: support per service and per method interceptors (KRPC-222)
+            it.toDefinitionOn(methodDescriptor, service, interceptors)
         }
 
         return serverServiceDefinition(delegate.serviceDescriptor, methods)
@@ -114,29 +114,40 @@ public class GrpcServer internal constructor(
     private fun <@Grpc Service : Any> RpcCallable<Service>.toDefinitionOn(
         descriptor: MethodDescriptor<RequestServer, ResponseServer>,
         service: Service,
+        interceptors: List<ServerInterceptor>,
     ): ServerMethodDefinition<RequestServer, ResponseServer> {
         return when (descriptor.type) {
             MethodType.UNARY -> {
-                internalScope.unaryServerMethodDefinition(descriptor, returnType.kType) { request ->
+                internalScope.unaryServerMethodDefinition(descriptor, returnType.kType, interceptors) { request ->
                     unaryInvokator.call(service, arrayOf(request)) as ResponseServer
                 }
             }
 
             MethodType.CLIENT_STREAMING -> {
-                internalScope.clientStreamingServerMethodDefinition(descriptor, returnType.kType) { requests ->
+                internalScope.clientStreamingServerMethodDefinition(
+                    descriptor,
+                    returnType.kType,
+                    interceptors
+                ) { requests ->
                     unaryInvokator.call(service, arrayOf(requests)) as ResponseServer
                 }
             }
 
             MethodType.SERVER_STREAMING -> {
-                internalScope.serverStreamingServerMethodDefinition(descriptor, returnType.kType) { request ->
+                internalScope.serverStreamingServerMethodDefinition(
+                    descriptor, returnType.kType, interceptors
+                ) { request ->
                     @Suppress("UNCHECKED_CAST")
                     flowInvokator.call(service, arrayOf(request)) as Flow<ResponseServer>
                 }
             }
 
             MethodType.BIDI_STREAMING -> {
-                internalScope.bidiStreamingServerMethodDefinition(descriptor, returnType.kType) { requests ->
+                internalScope.bidiStreamingServerMethodDefinition(
+                    descriptor,
+                    returnType.kType,
+                    interceptors
+                ) { requests ->
                     @Suppress("UNCHECKED_CAST")
                     flowInvokator.call(service, arrayOf(requests)) as Flow<ResponseServer>
                 }
@@ -152,7 +163,7 @@ public class GrpcServer internal constructor(
 
     internal fun build() {
         if (buildLock.compareAndSet(expect = false, update = true)) {
-            internalServer = Server(serverBuilder)
+            internalServer = Server(this@GrpcServer.serverBuilder)
             isBuilt = true
         }
     }
@@ -188,16 +199,145 @@ public class GrpcServer internal constructor(
 }
 
 /**
- * Constructor function for the [GrpcServer] class.
+ * Creates and configures a gRPC server instance.
+ *
+ * This function initializes a gRPC server with the provided port and a configuration block
+ * ([GrpcServerConfiguration]).
+ *
+ * To start the server, call the [GrpcServer.start] method.
+ * To clean up resources, call the [GrpcServer.shutdown] or [GrpcServer.shutdownNow] methods.
+ *
+ * ```kt
+ * GrpcServer(port) {
+ *     credentials = tls(myCertChain, myPrivateKey)
+ *     services {
+ *         registerService<MyService> { MyServiceImpl() }
+ *         registerService<MyOtherService> { MyOtherServiceImpl() }
+ *     }
+ * }
+ * ```
+ *
+ * @param port The port number where the gRPC server will listen for incoming connections.
+ *             This must be a valid and available port on the host system.
+ * @param parentContext The parent coroutine context used for managing server-related operations.
+ *                      Defaults to an empty coroutine context if not specified.
+ * @param configure A configuration lambda receiver,
+ *                  allowing customization of server behavior such as credentials, interceptors,
+ *                  codecs, and service registration logic.
+ * @return A fully configured `GrpcServer` instance, which must be started explicitly to handle requests.
  */
 public fun GrpcServer(
     port: Int,
-    credentials: ServerCredentials? = null,
-    messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
     parentContext: CoroutineContext = EmptyCoroutineContext,
-    configure: ServerBuilder<*>.() -> Unit = {},
-    builder: RpcServer.() -> Unit = {},
+    configure: GrpcServerConfiguration.() -> Unit = {},
 ): GrpcServer {
-    return GrpcServer(port, credentials, messageCodecResolver, parentContext, configure).apply(builder)
+    val config = GrpcServerConfiguration().apply(configure)
+    val serverBuilder = ServerBuilder(port, config.credentials).apply {
+        config.fallbackHandlerRegistry?.let { fallbackHandlerRegistry(it) }
+    }
+    return GrpcServer(port, serverBuilder, config.interceptors, config.messageCodecResolver, parentContext)
+        .apply(config.serviceBuilder)
         .apply { build() }
+}
+
+/**
+ * A configuration class for setting up a gRPC server.
+ *
+ * This class provides an API to configure various server parameters, such as message codecs,
+ * security credentials, server-side interceptors, and service registration.
+ */
+public class GrpcServerConfiguration internal constructor() {
+
+    internal val interceptors: MutableList<ServerInterceptor> = mutableListOf()
+    internal var serviceBuilder: RpcServer.() -> Unit = { }
+
+
+    /**
+     * Sets the credentials to be used by the gRPC server for secure communication.
+     *
+     * By default, the server does not have any credentials configured and the communication is plaintext.
+     * To set up transport-layer security provide a [TlsServerCredentials] by constructing it with the
+     * [tls] function.
+     *
+     * @see TlsServerCredentials
+     * @see tls
+     */
+    public var credentials: ServerCredentials? = null
+
+    /**
+     * Sets a custom [MessageCodecResolver] to be used by the gRPC server for resolving the appropriate
+     * codec for message serialization and deserialization.
+     *
+     * When not explicitly set, a default [EmptyMessageCodecResolver] is used, which may not perform
+     * any specific resolution.
+     * Provide a custom [MessageCodecResolver] to resolve codecs based on the message's `KType`.
+     */
+    public var messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver
+
+
+    /**
+     * Sets a custom [HandlerRegistry] to be used by the gRPC server for resolving service implementations
+     * that were not registered before via the [services] configuration block.
+     *
+     * If not set, unknown services not registered will cause a `UNIMPLEMENTED` status
+     * to be returned to the client.
+     */
+    public var fallbackHandlerRegistry: HandlerRegistry? = null
+
+    /**
+     * Registers one or more server-side interceptors for the gRPC server.
+     *
+     * Interceptors allow observing and modifying incoming gRPC calls before they reach the service
+     * implementation logic.
+     * They are commonly used to implement cross-cutting concerns like
+     * authentication, logging, metrics, or custom request/response transformations.
+     *
+     * @param interceptors One or more instances of [ServerInterceptor] to be applied to incoming calls.
+     * @see ServerInterceptor
+     */
+    public fun intercept(vararg interceptors: ServerInterceptor) {
+        this.interceptors.addAll(interceptors)
+    }
+
+    /**
+     * Configures the gRPC server to register services.
+     *
+     * This method allows defining a block of logic to configure an [RpcServer] instance,
+     * where multiple services can be registered:
+     * ```kt
+     * GrpcServer(port) {
+     *     services {
+     *         registerService<MyService> { MyServiceImpl() }
+     *         registerService<MyOtherService> { MyOtherServiceImpl() }
+     *     }
+     * }
+     * ```
+     *
+     * @param block A lambda with [RpcServer] as its receiver, allowing service registration.
+     */
+    public fun services(block: RpcServer.() -> Unit) {
+        serviceBuilder = block
+    }
+
+    /**
+     * Configures and creates TLS (Transport Layer Security) credentials for the gRPC server.
+     *
+     * This method allows specifying the server's certificate chain, private key, and additional
+     * configurations needed for setting up a secure communication channel over TLS.
+     *
+     * @param certificateChain A string representing the PEM-encoded certificate chain for the server.
+     * @param privateKey A string representing the PKCS#8 formatted private key corresponding to the certificate.
+     * @param configure A lambda to further customize the [TlsServerCredentialsBuilder], enabling configurations
+     *                  like setting trusted root certificates or enabling client authentication.
+     * @return An instance of [ServerCredentials] representing the configured TLS credentials that must be passed
+     * to [credentials].
+     *
+     * @see credentials
+     */
+    public fun tls(
+        certificateChain: String,
+        privateKey: String,
+        configure: TlsServerCredentialsBuilder.() -> Unit,
+    ): ServerCredentials =
+        TlsServerCredentials(certificateChain, privateKey, configure)
 }

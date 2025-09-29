@@ -46,4 +46,6 @@ internal class CallbackFuture<T : Any> {
             }
         }
     }
+
+    val isCompleted: Boolean get() = state.value is State.Done
 }
