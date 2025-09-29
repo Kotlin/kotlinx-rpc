@@ -32,8 +32,9 @@ private typealias RequestClient = Any
  * @field channel The [ManagedChannel] used to communicate with remote gRPC services.
  */
 public class GrpcClient internal constructor(
-    private val channel: ManagedChannel,
+    internal val channel: ManagedChannel,
     messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
+    internal val interceptors: List<ClientInterceptor>,
 ) : RpcClient {
     private val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
     private val messageCodecResolver = messageCodecResolver + ThrowingMessageCodecResolver
@@ -54,11 +55,10 @@ public class GrpcClient internal constructor(
 
     override suspend fun <T> call(call: RpcCall): T = withGrpcCall(call) { methodDescriptor, request ->
         val callOptions = GrpcDefaultCallOptions
-        val trailers = GrpcTrailers()
+        val trailers = GrpcMetadata()
 
         return when (methodDescriptor.type) {
             MethodType.UNARY -> unaryRpc(
-                channel = channel.platformApi,
                 descriptor = methodDescriptor,
                 request = request,
                 callOptions = callOptions,
@@ -66,7 +66,6 @@ public class GrpcClient internal constructor(
             )
 
             MethodType.CLIENT_STREAMING -> @Suppress("UNCHECKED_CAST") clientStreamingRpc(
-                channel = channel.platformApi,
                 descriptor = methodDescriptor,
                 requests = request as Flow<RequestClient>,
                 callOptions = callOptions,
@@ -79,11 +78,10 @@ public class GrpcClient internal constructor(
 
     override fun <T> callServerStreaming(call: RpcCall): Flow<T> = withGrpcCall(call) { methodDescriptor, request ->
         val callOptions = GrpcDefaultCallOptions
-        val trailers = GrpcTrailers()
+        val trailers = GrpcMetadata()
 
         when (methodDescriptor.type) {
             MethodType.SERVER_STREAMING -> serverStreamingRpc(
-                channel = channel.platformApi,
                 descriptor = methodDescriptor,
                 request = request,
                 callOptions = callOptions,
@@ -91,7 +89,6 @@ public class GrpcClient internal constructor(
             )
 
             MethodType.BIDI_STREAMING -> @Suppress("UNCHECKED_CAST") bidirectionalStreamingRpc(
-                channel = channel.platformApi,
                 descriptor = methodDescriptor,
                 requests = request as Flow<RequestClient>,
                 callOptions = callOptions,
@@ -126,28 +123,164 @@ public class GrpcClient internal constructor(
 }
 
 /**
- * Constructor function for the [GrpcClient] class.
+ * Creates and configures a gRPC client instance.
+ *
+ * This function initializes a new gRPC client with the specified target server
+ * and allows optional customization of the client's configuration through a configuration block.
+ *
+ * @param hostname The gRPC server hostname to connect to.
+ * @param port The gRPC server port to connect to.
+ * @param configure An optional configuration block to customize the [GrpcClientConfiguration].
+ * This can include setting up interceptors, specifying credentials, customizing message codec
+ * resolution, and overriding default authority.
+ *
+ * @return A new instance of [GrpcClient] configured with the specified target and options.
+ *
+ * @see [GrpcClientConfiguration]
  */
 public fun GrpcClient(
     hostname: String,
     port: Int,
-    credentials: ClientCredentials? = null,
-    messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
-    configure: ManagedChannelBuilder<*>.() -> Unit = {},
+    configure: GrpcClientConfiguration.() -> Unit = {},
 ): GrpcClient {
-    val channel = ManagedChannelBuilder(hostname, port, credentials).apply(configure).buildChannel()
-    return GrpcClient(channel, messageCodecResolver)
+    val config = GrpcClientConfiguration().apply(configure)
+    return GrpcClient(ManagedChannelBuilder(hostname, port, config.credentials), config)
 }
 
+
 /**
- * Constructor function for the [GrpcClient] class.
+ * Creates and configures a gRPC client instance.
+ *
+ * This function initializes a new gRPC client with the specified target server
+ * and allows optional customization of the client's configuration through a configuration block.
+ *
+ * @param target The gRPC server endpoint to connect to, typically specified in
+ * the format `hostname:port`.
+ * @param configure An optional configuration block to customize the [GrpcClientConfiguration].
+ * This can include setting up interceptors, specifying credentials, customizing message codec
+ * resolution, and overriding default authority.
+ *
+ * @return A new instance of [GrpcClient] configured with the specified target and options.
+ *
+ * @see [GrpcClientConfiguration]
  */
 public fun GrpcClient(
     target: String,
-    credentials: ClientCredentials? = null,
-    messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
-    configure: ManagedChannelBuilder<*>.() -> Unit = {},
+    configure: GrpcClientConfiguration.() -> Unit = {},
 ): GrpcClient {
-    val channel = ManagedChannelBuilder(target, credentials).apply(configure).buildChannel()
-    return GrpcClient(channel, messageCodecResolver)
+    val config = GrpcClientConfiguration().apply(configure)
+    return GrpcClient(ManagedChannelBuilder(target, config.credentials), config)
+}
+
+private fun GrpcClient(
+    builder: ManagedChannelBuilder<*>,
+    config: GrpcClientConfiguration,
+): GrpcClient {
+    val channel = builder.apply {
+        config.overrideAuthority?.let { overrideAuthority(it) }
+    }.buildChannel()
+    return GrpcClient(channel, config.messageCodecResolver, config.interceptors)
+}
+
+
+/**
+ * Configuration class for a gRPC client, providing customization options
+ * for client behavior, including interceptors, credentials, codec resolution,
+ * and authority overrides.
+ */
+public class GrpcClientConfiguration internal constructor() {
+    internal val interceptors: MutableList<ClientInterceptor> = mutableListOf()
+
+    /**
+     * Configurable resolver used to determine the appropriate codec for a given Kotlin type
+     * during message serialization and deserialization in gRPC calls.
+     *
+     * Custom implementations of [MessageCodecResolver] can be provided to handle specific serialization
+     * for arbitrary types.
+     * For custom types prefer using the [kotlinx.rpc.grpc.codec.WithCodec] annotation.
+     *
+     * @see MessageCodecResolver
+     * @see kotlinx.rpc.grpc.codec.SourcedMessageCodec
+     * @see kotlinx.rpc.grpc.codec.WithCodec
+     */
+    public var messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver
+
+
+    /**
+     * Configures the client credentials used for secure gRPC requests made by the client.
+     *
+     * By default, the client uses default TLS credentials.
+     * To use custom TLS credentials, use the [tls] constructor function which returns a
+     * [TlsClientCredentials] instance.
+     *
+     * To use plaintext communication, use the [plaintext] constructor function.
+     * Should only be used for testing or for APIs where the use of such API or
+     * the data exchanged is not sensitive.
+     *
+     * ```
+     * GrpcClient("localhost", 50051) {
+     *     credentials = plaintext() // for testing purposes only!
+     * }
+     * ```
+     */
+    public var credentials: ClientCredentials? = null
+
+    /**
+     * Overrides the authority used with TLS and HTTP virtual hosting.
+     * It does not change what the host is actually connected to.
+     * Is commonly in the form `host:port`.
+     */
+    public var overrideAuthority: String? = null
+
+
+    /**
+     * Adds one or more client-side interceptors to the current gRPC client configuration.
+     * Interceptors enable extended customization of gRPC calls
+     * by observing or altering the behaviors of requests and responses.
+     *
+     * The order of interceptors added via this method is significant.
+     * Interceptors are executed in the order they are added,
+     * while one interceptor has to invoke the next interceptor to proceed with the call.
+     *
+     * @param interceptors Interceptors to be added to the current configuration.
+     * Each provided instance of [ClientInterceptor] may perform operations such as modifying headers,
+     * observing call metadata, logging, or transforming data flows.
+     *
+     * @see ClientInterceptor
+     * @see ClientCallScope
+     */
+    public fun intercept(vararg interceptors: ClientInterceptor) {
+        this.interceptors.addAll(interceptors)
+    }
+
+    /**
+     * Provides insecure client credentials for the gRPC client configuration.
+     *
+     * Typically, this would be used for local development, testing, or other
+     * environments where security is not a concern.
+     *
+     * @return An insecure [ClientCredentials] instance that must be passed to [credentials].
+     */
+    public fun plaintext(): ClientCredentials = createInsecureClientCredentials()
+
+    /**
+     * Configures and creates secure client credentials for the gRPC client.
+     *
+     * This method takes a configuration block in which TLS-related parameters,
+     * such as trust managers and key managers, can be defined. The resulting
+     * credentials are used to establish secure communication between the gRPC client
+     * and server, ensuring encrypted transmission of data and mutual authentication
+     * if configured.
+     *
+     * Alternatively, you can use the [TlsClientCredentials] constructor.
+     *
+     * @param configure A configuration block that allows setting up the TLS parameters
+     * using the [TlsClientCredentialsBuilder].
+     * @return A secure [ClientCredentials] instance that must be passed to [credentials].
+     *
+     * @see credentials
+     */
+    public fun tls(configure: TlsClientCredentialsBuilder.() -> Unit): ClientCredentials =
+        TlsClientCredentials(configure)
+
 }
