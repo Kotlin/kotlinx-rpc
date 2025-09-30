@@ -10,6 +10,7 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.Descriptors
 import kotlinx.rpc.protoc.gen.core.AModelToKotlinCommonGenerator
 import kotlinx.rpc.protoc.gen.core.CodeGenerator
+import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.INTERNAL_RPC_API_ANNO
 import kotlinx.rpc.protoc.gen.core.PB_PKG
 import kotlinx.rpc.protoc.gen.core.WITH_CODEC_ANNO
@@ -23,13 +24,11 @@ import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
 import kotlinx.rpc.protoc.gen.core.model.WireType
 import kotlinx.rpc.protoc.gen.core.model.scalarDefaultSuffix
-import org.slf4j.Logger
 
 class ModelToProtobufKotlinCommonGenerator(
+    config: Config,
     model: Model,
-    logger: Logger,
-    explicitApiModeEnabled: Boolean,
-) : AModelToKotlinCommonGenerator(model, logger, explicitApiModeEnabled) {
+) : AModelToKotlinCommonGenerator(config, model) {
     override val FileDeclaration.hasPublicGeneratedContent: Boolean
         get() = enumDeclarations.isNotEmpty() || messageDeclarations.isNotEmpty()
 
@@ -79,12 +78,14 @@ class ModelToProtobufKotlinCommonGenerator(
 
         clazz(
             name = declaration.name.simpleName,
+            comment = declaration.doc,
             declarationType = CodeGenerator.DeclarationType.Interface,
             annotations = annotations
         ) {
             declaration.actualFields.forEachIndexed { i, field ->
                 property(
                     name = field.name,
+                    comment = field.doc,
                     type = field.typeFqName(),
                     needsNewLineAfterDeclaration = i == declaration.actualFields.lastIndex,
                 )
@@ -193,7 +194,7 @@ class ModelToProtobufKotlinCommonGenerator(
             return
         }
 
-        clazz("PresenceIndices", "private", declarationType = CodeGenerator.DeclarationType.Object) {
+        clazz("PresenceIndices", modifiers = "private", declarationType = CodeGenerator.DeclarationType.Object) {
             val fieldDeclarations = declaration.actualFields.filter { it.presenceIdx != null }
             fieldDeclarations.forEachIndexed { i, field ->
                 property(
@@ -219,7 +220,7 @@ class ModelToProtobufKotlinCommonGenerator(
             return
         }
 
-        clazz("BytesDefaults", "private", declarationType = CodeGenerator.DeclarationType.Object) {
+        clazz("BytesDefaults", modifiers = "private", declarationType = CodeGenerator.DeclarationType.Object) {
             fieldDeclarations.forEachIndexed { i, field ->
                 val value = if (field.dec.hasDefaultValue()) {
                     val stringValue = (field.dec.defaultValue as ByteString).toString(Charsets.UTF_8)
@@ -441,7 +442,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
             is FieldType.List -> if (isPacked) {
                 val conversion = if (fieldType.value is FieldType.Enum) {
-                    ".map { ${(fieldType.value as FieldType.Enum).dec.name.safeFullName()}.fromNumber(it) }"
+                    ".map { ${(fieldType.value as FieldType.Enum).dec.value.name.safeFullName()}.fromNumber(it) }"
                 } else {
                     ""
                 }
@@ -464,7 +465,7 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             is FieldType.Enum -> {
-                val fromNum = "${fieldType.dec.name.safeFullName()}.fromNumber"
+                val fromNum = "${fieldType.dec.value.name.safeFullName()}.fromNumber"
                 val raw = "$fromNum(decoder.read${fieldType.decodeEncodeFuncName()}())"
                 code("$lvalue = ${wrapperCtor(raw)}")
             }
@@ -491,10 +492,10 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             is FieldType.Map -> {
-                val entryClassName = fieldType.entry.dec.internalClassFullName()
+                val entryClassName = fieldType.entry.dec.value.internalClassFullName()
                 scope("with($entryClassName())") {
                     generateDecodeFieldValue(
-                        fieldType = FieldType.Message(lazy { fieldType.entry.dec }),
+                        fieldType = FieldType.Message(fieldType.entry.dec),
                         lvalue = "this",
                         isPacked = false,
                         wrapperCtor = wrapperCtor
@@ -608,7 +609,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     scope(".also", paramDecl = "entry ->") {
                         generateEncodeFieldValue(
                             valueVar = "entry",
-                            type = FieldType.Message(lazy { type.entry.dec }),
+                            type = FieldType.Message(type.entry.dec),
                             number = number,
                             isPacked = false,
                             packedWithFixedSize = false,
@@ -829,7 +830,7 @@ class ModelToProtobufKotlinCommonGenerator(
         keyVar: String,
         valueVar: String,
     ) {
-        val entryClass = map.entry.dec.internalClassFullName()
+        val entryClass = map.entry.dec.value.internalClassFullName()
         scope("$entryClass().apply", nlAfterClosed = false) {
             code("key = $keyVar")
             code("value = $valueVar")
@@ -980,10 +981,16 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun CodeGenerator.generateOneOfPublic(declaration: OneOfDeclaration) {
         val interfaceName = declaration.name.simpleName
 
-        clazz(interfaceName, "sealed", declarationType = CodeGenerator.DeclarationType.Interface) {
+        clazz(
+            name = interfaceName,
+            comment = declaration.doc,
+            modifiers = "sealed",
+            declarationType = CodeGenerator.DeclarationType.Interface
+        ) {
             declaration.variants.forEach { variant ->
                 clazz(
                     name = variant.name,
+                    comment = variant.doc,
                     modifiers = "value",
                     constructorArgs = listOf("val value: ${variant.typeFqName()}"),
                     annotations = listOf("@JvmInline"),
@@ -1002,13 +1009,16 @@ class ModelToProtobufKotlinCommonGenerator(
         val entriesSorted = declaration.originalEntries.sortedBy { it.dec.number }
 
         clazz(
-            className, "sealed",
+            name = className,
+            comment = declaration.doc,
+            modifiers = "sealed",
             constructorArgs = listOf("open val number: Int"),
         ) {
 
             declaration.originalEntries.forEach { variant ->
                 clazz(
                     name = variant.name.simpleName,
+                    comment = variant.doc,
                     declarationType = CodeGenerator.DeclarationType.Object,
                     superTypes = listOf("$className(number = ${variant.dec.number})"),
                 )
@@ -1028,6 +1038,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 declaration.aliases.forEach { alias: EnumDeclaration.Alias ->
                     property(
                         name = alias.name.simpleName,
+                        comment = alias.doc,
                         type = className,
                         propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
                         value = alias.original.name.simpleName,

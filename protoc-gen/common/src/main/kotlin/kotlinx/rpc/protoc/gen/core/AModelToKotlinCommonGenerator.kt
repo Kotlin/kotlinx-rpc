@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.protoc.gen.core
 
-import kotlinx.rpc.protoc.gen.core.model.EnumDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FieldDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FieldType
 import kotlinx.rpc.protoc.gen.core.model.FileDeclaration
@@ -21,9 +20,8 @@ const val INTERNAL_RPC_API_ANNO = "kotlinx.rpc.internal.utils.InternalRpcApi"
 const val WITH_CODEC_ANNO = "kotlinx.rpc.grpc.codec.WithCodec"
 
 abstract class AModelToKotlinCommonGenerator(
+    protected val config: Config,
     protected val model: Model,
-    protected val logger: Logger,
-    private val explicitApiModeEnabled: Boolean,
 ) {
     protected abstract fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration)
     protected abstract fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration)
@@ -52,10 +50,11 @@ abstract class AModelToKotlinCommonGenerator(
     private fun FileDeclaration.generatePublicKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(logger = logger, explicitApiModeEnabled = explicitApiModeEnabled) {
+        return file(config) {
             filename = this@generatePublicKotlinFile.name
             packageName = this@generatePublicKotlinFile.packageName.safeFullName()
             packagePath = this@generatePublicKotlinFile.packageName.safeFullName()
+            comments = this@generatePublicKotlinFile.doc
 
             dependencies.forEach { dependency ->
                 importPackage(dependency.packageName.safeFullName())
@@ -76,7 +75,7 @@ abstract class AModelToKotlinCommonGenerator(
     private fun FileDeclaration.generateInternalKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(logger = logger, explicitApiModeEnabled = explicitApiModeEnabled) {
+        return file(config) {
             filename = this@generateInternalKotlinFile.name
             packageName = this@generateInternalKotlinFile.packageName.safeFullName()
             packagePath =
@@ -106,7 +105,7 @@ abstract class AModelToKotlinCommonGenerator(
                 type.dec.value.name.safeFullName()
             }
 
-            is FieldType.Enum -> type.dec.name.safeFullName()
+            is FieldType.Enum -> type.dec.value.name.safeFullName()
 
             is FieldType.OneOf -> type.dec.name.safeFullName()
 
@@ -118,7 +117,7 @@ abstract class AModelToKotlinCommonGenerator(
                 val fqValue = when (val value = type.value) {
                     is FieldType.Message -> value.dec.value.name
                     is FieldType.IntegralType -> value.fqName
-                    is FieldType.Enum -> value.dec.name
+                    is FieldType.Enum -> value.dec.value.name
                     else -> error("Unsupported type: $value")
                 }
 
@@ -137,7 +136,7 @@ abstract class AModelToKotlinCommonGenerator(
                 val fqValue = when (val value = entry.value) {
                     is FieldType.Message -> value.dec.value.name
                     is FieldType.IntegralType -> value.fqName
-                    is FieldType.Enum -> value.dec.name
+                    is FieldType.Enum -> value.dec.value.name
                     else -> error("Unsupported type: $value")
                 }
 

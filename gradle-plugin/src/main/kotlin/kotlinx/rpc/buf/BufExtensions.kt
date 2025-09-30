@@ -68,6 +68,7 @@ public open class BufExtension @Inject constructor(objects: ObjectFactory) {
      *
      * @see <a href="https://buf.build/docs/reference/cli/buf/generate/">"buf generate" command</a>
      * @see [BUF_GEN_YAML]
+     * @see [BufGenerateExtension]
      */
     public val generate: BufGenerateExtension = objects.newInstance(BufGenerateExtension::class.java)
 
@@ -76,6 +77,7 @@ public open class BufExtension @Inject constructor(objects: ObjectFactory) {
      *
      * @see <a href="https://buf.build/docs/reference/cli/buf/generate/">"buf generate" command</a>
      * @see [BUF_GEN_YAML]
+     * @see [BufGenerateExtension]
      */
     public fun generate(configure: Action<BufGenerateExtension>) {
         configure.execute(generate)
@@ -226,4 +228,45 @@ public open class BufGenerateExtension @Inject constructor(internal val project:
         Default(""),
         ;
     }
+
+    /**
+     * Option to configure the indent sized for the generated code.
+     *
+     * Default value: `4`.
+     */
+    public val indentSize: Property<Int> = project.objects.property<Int>().convention(4)
+
+    /**
+     * Extension for configuring comments in the generated code.
+     *
+     * @see [BufCommentsExtension].
+     */
+    public val comments: BufCommentsExtension = project.objects.newInstance(BufCommentsExtension::class.java)
+
+    /**
+     * Extension for configuring comments in the generated code.
+     *
+     * @see [BufCommentsExtension].
+     */
+    public fun comments(configure: Action<BufCommentsExtension>) {
+        configure.execute(comments)
+    }
+}
+
+/**
+ * Extension for configuring comments in the generated code.
+ */
+public open class BufCommentsExtension @Inject constructor(internal val project: Project) {
+    /**
+     * Whether to copy comments from the original source files.
+     */
+    public val copyComments: Property<Boolean> = project.objects.property<Boolean>().convention(true)
+
+    /**
+     * Whether to include file-level comments. This includes:
+     * - Comments on the `package` declaration.
+     * - Comments on the `syntax` declaration.
+     * - Comments on the `editions` declaration.
+     */
+    public val includeFileLevelComments: Property<Boolean> = project.objects.property<Boolean>().convention(true)
 }

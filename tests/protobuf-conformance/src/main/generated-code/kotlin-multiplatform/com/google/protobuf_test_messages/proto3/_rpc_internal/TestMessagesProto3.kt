@@ -4731,4 +4731,3 @@ fun com.google.protobuf_test_messages.proto3.EnumOnlyProto3.Bool.Companion.fromN
         }
     }
 }
-

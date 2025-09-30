@@ -19,14 +19,26 @@ import org.slf4j.LoggerFactory
 import org.slf4j.helpers.NOPLogger
 import java.io.File
 
+@Volatile
+lateinit var globalLogger: Logger
+
+class Config(
+    val explicitApiModeEnabled: Boolean,
+    val generateComments: Boolean,
+    val generateFileLevelComments: Boolean,
+    val indentSize: Int,
+)
+
 abstract class ProtocGenPlugin {
     companion object {
         private const val DEBUG_OUTPUT_OPTION = "debugOutput"
         private const val EXPLICIT_API_MODE_ENABLED_OPTION = "explicitApiModeEnabled"
+        private const val GENERATE_COMMENTS_OPTION = "generateComments"
+        private const val GENERATE_FILE_LEVEL_COMMENTS_OPTION = "generateFileLevelComments"
+        private const val INDENT_SIZE_OPTION = "indentSize"
     }
 
     private var debugOutput: String? = null
-    private var explicitApiModeEnabled: Boolean = false
     private val logger: Logger by lazy {
         val debugOutput = debugOutput ?: return@lazy NOPLogger.NOP_LOGGER
 
@@ -59,9 +71,22 @@ abstract class ProtocGenPlugin {
         }
 
         debugOutput = parameters[DEBUG_OUTPUT_OPTION]
-        explicitApiModeEnabled = parameters[EXPLICIT_API_MODE_ENABLED_OPTION]?.toBooleanStrictOrNull() ?: false
+        val explicitApiModeEnabled = parameters[EXPLICIT_API_MODE_ENABLED_OPTION]?.toBooleanStrictOrNull() ?: false
 
-        val files = input.runGeneration()
+        val generateComments = parameters[GENERATE_COMMENTS_OPTION]?.toBooleanStrictOrNull() ?: true
+        val generateFileLevelComments = parameters[GENERATE_FILE_LEVEL_COMMENTS_OPTION]?.toBooleanStrictOrNull() ?: true
+
+        val indentSize = parameters[INDENT_SIZE_OPTION]?.toIntOrNull() ?: 4
+
+        val config = Config(
+            explicitApiModeEnabled = explicitApiModeEnabled,
+            generateComments = generateComments,
+            generateFileLevelComments = generateFileLevelComments,
+            indentSize = indentSize,
+        )
+
+        globalLogger = logger
+        val files = input.runGeneration(config)
             .map { file ->
                 CodeGeneratorResponse.File.newBuilder()
                     .apply {
@@ -95,17 +120,19 @@ abstract class ProtocGenPlugin {
             .build()
     }
 
-    private fun CodeGeneratorRequest.runGeneration(): List<FileGenerator> {
-        return generateKotlinByModel(
-            model = this.toModel(),
-            logger = logger,
-            explicitApiModeEnabled = explicitApiModeEnabled,
-        )
+    private fun CodeGeneratorRequest.runGeneration(config: Config): List<FileGenerator> {
+        return try {
+            generateKotlinByModel(
+                config = config,
+                model = this.toModel(),
+            )
+        } finally {
+            (logger as ch.qos.logback.classic.Logger).detachAndStopAllAppenders()
+        }
     }
 
     protected abstract fun generateKotlinByModel(
+        config: Config,
         model: Model,
-        logger: Logger,
-        explicitApiModeEnabled: Boolean,
     ): List<FileGenerator>
 }

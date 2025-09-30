@@ -473,4 +473,3 @@ public fun com.google.protobuf.kotlin.NullValue.Companion.fromNumber(number: Int
         }
     }
 }
-

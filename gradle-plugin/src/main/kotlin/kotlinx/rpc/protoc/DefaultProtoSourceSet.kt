@@ -4,9 +4,13 @@
 
 package kotlinx.rpc.protoc
 
+import kotlinx.rpc.buf.BufCommentsExtension
+import kotlinx.rpc.buf.BufGenerateExtension
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.protoc.ProtocPlugin.Companion.GRPC_KOTLIN_MULTIPLATFORM
 import kotlinx.rpc.protoc.ProtocPlugin.Companion.KOTLIN_MULTIPLATFORM
+import kotlinx.rpc.rpcExtension
+import kotlinx.rpc.rpcExtensionOrNull
 import kotlinx.rpc.util.findOrCreate
 import kotlinx.rpc.util.withKotlinJvmExtension
 import kotlinx.rpc.util.withKotlinKmpExtension
@@ -14,14 +18,17 @@ import org.gradle.api.*
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.add
 import org.gradle.kotlin.dsl.listProperty
+import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
+import org.jetbrains.kotlin.gradle.targets.js.npm.includedRange
 import javax.inject.Inject
 
 @Suppress("UNCHECKED_CAST")
@@ -58,11 +65,7 @@ internal open class DefaultProtoSourceSet @Inject constructor(
                 javaJar(project.kotlinMultiplatformProtocPluginJarPath)
             }
 
-            options.put("debugOutput", "protoc-gen-kotlin-multiplatform.log")
-
-            if (this@DefaultProtoSourceSet.name.lowercase().endsWith("main")) {
-                options.put("explicitApiModeEnabled", explicitApiModeEnabled)
-            }
+            defaultOptions(explicitApiModeEnabled)
         }
 
         plugins.create(GRPC_KOTLIN_MULTIPLATFORM) {
@@ -70,12 +73,25 @@ internal open class DefaultProtoSourceSet @Inject constructor(
                 javaJar(project.grpcKotlinMultiplatformProtocPluginJarPath)
             }
 
-            options.put("debugOutput", "protoc-gen-grpc-kotlin-multiplatform.log")
-
-            if (this@DefaultProtoSourceSet.name.lowercase().endsWith("main")) {
-                options.put("explicitApiModeEnabled", explicitApiModeEnabled)
-            }
+            defaultOptions(explicitApiModeEnabled)
         }
+    }
+
+    private fun ProtocPlugin.defaultOptions(explicitApiModeEnabled: Provider<Boolean>) {
+        options.put("debugOutput", "protoc-gen-$name.log")
+
+        if (this@DefaultProtoSourceSet.name.lowercase().endsWith("main")) {
+            options.put("explicitApiModeEnabled", explicitApiModeEnabled)
+        }
+
+        val comments: Provider<BufGenerateExtension> = project.provider {
+            project.rpcExtensionOrNull()?.run { protoc.buf.generate }
+                ?: project.objects.newInstance<BufGenerateExtension>()
+        }
+
+        options.put("generateComments", comments.flatMap { it.comments.copyComments })
+        options.put("generateFileLevelComments", comments.flatMap { it.comments.includeFileLevelComments })
+        options.put("indentSize", comments.flatMap { it.indentSize })
     }
 
     val languageSourceSets: ListProperty<Any> = project.objects.listProperty<Any>()

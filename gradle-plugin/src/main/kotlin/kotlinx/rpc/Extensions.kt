@@ -19,7 +19,9 @@ import org.gradle.kotlin.dsl.property
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
-internal fun Project.rpcExtension(): RpcExtension = extensions.findByType<RpcExtension>()
+internal fun Project.rpcExtensionOrNull(): RpcExtension? = extensions.findByType<RpcExtension>()
+
+internal fun Project.rpcExtension(): RpcExtension = rpcExtensionOrNull()
     ?: error("Rpc extension not found. Please apply the plugin to the project")
 
 public open class RpcExtension @Inject constructor(objects: ObjectFactory, private val project: Project) {

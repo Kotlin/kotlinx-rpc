@@ -104,4 +104,3 @@ private fun com.google.protobuf.kotlin.DurationInternal.computeSize(): Int {
 public fun com.google.protobuf.kotlin.Duration.asInternal(): com.google.protobuf.kotlin.DurationInternal { 
     return this as? com.google.protobuf.kotlin.DurationInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
-

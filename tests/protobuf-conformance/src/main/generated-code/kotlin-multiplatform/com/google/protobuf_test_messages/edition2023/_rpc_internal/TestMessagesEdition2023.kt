@@ -4026,4 +4026,3 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.Nested
         }
     }
 }
-

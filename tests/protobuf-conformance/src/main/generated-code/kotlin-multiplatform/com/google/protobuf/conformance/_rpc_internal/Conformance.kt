@@ -758,4 +758,3 @@ fun com.google.protobuf.conformance.TestCategory.Companion.fromNumber(number: In
         }
     }
 }
-

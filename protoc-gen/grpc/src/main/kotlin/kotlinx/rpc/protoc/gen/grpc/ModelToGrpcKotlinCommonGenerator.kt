@@ -7,17 +7,16 @@ package kotlinx.rpc.protoc.gen.grpc
 import com.google.protobuf.DescriptorProtos
 import kotlinx.rpc.protoc.gen.core.AModelToKotlinCommonGenerator
 import kotlinx.rpc.protoc.gen.core.CodeGenerator
+import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.model.FileDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FqName
 import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.ServiceDeclaration
-import org.slf4j.Logger
 
 class ModelToGrpcKotlinCommonGenerator(
+    config: Config,
     model: Model,
-    logger: Logger,
-    explicitApiModeEnabled: Boolean,
-) : AModelToKotlinCommonGenerator(model, logger, explicitApiModeEnabled) {
+) : AModelToKotlinCommonGenerator(config, model) {
     override val FileDeclaration.hasPublicGeneratedContent: Boolean get() = serviceDeclarations.isNotEmpty()
     override val FileDeclaration.hasInternalGeneratedContent: Boolean get() = false
 
@@ -35,6 +34,7 @@ class ModelToGrpcKotlinCommonGenerator(
 
         clazz(
             name = service.name.simpleName,
+            comment = service.doc,
             declarationType = CodeGenerator.DeclarationType.Interface,
             annotations = listOf("@kotlinx.rpc.grpc.annotations.Grpc$annotationParams")
         ) {
@@ -49,10 +49,11 @@ class ModelToGrpcKotlinCommonGenerator(
 
                 function(
                     name = method.name,
+                    comment = method.doc,
                     modifiers = if (method.dec.isServerStreaming) "" else "suspend",
-                    args = "message: ${inputType.name.safeFullName().wrapInFlowIf(method.dec.isClientStreaming)}",
+                    args = "message: ${inputType.value.name.safeFullName().wrapInFlowIf(method.dec.isClientStreaming)}",
                     annotations = annotations,
-                    returnType = outputType.name.safeFullName().wrapInFlowIf(method.dec.isServerStreaming),
+                    returnType = outputType.value.name.safeFullName().wrapInFlowIf(method.dec.isServerStreaming),
                 )
             }
         }

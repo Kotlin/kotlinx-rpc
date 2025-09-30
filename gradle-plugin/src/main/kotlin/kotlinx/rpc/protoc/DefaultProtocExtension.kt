@@ -25,10 +25,7 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.newInstance
-import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import java.io.File
@@ -36,7 +33,7 @@ import javax.inject.Inject
 
 internal open class DefaultProtocExtension @Inject constructor(
     objects: ObjectFactory,
-    private val project: Project,
+    project: Project,
 ) : ProtocExtension {
     override val buf: BufExtension = project.objects.newInstance<BufExtension>()
     override fun buf(action: Action<BufExtension>) {
