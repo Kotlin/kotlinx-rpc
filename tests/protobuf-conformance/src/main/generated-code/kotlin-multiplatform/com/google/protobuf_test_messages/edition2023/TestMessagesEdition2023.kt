@@ -174,16 +174,16 @@ interface TestAllTypesEdition2023 {
     }
 
     sealed class NestedEnum(open val number: Int) { 
-        object FOO: NestedEnum(number = 0)
+        data object FOO: NestedEnum(number = 0)
 
-        object BAR: NestedEnum(number = 1)
+        data object BAR: NestedEnum(number = 1)
 
-        object BAZ: NestedEnum(number = 2)
+        data object BAZ: NestedEnum(number = 2)
 
         /**
         * Intentionally negative.
         */
-        object NEG: NestedEnum(number = -1)
+        data object NEG: NestedEnum(number = -1)
 
         data class UNRECOGNIZED(override val number: Int): NestedEnum(number)
 
@@ -210,11 +210,11 @@ interface GroupLikeType {
 }
 
 sealed class ForeignEnumEdition2023(open val number: Int) { 
-    object FOREIGN_FOO: ForeignEnumEdition2023(number = 0)
+    data object FOREIGN_FOO: ForeignEnumEdition2023(number = 0)
 
-    object FOREIGN_BAR: ForeignEnumEdition2023(number = 1)
+    data object FOREIGN_BAR: ForeignEnumEdition2023(number = 1)
 
-    object FOREIGN_BAZ: ForeignEnumEdition2023(number = 2)
+    data object FOREIGN_BAZ: ForeignEnumEdition2023(number = 2)
 
     data class UNRECOGNIZED(override val number: Int): ForeignEnumEdition2023(number)
 
