@@ -51,4 +51,10 @@ kotlin {
 tasks.withType<KotlinJvmTest> {
     // lincheck agent
     jvmArgs("-XX:+EnableDynamicAgentLoading")
+
+    if (project.hasProperty("stressTests") && project.property("stressTests") == "true") {
+        include("kotlinx/rpc/krpc/stress/**")
+    } else {
+        exclude("kotlinx/rpc/krpc/stress/**")
+    }
 }

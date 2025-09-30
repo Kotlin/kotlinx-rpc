@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.junit.jupiter.api.TestFactory
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.seconds
 
@@ -139,17 +141,23 @@ class KrpcProtocolCompatibilityTests : KrpcProtocolCompatibilityTestsBase() {
 
     @TestFactory
     fun fastProducer() = matrixTest(timeout = 60.seconds) { service, impl ->
+        val root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as ch.qos.logback.classic.Logger
+
         val async = async {
             service.fastServerProduce(1000).map {
                 // long produce
                 impl.entered.complete(Unit)
                 impl.fence.await()
+                root.info("Consumed $it")
                 it * it
             }.toList()
         }
 
         impl.entered.await()
-        repeat(10_000) {
+        repeat(5_000) {
+            if (it % 10 == 0) {
+                root.info("Parallel iteration #$it")
+            }
             assertEquals(1, service.unary(1))
             assertEquals(55, service.serverStreaming(10).toList().sum())
         }
