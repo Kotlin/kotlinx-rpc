@@ -951,4 +951,3 @@ public fun com.google.protobuf.kotlin.Field.Cardinality.Companion.fromNumber(num
         }
     }
 }
-

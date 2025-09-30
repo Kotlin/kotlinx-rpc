@@ -476,4 +476,3 @@ private fun com.google.protobuf.kotlin.MixinInternal.computeSize(): Int {
 public fun com.google.protobuf.kotlin.Mixin.asInternal(): com.google.protobuf.kotlin.MixinInternal { 
     return this as? com.google.protobuf.kotlin.MixinInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
-
