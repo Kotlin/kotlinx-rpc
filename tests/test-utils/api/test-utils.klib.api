@@ -1,0 +1,32 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, wasmWasi, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Alias: native => [iosArm64, iosSimulatorArm64, iosX64, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <org.jetbrains.kotlinx:test-utils>
+final class kotlinx.rpc.test/WaitCounter { // kotlinx.rpc.test/WaitCounter|null[0]
+    constructor <init>() // kotlinx.rpc.test/WaitCounter.<init>|<init>(){}[0]
+
+    final val value // kotlinx.rpc.test/WaitCounter.value|{}value[0]
+        final fun <get-value>(): kotlin/Int // kotlinx.rpc.test/WaitCounter.value.<get-value>|<get-value>(){}[0]
+
+    final fun increment() // kotlinx.rpc.test/WaitCounter.increment|increment(){}[0]
+    final suspend fun await(kotlin/Int) // kotlinx.rpc.test/WaitCounter.await|await(kotlin.Int){}[0]
+}
+
+final inline fun <#A: kotlin/Any?> kotlinx.rpc.test/withDebugProbes(kotlin/Function0<#A>): #A // kotlinx.rpc.test/withDebugProbes|withDebugProbes(kotlin.Function0<0:0>){0§<kotlin.Any?>}[0]
+
+// Targets: [native, wasmWasi]
+final fun kotlinx.rpc.test/runTestWithCoroutinesProbes(kotlin.time/Duration, kotlin.coroutines/SuspendFunction1<kotlinx.coroutines.test/TestScope, kotlin/Unit>) // kotlinx.rpc.test/runTestWithCoroutinesProbes|runTestWithCoroutinesProbes(kotlin.time.Duration;kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.test.TestScope,kotlin.Unit>){}[0]
+
+// Targets: [native]
+final fun kotlinx.rpc.test/runThreadIfPossible(kotlin/Function0<kotlin/Unit>) // kotlinx.rpc.test/runThreadIfPossible|runThreadIfPossible(kotlin.Function0<kotlin.Unit>){}[0]
+
+// Targets: [js, wasmJs, wasmWasi]
+final inline fun kotlinx.rpc.test/runThreadIfPossible(kotlin/Function0<kotlin/Unit>) // kotlinx.rpc.test/runThreadIfPossible|runThreadIfPossible(kotlin.Function0<kotlin.Unit>){}[0]
+
+// Targets: [js, wasmJs]
+final fun kotlinx.rpc.test/runTestWithCoroutinesProbes(kotlin.time/Duration, kotlin.coroutines/SuspendFunction1<kotlinx.coroutines.test/TestScope, kotlin/Unit>): kotlinx.coroutines.test.internal/JsPromiseInterfaceForTesting // kotlinx.rpc.test/runTestWithCoroutinesProbes|runTestWithCoroutinesProbes(kotlin.time.Duration;kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.test.TestScope,kotlin.Unit>){}[0]
