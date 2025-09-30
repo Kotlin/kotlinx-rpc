@@ -243,6 +243,7 @@ class KrpcTestServiceBackend : KrpcTestService {
 
     override suspend fun nullableInt(v: Int?): Int? = v
     override suspend fun nullableList(v: List<Int>?): List<Int>? = v
+    override suspend fun nullableEnum(enum: KrpcTestService.TestEnum?): KrpcTestService.TestEnum? = enum
 
     override fun delayForever(): Flow<Boolean> = flow {
         emit(true)

@@ -127,25 +127,33 @@ class CancellationTest {
                 service.cancellationInOutgoingStream(
                     stream = flow {
                         emit(42)
+                        println("[testCancellationInClientStream] emit 42")
                         emit(43)
+                        println("[testCancellationInClientStream] emit 43")
                     },
                     cancelled = flow {
                         emit(1)
+                        println("[testCancellationInClientStream] emit 1")
                         serverInstance().firstIncomingConsumed.await()
+                        println("[testCancellationInClientStream] firstIncomingConsumed")
                         throw CancellationException("cancellationInClientStream")
                     },
                 )
             }
 
             requestJob.join()
+            println("[testCancellationInClientStream] Request job finished")
             serverInstance().consumedAll.await()
+            println("[testCancellationInClientStream] Server consumed all")
 
             assertFalse(requestJob.isCancelled, "Expected requestJob not to be cancelled")
             assertContentEquals(listOf(42, 43), serverInstance().consumedIncomingValues)
         }
+        println("[testCancellationInClientStream] Scope finished")
 
         checkAlive()
         stopAllAndJoin()
+        println("[testCancellationInClientStream] All done")
 
         assertEquals(1, serverInstance().cancellationsCounter.value, "Expected 1 request to be cancelled")
     }
@@ -154,19 +162,23 @@ class CancellationTest {
     @Test
     fun testCancelClient() = runCancellationTest {
         val firstRequestJob = launch {
+            println("[testCancelClient] firstRequestJob started")
             service.longRequest()
         }
 
         val secondService = client.withService<CancellationService>()
 
         val secondRequestJob = launch {
+            println("[testCancelClient] secondRequestJob started")
             secondService.longRequest()
         }
 
         val clientFlowJob = launch {
             service.outgoingStream(flow {
                 emit(0)
+                println("[testCancelClient] emit 0")
                 serverInstance().fence.await()
+                println("[testCancelClient] fence awaited")
                 emit(1)
             })
         }
@@ -181,18 +193,27 @@ class CancellationTest {
             }
         }
 
+        println("[testCancelClient] Requests sent")
         serverInstance().waitCounter.await(4)
+        println("[testCancelClient] Requests reached")
         client.close()
         client.awaitCompletion()
+        println("[testCancelClient] Client stopped")
         server.awaitCompletion()
+        println("[testCancelClient] Server stopped")
         firstRequestJob.join()
+        println("[testCancelClient] First request finished")
         secondRequestJob.join()
+        println("[testCancelClient] Second request finished")
         clientFlowJob.join()
+        println("[testCancelClient] Client flow finished")
 
         serverInstance().fence.complete(Unit)
         serverFlowJob.join()
+        println("[testCancelClient] Server flow finished")
 
         serverInstance().cancellationsCounter.await(4)
+        println("[testCancelClient] Server cancellations counted")
 
         assertTrue(firstRequestJob.isCancelled, "Expected firstRequestJob to be cancelled")
         assertTrue(secondRequestJob.isCancelled, "Expected secondRequestJob to be cancelled")
@@ -203,6 +224,7 @@ class CancellationTest {
 
         checkAlive(clientAlive = false, serverAlive = false)
         stopAllAndJoin()
+        println("[testCancelClient] All done")
 
         assertEquals(4, serverInstance().cancellationsCounter.value, "Expected 4 requests to be cancelled")
     }
@@ -210,19 +232,23 @@ class CancellationTest {
     @Test
     fun testCancelServer() = runCancellationTest {
         val firstRequestJob = launch {
+            println("[testCancelServer] firstRequestJob started")
             service.longRequest()
         }
 
         val secondService = client.withService<CancellationService>()
 
         val secondRequestJob = launch {
+            println("[testCancelServer] secondRequestJob started")
             secondService.longRequest()
         }
 
         val clientFlowJob = launch {
             service.outgoingStream(flow {
                 emit(0)
+                println("[testCancelServer] emit 0")
                 serverInstance().fence.await()
+                println("[testCancelServer] fence awaited")
                 emit(1)
             })
         }
@@ -237,18 +263,27 @@ class CancellationTest {
             }
         }
 
+        println("[testCancelServer] Requests sent")
         serverInstance().waitCounter.await(4) // wait for requests to reach server
+        println("[testCancelServer] Requests reached")
         server.close()
         server.awaitCompletion()
+        println("[testCancelServer] Server stopped")
         client.awaitCompletion()
+        println("[testCancelServer] Client stopped")
         firstRequestJob.join()
+        println("[testCancelServer] First request finished")
         secondRequestJob.join()
+        println("[testCancelServer] Second request finished")
         clientFlowJob.join()
+        println("[testCancelServer] Client flow finished")
 
         serverInstance().fence.complete(Unit)
         serverFlowJob.join()
+        println("[testCancelServer] Server flow finished")
 
         serverInstance().cancellationsCounter.await(4)
+        println("[testCancelServer] Server cancellations counted")
 
         assertTrue(firstRequestJob.isCancelled, "Expected firstRequestJob to be cancelled")
         assertTrue(secondRequestJob.isCancelled, "Expected secondRequestJob to be cancelled")
@@ -259,6 +294,7 @@ class CancellationTest {
 
         checkAlive(clientAlive = false, serverAlive = false)
         stopAllAndJoin()
+        println("[testCancelServer] All done")
 
         assertEquals(4, serverInstance().cancellationsCounter.value, "Expected 4 requests to be cancelled")
     }

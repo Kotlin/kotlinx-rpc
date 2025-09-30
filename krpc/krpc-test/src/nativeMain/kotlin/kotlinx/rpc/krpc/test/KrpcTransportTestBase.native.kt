@@ -5,3 +5,4 @@
 package kotlinx.rpc.krpc.test
 
 actual val isJs: Boolean = false
+internal actual val iterations_100_000: Int = 100_000
