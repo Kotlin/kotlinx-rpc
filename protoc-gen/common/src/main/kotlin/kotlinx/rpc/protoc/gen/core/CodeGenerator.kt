@@ -4,14 +4,14 @@
 
 package kotlinx.rpc.protoc.gen.core
 
-import org.slf4j.Logger
-import org.slf4j.helpers.NOPLogger
+@DslMarker
+annotation class CodegenDsl
 
+@CodegenDsl
 open class CodeGenerator(
     private val indent: String,
     private val builder: StringBuilder = StringBuilder(),
-    protected val logger: Logger = NOPLogger.NOP_LOGGER,
-    protected val explicitApiModeEnabled: Boolean,
+    val config: Config,
 ) {
     private var isEmpty: Boolean = true
     private var result: String? = null
@@ -60,7 +60,7 @@ open class CodeGenerator(
         _append(value)
     }
 
-    private fun addLine(value: String? = null) {
+    fun addLine(value: String? = null) {
         _append("$indent${value ?: ""}", newLineIfAbsent = true)
     }
 
@@ -68,8 +68,12 @@ open class CodeGenerator(
         _append(newLineBefore = true)
     }
 
+    fun blankLine() {
+        _append(newLineBefore = true, newLineAfter = true)
+    }
+
     private fun withNextIndent(block: CodeGenerator.() -> Unit) {
-        CodeGenerator("$indent$ONE_INDENT", builder, logger, explicitApiModeEnabled).block()
+        CodeGenerator("$indent$ONE_INDENT", builder, config).block()
     }
 
     fun scope(
@@ -140,8 +144,7 @@ open class CodeGenerator(
 
         val nested = CodeGenerator(
             indent = "$indent$ONE_INDENT",
-            logger = logger,
-            explicitApiModeEnabled = explicitApiModeEnabled,
+            config = config,
         ).apply(block)
 
         if (nested.isEmpty) {
@@ -169,6 +172,7 @@ open class CodeGenerator(
 
     fun property(
         name: String,
+        comment: Comment? = null,
         modifiers: String = "",
         contextReceiver: String = "",
         annotations: List<String> = emptyList(),
@@ -179,6 +183,7 @@ open class CodeGenerator(
         needsNewLineAfterDeclaration: Boolean = true,
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
+        appendComment(comment)
         for (annotation in annotations) {
             addLine(annotation)
         }
@@ -207,6 +212,7 @@ open class CodeGenerator(
 
     fun function(
         name: String,
+        comment: Comment? = null,
         modifiers: String = "",
         typeParameters: String = "",
         args: String = "",
@@ -215,6 +221,7 @@ open class CodeGenerator(
         returnType: String,
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
+        appendComment(comment)
         for (annotation in annotations) {
             addLine(annotation)
         }
@@ -232,6 +239,7 @@ open class CodeGenerator(
     @JvmName("clazz_no_constructorArgs")
     fun clazz(
         name: String,
+        comment: Comment? = null,
         modifiers: String = "",
         superTypes: List<String> = emptyList(),
         annotations: List<String> = emptyList(),
@@ -240,6 +248,7 @@ open class CodeGenerator(
     ) {
         clazz(
             name = name,
+            comment = comment,
             modifiers = modifiers,
             constructorArgs = emptyList<String>(),
             superTypes = superTypes,
@@ -252,6 +261,7 @@ open class CodeGenerator(
     @JvmName("clazz_constructorArgs_no_default")
     fun clazz(
         name: String,
+        comment: Comment? = null,
         modifiers: String = "",
         constructorArgs: List<String> = emptyList(),
         superTypes: List<String> = emptyList(),
@@ -261,6 +271,7 @@ open class CodeGenerator(
     ) {
         clazz(
             name = name,
+            comment = comment,
             modifiers = modifiers,
             constructorArgs = constructorArgs.map { it to null },
             superTypes = superTypes,
@@ -272,6 +283,7 @@ open class CodeGenerator(
 
     fun clazz(
         name: String,
+        comment: Comment? = null,
         modifiers: String = "",
         constructorModifiers: String = "",
         constructorArgs: List<Pair<String, String?>> = emptyList(),
@@ -280,6 +292,7 @@ open class CodeGenerator(
         declarationType: DeclarationType = DeclarationType.Class,
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
+        appendComment(comment)
         for (annotation in annotations) {
             addLine(annotation)
         }
@@ -297,7 +310,7 @@ open class CodeGenerator(
         val constructorArgsTransformed = constructorArgs.map { (arg, default) ->
             val defaultString = default?.let { " = $it" } ?: ""
             val modifierString = when {
-                !explicitApiModeEnabled -> ""
+                !config.explicitApiModeEnabled -> ""
 
                 arg.contains("val") || arg.contains("var") -> when {
                     modifiers.contains("internal") ||
@@ -365,7 +378,7 @@ open class CodeGenerator(
     }
 
     fun String.withVisibility(): String {
-        return if (explicitApiModeEnabled) {
+        return if (config.explicitApiModeEnabled) {
             when {
                 contains("public") -> this
                 contains("protected") -> this
@@ -378,19 +391,65 @@ open class CodeGenerator(
         }
     }
 
-    companion object {
-        private const val ONE_INDENT = "    "
+    fun appendComments(comments: List<Comment>) {
+        val filteredComments = comments.filter { !it.isEmpty() }
+
+        filteredComments.forEachIndexed { index, comment ->
+            appendComment(comment, first = index == 0, final = index == filteredComments.lastIndex)
+        }
     }
+
+    fun appendComment(comment: Comment?, first: Boolean = true, final: Boolean = true) {
+        if (!config.generateComments || comment == null || comment.isEmpty()) {
+            return
+        }
+
+        val leadingDetached = comment.leadingDetached
+        val leading = comment.leading
+        val trailing = comment.trailing
+
+        if (first) {
+            addLine("/**")
+        } else {
+            addLine("* ")
+        }
+
+        leadingDetached.forEach {
+            addLine("* $it")
+        }
+
+        if (leadingDetached.isNotEmpty() && (leading.isNotEmpty() || trailing.isNotEmpty())) {
+            addLine("* ")
+        }
+        leading.forEach {
+            addLine("* $it")
+        }
+
+        if ((leadingDetached.isNotEmpty() || leading.isNotEmpty()) && trailing.isNotEmpty()) {
+            addLine("* ")
+        }
+        trailing.forEach {
+            addLine("* $it")
+        }
+
+        if (final) {
+            addLine("*/")
+        }
+    }
+
+    @Suppress("PrivatePropertyName")
+    private val ONE_INDENT = " ".repeat(config.indentSize)
 }
 
+@CodegenDsl
 class FileGenerator(
     var filename: String? = null,
     var packageName: String? = null,
     var packagePath: String? = packageName,
+    var comments: List<Comment> = emptyList(),
     var fileOptIns: List<String> = emptyList(),
-    logger: Logger = NOPLogger.NOP_LOGGER,
-    explicitApiModeEnabled: Boolean,
-) : CodeGenerator("", logger = logger, explicitApiModeEnabled = explicitApiModeEnabled) {
+    config: Config,
+) : CodeGenerator("", config = config) {
     private val imports = mutableListOf<String>()
 
     fun importPackage(name: String) {
@@ -404,44 +463,55 @@ class FileGenerator(
     }
 
     override fun build(): String {
-        val sortedImports = imports.toSortedSet()
-        val prefix = buildString {
-            if (fileOptIns.isNotEmpty()) {
-                appendLine("@file:OptIn(${fileOptIns.joinToString(", ")})")
-                newLine()
+        val builder = CodeGenerator(
+            indent = "",
+            config = config,
+        ).apply {
+            val sortedImports = this@FileGenerator.imports.toSortedSet()
+
+            if (config.generateFileLevelComments) {
+                appendComments(this@FileGenerator.comments)
             }
 
-            val packageName = packageName
+            if (config.generateComments && config.generateFileLevelComments && this@FileGenerator.comments.any { !it.isEmpty() }) {
+                blankLine()
+            }
+
+            if (this@FileGenerator.fileOptIns.isNotEmpty()) {
+                addLine("@file:OptIn(${this@FileGenerator.fileOptIns.joinToString(", ")})")
+            }
+
+            val packageName = this@FileGenerator.packageName
             if (packageName != null && packageName.isNotEmpty()) {
-                appendLine("package $packageName")
+                addLine("package $packageName")
             }
 
-            appendLine()
+            if (this@FileGenerator.fileOptIns.isNotEmpty() || packageName != null && packageName.isNotEmpty()) {
+                blankLine()
+            }
 
             for (import in sortedImports) {
-                appendLine("import $import")
+                addLine("import $import")
             }
 
-            if (imports.isNotEmpty()) {
-                appendLine()
+            if (this@FileGenerator.imports.isNotEmpty()) {
+                blankLine()
             }
         }
 
-        return prefix + super.build()
+        return builder.build() + super.build()
     }
 }
 
 fun file(
+    config: Config,
     name: String? = null,
     packageName: String? = null,
-    logger: Logger = NOPLogger.NOP_LOGGER,
-    explicitApiModeEnabled: Boolean,
     block: FileGenerator.() -> Unit,
 ): FileGenerator = FileGenerator(
     filename = name,
     packageName = packageName,
     packagePath = packageName,
     fileOptIns = emptyList(),
-    logger = logger,
-    explicitApiModeEnabled = explicitApiModeEnabled,
+    config = config,
 ).apply(block)

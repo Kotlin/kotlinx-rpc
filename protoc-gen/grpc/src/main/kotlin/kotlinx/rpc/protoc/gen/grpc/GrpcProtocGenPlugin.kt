@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.protoc.gen.grpc
 
+import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.FileGenerator
 import kotlinx.rpc.protoc.gen.core.ProtocGenPlugin
 import kotlinx.rpc.protoc.gen.core.model.Model
@@ -11,10 +12,9 @@ import org.slf4j.Logger
 
 object GrpcProtocGenPlugin : ProtocGenPlugin() {
     override fun generateKotlinByModel(
+        config: Config,
         model: Model,
-        logger: Logger,
-        explicitApiModeEnabled: Boolean,
     ): List<FileGenerator> {
-        return ModelToGrpcKotlinCommonGenerator(model, logger, explicitApiModeEnabled).generateKotlinFiles()
+        return ModelToGrpcKotlinCommonGenerator(config, model).generateKotlinFiles()
     }
 }

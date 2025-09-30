@@ -17,6 +17,7 @@ import kotlinx.rpc.protoc.gen.core.model.MethodDeclaration
 import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
 import kotlinx.rpc.protoc.gen.core.model.ServiceDeclaration
+import kotlin.collections.plus
 
 private val nameCache = mutableMapOf<Descriptors.GenericDescriptor, FqName>()
 private val modelCache = mutableMapOf<Descriptors.GenericDescriptor, Any>()
@@ -101,7 +102,7 @@ fun Descriptors.GenericDescriptor.fqName(): FqName {
  * Caches the `descriptor.toModel()` result in the [modelCache] to ensure that only a single object
  * per descriptor exists.
  */
-private inline fun <D, reified T> D.cached(block: (D) -> T): T
+private inline fun <D, reified T> D.cached(crossinline block: (D) -> T): T
         where D : Descriptors.GenericDescriptor, T : Any {
     if (modelCache.containsKey(this)) {
         return modelCache[this] as T
@@ -112,130 +113,149 @@ private inline fun <D, reified T> D.cached(block: (D) -> T): T
 }
 
 private fun Descriptors.FileDescriptor.toModel(): FileDeclaration = cached {
-    return FileDeclaration(
+    val comments = Comments(extractComments(), ObjectPath.empty)
+
+    FileDeclaration(
         name = kotlinFileName(),
         packageName = FqName.Package.fromString(kotlinPackage()),
         dependencies = dependencies.map { it.toModel() },
-        messageDeclarations = messageTypes.map { it.toModel() },
-        enumDeclarations = enumTypes.map { it.toModel() },
-        serviceDeclarations = services.map { it.toModel() },
-        doc = null,
+        messageDeclarations = messageTypes.map { it.toModel(comments + Paths.messageCommentPath + it.index) },
+        enumDeclarations = enumTypes.map { it.toModel(comments + Paths.enumCommentPath + it.index) },
+        serviceDeclarations = services.map { it.toModel(comments + Paths.serviceCommentPath + it.index) },
+        doc = listOfNotNull(
+            (comments + Paths.syntaxCommentPath).get(),
+            (comments + Paths.editionsCommentPath).get(),
+            (comments + Paths.packageCommentPath).get()
+        ),
         dec = this,
     )
 }
 
-private fun Descriptors.Descriptor.toModel(): MessageDeclaration = cached {
+private fun Descriptors.Descriptor.toModel(comments: Comments?): MessageDeclaration = cached {
+    requireNotNull(comments) {
+        "Comments are missing for message declaration: ${fqName()}"
+    }
+
     var currPresenceIdx = 0
     var regularFields = fields
         // only fields that are not part of a oneOf declaration
         .filter { field -> field.realContainingOneof == null }
         .map {
             val presenceIdx = if (it.hasPresence()) currPresenceIdx++ else null
-            it.toModel(presenceIdx = presenceIdx)
+            it.toModel(comments + Paths.messageFieldCommentPath + it.index, presenceIdx = presenceIdx)
         }
-    val oneOfs = oneofs.filter { it.fields[0].realContainingOneof != null }.map { it.toModel() }
+
+    val oneOfs = oneofs
+        .filter { it.fields[0].realContainingOneof != null }
+        .map { it.toModel(comments) }
 
     regularFields = regularFields + oneOfs.map {
         FieldDeclaration(
             // TODO: Proper handling of this field name
-            it.name.simpleName.decapitalize(),
-            FieldType.OneOf(it),
-            doc = null,
+            name = it.name.simpleName.decapitalize(),
+            type = FieldType.OneOf(it),
+            doc = it.doc,
             dec = it.variants.first().dec,
         )
     }
 
-    return MessageDeclaration(
+    MessageDeclaration(
         name = fqName(),
         presenceMaskSize = currPresenceIdx,
         actualFields = regularFields,
         // get all oneof declarations that are not created from an optional in proto3 https://github.com/googleapis/api-linter/issues/1323
         oneOfDeclarations = oneOfs,
-        enumDeclarations = enumTypes.map { it.toModel() },
-        nestedDeclarations = nestedTypes.map { it.toModel() },
-        doc = null,
+        enumDeclarations = enumTypes.map { it.toModel(comments + Paths.messageEnumCommentPath + it.index) },
+        nestedDeclarations = nestedTypes.map { it.toModel(comments + Paths.messageMessageCommentPath + it.index) },
+        doc = comments.get(),
         dec = this,
     )
 }
 
-private fun Descriptors.FieldDescriptor.toModel(presenceIdx: Int? = null): FieldDeclaration = cached {
-    toProto().hasProto3Optional()
-    return FieldDeclaration(
-        name = fqName().simpleName,
-        type = modelType(),
-        presenceIdx = presenceIdx,
-        doc = null,
-        dec = this,
-    )
-}
+private fun Descriptors.FieldDescriptor.toModel(comments: Comments, presenceIdx: Int? = null): FieldDeclaration =
+    cached {
+        FieldDeclaration(
+            name = fqName().simpleName,
+            type = modelType(),
+            presenceIdx = presenceIdx,
+            doc = comments.get(),
+            dec = this,
+        )
+    }
 
-
-private fun Descriptors.OneofDescriptor.toModel(): OneOfDeclaration = cached {
-    return OneOfDeclaration(
+private fun Descriptors.OneofDescriptor.toModel(parentComments: Comments): OneOfDeclaration = cached {
+    OneOfDeclaration(
         name = fqName(),
-        variants = fields.map { it.toModel() },
+        variants = fields.map { it.toModel(parentComments + Paths.messageFieldCommentPath + it.index) },
+        doc = (parentComments + Paths.messageOneOfCommentPath + index).get(),
         dec = this,
     )
 }
 
-private fun Descriptors.EnumDescriptor.toModel(): EnumDeclaration = cached {
+private fun Descriptors.EnumDescriptor.toModel(comments: Comments?): EnumDeclaration = cached {
+    requireNotNull(comments) {
+        "Comments are missing for enum declaration: ${fqName()}"
+    }
+
     val entriesMap = mutableMapOf<Int, EnumDeclaration.Entry>()
     val aliases = mutableListOf<EnumDeclaration.Alias>()
 
     values.forEach { value ->
         if (entriesMap.containsKey(value.number)) {
             val original = entriesMap.getValue(value.number)
-            aliases.add(value.toAliasModel(original))
+            aliases.add(value.toAliasModel(comments + Paths.enumValueCommentPath + value.index, original))
         } else {
-            entriesMap[value.number] = value.toModel()
+            entriesMap[value.number] = value.toModel(comments + Paths.enumValueCommentPath + value.index)
         }
     }
 
     if (!options.allowAlias && aliases.isNotEmpty()) {
-        error("Enum ${fullName} has aliases: ${aliases.joinToString { it.name.simpleName }}")
+        error("Enum $fullName can't have aliases in current proto config: ${aliases.joinToString { it.name.simpleName }}")
     }
 
-    return EnumDeclaration(
+    EnumDeclaration(
         name = fqName(),
         originalEntries = entriesMap.values.toList(),
         aliases = aliases,
-        doc = null,
+        doc = comments.get(),
         dec = this,
     )
 }
 
-private fun Descriptors.EnumValueDescriptor.toModel(): EnumDeclaration.Entry = cached {
-    return EnumDeclaration.Entry(
+private fun Descriptors.EnumValueDescriptor.toModel(comments: Comments): EnumDeclaration.Entry = cached {
+    EnumDeclaration.Entry(
         name = fqName(),
-        doc = null,
+        doc = comments.get(),
         dec = this,
     )
 }
 
 // no caching, as it would conflict with .toModel
-private fun Descriptors.EnumValueDescriptor.toAliasModel(original: EnumDeclaration.Entry): EnumDeclaration.Alias {
-    return EnumDeclaration.Alias(
+private fun Descriptors.EnumValueDescriptor.toAliasModel(enumComments: Comments, original: EnumDeclaration.Entry): EnumDeclaration.Alias = cached {
+    EnumDeclaration.Alias(
         name = fqName(),
         original = original,
-        doc = null,
+        doc = enumComments.get(),
         dec = this,
     )
 }
 
-private fun Descriptors.ServiceDescriptor.toModel(): ServiceDeclaration = cached {
-    return ServiceDeclaration(
+private fun Descriptors.ServiceDescriptor.toModel(comments: Comments): ServiceDeclaration = cached {
+    ServiceDeclaration(
         name = fqName(),
-        methods = methods.map { it.toModel() },
+        methods = methods.map { it.toModel(comments + Paths.serviceMethodCommentPath + it.index) },
         dec = this,
+        doc = comments.get(),
     )
 }
 
-private fun Descriptors.MethodDescriptor.toModel(): MethodDeclaration = cached {
-    return MethodDeclaration(
+private fun Descriptors.MethodDescriptor.toModel(comments: Comments): MethodDeclaration = cached {
+    MethodDeclaration(
         name = name,
-        inputType = inputType.toModel(),
-        outputType = outputType.toModel(),
+        inputType = lazy { inputType.toModel(null) },
+        outputType = lazy { outputType.toModel(null) },
         dec = this,
+        doc = comments.get(),
     )
 }
 
@@ -258,15 +278,15 @@ private fun Descriptors.FieldDescriptor.modelType(): FieldType {
         Descriptors.FieldDescriptor.Type.SFIXED64 -> FieldType.IntegralType.SFIXED64
         Descriptors.FieldDescriptor.Type.SINT32 -> FieldType.IntegralType.SINT32
         Descriptors.FieldDescriptor.Type.SINT64 -> FieldType.IntegralType.SINT64
-        Descriptors.FieldDescriptor.Type.ENUM -> FieldType.Enum(enumType.toModel())
-        Descriptors.FieldDescriptor.Type.MESSAGE -> FieldType.Message(lazy { messageType!!.toModel() })
-        Descriptors.FieldDescriptor.Type.GROUP -> FieldType.Message(lazy { messageType!!.toModel() })
+        Descriptors.FieldDescriptor.Type.ENUM -> FieldType.Enum(lazy { enumType.toModel(null) })
+        Descriptors.FieldDescriptor.Type.MESSAGE -> FieldType.Message(lazy { messageType!!.toModel(null) })
+        Descriptors.FieldDescriptor.Type.GROUP -> FieldType.Message(lazy { messageType!!.toModel(null) })
     }
 
     if (isMapField) {
         val keyType = messageType.findFieldByName("key").modelType()
         val valType = messageType.findFieldByName("value").modelType()
-        val mapEntryDec = messageType.toModel()
+        val mapEntryDec = lazy { messageType.toModel(null) }
         val mapEntry = FieldType.Map.Entry(mapEntryDec, keyType, valType)
         return FieldType.Map(mapEntry)
     }
