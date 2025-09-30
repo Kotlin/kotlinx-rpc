@@ -13,6 +13,9 @@ interface ComplexMessage {
 
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.CODEC::class)
 interface TestAllTypesEdition2023 { 
+    /**
+    * Singular
+    */
     val optionalInt32: Int?
     val optionalInt64: Long?
     val optionalUint32: UInt?
@@ -35,6 +38,9 @@ interface TestAllTypesEdition2023 {
     val optionalStringPiece: String?
     val optionalCord: String?
     val recursiveMessage: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023
+    /**
+    * Repeated
+    */
     val repeatedInt32: List<kotlin.Int>
     val repeatedInt64: List<kotlin.Long>
     val repeatedUint32: List<kotlin.UInt>
@@ -56,6 +62,9 @@ interface TestAllTypesEdition2023 {
     val repeatedForeignEnum: List<com.google.protobuf_test_messages.edition2023.ForeignEnumEdition2023>
     val repeatedStringPiece: List<kotlin.String>
     val repeatedCord: List<kotlin.String>
+    /**
+    * Packed
+    */
     val packedInt32: List<kotlin.Int>
     val packedInt64: List<kotlin.Long>
     val packedUint32: List<kotlin.UInt>
@@ -70,6 +79,9 @@ interface TestAllTypesEdition2023 {
     val packedDouble: List<kotlin.Double>
     val packedBool: List<kotlin.Boolean>
     val packedNestedEnum: List<com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedEnum>
+    /**
+    * Unpacked
+    */
     val unpackedInt32: List<kotlin.Int>
     val unpackedInt64: List<kotlin.Long>
     val unpackedUint32: List<kotlin.UInt>
@@ -84,6 +96,9 @@ interface TestAllTypesEdition2023 {
     val unpackedDouble: List<kotlin.Double>
     val unpackedBool: List<kotlin.Boolean>
     val unpackedNestedEnum: List<com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedEnum>
+    /**
+    * Map
+    */
     val mapInt32Int32: Map<kotlin.Int, kotlin.Int>
     val mapInt64Int64: Map<kotlin.Long, kotlin.Long>
     val mapUint32Uint32: Map<kotlin.UInt, kotlin.UInt>
@@ -148,6 +163,9 @@ interface TestAllTypesEdition2023 {
         companion object
     }
 
+    /**
+    * groups
+    */
     interface GroupLikeType { 
         val groupInt32: Int?
         val groupUint32: UInt?
@@ -162,6 +180,9 @@ interface TestAllTypesEdition2023 {
 
         object BAZ: NestedEnum(number = 2)
 
+        /**
+        * Intentionally negative.
+        */
         object NEG: NestedEnum(number = -1)
 
         data class UNRECOGNIZED(override val number: Int): NestedEnum(number)
@@ -201,4 +222,3 @@ sealed class ForeignEnumEdition2023(open val number: Int) {
         val entries: List<ForeignEnumEdition2023> by lazy { listOf(FOREIGN_FOO, FOREIGN_BAR, FOREIGN_BAZ) }
     }
 }
-

@@ -94,4 +94,3 @@ private fun com.google.protobuf.kotlin.FieldMaskInternal.computeSize(): Int {
 public fun com.google.protobuf.kotlin.FieldMask.asInternal(): com.google.protobuf.kotlin.FieldMaskInternal { 
     return this as? com.google.protobuf.kotlin.FieldMaskInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
-

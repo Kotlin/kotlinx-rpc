@@ -5,6 +5,7 @@
 package kotlinx.rpc.protoc.gen.core.model
 
 import com.google.protobuf.Descriptors
+import kotlinx.rpc.protoc.gen.core.Comment
 
 data class Model(
     val files: List<FileDeclaration>,
@@ -17,7 +18,7 @@ data class FileDeclaration(
     val messageDeclarations: List<MessageDeclaration>,
     val enumDeclarations: List<EnumDeclaration>,
     val serviceDeclarations: List<ServiceDeclaration>,
-    val doc: String?,
+    val doc: List<Comment>,
     val dec: Descriptors.FileDescriptor,
 )
 
@@ -28,7 +29,7 @@ data class MessageDeclaration(
     val oneOfDeclarations: List<OneOfDeclaration>,
     val enumDeclarations: List<EnumDeclaration>,
     val nestedDeclarations: List<MessageDeclaration>,
-    val doc: String?,
+    val doc: Comment?,
     val dec: Descriptors.Descriptor,
 ) {
     val isMapEntry = dec.options.mapEntry
@@ -46,7 +47,7 @@ data class EnumDeclaration(
     val name: FqName,
     val originalEntries: List<Entry>,
     val aliases: List<Alias>,
-    val doc: String?,
+    val doc: Comment?,
     val dec: Descriptors.EnumDescriptor,
 ) {
 
@@ -60,14 +61,14 @@ data class EnumDeclaration(
 
     data class Entry(
         val name: FqName,
-        val doc: String?,
+        val doc: Comment?,
         val dec: Descriptors.EnumValueDescriptor,
     )
 
     data class Alias(
         val name: FqName,
         val original: Entry,
-        val doc: String?,
+        val doc: Comment?,
         val dec: Descriptors.EnumValueDescriptor,
     )
 }
@@ -76,12 +77,13 @@ data class OneOfDeclaration(
     val name: FqName,
     val variants: List<FieldDeclaration>,
     val dec: Descriptors.OneofDescriptor,
+    val doc: Comment?,
 )
 
 data class FieldDeclaration(
     val name: String,
     val type: FieldType,
-    val doc: String?,
+    val doc: Comment?,
     val dec: Descriptors.FieldDescriptor,
     // defines the index in the presenceMask of the Message.
     // this cannot be the number, as only fields with hasPresence == true are part of the presenceMask
@@ -108,12 +110,14 @@ data class ServiceDeclaration(
     val name: FqName,
     val methods: List<MethodDeclaration>,
     val dec: Descriptors.ServiceDescriptor,
+    val doc: Comment?,
 )
 
 data class MethodDeclaration(
     val name: String,
-    val inputType: MessageDeclaration,
-    val outputType: MessageDeclaration,
+    val inputType: Lazy<MessageDeclaration>,
+    val outputType: Lazy<MessageDeclaration>,
     val dec: Descriptors.MethodDescriptor,
+    val doc: Comment?,
 )
 
