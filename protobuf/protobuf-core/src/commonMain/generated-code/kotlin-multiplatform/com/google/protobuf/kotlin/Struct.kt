@@ -114,7 +114,7 @@ public sealed class NullValue(public open val number: Int) {
     /**
     * Null value.
     */
-    public object NULL_VALUE: NullValue(number = 0)
+    public data object NULL_VALUE: NullValue(number = 0)
 
     public data class UNRECOGNIZED(override val number: Int): NullValue(number)
 

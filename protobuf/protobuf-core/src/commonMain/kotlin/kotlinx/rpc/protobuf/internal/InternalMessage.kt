@@ -17,7 +17,7 @@ public abstract class InternalMessage(fieldsWithPresence: Int) {
 }
 
 @InternalRpcApi
-public class MsgFieldDelegate<T : Any>(
+public class MsgFieldDelegate<T>(
     private val presenceIdx: Int? = null,
     private val defaultProvider: (() -> T)? = null
 ) : ReadWriteProperty<InternalMessage, T> {
@@ -34,6 +34,7 @@ public class MsgFieldDelegate<T : Any>(
                 error("Property ${property.name} not initialized")
             }
         }
+        @Suppress("UNCHECKED_CAST")
         return value as T
     }
 

@@ -263,16 +263,16 @@ interface TestAllTypesProto2 {
     }
 
     sealed class NestedEnum(open val number: Int) { 
-        object FOO: NestedEnum(number = 0)
+        data object FOO: NestedEnum(number = 0)
 
-        object BAR: NestedEnum(number = 1)
+        data object BAR: NestedEnum(number = 1)
 
-        object BAZ: NestedEnum(number = 2)
+        data object BAZ: NestedEnum(number = 2)
 
         /**
         * Intentionally negative.
         */
-        object NEG: NestedEnum(number = -1)
+        data object NEG: NestedEnum(number = -1)
 
         data class UNRECOGNIZED(override val number: Int): NestedEnum(number)
 
@@ -325,9 +325,9 @@ interface NullHypothesisProto2 {
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf_test_messages.proto2.EnumOnlyProto2Internal.CODEC::class)
 interface EnumOnlyProto2 { 
     sealed class Bool(open val number: Int) { 
-        object kFalse: Bool(number = 0)
+        data object kFalse: Bool(number = 0)
 
-        object kTrue: Bool(number = 1)
+        data object kTrue: Bool(number = 1)
 
         data class UNRECOGNIZED(override val number: Int): Bool(number)
 
@@ -445,16 +445,16 @@ interface TestAllRequiredTypesProto2 {
     }
 
     sealed class NestedEnum(open val number: Int) { 
-        object FOO: NestedEnum(number = 0)
+        data object FOO: NestedEnum(number = 0)
 
-        object BAR: NestedEnum(number = 1)
+        data object BAR: NestedEnum(number = 1)
 
-        object BAZ: NestedEnum(number = 2)
+        data object BAZ: NestedEnum(number = 2)
 
         /**
         * Intentionally negative.
         */
-        object NEG: NestedEnum(number = -1)
+        data object NEG: NestedEnum(number = -1)
 
         data class UNRECOGNIZED(override val number: Int): NestedEnum(number)
 
@@ -526,11 +526,11 @@ interface TestLargeOneof {
 }
 
 sealed class ForeignEnumProto2(open val number: Int) { 
-    object FOREIGN_FOO: ForeignEnumProto2(number = 0)
+    data object FOREIGN_FOO: ForeignEnumProto2(number = 0)
 
-    object FOREIGN_BAR: ForeignEnumProto2(number = 1)
+    data object FOREIGN_BAR: ForeignEnumProto2(number = 1)
 
-    object FOREIGN_BAZ: ForeignEnumProto2(number = 2)
+    data object FOREIGN_BAZ: ForeignEnumProto2(number = 2)
 
     data class UNRECOGNIZED(override val number: Int): ForeignEnumProto2(number)
 

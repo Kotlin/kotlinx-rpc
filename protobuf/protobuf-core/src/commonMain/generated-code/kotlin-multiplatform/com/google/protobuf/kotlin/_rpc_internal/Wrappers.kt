@@ -11,6 +11,36 @@ public class DoubleValueInternal: com.google.protobuf.kotlin.DoubleValue, kotlin
 
     public override var value: Double by MsgFieldDelegate { 0.0 }
 
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return value.hashCode()
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as DoubleValueInternal
+        other.checkRequiredFields()
+        if (value != other.value) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.DoubleValue(")
+            appendLine("${nextIndentString}value=${value},")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.DoubleValue> { 
         public override fun encode(value: com.google.protobuf.kotlin.DoubleValue): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -44,6 +74,36 @@ public class FloatValueInternal: com.google.protobuf.kotlin.FloatValue, kotlinx.
     public override val _size: Int by lazy { computeSize() }
 
     public override var value: Float by MsgFieldDelegate { 0.0f }
+
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return value.hashCode()
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as FloatValueInternal
+        other.checkRequiredFields()
+        if (value != other.value) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.FloatValue(")
+            appendLine("${nextIndentString}value=${value},")
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.FloatValue> { 
@@ -79,6 +139,36 @@ public class Int64ValueInternal: com.google.protobuf.kotlin.Int64Value, kotlinx.
 
     public override var value: Long by MsgFieldDelegate { 0L }
 
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return value.hashCode()
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as Int64ValueInternal
+        other.checkRequiredFields()
+        if (value != other.value) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.Int64Value(")
+            appendLine("${nextIndentString}value=${value},")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Int64Value> { 
         public override fun encode(value: com.google.protobuf.kotlin.Int64Value): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -112,6 +202,36 @@ public class UInt64ValueInternal: com.google.protobuf.kotlin.UInt64Value, kotlin
     public override val _size: Int by lazy { computeSize() }
 
     public override var value: ULong by MsgFieldDelegate { 0uL }
+
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return value.hashCode()
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as UInt64ValueInternal
+        other.checkRequiredFields()
+        if (value != other.value) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.UInt64Value(")
+            appendLine("${nextIndentString}value=${value},")
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.UInt64Value> { 
@@ -147,6 +267,36 @@ public class Int32ValueInternal: com.google.protobuf.kotlin.Int32Value, kotlinx.
 
     public override var value: Int by MsgFieldDelegate { 0 }
 
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return value.hashCode()
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as Int32ValueInternal
+        other.checkRequiredFields()
+        if (value != other.value) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.Int32Value(")
+            appendLine("${nextIndentString}value=${value},")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Int32Value> { 
         public override fun encode(value: com.google.protobuf.kotlin.Int32Value): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -180,6 +330,36 @@ public class UInt32ValueInternal: com.google.protobuf.kotlin.UInt32Value, kotlin
     public override val _size: Int by lazy { computeSize() }
 
     public override var value: UInt by MsgFieldDelegate { 0u }
+
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return value.hashCode()
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as UInt32ValueInternal
+        other.checkRequiredFields()
+        if (value != other.value) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.UInt32Value(")
+            appendLine("${nextIndentString}value=${value},")
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.UInt32Value> { 
@@ -215,6 +395,36 @@ public class BoolValueInternal: com.google.protobuf.kotlin.BoolValue, kotlinx.rp
 
     public override var value: Boolean by MsgFieldDelegate { false }
 
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return value.hashCode()
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as BoolValueInternal
+        other.checkRequiredFields()
+        if (value != other.value) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.BoolValue(")
+            appendLine("${nextIndentString}value=${value},")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.BoolValue> { 
         public override fun encode(value: com.google.protobuf.kotlin.BoolValue): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -249,6 +459,36 @@ public class StringValueInternal: com.google.protobuf.kotlin.StringValue, kotlin
 
     public override var value: String by MsgFieldDelegate { "" }
 
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return value.hashCode()
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as StringValueInternal
+        other.checkRequiredFields()
+        if (value != other.value) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.StringValue(")
+            appendLine("${nextIndentString}value=${value},")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.StringValue> { 
         public override fun encode(value: com.google.protobuf.kotlin.StringValue): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -282,6 +522,36 @@ public class BytesValueInternal: com.google.protobuf.kotlin.BytesValue, kotlinx.
     public override val _size: Int by lazy { computeSize() }
 
     public override var value: ByteArray by MsgFieldDelegate { byteArrayOf() }
+
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return value.contentHashCode()
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as BytesValueInternal
+        other.checkRequiredFields()
+        if (!value.contentEquals(other.value)) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.BytesValue(")
+            appendLine("${nextIndentString}value=${value.contentToString()},")
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.BytesValue> { 

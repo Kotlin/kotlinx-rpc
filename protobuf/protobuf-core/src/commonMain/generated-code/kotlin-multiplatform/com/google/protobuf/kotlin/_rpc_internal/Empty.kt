@@ -9,6 +9,34 @@ public class EmptyInternal: com.google.protobuf.kotlin.Empty, kotlinx.rpc.protob
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return this::class.hashCode()
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as EmptyInternal
+        other.checkRequiredFields()
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.Empty(")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Empty> { 
         public override fun encode(value: com.google.protobuf.kotlin.Empty): kotlinx.rpc.protobuf.input.stream.InputStream { 

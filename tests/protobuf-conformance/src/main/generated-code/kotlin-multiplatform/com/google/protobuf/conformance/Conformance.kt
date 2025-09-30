@@ -219,18 +219,18 @@ interface JspbEncodingConfig {
 *     iOS apps, where fork/stdin/stdout are not available.
 */
 sealed class WireFormat(open val number: Int) { 
-    object UNSPECIFIED: WireFormat(number = 0)
+    data object UNSPECIFIED: WireFormat(number = 0)
 
-    object PROTOBUF: WireFormat(number = 1)
+    data object PROTOBUF: WireFormat(number = 1)
 
-    object JSON: WireFormat(number = 2)
+    data object JSON: WireFormat(number = 2)
 
     /**
     * Only used inside Google. Opensource testees just skip it.
     */
-    object JSPB: WireFormat(number = 3)
+    data object JSPB: WireFormat(number = 3)
 
-    object TEXT_FORMAT: WireFormat(number = 4)
+    data object TEXT_FORMAT: WireFormat(number = 4)
 
     data class UNRECOGNIZED(override val number: Int): WireFormat(number)
 
@@ -240,17 +240,17 @@ sealed class WireFormat(open val number: Int) {
 }
 
 sealed class TestCategory(open val number: Int) { 
-    object UNSPECIFIED_TEST: TestCategory(number = 0)
+    data object UNSPECIFIED_TEST: TestCategory(number = 0)
 
     /**
     * Test binary wire format.
     */
-    object BINARY_TEST: TestCategory(number = 1)
+    data object BINARY_TEST: TestCategory(number = 1)
 
     /**
     * Test json wire format.
     */
-    object JSON_TEST: TestCategory(number = 2)
+    data object JSON_TEST: TestCategory(number = 2)
 
     /**
     * Similar to JSON_TEST. However, during parsing json, testee should ignore
@@ -259,19 +259,19 @@ sealed class TestCategory(open val number: Int) {
     * https://developers.google.com/protocol-buffers/docs/proto3#json_options
     * for more detail.
     */
-    object JSON_IGNORE_UNKNOWN_PARSING_TEST: TestCategory(number = 3)
+    data object JSON_IGNORE_UNKNOWN_PARSING_TEST: TestCategory(number = 3)
 
     /**
     * Test jspb wire format. Only used inside Google. Opensource testees just
     * skip it.
     */
-    object JSPB_TEST: TestCategory(number = 4)
+    data object JSPB_TEST: TestCategory(number = 4)
 
     /**
     * Test text format. For cpp, java and python, testees can already deal with
     * this type. Testees of other languages can simply skip it.
     */
-    object TEXT_FORMAT_TEST: TestCategory(number = 5)
+    data object TEXT_FORMAT_TEST: TestCategory(number = 5)
 
     data class UNRECOGNIZED(override val number: Int): TestCategory(number)
 

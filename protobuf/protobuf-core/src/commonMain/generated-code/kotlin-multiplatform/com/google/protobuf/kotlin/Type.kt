@@ -95,97 +95,97 @@ public interface Field {
         /**
         * Field type unknown.
         */
-        public object TYPE_UNKNOWN: Kind(number = 0)
+        public data object TYPE_UNKNOWN: Kind(number = 0)
 
         /**
         * Field type double.
         */
-        public object TYPE_DOUBLE: Kind(number = 1)
+        public data object TYPE_DOUBLE: Kind(number = 1)
 
         /**
         * Field type float.
         */
-        public object TYPE_FLOAT: Kind(number = 2)
+        public data object TYPE_FLOAT: Kind(number = 2)
 
         /**
         * Field type int64.
         */
-        public object TYPE_INT64: Kind(number = 3)
+        public data object TYPE_INT64: Kind(number = 3)
 
         /**
         * Field type uint64.
         */
-        public object TYPE_UINT64: Kind(number = 4)
+        public data object TYPE_UINT64: Kind(number = 4)
 
         /**
         * Field type int32.
         */
-        public object TYPE_INT32: Kind(number = 5)
+        public data object TYPE_INT32: Kind(number = 5)
 
         /**
         * Field type fixed64.
         */
-        public object TYPE_FIXED64: Kind(number = 6)
+        public data object TYPE_FIXED64: Kind(number = 6)
 
         /**
         * Field type fixed32.
         */
-        public object TYPE_FIXED32: Kind(number = 7)
+        public data object TYPE_FIXED32: Kind(number = 7)
 
         /**
         * Field type bool.
         */
-        public object TYPE_BOOL: Kind(number = 8)
+        public data object TYPE_BOOL: Kind(number = 8)
 
         /**
         * Field type string.
         */
-        public object TYPE_STRING: Kind(number = 9)
+        public data object TYPE_STRING: Kind(number = 9)
 
         /**
         * Field type group. Proto2 syntax only, and deprecated.
         */
-        public object TYPE_GROUP: Kind(number = 10)
+        public data object TYPE_GROUP: Kind(number = 10)
 
         /**
         * Field type message.
         */
-        public object TYPE_MESSAGE: Kind(number = 11)
+        public data object TYPE_MESSAGE: Kind(number = 11)
 
         /**
         * Field type bytes.
         */
-        public object TYPE_BYTES: Kind(number = 12)
+        public data object TYPE_BYTES: Kind(number = 12)
 
         /**
         * Field type uint32.
         */
-        public object TYPE_UINT32: Kind(number = 13)
+        public data object TYPE_UINT32: Kind(number = 13)
 
         /**
         * Field type enum.
         */
-        public object TYPE_ENUM: Kind(number = 14)
+        public data object TYPE_ENUM: Kind(number = 14)
 
         /**
         * Field type sfixed32.
         */
-        public object TYPE_SFIXED32: Kind(number = 15)
+        public data object TYPE_SFIXED32: Kind(number = 15)
 
         /**
         * Field type sfixed64.
         */
-        public object TYPE_SFIXED64: Kind(number = 16)
+        public data object TYPE_SFIXED64: Kind(number = 16)
 
         /**
         * Field type sint32.
         */
-        public object TYPE_SINT32: Kind(number = 17)
+        public data object TYPE_SINT32: Kind(number = 17)
 
         /**
         * Field type sint64.
         */
-        public object TYPE_SINT64: Kind(number = 18)
+        public data object TYPE_SINT64: Kind(number = 18)
 
         public data class UNRECOGNIZED(override val number: Int): Kind(number)
 
@@ -201,22 +201,22 @@ public interface Field {
         /**
         * For fields with unknown cardinality.
         */
-        public object CARDINALITY_UNKNOWN: Cardinality(number = 0)
+        public data object CARDINALITY_UNKNOWN: Cardinality(number = 0)
 
         /**
         * For optional fields.
         */
-        public object CARDINALITY_OPTIONAL: Cardinality(number = 1)
+        public data object CARDINALITY_OPTIONAL: Cardinality(number = 1)
 
         /**
         * For required fields. Proto2 syntax only.
         */
-        public object CARDINALITY_REQUIRED: Cardinality(number = 2)
+        public data object CARDINALITY_REQUIRED: Cardinality(number = 2)
 
         /**
         * For repeated fields.
         */
-        public object CARDINALITY_REPEATED: Cardinality(number = 3)
+        public data object CARDINALITY_REPEATED: Cardinality(number = 3)
 
         public data class UNRECOGNIZED(override val number: Int): Cardinality(number)
 
@@ -313,17 +313,17 @@ public sealed class Syntax(public open val number: Int) {
     /**
     * Syntax `proto2`.
     */
-    public object SYNTAX_PROTO2: Syntax(number = 0)
+    public data object SYNTAX_PROTO2: Syntax(number = 0)
 
     /**
     * Syntax `proto3`.
     */
-    public object SYNTAX_PROTO3: Syntax(number = 1)
+    public data object SYNTAX_PROTO3: Syntax(number = 1)
 
     /**
     * Syntax `editions`.
     */
-    public object SYNTAX_EDITIONS: Syntax(number = 2)
+    public data object SYNTAX_EDITIONS: Syntax(number = 2)
 
     public data class UNRECOGNIZED(override val number: Int): Syntax(number)
 

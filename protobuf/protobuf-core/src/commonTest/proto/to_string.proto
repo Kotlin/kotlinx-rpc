@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+message ToString {
+  required string text = 1;
+  required bytes bytes = 2;
+  optional bytes optionalBytes = 3;
+  message Nested {
+    optional Nested recursive = 1;
+  }
+  optional Nested nested = 4;
+  enum SomeEnum {
+    VALUE1 = 0;
+    VALUE2 = 1;
+  }
+  optional SomeEnum enum = 5;
+  oneof oneof {
+    string option1 = 6;
+    string option2 = 7;
+    int32 option3 = 8;
+  }
+  repeated string list = 9;
+  map<int32, int32> map = 10;
+}
