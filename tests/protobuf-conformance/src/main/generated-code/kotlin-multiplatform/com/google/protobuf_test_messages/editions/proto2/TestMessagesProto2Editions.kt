@@ -4,8 +4,20 @@ package com.google.protobuf_test_messages.editions.proto2
 import kotlin.jvm.JvmInline
 import kotlinx.rpc.internal.utils.*
 
+/**
+* This proto includes every type of field in both singular and repeated
+* forms.
+* 
+* Also, crucially, all messages and enums in this file are eventually
+* submessages of this message.  So for example, a fuzz test of TestAllTypes
+* could trigger bugs that occur in any message type in this file.  We verify
+* this stays true in a unit test.
+*/
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2Internal.CODEC::class)
 interface TestAllTypesProto2 { 
+    /**
+    * Singular
+    */
     val optionalInt32: Int?
     val optionalInt64: Long?
     val optionalUint32: UInt?
@@ -28,6 +40,9 @@ interface TestAllTypesProto2 {
     val optionalStringPiece: String?
     val optionalCord: String?
     val recursiveMessage: com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2
+    /**
+    * Repeated
+    */
     val repeatedInt32: List<kotlin.Int>
     val repeatedInt64: List<kotlin.Long>
     val repeatedUint32: List<kotlin.UInt>
@@ -49,6 +64,9 @@ interface TestAllTypesProto2 {
     val repeatedForeignEnum: List<com.google.protobuf_test_messages.editions.proto2.ForeignEnumProto2>
     val repeatedStringPiece: List<kotlin.String>
     val repeatedCord: List<kotlin.String>
+    /**
+    * Packed
+    */
     val packedInt32: List<kotlin.Int>
     val packedInt64: List<kotlin.Long>
     val packedUint32: List<kotlin.UInt>
@@ -63,6 +81,9 @@ interface TestAllTypesProto2 {
     val packedDouble: List<kotlin.Double>
     val packedBool: List<kotlin.Boolean>
     val packedNestedEnum: List<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.NestedEnum>
+    /**
+    * Unpacked
+    */
     val unpackedInt32: List<kotlin.Int>
     val unpackedInt64: List<kotlin.Long>
     val unpackedUint32: List<kotlin.UInt>
@@ -77,6 +98,9 @@ interface TestAllTypesProto2 {
     val unpackedDouble: List<kotlin.Double>
     val unpackedBool: List<kotlin.Boolean>
     val unpackedNestedEnum: List<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.NestedEnum>
+    /**
+    * Map
+    */
     val mapInt32Int32: Map<kotlin.Int, kotlin.Int>
     val mapInt64Int64: Map<kotlin.Long, kotlin.Long>
     val mapUint32Uint32: Map<kotlin.UInt, kotlin.UInt>
@@ -100,6 +124,9 @@ interface TestAllTypesProto2 {
     val mapStringForeignEnum: Map<kotlin.String, com.google.protobuf_test_messages.editions.proto2.ForeignEnumProto2>
     val data: com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.Data
     val multiwordgroupfield: com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MultiWordGroupField
+    /**
+    * default values
+    */
     val defaultInt32: Int
     val defaultInt64: Long
     val defaultUint32: UInt
@@ -115,6 +142,10 @@ interface TestAllTypesProto2 {
     val defaultBool: Boolean
     val defaultString: String
     val defaultBytes: ByteArray
+    /**
+    * Test field-name-to-JSON-name convention.
+    * (protobuf says names can be any valid C/C++ identifier.)
+    */
     val fieldname1: Int?
     val fieldName2: Int?
     val FieldName3: Int?
@@ -177,6 +208,9 @@ interface TestAllTypesProto2 {
         companion object
     }
 
+    /**
+    * groups
+    */
     interface Data { 
         val groupInt32: Int?
         val groupUint32: UInt?
@@ -191,6 +225,9 @@ interface TestAllTypesProto2 {
         companion object
     }
 
+    /**
+    * message_set test case.
+    */
     @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2Internal.MessageSetCorrectInternal.CODEC::class)
     interface MessageSetCorrect { 
         companion object
@@ -232,6 +269,9 @@ interface TestAllTypesProto2 {
 
         object BAZ: NestedEnum(number = 2)
 
+        /**
+        * Intentionally negative.
+        */
         object NEG: NestedEnum(number = -1)
 
         data class UNRECOGNIZED(override val number: Int): NestedEnum(number)
@@ -317,6 +357,9 @@ interface ProtoWithKeywords {
 
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2Internal.CODEC::class)
 interface TestAllRequiredTypesProto2 { 
+    /**
+    * Singular
+    */
     val requiredInt32: Int
     val requiredInt64: Long
     val requiredUint32: UInt
@@ -341,6 +384,9 @@ interface TestAllRequiredTypesProto2 {
     val recursiveMessage: com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2
     val optionalRecursiveMessage: com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2
     val data: com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.Data
+    /**
+    * default values
+    */
     val defaultInt32: Int
     val defaultInt64: Long
     val defaultUint32: UInt
@@ -366,6 +412,9 @@ interface TestAllRequiredTypesProto2 {
         companion object
     }
 
+    /**
+    * groups
+    */
     interface Data { 
         val groupInt32: Int
         val groupUint32: UInt
@@ -373,6 +422,9 @@ interface TestAllRequiredTypesProto2 {
         companion object
     }
 
+    /**
+    * message_set test case.
+    */
     @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.CODEC::class)
     interface MessageSetCorrect { 
         companion object
@@ -399,6 +451,9 @@ interface TestAllRequiredTypesProto2 {
 
         object BAZ: NestedEnum(number = 2)
 
+        /**
+        * Intentionally negative.
+        */
         object NEG: NestedEnum(number = -1)
 
         data class UNRECOGNIZED(override val number: Int): NestedEnum(number)
@@ -483,4 +538,3 @@ sealed class ForeignEnumProto2(open val number: Int) {
         val entries: List<ForeignEnumProto2> by lazy { listOf(FOREIGN_FOO, FOREIGN_BAR, FOREIGN_BAZ) }
     }
 }
-

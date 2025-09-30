@@ -787,4 +787,3 @@ private fun com.google.protobuf.kotlin.BytesValueInternal.computeSize(): Int {
 public fun com.google.protobuf.kotlin.BytesValue.asInternal(): com.google.protobuf.kotlin.BytesValueInternal { 
     return this as? com.google.protobuf.kotlin.BytesValueInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
-

@@ -104,4 +104,3 @@ private fun com.google.protobuf.kotlin.AnyInternal.computeSize(): Int {
 public fun com.google.protobuf.kotlin.Any.asInternal(): com.google.protobuf.kotlin.AnyInternal { 
     return this as? com.google.protobuf.kotlin.AnyInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }
-

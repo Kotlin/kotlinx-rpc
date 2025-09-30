@@ -23,5 +23,7 @@ jobs:
         run: |
           if [[ -n "$(git status --porcelain | grep tests/protobuf-conformance/)" ]]; then
             echo "Protobuf conformance test is not up to date. Please run './gradlew tests:protobuf-conformance:bufGenerateMain' and commit changes"
+            git status --porcelain
+            git diff --minimal | cat
             exit 1
           fi

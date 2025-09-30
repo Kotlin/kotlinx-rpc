@@ -72,6 +72,12 @@ protoSourceSets {
     }
 }
 
+rpc {
+    protoc.buf.generate.comments {
+        includeFileLevelComments = false
+    }
+}
+
 configureLocalProtocGenDevelopmentDependency("Main", "Test")
 
 val generatedCodeDir = layout.projectDirectory
