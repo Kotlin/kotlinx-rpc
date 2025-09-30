@@ -336,7 +336,9 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    fun RPC_should_be_able_to_receive_100_000_ints_with_batching_in_reasonable_time() = runTest(timeout = EXTENDED_TIMEOUT) {
+    fun RPC_should_be_able_to_receive_100_000_ints_with_batching_in_reasonable_time() = runTest(
+        timeout = EXTENDED_TIMEOUT,
+    ) {
         val n = iterations_100_000
         assertEquals(client.getNIntsBatched(n).last().last(), n)
     }

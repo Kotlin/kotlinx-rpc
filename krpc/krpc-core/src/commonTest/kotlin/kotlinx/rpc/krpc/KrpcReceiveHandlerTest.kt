@@ -71,15 +71,15 @@ internal class KrpcReceiveHandlerTest : KrpcReceiveHandlerBaseTest() {
 
         acting.broadcastWindowUpdate(-1, null, "service", "callId")
         val windowResult2 = decodeWindow(channel.receive() as KrpcGenericMessage)
-        assertEquals(-1, (windowResult2 as  WindowResult.Success).update)
+        assertEquals(-1, (windowResult2 as WindowResult.Success).update)
 
         acting.broadcastWindowUpdate(Int.MAX_VALUE, null, "service", "callId")
         val windowResult3 = decodeWindow(channel.receive() as KrpcGenericMessage)
-        assertEquals(Int.MAX_VALUE, (windowResult3 as  WindowResult.Success).update)
+        assertEquals(Int.MAX_VALUE, (windowResult3 as WindowResult.Success).update)
 
         acting.broadcastWindowUpdate(Int.MIN_VALUE, null, "service", "callId")
         val windowResult4 = decodeWindow(channel.receive() as KrpcGenericMessage)
-        assertEquals(Int.MIN_VALUE, (windowResult4 as  WindowResult.Success).update)
+        assertEquals(Int.MIN_VALUE, (windowResult4 as WindowResult.Success).update)
     }
 
     @Test
@@ -172,7 +172,11 @@ internal class KrpcReceiveHandlerTest : KrpcReceiveHandlerBaseTest() {
                     withContext(Dispatchers.Default) {
                         delay(5.seconds)
                     }
-                    println("Collected: ${collected.size}, launches: ${counter.launches.value}, total: ${counter.total.value}")
+                    println(
+                        "Collected: ${collected.size}, " +
+                                "launches: ${counter.launches.value}, " +
+                                "total: ${counter.total.value}"
+                    )
                 }
             }
 
