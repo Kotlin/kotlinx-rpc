@@ -36,6 +36,12 @@ dependencies {
 setupProtobufConformanceResources()
 configureLocalProtocGenDevelopmentDependency("Main")
 
+rpc {
+    protoc.buf.generate.comments {
+        includeFileLevelComments = false
+    }
+}
+
 val generatedCodeDir = project.layout.projectDirectory
     .dir("src")
     .dir("main")

@@ -42,6 +42,12 @@ public final class kotlinx/rpc/VersionsKt {
 	public static final field LIBRARY_VERSION Ljava/lang/String;
 }
 
+public class kotlinx/rpc/buf/BufCommentsExtension {
+	public fun <init> (Lorg/gradle/api/Project;)V
+	public final fun getCopyComments ()Lorg/gradle/api/provider/Property;
+	public final fun getIncludeFileLevelComments ()Lorg/gradle/api/provider/Property;
+}
+
 public class kotlinx/rpc/buf/BufExtension {
 	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
 	public final fun generate (Lorg/gradle/api/Action;)V
@@ -65,9 +71,12 @@ public final class kotlinx/rpc/buf/BufExtension$LogFormat : java/lang/Enum {
 
 public class kotlinx/rpc/buf/BufGenerateExtension {
 	public fun <init> (Lorg/gradle/api/Project;)V
+	public final fun comments (Lorg/gradle/api/Action;)V
+	public final fun getComments ()Lkotlinx/rpc/buf/BufCommentsExtension;
 	public final fun getErrorFormat ()Lorg/gradle/api/provider/Property;
 	public final fun getIncludeImports ()Lorg/gradle/api/provider/Property;
 	public final fun getIncludeWkt ()Lorg/gradle/api/provider/Property;
+	public final fun getIndentSize ()Lorg/gradle/api/provider/Property;
 }
 
 public final class kotlinx/rpc/buf/BufGenerateExtension$ErrorFormat : java/lang/Enum {
