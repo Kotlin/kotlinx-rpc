@@ -11,6 +11,36 @@ public class StructInternal: com.google.protobuf.kotlin.Struct, kotlinx.rpc.prot
 
     public override var fields: Map<kotlin.String, com.google.protobuf.kotlin.Value> by MsgFieldDelegate { mutableMapOf() }
 
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return fields.hashCode()
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as StructInternal
+        other.checkRequiredFields()
+        if (fields != other.fields) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.Struct(")
+            appendLine("${nextIndentString}fields=${fields},")
+            append("${indentString})")
+        }
+    }
+
     public class FieldsEntryInternal: kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 1) { 
         private object PresenceIndices { 
             public const val value: Int = 0
@@ -21,6 +51,46 @@ public class StructInternal: com.google.protobuf.kotlin.Struct, kotlinx.rpc.prot
 
         public var key: String by MsgFieldDelegate { "" }
         public var value: com.google.protobuf.kotlin.Value by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf.kotlin.ValueInternal() }
+
+        public override fun hashCode(): kotlin.Int { 
+            checkRequiredFields()
+            var result = key.hashCode()
+            result = 31 * result + if (presenceMask[0]) value.hashCode() else 0
+            return result
+        }
+
+        public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+            checkRequiredFields()
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as FieldsEntryInternal
+            other.checkRequiredFields()
+            if (presenceMask != other.presenceMask) return false
+            if (key != other.key) return false
+            if (presenceMask[0] && value != other.value) return false
+            return true
+        }
+
+        public override fun toString(): kotlin.String { 
+            return asString()
+        }
+
+        public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+            checkRequiredFields()
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            return buildString { 
+                appendLine("com.google.protobuf.kotlin.Struct.FieldsEntry(")
+                appendLine("${nextIndentString}key=${key},")
+                if (presenceMask[0]) { 
+                    appendLine("${nextIndentString}value=${value.asInternal().asString(indent = indent + 4)},")
+                } else { 
+                    appendLine("${nextIndentString}value=<unset>,")
+                }
+
+                append("${indentString})")
+            }
+        }
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         public companion object
@@ -60,6 +130,49 @@ public class ValueInternal: com.google.protobuf.kotlin.Value, kotlinx.rpc.protob
 
     public override var kind: com.google.protobuf.kotlin.Value.Kind? = null
 
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return (kind?.oneOfHashCode() ?: 0)
+    }
+
+    public fun com.google.protobuf.kotlin.Value.Kind.oneOfHashCode(): kotlin.Int { 
+        val offset = when (this) { 
+            is com.google.protobuf.kotlin.Value.Kind.NullValue -> 0
+            is com.google.protobuf.kotlin.Value.Kind.NumberValue -> 1
+            is com.google.protobuf.kotlin.Value.Kind.StringValue -> 2
+            is com.google.protobuf.kotlin.Value.Kind.BoolValue -> 3
+            is com.google.protobuf.kotlin.Value.Kind.StructValue -> 4
+            is com.google.protobuf.kotlin.Value.Kind.ListValue -> 5
+        }
+
+        return hashCode() + offset
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as ValueInternal
+        other.checkRequiredFields()
+        if (kind != other.kind) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.Value(")
+            appendLine("${nextIndentString}kind=${kind},")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Value> { 
         public override fun encode(value: com.google.protobuf.kotlin.Value): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -93,6 +206,36 @@ public class ListValueInternal: com.google.protobuf.kotlin.ListValue, kotlinx.rp
     public override val _size: Int by lazy { computeSize() }
 
     public override var values: List<com.google.protobuf.kotlin.Value> by MsgFieldDelegate { mutableListOf() }
+
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return values.hashCode()
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as ListValueInternal
+        other.checkRequiredFields()
+        if (values != other.values) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.ListValue(")
+            appendLine("${nextIndentString}values=${values},")
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.ListValue> { 
