@@ -150,6 +150,7 @@ class CancellationTest {
         assertEquals(1, serverInstance().cancellationsCounter.value, "Expected 1 request to be cancelled")
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun testCancelClient() = runCancellationTest {
         val firstRequestJob = launch {
@@ -162,23 +163,48 @@ class CancellationTest {
             secondService.longRequest()
         }
 
-        serverInstance().waitCounter.await(2)
+        val clientFlowJob = launch {
+            service.outgoingStream(flow {
+                emit(0)
+                serverInstance().fence.await()
+                emit(1)
+            })
+        }
+
+        val serverFlowJob = launch {
+            try {
+                secondService.incomingStream().toList()
+                fail("Expected cancellation of the client to cancel the server flow")
+            } catch (e : CancellationException) {
+                serverInstance().cancellationsCounter.increment()
+                throw e
+            }
+        }
+
+        serverInstance().waitCounter.await(4)
         client.close()
         client.awaitCompletion()
         server.awaitCompletion()
         firstRequestJob.join()
         secondRequestJob.join()
-        serverInstance().cancellationsCounter.await(2)
+        clientFlowJob.join()
+
+        serverInstance().fence.complete(Unit)
+        serverFlowJob.join()
+
+        serverInstance().cancellationsCounter.await(4)
 
         assertTrue(firstRequestJob.isCancelled, "Expected firstRequestJob to be cancelled")
         assertTrue(secondRequestJob.isCancelled, "Expected secondRequestJob to be cancelled")
+        assertTrue(clientFlowJob.isCancelled, "Expected clientFlowJob to be cancelled")
+        assertTrue(serverFlowJob.isCancelled, "Expected serverFlowJob to be cancelled")
 
         assertEquals(0, serverInstances.sumOf { it.successCounter.value }, "Expected no requests to succeed")
 
         checkAlive(clientAlive = false, serverAlive = false)
         stopAllAndJoin()
 
-        assertEquals(2, serverInstance().cancellationsCounter.value, "Expected 2 requests to be cancelled")
+        assertEquals(4, serverInstance().cancellationsCounter.value, "Expected 4 requests to be cancelled")
     }
 
     @Test
@@ -193,23 +219,48 @@ class CancellationTest {
             secondService.longRequest()
         }
 
-        serverInstance().waitCounter.await(2) // wait for requests to reach server
+        val clientFlowJob = launch {
+            service.outgoingStream(flow {
+                emit(0)
+                serverInstance().fence.await()
+                emit(1)
+            })
+        }
+
+        val serverFlowJob = launch {
+            try {
+                secondService.incomingStream().toList()
+                fail("Expected cancellation of the client to cancel the server flow")
+            } catch (e : CancellationException) {
+                serverInstance().cancellationsCounter.increment()
+                throw e
+            }
+        }
+
+        serverInstance().waitCounter.await(4) // wait for requests to reach server
         server.close()
         server.awaitCompletion()
         client.awaitCompletion()
         firstRequestJob.join()
         secondRequestJob.join()
-        serverInstance().cancellationsCounter.await(2)
+        clientFlowJob.join()
+
+        serverInstance().fence.complete(Unit)
+        serverFlowJob.join()
+
+        serverInstance().cancellationsCounter.await(4)
 
         assertTrue(firstRequestJob.isCancelled, "Expected firstRequestJob to be cancelled")
         assertTrue(secondRequestJob.isCancelled, "Expected secondRequestJob to be cancelled")
+        assertTrue(clientFlowJob.isCancelled, "Expected clientFlowJob to be cancelled")
+        assertTrue(serverFlowJob.isCancelled, "Expected serverFlowJob to be cancelled")
 
         assertEquals(0, serverInstances.sumOf { it.successCounter.value }, "Expected no requests to succeed")
 
         checkAlive(clientAlive = false, serverAlive = false)
         stopAllAndJoin()
 
-        assertEquals(2, serverInstance().cancellationsCounter.value, "Expected 2 requests to be cancelled")
+        assertEquals(4, serverInstance().cancellationsCounter.value, "Expected 4 requests to be cancelled")
     }
 
     @Test

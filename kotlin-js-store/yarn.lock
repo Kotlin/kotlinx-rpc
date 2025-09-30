@@ -134,9 +134,9 @@
   integrity sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==
 
 "@types/node@*", "@types/node@>=10.0.0":
-  version "24.5.0"
-  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/@types/node/-/node-24.5.0.tgz#70a482e6b1d50e603729d74e62a9a43705ddc9d7"
-  integrity sha512-y1dMvuvJspJiPSDZUQ+WMBvF7dpnEqN4x9DDC9ie5Fs/HUZJA3wFp7EhHoVaKX/iI0cRoECV8X2jL8zi0xrHCg==
+  version "24.5.1"
+  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/@types/node/-/node-24.5.1.tgz#dab6917c47113eb4502d27d06e89a407ec0eff95"
+  integrity sha512-/SQdmUP2xa+1rdx7VwB9yPq8PaKej8TD5cQ+XfKDPWWC+VDJU4rvVVagXqKUzhKjtFoNA8rXDJAkCxQPAe00+Q==
   dependencies:
     undici-types "~7.12.0"
 
@@ -393,9 +393,9 @@ balanced-match@^1.0.0:
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
 bare-events@^2.2.0, bare-events@^2.5.4:
-  version "2.6.1"
-  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/bare-events/-/bare-events-2.6.1.tgz#f793b28bdc3dcf147d7cf01f882a6f0b12ccc4a2"
-  integrity sha512-AuTJkq9XmE6Vk0FJVNq5QxETrSA/vKHarWVBG5l/JbdCL1prJemiyJqUS0jrlXO0MftuPq4m3YVYhoNc5+aE/g==
+  version "2.7.0"
+  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/bare-events/-/bare-events-2.7.0.tgz#46596dae9c819c5891eb2dcc8186326ed5a6da54"
+  integrity sha512-b3N5eTW1g7vXkw+0CXh/HazGTcO5KYuu/RCNaJbDMPI6LHDi+7qe8EmxKUVe1sUbY2KZOVZFyj62x0OEz9qyAA==
 
 bare-fs@^4.0.1:
   version "4.4.4"
@@ -810,9 +810,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 electron-to-chromium@^1.5.218:
-  version "1.5.218"
-  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/electron-to-chromium/-/electron-to-chromium-1.5.218.tgz#921042a011a98a4620853c9d391ab62bcc124400"
-  integrity sha512-uwwdN0TUHs8u6iRgN8vKeWZMRll4gBkz+QMqdS7DDe49uiK68/UX92lFb61oiFPrpYZNeZIqa4bA7O6Aiasnzg==
+  version "1.5.220"
+  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/electron-to-chromium/-/electron-to-chromium-1.5.220.tgz#a9853fa5edcf51f4c7db369144377cf31d783b8f"
+  integrity sha512-TWXijEwR1ggr4BdAKrb1nMNqYLTx1/4aD1fkeZU+FVJGTKu53/T7UyHKXlqEX3Ub02csyHePbHmkvnrjcaYzMA==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -858,7 +858,7 @@ engine.io@~6.6.0:
 
 enhanced-resolve@^5.17.2:
   version "5.18.3"
-  resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-5.18.3.tgz#9b5f4c5c076b8787c78fe540392ce76a88855b44"
+  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/enhanced-resolve/-/enhanced-resolve-5.18.3.tgz#9b5f4c5c076b8787c78fe540392ce76a88855b44"
   integrity sha512-d4lC8xfavMeBjzGr2vECC3fsGXziXZQyJxD868h2M/mBI3PwAuODxAkLkq5HYuvrPYcUtiLzsTo8U3PgX3Ocww==
   dependencies:
     graceful-fs "^4.2.4"
@@ -1486,7 +1486,7 @@ karma-webpack@5.0.1:
 
 karma@6.4.4:
   version "6.4.4"
-  resolved "https://registry.yarnpkg.com/karma/-/karma-6.4.4.tgz#dfa5a426cf5a8b53b43cd54ef0d0d09742351492"
+  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/karma/-/karma-6.4.4.tgz#dfa5a426cf5a8b53b43cd54ef0d0d09742351492"
   integrity sha512-LrtUxbdvt1gOpo3gxG+VAJlJAEMhbWlM4YrFQgql98FwF7+K8K12LYO4hnDdUkNjeztYrOXEMqgTajSWgmtI/w==
   dependencies:
     "@colors/colors" "1.5.0"
@@ -1521,7 +1521,7 @@ kind-of@^6.0.2:
 
 kotlin-web-helpers@2.1.0:
   version "2.1.0"
-  resolved "https://registry.yarnpkg.com/kotlin-web-helpers/-/kotlin-web-helpers-2.1.0.tgz#6cd4b0f0dc3baea163929c8638155b8d19c55a74"
+  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/kotlin-web-helpers/-/kotlin-web-helpers-2.1.0.tgz#6cd4b0f0dc3baea163929c8638155b8d19c55a74"
   integrity sha512-NAJhiNB84tnvJ5EQx7iER3GWw7rsTZkX9HVHZpe7E3dDBD/dhTzqgSwNU3MfQjniy2rB04bP24WM9Z32ntUWRg==
   dependencies:
     format-util "^1.0.5"
@@ -1654,7 +1654,7 @@ mkdirp@^0.5.5:
 
 mocha@11.7.1:
   version "11.7.1"
-  resolved "https://registry.yarnpkg.com/mocha/-/mocha-11.7.1.tgz#91948fecd624fb4bd154ed260b7e1ad3910d7c7a"
+  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/mocha/-/mocha-11.7.1.tgz#91948fecd624fb4bd154ed260b7e1ad3910d7c7a"
   integrity sha512-5EK+Cty6KheMS/YLPPMJC64g5V61gIR25KsRItHw6x4hEKT6Njp1n9LOlH4gpevuwMVS66SXaBBpg+RWZkza4A==
   dependencies:
     browser-stdout "^1.3.1"
@@ -2496,7 +2496,7 @@ webpack-sources@^3.3.3:
 
 webpack@5.100.2:
   version "5.100.2"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.100.2.tgz#e2341facf9f7de1d702147c91bcb65b693adf9e8"
+  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/webpack/-/webpack-5.100.2.tgz#e2341facf9f7de1d702147c91bcb65b693adf9e8"
   integrity sha512-QaNKAvGCDRh3wW1dsDjeMdDXwZm2vqq3zn6Pvq4rHOEOGSaUMgOOjG2Y9ZbIGzpfkJk9ZYTHpDqgDfeBDcnLaw==
   dependencies:
     "@types/eslint-scope" "^3.7.7"
@@ -2572,12 +2572,7 @@ wrappy@1:
   resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==
 
-ws@8.18.0:
-  version "8.18.0"
-  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/ws/-/ws-8.18.0.tgz#0d7505a6eafe2b0e712d232b42279f53bc289bbc"
-  integrity sha512-8VbfWfHLbbwu3+N6OKsOMpBdT4kXPDDB9cJk2bJ6mh9ucxdlnNvH1e+roYkKmN9Nxw2yjz7VzeO9oOz2zJ04Pw==
-
-ws@^8.18.2:
+ws@8.18.3, ws@^8.18.2:
   version "8.18.3"
   resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/ws/-/ws-8.18.3.tgz#b56b88abffde62791c639170400c93dcb0c95472"
   integrity sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==

@@ -212,17 +212,15 @@ internal class KrpcActingReceiveHandler(
     }
 
     internal suspend fun broadcastWindowUpdate(update: Int, connectionId: Long?, serviceType: String, callId: String) {
-        try {
-            sender.sendMessage(
-                KrpcGenericMessage(
-                    connectionId = connectionId,
-                    pluginParams = mutableMapOf(
-                        KrpcPluginKey.WINDOW_UPDATE to "$update",
-                        KrpcPluginKey.WINDOW_KEY to "$serviceType/$callId",
-                    ),
-                )
+        sender.sendMessageChecked(
+            KrpcGenericMessage(
+                connectionId = connectionId,
+                pluginParams = mutableMapOf(
+                    KrpcPluginKey.WINDOW_UPDATE to "$update",
+                    KrpcPluginKey.WINDOW_KEY to "$serviceType/$callId",
+                ),
             )
-        } catch (_: ClosedSendChannelException) {
+        ) {
             // ignore, connection is closed, no more channel updates are needed
         }
     }

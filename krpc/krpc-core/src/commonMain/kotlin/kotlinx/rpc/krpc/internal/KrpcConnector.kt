@@ -35,6 +35,18 @@ public interface KrpcMessageSender {
     public fun drainSendQueueAndClose(message: String)
 }
 
+@InternalRpcApi
+public suspend inline fun KrpcMessageSender.sendMessageChecked(
+    message: KrpcMessage,
+    onChannelClosed: (ClosedSendChannelException) -> Unit,
+) {
+    try {
+        sendMessage(message)
+    } catch (e: ClosedSendChannelException) {
+        onChannelClosed(e)
+    }
+}
+
 internal typealias KrpcMessageSubscription<Message> = suspend (Message) -> Unit
 
 /**
@@ -72,9 +84,7 @@ public class KrpcConnector(
 
     // prevent errors ping-pong
     private suspend fun sendMessageIgnoreClosure(message: KrpcMessage) {
-        try {
-            sendMessage(message)
-        } catch (_: ClosedSendChannelException) {
+        sendMessageChecked(message) {
             // ignore
         }
     }
