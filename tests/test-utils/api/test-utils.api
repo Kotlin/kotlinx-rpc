@@ -1,0 +1,19 @@
+public final class kotlinx/rpc/test/RunTestKt {
+	public static final fun runTestWithCoroutinesProbes-VtjQ1oo (JLkotlin/jvm/functions/Function2;)V
+}
+
+public final class kotlinx/rpc/test/RunTest_jvmKt {
+	public static final fun withDebugProbes (Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+}
+
+public final class kotlinx/rpc/test/RunThreadIfPossible_jvmKt {
+	public static final fun runThreadIfPossible (Lkotlin/jvm/functions/Function0;)V
+}
+
+public final class kotlinx/rpc/test/WaitCounter {
+	public fun <init> ()V
+	public final fun await (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getValue ()I
+	public final fun increment ()V
+}
+
