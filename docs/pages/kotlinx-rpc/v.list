@@ -15,5 +15,5 @@
 
     <!--  Library versions  -->
     <var name="kotlinx-rpc-version" value="0.9.1"/>
-    <var name="kotlin-version" value="2.2.10"/>
+    <var name="kotlin-version" value="2.2.20"/>
 </vars>
