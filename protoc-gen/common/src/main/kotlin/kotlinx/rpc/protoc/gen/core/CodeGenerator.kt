@@ -2,6 +2,8 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:Suppress("DuplicatedCode")
+
 package kotlinx.rpc.protoc.gen.core
 
 @DslMarker
@@ -176,6 +178,7 @@ open class CodeGenerator(
         modifiers: String = "",
         contextReceiver: String = "",
         annotations: List<String> = emptyList(),
+        deprecation: DeprecationLevel? = null,
         type: String,
         propertyInitializer: PropertyInitializer = PropertyInitializer.PLAIN,
         value: String = "",
@@ -187,6 +190,7 @@ open class CodeGenerator(
         for (annotation in annotations) {
             addLine(annotation)
         }
+        addDeprecation(deprecation)
 
         val modifiersString = (if (modifiers.isEmpty()) "" else "$modifiers ").withVisibility()
         val contextString = if (contextReceiver.isEmpty()) "" else "$contextReceiver."
@@ -218,6 +222,7 @@ open class CodeGenerator(
         args: String = "",
         contextReceiver: String = "",
         annotations: List<String> = emptyList(),
+        deprecation: DeprecationLevel? = null,
         returnType: String,
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
@@ -225,6 +230,8 @@ open class CodeGenerator(
         for (annotation in annotations) {
             addLine(annotation)
         }
+        addDeprecation(deprecation)
+
         val modifiersString = (if (modifiers.isEmpty()) "" else "$modifiers ").withVisibility()
         val contextString = if (contextReceiver.isEmpty()) "" else "$contextReceiver."
         val returnTypeString = if (returnType.isEmpty() || returnType == "Unit") "" else ": $returnType"
@@ -243,6 +250,7 @@ open class CodeGenerator(
         modifiers: String = "",
         superTypes: List<String> = emptyList(),
         annotations: List<String> = emptyList(),
+        deprecation: DeprecationLevel? = null,
         declarationType: DeclarationType = DeclarationType.Class,
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
@@ -253,6 +261,7 @@ open class CodeGenerator(
             constructorArgs = emptyList<String>(),
             superTypes = superTypes,
             annotations = annotations,
+            deprecation = deprecation,
             declarationType = declarationType,
             block = block,
         )
@@ -266,6 +275,7 @@ open class CodeGenerator(
         constructorArgs: List<String> = emptyList(),
         superTypes: List<String> = emptyList(),
         annotations: List<String> = emptyList(),
+        deprecation: DeprecationLevel? = null,
         declarationType: DeclarationType = DeclarationType.Class,
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
@@ -276,6 +286,7 @@ open class CodeGenerator(
             constructorArgs = constructorArgs.map { it to null },
             superTypes = superTypes,
             annotations = annotations,
+            deprecation = deprecation,
             declarationType = declarationType,
             block = block,
         )
@@ -289,6 +300,7 @@ open class CodeGenerator(
         constructorArgs: List<Pair<String, String?>> = emptyList(),
         superTypes: List<String> = emptyList(),
         annotations: List<String> = emptyList(),
+        deprecation: DeprecationLevel? = null,
         declarationType: DeclarationType = DeclarationType.Class,
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
@@ -296,6 +308,7 @@ open class CodeGenerator(
         for (annotation in annotations) {
             addLine(annotation)
         }
+        addDeprecation(deprecation)
 
         val modifiersString = (if (modifiers.isEmpty()) "" else "$modifiers ").withVisibility()
 
@@ -434,6 +447,17 @@ open class CodeGenerator(
 
         if (final) {
             addLine("*/")
+        }
+    }
+
+    private fun addDeprecation(deprecation: DeprecationLevel?) {
+        if (deprecation != null) {
+            val value = if (deprecation != DeprecationLevel.WARNING) {
+                "@Deprecated(\"This declaration is deprecated in .proto file\", DeprecationLevel.$deprecation)"
+            } else {
+                "@Deprecated(\"This declaration is deprecated in .proto file\")"
+            }
+            addLine(value)
         }
     }
 

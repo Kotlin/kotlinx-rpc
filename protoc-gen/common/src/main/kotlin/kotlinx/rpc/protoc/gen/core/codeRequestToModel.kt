@@ -17,6 +17,7 @@ import kotlinx.rpc.protoc.gen.core.model.MethodDeclaration
 import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
 import kotlinx.rpc.protoc.gen.core.model.ServiceDeclaration
+import kotlin.Boolean
 import kotlin.collections.plus
 
 private val nameCache = mutableMapOf<Descriptors.GenericDescriptor, FqName>()
@@ -127,6 +128,7 @@ private fun Descriptors.FileDescriptor.toModel(): FileDeclaration = cached {
             (comments + Paths.editionsCommentPath).get(),
             (comments + Paths.packageCommentPath).get()
         ),
+        deprecated = options.deprecated,
         dec = this,
     )
 }
@@ -156,6 +158,7 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?): MessageDeclarat
             type = FieldType.OneOf(it),
             doc = it.doc,
             dec = it.variants.first().dec,
+            deprecated = options.deprecated,
         )
     }
 
@@ -169,6 +172,7 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?): MessageDeclarat
         nestedDeclarations = nestedTypes.map { it.toModel(comments + Paths.messageMessageCommentPath + it.index) },
         doc = comments.get(),
         dec = this,
+        deprecated = options.deprecated,
     )
 }
 
@@ -180,6 +184,7 @@ private fun Descriptors.FieldDescriptor.toModel(comments: Comments, presenceIdx:
             presenceIdx = presenceIdx,
             doc = comments.get(),
             dec = this,
+            deprecated = options.deprecated,
         )
     }
 
@@ -219,6 +224,7 @@ private fun Descriptors.EnumDescriptor.toModel(comments: Comments?): EnumDeclara
         aliases = aliases,
         doc = comments.get(),
         dec = this,
+        deprecated = options.deprecated,
     )
 }
 
@@ -227,6 +233,7 @@ private fun Descriptors.EnumValueDescriptor.toModel(comments: Comments): EnumDec
         name = fqName(),
         doc = comments.get(),
         dec = this,
+        deprecated = options.deprecated,
     )
 }
 
@@ -237,6 +244,7 @@ private fun Descriptors.EnumValueDescriptor.toAliasModel(enumComments: Comments,
         original = original,
         doc = enumComments.get(),
         dec = this,
+        deprecated = options.deprecated,
     )
 }
 
@@ -246,6 +254,7 @@ private fun Descriptors.ServiceDescriptor.toModel(comments: Comments): ServiceDe
         methods = methods.map { it.toModel(comments + Paths.serviceMethodCommentPath + it.index) },
         dec = this,
         doc = comments.get(),
+        deprecated = options.deprecated,
     )
 }
 
@@ -256,6 +265,7 @@ private fun Descriptors.MethodDescriptor.toModel(comments: Comments): MethodDecl
         outputType = lazy { outputType.toModel(null) },
         dec = this,
         doc = comments.get(),
+        deprecated = options.deprecated,
     )
 }
 

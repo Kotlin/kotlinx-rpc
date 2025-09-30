@@ -80,7 +80,8 @@ class ModelToProtobufKotlinCommonGenerator(
             name = declaration.name.simpleName,
             comment = declaration.doc,
             declarationType = CodeGenerator.DeclarationType.Interface,
-            annotations = annotations
+            annotations = annotations,
+            deprecation = if (declaration.deprecated) DeprecationLevel.WARNING else null,
         ) {
             declaration.actualFields.forEachIndexed { i, field ->
                 property(
@@ -88,6 +89,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     comment = field.doc,
                     type = field.typeFqName(),
                     needsNewLineAfterDeclaration = i == declaration.actualFields.lastIndex,
+                    deprecation = if (field.deprecated) DeprecationLevel.WARNING else null,
                 )
             }
 
@@ -300,7 +302,7 @@ class ModelToProtobufKotlinCommonGenerator(
     }
 
     private fun CodeGenerator.generateMessageDecoder(declaration: MessageDeclaration) {
-        var args = "msg: ${declaration.internalClassFullName()}, decoder: $PB_PKG.WireDecoder";
+        var args = "msg: ${declaration.internalClassFullName()}, decoder: $PB_PKG.WireDecoder"
         if (declaration.isGroup) {
             args += ", startGroup: $PB_PKG.KTag"
         }
@@ -406,8 +408,6 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             is FieldType.Message -> {
-                val msg = fieldType.dec.value
-
                 whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.${fieldType.wireType.name}") {
                     if (field.presenceIdx != null) {
                         // check if the current sub message object was already set, if not, set a new one
@@ -995,6 +995,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     constructorArgs = listOf("val value: ${variant.typeFqName()}"),
                     annotations = listOf("@JvmInline"),
                     superTypes = listOf(interfaceName),
+                    deprecation = if (variant.deprecated) DeprecationLevel.WARNING else null,
                 )
 
                 additionalPublicImports.add("kotlin.jvm.JvmInline")
@@ -1003,9 +1004,7 @@ class ModelToProtobufKotlinCommonGenerator(
     }
 
     private fun CodeGenerator.generatePublicEnum(declaration: EnumDeclaration) {
-
         val className = declaration.name.simpleName
-
         val entriesSorted = declaration.originalEntries.sortedBy { it.dec.number }
 
         clazz(
@@ -1013,14 +1012,15 @@ class ModelToProtobufKotlinCommonGenerator(
             comment = declaration.doc,
             modifiers = "sealed",
             constructorArgs = listOf("open val number: Int"),
+            deprecation = if (declaration.deprecated) DeprecationLevel.WARNING else null,
         ) {
-
             declaration.originalEntries.forEach { variant ->
                 clazz(
                     name = variant.name.simpleName,
                     comment = variant.doc,
                     declarationType = CodeGenerator.DeclarationType.Object,
                     superTypes = listOf("$className(number = ${variant.dec.number})"),
+                    deprecation = if (variant.deprecated) DeprecationLevel.WARNING else null,
                 )
             }
 
@@ -1042,6 +1042,7 @@ class ModelToProtobufKotlinCommonGenerator(
                         type = className,
                         propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
                         value = alias.original.name.simpleName,
+                        deprecation = if (alias.deprecated) DeprecationLevel.WARNING else null,
                     )
                 }
 

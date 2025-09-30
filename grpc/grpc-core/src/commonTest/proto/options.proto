@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+message Options {
+  option deprecated = true;
+  string old = 1 [deprecated = true];
+  oneof oneof {
+    string first = 2 [deprecated = true];
+  }
+  map<string, string> map = 3 [deprecated = true];
+  repeated string list = 4 [deprecated = true];
+}
+
+enum OptionsEnum {
+  option deprecated = true;
+  option allow_alias = true;
+
+  SOME = 0 [deprecated = true];
+  SOME_2 = 0 [deprecated = true];
+}
+
+service SomeService {
+  option deprecated = true;
+  rpc SomeMethod(Options) returns (Options) {
+    option deprecated = true;
+  }
+}
