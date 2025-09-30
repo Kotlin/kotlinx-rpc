@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Migration to 0.10.0" id="0-10-0">
+
+    <p>
+        Version <code>0.10.0</code> brings some changes that require a migration:
+    </p>
+    <list>
+        <li>
+            <code>waitForServices</code> parameter in kRPC config is deprecated
+            and should be replaced with <a href="configuration.topic#connector-dsl"/>
+        </li>
+        <li>
+            As a continuation of the previous point, the backpressure mechanism is now introduced.
+            You may encounter slowdowns by default when using streams.
+            Use <a href="configuration.topic#connector-dsl"/>
+            to configure better suited buffer sizes.
+        </li>
+        <li>
+            For Ktor kRPC integration -
+            <code>public fun Route.rpc</code> functions now accept a suspending function parameter
+            instead of a regular one.
+        </li>
+    </list>
+</topic>
