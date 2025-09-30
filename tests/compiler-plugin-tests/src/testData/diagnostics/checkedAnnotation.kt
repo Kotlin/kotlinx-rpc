@@ -306,3 +306,6 @@ fun <T> unknownTypeFail9(arg: T) {
 fun <T> unknownTypeFail10(arg: T) {
     <!CHECKED_ANNOTATION_VIOLATION, CHECKED_ANNOTATION_VIOLATION!>deeplyNestedTwoWithArgCheckedOk<!>(<!CHECKED_ANNOTATION_VIOLATION!>GenericClass<!>(<!CHECKED_ANNOTATION_VIOLATION!>GenericClass<!>(<!CHECKED_ANNOTATION_VIOLATION!>CheckedClass<!>(arg))))
 }
+
+/* GENERATED_FIR_TAGS: annotationDeclaration, classDeclaration, functionDeclaration, nullableType, primaryConstructor,
+starProjection, typeConstraint, typeParameter */

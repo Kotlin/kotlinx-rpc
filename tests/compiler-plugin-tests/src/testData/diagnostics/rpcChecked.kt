@@ -59,3 +59,6 @@ class WrongGrpcTarget
 
 <!WRONG_RPC_ANNOTATION_TARGET!>@Rpc<!>
 class WrongRpcTarget
+
+/* GENERATED_FIR_TAGS: annotationDeclaration, annotationUseSiteTargetFile, classDeclaration, classReference,
+functionDeclaration, inline, interfaceDeclaration, lambdaLiteral, reified, suspend, typeConstraint, typeParameter */

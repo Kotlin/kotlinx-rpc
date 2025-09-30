@@ -63,6 +63,7 @@ class CancellationServiceImpl : CancellationService {
     }
 
     override fun incomingStream(): Flow<Int> {
+        waitCounter.increment()
         return resumableFlow(fence)
     }
 
@@ -95,7 +96,13 @@ class CancellationServiceImpl : CancellationService {
     }
 
     override suspend fun outgoingStream(stream: Flow<Int>) {
-        consume(stream)
+        try {
+            waitCounter.increment()
+            consume(stream)
+        } catch (e: CancellationException) {
+            cancellationsCounter.increment()
+            throw e
+        }
     }
 
     @OptIn(DelicateCoroutinesApi::class)
