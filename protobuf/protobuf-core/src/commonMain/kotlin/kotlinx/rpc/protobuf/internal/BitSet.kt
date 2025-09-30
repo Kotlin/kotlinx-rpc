@@ -66,4 +66,22 @@ public class BitSet(public val size: Int) {
         }
         return true
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+
+        other as BitSet
+
+        if (size != other.size) return false
+        if (!data.contentEquals(other.data)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = size
+        result = 31 * result + data.contentHashCode()
+        return result
+    }
 }

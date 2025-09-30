@@ -21,6 +21,61 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
     public override var syntax: com.google.protobuf.kotlin.Syntax by MsgFieldDelegate { com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2 }
     public override var edition: String by MsgFieldDelegate { "" }
 
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = name.hashCode()
+        result = 31 * result + fields.hashCode()
+        result = 31 * result + oneofs.hashCode()
+        result = 31 * result + options.hashCode()
+        result = 31 * result + if (presenceMask[0]) sourceContext.hashCode() else 0
+        result = 31 * result + syntax.hashCode()
+        result = 31 * result + edition.hashCode()
+        return result
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as TypeInternal
+        other.checkRequiredFields()
+        if (presenceMask != other.presenceMask) return false
+        if (name != other.name) return false
+        if (fields != other.fields) return false
+        if (oneofs != other.oneofs) return false
+        if (options != other.options) return false
+        if (presenceMask[0] && sourceContext != other.sourceContext) return false
+        if (syntax != other.syntax) return false
+        if (edition != other.edition) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.Type(")
+            appendLine("${nextIndentString}name=${name},")
+            appendLine("${nextIndentString}fields=${fields},")
+            appendLine("${nextIndentString}oneofs=${oneofs},")
+            appendLine("${nextIndentString}options=${options},")
+            if (presenceMask[0]) { 
+                appendLine("${nextIndentString}sourceContext=${sourceContext.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}sourceContext=<unset>,")
+            }
+
+            appendLine("${nextIndentString}syntax=${syntax},")
+            appendLine("${nextIndentString}edition=${edition},")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Type> { 
         public override fun encode(value: com.google.protobuf.kotlin.Type): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -63,6 +118,64 @@ public class FieldInternal: com.google.protobuf.kotlin.Field, kotlinx.rpc.protob
     public override var options: List<com.google.protobuf.kotlin.Option> by MsgFieldDelegate { mutableListOf() }
     public override var jsonName: String by MsgFieldDelegate { "" }
     public override var defaultValue: String by MsgFieldDelegate { "" }
+
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = kind.hashCode()
+        result = 31 * result + cardinality.hashCode()
+        result = 31 * result + number.hashCode()
+        result = 31 * result + name.hashCode()
+        result = 31 * result + typeUrl.hashCode()
+        result = 31 * result + oneofIndex.hashCode()
+        result = 31 * result + packed.hashCode()
+        result = 31 * result + options.hashCode()
+        result = 31 * result + jsonName.hashCode()
+        result = 31 * result + defaultValue.hashCode()
+        return result
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as FieldInternal
+        other.checkRequiredFields()
+        if (kind != other.kind) return false
+        if (cardinality != other.cardinality) return false
+        if (number != other.number) return false
+        if (name != other.name) return false
+        if (typeUrl != other.typeUrl) return false
+        if (oneofIndex != other.oneofIndex) return false
+        if (packed != other.packed) return false
+        if (options != other.options) return false
+        if (jsonName != other.jsonName) return false
+        if (defaultValue != other.defaultValue) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.Field(")
+            appendLine("${nextIndentString}kind=${kind},")
+            appendLine("${nextIndentString}cardinality=${cardinality},")
+            appendLine("${nextIndentString}number=${number},")
+            appendLine("${nextIndentString}name=${name},")
+            appendLine("${nextIndentString}typeUrl=${typeUrl},")
+            appendLine("${nextIndentString}oneofIndex=${oneofIndex},")
+            appendLine("${nextIndentString}packed=${packed},")
+            appendLine("${nextIndentString}options=${options},")
+            appendLine("${nextIndentString}jsonName=${jsonName},")
+            appendLine("${nextIndentString}defaultValue=${defaultValue},")
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Field> { 
@@ -107,6 +220,58 @@ public class EnumInternal: com.google.protobuf.kotlin.Enum, kotlinx.rpc.protobuf
     public override var syntax: com.google.protobuf.kotlin.Syntax by MsgFieldDelegate { com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2 }
     public override var edition: String by MsgFieldDelegate { "" }
 
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = name.hashCode()
+        result = 31 * result + enumvalue.hashCode()
+        result = 31 * result + options.hashCode()
+        result = 31 * result + if (presenceMask[0]) sourceContext.hashCode() else 0
+        result = 31 * result + syntax.hashCode()
+        result = 31 * result + edition.hashCode()
+        return result
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as EnumInternal
+        other.checkRequiredFields()
+        if (presenceMask != other.presenceMask) return false
+        if (name != other.name) return false
+        if (enumvalue != other.enumvalue) return false
+        if (options != other.options) return false
+        if (presenceMask[0] && sourceContext != other.sourceContext) return false
+        if (syntax != other.syntax) return false
+        if (edition != other.edition) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.Enum(")
+            appendLine("${nextIndentString}name=${name},")
+            appendLine("${nextIndentString}enumvalue=${enumvalue},")
+            appendLine("${nextIndentString}options=${options},")
+            if (presenceMask[0]) { 
+                appendLine("${nextIndentString}sourceContext=${sourceContext.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}sourceContext=<unset>,")
+            }
+
+            appendLine("${nextIndentString}syntax=${syntax},")
+            appendLine("${nextIndentString}edition=${edition},")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Enum> { 
         public override fun encode(value: com.google.protobuf.kotlin.Enum): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -142,6 +307,43 @@ public class EnumValueInternal: com.google.protobuf.kotlin.EnumValue, kotlinx.rp
     public override var name: String by MsgFieldDelegate { "" }
     public override var number: Int by MsgFieldDelegate { 0 }
     public override var options: List<com.google.protobuf.kotlin.Option> by MsgFieldDelegate { mutableListOf() }
+
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = name.hashCode()
+        result = 31 * result + number.hashCode()
+        result = 31 * result + options.hashCode()
+        return result
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as EnumValueInternal
+        other.checkRequiredFields()
+        if (name != other.name) return false
+        if (number != other.number) return false
+        if (options != other.options) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.EnumValue(")
+            appendLine("${nextIndentString}name=${name},")
+            appendLine("${nextIndentString}number=${number},")
+            appendLine("${nextIndentString}options=${options},")
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.EnumValue> { 
@@ -181,6 +383,46 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
 
     public override var name: String by MsgFieldDelegate { "" }
     public override var value: com.google.protobuf.kotlin.Any by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf.kotlin.AnyInternal() }
+
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = name.hashCode()
+        result = 31 * result + if (presenceMask[0]) value.hashCode() else 0
+        return result
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as OptionInternal
+        other.checkRequiredFields()
+        if (presenceMask != other.presenceMask) return false
+        if (name != other.name) return false
+        if (presenceMask[0] && value != other.value) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.Option(")
+            appendLine("${nextIndentString}name=${name},")
+            if (presenceMask[0]) { 
+                appendLine("${nextIndentString}value=${value.asInternal().asString(indent = indent + 4)},")
+            } else { 
+                appendLine("${nextIndentString}value=<unset>,")
+            }
+
+            append("${indentString})")
+        }
+    }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Option> { 
