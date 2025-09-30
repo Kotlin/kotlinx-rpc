@@ -20,6 +20,7 @@ data class FileDeclaration(
     val serviceDeclarations: List<ServiceDeclaration>,
     val doc: List<Comment>,
     val dec: Descriptors.FileDescriptor,
+    val deprecated: Boolean,
 )
 
 data class MessageDeclaration(
@@ -31,6 +32,7 @@ data class MessageDeclaration(
     val nestedDeclarations: List<MessageDeclaration>,
     val doc: Comment?,
     val dec: Descriptors.Descriptor,
+    val deprecated: Boolean,
 ) {
     val isMapEntry = dec.options.mapEntry
     val isUserFacing = !isMapEntry
@@ -49,6 +51,7 @@ data class EnumDeclaration(
     val aliases: List<Alias>,
     val doc: Comment?,
     val dec: Descriptors.EnumDescriptor,
+    val deprecated: Boolean,
 ) {
 
     fun defaultEntry(): Entry {
@@ -63,6 +66,7 @@ data class EnumDeclaration(
         val name: FqName,
         val doc: Comment?,
         val dec: Descriptors.EnumValueDescriptor,
+        val deprecated: Boolean,
     )
 
     data class Alias(
@@ -70,6 +74,7 @@ data class EnumDeclaration(
         val original: Entry,
         val doc: Comment?,
         val dec: Descriptors.EnumValueDescriptor,
+        val deprecated: Boolean,
     )
 }
 
@@ -85,6 +90,7 @@ data class FieldDeclaration(
     val type: FieldType,
     val doc: Comment?,
     val dec: Descriptors.FieldDescriptor,
+    val deprecated: Boolean,
     // defines the index in the presenceMask of the Message.
     // this cannot be the number, as only fields with hasPresence == true are part of the presenceMask
     val presenceIdx: Int? = null,
@@ -111,6 +117,7 @@ data class ServiceDeclaration(
     val methods: List<MethodDeclaration>,
     val dec: Descriptors.ServiceDescriptor,
     val doc: Comment?,
+    val deprecated: Boolean,
 )
 
 data class MethodDeclaration(
@@ -119,5 +126,6 @@ data class MethodDeclaration(
     val outputType: Lazy<MessageDeclaration>,
     val dec: Descriptors.MethodDescriptor,
     val doc: Comment?,
+    val deprecated: Boolean,
 )
 
