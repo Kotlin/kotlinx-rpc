@@ -185,10 +185,11 @@ class ConformanceRequestInternal: com.google.protobuf.conformance.ConformanceReq
         if (other == null || this::class != other::class) return false
         other as ConformanceRequestInternal
         other.checkRequiredFields()
+        if (presenceMask != other.presenceMask) return false
         if (requestedOutputFormat != other.requestedOutputFormat) return false
         if (messageType != other.messageType) return false
         if (testCategory != other.testCategory) return false
-        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && jspbEncodingOptions != other.jspbEncodingOptions) return false
+        if (presenceMask[0] && jspbEncodingOptions != other.jspbEncodingOptions) return false
         if (printUnknownFields != other.printUnknownFields) return false
         if (payload != other.payload) return false
         return true

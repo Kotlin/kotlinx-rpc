@@ -39,11 +39,12 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
         if (other == null || this::class != other::class) return false
         other as ApiInternal
         other.checkRequiredFields()
+        if (presenceMask != other.presenceMask) return false
         if (name != other.name) return false
         if (methods != other.methods) return false
         if (options != other.options) return false
         if (version != other.version) return false
-        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && sourceContext != other.sourceContext) return false
+        if (presenceMask[0] && sourceContext != other.sourceContext) return false
         if (mixins != other.mixins) return false
         if (syntax != other.syntax) return false
         return true

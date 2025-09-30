@@ -65,8 +65,9 @@ public class StructInternal: com.google.protobuf.kotlin.Struct, kotlinx.rpc.prot
             if (other == null || this::class != other::class) return false
             other as FieldsEntryInternal
             other.checkRequiredFields()
+            if (presenceMask != other.presenceMask) return false
             if (key != other.key) return false
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && value != other.value) return false
+            if (presenceMask[0] && value != other.value) return false
             return true
         }
 

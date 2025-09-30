@@ -39,11 +39,12 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
         if (other == null || this::class != other::class) return false
         other as TypeInternal
         other.checkRequiredFields()
+        if (presenceMask != other.presenceMask) return false
         if (name != other.name) return false
         if (fields != other.fields) return false
         if (oneofs != other.oneofs) return false
         if (options != other.options) return false
-        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && sourceContext != other.sourceContext) return false
+        if (presenceMask[0] && sourceContext != other.sourceContext) return false
         if (syntax != other.syntax) return false
         if (edition != other.edition) return false
         return true
@@ -236,10 +237,11 @@ public class EnumInternal: com.google.protobuf.kotlin.Enum, kotlinx.rpc.protobuf
         if (other == null || this::class != other::class) return false
         other as EnumInternal
         other.checkRequiredFields()
+        if (presenceMask != other.presenceMask) return false
         if (name != other.name) return false
         if (enumvalue != other.enumvalue) return false
         if (options != other.options) return false
-        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && sourceContext != other.sourceContext) return false
+        if (presenceMask[0] && sourceContext != other.sourceContext) return false
         if (syntax != other.syntax) return false
         if (edition != other.edition) return false
         return true
@@ -395,8 +397,9 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
         if (other == null || this::class != other::class) return false
         other as OptionInternal
         other.checkRequiredFields()
+        if (presenceMask != other.presenceMask) return false
         if (name != other.name) return false
-        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && value != other.value) return false
+        if (presenceMask[0] && value != other.value) return false
         return true
     }
 

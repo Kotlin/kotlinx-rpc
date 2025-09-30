@@ -26,7 +26,8 @@ class ComplexMessageInternal: com.google.protobuf_test_messages.edition2023.Comp
         if (other == null || this::class != other::class) return false
         other as ComplexMessageInternal
         other.checkRequiredFields()
-        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && d != other.d) return false
+        if (presenceMask != other.presenceMask) return false
+        if (presenceMask[0] && d != other.d) return false
         return true
     }
 
@@ -323,28 +324,29 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         if (other == null || this::class != other::class) return false
         other as TestAllTypesEdition2023Internal
         other.checkRequiredFields()
-        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && optionalInt32 != other.optionalInt32) return false
-        if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && optionalInt64 != other.optionalInt64) return false
-        if (presenceMask[2] != other.presenceMask[2] || presenceMask[2] && optionalUint32 != other.optionalUint32) return false
-        if (presenceMask[3] != other.presenceMask[3] || presenceMask[3] && optionalUint64 != other.optionalUint64) return false
-        if (presenceMask[4] != other.presenceMask[4] || presenceMask[4] && optionalSint32 != other.optionalSint32) return false
-        if (presenceMask[5] != other.presenceMask[5] || presenceMask[5] && optionalSint64 != other.optionalSint64) return false
-        if (presenceMask[6] != other.presenceMask[6] || presenceMask[6] && optionalFixed32 != other.optionalFixed32) return false
-        if (presenceMask[7] != other.presenceMask[7] || presenceMask[7] && optionalFixed64 != other.optionalFixed64) return false
-        if (presenceMask[8] != other.presenceMask[8] || presenceMask[8] && optionalSfixed32 != other.optionalSfixed32) return false
-        if (presenceMask[9] != other.presenceMask[9] || presenceMask[9] && optionalSfixed64 != other.optionalSfixed64) return false
-        if (presenceMask[10] != other.presenceMask[10] || presenceMask[10] && optionalFloat != other.optionalFloat) return false
-        if (presenceMask[11] != other.presenceMask[11] || presenceMask[11] && optionalDouble != other.optionalDouble) return false
-        if (presenceMask[12] != other.presenceMask[12] || presenceMask[12] && optionalBool != other.optionalBool) return false
-        if (presenceMask[13] != other.presenceMask[13] || presenceMask[13] && optionalString != other.optionalString) return false
-        if (presenceMask[14] != other.presenceMask[14] || presenceMask[14] && ((optionalBytes != null && (other.optionalBytes == null || !optionalBytes!!.contentEquals(other.optionalBytes!!))) || other.optionalBytes != null)) return false
-        if (presenceMask[15] != other.presenceMask[15] || presenceMask[15] && optionalNestedMessage != other.optionalNestedMessage) return false
-        if (presenceMask[16] != other.presenceMask[16] || presenceMask[16] && optionalForeignMessage != other.optionalForeignMessage) return false
-        if (presenceMask[17] != other.presenceMask[17] || presenceMask[17] && optionalNestedEnum != other.optionalNestedEnum) return false
-        if (presenceMask[18] != other.presenceMask[18] || presenceMask[18] && optionalForeignEnum != other.optionalForeignEnum) return false
-        if (presenceMask[19] != other.presenceMask[19] || presenceMask[19] && optionalStringPiece != other.optionalStringPiece) return false
-        if (presenceMask[20] != other.presenceMask[20] || presenceMask[20] && optionalCord != other.optionalCord) return false
-        if (presenceMask[21] != other.presenceMask[21] || presenceMask[21] && recursiveMessage != other.recursiveMessage) return false
+        if (presenceMask != other.presenceMask) return false
+        if (presenceMask[0] && optionalInt32 != other.optionalInt32) return false
+        if (presenceMask[1] && optionalInt64 != other.optionalInt64) return false
+        if (presenceMask[2] && optionalUint32 != other.optionalUint32) return false
+        if (presenceMask[3] && optionalUint64 != other.optionalUint64) return false
+        if (presenceMask[4] && optionalSint32 != other.optionalSint32) return false
+        if (presenceMask[5] && optionalSint64 != other.optionalSint64) return false
+        if (presenceMask[6] && optionalFixed32 != other.optionalFixed32) return false
+        if (presenceMask[7] && optionalFixed64 != other.optionalFixed64) return false
+        if (presenceMask[8] && optionalSfixed32 != other.optionalSfixed32) return false
+        if (presenceMask[9] && optionalSfixed64 != other.optionalSfixed64) return false
+        if (presenceMask[10] && optionalFloat != other.optionalFloat) return false
+        if (presenceMask[11] && optionalDouble != other.optionalDouble) return false
+        if (presenceMask[12] && optionalBool != other.optionalBool) return false
+        if (presenceMask[13] && optionalString != other.optionalString) return false
+        if (presenceMask[14] && ((optionalBytes != null && (other.optionalBytes == null || !optionalBytes!!.contentEquals(other.optionalBytes!!))) || other.optionalBytes != null)) return false
+        if (presenceMask[15] && optionalNestedMessage != other.optionalNestedMessage) return false
+        if (presenceMask[16] && optionalForeignMessage != other.optionalForeignMessage) return false
+        if (presenceMask[17] && optionalNestedEnum != other.optionalNestedEnum) return false
+        if (presenceMask[18] && optionalForeignEnum != other.optionalForeignEnum) return false
+        if (presenceMask[19] && optionalStringPiece != other.optionalStringPiece) return false
+        if (presenceMask[20] && optionalCord != other.optionalCord) return false
+        if (presenceMask[21] && recursiveMessage != other.recursiveMessage) return false
         if (repeatedInt32 != other.repeatedInt32) return false
         if (repeatedInt64 != other.repeatedInt64) return false
         if (repeatedUint32 != other.repeatedUint32) return false
@@ -413,8 +415,8 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         if (mapStringForeignMessage != other.mapStringForeignMessage) return false
         if (mapStringNestedEnum != other.mapStringNestedEnum) return false
         if (mapStringForeignEnum != other.mapStringForeignEnum) return false
-        if (presenceMask[22] != other.presenceMask[22] || presenceMask[22] && groupliketype != other.groupliketype) return false
-        if (presenceMask[23] != other.presenceMask[23] || presenceMask[23] && delimitedField != other.delimitedField) return false
+        if (presenceMask[22] && groupliketype != other.groupliketype) return false
+        if (presenceMask[23] && delimitedField != other.delimitedField) return false
         if (oneofField != other.oneofField) return false
         return true
     }
@@ -671,8 +673,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as NestedMessageInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && a != other.a) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && corecursive != other.corecursive) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && a != other.a) return false
+            if (presenceMask[1] && corecursive != other.corecursive) return false
             return true
         }
 
@@ -755,8 +758,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapInt32Int32EntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -815,8 +819,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapInt64Int64EntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -875,8 +880,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapUint32Uint32EntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -935,8 +941,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapUint64Uint64EntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -995,8 +1002,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapSint32Sint32EntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -1055,8 +1063,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapSint64Sint64EntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -1115,8 +1124,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapFixed32Fixed32EntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -1175,8 +1185,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapFixed64Fixed64EntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -1235,8 +1246,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapSfixed32Sfixed32EntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -1295,8 +1307,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapSfixed64Sfixed64EntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -1355,8 +1368,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapInt32FloatEntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -1415,8 +1429,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapInt32DoubleEntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -1475,8 +1490,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapBoolBoolEntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -1535,8 +1551,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapStringStringEntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -1595,8 +1612,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapStringBytesEntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && !value.contentEquals(other.value)) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && !value.contentEquals(other.value)) return false
             return true
         }
 
@@ -1655,8 +1673,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapStringNestedMessageEntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -1715,8 +1734,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapStringForeignMessageEntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -1775,8 +1795,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapStringNestedEnumEntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -1835,8 +1856,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as MapStringForeignEnumEntryInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && key != other.key) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && value != other.value) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && key != other.key) return false
+            if (presenceMask[1] && value != other.value) return false
             return true
         }
 
@@ -1895,8 +1917,9 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             if (other == null || this::class != other::class) return false
             other as GroupLikeTypeInternal
             other.checkRequiredFields()
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && groupInt32 != other.groupInt32) return false
-            if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && groupUint32 != other.groupUint32) return false
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[0] && groupInt32 != other.groupInt32) return false
+            if (presenceMask[1] && groupUint32 != other.groupUint32) return false
             return true
         }
 
@@ -1979,7 +2002,8 @@ class ForeignMessageEdition2023Internal: com.google.protobuf_test_messages.editi
         if (other == null || this::class != other::class) return false
         other as ForeignMessageEdition2023Internal
         other.checkRequiredFields()
-        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && c != other.c) return false
+        if (presenceMask != other.presenceMask) return false
+        if (presenceMask[0] && c != other.c) return false
         return true
     }
 
@@ -2052,7 +2076,8 @@ class GroupLikeTypeInternal: com.google.protobuf_test_messages.edition2023.Group
         if (other == null || this::class != other::class) return false
         other as GroupLikeTypeInternal
         other.checkRequiredFields()
-        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && c != other.c) return false
+        if (presenceMask != other.presenceMask) return false
+        if (presenceMask[0] && c != other.c) return false
         return true
     }
 

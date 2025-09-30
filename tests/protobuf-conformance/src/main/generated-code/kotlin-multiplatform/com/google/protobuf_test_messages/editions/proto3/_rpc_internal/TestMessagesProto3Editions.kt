@@ -344,6 +344,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         if (other == null || this::class != other::class) return false
         other as TestAllTypesProto3Internal
         other.checkRequiredFields()
+        if (presenceMask != other.presenceMask) return false
         if (optionalInt32 != other.optionalInt32) return false
         if (optionalInt64 != other.optionalInt64) return false
         if (optionalUint32 != other.optionalUint32) return false
@@ -359,14 +360,14 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         if (optionalBool != other.optionalBool) return false
         if (optionalString != other.optionalString) return false
         if (!optionalBytes.contentEquals(other.optionalBytes)) return false
-        if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && optionalNestedMessage != other.optionalNestedMessage) return false
-        if (presenceMask[1] != other.presenceMask[1] || presenceMask[1] && optionalForeignMessage != other.optionalForeignMessage) return false
+        if (presenceMask[0] && optionalNestedMessage != other.optionalNestedMessage) return false
+        if (presenceMask[1] && optionalForeignMessage != other.optionalForeignMessage) return false
         if (optionalNestedEnum != other.optionalNestedEnum) return false
         if (optionalForeignEnum != other.optionalForeignEnum) return false
         if (optionalAliasedEnum != other.optionalAliasedEnum) return false
         if (optionalStringPiece != other.optionalStringPiece) return false
         if (optionalCord != other.optionalCord) return false
-        if (presenceMask[2] != other.presenceMask[2] || presenceMask[2] && recursiveMessage != other.recursiveMessage) return false
+        if (presenceMask[2] && recursiveMessage != other.recursiveMessage) return false
         if (repeatedInt32 != other.repeatedInt32) return false
         if (repeatedInt64 != other.repeatedInt64) return false
         if (repeatedUint32 != other.repeatedUint32) return false
@@ -435,15 +436,15 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         if (mapStringForeignMessage != other.mapStringForeignMessage) return false
         if (mapStringNestedEnum != other.mapStringNestedEnum) return false
         if (mapStringForeignEnum != other.mapStringForeignEnum) return false
-        if (presenceMask[3] != other.presenceMask[3] || presenceMask[3] && optionalBoolWrapper != other.optionalBoolWrapper) return false
-        if (presenceMask[4] != other.presenceMask[4] || presenceMask[4] && optionalInt32Wrapper != other.optionalInt32Wrapper) return false
-        if (presenceMask[5] != other.presenceMask[5] || presenceMask[5] && optionalInt64Wrapper != other.optionalInt64Wrapper) return false
-        if (presenceMask[6] != other.presenceMask[6] || presenceMask[6] && optionalUint32Wrapper != other.optionalUint32Wrapper) return false
-        if (presenceMask[7] != other.presenceMask[7] || presenceMask[7] && optionalUint64Wrapper != other.optionalUint64Wrapper) return false
-        if (presenceMask[8] != other.presenceMask[8] || presenceMask[8] && optionalFloatWrapper != other.optionalFloatWrapper) return false
-        if (presenceMask[9] != other.presenceMask[9] || presenceMask[9] && optionalDoubleWrapper != other.optionalDoubleWrapper) return false
-        if (presenceMask[10] != other.presenceMask[10] || presenceMask[10] && optionalStringWrapper != other.optionalStringWrapper) return false
-        if (presenceMask[11] != other.presenceMask[11] || presenceMask[11] && optionalBytesWrapper != other.optionalBytesWrapper) return false
+        if (presenceMask[3] && optionalBoolWrapper != other.optionalBoolWrapper) return false
+        if (presenceMask[4] && optionalInt32Wrapper != other.optionalInt32Wrapper) return false
+        if (presenceMask[5] && optionalInt64Wrapper != other.optionalInt64Wrapper) return false
+        if (presenceMask[6] && optionalUint32Wrapper != other.optionalUint32Wrapper) return false
+        if (presenceMask[7] && optionalUint64Wrapper != other.optionalUint64Wrapper) return false
+        if (presenceMask[8] && optionalFloatWrapper != other.optionalFloatWrapper) return false
+        if (presenceMask[9] && optionalDoubleWrapper != other.optionalDoubleWrapper) return false
+        if (presenceMask[10] && optionalStringWrapper != other.optionalStringWrapper) return false
+        if (presenceMask[11] && optionalBytesWrapper != other.optionalBytesWrapper) return false
         if (repeatedBoolWrapper != other.repeatedBoolWrapper) return false
         if (repeatedInt32Wrapper != other.repeatedInt32Wrapper) return false
         if (repeatedInt64Wrapper != other.repeatedInt64Wrapper) return false
@@ -453,12 +454,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         if (repeatedDoubleWrapper != other.repeatedDoubleWrapper) return false
         if (repeatedStringWrapper != other.repeatedStringWrapper) return false
         if (repeatedBytesWrapper != other.repeatedBytesWrapper) return false
-        if (presenceMask[12] != other.presenceMask[12] || presenceMask[12] && optionalDuration != other.optionalDuration) return false
-        if (presenceMask[13] != other.presenceMask[13] || presenceMask[13] && optionalTimestamp != other.optionalTimestamp) return false
-        if (presenceMask[14] != other.presenceMask[14] || presenceMask[14] && optionalFieldMask != other.optionalFieldMask) return false
-        if (presenceMask[15] != other.presenceMask[15] || presenceMask[15] && optionalStruct != other.optionalStruct) return false
-        if (presenceMask[16] != other.presenceMask[16] || presenceMask[16] && optionalAny != other.optionalAny) return false
-        if (presenceMask[17] != other.presenceMask[17] || presenceMask[17] && optionalValue != other.optionalValue) return false
+        if (presenceMask[12] && optionalDuration != other.optionalDuration) return false
+        if (presenceMask[13] && optionalTimestamp != other.optionalTimestamp) return false
+        if (presenceMask[14] && optionalFieldMask != other.optionalFieldMask) return false
+        if (presenceMask[15] && optionalStruct != other.optionalStruct) return false
+        if (presenceMask[16] && optionalAny != other.optionalAny) return false
+        if (presenceMask[17] && optionalValue != other.optionalValue) return false
         if (optionalNullValue != other.optionalNullValue) return false
         if (repeatedDuration != other.repeatedDuration) return false
         if (repeatedTimestamp != other.repeatedTimestamp) return false
@@ -759,8 +760,9 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
             if (other == null || this::class != other::class) return false
             other as NestedMessageInternal
             other.checkRequiredFields()
+            if (presenceMask != other.presenceMask) return false
             if (a != other.a) return false
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && corecursive != other.corecursive) return false
+            if (presenceMask[0] && corecursive != other.corecursive) return false
             return true
         }
 
@@ -1512,8 +1514,9 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
             if (other == null || this::class != other::class) return false
             other as MapStringNestedMessageEntryInternal
             other.checkRequiredFields()
+            if (presenceMask != other.presenceMask) return false
             if (key != other.key) return false
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && value != other.value) return false
+            if (presenceMask[0] && value != other.value) return false
             return true
         }
 
@@ -1566,8 +1569,9 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
             if (other == null || this::class != other::class) return false
             other as MapStringForeignMessageEntryInternal
             other.checkRequiredFields()
+            if (presenceMask != other.presenceMask) return false
             if (key != other.key) return false
-            if (presenceMask[0] != other.presenceMask[0] || presenceMask[0] && value != other.value) return false
+            if (presenceMask[0] && value != other.value) return false
             return true
         }
 

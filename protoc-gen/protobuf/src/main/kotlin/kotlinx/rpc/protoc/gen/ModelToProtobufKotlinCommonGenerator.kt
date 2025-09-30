@@ -285,11 +285,14 @@ class ModelToProtobufKotlinCommonGenerator(
             addLine("if (other == null || this::class != other::class) return false")
             addLine("other as ${declaration.internalClassName()}")
             addLine("other.checkRequiredFields()")
+            if (declaration.presenceMaskSize != 0) {
+                addLine("if (presenceMask != other.presenceMask) return false")
+            }
             if (fields.isNotEmpty()) {
                 fields.forEach { field ->
                     if (field.presenceIdx != null) {
                         fieldEqualsCheck(
-                            presenceCheck = "presenceMask[${field.presenceIdx}] != other.presenceMask[${field.presenceIdx}] || presenceMask[${field.presenceIdx}] && ",
+                            presenceCheck = "presenceMask[${field.presenceIdx}] && ",
                             field = field,
                         )
                     } else {
