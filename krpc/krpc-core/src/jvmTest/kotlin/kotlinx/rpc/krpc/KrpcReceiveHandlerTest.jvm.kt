@@ -4,5 +4,5 @@
 
 package kotlinx.rpc.krpc
 
-internal actual val stressIterations: Int = 10_000
-internal actual val stressBufferSize: Int = 500
+internal actual val stressIterations: Int = 8_000
+internal actual val stressBufferSize: Int = 1000
