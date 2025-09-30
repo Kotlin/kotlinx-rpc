@@ -5,7 +5,6 @@
 package kotlinx.rpc.krpc.server.internal
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.descriptor.RpcInvokator

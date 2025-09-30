@@ -5,7 +5,6 @@
 package kotlinx.rpc.krpc.internal
 
 import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.launch
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
