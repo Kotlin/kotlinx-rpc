@@ -11,7 +11,6 @@ import kotlinx.rpc.protoc.gen.core.model.FqName
 import kotlinx.rpc.protoc.gen.core.model.MessageDeclaration
 import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.fullName
-import org.slf4j.Logger
 
 const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
 const val MSG_INTERNAL_SUFFIX = "Internal"

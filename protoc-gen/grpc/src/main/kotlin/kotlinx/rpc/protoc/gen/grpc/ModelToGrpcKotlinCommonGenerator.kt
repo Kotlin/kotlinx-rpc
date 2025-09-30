@@ -36,7 +36,8 @@ class ModelToGrpcKotlinCommonGenerator(
             name = service.name.simpleName,
             comment = service.doc,
             declarationType = CodeGenerator.DeclarationType.Interface,
-            annotations = listOf("@kotlinx.rpc.grpc.annotations.Grpc$annotationParams")
+            annotations = listOf("@kotlinx.rpc.grpc.annotations.Grpc$annotationParams"),
+            deprecation = if (service.deprecated) DeprecationLevel.WARNING else null,
         ) {
             service.methods.forEach { method ->
                 val inputType = method.inputType
@@ -53,6 +54,7 @@ class ModelToGrpcKotlinCommonGenerator(
                     modifiers = if (method.dec.isServerStreaming) "" else "suspend",
                     args = "message: ${inputType.value.name.safeFullName().wrapInFlowIf(method.dec.isClientStreaming)}",
                     annotations = annotations,
+                    deprecation = if (method.deprecated) DeprecationLevel.WARNING else null,
                     returnType = outputType.value.name.safeFullName().wrapInFlowIf(method.dec.isServerStreaming),
                 )
             }
