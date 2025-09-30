@@ -11,6 +11,36 @@ public class SourceContextInternal: com.google.protobuf.kotlin.SourceContext, ko
 
     public override var fileName: String by MsgFieldDelegate { "" }
 
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        return fileName.hashCode()
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as SourceContextInternal
+        other.checkRequiredFields()
+        if (fileName != other.fileName) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.SourceContext(")
+            appendLine("${nextIndentString}fileName=${fileName},")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.SourceContext> { 
         public override fun encode(value: com.google.protobuf.kotlin.SourceContext): kotlinx.rpc.protobuf.input.stream.InputStream { 

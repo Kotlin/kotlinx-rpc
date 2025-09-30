@@ -12,6 +12,40 @@ public class DurationInternal: com.google.protobuf.kotlin.Duration, kotlinx.rpc.
     public override var seconds: Long by MsgFieldDelegate { 0L }
     public override var nanos: Int by MsgFieldDelegate { 0 }
 
+    public override fun hashCode(): kotlin.Int { 
+        checkRequiredFields()
+        var result = seconds.hashCode()
+        result = 31 * result + nanos.hashCode()
+        return result
+    }
+
+    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+        checkRequiredFields()
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as DurationInternal
+        other.checkRequiredFields()
+        if (seconds != other.seconds) return false
+        if (nanos != other.nanos) return false
+        return true
+    }
+
+    public override fun toString(): kotlin.String { 
+        return asString()
+    }
+
+    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+        checkRequiredFields()
+        val indentString = " ".repeat(indent)
+        val nextIndentString = " ".repeat(indent + 4)
+        return buildString { 
+            appendLine("com.google.protobuf.kotlin.Duration(")
+            appendLine("${nextIndentString}seconds=${seconds},")
+            appendLine("${nextIndentString}nanos=${nanos},")
+            append("${indentString})")
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Duration> { 
         public override fun encode(value: com.google.protobuf.kotlin.Duration): kotlinx.rpc.protobuf.input.stream.InputStream { 

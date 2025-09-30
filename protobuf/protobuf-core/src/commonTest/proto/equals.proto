@@ -1,0 +1,22 @@
+syntax = "proto2";
+
+message Equals {
+  required string str1 = 1;
+  optional string str2 = 2 [default = "abc"];
+  required bytes bytes1 = 3;
+  optional bytes bytes2 = 4 [default = "abc"];
+  oneof oneof {
+    sint32 option1 = 5;
+    sint32 option2 = 6;
+  }
+  optional Nested nested = 7;
+  message Nested {
+    required string content = 1;
+  }
+  optional SomeEnum someEnum = 8;
+  required SomeEnum someEnum2 = 9;
+  enum SomeEnum {
+    VALUE1 = 0;
+    VALUE2 = 1;
+  }
+}
