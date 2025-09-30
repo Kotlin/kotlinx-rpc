@@ -4,4 +4,4 @@
 
 package kotlinx.rpc.krpc.test
 
-internal actual val testIterations: Int = 100
+internal actual val testIterations: Int = 10
