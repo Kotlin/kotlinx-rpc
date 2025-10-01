@@ -2,6 +2,60 @@
 
 This page contains all changes throughout releases of the library.
 
+## 0.10.0
+> Published 1 October 2025
+
+**Full Changelog**: [0.9.1...0.10.0](https://github.com/Kotlin/kotlinx-rpc/compare/0.9.1...0.10.0)
+
+### Overview {id=Overview_0_10_0}
+This release brings a lot of changes, work:
+- Kotlin 2.2.20 and 2.2.10 support
+- kRPC: Backpressure
+
+To read about the backpressure feature, 
+see the updated [kRPC Configuration](https://kotlin.github.io/kotlinx-rpc/configuration.html#connector-dsl) page.
+
+#### Breaking Changes 🔴 {id=Breaking_Changes_0_10_0}
+* Allow suspend calls inside ktor rpc builder #433 by [@Mr3zee](https://github.com/Mr3zee) in [#439](https://github.com/Kotlin/kotlinx-rpc/pull/439)
+
+#### Features 🎉 {id=Features_0_10_0}
+* Kotlin 2.2.20 by [@Mr3zee](https://github.com/Mr3zee) in [#478](https://github.com/Kotlin/kotlinx-rpc/pull/478)
+* Kotlin 2.2.10 by [@Mr3zee](https://github.com/Mr3zee) in [#456](https://github.com/Kotlin/kotlinx-rpc/pull/456)
+* kRPC: Backpressure by [@Mr3zee](https://github.com/Mr3zee) in [#462](https://github.com/Kotlin/kotlinx-rpc/pull/462)
+* Add support for Wasm/Wasi to krpc #465 by [@Mr3zee](https://github.com/Mr3zee) in [#480](https://github.com/Kotlin/kotlinx-rpc/pull/480)
+
+#### Bug fixes 🐛 {id=Bug_fixes_0_10_0}
+* Add collect once check for client streams by [@Mr3zee](https://github.com/Mr3zee) in [#431](https://github.com/Kotlin/kotlinx-rpc/pull/431)
+* Fix diagnostic rendering for compiler plugins checkers by [@Mr3zee](https://github.com/Mr3zee) in [#432](https://github.com/Kotlin/kotlinx-rpc/pull/432)
+* fix wrong unchecked null cast (potential NPE) by [@y9maly](https://github.com/y9maly) in [#445](https://github.com/Kotlin/kotlinx-rpc/pull/445)
+
+#### Documentation 📗 {id=Documentation_0_10_0}
+* Docs for gRPC with Ktor by [@Mr3zee](https://github.com/Mr3zee) in [#394](https://github.com/Kotlin/kotlinx-rpc/pull/394)
+* Add a doc for KMP source sets with gRPC by [@Mr3zee](https://github.com/Mr3zee) in [#405](https://github.com/Kotlin/kotlinx-rpc/pull/405)
+* Update strict-mode.topic by [@BierDav](https://github.com/BierDav) in [#440](https://github.com/Kotlin/kotlinx-rpc/pull/440)
+* Update grpc-configuration.topic by [@flockbastian](https://github.com/flockbastian) in [#450](https://github.com/Kotlin/kotlinx-rpc/pull/450)
+* Added docs for release by [@Mr3zee](https://github.com/Mr3zee) in [#482](https://github.com/Kotlin/kotlinx-rpc/pull/482)
+* Fix typo in docs grpc-configuration.topic by [@sebaslogen](https://github.com/sebaslogen) in [#495](https://github.com/Kotlin/kotlinx-rpc/pull/495)
+
+#### Infra 🚧 {id=Infra_0_10_0}
+* Fix docs yaml and signing tasks by [@Mr3zee](https://github.com/Mr3zee) in [#404](https://github.com/Kotlin/kotlinx-rpc/pull/404)
+* Fix jdk resolution problems on CI by [@Mr3zee](https://github.com/Mr3zee) in [#406](https://github.com/Kotlin/kotlinx-rpc/pull/406)
+* Use compat-patrouille for compatibility settings by [@Mr3zee](https://github.com/Mr3zee) in [#438](https://github.com/Kotlin/kotlinx-rpc/pull/438)
+
+#### Other Changes 🧹 {id=Other_Changes_0_10_0}
+* Fix how we create 'publishMavenArtifact' tasks by [@Mr3zee](https://github.com/Mr3zee) in [#416](https://github.com/Kotlin/kotlinx-rpc/pull/416)
+* Update grpc-sample app by [@Mr3zee](https://github.com/Mr3zee) in [#425](https://github.com/Kotlin/kotlinx-rpc/pull/425)
+* Fix LV and signing by [@Mr3zee](https://github.com/Mr3zee) in [#424](https://github.com/Kotlin/kotlinx-rpc/pull/424)
+* Update ktor-all-platforms-app sample to sync service creation by [@Mr3zee](https://github.com/Mr3zee) in [#455](https://github.com/Kotlin/kotlinx-rpc/pull/455)
+* Added Ktor closure tests and Cancellation tests, + minor fixes  by [@Mr3zee](https://github.com/Mr3zee) in [#479](https://github.com/Kotlin/kotlinx-rpc/pull/479)
+* Fix flaky tests by [@Mr3zee](https://github.com/Mr3zee) in [#481](https://github.com/Kotlin/kotlinx-rpc/pull/481)
+
+### New Contributors {id=New_Contributors_0_10_0}
+* [@flockbastian](https://github.com/flockbastian) made their first contribution in [#450](https://github.com/Kotlin/kotlinx-rpc/pull/450)
+* [@y9maly](https://github.com/y9maly) made their first contribution in [#445](https://github.com/Kotlin/kotlinx-rpc/pull/445)
+* [@sebaslogen](https://github.com/sebaslogen) made their first contribution in [#495](https://github.com/Kotlin/kotlinx-rpc/pull/495)
+
+
 ## 0.9.1
 > Published 17 July 2025
 
