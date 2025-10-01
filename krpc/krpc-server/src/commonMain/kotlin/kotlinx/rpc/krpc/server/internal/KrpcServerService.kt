@@ -141,6 +141,7 @@ internal class KrpcServerService<@Rpc T : Any>(
         var failure: Throwable? = null
 
         val requestJob = serverScope.launch(start = CoroutineStart.LAZY) {
+            var startedCollecting = false
             try {
                 val markedNonSuspending = callData.pluginParams.orEmpty()
                     .contains(KrpcPluginKey.NON_SUSPENDING_SERVER_FLOW_MARKER)
@@ -180,31 +181,39 @@ internal class KrpcServerService<@Rpc T : Any>(
                         )
                     }
 
+                    startedCollecting = true
                     sendFlowMessages(serialFormat, returnSerializer, value, callData)
                 } else {
                     sendMessageValue(serialFormat, returnSerializer, value, callData)
                 }
             } catch (cause: CancellationException) {
-                currentCoroutineContext().ensureActive()
+                serverScope.ensureActive()
+                val request = requestMap[callId]
+                if (request == null || request.serviceCancelled) {
+                    throw cause
+                }
 
-                val wrapped = ManualCancellationException(cause)
+                failure = ManualCancellationException(cause)
 
-                failure = wrapped
+                throw cause
             } catch (cause: Throwable) {
                 failure = cause
             } finally {
                 if (failure != null) {
-                    val serializedCause = serializeException(failure)
-                    val exceptionMessage = KrpcCallMessage.CallException(
-                        callId = callId,
-                        serviceType = descriptor.fqName,
-                        cause = serializedCause,
-                        connectionId = callData.connectionId,
-                        serviceId = callData.serviceId,
-                    )
+                    // flow cancellations are handled by the sendFlowMessages function
+                    if (!startedCollecting || !callable.isNonSuspendFunction) {
+                        val serializedCause = serializeException(failure)
+                        val exceptionMessage = KrpcCallMessage.CallException(
+                            callId = callId,
+                            serviceType = descriptor.fqName,
+                            cause = serializedCause,
+                            connectionId = callData.connectionId,
+                            serviceId = callData.serviceId,
+                        )
 
-                    connector.sendMessageChecked(exceptionMessage) {
-                        // ignore, the client probably already disconnected
+                        connector.sendMessageChecked(exceptionMessage) {
+                            // ignore, the client probably already disconnected
+                        }
                     }
 
                     closeReceiving(callId, "Server request failed", failure, fromJob = true)
@@ -268,6 +277,7 @@ internal class KrpcServerService<@Rpc T : Any>(
         flow: Flow<Any?>,
         callData: KrpcCallMessage.CallData,
     ) {
+        var failure: Throwable? = null
         try {
             flow.collect { value ->
                 val result = when (serialFormat) {
@@ -315,20 +325,34 @@ internal class KrpcServerService<@Rpc T : Any>(
                 // do nothing
             }
         } catch (cause: CancellationException) {
+            serverScope.ensureActive()
+            val request = requestMap[callData.callId]
+            if (request == null || request.serviceCancelled) {
+                throw cause
+            }
+
+            failure = ManualCancellationException(cause)
+
             throw cause
         } catch (cause: Throwable) {
-            val serializedCause = serializeException(cause)
-            connector.sendMessageChecked(
-                KrpcCallMessage.StreamCancel(
-                    callId = callData.callId,
-                    serviceType = descriptor.fqName,
-                    connectionId = callData.connectionId,
-                    serviceId = callData.serviceId,
-                    streamId = SINGLE_STREAM_ID,
-                    cause = serializedCause,
-                )
-            ) {
-                // do nothing
+            failure = cause
+
+            throw cause
+        } finally {
+            if (failure != null) {
+                val serializedCause = serializeException(failure)
+                connector.sendMessageChecked(
+                    KrpcCallMessage.StreamCancel(
+                        callId = callData.callId,
+                        serviceType = descriptor.fqName,
+                        connectionId = callData.connectionId,
+                        serviceId = callData.serviceId,
+                        streamId = SINGLE_STREAM_ID,
+                        cause = serializedCause,
+                    )
+                ) {
+                    // do nothing
+                }
             }
         }
     }
@@ -393,12 +417,18 @@ internal class KrpcServerService<@Rpc T : Any>(
 }
 
 internal class RpcRequest(val handlerJob: Job, val streamContext: ServerStreamContext) {
+    // not user cancelled
+    var serviceCancelled: Boolean = false
+        private set
+
     fun cancelAndClose(
         callId: String,
         message: String? = null,
         cause: Throwable? = null,
         fromJob: Boolean = false,
     ) {
+        serviceCancelled = true
+
         if (!handlerJob.isCompleted && !fromJob) {
             when {
                 message != null && cause != null -> handlerJob.cancel(message, cause)

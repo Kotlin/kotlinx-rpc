@@ -113,17 +113,19 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun nonSuspendErrorOnEmit() = runTest {
-        val flow = client.nonSuspendFlowErrorOnReturn()
-        assertFails {
+        val flow = client.nonSuspendFlowErrorOnEmit()
+        val failure = assertFails {
             flow.toList()
         }
+        assertFalse(failure is CancellationException)
     }
 
     @Test
     fun nonSuspendErrorOnReturn() = runTest {
-        assertFails {
+        val failure = assertFails {
             client.nonSuspendFlowErrorOnReturn().toList()
         }
+        assertFalse(failure is CancellationException)
     }
 
     @Test
