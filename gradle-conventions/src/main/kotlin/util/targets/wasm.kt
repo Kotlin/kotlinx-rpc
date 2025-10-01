@@ -24,7 +24,10 @@ fun KmpConfig.configureWasm() {
             wasmJs {
                 configureJsAndWasmJsTasks()
 
-                browser()
+                if (!kotlinMasterBuild) {
+                    browser()
+                }
+
                 nodejs()
                 if (wasmJsD8) {
                     // this platform needs some care KRPC-210

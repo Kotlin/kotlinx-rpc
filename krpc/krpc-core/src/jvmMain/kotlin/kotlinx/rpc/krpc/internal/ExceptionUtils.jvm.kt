@@ -37,6 +37,11 @@ internal actual fun Throwable.stackElements(): List<StackElement> = stackTrace.m
 }
 
 internal actual fun SerializedException.deserializeUnsafe(): Throwable {
+    val cancellationException = cancellationExceptionDeserialize()
+    if (cancellationException != null) {
+        return cancellationException
+    }
+
     try {
         val clazz = Class.forName(className)
         val fieldsCount = clazz.fieldsCountOrDefault(throwableFields)

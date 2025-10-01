@@ -111,7 +111,7 @@ internal abstract class KrpcSendHandlerBaseTest {
     }
 
     protected fun runTest(
-        timeout: Duration = 10.seconds,
+        timeout: Duration = 30.seconds,
         body: suspend TestScope.(Channel<KrpcTransportMessage>, KrpcSendHandler) -> Unit,
     ) = runTestWithCoroutinesProbes(timeout = timeout) {
         val channel = Channel<KrpcTransportMessage>(

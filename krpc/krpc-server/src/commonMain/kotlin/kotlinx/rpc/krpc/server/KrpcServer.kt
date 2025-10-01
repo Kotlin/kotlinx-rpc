@@ -31,7 +31,6 @@ import kotlin.reflect.KClass
  * @param transport [KrpcTransport] instance that will be used to send and receive RPC messages.
  * IMPORTANT: Must be exclusive to this server, otherwise unexpected behavior may occur.
  */
-@OptIn(InternalCoroutinesApi::class)
 public abstract class KrpcServer(
     private val config: KrpcConfig.Server,
     transport: KrpcTransport,
@@ -87,7 +86,7 @@ public abstract class KrpcServer(
     private var cancelledByClient = false
 
     init {
-        internalScope.coroutineContext.job.invokeOnCompletion(onCancelling = true) {
+        internalScope.coroutineContext.job.invokeOnCompletion {
             if (!cancelledByClient) {
                 sendCancellation(CancellationType.ENDPOINT, null, null, closeTransportAfterSending = true)
             }

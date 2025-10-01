@@ -13,7 +13,11 @@ public fun serializeException(cause: Throwable): SerializedException {
     val message = cause.message ?: "Unknown exception"
     val stacktrace = cause.stackElements()
     val serializedCause = cause.cause?.let { serializeException(it) }
-    val className = cause::class.rpcInternalTypeName ?: ""
+    val className = if (cause is CancellationException || cause is kotlin.coroutines.cancellation.CancellationException) {
+        CancellationException::class.rpcInternalTypeName ?: "kotlinx.coroutines.CancellationException"
+    } else {
+        cause::class.rpcInternalTypeName ?: ""
+    }
 
     return SerializedException(cause.toString(), message, stacktrace, serializedCause, className)
 }
@@ -22,16 +26,15 @@ internal expect fun Throwable.stackElements(): List<StackElement>
 
 internal expect fun SerializedException.deserializeUnsafe(): Throwable
 
-internal fun SerializedException.nonJvmManualCancellationExceptionDeserialize(): ManualCancellationException? {
-    if (className == ManualCancellationException::class.rpcInternalTypeName) {
-        val cancellation = cause?.deserializeUnsafe()
-            ?: error("ManualCancellationException must have a cause")
+internal fun SerializedException.cancellationExceptionDeserialize(): CancellationException? {
+    if (className == CancellationException::class.rpcInternalTypeName
+        || className == kotlin.coroutines.cancellation.CancellationException::class.rpcInternalTypeName
+    ) {
+        val cause = this@cancellationExceptionDeserialize.cause?.deserializeUnsafe()
 
-        return ManualCancellationException(
-            CancellationException(
-                message = cancellation.message,
-                cause = cancellation.cause,
-            )
+        return CancellationException(
+            message = message,
+            cause = cause,
         )
     }
 
@@ -44,29 +47,19 @@ public fun SerializedException.deserialize(): Throwable {
         deserializeUnsafe()
     }
 
-    val result = if (cause.isFailure) {
+    return if (cause.isFailure) {
         cause.exceptionOrNull()!!
     } else {
-        val ex = cause.getOrNull()!!
-        if (ex is ManualCancellationException) {
-            ex.cause
-        } else {
-            ex
-        }
+        cause.getOrNull()!!
     }
-
-    return result
 }
-
-@InternalRpcApi
-public class ManualCancellationException(override val cause: CancellationException): RuntimeException()
 
 internal expect class DeserializedException(
     toStringMessage: String,
     message: String,
     stacktrace: List<StackElement>,
     cause: SerializedException?,
-    className: String
+    className: String,
 ) : Throwable {
     override val message: String
 }

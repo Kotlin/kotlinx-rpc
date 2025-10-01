@@ -444,8 +444,8 @@ abstract class KrpcTransportTestBase {
 
     @Test
     fun rpc_continuation_is_called_in_the_correct_scope_and_doesnt_block_other_rpcs() = runTest {
-        if (isJs) {
-            println("Test is skipped on JS, because it doesn't support multiple threads.")
+        if (platform.isJs() || platform == Platform.WASI) {
+            println("Test is skipped on JS/WASM, because they don't support multiple threads.")
             return@runTest
         }
 
@@ -510,7 +510,14 @@ abstract class KrpcTransportTestBase {
     }
 }
 
-private val EXTENDED_TIMEOUT = if (isJs) 500.seconds else 200.seconds
+private val EXTENDED_TIMEOUT = if (platform.isJs()) 500.seconds else 200.seconds
 
-internal expect val isJs: Boolean
+@Suppress("unused")
+internal enum class Platform {
+    JVM, JS, NATIVE, WASM_JS, WASI;
+
+    fun isJs(): Boolean = this == JS || this == WASM_JS
+}
+
+internal expect val platform: Platform
 internal expect val iterations_100_000 : Int

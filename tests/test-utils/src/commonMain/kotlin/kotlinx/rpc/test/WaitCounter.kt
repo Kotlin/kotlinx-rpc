@@ -22,13 +22,19 @@ class WaitCounter {
     fun increment() {
         lock.withLock {
             val current = counter.incrementAndGet()
-            waiters[current]?.forEach { it.resume(Unit) }
+            (0..current).forEach {
+                waiters[it]?.forEach { continuation ->
+                    continuation.resume(Unit)
+                }
+
+                waiters.remove(it)
+            }
         }
     }
 
     suspend fun await(value: Int) = suspendCancellableCoroutine {
         lock.withLock {
-            if (counter.value == value) {
+            if (counter.value >= value) {
                 it.resume(Unit)
             } else {
                 waiters[value] = waiters[value].orEmpty() + it

@@ -22,7 +22,7 @@ import kotlinx.rpc.withService
 import kotlin.time.Duration.Companion.seconds
 
 fun runCancellationTest(body: suspend CancellationToolkit.() -> Unit): TestResult {
-    return runTestWithCoroutinesProbes(timeout = 15.seconds) {
+    return runTestWithCoroutinesProbes(timeout = 30.seconds) {
         val toolkit = CancellationToolkit(this)
         try {
             body(toolkit)

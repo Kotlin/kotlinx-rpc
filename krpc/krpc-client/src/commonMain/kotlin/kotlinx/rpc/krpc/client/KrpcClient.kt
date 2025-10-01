@@ -9,9 +9,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelAndJoin
@@ -79,7 +76,6 @@ public abstract class InitializedKrpcClient(
  * serializing data, tracking streams, processing exceptions, and other protocol responsibilities.
  * Leaves out the delivery of encoded messages to the specific implementations with [KrpcTransport].
  */
-@OptIn(InternalCoroutinesApi::class)
 public abstract class KrpcClient : RpcClient, KrpcEndpoint {
     /**
      * Called once to provide [KrpcTransport] for this client.
@@ -154,21 +150,22 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
 
         val context = SupervisorJob(transport.coroutineContext.job)
 
-        context.job.invokeOnCompletion(onCancelling = true) {
-            if (clientCancelled) {
-                return@invokeOnCompletion
-            }
+        context.job.invokeOnCompletion {
+            try {
+                if (!clientCancelled && !clientCancelledByServer) {
+                    sendCancellation(CancellationType.ENDPOINT, null, null, closeTransportAfterSending = true)
+                }
 
-            clientCancelled = true
+                clientCancelled = true
+            } catch (_ : Exception) {
+                // ignore, we are already cancelled
+            } finally {
+                requestChannels.values.forEach {
+                    val cause = CancellationException("Client cancelled")
+                    it.close(cause)
+                    it.cancel(cause)
+                }
 
-            if (!clientCancelledByServer) {
-                sendCancellation(CancellationType.ENDPOINT, null, null, closeTransportAfterSending = true)
-            }
-
-            @OptIn(DelicateCoroutinesApi::class)
-            @Suppress("detekt.GlobalCoroutineUsage")
-            GlobalScope.launch(CoroutineName("client-request-channels-closing")) {
-                requestChannels.values.forEach { it.close(CancellationException("Client cancelled")) }
                 requestChannels.clear()
             }
         }
@@ -333,6 +330,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 throw e
             } finally {
                 channel.close()
+                channel.cancel()
                 requestChannels.remove(callId)
                 connector.unsubscribeFromMessages(call.descriptor.fqName, callId)
             }
@@ -484,7 +482,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
         } catch (e: CancellationException) {
             internalScope.ensureActive()
 
-            failure = ManualCancellationException(e)
+            failure = e
 
             // stop the flow and its coroutine, other flows are not affected
             throw e
