@@ -6,19 +6,12 @@ package kotlinx.rpc.krpc
 
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.job
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.yield
 import kotlinx.rpc.krpc.internal.HandlerKey
 import kotlinx.rpc.krpc.internal.KrpcActingReceiveHandler
 import kotlinx.rpc.krpc.internal.KrpcCallMessage
@@ -29,20 +22,16 @@ import kotlinx.rpc.krpc.internal.KrpcMessageSender
 import kotlinx.rpc.krpc.internal.KrpcMessageSubscription
 import kotlinx.rpc.krpc.internal.KrpcPluginKey
 import kotlinx.rpc.krpc.internal.KrpcReceiveBuffer
-import kotlinx.rpc.krpc.internal.KrpcSendHandler
 import kotlinx.rpc.krpc.internal.KrpcStoringReceiveHandler
 import kotlinx.rpc.krpc.internal.WindowResult
 import kotlinx.rpc.krpc.internal.decodeWindow
 import kotlinx.rpc.krpc.internal.deserialize
 import kotlinx.rpc.krpc.internal.isFailure
 import kotlinx.rpc.krpc.internal.isSuccess
-import kotlinx.rpc.krpc.internal.onClosed
-import kotlinx.rpc.krpc.internal.onFailure
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlin.test.fail
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
