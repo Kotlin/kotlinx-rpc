@@ -78,13 +78,20 @@ class TestServiceImpl : TestService, CompatServiceImpl {
     override suspend fun clientStreamCancellation(n: Flow<Int>) {
         try {
             n.collect {
+                println("[clientStreamCancellation] collected $it")
                 if (it != 0) {
                     entered.complete(Unit)
                 }
             }
         } catch (e: CancellationException) {
+            println("[clientStreamCancellation] cancelled on server")
             cancelled.increment()
             throw e
+        } catch (e: Throwable) {
+            println("[clientStreamCancellation] caught $e")
+            throw e
+        } finally {
+            println("[clientStreamCancellation] finally")
         }
     }
 

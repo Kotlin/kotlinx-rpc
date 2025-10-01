@@ -23,6 +23,6 @@ internal actual class DeserializedException actual constructor(
 internal actual fun Throwable.stackElements(): List<StackElement> = emptyList()
 
 internal actual fun SerializedException.deserializeUnsafe(): Throwable {
-    return nonJvmManualCancellationExceptionDeserialize()
+    return cancellationExceptionDeserialize()
         ?: DeserializedException(toStringMessage, message, stacktrace, cause, className)
 }

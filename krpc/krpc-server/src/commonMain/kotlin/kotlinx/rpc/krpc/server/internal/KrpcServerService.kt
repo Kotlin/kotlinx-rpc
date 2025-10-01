@@ -193,7 +193,7 @@ internal class KrpcServerService<@Rpc T : Any>(
                     throw cause
                 }
 
-                failure = ManualCancellationException(cause)
+                failure = cause
 
                 throw cause
             } catch (cause: Throwable) {
@@ -332,7 +332,7 @@ internal class KrpcServerService<@Rpc T : Any>(
                 throw cause
             }
 
-            failure = ManualCancellationException(cause)
+            failure = cause
 
             throw cause
         } catch (cause: Throwable) {

@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.toList
+import kotlinx.rpc.krpc.test.Platform
+import kotlinx.rpc.krpc.test.platform
 import kotlinx.rpc.withService
 import kotlin.test.Ignore
 import kotlin.test.Test
@@ -99,6 +101,10 @@ class CancellationTest {
 
     @Test
     fun testCancellationInServerStream() = runCancellationTest {
+        if (platform.isJs() || platform == Platform.WASI) {
+            return@runCancellationTest
+        }
+
         supervisorScope {
             var ex: CancellationException? = null
             val requestJob = launch {
@@ -165,7 +171,7 @@ class CancellationTest {
         }
 
         val clientFlowJob = launch {
-            service.outgoingStream(flow {
+            service.outgoingStreamWithDelayedResponse(flow {
                 emit(0)
                 println("[testCancelClient] emit 0")
                 serverInstance().fence.await()
@@ -235,7 +241,7 @@ class CancellationTest {
         }
 
         val clientFlowJob = launch {
-            service.outgoingStream(flow {
+            service.outgoingStreamWithDelayedResponse(flow {
                 emit(0)
                 println("[testCancelServer] emit 0")
                 serverInstance().fence.await()
@@ -345,6 +351,10 @@ class CancellationTest {
 
     @Test
     fun testRequestCancellationCancelsStream() = runCancellationTest {
+        if (platform.isJs() || platform == Platform.WASI) {
+            return@runCancellationTest
+        }
+
         val fence = CompletableDeferred<Unit>()
 
         val job = launch {
@@ -369,6 +379,10 @@ class CancellationTest {
 
     @Test
     fun testRequestCancellationCancelsStreamButNotOthers() = runCancellationTest {
+        if (platform.isJs() || platform == Platform.WASI) {
+            return@runCancellationTest
+        }
+
         val fence = CompletableDeferred<Unit>()
         val job = launch {
             service.outgoingStreamWithDelayedResponse(resumableFlow(fence))

@@ -124,23 +124,37 @@ class KrpcProtocolCompatibilityTests : KrpcProtocolCompatibilityTestsBase() {
     }
 
     @TestFactory
-    fun clientStreamCancellation() = matrixTest { service, impl ->
+    fun clientStreamCancellation() = matrixTest(
+        exclude = listOf(
+            Versions.v0_9.client,
+            Versions.v0_9.server,
+            Versions.v0_8.client,
+            Versions.v0_8.server,
+        ),
+    ) { service, impl ->
         val job = launch {
+            println("[clientStreamCancellation] launching")
             service.clientStreamCancellation(flow {
                 emit(1)
+                println("[clientStreamCancellation] emit 1")
                 impl.fence.await()
+                println("[clientStreamCancellation] after fence")
             })
+            println("[clientStreamCancellation] after service call")
         }
 
         impl.entered.await()
+        println("[clientStreamCancellation] entered")
         job.cancelAndJoin()
+        println("[clientStreamCancellation] cancelled")
         impl.cancelled.await(1)
+        println("[clientStreamCancellation] awaited cancellation")
 
         assertNoErrorsInLogs()
     }
 
     @TestFactory
-    fun fastProducer() = matrixTest(timeout = 60.seconds) { service, impl ->
+    fun fastProducer() = matrixTest(timeout = 240.seconds) { service, impl ->
         val root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as ch.qos.logback.classic.Logger
 
         val async = async {

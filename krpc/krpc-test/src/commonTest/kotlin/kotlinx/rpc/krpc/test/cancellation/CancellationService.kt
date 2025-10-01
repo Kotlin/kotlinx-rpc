@@ -112,6 +112,7 @@ class CancellationServiceImpl : CancellationService {
 
     override suspend fun outgoingStreamWithDelayedResponse(stream: Flow<Int>) {
         try {
+            waitCounter.increment()
             consume(stream)
 
             fence.await()
