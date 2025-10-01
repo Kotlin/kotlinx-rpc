@@ -271,6 +271,7 @@ internal class KrpcServerService<@Rpc T : Any>(
         connector.sendMessage(result)
     }
 
+    @Suppress("detekt.ThrowsCount")
     private suspend fun sendFlowMessages(
         serialFormat: SerialFormat,
         returnSerializer: KSerializer<Any?>,
