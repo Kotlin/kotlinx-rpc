@@ -101,7 +101,7 @@
                 <br/>
                 Note that this is <b>per call</b>, not per connection.
                 <br/>
-                The default value is <code>1</code>.
+                The default value is <code>1000</code>.
             </li>
         </list>
         <p>
