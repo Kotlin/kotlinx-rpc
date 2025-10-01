@@ -125,13 +125,7 @@ class CancellationTest {
         supervisorScope {
             val requestJob = launch {
                 service.cancellationInOutgoingStream(
-                    stream = flow {
-                        emit(42)
-                        println("[testCancellationInClientStream] emit 42")
-                        emit(43)
-                        println("[testCancellationInClientStream] emit 43")
-                    },
-                    cancelled = flow {
+                    flow {
                         emit(1)
                         println("[testCancellationInClientStream] emit 1")
                         serverInstance().firstIncomingConsumed.await()
@@ -143,11 +137,8 @@ class CancellationTest {
 
             requestJob.join()
             println("[testCancellationInClientStream] Request job finished")
-            serverInstance().consumedAll.await()
-            println("[testCancellationInClientStream] Server consumed all")
 
             assertFalse(requestJob.isCancelled, "Expected requestJob not to be cancelled")
-            assertContentEquals(listOf(42, 43), serverInstance().consumedIncomingValues)
         }
         println("[testCancellationInClientStream] Scope finished")
 
