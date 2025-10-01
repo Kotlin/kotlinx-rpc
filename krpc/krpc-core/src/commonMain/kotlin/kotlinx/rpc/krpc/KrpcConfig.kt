@@ -79,12 +79,12 @@ public sealed class KrpcConfigBuilder protected constructor() {
         /**
          * A buffer size for a single call.
          *
-         * The default value is 1,
+         * The default value is 1000,
          * meaning that only after one message is handled - the next one will be sent.
          *
          * This buffer also applies to how many messages are cached with [waitTimeout]
          */
-        public var perCallBufferSize: Int = 1
+        public var perCallBufferSize: Int = 1000
     }
 
     @Deprecated("Use connector { } instead", level = DeprecationLevel.ERROR)
