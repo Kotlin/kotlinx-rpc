@@ -21,7 +21,7 @@ interface CancellationService {
 
     fun cancellationInIncomingStream(): Flow<Int>
 
-    suspend fun cancellationInOutgoingStream(stream: Flow<Int>, cancelled: Flow<Int>)
+    suspend fun cancellationInOutgoingStream(cancelled: Flow<Int>)
 
     suspend fun outgoingStream(stream: Flow<Int>)
 
@@ -74,16 +74,12 @@ class CancellationServiceImpl : CancellationService {
         }
     }
 
-    override suspend fun cancellationInOutgoingStream(stream: Flow<Int>, cancelled: Flow<Int>) {
+    override suspend fun cancellationInOutgoingStream(cancelled: Flow<Int>) {
         supervisorScope {
-            launch {
-                consume(stream)
-            }
-
             launch {
                 try {
                     cancelled.collect {
-                        if (it == 0) {
+                        if (it == 1) {
                             firstIncomingConsumed.complete(it)
                         }
                     }

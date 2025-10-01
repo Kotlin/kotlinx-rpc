@@ -17,7 +17,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -137,6 +136,9 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
     @Volatile
     private var clientCancelled = false
 
+    @Volatile
+    private var clientCancelledByServer = false
+
     private fun checkTransportReadiness() {
         if (!isTransportReady) {
             error(
@@ -153,9 +155,15 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
         val context = SupervisorJob(transport.coroutineContext.job)
 
         context.job.invokeOnCompletion(onCancelling = true) {
+            if (clientCancelled) {
+                return@invokeOnCompletion
+            }
+
             clientCancelled = true
 
-            sendCancellation(CancellationType.ENDPOINT, null, null, closeTransportAfterSending = true)
+            if (!clientCancelledByServer) {
+                sendCancellation(CancellationType.ENDPOINT, null, null, closeTransportAfterSending = true)
+            }
 
             @OptIn(DelicateCoroutinesApi::class)
             @Suppress("detekt.GlobalCoroutineUsage")
@@ -255,7 +263,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
     final override fun <T> callServerStreaming(call: RpcCall): Flow<T> {
         return flow {
             if (clientCancelled) {
-                error("Client cancelled")
+                error("RpcClient was cancelled")
             }
 
             initializeAndAwaitHandshakeCompletion()
@@ -271,6 +279,10 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
             try {
                 @Suppress("UNCHECKED_CAST")
                 requestChannels[callId] = channel as Channel<Result<Any?>>
+                if (clientCancelled) {
+                    requestChannels.remove(callId)
+                    error("RpcClient was cancelled")
+                }
 
                 val request = serializeRequest(
                     callId = callId,
@@ -362,6 +374,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
             is KrpcCallMessage.CallException -> {
                 val cause = message.cause.deserialize()
                 channel.close(cause)
+                channel.cancel(CancellationException("Call failed", cause))
             }
 
             is KrpcCallMessage.CallSuccess, is KrpcCallMessage.StreamMessage -> {
@@ -383,6 +396,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
             is KrpcCallMessage.StreamCancel -> {
                 val cause = message.cause.deserialize()
                 channel.close(cause)
+                channel.cancel(CancellationException("Stream cancelled", cause))
             }
         }
     }
@@ -391,6 +405,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
     final override suspend fun handleCancellation(message: KrpcGenericMessage) {
         when (val type = message.cancellationType()) {
             CancellationType.ENDPOINT -> {
+                clientCancelledByServer = true
                 internalScope.cancel("Closing client after server cancellation") // we cancel this client
             }
 
@@ -458,6 +473,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
         serialFormat: SerialFormat,
         serviceTypeString: String,
     ) {
+        var failure: Throwable? = null
         try {
             collectAndSendOutgoingStream(
                 serialFormat = serialFormat,
@@ -466,39 +482,31 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 serviceTypeString = serviceTypeString,
             )
         } catch (e: CancellationException) {
-            currentCoroutineContext().ensureActive()
+            internalScope.ensureActive()
 
-            val wrapped = ManualCancellationException(e)
-            val serializedReason = serializeException(wrapped)
-            val message = KrpcCallMessage.StreamCancel(
-                callId = outgoingStream.callId,
-                serviceType = serviceTypeString,
-                streamId = outgoingStream.streamId,
-                cause = serializedReason,
-                connectionId = outgoingStream.connectionId,
-                serviceId = outgoingStream.serviceId,
-            )
-            connector.sendMessageChecked(message) {
-                // ignore, we are already cancelled and have a cause
-            }
+            failure = ManualCancellationException(e)
 
             // stop the flow and its coroutine, other flows are not affected
             throw e
         } catch (cause: Throwable) {
-            val serializedReason = serializeException(cause)
-            val message = KrpcCallMessage.StreamCancel(
-                callId = outgoingStream.callId,
-                serviceType = serviceTypeString,
-                streamId = outgoingStream.streamId,
-                cause = serializedReason,
-                connectionId = outgoingStream.connectionId,
-                serviceId = outgoingStream.serviceId,
-            )
-            connector.sendMessageChecked(message) {
-                // ignore, we are already cancelled and have a cause
-            }
+            failure = cause
 
             throw cause
+        } finally {
+            if (failure != null) {
+                val serializedReason = serializeException(failure)
+                val message = KrpcCallMessage.StreamCancel(
+                    callId = outgoingStream.callId,
+                    serviceType = serviceTypeString,
+                    streamId = outgoingStream.streamId,
+                    cause = serializedReason,
+                    connectionId = outgoingStream.connectionId,
+                    serviceId = outgoingStream.serviceId,
+                )
+                connector.sendMessageChecked(message) {
+                    // ignore, we are already cancelled and have a cause
+                }
+            }
         }
 
         val message = KrpcCallMessage.StreamFinished(

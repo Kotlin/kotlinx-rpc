@@ -5,6 +5,7 @@
 package kotlinx.rpc.krpc.server.internal
 
 import kotlinx.atomicfu.atomic
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -49,6 +50,7 @@ internal class ServerStreamContext {
     fun removeCall(callId: String, cause: Throwable?) {
         streams.remove(callId)?.values?.forEach {
             it.channel.close(cause)
+            it.channel.cancel(cause?.let { e -> e as? CancellationException ?: CancellationException(null, e) })
         }
     }
 
