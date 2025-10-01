@@ -6,9 +6,11 @@ package kotlinx.rpc.krpc.test.compat
 
 import ch.qos.logback.classic.Logger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.withContext
+import kotlinx.rpc.krpc.test.compat.service.TestStarter
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import org.junit.jupiter.api.DynamicTest
 import org.slf4j.LoggerFactory
@@ -22,6 +24,7 @@ import kotlin.time.Duration.Companion.seconds
 enum class Versions {
     v0_9,
     v0_8,
+    Latest
     ;
 }
 
@@ -36,29 +39,48 @@ class VersionRolePair(
 
 @Suppress("unused")
 val Versions.client get() = VersionRolePair(this, Role.Client)
+
 @Suppress("unused")
 val Versions.server get() = VersionRolePair(this, Role.Server)
 
 abstract class KrpcProtocolCompatibilityTestsBase {
-    class LoadedStarter(val version: Versions, val classLoader: URLClassLoader) {
-        val starter = classLoader
+    interface LoadedStarter {
+        val version: Versions
+        val starter: Starter
+        suspend fun close()
+    }
+
+    class LoadedStarterImpl(override val version: Versions, val classLoader: URLClassLoader) : LoadedStarter {
+        override val starter = classLoader
             .loadClass("kotlinx.rpc.krpc.test.compat.service.TestStarter")
             .getDeclaredConstructor()
             .newInstance() as Starter
 
-        suspend fun close() {
-            classLoader.close()
+        override suspend fun close() {
+            withContext(Dispatchers.IO) {
+                classLoader.close()
+            }
             starter.stopClient()
             starter.stopServer()
         }
     }
 
     private fun prepareStarters(exclude: List<Versions>): List<LoadedStarter> {
-        return Versions.entries.filter { it !in exclude }.map { version ->
+        return Versions.entries.filter { it !in exclude && it != Versions.Latest }.map { version ->
             val versionResourcePath = javaClass.classLoader.getResource(version.name)!!
             val versionClassLoader = URLClassLoader(arrayOf(versionResourcePath), javaClass.classLoader)
 
-            LoadedStarter(version, versionClassLoader)
+            LoadedStarterImpl(version, versionClassLoader)
+        } + latestStarter()
+    }
+
+    private fun latestStarter() = object : LoadedStarter {
+        override val version: Versions = Versions.Latest
+        override val starter: Starter = TestStarter()
+
+        override suspend fun close() {
+            starter.stopClient()
+            starter.stopServer()
         }
     }
 
@@ -80,20 +102,20 @@ abstract class KrpcProtocolCompatibilityTestsBase {
         timeout: Duration = 10.seconds,
         body: suspend TestEnv.() -> Unit,
     ): Stream<DynamicTest> {
-        return prepareStarters(exclude).map {
-            DynamicTest.dynamicTest("$role ${it.version}") {
+        return prepareStarters(exclude).map { old ->
+            DynamicTest.dynamicTest("$role ${old.version}") {
                 runTestWithCoroutinesProbes(timeout = timeout) {
-                    DebugProbes.withDebugProbes {
-                        val root = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
-                        val testAppender = root.getAppender("TEST") as TestLogAppender
+                    val root = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
+                    val testAppender = root.getAppender("TEST") as TestLogAppender
+                    testAppender.events.clear()
+                    val new = latestStarter()
+                    try {
+                        val env = TestEnv(old.starter, new.starter, testAppender, this)
+                        body(env)
+                    } finally {
                         testAppender.events.clear()
-                        try {
-                            val env = TestEnv(it.starter, it.starter, testAppender, this)
-                            body(env)
-                        } finally {
-                            testAppender.events.clear()
-                            it.close()
-                        }
+                        old.close()
+                        new.close()
                     }
                 }
             }

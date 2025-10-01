@@ -7,6 +7,7 @@ package kotlinx.rpc.krpc.server.internal
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
@@ -36,15 +37,23 @@ internal class ServerStreamContext {
         val data = scoped(message.streamId) {
             decodeMessageData(serialFormat, call.elementSerializer, message)
         }
-        call.channel.send(data)
+        call.channel.sendIgnoreClosed(data)
     }
 
     suspend fun cancelStream(message: KrpcCallMessage.StreamCancel) {
-        streams[message.callId]?.get(message.streamId)?.channel?.send(StreamCancel(message.cause.deserialize()))
+        streams[message.callId]?.get(message.streamId)?.channel?.sendIgnoreClosed(StreamCancel(message.cause.deserialize()))
     }
 
     suspend fun closeStream(message: KrpcCallMessage.StreamFinished) {
-        streams[message.callId]?.get(message.streamId)?.channel?.send(StreamEnd)
+        streams[message.callId]?.get(message.streamId)?.channel?.sendIgnoreClosed(StreamEnd)
+    }
+
+    private suspend fun <T> Channel<T>.sendIgnoreClosed(data: T) {
+        try {
+            send(data)
+        } catch (_ : ClosedSendChannelException) {
+            // ignore, as it can only be closed by removeCall, and at this point the call is already dead
+        }
     }
 
     fun removeCall(callId: String, cause: Throwable?) {

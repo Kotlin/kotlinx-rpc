@@ -7,7 +7,6 @@ package util.targets
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.api.Action
 import org.gradle.api.Project
-import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
@@ -31,7 +30,9 @@ private fun KotlinMultiplatformExtension.configureTargets(config: KmpConfig): Li
     if (config.js) {
         js(IR) {
             nodejs()
-            browser()
+            if (!config.kotlinMasterBuild) {
+                browser()
+            }
 
             binaries.library()
         }.also { targets.add(it) }
