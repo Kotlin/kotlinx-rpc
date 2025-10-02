@@ -8,6 +8,7 @@ package kotlinx.rpc.grpc
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.time.Duration
 
 /**
@@ -20,11 +21,13 @@ public actual typealias ManagedChannelPlatform = io.grpc.ManagedChannel
  */
 public actual typealias ManagedChannelBuilder<T> = io.grpc.ManagedChannelBuilder<T>
 
-internal actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
+@InternalRpcApi
+public actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
     return build().toKotlin()
 }
 
-internal actual fun ManagedChannelBuilder(
+@InternalRpcApi
+public actual fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
     credentials: ClientCredentials?,
@@ -33,7 +36,8 @@ internal actual fun ManagedChannelBuilder(
     return io.grpc.ManagedChannelBuilder.forAddress(hostname, port)
 }
 
-internal actual fun ManagedChannelBuilder(
+@InternalRpcApi
+public actual fun ManagedChannelBuilder(
     target: String,
     credentials: ClientCredentials?,
 ): ManagedChannelBuilder<*> {

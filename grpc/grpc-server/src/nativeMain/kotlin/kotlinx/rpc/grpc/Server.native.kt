@@ -7,6 +7,7 @@ package kotlinx.rpc.grpc
 
 import kotlinx.rpc.grpc.internal.NativeServer
 import kotlinx.rpc.grpc.internal.ServerMethodDefinition
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
  * Platform-specific gRPC server builder.
@@ -42,11 +43,13 @@ private class NativeServerBuilder(
 
 }
 
-internal actual fun ServerBuilder(port: Int, credentials: ServerCredentials?): ServerBuilder<*> {
+@InternalRpcApi
+public actual fun ServerBuilder(port: Int, credentials: ServerCredentials?): ServerBuilder<*> {
     return NativeServerBuilder(port, credentials ?: createInsecureServerCredentials())
 }
 
-internal actual fun Server(builder: ServerBuilder<*>): Server {
+@InternalRpcApi
+public actual fun Server(builder: ServerBuilder<*>): Server {
     return builder.build()
 }
 

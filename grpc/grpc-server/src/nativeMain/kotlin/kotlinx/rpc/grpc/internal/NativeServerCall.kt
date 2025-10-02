@@ -25,6 +25,7 @@ import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.input.stream.asSource
 import libkgrpc.GRPC_OP_RECV_CLOSE_ON_SERVER
@@ -222,7 +223,7 @@ internal class NativeServerCall<Request, Response>(
             val buf = recvPtr.value
             if (buf == null) {
                 // end-of-stream observed. for UNARY, absence of any request is a protocol violation.
-                if (methodDescriptor.type == MethodType.UNARY && !receivedFirstMessage) {
+                if (methodDescriptor.methodType == MethodType.UNARY && !receivedFirstMessage) {
                     cancel(
                         grpc_status_code.GRPC_STATUS_INTERNAL,
                         "Unary call half-closed before receiving a request message"

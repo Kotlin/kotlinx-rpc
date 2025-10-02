@@ -27,7 +27,7 @@ import kotlinx.rpc.grpc.internal.ServerMethodDefinition
 import kotlinx.rpc.grpc.internal.bidiStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.internal.clientStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.internal.serverStreamingServerMethodDefinition
-import kotlinx.rpc.grpc.internal.type
+import kotlinx.rpc.grpc.internal.methodType
 import kotlinx.rpc.grpc.internal.unaryServerMethodDefinition
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
@@ -116,7 +116,7 @@ public class GrpcServer internal constructor(
         service: Service,
         interceptors: List<ServerInterceptor>,
     ): ServerMethodDefinition<RequestServer, ResponseServer> {
-        return when (descriptor.type) {
+        return when (descriptor.methodType) {
             MethodType.UNARY -> {
                 internalScope.unaryServerMethodDefinition(descriptor, returnType.kType, interceptors) { request ->
                     unaryInvokator.call(service, arrayOf(request)) as ResponseServer
@@ -154,7 +154,7 @@ public class GrpcServer internal constructor(
             }
 
             MethodType.UNKNOWN -> {
-                error("Unsupported method type ${descriptor.type} for ${descriptor.getFullMethodName()}")
+                error("Unsupported method type ${descriptor.methodType} for ${descriptor.getFullMethodName()}")
             }
         }
     }

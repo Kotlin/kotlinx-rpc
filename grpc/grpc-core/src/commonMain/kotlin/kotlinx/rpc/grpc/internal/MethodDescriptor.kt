@@ -26,7 +26,7 @@ public expect class MethodDescriptor<Request, Response> {
 }
 
 @InternalRpcApi
-internal expect val MethodDescriptor<*, *>.type: MethodType
+public expect val MethodDescriptor<*, *>.methodType: MethodType
 
 @InternalRpcApi
 public enum class MethodType {

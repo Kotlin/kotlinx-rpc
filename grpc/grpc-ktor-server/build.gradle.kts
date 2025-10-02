@@ -6,7 +6,6 @@
 
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
-import org.gradle.kotlin.dsl.kotlin
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -17,7 +16,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.grpc.grpcCore)
+                api(projects.grpc.grpcServer)
                 implementation(libs.ktor.server.core)
             }
         }

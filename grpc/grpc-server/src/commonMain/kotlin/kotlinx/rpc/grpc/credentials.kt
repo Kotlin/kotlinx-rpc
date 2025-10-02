@@ -4,25 +4,14 @@
 
 package kotlinx.rpc.grpc
 
-public expect abstract class ClientCredentials
 public expect abstract class ServerCredentials
 
-public expect class InsecureClientCredentials : ClientCredentials
 public expect class InsecureServerCredentials : ServerCredentials
 
 // we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
-// java constructor.
-internal expect fun createInsecureClientCredentials(): ClientCredentials
 internal expect fun createInsecureServerCredentials(): ServerCredentials
 
-public expect class TlsClientCredentials : ClientCredentials
 public expect class TlsServerCredentials : ServerCredentials
-
-public fun TlsClientCredentials(configure: TlsClientCredentialsBuilder.() -> Unit = {}): ClientCredentials {
-    val builder = TlsClientCredentialsBuilder()
-    builder.configure()
-    return builder.build()
-}
 
 public fun TlsServerCredentials(
     certChain: String,
@@ -32,11 +21,6 @@ public fun TlsServerCredentials(
     val builder = TlsServerCredentialsBuilder(certChain, privateKey)
     builder.configure()
     return builder.build()
-}
-
-public interface TlsClientCredentialsBuilder {
-    public fun trustManager(rootCertsPem: String): TlsClientCredentialsBuilder
-    public fun keyManager(certChainPem: String, privateKeyPem: String): TlsClientCredentialsBuilder
 }
 
 public enum class TlsClientAuth {
@@ -63,11 +47,9 @@ public interface TlsServerCredentialsBuilder {
     public fun clientAuth(clientAuth: TlsClientAuth): TlsServerCredentialsBuilder
 }
 
-internal expect fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder
 internal expect fun TlsServerCredentialsBuilder(
     certChain: String,
     privateKey: String,
 ): TlsServerCredentialsBuilder
 
-internal expect fun TlsClientCredentialsBuilder.build(): ClientCredentials
 internal expect fun TlsServerCredentialsBuilder.build(): ServerCredentials

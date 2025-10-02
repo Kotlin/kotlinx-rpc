@@ -36,7 +36,7 @@ public suspend fun <Request, Response> GrpcClient.unaryRpc(
     callOptions: GrpcCallOptions = GrpcDefaultCallOptions,
     trailers: GrpcMetadata = GrpcMetadata(),
 ): Response {
-    val type = descriptor.type
+    val type = descriptor.methodType
     require(type == MethodType.UNARY) {
         "Expected a unary RPC method, but got $descriptor"
     }
@@ -56,7 +56,7 @@ public fun <Request, Response> GrpcClient.serverStreamingRpc(
     callOptions: GrpcCallOptions = GrpcDefaultCallOptions,
     trailers: GrpcMetadata = GrpcMetadata(),
 ): Flow<Response> {
-    val type = descriptor.type
+    val type = descriptor.methodType
     require(type == MethodType.SERVER_STREAMING) {
         "Expected a server streaming RPC method, but got $type"
     }
@@ -76,7 +76,7 @@ public suspend fun <Request, Response> GrpcClient.clientStreamingRpc(
     callOptions: GrpcCallOptions = GrpcDefaultCallOptions,
     trailers: GrpcMetadata = GrpcMetadata(),
 ): Response {
-    val type = descriptor.type
+    val type = descriptor.methodType
     require(type == MethodType.CLIENT_STREAMING) {
         "Expected a client streaming RPC method, but got $type"
     }
@@ -96,7 +96,7 @@ public fun <Request, Response> GrpcClient.bidirectionalStreamingRpc(
     callOptions: GrpcCallOptions = GrpcDefaultCallOptions,
     trailers: GrpcMetadata = GrpcMetadata(),
 ): Flow<Response> {
-    val type = descriptor.type
+    val type = descriptor.methodType
     check(type == MethodType.BIDI_STREAMING) {
         "Expected a bidirectional streaming method, but got $type"
     }
@@ -153,55 +153,6 @@ private fun <Request, Response> GrpcClient.rpcImpl(
     return clientCallScope.proceed(request)
 }
 
-// todo really needed?
-internal fun <T> Flow<T>.singleOrStatusFlow(
-    expected: String,
-    descriptor: Any,
-): Flow<T> = flow {
-    var found = false
-    collect {
-        if (!found) {
-            found = true
-            emit(it)
-        } else {
-            throw StatusException(
-                Status(StatusCode.INTERNAL, "Expected one $expected for $descriptor but received two")
-            )
-        }
-    }
-
-    if (!found) {
-        throw StatusException(
-            Status(StatusCode.INTERNAL, "Expected one $expected for $descriptor but received none")
-        )
-    }
-}
-
-internal suspend fun <T> Flow<T>.singleOrStatus(
-    expected: String,
-    descriptor: Any,
-): T = singleOrStatusFlow(expected, descriptor).single()
-
-internal class Ready(private val isReallyReady: () -> Boolean) {
-    // A CONFLATED channel never suspends to send, and two notifications of readiness are equivalent
-    // to one
-    private val channel = Channel<Unit>(Channel.CONFLATED)
-
-    fun onReady() {
-        channel.trySend(Unit).onFailure { e ->
-            throw e ?: AssertionError(
-                "Should be impossible; a CONFLATED channel should never return false on offer"
-            )
-        }
-    }
-
-    suspend fun suspendUntilReady() {
-        while (!isReallyReady()) {
-            channel.receive()
-        }
-    }
-}
-
 private class ClientCallScopeImpl<Request, Response>(
     val client: GrpcClient,
     override val method: MethodDescriptor<Request, Response>,
@@ -253,7 +204,7 @@ private class ClientCallScopeImpl<Request, Response>(
             call.start(channelResponseListener(responses, ready), requestHeaders)
 
             suspend fun Flow<Request>.send() {
-                if (method.type == MethodType.UNARY || method.type == MethodType.SERVER_STREAMING) {
+                if (method.methodType == MethodType.UNARY || method.methodType == MethodType.SERVER_STREAMING) {
                     call.sendMessage(single())
                 } else {
                     ready.suspendUntilReady()

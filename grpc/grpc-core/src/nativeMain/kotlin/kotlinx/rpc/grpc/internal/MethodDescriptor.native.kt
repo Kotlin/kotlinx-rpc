@@ -57,7 +57,7 @@ public actual class MethodDescriptor<Request, Response> internal constructor(
 }
 
 @InternalRpcApi
-internal actual val MethodDescriptor<*, *>.type: MethodType
+public actual val MethodDescriptor<*, *>.methodType: MethodType
     get() = this.methodType
 
 @InternalRpcApi

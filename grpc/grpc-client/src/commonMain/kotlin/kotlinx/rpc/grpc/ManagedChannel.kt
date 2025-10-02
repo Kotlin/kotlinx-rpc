@@ -7,6 +7,7 @@
 package kotlinx.rpc.grpc
 
 import kotlinx.rpc.grpc.internal.GrpcChannel
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.time.Duration
 
 /**
@@ -71,15 +72,18 @@ public expect abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
     public abstract fun overrideAuthority(authority: String): T
 }
 
-internal expect fun ManagedChannelBuilder(
+@InternalRpcApi
+public expect fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
     credentials: ClientCredentials? = null,
 ): ManagedChannelBuilder<*>
 
-internal expect fun ManagedChannelBuilder(
+@InternalRpcApi
+public expect fun ManagedChannelBuilder(
     target: String,
     credentials: ClientCredentials? = null,
 ): ManagedChannelBuilder<*>
 
-internal expect fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel
+@InternalRpcApi
+public expect fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel

@@ -34,7 +34,7 @@ public fun <Request, Response> CoroutineScope.unaryServerMethodDefinition(
     interceptors: List<ServerInterceptor>,
     implementation: suspend (request: Request) -> Response,
 ): ServerMethodDefinition<Request, Response> {
-    val type = descriptor.type
+    val type = descriptor.methodType
     require(type == MethodType.UNARY) {
         "Expected a unary method descriptor but got $descriptor"
     }
@@ -53,7 +53,7 @@ public fun <Request, Response> CoroutineScope.clientStreamingServerMethodDefinit
     interceptors: List<ServerInterceptor>,
     implementation: suspend (requests: Flow<Request>) -> Response,
 ): ServerMethodDefinition<Request, Response> {
-    val type = descriptor.type
+    val type = descriptor.methodType
     require(type == MethodType.CLIENT_STREAMING) {
         "Expected a client streaming method descriptor but got $descriptor"
     }
@@ -73,7 +73,7 @@ public fun <Request, Response> CoroutineScope.serverStreamingServerMethodDefinit
     interceptors: List<ServerInterceptor>,
     implementation: (request: Request) -> Flow<Response>,
 ): ServerMethodDefinition<Request, Response> {
-    val type = descriptor.type
+    val type = descriptor.methodType
     require(type == MethodType.SERVER_STREAMING) {
         "Expected a server streaming method descriptor but got $descriptor"
     }
@@ -98,7 +98,7 @@ public fun <Request, Response> CoroutineScope.bidiStreamingServerMethodDefinitio
     interceptors: List<ServerInterceptor>,
     implementation: (requests: Flow<Request>) -> Flow<Response>,
 ): ServerMethodDefinition<Request, Response> {
-    val type = descriptor.type
+    val type = descriptor.methodType
     check(type == MethodType.BIDI_STREAMING) {
         "Expected a bidi streaming method descriptor but got $descriptor"
     }

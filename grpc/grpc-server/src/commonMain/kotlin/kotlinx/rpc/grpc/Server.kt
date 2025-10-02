@@ -6,6 +6,7 @@
 
 package kotlinx.rpc.grpc
 
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.time.Duration
 
 /**
@@ -31,7 +32,8 @@ public expect abstract class ServerBuilder<T : ServerBuilder<T>> {
     public abstract fun fallbackHandlerRegistry(registry: HandlerRegistry?): T
 }
 
-internal expect fun ServerBuilder(port: Int, credentials: ServerCredentials? = null): ServerBuilder<*>
+@InternalRpcApi
+public expect fun ServerBuilder(port: Int, credentials: ServerCredentials? = null): ServerBuilder<*>
 
 /**
  * Server for listening for and dispatching incoming calls.
@@ -110,4 +112,5 @@ public interface Server {
     public suspend fun awaitTermination(duration: Duration = Duration.INFINITE): Server
 }
 
-internal expect fun Server(builder: ServerBuilder<*>): Server
+@InternalRpcApi
+public expect fun Server(builder: ServerBuilder<*>): Server

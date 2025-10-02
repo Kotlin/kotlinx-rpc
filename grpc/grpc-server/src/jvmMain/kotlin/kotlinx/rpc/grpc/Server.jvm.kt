@@ -6,6 +6,7 @@ package kotlinx.rpc.grpc
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 
@@ -14,12 +15,14 @@ import kotlin.time.Duration
  */
 public actual typealias ServerBuilder<T> = io.grpc.ServerBuilder<T>
 
-internal actual fun ServerBuilder(port: Int, credentials: ServerCredentials?): ServerBuilder<*> {
+@InternalRpcApi
+public actual fun ServerBuilder(port: Int, credentials: ServerCredentials?): ServerBuilder<*> {
     if (credentials != null) return io.grpc.Grpc.newServerBuilderForPort(port, credentials)
     return io.grpc.ServerBuilder.forPort(port)
 }
 
-internal actual fun Server(builder: ServerBuilder<*>): Server {
+@InternalRpcApi
+public actual fun Server(builder: ServerBuilder<*>): Server {
     return builder.build().toKotlin()
 }
 

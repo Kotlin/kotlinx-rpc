@@ -8,9 +8,11 @@ import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.io.InputStream
 
-internal actual typealias MethodDescriptor<Request, Response> = io.grpc.MethodDescriptor<Request, Response>
+@InternalRpcApi
+public actual typealias MethodDescriptor<Request, Response> = io.grpc.MethodDescriptor<Request, Response>
 
-internal actual val MethodDescriptor<*, *>.type: MethodType
+@InternalRpcApi
+public actual val MethodDescriptor<*, *>.methodType: MethodType
     get() = when (this.type) {
         io.grpc.MethodDescriptor.MethodType.UNARY -> MethodType.UNARY
         io.grpc.MethodDescriptor.MethodType.CLIENT_STREAMING -> MethodType.CLIENT_STREAMING
