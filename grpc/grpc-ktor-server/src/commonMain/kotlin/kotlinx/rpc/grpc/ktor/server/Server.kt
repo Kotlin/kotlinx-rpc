@@ -7,9 +7,9 @@ package kotlinx.rpc.grpc.ktor.server
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.util.*
-import kotlinx.rpc.grpc.GrpcServer
-import kotlinx.rpc.grpc.GrpcServerConfiguration
-import kotlinx.rpc.grpc.ServerBuilder
+import kotlinx.rpc.grpc.server.GrpcServer
+import kotlinx.rpc.grpc.server.GrpcServerConfiguration
+import kotlinx.rpc.grpc.server.ServerBuilder
 
 @Suppress("ConstPropertyName")
 public object GrpcConfigKeys {
