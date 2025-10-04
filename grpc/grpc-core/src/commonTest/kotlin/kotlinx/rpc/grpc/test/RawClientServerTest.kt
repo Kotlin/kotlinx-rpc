@@ -18,14 +18,14 @@ import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.server.Server
 import kotlinx.rpc.grpc.server.ServerBuilder
 import kotlinx.rpc.grpc.codec.SourcedMessageCodec
-import kotlinx.rpc.grpc.internal.MethodDescriptor
-import kotlinx.rpc.grpc.internal.MethodType
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.MethodType
 import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.bidiStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
 import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
 import kotlinx.rpc.grpc.server.internal.clientStreamingServerMethodDefinition
-import kotlinx.rpc.grpc.internal.methodDescriptor
+import kotlinx.rpc.grpc.descriptor.methodDescriptor
 import kotlinx.rpc.grpc.client.internal.serverStreamingRpc
 import kotlinx.rpc.grpc.server.internal.serverStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.internal.serviceDescriptor

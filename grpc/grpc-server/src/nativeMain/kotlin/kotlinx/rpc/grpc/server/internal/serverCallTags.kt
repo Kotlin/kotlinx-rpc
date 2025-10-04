@@ -18,7 +18,7 @@ import kotlinx.cinterop.value
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.internal.CallbackTag
 import kotlinx.rpc.grpc.internal.CompletionQueue
-import kotlinx.rpc.grpc.internal.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.internal.toByteArray
 import kotlinx.rpc.grpc.server.HandlerRegistry
 import libkgrpc.gpr_timespec

@@ -21,13 +21,13 @@ import kotlinx.rpc.grpc.codec.MessageCodecResolver
 import kotlinx.rpc.grpc.codec.ThrowingMessageCodecResolver
 import kotlinx.rpc.grpc.codec.plus
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
-import kotlinx.rpc.grpc.internal.MethodDescriptor
-import kotlinx.rpc.grpc.internal.MethodType
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.MethodType
 import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.bidiStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.clientStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.serverStreamingServerMethodDefinition
-import kotlinx.rpc.grpc.internal.methodType
+import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.server.internal.unaryServerMethodDefinition
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.coroutines.CoroutineContext

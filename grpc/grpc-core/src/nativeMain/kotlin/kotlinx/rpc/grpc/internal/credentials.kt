@@ -4,7 +4,7 @@
 
 @file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 
-package kotlinx.rpc.grpc
+package kotlinx.rpc.grpc.internal
 
 import cnames.structs.grpc_tls_credentials_options
 import kotlinx.cinterop.CPointer

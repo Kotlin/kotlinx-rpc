@@ -2,13 +2,12 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.internal
+package kotlinx.rpc.grpc.descriptor
 
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.input.stream.InputStream
 
-@InternalRpcApi
 public actual class MethodDescriptor<Request, Response> internal constructor(
     private val fullMethodName: String,
     private val requestMarshaller: Marshaller<Request>,
@@ -56,7 +55,6 @@ public actual class MethodDescriptor<Request, Response> internal constructor(
     }
 }
 
-@InternalRpcApi
 public actual val MethodDescriptor<*, *>.methodType: MethodType
     get() = this.methodType
 

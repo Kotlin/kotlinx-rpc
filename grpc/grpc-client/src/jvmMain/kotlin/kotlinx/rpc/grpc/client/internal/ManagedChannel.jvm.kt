@@ -4,11 +4,12 @@
 
 @file:Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 
-package kotlinx.rpc.grpc.client
+package kotlinx.rpc.grpc.client.internal
 
 import io.grpc.Grpc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.rpc.grpc.client.ClientCredentials
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
@@ -16,11 +17,13 @@ import kotlin.time.Duration
 /**
  * Same as [ManagedChannel], but is platform-exposed.
  */
+@InternalRpcApi
 public actual typealias ManagedChannelPlatform = io.grpc.ManagedChannel
 
 /**
  * Builder class for [ManagedChannel].
  */
+@InternalRpcApi
 public actual typealias ManagedChannelBuilder<T> = io.grpc.ManagedChannelBuilder<T>
 
 @InternalRpcApi

@@ -6,7 +6,7 @@
 
 package kotlinx.rpc.grpc.server
 
-import kotlinx.rpc.grpc.internal.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 

@@ -2,16 +2,14 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.internal
+package kotlinx.rpc.grpc.descriptor
 
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.io.InputStream
 
-@InternalRpcApi
 public actual typealias MethodDescriptor<Request, Response> = io.grpc.MethodDescriptor<Request, Response>
 
-@InternalRpcApi
 public actual val MethodDescriptor<*, *>.methodType: MethodType
     get() = when (this.type) {
         io.grpc.MethodDescriptor.MethodType.UNARY -> MethodType.UNARY

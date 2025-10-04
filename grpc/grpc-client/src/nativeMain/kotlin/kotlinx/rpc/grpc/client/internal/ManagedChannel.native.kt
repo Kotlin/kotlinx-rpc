@@ -4,21 +4,23 @@
 
 @file:Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 
-package kotlinx.rpc.grpc.client
+package kotlinx.rpc.grpc.client.internal
 
-import kotlinx.rpc.grpc.client.internal.GrpcChannel
-import kotlinx.rpc.grpc.client.internal.NativeManagedChannel
+import kotlinx.rpc.grpc.client.ClientCredentials
+import kotlinx.rpc.grpc.client.TlsClientCredentials
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
  * Same as [ManagedChannel], but is platform-exposed.
  */
+@InternalRpcApi
 public actual abstract class ManagedChannelPlatform : GrpcChannel()
 
 /**
  * Builder class for [ManagedChannel].
  */
+@InternalRpcApi
 public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>> {
     public actual abstract fun overrideAuthority(authority: String): T
 }

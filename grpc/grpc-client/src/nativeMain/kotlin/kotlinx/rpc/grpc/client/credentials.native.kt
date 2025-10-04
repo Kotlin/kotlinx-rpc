@@ -9,7 +9,7 @@ package kotlinx.rpc.grpc.client
 import cnames.structs.grpc_channel_credentials
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.rpc.grpc.TlsCredentialsOptionsBuilder
+import kotlinx.rpc.grpc.internal.TlsCredentialsOptionsBuilder
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import libkgrpc.grpc_channel_credentials_release
 import libkgrpc.grpc_insecure_credentials_create

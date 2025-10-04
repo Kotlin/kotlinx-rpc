@@ -4,9 +4,7 @@
 
 package kotlinx.rpc.grpc.server.internal
 
-import kotlinx.rpc.grpc.internal.MethodDescriptor
-import kotlinx.rpc.grpc.server.internal.ServerCallHandler
-import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi

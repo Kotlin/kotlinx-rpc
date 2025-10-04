@@ -9,7 +9,10 @@ import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.client.internal.GrpcDefaultCallOptions
+import kotlinx.rpc.grpc.client.internal.ManagedChannel
+import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
 import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
+import kotlinx.rpc.grpc.client.internal.buildChannel
 import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
 import kotlinx.rpc.grpc.client.internal.serverStreamingRpc
 import kotlinx.rpc.grpc.client.internal.unaryRpc
@@ -19,9 +22,9 @@ import kotlinx.rpc.grpc.codec.ThrowingMessageCodecResolver
 import kotlinx.rpc.grpc.codec.plus
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
-import kotlinx.rpc.grpc.internal.MethodDescriptor
-import kotlinx.rpc.grpc.internal.MethodType
-import kotlinx.rpc.grpc.internal.methodType
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.MethodType
+import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.time.Duration
 
@@ -30,7 +33,7 @@ private typealias RequestClient = Any
 /**
  * GrpcClient manages gRPC communication by providing implementation for making asynchronous RPC calls.
  *
- * @field channel The [ManagedChannel] used to communicate with remote gRPC services.
+ * @field channel The [kotlinx.rpc.grpc.client.internal.ManagedChannel] used to communicate with remote gRPC services.
  */
 public class GrpcClient internal constructor(
     internal val channel: ManagedChannel,

@@ -24,10 +24,10 @@ import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.internal.CallbackFuture
-import kotlinx.rpc.grpc.internal.MethodDescriptor
-import kotlinx.rpc.grpc.internal.MethodType
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.MethodType
 import kotlinx.rpc.grpc.internal.Ready
-import kotlinx.rpc.grpc.internal.methodType
+import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.internal.singleOrStatus
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.internal.utils.InternalRpcApi

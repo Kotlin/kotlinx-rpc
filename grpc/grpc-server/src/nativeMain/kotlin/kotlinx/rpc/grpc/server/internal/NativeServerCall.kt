@@ -27,10 +27,10 @@ import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.internal.BatchResult
 import kotlinx.rpc.grpc.internal.CompletionQueue
-import kotlinx.rpc.grpc.internal.MethodDescriptor
-import kotlinx.rpc.grpc.internal.MethodType
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.MethodType
 import kotlinx.rpc.grpc.internal.internalError
-import kotlinx.rpc.grpc.internal.methodType
+import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.internal.toGrpcByteBuffer
 import kotlinx.rpc.grpc.internal.toGrpcSlice
 import kotlinx.rpc.grpc.internal.toKotlin
