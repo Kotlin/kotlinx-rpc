@@ -191,6 +191,10 @@ private fun GrpcClient(
  * Configuration class for a gRPC client, providing customization options
  * for client behavior, including interceptors, credentials, codec resolution,
  * and authority overrides.
+ *
+ * @see credentials
+ * @see overrideAuthority
+ * @see intercept
  */
 public class GrpcClientConfiguration internal constructor() {
     internal val interceptors: MutableList<ClientInterceptor> = mutableListOf()
@@ -226,6 +230,9 @@ public class GrpcClientConfiguration internal constructor() {
      *     credentials = plaintext() // for testing purposes only!
      * }
      * ```
+     *
+     * @see tls
+     * @see plaintext
      */
     public var credentials: ClientCredentials? = null
 
