@@ -87,7 +87,8 @@ pluginManagement {
 
     repositories {
         val useProxyProperty = getLocalProperties()["kotlinx.rpc.useProxyRepositories"] as String?
-        val useProxy = useProxyProperty == null || useProxyProperty == "true"
+        val useProxy = (useProxyProperty == null || useProxyProperty == "true") &&
+                settings.providers.gradleProperty("kotlinx.rpc.useProxyRepositories").orNull != "false"
 
         if (useProxy) {
             buildDeps()
@@ -194,11 +195,12 @@ settings.extra["useProxyRepositories"] = localProps.isUsingProxyRepositories()
 
 gradle.rootProject {
     allprojects {
+        val useProxy = localProps.isUsingProxyRepositories() &&
+                project.findProperty("kotlinx.rpc.useProxyRepositories") != "false"
+
         this.extra["spacePassword"] = getSpacePassword()
         this.extra["localProperties"] = localProps
-        this.extra["useProxyRepositories"] = localProps.isUsingProxyRepositories()
-
-        val useProxy = localProps.isUsingProxyRepositories()
+        this.extra["useProxyRepositories"] = useProxy
 
         val globalRootDir = findGlobalRootDirPath()
 
