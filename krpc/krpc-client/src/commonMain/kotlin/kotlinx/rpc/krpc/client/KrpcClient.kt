@@ -16,6 +16,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
@@ -215,7 +216,9 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 connector.subscribeToGenericMessages(::handleGenericMessage)
                 connector.subscribeToProtocolMessages(::handleProtocolMessage)
 
-                connector.sendMessage(KrpcProtocolMessage.Handshake(KrpcPlugin.ALL))
+                connector.sendMessageChecked(KrpcProtocolMessage.Handshake(KrpcPlugin.ALL)) {
+                    // ignore, we are already cancelled and have a cause
+                }
             }
         }
 
@@ -476,7 +479,9 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 connectionId = outgoingStream.connectionId,
                 serviceId = outgoingStream.serviceId,
             )
-            sender.sendMessage(message)
+            connector.sendMessageChecked(message) {
+                // ignore, we are already cancelled and have a cause
+            }
 
             // stop the flow and its coroutine, other flows are not affected
             throw e
@@ -490,7 +495,9 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 connectionId = outgoingStream.connectionId,
                 serviceId = outgoingStream.serviceId,
             )
-            sender.sendMessage(message)
+            connector.sendMessageChecked(message) {
+                // ignore, we are already cancelled and have a cause
+            }
 
             throw cause
         }
@@ -543,7 +550,9 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 }
             }
 
-            sender.sendMessage(message)
+            sender.sendMessageChecked(message) { e ->
+                throw CancellationException("Request cancelled", e)
+            }
         }
     }
 

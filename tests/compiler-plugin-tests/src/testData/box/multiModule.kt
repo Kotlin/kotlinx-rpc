@@ -24,3 +24,5 @@ fun box(): String = runBlocking {
 
     if (result == "call_42") "OK" else "Fail: $result"
 }
+
+/* GENERATED_FIR_TAGS: functionDeclaration, interfaceDeclaration, suspend */

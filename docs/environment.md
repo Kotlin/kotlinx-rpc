@@ -392,7 +392,7 @@ Here is a 'simple' guide for solving problems:
 - Docker
     - `Cannot connect to the Docker daemon` - open `Docker Desktop`
 - Kotlin/Js or Kotlin/Wasm
-  - `kotlinUpgradePackageLock` or `kotlinWasmUpgradePackageLock` (and also `kotlinNpmInstall` or `kotlinWasmNpmInstall`)
+  - `kotlinUpgradeYarnLock` or `kotlinWasmUpgradeYarnLock` (and also `kotlinNpmInstall` or `kotlinWasmNpmInstall`)
   have a funny tendency to fail sometimes, and you don't know why. 
     
     I'll tell you! 
@@ -403,7 +403,7 @@ Here is a 'simple' guide for solving problems:
     If something doesn't work, your steps are:
     - Delete `package-lock.json` file
     - Delete `<REPO_ROOT>/build/js` / `<REPO_ROOT>/build/wasm`
-    - Run `kotlinUpgradePackageLock` / `kotlinWasmUpgradePackageLock`
+    - Run `kotlinUpgradeYarnLock` / `kotlinWasmUpgradeYarnLock`
     - If the problem persists:
       - Check that `<REPO_ROOT>/build/<target>/.npmrc` AND `<REPO_ROOT>/build/<target>/.yarnrc` are present
       - Check that `.yarnrc` contains one line: `registry: "https://packages.jetbrains.team/npm/p/krpc/build-deps/"`
@@ -479,7 +479,7 @@ all included builds (not subprojects) must reflect the change.
 - `checkLegacyAbi` / `updateLegacyAbi` - ABI checks. 
 See https://kotlinlang.org/docs/whatsnew22.html#binary-compatibility-validation-included-in-kotlin-gradle-plugin.
 Former BCV: https://github.com/Kotlin/binary-compatibility-validator
-- `kotlinUpgradePackageLock` / `kotlinWasmUpgradePackageLock` - update [kotlin-js-store](../kotlin-js-store) contents, 
+- `kotlinUpgradeYarnLock` / `kotlinWasmUpgradeYarnLock` - update [kotlin-js-store](../kotlin-js-store) contents, 
 usually after Kotlin version update.
 - `updateDocsChangelog` - put modified [CONTRIBUTING.md](../CONTRIBUTING.md) into [topics](pages/kotlinx-rpc/topics)
 - `detekt` - run detekt checks.

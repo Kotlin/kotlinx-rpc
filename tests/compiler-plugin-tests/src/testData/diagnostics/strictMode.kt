@@ -66,3 +66,6 @@ interface MyService {
     <!NON_SUSPENDING_REQUEST_WITHOUT_STREAMING_RETURN_TYPE!>fun nonSuspendNoFlowString(): String<!>
     suspend fun complex(filter: ComplexFilter): String // doesn't fail on circular dependency
 }
+
+/* GENERATED_FIR_TAGS: annotationUseSiteTargetFile, classDeclaration, classReference, data, functionDeclaration,
+interfaceDeclaration, nullableType, primaryConstructor, propertyDeclaration, suspend, typeParameter */

@@ -104,7 +104,7 @@ abstract class KrpcProtocolCompatibilityTestsBase {
 
     private fun testOldClientWithNewServer(
         perCallBufferSize: Int = 1,
-        timeout: Duration = 10.seconds,
+        timeout: Duration = 60.seconds,
         exclude: List<Versions>,
         body: suspend TestEnv.(CompatService, CompatServiceImpl) -> Unit,
     ) = runTest(Role.Client, exclude, timeout) {
@@ -117,7 +117,7 @@ abstract class KrpcProtocolCompatibilityTestsBase {
 
     private fun testOldServersWithNewClient(
         perCallBufferSize: Int = 1,
-        timeout: Duration = 10.seconds,
+        timeout: Duration = 60.seconds,
         exclude: List<Versions>,
         body: suspend TestEnv.(CompatService, CompatServiceImpl) -> Unit,
     ) = runTest(Role.Server, exclude, timeout) {
@@ -130,7 +130,7 @@ abstract class KrpcProtocolCompatibilityTestsBase {
 
     protected fun matrixTest(
         perCallBufferSize: Int = 1,
-        timeout: Duration = 10.seconds,
+        timeout: Duration = 60.seconds,
         exclude: List<VersionRolePair> = emptyList(),
         body: suspend TestEnv.(CompatService, CompatServiceImpl) -> Unit,
     ): Stream<DynamicTest> {

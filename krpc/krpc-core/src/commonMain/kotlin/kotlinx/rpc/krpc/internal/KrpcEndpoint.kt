@@ -44,9 +44,7 @@ public interface KrpcEndpoint {
                 ).toMap()
             )
 
-            try {
-                sender.sendMessage(message)
-            } catch (_: ClosedSendChannelException) {
+            sender.sendMessageChecked(message) {
                 // ignore, call was already closed
             }
         }
@@ -76,7 +74,9 @@ public interface KrpcEndpoint {
                 connectionId = message.connectionId,
             )
 
-            sender.sendMessage(failure)
+            sender.sendMessageChecked(failure) {
+                // ignore, call was already closed
+            }
         }
     }
 

@@ -25,14 +25,18 @@
         <code-block lang="kotlin">
             val ktorClient = HttpClient {
                 installKrpc {
-                    waitForServices = true
+                    serialization {
+                        json()
+                    }
                 }
             }
 
             val rpcClient: KtorKrpcClient =
                 ktorClient.rpc(&quot;ws://localhost:4242/services&quot;) {
                     rpcConfig {
-                        waitForServices = false
+                        serialization {
+                            protobuf()
+                        }
                     }
                 }
 
@@ -53,13 +57,17 @@
         <code-block lang="kotlin">
             fun Application.module() {
                 install(Krpc) {
-                    waitForServices = true
+                    serialization {
+                        json()
+                    }
                 }
 
                 routing {
                     rpc(&quot;/services&quot;) {
                         rpcConfig {
-                            waitForServices = false
+                            serialization {
+                                protobuf()
+                            }
                         }
 
                         registerService&lt;MyService&gt; { MyServiceImpl() }
