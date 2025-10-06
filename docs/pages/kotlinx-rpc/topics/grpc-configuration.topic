@@ -174,7 +174,7 @@
                 plugin.
             </li>
             <li>
-                <code>kotlin-multiplatform</code> - out own protoc plugin.
+                <code>kotlin-multiplatform</code> - our own protoc plugin.
             </li>
         </list>
         <p>
