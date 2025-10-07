@@ -79,10 +79,9 @@ public sealed class KrpcConfigBuilder protected constructor() {
         /**
          * A buffer size for a single call.
          *
-         * The default value is 1000,
-         * meaning that only after one message is handled - the next one will be sent.
+         * The default value is 1000 messages independent of their size in bytes.
          *
-         * This buffer also applies to how many messages are cached with [waitTimeout]
+         * This buffer also applies to how many messages are cached with [waitTimeout].
          */
         public var perCallBufferSize: Int = 1000
     }
