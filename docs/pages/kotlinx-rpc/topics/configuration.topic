@@ -92,8 +92,8 @@
                 The default value is <code>Duration.INFINITE</code>.
             </li>
             <li>
-                <code>perCallBufferSize</code> - size of the buffer for one call.
-                Call can be a stream or a single message.
+                <code>perCallBufferSize</code> - size of the messages buffer for one call.
+                The buffer ignores the size in bytes and only counts the number of messages.
                 This effectively provides a backpressure mechanism.
                 If a peer is slow to process the message during a call,
                 the buffer will be filled up and
