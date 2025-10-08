@@ -4,30 +4,25 @@
 
 package kotlinx.rpc.codegen.extension
 
-import kotlinx.rpc.codegen.VersionSpecificApi
-import kotlinx.rpc.codegen.common.RpcClassId
-import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
-import org.jetbrains.kotlin.backend.jvm.functionByName
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
-import org.jetbrains.kotlin.descriptors.DescriptorVisibility
-import org.jetbrains.kotlin.descriptors.Modality
-import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
+import kotlinx.rpc.codegen.*
+import kotlinx.rpc.codegen.common.*
+import org.jetbrains.kotlin.backend.common.lower.*
+import org.jetbrains.kotlin.backend.jvm.*
+import org.jetbrains.kotlin.cli.common.messages.*
+import org.jetbrains.kotlin.descriptors.*
+import org.jetbrains.kotlin.ir.*
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.builders.declarations.*
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
-import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
-import org.jetbrains.kotlin.ir.symbols.IrSymbol
-import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
+import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.util.*
-import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.name.SpecialNames
-import org.jetbrains.kotlin.types.Variance
-import org.jetbrains.kotlin.util.OperatorNameConventions
-import kotlin.properties.Delegates
+import org.jetbrains.kotlin.name.*
+import org.jetbrains.kotlin.types.*
+import org.jetbrains.kotlin.util.*
+import kotlin.properties.*
 
 private object Stub {
     const val CLIENT = "__rpc_client"
@@ -657,7 +652,7 @@ internal class RpcStubGenerator(
      * A map that holds an RpcCallable that describes it.
      *
      * ```kotlin
-     *  private val callableMap: Map<String, RpcCallable<MyService>> = mapOf(
+     *  override val callableMap: Map<String, RpcCallable<MyService>> = mapOf(
      *      Pair("<callable-name-1>", RpcCallable(...)),
      *      ...
      *      Pair("<callable-name-n>", RpcCallable(...)),
@@ -671,11 +666,23 @@ internal class RpcStubGenerator(
      *  - `<callable-name-k>` - the name of the k-th callable in the service
      */
     private fun IrClass.generateCallableMapProperty() {
+
+        // the RpcServiceDescriptor.callableMap property will not exist for older runtime library versions
+        val interfaceProperty = ctx.rpcServiceDescriptor.findPropertyByName(Descriptor.CALLABLE_MAP)
+
         callableMap = addProperty {
             name = Name.identifier(Descriptor.CALLABLE_MAP)
-            visibility = DescriptorVisibilities.PRIVATE
-            modality = Modality.FINAL
+            if (interfaceProperty == null) {
+                visibility = DescriptorVisibilities.PUBLIC
+                modality = Modality.OPEN
+            } else {
+                visibility = DescriptorVisibilities.PRIVATE
+                modality = Modality.FINAL
+            }
         }.apply {
+            if (interfaceProperty != null)
+                overriddenSymbols = listOf(interfaceProperty)
+
             val rpcCallableType = ctx.rpcCallable.typeWith(declaration.serviceType)
             val mapType = ctx.irBuiltIns.mapClass.typeWith(ctx.irBuiltIns.stringType, rpcCallableType)
 
@@ -699,7 +706,10 @@ internal class RpcStubGenerator(
             }
 
             addDefaultGetter(this@generateCallableMapProperty, ctx.irBuiltIns) {
-                visibility = DescriptorVisibilities.PRIVATE
+                visibility =
+                    if (interfaceProperty == null) DescriptorVisibilities.PRIVATE else DescriptorVisibilities.PUBLIC
+                if (interfaceProperty != null)
+                    overriddenSymbols = listOf(ctx.rpcServiceDescriptor.getPropertyGetter(Descriptor.CALLABLE_MAP)!!)
             }
         }
     }
