@@ -217,6 +217,8 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 transport = initializeTransport()
                 isTransportReady = true
 
+                internalScope // access scope to initialize it
+
                 connector.subscribeToGenericMessages(::handleGenericMessage)
                 connector.subscribeToProtocolMessages(::handleProtocolMessage)
 
