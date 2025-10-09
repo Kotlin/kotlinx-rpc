@@ -25,7 +25,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
 
-                implementation(projects.grpc.grpcCore)
+                implementation(projects.grpc.grpcClient)
                 implementation(projects.grpc.grpcKtorServer)
 
                 implementation(libs.grpc.kotlin.stub)

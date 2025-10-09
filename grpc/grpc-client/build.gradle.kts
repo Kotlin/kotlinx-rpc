@@ -9,10 +9,6 @@ import kotlinx.rpc.internal.InternalRpcApi
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.kotlinx.rpc)
-
-    // TODO: Check if we can drop these plugins
-    alias(libs.plugins.atomicfu)
-    alias(libs.plugins.serialization) // for tests
 }
 
 kotlin {
@@ -24,34 +20,12 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.grpc.grpcCore)
-
-                implementation(libs.atomicfu)
-                implementation(libs.kotlinx.io.core)
-            }
-        }
-
-        jvmMain {
-            dependencies {
-                // TODO: Check if we can drop the API dependencies
-                api(libs.grpc.api)
-                api(libs.grpc.util)
-                api(libs.grpc.stub)
-                api(libs.grpc.protobuf)
-                api(libs.grpc.protobuf.lite)
-                implementation(libs.grpc.kotlin.stub) // causes problems to jpms if api
-            }
-        }
-
-        jvmTest {
-            dependencies {
-                implementation(libs.grpc.netty)
             }
         }
 
         nativeMain {
             dependencies {
-                // required for status.proto
-                implementation(projects.protobuf.protobufCore)
+                implementation(libs.atomicfu)
             }
         }
     }

@@ -5,7 +5,7 @@
 package kotlinx.rpc.grpc.ktor.server.test
 
 import io.ktor.server.testing.*
-import kotlinx.rpc.grpc.GrpcClient
+import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.ktor.server.grpc
 import kotlinx.rpc.withService
 import kotlin.test.Test
@@ -25,7 +25,9 @@ class TestServer {
     fun testPlainRequests() = testApplication {
         application {
             grpc(PORT) {
-                registerService<KtorTestService> { KtorTestServiceImpl() }
+                services {
+                    registerService<KtorTestService> { KtorTestServiceImpl() }
+                }
             }
         }
 
