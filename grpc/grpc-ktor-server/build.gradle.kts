@@ -21,6 +21,12 @@ kotlin {
             }
         }
 
+        commonTest {
+            dependencies {
+                implementation(projects.protobuf.protobufCore)
+            }
+        }
+
         jvmTest {
             dependencies {
                 implementation(kotlin("test"))
