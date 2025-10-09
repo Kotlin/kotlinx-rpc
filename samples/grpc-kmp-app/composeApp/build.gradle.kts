@@ -32,7 +32,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.rpc.protobuf.core)
-            implementation(libs.kotlinx.rpc.grpc.core)
+            implementation(libs.kotlinx.rpc.grpc.client)
             implementation(libs.grpc.netty)
             implementation(projects.shared)
         }
