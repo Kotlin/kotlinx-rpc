@@ -3,9 +3,9 @@
 package kotlinx.rpc.codegen.test.runners;
 
 import com.intellij.testFramework.TestDataPath;
-import org.jetbrains.kotlin.test.util.KtTestUtil;
 import org.jetbrains.kotlin.test.TargetBackend;
 import org.jetbrains.kotlin.test.TestMetadata;
+import org.jetbrains.kotlin.test.util.KtTestUtil;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -38,6 +38,12 @@ public class BoxTestGenerated extends AbstractBoxTest {
   public void testMultiModule() {
     runTest("src/testData/box/multiModule.kt");
   }
+
+    @Test
+    @TestMetadata("serviceDescriptor.kt")
+    public void testServiceDescriptor() {
+        runTest("src/testData/box/serviceDescriptor.kt");
+    }
 
   @Test
   @TestMetadata("simple.kt")
