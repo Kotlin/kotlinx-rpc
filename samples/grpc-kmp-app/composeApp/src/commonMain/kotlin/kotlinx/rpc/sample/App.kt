@@ -33,10 +33,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlinx.rpc.grpc.GrpcClient
+import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.sample.messages.ChatEntry
 import kotlinx.rpc.sample.messages.MessageService
@@ -45,7 +51,9 @@ import kotlinx.rpc.sample.messages.SendMessageRequest
 import kotlinx.rpc.sample.messages.invoke
 import kotlinx.rpc.withService
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.random.Random
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -56,7 +64,7 @@ fun App() {
 
     val grpcClient = remember {
         GrpcClient("localhost", 8080) {
-            usePlaintext()
+            credentials = plaintext()
         }
     }
 
@@ -72,34 +80,63 @@ fun App() {
 private fun ChatScreen(service: MessageService) {
     val scope = rememberCoroutineScope()
 
-    var me by remember { mutableStateOf("me") }
+    var me by remember { mutableStateOf("user-${Random.nextInt(until = 999)}" ) }
     var input by remember { mutableStateOf("") }
     val messages = remember { mutableStateListOf<ChatEntry>() }
+    var error by remember { mutableStateOf<String?>(null) }
 
     fun sendMessage() {
         scope.launch {
-            val result = service.SendMessage(
-                SendMessageRequest{
-                    user = me
-                    text = input
+            try {
+                val result = service.SendMessage(
+                    SendMessageRequest {
+                        user = me
+                        text = input
+                    }
+                )
+                if (result.success) {
+                    messages += ChatEntry {
+                        user = me
+                        text = input
+                        tsMillis = Clock.System.now().toEpochMilliseconds()
+                    }
+                    input = ""
+                    error = null
+                } else {
+                    error = "Message not accepted by server."
                 }
-            )
-            if (result.success) {
-                messages += ChatEntry {
-                    user = me
-                    text = input
-                    tsMillis = Clock.System.now().toEpochMilliseconds()
-                }
-                input = ""
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: StatusException) {
+                error = e.getStatus().getDescription()?.let { "${e.getStatus().statusCode}: $it" } ?: "gRPC error: ${e.getStatus().statusCode}"
+            } catch (e: Throwable) {
+                error = e.message ?: "Unknown error while sending."
             }
         }
     }
 
     LaunchedEffect(me) {
         messages.clear()
+        error = null
         val req = ReceiveMessagesRequest { user = me }
-        service.ReceiveMessages(req).collect { msg ->
-            messages += msg
+        try {
+            service.ReceiveMessages(req)
+                .retryWhen { cause, attempt ->
+                    if (cause is CancellationException) false
+                    else {
+                        error = (cause as? StatusException)?.getStatus()?.getDescription()?.let { "${cause.getStatus().statusCode}: $it" }
+                            ?: cause.message ?: "Error receiving messages."
+                        delay(2.seconds)
+                        true
+                    }
+                }
+                .collect { msg -> messages += msg; error = null }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: StatusException) {
+            error = e.getStatus().getDescription() ?: "gRPC error: ${e.getStatus().statusCode}"
+        } catch (e: Throwable) {
+            error = e.message ?: "Unknown error while receiving."
         }
     }
 
@@ -108,6 +145,18 @@ private fun ChatScreen(service: MessageService) {
         .windowInsetsPadding(WindowInsets.safeDrawing)
         .padding(16.dp)
     ) {
+
+        if (error != null) {
+            Text(
+                error!!,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.errorContainer)
+                    .padding(8.dp)
+            )
+        }
+
         OutlinedTextField(
             value = me,
             onValueChange = { me = it },

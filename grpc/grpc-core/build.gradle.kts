@@ -44,6 +44,8 @@ kotlin {
 
                 implementation(projects.grpc.grpcCodecKotlinxSerialization)
                 implementation(projects.protobuf.protobufCore)
+                implementation(projects.grpc.grpcClient)
+                implementation(projects.grpc.grpcServer)
             }
         }
 

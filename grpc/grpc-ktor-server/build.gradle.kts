@@ -6,7 +6,6 @@
 
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
-import org.gradle.kotlin.dsl.kotlin
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -17,8 +16,14 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.grpc.grpcCore)
+                api(projects.grpc.grpcServer)
                 implementation(libs.ktor.server.core)
+            }
+        }
+
+        commonTest {
+            dependencies {
+                implementation(projects.protobuf.protobufCore)
             }
         }
 
@@ -26,7 +31,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
 
-                implementation(projects.grpc.grpcCore)
+                implementation(projects.grpc.grpcClient)
                 implementation(projects.grpc.grpcKtorServer)
 
                 implementation(libs.grpc.kotlin.stub)

@@ -7,7 +7,6 @@ package kotlinx.rpc.grpc.descriptor
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
 import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.codec.MessageCodecResolver
-import kotlinx.rpc.grpc.internal.MethodDescriptor
 import kotlinx.rpc.grpc.internal.ServiceDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
