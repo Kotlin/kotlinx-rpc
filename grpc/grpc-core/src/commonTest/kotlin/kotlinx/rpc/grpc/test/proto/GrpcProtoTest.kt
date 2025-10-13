@@ -8,12 +8,12 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.grpc.ClientCredentials
-import kotlinx.rpc.grpc.ClientInterceptor
-import kotlinx.rpc.grpc.GrpcClient
-import kotlinx.rpc.grpc.GrpcServer
-import kotlinx.rpc.grpc.ServerCredentials
-import kotlinx.rpc.grpc.ServerInterceptor
+import kotlinx.rpc.grpc.client.ClientCredentials
+import kotlinx.rpc.grpc.client.ClientInterceptor
+import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.server.GrpcServer
+import kotlinx.rpc.grpc.server.ServerCredentials
+import kotlinx.rpc.grpc.server.ServerInterceptor
 
 abstract class GrpcProtoTest {
     private val serverMutex = Mutex()

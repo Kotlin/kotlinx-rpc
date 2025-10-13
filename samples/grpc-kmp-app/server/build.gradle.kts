@@ -16,6 +16,6 @@ dependencies {
     implementation(projects.shared)
     implementation(libs.logback)
     implementation(libs.kotlinx.rpc.protobuf.core)
-    implementation(libs.kotlinx.rpc.grpc.core)
+    implementation(libs.kotlinx.rpc.grpc.server)
     implementation(libs.grpc.netty)
 }
