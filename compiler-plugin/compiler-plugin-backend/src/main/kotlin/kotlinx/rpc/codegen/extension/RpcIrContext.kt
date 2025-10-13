@@ -84,12 +84,12 @@ internal class RpcIrContext(
         if (isJvmTarget()) {
             getIrClassSymbol("io.grpc", "MethodDescriptor")
         } else {
-            getIrClassSymbol("kotlinx.rpc.grpc.internal", "MethodDescriptor")
+            getIrClassSymbol("kotlinx.rpc.grpc.descriptor", "MethodDescriptor")
         }
     }
 
     val grpcPlatformMethodType by lazy {
-        getIrClassSymbol("kotlinx.rpc.grpc.internal", "MethodType")
+        getIrClassSymbol("kotlinx.rpc.grpc.descriptor", "MethodType")
     }
 
     val grpcPlatformMethodTypeUnary by lazy {
@@ -248,7 +248,7 @@ internal class RpcIrContext(
         }
 
         val methodDescriptor by lazy {
-            namedFunction("kotlinx.rpc.grpc.internal", "methodDescriptor")
+            namedFunction("kotlinx.rpc.grpc.descriptor", "methodDescriptor")
         }
 
         val grpcServiceDescriptorDelegate by lazy {
