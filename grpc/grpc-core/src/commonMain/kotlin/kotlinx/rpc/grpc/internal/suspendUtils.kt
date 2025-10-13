@@ -14,7 +14,6 @@ import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
-// todo really needed?
 @InternalRpcApi
 public fun <T> Flow<T>.singleOrStatusFlow(
     expected: String,
