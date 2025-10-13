@@ -7,6 +7,7 @@
 package kotlinx.rpc.grpc.internal
 
 import cnames.structs.grpc_call
+import cnames.structs.grpc_completion_queue
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
@@ -24,6 +25,7 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.sizeOf
 import kotlinx.cinterop.staticCFunction
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import libkgrpc.GRPC_OP_RECV_STATUS_ON_CLIENT
 import libkgrpc.grpc_call_error
 import libkgrpc.grpc_call_start_batch
@@ -41,26 +43,30 @@ import kotlin.native.ref.createCleaner
 /**
  * The result of a batch operation (see [CompletionQueue.runBatch]).
  */
-internal sealed interface BatchResult {
+@InternalRpcApi
+public sealed interface BatchResult {
     /**
      * Happens when a batch was submitted and...
      * - the queue is closed
      * - the queue is in the process of a force shutdown
      * - the queue is in the process of a normal shutdown, and the batch is a new `RECV_STATUS_ON_CLIENT` batch.
      */
-    object CQShutdown : BatchResult
+    @InternalRpcApi
+    public object CQShutdown : BatchResult
 
     /**
      * Happens when the batch couldn't be submitted for some reason.
      */
-    data class SubmitError(val error: grpc_call_error) : BatchResult
+    @InternalRpcApi
+    public data class SubmitError(val error: grpc_call_error) : BatchResult
 
     /**
      * Happens when the batch was successfully submitted.
      * The [future] will be completed with `true` if the batch was successful, `false` otherwise.
      * In the case of `false`, the status of the `RECV_STATUS_ON_CLIENT` batch will provide the error details.
      */
-    data class Submitted(val future: CallbackFuture<Boolean>) : BatchResult
+    @InternalRpcApi
+    public data class Submitted(val future: CallbackFuture<Boolean>) : BatchResult
 }
 
 /**
@@ -69,7 +75,8 @@ internal sealed interface BatchResult {
  * the queue.
  * Users can attach to the returned [CallbackFuture] if the batch was successfully submitted (see [BatchResult]).
  */
-internal class CompletionQueue {
+@InternalRpcApi
+public class CompletionQueue {
 
     internal enum class State { OPEN, SHUTTING_DOWN, CLOSED }
 
@@ -100,7 +107,8 @@ internal class CompletionQueue {
     }.reinterpret<grpc_completion_queue_functor>()
 
 
-    val raw = grpc_completion_queue_create_for_callback(shutdownFunctor.ptr, null)
+    public val raw: CPointer<grpc_completion_queue>? =
+        grpc_completion_queue_create_for_callback(shutdownFunctor.ptr, null)
 
     @Suppress("unused")
     private val thisStableRefCleaner = createCleaner(thisStableRef) { it.dispose() }
@@ -118,7 +126,7 @@ internal class CompletionQueue {
      * Submits a batch operation to the queue.
      * See [BatchResult] for possible outcomes.
      */
-    fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong): BatchResult {
+    public fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong): BatchResult {
         if (_shutdownDone.isCompleted) return BatchResult.CQShutdown
 
         val completion = CallbackFuture<Boolean>()
@@ -162,7 +170,7 @@ internal class CompletionQueue {
      *        Otherwise, the queue allows submitting new batches and shutdown only when there are no more
      *        ongoing batches.
      */
-    fun shutdown(force: Boolean = false): CallbackFuture<Unit> {
+    public fun shutdown(force: Boolean = false): CallbackFuture<Unit> {
         if (force) {
             forceShutdown.value = true
         }
@@ -230,14 +238,15 @@ private fun deleteCbTag(tag: CPointer<kgrpc_cb_tag>) {
  *
  * `this` object is guaranteed to be not garbage collected until the [run] method was executed.
  */
-internal interface CallbackTag {
-    fun run(ok: Boolean)
+@InternalRpcApi
+public interface CallbackTag {
+    public fun run(ok: Boolean)
 
     /**
      * Creates a pointer to a gRPC callback tag that encapsulates the given `run` function.
      * It can be passed to callback-based grpc_completion_queue.
      */
-    fun toCbTag(): CPointer<kgrpc_cb_tag> {
+    public fun toCbTag(): CPointer<kgrpc_cb_tag> {
         return newCbTag(this, staticCFunction { functor, ok ->
             val tag = functor!!.reinterpret<kgrpc_cb_tag>()
             val callbackTag = tag.pointed.user_data!!.asStableRef<CallbackTag>().get()
@@ -247,7 +256,7 @@ internal interface CallbackTag {
         })
     }
 
-    companion object {
+    public companion object {
         /**
          * Creates a pointer to a gRPC callback tag that encapsulates the given `run` function.
          *
@@ -257,7 +266,7 @@ internal interface CallbackTag {
          * @return A pointer to the newly created gRPC callback tag.
          *         It can be passed to callback-based grpc_completion_queue.
          */
-        fun anonymous(run: (ok: Boolean) -> Unit): CPointer<kgrpc_cb_tag> {
+        public fun anonymous(run: (ok: Boolean) -> Unit): CPointer<kgrpc_cb_tag> {
             return object : CallbackTag {
                 override fun run(ok: Boolean) {
                     run(ok)
