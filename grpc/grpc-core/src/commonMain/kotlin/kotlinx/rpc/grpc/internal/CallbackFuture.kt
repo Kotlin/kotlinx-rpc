@@ -5,11 +5,13 @@
 package kotlinx.rpc.grpc.internal
 
 import kotlinx.atomicfu.atomic
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
  * Thread safe future for callbacks.
  */
-internal class CallbackFuture<T : Any> {
+@InternalRpcApi
+public class CallbackFuture<T : Any> {
     private sealed interface State<out T> {
         data class Pending<T>(val callbacks: List<(T) -> Unit> = emptyList()) : State<T>
         data class Done<T>(val value: T) : State<T>
@@ -17,7 +19,7 @@ internal class CallbackFuture<T : Any> {
 
     private val state = atomic<State<T>>(State.Pending())
 
-    fun complete(result: T) {
+    public fun complete(result: T) {
         var toInvoke: List<(T) -> Unit>
         while (true) {
             when (val s = state.value) {
@@ -32,7 +34,7 @@ internal class CallbackFuture<T : Any> {
         for (cb in toInvoke) cb(result)
     }
 
-    fun onComplete(callback: (T) -> Unit) {
+    public fun onComplete(callback: (T) -> Unit) {
         while (true) {
             when (val s = state.value) {
                 is State.Done -> {
@@ -47,5 +49,5 @@ internal class CallbackFuture<T : Any> {
         }
     }
 
-    val isCompleted: Boolean get() = state.value is State.Done
+    public val isCompleted: Boolean get() = state.value is State.Done
 }

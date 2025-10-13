@@ -10,16 +10,18 @@ import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import libkgrpc.grpc_init
 import libkgrpc.grpc_shutdown
 import kotlin.experimental.ExperimentalNativeApi
 
-internal object GrpcRuntime {
+@InternalRpcApi
+public object GrpcRuntime {
     private val refLock = reentrantLock()
     private var refs = 0
 
     /** Acquire a runtime reference. Must be closed exactly once. */
-    fun acquire(): AutoCloseable {
+    public fun acquire(): AutoCloseable {
         refLock.withLock {
             val prev = refs++
             if (prev == 0) grpc_init()

@@ -8,9 +8,9 @@ import com.google.protobuf.kotlin.Empty
 import com.google.protobuf.kotlin.EmptyInternal
 import com.google.protobuf.kotlin.invoke
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.grpc.internal.MethodType
-import kotlinx.rpc.grpc.internal.methodDescriptor
-import kotlinx.rpc.grpc.internal.unaryRpc
+import kotlinx.rpc.grpc.descriptor.MethodType
+import kotlinx.rpc.grpc.descriptor.methodDescriptor
+import kotlinx.rpc.grpc.client.internal.unaryRpc
 import kotlinx.rpc.grpc.test.withJavaPkg.TheService
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService

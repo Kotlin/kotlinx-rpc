@@ -7,10 +7,9 @@ package kotlinx.rpc.grpc.ktor.server
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.util.*
-import kotlinx.rpc.RpcServer
-import kotlinx.rpc.grpc.GrpcServer
-import kotlinx.rpc.grpc.GrpcServerConfiguration
-import kotlinx.rpc.grpc.ServerBuilder
+import kotlinx.rpc.grpc.server.GrpcServer
+import kotlinx.rpc.grpc.server.GrpcServerConfiguration
+import kotlinx.rpc.grpc.server.ServerBuilder
 
 @Suppress("ConstPropertyName")
 public object GrpcConfigKeys {
@@ -48,7 +47,6 @@ public val GrpcServerKey: AttributeKey<GrpcServer> = AttributeKey<GrpcServer>("G
 public fun Application.grpc(
     port: Int = environment.config.propertyOrNull(GrpcConfigKeys.grpcHostPortPath)?.getAs<Int>() ?: 8001,
     configure: GrpcServerConfiguration.() -> Unit = {},
-    builder: RpcServer.() -> Unit,
 ): GrpcServer {
     if (attributes.contains(GrpcServerKey)) {
         error("gRPC Server is already installed, second call to grpc() is not allowed")
@@ -61,7 +59,6 @@ public fun Application.grpc(
             port = port,
             parentContext = coroutineContext,
             configure = configure,
-            builder = builder,
         )
     }
 
