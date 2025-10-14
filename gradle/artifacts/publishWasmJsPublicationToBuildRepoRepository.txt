@@ -34,9 +34,6 @@ org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-protobuf-wasm-js/sources.ja
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-wasm-js/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-wasm-js/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-wasm-js/sources.jar
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test-wasm-js/.klib
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test-wasm-js/javadoc.jar
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test-wasm-js/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-utils-wasm-js/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-utils-wasm-js/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-utils-wasm-js/sources.jar

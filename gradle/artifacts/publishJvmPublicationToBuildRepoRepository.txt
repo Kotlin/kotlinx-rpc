@@ -34,9 +34,6 @@ org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-protobuf-jvm/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-jvm/.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-jvm/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-jvm/sources.jar
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test-jvm/.jar
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test-jvm/javadoc.jar
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test-jvm/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-utils-jvm/.jar
 org.jetbrains.kotlinx:kotlinx-rpc-utils-jvm/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-utils-jvm/sources.jar

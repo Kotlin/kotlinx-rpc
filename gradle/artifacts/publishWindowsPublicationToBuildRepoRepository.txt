@@ -34,9 +34,6 @@ org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-protobuf-mingwx64/sources.j
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-mingwx64/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-mingwx64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-mingwx64/sources.jar
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test-mingwx64/.klib
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test-mingwx64/javadoc.jar
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test-mingwx64/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-utils-mingwx64/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-utils-mingwx64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-utils-mingwx64/sources.jar
