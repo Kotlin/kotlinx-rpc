@@ -38,7 +38,7 @@ includePublic(":krpc:krpc-core")
 includePublic(":krpc:krpc-client")
 includePublic(":krpc:krpc-server")
 includePublic(":krpc:krpc-logging")
-includePublic(":krpc:krpc-test")
+include(":krpc:krpc-test")
 
 include(":krpc:krpc-serialization")
 includePublic(":krpc:krpc-serialization:krpc-serialization-core")
