@@ -18,7 +18,7 @@ interface BoxService {
 @OptIn(ExperimentalRpcApi::class)
 fun box(): String = runBlocking {
     val descriptor = serviceDescriptorOf<BoxService>()
-    val result = descriptor.callableMap["simple"]?.name
+    val result = descriptor.callables["simple"]?.name
 
     if (result == "simple") "OK" else "Fail: $result"
 }

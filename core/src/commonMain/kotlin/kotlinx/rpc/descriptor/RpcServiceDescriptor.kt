@@ -44,7 +44,7 @@ public interface RpcServiceDescriptor<@Rpc T : Any> {
 
     public fun getCallable(name: String): RpcCallable<T>?
 
-    public val callableMap: Map<String, RpcCallable<T>>
+    public val callables: Map<String, RpcCallable<T>>
 
     public fun createInstance(serviceId: Long, client: RpcClient): T
 }

@@ -12,7 +12,7 @@ FILE: serviceDescriptor.kt
     @R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|))) public final fun box(): R|kotlin/String| {
         ^box R|kotlinx/coroutines/runBlocking|<R|kotlin/String|>(<L> = runBlocking@fun R|kotlinx/coroutines/CoroutineScope|.<anonymous>(): R|kotlin/String| <inline=NoInline, kind=EXACTLY_ONCE>  {
             lval descriptor: R|kotlinx/rpc/descriptor/RpcServiceDescriptor<BoxService>| = R|kotlinx/rpc/descriptor/serviceDescriptorOf|<R|BoxService|>()
-            lval result: R|kotlin/String?| = R|<local>/descriptor|.R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcServiceDescriptor.callableMap: R|kotlin/collections/Map<kotlin/String, kotlinx/rpc/descriptor/RpcCallable<BoxService>>|>|.R|SubstitutionOverride<kotlin/collections/Map.get: R|kotlinx/rpc/descriptor/RpcCallable<BoxService>?|>|(String(simple))?.{ $subj$.R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcCallable.name: R|kotlin/String|>| }
+            lval result: R|kotlin/String?| = R|<local>/descriptor|.R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcServiceDescriptor.callables: R|kotlin/collections/Map<kotlin/String, kotlinx/rpc/descriptor/RpcCallable<BoxService>>|>|.R|SubstitutionOverride<kotlin/collections/Map.get: R|kotlinx/rpc/descriptor/RpcCallable<BoxService>?|>|(String(simple))?.{ $subj$.R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcCallable.name: R|kotlin/String|>| }
             ^ when () {
                 ==(R|<local>/result|, String(simple)) ->  {
                     String(OK)

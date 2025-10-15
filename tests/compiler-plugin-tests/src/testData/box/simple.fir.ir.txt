@@ -63,10 +63,10 @@ FILE fqName:<root> fileName:/simple.kt
               RETURN type=kotlin.Nothing from='private final fun <get-simpleInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.Method<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion'
                 GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:simpleInvokator type:kotlinx.rpc.descriptor.RpcInvokator.Method<<root>.BoxService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.Method<<root>.BoxService> origin=null
                   receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-simpleInvokator>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
-        PROPERTY name:callableMap visibility:private modality:FINAL [val]
+        PROPERTY name:callables visibility:private modality:FINAL [val]
           overridden:
-            public abstract callableMap: kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<T of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
-          FIELD PROPERTY_BACKING_FIELD name:callableMap type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> visibility:private [final]
+            public abstract callables: kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<T of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
+          FIELD PROPERTY_BACKING_FIELD name:callables type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> visibility:private [final]
             EXPRESSION_BODY
               CALL 'public final fun mapOf <K, V> (vararg pairs: kotlin.Pair<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf>): kotlin.collections.Map<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf> declared in kotlin.collections' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
                 TYPE_ARG K: kotlin.String
@@ -89,15 +89,15 @@ FILE fqName:<root> fileName:/simple.kt
                       ARG parameters: CALL 'public final fun emptyArray <T> (): kotlin.Array<T of kotlin.emptyArray> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null
                         TYPE_ARG T: kotlinx.rpc.descriptor.RpcParameter
                       ARG isNonSuspendFunction: CONST Boolean type=kotlin.Boolean value=false
-          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-callableMap> visibility:public modality:FINAL returnType:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>>
+          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-callables> visibility:public modality:FINAL returnType:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>>
             VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
-            correspondingProperty: PROPERTY name:callableMap visibility:private modality:FINAL [val]
+            correspondingProperty: PROPERTY name:callables visibility:private modality:FINAL [val]
             overridden:
-              public abstract fun <get-callableMap> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<T of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
+              public abstract fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<T of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
             BLOCK_BODY
-              RETURN type=kotlin.Nothing from='public final fun <get-callableMap> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion'
-                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:callableMap type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> visibility:private [final]' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
-                  receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-callableMap>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
+              RETURN type=kotlin.Nothing from='public final fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion'
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:callables type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> visibility:private [final]' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
+                  receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-callables>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
         CONSTRUCTOR visibility:private returnType:<root>.BoxService.$rpcServiceStub.Companion [primary]
           BLOCK_BODY
             DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
@@ -134,7 +134,7 @@ FILE fqName:<root> fileName:/simple.kt
           BLOCK_BODY
             RETURN type=kotlin.Nothing from='public open fun getCallable (name: kotlin.String): kotlinx.rpc.descriptor.RpcCallable? declared in <root>.BoxService.$rpcServiceStub.Companion'
               CALL 'public abstract fun get (key: K of kotlin.collections.Map): V of kotlin.collections.Map? declared in kotlin.collections.Map' type=kotlinx.rpc.descriptor.RpcCallable? origin=GET_ARRAY_ELEMENT
-                ARG <this>: CALL 'public final fun <get-callableMap> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=GET_PROPERTY
+                ARG <this>: CALL 'public final fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=GET_PROPERTY
                   ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.getCallable' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                 ARG key: GET_VAR 'name: kotlin.String declared in <root>.BoxService.$rpcServiceStub.Companion.getCallable' type=kotlin.String origin=null
       CONSTRUCTOR visibility:public returnType:<root>.BoxService.$rpcServiceStub [primary]

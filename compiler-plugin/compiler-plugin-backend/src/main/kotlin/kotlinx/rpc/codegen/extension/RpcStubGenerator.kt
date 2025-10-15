@@ -83,7 +83,7 @@ private object Stub {
 }
 
 private object Descriptor {
-    const val CALLABLE_MAP = "callableMap"
+    const val CALLABLES = "callables"
     const val FQ_NAME = "fqName"
     const val GET_CALLABLE = "getCallable"
     const val CREATE_INSTANCE = "createInstance"
@@ -524,7 +524,7 @@ internal class RpcStubGenerator(
 
         generateInvokators()
 
-        generateCallableMapProperty()
+        generateCallablesProperty()
 
         generateGetCallableFunction()
 
@@ -698,33 +698,33 @@ internal class RpcStubGenerator(
         }
     }
 
-    private var callableMap: IrProperty by Delegates.notNull()
+    private var callables: IrProperty by Delegates.notNull()
 
     /**
      * Callable names map.
      * A map that holds an RpcCallable that describes it.
      *
      * ```kotlin
-     *  override val callableMap: Map<String, RpcCallable<MyService>> = mapOf(
+     *  override val callables: Map<String, RpcCallable<MyService>> = mapOf(
      *      Pair("<callable-name-1>", RpcCallable(...)),
      *      ...
      *      Pair("<callable-name-n>", RpcCallable(...)),
      *  )
      *
      *  // when n=0:
-     *  private val callableMap: Map<String, RpcCallable<MyService>> = emptyMap()
+     *  private val callables: Map<String, RpcCallable<MyService>> = emptyMap()
      * ```
      *
      * Where:
      *  - `<callable-name-k>` - the name of the k-th callable in the service
      */
-    private fun IrClass.generateCallableMapProperty() {
+    private fun IrClass.generateCallablesProperty() {
 
-        // the RpcServiceDescriptor.callableMap property will not exist for older runtime library versions
-        val interfaceProperty = ctx.rpcServiceDescriptor.findPropertyByName(Descriptor.CALLABLE_MAP)
+        // the RpcServiceDescriptor.callables property will not exist for older runtime library versions
+        val interfaceProperty = ctx.rpcServiceDescriptor.findPropertyByName(Descriptor.CALLABLES)
 
-        callableMap = addProperty {
-            name = Name.identifier(Descriptor.CALLABLE_MAP)
+        callables = addProperty {
+            name = Name.identifier(Descriptor.CALLABLES)
             if (interfaceProperty == null) {
                 visibility = DescriptorVisibilities.PUBLIC
                 modality = Modality.OPEN
@@ -758,11 +758,11 @@ internal class RpcStubGenerator(
                 )
             }
 
-            addDefaultGetter(this@generateCallableMapProperty, ctx.irBuiltIns) {
+            addDefaultGetter(this@generateCallablesProperty, ctx.irBuiltIns) {
                 visibility =
                     if (interfaceProperty == null) DescriptorVisibilities.PRIVATE else DescriptorVisibilities.PUBLIC
                 if (interfaceProperty != null)
-                    overriddenSymbols = listOf(ctx.rpcServiceDescriptor.getPropertyGetter(Descriptor.CALLABLE_MAP)!!)
+                    overriddenSymbols = listOf(ctx.rpcServiceDescriptor.getPropertyGetter(Descriptor.CALLABLES)!!)
             }
         }
     }
@@ -950,11 +950,11 @@ internal class RpcStubGenerator(
     }
 
     /**
-     * Accessor function for the `callableMap` property
+     * Accessor function for the `callables` property
      * Defined in `RpcServiceDescriptor`
      *
      * ```kotlin
-     *  final override fun getCallable(name: String): RpcCallable<MyService>? = callableMap[name]
+     *  final override fun getCallable(name: String): RpcCallable<MyService>? = callables[name]
      * ```
      */
     private fun IrClass.generateGetCallableFunction() {
@@ -989,7 +989,7 @@ internal class RpcStubGenerator(
                         arguments {
                             dispatchReceiver = irCallProperty(
                                 clazz = this@generateGetCallableFunction,
-                                property = callableMap,
+                                property = callables,
                                 symbol = functionThisReceiver.symbol,
                             )
 
