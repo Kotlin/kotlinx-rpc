@@ -3,7 +3,7 @@
 This page contains all changes throughout releases of the library.
 
 ## 0.10.0
-> Published 1 October 2025
+> Published 7 October 2025
 
 **Full Changelog**: [0.9.1...0.10.0](https://github.com/Kotlin/kotlinx-rpc/compare/0.9.1...0.10.0)
 
