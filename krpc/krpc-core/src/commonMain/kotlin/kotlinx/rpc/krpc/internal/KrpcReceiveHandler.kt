@@ -113,7 +113,9 @@ internal class KrpcStoringReceiveHandler(
                     serviceId = message.serviceId,
                 )
 
-                this@KrpcStoringReceiveHandler.sender.sendMessage(callException)
+                this@KrpcStoringReceiveHandler.sender.sendMessageChecked(callException) {
+                    // ignore, call was already closed
+                }
             }
 
             buffer.close(e)
