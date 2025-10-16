@@ -13,16 +13,64 @@ import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
 import org.jetbrains.kotlin.descriptors.DescriptorVisibility
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
-import org.jetbrains.kotlin.ir.builders.*
-import org.jetbrains.kotlin.ir.builders.declarations.*
-import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.expressions.*
-import org.jetbrains.kotlin.ir.expressions.impl.*
+import org.jetbrains.kotlin.ir.builders.IrBlockBodyBuilder
+import org.jetbrains.kotlin.ir.builders.IrBuilderWithScope
+import org.jetbrains.kotlin.ir.builders.declarations.addConstructor
+import org.jetbrains.kotlin.ir.builders.declarations.addFunction
+import org.jetbrains.kotlin.ir.builders.declarations.addProperty
+import org.jetbrains.kotlin.ir.builders.declarations.addValueParameter
+import org.jetbrains.kotlin.ir.builders.declarations.buildFun
+import org.jetbrains.kotlin.ir.builders.irAs
+import org.jetbrains.kotlin.ir.builders.irBlockBody
+import org.jetbrains.kotlin.ir.builders.irCall
+import org.jetbrains.kotlin.ir.builders.irCallConstructor
+import org.jetbrains.kotlin.ir.builders.irDelegatingConstructorCall
+import org.jetbrains.kotlin.ir.builders.irGet
+import org.jetbrains.kotlin.ir.builders.irReturn
+import org.jetbrains.kotlin.ir.builders.irVararg
+import org.jetbrains.kotlin.ir.declarations.IrAnnotationContainer
+import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrConstructor
+import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
+import org.jetbrains.kotlin.ir.declarations.IrFunction
+import org.jetbrains.kotlin.ir.declarations.IrProperty
+import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
+import org.jetbrains.kotlin.ir.declarations.IrValueParameter
+import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrClassReference
+import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
+import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
+import org.jetbrains.kotlin.ir.expressions.IrTypeOperator
+import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrClassReferenceImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrFunctionExpressionImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrGetObjectValueImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrInstanceInitializerCallImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrTypeOperatorCallImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
+import org.jetbrains.kotlin.ir.expressions.putConstructorTypeArgument
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
-import org.jetbrains.kotlin.ir.types.*
-import org.jetbrains.kotlin.ir.util.*
+import org.jetbrains.kotlin.ir.types.IrSimpleType
+import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.types.classOrNull
+import org.jetbrains.kotlin.ir.types.createType
+import org.jetbrains.kotlin.ir.types.defaultType
+import org.jetbrains.kotlin.ir.types.typeWith
+import org.jetbrains.kotlin.ir.util.classId
+import org.jetbrains.kotlin.ir.util.companionObject
+import org.jetbrains.kotlin.ir.util.constructors
+import org.jetbrains.kotlin.ir.util.defaultType
+import org.jetbrains.kotlin.ir.util.dumpKotlinLike
+import org.jetbrains.kotlin.ir.util.functions
+import org.jetbrains.kotlin.ir.util.getPropertyGetter
+import org.jetbrains.kotlin.ir.util.isObject
+import org.jetbrains.kotlin.ir.util.primaryConstructor
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
 import org.jetbrains.kotlin.types.Variance
@@ -35,7 +83,7 @@ private object Stub {
 }
 
 private object Descriptor {
-    const val CALLABLE_MAP = "callableMap"
+    const val CALLABLES = "callables"
     const val FQ_NAME = "fqName"
     const val GET_CALLABLE = "getCallable"
     const val CREATE_INSTANCE = "createInstance"
@@ -476,7 +524,7 @@ internal class RpcStubGenerator(
 
         generateInvokators()
 
-        generateCallableMapProperty()
+        generateCallablesProperty()
 
         generateGetCallableFunction()
 
@@ -650,32 +698,37 @@ internal class RpcStubGenerator(
         }
     }
 
-    private var callableMap: IrProperty by Delegates.notNull()
+    private var callables: IrProperty by Delegates.notNull()
 
     /**
      * Callable names map.
      * A map that holds an RpcCallable that describes it.
      *
      * ```kotlin
-     *  private val callableMap: Map<String, RpcCallable<MyService>> = mapOf(
+     *  override val callables: Map<String, RpcCallable<MyService>> = mapOf(
      *      Pair("<callable-name-1>", RpcCallable(...)),
      *      ...
      *      Pair("<callable-name-n>", RpcCallable(...)),
      *  )
      *
      *  // when n=0:
-     *  private val callableMap: Map<String, RpcCallable<MyService>> = emptyMap()
+     *  private val callables: Map<String, RpcCallable<MyService>> = emptyMap()
      * ```
      *
      * Where:
      *  - `<callable-name-k>` - the name of the k-th callable in the service
      */
-    private fun IrClass.generateCallableMapProperty() {
-        callableMap = addProperty {
-            name = Name.identifier(Descriptor.CALLABLE_MAP)
+    private fun IrClass.generateCallablesProperty() {
+        val interfaceProperty = ctx.rpcServiceDescriptor.findPropertyByName(Descriptor.CALLABLES)
+            ?: error("Expected RpcServiceDescriptor.callables property to exist")
+
+        callables = addProperty {
+            name = Name.identifier(Descriptor.CALLABLES)
             visibility = DescriptorVisibilities.PRIVATE
             modality = Modality.FINAL
         }.apply {
+            overriddenSymbols = listOf(interfaceProperty)
+
             val rpcCallableType = ctx.rpcCallable.typeWith(declaration.serviceType)
             val mapType = ctx.irBuiltIns.mapClass.typeWith(ctx.irBuiltIns.stringType, rpcCallableType)
 
@@ -698,8 +751,10 @@ internal class RpcStubGenerator(
                 )
             }
 
-            addDefaultGetter(this@generateCallableMapProperty, ctx.irBuiltIns) {
-                visibility = DescriptorVisibilities.PRIVATE
+            addDefaultGetter(this@generateCallablesProperty, ctx.irBuiltIns) {
+                visibility =
+                    DescriptorVisibilities.PUBLIC
+                overriddenSymbols = listOf(ctx.rpcServiceDescriptor.getPropertyGetter(Descriptor.CALLABLES)!!)
             }
         }
     }
@@ -887,11 +942,11 @@ internal class RpcStubGenerator(
     }
 
     /**
-     * Accessor function for the `callableMap` property
+     * Accessor function for the `callables` property
      * Defined in `RpcServiceDescriptor`
      *
      * ```kotlin
-     *  final override fun getCallable(name: String): RpcCallable<MyService>? = callableMap[name]
+     *  final override fun getCallable(name: String): RpcCallable<MyService>? = callables[name]
      * ```
      */
     private fun IrClass.generateGetCallableFunction() {
@@ -926,7 +981,7 @@ internal class RpcStubGenerator(
                         arguments {
                             dispatchReceiver = irCallProperty(
                                 clazz = this@generateGetCallableFunction,
-                                property = callableMap,
+                                property = callables,
                                 symbol = functionThisReceiver.symbol,
                             )
 

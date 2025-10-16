@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.dsl.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -110,6 +110,12 @@ tasks.test {
     dependsOn(project(":core").tasks.getByName("jvmJar"))
     dependsOn(project(":utils").tasks.getByName("jvmJar"))
     dependsOn(project(":krpc:krpc-core").tasks.getByName("jvmJar"))
+    dependsOn("generateTests")
+
+    inputs.dir("src/testData")
+        .ignoreEmptyDirectories()
+        .normalizeLineEndings()
+        .withPathSensitivity(PathSensitivity.RELATIVE)
 
     useJUnitPlatform()
 
