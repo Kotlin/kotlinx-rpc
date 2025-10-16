@@ -46,10 +46,6 @@ org.jetbrains.kotlinx:kotlinx-rpc-krpc-server/.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server/kotlin-tooling-metadata.json
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server/sources.jar
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test/.jar
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test/javadoc.jar
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test/kotlin-tooling-metadata.json
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-utils/.jar
 org.jetbrains.kotlinx:kotlinx-rpc-utils/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-utils/kotlin-tooling-metadata.json
