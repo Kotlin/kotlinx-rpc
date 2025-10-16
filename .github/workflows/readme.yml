@@ -1,0 +1,34 @@
+name: Verify Readme
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-readme:
+    name: Run Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Sources
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Check Platforms Table
+        run: ./gradlew updateDocsChangelog --info --stacktrace
+
+      - name: Check if readme is changed in a propper branch
+        run: |
+          if [[ -n "$(git status --porcelain | grep README.md)" ]]; then
+            target_branch=${{ github.base_ref }}
+            pr_branch=${{ github.head_ref }}
+            if [[ "$target_branch" == "main" && ! "$pr_branch" =~ ^release-.* ]]; then
+              echo "README.md change targeting main can only be done in release-* branches"
+              exit 1
+            fi
+          fi

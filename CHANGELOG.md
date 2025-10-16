@@ -1,5 +1,5 @@
 # 0.10.0
-> Published 1 October 2025
+> Published 7 October 2025
 
 ## Overview
 This release brings a lot of changes, work:
