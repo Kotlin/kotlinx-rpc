@@ -719,22 +719,15 @@ internal class RpcStubGenerator(
      *  - `<callable-name-k>` - the name of the k-th callable in the service
      */
     private fun IrClass.generateCallablesProperty() {
-
-        // the RpcServiceDescriptor.callables property will not exist for older runtime library versions
         val interfaceProperty = ctx.rpcServiceDescriptor.findPropertyByName(Descriptor.CALLABLES)
+            ?: error("Expected RpcServiceDescriptor.callables property to exist")
 
         callables = addProperty {
             name = Name.identifier(Descriptor.CALLABLES)
-            if (interfaceProperty == null) {
-                visibility = DescriptorVisibilities.PUBLIC
-                modality = Modality.OPEN
-            } else {
-                visibility = DescriptorVisibilities.PRIVATE
-                modality = Modality.FINAL
-            }
+            visibility = DescriptorVisibilities.PRIVATE
+            modality = Modality.FINAL
         }.apply {
-            if (interfaceProperty != null)
-                overriddenSymbols = listOf(interfaceProperty)
+            overriddenSymbols = listOf(interfaceProperty)
 
             val rpcCallableType = ctx.rpcCallable.typeWith(declaration.serviceType)
             val mapType = ctx.irBuiltIns.mapClass.typeWith(ctx.irBuiltIns.stringType, rpcCallableType)
@@ -760,9 +753,8 @@ internal class RpcStubGenerator(
 
             addDefaultGetter(this@generateCallablesProperty, ctx.irBuiltIns) {
                 visibility =
-                    if (interfaceProperty == null) DescriptorVisibilities.PRIVATE else DescriptorVisibilities.PUBLIC
-                if (interfaceProperty != null)
-                    overriddenSymbols = listOf(ctx.rpcServiceDescriptor.getPropertyGetter(Descriptor.CALLABLES)!!)
+                    DescriptorVisibilities.PUBLIC
+                overriddenSymbols = listOf(ctx.rpcServiceDescriptor.getPropertyGetter(Descriptor.CALLABLES)!!)
             }
         }
     }
