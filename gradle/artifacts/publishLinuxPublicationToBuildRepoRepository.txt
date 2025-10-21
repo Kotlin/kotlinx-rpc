@@ -70,12 +70,6 @@ org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-linuxarm64/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-linuxx64/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-linuxx64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-linuxx64/sources.jar
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test-linuxarm64/.klib
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test-linuxarm64/javadoc.jar
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test-linuxarm64/sources.jar
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test-linuxx64/.klib
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test-linuxx64/javadoc.jar
-org.jetbrains.kotlinx:kotlinx-rpc-krpc-test-linuxx64/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-utils-linuxarm64/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-utils-linuxarm64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-utils-linuxarm64/sources.jar
