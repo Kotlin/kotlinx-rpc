@@ -3,6 +3,7 @@
  */
 
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import util.other.generateSource
 
 /*
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
@@ -55,36 +56,15 @@ gradlePlugin {
     }
 }
 
-abstract class GeneratePluginVersionTask @Inject constructor(
-    @get:Input val pluginVersion: String,
-    @get:OutputDirectory val sourcesDir: File
-) : DefaultTask() {
-    @TaskAction
-    fun generate() {
-        val sourceFile = File(sourcesDir, "Versions.kt")
-
-        sourceFile.writeText(
-            """
-            package kotlinx.rpc
-
-            public const val PLUGIN_VERSION: String = "$pluginVersion"
-            
-            """.trimIndent()
-        )
-    }
-}
-
-val sourcesDir = File(project.layout.buildDirectory.asFile.get(), "generated-sources/pluginVersion")
-
-val generatePluginVersionTask =
-    tasks.register<GeneratePluginVersionTask>("generatePluginVersion", version.toString(), sourcesDir)
-
-kotlin {
-    sourceSets {
-        main {
-            kotlin.srcDir(generatePluginVersionTask.map { it.sourcesDir })
-        }
-    }
-}
+generateSource(
+    name = "Versions",
+    text = """
+        package kotlinx.rpc
+    
+        public const val PLUGIN_VERSION: String = "$version"
+        
+    """.trimIndent(),
+    chooseSourceSet = { main }
+)
 
 logger.lifecycle("[Gradle Plugin] kotlinx.rpc project version: $version")

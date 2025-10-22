@@ -10,23 +10,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.withContext
-import kotlinx.rpc.krpc.test.compat.service.TestStarter
+import kotlinx.rpc.krpc.test.compat.service.TestStarter_Latest
+import kotlinx.rpc.test.WaitCounter
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import org.junit.jupiter.api.DynamicTest
 import org.slf4j.LoggerFactory
 import java.net.URLClassLoader
 import java.util.stream.Stream
+import kotlin.io.path.Path
 import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-
-@Suppress("EnumEntryName", "detekt.EnumNaming")
-enum class Versions {
-    v0_9,
-    v0_8,
-    Latest
-    ;
-}
 
 enum class Role {
     Server, Client;
@@ -52,7 +46,7 @@ abstract class KrpcProtocolCompatibilityTestsBase {
 
     class LoadedStarterImpl(override val version: Versions, val classLoader: URLClassLoader) : LoadedStarter {
         override val starter = classLoader
-            .loadClass("kotlinx.rpc.krpc.test.compat.service.TestStarter")
+            .loadClass("kotlinx.rpc.krpc.test.compat.service.TestStarter_${version.name}")
             .getDeclaredConstructor()
             .newInstance() as Starter
 
@@ -67,8 +61,12 @@ abstract class KrpcProtocolCompatibilityTestsBase {
 
     private fun prepareStarters(exclude: List<Versions>): List<LoadedStarter> {
         return Versions.entries.filter { it !in exclude && it != Versions.Latest }.map { version ->
-            val versionResourcePath = javaClass.classLoader.getResource(version.name)!!
-            val versionClassLoader = URLClassLoader(arrayOf(versionResourcePath), javaClass.classLoader)
+            val jarPathValue = System.getenv("JAR_PATH_${version.name}")
+                ?: error("JAR_PATH_${version.name} environment variable is not set")
+
+            val jarPath = Path(jarPathValue).toUri().toURL()
+
+            val versionClassLoader = URLClassLoader(arrayOf(jarPath), javaClass.classLoader)
 
             LoadedStarterImpl(version, versionClassLoader)
         } + latestStarter()
@@ -76,7 +74,7 @@ abstract class KrpcProtocolCompatibilityTestsBase {
 
     private fun latestStarter() = object : LoadedStarter {
         override val version: Versions = Versions.Latest
-        override val starter: Starter = TestStarter()
+        override val starter: Starter = TestStarter_Latest()
 
         override suspend fun close() {
             starter.stopClient()
@@ -131,7 +129,7 @@ abstract class KrpcProtocolCompatibilityTestsBase {
         body: suspend TestEnv.(CompatService, CompatServiceImpl) -> Unit,
     ) = runTest(Role.Client, exclude, timeout) {
         val transport = testTransport()
-        val config = TestConfig(perCallBufferSize)
+        val config = TestConfig(perCallBufferSize, ::CompatWaitCounterImpl)
         val service = old.startClient(transport.client, config)
         val impl = new.startServer(transport.server, config)
         body(service, impl)
@@ -144,7 +142,7 @@ abstract class KrpcProtocolCompatibilityTestsBase {
         body: suspend TestEnv.(CompatService, CompatServiceImpl) -> Unit,
     ) = runTest(Role.Server, exclude, timeout) {
         val transport = testTransport()
-        val config = TestConfig(perCallBufferSize)
+        val config = TestConfig(perCallBufferSize, ::CompatWaitCounterImpl)
         val service = new.startClient(transport.client, config)
         val impl = old.startServer(transport.server, config)
         body(service, impl)
@@ -162,5 +160,20 @@ abstract class KrpcProtocolCompatibilityTestsBase {
             testOldClientWithNewServer(perCallBufferSize, timeout, clientExclude, body),
             testOldServersWithNewClient(perCallBufferSize, timeout, serverExclude, body),
         )
+    }
+}
+
+class CompatWaitCounterImpl : CompatWaitCounter {
+    private val counter = WaitCounter()
+
+    override val value: Int
+        get() = counter.value
+
+    override fun increment() {
+        counter.increment()
+    }
+
+    override suspend fun await(value: Int) {
+        counter.await(value)
     }
 }

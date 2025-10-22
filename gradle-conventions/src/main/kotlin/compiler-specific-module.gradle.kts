@@ -24,6 +24,7 @@ val processCsmTemplates =
     tasks.register<ProcessCsmTemplate>(
         "processCsmTemplates",
         libs.versions.kotlin.compiler.get(),
+        emptyMap<String, String>(),
         templatesDir,
         sourcesDir,
     )

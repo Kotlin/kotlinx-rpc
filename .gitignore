@@ -39,3 +39,6 @@ detekt/reports/**
 local.properties
 scan-journal.log
 
+# krpc compat tests
+tests/krpc-protocol-compatibility-tests/v*
+gradle-conventions/src/main/kotlin/util/krpc_compat/versions.kt
