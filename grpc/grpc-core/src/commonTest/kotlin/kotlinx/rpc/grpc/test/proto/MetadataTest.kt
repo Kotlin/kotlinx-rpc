@@ -14,6 +14,7 @@ import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.appendBinary
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.contains
+import kotlinx.rpc.grpc.copy
 import kotlinx.rpc.grpc.get
 import kotlinx.rpc.grpc.getAll
 import kotlinx.rpc.grpc.getAllBinary
@@ -210,6 +211,206 @@ class MetadataTest : GrpcProtoTest() {
             assertContentEquals(byteArrayOf(1, 2, 3), getAllBinary("my-key-1-bin")[0])
             assertContentEquals(byteArrayOf(4, 5, 6), getAllBinary("my-key-2-bin")[0])
         }
+    }
+
+    @Test
+    fun `test plusAssign operator`() {
+        var md1 = GrpcMetadata().apply {
+            append("my-key", "my-value-1")
+        }
+
+        val md2 = GrpcMetadata().apply {
+            append("my-key", "my-value-2")
+        }
+
+        md1 += md2
+
+        assertEquals(listOf("my-value-1", "my-value-2"), md1.getAll("my-key"))
+        assertEquals(listOf("my-value-2"), md2.getAll("my-key"))
+    }
+
+    @Test
+    fun `test copy`() {
+        val original = GrpcMetadata().apply {
+            append("my-key", "my-value")
+            appendBinary("my-key-bin", byteArrayOf(1, 2, 3))
+        }
+
+        val copy = original.copy()
+
+        assertEquals(original.get("my-key"), copy.get("my-key"))
+        assertContentEquals(original.getBinary("my-key-bin"), copy.getBinary("my-key-bin"))
+
+        // Verify they are independent
+        copy.append("my-key", "my-value-2")
+        assertEquals("my-value", original.get("my-key"))
+        assertEquals("my-value-2", copy.get("my-key"))
+    }
+
+    @Test
+    fun `test empty metadata`() {
+        val metadata = GrpcMetadata()
+        assertEquals(0, metadata.keys().size)
+        assertEquals(null, metadata.get("non-existent"))
+        assertEquals(null, metadata.getBinary("non-existent-bin"))
+        assertEquals(emptyList(), metadata.getAll("non-existent"))
+        assertEquals(emptyList(), metadata.getAllBinary("non-existent-bin"))
+        assertEquals(false, metadata.contains("non-existent"))
+    }
+
+    @Test
+    fun `test get returns last value`() {
+        val metadata = GrpcMetadata().apply {
+            append("my-key", "first")
+            append("my-key", "second")
+            append("my-key", "third")
+        }
+
+        assertEquals("third", metadata.get("my-key"))
+        assertEquals(listOf("first", "second", "third"), metadata.getAll("my-key"))
+    }
+
+    @Test
+    fun `test getBinary returns last value`() {
+        val metadata = GrpcMetadata().apply {
+            appendBinary("my-key-bin", byteArrayOf(1, 2, 3))
+            appendBinary("my-key-bin", byteArrayOf(4, 5, 6))
+            appendBinary("my-key-bin", byteArrayOf(7, 8, 9))
+        }
+
+        assertContentEquals(byteArrayOf(7, 8, 9), metadata.getBinary("my-key-bin"))
+        assertEquals(3, metadata.getAllBinary("my-key-bin").size)
+        assertContentEquals(byteArrayOf(1, 2, 3), metadata.getAllBinary("my-key-bin")[0])
+        assertContentEquals(byteArrayOf(4, 5, 6), metadata.getAllBinary("my-key-bin")[1])
+        assertContentEquals(byteArrayOf(7, 8, 9), metadata.getAllBinary("my-key-bin")[2])
+    }
+
+    @Test
+    fun `test case insensitivity`() {
+        val metadata = GrpcMetadata().apply {
+            append("My-Key", "my-value")
+            appendBinary("My-Key-bin", byteArrayOf(1, 2, 3))
+        }
+
+        assertEquals("my-value", metadata.get("my-key"))
+        assertEquals("my-value", metadata.get("MY-KEY"))
+        assertEquals("my-value", metadata.get("My-Key"))
+        assertContentEquals(byteArrayOf(1, 2, 3), metadata.getBinary("my-key-bin"))
+        assertContentEquals(byteArrayOf(1, 2, 3), metadata.getBinary("MY-KEY-bin"))
+        assertTrue(metadata.contains("my-key"))
+        assertTrue(metadata.contains("MY-KEY"))
+    }
+
+    @Test
+    fun `test remove returns false for non-existent value`() {
+        val metadata = GrpcMetadata().apply {
+            append("my-key", "my-value")
+        }
+
+        assertEquals(false, metadata.remove("my-key", "other-value"))
+        assertEquals(false, metadata.remove("non-existent", "value"))
+        assertEquals(true, metadata.remove("my-key", "my-value"))
+    }
+
+    @Test
+    fun `test removeBinary returns false for non-existent value`() {
+        val value = byteArrayOf(1, 2, 3)
+        val metadata = GrpcMetadata().apply {
+            appendBinary("my-key-bin", value)
+        }
+
+        assertEquals(false, metadata.removeBinary("my-key-bin", byteArrayOf(4, 5, 6)))
+        assertEquals(false, metadata.removeBinary("non-existent-bin", value))
+        assertEquals(true, metadata.removeBinary("my-key-bin", value))
+    }
+
+    @Test
+    fun `test removeAll returns empty list for non-existent key`() {
+        val metadata = GrpcMetadata()
+        assertEquals(emptyList(), metadata.removeAll("non-existent"))
+    }
+
+    @Test
+    fun `test removeAllBinary returns empty list for non-existent key`() {
+        val metadata = GrpcMetadata()
+        assertEquals(emptyList(), metadata.removeAllBinary("non-existent-bin"))
+    }
+
+    @Test
+    fun `test removeAll removes all values and returns them`() {
+        val metadata = GrpcMetadata().apply {
+            append("my-key", "value1")
+            append("my-key", "value2")
+            append("my-key", "value3")
+        }
+
+        val removed = metadata.removeAll("my-key")
+        assertEquals(listOf("value1", "value2", "value3"), removed)
+        assertEquals(null, metadata.get("my-key"))
+        assertEquals(false, metadata.contains("my-key"))
+    }
+
+    @Test
+    fun `test removeAllBinary removes all values and returns them`() {
+        val metadata = GrpcMetadata().apply {
+            appendBinary("my-key-bin", byteArrayOf(1, 2, 3))
+            appendBinary("my-key-bin", byteArrayOf(4, 5, 6))
+        }
+
+        val removed = metadata.removeAllBinary("my-key-bin")
+        assertEquals(2, removed.size)
+        assertContentEquals(byteArrayOf(1, 2, 3), removed[0])
+        assertContentEquals(byteArrayOf(4, 5, 6), removed[1])
+        assertEquals(null, metadata.getBinary("my-key-bin"))
+        assertEquals(false, metadata.contains("my-key-bin"))
+    }
+
+    @Test
+    fun `test duplicate values allowed`() {
+        val metadata = GrpcMetadata().apply {
+            append("my-key", "value")
+            append("my-key", "value")
+            append("my-key", "value")
+        }
+
+        assertEquals(listOf("value", "value", "value"), metadata.getAll("my-key"))
+        assertEquals(true, metadata.remove("my-key", "value"))
+        assertEquals(listOf("value", "value"), metadata.getAll("my-key"))
+    }
+
+    @Test
+    fun `test keys returns snapshot`() {
+        val metadata = GrpcMetadata().apply {
+            append("key1", "value1")
+            append("key2", "value2")
+        }
+
+        val keys = metadata.keys()
+        assertEquals(2, keys.size)
+
+        metadata.append("key3", "value3")
+        // Keys set should still be 2 since it's a snapshot
+        assertEquals(2, keys.size)
+    }
+
+    @Test
+    fun `test plus operator does not modify originals`() {
+        val md1 = GrpcMetadata().apply {
+            append("key1", "value1")
+        }
+
+        val md2 = GrpcMetadata().apply {
+            append("key2", "value2")
+        }
+
+        val md3 = md1 + md2
+
+        assertEquals(listOf("value1"), md1.getAll("key1"))
+        assertEquals(false, md1.contains("key2"))
+        assertEquals(listOf("value2"), md2.getAll("key2"))
+        assertEquals(false, md2.contains("key1"))
+        assertEquals(listOf("value1"), md3.getAll("key1"))
+        assertEquals(listOf("value2"), md3.getAll("key2"))
     }
 
 
