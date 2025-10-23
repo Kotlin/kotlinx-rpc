@@ -41,11 +41,13 @@ internal class ServerStreamContext {
     }
 
     suspend fun cancelStream(message: KrpcCallMessage.StreamCancel) {
-        streams[message.callId]?.get(message.streamId)?.channel?.sendIgnoreClosed(StreamCancel(message.cause.deserialize()))
+        streams[message.callId]?.get(message.streamId)?.channel
+            ?.sendIgnoreClosed(StreamCancel(message.cause.deserialize()))
     }
 
     suspend fun closeStream(message: KrpcCallMessage.StreamFinished) {
-        streams[message.callId]?.get(message.streamId)?.channel?.sendIgnoreClosed(StreamEnd)
+        streams[message.callId]?.get(message.streamId)?.channel
+            ?.sendIgnoreClosed(StreamEnd)
     }
 
     private suspend fun <T> Channel<T>.sendIgnoreClosed(data: T) {
