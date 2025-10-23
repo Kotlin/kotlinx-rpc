@@ -3,6 +3,29 @@
 This page contains all changes throughout releases of the library.
 
 ## 0.10.0
+> Published 24 October 2025
+
+**Full Changelog**: [0.10.0...0.10.1](https://github.com/Kotlin/kotlinx-rpc/compare/0.10.0...0.10.1)
+
+#### Features 🎉 {id=Features_0_10_0}
+* Expose RpcServiceDescriptor.callables by [@rnett](https://github.com/rnett) in [#516](https://github.com/Kotlin/kotlinx-rpc/pull/516)
+* Added watchosDeviceArm64 and watchosArm32 targets to kRPC by [@Mr3zee](https://github.com/Mr3zee) in [#513](https://github.com/Kotlin/kotlinx-rpc/pull/513)
+
+#### Bug fixes 🐛 {id=Bug_fixes_0_10_0}
+* Fix one more ClosedSendChannelException by [@Mr3zee](https://github.com/Mr3zee) in [#514](https://github.com/Kotlin/kotlinx-rpc/pull/514)
+* Fix scope initialization on the kRPC Client by [@Mr3zee](https://github.com/Mr3zee) in [#505](https://github.com/Kotlin/kotlinx-rpc/pull/505)
+* Fix wording for the `perCallBufferSize` docs by [@Mr3zee](https://github.com/Mr3zee) in [#500](https://github.com/Kotlin/kotlinx-rpc/pull/500)
+
+#### Infra 🚧 {id=Infra_0_10_0}
+* Added readme safeguard by [@Mr3zee](https://github.com/Mr3zee) in [#515](https://github.com/Kotlin/kotlinx-rpc/pull/515)
+* Fixed kRPC compatibility tests by [@Mr3zee](https://github.com/Mr3zee) in [#518](https://github.com/Kotlin/kotlinx-rpc/pull/518)
+* Update compiler tests infra by [@Mr3zee](https://github.com/Mr3zee) in [#510](https://github.com/Kotlin/kotlinx-rpc/pull/510)
+
+### New Contributors {id=New_Contributors_0_10_0}
+* [@rnett](https://github.com/rnett) made their first contribution in [#516](https://github.com/Kotlin/kotlinx-rpc/pull/516)
+
+
+## 0.10.0
 > Published 7 October 2025
 
 **Full Changelog**: [0.9.1...0.10.0](https://github.com/Kotlin/kotlinx-rpc/compare/0.9.1...0.10.0)
