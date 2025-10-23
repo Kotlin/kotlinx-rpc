@@ -13,7 +13,9 @@ public fun serializeException(cause: Throwable): SerializedException {
     val message = cause.message ?: "Unknown exception"
     val stacktrace = cause.stackElements()
     val serializedCause = cause.cause?.let { serializeException(it) }
-    val className = if (cause is CancellationException || cause is kotlin.coroutines.cancellation.CancellationException) {
+    val className = if (
+        cause is CancellationException || cause is kotlin.coroutines.cancellation.CancellationException
+    ) {
         CancellationException::class.rpcInternalTypeName ?: "kotlinx.coroutines.CancellationException"
     } else {
         cause::class.rpcInternalTypeName ?: ""

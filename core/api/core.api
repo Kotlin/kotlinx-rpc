@@ -55,7 +55,7 @@ public abstract interface class kotlinx/rpc/descriptor/RpcParameter {
 public abstract interface class kotlinx/rpc/descriptor/RpcServiceDescriptor {
 	public abstract fun createInstance (JLkotlinx/rpc/RpcClient;)Ljava/lang/Object;
 	public abstract fun getCallable (Ljava/lang/String;)Lkotlinx/rpc/descriptor/RpcCallable;
-	public abstract fun getCallableMap ()Ljava/util/Map;
+	public abstract fun getCallables ()Ljava/util/Map;
 	public abstract fun getFqName ()Ljava/lang/String;
 }
 

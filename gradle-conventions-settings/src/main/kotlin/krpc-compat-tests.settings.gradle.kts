@@ -2,6 +2,8 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:Suppress("LoggingSimilarMessage")
+
 import kotlin.io.path.createDirectories
 import kotlin.io.path.writeText
 
@@ -55,7 +57,7 @@ versionDirs.forEach { (dir, version) ->
     """.trimIndent()
     )
 
-    logger.lifecycle("Generating :tests:krpc-protocol-compatibility-tests:$dir")
+    logger.debug("Generating {}", globalRootDir.relativize(buildFile))
     include(":tests:krpc-protocol-compatibility-tests:$dir")
 }
 
@@ -68,7 +70,7 @@ val versionsConventionsFile: java.nio.file.Path = globalRootDir
     .resolve("krpc_compat")
     .resolve("versions.kt")
 
-logger.lifecycle("Generating krpc_compat/versions.kt")
+logger.debug("Generating {}", globalRootDir.relativize(versionsConventionsFile))
 versionsConventionsFile.writeText(
     """
         |/* THIS FILE IS AUTO-GENERATED, DO NOT EDIT! */

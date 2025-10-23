@@ -28,8 +28,8 @@ abstract interface <#A: kotlin/Any> kotlinx.rpc.descriptor/RpcCallable { // kotl
 }
 
 abstract interface <#A: kotlin/Any> kotlinx.rpc.descriptor/RpcServiceDescriptor { // kotlinx.rpc.descriptor/RpcServiceDescriptor|null[0]
-    abstract val callableMap // kotlinx.rpc.descriptor/RpcServiceDescriptor.callableMap|{}callableMap[0]
-        abstract fun <get-callableMap>(): kotlin.collections/Map<kotlin/String, kotlinx.rpc.descriptor/RpcCallable<#A>> // kotlinx.rpc.descriptor/RpcServiceDescriptor.callableMap.<get-callableMap>|<get-callableMap>(){}[0]
+    abstract val callables // kotlinx.rpc.descriptor/RpcServiceDescriptor.callables|{}callables[0]
+        abstract fun <get-callables>(): kotlin.collections/Map<kotlin/String, kotlinx.rpc.descriptor/RpcCallable<#A>> // kotlinx.rpc.descriptor/RpcServiceDescriptor.callables.<get-callables>|<get-callables>(){}[0]
     abstract val fqName // kotlinx.rpc.descriptor/RpcServiceDescriptor.fqName|{}fqName[0]
         abstract fun <get-fqName>(): kotlin/String // kotlinx.rpc.descriptor/RpcServiceDescriptor.fqName.<get-fqName>|<get-fqName>(){}[0]
 
