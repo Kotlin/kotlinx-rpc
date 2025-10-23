@@ -19,6 +19,7 @@ plugins {
     id("conventions-repositories")
     id("conventions-version-resolution")
     id("conventions-develocity")
+    id("krpc-compat-tests")
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
