@@ -8,7 +8,7 @@ import org.gradle.api.GradleException
 import org.slf4j.Logger
 
 object CsmTemplateProcessor {
-    fun process(lines: List<String>, kotlinCompilerVersion: String, logger: Logger): List<String> {
+    fun process(lines: List<String>, kotlinCompilerVersion: String, logger: Logger, replacementMap: Map<String, String>): List<String> {
         val result = mutableListOf<String>()
 
         val tags: ArrayDeque<String> = ArrayDeque()
@@ -21,7 +21,7 @@ object CsmTemplateProcessor {
         val defaultBuffer = mutableListOf<String>()
         val specificBuffer = mutableListOf<String>()
 
-        lines.forEachIndexed { i, line ->
+        lines.map { it.applyReplacements(replacementMap) }.forEachIndexed { i, line ->
             val trimmed = line.trim()
             when {
                 trimmed.startsWith("//##csm") -> {
@@ -178,4 +178,12 @@ object CsmTemplateProcessor {
     private enum class Specific {
         Skip, Apply;
     }
+}
+
+private fun String.applyReplacements(replacementMap: Map<String, String>): String {
+    var result = this
+    replacementMap.forEach { (from, to) ->
+        result = result.replace(from, to)
+    }
+    return result
 }

@@ -12,6 +12,7 @@ rootProject.name = "gradle-conventions-settings"
 // Code below is a hack because a chicken-egg problem, I can't use myself as a settings-plugin
 apply(from = "src/main/kotlin/conventions-repositories.settings.gradle.kts")
 apply(from = "src/main/kotlin/conventions-version-resolution.settings.gradle.kts")
+apply(from = "src/main/kotlin/krpc-compat-tests.settings.gradle.kts")
 
 include(":develocity")
 

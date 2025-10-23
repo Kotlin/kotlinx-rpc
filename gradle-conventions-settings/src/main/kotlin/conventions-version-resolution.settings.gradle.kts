@@ -139,7 +139,7 @@ fun VersionCatalogBuilder.resolveKotlinVersion(versionCatalog: Map<String, Strin
 
 // Resolves a core kotlinx.rpc version (without a Kotlin version prefix) from the Version Catalog.
 // Uses LIBRARY_VERSION_ENV_VAR_NAME instead if present
-fun VersionCatalogBuilder.resolveLibraryVersion(versionCatalog: Map<String, String>) {
+fun resolveLibraryVersion(versionCatalog: Map<String, String>): String {
     val libraryCoreVersion: String = System.getenv(SettingsConventions.LIBRARY_VERSION_ENV_VAR_NAME)
         ?.takeIf { it.isNotBlank() }
         ?: versionCatalog[SettingsConventions.LIBRARY_CORE_VERSION_ALIAS]
@@ -158,7 +158,7 @@ fun VersionCatalogBuilder.resolveLibraryVersion(versionCatalog: Map<String, Stri
         else -> libraryCoreVersion.substringBefore('-') + eapVersion
     }
 
-    version(SettingsConventions.LIBRARY_CORE_VERSION_ALIAS, resultingVersion)
+    return resultingVersion
 }
 
 fun String.kotlinVersionParsed(): KotlinVersion {
@@ -166,19 +166,23 @@ fun String.kotlinVersionParsed(): KotlinVersion {
     return KotlinVersion(major, minor, patch)
 }
 
+val currentPath: Path = file(".").toPath().toAbsolutePath()
+val rootDir = findGlobalRootDirPath(currentPath)
+val versionCatalog = resolveVersionCatalog(rootDir)
+val libVersion = resolveLibraryVersion(versionCatalog)
+
+extra["libVersion"] = libVersion
+
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            val currentPath = file(".").toPath().toAbsolutePath()
-            val rootDir = findGlobalRootDirPath(currentPath)
-
             from(files("$rootDir/${SettingsConventions.LIBS_VERSION_CATALOG_PATH}"))
 
             val versionCatalog = resolveVersionCatalog(rootDir)
 
             val (kotlinVersion, compilerVersion) = resolveKotlinVersion(versionCatalog)
 
-            resolveLibraryVersion(versionCatalog)
+            version(SettingsConventions.LIBRARY_CORE_VERSION_ALIAS, libVersion)
 
             val kotlinVersionParsed = kotlinVersion.kotlinVersionParsed()
 

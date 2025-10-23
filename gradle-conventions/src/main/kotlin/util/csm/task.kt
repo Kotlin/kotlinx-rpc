@@ -21,6 +21,7 @@ import kotlin.io.path.writeLines
 
 abstract class ProcessCsmTemplate @Inject constructor(
     @get:Input val kotlinComplierVersion: String,
+    @get:Input val replacementMap: Map<String, String>,
     @get:InputDirectory val templatesDir: Provider<Path>,
     @get:OutputDirectory val sourcesDir: Provider<Path>,
 ) : DefaultTask() {
@@ -43,6 +44,7 @@ abstract class ProcessCsmTemplate @Inject constructor(
             val lines = CsmTemplateProcessor.process(
                 lines = file.readLines(Charsets.UTF_8),
                 kotlinCompilerVersion = kotlinComplierVersion,
+                replacementMap = replacementMap,
                 logger = logger,
             )
             out.parent.toFile().mkdirs()

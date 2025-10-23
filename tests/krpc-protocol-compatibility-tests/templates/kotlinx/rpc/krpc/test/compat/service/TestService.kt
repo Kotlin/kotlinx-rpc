@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.test.compat.CompatServiceImpl
-import kotlinx.rpc.test.WaitCounter
+import kotlinx.rpc.krpc.test.compat.CompatWaitCounter
 import kotlin.coroutines.cancellation.CancellationException
 
 @Rpc
@@ -28,7 +28,7 @@ interface TestService {
     fun fastServerProduce(n: Int): Flow<Int>
 }
 
-class TestServiceImpl : TestService, CompatServiceImpl {
+class TestServiceImpl(counterFactory: () -> CompatWaitCounter) : TestService, CompatServiceImpl {
     override suspend fun unary(n: Int): Int {
         return n
     }
@@ -45,8 +45,8 @@ class TestServiceImpl : TestService, CompatServiceImpl {
         return flow
     }
 
-    override val exitMethod: WaitCounter = WaitCounter()
-    override val cancelled: WaitCounter = WaitCounter()
+    override val exitMethod: CompatWaitCounter = counterFactory()
+    override val cancelled: CompatWaitCounter = counterFactory()
 
     override val entered: CompletableDeferred<Unit> = CompletableDeferred()
     override val fence: CompletableDeferred<Unit> = CompletableDeferred()
@@ -79,13 +79,20 @@ class TestServiceImpl : TestService, CompatServiceImpl {
     override suspend fun clientStreamCancellation(n: Flow<Int>) {
         try {
             n.collect {
+                println("[clientStreamCancellation] collected $it")
                 if (it != 0) {
                     entered.complete(Unit)
                 }
             }
         } catch (e: CancellationException) {
+            println("[clientStreamCancellation] cancelled on server")
             cancelled.increment()
             throw e
+        } catch (e: Throwable) {
+            println("[clientStreamCancellation] caught $e")
+            throw e
+        } finally {
+            println("[clientStreamCancellation] finally")
         }
     }
 

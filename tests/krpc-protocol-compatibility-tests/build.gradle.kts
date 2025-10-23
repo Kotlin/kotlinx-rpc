@@ -5,6 +5,10 @@
 @file:Suppress("PropertyName")
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import util.csm.ProcessCsmTemplate
+import util.krpc_compat.krpcCompatVersions
+import util.other.generateSource
+import util.other.libs
 
 plugins {
     alias(libs.plugins.conventions.jvm)
@@ -13,65 +17,9 @@ plugins {
     alias(libs.plugins.atomicfu)
 }
 
-val main: SourceSet by sourceSets.getting
-val test: SourceSet by sourceSets.getting
-
-val compatibilityTestSourcesDir: File = project.layout.buildDirectory.dir("compatibilityTestSources").get().asFile
-
-fun versioned(name: String): Configuration {
-    val configuration = configurations.create(name) {
-        isCanBeConsumed = true
-        isCanBeResolved = true
-        isTransitive = true
-    }
-
-    val sourceSet = sourceSets.create(name) {
-        compileClasspath += main.output
-        runtimeClasspath += main.output
-
-        compileClasspath += configuration
-        runtimeClasspath += configuration
-    }
-
-    val copySourceSetTestResources by tasks.register<Copy>("copy_${name}_ToTestResources") {
-        dependsOn(sourceSet.output)
-        from(sourceSet.output)
-        into(compatibilityTestSourcesDir.resolve(name))
-    }
-
-    tasks.processTestResources.configure {
-        dependsOn(copySourceSetTestResources)
-    }
-
-    return configuration
-}
-
-val v0_9 = versioned("v0_9")
-val v0_8 = versioned("v0_8")
-
-test.resources {
-    srcDir(compatibilityTestSourcesDir)
-}
-
-fun DependencyHandlerScope.versioned(configuration: Configuration, version: String) {
-    add(configuration.name, "org.jetbrains.kotlinx:kotlinx-rpc-krpc-client:$version")
-    add(configuration.name, "org.jetbrains.kotlinx:kotlinx-rpc-krpc-server:$version")
-    add(configuration.name, "org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json:$version")
-    add(configuration.name, libs.atomicfu)
-    add(configuration.name, projects.tests.testUtils)
-}
-
 dependencies {
-    api(libs.atomicfu)
-    api(projects.tests.testUtils)
-    implementation(libs.serialization.core)
-    implementation(libs.coroutines.core)
-    implementation(libs.kotlin.reflect)
+    testImplementation(projects.tests.krpcProtocolCompatibilityTests.testApi)
 
-    versioned(v0_9, "0.9.1")
-    versioned(v0_8, "0.8.1")
-
-    // current version is in test source set
     testImplementation(projects.krpc.krpcCore)
     testImplementation(projects.krpc.krpcServer)
     testImplementation(projects.krpc.krpcClient)
@@ -92,4 +40,59 @@ kotlin {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+val templates: java.nio.file.Path = project.layout.projectDirectory.dir("templates").asFile.toPath()
+
+krpcCompatVersions.forEach { (dir, version) ->
+    val templateTask = tasks.register<ProcessCsmTemplate>(
+        "process_template_$dir",
+        version,
+        mapOf("<rpc-version>" to dir),
+        project.provider { templates },
+        project.provider {
+            val root = project.layout.projectDirectory.let {
+                if (dir != "Latest") it.dir(dir) else it
+            }
+
+            root.dir("build")
+                .dir("generated-sources")
+                .dir("csm")
+                .asFile.toPath()
+        },
+    )
+
+    tasks.named("processResources").configure {
+        dependsOn(templateTask)
+    }
+}
+
+kotlin {
+    sourceSets.test {
+        kotlin.srcDirs(layout.buildDirectory.dir("generated-sources").map { it.asFile.resolve("csm") })
+    }
+}
+
+generateSource(
+    name = "versions",
+    text = """
+        |package kotlinx.rpc.krpc.test.compat
+        |
+        |@Suppress("EnumEntryName", "detekt.EnumNaming")
+        |enum class Versions {
+        |    ${krpcCompatVersions.keys.joinToString("\n|    ") { "$it," }}
+        |    ;
+        |}
+        |
+    """.trimMargin(),
+    chooseSourceSet = { test },
+)
+
+tasks.test {
+    krpcCompatVersions.keys.filter { it != "Latest" }.forEach { dir ->
+        val jarTask = project(":tests:krpc-protocol-compatibility-tests:$dir").tasks.named("jar")
+        dependsOn(jarTask)
+
+        environment["JAR_PATH_$dir"] = jarTask.get().outputs.files.singleFile.absolutePath
+    }
 }

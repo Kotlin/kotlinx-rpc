@@ -39,11 +39,11 @@ public class BoxTestGenerated extends AbstractBoxTest {
     runTest("src/testData/box/multiModule.kt");
   }
 
-    @Test
-    @TestMetadata("serviceDescriptor.kt")
-    public void testServiceDescriptor() {
-        runTest("src/testData/box/serviceDescriptor.kt");
-    }
+  @Test
+  @TestMetadata("serviceDescriptor.kt")
+  public void testServiceDescriptor() {
+    runTest("src/testData/box/serviceDescriptor.kt");
+  }
 
   @Test
   @TestMetadata("simple.kt")

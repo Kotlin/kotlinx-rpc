@@ -36,8 +36,8 @@ fun CompatTransport.toKrpc(): KrpcTransport {
     }
 }
 
-@Suppress("unused")
-class TestStarter : Starter {
+@Suppress("unused", "ClassName")
+class TestStarter_<rpc-version> : Starter {
     private var client: KrpcClient? = null
     private var server: KrpcServer? = null
 
@@ -47,6 +47,16 @@ class TestStarter : Starter {
             serialization {
                 json()
             }
+
+            //##csm connector-API-client
+            //##csm default
+            connector {
+                perCallBufferSize = config.perCallBufferSize
+            }
+            //##csm /default
+            //##csm specific=[0.8.1, 0.9.1]
+            //##csm /specific
+            //##csm /connector-API-client
         }
 
         client = object : InitializedKrpcClient(clientConfig, transport) {}
@@ -97,10 +107,20 @@ class TestStarter : Starter {
             serialization {
                 json()
             }
+
+            //##csm connector-API-server
+            //##csm default
+            connector {
+                perCallBufferSize = config.perCallBufferSize
+            }
+            //##csm /default
+            //##csm specific=[0.8.1, 0.9.1]
+            //##csm /specific
+            //##csm /connector-API-server
         }
 
         server = object : KrpcServer(serverConfig, transport) {}
-        val impl = TestServiceImpl()
+        val impl = TestServiceImpl(config.counterFactory)
         server?.registerService<TestService> { impl }
         return impl
     }
