@@ -274,8 +274,6 @@ class CancellationTest {
         println("[testCancelServer] Second request finished")
         clientFlowJob.join()
         println("[testCancelServer] Client flow finished")
-
-        serverInstance().fence.complete(Unit)
         serverFlowJob.join()
         println("[testCancelServer] Server flow finished")
 
