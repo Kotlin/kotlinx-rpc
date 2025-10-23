@@ -1,4 +1,4 @@
-# 0.10.0
+# 0.10.1
 > Published 24 October 2025
 
 ### Features 🎉
