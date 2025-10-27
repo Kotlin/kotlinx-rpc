@@ -116,6 +116,8 @@ generateSource(
     chooseSourceSet = { main }
 )
 
+val globalRootDir: String by extra
+
 generateSource(
     name = "TestVersions",
     text = """
@@ -125,7 +127,7 @@ generateSource(
         
         const val BUILD_REPO: String = "${File(globalRootDir).resolve("build/repo").absolutePath}"
         
-        // can't use from generatePluginVersionsTask bacause Gradle messes up caches
+        // can't use from Versions.kt bacause Gradle messes up caches
         const val TEST_PROTOBUF_VERSION: String = "${libs.versions.protobuf.asProvider().get()}"
         const val TEST_GRPC_VERSION: String = "${libs.versions.grpc.asProvider().get()}"
         const val TEST_GRPC_KOTLIN_VERSION: String = "${libs.versions.grpc.kotlin.get()}"
