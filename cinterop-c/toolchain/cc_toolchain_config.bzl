@@ -198,6 +198,7 @@ def _impl(ctx):
             # These paths must be updated after each upgrade of the project's Kotlin compiler version.
             # After upgrading the Kotlin compiler, the C compiler will throw an error that certain includes are not
             # are not part of the built-in include paths. In this case, replace the below path with the printed one.
+            # See the cinterop-c/README.md for more details.
             deps + "/llvm-19-aarch64-macos-essentials-75/lib/clang/19/include",
             deps + "/llvm-19-x86_64-macos-essentials-103/lib/clang/19/include",
         ] + includes,
