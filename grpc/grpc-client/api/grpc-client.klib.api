@@ -1,0 +1,64 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, macosArm64, macosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <org.jetbrains.kotlinx:grpc-client>
+abstract interface <#A: kotlin/Any?, #B: kotlin/Any?> kotlinx.rpc.grpc.client/ClientCallScope { // kotlinx.rpc.grpc.client/ClientCallScope|null[0]
+    abstract val callOptions // kotlinx.rpc.grpc.client/ClientCallScope.callOptions|{}callOptions[0]
+        abstract fun <get-callOptions>(): kotlinx.rpc.grpc.client.internal/GrpcCallOptions // kotlinx.rpc.grpc.client/ClientCallScope.callOptions.<get-callOptions>|<get-callOptions>(){}[0]
+    abstract val method // kotlinx.rpc.grpc.client/ClientCallScope.method|{}method[0]
+        abstract fun <get-method>(): kotlinx.rpc.grpc.descriptor/MethodDescriptor<#A, #B> // kotlinx.rpc.grpc.client/ClientCallScope.method.<get-method>|<get-method>(){}[0]
+    abstract val requestHeaders // kotlinx.rpc.grpc.client/ClientCallScope.requestHeaders|{}requestHeaders[0]
+        abstract fun <get-requestHeaders>(): kotlinx.rpc.grpc/GrpcMetadata // kotlinx.rpc.grpc.client/ClientCallScope.requestHeaders.<get-requestHeaders>|<get-requestHeaders>(){}[0]
+
+    abstract fun cancel(kotlin/String, kotlin/Throwable? = ...): kotlin/Nothing // kotlinx.rpc.grpc.client/ClientCallScope.cancel|cancel(kotlin.String;kotlin.Throwable?){}[0]
+    abstract fun onClose(kotlin/Function2<kotlinx.rpc.grpc/Status, kotlinx.rpc.grpc/GrpcMetadata, kotlin/Unit>) // kotlinx.rpc.grpc.client/ClientCallScope.onClose|onClose(kotlin.Function2<kotlinx.rpc.grpc.Status,kotlinx.rpc.grpc.GrpcMetadata,kotlin.Unit>){}[0]
+    abstract fun onHeaders(kotlin/Function1<kotlinx.rpc.grpc/GrpcMetadata, kotlin/Unit>) // kotlinx.rpc.grpc.client/ClientCallScope.onHeaders|onHeaders(kotlin.Function1<kotlinx.rpc.grpc.GrpcMetadata,kotlin.Unit>){}[0]
+    abstract fun proceed(kotlinx.coroutines.flow/Flow<#A>): kotlinx.coroutines.flow/Flow<#B> // kotlinx.rpc.grpc.client/ClientCallScope.proceed|proceed(kotlinx.coroutines.flow.Flow<1:0>){}[0]
+}
+
+abstract interface kotlinx.rpc.grpc.client/ClientInterceptor { // kotlinx.rpc.grpc.client/ClientInterceptor|null[0]
+    abstract fun <#A1: kotlin/Any?, #B1: kotlin/Any?> (kotlinx.rpc.grpc.client/ClientCallScope<#A1, #B1>).intercept(kotlinx.coroutines.flow/Flow<#A1>): kotlinx.coroutines.flow/Flow<#B1> // kotlinx.rpc.grpc.client/ClientInterceptor.intercept|intercept@kotlinx.rpc.grpc.client.ClientCallScope<0:0,0:1>(kotlinx.coroutines.flow.Flow<0:0>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+}
+
+abstract interface kotlinx.rpc.grpc.client/TlsClientCredentialsBuilder { // kotlinx.rpc.grpc.client/TlsClientCredentialsBuilder|null[0]
+    abstract fun keyManager(kotlin/String, kotlin/String): kotlinx.rpc.grpc.client/TlsClientCredentialsBuilder // kotlinx.rpc.grpc.client/TlsClientCredentialsBuilder.keyManager|keyManager(kotlin.String;kotlin.String){}[0]
+    abstract fun trustManager(kotlin/String): kotlinx.rpc.grpc.client/TlsClientCredentialsBuilder // kotlinx.rpc.grpc.client/TlsClientCredentialsBuilder.trustManager|trustManager(kotlin.String){}[0]
+}
+
+abstract class kotlinx.rpc.grpc.client/ClientCredentials // kotlinx.rpc.grpc.client/ClientCredentials|null[0]
+
+final class kotlinx.rpc.grpc.client/GrpcClient : kotlinx.rpc/RpcClient { // kotlinx.rpc.grpc.client/GrpcClient|null[0]
+    final fun <#A1: kotlin/Any?> callServerStreaming(kotlinx.rpc/RpcCall): kotlinx.coroutines.flow/Flow<#A1> // kotlinx.rpc.grpc.client/GrpcClient.callServerStreaming|callServerStreaming(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]
+    final fun shutdown() // kotlinx.rpc.grpc.client/GrpcClient.shutdown|shutdown(){}[0]
+    final fun shutdownNow() // kotlinx.rpc.grpc.client/GrpcClient.shutdownNow|shutdownNow(){}[0]
+    final suspend fun <#A1: kotlin/Any?> call(kotlinx.rpc/RpcCall): #A1 // kotlinx.rpc.grpc.client/GrpcClient.call|call(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]
+    final suspend fun awaitTermination(kotlin.time/Duration = ...) // kotlinx.rpc.grpc.client/GrpcClient.awaitTermination|awaitTermination(kotlin.time.Duration){}[0]
+}
+
+final class kotlinx.rpc.grpc.client/GrpcClientConfiguration { // kotlinx.rpc.grpc.client/GrpcClientConfiguration|null[0]
+    final var credentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.credentials|{}credentials[0]
+        final fun <get-credentials>(): kotlinx.rpc.grpc.client/ClientCredentials? // kotlinx.rpc.grpc.client/GrpcClientConfiguration.credentials.<get-credentials>|<get-credentials>(){}[0]
+        final fun <set-credentials>(kotlinx.rpc.grpc.client/ClientCredentials?) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.credentials.<set-credentials>|<set-credentials>(kotlinx.rpc.grpc.client.ClientCredentials?){}[0]
+    final var messageCodecResolver // kotlinx.rpc.grpc.client/GrpcClientConfiguration.messageCodecResolver|{}messageCodecResolver[0]
+        final fun <get-messageCodecResolver>(): kotlinx.rpc.grpc.codec/MessageCodecResolver // kotlinx.rpc.grpc.client/GrpcClientConfiguration.messageCodecResolver.<get-messageCodecResolver>|<get-messageCodecResolver>(){}[0]
+        final fun <set-messageCodecResolver>(kotlinx.rpc.grpc.codec/MessageCodecResolver) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.messageCodecResolver.<set-messageCodecResolver>|<set-messageCodecResolver>(kotlinx.rpc.grpc.codec.MessageCodecResolver){}[0]
+    final var overrideAuthority // kotlinx.rpc.grpc.client/GrpcClientConfiguration.overrideAuthority|{}overrideAuthority[0]
+        final fun <get-overrideAuthority>(): kotlin/String? // kotlinx.rpc.grpc.client/GrpcClientConfiguration.overrideAuthority.<get-overrideAuthority>|<get-overrideAuthority>(){}[0]
+        final fun <set-overrideAuthority>(kotlin/String?) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.overrideAuthority.<set-overrideAuthority>|<set-overrideAuthority>(kotlin.String?){}[0]
+
+    final fun intercept(kotlin/Array<out kotlinx.rpc.grpc.client/ClientInterceptor>...) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.intercept|intercept(kotlin.Array<out|kotlinx.rpc.grpc.client.ClientInterceptor>...){}[0]
+    final fun plaintext(): kotlinx.rpc.grpc.client/ClientCredentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.plaintext|plaintext(){}[0]
+    final fun tls(kotlin/Function1<kotlinx.rpc.grpc.client/TlsClientCredentialsBuilder, kotlin/Unit>): kotlinx.rpc.grpc.client/ClientCredentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.tls|tls(kotlin.Function1<kotlinx.rpc.grpc.client.TlsClientCredentialsBuilder,kotlin.Unit>){}[0]
+}
+
+final class kotlinx.rpc.grpc.client/InsecureClientCredentials : kotlinx.rpc.grpc.client/ClientCredentials // kotlinx.rpc.grpc.client/InsecureClientCredentials|null[0]
+
+final class kotlinx.rpc.grpc.client/TlsClientCredentials : kotlinx.rpc.grpc.client/ClientCredentials // kotlinx.rpc.grpc.client/TlsClientCredentials|null[0]
+
+final fun kotlinx.rpc.grpc.client/GrpcClient(kotlin/String, kotlin/Function1<kotlinx.rpc.grpc.client/GrpcClientConfiguration, kotlin/Unit> = ...): kotlinx.rpc.grpc.client/GrpcClient // kotlinx.rpc.grpc.client/GrpcClient|GrpcClient(kotlin.String;kotlin.Function1<kotlinx.rpc.grpc.client.GrpcClientConfiguration,kotlin.Unit>){}[0]
+final fun kotlinx.rpc.grpc.client/GrpcClient(kotlin/String, kotlin/Int, kotlin/Function1<kotlinx.rpc.grpc.client/GrpcClientConfiguration, kotlin/Unit> = ...): kotlinx.rpc.grpc.client/GrpcClient // kotlinx.rpc.grpc.client/GrpcClient|GrpcClient(kotlin.String;kotlin.Int;kotlin.Function1<kotlinx.rpc.grpc.client.GrpcClientConfiguration,kotlin.Unit>){}[0]
+final fun kotlinx.rpc.grpc.client/TlsClientCredentials(kotlin/Function1<kotlinx.rpc.grpc.client/TlsClientCredentialsBuilder, kotlin/Unit> = ...): kotlinx.rpc.grpc.client/ClientCredentials // kotlinx.rpc.grpc.client/TlsClientCredentials|TlsClientCredentials(kotlin.Function1<kotlinx.rpc.grpc.client.TlsClientCredentialsBuilder,kotlin.Unit>){}[0]

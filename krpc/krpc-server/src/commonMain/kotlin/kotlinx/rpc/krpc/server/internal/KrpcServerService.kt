@@ -196,9 +196,11 @@ internal class KrpcServerService<@Rpc T : Any>(
             } catch (cause: Throwable) {
                 failure = cause
             } finally {
+                val isNonSuspendFunction = callable.invokator is RpcInvokator.FlowResponse
+
                 if (failure != null) {
                     // flow cancellations are handled by the sendFlowMessages function
-                    if (!startedCollecting || !callable.isNonSuspendFunction) {
+                    if (!startedCollecting || !isNonSuspendFunction) {
                         val serializedCause = serializeException(failure)
                         val exceptionMessage = KrpcCallMessage.CallException(
                             callId = callId,
