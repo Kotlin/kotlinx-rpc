@@ -1,0 +1,128 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, macosArm64, macosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <org.jetbrains.kotlinx:grpc-server>
+final enum class kotlinx.rpc.grpc.server/TlsClientAuth : kotlin/Enum<kotlinx.rpc.grpc.server/TlsClientAuth> { // kotlinx.rpc.grpc.server/TlsClientAuth|null[0]
+    enum entry NONE // kotlinx.rpc.grpc.server/TlsClientAuth.NONE|null[0]
+    enum entry OPTIONAL // kotlinx.rpc.grpc.server/TlsClientAuth.OPTIONAL|null[0]
+    enum entry REQUIRE // kotlinx.rpc.grpc.server/TlsClientAuth.REQUIRE|null[0]
+
+    final val entries // kotlinx.rpc.grpc.server/TlsClientAuth.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<kotlinx.rpc.grpc.server/TlsClientAuth> // kotlinx.rpc.grpc.server/TlsClientAuth.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): kotlinx.rpc.grpc.server/TlsClientAuth // kotlinx.rpc.grpc.server/TlsClientAuth.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<kotlinx.rpc.grpc.server/TlsClientAuth> // kotlinx.rpc.grpc.server/TlsClientAuth.values|values#static(){}[0]
+}
+
+abstract interface <#A: kotlin/Any?, #B: kotlin/Any?> kotlinx.rpc.grpc.server/ServerCallScope { // kotlinx.rpc.grpc.server/ServerCallScope|null[0]
+    abstract val context // kotlinx.rpc.grpc.server/ServerCallScope.context|{}context[0]
+        abstract fun <get-context>(): kotlinx.rpc.grpc.server.internal/GrpcContext // kotlinx.rpc.grpc.server/ServerCallScope.context.<get-context>|<get-context>(){}[0]
+    abstract val method // kotlinx.rpc.grpc.server/ServerCallScope.method|{}method[0]
+        abstract fun <get-method>(): kotlinx.rpc.grpc.descriptor/MethodDescriptor<#A, #B> // kotlinx.rpc.grpc.server/ServerCallScope.method.<get-method>|<get-method>(){}[0]
+    abstract val requestHeaders // kotlinx.rpc.grpc.server/ServerCallScope.requestHeaders|{}requestHeaders[0]
+        abstract fun <get-requestHeaders>(): kotlinx.rpc.grpc/GrpcMetadata // kotlinx.rpc.grpc.server/ServerCallScope.requestHeaders.<get-requestHeaders>|<get-requestHeaders>(){}[0]
+    abstract val responseHeaders // kotlinx.rpc.grpc.server/ServerCallScope.responseHeaders|{}responseHeaders[0]
+        abstract fun <get-responseHeaders>(): kotlinx.rpc.grpc/GrpcMetadata // kotlinx.rpc.grpc.server/ServerCallScope.responseHeaders.<get-responseHeaders>|<get-responseHeaders>(){}[0]
+    abstract val responseTrailers // kotlinx.rpc.grpc.server/ServerCallScope.responseTrailers|{}responseTrailers[0]
+        abstract fun <get-responseTrailers>(): kotlinx.rpc.grpc/GrpcMetadata // kotlinx.rpc.grpc.server/ServerCallScope.responseTrailers.<get-responseTrailers>|<get-responseTrailers>(){}[0]
+
+    abstract fun close(kotlinx.rpc.grpc/Status, kotlinx.rpc.grpc/GrpcMetadata = ...): kotlin/Nothing // kotlinx.rpc.grpc.server/ServerCallScope.close|close(kotlinx.rpc.grpc.Status;kotlinx.rpc.grpc.GrpcMetadata){}[0]
+    abstract fun onClose(kotlin/Function2<kotlinx.rpc.grpc/Status, kotlinx.rpc.grpc/GrpcMetadata, kotlin/Unit>) // kotlinx.rpc.grpc.server/ServerCallScope.onClose|onClose(kotlin.Function2<kotlinx.rpc.grpc.Status,kotlinx.rpc.grpc.GrpcMetadata,kotlin.Unit>){}[0]
+    abstract fun proceed(kotlinx.coroutines.flow/Flow<#A>): kotlinx.coroutines.flow/Flow<#B> // kotlinx.rpc.grpc.server/ServerCallScope.proceed|proceed(kotlinx.coroutines.flow.Flow<1:0>){}[0]
+    open suspend fun (kotlinx.coroutines.flow/FlowCollector<#B>).proceedUnmodified(kotlinx.coroutines.flow/Flow<#A>) // kotlinx.rpc.grpc.server/ServerCallScope.proceedUnmodified|proceedUnmodified@kotlinx.coroutines.flow.FlowCollector<1:1>(kotlinx.coroutines.flow.Flow<1:0>){}[0]
+}
+
+abstract interface kotlinx.rpc.grpc.server/Server { // kotlinx.rpc.grpc.server/Server|null[0]
+    abstract val isShutdown // kotlinx.rpc.grpc.server/Server.isShutdown|{}isShutdown[0]
+        abstract fun <get-isShutdown>(): kotlin/Boolean // kotlinx.rpc.grpc.server/Server.isShutdown.<get-isShutdown>|<get-isShutdown>(){}[0]
+    abstract val isTerminated // kotlinx.rpc.grpc.server/Server.isTerminated|{}isTerminated[0]
+        abstract fun <get-isTerminated>(): kotlin/Boolean // kotlinx.rpc.grpc.server/Server.isTerminated.<get-isTerminated>|<get-isTerminated>(){}[0]
+    abstract val port // kotlinx.rpc.grpc.server/Server.port|{}port[0]
+        abstract fun <get-port>(): kotlin/Int // kotlinx.rpc.grpc.server/Server.port.<get-port>|<get-port>(){}[0]
+
+    abstract fun shutdown(): kotlinx.rpc.grpc.server/Server // kotlinx.rpc.grpc.server/Server.shutdown|shutdown(){}[0]
+    abstract fun shutdownNow(): kotlinx.rpc.grpc.server/Server // kotlinx.rpc.grpc.server/Server.shutdownNow|shutdownNow(){}[0]
+    abstract fun start(): kotlinx.rpc.grpc.server/Server // kotlinx.rpc.grpc.server/Server.start|start(){}[0]
+    abstract suspend fun awaitTermination(kotlin.time/Duration = ...): kotlinx.rpc.grpc.server/Server // kotlinx.rpc.grpc.server/Server.awaitTermination|awaitTermination(kotlin.time.Duration){}[0]
+}
+
+abstract interface kotlinx.rpc.grpc.server/ServerInterceptor { // kotlinx.rpc.grpc.server/ServerInterceptor|null[0]
+    abstract fun <#A1: kotlin/Any?, #B1: kotlin/Any?> (kotlinx.rpc.grpc.server/ServerCallScope<#A1, #B1>).intercept(kotlinx.coroutines.flow/Flow<#A1>): kotlinx.coroutines.flow/Flow<#B1> // kotlinx.rpc.grpc.server/ServerInterceptor.intercept|intercept@kotlinx.rpc.grpc.server.ServerCallScope<0:0,0:1>(kotlinx.coroutines.flow.Flow<0:0>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+}
+
+abstract interface kotlinx.rpc.grpc.server/TlsServerCredentialsBuilder { // kotlinx.rpc.grpc.server/TlsServerCredentialsBuilder|null[0]
+    abstract fun clientAuth(kotlinx.rpc.grpc.server/TlsClientAuth): kotlinx.rpc.grpc.server/TlsServerCredentialsBuilder // kotlinx.rpc.grpc.server/TlsServerCredentialsBuilder.clientAuth|clientAuth(kotlinx.rpc.grpc.server.TlsClientAuth){}[0]
+    abstract fun trustManager(kotlin/String): kotlinx.rpc.grpc.server/TlsServerCredentialsBuilder // kotlinx.rpc.grpc.server/TlsServerCredentialsBuilder.trustManager|trustManager(kotlin.String){}[0]
+}
+
+abstract class <#A: kotlinx.rpc.grpc.server/ServerBuilder<#A>> kotlinx.rpc.grpc.server/ServerBuilder { // kotlinx.rpc.grpc.server/ServerBuilder|null[0]
+    constructor <init>() // kotlinx.rpc.grpc.server/ServerBuilder.<init>|<init>(){}[0]
+
+    abstract fun addService(kotlinx.rpc.grpc.server/ServerServiceDefinition): #A // kotlinx.rpc.grpc.server/ServerBuilder.addService|addService(kotlinx.rpc.grpc.server.ServerServiceDefinition){}[0]
+    abstract fun build(): kotlinx.rpc.grpc.server/Server // kotlinx.rpc.grpc.server/ServerBuilder.build|build(){}[0]
+    abstract fun fallbackHandlerRegistry(kotlinx.rpc.grpc.server/HandlerRegistry?): #A // kotlinx.rpc.grpc.server/ServerBuilder.fallbackHandlerRegistry|fallbackHandlerRegistry(kotlinx.rpc.grpc.server.HandlerRegistry?){}[0]
+}
+
+abstract class kotlinx.rpc.grpc.server/HandlerRegistry { // kotlinx.rpc.grpc.server/HandlerRegistry|null[0]
+    constructor <init>() // kotlinx.rpc.grpc.server/HandlerRegistry.<init>|<init>(){}[0]
+
+    abstract fun getServices(): kotlin.collections/List<kotlinx.rpc.grpc.server/ServerServiceDefinition> // kotlinx.rpc.grpc.server/HandlerRegistry.getServices|getServices(){}[0]
+    abstract fun lookupMethod(kotlin/String, kotlin/String?): kotlinx.rpc.grpc.server.internal/ServerMethodDefinition<*, *>? // kotlinx.rpc.grpc.server/HandlerRegistry.lookupMethod|lookupMethod(kotlin.String;kotlin.String?){}[0]
+    final fun lookupMethod(kotlin/String): kotlinx.rpc.grpc.server.internal/ServerMethodDefinition<*, *>? // kotlinx.rpc.grpc.server/HandlerRegistry.lookupMethod|lookupMethod(kotlin.String){}[0]
+}
+
+abstract class kotlinx.rpc.grpc.server/ServerCredentials // kotlinx.rpc.grpc.server/ServerCredentials|null[0]
+
+final class kotlinx.rpc.grpc.server.internal/GrpcContext { // kotlinx.rpc.grpc.server.internal/GrpcContext|null[0]
+    constructor <init>() // kotlinx.rpc.grpc.server.internal/GrpcContext.<init>|<init>(){}[0]
+}
+
+final class kotlinx.rpc.grpc.server/GrpcServer : kotlinx.rpc.grpc.server/Server, kotlinx.rpc/RpcServer { // kotlinx.rpc.grpc.server/GrpcServer|null[0]
+    final val isShutdown // kotlinx.rpc.grpc.server/GrpcServer.isShutdown|{}isShutdown[0]
+        final fun <get-isShutdown>(): kotlin/Boolean // kotlinx.rpc.grpc.server/GrpcServer.isShutdown.<get-isShutdown>|<get-isShutdown>(){}[0]
+    final val isTerminated // kotlinx.rpc.grpc.server/GrpcServer.isTerminated|{}isTerminated[0]
+        final fun <get-isTerminated>(): kotlin/Boolean // kotlinx.rpc.grpc.server/GrpcServer.isTerminated.<get-isTerminated>|<get-isTerminated>(){}[0]
+    final val port // kotlinx.rpc.grpc.server/GrpcServer.port|{}port[0]
+        final fun <get-port>(): kotlin/Int // kotlinx.rpc.grpc.server/GrpcServer.port.<get-port>|<get-port>(){}[0]
+
+    final fun <#A1: kotlin/Any> deregisterService(kotlin.reflect/KClass<#A1>) // kotlinx.rpc.grpc.server/GrpcServer.deregisterService|deregisterService(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
+    final fun <#A1: kotlin/Any> registerService(kotlin.reflect/KClass<#A1>, kotlin/Function0<#A1>) // kotlinx.rpc.grpc.server/GrpcServer.registerService|registerService(kotlin.reflect.KClass<0:0>;kotlin.Function0<0:0>){0§<kotlin.Any>}[0]
+    final fun shutdown(): kotlinx.rpc.grpc.server/GrpcServer // kotlinx.rpc.grpc.server/GrpcServer.shutdown|shutdown(){}[0]
+    final fun shutdownNow(): kotlinx.rpc.grpc.server/GrpcServer // kotlinx.rpc.grpc.server/GrpcServer.shutdownNow|shutdownNow(){}[0]
+    final fun start(): kotlinx.rpc.grpc.server/GrpcServer // kotlinx.rpc.grpc.server/GrpcServer.start|start(){}[0]
+    final suspend fun awaitTermination(kotlin.time/Duration): kotlinx.rpc.grpc.server/GrpcServer // kotlinx.rpc.grpc.server/GrpcServer.awaitTermination|awaitTermination(kotlin.time.Duration){}[0]
+}
+
+final class kotlinx.rpc.grpc.server/GrpcServerConfiguration { // kotlinx.rpc.grpc.server/GrpcServerConfiguration|null[0]
+    final var credentials // kotlinx.rpc.grpc.server/GrpcServerConfiguration.credentials|{}credentials[0]
+        final fun <get-credentials>(): kotlinx.rpc.grpc.server/ServerCredentials? // kotlinx.rpc.grpc.server/GrpcServerConfiguration.credentials.<get-credentials>|<get-credentials>(){}[0]
+        final fun <set-credentials>(kotlinx.rpc.grpc.server/ServerCredentials?) // kotlinx.rpc.grpc.server/GrpcServerConfiguration.credentials.<set-credentials>|<set-credentials>(kotlinx.rpc.grpc.server.ServerCredentials?){}[0]
+    final var fallbackHandlerRegistry // kotlinx.rpc.grpc.server/GrpcServerConfiguration.fallbackHandlerRegistry|{}fallbackHandlerRegistry[0]
+        final fun <get-fallbackHandlerRegistry>(): kotlinx.rpc.grpc.server/HandlerRegistry? // kotlinx.rpc.grpc.server/GrpcServerConfiguration.fallbackHandlerRegistry.<get-fallbackHandlerRegistry>|<get-fallbackHandlerRegistry>(){}[0]
+        final fun <set-fallbackHandlerRegistry>(kotlinx.rpc.grpc.server/HandlerRegistry?) // kotlinx.rpc.grpc.server/GrpcServerConfiguration.fallbackHandlerRegistry.<set-fallbackHandlerRegistry>|<set-fallbackHandlerRegistry>(kotlinx.rpc.grpc.server.HandlerRegistry?){}[0]
+    final var messageCodecResolver // kotlinx.rpc.grpc.server/GrpcServerConfiguration.messageCodecResolver|{}messageCodecResolver[0]
+        final fun <get-messageCodecResolver>(): kotlinx.rpc.grpc.codec/MessageCodecResolver // kotlinx.rpc.grpc.server/GrpcServerConfiguration.messageCodecResolver.<get-messageCodecResolver>|<get-messageCodecResolver>(){}[0]
+        final fun <set-messageCodecResolver>(kotlinx.rpc.grpc.codec/MessageCodecResolver) // kotlinx.rpc.grpc.server/GrpcServerConfiguration.messageCodecResolver.<set-messageCodecResolver>|<set-messageCodecResolver>(kotlinx.rpc.grpc.codec.MessageCodecResolver){}[0]
+
+    final fun intercept(kotlin/Array<out kotlinx.rpc.grpc.server/ServerInterceptor>...) // kotlinx.rpc.grpc.server/GrpcServerConfiguration.intercept|intercept(kotlin.Array<out|kotlinx.rpc.grpc.server.ServerInterceptor>...){}[0]
+    final fun services(kotlin/Function1<kotlinx.rpc/RpcServer, kotlin/Unit>) // kotlinx.rpc.grpc.server/GrpcServerConfiguration.services|services(kotlin.Function1<kotlinx.rpc.RpcServer,kotlin.Unit>){}[0]
+    final fun tls(kotlin/String, kotlin/String, kotlin/Function1<kotlinx.rpc.grpc.server/TlsServerCredentialsBuilder, kotlin/Unit>): kotlinx.rpc.grpc.server/ServerCredentials // kotlinx.rpc.grpc.server/GrpcServerConfiguration.tls|tls(kotlin.String;kotlin.String;kotlin.Function1<kotlinx.rpc.grpc.server.TlsServerCredentialsBuilder,kotlin.Unit>){}[0]
+}
+
+final class kotlinx.rpc.grpc.server/InsecureServerCredentials : kotlinx.rpc.grpc.server/ServerCredentials // kotlinx.rpc.grpc.server/InsecureServerCredentials|null[0]
+
+final class kotlinx.rpc.grpc.server/ServerServiceDefinition { // kotlinx.rpc.grpc.server/ServerServiceDefinition|null[0]
+    final fun getMethod(kotlin/String): kotlinx.rpc.grpc.server.internal/ServerMethodDefinition<*, *>? // kotlinx.rpc.grpc.server/ServerServiceDefinition.getMethod|getMethod(kotlin.String){}[0]
+    final fun getMethods(): kotlin.collections/Collection<kotlinx.rpc.grpc.server.internal/ServerMethodDefinition<*, *>> // kotlinx.rpc.grpc.server/ServerServiceDefinition.getMethods|getMethods(){}[0]
+    final fun getServiceDescriptor(): kotlinx.rpc.grpc.internal/ServiceDescriptor // kotlinx.rpc.grpc.server/ServerServiceDefinition.getServiceDescriptor|getServiceDescriptor(){}[0]
+}
+
+final class kotlinx.rpc.grpc.server/TlsServerCredentials : kotlinx.rpc.grpc.server/ServerCredentials // kotlinx.rpc.grpc.server/TlsServerCredentials|null[0]
+
+final fun <#A: kotlin/Any?, #B: kotlin/Any?> kotlinx.rpc.grpc.server.internal/serverMethodDefinition(kotlinx.rpc.grpc.descriptor/MethodDescriptor<#A, #B>, kotlinx.rpc.grpc.server.internal/ServerCallHandler<#A, #B>): kotlinx.rpc.grpc.server.internal/ServerMethodDefinition<#A, #B> // kotlinx.rpc.grpc.server.internal/serverMethodDefinition|serverMethodDefinition(kotlinx.rpc.grpc.descriptor.MethodDescriptor<0:0,0:1>;kotlinx.rpc.grpc.server.internal.ServerCallHandler<0:0,0:1>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final fun kotlinx.rpc.grpc.server/GrpcServer(kotlin/Int, kotlin.coroutines/CoroutineContext = ..., kotlin/Function1<kotlinx.rpc.grpc.server/GrpcServerConfiguration, kotlin/Unit> = ...): kotlinx.rpc.grpc.server/GrpcServer // kotlinx.rpc.grpc.server/GrpcServer|GrpcServer(kotlin.Int;kotlin.coroutines.CoroutineContext;kotlin.Function1<kotlinx.rpc.grpc.server.GrpcServerConfiguration,kotlin.Unit>){}[0]
+final fun kotlinx.rpc.grpc.server/TlsServerCredentials(kotlin/String, kotlin/String, kotlin/Function1<kotlinx.rpc.grpc.server/TlsServerCredentialsBuilder, kotlin/Unit> = ...): kotlinx.rpc.grpc.server/ServerCredentials // kotlinx.rpc.grpc.server/TlsServerCredentials|TlsServerCredentials(kotlin.String;kotlin.String;kotlin.Function1<kotlinx.rpc.grpc.server.TlsServerCredentialsBuilder,kotlin.Unit>){}[0]
