@@ -27,18 +27,18 @@ import libkgrpc.grpc_slice_unref
 import libkgrpc.kgrpc_metadata_array_append
 import kotlin.experimental.ExperimentalNativeApi
 
-private value class GrpcKey private constructor(val name: String) {
+private value class GrpcMetadataKey private constructor(val name: String) {
     val isBinary get() = name.endsWith("-bin")
 
-    companion object {
-        fun binary(name: String): GrpcKey {
-            val key = GrpcKey(validateName(name.lowercase()))
+    companion object Companion {
+        fun binary(name: String): GrpcMetadataKey {
+            val key = GrpcMetadataKey(validateName(name.lowercase()))
             require(key.isBinary) { "Binary header is named ${key.name}. It must end with '-bin'" }
             return key
         }
 
-        fun string(name: String): GrpcKey {
-            val key = GrpcKey(validateName(name.lowercase()))
+        fun string(name: String): GrpcMetadataKey {
+            val key = GrpcMetadataKey(validateName(name.lowercase()))
             require(!key.isBinary) { "String header is named ${key.name}. It must not end with '-bin'" }
             return key
         }
@@ -97,19 +97,19 @@ public actual class GrpcMetadata actual constructor() {
 }
 
 public actual operator fun GrpcMetadata.get(key: String): String? {
-    return map[GrpcKey.string(key).name]?.lastOrNull()?.toAsciiString()
+    return map[GrpcMetadataKey.string(key).name]?.lastOrNull()?.toAsciiString()
 }
 
 public actual fun GrpcMetadata.getBinary(key: String): ByteArray? {
-    return map[GrpcKey.binary(key).name]?.lastOrNull()
+    return map[GrpcMetadataKey.binary(key).name]?.lastOrNull()
 }
 
 public actual fun GrpcMetadata.getAll(key: String): List<String> {
-    return map[GrpcKey.string(key).name]?.map { it.toAsciiString() } ?: emptyList()
+    return map[GrpcMetadataKey.string(key).name]?.map { it.toAsciiString() } ?: emptyList()
 }
 
 public actual fun GrpcMetadata.getAllBinary(key: String): List<ByteArray> {
-    return map[GrpcKey.binary(key).name]?.map { it } ?: emptyList()
+    return map[GrpcMetadataKey.binary(key).name]?.map { it } ?: emptyList()
 }
 
 public actual operator fun GrpcMetadata.contains(key: String): Boolean {
@@ -121,35 +121,35 @@ public actual fun GrpcMetadata.keys(): Set<String> {
 }
 
 public actual fun GrpcMetadata.append(key: String, value: String) {
-    val k = GrpcKey.string(key) // non-bin key
+    val k = GrpcMetadataKey.string(key) // non-bin key
     map.getOrPut(k.name) { mutableListOf() }.add(value.toAsciiBytes())
 }
 
 public actual fun GrpcMetadata.appendBinary(key: String, value: ByteArray) {
-    val k = GrpcKey.binary(key)
+    val k = GrpcMetadataKey.binary(key)
     map.getOrPut(k.name) { mutableListOf() }.add(value)
 }
 
 public actual fun GrpcMetadata.remove(key: String, value: String): Boolean {
     val index = getAll(key).indexOf(value)
     if (index == -1) return false
-    map[GrpcKey.string(key).name]!!.removeAt(index)
+    map[GrpcMetadataKey.string(key).name]!!.removeAt(index)
     return true
 }
 
 public actual fun GrpcMetadata.removeBinary(key: String, value: ByteArray): Boolean {
     val index = getAllBinary(key).indexOf(value)
     if (index == -1) return false
-    map[GrpcKey.binary(key).name]!!.removeAt(index)
+    map[GrpcMetadataKey.binary(key).name]!!.removeAt(index)
     return true
 }
 
 public actual fun GrpcMetadata.removeAll(key: String): List<String> {
-    return map.remove(GrpcKey.string(key).name)?.map { it.toAsciiString() } ?: emptyList()
+    return map.remove(GrpcMetadataKey.string(key).name)?.map { it.toAsciiString() } ?: emptyList()
 }
 
 public actual fun GrpcMetadata.removeAllBinary(key: String): List<ByteArray> {
-    return map.remove(GrpcKey.binary(key).name) ?: emptyList()
+    return map.remove(GrpcMetadataKey.binary(key).name) ?: emptyList()
 }
 
 public actual fun GrpcMetadata.merge(other: GrpcMetadata) {
@@ -201,7 +201,7 @@ private val VALID_KEY_CHARS by lazy {
 }
 
 @OptIn(ObsoleteNativeApi::class)
-private fun GrpcKey.Companion.validateName(name: String): String {
+private fun GrpcMetadataKey.Companion.validateName(name: String): String {
     require(!name.startsWith("grpc-")) { "Header is named $name. It must not start with 'grpc-' as it is reserved for internal use." }
 
     for (char in name) {

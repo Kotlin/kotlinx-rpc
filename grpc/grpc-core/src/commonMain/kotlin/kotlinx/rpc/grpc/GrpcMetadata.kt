@@ -52,9 +52,10 @@ public expect class GrpcMetadata constructor()
 /**
  * Returns the last metadata entry added with the given [key], or `null` if there are no entries.
  *
- * @param key the name of the metadata entry to retrieve (case-insensitive). Must not end with `-bin`.
+ * @param key the name of the metadata entry (case-insensitive). Must contain only digits (0-9),
+ *   lowercase letters (a-z), and special characters (`-`, `_`, `.`). Must not end with `-bin`.
  * @return the last value associated with the key, or `null` if no values exist
- * @throws IllegalArgumentException if the key ends with `-bin`
+ * @throws IllegalArgumentException if the key ends with `-bin` or contains invalid characters
  */
 public expect operator fun GrpcMetadata.get(key: String): String?
 
@@ -63,18 +64,22 @@ public expect operator fun GrpcMetadata.get(key: String): String?
  *
  * Binary keys must end with the "-bin" suffix according to gRPC specification.
  *
- * @param key the name of the binary metadata entry to retrieve (case-insensitive). Must end with `-bin`.
+ * @param key the name of the metadata entry (case-insensitive).
+ *   Must contain only digits (0-9), lowercase letters (a-z), and special characters (`-`, `_`, `.`).
+ *   Must end with `-bin`.
  * @return the last binary value associated with the key, or `null` if no values exist
- * @throws IllegalArgumentException if the key does not end with `-bin`
+ * @throws IllegalArgumentException if the key does not end with `-bin` or contains invalid characters
  */
 public expect fun GrpcMetadata.getBinary(key: String): ByteArray?
 
 /**
  * Returns all metadata entries with the given [key], in the order they were added.
  *
- * @param key the name of the metadata entries to retrieve (case-insensitive). Must not end with `-bin`.
+ * @param key the name of the metadata entry (case-insensitive).
+ *   Must contain only digits (0-9), lowercase letters (a-z), and special characters (`-`, `_`, `.`).
+ *   Must not end with `-bin`.
  * @return a list of all values associated with the key, or an empty list if no values exist
- * @throws IllegalArgumentException if the key ends with `-bin`
+ * @throws IllegalArgumentException if the key ends with `-bin` or contains invalid characters
  */
 public expect fun GrpcMetadata.getAll(key: String): List<String>
 
@@ -83,9 +88,11 @@ public expect fun GrpcMetadata.getAll(key: String): List<String>
  *
  * Binary keys must end with the "-bin" suffix according to gRPC specification.
  *
- * @param key the name of the binary metadata entries to retrieve (case-insensitive). Must end with `-bin`.
+ * @param key the name of the metadata entry (case-insensitive).
+ *   Must contain only digits (0-9), lowercase letters (a-z), and special characters (`-`, `_`, `.`).
+ *   Must end with `-bin`.
  * @return a list of all binary values associated with the key, or an empty list if no values exist
- * @throws IllegalArgumentException if the key does not end with `-bin`
+ * @throws IllegalArgumentException if the key does not end with `-bin` or contains invalid characters
  */
 public expect fun GrpcMetadata.getAllBinary(key: String): List<ByteArray>
 
@@ -102,7 +109,8 @@ public expect fun GrpcMetadata.keys(): Set<String>
 /**
  * Returns `true` if this metadata contains one or more values for the specified [key].
  *
- * @param key the key whose presence is to be tested (case-insensitive)
+ * @param key the key whose presence is to be tested (case-insensitive).
+ *   Must contain only digits (0-9), lowercase letters (a-z), and special characters (`-`, `_`, `.`).
  * @return `true` if this metadata contains the key, `false` otherwise
  */
 public expect operator fun GrpcMetadata.contains(key: String): Boolean
@@ -137,10 +145,12 @@ public expect fun GrpcMetadata.appendBinary(key: String, value: ByteArray)
 /**
  * Removes the first occurrence of the specified [value] for the given [key].
  *
- * @param key the name of the metadata entry (case-insensitive). Must not end with `-bin`.
+ * @param key the name of the metadata entry (case-insensitive).
+ *   Must contain only digits (0-9), lowercase letters (a-z), and special characters (`-`, `_`, `.`).
+ *   Must not end with `-bin`.
  * @param value the value to remove
  * @return `true` if the value was found and removed, `false` if the value was not present
- * @throws IllegalArgumentException if the key ends with `-bin`
+ * @throws IllegalArgumentException if the key ends with `-bin` or contains invalid characters
  */
 public expect fun GrpcMetadata.remove(key: String, value: String): Boolean
 
@@ -149,7 +159,9 @@ public expect fun GrpcMetadata.remove(key: String, value: String): Boolean
  *
  * Binary keys must end with the "-bin" suffix according to gRPC specification.
  *
- * @param key the name of the binary metadata entry (case-insensitive). Must end with `-bin`.
+ * @param key the name of the binary metadata entry (case-insensitive).
+ *   Must contain only digits (0-9), lowercase letters (a-z), and special characters (`-`, `_`, `.`).
+ *   Must end with `-bin`.
  * @param value the binary value to remove
  * @return `true` if the value was found and removed, `false` if the value was not present
  * @throws IllegalArgumentException if the key does not end with `-bin`
@@ -159,7 +171,9 @@ public expect fun GrpcMetadata.removeBinary(key: String, value: ByteArray): Bool
 /**
  * Removes all values for the given [key] and returns them.
  *
- * @param key the name of the metadata entries to remove (case-insensitive). Must not end with `-bin`.
+ * @param key the name of the metadata entries to remove (case-insensitive).
+ *   Must contain only digits (0-9), lowercase letters (a-z), and special characters (`-`, `_`, `.`).
+ *   Must not end with `-bin`.
  * @return a list of all values that were removed, or an empty list if there were no values
  * @throws IllegalArgumentException if the key ends with `-bin`
  */
@@ -170,7 +184,9 @@ public expect fun GrpcMetadata.removeAll(key: String): List<String>
  *
  * Binary keys must end with the "-bin" suffix according to gRPC specification.
  *
- * @param key the name of the binary metadata entries to remove (case-insensitive). Must end with `-bin`.
+ * @param key the name of the binary metadata entries to remove (case-insensitive).
+ *   Must contain only digits (0-9), lowercase letters (a-z), and special characters (`-`, `_`, `.`).
+ *   Must end with `-bin`.
  * @return a list of all binary values that were removed, or an empty list if there were no values
  * @throws IllegalArgumentException if the key does not end with `-bin`
  */
