@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.grpc
 
+import kotlinx.rpc.grpc.codec.MessageCodec
+
 /**
  * Provides access to read and write metadata values to be exchanged during a gRPC call.
  *
@@ -49,6 +51,9 @@ package kotlinx.rpc.grpc
 @Suppress("RedundantConstructorKeyword")
 public expect class GrpcMetadata constructor()
 
+
+public expect class GrpcMetadataKey<T> internal constructor(name: String, codec: MessageCodec<T>) {}
+
 /**
  * Returns the last metadata entry added with the given [key], or `null` if there are no entries.
  *
@@ -58,6 +63,8 @@ public expect class GrpcMetadata constructor()
  * @throws IllegalArgumentException if the key ends with `-bin` or contains invalid characters
  */
 public expect operator fun GrpcMetadata.get(key: String): String?
+
+public expect fun <T> GrpcMetadata.get(key: GrpcMetadataKey<T>): T?
 
 /**
  * Returns the last binary metadata entry added with the given [key], or `null` if there are no entries.
@@ -72,6 +79,8 @@ public expect operator fun GrpcMetadata.get(key: String): String?
  */
 public expect fun GrpcMetadata.getBinary(key: String): ByteArray?
 
+public expect fun <T> GrpcMetadata.getBinary(key: GrpcMetadataKey<T>): T?
+
 /**
  * Returns all metadata entries with the given [key], in the order they were added.
  *
@@ -82,6 +91,7 @@ public expect fun GrpcMetadata.getBinary(key: String): ByteArray?
  * @throws IllegalArgumentException if the key ends with `-bin` or contains invalid characters
  */
 public expect fun GrpcMetadata.getAll(key: String): List<String>
+public expect fun <T> GrpcMetadata.getAll(key: GrpcMetadataKey<T>): List<T>
 
 /**
  * Returns all binary metadata entries with the given [key], in the order they were added.
@@ -95,6 +105,7 @@ public expect fun GrpcMetadata.getAll(key: String): List<String>
  * @throws IllegalArgumentException if the key does not end with `-bin` or contains invalid characters
  */
 public expect fun GrpcMetadata.getAllBinary(key: String): List<ByteArray>
+public expect fun <T> GrpcMetadata.getAllBinary(key: GrpcMetadataKey<T>): List<T>
 
 /**
  * Returns an immutable set of all keys present in this metadata.
@@ -127,6 +138,7 @@ public expect operator fun GrpcMetadata.contains(key: String): Boolean
  * @throws IllegalArgumentException if the key contains invalid characters or ends with `-bin`
  */
 public expect fun GrpcMetadata.append(key: String, value: String)
+public expect fun <T> GrpcMetadata.append(key: GrpcMetadataKey<T>, value: T)
 
 /**
  * Appends a binary metadata entry with the given [key] and [value].
@@ -141,6 +153,7 @@ public expect fun GrpcMetadata.append(key: String, value: String)
  * @throws IllegalArgumentException if the key contains invalid characters or does not end with `-bin`
  */
 public expect fun GrpcMetadata.appendBinary(key: String, value: ByteArray)
+public expect fun <T> GrpcMetadata.appendBinary(key: GrpcMetadataKey<T>, value: T)
 
 /**
  * Removes the first occurrence of the specified [value] for the given [key].
@@ -153,6 +166,7 @@ public expect fun GrpcMetadata.appendBinary(key: String, value: ByteArray)
  * @throws IllegalArgumentException if the key ends with `-bin` or contains invalid characters
  */
 public expect fun GrpcMetadata.remove(key: String, value: String): Boolean
+public expect fun <T> GrpcMetadata.remove(key: GrpcMetadataKey<T>, value: T): Boolean
 
 /**
  * Removes the first occurrence of the specified binary [value] for the given [key].
@@ -167,6 +181,7 @@ public expect fun GrpcMetadata.remove(key: String, value: String): Boolean
  * @throws IllegalArgumentException if the key does not end with `-bin`
  */
 public expect fun GrpcMetadata.removeBinary(key: String, value: ByteArray): Boolean
+public expect fun <T> GrpcMetadata.removeBinary(key: GrpcMetadataKey<T>, value: T): Boolean
 
 /**
  * Removes all values for the given [key] and returns them.
@@ -178,6 +193,7 @@ public expect fun GrpcMetadata.removeBinary(key: String, value: ByteArray): Bool
  * @throws IllegalArgumentException if the key ends with `-bin`
  */
 public expect fun GrpcMetadata.removeAll(key: String): List<String>
+public expect fun <T> GrpcMetadata.removeAll(key: GrpcMetadataKey<T>): List<T>
 
 /**
  * Removes all binary values for the given [key] and returns them.
@@ -191,6 +207,7 @@ public expect fun GrpcMetadata.removeAll(key: String): List<String>
  * @throws IllegalArgumentException if the key does not end with `-bin`
  */
 public expect fun GrpcMetadata.removeAllBinary(key: String): List<ByteArray>
+public expect fun <T> GrpcMetadata.removeAllBinary(key: GrpcMetadataKey<T>): List<T>
 
 /**
  * Merges all entries from [other] metadata into this metadata.

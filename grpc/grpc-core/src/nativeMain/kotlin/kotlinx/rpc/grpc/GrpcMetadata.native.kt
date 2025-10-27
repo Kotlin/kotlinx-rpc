@@ -15,8 +15,14 @@ import kotlinx.cinterop.convert
 import kotlinx.cinterop.get
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.usePinned
+import kotlinx.io.Buffer
+import kotlinx.io.Source
+import kotlinx.io.readByteArray
+import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.codec.SourcedMessageCodec
 import kotlinx.rpc.grpc.internal.toByteArray
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.input.stream.asInputStream
 import libkgrpc.grpc_metadata
 import libkgrpc.grpc_metadata_array
 import libkgrpc.grpc_metadata_array_init
@@ -27,22 +33,31 @@ import libkgrpc.grpc_slice_unref
 import libkgrpc.kgrpc_metadata_array_append
 import kotlin.experimental.ExperimentalNativeApi
 
-private value class GrpcMetadataKey private constructor(val name: String) {
-    val isBinary get() = name.endsWith("-bin")
+public actual class GrpcMetadataKey<T> actual constructor(public var name: String, public val codec: MessageCodec<T>) {
 
-    companion object Companion {
-        fun binary(name: String): GrpcMetadataKey {
-            val key = GrpcMetadataKey(validateName(name.lowercase()))
-            require(key.isBinary) { "Binary header is named ${key.name}. It must end with '-bin'" }
-            return key
-        }
-
-        fun string(name: String): GrpcMetadataKey {
-            val key = GrpcMetadataKey(validateName(name.lowercase()))
-            require(!key.isBinary) { "String header is named ${key.name}. It must not end with '-bin'" }
-            return key
-        }
+    init {
+        name = name.lowercase()
     }
+
+    internal val isBinary get() = name.endsWith("-bin")
+
+    internal fun encode(value: T): ByteArray = codec.encode(value).buffer.readByteArray()
+    internal fun decode(value: ByteArray): T = Buffer().let { buffer ->
+        buffer.write(value)
+        codec.decode(buffer.asInputStream())
+    }
+
+    internal fun validateForString() {
+        validateName()
+        require(!isBinary) { "String header is named ${name}. It must not end with '-bin'" }
+    }
+
+    internal fun validateForBinary() {
+        validateName()
+        require(isBinary) { "Binary header is named ${name}. It must end with '-bin'" }
+    }
+
+    internal companion object
 }
 
 @Suppress(names = ["RedundantConstructorKeyword"])
@@ -97,19 +112,47 @@ public actual class GrpcMetadata actual constructor() {
 }
 
 public actual operator fun GrpcMetadata.get(key: String): String? {
-    return map[GrpcMetadataKey.string(key).name]?.lastOrNull()?.toAsciiString()
+    return get(key.toAsciiKey())
+}
+
+public actual fun <T> GrpcMetadata.get(key: GrpcMetadataKey<T>): T? {
+    key.validateForString()
+    return map[key.name]?.lastOrNull()?.let {
+        key.decode(it)
+    }
 }
 
 public actual fun GrpcMetadata.getBinary(key: String): ByteArray? {
-    return map[GrpcMetadataKey.binary(key).name]?.lastOrNull()
+    val key = key.toBinaryKey()
+    key.validateForBinary()
+    return map[key.name]?.lastOrNull()
+}
+
+public actual fun <T> GrpcMetadata.getBinary(key: GrpcMetadataKey<T>): T? {
+    key.validateForBinary()
+    return map[key.name]?.lastOrNull()?.let {
+        key.decode(it)
+    }
 }
 
 public actual fun GrpcMetadata.getAll(key: String): List<String> {
-    return map[GrpcMetadataKey.string(key).name]?.map { it.toAsciiString() } ?: emptyList()
+    return getAll(key.toAsciiKey())
+}
+
+public actual fun <T> GrpcMetadata.getAll(key: GrpcMetadataKey<T>): List<T> {
+    key.validateForString()
+    return map[key.name]?.map { key.decode(it) } ?: emptyList()
 }
 
 public actual fun GrpcMetadata.getAllBinary(key: String): List<ByteArray> {
-    return map[GrpcMetadataKey.binary(key).name]?.map { it } ?: emptyList()
+    val key = key.toBinaryKey()
+    key.validateForBinary()
+    return map[key.name] ?: emptyList()
+}
+
+public actual fun <T> GrpcMetadata.getAllBinary(key: GrpcMetadataKey<T>): List<T> {
+    key.validateForBinary()
+    return map[key.name]?.map { key.decode(it) } ?: emptyList()
 }
 
 public actual operator fun GrpcMetadata.contains(key: String): Boolean {
@@ -121,35 +164,70 @@ public actual fun GrpcMetadata.keys(): Set<String> {
 }
 
 public actual fun GrpcMetadata.append(key: String, value: String) {
-    val k = GrpcMetadataKey.string(key) // non-bin key
-    map.getOrPut(k.name) { mutableListOf() }.add(value.toAsciiBytes())
+    append(key.toAsciiKey(), value)
+}
+
+public actual fun <T> GrpcMetadata.append(key: GrpcMetadataKey<T>, value: T) {
+    key.validateForString()
+    map.getOrPut(key.name) { mutableListOf() }.add(key.encode(value))
 }
 
 public actual fun GrpcMetadata.appendBinary(key: String, value: ByteArray) {
-    val k = GrpcMetadataKey.binary(key)
-    map.getOrPut(k.name) { mutableListOf() }.add(value)
+    val key = key.toBinaryKey()
+    key.validateForBinary()
+    map.getOrPut(key.name) { mutableListOf() }.add(value)
+}
+
+public actual fun <T> GrpcMetadata.appendBinary(key: GrpcMetadataKey<T>, value: T) {
+    key.validateForBinary()
+    map.getOrPut(key.name) { mutableListOf() }.add(key.encode(value))
 }
 
 public actual fun GrpcMetadata.remove(key: String, value: String): Boolean {
+    return remove(key.toAsciiKey(), value)
+}
+
+public actual fun <T> GrpcMetadata.remove(key: GrpcMetadataKey<T>, value: T): Boolean {
+    key.validateForString()
     val index = getAll(key).indexOf(value)
     if (index == -1) return false
-    map[GrpcMetadataKey.string(key).name]!!.removeAt(index)
+    map[key.name]!!.removeAt(index)
     return true
 }
 
 public actual fun GrpcMetadata.removeBinary(key: String, value: ByteArray): Boolean {
+    val keyObj = key.toBinaryKey()
+    keyObj.validateForBinary()
     val index = getAllBinary(key).indexOf(value)
     if (index == -1) return false
-    map[GrpcMetadataKey.binary(key).name]!!.removeAt(index)
+    map[keyObj.name]!!.removeAt(index)
+    return true
+}
+
+public actual fun <T> GrpcMetadata.removeBinary(key: GrpcMetadataKey<T>, value: T): Boolean {
+    key.validateForBinary()
+    val index = getAllBinary(key).indexOf(value)
+    if (index == -1) return false
+    map[key.name]!!.removeAt(index)
     return true
 }
 
 public actual fun GrpcMetadata.removeAll(key: String): List<String> {
-    return map.remove(GrpcMetadataKey.string(key).name)?.map { it.toAsciiString() } ?: emptyList()
+    return removeAll(key.toAsciiKey())
+}
+
+public actual fun <T> GrpcMetadata.removeAll(key: GrpcMetadataKey<T>): List<T> {
+    key.validateForString()
+    return map.remove(key.name)?.map { key.decode(it) } ?: emptyList()
 }
 
 public actual fun GrpcMetadata.removeAllBinary(key: String): List<ByteArray> {
-    return map.remove(GrpcMetadataKey.binary(key).name) ?: emptyList()
+    return removeAllBinary(key.toBinaryKey())
+}
+
+public actual fun <T> GrpcMetadata.removeAllBinary(key: GrpcMetadataKey<T>): List<T> {
+    key.validateForBinary()
+    return map.remove(key.name)?.map { key.decode(it) } ?: emptyList()
 }
 
 public actual fun GrpcMetadata.merge(other: GrpcMetadata) {
@@ -201,12 +279,32 @@ private val VALID_KEY_CHARS by lazy {
 }
 
 @OptIn(ObsoleteNativeApi::class)
-private fun GrpcMetadataKey.Companion.validateName(name: String): String {
+private fun <T> GrpcMetadataKey<T>.validateName() {
     require(!name.startsWith("grpc-")) { "Header is named $name. It must not start with 'grpc-' as it is reserved for internal use." }
 
     for (char in name) {
         require(VALID_KEY_CHARS[char.code]) { "Header is named $name. It contains illegal character $char." }
     }
-
-    return name
 }
+
+private val AsciiCodec = object : SourcedMessageCodec<String> {
+    override fun encodeToSource(value: String): Source = Buffer().apply {
+        write(value.toAsciiBytes())
+    }
+
+    override fun decodeFromSource(stream: Source): String = stream.use { buffer ->
+        buffer.readByteArray().toAsciiString()
+    }
+}
+
+private val BinaryCodec = object : SourcedMessageCodec<ByteArray> {
+    override fun encodeToSource(value: ByteArray): Source = Buffer().apply {
+        write(value)
+    }
+
+    override fun decodeFromSource(stream: Source): ByteArray = stream.readByteArray()
+}
+
+private fun String.toAsciiKey() = GrpcMetadataKey(this, AsciiCodec)
+private fun String.toBinaryKey() = GrpcMetadataKey(this, BinaryCodec)
+
