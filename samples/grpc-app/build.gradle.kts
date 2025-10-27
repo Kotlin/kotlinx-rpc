@@ -21,8 +21,8 @@ kotlin {
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core:0.10.0-grpc-127")
-    implementation("ch.qos.logback:logback-classic:1.5.18")
-    implementation("io.grpc:grpc-netty:1.75.0")
+    implementation("ch.qos.logback:logback-classic:1.5.20")
+    implementation("io.grpc:grpc-netty:1.76.0")
     implementation("io.grpc:grpc-kotlin-stub:1.5.0")
 }
 
