@@ -26,7 +26,12 @@ abstract class GenerateSourceTask @Inject constructor(
     @TaskAction
     fun generate() {
         val sourceFile = File(sourcesDir, "${filename}.kt")
-        sourceFile.writeText(text)
+        sourceFile.writeText("// THIS FILE IS AUTO-GENERATED, DO NOT EDIT!")
+        sourceFile.appendText(System.lineSeparator())
+        sourceFile.appendText("// Gradle task: $name")
+        sourceFile.appendText(System.lineSeparator())
+        sourceFile.appendText(System.lineSeparator())
+        sourceFile.appendText(text)
     }
 }
 
