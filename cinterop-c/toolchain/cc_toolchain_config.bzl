@@ -193,7 +193,10 @@ def _impl(ctx):
         tool_paths = tool_paths,
         features = features,
         cxx_builtin_include_directories = [
-            deps + "/llvm-19-aarch64-macos-essentials-75/lib/clang/19/include",
+            # Built-in include directories from the toolchain.
+            # Only one will be available on the host (x64 or arm64).
+            deps + "/llvm-19-aarch64-macos-essentials-79/lib/clang/19/include",
+            deps + "/llvm-19-x86_64-macos-essentials-103/lib/clang/19/include",
         ] + includes,
     )
 
