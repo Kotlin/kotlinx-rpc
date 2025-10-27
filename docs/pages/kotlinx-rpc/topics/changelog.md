@@ -3,11 +3,12 @@
 This page contains all changes throughout releases of the library.
 
 ## 0.10.1
-> Published 24 October 2025
+> Published 27 October 2025
 
 **Full Changelog**: [0.10.0...0.10.1](https://github.com/Kotlin/kotlinx-rpc/compare/0.10.0...0.10.1)
 
 #### Features 🎉 {id=Features_0_10_1}
+* Kotlin 2.2.21 Support by [@Mr3zee](https://github.com/Mr3zee) in [#519](https://github.com/Kotlin/kotlinx-rpc/pull/519) 
 * Expose RpcServiceDescriptor.callables by [@rnett](https://github.com/rnett) in [#516](https://github.com/Kotlin/kotlinx-rpc/pull/516)
 * Added watchosDeviceArm64 and watchosArm32 targets to kRPC by [@Mr3zee](https://github.com/Mr3zee) in [#513](https://github.com/Kotlin/kotlinx-rpc/pull/513)
 
