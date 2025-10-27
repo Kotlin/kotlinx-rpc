@@ -112,3 +112,6 @@ object TestCodec9 : CustomCodec4<Test8> {
         error("Not implemented")
     }
 }
+
+/* GENERATED_FIR_TAGS: annotationUseSiteTargetFile, classDeclaration, classReference, functionDeclaration,
+interfaceDeclaration, nullableType, objectDeclaration, override, stringLiteral, typeParameter */

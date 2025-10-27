@@ -255,8 +255,10 @@ FILE fqName:<root> fileName:/grpc.kt
               RETURN type=kotlin.Nothing from='private final fun <get-customInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion'
                 GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:customInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> origin=null
                   receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-customInvokator>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
-        PROPERTY name:callableMap visibility:private modality:FINAL [val]
-          FIELD PROPERTY_BACKING_FIELD name:callableMap type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> visibility:private [final]
+        PROPERTY name:callables visibility:private modality:FINAL [val]
+          overridden:
+            public abstract callables: kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
+          FIELD PROPERTY_BACKING_FIELD name:callables type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> visibility:private [final]
             EXPRESSION_BODY
               CALL 'public final fun mapOf <K, V> (vararg pairs: kotlin.Pair<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf>): kotlin.collections.Map<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf> declared in kotlin.collections' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
                 TYPE_ARG K: kotlin.String
@@ -391,13 +393,15 @@ FILE fqName:<root> fileName:/grpc.kt
                         ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                       ARG parameters: CALL 'public final fun emptyArray <T> (): kotlin.Array<T of kotlin.emptyArray> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null
                         TYPE_ARG T: kotlinx.rpc.descriptor.RpcParameter
-          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-callableMap> visibility:private modality:FINAL returnType:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>>
+          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-callables> visibility:public modality:FINAL returnType:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>>
             VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
-            correspondingProperty: PROPERTY name:callableMap visibility:private modality:FINAL [val]
+            correspondingProperty: PROPERTY name:callables visibility:private modality:FINAL [val]
+            overridden:
+              public abstract fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
             BLOCK_BODY
-              RETURN type=kotlin.Nothing from='private final fun <get-callableMap> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion'
-                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:callableMap type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> visibility:private [final]' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
-                  receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-callableMap>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
+              RETURN type=kotlin.Nothing from='public final fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion'
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:callables type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> visibility:private [final]' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
+                  receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-callables>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
         CONSTRUCTOR visibility:private returnType:<root>.BoxService.$rpcServiceStub.Companion [primary]
           BLOCK_BODY
             DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
@@ -441,7 +445,7 @@ FILE fqName:<root> fileName:/grpc.kt
                     TYPE_ARG A: kotlin.String
                     TYPE_ARG B: io.grpc.MethodDescriptor<*, *>
                     ARG <this>: CONST String type=kotlin.String value="simple"
-                    ARG that: CALL 'public final fun methodDescriptor <Request, Response> (fullMethodName: kotlin.String, requestCodec: kotlinx.rpc.grpc.codec.MessageCodec<Request of kotlinx.rpc.grpc.internal.methodDescriptor>, responseCodec: kotlinx.rpc.grpc.codec.MessageCodec<Response of kotlinx.rpc.grpc.internal.methodDescriptor>, type: kotlinx.rpc.grpc.internal.MethodType, schemaDescriptor: kotlin.Any?, idempotent: kotlin.Boolean, safe: kotlin.Boolean, sampledToLocalTracing: kotlin.Boolean): io.grpc.MethodDescriptor<Request of kotlinx.rpc.grpc.internal.methodDescriptor, Response of kotlinx.rpc.grpc.internal.methodDescriptor> declared in kotlinx.rpc.grpc.internal' type=io.grpc.MethodDescriptor<kotlin.String, kotlin.String> origin=null
+                    ARG that: CALL 'public final fun methodDescriptor <Request, Response> (fullMethodName: kotlin.String, requestCodec: kotlinx.rpc.grpc.codec.MessageCodec<Request of kotlinx.rpc.grpc.descriptor.methodDescriptor>, responseCodec: kotlinx.rpc.grpc.codec.MessageCodec<Response of kotlinx.rpc.grpc.descriptor.methodDescriptor>, type: kotlinx.rpc.grpc.descriptor.MethodType, schemaDescriptor: kotlin.Any?, idempotent: kotlin.Boolean, safe: kotlin.Boolean, sampledToLocalTracing: kotlin.Boolean): io.grpc.MethodDescriptor<Request of kotlinx.rpc.grpc.descriptor.methodDescriptor, Response of kotlinx.rpc.grpc.descriptor.methodDescriptor> declared in kotlinx.rpc.grpc.descriptor' type=io.grpc.MethodDescriptor<kotlin.String, kotlin.String> origin=null
                       TYPE_ARG Request: kotlin.String
                       TYPE_ARG Response: kotlin.String
                       ARG fullMethodName: CONST String type=kotlin.String value="BoxService/simple"
@@ -477,7 +481,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           BRANCH
                             if: CONST Boolean type=kotlin.Boolean value=true
                             then: GET_VAR 'val tmp_2: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
-                      ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:UNARY' type=kotlinx.rpc.grpc.internal.MethodType
+                      ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:UNARY' type=kotlinx.rpc.grpc.descriptor.MethodType
                       ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
                       ARG idempotent: CONST Boolean type=kotlin.Boolean value=false
                       ARG safe: CONST Boolean type=kotlin.Boolean value=false
@@ -486,7 +490,7 @@ FILE fqName:<root> fileName:/grpc.kt
                     TYPE_ARG A: kotlin.String
                     TYPE_ARG B: io.grpc.MethodDescriptor<*, *>
                     ARG <this>: CONST String type=kotlin.String value="unit"
-                    ARG that: CALL 'public final fun methodDescriptor <Request, Response> (fullMethodName: kotlin.String, requestCodec: kotlinx.rpc.grpc.codec.MessageCodec<Request of kotlinx.rpc.grpc.internal.methodDescriptor>, responseCodec: kotlinx.rpc.grpc.codec.MessageCodec<Response of kotlinx.rpc.grpc.internal.methodDescriptor>, type: kotlinx.rpc.grpc.internal.MethodType, schemaDescriptor: kotlin.Any?, idempotent: kotlin.Boolean, safe: kotlin.Boolean, sampledToLocalTracing: kotlin.Boolean): io.grpc.MethodDescriptor<Request of kotlinx.rpc.grpc.internal.methodDescriptor, Response of kotlinx.rpc.grpc.internal.methodDescriptor> declared in kotlinx.rpc.grpc.internal' type=io.grpc.MethodDescriptor<kotlin.Unit, kotlin.Unit> origin=null
+                    ARG that: CALL 'public final fun methodDescriptor <Request, Response> (fullMethodName: kotlin.String, requestCodec: kotlinx.rpc.grpc.codec.MessageCodec<Request of kotlinx.rpc.grpc.descriptor.methodDescriptor>, responseCodec: kotlinx.rpc.grpc.codec.MessageCodec<Response of kotlinx.rpc.grpc.descriptor.methodDescriptor>, type: kotlinx.rpc.grpc.descriptor.MethodType, schemaDescriptor: kotlin.Any?, idempotent: kotlin.Boolean, safe: kotlin.Boolean, sampledToLocalTracing: kotlin.Boolean): io.grpc.MethodDescriptor<Request of kotlinx.rpc.grpc.descriptor.methodDescriptor, Response of kotlinx.rpc.grpc.descriptor.methodDescriptor> declared in kotlinx.rpc.grpc.descriptor' type=io.grpc.MethodDescriptor<kotlin.Unit, kotlin.Unit> origin=null
                       TYPE_ARG Request: kotlin.Unit
                       TYPE_ARG Response: kotlin.Unit
                       ARG fullMethodName: CONST String type=kotlin.String value="BoxService/unit"
@@ -522,7 +526,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           BRANCH
                             if: CONST Boolean type=kotlin.Boolean value=true
                             then: GET_VAR 'val tmp_4: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                      ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:UNARY' type=kotlinx.rpc.grpc.internal.MethodType
+                      ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:UNARY' type=kotlinx.rpc.grpc.descriptor.MethodType
                       ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
                       ARG idempotent: CONST Boolean type=kotlin.Boolean value=false
                       ARG safe: CONST Boolean type=kotlin.Boolean value=false
@@ -531,7 +535,7 @@ FILE fqName:<root> fileName:/grpc.kt
                     TYPE_ARG A: kotlin.String
                     TYPE_ARG B: io.grpc.MethodDescriptor<*, *>
                     ARG <this>: CONST String type=kotlin.String value="clientStream"
-                    ARG that: CALL 'public final fun methodDescriptor <Request, Response> (fullMethodName: kotlin.String, requestCodec: kotlinx.rpc.grpc.codec.MessageCodec<Request of kotlinx.rpc.grpc.internal.methodDescriptor>, responseCodec: kotlinx.rpc.grpc.codec.MessageCodec<Response of kotlinx.rpc.grpc.internal.methodDescriptor>, type: kotlinx.rpc.grpc.internal.MethodType, schemaDescriptor: kotlin.Any?, idempotent: kotlin.Boolean, safe: kotlin.Boolean, sampledToLocalTracing: kotlin.Boolean): io.grpc.MethodDescriptor<Request of kotlinx.rpc.grpc.internal.methodDescriptor, Response of kotlinx.rpc.grpc.internal.methodDescriptor> declared in kotlinx.rpc.grpc.internal' type=io.grpc.MethodDescriptor<kotlin.String, kotlin.Unit> origin=null
+                    ARG that: CALL 'public final fun methodDescriptor <Request, Response> (fullMethodName: kotlin.String, requestCodec: kotlinx.rpc.grpc.codec.MessageCodec<Request of kotlinx.rpc.grpc.descriptor.methodDescriptor>, responseCodec: kotlinx.rpc.grpc.codec.MessageCodec<Response of kotlinx.rpc.grpc.descriptor.methodDescriptor>, type: kotlinx.rpc.grpc.descriptor.MethodType, schemaDescriptor: kotlin.Any?, idempotent: kotlin.Boolean, safe: kotlin.Boolean, sampledToLocalTracing: kotlin.Boolean): io.grpc.MethodDescriptor<Request of kotlinx.rpc.grpc.descriptor.methodDescriptor, Response of kotlinx.rpc.grpc.descriptor.methodDescriptor> declared in kotlinx.rpc.grpc.descriptor' type=io.grpc.MethodDescriptor<kotlin.String, kotlin.Unit> origin=null
                       TYPE_ARG Request: kotlin.String
                       TYPE_ARG Response: kotlin.Unit
                       ARG fullMethodName: CONST String type=kotlin.String value="BoxService/clientStream"
@@ -567,7 +571,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           BRANCH
                             if: CONST Boolean type=kotlin.Boolean value=true
                             then: GET_VAR 'val tmp_6: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                      ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:CLIENT_STREAMING' type=kotlinx.rpc.grpc.internal.MethodType
+                      ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:CLIENT_STREAMING' type=kotlinx.rpc.grpc.descriptor.MethodType
                       ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
                       ARG idempotent: CONST Boolean type=kotlin.Boolean value=false
                       ARG safe: CONST Boolean type=kotlin.Boolean value=false
@@ -576,7 +580,7 @@ FILE fqName:<root> fileName:/grpc.kt
                     TYPE_ARG A: kotlin.String
                     TYPE_ARG B: io.grpc.MethodDescriptor<*, *>
                     ARG <this>: CONST String type=kotlin.String value="serverStream"
-                    ARG that: CALL 'public final fun methodDescriptor <Request, Response> (fullMethodName: kotlin.String, requestCodec: kotlinx.rpc.grpc.codec.MessageCodec<Request of kotlinx.rpc.grpc.internal.methodDescriptor>, responseCodec: kotlinx.rpc.grpc.codec.MessageCodec<Response of kotlinx.rpc.grpc.internal.methodDescriptor>, type: kotlinx.rpc.grpc.internal.MethodType, schemaDescriptor: kotlin.Any?, idempotent: kotlin.Boolean, safe: kotlin.Boolean, sampledToLocalTracing: kotlin.Boolean): io.grpc.MethodDescriptor<Request of kotlinx.rpc.grpc.internal.methodDescriptor, Response of kotlinx.rpc.grpc.internal.methodDescriptor> declared in kotlinx.rpc.grpc.internal' type=io.grpc.MethodDescriptor<kotlin.Unit, kotlin.Unit> origin=null
+                    ARG that: CALL 'public final fun methodDescriptor <Request, Response> (fullMethodName: kotlin.String, requestCodec: kotlinx.rpc.grpc.codec.MessageCodec<Request of kotlinx.rpc.grpc.descriptor.methodDescriptor>, responseCodec: kotlinx.rpc.grpc.codec.MessageCodec<Response of kotlinx.rpc.grpc.descriptor.methodDescriptor>, type: kotlinx.rpc.grpc.descriptor.MethodType, schemaDescriptor: kotlin.Any?, idempotent: kotlin.Boolean, safe: kotlin.Boolean, sampledToLocalTracing: kotlin.Boolean): io.grpc.MethodDescriptor<Request of kotlinx.rpc.grpc.descriptor.methodDescriptor, Response of kotlinx.rpc.grpc.descriptor.methodDescriptor> declared in kotlinx.rpc.grpc.descriptor' type=io.grpc.MethodDescriptor<kotlin.Unit, kotlin.Unit> origin=null
                       TYPE_ARG Request: kotlin.Unit
                       TYPE_ARG Response: kotlin.Unit
                       ARG fullMethodName: CONST String type=kotlin.String value="BoxService/serverStream"
@@ -612,7 +616,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           BRANCH
                             if: CONST Boolean type=kotlin.Boolean value=true
                             then: GET_VAR 'val tmp_8: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                      ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:SERVER_STREAMING' type=kotlinx.rpc.grpc.internal.MethodType
+                      ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:SERVER_STREAMING' type=kotlinx.rpc.grpc.descriptor.MethodType
                       ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
                       ARG idempotent: CONST Boolean type=kotlin.Boolean value=false
                       ARG safe: CONST Boolean type=kotlin.Boolean value=false
@@ -621,7 +625,7 @@ FILE fqName:<root> fileName:/grpc.kt
                     TYPE_ARG A: kotlin.String
                     TYPE_ARG B: io.grpc.MethodDescriptor<*, *>
                     ARG <this>: CONST String type=kotlin.String value="bidiStream"
-                    ARG that: CALL 'public final fun methodDescriptor <Request, Response> (fullMethodName: kotlin.String, requestCodec: kotlinx.rpc.grpc.codec.MessageCodec<Request of kotlinx.rpc.grpc.internal.methodDescriptor>, responseCodec: kotlinx.rpc.grpc.codec.MessageCodec<Response of kotlinx.rpc.grpc.internal.methodDescriptor>, type: kotlinx.rpc.grpc.internal.MethodType, schemaDescriptor: kotlin.Any?, idempotent: kotlin.Boolean, safe: kotlin.Boolean, sampledToLocalTracing: kotlin.Boolean): io.grpc.MethodDescriptor<Request of kotlinx.rpc.grpc.internal.methodDescriptor, Response of kotlinx.rpc.grpc.internal.methodDescriptor> declared in kotlinx.rpc.grpc.internal' type=io.grpc.MethodDescriptor<kotlinx.rpc.codegen.test.Message, kotlinx.rpc.codegen.test.Message> origin=null
+                    ARG that: CALL 'public final fun methodDescriptor <Request, Response> (fullMethodName: kotlin.String, requestCodec: kotlinx.rpc.grpc.codec.MessageCodec<Request of kotlinx.rpc.grpc.descriptor.methodDescriptor>, responseCodec: kotlinx.rpc.grpc.codec.MessageCodec<Response of kotlinx.rpc.grpc.descriptor.methodDescriptor>, type: kotlinx.rpc.grpc.descriptor.MethodType, schemaDescriptor: kotlin.Any?, idempotent: kotlin.Boolean, safe: kotlin.Boolean, sampledToLocalTracing: kotlin.Boolean): io.grpc.MethodDescriptor<Request of kotlinx.rpc.grpc.descriptor.methodDescriptor, Response of kotlinx.rpc.grpc.descriptor.methodDescriptor> declared in kotlinx.rpc.grpc.descriptor' type=io.grpc.MethodDescriptor<kotlinx.rpc.codegen.test.Message, kotlinx.rpc.codegen.test.Message> origin=null
                       TYPE_ARG Request: kotlinx.rpc.codegen.test.Message
                       TYPE_ARG Response: kotlinx.rpc.codegen.test.Message
                       ARG fullMethodName: CONST String type=kotlin.String value="BoxService/bidiStream"
@@ -657,7 +661,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           BRANCH
                             if: CONST Boolean type=kotlin.Boolean value=true
                             then: GET_VAR 'val tmp_10: kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
-                      ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:BIDI_STREAMING' type=kotlinx.rpc.grpc.internal.MethodType
+                      ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:BIDI_STREAMING' type=kotlinx.rpc.grpc.descriptor.MethodType
                       ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
                       ARG idempotent: CONST Boolean type=kotlin.Boolean value=false
                       ARG safe: CONST Boolean type=kotlin.Boolean value=false
@@ -666,7 +670,7 @@ FILE fqName:<root> fileName:/grpc.kt
                     TYPE_ARG A: kotlin.String
                     TYPE_ARG B: io.grpc.MethodDescriptor<*, *>
                     ARG <this>: CONST String type=kotlin.String value="custom"
-                    ARG that: CALL 'public final fun methodDescriptor <Request, Response> (fullMethodName: kotlin.String, requestCodec: kotlinx.rpc.grpc.codec.MessageCodec<Request of kotlinx.rpc.grpc.internal.methodDescriptor>, responseCodec: kotlinx.rpc.grpc.codec.MessageCodec<Response of kotlinx.rpc.grpc.internal.methodDescriptor>, type: kotlinx.rpc.grpc.internal.MethodType, schemaDescriptor: kotlin.Any?, idempotent: kotlin.Boolean, safe: kotlin.Boolean, sampledToLocalTracing: kotlin.Boolean): io.grpc.MethodDescriptor<Request of kotlinx.rpc.grpc.internal.methodDescriptor, Response of kotlinx.rpc.grpc.internal.methodDescriptor> declared in kotlinx.rpc.grpc.internal' type=io.grpc.MethodDescriptor<kotlin.Unit, <root>.Custom> origin=null
+                    ARG that: CALL 'public final fun methodDescriptor <Request, Response> (fullMethodName: kotlin.String, requestCodec: kotlinx.rpc.grpc.codec.MessageCodec<Request of kotlinx.rpc.grpc.descriptor.methodDescriptor>, responseCodec: kotlinx.rpc.grpc.codec.MessageCodec<Response of kotlinx.rpc.grpc.descriptor.methodDescriptor>, type: kotlinx.rpc.grpc.descriptor.MethodType, schemaDescriptor: kotlin.Any?, idempotent: kotlin.Boolean, safe: kotlin.Boolean, sampledToLocalTracing: kotlin.Boolean): io.grpc.MethodDescriptor<Request of kotlinx.rpc.grpc.descriptor.methodDescriptor, Response of kotlinx.rpc.grpc.descriptor.methodDescriptor> declared in kotlinx.rpc.grpc.descriptor' type=io.grpc.MethodDescriptor<kotlin.Unit, <root>.Custom> origin=null
                       TYPE_ARG Request: kotlin.Unit
                       TYPE_ARG Response: <root>.Custom
                       ARG fullMethodName: CONST String type=kotlin.String value="BoxService/custom"
@@ -687,7 +691,7 @@ FILE fqName:<root> fileName:/grpc.kt
                             if: CONST Boolean type=kotlin.Boolean value=true
                             then: GET_VAR 'val tmp_11: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
                       ARG responseCodec: GET_OBJECT 'CLASS OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.grpc.codec.MessageCodec<<root>.Custom>]' type=<root>.Custom.Companion
-                      ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:UNARY' type=kotlinx.rpc.grpc.internal.MethodType
+                      ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:UNARY' type=kotlinx.rpc.grpc.descriptor.MethodType
                       ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
                       ARG idempotent: CONST Boolean type=kotlin.Boolean value=false
                       ARG safe: CONST Boolean type=kotlin.Boolean value=false
@@ -710,20 +714,9 @@ FILE fqName:<root> fileName:/grpc.kt
           BLOCK_BODY
             RETURN type=kotlin.Nothing from='public final fun getCallable (name: kotlin.String): kotlinx.rpc.descriptor.RpcCallable? declared in <root>.BoxService.$rpcServiceStub.Companion'
               CALL 'public abstract fun get (key: K of kotlin.collections.Map): V of kotlin.collections.Map? declared in kotlin.collections.Map' type=kotlinx.rpc.descriptor.RpcCallable? origin=GET_ARRAY_ELEMENT
-                ARG <this>: CALL 'private final fun <get-callableMap> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=GET_PROPERTY
+                ARG <this>: CALL 'public final fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=GET_PROPERTY
                   ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.getCallable' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                 ARG key: GET_VAR 'name: kotlin.String declared in <root>.BoxService.$rpcServiceStub.Companion.getCallable' type=kotlin.String origin=null
-        PROPERTY name:callables visibility:public modality:FINAL [val]
-          overridden:
-            public abstract callables: kotlin.collections.Collection<kotlinx.rpc.descriptor.RpcCallable<Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
-          FUN name:<get-callables> visibility:public modality:FINAL returnType:kotlin.collections.Collection<kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>>
-            VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
-            correspondingProperty: PROPERTY name:callables visibility:public modality:FINAL [val]
-            BLOCK_BODY
-              RETURN type=kotlin.Nothing from='public final fun <get-callables> (): kotlin.collections.Collection<kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion'
-                CALL 'public abstract fun <get-values> (): kotlin.collections.Collection<V of kotlin.collections.Map> declared in kotlin.collections.Map' type=kotlin.collections.Collection<V of kotlin.collections.Map> origin=GET_PROPERTY
-                  ARG <this>: CALL 'private final fun <get-callableMap> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=GET_PROPERTY
-                    ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-callables>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
       CONSTRUCTOR visibility:public returnType:<root>.BoxService.$rpcServiceStub [primary]
         VALUE_PARAMETER kind:Regular name:__rpc_stub_id index:0 type:kotlin.Long
         VALUE_PARAMETER kind:Regular name:__rpc_client index:1 type:kotlinx.rpc.RpcClient
@@ -959,8 +952,10 @@ FILE fqName:<root> fileName:/grpc.kt
               RETURN type=kotlin.Nothing from='private final fun <get-unitInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.ProtoPkgService> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'
                 GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:unitInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.ProtoPkgService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.ProtoPkgService> origin=null
                   receiver: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub.Companion declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.<get-unitInvokator>' type=<root>.ProtoPkgService.$rpcServiceStub.Companion origin=null
-        PROPERTY name:callableMap visibility:private modality:FINAL [val]
-          FIELD PROPERTY_BACKING_FIELD name:callableMap type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> visibility:private [final]
+        PROPERTY name:callables visibility:private modality:FINAL [val]
+          overridden:
+            public abstract callables: kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
+          FIELD PROPERTY_BACKING_FIELD name:callables type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> visibility:private [final]
             EXPRESSION_BODY
               CALL 'public final fun mapOf <K, V> (vararg pairs: kotlin.Pair<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf>): kotlin.collections.Map<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf> declared in kotlin.collections' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> origin=null
                 TYPE_ARG K: kotlin.String
@@ -982,13 +977,15 @@ FILE fqName:<root> fileName:/grpc.kt
                         ARG <this>: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub.Companion declared in <root>.ProtoPkgService.$rpcServiceStub.Companion' type=<root>.ProtoPkgService.$rpcServiceStub.Companion origin=null
                       ARG parameters: CALL 'public final fun emptyArray <T> (): kotlin.Array<T of kotlin.emptyArray> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null
                         TYPE_ARG T: kotlinx.rpc.descriptor.RpcParameter
-          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-callableMap> visibility:private modality:FINAL returnType:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>>
+          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-callables> visibility:public modality:FINAL returnType:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>>
             VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub.Companion
-            correspondingProperty: PROPERTY name:callableMap visibility:private modality:FINAL [val]
+            correspondingProperty: PROPERTY name:callables visibility:private modality:FINAL [val]
+            overridden:
+              public abstract fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
             BLOCK_BODY
-              RETURN type=kotlin.Nothing from='private final fun <get-callableMap> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'
-                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:callableMap type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> visibility:private [final]' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> origin=null
-                  receiver: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub.Companion declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.<get-callableMap>' type=<root>.ProtoPkgService.$rpcServiceStub.Companion origin=null
+              RETURN type=kotlin.Nothing from='public final fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:callables type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> visibility:private [final]' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> origin=null
+                  receiver: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub.Companion declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.<get-callables>' type=<root>.ProtoPkgService.$rpcServiceStub.Companion origin=null
         CONSTRUCTOR visibility:private returnType:<root>.ProtoPkgService.$rpcServiceStub.Companion [primary]
           BLOCK_BODY
             DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
@@ -1032,7 +1029,7 @@ FILE fqName:<root> fileName:/grpc.kt
                     TYPE_ARG A: kotlin.String
                     TYPE_ARG B: io.grpc.MethodDescriptor<*, *>
                     ARG <this>: CONST String type=kotlin.String value="unit"
-                    ARG that: CALL 'public final fun methodDescriptor <Request, Response> (fullMethodName: kotlin.String, requestCodec: kotlinx.rpc.grpc.codec.MessageCodec<Request of kotlinx.rpc.grpc.internal.methodDescriptor>, responseCodec: kotlinx.rpc.grpc.codec.MessageCodec<Response of kotlinx.rpc.grpc.internal.methodDescriptor>, type: kotlinx.rpc.grpc.internal.MethodType, schemaDescriptor: kotlin.Any?, idempotent: kotlin.Boolean, safe: kotlin.Boolean, sampledToLocalTracing: kotlin.Boolean): io.grpc.MethodDescriptor<Request of kotlinx.rpc.grpc.internal.methodDescriptor, Response of kotlinx.rpc.grpc.internal.methodDescriptor> declared in kotlinx.rpc.grpc.internal' type=io.grpc.MethodDescriptor<kotlin.Unit, kotlin.Unit> origin=null
+                    ARG that: CALL 'public final fun methodDescriptor <Request, Response> (fullMethodName: kotlin.String, requestCodec: kotlinx.rpc.grpc.codec.MessageCodec<Request of kotlinx.rpc.grpc.descriptor.methodDescriptor>, responseCodec: kotlinx.rpc.grpc.codec.MessageCodec<Response of kotlinx.rpc.grpc.descriptor.methodDescriptor>, type: kotlinx.rpc.grpc.descriptor.MethodType, schemaDescriptor: kotlin.Any?, idempotent: kotlin.Boolean, safe: kotlin.Boolean, sampledToLocalTracing: kotlin.Boolean): io.grpc.MethodDescriptor<Request of kotlinx.rpc.grpc.descriptor.methodDescriptor, Response of kotlinx.rpc.grpc.descriptor.methodDescriptor> declared in kotlinx.rpc.grpc.descriptor' type=io.grpc.MethodDescriptor<kotlin.Unit, kotlin.Unit> origin=null
                       TYPE_ARG Request: kotlin.Unit
                       TYPE_ARG Response: kotlin.Unit
                       ARG fullMethodName: CONST String type=kotlin.String value="my.proto.package.ProtoPkgService/unit"
@@ -1068,7 +1065,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           BRANCH
                             if: CONST Boolean type=kotlin.Boolean value=true
                             then: GET_VAR 'val tmp_15: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                      ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:UNARY' type=kotlinx.rpc.grpc.internal.MethodType
+                      ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:UNARY' type=kotlinx.rpc.grpc.descriptor.MethodType
                       ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
                       ARG idempotent: CONST Boolean type=kotlin.Boolean value=false
                       ARG safe: CONST Boolean type=kotlin.Boolean value=false
@@ -1091,20 +1088,9 @@ FILE fqName:<root> fileName:/grpc.kt
           BLOCK_BODY
             RETURN type=kotlin.Nothing from='public final fun getCallable (name: kotlin.String): kotlinx.rpc.descriptor.RpcCallable? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'
               CALL 'public abstract fun get (key: K of kotlin.collections.Map): V of kotlin.collections.Map? declared in kotlin.collections.Map' type=kotlinx.rpc.descriptor.RpcCallable? origin=GET_ARRAY_ELEMENT
-                ARG <this>: CALL 'private final fun <get-callableMap> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> origin=GET_PROPERTY
+                ARG <this>: CALL 'public final fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> origin=GET_PROPERTY
                   ARG <this>: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub.Companion declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.getCallable' type=<root>.ProtoPkgService.$rpcServiceStub.Companion origin=null
                 ARG key: GET_VAR 'name: kotlin.String declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.getCallable' type=kotlin.String origin=null
-        PROPERTY name:callables visibility:public modality:FINAL [val]
-          overridden:
-            public abstract callables: kotlin.collections.Collection<kotlinx.rpc.descriptor.RpcCallable<Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
-          FUN name:<get-callables> visibility:public modality:FINAL returnType:kotlin.collections.Collection<kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>>
-            VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub.Companion
-            correspondingProperty: PROPERTY name:callables visibility:public modality:FINAL [val]
-            BLOCK_BODY
-              RETURN type=kotlin.Nothing from='public final fun <get-callables> (): kotlin.collections.Collection<kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'
-                CALL 'public abstract fun <get-values> (): kotlin.collections.Collection<V of kotlin.collections.Map> declared in kotlin.collections.Map' type=kotlin.collections.Collection<V of kotlin.collections.Map> origin=GET_PROPERTY
-                  ARG <this>: CALL 'private final fun <get-callableMap> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> origin=GET_PROPERTY
-                    ARG <this>: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub.Companion declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.<get-callables>' type=<root>.ProtoPkgService.$rpcServiceStub.Companion origin=null
       CONSTRUCTOR visibility:public returnType:<root>.ProtoPkgService.$rpcServiceStub [primary]
         VALUE_PARAMETER kind:Regular name:__rpc_stub_id index:0 type:kotlin.Long
         VALUE_PARAMETER kind:Regular name:__rpc_client index:1 type:kotlinx.rpc.RpcClient
@@ -1199,7 +1185,8 @@ FILE fqName:<root> fileName:/grpc.kt
               then: CALL 'public final fun let <T, R> (<this>: T of kotlin.let, block: kotlin.Function1<T of kotlin.let, R of kotlin.let>): R of kotlin.let declared in kotlin' type=kotlin.Nothing origin=null
                 TYPE_ARG T: kotlin.String
                 TYPE_ARG R: kotlin.Nothing
-                ARG <this>: GET_VAR 'val tmp_17: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                ARG <this>: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
+                  GET_VAR 'val tmp_17: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG block: FUN_EXPR type=kotlin.Function1<kotlin.String, kotlin.Nothing> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Nothing
                     VALUE_PARAMETER kind:Regular name:it index:0 type:kotlin.String
@@ -1232,7 +1219,8 @@ FILE fqName:<root> fileName:/grpc.kt
               then: CALL 'public final fun let <T, R> (<this>: T of kotlin.let, block: kotlin.Function1<T of kotlin.let, R of kotlin.let>): R of kotlin.let declared in kotlin' type=kotlin.Nothing origin=null
                 TYPE_ARG T: kotlin.String
                 TYPE_ARG R: kotlin.Nothing
-                ARG <this>: GET_VAR 'val tmp_18: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                ARG <this>: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
+                  GET_VAR 'val tmp_18: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG block: FUN_EXPR type=kotlin.Function1<kotlin.String, kotlin.Nothing> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Nothing
                     VALUE_PARAMETER kind:Regular name:it index:0 type:kotlin.String
@@ -1265,7 +1253,8 @@ FILE fqName:<root> fileName:/grpc.kt
               then: CALL 'public final fun let <T, R> (<this>: T of kotlin.let, block: kotlin.Function1<T of kotlin.let, R of kotlin.let>): R of kotlin.let declared in kotlin' type=kotlin.Nothing origin=null
                 TYPE_ARG T: kotlin.String
                 TYPE_ARG R: kotlin.Nothing
-                ARG <this>: GET_VAR 'val tmp_19: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                ARG <this>: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
+                  GET_VAR 'val tmp_19: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG block: FUN_EXPR type=kotlin.Function1<kotlin.String, kotlin.Nothing> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Nothing
                     VALUE_PARAMETER kind:Regular name:it index:0 type:kotlin.String
@@ -1298,7 +1287,8 @@ FILE fqName:<root> fileName:/grpc.kt
               then: CALL 'public final fun let <T, R> (<this>: T of kotlin.let, block: kotlin.Function1<T of kotlin.let, R of kotlin.let>): R of kotlin.let declared in kotlin' type=kotlin.Nothing origin=null
                 TYPE_ARG T: kotlin.String
                 TYPE_ARG R: kotlin.Nothing
-                ARG <this>: GET_VAR 'val tmp_20: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                ARG <this>: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
+                  GET_VAR 'val tmp_20: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG block: FUN_EXPR type=kotlin.Function1<kotlin.String, kotlin.Nothing> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Nothing
                     VALUE_PARAMETER kind:Regular name:it index:0 type:kotlin.String
@@ -1331,7 +1321,8 @@ FILE fqName:<root> fileName:/grpc.kt
               then: CALL 'public final fun let <T, R> (<this>: T of kotlin.let, block: kotlin.Function1<T of kotlin.let, R of kotlin.let>): R of kotlin.let declared in kotlin' type=kotlin.Nothing origin=null
                 TYPE_ARG T: kotlin.String
                 TYPE_ARG R: kotlin.Nothing
-                ARG <this>: GET_VAR 'val tmp_21: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                ARG <this>: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
+                  GET_VAR 'val tmp_21: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG block: FUN_EXPR type=kotlin.Function1<kotlin.String, kotlin.Nothing> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Nothing
                     VALUE_PARAMETER kind:Regular name:it index:0 type:kotlin.String
@@ -1364,7 +1355,8 @@ FILE fqName:<root> fileName:/grpc.kt
               then: CALL 'public final fun let <T, R> (<this>: T of kotlin.let, block: kotlin.Function1<T of kotlin.let, R of kotlin.let>): R of kotlin.let declared in kotlin' type=kotlin.Nothing origin=null
                 TYPE_ARG T: kotlin.String
                 TYPE_ARG R: kotlin.Nothing
-                ARG <this>: GET_VAR 'val tmp_22: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                ARG <this>: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
+                  GET_VAR 'val tmp_22: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG block: FUN_EXPR type=kotlin.Function1<kotlin.String, kotlin.Nothing> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Nothing
                     VALUE_PARAMETER kind:Regular name:it index:0 type:kotlin.String
@@ -1415,7 +1407,8 @@ FILE fqName:<root> fileName:/grpc.kt
               then: CALL 'public final fun let <T, R> (<this>: T of kotlin.let, block: kotlin.Function1<T of kotlin.let, R of kotlin.let>): R of kotlin.let declared in kotlin' type=kotlin.Nothing origin=null
                 TYPE_ARG T: kotlin.String
                 TYPE_ARG R: kotlin.Nothing
-                ARG <this>: GET_VAR 'val tmp_23: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                ARG <this>: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
+                  GET_VAR 'val tmp_23: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG block: FUN_EXPR type=kotlin.Function1<kotlin.String, kotlin.Nothing> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Nothing
                     VALUE_PARAMETER kind:Regular name:it index:0 type:kotlin.String

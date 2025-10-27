@@ -58,3 +58,6 @@ interface WrongAnnotations4 {
     @Grpc.Method<!WRONG_SAFE_IDEMPOTENT_COMBINATION!>(safe = true)<!>
     suspend fun wrongSafeIdempotent2()
 }
+
+/* GENERATED_FIR_TAGS: classDeclaration, functionDeclaration, interfaceDeclaration, nullableType, primaryConstructor,
+propertyDeclaration, stringLiteral, suspend */

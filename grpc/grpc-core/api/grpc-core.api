@@ -1,70 +1,3 @@
-public final class kotlinx/rpc/grpc/GrpcClient : kotlinx/rpc/RpcClient {
-	public final fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun awaitTermination-VtjQ1oo$default (Lkotlinx/rpc/grpc/GrpcClient;JLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun callServerStreaming (Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/flow/Flow;
-	public final fun shutdown ()V
-	public final fun shutdownNow ()V
-}
-
-public final class kotlinx/rpc/grpc/GrpcClientKt {
-	public static final fun GrpcClient (Ljava/lang/String;ILkotlinx/rpc/grpc/codec/MessageCodecResolver;Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/GrpcClient;
-	public static final fun GrpcClient (Ljava/lang/String;Lkotlinx/rpc/grpc/codec/MessageCodecResolver;Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/GrpcClient;
-	public static synthetic fun GrpcClient$default (Ljava/lang/String;ILkotlinx/rpc/grpc/codec/MessageCodecResolver;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/GrpcClient;
-	public static synthetic fun GrpcClient$default (Ljava/lang/String;Lkotlinx/rpc/grpc/codec/MessageCodecResolver;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/GrpcClient;
-}
-
-public final class kotlinx/rpc/grpc/GrpcServer : kotlinx/rpc/RpcServer, kotlinx/rpc/grpc/Server {
-	public fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun deregisterService (Lkotlin/reflect/KClass;)V
-	public fun getPort ()I
-	public fun isShutdown ()Z
-	public fun isTerminated ()Z
-	public fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function0;)V
-	public fun shutdown ()Lkotlinx/rpc/grpc/GrpcServer;
-	public synthetic fun shutdown ()Lkotlinx/rpc/grpc/Server;
-	public fun shutdownNow ()Lkotlinx/rpc/grpc/GrpcServer;
-	public synthetic fun shutdownNow ()Lkotlinx/rpc/grpc/Server;
-	public fun start ()Lkotlinx/rpc/grpc/GrpcServer;
-	public synthetic fun start ()Lkotlinx/rpc/grpc/Server;
-}
-
-public final class kotlinx/rpc/grpc/GrpcServerKt {
-	public static final fun GrpcServer (ILkotlinx/rpc/grpc/codec/MessageCodecResolver;Lkotlin/coroutines/CoroutineContext;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/GrpcServer;
-	public static synthetic fun GrpcServer$default (ILkotlinx/rpc/grpc/codec/MessageCodecResolver;Lkotlin/coroutines/CoroutineContext;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/GrpcServer;
-}
-
-public abstract interface class kotlinx/rpc/grpc/ManagedChannel {
-	public abstract fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun getPlatformApi ()Lio/grpc/ManagedChannel;
-	public abstract fun isShutdown ()Z
-	public abstract fun isTerminated ()Z
-	public abstract fun shutdown ()Lkotlinx/rpc/grpc/ManagedChannel;
-	public abstract fun shutdownNow ()Lkotlinx/rpc/grpc/ManagedChannel;
-}
-
-public final class kotlinx/rpc/grpc/ManagedChannel$DefaultImpls {
-	public static synthetic fun awaitTermination-VtjQ1oo$default (Lkotlinx/rpc/grpc/ManagedChannel;JLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-}
-
-public final class kotlinx/rpc/grpc/ManagedChannel_jvmKt {
-	public static final fun toKotlin (Lio/grpc/ManagedChannel;)Lkotlinx/rpc/grpc/ManagedChannel;
-}
-
-public abstract interface class kotlinx/rpc/grpc/Server {
-	public abstract fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun getPort ()I
-	public abstract fun isShutdown ()Z
-	public abstract fun isTerminated ()Z
-	public abstract fun shutdown ()Lkotlinx/rpc/grpc/Server;
-	public abstract fun shutdownNow ()Lkotlinx/rpc/grpc/Server;
-	public abstract fun start ()Lkotlinx/rpc/grpc/Server;
-}
-
-public final class kotlinx/rpc/grpc/Server$DefaultImpls {
-	public static synthetic fun awaitTermination-VtjQ1oo$default (Lkotlinx/rpc/grpc/Server;JLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-}
-
 public final class kotlinx/rpc/grpc/StatusCode : java/lang/Enum {
 	public static final field ABORTED Lkotlinx/rpc/grpc/StatusCode;
 	public static final field ALREADY_EXISTS Lkotlinx/rpc/grpc/StatusCode;
@@ -93,9 +26,32 @@ public final class kotlinx/rpc/grpc/StatusCode : java/lang/Enum {
 public final class kotlinx/rpc/grpc/Status_jvmKt {
 	public static final fun Status (Lkotlinx/rpc/grpc/StatusCode;Ljava/lang/String;Ljava/lang/Throwable;)Lio/grpc/Status;
 	public static synthetic fun Status$default (Lkotlinx/rpc/grpc/StatusCode;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Lio/grpc/Status;
-	public static final fun getCode (Lio/grpc/Status;)Lkotlinx/rpc/grpc/StatusCode;
+	public static final fun getStatusCode (Lio/grpc/Status;)Lkotlinx/rpc/grpc/StatusCode;
 }
 
 public abstract interface annotation class kotlinx/rpc/grpc/annotations/Grpc : java/lang/annotation/Annotation {
+	public abstract fun protoPackage ()Ljava/lang/String;
+}
+
+public abstract interface annotation class kotlinx/rpc/grpc/annotations/Grpc$Method : java/lang/annotation/Annotation {
+	public abstract fun idempotent ()Z
+	public abstract fun name ()Ljava/lang/String;
+	public abstract fun safe ()Z
+	public abstract fun sampledToLocalTracing ()Z
+}
+
+public final class kotlinx/rpc/grpc/descriptor/MethodDescriptor_jvmKt {
+	public static final fun getMethodType (Lio/grpc/MethodDescriptor;)Lkotlinx/rpc/grpc/descriptor/MethodType;
+}
+
+public final class kotlinx/rpc/grpc/descriptor/MethodType : java/lang/Enum {
+	public static final field BIDI_STREAMING Lkotlinx/rpc/grpc/descriptor/MethodType;
+	public static final field CLIENT_STREAMING Lkotlinx/rpc/grpc/descriptor/MethodType;
+	public static final field SERVER_STREAMING Lkotlinx/rpc/grpc/descriptor/MethodType;
+	public static final field UNARY Lkotlinx/rpc/grpc/descriptor/MethodType;
+	public static final field UNKNOWN Lkotlinx/rpc/grpc/descriptor/MethodType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/grpc/descriptor/MethodType;
+	public static fun values ()[Lkotlinx/rpc/grpc/descriptor/MethodType;
 }
 
