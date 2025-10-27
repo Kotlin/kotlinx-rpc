@@ -1,0 +1,60 @@
+public abstract interface class kotlinx/rpc/grpc/client/ClientCallScope {
+	public abstract fun cancel (Ljava/lang/String;Ljava/lang/Throwable;)Ljava/lang/Void;
+	public abstract fun getCallOptions ()Lio/grpc/CallOptions;
+	public abstract fun getMethod ()Lio/grpc/MethodDescriptor;
+	public abstract fun getRequestHeaders ()Lio/grpc/Metadata;
+	public abstract fun onClose (Lkotlin/jvm/functions/Function2;)V
+	public abstract fun onHeaders (Lkotlin/jvm/functions/Function1;)V
+	public abstract fun proceed (Lkotlinx/coroutines/flow/Flow;)Lkotlinx/coroutines/flow/Flow;
+}
+
+public final class kotlinx/rpc/grpc/client/ClientCallScope$DefaultImpls {
+	public static synthetic fun cancel$default (Lkotlinx/rpc/grpc/client/ClientCallScope;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Ljava/lang/Void;
+}
+
+public abstract interface class kotlinx/rpc/grpc/client/ClientInterceptor {
+	public abstract fun intercept (Lkotlinx/rpc/grpc/client/ClientCallScope;Lkotlinx/coroutines/flow/Flow;)Lkotlinx/coroutines/flow/Flow;
+}
+
+public final class kotlinx/rpc/grpc/client/CredentialsKt {
+	public static final fun TlsClientCredentials (Lkotlin/jvm/functions/Function1;)Lio/grpc/ChannelCredentials;
+	public static synthetic fun TlsClientCredentials$default (Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lio/grpc/ChannelCredentials;
+}
+
+public final class kotlinx/rpc/grpc/client/GrpcClient : kotlinx/rpc/RpcClient {
+	public final fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun awaitTermination-VtjQ1oo$default (Lkotlinx/rpc/grpc/client/GrpcClient;JLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun callServerStreaming (Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/flow/Flow;
+	public final fun shutdown ()V
+	public final fun shutdownNow ()V
+}
+
+public final class kotlinx/rpc/grpc/client/GrpcClientConfiguration {
+	public final fun getCredentials ()Lio/grpc/ChannelCredentials;
+	public final fun getMessageCodecResolver ()Lkotlinx/rpc/grpc/codec/MessageCodecResolver;
+	public final fun getOverrideAuthority ()Ljava/lang/String;
+	public final fun intercept ([Lkotlinx/rpc/grpc/client/ClientInterceptor;)V
+	public final fun plaintext ()Lio/grpc/ChannelCredentials;
+	public final fun setCredentials (Lio/grpc/ChannelCredentials;)V
+	public final fun setMessageCodecResolver (Lkotlinx/rpc/grpc/codec/MessageCodecResolver;)V
+	public final fun setOverrideAuthority (Ljava/lang/String;)V
+	public final fun tls (Lkotlin/jvm/functions/Function1;)Lio/grpc/ChannelCredentials;
+}
+
+public final class kotlinx/rpc/grpc/client/GrpcClientKt {
+	public static final fun GrpcClient (Ljava/lang/String;ILkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/client/GrpcClient;
+	public static final fun GrpcClient (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/client/GrpcClient;
+	public static synthetic fun GrpcClient$default (Ljava/lang/String;ILkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/client/GrpcClient;
+	public static synthetic fun GrpcClient$default (Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/client/GrpcClient;
+}
+
+public abstract interface class kotlinx/rpc/grpc/client/TlsClientCredentialsBuilder {
+	public abstract fun keyManager (Ljava/lang/String;Ljava/lang/String;)Lkotlinx/rpc/grpc/client/TlsClientCredentialsBuilder;
+	public abstract fun trustManager (Ljava/lang/String;)Lkotlinx/rpc/grpc/client/TlsClientCredentialsBuilder;
+}
+
+public final class kotlinx/rpc/grpc/client/internal/ManagedChannel_jvmKt {
+	public static final fun toKotlin (Lio/grpc/ManagedChannel;)Lkotlinx/rpc/grpc/client/internal/ManagedChannel;
+}
+

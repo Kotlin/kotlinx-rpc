@@ -98,7 +98,7 @@ public class GrpcServer internal constructor(
 
         val delegate = descriptor.delegate(messageCodecResolver)
 
-        val methods = descriptor.callables.map {
+        val methods = descriptor.callables.values.map {
             @Suppress("UNCHECKED_CAST")
             val methodDescriptor = delegate.getMethodDescriptor(it.name)
                     as? MethodDescriptor<RequestServer, ResponseServer>

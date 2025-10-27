@@ -19,6 +19,7 @@ import kotlinx.rpc.grpc.descriptor.methodDescriptor
 import kotlinx.rpc.grpc.client.internal.serverStreamingRpc
 import kotlinx.rpc.grpc.client.internal.unaryRpc
 import kotlinx.rpc.registerService
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration
@@ -153,6 +154,7 @@ class EchoServiceImpl : EchoService {
      * Run this on JVM before executing tests.
      */
     @Test
+    @Ignore
     fun runServer() = runTest(timeout = Duration.INFINITE) {
         val server = GrpcServer(
             port = PORT,

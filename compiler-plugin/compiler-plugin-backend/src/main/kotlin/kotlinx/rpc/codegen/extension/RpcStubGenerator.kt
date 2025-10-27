@@ -21,13 +21,19 @@ import org.jetbrains.kotlin.ir.builders.declarations.addProperty
 import org.jetbrains.kotlin.ir.builders.declarations.addValueParameter
 import org.jetbrains.kotlin.ir.builders.declarations.buildFun
 import org.jetbrains.kotlin.ir.builders.irAs
+import org.jetbrains.kotlin.ir.builders.irBlock
 import org.jetbrains.kotlin.ir.builders.irBlockBody
+import org.jetbrains.kotlin.ir.builders.irBranch
 import org.jetbrains.kotlin.ir.builders.irCall
 import org.jetbrains.kotlin.ir.builders.irCallConstructor
 import org.jetbrains.kotlin.ir.builders.irDelegatingConstructorCall
+import org.jetbrains.kotlin.ir.builders.irEqualsNull
 import org.jetbrains.kotlin.ir.builders.irGet
 import org.jetbrains.kotlin.ir.builders.irReturn
+import org.jetbrains.kotlin.ir.builders.irTemporary
+import org.jetbrains.kotlin.ir.builders.irTrue
 import org.jetbrains.kotlin.ir.builders.irVararg
+import org.jetbrains.kotlin.ir.builders.irWhen
 import org.jetbrains.kotlin.ir.declarations.IrAnnotationContainer
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrConstructor
@@ -36,8 +42,10 @@ import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.declarations.IrValueParameter
+import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrClassReference
+import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
@@ -47,6 +55,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrClassReferenceImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrFunctionExpressionImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrGetEnumValueImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetObjectValueImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrInstanceInitializerCallImpl
@@ -60,9 +69,14 @@ import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
 import org.jetbrains.kotlin.ir.types.IrSimpleType
 import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.types.classFqName
+import org.jetbrains.kotlin.ir.types.classOrFail
 import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.types.createType
 import org.jetbrains.kotlin.ir.types.defaultType
+import org.jetbrains.kotlin.ir.types.makeNotNull
+import org.jetbrains.kotlin.ir.types.makeNullable
+import org.jetbrains.kotlin.ir.types.starProjectedType
 import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.classId
 import org.jetbrains.kotlin.ir.util.companionObject
@@ -70,9 +84,11 @@ import org.jetbrains.kotlin.ir.util.constructors
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.dumpKotlinLike
 import org.jetbrains.kotlin.ir.util.functions
+import org.jetbrains.kotlin.ir.util.getAnnotation
 import org.jetbrains.kotlin.ir.util.getPropertyGetter
+import org.jetbrains.kotlin.ir.util.getValueArgument
 import org.jetbrains.kotlin.ir.util.isObject
-import org.jetbrains.kotlin.ir.util.packageFqName
+import org.jetbrains.kotlin.ir.util.kotlinFqName
 import org.jetbrains.kotlin.ir.util.primaryConstructor
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
@@ -543,8 +559,6 @@ internal class RpcStubGenerator(
 
         generateGetCallableFunction()
 
-        generateCallablesProperty()
-
         generateCreateInstanceFunction()
 
         if (declaration.isGrpc) {
@@ -772,18 +786,23 @@ internal class RpcStubGenerator(
         val interfaceProperty = ctx.rpcServiceDescriptor.findPropertyByName(Descriptor.CALLABLES)
             ?: error("Expected RpcServiceDescriptor.callables property to exist")
 
-        callableMap = generateMapProperty(
+        callables = generateMapProperty(
             propertyName = Descriptor.CALLABLES,
             values = declaration.methods.memoryOptimizedMap { callable ->
                 stringConst(callable.name) to irRpcCallable(callable)
             },
             valueType = ctx.rpcCallable.typeWith(declaration.serviceType),
+            addDefaultGetter = false,
         ).apply {
             overriddenSymbols = listOf(interfaceProperty)
 
             addDefaultGetter(this@generateCallablesProperty, ctx.irBuiltIns) {
                 visibility = DescriptorVisibilities.PUBLIC
-                overriddenSymbols = listOf(ctx.rpcServiceDescriptor.getPropertyGetter(Descriptor.CALLABLES)!!)
+
+                val propertyGetter = ctx.rpcServiceDescriptor.getPropertyGetter(Descriptor.CALLABLES)
+                    ?: error("Expected RpcServiceDescriptor.callables property getter to exist")
+
+                overriddenSymbols = listOf(propertyGetter)
             }
         }
     }
@@ -955,7 +974,7 @@ internal class RpcStubGenerator(
             functionName = Descriptor.GET_CALLABLE,
             resultType = ctx.rpcCallable.createType(hasQuestionMark = true, emptyList()),
             overriddenSymbol = ctx.rpcServiceDescriptor.functionByName(Descriptor.GET_CALLABLE),
-            mapProperty = callableMap,
+            mapProperty = callables,
         )
     }
 
@@ -1640,6 +1659,7 @@ internal class RpcStubGenerator(
         propertyName: String,
         values: List<Pair<IrExpression, IrExpression>>,
         valueType: IrType,
+        addDefaultGetter: Boolean = true,
     ): IrProperty {
         return addProperty {
             name = Name.identifier(propertyName)
@@ -1665,8 +1685,10 @@ internal class RpcStubGenerator(
                 )
             }
 
-            addDefaultGetter(this@generateMapProperty, ctx.irBuiltIns) {
-                visibility = DescriptorVisibilities.PRIVATE
+            if (addDefaultGetter) {
+                addDefaultGetter(this@generateMapProperty, ctx.irBuiltIns) {
+                    visibility = DescriptorVisibilities.PRIVATE
+                }
             }
         }
     }

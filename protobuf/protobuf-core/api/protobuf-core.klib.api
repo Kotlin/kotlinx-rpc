@@ -1,11 +1,988 @@
 // Klib ABI Dump
-// Targets: [macosArm64]
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, macosArm64, macosX64]
 // Rendering settings:
 // - Signature version: 2
 // - Show manifest properties: true
 // - Show declarations: true
 
 // Library unique name: <org.jetbrains.kotlinx:protobuf-core>
+abstract interface com.google.protobuf.kotlin/Any { // com.google.protobuf.kotlin/Any|null[0]
+    abstract val typeUrl // com.google.protobuf.kotlin/Any.typeUrl|{}typeUrl[0]
+        abstract fun <get-typeUrl>(): kotlin/String // com.google.protobuf.kotlin/Any.typeUrl.<get-typeUrl>|<get-typeUrl>(){}[0]
+    abstract val value // com.google.protobuf.kotlin/Any.value|{}value[0]
+        abstract fun <get-value>(): kotlin/ByteArray // com.google.protobuf.kotlin/Any.value.<get-value>|<get-value>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/Any.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/Api { // com.google.protobuf.kotlin/Api|null[0]
+    abstract val methods // com.google.protobuf.kotlin/Api.methods|{}methods[0]
+        abstract fun <get-methods>(): kotlin.collections/List<com.google.protobuf.kotlin/Method> // com.google.protobuf.kotlin/Api.methods.<get-methods>|<get-methods>(){}[0]
+    abstract val mixins // com.google.protobuf.kotlin/Api.mixins|{}mixins[0]
+        abstract fun <get-mixins>(): kotlin.collections/List<com.google.protobuf.kotlin/Mixin> // com.google.protobuf.kotlin/Api.mixins.<get-mixins>|<get-mixins>(){}[0]
+    abstract val name // com.google.protobuf.kotlin/Api.name|{}name[0]
+        abstract fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/Api.name.<get-name>|<get-name>(){}[0]
+    abstract val options // com.google.protobuf.kotlin/Api.options|{}options[0]
+        abstract fun <get-options>(): kotlin.collections/List<com.google.protobuf.kotlin/Option> // com.google.protobuf.kotlin/Api.options.<get-options>|<get-options>(){}[0]
+    abstract val sourceContext // com.google.protobuf.kotlin/Api.sourceContext|{}sourceContext[0]
+        abstract fun <get-sourceContext>(): com.google.protobuf.kotlin/SourceContext // com.google.protobuf.kotlin/Api.sourceContext.<get-sourceContext>|<get-sourceContext>(){}[0]
+    abstract val syntax // com.google.protobuf.kotlin/Api.syntax|{}syntax[0]
+        abstract fun <get-syntax>(): com.google.protobuf.kotlin/Syntax // com.google.protobuf.kotlin/Api.syntax.<get-syntax>|<get-syntax>(){}[0]
+    abstract val version // com.google.protobuf.kotlin/Api.version|{}version[0]
+        abstract fun <get-version>(): kotlin/String // com.google.protobuf.kotlin/Api.version.<get-version>|<get-version>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/Api.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/BoolValue { // com.google.protobuf.kotlin/BoolValue|null[0]
+    abstract val value // com.google.protobuf.kotlin/BoolValue.value|{}value[0]
+        abstract fun <get-value>(): kotlin/Boolean // com.google.protobuf.kotlin/BoolValue.value.<get-value>|<get-value>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/BoolValue.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/BytesValue { // com.google.protobuf.kotlin/BytesValue|null[0]
+    abstract val value // com.google.protobuf.kotlin/BytesValue.value|{}value[0]
+        abstract fun <get-value>(): kotlin/ByteArray // com.google.protobuf.kotlin/BytesValue.value.<get-value>|<get-value>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/BytesValue.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/DoubleValue { // com.google.protobuf.kotlin/DoubleValue|null[0]
+    abstract val value // com.google.protobuf.kotlin/DoubleValue.value|{}value[0]
+        abstract fun <get-value>(): kotlin/Double // com.google.protobuf.kotlin/DoubleValue.value.<get-value>|<get-value>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/DoubleValue.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/Duration { // com.google.protobuf.kotlin/Duration|null[0]
+    abstract val nanos // com.google.protobuf.kotlin/Duration.nanos|{}nanos[0]
+        abstract fun <get-nanos>(): kotlin/Int // com.google.protobuf.kotlin/Duration.nanos.<get-nanos>|<get-nanos>(){}[0]
+    abstract val seconds // com.google.protobuf.kotlin/Duration.seconds|{}seconds[0]
+        abstract fun <get-seconds>(): kotlin/Long // com.google.protobuf.kotlin/Duration.seconds.<get-seconds>|<get-seconds>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/Duration.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/Empty { // com.google.protobuf.kotlin/Empty|null[0]
+    final object Companion // com.google.protobuf.kotlin/Empty.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/Enum { // com.google.protobuf.kotlin/Enum|null[0]
+    abstract val edition // com.google.protobuf.kotlin/Enum.edition|{}edition[0]
+        abstract fun <get-edition>(): kotlin/String // com.google.protobuf.kotlin/Enum.edition.<get-edition>|<get-edition>(){}[0]
+    abstract val enumvalue // com.google.protobuf.kotlin/Enum.enumvalue|{}enumvalue[0]
+        abstract fun <get-enumvalue>(): kotlin.collections/List<com.google.protobuf.kotlin/EnumValue> // com.google.protobuf.kotlin/Enum.enumvalue.<get-enumvalue>|<get-enumvalue>(){}[0]
+    abstract val name // com.google.protobuf.kotlin/Enum.name|{}name[0]
+        abstract fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/Enum.name.<get-name>|<get-name>(){}[0]
+    abstract val options // com.google.protobuf.kotlin/Enum.options|{}options[0]
+        abstract fun <get-options>(): kotlin.collections/List<com.google.protobuf.kotlin/Option> // com.google.protobuf.kotlin/Enum.options.<get-options>|<get-options>(){}[0]
+    abstract val sourceContext // com.google.protobuf.kotlin/Enum.sourceContext|{}sourceContext[0]
+        abstract fun <get-sourceContext>(): com.google.protobuf.kotlin/SourceContext // com.google.protobuf.kotlin/Enum.sourceContext.<get-sourceContext>|<get-sourceContext>(){}[0]
+    abstract val syntax // com.google.protobuf.kotlin/Enum.syntax|{}syntax[0]
+        abstract fun <get-syntax>(): com.google.protobuf.kotlin/Syntax // com.google.protobuf.kotlin/Enum.syntax.<get-syntax>|<get-syntax>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/Enum.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/EnumValue { // com.google.protobuf.kotlin/EnumValue|null[0]
+    abstract val name // com.google.protobuf.kotlin/EnumValue.name|{}name[0]
+        abstract fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/EnumValue.name.<get-name>|<get-name>(){}[0]
+    abstract val number // com.google.protobuf.kotlin/EnumValue.number|{}number[0]
+        abstract fun <get-number>(): kotlin/Int // com.google.protobuf.kotlin/EnumValue.number.<get-number>|<get-number>(){}[0]
+    abstract val options // com.google.protobuf.kotlin/EnumValue.options|{}options[0]
+        abstract fun <get-options>(): kotlin.collections/List<com.google.protobuf.kotlin/Option> // com.google.protobuf.kotlin/EnumValue.options.<get-options>|<get-options>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/EnumValue.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/Field { // com.google.protobuf.kotlin/Field|null[0]
+    abstract val cardinality // com.google.protobuf.kotlin/Field.cardinality|{}cardinality[0]
+        abstract fun <get-cardinality>(): com.google.protobuf.kotlin/Field.Cardinality // com.google.protobuf.kotlin/Field.cardinality.<get-cardinality>|<get-cardinality>(){}[0]
+    abstract val defaultValue // com.google.protobuf.kotlin/Field.defaultValue|{}defaultValue[0]
+        abstract fun <get-defaultValue>(): kotlin/String // com.google.protobuf.kotlin/Field.defaultValue.<get-defaultValue>|<get-defaultValue>(){}[0]
+    abstract val jsonName // com.google.protobuf.kotlin/Field.jsonName|{}jsonName[0]
+        abstract fun <get-jsonName>(): kotlin/String // com.google.protobuf.kotlin/Field.jsonName.<get-jsonName>|<get-jsonName>(){}[0]
+    abstract val kind // com.google.protobuf.kotlin/Field.kind|{}kind[0]
+        abstract fun <get-kind>(): com.google.protobuf.kotlin/Field.Kind // com.google.protobuf.kotlin/Field.kind.<get-kind>|<get-kind>(){}[0]
+    abstract val name // com.google.protobuf.kotlin/Field.name|{}name[0]
+        abstract fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/Field.name.<get-name>|<get-name>(){}[0]
+    abstract val number // com.google.protobuf.kotlin/Field.number|{}number[0]
+        abstract fun <get-number>(): kotlin/Int // com.google.protobuf.kotlin/Field.number.<get-number>|<get-number>(){}[0]
+    abstract val oneofIndex // com.google.protobuf.kotlin/Field.oneofIndex|{}oneofIndex[0]
+        abstract fun <get-oneofIndex>(): kotlin/Int // com.google.protobuf.kotlin/Field.oneofIndex.<get-oneofIndex>|<get-oneofIndex>(){}[0]
+    abstract val options // com.google.protobuf.kotlin/Field.options|{}options[0]
+        abstract fun <get-options>(): kotlin.collections/List<com.google.protobuf.kotlin/Option> // com.google.protobuf.kotlin/Field.options.<get-options>|<get-options>(){}[0]
+    abstract val packed // com.google.protobuf.kotlin/Field.packed|{}packed[0]
+        abstract fun <get-packed>(): kotlin/Boolean // com.google.protobuf.kotlin/Field.packed.<get-packed>|<get-packed>(){}[0]
+    abstract val typeUrl // com.google.protobuf.kotlin/Field.typeUrl|{}typeUrl[0]
+        abstract fun <get-typeUrl>(): kotlin/String // com.google.protobuf.kotlin/Field.typeUrl.<get-typeUrl>|<get-typeUrl>(){}[0]
+
+    sealed class Cardinality { // com.google.protobuf.kotlin/Field.Cardinality|null[0]
+        open val number // com.google.protobuf.kotlin/Field.Cardinality.number|{}number[0]
+            open fun <get-number>(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.number.<get-number>|<get-number>(){}[0]
+
+        final class UNRECOGNIZED : com.google.protobuf.kotlin/Field.Cardinality { // com.google.protobuf.kotlin/Field.Cardinality.UNRECOGNIZED|null[0]
+            constructor <init>(kotlin/Int) // com.google.protobuf.kotlin/Field.Cardinality.UNRECOGNIZED.<init>|<init>(kotlin.Int){}[0]
+
+            final val number // com.google.protobuf.kotlin/Field.Cardinality.UNRECOGNIZED.number|{}number[0]
+                final fun <get-number>(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.UNRECOGNIZED.number.<get-number>|<get-number>(){}[0]
+
+            final fun component1(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.UNRECOGNIZED.component1|component1(){}[0]
+            final fun copy(kotlin/Int = ...): com.google.protobuf.kotlin/Field.Cardinality.UNRECOGNIZED // com.google.protobuf.kotlin/Field.Cardinality.UNRECOGNIZED.copy|copy(kotlin.Int){}[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Cardinality.UNRECOGNIZED.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.UNRECOGNIZED.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Cardinality.UNRECOGNIZED.toString|toString(){}[0]
+        }
+
+        final object CARDINALITY_OPTIONAL : com.google.protobuf.kotlin/Field.Cardinality { // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_OPTIONAL|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_OPTIONAL.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_OPTIONAL.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_OPTIONAL.toString|toString(){}[0]
+        }
+
+        final object CARDINALITY_REPEATED : com.google.protobuf.kotlin/Field.Cardinality { // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REPEATED|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REPEATED.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REPEATED.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REPEATED.toString|toString(){}[0]
+        }
+
+        final object CARDINALITY_REQUIRED : com.google.protobuf.kotlin/Field.Cardinality { // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REQUIRED|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REQUIRED.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REQUIRED.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REQUIRED.toString|toString(){}[0]
+        }
+
+        final object CARDINALITY_UNKNOWN : com.google.protobuf.kotlin/Field.Cardinality { // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_UNKNOWN|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_UNKNOWN.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_UNKNOWN.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_UNKNOWN.toString|toString(){}[0]
+        }
+
+        final object Companion { // com.google.protobuf.kotlin/Field.Cardinality.Companion|null[0]
+            final val entries // com.google.protobuf.kotlin/Field.Cardinality.Companion.entries|{}entries[0]
+                final fun <get-entries>(): kotlin.collections/List<com.google.protobuf.kotlin/Field.Cardinality> // com.google.protobuf.kotlin/Field.Cardinality.Companion.entries.<get-entries>|<get-entries>(){}[0]
+        }
+    }
+
+    sealed class Kind { // com.google.protobuf.kotlin/Field.Kind|null[0]
+        open val number // com.google.protobuf.kotlin/Field.Kind.number|{}number[0]
+            open fun <get-number>(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.number.<get-number>|<get-number>(){}[0]
+
+        final class UNRECOGNIZED : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.UNRECOGNIZED|null[0]
+            constructor <init>(kotlin/Int) // com.google.protobuf.kotlin/Field.Kind.UNRECOGNIZED.<init>|<init>(kotlin.Int){}[0]
+
+            final val number // com.google.protobuf.kotlin/Field.Kind.UNRECOGNIZED.number|{}number[0]
+                final fun <get-number>(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.UNRECOGNIZED.number.<get-number>|<get-number>(){}[0]
+
+            final fun component1(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.UNRECOGNIZED.component1|component1(){}[0]
+            final fun copy(kotlin/Int = ...): com.google.protobuf.kotlin/Field.Kind.UNRECOGNIZED // com.google.protobuf.kotlin/Field.Kind.UNRECOGNIZED.copy|copy(kotlin.Int){}[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.UNRECOGNIZED.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.UNRECOGNIZED.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.UNRECOGNIZED.toString|toString(){}[0]
+        }
+
+        final object Companion { // com.google.protobuf.kotlin/Field.Kind.Companion|null[0]
+            final val entries // com.google.protobuf.kotlin/Field.Kind.Companion.entries|{}entries[0]
+                final fun <get-entries>(): kotlin.collections/List<com.google.protobuf.kotlin/Field.Kind> // com.google.protobuf.kotlin/Field.Kind.Companion.entries.<get-entries>|<get-entries>(){}[0]
+        }
+
+        final object TYPE_BOOL : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_BOOL|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_BOOL.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_BOOL.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_BOOL.toString|toString(){}[0]
+        }
+
+        final object TYPE_BYTES : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_BYTES|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_BYTES.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_BYTES.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_BYTES.toString|toString(){}[0]
+        }
+
+        final object TYPE_DOUBLE : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_DOUBLE|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_DOUBLE.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_DOUBLE.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_DOUBLE.toString|toString(){}[0]
+        }
+
+        final object TYPE_ENUM : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_ENUM|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_ENUM.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_ENUM.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_ENUM.toString|toString(){}[0]
+        }
+
+        final object TYPE_FIXED32 : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_FIXED32|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_FIXED32.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_FIXED32.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_FIXED32.toString|toString(){}[0]
+        }
+
+        final object TYPE_FIXED64 : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_FIXED64|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_FIXED64.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_FIXED64.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_FIXED64.toString|toString(){}[0]
+        }
+
+        final object TYPE_FLOAT : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_FLOAT|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_FLOAT.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_FLOAT.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_FLOAT.toString|toString(){}[0]
+        }
+
+        final object TYPE_GROUP : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_GROUP|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_GROUP.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_GROUP.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_GROUP.toString|toString(){}[0]
+        }
+
+        final object TYPE_INT32 : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_INT32|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_INT32.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_INT32.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_INT32.toString|toString(){}[0]
+        }
+
+        final object TYPE_INT64 : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_INT64|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_INT64.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_INT64.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_INT64.toString|toString(){}[0]
+        }
+
+        final object TYPE_MESSAGE : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_MESSAGE|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_MESSAGE.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_MESSAGE.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_MESSAGE.toString|toString(){}[0]
+        }
+
+        final object TYPE_SFIXED32 : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_SFIXED32|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_SFIXED32.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_SFIXED32.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_SFIXED32.toString|toString(){}[0]
+        }
+
+        final object TYPE_SFIXED64 : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_SFIXED64|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_SFIXED64.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_SFIXED64.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_SFIXED64.toString|toString(){}[0]
+        }
+
+        final object TYPE_SINT32 : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_SINT32|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_SINT32.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_SINT32.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_SINT32.toString|toString(){}[0]
+        }
+
+        final object TYPE_SINT64 : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_SINT64|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_SINT64.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_SINT64.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_SINT64.toString|toString(){}[0]
+        }
+
+        final object TYPE_STRING : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_STRING|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_STRING.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_STRING.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_STRING.toString|toString(){}[0]
+        }
+
+        final object TYPE_UINT32 : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_UINT32|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_UINT32.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_UINT32.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_UINT32.toString|toString(){}[0]
+        }
+
+        final object TYPE_UINT64 : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_UINT64|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_UINT64.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_UINT64.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_UINT64.toString|toString(){}[0]
+        }
+
+        final object TYPE_UNKNOWN : com.google.protobuf.kotlin/Field.Kind { // com.google.protobuf.kotlin/Field.Kind.TYPE_UNKNOWN|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Kind.TYPE_UNKNOWN.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Kind.TYPE_UNKNOWN.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Kind.TYPE_UNKNOWN.toString|toString(){}[0]
+        }
+    }
+
+    final object Companion // com.google.protobuf.kotlin/Field.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/FieldMask { // com.google.protobuf.kotlin/FieldMask|null[0]
+    abstract val paths // com.google.protobuf.kotlin/FieldMask.paths|{}paths[0]
+        abstract fun <get-paths>(): kotlin.collections/List<kotlin/String> // com.google.protobuf.kotlin/FieldMask.paths.<get-paths>|<get-paths>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/FieldMask.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/FloatValue { // com.google.protobuf.kotlin/FloatValue|null[0]
+    abstract val value // com.google.protobuf.kotlin/FloatValue.value|{}value[0]
+        abstract fun <get-value>(): kotlin/Float // com.google.protobuf.kotlin/FloatValue.value.<get-value>|<get-value>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/FloatValue.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/Int32Value { // com.google.protobuf.kotlin/Int32Value|null[0]
+    abstract val value // com.google.protobuf.kotlin/Int32Value.value|{}value[0]
+        abstract fun <get-value>(): kotlin/Int // com.google.protobuf.kotlin/Int32Value.value.<get-value>|<get-value>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/Int32Value.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/Int64Value { // com.google.protobuf.kotlin/Int64Value|null[0]
+    abstract val value // com.google.protobuf.kotlin/Int64Value.value|{}value[0]
+        abstract fun <get-value>(): kotlin/Long // com.google.protobuf.kotlin/Int64Value.value.<get-value>|<get-value>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/Int64Value.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/ListValue { // com.google.protobuf.kotlin/ListValue|null[0]
+    abstract val values // com.google.protobuf.kotlin/ListValue.values|{}values[0]
+        abstract fun <get-values>(): kotlin.collections/List<com.google.protobuf.kotlin/Value> // com.google.protobuf.kotlin/ListValue.values.<get-values>|<get-values>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/ListValue.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/Method { // com.google.protobuf.kotlin/Method|null[0]
+    abstract val name // com.google.protobuf.kotlin/Method.name|{}name[0]
+        abstract fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/Method.name.<get-name>|<get-name>(){}[0]
+    abstract val options // com.google.protobuf.kotlin/Method.options|{}options[0]
+        abstract fun <get-options>(): kotlin.collections/List<com.google.protobuf.kotlin/Option> // com.google.protobuf.kotlin/Method.options.<get-options>|<get-options>(){}[0]
+    abstract val requestStreaming // com.google.protobuf.kotlin/Method.requestStreaming|{}requestStreaming[0]
+        abstract fun <get-requestStreaming>(): kotlin/Boolean // com.google.protobuf.kotlin/Method.requestStreaming.<get-requestStreaming>|<get-requestStreaming>(){}[0]
+    abstract val requestTypeUrl // com.google.protobuf.kotlin/Method.requestTypeUrl|{}requestTypeUrl[0]
+        abstract fun <get-requestTypeUrl>(): kotlin/String // com.google.protobuf.kotlin/Method.requestTypeUrl.<get-requestTypeUrl>|<get-requestTypeUrl>(){}[0]
+    abstract val responseStreaming // com.google.protobuf.kotlin/Method.responseStreaming|{}responseStreaming[0]
+        abstract fun <get-responseStreaming>(): kotlin/Boolean // com.google.protobuf.kotlin/Method.responseStreaming.<get-responseStreaming>|<get-responseStreaming>(){}[0]
+    abstract val responseTypeUrl // com.google.protobuf.kotlin/Method.responseTypeUrl|{}responseTypeUrl[0]
+        abstract fun <get-responseTypeUrl>(): kotlin/String // com.google.protobuf.kotlin/Method.responseTypeUrl.<get-responseTypeUrl>|<get-responseTypeUrl>(){}[0]
+    abstract val syntax // com.google.protobuf.kotlin/Method.syntax|{}syntax[0]
+        abstract fun <get-syntax>(): com.google.protobuf.kotlin/Syntax // com.google.protobuf.kotlin/Method.syntax.<get-syntax>|<get-syntax>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/Method.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/Mixin { // com.google.protobuf.kotlin/Mixin|null[0]
+    abstract val name // com.google.protobuf.kotlin/Mixin.name|{}name[0]
+        abstract fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/Mixin.name.<get-name>|<get-name>(){}[0]
+    abstract val root // com.google.protobuf.kotlin/Mixin.root|{}root[0]
+        abstract fun <get-root>(): kotlin/String // com.google.protobuf.kotlin/Mixin.root.<get-root>|<get-root>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/Mixin.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/Option { // com.google.protobuf.kotlin/Option|null[0]
+    abstract val name // com.google.protobuf.kotlin/Option.name|{}name[0]
+        abstract fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/Option.name.<get-name>|<get-name>(){}[0]
+    abstract val value // com.google.protobuf.kotlin/Option.value|{}value[0]
+        abstract fun <get-value>(): com.google.protobuf.kotlin/Any // com.google.protobuf.kotlin/Option.value.<get-value>|<get-value>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/Option.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/SourceContext { // com.google.protobuf.kotlin/SourceContext|null[0]
+    abstract val fileName // com.google.protobuf.kotlin/SourceContext.fileName|{}fileName[0]
+        abstract fun <get-fileName>(): kotlin/String // com.google.protobuf.kotlin/SourceContext.fileName.<get-fileName>|<get-fileName>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/SourceContext.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/StringValue { // com.google.protobuf.kotlin/StringValue|null[0]
+    abstract val value // com.google.protobuf.kotlin/StringValue.value|{}value[0]
+        abstract fun <get-value>(): kotlin/String // com.google.protobuf.kotlin/StringValue.value.<get-value>|<get-value>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/StringValue.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/Struct { // com.google.protobuf.kotlin/Struct|null[0]
+    abstract val fields // com.google.protobuf.kotlin/Struct.fields|{}fields[0]
+        abstract fun <get-fields>(): kotlin.collections/Map<kotlin/String, com.google.protobuf.kotlin/Value> // com.google.protobuf.kotlin/Struct.fields.<get-fields>|<get-fields>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/Struct.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/Timestamp { // com.google.protobuf.kotlin/Timestamp|null[0]
+    abstract val nanos // com.google.protobuf.kotlin/Timestamp.nanos|{}nanos[0]
+        abstract fun <get-nanos>(): kotlin/Int // com.google.protobuf.kotlin/Timestamp.nanos.<get-nanos>|<get-nanos>(){}[0]
+    abstract val seconds // com.google.protobuf.kotlin/Timestamp.seconds|{}seconds[0]
+        abstract fun <get-seconds>(): kotlin/Long // com.google.protobuf.kotlin/Timestamp.seconds.<get-seconds>|<get-seconds>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/Timestamp.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/Type { // com.google.protobuf.kotlin/Type|null[0]
+    abstract val edition // com.google.protobuf.kotlin/Type.edition|{}edition[0]
+        abstract fun <get-edition>(): kotlin/String // com.google.protobuf.kotlin/Type.edition.<get-edition>|<get-edition>(){}[0]
+    abstract val fields // com.google.protobuf.kotlin/Type.fields|{}fields[0]
+        abstract fun <get-fields>(): kotlin.collections/List<com.google.protobuf.kotlin/Field> // com.google.protobuf.kotlin/Type.fields.<get-fields>|<get-fields>(){}[0]
+    abstract val name // com.google.protobuf.kotlin/Type.name|{}name[0]
+        abstract fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/Type.name.<get-name>|<get-name>(){}[0]
+    abstract val oneofs // com.google.protobuf.kotlin/Type.oneofs|{}oneofs[0]
+        abstract fun <get-oneofs>(): kotlin.collections/List<kotlin/String> // com.google.protobuf.kotlin/Type.oneofs.<get-oneofs>|<get-oneofs>(){}[0]
+    abstract val options // com.google.protobuf.kotlin/Type.options|{}options[0]
+        abstract fun <get-options>(): kotlin.collections/List<com.google.protobuf.kotlin/Option> // com.google.protobuf.kotlin/Type.options.<get-options>|<get-options>(){}[0]
+    abstract val sourceContext // com.google.protobuf.kotlin/Type.sourceContext|{}sourceContext[0]
+        abstract fun <get-sourceContext>(): com.google.protobuf.kotlin/SourceContext // com.google.protobuf.kotlin/Type.sourceContext.<get-sourceContext>|<get-sourceContext>(){}[0]
+    abstract val syntax // com.google.protobuf.kotlin/Type.syntax|{}syntax[0]
+        abstract fun <get-syntax>(): com.google.protobuf.kotlin/Syntax // com.google.protobuf.kotlin/Type.syntax.<get-syntax>|<get-syntax>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/Type.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/UInt32Value { // com.google.protobuf.kotlin/UInt32Value|null[0]
+    abstract val value // com.google.protobuf.kotlin/UInt32Value.value|{}value[0]
+        abstract fun <get-value>(): kotlin/UInt // com.google.protobuf.kotlin/UInt32Value.value.<get-value>|<get-value>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/UInt32Value.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/UInt64Value { // com.google.protobuf.kotlin/UInt64Value|null[0]
+    abstract val value // com.google.protobuf.kotlin/UInt64Value.value|{}value[0]
+        abstract fun <get-value>(): kotlin/ULong // com.google.protobuf.kotlin/UInt64Value.value.<get-value>|<get-value>(){}[0]
+
+    final object Companion // com.google.protobuf.kotlin/UInt64Value.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/Value { // com.google.protobuf.kotlin/Value|null[0]
+    abstract val kind // com.google.protobuf.kotlin/Value.kind|{}kind[0]
+        abstract fun <get-kind>(): com.google.protobuf.kotlin/Value.Kind? // com.google.protobuf.kotlin/Value.kind.<get-kind>|<get-kind>(){}[0]
+
+    sealed interface Kind { // com.google.protobuf.kotlin/Value.Kind|null[0]
+        final value class BoolValue : com.google.protobuf.kotlin/Value.Kind { // com.google.protobuf.kotlin/Value.Kind.BoolValue|null[0]
+            constructor <init>(kotlin/Boolean) // com.google.protobuf.kotlin/Value.Kind.BoolValue.<init>|<init>(kotlin.Boolean){}[0]
+
+            final val value // com.google.protobuf.kotlin/Value.Kind.BoolValue.value|{}value[0]
+                final fun <get-value>(): kotlin/Boolean // com.google.protobuf.kotlin/Value.Kind.BoolValue.value.<get-value>|<get-value>(){}[0]
+
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Value.Kind.BoolValue.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Value.Kind.BoolValue.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Value.Kind.BoolValue.toString|toString(){}[0]
+        }
+
+        final value class ListValue : com.google.protobuf.kotlin/Value.Kind { // com.google.protobuf.kotlin/Value.Kind.ListValue|null[0]
+            constructor <init>(com.google.protobuf.kotlin/ListValue) // com.google.protobuf.kotlin/Value.Kind.ListValue.<init>|<init>(com.google.protobuf.kotlin.ListValue){}[0]
+
+            final val value // com.google.protobuf.kotlin/Value.Kind.ListValue.value|{}value[0]
+                final fun <get-value>(): com.google.protobuf.kotlin/ListValue // com.google.protobuf.kotlin/Value.Kind.ListValue.value.<get-value>|<get-value>(){}[0]
+
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Value.Kind.ListValue.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Value.Kind.ListValue.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Value.Kind.ListValue.toString|toString(){}[0]
+        }
+
+        final value class NullValue : com.google.protobuf.kotlin/Value.Kind { // com.google.protobuf.kotlin/Value.Kind.NullValue|null[0]
+            constructor <init>(com.google.protobuf.kotlin/NullValue) // com.google.protobuf.kotlin/Value.Kind.NullValue.<init>|<init>(com.google.protobuf.kotlin.NullValue){}[0]
+
+            final val value // com.google.protobuf.kotlin/Value.Kind.NullValue.value|{}value[0]
+                final fun <get-value>(): com.google.protobuf.kotlin/NullValue // com.google.protobuf.kotlin/Value.Kind.NullValue.value.<get-value>|<get-value>(){}[0]
+
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Value.Kind.NullValue.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Value.Kind.NullValue.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Value.Kind.NullValue.toString|toString(){}[0]
+        }
+
+        final value class NumberValue : com.google.protobuf.kotlin/Value.Kind { // com.google.protobuf.kotlin/Value.Kind.NumberValue|null[0]
+            constructor <init>(kotlin/Double) // com.google.protobuf.kotlin/Value.Kind.NumberValue.<init>|<init>(kotlin.Double){}[0]
+
+            final val value // com.google.protobuf.kotlin/Value.Kind.NumberValue.value|{}value[0]
+                final fun <get-value>(): kotlin/Double // com.google.protobuf.kotlin/Value.Kind.NumberValue.value.<get-value>|<get-value>(){}[0]
+
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Value.Kind.NumberValue.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Value.Kind.NumberValue.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Value.Kind.NumberValue.toString|toString(){}[0]
+        }
+
+        final value class StringValue : com.google.protobuf.kotlin/Value.Kind { // com.google.protobuf.kotlin/Value.Kind.StringValue|null[0]
+            constructor <init>(kotlin/String) // com.google.protobuf.kotlin/Value.Kind.StringValue.<init>|<init>(kotlin.String){}[0]
+
+            final val value // com.google.protobuf.kotlin/Value.Kind.StringValue.value|{}value[0]
+                final fun <get-value>(): kotlin/String // com.google.protobuf.kotlin/Value.Kind.StringValue.value.<get-value>|<get-value>(){}[0]
+
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Value.Kind.StringValue.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Value.Kind.StringValue.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Value.Kind.StringValue.toString|toString(){}[0]
+        }
+
+        final value class StructValue : com.google.protobuf.kotlin/Value.Kind { // com.google.protobuf.kotlin/Value.Kind.StructValue|null[0]
+            constructor <init>(com.google.protobuf.kotlin/Struct) // com.google.protobuf.kotlin/Value.Kind.StructValue.<init>|<init>(com.google.protobuf.kotlin.Struct){}[0]
+
+            final val value // com.google.protobuf.kotlin/Value.Kind.StructValue.value|{}value[0]
+                final fun <get-value>(): com.google.protobuf.kotlin/Struct // com.google.protobuf.kotlin/Value.Kind.StructValue.value.<get-value>|<get-value>(){}[0]
+
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Value.Kind.StructValue.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Value.Kind.StructValue.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Value.Kind.StructValue.toString|toString(){}[0]
+        }
+    }
+
+    final object Companion // com.google.protobuf.kotlin/Value.Companion|null[0]
+}
+
+final class com.google.protobuf.kotlin/AnyInternal : com.google.protobuf.kotlin/Any, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/AnyInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/AnyInternal.<init>|<init>(){}[0]
+
+    final var typeUrl // com.google.protobuf.kotlin/AnyInternal.typeUrl|{}typeUrl[0]
+        final fun <get-typeUrl>(): kotlin/String // com.google.protobuf.kotlin/AnyInternal.typeUrl.<get-typeUrl>|<get-typeUrl>(){}[0]
+        final fun <set-typeUrl>(kotlin/String) // com.google.protobuf.kotlin/AnyInternal.typeUrl.<set-typeUrl>|<set-typeUrl>(kotlin.String){}[0]
+    final var value // com.google.protobuf.kotlin/AnyInternal.value|{}value[0]
+        final fun <get-value>(): kotlin/ByteArray // com.google.protobuf.kotlin/AnyInternal.value.<get-value>|<get-value>(){}[0]
+        final fun <set-value>(kotlin/ByteArray) // com.google.protobuf.kotlin/AnyInternal.value.<set-value>|<set-value>(kotlin.ByteArray){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/AnyInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/AnyInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/AnyInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/AnyInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/ApiInternal : com.google.protobuf.kotlin/Api, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/ApiInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/ApiInternal.<init>|<init>(){}[0]
+
+    final var methods // com.google.protobuf.kotlin/ApiInternal.methods|{}methods[0]
+        final fun <get-methods>(): kotlin.collections/List<com.google.protobuf.kotlin/Method> // com.google.protobuf.kotlin/ApiInternal.methods.<get-methods>|<get-methods>(){}[0]
+        final fun <set-methods>(kotlin.collections/List<com.google.protobuf.kotlin/Method>) // com.google.protobuf.kotlin/ApiInternal.methods.<set-methods>|<set-methods>(kotlin.collections.List<com.google.protobuf.kotlin.Method>){}[0]
+    final var mixins // com.google.protobuf.kotlin/ApiInternal.mixins|{}mixins[0]
+        final fun <get-mixins>(): kotlin.collections/List<com.google.protobuf.kotlin/Mixin> // com.google.protobuf.kotlin/ApiInternal.mixins.<get-mixins>|<get-mixins>(){}[0]
+        final fun <set-mixins>(kotlin.collections/List<com.google.protobuf.kotlin/Mixin>) // com.google.protobuf.kotlin/ApiInternal.mixins.<set-mixins>|<set-mixins>(kotlin.collections.List<com.google.protobuf.kotlin.Mixin>){}[0]
+    final var name // com.google.protobuf.kotlin/ApiInternal.name|{}name[0]
+        final fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/ApiInternal.name.<get-name>|<get-name>(){}[0]
+        final fun <set-name>(kotlin/String) // com.google.protobuf.kotlin/ApiInternal.name.<set-name>|<set-name>(kotlin.String){}[0]
+    final var options // com.google.protobuf.kotlin/ApiInternal.options|{}options[0]
+        final fun <get-options>(): kotlin.collections/List<com.google.protobuf.kotlin/Option> // com.google.protobuf.kotlin/ApiInternal.options.<get-options>|<get-options>(){}[0]
+        final fun <set-options>(kotlin.collections/List<com.google.protobuf.kotlin/Option>) // com.google.protobuf.kotlin/ApiInternal.options.<set-options>|<set-options>(kotlin.collections.List<com.google.protobuf.kotlin.Option>){}[0]
+    final var sourceContext // com.google.protobuf.kotlin/ApiInternal.sourceContext|{}sourceContext[0]
+        final fun <get-sourceContext>(): com.google.protobuf.kotlin/SourceContext // com.google.protobuf.kotlin/ApiInternal.sourceContext.<get-sourceContext>|<get-sourceContext>(){}[0]
+        final fun <set-sourceContext>(com.google.protobuf.kotlin/SourceContext) // com.google.protobuf.kotlin/ApiInternal.sourceContext.<set-sourceContext>|<set-sourceContext>(com.google.protobuf.kotlin.SourceContext){}[0]
+    final var syntax // com.google.protobuf.kotlin/ApiInternal.syntax|{}syntax[0]
+        final fun <get-syntax>(): com.google.protobuf.kotlin/Syntax // com.google.protobuf.kotlin/ApiInternal.syntax.<get-syntax>|<get-syntax>(){}[0]
+        final fun <set-syntax>(com.google.protobuf.kotlin/Syntax) // com.google.protobuf.kotlin/ApiInternal.syntax.<set-syntax>|<set-syntax>(com.google.protobuf.kotlin.Syntax){}[0]
+    final var version // com.google.protobuf.kotlin/ApiInternal.version|{}version[0]
+        final fun <get-version>(): kotlin/String // com.google.protobuf.kotlin/ApiInternal.version.<get-version>|<get-version>(){}[0]
+        final fun <set-version>(kotlin/String) // com.google.protobuf.kotlin/ApiInternal.version.<set-version>|<set-version>(kotlin.String){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/ApiInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/ApiInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/ApiInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/ApiInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/BoolValueInternal : com.google.protobuf.kotlin/BoolValue, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/BoolValueInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/BoolValueInternal.<init>|<init>(){}[0]
+
+    final var value // com.google.protobuf.kotlin/BoolValueInternal.value|{}value[0]
+        final fun <get-value>(): kotlin/Boolean // com.google.protobuf.kotlin/BoolValueInternal.value.<get-value>|<get-value>(){}[0]
+        final fun <set-value>(kotlin/Boolean) // com.google.protobuf.kotlin/BoolValueInternal.value.<set-value>|<set-value>(kotlin.Boolean){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/BoolValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/BoolValueInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/BoolValueInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/BoolValueInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/BytesValueInternal : com.google.protobuf.kotlin/BytesValue, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/BytesValueInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/BytesValueInternal.<init>|<init>(){}[0]
+
+    final var value // com.google.protobuf.kotlin/BytesValueInternal.value|{}value[0]
+        final fun <get-value>(): kotlin/ByteArray // com.google.protobuf.kotlin/BytesValueInternal.value.<get-value>|<get-value>(){}[0]
+        final fun <set-value>(kotlin/ByteArray) // com.google.protobuf.kotlin/BytesValueInternal.value.<set-value>|<set-value>(kotlin.ByteArray){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/BytesValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/BytesValueInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/BytesValueInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/BytesValueInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/DoubleValueInternal : com.google.protobuf.kotlin/DoubleValue, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/DoubleValueInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/DoubleValueInternal.<init>|<init>(){}[0]
+
+    final var value // com.google.protobuf.kotlin/DoubleValueInternal.value|{}value[0]
+        final fun <get-value>(): kotlin/Double // com.google.protobuf.kotlin/DoubleValueInternal.value.<get-value>|<get-value>(){}[0]
+        final fun <set-value>(kotlin/Double) // com.google.protobuf.kotlin/DoubleValueInternal.value.<set-value>|<set-value>(kotlin.Double){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/DoubleValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/DoubleValueInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/DoubleValueInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/DoubleValueInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/DurationInternal : com.google.protobuf.kotlin/Duration, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/DurationInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/DurationInternal.<init>|<init>(){}[0]
+
+    final var nanos // com.google.protobuf.kotlin/DurationInternal.nanos|{}nanos[0]
+        final fun <get-nanos>(): kotlin/Int // com.google.protobuf.kotlin/DurationInternal.nanos.<get-nanos>|<get-nanos>(){}[0]
+        final fun <set-nanos>(kotlin/Int) // com.google.protobuf.kotlin/DurationInternal.nanos.<set-nanos>|<set-nanos>(kotlin.Int){}[0]
+    final var seconds // com.google.protobuf.kotlin/DurationInternal.seconds|{}seconds[0]
+        final fun <get-seconds>(): kotlin/Long // com.google.protobuf.kotlin/DurationInternal.seconds.<get-seconds>|<get-seconds>(){}[0]
+        final fun <set-seconds>(kotlin/Long) // com.google.protobuf.kotlin/DurationInternal.seconds.<set-seconds>|<set-seconds>(kotlin.Long){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/DurationInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/DurationInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/DurationInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/DurationInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/EmptyInternal : com.google.protobuf.kotlin/Empty, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/EmptyInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/EmptyInternal.<init>|<init>(){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/EmptyInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/EmptyInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/EmptyInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/EmptyInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/EnumInternal : com.google.protobuf.kotlin/Enum, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/EnumInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/EnumInternal.<init>|<init>(){}[0]
+
+    final var edition // com.google.protobuf.kotlin/EnumInternal.edition|{}edition[0]
+        final fun <get-edition>(): kotlin/String // com.google.protobuf.kotlin/EnumInternal.edition.<get-edition>|<get-edition>(){}[0]
+        final fun <set-edition>(kotlin/String) // com.google.protobuf.kotlin/EnumInternal.edition.<set-edition>|<set-edition>(kotlin.String){}[0]
+    final var enumvalue // com.google.protobuf.kotlin/EnumInternal.enumvalue|{}enumvalue[0]
+        final fun <get-enumvalue>(): kotlin.collections/List<com.google.protobuf.kotlin/EnumValue> // com.google.protobuf.kotlin/EnumInternal.enumvalue.<get-enumvalue>|<get-enumvalue>(){}[0]
+        final fun <set-enumvalue>(kotlin.collections/List<com.google.protobuf.kotlin/EnumValue>) // com.google.protobuf.kotlin/EnumInternal.enumvalue.<set-enumvalue>|<set-enumvalue>(kotlin.collections.List<com.google.protobuf.kotlin.EnumValue>){}[0]
+    final var name // com.google.protobuf.kotlin/EnumInternal.name|{}name[0]
+        final fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/EnumInternal.name.<get-name>|<get-name>(){}[0]
+        final fun <set-name>(kotlin/String) // com.google.protobuf.kotlin/EnumInternal.name.<set-name>|<set-name>(kotlin.String){}[0]
+    final var options // com.google.protobuf.kotlin/EnumInternal.options|{}options[0]
+        final fun <get-options>(): kotlin.collections/List<com.google.protobuf.kotlin/Option> // com.google.protobuf.kotlin/EnumInternal.options.<get-options>|<get-options>(){}[0]
+        final fun <set-options>(kotlin.collections/List<com.google.protobuf.kotlin/Option>) // com.google.protobuf.kotlin/EnumInternal.options.<set-options>|<set-options>(kotlin.collections.List<com.google.protobuf.kotlin.Option>){}[0]
+    final var sourceContext // com.google.protobuf.kotlin/EnumInternal.sourceContext|{}sourceContext[0]
+        final fun <get-sourceContext>(): com.google.protobuf.kotlin/SourceContext // com.google.protobuf.kotlin/EnumInternal.sourceContext.<get-sourceContext>|<get-sourceContext>(){}[0]
+        final fun <set-sourceContext>(com.google.protobuf.kotlin/SourceContext) // com.google.protobuf.kotlin/EnumInternal.sourceContext.<set-sourceContext>|<set-sourceContext>(com.google.protobuf.kotlin.SourceContext){}[0]
+    final var syntax // com.google.protobuf.kotlin/EnumInternal.syntax|{}syntax[0]
+        final fun <get-syntax>(): com.google.protobuf.kotlin/Syntax // com.google.protobuf.kotlin/EnumInternal.syntax.<get-syntax>|<get-syntax>(){}[0]
+        final fun <set-syntax>(com.google.protobuf.kotlin/Syntax) // com.google.protobuf.kotlin/EnumInternal.syntax.<set-syntax>|<set-syntax>(com.google.protobuf.kotlin.Syntax){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/EnumInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/EnumInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/EnumInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/EnumInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/EnumValueInternal : com.google.protobuf.kotlin/EnumValue, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/EnumValueInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/EnumValueInternal.<init>|<init>(){}[0]
+
+    final var name // com.google.protobuf.kotlin/EnumValueInternal.name|{}name[0]
+        final fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/EnumValueInternal.name.<get-name>|<get-name>(){}[0]
+        final fun <set-name>(kotlin/String) // com.google.protobuf.kotlin/EnumValueInternal.name.<set-name>|<set-name>(kotlin.String){}[0]
+    final var number // com.google.protobuf.kotlin/EnumValueInternal.number|{}number[0]
+        final fun <get-number>(): kotlin/Int // com.google.protobuf.kotlin/EnumValueInternal.number.<get-number>|<get-number>(){}[0]
+        final fun <set-number>(kotlin/Int) // com.google.protobuf.kotlin/EnumValueInternal.number.<set-number>|<set-number>(kotlin.Int){}[0]
+    final var options // com.google.protobuf.kotlin/EnumValueInternal.options|{}options[0]
+        final fun <get-options>(): kotlin.collections/List<com.google.protobuf.kotlin/Option> // com.google.protobuf.kotlin/EnumValueInternal.options.<get-options>|<get-options>(){}[0]
+        final fun <set-options>(kotlin.collections/List<com.google.protobuf.kotlin/Option>) // com.google.protobuf.kotlin/EnumValueInternal.options.<set-options>|<set-options>(kotlin.collections.List<com.google.protobuf.kotlin.Option>){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/EnumValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/EnumValueInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/EnumValueInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/EnumValueInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/FieldInternal : com.google.protobuf.kotlin/Field, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/FieldInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/FieldInternal.<init>|<init>(){}[0]
+
+    final var cardinality // com.google.protobuf.kotlin/FieldInternal.cardinality|{}cardinality[0]
+        final fun <get-cardinality>(): com.google.protobuf.kotlin/Field.Cardinality // com.google.protobuf.kotlin/FieldInternal.cardinality.<get-cardinality>|<get-cardinality>(){}[0]
+        final fun <set-cardinality>(com.google.protobuf.kotlin/Field.Cardinality) // com.google.protobuf.kotlin/FieldInternal.cardinality.<set-cardinality>|<set-cardinality>(com.google.protobuf.kotlin.Field.Cardinality){}[0]
+    final var defaultValue // com.google.protobuf.kotlin/FieldInternal.defaultValue|{}defaultValue[0]
+        final fun <get-defaultValue>(): kotlin/String // com.google.protobuf.kotlin/FieldInternal.defaultValue.<get-defaultValue>|<get-defaultValue>(){}[0]
+        final fun <set-defaultValue>(kotlin/String) // com.google.protobuf.kotlin/FieldInternal.defaultValue.<set-defaultValue>|<set-defaultValue>(kotlin.String){}[0]
+    final var jsonName // com.google.protobuf.kotlin/FieldInternal.jsonName|{}jsonName[0]
+        final fun <get-jsonName>(): kotlin/String // com.google.protobuf.kotlin/FieldInternal.jsonName.<get-jsonName>|<get-jsonName>(){}[0]
+        final fun <set-jsonName>(kotlin/String) // com.google.protobuf.kotlin/FieldInternal.jsonName.<set-jsonName>|<set-jsonName>(kotlin.String){}[0]
+    final var kind // com.google.protobuf.kotlin/FieldInternal.kind|{}kind[0]
+        final fun <get-kind>(): com.google.protobuf.kotlin/Field.Kind // com.google.protobuf.kotlin/FieldInternal.kind.<get-kind>|<get-kind>(){}[0]
+        final fun <set-kind>(com.google.protobuf.kotlin/Field.Kind) // com.google.protobuf.kotlin/FieldInternal.kind.<set-kind>|<set-kind>(com.google.protobuf.kotlin.Field.Kind){}[0]
+    final var name // com.google.protobuf.kotlin/FieldInternal.name|{}name[0]
+        final fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/FieldInternal.name.<get-name>|<get-name>(){}[0]
+        final fun <set-name>(kotlin/String) // com.google.protobuf.kotlin/FieldInternal.name.<set-name>|<set-name>(kotlin.String){}[0]
+    final var number // com.google.protobuf.kotlin/FieldInternal.number|{}number[0]
+        final fun <get-number>(): kotlin/Int // com.google.protobuf.kotlin/FieldInternal.number.<get-number>|<get-number>(){}[0]
+        final fun <set-number>(kotlin/Int) // com.google.protobuf.kotlin/FieldInternal.number.<set-number>|<set-number>(kotlin.Int){}[0]
+    final var oneofIndex // com.google.protobuf.kotlin/FieldInternal.oneofIndex|{}oneofIndex[0]
+        final fun <get-oneofIndex>(): kotlin/Int // com.google.protobuf.kotlin/FieldInternal.oneofIndex.<get-oneofIndex>|<get-oneofIndex>(){}[0]
+        final fun <set-oneofIndex>(kotlin/Int) // com.google.protobuf.kotlin/FieldInternal.oneofIndex.<set-oneofIndex>|<set-oneofIndex>(kotlin.Int){}[0]
+    final var options // com.google.protobuf.kotlin/FieldInternal.options|{}options[0]
+        final fun <get-options>(): kotlin.collections/List<com.google.protobuf.kotlin/Option> // com.google.protobuf.kotlin/FieldInternal.options.<get-options>|<get-options>(){}[0]
+        final fun <set-options>(kotlin.collections/List<com.google.protobuf.kotlin/Option>) // com.google.protobuf.kotlin/FieldInternal.options.<set-options>|<set-options>(kotlin.collections.List<com.google.protobuf.kotlin.Option>){}[0]
+    final var packed // com.google.protobuf.kotlin/FieldInternal.packed|{}packed[0]
+        final fun <get-packed>(): kotlin/Boolean // com.google.protobuf.kotlin/FieldInternal.packed.<get-packed>|<get-packed>(){}[0]
+        final fun <set-packed>(kotlin/Boolean) // com.google.protobuf.kotlin/FieldInternal.packed.<set-packed>|<set-packed>(kotlin.Boolean){}[0]
+    final var typeUrl // com.google.protobuf.kotlin/FieldInternal.typeUrl|{}typeUrl[0]
+        final fun <get-typeUrl>(): kotlin/String // com.google.protobuf.kotlin/FieldInternal.typeUrl.<get-typeUrl>|<get-typeUrl>(){}[0]
+        final fun <set-typeUrl>(kotlin/String) // com.google.protobuf.kotlin/FieldInternal.typeUrl.<set-typeUrl>|<set-typeUrl>(kotlin.String){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/FieldInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/FieldMaskInternal : com.google.protobuf.kotlin/FieldMask, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/FieldMaskInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/FieldMaskInternal.<init>|<init>(){}[0]
+
+    final var paths // com.google.protobuf.kotlin/FieldMaskInternal.paths|{}paths[0]
+        final fun <get-paths>(): kotlin.collections/List<kotlin/String> // com.google.protobuf.kotlin/FieldMaskInternal.paths.<get-paths>|<get-paths>(){}[0]
+        final fun <set-paths>(kotlin.collections/List<kotlin/String>) // com.google.protobuf.kotlin/FieldMaskInternal.paths.<set-paths>|<set-paths>(kotlin.collections.List<kotlin.String>){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/FieldMaskInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldMaskInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldMaskInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldMaskInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/FloatValueInternal : com.google.protobuf.kotlin/FloatValue, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/FloatValueInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/FloatValueInternal.<init>|<init>(){}[0]
+
+    final var value // com.google.protobuf.kotlin/FloatValueInternal.value|{}value[0]
+        final fun <get-value>(): kotlin/Float // com.google.protobuf.kotlin/FloatValueInternal.value.<get-value>|<get-value>(){}[0]
+        final fun <set-value>(kotlin/Float) // com.google.protobuf.kotlin/FloatValueInternal.value.<set-value>|<set-value>(kotlin.Float){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/FloatValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FloatValueInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FloatValueInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/FloatValueInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/Int32ValueInternal : com.google.protobuf.kotlin/Int32Value, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/Int32ValueInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/Int32ValueInternal.<init>|<init>(){}[0]
+
+    final var value // com.google.protobuf.kotlin/Int32ValueInternal.value|{}value[0]
+        final fun <get-value>(): kotlin/Int // com.google.protobuf.kotlin/Int32ValueInternal.value.<get-value>|<get-value>(){}[0]
+        final fun <set-value>(kotlin/Int) // com.google.protobuf.kotlin/Int32ValueInternal.value.<set-value>|<set-value>(kotlin.Int){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/Int32ValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Int32ValueInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Int32ValueInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/Int32ValueInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/Int64ValueInternal : com.google.protobuf.kotlin/Int64Value, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/Int64ValueInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/Int64ValueInternal.<init>|<init>(){}[0]
+
+    final var value // com.google.protobuf.kotlin/Int64ValueInternal.value|{}value[0]
+        final fun <get-value>(): kotlin/Long // com.google.protobuf.kotlin/Int64ValueInternal.value.<get-value>|<get-value>(){}[0]
+        final fun <set-value>(kotlin/Long) // com.google.protobuf.kotlin/Int64ValueInternal.value.<set-value>|<set-value>(kotlin.Long){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/Int64ValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Int64ValueInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Int64ValueInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/Int64ValueInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/ListValueInternal : com.google.protobuf.kotlin/ListValue, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/ListValueInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/ListValueInternal.<init>|<init>(){}[0]
+
+    final var values // com.google.protobuf.kotlin/ListValueInternal.values|{}values[0]
+        final fun <get-values>(): kotlin.collections/List<com.google.protobuf.kotlin/Value> // com.google.protobuf.kotlin/ListValueInternal.values.<get-values>|<get-values>(){}[0]
+        final fun <set-values>(kotlin.collections/List<com.google.protobuf.kotlin/Value>) // com.google.protobuf.kotlin/ListValueInternal.values.<set-values>|<set-values>(kotlin.collections.List<com.google.protobuf.kotlin.Value>){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/ListValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/ListValueInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/ListValueInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/ListValueInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/MethodInternal : com.google.protobuf.kotlin/Method, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/MethodInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/MethodInternal.<init>|<init>(){}[0]
+
+    final var name // com.google.protobuf.kotlin/MethodInternal.name|{}name[0]
+        final fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/MethodInternal.name.<get-name>|<get-name>(){}[0]
+        final fun <set-name>(kotlin/String) // com.google.protobuf.kotlin/MethodInternal.name.<set-name>|<set-name>(kotlin.String){}[0]
+    final var options // com.google.protobuf.kotlin/MethodInternal.options|{}options[0]
+        final fun <get-options>(): kotlin.collections/List<com.google.protobuf.kotlin/Option> // com.google.protobuf.kotlin/MethodInternal.options.<get-options>|<get-options>(){}[0]
+        final fun <set-options>(kotlin.collections/List<com.google.protobuf.kotlin/Option>) // com.google.protobuf.kotlin/MethodInternal.options.<set-options>|<set-options>(kotlin.collections.List<com.google.protobuf.kotlin.Option>){}[0]
+    final var requestStreaming // com.google.protobuf.kotlin/MethodInternal.requestStreaming|{}requestStreaming[0]
+        final fun <get-requestStreaming>(): kotlin/Boolean // com.google.protobuf.kotlin/MethodInternal.requestStreaming.<get-requestStreaming>|<get-requestStreaming>(){}[0]
+        final fun <set-requestStreaming>(kotlin/Boolean) // com.google.protobuf.kotlin/MethodInternal.requestStreaming.<set-requestStreaming>|<set-requestStreaming>(kotlin.Boolean){}[0]
+    final var requestTypeUrl // com.google.protobuf.kotlin/MethodInternal.requestTypeUrl|{}requestTypeUrl[0]
+        final fun <get-requestTypeUrl>(): kotlin/String // com.google.protobuf.kotlin/MethodInternal.requestTypeUrl.<get-requestTypeUrl>|<get-requestTypeUrl>(){}[0]
+        final fun <set-requestTypeUrl>(kotlin/String) // com.google.protobuf.kotlin/MethodInternal.requestTypeUrl.<set-requestTypeUrl>|<set-requestTypeUrl>(kotlin.String){}[0]
+    final var responseStreaming // com.google.protobuf.kotlin/MethodInternal.responseStreaming|{}responseStreaming[0]
+        final fun <get-responseStreaming>(): kotlin/Boolean // com.google.protobuf.kotlin/MethodInternal.responseStreaming.<get-responseStreaming>|<get-responseStreaming>(){}[0]
+        final fun <set-responseStreaming>(kotlin/Boolean) // com.google.protobuf.kotlin/MethodInternal.responseStreaming.<set-responseStreaming>|<set-responseStreaming>(kotlin.Boolean){}[0]
+    final var responseTypeUrl // com.google.protobuf.kotlin/MethodInternal.responseTypeUrl|{}responseTypeUrl[0]
+        final fun <get-responseTypeUrl>(): kotlin/String // com.google.protobuf.kotlin/MethodInternal.responseTypeUrl.<get-responseTypeUrl>|<get-responseTypeUrl>(){}[0]
+        final fun <set-responseTypeUrl>(kotlin/String) // com.google.protobuf.kotlin/MethodInternal.responseTypeUrl.<set-responseTypeUrl>|<set-responseTypeUrl>(kotlin.String){}[0]
+    final var syntax // com.google.protobuf.kotlin/MethodInternal.syntax|{}syntax[0]
+        final fun <get-syntax>(): com.google.protobuf.kotlin/Syntax // com.google.protobuf.kotlin/MethodInternal.syntax.<get-syntax>|<get-syntax>(){}[0]
+        final fun <set-syntax>(com.google.protobuf.kotlin/Syntax) // com.google.protobuf.kotlin/MethodInternal.syntax.<set-syntax>|<set-syntax>(com.google.protobuf.kotlin.Syntax){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/MethodInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/MethodInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/MethodInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/MethodInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/MixinInternal : com.google.protobuf.kotlin/Mixin, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/MixinInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/MixinInternal.<init>|<init>(){}[0]
+
+    final var name // com.google.protobuf.kotlin/MixinInternal.name|{}name[0]
+        final fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/MixinInternal.name.<get-name>|<get-name>(){}[0]
+        final fun <set-name>(kotlin/String) // com.google.protobuf.kotlin/MixinInternal.name.<set-name>|<set-name>(kotlin.String){}[0]
+    final var root // com.google.protobuf.kotlin/MixinInternal.root|{}root[0]
+        final fun <get-root>(): kotlin/String // com.google.protobuf.kotlin/MixinInternal.root.<get-root>|<get-root>(){}[0]
+        final fun <set-root>(kotlin/String) // com.google.protobuf.kotlin/MixinInternal.root.<set-root>|<set-root>(kotlin.String){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/MixinInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/MixinInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/MixinInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/MixinInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/OptionInternal : com.google.protobuf.kotlin/Option, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/OptionInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/OptionInternal.<init>|<init>(){}[0]
+
+    final var name // com.google.protobuf.kotlin/OptionInternal.name|{}name[0]
+        final fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/OptionInternal.name.<get-name>|<get-name>(){}[0]
+        final fun <set-name>(kotlin/String) // com.google.protobuf.kotlin/OptionInternal.name.<set-name>|<set-name>(kotlin.String){}[0]
+    final var value // com.google.protobuf.kotlin/OptionInternal.value|{}value[0]
+        final fun <get-value>(): com.google.protobuf.kotlin/Any // com.google.protobuf.kotlin/OptionInternal.value.<get-value>|<get-value>(){}[0]
+        final fun <set-value>(com.google.protobuf.kotlin/Any) // com.google.protobuf.kotlin/OptionInternal.value.<set-value>|<set-value>(com.google.protobuf.kotlin.Any){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/OptionInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/OptionInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/OptionInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/OptionInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/SourceContextInternal : com.google.protobuf.kotlin/SourceContext, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/SourceContextInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/SourceContextInternal.<init>|<init>(){}[0]
+
+    final var fileName // com.google.protobuf.kotlin/SourceContextInternal.fileName|{}fileName[0]
+        final fun <get-fileName>(): kotlin/String // com.google.protobuf.kotlin/SourceContextInternal.fileName.<get-fileName>|<get-fileName>(){}[0]
+        final fun <set-fileName>(kotlin/String) // com.google.protobuf.kotlin/SourceContextInternal.fileName.<set-fileName>|<set-fileName>(kotlin.String){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/SourceContextInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/SourceContextInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/SourceContextInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/SourceContextInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/StringValueInternal : com.google.protobuf.kotlin/StringValue, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/StringValueInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/StringValueInternal.<init>|<init>(){}[0]
+
+    final var value // com.google.protobuf.kotlin/StringValueInternal.value|{}value[0]
+        final fun <get-value>(): kotlin/String // com.google.protobuf.kotlin/StringValueInternal.value.<get-value>|<get-value>(){}[0]
+        final fun <set-value>(kotlin/String) // com.google.protobuf.kotlin/StringValueInternal.value.<set-value>|<set-value>(kotlin.String){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/StringValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/StringValueInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/StringValueInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/StringValueInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/StructInternal : com.google.protobuf.kotlin/Struct, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/StructInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/StructInternal.<init>|<init>(){}[0]
+
+    final var fields // com.google.protobuf.kotlin/StructInternal.fields|{}fields[0]
+        final fun <get-fields>(): kotlin.collections/Map<kotlin/String, com.google.protobuf.kotlin/Value> // com.google.protobuf.kotlin/StructInternal.fields.<get-fields>|<get-fields>(){}[0]
+        final fun <set-fields>(kotlin.collections/Map<kotlin/String, com.google.protobuf.kotlin/Value>) // com.google.protobuf.kotlin/StructInternal.fields.<set-fields>|<set-fields>(kotlin.collections.Map<kotlin.String,com.google.protobuf.kotlin.Value>){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/StructInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/StructInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/StructInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/StructInternal.toString|toString(){}[0]
+
+    final class FieldsEntryInternal : kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal|null[0]
+        constructor <init>() // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.<init>|<init>(){}[0]
+
+        final var key // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.key|{}key[0]
+            final fun <get-key>(): kotlin/String // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.key.<get-key>|<get-key>(){}[0]
+            final fun <set-key>(kotlin/String) // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.key.<set-key>|<set-key>(kotlin.String){}[0]
+        final var value // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.value|{}value[0]
+            final fun <get-value>(): com.google.protobuf.kotlin/Value // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.value.<get-value>|<get-value>(){}[0]
+            final fun <set-value>(com.google.protobuf.kotlin/Value) // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.value.<set-value>|<set-value>(com.google.protobuf.kotlin.Value){}[0]
+
+        final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.asString|asString(kotlin.Int){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.toString|toString(){}[0]
+    }
+}
+
+final class com.google.protobuf.kotlin/TimestampInternal : com.google.protobuf.kotlin/Timestamp, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/TimestampInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/TimestampInternal.<init>|<init>(){}[0]
+
+    final var nanos // com.google.protobuf.kotlin/TimestampInternal.nanos|{}nanos[0]
+        final fun <get-nanos>(): kotlin/Int // com.google.protobuf.kotlin/TimestampInternal.nanos.<get-nanos>|<get-nanos>(){}[0]
+        final fun <set-nanos>(kotlin/Int) // com.google.protobuf.kotlin/TimestampInternal.nanos.<set-nanos>|<set-nanos>(kotlin.Int){}[0]
+    final var seconds // com.google.protobuf.kotlin/TimestampInternal.seconds|{}seconds[0]
+        final fun <get-seconds>(): kotlin/Long // com.google.protobuf.kotlin/TimestampInternal.seconds.<get-seconds>|<get-seconds>(){}[0]
+        final fun <set-seconds>(kotlin/Long) // com.google.protobuf.kotlin/TimestampInternal.seconds.<set-seconds>|<set-seconds>(kotlin.Long){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/TimestampInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/TimestampInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/TimestampInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/TimestampInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/TypeInternal : com.google.protobuf.kotlin/Type, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/TypeInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/TypeInternal.<init>|<init>(){}[0]
+
+    final var edition // com.google.protobuf.kotlin/TypeInternal.edition|{}edition[0]
+        final fun <get-edition>(): kotlin/String // com.google.protobuf.kotlin/TypeInternal.edition.<get-edition>|<get-edition>(){}[0]
+        final fun <set-edition>(kotlin/String) // com.google.protobuf.kotlin/TypeInternal.edition.<set-edition>|<set-edition>(kotlin.String){}[0]
+    final var fields // com.google.protobuf.kotlin/TypeInternal.fields|{}fields[0]
+        final fun <get-fields>(): kotlin.collections/List<com.google.protobuf.kotlin/Field> // com.google.protobuf.kotlin/TypeInternal.fields.<get-fields>|<get-fields>(){}[0]
+        final fun <set-fields>(kotlin.collections/List<com.google.protobuf.kotlin/Field>) // com.google.protobuf.kotlin/TypeInternal.fields.<set-fields>|<set-fields>(kotlin.collections.List<com.google.protobuf.kotlin.Field>){}[0]
+    final var name // com.google.protobuf.kotlin/TypeInternal.name|{}name[0]
+        final fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/TypeInternal.name.<get-name>|<get-name>(){}[0]
+        final fun <set-name>(kotlin/String) // com.google.protobuf.kotlin/TypeInternal.name.<set-name>|<set-name>(kotlin.String){}[0]
+    final var oneofs // com.google.protobuf.kotlin/TypeInternal.oneofs|{}oneofs[0]
+        final fun <get-oneofs>(): kotlin.collections/List<kotlin/String> // com.google.protobuf.kotlin/TypeInternal.oneofs.<get-oneofs>|<get-oneofs>(){}[0]
+        final fun <set-oneofs>(kotlin.collections/List<kotlin/String>) // com.google.protobuf.kotlin/TypeInternal.oneofs.<set-oneofs>|<set-oneofs>(kotlin.collections.List<kotlin.String>){}[0]
+    final var options // com.google.protobuf.kotlin/TypeInternal.options|{}options[0]
+        final fun <get-options>(): kotlin.collections/List<com.google.protobuf.kotlin/Option> // com.google.protobuf.kotlin/TypeInternal.options.<get-options>|<get-options>(){}[0]
+        final fun <set-options>(kotlin.collections/List<com.google.protobuf.kotlin/Option>) // com.google.protobuf.kotlin/TypeInternal.options.<set-options>|<set-options>(kotlin.collections.List<com.google.protobuf.kotlin.Option>){}[0]
+    final var sourceContext // com.google.protobuf.kotlin/TypeInternal.sourceContext|{}sourceContext[0]
+        final fun <get-sourceContext>(): com.google.protobuf.kotlin/SourceContext // com.google.protobuf.kotlin/TypeInternal.sourceContext.<get-sourceContext>|<get-sourceContext>(){}[0]
+        final fun <set-sourceContext>(com.google.protobuf.kotlin/SourceContext) // com.google.protobuf.kotlin/TypeInternal.sourceContext.<set-sourceContext>|<set-sourceContext>(com.google.protobuf.kotlin.SourceContext){}[0]
+    final var syntax // com.google.protobuf.kotlin/TypeInternal.syntax|{}syntax[0]
+        final fun <get-syntax>(): com.google.protobuf.kotlin/Syntax // com.google.protobuf.kotlin/TypeInternal.syntax.<get-syntax>|<get-syntax>(){}[0]
+        final fun <set-syntax>(com.google.protobuf.kotlin/Syntax) // com.google.protobuf.kotlin/TypeInternal.syntax.<set-syntax>|<set-syntax>(com.google.protobuf.kotlin.Syntax){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/TypeInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/TypeInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/TypeInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/TypeInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/UInt32ValueInternal : com.google.protobuf.kotlin/UInt32Value, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/UInt32ValueInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/UInt32ValueInternal.<init>|<init>(){}[0]
+
+    final var value // com.google.protobuf.kotlin/UInt32ValueInternal.value|{}value[0]
+        final fun <get-value>(): kotlin/UInt // com.google.protobuf.kotlin/UInt32ValueInternal.value.<get-value>|<get-value>(){}[0]
+        final fun <set-value>(kotlin/UInt) // com.google.protobuf.kotlin/UInt32ValueInternal.value.<set-value>|<set-value>(kotlin.UInt){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/UInt32ValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/UInt32ValueInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/UInt32ValueInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/UInt32ValueInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/UInt64ValueInternal : com.google.protobuf.kotlin/UInt64Value, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/UInt64ValueInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/UInt64ValueInternal.<init>|<init>(){}[0]
+
+    final var value // com.google.protobuf.kotlin/UInt64ValueInternal.value|{}value[0]
+        final fun <get-value>(): kotlin/ULong // com.google.protobuf.kotlin/UInt64ValueInternal.value.<get-value>|<get-value>(){}[0]
+        final fun <set-value>(kotlin/ULong) // com.google.protobuf.kotlin/UInt64ValueInternal.value.<set-value>|<set-value>(kotlin.ULong){}[0]
+
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/UInt64ValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/UInt64ValueInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/UInt64ValueInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/UInt64ValueInternal.toString|toString(){}[0]
+}
+
+final class com.google.protobuf.kotlin/ValueInternal : com.google.protobuf.kotlin/Value, kotlinx.rpc.protobuf.internal/InternalMessage { // com.google.protobuf.kotlin/ValueInternal|null[0]
+    constructor <init>() // com.google.protobuf.kotlin/ValueInternal.<init>|<init>(){}[0]
+
+    final var kind // com.google.protobuf.kotlin/ValueInternal.kind|{}kind[0]
+        final fun <get-kind>(): com.google.protobuf.kotlin/Value.Kind? // com.google.protobuf.kotlin/ValueInternal.kind.<get-kind>|<get-kind>(){}[0]
+        final fun <set-kind>(com.google.protobuf.kotlin/Value.Kind?) // com.google.protobuf.kotlin/ValueInternal.kind.<set-kind>|<set-kind>(com.google.protobuf.kotlin.Value.Kind?){}[0]
+
+    final fun (com.google.protobuf.kotlin/Value.Kind).oneOfHashCode(): kotlin/Int // com.google.protobuf.kotlin/ValueInternal.oneOfHashCode|oneOfHashCode@com.google.protobuf.kotlin.Value.Kind(){}[0]
+    final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/ValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/ValueInternal.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/ValueInternal.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.protobuf.kotlin/ValueInternal.toString|toString(){}[0]
+}
+
 final class kotlinx.rpc.protobuf.internal/ProtobufDecodingException : kotlinx.rpc.protobuf.internal/ProtobufException { // kotlinx.rpc.protobuf.internal/ProtobufDecodingException|null[0]
     constructor <init>(kotlin/String, kotlin/Throwable? = ...) // kotlinx.rpc.protobuf.internal/ProtobufDecodingException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
 
@@ -16,8 +993,108 @@ final class kotlinx.rpc.protobuf.internal/ProtobufEncodingException : kotlinx.rp
     constructor <init>(kotlin/String, kotlin/Throwable? = ...) // kotlinx.rpc.protobuf.internal/ProtobufEncodingException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
 }
 
+sealed class com.google.protobuf.kotlin/NullValue { // com.google.protobuf.kotlin/NullValue|null[0]
+    open val number // com.google.protobuf.kotlin/NullValue.number|{}number[0]
+        open fun <get-number>(): kotlin/Int // com.google.protobuf.kotlin/NullValue.number.<get-number>|<get-number>(){}[0]
+
+    final class UNRECOGNIZED : com.google.protobuf.kotlin/NullValue { // com.google.protobuf.kotlin/NullValue.UNRECOGNIZED|null[0]
+        constructor <init>(kotlin/Int) // com.google.protobuf.kotlin/NullValue.UNRECOGNIZED.<init>|<init>(kotlin.Int){}[0]
+
+        final val number // com.google.protobuf.kotlin/NullValue.UNRECOGNIZED.number|{}number[0]
+            final fun <get-number>(): kotlin/Int // com.google.protobuf.kotlin/NullValue.UNRECOGNIZED.number.<get-number>|<get-number>(){}[0]
+
+        final fun component1(): kotlin/Int // com.google.protobuf.kotlin/NullValue.UNRECOGNIZED.component1|component1(){}[0]
+        final fun copy(kotlin/Int = ...): com.google.protobuf.kotlin/NullValue.UNRECOGNIZED // com.google.protobuf.kotlin/NullValue.UNRECOGNIZED.copy|copy(kotlin.Int){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/NullValue.UNRECOGNIZED.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/NullValue.UNRECOGNIZED.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.google.protobuf.kotlin/NullValue.UNRECOGNIZED.toString|toString(){}[0]
+    }
+
+    final object Companion { // com.google.protobuf.kotlin/NullValue.Companion|null[0]
+        final val entries // com.google.protobuf.kotlin/NullValue.Companion.entries|{}entries[0]
+            final fun <get-entries>(): kotlin.collections/List<com.google.protobuf.kotlin/NullValue> // com.google.protobuf.kotlin/NullValue.Companion.entries.<get-entries>|<get-entries>(){}[0]
+    }
+
+    final object NULL_VALUE : com.google.protobuf.kotlin/NullValue { // com.google.protobuf.kotlin/NullValue.NULL_VALUE|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/NullValue.NULL_VALUE.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/NullValue.NULL_VALUE.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.google.protobuf.kotlin/NullValue.NULL_VALUE.toString|toString(){}[0]
+    }
+}
+
+sealed class com.google.protobuf.kotlin/Syntax { // com.google.protobuf.kotlin/Syntax|null[0]
+    open val number // com.google.protobuf.kotlin/Syntax.number|{}number[0]
+        open fun <get-number>(): kotlin/Int // com.google.protobuf.kotlin/Syntax.number.<get-number>|<get-number>(){}[0]
+
+    final class UNRECOGNIZED : com.google.protobuf.kotlin/Syntax { // com.google.protobuf.kotlin/Syntax.UNRECOGNIZED|null[0]
+        constructor <init>(kotlin/Int) // com.google.protobuf.kotlin/Syntax.UNRECOGNIZED.<init>|<init>(kotlin.Int){}[0]
+
+        final val number // com.google.protobuf.kotlin/Syntax.UNRECOGNIZED.number|{}number[0]
+            final fun <get-number>(): kotlin/Int // com.google.protobuf.kotlin/Syntax.UNRECOGNIZED.number.<get-number>|<get-number>(){}[0]
+
+        final fun component1(): kotlin/Int // com.google.protobuf.kotlin/Syntax.UNRECOGNIZED.component1|component1(){}[0]
+        final fun copy(kotlin/Int = ...): com.google.protobuf.kotlin/Syntax.UNRECOGNIZED // com.google.protobuf.kotlin/Syntax.UNRECOGNIZED.copy|copy(kotlin.Int){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Syntax.UNRECOGNIZED.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Syntax.UNRECOGNIZED.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.google.protobuf.kotlin/Syntax.UNRECOGNIZED.toString|toString(){}[0]
+    }
+
+    final object Companion { // com.google.protobuf.kotlin/Syntax.Companion|null[0]
+        final val entries // com.google.protobuf.kotlin/Syntax.Companion.entries|{}entries[0]
+            final fun <get-entries>(): kotlin.collections/List<com.google.protobuf.kotlin/Syntax> // com.google.protobuf.kotlin/Syntax.Companion.entries.<get-entries>|<get-entries>(){}[0]
+    }
+
+    final object SYNTAX_EDITIONS : com.google.protobuf.kotlin/Syntax { // com.google.protobuf.kotlin/Syntax.SYNTAX_EDITIONS|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Syntax.SYNTAX_EDITIONS.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Syntax.SYNTAX_EDITIONS.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.google.protobuf.kotlin/Syntax.SYNTAX_EDITIONS.toString|toString(){}[0]
+    }
+
+    final object SYNTAX_PROTO2 : com.google.protobuf.kotlin/Syntax { // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO2|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO2.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO2.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO2.toString|toString(){}[0]
+    }
+
+    final object SYNTAX_PROTO3 : com.google.protobuf.kotlin/Syntax { // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO3|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO3.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO3.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO3.toString|toString(){}[0]
+    }
+}
+
 sealed class kotlinx.rpc.protobuf.internal/ProtobufException : kotlin/RuntimeException // kotlinx.rpc.protobuf.internal/ProtobufException|null[0]
 
+final fun (com.google.protobuf.kotlin/Any.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/AnyInternal, kotlin/Unit>): com.google.protobuf.kotlin/Any // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Any.Companion(kotlin.Function1<com.google.protobuf.kotlin.AnyInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/Api.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/ApiInternal, kotlin/Unit>): com.google.protobuf.kotlin/Api // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Api.Companion(kotlin.Function1<com.google.protobuf.kotlin.ApiInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/BoolValue.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/BoolValueInternal, kotlin/Unit>): com.google.protobuf.kotlin/BoolValue // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.BoolValue.Companion(kotlin.Function1<com.google.protobuf.kotlin.BoolValueInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/BytesValue.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/BytesValueInternal, kotlin/Unit>): com.google.protobuf.kotlin/BytesValue // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.BytesValue.Companion(kotlin.Function1<com.google.protobuf.kotlin.BytesValueInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/DoubleValue.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/DoubleValueInternal, kotlin/Unit>): com.google.protobuf.kotlin/DoubleValue // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.DoubleValue.Companion(kotlin.Function1<com.google.protobuf.kotlin.DoubleValueInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/Duration).com.google.protobuf.kotlin/toKotlinDuration(): kotlin.time/Duration // com.google.protobuf.kotlin/toKotlinDuration|toKotlinDuration@com.google.protobuf.kotlin.Duration(){}[0]
+final fun (com.google.protobuf.kotlin/Duration.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/DurationInternal, kotlin/Unit>): com.google.protobuf.kotlin/Duration // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Duration.Companion(kotlin.Function1<com.google.protobuf.kotlin.DurationInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/Empty.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/EmptyInternal, kotlin/Unit>): com.google.protobuf.kotlin/Empty // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Empty.Companion(kotlin.Function1<com.google.protobuf.kotlin.EmptyInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/Enum.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/EnumInternal, kotlin/Unit>): com.google.protobuf.kotlin/Enum // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Enum.Companion(kotlin.Function1<com.google.protobuf.kotlin.EnumInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/EnumValue.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/EnumValueInternal, kotlin/Unit>): com.google.protobuf.kotlin/EnumValue // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.EnumValue.Companion(kotlin.Function1<com.google.protobuf.kotlin.EnumValueInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/Field.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FieldInternal, kotlin/Unit>): com.google.protobuf.kotlin/Field // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Field.Companion(kotlin.Function1<com.google.protobuf.kotlin.FieldInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/FieldMask.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FieldMaskInternal, kotlin/Unit>): com.google.protobuf.kotlin/FieldMask // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FieldMask.Companion(kotlin.Function1<com.google.protobuf.kotlin.FieldMaskInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/FloatValue.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FloatValueInternal, kotlin/Unit>): com.google.protobuf.kotlin/FloatValue // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FloatValue.Companion(kotlin.Function1<com.google.protobuf.kotlin.FloatValueInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/Int32Value.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Int32ValueInternal, kotlin/Unit>): com.google.protobuf.kotlin/Int32Value // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Int32Value.Companion(kotlin.Function1<com.google.protobuf.kotlin.Int32ValueInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/Int64Value.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Int64ValueInternal, kotlin/Unit>): com.google.protobuf.kotlin/Int64Value // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Int64Value.Companion(kotlin.Function1<com.google.protobuf.kotlin.Int64ValueInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/ListValue.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/ListValueInternal, kotlin/Unit>): com.google.protobuf.kotlin/ListValue // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.ListValue.Companion(kotlin.Function1<com.google.protobuf.kotlin.ListValueInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/Method.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/MethodInternal, kotlin/Unit>): com.google.protobuf.kotlin/Method // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Method.Companion(kotlin.Function1<com.google.protobuf.kotlin.MethodInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/Mixin.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/MixinInternal, kotlin/Unit>): com.google.protobuf.kotlin/Mixin // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Mixin.Companion(kotlin.Function1<com.google.protobuf.kotlin.MixinInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/Option.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/OptionInternal, kotlin/Unit>): com.google.protobuf.kotlin/Option // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Option.Companion(kotlin.Function1<com.google.protobuf.kotlin.OptionInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/SourceContext.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/SourceContextInternal, kotlin/Unit>): com.google.protobuf.kotlin/SourceContext // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.SourceContext.Companion(kotlin.Function1<com.google.protobuf.kotlin.SourceContextInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/StringValue.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/StringValueInternal, kotlin/Unit>): com.google.protobuf.kotlin/StringValue // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.StringValue.Companion(kotlin.Function1<com.google.protobuf.kotlin.StringValueInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/Struct.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/StructInternal, kotlin/Unit>): com.google.protobuf.kotlin/Struct // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Struct.Companion(kotlin.Function1<com.google.protobuf.kotlin.StructInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/Timestamp).com.google.protobuf.kotlin/toInstant(): kotlin.time/Instant // com.google.protobuf.kotlin/toInstant|toInstant@com.google.protobuf.kotlin.Timestamp(){}[0]
+final fun (com.google.protobuf.kotlin/Timestamp.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/TimestampInternal, kotlin/Unit>): com.google.protobuf.kotlin/Timestamp // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Timestamp.Companion(kotlin.Function1<com.google.protobuf.kotlin.TimestampInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/Type.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/TypeInternal, kotlin/Unit>): com.google.protobuf.kotlin/Type // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Type.Companion(kotlin.Function1<com.google.protobuf.kotlin.TypeInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/UInt32Value.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/UInt32ValueInternal, kotlin/Unit>): com.google.protobuf.kotlin/UInt32Value // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.UInt32Value.Companion(kotlin.Function1<com.google.protobuf.kotlin.UInt32ValueInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/UInt64Value.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/UInt64ValueInternal, kotlin/Unit>): com.google.protobuf.kotlin/UInt64Value // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.UInt64Value.Companion(kotlin.Function1<com.google.protobuf.kotlin.UInt64ValueInternal,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/Value.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/ValueInternal, kotlin/Unit>): com.google.protobuf.kotlin/Value // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Value.Companion(kotlin.Function1<com.google.protobuf.kotlin.ValueInternal,kotlin.Unit>){}[0]
+final fun (kotlin.time/Duration).com.google.protobuf.kotlin/toProtobufDuration(): com.google.protobuf.kotlin/Duration // com.google.protobuf.kotlin/toProtobufDuration|toProtobufDuration@kotlin.time.Duration(){}[0]
+final fun (kotlin.time/Instant).com.google.protobuf.kotlin/toTimestamp(): com.google.protobuf.kotlin/Timestamp // com.google.protobuf.kotlin/toTimestamp|toTimestamp@kotlin.time.Instant(){}[0]
 final fun kotlinx.rpc.protobuf.internal/WireDecoder(kotlinx.rpc.protobuf.input.stream/BufferInputStream): kotlinx.rpc.protobuf.internal/WireDecoder // kotlinx.rpc.protobuf.internal/WireDecoder|WireDecoder(kotlinx.rpc.protobuf.input.stream.BufferInputStream){}[0]
 final fun kotlinx.rpc.protobuf.internal/WireEncoder(kotlinx.io/Sink): kotlinx.rpc.protobuf.internal/WireEncoder // kotlinx.rpc.protobuf.internal/WireEncoder|WireEncoder(kotlinx.io.Sink){}[0]
 final inline fun kotlinx.rpc.protobuf.internal/checkForPlatformDecodeException(kotlin/Function0<kotlin/Unit>) // kotlinx.rpc.protobuf.internal/checkForPlatformDecodeException|checkForPlatformDecodeException(kotlin.Function0<kotlin.Unit>){}[0]
