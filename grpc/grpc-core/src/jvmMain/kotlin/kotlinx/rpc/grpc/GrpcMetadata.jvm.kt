@@ -13,7 +13,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 @InternalRpcApi
 public actual typealias GrpcMetadata = io.grpc.Metadata
 
-public actual class GrpcMetadataKey<T> internal actual constructor(
+public actual class GrpcMetadataKey<T> public actual constructor(
     private val name: String,
     private val codec: MessageCodec<T>,
 ) {
@@ -54,7 +54,7 @@ public actual operator fun GrpcMetadata.get(key: String): String? {
     return get(Metadata.Key.of(key, Metadata.ASCII_STRING_MARSHALLER))
 }
 
-public actual fun <T> GrpcMetadata.get(key: GrpcMetadataKey<T>): T? {
+public actual operator fun <T> GrpcMetadata.get(key: GrpcMetadataKey<T>): T? {
     return get(key.toAsciiKey())
 }
 

@@ -33,12 +33,8 @@ import libkgrpc.grpc_slice_unref
 import libkgrpc.kgrpc_metadata_array_append
 import kotlin.experimental.ExperimentalNativeApi
 
-public actual class GrpcMetadataKey<T> actual constructor(public var name: String, public val codec: MessageCodec<T>) {
-
-    init {
-        name = name.lowercase()
-    }
-
+public actual class GrpcMetadataKey<T> actual constructor(name: String, public val codec: MessageCodec<T>) {
+    public val name: String = name.lowercase()
     internal val isBinary get() = name.endsWith("-bin")
 
     internal fun encode(value: T): ByteArray = codec.encode(value).buffer.readByteArray()
@@ -115,7 +111,7 @@ public actual operator fun GrpcMetadata.get(key: String): String? {
     return get(key.toAsciiKey())
 }
 
-public actual fun <T> GrpcMetadata.get(key: GrpcMetadataKey<T>): T? {
+public actual operator fun <T> GrpcMetadata.get(key: GrpcMetadataKey<T>): T? {
     key.validateForString()
     return map[key.name]?.lastOrNull()?.let {
         key.decode(it)
