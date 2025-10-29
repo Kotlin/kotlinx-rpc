@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.client.internal.GrpcDefaultCallOptions
+import kotlinx.rpc.grpc.client.internal.GrpcCallOptions
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
 import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
@@ -58,7 +58,7 @@ public class GrpcClient internal constructor(
     }
 
     override suspend fun <T> call(call: RpcCall): T = withGrpcCall(call) { methodDescriptor, request ->
-        val callOptions = GrpcDefaultCallOptions
+        val callOptions = GrpcCallOptions()
         val trailers = GrpcMetadata()
 
         return when (methodDescriptor.methodType) {
@@ -66,14 +66,14 @@ public class GrpcClient internal constructor(
                 descriptor = methodDescriptor,
                 request = request,
                 callOptions = callOptions,
-                trailers = trailers,
+                headers = trailers,
             )
 
             MethodType.CLIENT_STREAMING -> @Suppress("UNCHECKED_CAST") clientStreamingRpc(
                 descriptor = methodDescriptor,
                 requests = request as Flow<RequestClient>,
                 callOptions = callOptions,
-                trailers = trailers,
+                headers = trailers,
             )
 
             else -> error("Wrong method type ${methodDescriptor.methodType}")
@@ -81,22 +81,22 @@ public class GrpcClient internal constructor(
     }
 
     override fun <T> callServerStreaming(call: RpcCall): Flow<T> = withGrpcCall(call) { methodDescriptor, request ->
-        val callOptions = GrpcDefaultCallOptions
-        val trailers = GrpcMetadata()
+        val callOptions = GrpcCallOptions()
+        val headers = GrpcMetadata()
 
         when (methodDescriptor.methodType) {
             MethodType.SERVER_STREAMING -> serverStreamingRpc(
                 descriptor = methodDescriptor,
                 request = request,
                 callOptions = callOptions,
-                trailers = trailers,
+                headers = headers,
             )
 
             MethodType.BIDI_STREAMING -> @Suppress("UNCHECKED_CAST") bidirectionalStreamingRpc(
                 descriptor = methodDescriptor,
                 requests = request as Flow<RequestClient>,
                 callOptions = callOptions,
-                trailers = trailers,
+                headers = headers,
             )
 
             else -> error("Wrong method type ${methodDescriptor.methodType}")
