@@ -17,18 +17,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.server.ServerCallScope
-import kotlinx.rpc.grpc.server.ServerInterceptor
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.StatusRuntimeException
-import kotlinx.rpc.grpc.internal.CallbackFuture
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
-import kotlinx.rpc.grpc.internal.Ready
 import kotlinx.rpc.grpc.descriptor.methodType
+import kotlinx.rpc.grpc.internal.CallbackFuture
+import kotlinx.rpc.grpc.internal.Ready
 import kotlinx.rpc.grpc.internal.singleOrStatusFlow
+import kotlinx.rpc.grpc.merge
+import kotlinx.rpc.grpc.server.ServerCallScope
+import kotlinx.rpc.grpc.server.ServerInterceptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -185,7 +186,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
                 // once we have a response message, check if we've sent headers yet - if not, do so
                 if (headersSent.value.compareAndSet(expect = false, update = true)) {
                     mutex.withLock {
-                        handler.sendHeaders(GrpcMetadata())
+                        handler.sendHeaders(serverCallScope.responseHeaders)
                     }
                 }
                 ready.suspendUntilReady()
@@ -198,7 +199,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         // no elements or threw an exception, then we wouldn't have sent them
         if (failure == null && headersSent.value.compareAndSet(expect = false, update = true)) {
             mutex.withLock {
-                handler.sendHeaders(GrpcMetadata())
+                handler.sendHeaders(serverCallScope.responseHeaders)
             }
         }
 
@@ -210,21 +211,14 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
             else -> Status(StatusCode.UNKNOWN, cause = failure)
         }
 
-        val trailers = failure?.let {
-            when (it) {
-                is StatusException -> {
-                    it.getTrailers()
-                }
+        val trailers = serverCallScope.responseTrailers
 
-                is StatusRuntimeException -> {
-                    it.getTrailers()
-                }
-
-                else -> {
-                    null
-                }
-            }
-        } ?: GrpcMetadata()
+        // we merge the failure trailers with the user-defined trailers
+        when (failure) {
+            is StatusException -> failure.getTrailers()
+            is StatusRuntimeException -> failure.getTrailers()
+            else -> null
+        }?.let { trailers.merge(it) }
 
         mutex.withLock {
             handler.close(closeStatus, trailers)
