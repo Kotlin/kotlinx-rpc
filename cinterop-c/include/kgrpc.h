@@ -89,6 +89,12 @@ void kgrpc_server_set_batch_method_allocator(
     kgrpc_batch_call_allocator allocator
 );
 
+/**
+ * Append an grpc_metadata entry to the given grpc_metadata_array.
+ *
+ * @return false if the array has not enough capacity, true otherwise.
+ */
+bool kgrpc_metadata_array_append(grpc_metadata_array *array, grpc_slice key, grpc_slice value);
 
 #ifdef __cplusplus
 }

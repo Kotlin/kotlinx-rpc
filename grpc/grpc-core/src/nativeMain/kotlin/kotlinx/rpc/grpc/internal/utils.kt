@@ -14,6 +14,7 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.convert
+import kotlinx.cinterop.get
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.plus
 import kotlinx.cinterop.ptr
@@ -35,6 +36,8 @@ import libkgrpc.grpc_byte_buffer_reader
 import libkgrpc.grpc_byte_buffer_reader_destroy
 import libkgrpc.grpc_byte_buffer_reader_init
 import libkgrpc.grpc_byte_buffer_reader_next
+import libkgrpc.grpc_metadata
+import libkgrpc.grpc_metadata_array
 import libkgrpc.grpc_raw_byte_buffer_create
 import libkgrpc.grpc_slice
 import libkgrpc.grpc_slice_from_copied_buffer
@@ -225,4 +228,17 @@ public fun StatusCode.toRaw(): grpc_status_code = when (this) {
     StatusCode.UNAVAILABLE -> grpc_status_code.GRPC_STATUS_UNAVAILABLE
     StatusCode.DATA_LOSS -> grpc_status_code.GRPC_STATUS_DATA_LOSS
     StatusCode.UNAUTHENTICATED -> grpc_status_code.GRPC_STATUS_UNAUTHENTICATED
+}
+
+@InternalRpcApi
+public fun grpc_metadata.destroy() {
+    grpc_slice_unref(key.readValue())
+    grpc_slice_unref(value.readValue())
+}
+
+@InternalRpcApi
+public fun grpc_metadata_array.destroyEntries() {
+    for (i in 0 until count.convert()) {
+        metadata?.get(i)?.destroy()
+    }
 }
