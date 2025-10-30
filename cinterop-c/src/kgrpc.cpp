@@ -3,6 +3,7 @@
 #include <kgrpc.h>
 #include "src/core/lib/iomgr/iomgr.h"
 #include "src/core/server/server.h"
+#include "grpc/support/string_util.h"
 
 extern "C" {
 
@@ -51,6 +52,18 @@ void kgrpc_server_set_batch_method_allocator(
                         .cq = result.cq,
                 };
             });
+}
+
+bool kgrpc_metadata_array_append(grpc_metadata_array *array, grpc_slice key, grpc_slice value) {
+    if (array->capacity - array->count <= 0) {
+        return false;
+    }
+    grpc_metadata entry = {
+        .key = key,
+        .value = value
+    };
+    array->metadata[array->count++] = entry;
+    return true;
 }
 
 }

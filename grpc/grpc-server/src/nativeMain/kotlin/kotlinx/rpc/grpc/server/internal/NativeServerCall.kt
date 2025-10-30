@@ -25,12 +25,13 @@ import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
-import kotlinx.rpc.grpc.internal.BatchResult
-import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
-import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.grpc.descriptor.methodType
+import kotlinx.rpc.grpc.internal.BatchResult
+import kotlinx.rpc.grpc.internal.CompletionQueue
+import kotlinx.rpc.grpc.internal.destroyEntries
+import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.grpc.internal.toGrpcByteBuffer
 import kotlinx.rpc.grpc.internal.toGrpcSlice
 import kotlinx.rpc.grpc.internal.toKotlin
@@ -262,15 +263,22 @@ internal class NativeServerCall<Request, Response>(
     override fun sendHeaders(headers: GrpcMetadata) {
         check(initialized) { internalError("Call not initialized") }
         val arena = Arena()
-        // TODO: Implement header metadata operation
+
+        val initialMetadata = with(headers) {
+            arena.allocRawGrpcMetadata()
+        }
+
         val op = arena.alloc<grpc_op> {
             op = GRPC_OP_SEND_INITIAL_METADATA
-            data.send_initial_metadata.count = 0u
-            data.send_initial_metadata.metadata = null
+            data.send_initial_metadata.count = initialMetadata.count
+            data.send_initial_metadata.metadata = initialMetadata.metadata
         }
 
         sentInitialMetadata = true
-        runBatch(op.ptr, 1u, cleanup = { arena.clear() }) {
+        runBatch(op.ptr, 1u, cleanup = {
+            initialMetadata.destroyEntries()
+            arena.clear()
+        }) {
             // nothing to do here
         }
     }
@@ -304,6 +312,9 @@ internal class NativeServerCall<Request, Response>(
         check(initialized) { internalError("Call not initialized") }
 
         val arena = Arena()
+        val trailingMetadata = with(trailers) {
+            arena.allocRawGrpcMetadata()
+        }
 
         val details = status.getDescription()?.toGrpcSlice()
         val detailsPtr = details?.getPointer(arena)
@@ -315,8 +326,8 @@ internal class NativeServerCall<Request, Response>(
         ops[0].op = GRPC_OP_SEND_STATUS_FROM_SERVER
         ops[0].data.send_status_from_server.status = status.statusCode.toRaw()
         ops[0].data.send_status_from_server.status_details = detailsPtr
-        ops[0].data.send_status_from_server.trailing_metadata_count = 0u
-        ops[0].data.send_status_from_server.trailing_metadata = null
+        ops[0].data.send_status_from_server.trailing_metadata_count = trailingMetadata.count
+        ops[0].data.send_status_from_server.trailing_metadata = trailingMetadata.metadata
 
         if (!sentInitialMetadata) {
             // if we haven't sent GRPC_OP_SEND_INITIAL_METADATA yet,
@@ -328,6 +339,7 @@ internal class NativeServerCall<Request, Response>(
 
         runBatch(ops, nOps, cleanup = {
             if (details != null) grpc_slice_unref(details)
+            trailingMetadata.destroyEntries()
             arena.clear()
         }) {
             closed = true
