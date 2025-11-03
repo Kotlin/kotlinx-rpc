@@ -797,7 +797,7 @@ internal class RpcStubGenerator(
                 type = ctx.rpcCallable.typeWith(declaration.serviceType),
                 symbol = ctx.rpcCallableDefault.constructors.single(),
                 typeArgumentsCount = 1,
-                valueArgumentsCount = 5,
+                valueArgumentsCount = 6,
                 constructorTypeArgumentsCount = 1,
             )
         }.apply {
@@ -805,15 +805,7 @@ internal class RpcStubGenerator(
 
             callable as ServiceDeclaration.Method
 
-            val returnType = when {
-                callable.function.isNonSuspendingWithFlowReturn() -> {
-                    (callable.function.returnType as IrSimpleType).arguments.single().typeOrFail
-                }
-
-                else -> {
-                    callable.function.returnType
-                }
-            }
+            val returnType = callable.function.returnType
 
             val invokator = invokators[callable.name]
                 ?: error("Expected invokator for ${callable.name} in ${declaration.service.name}")
@@ -889,6 +881,8 @@ internal class RpcStubGenerator(
                 }
             }
 
+            val returnsFlowFlag = (callable.function.returnType.classOrNull == ctx.flow)
+
             arguments {
                 values {
                     +stringConst(callable.name)
@@ -900,6 +894,7 @@ internal class RpcStubGenerator(
                     +arrayOfCall
 
                     +booleanConst(!callable.function.isSuspend)
+                    +booleanConst(returnsFlowFlag)
                 }
             }
         }

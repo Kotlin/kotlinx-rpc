@@ -56,6 +56,12 @@ public interface RpcCallable<@Rpc T : Any> {
     public val invokator: RpcInvokator<T>
     public val parameters: Array<out RpcParameter>
     public val isNonSuspendFunction: Boolean
+    /**
+     * True if the method returns Flow<...> and should be treated as a streaming return.
+     * The [returnType] remains the original declared KType (including Flow<...>),
+     * consumers can use this flag to branch logic without relying on type unwrapping.
+     */
+    public val returnsFlow: Boolean
 }
 
 @ExperimentalRpcApi
