@@ -26,6 +26,7 @@ import kotlinx.coroutines.CompletableJob
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.internal.BatchResult
 import kotlinx.rpc.grpc.internal.CompletionQueue
@@ -63,6 +64,7 @@ internal class NativeClientCall<Request, Response>(
     private val cq: CompletionQueue,
     internal val raw: CPointer<grpc_call>,
     private val methodDescriptor: MethodDescriptor<Request, Response>,
+    private val callOptions: GrpcCallOptions,
     private val callJob: CompletableJob,
 ) : ClientCall<Request, Response>() {
 
@@ -308,6 +310,10 @@ internal class NativeClientCall<Request, Response>(
         val opsNum = 2uL
         val ops = arena.allocArray<grpc_op>(opsNum.convert())
 
+        // add compression algorithm to the call metadata.
+        // the gRPC core will read the header and perform the compression (compression_filter.cc).
+        headers.append("grpc-internal-encoding-request", callOptions.compression.name)
+
         // turn given headers into a grpc_metadata_array.
         val sendInitialMetadata: grpc_metadata_array = with(headers) {
             arena.allocRawGrpcMetadata()
@@ -460,4 +466,3 @@ internal class NativeClientCall<Request, Response>(
         }
     }
 }
-

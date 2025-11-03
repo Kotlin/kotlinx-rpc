@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.grpc.client.internal
 
+import kotlinx.rpc.grpc.GrpcCompression
 import kotlin.time.Duration
 
 /**
@@ -25,4 +26,6 @@ public class GrpcCallOptions {
      * @see Duration
      */
     public var timeout: Duration? = null
+
+    public var compression: GrpcCompression = GrpcCompression.None
 }

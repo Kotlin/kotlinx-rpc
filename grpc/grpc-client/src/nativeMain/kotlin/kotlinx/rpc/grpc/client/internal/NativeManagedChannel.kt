@@ -163,7 +163,7 @@ internal class NativeManagedChannel(
         grpc_slice_unref(methodNameSlice)
 
         return NativeClientCall(
-            cq, rawCall, methodDescriptor, callJob
+            cq, rawCall, methodDescriptor, callOptions, callJob
         )
     }
 
