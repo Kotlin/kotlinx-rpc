@@ -5,6 +5,8 @@
 package kotlinx.rpc.grpc.client.internal
 
 import io.grpc.Channel
+import kotlinx.rpc.grpc.client.GrpcCallOptions
+import kotlinx.rpc.grpc.client.toJvm
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 

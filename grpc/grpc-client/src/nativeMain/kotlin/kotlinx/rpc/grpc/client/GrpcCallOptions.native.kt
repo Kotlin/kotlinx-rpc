@@ -4,7 +4,7 @@
 
 @file:OptIn(ExperimentalForeignApi::class)
 
-package kotlinx.rpc.grpc.client.internal
+package kotlinx.rpc.grpc.client
 
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
