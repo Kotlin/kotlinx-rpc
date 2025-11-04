@@ -13,7 +13,7 @@ import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.client.createInsecureClientCredentials
 import kotlinx.rpc.grpc.client.internal.ClientCall
-import kotlinx.rpc.grpc.client.internal.GrpcCallOptions
+import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
 import kotlinx.rpc.grpc.client.internal.buildChannel
