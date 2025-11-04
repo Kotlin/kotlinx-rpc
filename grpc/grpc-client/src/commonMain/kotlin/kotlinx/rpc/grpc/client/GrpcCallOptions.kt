@@ -21,6 +21,8 @@ public class GrpcCallOptions {
      * The timeout is measured from the moment the call is initiated.
      * If `null`, no timeout is applied, and the call may run indefinitely.
      *
+     * The default value is `null`.
+     *
      * @see kotlin.time.Duration
      */
     public var timeout: Duration? = null
