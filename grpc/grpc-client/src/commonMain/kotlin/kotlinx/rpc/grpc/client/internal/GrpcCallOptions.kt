@@ -4,10 +4,25 @@
 
 package kotlinx.rpc.grpc.client.internal
 
-import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlin.time.Duration
 
-@InternalRpcApi
-public expect class GrpcCallOptions
-
-@InternalRpcApi
-public expect val GrpcDefaultCallOptions: GrpcCallOptions
+/**
+ * The collection of runtime options for a new gRPC call.
+ *
+ * This class allows configuring per-call behavior such as timeouts.
+ */
+public class GrpcCallOptions {
+    /**
+     * The maximum duration to wait for the RPC to complete.
+     *
+     * If set, the RPC will be canceled (with `DEADLINE_EXCEEDED`)
+     * if it does not complete within the specified duration.
+     * The timeout is measured from the moment the call is initiated.
+     * If `null`, no timeout is applied, and the call may run indefinitely.
+     *
+     * The default value is `null`.
+     *
+     * @see Duration
+     */
+    public var timeout: Duration? = null
+}

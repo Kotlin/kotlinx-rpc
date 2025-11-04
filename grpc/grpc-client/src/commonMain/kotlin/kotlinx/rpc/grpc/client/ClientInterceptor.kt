@@ -30,6 +30,9 @@ import kotlinx.rpc.grpc.descriptor.MethodDescriptor
  *          // Example: add a header before proceeding
  *          requestHeaders[MyKeys.Authorization] = token
  *
+ *          // Example: modify call options
+ *          callOptions.timeout = 5.seconds
+ *
  *          // Example: observe response metadata
  *          onHeaders { headers -> /* inspect headers */ }
  *          onClose { status, trailers -> /* log status/trailers */ }

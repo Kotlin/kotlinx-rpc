@@ -5,12 +5,13 @@
 package kotlinx.rpc.grpc.client.internal
 
 import io.grpc.CallOptions
-import kotlinx.rpc.grpc.client.internal.GrpcCallOptions
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
-public actual typealias GrpcCallOptions = CallOptions
-
-@InternalRpcApi
-public actual val GrpcDefaultCallOptions: GrpcCallOptions
-    get() = GrpcCallOptions.DEFAULT
+public fun GrpcCallOptions.toJvm(): CallOptions {
+    var default = CallOptions.DEFAULT
+    if (timeout != null) {
+        default = default.withDeadlineAfter(timeout!!.inWholeMilliseconds, java.util.concurrent.TimeUnit.MILLISECONDS)
+    }
+    return default
+}

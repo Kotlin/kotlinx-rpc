@@ -9,19 +9,20 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.server.GrpcServer
-import kotlinx.rpc.grpc.client.internal.ManagedChannel
-import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
-import kotlinx.rpc.grpc.client.internal.buildChannel
 import kotlinx.rpc.grpc.client.createInsecureClientCredentials
 import kotlinx.rpc.grpc.client.internal.ClientCall
-import kotlinx.rpc.grpc.client.internal.GrpcDefaultCallOptions
+import kotlinx.rpc.grpc.client.internal.GrpcCallOptions
+import kotlinx.rpc.grpc.client.internal.ManagedChannel
+import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
+import kotlinx.rpc.grpc.client.internal.buildChannel
+import kotlinx.rpc.grpc.client.internal.clientCallListener
+import kotlinx.rpc.grpc.client.internal.createCall
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
-import kotlinx.rpc.grpc.client.internal.clientCallListener
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
+import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.registerService
 import kotlin.test.Test
@@ -51,7 +52,7 @@ class GrpcCoreClientTest {
         )
 
     private fun ManagedChannel.newHelloCall(fullName: String = "kotlinx.rpc.grpc.test.GreeterService/SayHello"): ClientCall<HelloRequest, HelloReply> =
-        platformApi.newCall(descriptorFor(fullName), GrpcDefaultCallOptions)
+        platformApi.createCall(descriptorFor(fullName), GrpcCallOptions())
 
     private fun createChannel(): ManagedChannel = ManagedChannelBuilder(
         target = "localhost:$PORT",
