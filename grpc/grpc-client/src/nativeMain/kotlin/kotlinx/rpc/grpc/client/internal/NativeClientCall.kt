@@ -37,6 +37,8 @@ import kotlinx.rpc.grpc.internal.toGrpcByteBuffer
 import kotlinx.rpc.grpc.internal.toKotlin
 import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.input.stream.asSource
+import kotlinx.rpc.grpc.GrpcCompression
+import kotlinx.rpc.grpc.client.GrpcCallOptions
 import libkgrpc.GRPC_OP_RECV_INITIAL_METADATA
 import libkgrpc.GRPC_OP_RECV_MESSAGE
 import libkgrpc.GRPC_OP_RECV_STATUS_ON_CLIENT
@@ -312,7 +314,13 @@ internal class NativeClientCall<Request, Response>(
 
         // add compression algorithm to the call metadata.
         // the gRPC core will read the header and perform the compression (compression_filter.cc).
-        headers.append("grpc-internal-encoding-request", callOptions.compression.name)
+        if (callOptions.compression !is GrpcCompression.None) {
+            if (callOptions.compression !is GrpcCompression.Gzip) {
+                // to match the behavior of grpc-java, we throw an error if the compression algorithm is not supported.
+                cancelInternal(grpc_status_code.GRPC_STATUS_INTERNAL, "Unable to find compressor by name ${callOptions.compression.name}")
+            }
+            headers.append("grpc-internal-encoding-request", callOptions.compression.name)
+        }
 
         // turn given headers into a grpc_metadata_array.
         val sendInitialMetadata: grpc_metadata_array = with(headers) {
