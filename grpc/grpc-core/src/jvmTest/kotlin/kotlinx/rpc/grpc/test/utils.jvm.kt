@@ -7,6 +7,17 @@ package kotlinx.rpc.grpc.test
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
+actual val runtime: Runtime
+    get() = Runtime.JVM
+
+actual fun setNativeEnv(key: String, value: String) {
+    // Nothing to do on JVM
+}
+
+actual fun clearNativeEnv(key: String) {
+    // Nothing to do on JVM
+}
+
 actual suspend fun captureStdErr(block: suspend () -> Unit): String {
     val orig = System.out
     val baos = ByteArrayOutputStream()
@@ -19,17 +30,3 @@ actual suspend fun captureStdErr(block: suspend () -> Unit): String {
     }
 }
 
-actual fun printErrLn(message: Any?) {
-    System.err.println(message)
-}
-
-actual fun setNativeEnv(key: String, value: String) {
-    // Nothing to do on JVM
-}
-
-actual fun clearNativeEnv(key: String) {
-    // Nothing to do on JVM
-}
-
-actual val runtime: Runtime
-    get() = Runtime.JVM

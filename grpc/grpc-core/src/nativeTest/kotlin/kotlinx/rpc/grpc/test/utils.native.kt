@@ -27,6 +27,16 @@ import platform.posix.pipe
 import platform.posix.read
 import platform.posix.stderr
 
+actual val runtime: Runtime
+    get() = Runtime.NATIVE
+
+actual fun setNativeEnv(key: String, value: String) {
+    platform.posix.setenv(key, value, 1)
+}
+
+actual fun clearNativeEnv(key: String) {
+    platform.posix.unsetenv(key)
+}
 
 actual suspend fun captureStdErr(block: suspend () -> Unit): String = coroutineScope {
     memScoped {
@@ -65,18 +75,3 @@ actual suspend fun captureStdErr(block: suspend () -> Unit): String = coroutineS
     }
 }
 
-actual fun printErrLn(message: Any?) {
-    fprintf(stderr, "%s\n", message.toString())
-    fflush(stderr)
-}
-
-actual fun setNativeEnv(key: String, value: String) {
-    platform.posix.setenv(key, value, 1)
-}
-
-actual fun clearNativeEnv(key: String) {
-    platform.posix.unsetenv(key)
-}
-
-actual val runtime: Runtime
-    get() = Runtime.NATIVE

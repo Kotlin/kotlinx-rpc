@@ -28,17 +28,20 @@ fun <T> assertContainsAll(actual: Iterable<T>, expected: Iterable<T>) {
     }
 }
 
-expect suspend fun captureStdErr(block: suspend () -> Unit): String
-
-expect fun setNativeEnv(key: String, value: String)
-expect fun clearNativeEnv(key: String)
-
-expect fun printErrLn(message: Any?)
-
-
 enum class Runtime {
     JVM,
     NATIVE
 }
-
 expect val runtime: Runtime
+
+expect fun setNativeEnv(key: String, value: String)
+expect fun clearNativeEnv(key: String)
+
+/**
+ * Captures the standard error output written during the execution of the provided suspending block.
+ *
+ * @param block A suspending lambda function whose standard error output will be captured.
+ * @return A string containing the captured standard error output.
+ */
+expect suspend fun captureStdErr(block: suspend () -> Unit): String
+
