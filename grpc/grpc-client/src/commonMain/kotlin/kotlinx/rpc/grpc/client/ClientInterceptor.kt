@@ -7,7 +7,7 @@ package kotlinx.rpc.grpc.client
 import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
-import kotlinx.rpc.grpc.client.internal.GrpcCallOptions
+import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 
 /**

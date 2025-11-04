@@ -20,6 +20,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.grpc.client.ClientCredentials
+import kotlinx.rpc.grpc.client.GrpcCallOptions
+import kotlinx.rpc.grpc.client.rawDeadline
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.GrpcRuntime
@@ -163,7 +165,7 @@ internal class NativeManagedChannel(
         grpc_slice_unref(methodNameSlice)
 
         return NativeClientCall(
-            cq, rawCall, methodDescriptor, callJob
+            cq, rawCall, methodDescriptor, callOptions, callJob
         )
     }
 

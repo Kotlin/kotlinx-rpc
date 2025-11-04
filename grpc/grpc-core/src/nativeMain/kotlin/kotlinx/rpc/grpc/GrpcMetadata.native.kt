@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, ExperimentalEncodingApi::class)
 
 package kotlinx.rpc.grpc
 
@@ -32,6 +32,8 @@ import libkgrpc.grpc_slice_ref
 import libkgrpc.grpc_slice_unref
 import libkgrpc.kgrpc_metadata_array_append
 import kotlin.experimental.ExperimentalNativeApi
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 public actual class GrpcMetadataKey<T> actual constructor(name: String, public val codec: MessageCodec<T>) {
     public val name: String = name.lowercase()
@@ -105,6 +107,28 @@ public actual class GrpcMetadata actual constructor() {
 
         return raw
     }
+
+    @OptIn(ExperimentalEncodingApi::class)
+    override fun toString(): String {
+        val sb = StringBuilder("Metadata(")
+        var first = true
+        for ((key, values) in map) {
+            for (value in values) {
+                if (!first) {
+                    sb.append(',')
+                }
+                first = false
+                sb.append(key).append('=')
+                if (key.endsWith("-bin")) {
+                    sb.append(Base64.encode(value))
+                } else {
+                    sb.append(value.toAsciiString())
+                }
+            }
+        }
+        return sb.append(')').toString()
+    }
+
 }
 
 public actual operator fun GrpcMetadata.get(key: String): String? {
@@ -276,8 +300,6 @@ private val VALID_KEY_CHARS by lazy {
 
 @OptIn(ObsoleteNativeApi::class)
 private fun <T> GrpcMetadataKey<T>.validateName() {
-    require(!name.startsWith("grpc-")) { "Header is named $name. It must not start with 'grpc-' as it is reserved for internal use." }
-
     for (char in name) {
         require(VALID_KEY_CHARS[char.code]) { "Header is named $name. It contains illegal character $char." }
     }
