@@ -11,6 +11,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 @InternalRpcApi
 public actual typealias GrpcChannel = Channel
 
+@InternalRpcApi
 public actual fun <RequestT, ResponseT> GrpcChannel.createCall(
     methodDescriptor: MethodDescriptor<RequestT, ResponseT>,
     callOptions: GrpcCallOptions,

@@ -15,6 +15,7 @@ public actual abstract class GrpcChannel {
     ): ClientCall<RequestT, ResponseT>
 }
 
+@InternalRpcApi
 public actual fun <RequestT, ResponseT> GrpcChannel.createCall(
     methodDescriptor: MethodDescriptor<RequestT, ResponseT>,
     callOptions: GrpcCallOptions,
