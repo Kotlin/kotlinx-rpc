@@ -11,9 +11,12 @@ actual suspend fun captureStdErr(block: suspend () -> Unit): String {
     val orig = System.out
     val baos = ByteArrayOutputStream()
     System.setOut(PrintStream(baos))
-    block()
-    System.setOut(orig)
-    return baos.toString()
+    try {
+        block()
+        return baos.toString()
+    } finally {
+        System.setOut(orig)
+    }
 }
 
 actual fun printErrLn(message: Any?) {

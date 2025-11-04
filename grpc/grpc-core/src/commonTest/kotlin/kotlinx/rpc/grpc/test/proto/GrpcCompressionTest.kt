@@ -8,6 +8,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.GrpcCompression
 import kotlinx.rpc.grpc.GrpcMetadata
+import kotlinx.rpc.grpc.Status
+import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.get
 import kotlinx.rpc.grpc.keys
 import kotlinx.rpc.grpc.test.EchoRequest
@@ -15,6 +17,7 @@ import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
 import kotlinx.rpc.grpc.test.Runtime
 import kotlinx.rpc.grpc.test.assertContainsAll
+import kotlinx.rpc.grpc.test.assertGrpcFailure
 import kotlinx.rpc.grpc.test.captureStdErr
 import kotlinx.rpc.grpc.test.clearNativeEnv
 import kotlinx.rpc.grpc.test.invoke
@@ -41,12 +44,69 @@ class GrpcCompressionTest : GrpcProtoTest() {
 
     @Test
     fun `test gzip client compression - should succeed`() = runTest {
+        testCompression(
+            clientCompression = GrpcCompression.Gzip,
+            expectedEncoding = "gzip",
+            expectedRequestCompressionAlg = 2,
+            expectedRequestDecompressionAlg = 2
+        )
+    }
+
+    @Test
+    fun `test identity compression - should not compress`() = runTest {
+        testCompression(
+            clientCompression = GrpcCompression.None,
+            expectedEncoding = null,
+            expectedRequestCompressionAlg = 0,
+            expectedRequestDecompressionAlg = 0
+        )
+    }
+
+    @Test
+    fun `test no compression set - should not compress`() = runTest {
+        testCompression(
+            clientCompression = null,
+            expectedEncoding = null,
+            expectedRequestCompressionAlg = 0,
+            expectedRequestDecompressionAlg = 0
+        )
+    }
+
+    @Test
+    fun `test unknown compression - should fail`() = assertGrpcFailure(
+        StatusCode.INTERNAL,
+        "Unable to find compressor by name unknownCompressionName"
+    ) {
+        runGrpcTest(
+            clientInterceptors = clientInterceptor {
+                callOptions.compression = object : GrpcCompression {
+                    override val name: String
+                        get() = "unknownCompressionName"
+
+                }
+                proceed(it)
+            }
+        ) { client ->
+            client.withService<EchoService>().UnaryEcho(EchoRequest.invoke { message = "Unknown compression" })
+        }
+    }
+
+    private suspend fun testCompression(
+        clientCompression: GrpcCompression?,
+        expectedEncoding: String?,
+        expectedRequestCompressionAlg: Int,
+        expectedRequestDecompressionAlg: Int,
+        expectedResponseCompressionAlg: Int = 0,
+        expectedResponseDecompressionAlg: Int = 0
+    ) {
         var reqHeaders = emptyMap<String, String>()
         var respHeaders = emptyMap<String, String>()
         val logs = captureNativeGrpcLogs {
             runGrpcTest(
                 clientInterceptors = clientInterceptor {
-                    callOptions.compression = GrpcCompression.Gzip
+                    clientCompression?.let { compression ->
+                        callOptions.compression = compression
+                    }
                     onHeaders { headers -> respHeaders = headers.toMap() }
                     proceed(it)
                 },
@@ -55,7 +115,7 @@ class GrpcCompressionTest : GrpcProtoTest() {
                     proceed(it)
                 }
             ) {
-                val message = "Echo"
+                val message = "Echo with ${clientCompression?.name}"
                 val response = it.withService<EchoService>().UnaryEcho(EchoRequest.invoke { this.message = message })
 
                 // Verify the call succeeded and data is correct
@@ -69,18 +129,21 @@ class GrpcCompressionTest : GrpcProtoTest() {
             reqHeaders = traceHeaders.requestHeaders
             respHeaders = traceHeaders.responseHeaders
 
-            // verify that the client and server actually used gzip compression for the request
+            // verify that the client and server actually used the expected compression algorithm
             val compression = CompressionTrace.fromTrace(logs)
-            assertEquals(2, compression.requestCompressionAlg)
-            assertEquals(2, compression.requestDecompressionAlg)
-            assertEquals(0, compression.responseCompressionAlg)
-            assertEquals(0, compression.responseDecompressionAlg)
+            assertEquals(expectedRequestCompressionAlg, compression.requestCompressionAlg)
+            assertEquals(expectedRequestDecompressionAlg, compression.requestDecompressionAlg)
+            assertEquals(expectedResponseCompressionAlg, compression.responseCompressionAlg)
+            assertEquals(expectedResponseDecompressionAlg, compression.responseDecompressionAlg)
         }
 
-        fun Map<String, String>.grpcAcceptEncoding() = this["grpc-accept-encoding"]?.split(",")?.map { it.trim() } ?: emptyList()
+        fun Map<String, String>.grpcAcceptEncoding() =
+            this["grpc-accept-encoding"]?.split(",")?.map { it.trim() } ?: emptyList()
 
         // check request headers
-        assertEquals("gzip", reqHeaders["grpc-encoding"])
+        if (expectedEncoding != null) {
+            assertEquals(expectedEncoding, reqHeaders["grpc-encoding"])
+        }
         assertContainsAll(listOf("gzip"), reqHeaders.grpcAcceptEncoding())
 
         assertContainsAll(listOf("gzip"), respHeaders.grpcAcceptEncoding())
