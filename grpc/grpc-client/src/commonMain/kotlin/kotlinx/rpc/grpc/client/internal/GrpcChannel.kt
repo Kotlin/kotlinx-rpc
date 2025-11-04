@@ -8,11 +8,10 @@ import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
-public expect abstract class GrpcChannel {
-    public abstract fun <RequestT, ResponseT> newCall(
-        methodDescriptor: MethodDescriptor<RequestT, ResponseT>,
-        callOptions: GrpcCallOptions,
-    ): ClientCall<RequestT, ResponseT>
+public expect abstract class GrpcChannel
 
-    public abstract fun authority(): String?
-}
+@InternalRpcApi
+public expect fun <RequestT, ResponseT> GrpcChannel.createCall(
+    methodDescriptor: MethodDescriptor<RequestT, ResponseT>,
+    callOptions: GrpcCallOptions,
+): ClientCall<RequestT, ResponseT>
