@@ -5,7 +5,16 @@
 package kotlinx.rpc.grpc.client.internal
 
 import io.grpc.Channel
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
 public actual typealias GrpcChannel = Channel
+
+@InternalRpcApi
+public actual fun <RequestT, ResponseT> GrpcChannel.createCall(
+    methodDescriptor: MethodDescriptor<RequestT, ResponseT>,
+    callOptions: GrpcCallOptions,
+): ClientCall<RequestT, ResponseT> {
+    return this.newCall(methodDescriptor, callOptions.toJvm())
+}

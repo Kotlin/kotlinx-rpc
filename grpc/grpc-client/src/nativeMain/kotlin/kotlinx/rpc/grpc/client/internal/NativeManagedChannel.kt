@@ -20,14 +20,12 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.grpc.client.ClientCredentials
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.GrpcRuntime
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.grpc.internal.toGrpcSlice
-import libkgrpc.GPR_CLOCK_REALTIME
 import libkgrpc.GRPC_PROPAGATE_DEFAULTS
-import libkgrpc.gpr_inf_future
 import libkgrpc.grpc_arg
 import libkgrpc.grpc_arg_type
 import libkgrpc.grpc_channel_args
@@ -158,7 +156,7 @@ internal class NativeManagedChannel(
             completion_queue = cq.raw,
             method = methodNameSlice,
             host = null,
-            deadline = gpr_inf_future(GPR_CLOCK_REALTIME),
+            deadline = callOptions.rawDeadline(),
             reserved = null
         ) ?: error("Failed to create call")
 
@@ -167,10 +165,6 @@ internal class NativeManagedChannel(
         return NativeClientCall(
             cq, rawCall, methodDescriptor, callJob
         )
-    }
-
-    override fun authority(): String? {
-        return authority
     }
 
 }
