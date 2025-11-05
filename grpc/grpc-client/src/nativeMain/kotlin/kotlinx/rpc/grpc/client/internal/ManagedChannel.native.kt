@@ -7,6 +7,7 @@
 package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.rpc.grpc.client.ClientCredentials
+import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.TlsClientCredentials
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -22,25 +23,23 @@ public actual abstract class ManagedChannelPlatform : GrpcChannel()
  */
 @InternalRpcApi
 public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>> {
-    public actual abstract fun overrideAuthority(authority: String): T
+    internal var config: GrpcClientConfiguration? = null
 }
 
 internal class NativeManagedChannelBuilder(
     private val target: String,
     private var credentials: Lazy<ClientCredentials>,
 ) : ManagedChannelBuilder<NativeManagedChannelBuilder>() {
-
-    private var authority: String? = null
-
-    override fun overrideAuthority(authority: String): NativeManagedChannelBuilder {
-        this.authority = authority
-        return this
-    }
-
     fun buildChannel(): NativeManagedChannel {
+        val keepAlive = config?.keepAlive
+        keepAlive?.run {
+            require(time.isPositive()) { "keepalive time must be positive" }
+            require(timeout.isPositive()) { "keepalive timeout must be positive" }
+        }
         return NativeManagedChannel(
             target,
-            authority = authority,
+            authority = config?.overrideAuthority,
+            keepAlive = config?.keepAlive,
             credentials = credentials.value,
         )
     }
@@ -70,3 +69,7 @@ public actual fun ManagedChannelBuilder(target: String, credentials: ClientCrede
 }
 
 
+internal actual fun ManagedChannelBuilder<*>.applyConfig(config: GrpcClientConfiguration): ManagedChannelBuilder<*> {
+    this.config = config
+    return this
+}

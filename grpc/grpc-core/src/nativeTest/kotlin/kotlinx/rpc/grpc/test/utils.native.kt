@@ -22,7 +22,6 @@ import platform.posix.close
 import platform.posix.dup
 import platform.posix.dup2
 import platform.posix.fflush
-import platform.posix.fprintf
 import platform.posix.pipe
 import platform.posix.read
 import platform.posix.stderr
@@ -75,3 +74,21 @@ actual suspend fun captureStdErr(block: suspend () -> Unit): String = coroutineS
     }
 }
 
+actual suspend fun captureGrpcLogs(
+    jvmLogLevel: String,
+    jvmLoggers: List<String>,
+    nativeVerbosity: String,
+    nativeTracers: List<String>,
+    block: suspend () -> Unit
+): String {
+    try {
+        return captureStdErr {
+            setNativeEnv("GRPC_TRACE", nativeTracers.joinToString(","))
+            setNativeEnv("GRPC_VERBOSITY", nativeVerbosity)
+            block()
+        }
+    } finally {
+        clearNativeEnv("GRPC_TRACE")
+        clearNativeEnv("GRPC_VERBOSITY")
+    }
+}

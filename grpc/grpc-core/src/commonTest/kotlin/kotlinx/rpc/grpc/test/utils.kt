@@ -45,3 +45,10 @@ expect fun clearNativeEnv(key: String)
  */
 expect suspend fun captureStdErr(block: suspend () -> Unit): String
 
+expect suspend fun captureGrpcLogs(
+    jvmLogLevel: String = "DEBUG",
+    jvmLoggers: List<String> = listOf("io.grpc"),
+    nativeVerbosity: String = "DEBUG",
+    nativeTracers: List<String> = listOf("all"),
+    block: suspend () -> Unit
+): String

@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
+import kotlinx.rpc.grpc.client.internal.applyConfig
 import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
 import kotlinx.rpc.grpc.client.internal.buildChannel
 import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
@@ -27,6 +27,7 @@ import kotlinx.rpc.grpc.descriptor.MethodType
 import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 private typealias RequestClient = Any
 
@@ -180,9 +181,7 @@ private fun GrpcClient(
     builder: ManagedChannelBuilder<*>,
     config: GrpcClientConfiguration,
 ): GrpcClient {
-    val channel = builder.apply {
-        config.overrideAuthority?.let { overrideAuthority(it) }
-    }.buildChannel()
+    val channel = builder.applyConfig(config).buildChannel()
     return GrpcClient(channel, config.messageCodecResolver, config.interceptors)
 }
 
@@ -198,6 +197,7 @@ private fun GrpcClient(
  */
 public class GrpcClientConfiguration internal constructor() {
     internal val interceptors: MutableList<ClientInterceptor> = mutableListOf()
+    internal var keepAlive: KeepAlive? = null
 
     /**
      * Configurable resolver used to determine the appropriate codec for a given Kotlin type
@@ -294,4 +294,55 @@ public class GrpcClientConfiguration internal constructor() {
     public fun tls(configure: TlsClientCredentialsBuilder.() -> Unit): ClientCredentials =
         TlsClientCredentials(configure)
 
+    /**
+     * Configures keep-alive settings for the gRPC client.
+     *
+     * Keep-alive allows you to fine-tune the behavior of the client to ensure the connection
+     * between the client and server remains active according to specific parameters.
+     *
+     * By default, keep-alive is disabled.
+     *
+     * @param configure A lambda to apply custom configurations to the [KeepAlive] instance.
+     * The [KeepAlive] settings include:
+     * - `time`: The maximum amount of time that the channel can be idle before a keep-alive
+     *   ping is sent.
+     * - `timeout`: The time allowed for a keep-alive ping to complete.
+     * - `withoutCalls`: Whether to send keep-alive pings even when there are no outstanding
+     *   RPCs on the connection.
+     *
+     * @see KeepAlive
+     */
+    public fun keepAlive(configure: KeepAlive.() -> Unit) {
+        keepAlive = KeepAlive().apply(configure)
+    }
+
+    /**
+     * Represents keep-alive settings for a gRPC client connection.
+     *
+     * Keep-alive ensures that the connection between the client and the server remains active.
+     * It helps detect connection issues proactively before a request is made and facilitates
+     * maintaining long-lived idle connections.
+     *
+     * Client authors must coordinate with service owners for whether a particular client-side
+     * setting is acceptable.
+     *
+     * @property time Specifies the maximum amount of time the channel can remain idle before a
+     * keep-alive ping is sent to the server to check the connection state.
+     * The default value is `Duration.INFINITE`, which disables keep-alive pings when idle.
+     *
+     * @property timeout Sets the amount of time to wait for a keep-alive ping response.
+     * If the server does not respond within this timeout, the connection will be considered broken.
+     * The default value is 20 seconds.
+     *
+     * @property withoutCalls Defines whether keep-alive pings will be sent even when there
+     * are no active RPCs on the connection. If set to `true`, pings will be sent regardless
+     * of ongoing calls; otherwise, pings are only sent during active RPCs.
+     * The default value is `false`.
+     */
+    public class KeepAlive internal constructor() {
+        public var time: Duration = Duration.INFINITE
+        public var timeout: Duration = 20.seconds
+        public var withoutCalls: Boolean = false
+    }
 }
+

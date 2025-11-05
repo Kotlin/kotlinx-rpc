@@ -5,6 +5,7 @@
 package kotlinx.rpc.grpc.test.proto
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.test.runTest
@@ -13,6 +14,7 @@ import kotlinx.rpc.grpc.client.ClientCallScope
 import kotlinx.rpc.grpc.client.ClientCredentials
 import kotlinx.rpc.grpc.client.ClientInterceptor
 import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.server.ServerCallScope
 import kotlinx.rpc.grpc.server.ServerCredentials
@@ -23,19 +25,21 @@ abstract class GrpcProtoTest {
 
     abstract fun RpcServer.registerServices()
 
-    protected fun runGrpcTest(
+    fun runGrpcTest(
         serverCreds: ServerCredentials? = null,
         clientCreds: ClientCredentials? = null,
         overrideAuthority: String? = null,
         clientInterceptors: List<ClientInterceptor> = emptyList(),
         serverInterceptors: List<ServerInterceptor> = emptyList(),
+        configure: GrpcClientConfiguration.() -> Unit = {},
         test: suspend (GrpcClient) -> Unit,
-    ) = runTest {
+    ) = runBlocking {
         serverMutex.withLock {
             val grpcClient = GrpcClient("localhost", PORT) {
                 credentials = clientCreds ?: plaintext()
                 if (overrideAuthority != null) this.overrideAuthority = overrideAuthority
                 clientInterceptors.forEach { intercept(it) }
+                configure()
             }
 
             val grpcServer = GrpcServer(

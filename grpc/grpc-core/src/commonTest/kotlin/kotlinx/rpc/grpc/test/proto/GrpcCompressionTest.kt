@@ -156,7 +156,7 @@ class GrpcCompressionTest : GrpcProtoTest() {
                 block()
             }
         } finally {
-            clearNativeEnv("GRPC_GRACE")
+            clearNativeEnv("GRPC_TRACE")
         }
     }
 
