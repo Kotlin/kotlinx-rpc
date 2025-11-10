@@ -68,7 +68,6 @@ public actual fun ManagedChannelBuilder(target: String, credentials: ClientCrede
     return NativeManagedChannelBuilder(target, credentials)
 }
 
-
 internal actual fun ManagedChannelBuilder<*>.applyConfig(config: GrpcClientConfiguration): ManagedChannelBuilder<*> {
     this.config = config
     return this
