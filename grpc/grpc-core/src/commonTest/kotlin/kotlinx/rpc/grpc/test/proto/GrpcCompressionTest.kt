@@ -8,7 +8,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.GrpcCompression
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.get
 import kotlinx.rpc.grpc.keys
@@ -18,11 +17,9 @@ import kotlinx.rpc.grpc.test.EchoServiceImpl
 import kotlinx.rpc.grpc.test.Runtime
 import kotlinx.rpc.grpc.test.assertContainsAll
 import kotlinx.rpc.grpc.test.assertGrpcFailure
-import kotlinx.rpc.grpc.test.captureStdErr
-import kotlinx.rpc.grpc.test.clearNativeEnv
+import kotlinx.rpc.grpc.test.captureGrpcLogs
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.grpc.test.runtime
-import kotlinx.rpc.grpc.test.setNativeEnv
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.collections.emptyList
@@ -101,7 +98,10 @@ class GrpcCompressionTest : GrpcProtoTest() {
     ) {
         var reqHeaders = emptyMap<String, String>()
         var respHeaders = emptyMap<String, String>()
-        val logs = captureNativeGrpcLogs {
+        val logs = captureGrpcLogs(
+            nativeTracers = listOf("compression", "http"),
+            jvmLoggers = emptyList(),
+        ) {
             runGrpcTest(
                 clientInterceptors = clientInterceptor {
                     clientCompression?.let { compression ->
@@ -147,17 +147,6 @@ class GrpcCompressionTest : GrpcProtoTest() {
         assertContainsAll(listOf("gzip"), reqHeaders.grpcAcceptEncoding())
 
         assertContainsAll(listOf("gzip"), respHeaders.grpcAcceptEncoding())
-    }
-
-    private suspend fun captureNativeGrpcLogs(block: suspend () -> Unit): String {
-        try {
-            return captureStdErr {
-                setNativeEnv("GRPC_TRACE", "compression,http")
-                block()
-            }
-        } finally {
-            clearNativeEnv("GRPC_TRACE")
-        }
     }
 
     private fun GrpcMetadata.toMap(): Map<String, String> {

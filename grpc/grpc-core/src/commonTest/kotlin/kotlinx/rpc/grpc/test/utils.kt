@@ -34,9 +34,6 @@ enum class Runtime {
 }
 expect val runtime: Runtime
 
-expect fun setNativeEnv(key: String, value: String)
-expect fun clearNativeEnv(key: String)
-
 /**
  * Captures the standard error output written during the execution of the provided suspending block.
  *

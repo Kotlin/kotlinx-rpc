@@ -14,14 +14,6 @@ import java.util.logging.Logger
 actual val runtime: Runtime
     get() = Runtime.JVM
 
-actual fun setNativeEnv(key: String, value: String) {
-    // Nothing to do on JVM
-}
-
-actual fun clearNativeEnv(key: String) {
-    // Nothing to do on JVM
-}
-
 actual suspend fun captureStdErr(block: suspend () -> Unit): String {
     val orig = System.out
     val baos = ByteArrayOutputStream()

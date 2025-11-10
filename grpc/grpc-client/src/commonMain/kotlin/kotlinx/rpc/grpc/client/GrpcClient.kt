@@ -302,6 +302,16 @@ public class GrpcClientConfiguration internal constructor() {
      *
      * By default, keep-alive is disabled.
      *
+     * ```
+     * GrpcClient("localhost", 50051) {
+     *     keepAlive {
+     *          time = 10.seconds
+     *          timeout = 20.seconds
+     *          withoutCalls = false
+     *     }
+     * }
+     * ```
+     *
      * @param configure A lambda to apply custom configurations to the [KeepAlive] instance.
      * The [KeepAlive] settings include:
      * - `time`: The maximum amount of time that the channel can be idle before a keep-alive

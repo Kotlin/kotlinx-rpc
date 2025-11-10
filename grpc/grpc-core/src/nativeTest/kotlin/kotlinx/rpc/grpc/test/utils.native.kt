@@ -6,6 +6,9 @@
 
 package kotlinx.rpc.grpc.test
 
+import platform.posix.getenv
+import platform.posix.setenv
+
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.IntVar
 import kotlinx.cinterop.allocArray
@@ -25,16 +28,18 @@ import platform.posix.fflush
 import platform.posix.pipe
 import platform.posix.read
 import platform.posix.stderr
+import libkgrpc.grpc_tracer_set_enabled
+import platform.posix.unsetenv
 
 actual val runtime: Runtime
     get() = Runtime.NATIVE
 
-actual fun setNativeEnv(key: String, value: String) {
-    platform.posix.setenv(key, value, 1)
+fun setNativeEnv(key: String, value: String) {
+    setenv(key, value, 1)
 }
 
-actual fun clearNativeEnv(key: String) {
-    platform.posix.unsetenv(key)
+fun clearNativeEnv(key: String) {
+    unsetenv(key)
 }
 
 actual suspend fun captureStdErr(block: suspend () -> Unit): String = coroutineScope {
@@ -83,12 +88,17 @@ actual suspend fun captureGrpcLogs(
 ): String {
     try {
         return captureStdErr {
-            setNativeEnv("GRPC_TRACE", nativeTracers.joinToString(","))
             setNativeEnv("GRPC_VERBOSITY", nativeVerbosity)
+            nativeTracers.forEach { tracer ->
+                grpc_tracer_set_enabled(tracer, 1)
+            }
             block()
         }
     } finally {
-        clearNativeEnv("GRPC_TRACE")
         clearNativeEnv("GRPC_VERBOSITY")
+        nativeTracers.forEach { tracer ->
+            // set tracer to disabled
+            grpc_tracer_set_enabled(tracer, 0)
+        }
     }
 }
