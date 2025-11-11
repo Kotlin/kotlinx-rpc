@@ -50,5 +50,48 @@ public class GrpcCallOptions {
      */
     public var compression: GrpcCompression = GrpcCompression.None
 
+    /**
+     * Per-call authentication credentials to apply to this RPC.
+     *
+     * Call credentials allow dynamic, per-request authentication by adding metadata headers
+     * such as bearer tokens, API keys, or custom authentication information.
+     *
+     * ## Default Behavior
+     * Defaults to [EmptyCallCredentials], which attaches no authentication headers.
+     *
+     * ## Usage Patterns
+     *
+     * ### Setting in Client Interceptors
+     * Call credentials can be dynamically added or modified in client interceptors:
+     *
+     * ```kotlin
+     * val client = GrpcClient("example.com", 443) {
+     *     interceptors {
+     *         clientInterceptor {
+     *             callOptions.callCredentials += BearerTokenCredentials(getToken())
+     *             proceed(it)
+     *         }
+     *     }
+     * }
+     * ```
+     *
+     * ### Combining Multiple Credentials
+     * Multiple call credentials can be combined using the `+` operator:
+     *
+     * ```kotlin
+     * callOptions.callCredentials = bearerToken + apiKey
+     * // or incrementally:
+     * callOptions.callCredentials += additionalCredential
+     * ```
+     *
+     * ### Transport Security
+     * If any call credential requires transport security ([GrpcCallCredentials.requiresTransportSecurity]),
+     * the call will fail with [kotlinx.rpc.grpc.StatusCode.UNAUTHENTICATED] unless the channel
+     * is configured with TLS credentials (which is the default, except if the client uses `plaintext()`).
+     *
+     * @see GrpcCallCredentials
+     * @see EmptyCallCredentials
+     * @see GrpcCallCredentials.plus
+     */
     public var callCredentials: GrpcCallCredentials = EmptyCallCredentials
 }

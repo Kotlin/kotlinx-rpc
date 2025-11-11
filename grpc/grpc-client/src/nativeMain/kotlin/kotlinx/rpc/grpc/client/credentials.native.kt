@@ -77,6 +77,3 @@ private class NativeTlsClientCredentialsBuilder : TlsClientCredentialsBuilder {
 public actual operator fun ClientCredentials.plus(other: GrpcCallCredentials): ClientCredentials {
     TODO("Not yet implemented")
 }
-
-internal actual val ClientCredentials.callCredentials: GrpcCallCredentials?
-    get() = TODO("Not yet implemented")
