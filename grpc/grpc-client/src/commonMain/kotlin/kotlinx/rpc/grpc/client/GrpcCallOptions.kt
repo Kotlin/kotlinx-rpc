@@ -49,4 +49,6 @@ public class GrpcCallOptions {
      * @see GrpcCompression
      */
     public var compression: GrpcCompression = GrpcCompression.None
+
+    public var callCredentials: GrpcCallCredentials = EmptyCallCredentials
 }

@@ -8,6 +8,11 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 
 public expect abstract class ClientCredentials
 
+public expect operator fun ClientCredentials.plus(other: GrpcCallCredentials): ClientCredentials
+
+public fun ClientCredentials.combine(other: GrpcCallCredentials): ClientCredentials = this + other
+
+
 public expect class InsecureClientCredentials : ClientCredentials
 
 // we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
