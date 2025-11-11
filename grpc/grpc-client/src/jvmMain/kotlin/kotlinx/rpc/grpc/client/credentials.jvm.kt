@@ -8,7 +8,6 @@ import io.grpc.CallCredentials
 import io.grpc.ChannelCredentials
 import io.grpc.CompositeChannelCredentials
 import io.grpc.InsecureChannelCredentials
-import io.grpc.Metadata
 import io.grpc.SecurityLevel
 import io.grpc.TlsChannelCredentials
 import kotlinx.coroutines.CoroutineScope
@@ -73,8 +72,8 @@ internal fun GrpcCallCredentials.toJvm(): CallCredentials {
                         "Transport security required but not present"
                     }
 
-                    val metadata = Metadata()
-                    metadata.applyOnMetadata(GrpcCallOptions(/* populate from requestInfo if needed */))
+                    val context = GrpcCallCredentials.Context(requestInfo.methodDescriptor, requestInfo.authority)
+                    val metadata = context.getRequestMetadata()
                     applier.apply(metadata)
                 } catch (e: StatusException) {
                     applier.fail(e.status)

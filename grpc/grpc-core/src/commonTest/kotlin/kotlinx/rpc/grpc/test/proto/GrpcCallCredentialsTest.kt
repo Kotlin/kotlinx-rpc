@@ -10,12 +10,20 @@ import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.append
+import kotlinx.rpc.grpc.buildGrpcMetadata
+import kotlinx.rpc.grpc.client.BearerTokenCredentials
 import kotlinx.rpc.grpc.client.GrpcCallCredentials
-import kotlinx.rpc.grpc.client.GrpcCallOptions
+import kotlinx.rpc.grpc.client.GrpcCallCredentials.Context
 import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.client.JwtCredentials
 import kotlinx.rpc.grpc.client.TlsClientCredentials
 import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.getAll
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeSource
 import kotlinx.rpc.grpc.server.TlsServerCredentials
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
@@ -113,7 +121,7 @@ class GrpcCallCredentialsTest : GrpcProtoTest() {
     @Test
     fun `test throw status exception - should fail with status`() {
         val throwingCallCredentials = object : GrpcCallCredentials {
-            override suspend fun GrpcMetadata.applyOnMetadata(callOptions: GrpcCallOptions) {
+            override suspend fun Context.getRequestMetadata(): GrpcMetadata {
                 throw StatusException(Status(StatusCode.UNIMPLEMENTED, "This is my custom exception"))
             }
 
@@ -164,6 +172,54 @@ class GrpcCallCredentialsTest : GrpcProtoTest() {
             test = ::unaryCall
         )}
     }
+
+    @Test
+    fun `test context contains correct method descriptor - should succeed`() {
+        var capturedMethod: String? = null
+
+        val contextCapturingCredentials = object : GrpcCallCredentials {
+            override suspend fun Context.getRequestMetadata(): GrpcMetadata {
+                println(authority)
+                capturedMethod = method.getFullMethodName()
+                return GrpcMetadata()
+            }
+
+            override val requiresTransportSecurity: Boolean = false
+        }
+
+        runGrpcTest(
+            configure = {
+                credentials = plaintext() + contextCapturingCredentials
+            },
+            test = ::unaryCall
+        )
+
+        assertEquals("kotlinx.rpc.grpc.test.EchoService/UnaryEcho", capturedMethod)
+    }
+
+    @Test
+    fun `test context contains correct authority - should succeed`() {
+        var capturedAuthority: String? = null
+
+        val contextCapturingCredentials = object : GrpcCallCredentials {
+            override suspend fun Context.getRequestMetadata(): GrpcMetadata {
+                capturedAuthority = authority
+                return GrpcMetadata()
+            }
+
+            override val requiresTransportSecurity: Boolean = false
+        }
+
+        runGrpcTest(
+            configure = {
+                credentials = plaintext() + contextCapturingCredentials
+                overrideAuthority = "test.example.com"
+            },
+            test = ::unaryCall
+        )
+
+        assertEquals("test.example.com", capturedAuthority)
+    }
 }
 
 private suspend fun unaryCall(grpcClient: GrpcClient) {
@@ -175,9 +231,11 @@ private suspend fun unaryCall(grpcClient: GrpcClient) {
 class NoTLSBearerTokenCredentials(
     val token: String = "token"
 ): GrpcCallCredentials {
-    override suspend fun GrpcMetadata.applyOnMetadata(callOptions: GrpcCallOptions) {
-        // potentially fetching the token from a secure storage
-        append("Authorization", "Bearer $token")
+    override suspend fun Context.getRequestMetadata(): GrpcMetadata {
+        return buildGrpcMetadata {
+            // potentially fetching the token from a secure storage
+            append("Authorization", "Bearer $token")
+        }
     }
 
     override val requiresTransportSecurity: Boolean
@@ -185,7 +243,9 @@ class NoTLSBearerTokenCredentials(
 }
 
 class TlsBearerTokenCredentials: GrpcCallCredentials {
-    override suspend fun GrpcMetadata.applyOnMetadata(callOptions: GrpcCallOptions) {
-        append("Authorization", "Bearer token")
+    override suspend fun Context.getRequestMetadata(): GrpcMetadata {
+        return buildGrpcMetadata {
+            append("Authorization", "Bearer token")
+        }
     }
 }

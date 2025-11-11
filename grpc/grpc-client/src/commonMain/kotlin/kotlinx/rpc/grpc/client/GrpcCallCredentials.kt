@@ -5,6 +5,8 @@
 package kotlinx.rpc.grpc.client
 
 import kotlinx.rpc.grpc.GrpcMetadata
+import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.plus
 
 /**
  * Provides per-call authentication credentials for gRPC calls.
@@ -20,11 +22,35 @@ import kotlinx.rpc.grpc.GrpcMetadata
  *
  * ```kotlin
  * class BearerTokenCredentials(private val token: String) : GrpcCallCredentials {
- *     override suspend fun GrpcMetadata.applyOnMetadata(callOptions: GrpcCallOptions) {
- *         append("Authorization", "Bearer $token")
+ *     override suspend fun Context.getRequestMetadata(): GrpcMetadata {
+ *         return buildGrpcMetadata {
+ *             append("Authorization", "Bearer $token")
+ *         }
  *     }
  * }
  * ```
+ *
+ * ## Context-Aware Credentials
+ *
+ * Use the [Context] to implement sophisticated authentication strategies:
+ *
+ * ```kotlin
+ * class MethodScopedCredentials : GrpcCallCredentials {
+ *     override suspend fun Context.getRequestMetadata(): GrpcMetadata {
+ *         val scope = when (method.name) {
+ *             "GetUser" -> "read:users"
+ *             "UpdateUser" -> "write:users"
+ *             else -> "default"
+ *         }
+ *         val token = fetchTokenWithScope(scope)
+ *         return buildGrpcMetadata {
+ *             append("Authorization", "Bearer $token")
+ *         }
+ *     }
+ * }
+ * ```
+ *
+ * ## Combining Credentials
  *
  * Credentials can be combined using the [plus] operator or [combine] function:
  *
@@ -37,7 +63,8 @@ import kotlinx.rpc.grpc.GrpcMetadata
  * By default, call credentials require transport security (TLS) to prevent credential leakage.
  * Override [requiresTransportSecurity] to `false` only for testing or non-production environments.
  *
- * @see applyOnMetadata
+ * @see getRequestMetadata
+ * @see Context
  * @see requiresTransportSecurity
  * @see plus
  * @see combine
@@ -45,44 +72,61 @@ import kotlinx.rpc.grpc.GrpcMetadata
 public interface GrpcCallCredentials {
 
     /**
-     * Applies authentication metadata to the gRPC call.
+     * Retrieves authentication metadata for the gRPC call.
      *
-     * This method is invoked before each gRPC call to add authentication headers or metadata.
-     * Implementations should append the necessary authentication information to the [GrpcMetadata] receiver.
+     * This method is invoked before each gRPC call to generate authentication headers or metadata.
+     * Implementations should return a [GrpcMetadata] object containing the necessary authentication
+     * information for the request.
      *
-     * The method is suspending to allow asynchronous token retrieval or refresh operations,
-     * such as fetching tokens from secure storage or performing OAuth token exchanges.
+     * The method is suspending to allow asynchronous operations such as:
+     * - Token retrieval from secure storage
+     * - OAuth token refresh or exchange
+     * - Dynamic token generation or signing
+     * - Network calls to authentication services
+     *
+     * ## Context Information
+     *
+     * The [Context] receiver provides access to call-specific information:
+     * - [Context.method]: The method being invoked (for method-specific auth)
+     * - [Context.authority]: The target authority (for tenant-aware auth)
      *
      * ## Examples
      *
-     * Adding a bearer token:
+     * Simple bearer token:
      * ```kotlin
-     * override suspend fun GrpcMetadata.applyOnMetadata(callOptions: GrpcCallOptions) {
-     *     append("Authorization", "Bearer $token")
+     * override suspend fun Context.getRequestMetadata(): GrpcMetadata {
+     *     return buildGrpcMetadata {
+     *         append("Authorization", "Bearer $token")
+     *     }
      * }
      * ```
      *
      * Throwing a [kotlinx.rpc.grpc.StatusException] to fail the call:
      * ```kotlin
-     * override suspend fun GrpcMetadata.applyOnMetadata(callOptions: GrpcCallOptions) {
-     *     if (!isValid) {
-     *         throw StatusException(Status(StatusCode.UNAUTHENTICATED, "Invalid credentials"))
+     * override suspend fun Context.getRequestMetadata(): GrpcMetadata {
+     *     val token = try {
+     *         refreshToken()
+     *     } catch (e: Exception) {
+     *         throw StatusException(Status(StatusCode.UNAUTHENTICATED, "Token refresh failed"))
      *     }
-     *     append("Authorization", "Bearer $token")
+     *
+     *     return buildGrpcMetadata {
+     *         append("Authorization", "Bearer $token")
+     *     }
      * }
      * ```
      *
-     * @param callOptions The options for the current call, providing context and configuration.
-     * @receiver The metadata to which authentication information should be added.
+     * @receiver Context information about the call being authenticated.
+     * @return Metadata containing authentication information to attach to the request.
      * @throws kotlinx.rpc.grpc.StatusException to abort the call with a specific gRPC status.
      */
-    public suspend fun GrpcMetadata.applyOnMetadata(callOptions: GrpcCallOptions)
+    public suspend fun Context.getRequestMetadata(): GrpcMetadata
 
     /**
      * Indicates whether this credential requires transport security (TLS).
      *
      * When `true` (the default), the credential will only be applied to calls over secure transports.
-     * If transport security is not present, the call will fail with `UNAUTHENTICATED`.
+     * If transport security is not present, the call will fail with [kotlinx.rpc.grpc.StatusCode.UNAUTHENTICATED].
      *
      * Set to `false` only for credentials that are safe to send over insecure connections,
      * such as in testing environments or for non-sensitive authentication mechanisms.
@@ -91,6 +135,20 @@ public interface GrpcCallCredentials {
      */
     public val requiresTransportSecurity: Boolean
         get() = true
+
+    /**
+     * Context information available when retrieving call credentials.
+     *
+     * Provides metadata about the RPC call to enable method-specific authentication strategies.
+     *
+     * @property method The method descriptor of the RPC being invoked.
+     * @property authority The authority (host:port) for this call.
+     */
+    // TODO: check whether we should add GrpcCallOptions in the context (KRPC-232)
+    public data class Context(
+        val method: MethodDescriptor<*, *>,
+        val authority: String,
+    )
 }
 
 /**
@@ -154,8 +212,8 @@ public fun GrpcCallCredentials.combine(other: GrpcCallCredentials): GrpcCallCred
  * ```
  */
 public object  EmptyCallCredentials : GrpcCallCredentials {
-    override suspend fun GrpcMetadata.applyOnMetadata(callOptions: GrpcCallOptions) {
-        // do nothing
+    override suspend fun GrpcCallCredentials.Context.getRequestMetadata(): GrpcMetadata {
+        return GrpcMetadata()
     }
     override val requiresTransportSecurity: Boolean = false
 }
@@ -164,15 +222,10 @@ internal class CombinedCallCredentials(
     private val first: GrpcCallCredentials,
     private val second: GrpcCallCredentials
 ) : GrpcCallCredentials {
-    override suspend fun GrpcMetadata.applyOnMetadata(
-        callOptions: GrpcCallOptions
-    ) {
-        with(first) {
-            this@applyOnMetadata.applyOnMetadata(callOptions)
-        }
-        with(second) {
-            this@applyOnMetadata.applyOnMetadata(callOptions)
-        }
+    override suspend fun GrpcCallCredentials.Context.getRequestMetadata(): GrpcMetadata {
+        val firstMetadata = with(first) { getRequestMetadata() }
+        val secondMetadata = with(second) { getRequestMetadata() }
+        return firstMetadata + secondMetadata
     }
 
     override val requiresTransportSecurity: Boolean = first.requiresTransportSecurity || second.requiresTransportSecurity
