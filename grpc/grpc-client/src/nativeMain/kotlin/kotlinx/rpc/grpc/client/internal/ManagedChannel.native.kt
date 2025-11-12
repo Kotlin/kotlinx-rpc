@@ -32,7 +32,7 @@ public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
 
 internal class NativeManagedChannelBuilder(
     private val target: String,
-    private var credentials: Lazy<ClientCredentials>,
+    private val credentials: Lazy<ClientCredentials>,
 ) : ManagedChannelBuilder<NativeManagedChannelBuilder>() {
     fun buildChannel(): NativeManagedChannel {
         val keepAlive = config?.keepAlive
@@ -40,15 +40,13 @@ internal class NativeManagedChannelBuilder(
             require(time.isPositive()) { "keepalive time must be positive" }
             require(timeout.isPositive()) { "keepalive timeout must be positive" }
         }
+
         return NativeManagedChannel(
             target,
-            authority = config?.overrideAuthority,
+            overrideAuthority = config?.overrideAuthority,
             keepAlive = config?.keepAlive,
-            rawChannelCredentials = credentials.value.clientCredentials.takeRaw(),
-            rawCallCredentials = credentials.value.clientCredentials.callCredentials?.createRaw(
-                // TODO: Replace GlobalScope with something more appropriate.
-                GlobalScope,
-            )
+            clientCredentials = credentials.value.clientCredentials,
+            callCredentials = credentials.value.callCredentials
         )
     }
 

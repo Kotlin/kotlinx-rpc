@@ -8,7 +8,10 @@ package kotlinx.rpc.grpc.client
 
 import cnames.structs.grpc_call_credentials
 import kotlinx.cinterop.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.StatusException
@@ -21,52 +24,25 @@ import platform.posix.size_tVar
 // Stable reference holder for Kotlin objects
 private class CredentialsPluginState(
     val kotlinCreds: GrpcCallCredentials,
-    val scope: CoroutineScope
+    val parentJob: Job,
+    val coroutineDispatcher: CoroutineDispatcher
 )
 
 private fun getMetadataCallback(
     state: COpaquePointer?,
     context: CValue<grpc_auth_metadata_context>,
     cb: grpc_credentials_plugin_metadata_cb?,
-    user_data: COpaquePointer?,
-    creds_md: CValuesRef<grpc_metadata>?,
-    num_creds_md: CPointer<size_tVar>?,
+    userData: COpaquePointer?,
+    credsMd: CPointer<grpc_metadata>?,
+    numCredMd: CPointer<size_tVar>?,
     status: CPointer<grpc_status_code.Var>?,
-    error_details: CPointer<CPointerVar<ByteVar>>?
+    errorDetails: CPointer<CPointerVar<ByteVar>>?
 ): Int {
     val pluginState = state!!.asStableRef<CredentialsPluginState>().get()
 
-    // Launch coroutine to call suspend function asynchronously
-    pluginState.scope.launch {
-        // Extract context information
-        val serviceUrl = context.useContents { service_url?.toKString() ?: "" }
-        val methodName = context.useContents { method_name?.toKString() ?: "" }
-        val authority = extractAuthority(serviceUrl)
-
-        // Create Kotlin context
-        val kotlinContext = GrpcCallCredentials.Context(
-            authority = authority,
-            methodName = methodName,
-        )
-
-        var metadata = GrpcMetadata()
-        var status = grpc_status_code.GRPC_STATUS_OK
-        var errorDetails: String? = null
-        try {
-            // Call the Kotlin suspend function
-            metadata = with(pluginState.kotlinCreds) {
-                kotlinContext.getRequestMetadata()
-            }
-        } catch (e: StatusException) {
-            status = e.getStatus().statusCode.toRaw()
-            errorDetails = e.message
-        } catch (e: Exception) {
-            status = grpc_status_code.GRPC_STATUS_UNAUTHENTICATED
-            errorDetails = e.message
-        }
-
-        // Convert GrpcMetadata to grpc_metadata array
+    fun notifyResult(metadata: GrpcMetadata, status: grpc_status_code, errorDetails: String?) {
         memScoped {
+            // Convert GrpcMetadata to grpc_metadata array
             val metadataArray = with(metadata) {
                 this@memScoped.allocRawGrpcMetadata()
             }
@@ -74,7 +50,7 @@ private fun getMetadataCallback(
             try {
                 // Invoke the callback with success
                 cb?.invoke(
-                    user_data,
+                    userData,
                     metadataArray.metadata,
                     metadataArray.count,
                     status,
@@ -83,6 +59,39 @@ private fun getMetadataCallback(
             } finally {
                 metadataArray.destroyEntries()
             }
+        }
+    }
+
+    val scope = CoroutineScope(Job(pluginState.parentJob) + pluginState.coroutineDispatcher)
+
+    // Launch coroutine to call a suspend function asynchronously
+    scope.launch {
+        // Extract context information
+        val serviceUrl = context.useContents { service_url?.toKString() ?: "" }
+        val methodName = context.useContents { method_name?.toKString() ?: "" }
+        val authority = extractAuthority(serviceUrl)
+        val serviceFq = serviceUrl.removeUntil("$authority/")
+
+        // Create Kotlin context
+        val kotlinContext = GrpcCallCredentials.Context(
+            authority = authority,
+            methodName = "$serviceFq/$methodName"
+        )
+
+        var metadata = GrpcMetadata()
+        try {
+            // Call the Kotlin suspend function
+            metadata = with(pluginState.kotlinCreds) {
+                kotlinContext.getRequestMetadata()
+            }
+            notifyResult(metadata, grpc_status_code.GRPC_STATUS_OK, null)
+        } catch (e: StatusException) {
+            notifyResult(metadata, e.getStatus().statusCode.toRaw(), e.message)
+        } catch (e: CancellationException) {
+            notifyResult(metadata, grpc_status_code.GRPC_STATUS_CANCELLED, e.message)
+            throw e
+        } catch (e: Exception) {
+            notifyResult(metadata, grpc_status_code.GRPC_STATUS_UNAVAILABLE, e.message)
         }
     }
 
@@ -95,11 +104,15 @@ private fun debugStringCallback(state: COpaquePointer?): CPointer<ByteVar>? {
 }
 
 private fun extractAuthority(serviceUrl: String): String {
-    // service_url format: "https://example.com:443/service"
+    // service_url format: "://example.com:443/with.package.service"
     return serviceUrl
-        .removePrefix("http://")
-        .removePrefix("https://")
+        .removeUntil("://")
         .substringBefore("/")
+}
+
+private fun String.removeUntil(pattern: String): String {
+    val idx = indexOf(pattern)
+    return if (idx == -1) this else removeRange(0, idx + pattern.length)
 }
 
 private fun destroyCallback(state: COpaquePointer?) {
@@ -107,10 +120,11 @@ private fun destroyCallback(state: COpaquePointer?) {
 }
 
 internal fun GrpcCallCredentials.createRaw(
-    scope: CoroutineScope
+    parentJob: Job,
+    coroutineDispatcher: CoroutineDispatcher
 ): CPointer<grpc_call_credentials>? = memScoped {
-    // Create stable reference to keep Kotlin object alive
-    val pluginState = CredentialsPluginState(this@createRaw, scope)
+    // Create a stable reference to keep the Kotlin object alive
+    val pluginState = CredentialsPluginState(this@createRaw, parentJob, coroutineDispatcher)
     val stableRef = StableRef.create(pluginState)
 
     // Create plugin structure

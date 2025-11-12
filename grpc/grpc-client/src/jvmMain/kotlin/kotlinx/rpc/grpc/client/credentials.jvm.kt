@@ -69,16 +69,18 @@ internal fun GrpcCallCredentials.toJvm(): CallCredentials {
             CoroutineScope(dispatcher).launch {
                 try {
                     check(!requiresTransportSecurity || requestInfo.securityLevel != SecurityLevel.NONE) {
-                        "Transport security required but not present"
+                        "Established channel does not have a sufficient security level to transfer call credential."
                     }
 
-                    val context = GrpcCallCredentials.Context(requestInfo.methodDescriptor, requestInfo.authority)
+                    val context = GrpcCallCredentials.Context(requestInfo.authority, requestInfo.methodDescriptor.fullMethodName)
                     val metadata = context.getRequestMetadata()
                     applier.apply(metadata)
-                } catch (e: StatusException) {
-                    applier.fail(e.status)
                 } catch (e: Exception) {
-                    applier.fail(Status.UNAUTHENTICATED.withCause(e))
+                    // we are not treating StatusExceptions separately, as currently there is no
+                    // clean way to support the same feature on native. So for the sake of similar behavior,
+                    // we always fail with Status.UNAVAILABLE. (KRPC-233)
+                    val description = "Getting metadata from call credentials failed with error: ${e.message}"
+                    applier.fail(Status.UNAVAILABLE.withDescription(description).withCause(e))
                 }
             }
         }

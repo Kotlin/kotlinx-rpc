@@ -76,7 +76,7 @@ class GrpcCallCredentialsTest : GrpcProtoTest() {
 
     @Test
     fun `test plaintext call credentials - should fail`() {
-        assertGrpcFailure(StatusCode.UNAUTHENTICATED, "Transport security required but not present") {
+        assertGrpcFailure(StatusCode.UNAUTHENTICATED, "Established channel does not have a sufficient security level to transfer call credential.") {
             runGrpcTest(
                 configure = {
                     credentials = plaintext() + TlsBearerTokenCredentials()
@@ -122,7 +122,30 @@ class GrpcCallCredentialsTest : GrpcProtoTest() {
                 get() = false
         }
 
-        assertGrpcFailure(StatusCode.UNIMPLEMENTED, "This is my custom exception") {
+        assertGrpcFailure(StatusCode.UNAVAILABLE, "This is my custom exception") {
+            runGrpcTest(
+                configure = {
+                    credentials = plaintext() + throwingCallCredentials
+                },
+                serverInterceptors = serverInterceptor {
+                    proceed(it)
+                },
+                test = ::unaryCall
+            )
+        }
+    }
+
+
+    @Test
+    fun `test throw exception - should fail`() {
+        val throwingCallCredentials = object : GrpcCallCredentials {
+            override suspend fun Context.getRequestMetadata(): GrpcMetadata {
+                throw IllegalStateException("This is my custom exception")
+            }
+            override val requiresTransportSecurity: Boolean
+                get() = false
+        }
+        assertGrpcFailure(StatusCode.UNAVAILABLE, "This is my custom exception") {
             runGrpcTest(
                 configure = {
                     credentials = plaintext() + throwingCallCredentials
@@ -156,7 +179,7 @@ class GrpcCallCredentialsTest : GrpcProtoTest() {
 
     @Test
     fun `test interceptor call credentials without TLS - should fail`() {
-        assertGrpcFailure(StatusCode.UNAUTHENTICATED, "Transport security required but not present") {
+        assertGrpcFailure(StatusCode.UNAUTHENTICATED, "Established channel does not have a sufficient security level to transfer call credential.") {
         runGrpcTest(
             clientInterceptors = clientInterceptor {
                 callOptions.callCredentials += TlsBearerTokenCredentials()
@@ -173,7 +196,7 @@ class GrpcCallCredentialsTest : GrpcProtoTest() {
         val contextCapturingCredentials = object : GrpcCallCredentials {
             override suspend fun Context.getRequestMetadata(): GrpcMetadata {
                 println(authority)
-                capturedMethod = method.getFullMethodName()
+                capturedMethod = methodName
                 return GrpcMetadata()
             }
 

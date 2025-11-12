@@ -23,6 +23,11 @@ import kotlinx.cinterop.toKString
 import kotlinx.cinterop.value
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableJob
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
@@ -38,7 +43,14 @@ import kotlinx.rpc.grpc.internal.toKotlin
 import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.input.stream.asSource
 import kotlinx.rpc.grpc.GrpcCompression
+import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.client.EmptyCallCredentials
+import kotlinx.rpc.grpc.client.GrpcCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
+import kotlinx.rpc.grpc.client.createRaw
+import kotlinx.rpc.grpc.internal.toRaw
+import kotlinx.rpc.grpc.merge
+import kotlinx.rpc.grpc.statusCode
 import libkgrpc.GRPC_OP_RECV_INITIAL_METADATA
 import libkgrpc.GRPC_OP_RECV_MESSAGE
 import libkgrpc.GRPC_OP_RECV_STATUS_ON_CLIENT
@@ -49,8 +61,11 @@ import libkgrpc.gpr_free
 import libkgrpc.grpc_byte_buffer
 import libkgrpc.grpc_byte_buffer_destroy
 import libkgrpc.grpc_call_cancel_with_status
+import libkgrpc.grpc_call_credentials_release
 import libkgrpc.grpc_call_error
+import libkgrpc.grpc_call_set_credentials
 import libkgrpc.grpc_call_unref
+import libkgrpc.grpc_channel_credentials_release
 import libkgrpc.grpc_metadata_array
 import libkgrpc.grpc_metadata_array_destroy
 import libkgrpc.grpc_metadata_array_init
@@ -73,6 +88,15 @@ internal class NativeClientCall<Request, Response>(
     @Suppress("unused")
     private val rawCleaner = createCleaner(raw) {
         grpc_call_unref(it)
+    }
+
+    private val rawCallCredentials = callOptions.callCredentials.let {
+        if (it is EmptyCallCredentials) null else it.createRaw(callJob, Dispatchers.Default)
+    }
+
+    @Suppress("unused")
+    private val rawCallCredentialsCleaner = createCleaner(rawCallCredentials) {
+        if (it != null) grpc_call_credentials_release(it)
     }
 
     init {
@@ -181,12 +205,16 @@ internal class NativeClientCall<Request, Response>(
 
         listener = responseListener
 
+        // attach call credentials to the call.
+        if (rawCallCredentials != null) {
+            grpc_call_set_credentials(raw, rawCallCredentials)
+        }
+
         // start receiving the status from the completion queue,
         // which is bound to the lifetime of the call.
         val success = startRecvStatus()
         if (!success) return
 
-        // send and receive initial headers to/from the server
         sendAndReceiveInitialMetadata(headers)
     }
 
@@ -473,4 +501,21 @@ internal class NativeClientCall<Request, Response>(
             cancel(cancelMsg, e)
         }
     }
+
+    private fun Job.cancelCallOnFailure() {
+        invokeOnCompletion { cause ->
+            when (cause) {
+                is CancellationException -> {
+                    cancelInternal(grpc_status_code.GRPC_STATUS_CANCELLED, "Call cancelled")
+                }
+                is StatusException -> {
+                    cancelInternal(cause.getStatus().statusCode.toRaw(), cause.getStatus().getDescription() ?: "StatusException")
+                }
+                is Exception -> {
+                    cancelInternal(grpc_status_code.GRPC_STATUS_INTERNAL, "Call failed: ${cause.message}")
+                }
+            }
+        }
+    }
+
 }

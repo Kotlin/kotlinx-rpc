@@ -20,12 +20,17 @@ import kotlinx.cinterop.cstr
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.rpc.grpc.client.ClientCredentials
+import kotlinx.rpc.grpc.client.GrpcCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
+import kotlinx.rpc.grpc.client.createRaw
 import kotlinx.rpc.grpc.client.rawDeadline
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.internal.CompletionQueue
@@ -56,11 +61,11 @@ import kotlin.time.Duration
  */
 internal class NativeManagedChannel(
     target: String,
-    val authority: String?,
+    val overrideAuthority: String?,
     val keepAlive: GrpcClientConfiguration.KeepAlive?,
     // this is not a composite channel credentials
-    val rawChannelCredentials: CPointer<grpc_channel_credentials>,
-    val rawCallCredentials: CPointer<grpc_call_credentials>?,
+    clientCredentials: ClientCredentials,
+    callCredentials: GrpcCallCredentials?,
 ) : ManagedChannel, ManagedChannelPlatform() {
 
     // a reference to make sure the grpc_init() was called. (it is released after shutdown)
@@ -74,6 +79,12 @@ internal class NativeManagedChannel(
     // the channel's completion queue, handling all request operations
     private val cq = CompletionQueue()
 
+
+    private val rawChannelCredentials: CPointer<grpc_channel_credentials> = clientCredentials.takeRaw()
+    private val callCredCallJob = SupervisorJob(callJobSupervisor)
+    private val rawCallCredentials: CPointer<grpc_call_credentials>? = callCredentials?.createRaw(
+        parentJob = callCredCallJob,
+        coroutineDispatcher = Dispatchers.Default)
     private val rawCompositeCredentials = rawCallCredentials?.let {
         grpc_composite_channel_credentials_create(rawChannelCredentials, it, null)
     }
@@ -81,7 +92,7 @@ internal class NativeManagedChannel(
     internal val raw: CPointer<grpc_channel> = memScoped {
         val args = mutableListOf<GrpcArg>()
 
-        authority?.let {
+        overrideAuthority?.let {
             // the C Core API doesn't have a way to override the authority (used for TLS SNI) as it
             // is available in the Java gRPC implementation.
             // instead, it can be done by setting the "grpc.ssl_target_name_override" argument.
@@ -185,8 +196,6 @@ internal class NativeManagedChannel(
     ): ClientCall<RequestT, ResponseT> {
         check(!isShutdown) { internalError("Channel is shutdown") }
 
-        val callJob = Job(callJobSupervisor)
-
         val methodFullName = methodDescriptor.getFullMethodName()
         // to construct a valid HTTP/2 path, we must prepend the name with a slash.
         // the user does not do this to align it with the java implementation.
@@ -206,7 +215,11 @@ internal class NativeManagedChannel(
         grpc_slice_unref(methodNameSlice)
 
         return NativeClientCall(
-            cq, rawCall, methodDescriptor, callOptions, callJob
+            cq = cq,
+            raw = rawCall,
+            methodDescriptor =methodDescriptor,
+            callOptions = callOptions,
+            callJob = Job(callJobSupervisor),
         )
     }
 
