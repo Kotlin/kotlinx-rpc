@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-    <component name="IssueNavigationConfiguration">
-        <option name="links">
-            <list>
-                <IssueNavigationLink>
-                    <option name="issueRegexp" value="#(\d+)"/>
-                    <option name="linkRegexp" value="https://github.com/Kotlin/kotlinx-rpc/issues/$1"/>
-                </IssueNavigationLink>
-                <IssueNavigationLink>
-                    <option name="issueRegexp" value="KT-(\d+)"/>
-                    <option name="linkRegexp" value="https://youtrack.jetbrains.com/issue/KT-$1"/>
-                </IssueNavigationLink>
-                <IssueNavigationLink>
-                    <option name="issueRegexp" value="KRPC-(\d+)"/>
-                    <option name="linkRegexp" value="https://youtrack.jetbrains.com/issue/KRPC-$1"/>
-                </IssueNavigationLink>
-            </list>
-        </option>
-    </component>
-    <component name="VcsDirectoryMappings">
-        <mapping directory="" vcs="Git"/>
-    </component>
+  <component name="IssueNavigationConfiguration">
+    <option name="links">
+      <list>
+        <IssueNavigationLink>
+          <option name="issueRegexp" value="#(\d+)" />
+          <option name="linkRegexp" value="https://github.com/Kotlin/kotlinx-rpc/issues/$1" />
+        </IssueNavigationLink>
+        <IssueNavigationLink>
+          <option name="issueRegexp" value="KT-(\d+)" />
+          <option name="linkRegexp" value="https://youtrack.jetbrains.com/issue/KT-$1" />
+        </IssueNavigationLink>
+        <IssueNavigationLink>
+          <option name="issueRegexp" value="KRPC-(\d+)" />
+          <option name="linkRegexp" value="https://youtrack.jetbrains.com/issue/KRPC-$1" />
+        </IssueNavigationLink>
+      </list>
+    </option>
+  </component>
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+  </component>
+  <component name="VcsProjectSettings">
+    <option name="detectVcsMappingsAutomatically" value="false" />
+  </component>
 </project>
