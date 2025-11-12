@@ -17,6 +17,7 @@ import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.util.concurrent.Executor
+import kotlin.coroutines.cancellation.CancellationException
 
 public actual typealias ClientCredentials = ChannelCredentials
 
@@ -81,6 +82,9 @@ internal fun GrpcCallCredentials.toJvm(): CallCredentials {
                     // we always fail with Status.UNAVAILABLE. (KRPC-233)
                     val description = "Getting metadata from call credentials failed with error: ${e.message}"
                     applier.fail(Status.UNAVAILABLE.withDescription(description).withCause(e))
+                    if (e is CancellationException) {
+                        throw e
+                    }
                 }
             }
         }
