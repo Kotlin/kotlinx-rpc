@@ -18,28 +18,50 @@ import libkgrpc.grpc_tls_credentials_options_destroy
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
-public actual abstract class ClientCredentials internal constructor(
-    internal val raw: CPointer<grpc_channel_credentials>,
-) {
-    @Suppress("unused")
-    internal val rawCleaner = createCleaner(raw) {
-        grpc_channel_credentials_release(it)
+public actual abstract class ClientCredentials {
+    internal abstract val clientCredentials: ClientCredentials
+    internal abstract val callCredentials: GrpcCallCredentials?
+
+    internal abstract fun takeRaw(): CPointer<grpc_channel_credentials>
+}
+
+public actual class InsecureClientCredentials() : ClientCredentials() {
+    override val clientCredentials: ClientCredentials
+        get() = this
+    override val callCredentials: GrpcCallCredentials?
+        get() = null
+
+    override fun takeRaw(): CPointer<grpc_channel_credentials> {
+        return grpc_insecure_credentials_create() ?: error("grpc_insecure_credentials_create() returned null")
     }
 }
 
-public actual class InsecureClientCredentials internal constructor(
-    raw: CPointer<grpc_channel_credentials>,
-) : ClientCredentials(raw)
+public actual class TlsClientCredentials(
+    private var credentials: CPointer<grpc_channel_credentials>?
+) : ClientCredentials() {
 
-public actual class TlsClientCredentials internal constructor(
-    raw: CPointer<grpc_channel_credentials>,
-) : ClientCredentials(raw)
+    @Suppress("unused")
+    private val rawCleaner = createCleaner(credentials) {
+        if (it != null) {
+            grpc_channel_credentials_release(it)
+        }
+    }
+
+    override val clientCredentials: ClientCredentials
+        get() = this
+    override val callCredentials: GrpcCallCredentials?
+        get() = null
+
+    override fun takeRaw(): CPointer<grpc_channel_credentials> {
+        val credentials = this.credentials
+        this.credentials = null
+        return credentials ?: error("Credentials are already taken")
+    }
+}
 
 @InternalRpcApi
 public actual fun createInsecureClientCredentials(): ClientCredentials {
-    return InsecureClientCredentials(
-        grpc_insecure_credentials_create() ?: error("grpc_insecure_credentials_create() returned null")
-    )
+    return InsecureClientCredentials()
 }
 
 internal actual fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder = NativeTlsClientCredentialsBuilder()
@@ -74,6 +96,16 @@ private class NativeTlsClientCredentialsBuilder : TlsClientCredentialsBuilder {
     }
 }
 
+internal class CombinedClientCredentials(
+    override val clientCredentials: ClientCredentials,
+    override val callCredentials: GrpcCallCredentials,
+): ClientCredentials() {
+    override fun takeRaw(): CPointer<grpc_channel_credentials> {
+        // doesn't return a composite key but just the client credentials key.
+        return clientCredentials.takeRaw()
+    }
+}
+
 public actual operator fun ClientCredentials.plus(other: GrpcCallCredentials): ClientCredentials {
-    TODO("Not yet implemented")
+    return CombinedClientCredentials(clientCredentials, callCredentials?.combine(other) ?: other)
 }

@@ -3,12 +3,16 @@
  */
 
 @file:Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+@file:OptIn(ExperimentalForeignApi::class)
 
 package kotlinx.rpc.grpc.client.internal
 
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.rpc.grpc.client.ClientCredentials
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.TlsClientCredentials
+import kotlinx.rpc.grpc.client.createRaw
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
@@ -40,7 +44,11 @@ internal class NativeManagedChannelBuilder(
             target,
             authority = config?.overrideAuthority,
             keepAlive = config?.keepAlive,
-            credentials = credentials.value,
+            rawChannelCredentials = credentials.value.clientCredentials.takeRaw(),
+            rawCallCredentials = credentials.value.clientCredentials.callCredentials?.createRaw(
+                // TODO: Replace GlobalScope with something more appropriate.
+                GlobalScope,
+            )
         )
     }
 

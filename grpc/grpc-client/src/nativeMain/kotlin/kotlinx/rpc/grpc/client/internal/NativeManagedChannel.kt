@@ -6,7 +6,9 @@
 
 package kotlinx.rpc.grpc.client.internal
 
+import cnames.structs.grpc_call_credentials
 import cnames.structs.grpc_channel
+import cnames.structs.grpc_channel_credentials
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -22,7 +24,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlinx.rpc.grpc.client.ClientCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.rawDeadline
@@ -37,7 +38,9 @@ import libkgrpc.grpc_arg_type
 import libkgrpc.grpc_channel_args
 import libkgrpc.grpc_channel_create
 import libkgrpc.grpc_channel_create_call
+import libkgrpc.grpc_channel_credentials_release
 import libkgrpc.grpc_channel_destroy
+import libkgrpc.grpc_composite_channel_credentials_create
 import libkgrpc.grpc_slice_unref
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.experimental.ExperimentalNativeApi
@@ -49,14 +52,15 @@ import kotlin.time.Duration
  * Native implementation of [ManagedChannel].
  *
  * @param target The target address to connect to.
- * @param credentials The credentials to use for the connection.
+ * @param rawChannelCredentials The credentials to use for the connection.
  */
 internal class NativeManagedChannel(
     target: String,
     val authority: String?,
     val keepAlive: GrpcClientConfiguration.KeepAlive?,
-    // we must store them, otherwise the credentials are getting released
-    credentials: ClientCredentials,
+    // this is not a composite channel credentials
+    val rawChannelCredentials: CPointer<grpc_channel_credentials>,
+    val rawCallCredentials: CPointer<grpc_call_credentials>?,
 ) : ManagedChannel, ManagedChannelPlatform() {
 
     // a reference to make sure the grpc_init() was called. (it is released after shutdown)
@@ -69,6 +73,10 @@ internal class NativeManagedChannel(
 
     // the channel's completion queue, handling all request operations
     private val cq = CompletionQueue()
+
+    private val rawCompositeCredentials = rawCallCredentials?.let {
+        grpc_composite_channel_credentials_create(rawChannelCredentials, it, null)
+    }
 
     internal val raw: CPointer<grpc_channel> = memScoped {
         val args = mutableListOf<GrpcArg>()
@@ -100,13 +108,27 @@ internal class NativeManagedChannel(
 
         var rawArgs = if (args.isNotEmpty()) args.toRaw(this) else null
 
-        grpc_channel_create(target, credentials.raw, rawArgs?.ptr)
+        // if we have composite credentials, which bundles call credentials and channel credentials,
+        // we use it. Otherwise, we use the channel credentials alone.
+        var credentials = rawCompositeCredentials ?: rawChannelCredentials
+        grpc_channel_create(target, credentials, rawArgs?.ptr)
             ?: error("Failed to create channel")
     }
 
     @Suppress("unused")
     private val rawCleaner = createCleaner(raw) {
         grpc_channel_destroy(it)
+    }
+    @Suppress("unused")
+    internal val rawCredentialsCleaner = createCleaner(rawChannelCredentials) {
+        grpc_channel_credentials_release(it)
+    }
+
+    @Suppress("unused")
+    internal val rawCompositeCredentialsCleaner = createCleaner(rawCompositeCredentials) {
+        if (it != null) {
+            grpc_channel_credentials_release(it)
+        }
     }
 
     override val platformApi: ManagedChannelPlatform = this

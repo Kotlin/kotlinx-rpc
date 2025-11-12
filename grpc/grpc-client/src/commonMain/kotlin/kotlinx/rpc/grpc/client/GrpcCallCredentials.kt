@@ -78,11 +78,7 @@ public interface GrpcCallCredentials {
      * Implementations should return a [GrpcMetadata] object containing the necessary authentication
      * information for the request.
      *
-     * The method is suspending to allow asynchronous operations such as:
-     * - Token retrieval from secure storage
-     * - OAuth token refresh or exchange
-     * - Dynamic token generation or signing
-     * - Network calls to authentication services
+     * The method is suspending to allow asynchronous operations such as token retrieval from secure storage.
      *
      * ## Context Information
      *
@@ -145,9 +141,10 @@ public interface GrpcCallCredentials {
      * @property authority The authority (host:port) for this call.
      */
     // TODO: check whether we should add GrpcCallOptions in the context (KRPC-232)
+    // TODO: determine if possible and necessary to add the MethodDescriptor
     public data class Context(
-        val method: MethodDescriptor<*, *>,
         val authority: String,
+        val methodName: String,
     )
 }
 
