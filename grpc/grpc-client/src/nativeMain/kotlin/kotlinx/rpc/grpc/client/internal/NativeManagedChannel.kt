@@ -10,7 +10,10 @@ import cnames.structs.grpc_channel
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.MemScope
 import kotlinx.cinterop.alloc
+import kotlinx.cinterop.allocArray
+import kotlinx.cinterop.convert
 import kotlinx.cinterop.cstr
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
@@ -21,6 +24,7 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.grpc.client.ClientCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
+import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.rawDeadline
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.internal.CompletionQueue
@@ -50,6 +54,7 @@ import kotlin.time.Duration
 internal class NativeManagedChannel(
     target: String,
     val authority: String?,
+    val keepAlive: GrpcClientConfiguration.KeepAlive?,
     // we must store them, otherwise the credentials are getting released
     credentials: ClientCredentials,
 ) : ManagedChannel, ManagedChannelPlatform() {
@@ -66,22 +71,36 @@ internal class NativeManagedChannel(
     private val cq = CompletionQueue()
 
     internal val raw: CPointer<grpc_channel> = memScoped {
-        val args = authority?.let {
+        val args = mutableListOf<GrpcArg>()
+
+        authority?.let {
             // the C Core API doesn't have a way to override the authority (used for TLS SNI) as it
             // is available in the Java gRPC implementation.
             // instead, it can be done by setting the "grpc.ssl_target_name_override" argument.
-            val authorityOverride = alloc<grpc_arg> {
-                type = grpc_arg_type.GRPC_ARG_STRING
-                key = "grpc.ssl_target_name_override".cstr.ptr
-                value.string = authority.cstr.ptr
-            }
-
-            alloc<grpc_channel_args> {
-                num_args = 1u
-                args = authorityOverride.ptr
-            }
+            args.add(GrpcArg.Str(
+                    key = "grpc.ssl_target_name_override",
+                    value = it
+            ))
         }
-        grpc_channel_create(target, credentials.raw, args?.ptr)
+
+        keepAlive?.let {
+            args.add(GrpcArg.Integer(
+                    key = "grpc.keepalive_time_ms",
+                    value = it.time.inWholeMilliseconds.convert()
+            ))
+            args.add(GrpcArg.Integer(
+                key = "grpc.keepalive_timeout_ms",
+                value = it.timeout.inWholeMilliseconds.convert()
+            ))
+            args.add(GrpcArg.Integer(
+                key = "grpc.keepalive_permit_without_calls",
+                value = if (it.withoutCalls) 1 else 0
+            ))
+        }
+
+        var rawArgs = if (args.isNotEmpty()) args.toRaw(this) else null
+
+        grpc_channel_create(target, credentials.raw, rawArgs?.ptr)
             ?: error("Failed to create channel")
     }
 
@@ -169,4 +188,34 @@ internal class NativeManagedChannel(
         )
     }
 
+}
+
+internal sealed class GrpcArg(val key: String) {
+    internal class Str(key: String, val value: String) : GrpcArg(key)
+    internal class Integer(key: String, val value: Int) : GrpcArg(key)
+
+    internal val rawType: grpc_arg_type
+        get() = when (this) {
+            is Str -> grpc_arg_type.GRPC_ARG_STRING
+            is Integer -> grpc_arg_type.GRPC_ARG_INTEGER
+        }
+}
+
+private fun List<GrpcArg>.toRaw(memScope: MemScope): grpc_channel_args {
+    with(memScope) {
+        val arr = allocArray<grpc_arg>(size) {
+            val arg = get(it)
+            type = arg.rawType
+            key = arg.key.cstr.ptr
+            when (arg) {
+                is GrpcArg.Str -> value.string = arg.value.cstr.ptr
+                is GrpcArg.Integer -> value.integer = arg.value.convert()
+            }
+        }
+
+        return alloc<grpc_channel_args> {
+            num_args = size.convert()
+            args = arr
+        }
+    }
 }

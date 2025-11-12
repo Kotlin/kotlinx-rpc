@@ -34,9 +34,6 @@ enum class Runtime {
 }
 expect val runtime: Runtime
 
-expect fun setNativeEnv(key: String, value: String)
-expect fun clearNativeEnv(key: String)
-
 /**
  * Captures the standard error output written during the execution of the provided suspending block.
  *
@@ -45,3 +42,10 @@ expect fun clearNativeEnv(key: String)
  */
 expect suspend fun captureStdErr(block: suspend () -> Unit): String
 
+expect suspend fun captureGrpcLogs(
+    jvmLogLevel: String = "DEBUG",
+    jvmLoggers: List<String> = listOf("io.grpc"),
+    nativeVerbosity: String = "DEBUG",
+    nativeTracers: List<String> = listOf("all"),
+    block: suspend () -> Unit
+): String

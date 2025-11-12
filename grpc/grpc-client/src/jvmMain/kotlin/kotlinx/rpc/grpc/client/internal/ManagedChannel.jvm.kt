@@ -10,6 +10,7 @@ import io.grpc.Grpc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.client.ClientCredentials
+import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
@@ -79,4 +80,15 @@ private class JvmManagedChannel(private val channel: io.grpc.ManagedChannel) : M
 
     override val platformApi: ManagedChannelPlatform
         get() = channel
+}
+
+internal actual fun ManagedChannelBuilder<*>.applyConfig(config: GrpcClientConfiguration): ManagedChannelBuilder<*> {
+    config.keepAlive?.let {
+        keepAliveTime(it.time.inWholeMilliseconds, TimeUnit.MILLISECONDS)
+        keepAliveTimeout(it.timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
+        keepAliveWithoutCalls(it.withoutCalls)
+    }
+
+    config.overrideAuthority?.let { overrideAuthority(it) }
+    return this
 }

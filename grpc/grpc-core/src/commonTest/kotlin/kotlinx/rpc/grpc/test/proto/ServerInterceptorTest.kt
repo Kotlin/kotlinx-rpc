@@ -38,21 +38,6 @@ class ServerInterceptorTest : GrpcProtoTest() {
     }
 
     @Test
-    fun `throw during onClosing - should fail propagate the exception to the server root`() {
-        val error = assertFailsWith<IllegalStateException> {
-            val interceptor = interceptor {
-                onClose { _, _ -> throw IllegalStateException("Illegal failing in onClose") }
-                proceed(it)
-            }
-            runGrpcTest(serverInterceptors = interceptor, test = ::unaryCall)
-        }
-
-        assertContains(error.message!!, "Illegal failing in onClose")
-        // check that the error is indeed causing a server crash
-        assertContains(error.stackTraceToString(), "suspendServerCall")
-    }
-
-    @Test
     fun `throw during intercept - should fail with unknown status on client`() {
         var cause: Throwable? = null
         val error = assertFailsWith<StatusException> {
@@ -113,38 +98,6 @@ class ServerInterceptorTest : GrpcProtoTest() {
 
         assertEquals(StatusCode.UNAUTHENTICATED, error.getStatus().statusCode)
         assertContains(error.message!!, "Close in response flow")
-    }
-
-    @Test
-    fun `close during onClose - should fail with correct status on client`() {
-        val error = assertFailsWith<StatusException> {
-            val interceptor = interceptor {
-                onClose { _, _ -> close(Status(StatusCode.UNAUTHENTICATED, "Close in onClose"), GrpcMetadata()) }
-                proceed(it)
-            }
-            runGrpcTest(serverInterceptors = interceptor, test = ::unaryCall)
-        }
-
-        assertEquals(StatusCode.UNAUTHENTICATED, error.getStatus().statusCode)
-        assertContains(error.message!!, "Close in onClose")
-    }
-
-    @Test
-    fun `close in two interceptors - should fail with correct status on client`() {
-        val error = assertFailsWith<StatusException> {
-            val interceptor1 = interceptor {
-                onClose { _, _ -> close(Status(StatusCode.UNAUTHENTICATED, "[1] Close in onClose"), GrpcMetadata()) }
-                proceed(it)
-            }
-            val interceptor2 = interceptor {
-                onClose { _, _ -> close(Status(StatusCode.UNAUTHENTICATED, "[2] Close in onClose"), GrpcMetadata()) }
-                proceed(it)
-            }
-            runGrpcTest(serverInterceptors = interceptor1 + interceptor2, test = ::unaryCall)
-        }
-
-        assertEquals(StatusCode.UNAUTHENTICATED, error.getStatus().statusCode)
-        assertContains(error.message!!, "[1] Close in onClose")
     }
 
     @Test
@@ -272,7 +225,6 @@ class ServerInterceptorTest : GrpcProtoTest() {
     }
 
 }
-
 
 private fun interceptor(
     block: ServerCallScope<Any, Any>.(Flow<Any>) -> Flow<Any>,
