@@ -502,20 +502,4 @@ internal class NativeClientCall<Request, Response>(
         }
     }
 
-    private fun Job.cancelCallOnFailure() {
-        invokeOnCompletion { cause ->
-            when (cause) {
-                is CancellationException -> {
-                    cancelInternal(grpc_status_code.GRPC_STATUS_CANCELLED, "Call cancelled")
-                }
-                is StatusException -> {
-                    cancelInternal(cause.getStatus().statusCode.toRaw(), cause.getStatus().getDescription() ?: "StatusException")
-                }
-                is Exception -> {
-                    cancelInternal(grpc_status_code.GRPC_STATUS_INTERNAL, "Call failed: ${cause.message}")
-                }
-            }
-        }
-    }
-
 }
