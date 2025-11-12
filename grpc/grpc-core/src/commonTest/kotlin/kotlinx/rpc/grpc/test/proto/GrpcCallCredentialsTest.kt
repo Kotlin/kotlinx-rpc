@@ -4,6 +4,10 @@
 
 package kotlinx.rpc.grpc.test.proto
 
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
@@ -195,7 +199,6 @@ class GrpcCallCredentialsTest : GrpcProtoTest() {
 
         val contextCapturingCredentials = object : GrpcCallCredentials {
             override suspend fun Context.getRequestMetadata(): GrpcMetadata {
-                println(authority)
                 capturedMethod = methodName
                 return GrpcMetadata()
             }
@@ -236,6 +239,52 @@ class GrpcCallCredentialsTest : GrpcProtoTest() {
 
         assertEquals("test.example.com", capturedAuthority)
     }
+
+//    @Test
+//    fun `test long running call credentials - should succeed`() {
+//        var grpcMetadata: GrpcMetadata? = null
+//        class SlowCredentials(
+//            val token: String
+//        ) : GrpcCallCredentials {
+//            override suspend fun Context.getRequestMetadata(): GrpcMetadata {
+//                delay(1000)
+//                return buildGrpcMetadata {
+//                    append(token, token)
+//                }
+//            }
+//
+//            override val requiresTransportSecurity: Boolean
+//                get() = false
+//        }
+//
+//        runGrpcTest(
+//            configure = {
+//                credentials = plaintext() + SlowCredentials("token-1")
+//            },
+//            clientInterceptors = clientInterceptor {
+//                callOptions.callCredentials += SlowCredentials("token-2")
+//                proceed(it)
+//            },
+//            serverInterceptors = serverInterceptor {
+//                grpcMetadata = requestHeaders
+//                proceed(it)
+//            },
+//            test = {
+//                coroutineScope {
+//                    launch { unaryCall(it) }
+//                    delay(200)
+//                    cancel("Midcanceling")
+//                }
+//            }
+//        )
+//
+//        val authHeaders = grpcMetadata?.getAll("token-1")
+//        assertEquals(1, authHeaders?.size)
+//        assertEquals("token-1", authHeaders?.single())
+//        val authHeaders2 = grpcMetadata?.getAll("token-2")
+//        assertEquals(1, authHeaders2?.size)
+//        assertEquals("token-2", authHeaders2?.single())
+//    }
 }
 
 private suspend fun unaryCall(grpcClient: GrpcClient) {

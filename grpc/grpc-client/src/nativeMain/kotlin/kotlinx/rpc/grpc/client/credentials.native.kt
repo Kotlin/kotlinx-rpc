@@ -9,53 +9,48 @@ package kotlinx.rpc.grpc.client
 import cnames.structs.grpc_channel_credentials
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
 import kotlinx.rpc.grpc.internal.TlsCredentialsOptionsBuilder
+import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import libkgrpc.grpc_call_credentials_release
 import libkgrpc.grpc_channel_credentials_release
+import libkgrpc.grpc_composite_channel_credentials_create
 import libkgrpc.grpc_insecure_credentials_create
 import libkgrpc.grpc_tls_credentials_create
 import libkgrpc.grpc_tls_credentials_options_destroy
 import kotlin.experimental.ExperimentalNativeApi
-import kotlin.native.ref.createCleaner
 
 public actual abstract class ClientCredentials {
     internal abstract val clientCredentials: ClientCredentials
     internal abstract val callCredentials: GrpcCallCredentials?
 
-    internal abstract fun takeRaw(): CPointer<grpc_channel_credentials>
+    internal abstract fun createRaw(parentJob: Job, coroutineDispatcher: CoroutineDispatcher): CPointer<grpc_channel_credentials>
 }
 
-public actual class InsecureClientCredentials() : ClientCredentials() {
+public actual class InsecureClientCredentials : ClientCredentials() {
     override val clientCredentials: ClientCredentials
         get() = this
     override val callCredentials: GrpcCallCredentials?
         get() = null
 
-    override fun takeRaw(): CPointer<grpc_channel_credentials> {
+    override fun createRaw(parentJob: Job, coroutineDispatcher: CoroutineDispatcher): CPointer<grpc_channel_credentials> {
         return grpc_insecure_credentials_create() ?: error("grpc_insecure_credentials_create() returned null")
     }
 }
 
-public actual class TlsClientCredentials(
-    private var credentials: CPointer<grpc_channel_credentials>?
+public actual class TlsClientCredentials internal constructor(
+    internal var builder: NativeTlsClientCredentialsBuilder,
 ) : ClientCredentials() {
-
-    @Suppress("unused")
-    private val rawCleaner = createCleaner(credentials) {
-        if (it != null) {
-            grpc_channel_credentials_release(it)
-        }
-    }
 
     override val clientCredentials: ClientCredentials
         get() = this
     override val callCredentials: GrpcCallCredentials?
         get() = null
 
-    override fun takeRaw(): CPointer<grpc_channel_credentials> {
-        val credentials = this.credentials
-        this.credentials = null
-        return credentials ?: error("Credentials are already taken")
+    override fun createRaw(parentJob: Job, coroutineDispatcher: CoroutineDispatcher): CPointer<grpc_channel_credentials> {
+        return builder.build()
     }
 }
 
@@ -66,10 +61,10 @@ public actual fun createInsecureClientCredentials(): ClientCredentials {
 
 internal actual fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder = NativeTlsClientCredentialsBuilder()
 internal actual fun TlsClientCredentialsBuilder.build(): ClientCredentials {
-    return (this as NativeTlsClientCredentialsBuilder).build()
+    return TlsClientCredentials(this as NativeTlsClientCredentialsBuilder)
 }
 
-private class NativeTlsClientCredentialsBuilder : TlsClientCredentialsBuilder {
+internal class NativeTlsClientCredentialsBuilder : TlsClientCredentialsBuilder {
     var optionsBuilder = TlsCredentialsOptionsBuilder()
 
     override fun trustManager(rootCertsPem: String): TlsClientCredentialsBuilder {
@@ -85,14 +80,13 @@ private class NativeTlsClientCredentialsBuilder : TlsClientCredentialsBuilder {
         return this
     }
 
-    fun build(): ClientCredentials {
+    fun build(): CPointer<grpc_channel_credentials> {
         val opts = optionsBuilder.build()
-        val creds = grpc_tls_credentials_create(opts)
+        return grpc_tls_credentials_create(opts)
             ?: run {
                 grpc_tls_credentials_options_destroy(opts);
                 error("TLS channel credential creation failed")
             }
-        return TlsClientCredentials(creds)
     }
 }
 
@@ -100,9 +94,18 @@ internal class CombinedClientCredentials(
     override val clientCredentials: ClientCredentials,
     override val callCredentials: GrpcCallCredentials,
 ): ClientCredentials() {
-    override fun takeRaw(): CPointer<grpc_channel_credentials> {
-        // doesn't return a composite key but just the client credentials key.
-        return clientCredentials.takeRaw()
+    override fun createRaw(parentJob: Job, coroutineDispatcher: CoroutineDispatcher): CPointer<grpc_channel_credentials> {
+        val rawChannelCredentials = clientCredentials.createRaw(parentJob, coroutineDispatcher)
+        val rawCallCredentials = callCredentials.createRaw(parentJob, coroutineDispatcher)
+        val rawComposite = grpc_composite_channel_credentials_create(
+            channel_creds = rawChannelCredentials,
+            call_creds = rawCallCredentials,
+            reserved = null
+        )
+        // Release originals as composite now holds references to them
+        grpc_channel_credentials_release(rawChannelCredentials)
+        grpc_call_credentials_release(rawCallCredentials)
+        return rawComposite ?: internalError("Failed to create composite credentials")
     }
 }
 
