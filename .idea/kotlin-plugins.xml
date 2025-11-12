@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="KotlinPluginsSettings">
+    <option name="repositories">
+      <map>
+        <entry key="Local Build Repo" value="$PROJECT_DIR$/build/repo;PATH" />
+        <entry key="Maven Central" value="https://repo1.maven.org/maven2;URL" />
+        <entry key="kotlinx-rpc for IDE" value="https://maven.pkg.jetbrains.space/public/p/krpc/for-ide;URL" />
+      </map>
+    </option>
+    <option name="plugins">
+      <map>
+        <entry key="kotlinx-rpc" value="EXACT;true;false;org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-cli;org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-k2;org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-backend;org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-common" />
+        <entry key="kotlinx-rpc-local" value="EXACT;true;false;org.jetbrains.kotlinx:compiler-plugin-cli;org.jetbrains.kotlinx:compiler-plugin-k2;org.jetbrains.kotlinx:compiler-plugin-backend;org.jetbrains.kotlinx:compiler-plugin-common" />
+      </map>
+    </option>
+    <option name="pluginsReplacements">
+      <map>
+        <entry key="kotlinx-rpc-local" value="&lt;kotlin-version&gt;-&lt;lib-version&gt;;&lt;artifact-id&gt;;kotlinx-rpc-&lt;artifact-id&gt;" />
+      </map>
+    </option>
+    <option name="pluginsRepos">
+      <map>
+        <entry key="kotlinx-rpc" value="kotlinx-rpc for IDE" />
+        <entry key="kotlinx-rpc-local" value="Local Build Repo" />
+      </map>
+    </option>
+  </component>
+</project>
