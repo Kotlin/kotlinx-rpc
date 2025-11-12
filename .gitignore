@@ -20,6 +20,7 @@ lib-kotlin
 !.idea/detekt.xml
 !.idea/kotlinTestDataPluginTestDataPaths.xml
 !.idea/kotlinx-rpc.iml
+!.idea/kotlin-plugins.xml
 
 samples/**/.idea/*
 
