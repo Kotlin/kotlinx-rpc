@@ -22,6 +22,8 @@ import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.client.ClientCallScope
+import kotlinx.rpc.grpc.client.EmptyCallCredentials
+import kotlinx.rpc.grpc.client.GrpcCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
@@ -197,10 +199,11 @@ private class ClientCallScopeImpl<Request, Response>(
 
     private fun doCall(request: Flow<Request>): Flow<Response> = flow {
         coroutineScope {
+
             val call = client.channel.platformApi.createCall(method, callOptions)
 
             /*
-             * We maintain a buffer of size 1 so onMessage never has to block: it only gets called after
+             * We maintain a buffer of size 1, so onMessage never has to block: it only gets called after
              * we request a response from the server, which only happens when responses is empty and
              * there is room in the buffer.
              */

@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.grpc.client.internal
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi

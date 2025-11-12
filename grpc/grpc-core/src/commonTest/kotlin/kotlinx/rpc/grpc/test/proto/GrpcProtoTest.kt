@@ -33,7 +33,7 @@ abstract class GrpcProtoTest {
         serverInterceptors: List<ServerInterceptor> = emptyList(),
         configure: GrpcClientConfiguration.() -> Unit = {},
         test: suspend (GrpcClient) -> Unit,
-    ) = runTest {
+    ) = runBlocking {
         serverMutex.withLock {
             val grpcClient = GrpcClient("localhost", PORT) {
                 credentials = clientCreds ?: plaintext()

@@ -4,10 +4,20 @@
 
 package kotlinx.rpc.grpc.client
 
+import io.grpc.CallCredentials
 import io.grpc.ChannelCredentials
+import io.grpc.CompositeChannelCredentials
 import io.grpc.InsecureChannelCredentials
+import io.grpc.SecurityLevel
 import io.grpc.TlsChannelCredentials
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
+import kotlinx.rpc.grpc.Status
+import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import java.util.concurrent.Executor
+import kotlin.coroutines.cancellation.CancellationException
 
 public actual typealias ClientCredentials = ChannelCredentials
 
@@ -47,4 +57,40 @@ private class JvmTlsCLientCredentialBuilder : TlsClientCredentialsBuilder {
     fun build(): ClientCredentials {
         return cb.build()
     }
+}
+
+internal fun GrpcCallCredentials.toJvm(): CallCredentials {
+    return object : CallCredentials() {
+        override fun applyRequestMetadata(
+            requestInfo: RequestInfo,
+            appExecutor: Executor,
+            applier: MetadataApplier
+        ) {
+            val dispatcher = appExecutor.asCoroutineDispatcher()
+            CoroutineScope(dispatcher).launch {
+                try {
+                    check(!requiresTransportSecurity || requestInfo.securityLevel != SecurityLevel.NONE) {
+                        "Established channel does not have a sufficient security level to transfer call credential."
+                    }
+
+                    val context = GrpcCallCredentials.Context(requestInfo.authority, requestInfo.methodDescriptor.fullMethodName)
+                    val metadata = context.getRequestMetadata()
+                    applier.apply(metadata)
+                } catch (e: Exception) {
+                    // we are not treating StatusExceptions separately, as currently there is no
+                    // clean way to support the same feature on native. So for the sake of similar behavior,
+                    // we always fail with Status.UNAVAILABLE. (KRPC-233)
+                    val description = "Getting metadata from call credentials failed with error: ${e.message}"
+                    applier.fail(Status.UNAVAILABLE.withDescription(description).withCause(e))
+                    if (e is CancellationException) {
+                        throw e
+                    }
+                }
+            }
+        }
+    }
+}
+
+public actual operator fun ClientCredentials.plus(other: GrpcCallCredentials): ClientCredentials {
+    return CompositeChannelCredentials.create(this, other.toJvm())
 }

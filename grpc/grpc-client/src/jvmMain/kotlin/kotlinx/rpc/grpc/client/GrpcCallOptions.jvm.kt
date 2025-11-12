@@ -18,5 +18,8 @@ public fun GrpcCallOptions.toJvm(): CallOptions {
     if (compression !is GrpcCompression.None) {
         default = default.withCompression(compression.name)
     }
+    if (callCredentials !is EmptyCallCredentials) {
+        default = default.withCallCredentials(callCredentials.toJvm())
+    }
     return default
 }
