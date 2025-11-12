@@ -58,6 +58,9 @@ public interface ServerCallScope<Request, Response> {
     /**
      * Register a callback invoked when the call is closed (successfully or exceptionally).
      * Provides the final [kotlinx.rpc.grpc.Status] and the sent [GrpcMetadata] trailers.
+     *
+     * IMPORTANT: The callback must not throw an exception or use [close].
+     * Behavior is undefined and may lead to crashes depending on the platform.
      */
     public fun onClose(block: (Status, GrpcMetadata) -> Unit)
 
