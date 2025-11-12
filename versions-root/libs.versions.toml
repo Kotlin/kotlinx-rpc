@@ -1,6 +1,6 @@
 [versions]
 # core library version
-kotlinx-rpc = "0.10.1"
+kotlinx-rpc = "0.11.0-SNAPSHOT"
 
 # kotlin
 kotlin-lang = "2.2.21" # or env.KOTLIN_VERSION
@@ -25,7 +25,7 @@ atomicfu = "0.29.0"
 serialization = "1.9.0"
 detekt-gradle-plugin = "1.23.8"
 kover = "0.9.2"
-develocity = "3.19.2"
+develocity = "4.2"
 common-custom-user-data = "2.4.0"
 compat-patrouille = "0.0.2"
 lincheck = "3.2"

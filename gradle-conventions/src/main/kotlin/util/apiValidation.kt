@@ -20,6 +20,7 @@ val Project.enableAbiValidation get() = name !in excludedProjects
 @OptIn(ExperimentalAbiValidation::class)
 fun AbiValidationVariantSpec.configureAbiFilters() {
     filters {
+        @Suppress("DEPRECATION_ERROR") // todo: temp, remove after update to 2.3.20
         excluded {
             annotatedWith.add("kotlinx.rpc.internal.utils.InternalRpcApi")
             byNames.add("kotlinx.rpc.internal.**")
