@@ -15,6 +15,7 @@ public class RpcCallableDefault<@Rpc T : Any>(
     override val invokator: RpcInvokator<T>,
     override val parameters: Array<out RpcParameter>,
     override val isNonSuspendFunction: Boolean,
+    override val returnsFlow: Boolean,
 ) : RpcCallable<T>
 
 @InternalRpcApi
