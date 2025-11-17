@@ -24,10 +24,6 @@ import kotlinx.cinterop.value
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
@@ -43,14 +39,9 @@ import kotlinx.rpc.grpc.internal.toKotlin
 import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.input.stream.asSource
 import kotlinx.rpc.grpc.GrpcCompression
-import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.client.EmptyCallCredentials
-import kotlinx.rpc.grpc.client.GrpcCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.createRaw
-import kotlinx.rpc.grpc.internal.toRaw
-import kotlinx.rpc.grpc.merge
-import kotlinx.rpc.grpc.statusCode
 import libkgrpc.GRPC_OP_RECV_INITIAL_METADATA
 import libkgrpc.GRPC_OP_RECV_MESSAGE
 import libkgrpc.GRPC_OP_RECV_STATUS_ON_CLIENT
@@ -65,7 +56,6 @@ import libkgrpc.grpc_call_credentials_release
 import libkgrpc.grpc_call_error
 import libkgrpc.grpc_call_set_credentials
 import libkgrpc.grpc_call_unref
-import libkgrpc.grpc_channel_credentials_release
 import libkgrpc.grpc_metadata_array
 import libkgrpc.grpc_metadata_array_destroy
 import libkgrpc.grpc_metadata_array_init
@@ -73,6 +63,7 @@ import libkgrpc.grpc_op
 import libkgrpc.grpc_slice
 import libkgrpc.grpc_slice_unref
 import libkgrpc.grpc_status_code
+import kotlin.coroutines.CoroutineContext
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
@@ -83,6 +74,7 @@ internal class NativeClientCall<Request, Response>(
     private val methodDescriptor: MethodDescriptor<Request, Response>,
     private val callOptions: GrpcCallOptions,
     private val callJob: CompletableJob,
+    private val coroutineContext: CoroutineContext,
 ) : ClientCall<Request, Response>() {
 
     @Suppress("unused")
@@ -91,7 +83,7 @@ internal class NativeClientCall<Request, Response>(
     }
 
     private val rawCallCredentials = callOptions.callCredentials.let {
-        if (it is EmptyCallCredentials) null else it.createRaw(callJob, Dispatchers.Default)
+        if (it is EmptyCallCredentials) null else it.createRaw(coroutineContext)
     }
 
     @Suppress("unused")

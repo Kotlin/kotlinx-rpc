@@ -20,12 +20,13 @@ import kotlinx.rpc.grpc.internal.toRaw
 import kotlinx.rpc.grpc.statusCode
 import libkgrpc.*
 import platform.posix.size_tVar
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 // Stable reference holder for Kotlin objects
 private class CredentialsPluginState(
     val kotlinCreds: GrpcCallCredentials,
-    val parentJob: Job,
-    val coroutineDispatcher: CoroutineDispatcher
+    val coroutineContext: CoroutineContext,
 )
 
 private fun getMetadataCallback(
@@ -62,7 +63,7 @@ private fun getMetadataCallback(
         }
     }
 
-    val scope = CoroutineScope(Job(pluginState.parentJob) + pluginState.coroutineDispatcher)
+    val scope = CoroutineScope(pluginState.coroutineContext)
 
     // Launch coroutine to call a suspend function asynchronously
     scope.launch {
@@ -120,11 +121,10 @@ private fun destroyCallback(state: COpaquePointer?) {
 }
 
 internal fun GrpcCallCredentials.createRaw(
-    parentJob: Job,
-    coroutineDispatcher: CoroutineDispatcher
+    coroutineContext: CoroutineContext,
 ): CPointer<grpc_call_credentials>? = memScoped {
     // Create a stable reference to keep the Kotlin object alive
-    val pluginState = CredentialsPluginState(this@createRaw, parentJob, coroutineDispatcher)
+    val pluginState = CredentialsPluginState(this@createRaw, coroutineContext)
     val stableRef = StableRef.create(pluginState)
 
     // Create plugin structure

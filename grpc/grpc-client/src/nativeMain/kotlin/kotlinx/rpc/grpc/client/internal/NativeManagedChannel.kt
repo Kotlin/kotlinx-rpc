@@ -42,6 +42,7 @@ import libkgrpc.grpc_channel_create_call
 import libkgrpc.grpc_channel_credentials_release
 import libkgrpc.grpc_channel_destroy
 import libkgrpc.grpc_slice_unref
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
@@ -171,6 +172,7 @@ internal class NativeManagedChannel(
     override fun <RequestT, ResponseT> newCall(
         methodDescriptor: MethodDescriptor<RequestT, ResponseT>,
         callOptions: GrpcCallOptions,
+        coroutineContext: CoroutineContext
     ): ClientCall<RequestT, ResponseT> {
         check(!isShutdown) { internalError("Channel is shutdown") }
 
@@ -198,6 +200,7 @@ internal class NativeManagedChannel(
             methodDescriptor =methodDescriptor,
             callOptions = callOptions,
             callJob = Job(callJobSupervisor),
+            coroutineContext = coroutineContext,
         )
     }
 

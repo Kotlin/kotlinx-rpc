@@ -6,11 +6,10 @@ package kotlinx.rpc.grpc.client
 
 import io.grpc.CallOptions
 import kotlinx.rpc.grpc.GrpcCompression
-import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.CoroutineContext
 
-@InternalRpcApi
-public fun GrpcCallOptions.toJvm(): CallOptions {
+internal fun GrpcCallOptions.toJvm(coroutineContext: CoroutineContext): CallOptions {
     var default = CallOptions.DEFAULT
     if (timeout != null) {
         default = default.withDeadlineAfter(timeout!!.inWholeMilliseconds, TimeUnit.MILLISECONDS)
@@ -19,7 +18,7 @@ public fun GrpcCallOptions.toJvm(): CallOptions {
         default = default.withCompression(compression.name)
     }
     if (callCredentials !is EmptyCallCredentials) {
-        default = default.withCallCredentials(callCredentials.toJvm())
+        default = default.withCallCredentials(callCredentials.toJvm(coroutineContext))
     }
     return default
 }
