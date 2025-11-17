@@ -8,11 +8,9 @@
 package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.rpc.grpc.client.ClientCredentials
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
-import kotlinx.rpc.grpc.client.TlsClientCredentials
-import kotlinx.rpc.grpc.client.createRaw
+import kotlinx.rpc.grpc.client.GrpcClientCredentials
+import kotlinx.rpc.grpc.client.GrpcTlsClientCredentials
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
@@ -32,7 +30,7 @@ public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
 
 internal class NativeManagedChannelBuilder(
     private val target: String,
-    private val credentials: Lazy<ClientCredentials>,
+    private val credentials: Lazy<GrpcClientCredentials>,
 ) : ManagedChannelBuilder<NativeManagedChannelBuilder>() {
     fun buildChannel(): NativeManagedChannel {
         val keepAlive = config?.keepAlive
@@ -61,15 +59,15 @@ public actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
 public actual fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
-    credentials: ClientCredentials?,
+    credentials: GrpcClientCredentials?,
 ): ManagedChannelBuilder<*> {
-    val credentials = if (credentials == null) lazy { TlsClientCredentials() } else lazy { credentials }
+    val credentials = if (credentials == null) lazy { GrpcTlsClientCredentials() } else lazy { credentials }
     return NativeManagedChannelBuilder(target = "$hostname:$port", credentials)
 }
 
 @InternalRpcApi
-public actual fun ManagedChannelBuilder(target: String, credentials: ClientCredentials?): ManagedChannelBuilder<*> {
-    val credentials = if (credentials == null) lazy { TlsClientCredentials() } else lazy { credentials }
+public actual fun ManagedChannelBuilder(target: String, credentials: GrpcClientCredentials?): ManagedChannelBuilder<*> {
+    val credentials = if (credentials == null) lazy { GrpcTlsClientCredentials() } else lazy { credentials }
     return NativeManagedChannelBuilder(target, credentials)
 }
 

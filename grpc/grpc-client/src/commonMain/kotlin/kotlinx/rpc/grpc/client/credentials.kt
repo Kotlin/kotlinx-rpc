@@ -4,8 +4,6 @@
 
 package kotlinx.rpc.grpc.client
 
-import kotlinx.rpc.internal.utils.InternalRpcApi
-
 /**
  * Base class for client channel credentials.
  *
@@ -15,31 +13,31 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  *
  * ## Types of Credentials
  *
- * - **[InsecureClientCredentials]**: No transport security (plaintext)
- * - **[TlsClientCredentials]**: TLS/SSL transport security with optional mutual TLS (mTLS)
+ * - **[GrpcInsecureClientCredentials]**: No transport security (plaintext)
+ * - **[GrpcTlsClientCredentials]**: TLS/SSL transport security with optional mutual TLS (mTLS)
  *
  * Client credentials can be combined with call credentials using the [plus] operator:
  * ```kotlin
- * val credentials = TlsClientCredentials { ... } + BearerTokenCredentials(token)
+ * val credentials = GrpcTlsClientCredentials { ... } + BearerTokenCredentials(token)
  * ```
  *
- * @see TlsClientCredentials
- * @see InsecureClientCredentials
+ * @see GrpcTlsClientCredentials
+ * @see GrpcInsecureClientCredentials
  * @see GrpcCallCredentials
  */
-public expect abstract class ClientCredentials
+public sealed class GrpcClientCredentials
 
 /**
  * Combines client credentials with call credentials.
  *
  * This operator allows attaching per-call authentication credentials to a client credential,
- * enabling both transport security (via [ClientCredentials]) and application-layer authentication
+ * enabling both transport security (via [GrpcClientCredentials]) and application-layer authentication
  * (via [GrpcCallCredentials]) to be used together for all requests of the client.
  *
  * ## Example
  *
  * ```kotlin
- * val tlsCredentials = TlsClientCredentials {
+ * val tlsCredentials = GrpcTlsClientCredentials {
  *     trustManager(serverCertPem)
  * }
  * val bearerToken = BearerTokenCredentials("my-token")
@@ -55,7 +53,9 @@ public expect abstract class ClientCredentials
  * @see combine
  * @see GrpcCallCredentials
  */
-public expect operator fun ClientCredentials.plus(other: GrpcCallCredentials): ClientCredentials
+public operator fun GrpcClientCredentials.plus(other: GrpcCallCredentials): GrpcClientCredentials {
+    return GrpcCombinedClientCredentials.create(this, other)
+}
 
 /**
  * Combines client credentials with call credentials.
@@ -67,14 +67,15 @@ public expect operator fun ClientCredentials.plus(other: GrpcCallCredentials): C
  * @return A new credential that includes both client and call credentials.
  * @see plus
  */
-public fun ClientCredentials.combine(other: GrpcCallCredentials): ClientCredentials = this + other
+public fun GrpcClientCredentials.combine(other: GrpcCallCredentials): GrpcClientCredentials = this + other
+
 
 
 /**
  * Plaintext credentials with no transport security.
  *
  * Use this credential type for unencrypted connections to gRPC servers. This should only
- * be used in development or testing environments, or when connecting to services within
+ * be used in development or testing environments or when connecting to services within
  * a secure network perimeter.
  *
  * ## Example
@@ -88,14 +89,9 @@ public fun ClientCredentials.combine(other: GrpcCallCredentials): ClientCredenti
  * **Warning**: Plaintext credentials transmit data without encryption. Do not use in production
  * for sensitive data or over untrusted networks.
  *
- * @see TlsClientCredentials
+ * @see GrpcTlsClientCredentials
  */
-public expect class InsecureClientCredentials : ClientCredentials
-
-// we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
-// java constructor.
-@InternalRpcApi
-public expect fun createInsecureClientCredentials(): ClientCredentials
+public class GrpcInsecureClientCredentials : GrpcClientCredentials()
 
 /**
  * TLS/SSL credentials for secure transport.
@@ -109,7 +105,7 @@ public expect fun createInsecureClientCredentials(): ClientCredentials
  * Verify the server's identity using a trust manager with root certificates:
  *
  * ```kotlin
- * val credentials = TlsClientCredentials {
+ * val credentials = GrpcTlsClientCredentials {
  *     trustManager(serverCertPem)
  * }
  *
@@ -123,7 +119,7 @@ public expect fun createInsecureClientCredentials(): ClientCredentials
  * For mutual authentication, provide both trust manager and key manager:
  *
  * ```kotlin
- * val credentials = TlsClientCredentials {
+ * val credentials = GrpcTlsClientCredentials {
  *     trustManager(caCertPem)              // Server's CA certificate
  *     keyManager(clientCertPem, clientKeyPem)  // Client's certificate and private key
  * }
@@ -140,60 +136,22 @@ public expect fun createInsecureClientCredentials(): ClientCredentials
  * **Note**: The server certificate's Common Name (CN) or Subject Alternative Name (SAN)
  * must match the authority specified in the client configuration, or the connection will fail.
  *
- * @see TlsClientCredentialsBuilder
- * @see InsecureClientCredentials
+ * @see GrpcTlsClientCredentialsBuilder
+ * @see GrpcInsecureClientCredentials
  */
-public expect class TlsClientCredentials : ClientCredentials
+public class GrpcTlsClientCredentials(internal val configure: GrpcTlsClientCredentialsBuilder.() -> Unit = {}) : GrpcClientCredentials()
 
 /**
- * Creates TLS client credentials using a builder DSL.
- *
- * This is the primary way to create [TlsClientCredentials], providing a convenient
- * builder interface for configuring trust managers and key managers.
- *
- * ## Examples
- *
- * Simple TLS with server authentication:
- * ```kotlin
- * val credentials = TlsClientCredentials {
- *     trustManager(serverCertPem)
- * }
- * ```
- *
- * Mutual TLS (mTLS):
- * ```kotlin
- * val credentials = TlsClientCredentials {
- *     trustManager(caCertPem)
- *     keyManager(clientCertPem, clientKeyPem)
- * }
- * ```
- *
- * Using system trust store:
- * ```kotlin
- * val credentials = TlsClientCredentials { }  // No configuration needed
- * ```
- *
- * @param configure A lambda to configure the TLS credentials using [TlsClientCredentialsBuilder].
- * @return Configured TLS client credentials.
- * @see TlsClientCredentialsBuilder
- */
-public fun TlsClientCredentials(configure: TlsClientCredentialsBuilder.() -> Unit = {}): ClientCredentials {
-    val builder = TlsClientCredentialsBuilder()
-    builder.configure()
-    return builder.build()
-}
-
-/**
- * Builder for configuring [TlsClientCredentials].
+ * Builder for configuring [GrpcTlsClientCredentials].
  *
  * This builder provides methods to configure trust managers for server authentication
  * and key managers for client authentication (mTLS).
  *
- * @see TlsClientCredentials
+ * @see GrpcTlsClientCredentials
  * @see trustManager
  * @see keyManager
  */
-public interface TlsClientCredentialsBuilder {
+public interface GrpcTlsClientCredentialsBuilder {
     /**
      * Configures the trust manager with root CA certificates for server authentication.
      *
@@ -218,7 +176,7 @@ public interface TlsClientCredentialsBuilder {
      * @return This builder for chaining.
      * @see keyManager
      */
-    public fun trustManager(rootCertsPem: String): TlsClientCredentialsBuilder
+    public fun trustManager(rootCertsPem: String): GrpcTlsClientCredentialsBuilder
 
     /**
      * Configures the key manager with client certificate and private key for mutual TLS (mTLS).
@@ -251,9 +209,37 @@ public interface TlsClientCredentialsBuilder {
      * @return This builder for chaining.
      * @see trustManager
      */
-    public fun keyManager(certChainPem: String, privateKeyPem: String): TlsClientCredentialsBuilder
+    public fun keyManager(certChainPem: String, privateKeyPem: String): GrpcTlsClientCredentialsBuilder
 }
 
-internal expect fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder
+/**
+ * Returns the unflattened [GrpcClientCredentials] in case of a [GrpcCombinedClientCredentials].
+ */
+internal val GrpcClientCredentials.realClientCredentials
+    get() = if (this is GrpcCombinedClientCredentials) clientCredentials else this
 
-internal expect fun TlsClientCredentialsBuilder.build(): ClientCredentials
+/**
+ * Returns the potential [GrpcCallCredentials] in case of a [GrpcCombinedClientCredentials].
+ */
+internal val GrpcClientCredentials.realCallCredentials
+    get() = if (this is GrpcCombinedClientCredentials) callCredentials else EmptyCallCredentials
+
+/**
+ * Combines a [GrpcClientCredentials] with a [GrpcCallCredentials], which can be expected by the
+ * [GrpcClient] at configuration. This matches the API semantics of the official gRPC libraries.
+ */
+internal class GrpcCombinedClientCredentials private constructor(
+    internal val clientCredentials: GrpcClientCredentials,
+    internal val callCredentials: GrpcCallCredentials,
+): GrpcClientCredentials() {
+
+    companion object {
+        internal fun create(clientCredentials: GrpcClientCredentials, callCredentials: GrpcCallCredentials): GrpcCombinedClientCredentials {
+            // flat nested combined credentials
+            return GrpcCombinedClientCredentials(
+                clientCredentials.realClientCredentials,
+                clientCredentials.realCallCredentials.combine(callCredentials)
+            )
+        }
+    }
+}

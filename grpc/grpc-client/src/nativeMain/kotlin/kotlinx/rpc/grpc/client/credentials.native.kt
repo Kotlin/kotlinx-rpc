@@ -22,52 +22,20 @@ import libkgrpc.grpc_tls_credentials_create
 import libkgrpc.grpc_tls_credentials_options_destroy
 import kotlin.experimental.ExperimentalNativeApi
 
-public actual abstract class ClientCredentials {
-    internal abstract val clientCredentials: ClientCredentials
-    internal abstract val callCredentials: GrpcCallCredentials?
-
-    internal abstract fun createRaw(parentJob: Job, coroutineDispatcher: CoroutineDispatcher): CPointer<grpc_channel_credentials>
-}
-
-public actual class InsecureClientCredentials : ClientCredentials() {
-    override val clientCredentials: ClientCredentials
-        get() = this
-    override val callCredentials: GrpcCallCredentials?
-        get() = null
-
-    override fun createRaw(parentJob: Job, coroutineDispatcher: CoroutineDispatcher): CPointer<grpc_channel_credentials> {
-        return grpc_insecure_credentials_create() ?: error("grpc_insecure_credentials_create() returned null")
+internal fun GrpcClientCredentials.createRaw(): CPointer<grpc_channel_credentials> {
+    return when (this) {
+        is GrpcCombinedClientCredentials ->
+            // we don't create a composite credential, as we collect them and apply them on every call
+            clientCredentials.createRaw()
+        is GrpcInsecureClientCredentials -> grpc_insecure_credentials_create() ?: error("grpc_insecure_credentials_create() returned null")
+        is GrpcTlsClientCredentials -> NativeTlsClientCredentialsBuilder().apply(configure).build()
     }
 }
 
-public actual class TlsClientCredentials internal constructor(
-    internal var builder: NativeTlsClientCredentialsBuilder,
-) : ClientCredentials() {
-
-    override val clientCredentials: ClientCredentials
-        get() = this
-    override val callCredentials: GrpcCallCredentials?
-        get() = null
-
-    override fun createRaw(parentJob: Job, coroutineDispatcher: CoroutineDispatcher): CPointer<grpc_channel_credentials> {
-        return builder.build()
-    }
-}
-
-@InternalRpcApi
-public actual fun createInsecureClientCredentials(): ClientCredentials {
-    return InsecureClientCredentials()
-}
-
-internal actual fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder = NativeTlsClientCredentialsBuilder()
-internal actual fun TlsClientCredentialsBuilder.build(): ClientCredentials {
-    return TlsClientCredentials(this as NativeTlsClientCredentialsBuilder)
-}
-
-internal class NativeTlsClientCredentialsBuilder : TlsClientCredentialsBuilder {
+internal class NativeTlsClientCredentialsBuilder : GrpcTlsClientCredentialsBuilder {
     var optionsBuilder = TlsCredentialsOptionsBuilder()
 
-    override fun trustManager(rootCertsPem: String): TlsClientCredentialsBuilder {
+    override fun trustManager(rootCertsPem: String): GrpcTlsClientCredentialsBuilder {
         optionsBuilder.trustManager(rootCertsPem)
         return this
     }
@@ -75,7 +43,7 @@ internal class NativeTlsClientCredentialsBuilder : TlsClientCredentialsBuilder {
     override fun keyManager(
         certChainPem: String,
         privateKeyPem: String,
-    ): TlsClientCredentialsBuilder {
+    ): GrpcTlsClientCredentialsBuilder {
         optionsBuilder.keyManager(certChainPem, privateKeyPem)
         return this
     }
@@ -88,27 +56,4 @@ internal class NativeTlsClientCredentialsBuilder : TlsClientCredentialsBuilder {
                 error("TLS channel credential creation failed")
             }
     }
-}
-
-internal class CombinedClientCredentials(
-    override val clientCredentials: ClientCredentials,
-    override val callCredentials: GrpcCallCredentials,
-): ClientCredentials() {
-    override fun createRaw(parentJob: Job, coroutineDispatcher: CoroutineDispatcher): CPointer<grpc_channel_credentials> {
-        val rawChannelCredentials = clientCredentials.createRaw(parentJob, coroutineDispatcher)
-        val rawCallCredentials = callCredentials.createRaw(parentJob, coroutineDispatcher)
-        val rawComposite = grpc_composite_channel_credentials_create(
-            channel_creds = rawChannelCredentials,
-            call_creds = rawCallCredentials,
-            reserved = null
-        )
-        // Release originals as composite now holds references to them
-        grpc_channel_credentials_release(rawChannelCredentials)
-        grpc_call_credentials_release(rawCallCredentials)
-        return rawComposite ?: internalError("Failed to create composite credentials")
-    }
-}
-
-public actual operator fun ClientCredentials.plus(other: GrpcCallCredentials): ClientCredentials {
-    return CombinedClientCredentials(clientCredentials, callCredentials?.combine(other) ?: other)
 }

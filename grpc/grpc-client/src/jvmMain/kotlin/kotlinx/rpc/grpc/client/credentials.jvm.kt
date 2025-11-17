@@ -6,7 +6,6 @@ package kotlinx.rpc.grpc.client
 
 import io.grpc.CallCredentials
 import io.grpc.ChannelCredentials
-import io.grpc.CompositeChannelCredentials
 import io.grpc.InsecureChannelCredentials
 import io.grpc.SecurityLevel
 import io.grpc.TlsChannelCredentials
@@ -14,34 +13,22 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.rpc.grpc.Status
-import kotlinx.rpc.grpc.StatusException
-import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.util.concurrent.Executor
 import kotlin.coroutines.cancellation.CancellationException
 
-public actual typealias ClientCredentials = ChannelCredentials
-
-public actual typealias InsecureClientCredentials = InsecureChannelCredentials
-
-public actual typealias TlsClientCredentials = TlsChannelCredentials
-
-// we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
-// java constructor.
-@InternalRpcApi
-public actual fun createInsecureClientCredentials(): ClientCredentials {
-    return InsecureClientCredentials.create()
+internal fun GrpcClientCredentials.toJvm(): ChannelCredentials {
+    return when (this) {
+        is GrpcCombinedClientCredentials -> clientCredentials.toJvm()
+        is GrpcInsecureClientCredentials -> InsecureChannelCredentials.create()
+        is GrpcTlsClientCredentials -> JvmTlsCLientCredentialBuilder().apply(configure).build()
+    }
 }
 
-internal actual fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder = JvmTlsCLientCredentialBuilder()
-internal actual fun TlsClientCredentialsBuilder.build(): ClientCredentials {
-    return (this as JvmTlsCLientCredentialBuilder).build()
-}
-
-private class JvmTlsCLientCredentialBuilder : TlsClientCredentialsBuilder {
-    private var cb = TlsClientCredentials.newBuilder()
+private class JvmTlsCLientCredentialBuilder : GrpcTlsClientCredentialsBuilder {
+    private var cb = TlsChannelCredentials.newBuilder()
 
 
-    override fun trustManager(rootCertsPem: String): TlsClientCredentialsBuilder {
+    override fun trustManager(rootCertsPem: String): GrpcTlsClientCredentialsBuilder {
         cb.trustManager(rootCertsPem.byteInputStream())
         return this
     }
@@ -49,12 +36,12 @@ private class JvmTlsCLientCredentialBuilder : TlsClientCredentialsBuilder {
     override fun keyManager(
         certChainPem: String,
         privateKeyPem: String,
-    ): TlsClientCredentialsBuilder {
+    ): GrpcTlsClientCredentialsBuilder {
         cb.keyManager(certChainPem.byteInputStream(), privateKeyPem.byteInputStream())
         return this
     }
 
-    fun build(): ClientCredentials {
+    fun build(): ChannelCredentials {
         return cb.build()
     }
 }
@@ -89,8 +76,4 @@ internal fun GrpcCallCredentials.toJvm(): CallCredentials {
             }
         }
     }
-}
-
-public actual operator fun ClientCredentials.plus(other: GrpcCallCredentials): ClientCredentials {
-    return CompositeChannelCredentials.create(this, other.toJvm())
 }

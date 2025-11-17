@@ -6,8 +6,8 @@
 
 package kotlinx.rpc.grpc.client.internal
 
-import kotlinx.rpc.grpc.client.ClientCredentials
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
+import kotlinx.rpc.grpc.client.GrpcClientCredentials
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.time.Duration
 
@@ -78,13 +78,13 @@ public expect abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
 public expect fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
-    credentials: ClientCredentials? = null,
+    credentials: GrpcClientCredentials? = null,
 ): ManagedChannelBuilder<*>
 
 @InternalRpcApi
 public expect fun ManagedChannelBuilder(
     target: String,
-    credentials: ClientCredentials? = null,
+    credentials: GrpcClientCredentials? = null,
 ): ManagedChannelBuilder<*>
 
 internal expect fun ManagedChannelBuilder<*>.applyConfig(config: GrpcClientConfiguration): ManagedChannelBuilder<*>

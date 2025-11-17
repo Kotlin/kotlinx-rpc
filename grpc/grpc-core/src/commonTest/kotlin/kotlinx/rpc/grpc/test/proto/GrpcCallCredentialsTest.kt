@@ -4,10 +4,6 @@
 
 package kotlinx.rpc.grpc.test.proto
 
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
@@ -18,7 +14,7 @@ import kotlinx.rpc.grpc.buildGrpcMetadata
 import kotlinx.rpc.grpc.client.GrpcCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallCredentials.Context
 import kotlinx.rpc.grpc.client.GrpcClient
-import kotlinx.rpc.grpc.client.TlsClientCredentials
+import kotlinx.rpc.grpc.client.GrpcTlsClientCredentials
 import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.getAll
 import kotlinx.rpc.grpc.server.TlsServerCredentials
@@ -93,7 +89,7 @@ class GrpcCallCredentialsTest : GrpcProtoTest() {
     @Test
     fun `test tls call credentials - should succeed`() {
         val serverTls = TlsServerCredentials(SERVER_CERT_PEM, SERVER_KEY_PEM)
-        val clientTls = TlsClientCredentials { trustManager(SERVER_CERT_PEM) }
+        val clientTls = GrpcTlsClientCredentials { trustManager(SERVER_CERT_PEM) }
         val clientCombined = clientTls + TlsBearerTokenCredentials()
 
         var grpcMetadata: GrpcMetadata? = null

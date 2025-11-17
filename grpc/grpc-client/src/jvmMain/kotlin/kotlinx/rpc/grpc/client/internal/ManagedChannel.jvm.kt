@@ -9,8 +9,9 @@ package kotlinx.rpc.grpc.client.internal
 import io.grpc.Grpc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.rpc.grpc.client.ClientCredentials
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
+import kotlinx.rpc.grpc.client.GrpcClientCredentials
+import kotlinx.rpc.grpc.client.toJvm
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
@@ -36,18 +37,18 @@ public actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
 public actual fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
-    credentials: ClientCredentials?,
+    credentials: GrpcClientCredentials?,
 ): ManagedChannelBuilder<*> {
-    if (credentials != null) return Grpc.newChannelBuilderForAddress(hostname, port, credentials)
+    if (credentials != null) return Grpc.newChannelBuilderForAddress(hostname, port, credentials.toJvm())
     return io.grpc.ManagedChannelBuilder.forAddress(hostname, port)
 }
 
 @InternalRpcApi
 public actual fun ManagedChannelBuilder(
     target: String,
-    credentials: ClientCredentials?,
+    credentials: GrpcClientCredentials?,
 ): ManagedChannelBuilder<*> {
-    if (credentials != null) return Grpc.newChannelBuilder(target, credentials)
+    if (credentials != null) return Grpc.newChannelBuilder(target, credentials.toJvm())
     return io.grpc.ManagedChannelBuilder.forTarget(target)
 }
 

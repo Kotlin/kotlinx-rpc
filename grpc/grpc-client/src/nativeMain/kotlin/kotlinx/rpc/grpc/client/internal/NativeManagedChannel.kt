@@ -6,7 +6,6 @@
 
 package kotlinx.rpc.grpc.client.internal
 
-import cnames.structs.grpc_call_credentials
 import cnames.structs.grpc_channel
 import cnames.structs.grpc_channel_credentials
 import kotlinx.atomicfu.atomic
@@ -20,16 +19,13 @@ import kotlinx.cinterop.cstr
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlinx.rpc.grpc.client.ClientCredentials
-import kotlinx.rpc.grpc.client.GrpcCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
+import kotlinx.rpc.grpc.client.GrpcClientCredentials
 import kotlinx.rpc.grpc.client.createRaw
 import kotlinx.rpc.grpc.client.rawDeadline
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
@@ -40,13 +36,11 @@ import kotlinx.rpc.grpc.internal.toGrpcSlice
 import libkgrpc.GRPC_PROPAGATE_DEFAULTS
 import libkgrpc.grpc_arg
 import libkgrpc.grpc_arg_type
-import libkgrpc.grpc_call_credentials_release
 import libkgrpc.grpc_channel_args
 import libkgrpc.grpc_channel_create
 import libkgrpc.grpc_channel_create_call
 import libkgrpc.grpc_channel_credentials_release
 import libkgrpc.grpc_channel_destroy
-import libkgrpc.grpc_composite_channel_credentials_create
 import libkgrpc.grpc_slice_unref
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.experimental.ExperimentalNativeApi
@@ -65,7 +59,7 @@ internal class NativeManagedChannel(
     val overrideAuthority: String?,
     val keepAlive: GrpcClientConfiguration.KeepAlive?,
     // this is not a composite channel credentials
-    clientCredentials: ClientCredentials,
+    clientCredentials: GrpcClientCredentials,
 ) : ManagedChannel, ManagedChannelPlatform() {
 
     // a reference to make sure the grpc_init() was called. (it is released after shutdown)
@@ -79,11 +73,7 @@ internal class NativeManagedChannel(
     // the channel's completion queue, handling all request operations
     private val cq = CompletionQueue()
 
-    private val callCredCallJob = SupervisorJob(callJobSupervisor)
-    private val rawChannelCredentials: CPointer<grpc_channel_credentials> = clientCredentials.createRaw(
-        parentJob = callCredCallJob,
-        coroutineDispatcher = Dispatchers.Default
-    )
+    private val rawChannelCredentials: CPointer<grpc_channel_credentials> = clientCredentials.createRaw()
 
     internal val raw: CPointer<grpc_channel> = memScoped {
         val args = mutableListOf<GrpcArg>()

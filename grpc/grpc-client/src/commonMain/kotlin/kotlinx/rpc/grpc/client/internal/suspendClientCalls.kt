@@ -26,6 +26,7 @@ import kotlinx.rpc.grpc.client.EmptyCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
 import kotlinx.rpc.grpc.descriptor.methodType
@@ -199,7 +200,8 @@ private class ClientCallScopeImpl<Request, Response>(
 
     private fun doCall(request: Flow<Request>): Flow<Response> = flow {
         coroutineScope {
-
+            // attach all call credentials set in the client to the call option ones.
+            callOptions.callCredentials += client.callCredentials
             val call = client.channel.platformApi.createCall(method, callOptions)
 
             /*
