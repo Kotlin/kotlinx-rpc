@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.grpc
 
+import kotlinx.rpc.internal.utils.InternalRpcApi
+
 /**
  * [Status] in Exception form, for propagating Status information via exceptions.
  */
@@ -11,14 +13,27 @@ public expect class StatusException : Exception {
     public constructor(status: Status)
     public constructor(status: Status, trailers: GrpcMetadata?)
 
-    public fun getStatus(): Status
-    public fun getTrailers(): GrpcMetadata?
+    internal fun getStatus(): Status
+    internal fun getTrailers(): GrpcMetadata?
 }
 
+public val StatusException.status: Status get() = getStatus()
+public val StatusException.trailers: GrpcMetadata? get() = getTrailers()
+
+@InternalRpcApi
 public expect class StatusRuntimeException : RuntimeException {
-    public constructor(status: Status)
-    public constructor(status: Status, trailers: GrpcMetadata?)
+    internal constructor(status: Status, trailers: GrpcMetadata?)
 
-    public fun getStatus(): Status
-    public fun getTrailers(): GrpcMetadata?
+    internal fun getStatus(): Status
+    internal fun getTrailers(): GrpcMetadata?
 }
+
+@InternalRpcApi
+public fun StatusRuntimeException(code: StatusCode, description: String? = null, trailers: GrpcMetadata? = null): StatusRuntimeException {
+    return StatusRuntimeException(Status(code, description), trailers)
+}
+
+@InternalRpcApi
+public val StatusRuntimeException.status: Status get() = getStatus()
+@InternalRpcApi
+public val StatusRuntimeException.trailers: GrpcMetadata? get() = getTrailers()

@@ -17,6 +17,7 @@ import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.internal.destroyEntries
 import kotlinx.rpc.grpc.internal.toRaw
+import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.statusCode
 import libkgrpc.*
 import platform.posix.size_tVar
@@ -87,7 +88,7 @@ private fun getMetadataCallback(
             }
             notifyResult(metadata, grpc_status_code.GRPC_STATUS_OK, null)
         } catch (e: StatusException) {
-            notifyResult(metadata, e.getStatus().statusCode.toRaw(), e.message)
+            notifyResult(metadata, e.status.statusCode.toRaw(), e.message)
         } catch (e: CancellationException) {
             notifyResult(metadata, grpc_status_code.GRPC_STATUS_CANCELLED, e.message)
             throw e

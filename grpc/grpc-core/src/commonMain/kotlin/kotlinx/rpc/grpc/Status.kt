@@ -26,13 +26,20 @@ package kotlinx.rpc.grpc
  * [doc/statuscodes.md](https://github.com/grpc/grpc/blob/master/doc/statuscodes.md)
  */
 public expect class Status {
-    public fun getDescription(): String?
-    public fun getCause(): Throwable?
+    internal fun getDescription(): String?
+    internal fun getCause(): Throwable?
 }
+
 
 public expect fun Status(code: StatusCode, description: String? = null, cause: Throwable? = null): Status
 
 public expect val Status.statusCode: StatusCode
+
+public val Status.description: String? get() = getDescription()
+
+public fun Status.asException(trailers: GrpcMetadata? = null): StatusException {
+    return StatusException(this, trailers)
+}
 
 public enum class StatusCode(public val value: Int) {
     OK(0),
@@ -54,4 +61,12 @@ public enum class StatusCode(public val value: Int) {
     UNAUTHENTICATED(16);
 
     public val valueAscii: ByteArray = value.toString().encodeToByteArray()
+}
+
+public fun StatusCode.asStatus(description: String? = null): Status {
+    return Status(this, description)
+}
+
+public fun StatusCode.asException(description: String? = null, trailers: GrpcMetadata? = null): StatusException {
+    return StatusException(Status(this, description), trailers)
 }
