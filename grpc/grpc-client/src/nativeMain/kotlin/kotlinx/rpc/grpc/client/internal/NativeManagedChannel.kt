@@ -106,8 +106,6 @@ internal class NativeManagedChannel(
 
         var rawArgs = if (args.isNotEmpty()) args.toRaw(this) else null
 
-        // if we have composite credentials, which bundles call credentials and channel credentials,
-        // we use it. Otherwise, we use the channel credentials alone.
         grpc_channel_create(target, rawChannelCredentials, rawArgs?.ptr)
             ?: error("Failed to create channel")
     }

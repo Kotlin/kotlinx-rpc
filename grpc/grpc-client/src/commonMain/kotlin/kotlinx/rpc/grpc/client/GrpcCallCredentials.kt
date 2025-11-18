@@ -37,7 +37,7 @@ import kotlinx.rpc.grpc.plus
  * ```kotlin
  * class MethodScopedCredentials : GrpcCallCredentials {
  *     override suspend fun Context.getRequestMetadata(): GrpcMetadata {
- *         val scope = when (method.name) {
+ *         val scope = when (methodName) {
  *             "GetUser" -> "read:users"
  *             "UpdateUser" -> "write:users"
  *             else -> "default"
@@ -83,7 +83,7 @@ public interface GrpcCallCredentials {
      * ## Context Information
      *
      * The [Context] receiver provides access to call-specific information:
-     * - [Context.method]: The method being invoked (for method-specific auth)
+     * - [Context.methodName]: The method being invoked (for method-specific auth)
      * - [Context.authority]: The target authority (for tenant-aware auth)
      *
      * ## Examples
@@ -137,11 +137,10 @@ public interface GrpcCallCredentials {
      *
      * Provides metadata about the RPC call to enable method-specific authentication strategies.
      *
-     * @property method The method descriptor of the RPC being invoked.
+     * @property methodName The method name of the RPC being invoked.
      * @property authority The authority (host:port) for this call.
      */
     // TODO: check whether we should add GrpcCallOptions in the context (KRPC-232)
-    // TODO: determine if possible and necessary to add the MethodDescriptor
     public data class Context(
         val authority: String,
         val methodName: String,
