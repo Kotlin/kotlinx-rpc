@@ -12,6 +12,7 @@ import io.grpc.TlsChannelCredentials
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.rpc.grpc.Status
+import kotlinx.rpc.grpc.internal.internalError
 import java.util.concurrent.Executor
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
@@ -21,6 +22,7 @@ internal fun GrpcClientCredentials.toJvm(): ChannelCredentials {
         is GrpcCombinedClientCredentials -> clientCredentials.toJvm()
         is GrpcInsecureClientCredentials -> InsecureChannelCredentials.create()
         is GrpcTlsClientCredentials -> JvmTlsCLientCredentialBuilder().apply(configure).build()
+        else -> internalError("Unknown client credentials type: $this")
     }
 }
 

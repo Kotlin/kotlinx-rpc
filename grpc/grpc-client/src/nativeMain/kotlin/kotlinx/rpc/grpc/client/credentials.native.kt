@@ -29,6 +29,7 @@ internal fun GrpcClientCredentials.createRaw(): CPointer<grpc_channel_credential
             clientCredentials.createRaw()
         is GrpcInsecureClientCredentials -> grpc_insecure_credentials_create() ?: error("grpc_insecure_credentials_create() returned null")
         is GrpcTlsClientCredentials -> NativeTlsClientCredentialsBuilder().apply(configure).build()
+        else -> internalError("Unknown client credentials type: $this")
     }
 }
 

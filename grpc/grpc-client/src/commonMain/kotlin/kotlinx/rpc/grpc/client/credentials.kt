@@ -25,7 +25,9 @@ package kotlinx.rpc.grpc.client
  * @see GrpcInsecureClientCredentials
  * @see GrpcCallCredentials
  */
-public sealed class GrpcClientCredentials
+@OptIn(ExperimentalSubclassOptIn::class)
+@SubclassOptInRequired
+public interface GrpcClientCredentials
 
 /**
  * Combines client credentials with call credentials.
@@ -91,7 +93,7 @@ public fun GrpcClientCredentials.combine(other: GrpcCallCredentials): GrpcClient
  *
  * @see GrpcTlsClientCredentials
  */
-public class GrpcInsecureClientCredentials : GrpcClientCredentials()
+public class GrpcInsecureClientCredentials : GrpcClientCredentials
 
 /**
  * TLS/SSL credentials for secure transport.
@@ -139,7 +141,7 @@ public class GrpcInsecureClientCredentials : GrpcClientCredentials()
  * @see GrpcTlsClientCredentialsBuilder
  * @see GrpcInsecureClientCredentials
  */
-public class GrpcTlsClientCredentials(internal val configure: GrpcTlsClientCredentialsBuilder.() -> Unit = {}) : GrpcClientCredentials()
+public class GrpcTlsClientCredentials(internal val configure: GrpcTlsClientCredentialsBuilder.() -> Unit = {}) : GrpcClientCredentials
 
 /**
  * Builder for configuring [GrpcTlsClientCredentials].
@@ -231,7 +233,7 @@ internal val GrpcClientCredentials.realCallCredentials
 internal class GrpcCombinedClientCredentials private constructor(
     internal val clientCredentials: GrpcClientCredentials,
     internal val callCredentials: GrpcCallCredentials,
-): GrpcClientCredentials() {
+): GrpcClientCredentials {
 
     companion object {
         internal fun create(clientCredentials: GrpcClientCredentials, callCredentials: GrpcCallCredentials): GrpcCombinedClientCredentials {
