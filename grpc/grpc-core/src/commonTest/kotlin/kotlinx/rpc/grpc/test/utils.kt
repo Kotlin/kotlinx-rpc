@@ -15,7 +15,7 @@ fun assertGrpcFailure(statusCode: StatusCode, message: String? = null, block: ()
     val exc = assertFailsWith<StatusException>(message) { block() }
     assertEquals(statusCode, exc.getStatus().statusCode)
     if (message != null) {
-        assertContains(message, exc.getStatus().getDescription() ?: "")
+        assertContains(exc.getStatus().getDescription() ?: "", message)
     }
 }
 

@@ -47,11 +47,6 @@ import libkgrpc.grpc_slice_unref
 import libkgrpc.grpc_status_code
 import platform.posix.memcpy
 
-@InternalRpcApi
-public fun internalError(message: String): Nothing {
-    error("Unexpected internal error: $message. Please, report the issue here: https://github.com/Kotlin/kotlinx-rpc/issues/new?template=bug_report.md")
-}
-
 
 @InternalRpcApi
 @OptIn(ExperimentalForeignApi::class, InternalIoApi::class, UnsafeIoApi::class)

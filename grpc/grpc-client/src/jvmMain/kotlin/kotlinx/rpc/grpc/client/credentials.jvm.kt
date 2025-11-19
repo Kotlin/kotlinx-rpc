@@ -4,34 +4,33 @@
 
 package kotlinx.rpc.grpc.client
 
+import io.grpc.CallCredentials
 import io.grpc.ChannelCredentials
 import io.grpc.InsecureChannelCredentials
+import io.grpc.SecurityLevel
 import io.grpc.TlsChannelCredentials
-import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.rpc.grpc.Status
+import kotlinx.rpc.grpc.internal.internalError
+import java.util.concurrent.Executor
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.cancellation.CancellationException
 
-public actual typealias ClientCredentials = ChannelCredentials
-
-public actual typealias InsecureClientCredentials = InsecureChannelCredentials
-
-public actual typealias TlsClientCredentials = TlsChannelCredentials
-
-// we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
-// java constructor.
-@InternalRpcApi
-public actual fun createInsecureClientCredentials(): ClientCredentials {
-    return InsecureClientCredentials.create()
+internal fun GrpcClientCredentials.toJvm(): ChannelCredentials {
+    return when (this) {
+        is GrpcCombinedClientCredentials -> clientCredentials.toJvm()
+        is GrpcInsecureClientCredentials -> InsecureChannelCredentials.create()
+        is GrpcTlsClientCredentials -> JvmTlsCLientCredentialBuilder().apply(configure).build()
+        else -> internalError("Unknown client credentials type: $this")
+    }
 }
 
-internal actual fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder = JvmTlsCLientCredentialBuilder()
-internal actual fun TlsClientCredentialsBuilder.build(): ClientCredentials {
-    return (this as JvmTlsCLientCredentialBuilder).build()
-}
-
-private class JvmTlsCLientCredentialBuilder : TlsClientCredentialsBuilder {
-    private var cb = TlsClientCredentials.newBuilder()
+private class JvmTlsCLientCredentialBuilder : GrpcTlsClientCredentialsBuilder {
+    private var cb = TlsChannelCredentials.newBuilder()
 
 
-    override fun trustManager(rootCertsPem: String): TlsClientCredentialsBuilder {
+    override fun trustManager(rootCertsPem: String): GrpcTlsClientCredentialsBuilder {
         cb.trustManager(rootCertsPem.byteInputStream())
         return this
     }
@@ -39,12 +38,44 @@ private class JvmTlsCLientCredentialBuilder : TlsClientCredentialsBuilder {
     override fun keyManager(
         certChainPem: String,
         privateKeyPem: String,
-    ): TlsClientCredentialsBuilder {
+    ): GrpcTlsClientCredentialsBuilder {
         cb.keyManager(certChainPem.byteInputStream(), privateKeyPem.byteInputStream())
         return this
     }
 
-    fun build(): ClientCredentials {
+    fun build(): ChannelCredentials {
         return cb.build()
+    }
+}
+
+internal fun GrpcCallCredentials.toJvm(coroutineContext: CoroutineContext): CallCredentials {
+    return object : CallCredentials() {
+        override fun applyRequestMetadata(
+            requestInfo: RequestInfo,
+            appExecutor: Executor,
+            applier: MetadataApplier
+        ) {
+            CoroutineScope(coroutineContext).launch {
+                if (requiresTransportSecurity && requestInfo.securityLevel == SecurityLevel.NONE) {
+                    applier.fail(Status.UNAUTHENTICATED.withDescription(
+                        "Established channel does not have a sufficient security level to transfer call credential."
+                    ))
+                    return@launch
+                }
+
+                try {
+                    val context = GrpcCallCredentials.Context(requestInfo.authority, requestInfo.methodDescriptor.fullMethodName)
+                    val metadata = context.getRequestMetadata()
+                    applier.apply(metadata)
+                } catch (err: Throwable) {
+                    // we are not treating StatusExceptions separately, as currently there is no
+                    // clean way to support the same feature on native. So for the sake of similar behavior,
+                    // we always fail with Status.UNAVAILABLE. (KRPC-233)
+                    val description = "Getting metadata from call credentials failed with error: ${err.message}"
+                    applier.fail(Status.UNAVAILABLE.withDescription(description).withCause(err))
+                    if (err is CancellationException) throw err
+                }
+            }
+        }
     }
 }

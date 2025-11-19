@@ -4,6 +4,8 @@
 package kotlinx.rpc.grpc.test
 
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -11,9 +13,9 @@ import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
-import kotlinx.rpc.grpc.client.createInsecureClientCredentials
 import kotlinx.rpc.grpc.client.internal.ClientCall
 import kotlinx.rpc.grpc.client.GrpcCallOptions
+import kotlinx.rpc.grpc.client.GrpcInsecureClientCredentials
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
 import kotlinx.rpc.grpc.client.internal.buildChannel
@@ -52,11 +54,11 @@ class GrpcCoreClientTest {
         )
 
     private fun ManagedChannel.newHelloCall(fullName: String = "kotlinx.rpc.grpc.test.GreeterService/SayHello"): ClientCall<HelloRequest, HelloReply> =
-        platformApi.createCall(descriptorFor(fullName), GrpcCallOptions())
+        platformApi.createCall(descriptorFor(fullName), GrpcCallOptions(), Dispatchers.Default)
 
     private fun createChannel(): ManagedChannel = ManagedChannelBuilder(
         target = "localhost:$PORT",
-        credentials = createInsecureClientCredentials()
+        credentials = GrpcInsecureClientCredentials()
     ).buildChannel()
 
 
