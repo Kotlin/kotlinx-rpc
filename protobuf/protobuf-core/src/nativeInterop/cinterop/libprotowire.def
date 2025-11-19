@@ -3,14 +3,22 @@ headerFilter = protowire.h
 
 noStringConversion = pw_encoder_write_string
 
-
 staticLibraries.macos_arm64 = libprotowire_fat.macos_arm64.a
 staticLibraries.macos_x64 = libprotowire_fat.macos_x64.a
+
 staticLibraries.ios_arm64 = libprotowire_fat.ios_arm64.a
 staticLibraries.ios_simulator_arm64 = libprotowire_fat.ios_simulator_arm64.a
 staticLibraries.ios_x64 = libprotowire_fat.ios_x64.a
+
+staticLibraries.watchos_arm64 =  libprotowire_fat.watchos_arm64.a
+staticLibraries.watchos_device_arm64 =  libprotowire_fat.watchos_device_arm64.a
+staticLibraries.watchos_simulator_arm64 =  libprotowire_fat.watchos_simulator_arm64.a
+staticLibraries.watchos_arm32 =  libprotowire_fat.watchos_arm32.a
+staticLibraries.watchos_x64 =  libprotowire_fat.watchos_x64.a
+
+staticLibraries.tvos_arm64 = libprotowire_fat.tvos_arm64.a
+staticLibraries.tvos_simulator_arm64 = libprotowire_fat.tvos_simulator_arm64.a
+staticLibraries.tvos_x64 = libprotowire_fat.tvos_x64.a
+
 staticLibraries.linux_arm64 = libprotowire_fat.linux_arm64.a
 staticLibraries.linux_x64 = libprotowire_fat.linux_x64.a
-# TODO: Uncomment when activating WatchOS
-# staticLibraries.watchos_arm64 = libprotowire_fat.watchos_arm64_32.a
-# staticLibraries.watchos_simulator_arm64 = libprotowire_fat.watchos_sim_arm64.a
