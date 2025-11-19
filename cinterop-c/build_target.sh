@@ -26,6 +26,8 @@ CONFIG=release
 mkdir -p "$(dirname "$DST")"
 
 echo "==> Building $LABEL to $DST" >&2
+echo "==> KONAN_HOME: $KONAN_HOME" >&2
+echo "==> KONAN_TARGET: $KONAN_TARGET" >&2
 KONAN_DEP="--define=KONAN_DEPS=$HOME/.konan/dependencies"
 bazel build "$LABEL" --config="$KONAN_TARGET" --config="$CONFIG" "$KONAN_DEP" "--define=KONAN_HOME=$KONAN_HOME"
 
