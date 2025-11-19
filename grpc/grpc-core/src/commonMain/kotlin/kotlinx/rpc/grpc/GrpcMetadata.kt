@@ -52,6 +52,16 @@ import kotlinx.rpc.grpc.codec.MessageCodec
 public expect class GrpcMetadata constructor()
 
 /**
+ * Constructs and configures a new [GrpcMetadata] instance.
+ * The provided [block] is executed to apply custom modifications to the metadata object.
+ *
+ * @param block A lambda function allowing customization of the [GrpcMetadata] object.
+ *              The lambda operates on the metadata instance being built.
+ * @return The configured [GrpcMetadata] instance.
+ */
+public fun buildGrpcMetadata(block: GrpcMetadata.() -> Unit): GrpcMetadata = GrpcMetadata().apply(block)
+
+/**
  * A typed key for metadata entries that uses a [MessageCodec] to encode and decode values.
  *
  * Typed keys provide type-safe access to metadata values with automatic serialization and
