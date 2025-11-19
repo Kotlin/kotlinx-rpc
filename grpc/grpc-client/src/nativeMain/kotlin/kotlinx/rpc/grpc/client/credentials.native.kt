@@ -9,48 +9,34 @@ package kotlinx.rpc.grpc.client
 import cnames.structs.grpc_channel_credentials
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
 import kotlinx.rpc.grpc.internal.TlsCredentialsOptionsBuilder
+import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import libkgrpc.grpc_call_credentials_release
 import libkgrpc.grpc_channel_credentials_release
+import libkgrpc.grpc_composite_channel_credentials_create
 import libkgrpc.grpc_insecure_credentials_create
 import libkgrpc.grpc_tls_credentials_create
 import libkgrpc.grpc_tls_credentials_options_destroy
 import kotlin.experimental.ExperimentalNativeApi
-import kotlin.native.ref.createCleaner
 
-public actual abstract class ClientCredentials internal constructor(
-    internal val raw: CPointer<grpc_channel_credentials>,
-) {
-    @Suppress("unused")
-    internal val rawCleaner = createCleaner(raw) {
-        grpc_channel_credentials_release(it)
+internal fun GrpcClientCredentials.createRaw(): CPointer<grpc_channel_credentials> {
+    return when (this) {
+        is GrpcCombinedClientCredentials ->
+            // we don't create a composite credential, as we collect them and apply them on every call
+            clientCredentials.createRaw()
+        is GrpcInsecureClientCredentials -> grpc_insecure_credentials_create() ?: error("grpc_insecure_credentials_create() returned null")
+        is GrpcTlsClientCredentials -> NativeTlsClientCredentialsBuilder().apply(configure).build()
+        else -> internalError("Unknown client credentials type: $this")
     }
 }
 
-public actual class InsecureClientCredentials internal constructor(
-    raw: CPointer<grpc_channel_credentials>,
-) : ClientCredentials(raw)
-
-public actual class TlsClientCredentials internal constructor(
-    raw: CPointer<grpc_channel_credentials>,
-) : ClientCredentials(raw)
-
-@InternalRpcApi
-public actual fun createInsecureClientCredentials(): ClientCredentials {
-    return InsecureClientCredentials(
-        grpc_insecure_credentials_create() ?: error("grpc_insecure_credentials_create() returned null")
-    )
-}
-
-internal actual fun TlsClientCredentialsBuilder(): TlsClientCredentialsBuilder = NativeTlsClientCredentialsBuilder()
-internal actual fun TlsClientCredentialsBuilder.build(): ClientCredentials {
-    return (this as NativeTlsClientCredentialsBuilder).build()
-}
-
-private class NativeTlsClientCredentialsBuilder : TlsClientCredentialsBuilder {
+internal class NativeTlsClientCredentialsBuilder : GrpcTlsClientCredentialsBuilder {
     var optionsBuilder = TlsCredentialsOptionsBuilder()
 
-    override fun trustManager(rootCertsPem: String): TlsClientCredentialsBuilder {
+    override fun trustManager(rootCertsPem: String): GrpcTlsClientCredentialsBuilder {
         optionsBuilder.trustManager(rootCertsPem)
         return this
     }
@@ -58,18 +44,17 @@ private class NativeTlsClientCredentialsBuilder : TlsClientCredentialsBuilder {
     override fun keyManager(
         certChainPem: String,
         privateKeyPem: String,
-    ): TlsClientCredentialsBuilder {
+    ): GrpcTlsClientCredentialsBuilder {
         optionsBuilder.keyManager(certChainPem, privateKeyPem)
         return this
     }
 
-    fun build(): ClientCredentials {
+    fun build(): CPointer<grpc_channel_credentials> {
         val opts = optionsBuilder.build()
-        val creds = grpc_tls_credentials_create(opts)
+        return grpc_tls_credentials_create(opts)
             ?: run {
                 grpc_tls_credentials_options_destroy(opts);
                 error("TLS channel credential creation failed")
             }
-        return TlsClientCredentials(creds)
     }
 }

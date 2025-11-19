@@ -6,6 +6,7 @@ package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
@@ -24,6 +25,7 @@ import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.client.ClientCallScope
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
 import kotlinx.rpc.grpc.descriptor.methodType
@@ -197,10 +199,15 @@ private class ClientCallScopeImpl<Request, Response>(
 
     private fun doCall(request: Flow<Request>): Flow<Response> = flow {
         coroutineScope {
-            val call = client.channel.platformApi.createCall(method, callOptions)
+            // attach all call credentials set in the client to the call option ones.
+            callOptions.callCredentials += client.callCredentials
+            // pass this scope's context, so the suspend functions of call credentials launch in the same context.
+            // it will ensure that getRequestMetadata of the callCredential won't orphan if the call is cancelled
+            // by the user or by grpc-java
+            val call = client.channel.platformApi.createCall(method, callOptions, this.coroutineContext)
 
             /*
-             * We maintain a buffer of size 1 so onMessage never has to block: it only gets called after
+             * We maintain a buffer of size 1, so onMessage never has to block: it only gets called after
              * we request a response from the server, which only happens when responses is empty and
              * there is room in the buffer.
              */

@@ -8,10 +8,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.client.ClientCallScope
-import kotlinx.rpc.grpc.client.ClientCredentials
+import kotlinx.rpc.grpc.client.GrpcClientCredentials
 import kotlinx.rpc.grpc.client.ClientInterceptor
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
@@ -27,13 +26,13 @@ abstract class GrpcProtoTest {
 
     fun runGrpcTest(
         serverCreds: ServerCredentials? = null,
-        clientCreds: ClientCredentials? = null,
+        clientCreds: GrpcClientCredentials? = null,
         overrideAuthority: String? = null,
         clientInterceptors: List<ClientInterceptor> = emptyList(),
         serverInterceptors: List<ServerInterceptor> = emptyList(),
         configure: GrpcClientConfiguration.() -> Unit = {},
         test: suspend (GrpcClient) -> Unit,
-    ) = runTest {
+    ) = runBlocking {
         serverMutex.withLock {
             val grpcClient = GrpcClient("localhost", PORT) {
                 credentials = clientCreds ?: plaintext()
