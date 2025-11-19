@@ -24,6 +24,13 @@ The binary can be updated by running
 ./gradlew :grpc:grpc-core:buildDependencyCLibGrpc_fat_iosArm64
 ```
 
+### Compiling for Apple targets
+
+All Konan Apple targets have a corresponding build config in `.bazelrc`.
+To tell Bazel the apple target constraints, we use the `apple_support` rules.
+All apple target rules are defined in https://github.com/bazelbuild/apple_support/blob/master/configs/platforms.bzl.
+For Konan Target to Apple triplet mapping, see https://kotlinlang.org/docs/native-target-support.html.
+
 ### Compiling for Linux
 
 To produce K/N compatible static libraries, we use the Konan toolchain for compilation.
