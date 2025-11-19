@@ -33,13 +33,13 @@ private typealias RequestClient = Any
 
 /**
  * GrpcClient manages gRPC communication by providing implementation for making asynchronous RPC calls.
- *
- * @field channel The [kotlinx.rpc.grpc.client.internal.ManagedChannel] used to communicate with remote gRPC services.
  */
 public class GrpcClient internal constructor(
     internal val channel: ManagedChannel,
     messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
     internal val interceptors: List<ClientInterceptor>,
+    // the default call credentials that are automatically attached to all calls made with this client
+    internal val callCredentials: GrpcCallCredentials,
 ) : RpcClient {
     private val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
     private val messageCodecResolver = messageCodecResolver + ThrowingMessageCodecResolver
@@ -182,7 +182,8 @@ private fun GrpcClient(
     config: GrpcClientConfiguration,
 ): GrpcClient {
     val channel = builder.applyConfig(config).buildChannel()
-    return GrpcClient(channel, config.messageCodecResolver, config.interceptors)
+    val callCredentials = config.credentials?.realCallCredentials ?: EmptyCallCredentials
+    return GrpcClient(channel, config.messageCodecResolver, config.interceptors, callCredentials)
 }
 
 
@@ -234,7 +235,7 @@ public class GrpcClientConfiguration internal constructor() {
      * @see tls
      * @see plaintext
      */
-    public var credentials: ClientCredentials? = null
+    public var credentials: GrpcClientCredentials? = null
 
     /**
      * Overrides the authority used with TLS and HTTP virtual hosting.
@@ -272,7 +273,7 @@ public class GrpcClientConfiguration internal constructor() {
      *
      * @return An insecure [ClientCredentials] instance that must be passed to [credentials].
      */
-    public fun plaintext(): ClientCredentials = createInsecureClientCredentials()
+    public fun plaintext(): GrpcClientCredentials = GrpcInsecureClientCredentials()
 
     /**
      * Configures and creates secure client credentials for the gRPC client.
@@ -286,13 +287,13 @@ public class GrpcClientConfiguration internal constructor() {
      * Alternatively, you can use the [TlsClientCredentials] constructor.
      *
      * @param configure A configuration block that allows setting up the TLS parameters
-     * using the [TlsClientCredentialsBuilder].
+     * using the [GrpcTlsClientCredentialsBuilder].
      * @return A secure [ClientCredentials] instance that must be passed to [credentials].
      *
      * @see credentials
      */
-    public fun tls(configure: TlsClientCredentialsBuilder.() -> Unit): ClientCredentials =
-        TlsClientCredentials(configure)
+    public fun tls(configure: GrpcTlsClientCredentialsBuilder.() -> Unit): GrpcClientCredentials =
+        GrpcTlsClientCredentials(configure)
 
     /**
      * Configures keep-alive settings for the gRPC client.
