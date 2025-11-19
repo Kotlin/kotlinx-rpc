@@ -21,9 +21,9 @@ rpc {
                 options.put("hello", "world")
                 options.put("foo", "bar")
 
-                strategy = ProtocPlugin.Strategy.All
-                includeImports = true
-                includeWkt = false
+                strategy.set(ProtocPlugin.Strategy.All)
+                includeImports.set(true)
+                includeWkt.set(false)
                 types = listOf("my.type.Yay")
                 excludeTypes = listOf("my.type.Nope")
             }

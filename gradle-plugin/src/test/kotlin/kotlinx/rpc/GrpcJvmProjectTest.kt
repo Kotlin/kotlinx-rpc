@@ -6,16 +6,16 @@ package kotlinx.rpc
 
 import kotlinx.rpc.base.GrpcBaseTest
 import org.gradle.testkit.runner.TaskOutcome
+import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
 import kotlin.io.path.Path
-import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class GrpcJvmProjectTest : GrpcBaseTest() {
     override val isKmp: Boolean = false
 
-    @Test
+    @TestFactory
     fun `Minimal gRPC Configuration`() = runGrpcTest {
         val result = runGradle(bufGenerateCommonMain)
 
@@ -30,7 +30,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
         )
     }
 
-    @Test
+    @TestFactory
     fun `No gRPC`() = runGrpcTest {
         runNonExistentTask(bufGenerateCommonMain)
         runNonExistentTask(bufGenerateCommonTest)
@@ -43,7 +43,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
         runNonExistentTask(generateBufGenYamlCommonTest)
     }
 
-    @Test
+    @TestFactory
     fun `Test-Only Sources`() = runGrpcTest {
         val result = runGradle(bufGenerateCommonTest)
 
@@ -60,7 +60,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
         )
     }
 
-    @Test
+    @TestFactory
     fun `Main and Test Mixed Sources`() = runGrpcTest {
         val mainRun = runGradle(bufGenerateCommonMain)
 
@@ -96,7 +96,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
         )
     }
 
-    @Test
+    @TestFactory
     fun `Java Source Sets`() = runGrpcTest {
         val mainRun = runGradle(bufGenerateCommonMain)
 
@@ -132,7 +132,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
         )
     }
 
-    @Test
+    @TestFactory
     fun `Java and Kotlin Source Sets`() = runGrpcTest {
         runGradle(processCommonMainProtoFiles)
         runGradle(generateBufGenYamlCommonMain)
@@ -194,7 +194,7 @@ inputs:
         )
     }
 
-    @Test
+    @TestFactory
     fun `Exclude and Include in proto sourceSets`() = runGrpcTest {
         runGradle(processCommonMainProtoFiles)
 
@@ -223,7 +223,7 @@ inputs:
         )
     }
 
-    @Test
+    @TestFactory
     fun `Can Add Custom Protoc Plugins`() = runGrpcTest {
         runGradle(generateBufGenYamlCommonMain)
 
@@ -272,7 +272,7 @@ inputs:
         )
     }
 
-    @Test
+    @TestFactory
     fun `Custom Protoc Plugins Must Declare an Artifact`() = runGrpcTest {
         val result = runGradleToFail(generateBufGenYamlCommonMain)
         assert(result.output.contains("Artifact is not specified for protoc plugin myPlugin"))
@@ -282,7 +282,7 @@ inputs:
     private val cliFlagsRegex =
         "- Buf Arguments: \\[.*?, generate, --output, .*?, --include-imports, --include-wkt, --error-format, json, --config, some\\.buf\\.yaml, --log-format, json, --timeout, 60s]".toRegex()
 
-    @Test
+    @TestFactory
     fun `Custom Buf CLI Flags`() = runGrpcTest {
         val result = runGradleToFail(bufGenerateCommonMain)
         assert(result.output.contains("could not read file: open some.buf.yaml: no such file or directory")) {
@@ -295,14 +295,14 @@ inputs:
         }
     }
 
-    @Test
+    @TestFactory
     fun `Skip Generation When No Proto Files`() = runGrpcTest {
         val result = runGradle(bufGenerateCommonMain)
 
         assertEquals(TaskOutcome.SKIPPED, result.protoTaskOutcome(bufGenerateCommonMain))
     }
 
-    @Test
+    @TestFactory
     fun `Proto Tasks Are Cached Properly`() = runGrpcTest {
         val firstRunMain = runGradle(bufGenerateCommonMain)
 

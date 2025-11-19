@@ -11,13 +11,10 @@ plugins {
 
 kotlin {
     jvm()
-    js()
+    js {
+        nodejs()
+    }
     macosArm64()
-}
-
-protoSourceSets {
-    commonMain {}
-    commonTest {}
 }
 
 rpc {

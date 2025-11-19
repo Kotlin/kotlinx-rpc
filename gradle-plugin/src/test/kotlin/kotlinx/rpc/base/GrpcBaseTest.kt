@@ -7,8 +7,10 @@ package kotlinx.rpc.base
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import org.intellij.lang.annotations.Language
+import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestInstance
 import java.nio.file.Path
+import java.util.stream.Stream
 import kotlin.io.path.*
 import kotlin.test.assertEquals
 import kotlin.test.fail
@@ -17,11 +19,11 @@ import kotlin.test.fail
 abstract class GrpcBaseTest : BaseTest() {
     abstract val isKmp: Boolean
 
-    protected fun runGrpcTest(test: GrpcTestEnv.() -> Unit) {
-        runTest(GrpcTestEnv(), test)
+    protected fun runGrpcTest(test: GrpcTestEnv.() -> Unit): Stream<DynamicTest> = runWithAllGradleVersions {
+        runTest(GrpcTestEnv(it), test)
     }
 
-    inner class GrpcTestEnv : TestEnv() {
+    inner class GrpcTestEnv(versions: VersionsEnv) : TestEnv(versions) {
         fun BuildResult.protoTaskOutcome(name: String): TaskOutcome {
             return tasks.find { it.path == ":$name" }?.outcome
                 ?: fail("Task ':$name' was not present in the build result")
@@ -213,15 +215,19 @@ abstract class GrpcBaseTest : BaseTest() {
                 .resolve("generated")
         }
 
-        val mainProtoFileSources: Path = projectDir
-            .resolve("src")
-            .resolve(mainSourceSet)
-            .resolve("proto")
+        val mainProtoFileSources: Path by lazy {
+            projectDir
+                .resolve("src")
+                .resolve(mainSourceSet)
+                .resolve("proto")
+        }
 
-        val testProtoFileSources: Path = projectDir
-            .resolve("src")
-            .resolve(testSourceSet)
-            .resolve("proto")
+        val testProtoFileSources: Path by lazy {
+            projectDir
+                .resolve("src")
+                .resolve(testSourceSet)
+                .resolve("proto")
+        }
     }
 
     companion object {

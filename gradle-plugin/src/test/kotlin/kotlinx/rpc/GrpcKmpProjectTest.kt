@@ -5,15 +5,15 @@
 package kotlinx.rpc
 
 import kotlinx.rpc.base.GrpcBaseTest
+import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
 import kotlin.io.path.Path
-import kotlin.test.Test
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class GrpcKmpProjectTest : GrpcBaseTest() {
     override val isKmp: Boolean = true
 
-    @Test
+    @TestFactory
     fun `Minimal gRPC Configuration`() = runGrpcTest {
         val result = runGradle(bufGenerateCommonMain)
 
@@ -28,7 +28,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
     }
 
-    @Test
+    @TestFactory
     fun `No gRPC`() = runGrpcTest {
         runNonExistentTask(bufGenerateCommonMain)
         runNonExistentTask(bufGenerateCommonTest)
@@ -41,7 +41,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         runNonExistentTask(generateBufGenYamlCommonTest)
     }
 
-    @Test
+    @TestFactory
     fun `Test-Only Sources`() = runGrpcTest {
         val result = runGradle(bufGenerateCommonTest)
 
@@ -58,7 +58,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
     }
 
-    @Test
+    @TestFactory
     fun `Main and Test Mixed Sources`() = runGrpcTest {
         val mainRun = runGradle(bufGenerateCommonMain)
 
@@ -94,7 +94,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
     }
 
-    @Test
+    @TestFactory
     fun `No JVM Targets`() = runGrpcTest {
         runNonExistentTask(bufGenerateCommonMain)
         runNonExistentTask(bufGenerateCommonTest)
@@ -107,7 +107,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         runNonExistentTask(generateBufGenYamlCommonTest)
     }
 
-    @Test
+    @TestFactory
     fun `With Other Targets`() = runGrpcTest {
         val result = runGradle(bufGenerateCommonMain)
 
