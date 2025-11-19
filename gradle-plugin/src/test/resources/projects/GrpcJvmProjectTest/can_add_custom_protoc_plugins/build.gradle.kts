@@ -11,11 +11,7 @@ plugins {
 }
 
 rpc {
-    protoc()
-}
-
-protoSourceSets {
-    main {
+    protoc {
         plugins {
             create("myPlugin") {
                 local {
@@ -37,5 +33,12 @@ protoSourceSets {
                 }
             }
         }
+    }
+}
+
+kotlin.sourceSets {
+    main.proto {
+        plugin { getByName("myPlugin") }
+        plugin { getByName("myRemotePlugin") }
     }
 }

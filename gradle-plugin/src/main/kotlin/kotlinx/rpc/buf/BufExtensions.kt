@@ -24,7 +24,7 @@ import kotlin.time.Duration
  *
  * @see <a href="https://buf.build/docs/reference/cli/buf/">buf commands</a>
  */
-public open class BufExtension @Inject constructor(objects: ObjectFactory) {
+public open class BufExtension @Inject internal constructor(objects: ObjectFactory) {
     /**
      * `--config` argument value.
      *
@@ -101,7 +101,7 @@ public open class BufExtension @Inject constructor(objects: ObjectFactory) {
 /**
  * Allows registering custom Buf tasks that can operate on the generated workspace.
  */
-public open class BufTasksExtension @Inject constructor(internal val project: Project) {
+public open class BufTasksExtension @Inject internal constructor(internal val project: Project) {
 
     /**
      * Registers a custom Buf task that operates on the generated workspace.
@@ -109,9 +109,9 @@ public open class BufTasksExtension @Inject constructor(internal val project: Pr
      * Name conventions:
      * `lint` input for [name] will result in tasks
      * named 'bufLintMain' and 'bufLintTest' for Kotlin/JVM projects
-     * and 'bufLintCommonMain' and 'bufLintCommonTest' for Kotlin/Multiplatform projects.
+     * and 'bufLintCommonMain', 'bufLintCommonTest', 'bufLintNativeMain', etc., for Kotlin/Multiplatform projects.
      *
-     * Note the by default 'test' task doesn't depend on 'main' task.
+     * Note the by default 'test' task doesn't depend on the 'main' task.
      */
     public fun <T : BufExecTask> registerWorkspaceTask(
         kClass: KClass<T>,
@@ -128,7 +128,6 @@ public open class BufTasksExtension @Inject constructor(internal val project: Pr
 
         return provider
     }
-
 
     /**
      * Registers a custom Buf task that operates on the generated workspace.

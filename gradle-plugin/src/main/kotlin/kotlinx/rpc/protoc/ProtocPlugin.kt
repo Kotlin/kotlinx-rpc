@@ -50,9 +50,9 @@ public fun NamedDomainObjectContainer<ProtocPlugin>.grpcKotlinMultiplatform(acti
 /**
  * Access to a specific protoc plugin.
  */
-public open class ProtocPlugin(
+public open class ProtocPlugin internal constructor(
     public val name: String,
-    private val project: Project,
+    internal val project: Project,
 ) {
     /**
      * Whether the plugin generates Java code.
@@ -274,5 +274,20 @@ public open class ProtocPlugin(
         public class Remote(project: Project) : Artifact() {
             public val locator: Property<String> = project.objects.property()
         }
+    }
+
+    // todo check if coping works
+    internal fun copy(): ProtocPlugin {
+        return ProtocPlugin(name, project)
+            .also {
+                it.isJava.set(isJava)
+                it.options.set(options)
+                it.artifact.set(artifact)
+                it.strategy.set(strategy)
+                it.includeImports.set(includeImports)
+                it.includeWkt.set(includeWkt)
+                it.types.set(types)
+                it.excludeTypes.set(excludeTypes)
+            }
     }
 }

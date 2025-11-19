@@ -44,7 +44,7 @@ abstract class GrpcBaseTest : BaseTest() {
 
             files.forEach { file ->
                 assert(dir.resolve(file).exists()) {
-                    "File 'file://${file.absolutePathString()}' in '$dir' does not exist"
+                    "File '${file}' in '$dir' does not exist"
                 }
             }
         }
@@ -54,7 +54,7 @@ abstract class GrpcBaseTest : BaseTest() {
 
             files.forEach { file ->
                 assert(!dir.resolve(file).exists()) {
-                    "File 'file://${file.absolutePathString()}' in '$dir' should not exist"
+                    "File '${file}' in '$dir' should not exist"
                 }
             }
         }
@@ -65,7 +65,7 @@ abstract class GrpcBaseTest : BaseTest() {
             val included = files.map { file ->
                 val resolved = protoSources.resolve(file)
                 assert(resolved.exists()) {
-                    "File 'file://${file.absolutePathString()}' in '$protoSources' does not exist"
+                    "File '${file}' in '$protoSources' does not exist"
                 }
                 resolved.relativeTo(protoSources).pathString
             }.toSet()
@@ -73,7 +73,7 @@ abstract class GrpcBaseTest : BaseTest() {
             protoSources.walk().forEach {
                 val pathString = it.relativeTo(protoSources).pathString
                 if (it.isRegularFile() && it.extension == "proto" && pathString !in included) {
-                    fail("File 'file://${it.absolutePathString()}' in '$protoSources' is not expected")
+                    fail("File '${it}' in '$protoSources' is not expected")
                 }
             }
         }
@@ -123,16 +123,16 @@ abstract class GrpcBaseTest : BaseTest() {
             protoFiles: List<Path>,
             generatedFiles: List<Path>,
         ) {
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(bufGenerateMain))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processMainProtoFiles))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufYamlMain))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufGenYamlMain))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(bufGenerateCommonMain))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processCommonMainProtoFiles))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufYamlCommonMain))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufGenYamlCommonMain))
 
-            assertProtoTaskNotExecuted(bufGenerateTest)
-            assertProtoTaskNotExecuted(processTestProtoFiles)
-            assertProtoTaskNotExecuted(processTestImportProtoFiles)
-            assertProtoTaskNotExecuted(generateBufYamlTest)
-            assertProtoTaskNotExecuted(generateBufGenYamlTest)
+            assertProtoTaskNotExecuted(bufGenerateCommonTest)
+            assertProtoTaskNotExecuted(processCommonTestProtoFiles)
+            assertProtoTaskNotExecuted(processCommonTestProtoFilesImports)
+            assertProtoTaskNotExecuted(generateBufYamlCommonTest)
+            assertProtoTaskNotExecuted(generateBufGenYamlCommonTest)
 
             assertSourceCodeGenerated(mainSourceSet, *generatedFiles.toTypedArray())
             assertSourceCodeNotGenerated(testSourceSet, *generatedFiles.toTypedArray())
@@ -150,11 +150,11 @@ abstract class GrpcBaseTest : BaseTest() {
             generatedFiles: List<Path>,
             importGeneratedFiles: List<Path>,
         ) {
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(bufGenerateTest))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processTestProtoFiles))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processTestImportProtoFiles))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufYamlTest))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufGenYamlTest))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(bufGenerateCommonTest))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processCommonTestProtoFiles))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processCommonTestProtoFilesImports))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufYamlCommonTest))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufGenYamlCommonTest))
 
             val mainGenerateOutcome = if (importProtoFiles.isEmpty()) {
                 TaskOutcome.SKIPPED
@@ -162,10 +162,10 @@ abstract class GrpcBaseTest : BaseTest() {
                 TaskOutcome.SUCCESS
             }
 
-            assertEquals(mainGenerateOutcome, protoTaskOutcome(bufGenerateMain))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processMainProtoFiles))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufYamlMain))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufGenYamlMain))
+            assertEquals(mainGenerateOutcome, protoTaskOutcome(bufGenerateCommonMain))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processCommonMainProtoFiles))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufYamlCommonMain))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufGenYamlCommonMain))
 
             assertSourceCodeGenerated(testSourceSet, *generatedFiles.toTypedArray())
             assertSourceCodeNotGenerated(mainSourceSet, *generatedFiles.toTypedArray())
@@ -182,20 +182,20 @@ abstract class GrpcBaseTest : BaseTest() {
 
         val mainSourceSet = if (isKmp) "${KMP_SOURCE_SET}Main" else "main"
         val testSourceSet = if (isKmp) "${KMP_SOURCE_SET}Test" else "test"
-        val bufGenerateMain = if (isKmp) "bufGenerate${KMP_SOURCE_SET_CAPITAL}Main" else "bufGenerateMain"
-        val bufGenerateTest = if (isKmp) "bufGenerate${KMP_SOURCE_SET_CAPITAL}Test" else "bufGenerateTest"
-        val processMainProtoFiles =
-            if (isKmp) "process${KMP_SOURCE_SET_CAPITAL}MainProtoFiles" else "processMainProtoFiles"
-        val processTestProtoFiles =
-            if (isKmp) "process${KMP_SOURCE_SET_CAPITAL}TestProtoFiles" else "processTestProtoFiles"
-        val processTestImportProtoFiles =
-            if (isKmp) "process${KMP_SOURCE_SET_CAPITAL}TestImportProtoFiles" else "processTestImportProtoFiles"
-        val generateBufYamlMain = if (isKmp) "generateBufYaml${KMP_SOURCE_SET_CAPITAL}Main" else "generateBufYamlMain"
-        val generateBufYamlTest = if (isKmp) "generateBufYaml${KMP_SOURCE_SET_CAPITAL}Test" else "generateBufYamlTest"
-        val generateBufGenYamlMain =
-            if (isKmp) "generateBufGenYaml${KMP_SOURCE_SET_CAPITAL}Main" else "generateBufGenYamlMain"
-        val generateBufGenYamlTest =
-            if (isKmp) "generateBufGenYaml${KMP_SOURCE_SET_CAPITAL}Test" else "generateBufGenYamlTest"
+        val bufGenerateCommonMain = if (isKmp) "bufGenerate${KMP_COMMON_SOURCE_SET_CAPITAL}Main" else "bufGenerateMain"
+        val bufGenerateCommonTest = if (isKmp) "bufGenerate${KMP_COMMON_SOURCE_SET_CAPITAL}Test" else "bufGenerateTest"
+        val processCommonMainProtoFiles =
+            if (isKmp) "process${KMP_COMMON_SOURCE_SET_CAPITAL}MainProtoFiles" else "processMainProtoFiles"
+        val processCommonTestProtoFiles =
+            if (isKmp) "process${KMP_COMMON_SOURCE_SET_CAPITAL}TestProtoFiles" else "processTestProtoFiles"
+        val processCommonTestProtoFilesImports =
+            if (isKmp) "process${KMP_COMMON_SOURCE_SET_CAPITAL}TestProtoFilesImports" else "processTestProtoFilesImports"
+        val generateBufYamlCommonMain = if (isKmp) "generateBufYaml${KMP_COMMON_SOURCE_SET_CAPITAL}Main" else "generateBufYamlMain"
+        val generateBufYamlCommonTest = if (isKmp) "generateBufYaml${KMP_COMMON_SOURCE_SET_CAPITAL}Test" else "generateBufYamlTest"
+        val generateBufGenYamlCommonMain =
+            if (isKmp) "generateBufGenYaml${KMP_COMMON_SOURCE_SET_CAPITAL}Main" else "generateBufGenYamlMain"
+        val generateBufGenYamlCommonTest =
+            if (isKmp) "generateBufGenYaml${KMP_COMMON_SOURCE_SET_CAPITAL}Test" else "generateBufGenYamlTest"
 
         val protoBuildDir: Path by lazy {
             projectDir
@@ -213,12 +213,12 @@ abstract class GrpcBaseTest : BaseTest() {
                 .resolve("generated")
         }
 
-        val mainProtoFileSources = projectDir
+        val mainProtoFileSources: Path = projectDir
             .resolve("src")
             .resolve(mainSourceSet)
             .resolve("proto")
 
-        val testProtoFileSources = projectDir
+        val testProtoFileSources: Path = projectDir
             .resolve("src")
             .resolve(testSourceSet)
             .resolve("proto")
@@ -226,7 +226,7 @@ abstract class GrpcBaseTest : BaseTest() {
 
     companion object {
         private const val KMP_SOURCE_SET = "common"
-        private val KMP_SOURCE_SET_CAPITAL = KMP_SOURCE_SET.replaceFirstChar(Char::uppercaseChar)
+        private val KMP_COMMON_SOURCE_SET_CAPITAL = KMP_SOURCE_SET.replaceFirstChar(Char::uppercaseChar)
         private const val KOTLIN_MULTIPLATFORM_DIR = "kotlin-multiplatform"
         const val RPC_INTERNAL = "_rpc_internal"
     }

@@ -5,11 +5,13 @@
 package kotlinx.rpc.buf.tasks
 
 import kotlinx.rpc.buf.BUF_YAML
+import kotlinx.rpc.protoc.DefaultProtoSourceSet
 import kotlinx.rpc.protoc.PROTO_GROUP
 import kotlinx.rpc.util.ensureRegularFileExists
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
@@ -88,7 +90,7 @@ internal fun Project.registerGenerateBufYamlTask(
     buildSourceSetsDir: File,
     buildSourceSetsProtoDir: File,
     buildSourceSetsImportDir: File,
-    withImport: Boolean,
+    withImport: Provider<Boolean>,
     configure: GenerateBufYaml.() -> Unit = {},
 ): TaskProvider<GenerateBufYaml> {
     val capitalizeName = name.replaceFirstChar { it.uppercase() }

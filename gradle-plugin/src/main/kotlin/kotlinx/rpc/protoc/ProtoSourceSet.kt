@@ -8,37 +8,66 @@ import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.SourceSet
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 public typealias ProtoSourceSets = NamedDomainObjectContainer<ProtoSourceSet>
 
 /**
  * Represents a source set for proto files.
  */
-public interface ProtoSourceSet {
-    /**
-     * Name of the source set.
-     */
-    public val name: String
+public sealed interface ProtoSourceSet : SourceDirectorySet {
+    public fun plugin(plugin: ProtocPlugin, configure: Action<ProtocPlugin>? = null)
 
-    /**
-     * Container of protoc plugins to be applied to the source set.
-     */
-    public val plugins: NamedDomainObjectContainer<ProtocPlugin>
+    public fun plugin(provider: NamedDomainObjectProvider<ProtocPlugin>, configure: Action<ProtocPlugin>? = null)
 
-    /**
-     * Configures the protoc plugins.
-     */
-    public fun plugins(action: Action<NamedDomainObjectContainer<ProtocPlugin>>)
+    public fun plugin(provider: Provider<ProtocPlugin>, configure: Action<ProtocPlugin>? = null)
 
-    /**
-     * Default [SourceDirectorySet] for proto files.
-     */
-    public val proto: SourceDirectorySet
+    public fun plugin(
+        configure: Action<ProtocPlugin>? = null,
+        select: NamedDomainObjectContainer<ProtocPlugin>.() -> ProtocPlugin,
+    )
+}
 
-    /**
-     * Configures [proto] source directory set.
-     */
-    public fun proto(action: Action<SourceDirectorySet>) {
-        action.execute(proto)
+public val KotlinSourceSet.proto: ProtoSourceSet
+    get(): ProtoSourceSet {
+        return project.protoSourceSets.getByName(name)
+    }
+
+public fun KotlinSourceSet.proto(action: Action<ProtoSourceSet>) {
+    proto.apply(action::execute)
+}
+
+@get:JvmName("proto_kotlin")
+public val NamedDomainObjectProvider<KotlinSourceSet>.proto: Provider<ProtoSourceSet>
+    get() {
+        return map { it.proto }
+    }
+
+@JvmName("proto_kotlin")
+public fun NamedDomainObjectProvider<KotlinSourceSet>.proto(action: Action<ProtoSourceSet>) {
+    configure {
+        proto(action)
+    }
+}
+
+public val SourceSet.proto: ProtoSourceSet
+    get(): ProtoSourceSet {
+        return extensions.getByType(ProtoSourceSet::class.java)
+    }
+
+public fun SourceSet.proto(action: Action<ProtoSourceSet>) {
+    extensions.configure(ProtoSourceSet::class.java, action::execute)
+}
+
+public val NamedDomainObjectProvider<SourceSet>.proto: Provider<ProtoSourceSet>
+    get() {
+        return map { it.proto }
+    }
+
+public fun NamedDomainObjectProvider<SourceSet>.proto(action: Action<ProtoSourceSet>) {
+    configure {
+        proto(action)
     }
 }

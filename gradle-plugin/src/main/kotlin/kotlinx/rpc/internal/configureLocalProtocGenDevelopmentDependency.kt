@@ -7,7 +7,6 @@ package kotlinx.rpc.internal
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.protoc.grpcKotlinMultiplatform
 import kotlinx.rpc.protoc.kotlinMultiplatform
-import kotlinx.rpc.protoc.protoSourceSets
 import kotlinx.rpc.rpcExtension
 import org.gradle.api.Project
 import org.gradle.internal.extensions.core.extra
@@ -21,9 +20,7 @@ public fun Project.configureLocalProtocGenDevelopmentDependency(
     val globalRootDir: String by extra
 
     // init
-    rpcExtension().protoc()
-
-    protoSourceSets.all {
+    rpcExtension().protoc {
         plugins {
             kotlinMultiplatform {
                 local {

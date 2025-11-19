@@ -137,19 +137,13 @@ public abstract class GenerateBufGenYaml : DefaultTask() {
 internal fun Project.registerGenerateBufGenYamlTask(
     name: String,
     buildSourceSetsDir: File,
-    protocPlugins: Provider<List<ProtocPlugin>>,
+    protocPlugins: Provider<Set<ProtocPlugin>>,
     configure: GenerateBufGenYaml.() -> Unit = {},
 ): TaskProvider<GenerateBufGenYaml> {
     val capitalizeName = name.replaceFirstChar { it.uppercase() }
     return project.tasks.register<GenerateBufGenYaml>("${GenerateBufGenYaml.NAME_PREFIX}$capitalizeName") {
         val pluginsProvider = project.provider {
             protocPlugins.get().map { plugin ->
-                if (!plugin.artifact.isPresent) {
-                    throw GradleException(
-                        "Artifact is not specified for protoc plugin ${plugin.name}. " +
-                                "Use `local {}` or `remote {}` to specify it.")
-                }
-
                 val artifact = plugin.artifact.get()
                 val locator = when (artifact) {
                     is ProtocPlugin.Artifact.Local -> artifact.executor.get()

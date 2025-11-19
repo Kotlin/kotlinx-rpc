@@ -40,20 +40,28 @@ fun Project.generateSource(
     text: String,
     chooseSourceSet: NamedDomainObjectContainer<KotlinSourceSet>.() -> NamedDomainObjectProvider<KotlinSourceSet>,
 ) {
-    val sourcesDir = File(project.layout.buildDirectory.asFile.get(), "generated-sources/kotlin")
+    withKotlinJvmExtension {
+        generateSource(sourceSets, name, text, chooseSourceSet)
+    }
+
+    withKotlinKmpExtension {
+        generateSource(sourceSets, name, text, chooseSourceSet)
+    }
+}
+
+private fun Project.generateSource(
+    sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
+    name: String,
+    text: String,
+    chooseSourceSet: NamedDomainObjectContainer<KotlinSourceSet>.() -> NamedDomainObjectProvider<KotlinSourceSet>,
+) {
+    val sourceSet = chooseSourceSet(sourceSets)
+    val sourcesDir = File(project.layout.buildDirectory.asFile.get(), "generated-sources/kotlin/${sourceSet.name}")
 
     val generatePluginVersionTask =
         tasks.register<GenerateSourceTask>("generateSources_$name", name, text, sourcesDir)
 
-    withKotlinJvmExtension {
-        chooseSourceSet(sourceSets).configure {
-            kotlin.srcDir(generatePluginVersionTask.map { it.sourcesDir })
-        }
-    }
-
-    withKotlinKmpExtension {
-        chooseSourceSet(sourceSets).configure {
-            kotlin.srcDir(generatePluginVersionTask.map { it.sourcesDir })
-        }
+    sourceSet.configure {
+        kotlin.srcDir(generatePluginVersionTask.map { it.sourcesDir })
     }
 }

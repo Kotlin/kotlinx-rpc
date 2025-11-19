@@ -24,7 +24,7 @@ internal fun Project.rpcExtensionOrNull(): RpcExtension? = extensions.findByType
 internal fun Project.rpcExtension(): RpcExtension = rpcExtensionOrNull()
     ?: error("Rpc extension not found. Please apply the plugin to the project")
 
-public open class RpcExtension @Inject constructor(objects: ObjectFactory, private val project: Project) {
+public open class RpcExtension @Inject constructor(objects: ObjectFactory, project: Project) {
     /**
      * Controls `@Rpc` [annotation type-safety](https://github.com/Kotlin/kotlinx-rpc/pull/240) compile-time checkers.
      *
@@ -48,25 +48,60 @@ public open class RpcExtension @Inject constructor(objects: ObjectFactory, priva
         configure.execute(strict)
     }
 
-    internal val protocApplied = AtomicBoolean(false)
 
     /**
      * Protoc settings.
+     *
+     * Can't be called in a lazy context if not initialized.
      */
-    public val protoc: ProtocExtension by lazy {
-        if (protocApplied.get()) {
-            error("Illegal access to protoc extension during DefaultProtocExtension.init")
+    public val protoc: Provider<ProtocExtension> = project.provider {
+        if (!protocApplied.get()) {
+            error("""
+                Protoc extension was not initialized. 
+                Please, apply the plugin by using the following declaration:
+                
+                  rpc {
+                      protoc()
+                  }
+                
+                If the error persists, check if you are using this property lazily, 
+                i.e. by calling 'protoc.map { }' and not 'protoc.get()', 
+                otherwise the order of initialization may be wrong.
+            """.trimIndent())
         }
 
-        protocApplied.set(true)
-        objects.newInstance<DefaultProtocExtension>()
+        protocInternal
     }
 
     /**
      * Protoc settings.
      */
     public fun protoc(configure: Action<ProtocExtension> = Action {}) {
-        configure.execute(protoc)
+        configure.execute(protocInternal)
+    }
+
+    internal val protocApplied = AtomicBoolean(false)
+
+    internal val protocInternal by lazy {
+        if (protocApplied.get()) {
+            error("Illegal access to protoc extension during DefaultProtocExtension.init")
+        }
+
+        protocApplied.set(true)
+        objects.newInstance<DefaultProtocExtension>().apply {
+            callbacks.forEach { it.execute(this) }
+        }
+    }
+
+    private val callbacks = mutableListOf<Action<ProtocExtension>>()
+
+    internal fun whenProtocApplied(action: Action<ProtocExtension>) {
+        if (protocApplied.get()) {
+            action.execute(protoc.get())
+            return
+        }
+
+        callbacks.add(action)
     }
 }
 

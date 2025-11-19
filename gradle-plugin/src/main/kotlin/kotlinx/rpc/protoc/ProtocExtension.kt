@@ -6,6 +6,7 @@ package kotlinx.rpc.protoc
 
 import kotlinx.rpc.buf.BufExtension
 import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectContainer
 
 /**
  * Configuration for the Protoc capabilities.
@@ -17,7 +18,7 @@ import org.gradle.api.Action
  * }
  * ```
  */
-public interface ProtocExtension {
+public sealed interface ProtocExtension {
     /**
      * Configuration for the Buf build tool.
      */
@@ -27,4 +28,14 @@ public interface ProtocExtension {
      * Configures the Buf build tool.
      */
     public fun buf(action: Action<BufExtension>)
+
+    /**
+     * Container of protoc plugins.
+     */
+    public val plugins: NamedDomainObjectContainer<ProtocPlugin>
+
+    /**
+     * Configures the protoc plugins.
+     */
+    public fun plugins(action: Action<NamedDomainObjectContainer<ProtocPlugin>>)
 }

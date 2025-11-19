@@ -7,6 +7,7 @@
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
+import kotlinx.rpc.protoc.proto
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import util.configureCLibCInterop
 
@@ -30,6 +31,10 @@ kotlin {
                 api(projects.grpc.grpcCodec)
 
                 api(libs.kotlinx.io.core)
+            }
+
+            proto {
+                exclude("exclude/**")
             }
         }
 
@@ -64,17 +69,11 @@ kotlin {
     }
 }
 
-protoSourceSets {
-    commonTest {
-        proto {
-            exclude("exclude/**")
-        }
-    }
-}
-
 rpc {
-    protoc.buf.generate.comments {
-        includeFileLevelComments = false
+    protoc {
+        buf.generate.comments {
+            includeFileLevelComments = false
+        }
     }
 }
 

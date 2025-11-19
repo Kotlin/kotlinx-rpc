@@ -15,7 +15,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @Test
     fun `Minimal gRPC Configuration`() = runGrpcTest {
-        val result = runGradle(bufGenerateMain)
+        val result = runGradle(bufGenerateCommonMain)
 
         result.assertMainTaskExecuted(
             protoFiles = listOf(
@@ -30,20 +30,20 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @Test
     fun `No gRPC`() = runGrpcTest {
-        runNonExistentTask(bufGenerateMain)
-        runNonExistentTask(bufGenerateTest)
-        runNonExistentTask(processMainProtoFiles)
-        runNonExistentTask(processTestProtoFiles)
-        runNonExistentTask(processTestImportProtoFiles)
-        runNonExistentTask(generateBufYamlMain)
-        runNonExistentTask(generateBufYamlTest)
-        runNonExistentTask(generateBufGenYamlMain)
-        runNonExistentTask(generateBufGenYamlTest)
+        runNonExistentTask(bufGenerateCommonMain)
+        runNonExistentTask(bufGenerateCommonTest)
+        runNonExistentTask(processCommonMainProtoFiles)
+        runNonExistentTask(processCommonTestProtoFiles)
+        runNonExistentTask(processCommonTestProtoFilesImports)
+        runNonExistentTask(generateBufYamlCommonMain)
+        runNonExistentTask(generateBufYamlCommonTest)
+        runNonExistentTask(generateBufGenYamlCommonMain)
+        runNonExistentTask(generateBufGenYamlCommonTest)
     }
 
     @Test
     fun `Test-Only Sources`() = runGrpcTest {
-        val result = runGradle(bufGenerateTest)
+        val result = runGradle(bufGenerateCommonTest)
 
         result.assertTestTaskExecuted(
             protoFiles = listOf(
@@ -60,7 +60,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @Test
     fun `Main and Test Mixed Sources`() = runGrpcTest {
-        val mainRun = runGradle(bufGenerateMain)
+        val mainRun = runGradle(bufGenerateCommonMain)
 
         mainRun.assertMainTaskExecuted(
             protoFiles = listOf(
@@ -74,7 +74,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
         cleanProtoBuildDir()
 
-        val testRun = runGradle(bufGenerateTest)
+        val testRun = runGradle(bufGenerateCommonTest)
 
         testRun.assertTestTaskExecuted(
             protoFiles = listOf(
@@ -96,20 +96,20 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @Test
     fun `No JVM Targets`() = runGrpcTest {
-        runNonExistentTask(bufGenerateMain)
-        runNonExistentTask(bufGenerateTest)
-        runNonExistentTask(processMainProtoFiles)
-        runNonExistentTask(processTestProtoFiles)
-        runNonExistentTask(processTestImportProtoFiles)
-        runNonExistentTask(generateBufYamlMain)
-        runNonExistentTask(generateBufYamlTest)
-        runNonExistentTask(generateBufGenYamlMain)
-        runNonExistentTask(generateBufGenYamlTest)
+        runNonExistentTask(bufGenerateCommonMain)
+        runNonExistentTask(bufGenerateCommonTest)
+        runNonExistentTask(processCommonMainProtoFiles)
+        runNonExistentTask(processCommonTestProtoFiles)
+        runNonExistentTask(processCommonTestProtoFilesImports)
+        runNonExistentTask(generateBufYamlCommonMain)
+        runNonExistentTask(generateBufYamlCommonTest)
+        runNonExistentTask(generateBufGenYamlCommonMain)
+        runNonExistentTask(generateBufGenYamlCommonTest)
     }
 
     @Test
     fun `With Other Targets`() = runGrpcTest {
-        val result = runGradle(bufGenerateMain)
+        val result = runGradle(bufGenerateCommonMain)
 
         result.assertMainTaskExecuted(
             protoFiles = listOf(

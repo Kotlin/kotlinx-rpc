@@ -37,8 +37,10 @@ setupProtobufConformanceResources()
 configureLocalProtocGenDevelopmentDependency("Main")
 
 rpc {
-    protoc.buf.generate.comments {
-        includeFileLevelComments = false
+    protoc {
+        buf.generate.comments {
+            includeFileLevelComments = false
+        }
     }
 }
 

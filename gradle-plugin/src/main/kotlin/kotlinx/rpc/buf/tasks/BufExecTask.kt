@@ -117,7 +117,7 @@ internal fun <T : BufExecTask> Project.registerBufExecTask(
     bufExecutable.set(executableConfiguration.singleFile)
     this.workingDir.set(workingDir)
 
-    val buf = provider { rpcExtension().protoc.buf }
+    val buf = provider { rpcExtension().protoc.get().buf }
     configFile.set(buf.flatMap { it.configFile })
     logFormat.set(buf.flatMap { it.logFormat })
     bufTimeoutInWholeSeconds.set(buf.flatMap { it.timeout.map { duration -> duration.inWholeSeconds } })
