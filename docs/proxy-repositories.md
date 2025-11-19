@@ -9,7 +9,7 @@ However, all dependency changes MUST be reviewed before running CI.
 For JetBrains developers, there is a possibility to use proxy repositories locally.
 It is actually encouraged to do so.
 
-For it to work, add the following properties to your `$HOME/gradle/gradle.properties` file 
+For it to work, add the following properties to your `$HOME/.gradle/gradle.properties` file 
 (or `local.properties` in the repository root):
 ```properties
 kotlinx.rpc.team.space.username=<username>
