@@ -107,12 +107,12 @@ public class GrpcInsecureClientCredentials : GrpcClientCredentials
  * Verify the server's identity using a trust manager with root certificates:
  *
  * ```kotlin
- * val credentials = GrpcTlsClientCredentials {
+ * val tlsCredentials = GrpcTlsClientCredentials {
  *     trustManager(serverCertPem)
  * }
  *
  * val client = GrpcClient("example.com", 443) {
- *     credentials = credentials
+ *     credentials = tlsCredentials
  * }
  * ```
  *
