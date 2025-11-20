@@ -121,4 +121,96 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             )
         )
     }
+
+    @TestFactory
+    fun `KMP Hierarchy`() = runGrpcTest {
+        runKmp(
+            SSets.commonMain,
+        )
+
+        runKmp(
+            SSets.commonTest,
+            SSets.commonMain,
+        )
+
+        runKmp(
+            SSets.nativeMain,
+            SSets.commonMain,
+        )
+
+        runKmp(
+            SSets.nativeTest,
+            SSets.commonMain, SSets.nativeMain,
+            SSets.commonTest,
+        )
+
+        runKmp(
+            SSets.jvmMain,
+            SSets.commonMain,
+        )
+
+        runKmp(
+            SSets.jvmTest,
+            SSets.commonMain, SSets.jvmMain,
+            SSets.commonTest,
+        )
+
+        runKmp(
+            SSets.jsMain,
+            SSets.commonMain,
+        )
+
+        runKmp(
+            SSets.jsTest,
+            SSets.commonMain, SSets.jsMain,
+            SSets.commonTest,
+        )
+
+        runKmp(
+            SSets.appleMain,
+            SSets.commonMain, SSets.nativeMain,
+        )
+
+        runKmp(
+            SSets.appleTest,
+            SSets.commonMain, SSets.nativeMain, SSets.appleMain,
+            SSets.commonTest, SSets.nativeTest
+        )
+
+        runKmp(
+            SSets.macosMain,
+            SSets.commonMain, SSets.nativeMain, SSets.appleMain,
+        )
+
+        runKmp(
+            SSets.macosTest,
+            SSets.commonMain, SSets.nativeMain, SSets.appleMain, SSets.macosMain,
+            SSets.commonTest, SSets.nativeTest, SSets.appleTest
+        )
+
+        runKmp(
+            SSets.macosArm64Main,
+            SSets.commonMain, SSets.nativeMain, SSets.appleMain, SSets.macosMain,
+        )
+
+        runKmp(
+            SSets.macosArm64Test,
+            SSets.commonMain, SSets.nativeMain, SSets.appleMain, SSets.macosMain, SSets.macosArm64Main,
+            SSets.commonTest, SSets.nativeTest, SSets.appleTest, SSets.macosTest,
+            clean = false,
+        )
+    }
+
+    private fun GrpcTestEnv.runKmp(
+        sourceSet: SSets,
+        vararg imports: SSets,
+        clean: Boolean = true,
+    ) {
+        runGradle(bufGenerate(sourceSet))
+            .assertKmpSourceSet(sourceSet, *imports)
+
+        if (clean) {
+            cleanProtoBuildDir()
+        }
+    }
 }

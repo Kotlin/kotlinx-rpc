@@ -36,8 +36,8 @@ abstract class GrpcBaseTest : BaseTest() {
             }
         }
 
-        fun assertSourceCodeGenerated(sourceSet: String, vararg files: Path) {
-            val dir = protoBuildDirGenerated.resolve(sourceSet).resolve(KOTLIN_MULTIPLATFORM_DIR)
+        fun assertSourceCodeGenerated(sourceSet: SSets, vararg files: Path) {
+            val dir = protoBuildDirGenerated.resolve(sourceSet.name).resolve(KOTLIN_MULTIPLATFORM_DIR)
             if (files.isNotEmpty()) {
                 assert(dir.exists()) {
                     "Directory '$dir' with generated sources does not exist"
@@ -51,8 +51,8 @@ abstract class GrpcBaseTest : BaseTest() {
             }
         }
 
-        fun assertSourceCodeNotGenerated(sourceSet: String, vararg files: Path) {
-            val dir = protoBuildDirGenerated.resolve(sourceSet).resolve(KOTLIN_MULTIPLATFORM_DIR)
+        fun assertSourceCodeNotGenerated(sourceSet: SSets, vararg files: Path) {
+            val dir = protoBuildDirGenerated.resolve(sourceSet.name).resolve(KOTLIN_MULTIPLATFORM_DIR)
 
             files.forEach { file ->
                 assert(!dir.resolve(file).exists()) {
@@ -61,9 +61,37 @@ abstract class GrpcBaseTest : BaseTest() {
             }
         }
 
+        fun assertSourceCodeNotGeneratedExcept(sourceSet: SSets, vararg files: Path) {
+            val dir = protoBuildDirGenerated.resolve(sourceSet.name).resolve(KOTLIN_MULTIPLATFORM_DIR)
+
+            fun Path.doAssert() {
+                listDirectoryEntries().forEach { entry ->
+                    when {
+                        entry.isDirectory() -> {
+                            entry.doAssert()
+                        }
+
+                        entry.isRegularFile() && entry.relativeTo(dir) in files -> {
+                            // fine
+                        }
+
+                        entry.name == ".keep" -> {
+                            // fine
+                        }
+
+                        else -> {
+                            fail("File '${entry}' in '$this' should not exist")
+                        }
+                    }
+                }
+            }
+
+            dir.doAssert()
+        }
+
         @OptIn(ExperimentalPathApi::class)
-        private fun assertWorkspaceProtoFilesCopiedInternal(vararg files: Path, sourceSet: String, dir: String) {
-            val protoSources = protoBuildDirSourceSets.resolve(sourceSet).resolve(dir)
+        private fun assertWorkspaceProtoFilesCopiedInternal(vararg files: Path, sourceSet: SSets, dir: String) {
+            val protoSources = protoBuildDirSourceSets.resolve(sourceSet.name).resolve(dir)
             val included = files.map { file ->
                 val resolved = protoSources.resolve(file)
                 assert(resolved.exists()) {
@@ -80,11 +108,11 @@ abstract class GrpcBaseTest : BaseTest() {
             }
         }
 
-        fun assertWorkspaceProtoFilesCopied(sourceSet: String, vararg files: Path) {
+        fun assertWorkspaceProtoFilesCopied(sourceSet: SSets, vararg files: Path) {
             assertWorkspaceProtoFilesCopiedInternal(*files, sourceSet = sourceSet, dir = "proto")
         }
 
-        fun assertWorkspaceImportProtoFilesCopied(sourceSet: String, vararg files: Path) {
+        fun assertWorkspaceImportProtoFilesCopied(sourceSet: SSets, vararg files: Path) {
             assertWorkspaceProtoFilesCopiedInternal(*files, sourceSet = sourceSet, dir = "import")
         }
 
@@ -93,9 +121,9 @@ abstract class GrpcBaseTest : BaseTest() {
             protoBuildDir.deleteRecursively()
         }
 
-        fun assertBufGenYaml(sourceSet: String, @Language("Yaml") content: String) {
+        fun assertBufGenYaml(sourceSet: SSets, @Language("Yaml") content: String) {
             val file = protoBuildDirSourceSets
-                .resolve(sourceSet)
+                .resolve(sourceSet.name)
                 .resolve("buf.gen.yaml")
 
             assert(file.exists()) {
@@ -107,9 +135,11 @@ abstract class GrpcBaseTest : BaseTest() {
                     it.contains("protoc-gen-kotlin-multiplatform") -> {
                         it.replace(localPluginExecRegex, "[protoc-gen-kotlin-multiplatform]")
                     }
+
                     it.contains("protoc-gen-grpc-kotlin-multiplatform") -> {
                         it.replace(localPluginExecRegex, "[protoc-gen-grpc-kotlin-multiplatform]")
                     }
+
                     else -> {
                         it
                     }
@@ -182,22 +212,72 @@ abstract class GrpcBaseTest : BaseTest() {
             assertWorkspaceImportProtoFilesCopied(mainSourceSet)
         }
 
-        val mainSourceSet = if (isKmp) "${KMP_SOURCE_SET}Main" else "main"
-        val testSourceSet = if (isKmp) "${KMP_SOURCE_SET}Test" else "test"
-        val bufGenerateCommonMain = if (isKmp) "bufGenerate${KMP_COMMON_SOURCE_SET_CAPITAL}Main" else "bufGenerateMain"
-        val bufGenerateCommonTest = if (isKmp) "bufGenerate${KMP_COMMON_SOURCE_SET_CAPITAL}Test" else "bufGenerateTest"
-        val processCommonMainProtoFiles =
-            if (isKmp) "process${KMP_COMMON_SOURCE_SET_CAPITAL}MainProtoFiles" else "processMainProtoFiles"
-        val processCommonTestProtoFiles =
-            if (isKmp) "process${KMP_COMMON_SOURCE_SET_CAPITAL}TestProtoFiles" else "processTestProtoFiles"
-        val processCommonTestProtoFilesImports =
-            if (isKmp) "process${KMP_COMMON_SOURCE_SET_CAPITAL}TestProtoFilesImports" else "processTestProtoFilesImports"
-        val generateBufYamlCommonMain = if (isKmp) "generateBufYaml${KMP_COMMON_SOURCE_SET_CAPITAL}Main" else "generateBufYamlMain"
-        val generateBufYamlCommonTest = if (isKmp) "generateBufYaml${KMP_COMMON_SOURCE_SET_CAPITAL}Test" else "generateBufYamlTest"
-        val generateBufGenYamlCommonMain =
-            if (isKmp) "generateBufGenYaml${KMP_COMMON_SOURCE_SET_CAPITAL}Main" else "generateBufGenYamlMain"
-        val generateBufGenYamlCommonTest =
-            if (isKmp) "generateBufGenYaml${KMP_COMMON_SOURCE_SET_CAPITAL}Test" else "generateBufGenYamlTest"
+        fun BuildResult.assertTaskExecuted(
+            sourceSet: SSets,
+            protoFiles: List<Path>,
+            importProtoFiles: List<Path>,
+            generatedFiles: List<Path>,
+            notExecuted: List<SSets>,
+        ) {
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(bufGenerate(sourceSet)))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processProtoFiles(sourceSet)))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processProtoFilesImports(sourceSet)))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufYaml(sourceSet)))
+            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufGenYaml(sourceSet)))
+
+            assertSourceCodeGenerated(sourceSet, *generatedFiles.toTypedArray())
+            assertSourceCodeNotGeneratedExcept(sourceSet, *generatedFiles.toTypedArray())
+            assertWorkspaceProtoFilesCopied(sourceSet, *protoFiles.toTypedArray())
+            assertWorkspaceImportProtoFilesCopied(sourceSet, *importProtoFiles.toTypedArray())
+
+            notExecuted.forEach {
+                assertProtoTaskNotExecuted(bufGenerate(it))
+                assertProtoTaskNotExecuted(processProtoFiles(it))
+                assertProtoTaskNotExecuted(processProtoFilesImports(it))
+                assertProtoTaskNotExecuted(generateBufYaml(it))
+                assertProtoTaskNotExecuted(generateBufGenYaml(it))
+            }
+        }
+
+        fun BuildResult.assertKmpSourceSet(
+            sourceSet: SSets,
+            vararg imports: SSets,
+        ) {
+            val ktFile = "${sourceSet.capital}.kt"
+            val importsSet = imports.toSet()
+
+            assertTaskExecuted(
+                sourceSet = sourceSet,
+                protoFiles = listOf(Path("${sourceSet.name}.proto")),
+                importProtoFiles = imports.map {
+                    Path("${it.name}.proto")
+                },
+                generatedFiles = listOf(
+                    Path(ktFile),
+                    Path(RPC_INTERNAL, ktFile),
+                ),
+                notExecuted = SSets.entries.filter { it != sourceSet && it !in importsSet },
+            )
+        }
+
+        fun bufGenerate(sourceSet: SSets) = "bufGenerate${sourceSet.capital}"
+        fun processProtoFiles(sourceSet: SSets) = "process${sourceSet.capital}ProtoFiles"
+        fun processProtoFilesImports(sourceSet: SSets) = "process${sourceSet.capital}ProtoFilesImports"
+        fun generateBufYaml(sourceSet: SSets) = "generateBufYaml${sourceSet.capital}"
+        fun generateBufGenYaml(sourceSet: SSets) = "generateBufGenYaml${sourceSet.capital}"
+
+        val mainSourceSet = if (isKmp) SSets.commonMain else SSets.main
+        val testSourceSet = if (isKmp) SSets.commonTest else SSets.test
+
+        val bufGenerateCommonMain = bufGenerate(mainSourceSet)
+        val bufGenerateCommonTest = bufGenerate(testSourceSet)
+        val processCommonMainProtoFiles = processProtoFiles(mainSourceSet)
+        val processCommonTestProtoFiles = processProtoFiles(testSourceSet)
+        val processCommonTestProtoFilesImports = processProtoFilesImports(testSourceSet)
+        val generateBufYamlCommonMain = generateBufYaml(mainSourceSet)
+        val generateBufYamlCommonTest = generateBufYaml(testSourceSet)
+        val generateBufGenYamlCommonMain = generateBufGenYaml(mainSourceSet)
+        val generateBufGenYamlCommonTest = generateBufGenYaml(testSourceSet)
 
         val protoBuildDir: Path by lazy {
             projectDir
@@ -218,21 +298,42 @@ abstract class GrpcBaseTest : BaseTest() {
         val mainProtoFileSources: Path by lazy {
             projectDir
                 .resolve("src")
-                .resolve(mainSourceSet)
+                .resolve(mainSourceSet.name)
                 .resolve("proto")
         }
 
         val testProtoFileSources: Path by lazy {
             projectDir
                 .resolve("src")
-                .resolve(testSourceSet)
+                .resolve(testSourceSet.name)
+                .resolve("proto")
+        }
+
+        fun SSets.sourceDir(): Path {
+            return projectDir
+                .resolve("src")
+                .resolve(name)
                 .resolve("proto")
         }
     }
 
+    @Suppress("EnumEntryName")
+    enum class SSets {
+        main, test,
+
+        commonMain, commonTest,
+        jvmMain, jvmTest,
+        androidMain, androidTest,
+        jsMain, jsTest,
+        nativeMain, nativeTest,
+        appleMain, appleTest,
+        macosMain, macosTest,
+        macosArm64Main, macosArm64Test,
+    }
+
+    private val SSets.capital get() = name.replaceFirstChar { it.titlecase() }
+
     companion object {
-        private const val KMP_SOURCE_SET = "common"
-        private val KMP_COMMON_SOURCE_SET_CAPITAL = KMP_SOURCE_SET.replaceFirstChar(Char::uppercaseChar)
         private const val KOTLIN_MULTIPLATFORM_DIR = "kotlin-multiplatform"
         const val RPC_INTERNAL = "_rpc_internal"
     }

@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message MacosArm64Test {
+  string content = 1;
+}
