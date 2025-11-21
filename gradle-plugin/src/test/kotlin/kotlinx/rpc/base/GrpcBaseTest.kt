@@ -29,6 +29,10 @@ abstract class GrpcBaseTest : BaseTest() {
                 ?: fail("Task ':$name' was not present in the build result")
         }
 
+        fun BuildResult.protoTaskOutcomeOrNull(name: String): TaskOutcome? {
+            return tasks.find { it.path == ":$name" }?.outcome
+        }
+
         fun BuildResult.assertProtoTaskNotExecuted(name: String) {
             val task = tasks.find { it.path == ":$name" }
             if (task != null) {
