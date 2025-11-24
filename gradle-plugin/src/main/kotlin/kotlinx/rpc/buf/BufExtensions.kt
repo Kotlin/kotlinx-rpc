@@ -160,7 +160,7 @@ public open class BufTasksExtension @Inject internal constructor(internal val pr
  * @see <a href="https://buf.build/docs/reference/cli/buf/generate/">"buf generate" command</a>
  * @see [BUF_GEN_YAML]
  */
-public open class BufGenerateExtension @Inject constructor(internal val project: Project) {
+public open class BufGenerateExtension @Inject internal constructor(internal val project: Project) {
     /**
      * Returns a collection of all `buf generate` tasks registered in the project.
      */
@@ -240,7 +240,7 @@ public open class BufGenerateExtension @Inject constructor(internal val project:
 /**
  * Extension for configuring comments in the generated code.
  */
-public open class BufCommentsExtension @Inject constructor(internal val project: Project) {
+public open class BufCommentsExtension @Inject internal constructor(internal val project: Project) {
     /**
      * Whether to copy comments from the original source files.
      */

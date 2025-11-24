@@ -51,6 +51,11 @@ public fun NamedDomainObjectContainer<ProtocPlugin>.grpcKotlinMultiplatform(acti
  * Access to a specific protoc plugin.
  */
 public open class ProtocPlugin internal constructor(
+    /**
+     * Plugin's name.
+     *
+     * Also used to create directory names for generated files.
+     */
     public val name: String,
     internal val project: Project,
 ) {
@@ -198,7 +203,7 @@ public open class ProtocPlugin internal constructor(
          *     Buf documentation - Type of plugin
          * </a>
          */
-        public class Local(private val project: Project) : Artifact() {
+        public class Local internal constructor(private val project: Project) : Artifact() {
             /**
              * Command-line arguments that execute the plugin.
              */
@@ -271,7 +276,7 @@ public open class ProtocPlugin internal constructor(
          *     Buf documentation - Type of plugin
          * </a>
          */
-        public class Remote(project: Project) : Artifact() {
+        public class Remote internal constructor(project: Project) : Artifact() {
             public val locator: Property<String> = project.objects.property()
         }
     }

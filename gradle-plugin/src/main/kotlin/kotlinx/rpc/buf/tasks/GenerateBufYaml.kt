@@ -22,7 +22,7 @@ import java.io.File
 /**
  * Generates/updates a Buf `buf.yaml` file.
  */
-public abstract class GenerateBufYaml : DefaultTask() {
+public abstract class GenerateBufYaml internal constructor(): DefaultTask() {
     @get:Input
     internal abstract val protoSourceDir: Property<String>
 

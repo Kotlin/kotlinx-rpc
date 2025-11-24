@@ -53,12 +53,12 @@ public abstract class BufExecTask @Inject constructor(
     @get:Input
     internal abstract val debug: Property<Boolean>
 
-    public open class Properties(
+    public open class Properties internal constructor(
         public val isTest: Boolean,
         public val sourceSetName: String,
     )
 
-    public class AndroidProperties(
+    public class AndroidProperties internal constructor(
         isTest: Boolean,
         sourceSetName: String,
         public val flavour: String,

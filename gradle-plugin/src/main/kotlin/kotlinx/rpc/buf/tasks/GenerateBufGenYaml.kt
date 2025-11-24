@@ -49,7 +49,7 @@ internal data class ResolvedGrpcPlugin(
 /**
  * Generates/updates Buf `buf.gen.yaml` file.
  */
-public abstract class GenerateBufGenYaml : DefaultTask() {
+public abstract class GenerateBufGenYaml internal constructor(): DefaultTask() {
     @get:Input
     internal abstract val plugins: ListProperty<ResolvedGrpcPlugin>
 

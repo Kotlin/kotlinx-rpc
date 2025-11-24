@@ -24,7 +24,7 @@ internal fun Project.rpcExtensionOrNull(): RpcExtension? = extensions.findByType
 internal fun Project.rpcExtension(): RpcExtension = rpcExtensionOrNull()
     ?: error("Rpc extension not found. Please apply the plugin to the project")
 
-public open class RpcExtension @Inject constructor(objects: ObjectFactory, project: Project) {
+public open class RpcExtension @Inject internal constructor(objects: ObjectFactory, project: Project) {
     /**
      * Controls `@Rpc` [annotation type-safety](https://github.com/Kotlin/kotlinx-rpc/pull/240) compile-time checkers.
      *
@@ -105,7 +105,7 @@ public open class RpcExtension @Inject constructor(objects: ObjectFactory, proje
     }
 }
 
-public open class RpcStrictModeExtension @Inject constructor(objects: ObjectFactory) {
+public open class RpcStrictModeExtension @Inject internal constructor(objects: ObjectFactory) {
     /**
      * `StateFlow`s in RPC services are deprecated,
      * due to their error-prone nature.

@@ -17,7 +17,7 @@ import java.io.File
 /**
  * Copy proto files to a temporary directory for Buf to process.
  */
-public abstract class ProcessProtoFiles : Copy() {
+public abstract class ProcessProtoFiles internal constructor(): Copy() {
     init {
         group = PROTO_GROUP
     }
