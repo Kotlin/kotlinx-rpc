@@ -31,6 +31,7 @@ rpc {
                 remote {
                     locator = "my.remote.plugin"
                 }
+                options.put("hello", "world")
             }
         }
     }
@@ -39,6 +40,9 @@ rpc {
 kotlin.sourceSets {
     main.proto {
         plugin { getByName("myPlugin") }
-        plugin { getByName("myRemotePlugin") }
+        plugin({ options.put("only", "in main") }) { getByName("myRemotePlugin") }
+    }
+    test.proto {
+        plugin({ options.put("only", "in test") }) { getByName("myRemotePlugin") }
     }
 }

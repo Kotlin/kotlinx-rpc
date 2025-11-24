@@ -265,7 +265,41 @@ plugins:
   - remote: my.remote.plugin
     out: myRemotePlugin
     opt:
+      - hello=world
       - explicitApiModeEnabled=true
+      - only=in main
+inputs:
+  - directory: proto
+            """.trimIndent()
+        )
+
+        runGradle(generateBufGenYamlCommonTest)
+
+        assertBufGenYaml(
+            sourceSet = testSourceSet,
+            content = """
+version: v2
+clean: true
+plugins:
+  - local: [protoc-gen-kotlin-multiplatform]
+    out: kotlin-multiplatform
+    opt:
+      - debugOutput=protoc-gen-kotlin-multiplatform.log
+      - generateComments=true
+      - generateFileLevelComments=true
+      - indentSize=4
+  - local: [protoc-gen-grpc-kotlin-multiplatform]
+    out: grpc-kotlin-multiplatform
+    opt:
+      - debugOutput=protoc-gen-grpc-kotlin-multiplatform.log
+      - generateComments=true
+      - generateFileLevelComments=true
+      - indentSize=4
+  - remote: my.remote.plugin
+    out: myRemotePlugin
+    opt:
+      - hello=world
+      - only=in test
 inputs:
   - directory: proto
             """.trimIndent()

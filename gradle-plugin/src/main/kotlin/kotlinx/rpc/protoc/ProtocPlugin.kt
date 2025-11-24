@@ -281,7 +281,6 @@ public open class ProtocPlugin internal constructor(
         }
     }
 
-    // todo check if coping works
     internal fun copy(): ProtocPlugin {
         return ProtocPlugin(name, project)
             .also {
