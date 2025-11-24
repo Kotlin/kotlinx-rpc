@@ -160,13 +160,13 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
         runKmpAndCheckFiles(
             SSets.jsMain,
-            SSets.commonMain,
+            SSets.commonMain, SSets.webMain,
         )
 
         runKmpAndCheckFiles(
             SSets.jsTest,
-            SSets.commonMain, SSets.jsMain,
-            SSets.commonTest,
+            SSets.commonMain, SSets.webMain, SSets.jsMain,
+            SSets.commonTest, SSets.webTest
         )
 
         runKmpAndCheckFiles(
@@ -223,7 +223,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         assertOutcomes(firstRunCommonMain, SSets.nativeMain)
         assertOutcomes(firstRunCommonMain, SSets.nativeTest)
         assertOutcomes(firstRunCommonMain, SSets.jvmMain)
-        assertOutcomes(firstRunCommonMain, SSets.jsTest)
+        assertOutcomes(firstRunCommonMain, SSets.jvmTest)
+        assertOutcomes(firstRunCommonMain, SSets.webMain)
+        assertOutcomes(firstRunCommonMain, SSets.webTest)
         assertOutcomes(firstRunCommonMain, SSets.jsMain)
         assertOutcomes(firstRunCommonMain, SSets.jsTest)
         assertOutcomes(firstRunCommonMain, SSets.appleMain)
@@ -330,7 +332,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         // didn't run
         assertOutcomes(firstRunMacosArm64Main, SSets.nativeTest)
         assertOutcomes(firstRunMacosArm64Main, SSets.jvmMain)
-        assertOutcomes(firstRunMacosArm64Main, SSets.jsTest)
+        assertOutcomes(firstRunMacosArm64Main, SSets.jvmTest)
+        assertOutcomes(firstRunMacosArm64Main, SSets.webMain)
+        assertOutcomes(firstRunMacosArm64Main, SSets.webTest)
         assertOutcomes(firstRunMacosArm64Main, SSets.jsMain)
         assertOutcomes(firstRunMacosArm64Main, SSets.jsTest)
         assertOutcomes(firstRunMacosArm64Main, SSets.appleTest)
@@ -431,7 +435,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
         // didn't run
         assertOutcomes(firstRunMacosArm64Test, SSets.jvmMain)
-        assertOutcomes(firstRunMacosArm64Test, SSets.jsTest)
+        assertOutcomes(firstRunMacosArm64Test, SSets.jvmTest)
+        assertOutcomes(firstRunMacosArm64Test, SSets.webMain)
+        assertOutcomes(firstRunMacosArm64Test, SSets.webTest)
         assertOutcomes(firstRunMacosArm64Test, SSets.jsMain)
         assertOutcomes(firstRunMacosArm64Test, SSets.jsTest)
 
@@ -456,7 +462,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         assertOutcomes(fifthRunCommonMain, SSets.nativeMain)
         assertOutcomes(fifthRunCommonMain, SSets.nativeTest)
         assertOutcomes(fifthRunCommonMain, SSets.jvmMain)
-        assertOutcomes(fifthRunCommonMain, SSets.jsTest)
+        assertOutcomes(fifthRunCommonMain, SSets.jvmTest)
+        assertOutcomes(fifthRunCommonMain, SSets.webMain)
+        assertOutcomes(fifthRunCommonMain, SSets.webTest)
         assertOutcomes(fifthRunCommonMain, SSets.jsMain)
         assertOutcomes(fifthRunCommonMain, SSets.jsTest)
         assertOutcomes(fifthRunCommonMain, SSets.appleMain)
@@ -521,7 +529,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         // didn't run
         assertOutcomes(secondRunMacosArm64Main, SSets.nativeTest)
         assertOutcomes(secondRunMacosArm64Main, SSets.jvmMain)
-        assertOutcomes(secondRunMacosArm64Main, SSets.jsTest)
+        assertOutcomes(secondRunMacosArm64Main, SSets.jvmTest)
+        assertOutcomes(secondRunMacosArm64Main, SSets.webMain)
+        assertOutcomes(secondRunMacosArm64Main, SSets.webTest)
         assertOutcomes(secondRunMacosArm64Main, SSets.jsMain)
         assertOutcomes(secondRunMacosArm64Main, SSets.jsTest)
         assertOutcomes(secondRunMacosArm64Main, SSets.appleTest)
@@ -622,7 +632,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
         // didn't run
         assertOutcomes(secondRunMacosArm64Test, SSets.jvmMain)
-        assertOutcomes(secondRunMacosArm64Test, SSets.jsTest)
+        assertOutcomes(secondRunMacosArm64Test, SSets.jvmTest)
+        assertOutcomes(secondRunMacosArm64Test, SSets.webMain)
+        assertOutcomes(secondRunMacosArm64Test, SSets.webTest)
         assertOutcomes(secondRunMacosArm64Test, SSets.jsMain)
         assertOutcomes(secondRunMacosArm64Test, SSets.jsTest)
 
@@ -652,7 +664,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         assertOutcomes(firstRunJvmMain, SSets.commonTest)
         assertOutcomes(firstRunJvmMain, SSets.nativeMain)
         assertOutcomes(firstRunJvmMain, SSets.nativeTest)
-        assertOutcomes(firstRunJvmMain, SSets.jsTest)
+        assertOutcomes(firstRunJvmMain, SSets.jvmTest)
+        assertOutcomes(firstRunJvmMain, SSets.webMain)
+        assertOutcomes(firstRunJvmMain, SSets.webTest)
         assertOutcomes(firstRunJvmMain, SSets.jsMain)
         assertOutcomes(firstRunJvmMain, SSets.jsTest)
         assertOutcomes(firstRunJvmMain, SSets.appleMain)
@@ -692,7 +706,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         assertOutcomes(secondRunJvmMain, SSets.commonTest)
         assertOutcomes(secondRunJvmMain, SSets.nativeMain)
         assertOutcomes(secondRunJvmMain, SSets.nativeTest)
-        assertOutcomes(secondRunJvmMain, SSets.jsTest)
+        assertOutcomes(secondRunJvmMain, SSets.jvmTest)
+        assertOutcomes(secondRunJvmMain, SSets.webMain)
+        assertOutcomes(secondRunJvmMain, SSets.webTest)
         assertOutcomes(secondRunJvmMain, SSets.jsMain)
         assertOutcomes(secondRunJvmMain, SSets.jsTest)
         assertOutcomes(secondRunJvmMain, SSets.appleMain)
@@ -733,5 +749,10 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         assertEquals(bufGenYaml, result.protoTaskOutcomeOrNull(generateBufGenYaml(sourceSet)))
         assertEquals(protoFiles, result.protoTaskOutcomeOrNull(processProtoFiles(sourceSet)))
         assertEquals(protoFilesImports, result.protoTaskOutcomeOrNull(processProtoFilesImports(sourceSet)))
+    }
+
+    @TestFactory
+    fun `Buf Tasks`() = runGrpcTest {
+        runGradle("test_tasks", "--no-configuration-cache")
     }
 }

@@ -398,4 +398,9 @@ inputs:
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunTest.protoTaskOutcome(generateBufGenYamlCommonMain))
         assertEquals(TaskOutcome.SUCCESS, fourthRunTest.protoTaskOutcome(processCommonMainProtoFiles))
     }
+
+    @TestFactory
+    fun `Buf Tasks`() = runGrpcTest {
+        runGradle("test_tasks", "--no-configuration-cache")
+    }
 }

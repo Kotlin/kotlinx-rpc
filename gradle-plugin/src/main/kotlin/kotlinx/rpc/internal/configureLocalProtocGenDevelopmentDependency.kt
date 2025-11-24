@@ -4,14 +4,12 @@
 
 package kotlinx.rpc.internal
 
-import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.protoc.grpcKotlinMultiplatform
 import kotlinx.rpc.protoc.kotlinMultiplatform
 import kotlinx.rpc.rpcExtension
 import org.gradle.api.Project
 import org.gradle.internal.extensions.core.extra
 import org.gradle.kotlin.dsl.provideDelegate
-import org.gradle.kotlin.dsl.withType
 
 @InternalRpcApi
 public fun Project.configureLocalProtocGenDevelopmentDependency(
@@ -34,13 +32,13 @@ public fun Project.configureLocalProtocGenDevelopmentDependency(
                 }
             }
         }
-    }
 
-    tasks.withType<BufGenerateTask>().configureEach {
-        if (sourceSetSuffix.any { name.endsWith(it) }) {
-            val includedBuild = gradle.includedBuild("protoc-gen")
-            dependsOn(includedBuild.task(":grpc:jar"))
-            dependsOn(includedBuild.task(":protobuf:jar"))
-        }
+        buf.generate.allTasks()
+            .matching { sourceSetSuffix.any { name.endsWith(it) } }
+            .configureEach {
+                val includedBuild = gradle.includedBuild("protoc-gen")
+                dependsOn(includedBuild.task(":grpc:jar"))
+                dependsOn(includedBuild.task(":protobuf:jar"))
+            }
     }
 }

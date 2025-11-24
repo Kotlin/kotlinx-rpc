@@ -328,6 +328,7 @@ abstract class GrpcBaseTest : BaseTest() {
         commonMain, commonTest,
         jvmMain, jvmTest,
         androidMain, androidTest,
+        webMain, webTest,
         jsMain, jsTest,
         nativeMain, nativeTest,
         appleMain, appleTest,

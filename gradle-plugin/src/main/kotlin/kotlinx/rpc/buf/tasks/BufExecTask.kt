@@ -27,21 +27,44 @@ import kotlinx.rpc.buf.BUF_GEN_YAML
 import kotlinx.rpc.buf.BUF_YAML
 import kotlinx.rpc.buf.BufTasksExtension
 import org.gradle.api.logging.LogLevel
+import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Classpath
+import org.gradle.api.tasks.Internal
+import javax.inject.Inject
 
 /**
  * Abstract base class for `buf` tasks.
  */
-public abstract class BufExecTask : DefaultTask() {
+public abstract class BufExecTask @Inject constructor(
+    @Internal
+    public val properties: Properties
+) : DefaultTask() {
     init {
         group = PROTO_GROUP
     }
+
+    // list of buf task dependencies of the same type
+    @get:Internal
+    internal abstract val bufTaskDependencies: SetProperty<String>
 
     @get:InputFile
     internal abstract val bufExecutable: Property<File>
 
     @get:Input
     internal abstract val debug: Property<Boolean>
+
+    public open class Properties(
+        public val isTest: Boolean,
+        public val sourceSetName: String,
+    )
+
+    public class AndroidProperties(
+        isTest: Boolean,
+        sourceSetName: String,
+        public val flavour: String,
+        public val buildType: String,
+        public val variant: String,
+    ) : Properties(isTest, sourceSetName)
 
     /**
      * The `buf` command to execute.
@@ -103,25 +126,29 @@ public abstract class BufExecTask : DefaultTask() {
 public inline fun <reified T : BufExecTask> Project.registerBufExecTask(
     name: String,
     workingDir: Provider<File>,
+    properties: BufExecTask.Properties,
     noinline configuration: T.() -> Unit,
-): TaskProvider<T> = registerBufExecTask(T::class, name, workingDir, configuration)
+): TaskProvider<T> = registerBufExecTask(T::class, name, workingDir, properties, configuration)
 
 @PublishedApi
 internal fun <T : BufExecTask> Project.registerBufExecTask(
     clazz: KClass<T>,
     name: String,
     workingDir: Provider<File>,
+    properties: BufExecTask.Properties,
     configuration: T.() -> Unit = {},
-): TaskProvider<T> = tasks.register(name, clazz) {
-    val executableConfiguration = configurations.getByName(BUF_EXECUTABLE_CONFIGURATION)
-    bufExecutable.set(executableConfiguration.singleFile)
-    this.workingDir.set(workingDir)
+): TaskProvider<T> = tasks.register(name, clazz, properties).apply {
+    configure {
+        val executableConfiguration = configurations.getByName(BUF_EXECUTABLE_CONFIGURATION)
+        bufExecutable.set(executableConfiguration.singleFile)
+        this.workingDir.set(workingDir)
 
-    val buf = provider { rpcExtension().protoc.get().buf }
-    configFile.set(buf.flatMap { it.configFile })
-    logFormat.set(buf.flatMap { it.logFormat })
-    bufTimeoutInWholeSeconds.set(buf.flatMap { it.timeout.map { duration -> duration.inWholeSeconds } })
-    debug.set(gradle.startParameter.logLevel == LogLevel.DEBUG)
+        val buf = provider { rpcExtension().protoc.get().buf }
+        configFile.set(buf.flatMap { it.configFile })
+        logFormat.set(buf.flatMap { it.logFormat })
+        bufTimeoutInWholeSeconds.set(buf.flatMap { it.timeout.map { duration -> duration.inWholeSeconds } })
+        debug.set(gradle.startParameter.logLevel == LogLevel.DEBUG)
 
-    configuration()
+        configuration()
+    }
 }
