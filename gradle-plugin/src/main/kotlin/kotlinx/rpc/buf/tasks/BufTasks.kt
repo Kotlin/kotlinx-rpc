@@ -13,51 +13,454 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.util.function.IntFunction
 import kotlin.reflect.KClass
 
+/**
+ * Represents a collection of buf tasks of a given type.
+ *
+ * Allows for better filtering using additional method on top of Gradle's [TaskCollection].
+ *
+ * Example:
+ * ```kotlin
+ * rpc.protoc {
+ *     buf.tasks.all().matchingSourceSet("main")
+ *     buf.tasks.all().testTasks()
+ *     buf.tasks.all()
+ *         .testTasks()
+ *         .matching { ... }
+ *         .all { ... }
+ * }
+ * ```
+ */
 public sealed interface BufTasks<BufTask : BufExecTask> : TaskCollection<BufTask> {
+    /**
+     * Filters tasks by source set name.
+     *
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all().matchingSourceSet("main")
+     * }
+     * ```
+     */
     public fun matchingSourceSet(sourceSetName: String): BufTasks<BufTask>
 
+    /**
+     * Filters tasks by a Kotlin source set.
+     *
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all().matchingSourceSet(kotlin.sourceSets.getByName("main"))
+     * }
+     * ```
+     */
     public fun matchingKotlinSourceSet(sourceSet: KotlinSourceSet): BufTasks<BufTask>
 
+    /**
+     * Filters tasks by a Kotlin source set.
+     *
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all().matchingSourceSet(kotlin.sourceSets.commonMain)
+     * }
+     * ```
+     */
     public fun matchingKotlinSourceSet(sourceSet: NamedDomainObjectProvider<KotlinSourceSet>): BufTasks<BufTask>
 
+    /**
+     * Filters tasks by a source set.
+     *
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all().matchingSourceSet(sourceSets.getByName("main"))
+     * }
+     * ```
+     */
     public fun matchingSourceSet(sourceSet: SourceSet): BufTasks<BufTask>
 
+    /**
+     * Filters tasks by a source set.
+     *
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all().matchingSourceSet(sourceSets.main)
+     * }
+     * ```
+     */
     public fun matchingSourceSet(sourceSet: NamedDomainObjectProvider<SourceSet>): BufTasks<BufTask>
 
+    /**
+     * Returns a collection of all buf tasks of the given type [BufTask] that will be executed for the given source set.
+     *
+     * This functionality uses [KotlinSourceSet.dependsOn] and inherits it's limitations:
+     * > Note that the Kotlin Gradle plugin may add additional required source sets
+     * on late stages of Gradle configuration
+     * and the most reliable way to get a full final set is to use this property
+     * as a task input with [org.gradle.api.provider.Provider] type.
+     *
+     * Unlike [KotlinSourceSet.dependsOn], this method also considers the `test -> main` dependency.
+     *
+     * Correct example:
+     * ```kotlin
+     * // use bufTaskNames in other tasks as in input, e.g.
+     * //
+     * // returns bufGenerateCommonMain, bufGenerateNativeMain, bufGenerateAppleMain
+     * // in default Kotlin source set hierarchy
+     * val bufTaskNames = project.provider {
+     *     rpc.protoc.get()
+     *         .buf.tasks.all()
+     *             .executedForSourceSet("bufGenerateAppleMain")
+     *             .map { it.name }
+     * }
+     * ```
+     *
+     * Incorrect example that will print only `bufGenerateAppleMain`,
+     * because [KotlinSourceSet.dependsOn] won't yet be resolved:
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all()
+     *         .executedForSourceSet("bufGenerateAppleMain")
+     *         .all { println(it.name) }
+     * }
+     * ```
+     *
+     * Mind the difference with [bufDependsOn]:
+     * [executedForSourceSet] also includes the task for the given source set.
+     *
+     * For the correct example:
+     * - [bufDependsOn] returns `bufGenerateCommonMain` and `bufGenerateNativeMain`
+     * - [executedForSourceSet] returns `bufGenerateCommonMain`, `bufGenerateNativeMain` and `bufGenerateAppleMain`
+     */
     public fun executedForSourceSet(sourceSetName: String): BufTasks<BufTask>
 
-    public fun executedForSourceSet(sourceSet: KotlinSourceSet): BufTasks<BufTask>
+    /**
+     * Returns a collection of all buf tasks of the given type [BufTask] that will be executed for the given source set.
+     *
+     * This functionality uses [KotlinSourceSet.dependsOn] and inherits it's limitations:
+     * > Note that the Kotlin Gradle plugin may add additional required source sets
+     * on late stages of Gradle configuration
+     * and the most reliable way to get a full final set is to use this property
+     * as a task input with [org.gradle.api.provider.Provider] type.
+     *
+     * Unlike [KotlinSourceSet.dependsOn], this method also considers the `test -> main` dependency.
+     *
+     * Correct example:
+     * ```kotlin
+     * // use bufTaskNames in other tasks as in input, e.g.
+     * //
+     * // returns bufGenerateCommonMain, bufGenerateNativeMain, bufGenerateAppleMain
+     * // in default Kotlin source set hierarchy
+     * val bufTaskNames = project.provider {
+     *     rpc.protoc.get()
+     *         .buf.tasks.all()
+     *             .executedForSourceSet(kotlin.sourceSets.appleMain.get())
+     *             .map { it.name }
+     * }
+     * ```
+     *
+     * Incorrect example that will print only `bufGenerateAppleMain`,
+     * because [KotlinSourceSet.dependsOn] won't yet be resolved:
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all()
+     *         .executedForSourceSet(kotlin.sourceSets.appleMain.get())
+     *         .all { println(it.name) }
+     * }
+     * ```
+     *
+     * Mind the difference with [bufDependsOn]:
+     * [executedForKotlinSourceSet] also includes the task for the given source set.
+     *
+     * For the correct example:
+     * - [bufDependsOn] returns `bufGenerateCommonMain` and `bufGenerateNativeMain`
+     * - [executedForKotlinSourceSet] returns `bufGenerateCommonMain`, `bufGenerateNativeMain` and `bufGenerateAppleMain`
+     */
+    public fun executedForKotlinSourceSet(sourceSet: KotlinSourceSet): BufTasks<BufTask>
 
+    /**
+     * Returns a collection of all buf tasks of the given type [BufTask] that will be executed for the given source set.
+     *
+     * This functionality uses [KotlinSourceSet.dependsOn] and inherits it's limitations:
+     * > Note that the Kotlin Gradle plugin may add additional required source sets
+     * on late stages of Gradle configuration
+     * and the most reliable way to get a full final set is to use this property
+     * as a task input with [org.gradle.api.provider.Provider] type.
+     *
+     * Unlike [KotlinSourceSet.dependsOn], this method also considers the `test -> main` dependency.
+     *
+     * Correct example:
+     * ```kotlin
+     * // use bufTaskNames in other tasks as in input, e.g.
+     * //
+     * // returns bufGenerateCommonMain, bufGenerateNativeMain, bufGenerateAppleMain
+     * // in default Kotlin source set hierarchy
+     * val bufTaskNames = project.provider {
+     *     rpc.protoc.get()
+     *         .buf.tasks.all()
+     *             .executedForSourceSet(kotlin.sourceSets.appleMain)
+     *             .map { it.name }
+     * }
+     * ```
+     *
+     * Incorrect example that will print only `bufGenerateAppleMain`,
+     * because [KotlinSourceSet.dependsOn] won't yet be resolved:
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all()
+     *         .executedForSourceSet(kotlin.sourceSets.appleMain)
+     *         .all { println(it.name) }
+     * }
+     * ```
+     *
+     * Mind the difference with [bufDependsOn]:
+     * [executedForKotlinSourceSet] also includes the task for the given source set.
+     *
+     * For the correct example:
+     * - [bufDependsOn] returns `bufGenerateCommonMain` and `bufGenerateNativeMain`
+     * - [executedForKotlinSourceSet] returns `bufGenerateCommonMain`, `bufGenerateNativeMain` and `bufGenerateAppleMain`
+     */
+    public fun executedForKotlinSourceSet(sourceSet: NamedDomainObjectProvider<KotlinSourceSet>): BufTasks<BufTask>
+
+    /**
+     * Returns a collection of all buf tasks of the given type [BufTask] that will be executed for the given source set.
+     *
+     * This functionality uses [KotlinSourceSet.dependsOn] and inherits it's limitations:
+     * > Note that the Kotlin Gradle plugin may add additional required source sets
+     * on late stages of Gradle configuration
+     * and the most reliable way to get a full final set is to use this property
+     * as a task input with [org.gradle.api.provider.Provider] type.
+     *
+     * Unlike [KotlinSourceSet.dependsOn], this method also considers the `test -> main` dependency.
+     *
+     * Correct example:
+     * ```kotlin
+     * // use bufTaskNames in other tasks as in input, e.g.
+     * //
+     * // returns bufGenerateMain, bufGenerateTest
+     * // in default Kotlin source set hierarchy
+     * val bufTaskNames = project.provider {
+     *     rpc.protoc.get()
+     *         .buf.tasks.all()
+     *             .executedForSourceSet(sourceSets.test.get())
+     *             .map { it.name }
+     * }
+     * ```
+     *
+     * Incorrect example.
+     * Although, the result will be correct in Kotlin/JVM projects (will print`bufGenerateMain`),
+     * this is a bad pattern because [KotlinSourceSet.dependsOn] won't yet be resolved:
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all()
+     *         .executedForSourceSet(sourceSets.test.get())
+     *         .all { println(it.name) }
+     * }
+     * ```
+     *
+     * Mind the difference with [bufDependsOn]:
+     * [executedForSourceSet] also includes the task for the given source set.
+     *
+     * For the correct example:
+     * - [bufDependsOn] returns `bufGenerateMain`
+     * - [executedForSourceSet] returns `bufGenerateMain` and `bufGenerateTest`
+     */
     public fun executedForSourceSet(sourceSet: SourceSet): BufTasks<BufTask>
 
+    /**
+     * Returns a collection of all buf tasks of the given type [BufTask] that will be executed for the given source set.
+     *
+     * This functionality uses [KotlinSourceSet.dependsOn] and inherits it's limitations:
+     * > Note that the Kotlin Gradle plugin may add additional required source sets
+     * on late stages of Gradle configuration
+     * and the most reliable way to get a full final set is to use this property
+     * as a task input with [org.gradle.api.provider.Provider] type.
+     *
+     * Unlike [KotlinSourceSet.dependsOn], this method also considers the `test -> main` dependency.
+     *
+     * Correct example:
+     * ```kotlin
+     * // use bufTaskNames in other tasks as in input, e.g.
+     * //
+     * // returns bufGenerateMain, bufGenerateTest
+     * // in default Kotlin source set hierarchy
+     * val bufTaskNames = project.provider {
+     *     rpc.protoc.get()
+     *         .buf.tasks.all()
+     *             .executedForSourceSet(sourceSets.test)
+     *             .map { it.name }
+     * }
+     * ```
+     *
+     * Incorrect example.
+     * Although, the result will be correct in Kotlin/JVM projects (will print`bufGenerateMain`),
+     * this is a bad pattern because [KotlinSourceSet.dependsOn] won't yet be resolved:
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all()
+     *         .executedForSourceSet(sourceSets.test)
+     *         .all { println(it.name) }
+     * }
+     * ```
+     *
+     * Mind the difference with [bufDependsOn]:
+     * [executedForSourceSet] also includes the task for the given source set.
+     *
+     * For the correct example:
+     * - [bufDependsOn] returns `bufGenerateMain`
+     * - [executedForSourceSet] returns `bufGenerateMain` and `bufGenerateTest`
+     */
+    public fun executedForSourceSet(sourceSet: NamedDomainObjectProvider<SourceSet>): BufTasks<BufTask>
+
+    /**
+     * Filters tasks by where [BufExecTask.Properties.isTest] is `true`.
+     *
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all().testTasks()
+     * }
+     * ```
+     */
     public fun testTasks(): BufTasks<BufTask>
 
+    /**
+     * Filters tasks by where [BufExecTask.Properties.isTest] is `false`.
+     *
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all().nonTestTasks()
+     * }
+     * ```
+     */
     public fun nonTestTasks(): BufTasks<BufTask>
 
     // android
 
+    /**
+     * Filters tasks by where [BufExecTask.AndroidProperties.flavor] matches the given flavor.
+     *
+     * Only returns Android tasks.
+     *
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all().matchingFlavor("freeApp")
+     * }
+     * ```
+     */
     public fun matchingFlavor(flavor: String): BufTasks<BufTask>
 
+    /**
+     * Filters tasks by where [BufExecTask.AndroidProperties.buildType] matches the given buildType.
+     *
+     * Only returns Android tasks.
+     *
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all().matchingBuildType("debug")
+     * }
+     * ```
+     */
     public fun matchingBuildType(buildType: String): BufTasks<BufTask>
 
+    /**
+     * Filters tasks by where [BufExecTask.AndroidProperties.variant] matches the given variant.
+     *
+     * Only returns Android tasks.
+     *
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all().matchingVariant("freeAppDebug")
+     * }
+     * ```
+     */
     public fun matchingVariant(variant: String): BufTasks<BufTask>
 }
 
+/**
+ * A version of [BufTasks] that contains all buf tasks and allows filtering by type.
+ *
+ * ```kotlin
+ * rpc.protoc {
+ *     buf.tasks.all().matchingType<BufGenerateTask>()
+ * }
+ * ```
+ */
 public sealed interface BufAllTasks : BufTasks<BufExecTask> {
+    /**
+     * Filters tasks by type.
+     *
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all().matchingType(BufGenerateTask::class)
+     * }
+     * ```
+     */
     public fun <BufTask : BufExecTask> matchingType(kClass: KClass<BufTask>): BufTasks<BufTask>
 }
 
+/**
+ * Filters tasks by type.
+ *
+ * ```kotlin
+ * rpc.protoc {
+ *     buf.tasks.all().matchingType<BufGenerateTask>()
+ * }
+ * ```
+ */
 public inline fun <reified BufTask : BufExecTask> BufAllTasks.matchingType(): BufTasks<BufTask> {
     return matchingType(BufTask::class)
 }
 
+/**
+ * Returns a collection of all buf tasks of the given type [BufTask] that this task depends on.
+ *
+ * This functionality uses [KotlinSourceSet.dependsOn] and inherits it's limitations:
+ * > Note that the Kotlin Gradle plugin may add additional required source sets
+ * on late stages of Gradle configuration
+ * and the most reliable way to get a full final set is to use this property
+ * as a task input with [org.gradle.api.provider.Provider] type.
+ *
+ * Unlike [KotlinSourceSet.dependsOn], this method also considers the `test -> main` dependency.
+ *
+ * Correct example:
+ * ```kotlin
+ * // use bufTaskNames in other tasks as in input, e.g.
+ * //
+ * // returns bufGenerateCommonMain, bufGenerateNativeMain
+ * // in default Kotlin source set hierarchy
+ * val bufTaskNames = project.provider {
+ *     rpc.protoc.get()
+ *         .buf.tasks.all()
+ *             .getByName("bufGenerateAppleMain")
+ *             .bufDependsOn()
+ *             .map { it.name }
+ * }
+ * ```
+ *
+ * Incorrect example that will print nothing, because [KotlinSourceSet.dependsOn] won't yet be resolved:
+ * ```kotlin
+ * rpc.protoc {
+ *     buf.tasks.all()
+ *         .getByName("bufGenerateAppleMain")
+ *         .bufDependsOn()
+ *         .all { println(it.name) }
+ * }
+ * ```
+ *
+ * Mind the difference with [BufTasks.executedForSourceSet]:
+ * [bufDependsOn] doesn't include the task for the given source set.
+ *
+ * For the correct example:
+ * - [bufDependsOn] returns `bufGenerateCommonMain` and `bufGenerateNativeMain`
+ * - [BufTasks.executedForSourceSet] returns `bufGenerateCommonMain`, `bufGenerateNativeMain` and `bufGenerateAppleMain`
+ */
 public inline fun <reified BufTask : BufExecTask> BufTask.bufDependsOn(): BufTasks<BufTask> {
     return bufDependsOn(BufTask::class)
 }
 
 @PublishedApi
 internal fun <BufTask : BufExecTask> BufTask.bufDependsOn(kClass: KClass<BufTask>): BufTasks<BufTask> {
-    return BufTasksImpl(project, project.tasks.withType(kClass).matching { it.name in bufTaskDependencies.get() }, kClass)
+    return BufTasksImpl(
+        project,
+        project.tasks.withType(kClass).matching { it.name in bufTaskDependencies.get() },
+        kClass
+    )
 }
 
 internal open class BufTasksImpl<BufTask : BufExecTask> internal constructor(
@@ -105,11 +508,19 @@ internal open class BufTasksImpl<BufTask : BufExecTask> internal constructor(
         )
     }
 
-    override fun executedForSourceSet(sourceSet: KotlinSourceSet): BufTasks<BufTask> {
+    override fun executedForKotlinSourceSet(sourceSet: KotlinSourceSet): BufTasks<BufTask> {
+        return executedForSourceSet(sourceSet.name)
+    }
+
+    override fun executedForKotlinSourceSet(sourceSet: NamedDomainObjectProvider<KotlinSourceSet>): BufTasks<BufTask> {
         return executedForSourceSet(sourceSet.name)
     }
 
     override fun executedForSourceSet(sourceSet: SourceSet): BufTasks<BufTask> {
+        return executedForSourceSet(sourceSet.name)
+    }
+
+    override fun executedForSourceSet(sourceSet: NamedDomainObjectProvider<SourceSet>): BufTasks<BufTask> {
         return executedForSourceSet(sourceSet.name)
     }
 
@@ -125,7 +536,7 @@ internal open class BufTasksImpl<BufTask : BufExecTask> internal constructor(
         return BufTasksImpl(
             project = project,
             collection = collection.matching {
-                (it.properties as? BufExecTask.AndroidProperties)?.flavour == flavor
+                (it.properties as? BufExecTask.AndroidProperties)?.flavor == flavor
             },
             kClass = kClass,
         )

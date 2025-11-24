@@ -116,7 +116,7 @@ public abstract class kotlinx/rpc/buf/tasks/BufExecTask : org/gradle/api/Default
 
 public final class kotlinx/rpc/buf/tasks/BufExecTask$AndroidProperties : kotlinx/rpc/buf/tasks/BufExecTask$Properties {
 	public final fun getBuildType ()Ljava/lang/String;
-	public final fun getFlavour ()Ljava/lang/String;
+	public final fun getFlavor ()Ljava/lang/String;
 	public final fun getVariant ()Ljava/lang/String;
 }
 
@@ -141,9 +141,11 @@ public abstract class kotlinx/rpc/buf/tasks/BufGenerateTask : kotlinx/rpc/buf/ta
 }
 
 public abstract interface class kotlinx/rpc/buf/tasks/BufTasks : org/gradle/api/tasks/TaskCollection {
+	public abstract fun executedForKotlinSourceSet (Lorg/gradle/api/NamedDomainObjectProvider;)Lkotlinx/rpc/buf/tasks/BufTasks;
+	public abstract fun executedForKotlinSourceSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Lkotlinx/rpc/buf/tasks/BufTasks;
 	public abstract fun executedForSourceSet (Ljava/lang/String;)Lkotlinx/rpc/buf/tasks/BufTasks;
+	public abstract fun executedForSourceSet (Lorg/gradle/api/NamedDomainObjectProvider;)Lkotlinx/rpc/buf/tasks/BufTasks;
 	public abstract fun executedForSourceSet (Lorg/gradle/api/tasks/SourceSet;)Lkotlinx/rpc/buf/tasks/BufTasks;
-	public abstract fun executedForSourceSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Lkotlinx/rpc/buf/tasks/BufTasks;
 	public abstract fun matchingBuildType (Ljava/lang/String;)Lkotlinx/rpc/buf/tasks/BufTasks;
 	public abstract fun matchingFlavor (Ljava/lang/String;)Lkotlinx/rpc/buf/tasks/BufTasks;
 	public abstract fun matchingKotlinSourceSet (Lorg/gradle/api/NamedDomainObjectProvider;)Lkotlinx/rpc/buf/tasks/BufTasks;

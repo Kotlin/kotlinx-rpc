@@ -53,16 +53,41 @@ public abstract class BufExecTask @Inject constructor(
     @get:Input
     internal abstract val debug: Property<Boolean>
 
+    /**
+     * Properties of the buf task.
+     *
+     * Can be used with [BufTasks] to filter tasks.
+     */
     public open class Properties internal constructor(
+        /**
+         * Whether the task is for a test source set.
+         */
         public val isTest: Boolean,
+        /**
+         * Name of the [kotlinx.rpc.protoc.ProtoSourceSet] this task is associated with.
+         */
         public val sourceSetName: String,
     )
 
+    /**
+     * Properties of the buf task for android source sets.
+     *
+     * Can be used with [BufTasks] to filter tasks.
+     */
     public class AndroidProperties internal constructor(
         isTest: Boolean,
         sourceSetName: String,
-        public val flavour: String,
+        /**
+         * Name of the android flavor this task is associated with.
+         */
+        public val flavor: String,
+        /**
+         * Name of the android build type this task is associated with.
+         */
         public val buildType: String,
+        /**
+         * Name of the android variant this task is associated with.
+         */
         public val variant: String,
     ) : Properties(isTest, sourceSetName)
 
