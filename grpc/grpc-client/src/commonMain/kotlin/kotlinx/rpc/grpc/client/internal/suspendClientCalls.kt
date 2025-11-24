@@ -22,6 +22,7 @@ import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.cause
 import kotlinx.rpc.grpc.client.ClientCallScope
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClient
@@ -284,7 +285,7 @@ private class ClientCallScopeImpl<Request, Response>(
         onClose = { status: Status, trailers: GrpcMetadata ->
             var cause = when {
                 status.statusCode == StatusCode.OK -> null
-                status.getCause() is CancellationException -> status.getCause()
+                status.cause is CancellationException -> status.cause
                 else -> StatusException(status, trailers)
             }
 
