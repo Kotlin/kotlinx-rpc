@@ -65,7 +65,7 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
      */
     private inner class Ctx {
         fun write(buf: CPointer<ByteVar>, size: Int): Boolean {
-            sink.writeFully(buf, 0L, size.toLong())
+            sink.writeFully(buf, 0L, size)
             return true
         }
     }

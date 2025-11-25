@@ -8,6 +8,7 @@ package kotlinx.rpc.grpc
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.NativePlacement
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
@@ -62,6 +63,7 @@ public actual class GrpcMetadataKey<T> actual constructor(name: String, public v
 public actual class GrpcMetadata actual constructor() {
     internal val map: LinkedHashMap<String, MutableList<ByteArray>> = linkedMapOf()
 
+    @OptIn(UnsafeNumber::class)
     public constructor(raw: grpc_metadata_array) : this() {
         for (i in 0 until raw.count.toInt()) {
             val metadata = raw.metadata?.get(i)
@@ -73,6 +75,7 @@ public actual class GrpcMetadata actual constructor() {
         }
     }
 
+    @OptIn(UnsafeNumber::class)
     @InternalRpcApi
     public fun NativePlacement.allocRawGrpcMetadata(): grpc_metadata_array {
         val raw = alloc<grpc_metadata_array>()
@@ -91,7 +94,7 @@ public actual class GrpcMetadata actual constructor() {
             for (entry in values) {
                 val size = entry.size.toULong()
                 val valSlice = entry.usePinned { pinned ->
-                    grpc_slice_from_copied_buffer(pinned.addressOf(0), size)
+                    grpc_slice_from_copied_buffer(pinned.addressOf(0), size.convert())
                 }
                 // we create a fresh reference for each entry
                 val keySliceRef = grpc_slice_ref(keySlice)

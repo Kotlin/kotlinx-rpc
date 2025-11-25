@@ -13,6 +13,7 @@ import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.convert
@@ -326,6 +327,7 @@ internal class NativeClientCall<Request, Response>(
         }
     }
 
+    @OptIn(UnsafeNumber::class)
     private fun sendAndReceiveInitialMetadata(headers: GrpcMetadata) {
         // sending and receiving initial metadata
         val arena = Arena()
