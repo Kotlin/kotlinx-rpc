@@ -17,6 +17,7 @@ import kotlin.io.path.copyToRecursively
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlinx.rpc.BUILD_REPO
+import kotlinx.rpc.RPC_VERSION
 import org.junit.jupiter.api.DynamicTest
 import java.util.stream.Stream
 import kotlin.io.path.absolute
@@ -26,7 +27,17 @@ import kotlin.io.path.deleteRecursively
 class VersionsEnv(
     val gradle: String,
     val kotlin: String,
-)
+) {
+    val kotlinSemver = run {
+        val (major, minor, patch) = kotlin.split(".").map { it.toInt() }
+        KotlinVersion(major, minor, patch)
+    }
+}
+
+internal object KtVersion {
+    val v2_2_20 = KotlinVersion(2, 2, 20)
+    val v2_0_0 = KotlinVersion(2, 0, 0)
+}
 
 private val GradleVersions = listOf(
     VersionsEnv("9.2.1", "2.2.21"),
@@ -103,6 +114,7 @@ abstract class BaseTest {
         val buildScriptFile = projectDir.resolve("build.gradle.kts")
         buildScriptFile
             .replace("<kotlin-version>", versions.kotlin)
+            .replace("<rpc-version>", RPC_VERSION)
 
         println("""
             Setup project '$projectName'
@@ -121,7 +133,6 @@ abstract class BaseTest {
             .withProjectDir(projectDir.absolute().toFile())
             .withTestKitDir(TEST_KIT_PATH.absolute().toFile())
             .withGradleVersion(versions.gradle)
-            .withPluginClasspath()
             .withArguments(
                 listOfNotNull(
                     task,
@@ -193,8 +204,9 @@ abstract class BaseTest {
         }
     }
 
-    protected fun Path.replace(oldValue: String, newValue: String) {
+    protected fun Path.replace(oldValue: String, newValue: String): Path {
         writeText(readText().replace(oldValue, newValue))
+        return this
     }
 
     companion object {

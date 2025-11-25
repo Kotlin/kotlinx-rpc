@@ -26,7 +26,7 @@ import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.setProperty
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import java.io.File
 import java.util.*
 import java.util.function.Consumer
@@ -57,7 +57,7 @@ internal open class DefaultProtoSourceSet(
     )
 
     private val explicitApiModeEnabled = project.provider {
-        project.the<KotlinBaseExtension>().explicitApi != ExplicitApiMode.Disabled
+        project.the<KotlinProjectExtension>().explicitApi != ExplicitApiMode.Disabled
     }
 
     val plugins = project.objects.setProperty<ProtocPlugin>()
@@ -137,7 +137,8 @@ internal fun Project.createProtoExtensions() {
             findOrCreateAndConfigure(name, this)
         }
 
-        project.extensions.configure<SourceSetContainer>("sourceSets") {
+        // this@createProtoExtensions: fails on KGP 2.0.0 otherwise
+        this@createProtoExtensions.project.extensions.configure<SourceSetContainer>("sourceSets") {
             all {
                 val protoSourceSet = findOrCreateAndConfigure(name, this)
 

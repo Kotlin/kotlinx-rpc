@@ -29,7 +29,8 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 dependencies {
-    implementation(libs.kotlin.gradle.plugin)
+    compileOnly(libs.kotlin.gradle.plugin)
+    compileOnly(libs.android.gradle.plugin)
 
     testImplementation(libs.kotlin.gradle.plugin)
     testImplementation(gradleTestKit())
@@ -50,9 +51,17 @@ tasks.test {
 
     useJUnitPlatform()
 
-    val includedBuild = gradle.includedBuild("protoc-gen")
-    dependsOn(includedBuild.task(":grpc:publishAllPublicationsToBuildRepoRepository"))
-    dependsOn(includedBuild.task(":protobuf:publishAllPublicationsToBuildRepoRepository"))
+    val protocGen = gradle.includedBuild("protoc-gen")
+    dependsOn(protocGen.task(":grpc:publishAllPublicationsToBuildRepoRepository"))
+    dependsOn(protocGen.task(":protobuf:publishAllPublicationsToBuildRepoRepository"))
+
+    val compilerPlugin = gradle.includedBuild("compiler-plugin")
+    dependsOn(compilerPlugin.task(":compiler-plugin-cli:publishAllPublicationsToBuildRepoRepository"))
+    dependsOn(compilerPlugin.task(":compiler-plugin-k2:publishAllPublicationsToBuildRepoRepository"))
+    dependsOn(compilerPlugin.task(":compiler-plugin-backend:publishAllPublicationsToBuildRepoRepository"))
+    dependsOn(compilerPlugin.task(":compiler-plugin-common:publishAllPublicationsToBuildRepoRepository"))
+
+    dependsOn(":publishAllPublicationsToBuildRepoRepository")
 }
 
 // This block is needed to show plugin tasks on --dry-run
@@ -103,7 +112,7 @@ generateSource(
     text = """
         package kotlinx.rpc
         
-        const val KOTLIN_VERSION: String = "${libs.versions.kotlin.lang.get()}"
+        const val RPC_VERSION: String = "${libs.versions.kotlinx.rpc.get()}"
         
         const val BUILD_REPO: String = "${File(globalRootDir).resolve("build/repo").absolutePath}"
     """.trimIndent(),

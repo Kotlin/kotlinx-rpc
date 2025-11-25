@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 plugins {
     kotlin("jvm") version "<kotlin-version>"
-    id("org.jetbrains.kotlinx.rpc.plugin")
+    id("org.jetbrains.kotlinx.rpc.plugin") version "<rpc-version>"
 }
 
 public abstract class BufLintTask @Inject constructor(properties: BufExecTask.Properties) : BufExecTask(properties) {

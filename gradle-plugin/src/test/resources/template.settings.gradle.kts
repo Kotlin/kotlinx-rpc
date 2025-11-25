@@ -10,9 +10,21 @@ buildCache {
     }
 }
 
+pluginManagement {
+    repositories {
+        repositories {
+            mavenCentral()
+            maven("<build-repo>")
+            google()
+            gradlePluginPortal()
+        }
+    }
+}
+
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
         maven("<build-repo>")
+        google()
     }
 }

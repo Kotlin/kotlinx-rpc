@@ -247,13 +247,25 @@ abstract class GrpcBaseTest : BaseTest() {
             sourceSet: SSets,
             vararg imports: SSets,
         ) {
+            if (!sourceSet.applicable()) {
+                println("Skipping ${sourceSet.capital} source set because it's not applicable for the current Kotlin version")
+                return
+            }
+
             val ktFile = "${sourceSet.capital}.kt"
-            val importsSet = imports.toSet()
+            val importsSet = imports
+                .onEach {
+                    if (!it.applicable()) {
+                        println("Skipping ${it.capital} import source set because it's not applicable for the current Kotlin version")
+                    }
+                }
+                .filter { it.applicable() }
+                .toSet()
 
             assertTaskExecuted(
                 sourceSet = sourceSet,
                 protoFiles = listOf(Path("${sourceSet.name}.proto")),
-                importProtoFiles = imports.map {
+                importProtoFiles = importsSet.map {
                     Path("${it.name}.proto")
                 },
                 generatedFiles = listOf(
@@ -319,16 +331,20 @@ abstract class GrpcBaseTest : BaseTest() {
                 .resolve(name)
                 .resolve("proto")
         }
+
+        fun SSets.applicable(): Boolean {
+            return versions.kotlinSemver >= minKotlin
+        }
     }
 
-    @Suppress("EnumEntryName")
-    enum class SSets {
+    @Suppress("EnumEntryName", "detekt.EnumNaming")
+    enum class SSets(val minKotlin: KotlinVersion = KtVersion.v2_0_0) {
         main, test,
 
         commonMain, commonTest,
         jvmMain, jvmTest,
         androidMain, androidTest,
-        webMain, webTest,
+        webMain(KtVersion.v2_2_20), webTest(KtVersion.v2_2_20),
         jsMain, jsTest,
         nativeMain, nativeTest,
         appleMain, appleTest,

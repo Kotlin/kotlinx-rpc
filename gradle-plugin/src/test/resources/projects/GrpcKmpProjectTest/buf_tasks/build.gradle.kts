@@ -7,12 +7,11 @@ import org.gradle.api.GradleException
 import org.gradle.kotlin.dsl.version
 import kotlinx.rpc.buf.tasks.*
 import kotlinx.rpc.buf.*
-import org.gradle.api.provider.Provider
 import javax.inject.Inject
 
 plugins {
     kotlin("multiplatform") version "<kotlin-version>"
-    id("org.jetbrains.kotlinx.rpc.plugin")
+    id("org.jetbrains.kotlinx.rpc.plugin") version "<rpc-version>"
 }
 
 kotlin {
@@ -43,13 +42,24 @@ rpc {
 
 fun Iterable<DefaultTask>.toNames() = map { it.name }.toSet()
 
+fun String.parseToKotlinVersion(): KotlinVersion {
+    val (major, minor, patch) = substringBefore('-').split(".").map { it.toInt() }
+    return KotlinVersion(major, minor, patch)
+}
+
+val currentKotlin = "<kotlin-version>".parseToKotlinVersion()
+
+fun String.ifKotlinAtLeast(minVersion: String): String? {
+    return if (currentKotlin >= minVersion.parseToKotlinVersion()) this else null
+}
+
 fun assertTasks(
     tag: String,
     tasks: Iterable<DefaultTask>,
-    vararg expected: String,
+    vararg expected: String?,
 ) {
     val names = tasks.toNames()
-    val expectedSet = expected.toSet()
+    val expectedSet = expected.filterNotNull().toSet()
     if (expectedSet != names) {
         throw GradleException(
             """
@@ -73,7 +83,7 @@ tasks.register("test_tasks") {
             "bufGenerateMacosMain", "bufGenerateMacosTest",
             "bufGenerateMacosArm64Main", "bufGenerateMacosArm64Test",
             "bufGenerateJvmMain", "bufGenerateJvmTest",
-            "bufGenerateWebMain", "bufGenerateWebTest",
+            "bufGenerateWebMain".ifKotlinAtLeast("2.2.20"), "bufGenerateWebTest".ifKotlinAtLeast("2.2.20"),
             "bufGenerateJsMain", "bufGenerateJsTest",
         )
 
@@ -85,7 +95,7 @@ tasks.register("test_tasks") {
             "bufGenerateMacosTest",
             "bufGenerateMacosArm64Test",
             "bufGenerateJvmTest",
-            "bufGenerateWebTest",
+            "bufGenerateWebTest".ifKotlinAtLeast("2.2.20"),
             "bufGenerateJsTest",
         )
 
@@ -97,7 +107,7 @@ tasks.register("test_tasks") {
             "bufGenerateMacosMain",
             "bufGenerateMacosArm64Main",
             "bufGenerateJvmMain",
-            "bufGenerateWebMain",
+            "bufGenerateWebMain".ifKotlinAtLeast("2.2.20"),
             "bufGenerateJsMain",
         )
 
@@ -207,7 +217,7 @@ tasks.register("test_tasks") {
             "buf depends on jsTest",
             genTasks.matchingSourceSet("jsTest").single().bufDependsOn(),
             "bufGenerateCommonMain", "bufGenerateCommonTest",
-            "bufGenerateWebMain", "bufGenerateWebTest",
+            "bufGenerateWebMain".ifKotlinAtLeast("2.2.20"), "bufGenerateWebTest".ifKotlinAtLeast("2.2.20"),
             "bufGenerateJsMain",
         )
 
@@ -222,7 +232,7 @@ tasks.register("test_tasks") {
             "bufGenerateMacosMain", "bufGenerateMacosTest",
             "bufGenerateMacosArm64Main", "bufGenerateMacosArm64Test",
             "bufGenerateJvmMain", "bufGenerateJvmTest",
-            "bufGenerateWebMain", "bufGenerateWebTest",
+            "bufGenerateWebMain".ifKotlinAtLeast("2.2.20"), "bufGenerateWebTest".ifKotlinAtLeast("2.2.20"),
             "bufGenerateJsMain", "bufGenerateJsTest",
 
             // lint
@@ -232,7 +242,7 @@ tasks.register("test_tasks") {
             "bufLintMacosMain", "bufLintMacosTest",
             "bufLintMacosArm64Main", "bufLintMacosArm64Test",
             "bufLintJvmMain", "bufLintJvmTest",
-            "bufLintWebMain", "bufLintWebTest",
+            "bufLintWebMain".ifKotlinAtLeast("2.2.20"), "bufLintWebTest".ifKotlinAtLeast("2.2.20"),
             "bufLintJsMain", "bufLintJsTest",
         )
 
@@ -245,7 +255,7 @@ tasks.register("test_tasks") {
             "bufGenerateMacosMain", "bufGenerateMacosTest",
             "bufGenerateMacosArm64Main", "bufGenerateMacosArm64Test",
             "bufGenerateJvmMain", "bufGenerateJvmTest",
-            "bufGenerateWebMain", "bufGenerateWebTest",
+            "bufGenerateWebMain".ifKotlinAtLeast("2.2.20"), "bufGenerateWebTest".ifKotlinAtLeast("2.2.20"),
             "bufGenerateJsMain", "bufGenerateJsTest",
         )
 
@@ -257,7 +267,7 @@ tasks.register("test_tasks") {
             "bufLintMacosMain", "bufLintMacosTest",
             "bufLintMacosArm64Main", "bufLintMacosArm64Test",
             "bufLintJvmMain", "bufLintJvmTest",
-            "bufLintWebMain", "bufLintWebTest",
+            "bufLintWebMain".ifKotlinAtLeast("2.2.20"), "bufLintWebTest".ifKotlinAtLeast("2.2.20"),
             "bufLintJsMain", "bufLintJsTest",
         )
 
