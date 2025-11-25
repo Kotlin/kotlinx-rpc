@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.single
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.asException
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
@@ -25,16 +26,12 @@ public fun <T> Flow<T>.singleOrStatusFlow(
             found = true
             emit(it)
         } else {
-            throw StatusException(
-                Status(StatusCode.INTERNAL, "Expected one $expected for $descriptor but received two")
-            )
+            throw StatusCode.INTERNAL.asException("Expected one $expected for $descriptor but received two")
         }
     }
 
     if (!found) {
-        throw StatusException(
-            Status(StatusCode.INTERNAL, "Expected one $expected for $descriptor but received none")
-        )
+        throw StatusCode.INTERNAL.asException("Expected one $expected for $descriptor but received none")
     }
 }
 
