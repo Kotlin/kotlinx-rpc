@@ -36,6 +36,7 @@ import kotlinx.rpc.grpc.internal.toGrpcByteBuffer
 import kotlinx.rpc.grpc.internal.toGrpcSlice
 import kotlinx.rpc.grpc.internal.toKotlin
 import kotlinx.rpc.grpc.internal.toRaw
+import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.input.stream.asSource
@@ -363,7 +364,7 @@ internal class NativeServerCall<Request, Response>(
         } catch (e: Throwable) {
             // TODO: Log internal error as warning
             val status = when (e) {
-                is StatusException -> e.getStatus()
+                is StatusException -> e.status
                 else -> Status(
                     StatusCode.INTERNAL,
                     description = "Internal error, so canceling the stream",

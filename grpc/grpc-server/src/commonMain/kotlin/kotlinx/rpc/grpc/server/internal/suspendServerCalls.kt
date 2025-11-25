@@ -30,6 +30,8 @@ import kotlinx.rpc.grpc.internal.singleOrStatusFlow
 import kotlinx.rpc.grpc.merge
 import kotlinx.rpc.grpc.server.ServerCallScope
 import kotlinx.rpc.grpc.server.ServerInterceptor
+import kotlinx.rpc.grpc.status
+import kotlinx.rpc.grpc.trailers
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -206,8 +208,8 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         val closeStatus = when (failure) {
             null -> Status(StatusCode.OK)
             is CancellationException -> Status(StatusCode.CANCELLED, cause = failure)
-            is StatusException -> failure.getStatus()
-            is StatusRuntimeException -> failure.getStatus()
+            is StatusException -> failure.status
+            is StatusRuntimeException -> failure.status
             else -> Status(StatusCode.UNKNOWN, cause = failure)
         }
 
@@ -215,8 +217,8 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
 
         // we merge the failure trailers with the user-defined trailers
         when (failure) {
-            is StatusException -> failure.getTrailers()
-            is StatusRuntimeException -> failure.getTrailers()
+            is StatusException -> failure.trailers
+            is StatusRuntimeException -> failure.trailers
             else -> null
         }?.let { trailers.merge(it) }
 

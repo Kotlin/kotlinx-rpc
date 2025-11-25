@@ -7,9 +7,7 @@ package kotlinx.rpc.grpc.test.proto
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
-import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.buildGrpcMetadata
 import kotlinx.rpc.grpc.client.GrpcCallCredentials
@@ -26,6 +24,7 @@ import kotlinx.rpc.grpc.test.SERVER_CERT_PEM
 import kotlinx.rpc.grpc.test.SERVER_KEY_PEM
 import kotlinx.rpc.grpc.test.assertGrpcFailure
 import kotlinx.rpc.grpc.test.invoke
+import kotlinx.rpc.grpc.asException
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.coroutines.cancellation.CancellationException
@@ -338,7 +337,7 @@ abstract class PlaintextCallCredentials : GrpcCallCredentials {
 }
 
 class ThrowingCallCredentials(
-    private val exception: Throwable = StatusException(Status(StatusCode.UNIMPLEMENTED, "This is my custom exception"))
+    private val exception: Throwable = StatusCode.UNIMPLEMENTED.asException("This is my custom exception")
 ) : PlaintextCallCredentials() {
     override suspend fun Context.getRequestMetadata(): GrpcMetadata {
         throw exception

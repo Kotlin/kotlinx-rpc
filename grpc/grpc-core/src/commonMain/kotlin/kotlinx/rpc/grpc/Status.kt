@@ -6,6 +6,8 @@
 
 package kotlinx.rpc.grpc
 
+import kotlinx.rpc.internal.utils.InternalRpcApi
+
 /**
  * Defines the status of an operation by providing a standard [StatusCode] in conjunction with an
  * optional descriptive message.
@@ -26,14 +28,39 @@ package kotlinx.rpc.grpc
  * [doc/statuscodes.md](https://github.com/grpc/grpc/blob/master/doc/statuscodes.md)
  */
 public expect class Status {
-    public fun getDescription(): String?
-    public fun getCause(): Throwable?
+    internal fun getDescription(): String?
+    internal fun getCause(): Throwable?
 }
 
+/**
+ * Creates a [Status] with the specified [code], optional [description], and [cause].
+ */
 public expect fun Status(code: StatusCode, description: String? = null, cause: Throwable? = null): Status
 
+/**
+ * The status code of this status.
+ */
 public expect val Status.statusCode: StatusCode
 
+/**
+ * The description of this status, or null if not present.
+ */
+public val Status.description: String? get() = getDescription()
+
+// this is currently @InternalRpcApi as it's behavior would be inconsistent between JVM and Native.
+@InternalRpcApi
+public val Status.cause: Throwable? get() = getCause()
+
+/**
+ * Converts this status to a [StatusException] with optional [trailers].
+ */
+public fun Status.asException(trailers: GrpcMetadata? = null): StatusException {
+    return StatusException(this, trailers)
+}
+
+/**
+ * Standard gRPC status codes.
+ */
 public enum class StatusCode(public val value: Int) {
     OK(0),
     CANCELLED(1),
@@ -53,5 +80,23 @@ public enum class StatusCode(public val value: Int) {
     DATA_LOSS(15),
     UNAUTHENTICATED(16);
 
+    /**
+     * The ASCII-encoded byte representation of the status code value.
+     */
     public val valueAscii: ByteArray = value.toString().encodeToByteArray()
+
+    /**
+     * Converts this status code to a [Status] with an optional [description].
+     */
+    public fun asStatus(description: String? = null): Status {
+        return Status(this, description)
+    }
+
+    /**
+     * Converts this status code to a [StatusException] with optional [description] and [trailers].
+     */
+    public fun asException(description: String? = null, trailers: GrpcMetadata? = null): StatusException {
+        return StatusException(Status(this, description), trailers)
+    }
 }
+

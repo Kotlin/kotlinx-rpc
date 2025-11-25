@@ -18,18 +18,16 @@ public actual class StatusException : Exception {
         this.trailers = trailers
     }
 
-    public actual fun getStatus(): Status = status
+    internal actual fun getStatus(): Status = status
 
-    public actual fun getTrailers(): GrpcMetadata? = trailers
+    internal actual fun getTrailers(): GrpcMetadata? = trailers
 }
 
 public actual class StatusRuntimeException : RuntimeException {
     private val status: Status
     private val trailers: GrpcMetadata?
 
-    public actual constructor(status: Status) : this(status, null)
-
-    public actual constructor(status: Status, trailers: GrpcMetadata?) : super(
+    internal actual constructor(status: Status, trailers: GrpcMetadata?) : super(
         "${status.statusCode}: ${status.getDescription()}",
         status.getCause()
     ) {
@@ -37,7 +35,7 @@ public actual class StatusRuntimeException : RuntimeException {
         this.trailers = trailers
     }
 
-    public actual fun getStatus(): Status = status
+    internal actual fun getStatus(): Status = status
 
-    public actual fun getTrailers(): GrpcMetadata? = trailers
+    internal actual fun getTrailers(): GrpcMetadata? = trailers
 }
