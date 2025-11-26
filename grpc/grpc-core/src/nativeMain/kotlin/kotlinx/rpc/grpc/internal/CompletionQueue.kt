@@ -15,6 +15,7 @@ import kotlinx.cinterop.CFunction
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.StableRef
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.asStableRef
 import kotlinx.cinterop.convert
@@ -126,6 +127,7 @@ public class CompletionQueue {
      * Submits a batch operation to the queue.
      * See [BatchResult] for possible outcomes.
      */
+    @OptIn(UnsafeNumber::class)
     public fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong): BatchResult {
         if (_shutdownDone.isCompleted) return BatchResult.CQShutdown
 
@@ -149,7 +151,7 @@ public class CompletionQueue {
                 return BatchResult.CQShutdown
             }
 
-            err = grpc_call_start_batch(call, ops, nOps, tag, null)
+            err = grpc_call_start_batch(call, ops, nOps.convert(), tag, null)
         }
 
         if (err != grpc_call_error.GRPC_CALL_OK) {
@@ -212,6 +214,7 @@ private fun shutdownCb(functor: CPointer<grpc_completion_queue_functor>?, ok: In
 private val OPS_COMPLETE_CB = staticCFunction(::opsCompleteCb)
 private val SHUTDOWN_CB = staticCFunction(::shutdownCb)
 
+@OptIn(UnsafeNumber::class)
 private fun newCbTag(
     userData: Any,
     cb: CPointer<CFunction<(CPointer<grpc_completion_queue_functor>?, Int) -> Unit>>,
