@@ -12,6 +12,7 @@ import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.MemScope
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.convert
@@ -215,6 +216,7 @@ internal sealed class GrpcArg(val key: String) {
         }
 }
 
+@OptIn(UnsafeNumber::class)
 private fun List<GrpcArg>.toRaw(memScope: MemScope): grpc_channel_args {
     with(memScope) {
         val arr = allocArray<grpc_arg>(size) {
