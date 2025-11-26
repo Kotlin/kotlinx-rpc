@@ -30,6 +30,7 @@ private class CredentialsPluginState(
     val coroutineContext: CoroutineContext,
 )
 
+@OptIn(UnsafeNumber::class)
 private fun getMetadataCallback(
     state: COpaquePointer?,
     context: CValue<grpc_auth_metadata_context>,
@@ -121,6 +122,7 @@ private fun destroyCallback(state: COpaquePointer?) {
     state?.asStableRef<CredentialsPluginState>()?.dispose()
 }
 
+@OptIn(UnsafeNumber::class)
 internal fun GrpcCallCredentials.createRaw(
     coroutineContext: CoroutineContext,
 ): CPointer<grpc_call_credentials>? = memScoped {

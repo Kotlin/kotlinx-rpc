@@ -10,6 +10,7 @@ import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
@@ -49,7 +50,7 @@ import platform.posix.memcpy
 
 
 @InternalRpcApi
-@OptIn(ExperimentalForeignApi::class, InternalIoApi::class, UnsafeIoApi::class)
+@OptIn(ExperimentalForeignApi::class, InternalIoApi::class, UnsafeIoApi::class, UnsafeNumber::class)
 public fun Sink.writeFully(buffer: CPointer<ByteVar>, offset: Long, length: Long) {
     var consumed = 0L
     while (consumed < length) {
@@ -66,6 +67,7 @@ public fun Sink.writeFully(buffer: CPointer<ByteVar>, offset: Long, length: Long
     }
 }
 
+@OptIn(UnsafeNumber::class)
 @InternalRpcApi
 public fun grpc_slice.toByteArray(): ByteArray = memScoped {
     val out = ByteArray(len().toInt())
@@ -98,6 +100,7 @@ public fun CPointer<grpc_byte_buffer>.toKotlin(): Buffer = memScoped {
     return out
 }
 
+@OptIn(UnsafeNumber::class)
 @InternalRpcApi
 public fun Source.toGrpcByteBuffer(): CPointer<grpc_byte_buffer> {
     if (this is Buffer) return toGrpcByteBuffer()
@@ -109,7 +112,7 @@ public fun Source.toGrpcByteBuffer(): CPointer<grpc_byte_buffer> {
         val n = readAtMostTo(tmp, 0, tmp.size)
         if (n <= 0) break
         tmp.usePinned {
-            slices += grpc_slice_from_copied_buffer(it.addressOf(0), n.toULong())
+            slices += grpc_slice_from_copied_buffer(it.addressOf(0), n.convert())
         }
     }
 
@@ -117,14 +120,14 @@ public fun Source.toGrpcByteBuffer(): CPointer<grpc_byte_buffer> {
 }
 
 @InternalRpcApi
-@OptIn(UnsafeIoApi::class)
+@OptIn(UnsafeIoApi::class, UnsafeNumber::class)
 public fun Buffer.toGrpcByteBuffer(): CPointer<grpc_byte_buffer> {
     val slices = ArrayList<CValue<grpc_slice>>(4)
 
     while (size > 0L) {
         UnsafeBufferOperations.readFromHead(this) { arr, start, end ->
             val len = end - start
-            arr.usePinned { p -> slices += grpc_slice_from_copied_buffer(p.addressOf(start), len.toULong()) }
+            arr.usePinned { p -> slices += grpc_slice_from_copied_buffer(p.addressOf(start), len.convert()) }
             len
         }
     }
@@ -132,6 +135,7 @@ public fun Buffer.toGrpcByteBuffer(): CPointer<grpc_byte_buffer> {
     return slices.toGrpcByteBuffer()
 }
 
+@OptIn(UnsafeNumber::class)
 private fun ArrayList<CValue<grpc_slice>>.toGrpcByteBuffer(): CPointer<grpc_byte_buffer> = memScoped {
     val count = if (isEmpty()) 1 else size
     val sliceArr = allocArray<grpc_slice>(count)
@@ -150,7 +154,7 @@ private fun ArrayList<CValue<grpc_slice>>.toGrpcByteBuffer(): CPointer<grpc_byte
     }
 
 
-    val buf = grpc_raw_byte_buffer_create(sliceArr, count.toULong())!!
+    val buf = grpc_raw_byte_buffer_create(sliceArr, count.convert())!!
     // unref each slice, as the buffer takes ownership
     this@toGrpcByteBuffer.forEach { grpc_slice_unref(it) }
 
@@ -166,10 +170,11 @@ public fun grpc_slice.startPtr(): CPointer<ByteVar> {
     }
 }
 
+@OptIn(UnsafeNumber::class)
 @InternalRpcApi
 public fun grpc_slice.len(): ULong {
     return if (this.refcount != null) {
-        this.data.refcounted.length
+        this.data.refcounted.length.convert()
     } else {
         this.data.inlined.length.convert()
     }
@@ -231,6 +236,7 @@ public fun grpc_metadata.destroy() {
     grpc_slice_unref(value.readValue())
 }
 
+@OptIn(UnsafeNumber::class)
 @InternalRpcApi
 public fun grpc_metadata_array.destroyEntries() {
     for (i in 0 until count.convert()) {
