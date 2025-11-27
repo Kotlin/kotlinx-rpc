@@ -318,7 +318,7 @@ class ModelToProtobufKotlinCommonGenerator(
             is FieldType.IntegralType -> {
                 if (t == FieldType.IntegralType.BYTES) {
                     if (field.nullable) {
-                        addLine("if ($presenceCheck((${field.name} != null && (other.${field.name} == null || !${field.name}!!.contentEquals(other.${field.name}!!))) || other.${field.name} != null)) return false")
+                        addLine("if ($presenceCheck((${field.name} != null && (other.${field.name} == null || !${field.name}!!.contentEquals(other.${field.name}!!))) || ${field.name} == null)) return false")
                     } else {
                         addLine("if ($presenceCheck!${field.name}.contentEquals(other.${field.name})) return false")
                     }
