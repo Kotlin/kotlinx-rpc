@@ -10,6 +10,7 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.Descriptors
 import kotlinx.rpc.protoc.gen.core.AModelToKotlinCommonGenerator
 import kotlinx.rpc.protoc.gen.core.CodeGenerator
+import kotlinx.rpc.protoc.gen.core.Comment
 import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.INTERNAL_RPC_API_ANNO
 import kotlinx.rpc.protoc.gen.core.PB_PKG
@@ -92,6 +93,12 @@ class ModelToProtobufKotlinCommonGenerator(
                     deprecation = if (field.deprecated) DeprecationLevel.WARNING else null,
                 )
             }
+
+            function("copy",
+                args = "body: ${declaration.internalClassFullName()}.() -> Unit = {}",
+                returnType = declaration.name.safeFullName(),
+                comment = Comment.leading("Copies the original message, including unknown fields.")
+            )
 
             if (declaration.actualFields.isNotEmpty()) {
                 newLine()
@@ -179,6 +186,8 @@ class ModelToProtobufKotlinCommonGenerator(
             generateOneOfHashCode(declaration)
             generateEquals(declaration)
             generateToString(declaration)
+            generateCopy(declaration)
+            generateOneOfCopy(declaration)
 
             declaration.nestedDeclarations.forEach { nested ->
                 generateInternalMessage(nested)
@@ -377,6 +386,88 @@ class ModelToProtobufKotlinCommonGenerator(
             }
         }
     }
+
+    private fun CodeGenerator.generateCopy(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) {
+            // e.g., internal map entries don't need a copy() method
+            return
+        }
+        function(
+            name = "copy",
+            modifiers = "override",
+            args = "body: ${declaration.internalClassName()}.() -> Unit",
+            returnType = declaration.internalClassName(),
+        ) {
+            code("val copy = ${declaration.internalClassName()}()")
+            for (field in declaration.actualFields) {
+                // write each field to the new copy object
+                if (field.presenceIdx != null) {
+                    // if the field has presence, we need to check if it was set in the original object.
+                    // if it was set, we copy it to the new object, otherwise we leave it unset.
+                    ifBranch(condition = "presenceMask[${field.presenceIdx}]", ifBlock = {
+                        code("copy.${field.name} = ${field.type.copyCall(field.name)}")
+                    })
+                } else {
+                    // by default, we copy the field value
+                    code("copy.${field.name} = ${field.type.copyCall(field.name)}")
+                }
+            }
+            code("copy.apply(body)")
+            code("return copy")
+        }
+    }
+
+    private fun FieldType.copyCall(varName: String): String {
+        return when (this) {
+            is FieldType.IntegralType -> varName
+            is FieldType.Enum -> varName
+            is FieldType.List -> "$varName.map { ${value.copyCall("it")} }"
+            is FieldType.Map -> "$varName.mapValues { ${entry.value.copyCall("it.value")} }"
+            is FieldType.Message -> "$varName.copy()"
+            is FieldType.OneOf -> "$varName?.oneOfCopy()"
+        }
+    }
+
+    private fun CodeGenerator.generateOneOfCopy(declaration: MessageDeclaration) {
+        declaration.oneOfDeclarations.forEach { oneOf ->
+            val oneOfFullName = oneOf.name.safeFullName()
+            function(
+                name = "oneOfCopy",
+                returnType = oneOfFullName,
+                contextReceiver = oneOfFullName,
+            ) {
+                // check if the type is copy by value (no need for deep copy)
+                val copyByValue = { type: FieldType -> type is FieldType.IntegralType || type is FieldType.Enum }
+
+                // if all variants are integral or enum types, we can just return this directly.
+                val fastPath = oneOf.variants.all { copyByValue(it.type) }
+                if (fastPath) {
+                    code("return this")
+                } else {
+                    // dispatch on all possible variants and copy its value
+                    whenBlock(
+                        prefix = "return",
+                        condition = "this"
+                    ) {
+                        oneOf.variants.forEach { variant ->
+                            val variantName = "$oneOfFullName.${variant.name}"
+                            whenCase("is $variantName") {
+                                if (copyByValue(variant.type)) {
+                                    // no need to reconstruct a new object, we can just return this
+                                    code("this")
+                                } else {
+                                    code("$variantName(${variant.type.copyCall("this.value")})")
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+
 
     private fun CodeGenerator.generatePresenceIndicesObject(declaration: MessageDeclaration) {
         if (declaration.presenceMaskSize == 0) {
@@ -1191,6 +1282,8 @@ class ModelToProtobufKotlinCommonGenerator(
 
                 additionalPublicImports.add("kotlin.jvm.JvmInline")
             }
+
+
         }
     }
 
