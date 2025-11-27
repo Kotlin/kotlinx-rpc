@@ -405,11 +405,11 @@ class ModelToProtobufKotlinCommonGenerator(
                     // if the field has presence, we need to check if it was set in the original object.
                     // if it was set, we copy it to the new object, otherwise we leave it unset.
                     ifBranch(condition = "presenceMask[${field.presenceIdx}]", ifBlock = {
-                        code("copy.${field.name} = ${field.type.copyCall(field.name)}")
+                        code("copy.${field.name} = ${field.type.copyCall(field.name, field.nullable)}")
                     })
                 } else {
                     // by default, we copy the field value
-                    code("copy.${field.name} = ${field.type.copyCall(field.name)}")
+                    code("copy.${field.name} = ${field.type.copyCall(field.name, field.nullable)}")
                 }
             }
             code("copy.apply(body)")
@@ -417,12 +417,16 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
-    private fun FieldType.copyCall(varName: String): String {
+    private fun FieldType.copyCall(varName: String, nullable: Boolean): String {
         return when (this) {
+            FieldType.IntegralType.BYTES -> {
+                val optionalPrefix = if (nullable) "?" else ""
+                "$varName$optionalPrefix.copyOf()"
+            }
             is FieldType.IntegralType -> varName
             is FieldType.Enum -> varName
-            is FieldType.List -> "$varName.map { ${value.copyCall("it")} }"
-            is FieldType.Map -> "$varName.mapValues { ${entry.value.copyCall("it.value")} }"
+            is FieldType.List -> "$varName.map { ${value.copyCall("it", false)} }"
+            is FieldType.Map -> "$varName.mapValues { ${entry.value.copyCall("it.value", false)} }"
             is FieldType.Message -> "$varName.copy()"
             is FieldType.OneOf -> "$varName?.oneOfCopy()"
         }
@@ -456,7 +460,7 @@ class ModelToProtobufKotlinCommonGenerator(
                                     // no need to reconstruct a new object, we can just return this
                                     code("this")
                                 } else {
-                                    code("$variantName(${variant.type.copyCall("this.value")})")
+                                    code("$variantName(${variant.type.copyCall("this.value", false)})")
                                 }
                             }
                         }

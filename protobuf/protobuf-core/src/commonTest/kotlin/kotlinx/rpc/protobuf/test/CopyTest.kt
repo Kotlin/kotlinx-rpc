@@ -5,7 +5,6 @@
 package kotlinx.rpc.protobuf.test
 
 import invoke
-import kotlinx.rpc.protobuf.test.invoke
 import test.submsg.Other
 import test.submsg.invoke
 import kotlin.collections.iterator
@@ -15,19 +14,6 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class CopyTest {
-
-    @Test
-    fun `test list copy - should be real copy`() {
-        val userList = mutableListOf(1,2,3)
-        val original = Repeated {
-            listInt32 = userList
-        }
-        val copy = original.copy()
-        userList.add(4)
-
-        assertEquals(listOf(1,2,3,4), original.listInt32)
-        assertEquals(listOf(1,2,3), copy.listInt32)
-    }
 
     @Test
     fun `copy primitives and bytes - equality and independence`() {
@@ -69,6 +55,8 @@ class CopyTest {
             )
         }
         val cp = orig.copy()
+
+        assertEquals(orig, cp)
 
         // Lists are distinct instances
         assertTrue(orig.listMessage !== cp.listMessage)
@@ -157,5 +145,133 @@ class CopyTest {
         val cp2 = p.copy { OptionalPresence = 5f }
         assertEquals(1, cp2.RequiredPresence)
         assertEquals(5f, cp2.OptionalPresence)
+    }
+
+    @Test
+    fun `copy with user-provided mutable map - mutation after copy should not affect copy`() {
+        val userMap = mutableMapOf("a" to 10L, "b" to 20L)
+        val original = TestMap {
+            primitives = userMap
+        }
+
+        val copy = original.copy()
+
+        // Mutate user's map after copy - should not affect copy
+        userMap["c"] = 30L
+        userMap["a"] = 999L
+
+        assertEquals(mapOf("a" to 10L, "b" to 20L, "c" to 30L, "a" to 999L), original.primitives)
+        assertEquals(mapOf("a" to 10L, "b" to 20L), copy.primitives)
+    }
+
+    @Test
+    fun `copy with user-provided bytes - mutation after copy should not affect copy`() {
+        val userBytes = byteArrayOf(1, 2, 3)
+        val original = AllPrimitives {
+            bytes = userBytes
+        }
+        val copy = original.copy()
+        userBytes[0] = 99
+        assertEquals(listOf<Byte>(99, 2, 3), original.bytes?.toList())
+        assertEquals(listOf<Byte>(1, 2, 3), copy.bytes?.toList())
+    }
+
+    @Test
+    fun `copy with nested messages - user mutation after copy should not affect copy`() {
+        val userMessages = mutableMapOf(
+            1 to PresenceCheck { RequiredPresence = 1 },
+            2 to PresenceCheck { RequiredPresence = 2 }
+        )
+        val original = TestMap {
+            messages = userMessages
+        }
+
+        val copy = original.copy()
+
+        // Mutate user's map after copy
+        userMessages[3] = PresenceCheck { RequiredPresence = 3 }
+
+        // Original has all 3, copy should only have original 2
+        assertEquals(3, original.messages.size)
+        assertEquals(2, copy.messages.size)
+        assertEquals(setOf(1, 2, 3), original.messages.keys)
+        assertEquals(setOf(1, 2), copy.messages.keys)
+    }
+
+    @Test
+    fun `copy with bytes - mutating source array after construction should not affect copy`() {
+        val bytesSrc = byteArrayOf(1, 2, 3)
+        val msg = AllPrimitives {
+            bytes = bytesSrc
+        }
+
+        val copy = msg.copy()
+
+        // Mutate source array after message creation
+        bytesSrc[0] = 99
+        bytesSrc[1] = 88
+
+        // Neither original nor copy should be affected
+        assertEquals(listOf<Byte>(99, 88, 3), msg.bytes?.toList())
+        assertEquals(listOf<Byte>(1, 2, 3), copy.bytes?.toList())
+    }
+
+    @Test
+    fun `copy with empty collections`() {
+        val msg = Repeated {
+            listInt32 = emptyList()
+            listMessage = emptyList()
+        }
+
+        val copy = msg.copy()
+
+        assertTrue(copy.listInt32.isEmpty())
+        assertTrue(copy.listMessage.isEmpty())
+
+        // Verify they are distinct instances
+        assertTrue(msg.listInt32 !== copy.listInt32)
+        assertTrue(msg.listMessage !== copy.listMessage)
+    }
+
+    @Test
+    fun `copy with nested message in list - mutations after copy don't affect copy`() {
+        val nestedList = mutableListOf(
+            Repeated.Other { a = 1 },
+            Repeated.Other { a = 2 }
+        )
+        val original = Repeated {
+            listMessage = nestedList
+        }
+
+        val copy = original.copy()
+
+        // Mutate the user's list after copy
+        nestedList.add(Repeated.Other { a = 3 })
+
+        assertEquals(3, original.listMessage.size)
+        assertEquals(2, copy.listMessage.size)
+        assertEquals(listOf(1, 2, 3), original.listMessage.map { it.a })
+        assertEquals(listOf(1, 2), copy.listMessage.map { it.a })
+    }
+
+    @Test
+    fun `copy lambda modifications don't affect original`() {
+        val original = AllPrimitives {
+            int32 = 10
+            string = "original"
+        }
+
+        val modified = original.copy {
+            int32 = 20
+            string = "modified"
+        }
+
+        // Original should remain unchanged
+        assertEquals(10, original.int32)
+        assertEquals("original", original.string)
+
+        // Modified should have new values
+        assertEquals(20, modified.int32)
+        assertEquals("modified", modified.string)
     }
 }
