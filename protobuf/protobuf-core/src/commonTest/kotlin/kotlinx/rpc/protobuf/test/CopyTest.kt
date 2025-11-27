@@ -4,11 +4,14 @@
 
 package kotlinx.rpc.protobuf.test
 
+import Equals
+import OneOfMsg
 import invoke
 import test.submsg.Other
 import test.submsg.invoke
 import kotlin.collections.iterator
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -214,6 +217,19 @@ class CopyTest {
         // Neither original nor copy should be affected
         assertEquals(listOf<Byte>(99, 88, 3), msg.bytes?.toList())
         assertEquals(listOf<Byte>(1, 2, 3), copy.bytes?.toList())
+    }
+
+    @Test
+    fun `copy with bytes in oneof - mutating must not affect copy`() {
+        val userBytes = byteArrayOf(1, 2, 3)
+        val original = OneOfMsg {
+            field = OneOfMsg.Field.Bytes(userBytes)
+        }
+        val copy = original.copy()
+        userBytes[0] = 99
+
+        assertContentEquals(byteArrayOf(99, 2, 3), (original.field as OneOfMsg.Field.Bytes).value)
+        assertContentEquals(byteArrayOf(1, 2, 3), (copy.field as OneOfMsg.Field.Bytes).value)
     }
 
     @Test

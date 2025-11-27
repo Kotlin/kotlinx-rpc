@@ -441,7 +441,9 @@ class ModelToProtobufKotlinCommonGenerator(
                 contextReceiver = oneOfFullName,
             ) {
                 // check if the type is copy by value (no need for deep copy)
-                val copyByValue = { type: FieldType -> type is FieldType.IntegralType || type is FieldType.Enum }
+                val copyByValue = { type: FieldType ->
+                    (type is FieldType.IntegralType && type != FieldType.IntegralType.BYTES) || type is FieldType.Enum
+                }
 
                 // if all variants are integral or enum types, we can just return this directly.
                 val fastPath = oneOf.variants.all { copyByValue(it.type) }
