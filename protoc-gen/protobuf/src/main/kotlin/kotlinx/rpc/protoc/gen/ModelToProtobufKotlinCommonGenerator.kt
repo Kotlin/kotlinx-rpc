@@ -471,8 +471,6 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
-
-
     private fun CodeGenerator.generatePresenceIndicesObject(declaration: MessageDeclaration) {
         if (declaration.presenceMaskSize == 0) {
             return

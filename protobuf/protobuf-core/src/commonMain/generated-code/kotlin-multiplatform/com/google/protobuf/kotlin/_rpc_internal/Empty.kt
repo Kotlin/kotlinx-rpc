@@ -37,6 +37,12 @@ public class EmptyInternal: com.google.protobuf.kotlin.Empty, kotlinx.rpc.protob
         }
     }
 
+    public override fun copy(body: EmptyInternal.() -> Unit): EmptyInternal { 
+        val copy = EmptyInternal()
+        copy.apply(body)
+        return copy
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Empty> { 
         public override fun encode(value: com.google.protobuf.kotlin.Empty): kotlinx.rpc.protobuf.input.stream.InputStream { 

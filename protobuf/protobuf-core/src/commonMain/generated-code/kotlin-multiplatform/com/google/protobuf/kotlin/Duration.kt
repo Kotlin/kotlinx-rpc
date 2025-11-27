@@ -81,5 +81,10 @@ public interface Duration {
     */
     public val nanos: Int
 
+    /**
+    * Copies the original message, including unknown fields.
+    */
+    public fun copy(body: com.google.protobuf.kotlin.DurationInternal.() -> Unit = {}): com.google.protobuf.kotlin.Duration
+
     public companion object
 }

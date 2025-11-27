@@ -128,5 +128,10 @@ public interface Any {
     */
     public val value: ByteArray
 
+    /**
+    * Copies the original message, including unknown fields.
+    */
+    public fun copy(body: com.google.protobuf.kotlin.AnyInternal.() -> Unit = {}): com.google.protobuf.kotlin.Any
+
     public companion object
 }

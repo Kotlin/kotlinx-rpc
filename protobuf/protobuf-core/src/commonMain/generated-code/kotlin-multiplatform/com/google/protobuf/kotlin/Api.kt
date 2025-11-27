@@ -65,6 +65,11 @@ public interface Api {
     */
     public val syntax: com.google.protobuf.kotlin.Syntax
 
+    /**
+    * Copies the original message, including unknown fields.
+    */
+    public fun copy(body: com.google.protobuf.kotlin.ApiInternal.() -> Unit = {}): com.google.protobuf.kotlin.Api
+
     public companion object
 }
 
@@ -101,6 +106,11 @@ public interface Method {
     * The source syntax of this method.
     */
     public val syntax: com.google.protobuf.kotlin.Syntax
+
+    /**
+    * Copies the original message, including unknown fields.
+    */
+    public fun copy(body: com.google.protobuf.kotlin.MethodInternal.() -> Unit = {}): com.google.protobuf.kotlin.Method
 
     public companion object
 }
@@ -196,6 +206,11 @@ public interface Mixin {
     * are rooted.
     */
     public val root: String
+
+    /**
+    * Copies the original message, including unknown fields.
+    */
+    public fun copy(body: com.google.protobuf.kotlin.MixinInternal.() -> Unit = {}): com.google.protobuf.kotlin.Mixin
 
     public companion object
 }

@@ -46,6 +46,14 @@ public class AnyInternal: com.google.protobuf.kotlin.Any, kotlinx.rpc.protobuf.i
         }
     }
 
+    public override fun copy(body: AnyInternal.() -> Unit): AnyInternal { 
+        val copy = AnyInternal()
+        copy.typeUrl = typeUrl
+        copy.value = value.copyOf()
+        copy.apply(body)
+        return copy
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Any> { 
         public override fun encode(value: com.google.protobuf.kotlin.Any): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -104,11 +112,9 @@ public fun com.google.protobuf.kotlin.AnyInternal.Companion.decodeWith(msg: com.
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.typeUrl = decoder.readString()
             }
-
             tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.value = decoder.readBytes()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")

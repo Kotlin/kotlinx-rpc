@@ -46,6 +46,14 @@ public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rp
         }
     }
 
+    public override fun copy(body: TimestampInternal.() -> Unit): TimestampInternal { 
+        val copy = TimestampInternal()
+        copy.seconds = seconds
+        copy.nanos = nanos
+        copy.apply(body)
+        return copy
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Timestamp> { 
         public override fun encode(value: com.google.protobuf.kotlin.Timestamp): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -104,11 +112,9 @@ public fun com.google.protobuf.kotlin.TimestampInternal.Companion.decodeWith(msg
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.seconds = decoder.readInt64()
             }
-
             tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.nanos = decoder.readInt32()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")

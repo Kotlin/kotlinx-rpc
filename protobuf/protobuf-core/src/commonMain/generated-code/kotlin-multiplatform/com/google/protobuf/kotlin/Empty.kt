@@ -14,5 +14,10 @@ import kotlinx.rpc.internal.utils.*
 */
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.EmptyInternal.CODEC::class)
 public interface Empty { 
+    /**
+    * Copies the original message, including unknown fields.
+    */
+    public fun copy(body: com.google.protobuf.kotlin.EmptyInternal.() -> Unit = {}): com.google.protobuf.kotlin.Empty
+
     public companion object
 }

@@ -41,6 +41,13 @@ public class DoubleValueInternal: com.google.protobuf.kotlin.DoubleValue, kotlin
         }
     }
 
+    public override fun copy(body: DoubleValueInternal.() -> Unit): DoubleValueInternal { 
+        val copy = DoubleValueInternal()
+        copy.value = value
+        copy.apply(body)
+        return copy
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.DoubleValue> { 
         public override fun encode(value: com.google.protobuf.kotlin.DoubleValue): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -103,6 +110,13 @@ public class FloatValueInternal: com.google.protobuf.kotlin.FloatValue, kotlinx.
             appendLine("${nextIndentString}value=${value},")
             append("${indentString})")
         }
+    }
+
+    public override fun copy(body: FloatValueInternal.() -> Unit): FloatValueInternal { 
+        val copy = FloatValueInternal()
+        copy.value = value
+        copy.apply(body)
+        return copy
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
@@ -169,6 +183,13 @@ public class Int64ValueInternal: com.google.protobuf.kotlin.Int64Value, kotlinx.
         }
     }
 
+    public override fun copy(body: Int64ValueInternal.() -> Unit): Int64ValueInternal { 
+        val copy = Int64ValueInternal()
+        copy.value = value
+        copy.apply(body)
+        return copy
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Int64Value> { 
         public override fun encode(value: com.google.protobuf.kotlin.Int64Value): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -231,6 +252,13 @@ public class UInt64ValueInternal: com.google.protobuf.kotlin.UInt64Value, kotlin
             appendLine("${nextIndentString}value=${value},")
             append("${indentString})")
         }
+    }
+
+    public override fun copy(body: UInt64ValueInternal.() -> Unit): UInt64ValueInternal { 
+        val copy = UInt64ValueInternal()
+        copy.value = value
+        copy.apply(body)
+        return copy
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
@@ -297,6 +325,13 @@ public class Int32ValueInternal: com.google.protobuf.kotlin.Int32Value, kotlinx.
         }
     }
 
+    public override fun copy(body: Int32ValueInternal.() -> Unit): Int32ValueInternal { 
+        val copy = Int32ValueInternal()
+        copy.value = value
+        copy.apply(body)
+        return copy
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Int32Value> { 
         public override fun encode(value: com.google.protobuf.kotlin.Int32Value): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -359,6 +394,13 @@ public class UInt32ValueInternal: com.google.protobuf.kotlin.UInt32Value, kotlin
             appendLine("${nextIndentString}value=${value},")
             append("${indentString})")
         }
+    }
+
+    public override fun copy(body: UInt32ValueInternal.() -> Unit): UInt32ValueInternal { 
+        val copy = UInt32ValueInternal()
+        copy.value = value
+        copy.apply(body)
+        return copy
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
@@ -425,6 +467,13 @@ public class BoolValueInternal: com.google.protobuf.kotlin.BoolValue, kotlinx.rp
         }
     }
 
+    public override fun copy(body: BoolValueInternal.() -> Unit): BoolValueInternal { 
+        val copy = BoolValueInternal()
+        copy.value = value
+        copy.apply(body)
+        return copy
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.BoolValue> { 
         public override fun encode(value: com.google.protobuf.kotlin.BoolValue): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -489,6 +538,13 @@ public class StringValueInternal: com.google.protobuf.kotlin.StringValue, kotlin
         }
     }
 
+    public override fun copy(body: StringValueInternal.() -> Unit): StringValueInternal { 
+        val copy = StringValueInternal()
+        copy.value = value
+        copy.apply(body)
+        return copy
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.StringValue> { 
         public override fun encode(value: com.google.protobuf.kotlin.StringValue): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -551,6 +607,13 @@ public class BytesValueInternal: com.google.protobuf.kotlin.BytesValue, kotlinx.
             appendLine("${nextIndentString}value=${value.contentToString()},")
             append("${indentString})")
         }
+    }
+
+    public override fun copy(body: BytesValueInternal.() -> Unit): BytesValueInternal { 
+        val copy = BytesValueInternal()
+        copy.value = value.copyOf()
+        copy.apply(body)
+        return copy
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
@@ -655,7 +718,6 @@ public fun com.google.protobuf.kotlin.DoubleValueInternal.Companion.decodeWith(m
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED64 -> { 
                 msg.value = decoder.readDouble()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -702,7 +764,6 @@ public fun com.google.protobuf.kotlin.FloatValueInternal.Companion.decodeWith(ms
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.FIXED32 -> { 
                 msg.value = decoder.readFloat()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -749,7 +810,6 @@ public fun com.google.protobuf.kotlin.Int64ValueInternal.Companion.decodeWith(ms
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.value = decoder.readInt64()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -796,7 +856,6 @@ public fun com.google.protobuf.kotlin.UInt64ValueInternal.Companion.decodeWith(m
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.value = decoder.readUInt64()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -843,7 +902,6 @@ public fun com.google.protobuf.kotlin.Int32ValueInternal.Companion.decodeWith(ms
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.value = decoder.readInt32()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -890,7 +948,6 @@ public fun com.google.protobuf.kotlin.UInt32ValueInternal.Companion.decodeWith(m
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.value = decoder.readUInt32()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -937,7 +994,6 @@ public fun com.google.protobuf.kotlin.BoolValueInternal.Companion.decodeWith(msg
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.value = decoder.readBool()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -984,7 +1040,6 @@ public fun com.google.protobuf.kotlin.StringValueInternal.Companion.decodeWith(m
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.value = decoder.readString()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -1031,7 +1086,6 @@ public fun com.google.protobuf.kotlin.BytesValueInternal.Companion.decodeWith(ms
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.value = decoder.readBytes()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")

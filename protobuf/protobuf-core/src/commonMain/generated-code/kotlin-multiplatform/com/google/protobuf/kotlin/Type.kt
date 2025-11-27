@@ -37,6 +37,11 @@ public interface Type {
     */
     public val edition: String
 
+    /**
+    * Copies the original message, including unknown fields.
+    */
+    public fun copy(body: com.google.protobuf.kotlin.TypeInternal.() -> Unit = {}): com.google.protobuf.kotlin.Type
+
     public companion object
 }
 
@@ -87,6 +92,11 @@ public interface Field {
     * The string value of the default value of this field. Proto2 syntax only.
     */
     public val defaultValue: String
+
+    /**
+    * Copies the original message, including unknown fields.
+    */
+    public fun copy(body: com.google.protobuf.kotlin.FieldInternal.() -> Unit = {}): com.google.protobuf.kotlin.Field
 
     /**
     * Basic field types.
@@ -258,6 +268,11 @@ public interface Enum {
     */
     public val edition: String
 
+    /**
+    * Copies the original message, including unknown fields.
+    */
+    public fun copy(body: com.google.protobuf.kotlin.EnumInternal.() -> Unit = {}): com.google.protobuf.kotlin.Enum
+
     public companion object
 }
 
@@ -278,6 +293,11 @@ public interface EnumValue {
     * Protocol buffer options.
     */
     public val options: List<com.google.protobuf.kotlin.Option>
+
+    /**
+    * Copies the original message, including unknown fields.
+    */
+    public fun copy(body: com.google.protobuf.kotlin.EnumValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.EnumValue
 
     public companion object
 }
@@ -302,6 +322,11 @@ public interface Option {
     * value using the google.protobuf.Int32Value type.
     */
     public val value: com.google.protobuf.kotlin.Any
+
+    /**
+    * Copies the original message, including unknown fields.
+    */
+    public fun copy(body: com.google.protobuf.kotlin.OptionInternal.() -> Unit = {}): com.google.protobuf.kotlin.Option
 
     public companion object
 }

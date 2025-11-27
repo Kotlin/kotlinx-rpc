@@ -41,6 +41,13 @@ public class FieldMaskInternal: com.google.protobuf.kotlin.FieldMask, kotlinx.rp
         }
     }
 
+    public override fun copy(body: FieldMaskInternal.() -> Unit): FieldMaskInternal { 
+        val copy = FieldMaskInternal()
+        copy.paths = paths.map { it }
+        copy.apply(body)
+        return copy
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.FieldMask> { 
         public override fun encode(value: com.google.protobuf.kotlin.FieldMask): kotlinx.rpc.protobuf.input.stream.InputStream { 
@@ -98,7 +105,6 @@ public fun com.google.protobuf.kotlin.FieldMaskInternal.Companion.decodeWith(msg
                 val elem = decoder.readString()
                 (msg.paths as MutableList).add(elem)
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
