@@ -75,9 +75,7 @@ public class EmptyInternal: com.google.protobuf.kotlin.Empty, kotlinx.rpc.protob
 /**
 * Constructs a new message.
 * ```
-* val message = Empty {
-*    someField = ...
-* }
+* val message = Empty { }
 * ```
 */
 public operator fun com.google.protobuf.kotlin.Empty.Companion.invoke(body: com.google.protobuf.kotlin.EmptyInternal.() -> Unit): com.google.protobuf.kotlin.Empty { 
@@ -89,9 +87,7 @@ public operator fun com.google.protobuf.kotlin.Empty.Companion.invoke(body: com.
 /**
 * Copies the original message, including unknown fields.
 * ```
-* val copy = original.copy {
-*    someField = ...
-* }
+* val copy = original.copy()
 * ```
 */
 public fun com.google.protobuf.kotlin.Empty.copy(body: com.google.protobuf.kotlin.EmptyInternal.() -> Unit = {}): com.google.protobuf.kotlin.Empty { 

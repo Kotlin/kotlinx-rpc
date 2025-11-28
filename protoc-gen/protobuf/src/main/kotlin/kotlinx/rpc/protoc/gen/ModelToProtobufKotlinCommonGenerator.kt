@@ -387,20 +387,23 @@ class ModelToProtobufKotlinCommonGenerator(
             // e.g., internal map entries don't need a copy() method
             return
         }
-        val demoField = declaration.actualFields.firstOrNull()?.name ?: "someField"
+        val demoField = declaration.actualFields.firstOrNull()?.name
+        val invocation = if (demoField == null) "()" else """
+            | {
+            |    $demoField = ...    
+            |}
+        """.trimMargin()
         function(
             name = "copy",
             contextReceiver = declaration.name.safeFullName(),
             args = "body: ${declaration.internalClassFullName()}.() -> Unit = {}",
             returnType = declaration.name.safeFullName(),
             comment = Comment.leading("""
-                Copies the original message, including unknown fields.
-                ```   
-                val copy = original.copy {
-                    $demoField = ...    
-                }
-                ```
-            """.trimIndent())
+                |Copies the original message, including unknown fields.
+                |```
+                |val copy = original.copy$invocation
+                |```
+            """.trimMargin())
         ) {
             code("return this.asInternal().copyInternal(body)")
         }
@@ -589,7 +592,12 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun CodeGenerator.generateMessageConstructor(declaration: MessageDeclaration) {
         if (!declaration.isUserFacing) return
 
-        val demoField = declaration.actualFields.firstOrNull()?.name ?: "someField"
+        val demoField = declaration.actualFields.firstOrNull()?.name
+        val invocation = if (demoField == null) "{ }" else """
+            |{
+            |    $demoField = ...    
+            |}
+        """.trimMargin()
         function(
             name = "invoke",
             modifiers = "operator",
@@ -597,13 +605,11 @@ class ModelToProtobufKotlinCommonGenerator(
             contextReceiver = "${declaration.name.safeFullName()}.Companion",
             returnType = declaration.name.safeFullName(),
             comment = Comment.leading("""
-                Constructs a new message.
-                ```
-                val message = ${declaration.name.simpleName} {
-                    $demoField = ...    
-                }
-                ```
-            """.trimIndent())
+                |Constructs a new message.
+                |```
+                |val message = ${declaration.name.simpleName} $invocation
+                |```
+            """.trimMargin())
         ) {
             code("val msg = ${declaration.internalClassFullName()}().apply(body)")
             // check if the user set all required fields
