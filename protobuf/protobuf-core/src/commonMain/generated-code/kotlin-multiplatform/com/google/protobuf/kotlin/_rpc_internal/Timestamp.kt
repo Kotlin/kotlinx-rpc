@@ -47,6 +47,15 @@ public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rp
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: TimestampInternal.() -> Unit): TimestampInternal { 
+        val copy = TimestampInternal()
+        copy.seconds = seconds
+        copy.nanos = nanos
+        copy.apply(body)
+        return copy
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Timestamp> { 
         public override fun encode(value: com.google.protobuf.kotlin.Timestamp): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
@@ -74,10 +83,30 @@ public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rp
     public companion object
 }
 
+/**
+* Constructs a new message.
+* ```
+* val message = Timestamp {
+*    seconds = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.Timestamp.Companion.invoke(body: com.google.protobuf.kotlin.TimestampInternal.() -> Unit): com.google.protobuf.kotlin.Timestamp { 
     val msg = com.google.protobuf.kotlin.TimestampInternal().apply(body)
     msg.checkRequiredFields()
     return msg
+}
+
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    seconds = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.Timestamp.copy(body: com.google.protobuf.kotlin.TimestampInternal.() -> Unit = {}): com.google.protobuf.kotlin.Timestamp { 
+    return this.asInternal().copyInternal(body)
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
@@ -104,11 +133,9 @@ public fun com.google.protobuf.kotlin.TimestampInternal.Companion.decodeWith(msg
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.seconds = decoder.readInt64()
             }
-
             tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.nanos = decoder.readInt32()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
