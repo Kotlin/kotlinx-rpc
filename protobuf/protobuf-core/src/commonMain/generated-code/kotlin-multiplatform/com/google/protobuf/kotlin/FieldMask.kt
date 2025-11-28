@@ -211,10 +211,5 @@ public interface FieldMask {
     */
     public val paths: List<kotlin.String>
 
-    /**
-    * Copies the original message, including unknown fields.
-    */
-    public fun copy(body: com.google.protobuf.kotlin.FieldMaskInternal.() -> Unit = {}): com.google.protobuf.kotlin.FieldMask
-
     public companion object
 }

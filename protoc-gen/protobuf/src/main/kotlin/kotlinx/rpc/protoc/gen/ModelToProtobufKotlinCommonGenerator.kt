@@ -58,6 +58,7 @@ class ModelToProtobufKotlinCommonGenerator(
         val allMsgs = messages + messages.flatMap(MessageDeclaration::allNestedRecursively)
         allMsgs.forEach {
             generateMessageConstructor(it)
+            generatePublicCopy(it)
         }
         allMsgs.forEach {
             generateRequiredCheck(it)
@@ -93,12 +94,6 @@ class ModelToProtobufKotlinCommonGenerator(
                     deprecation = if (field.deprecated) DeprecationLevel.WARNING else null,
                 )
             }
-
-            function("copy",
-                args = "body: ${declaration.internalClassFullName()}.() -> Unit = {}",
-                returnType = declaration.name.safeFullName(),
-                comment = Comment.leading("Copies the original message, including unknown fields.")
-            )
 
             if (declaration.actualFields.isNotEmpty()) {
                 newLine()
@@ -186,7 +181,7 @@ class ModelToProtobufKotlinCommonGenerator(
             generateOneOfHashCode(declaration)
             generateEquals(declaration)
             generateToString(declaration)
-            generateCopy(declaration)
+            generateInternalCopy(declaration)
             generateOneOfCopy(declaration)
 
             declaration.nestedDeclarations.forEach { nested ->
@@ -387,14 +382,38 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
-    private fun CodeGenerator.generateCopy(declaration: MessageDeclaration) {
+    private fun CodeGenerator.generatePublicCopy(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) {
+            // e.g., internal map entries don't need a copy() method
+            return
+        }
+        val demoField = declaration.actualFields.firstOrNull()?.name ?: "someField"
+        function(
+            name = "copy",
+            contextReceiver = declaration.name.safeFullName(),
+            args = "body: ${declaration.internalClassFullName()}.() -> Unit = {}",
+            returnType = declaration.name.safeFullName(),
+            comment = Comment.leading("""
+                Copies the original message, including unknown fields.
+                ```   
+                val copy = original.copy {
+                    $demoField = ...    
+                }
+                ```
+            """.trimIndent())
+        ) {
+            code("return this.asInternal().copyInternal(body)")
+        }
+    }
+
+    private fun CodeGenerator.generateInternalCopy(declaration: MessageDeclaration) {
         if (!declaration.isUserFacing) {
             // e.g., internal map entries don't need a copy() method
             return
         }
         function(
-            name = "copy",
-            modifiers = "override",
+            name = "copyInternal",
+            annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
             args = "body: ${declaration.internalClassName()}.() -> Unit",
             returnType = declaration.internalClassName(),
         ) {
@@ -437,6 +456,7 @@ class ModelToProtobufKotlinCommonGenerator(
             val oneOfFullName = oneOf.name.safeFullName()
             function(
                 name = "oneOfCopy",
+                annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
                 returnType = oneOfFullName,
                 contextReceiver = oneOfFullName,
             ) {
@@ -569,12 +589,21 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun CodeGenerator.generateMessageConstructor(declaration: MessageDeclaration) {
         if (!declaration.isUserFacing) return
 
+        val demoField = declaration.actualFields.firstOrNull()?.name ?: "someField"
         function(
             name = "invoke",
             modifiers = "operator",
             args = "body: ${declaration.internalClassFullName()}.() -> Unit",
             contextReceiver = "${declaration.name.safeFullName()}.Companion",
             returnType = declaration.name.safeFullName(),
+            comment = Comment.leading("""
+                Constructs a new message.
+                ```
+                val message = ${declaration.name.simpleName} {
+                    $demoField = ...    
+                }
+                ```
+            """.trimIndent())
         ) {
             code("val msg = ${declaration.internalClassFullName()}().apply(body)")
             // check if the user set all required fields

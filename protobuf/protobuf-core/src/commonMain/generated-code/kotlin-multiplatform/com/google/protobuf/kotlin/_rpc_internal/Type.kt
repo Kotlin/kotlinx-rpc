@@ -76,7 +76,8 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
         }
     }
 
-    public override fun copy(body: TypeInternal.() -> Unit): TypeInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: TypeInternal.() -> Unit): TypeInternal { 
         val copy = TypeInternal()
         copy.name = name
         copy.fields = fields.map { it.copy() }
@@ -193,7 +194,8 @@ public class FieldInternal: com.google.protobuf.kotlin.Field, kotlinx.rpc.protob
         }
     }
 
-    public override fun copy(body: FieldInternal.() -> Unit): FieldInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: FieldInternal.() -> Unit): FieldInternal { 
         val copy = FieldInternal()
         copy.kind = kind
         copy.cardinality = cardinality
@@ -304,7 +306,8 @@ public class EnumInternal: com.google.protobuf.kotlin.Enum, kotlinx.rpc.protobuf
         }
     }
 
-    public override fun copy(body: EnumInternal.() -> Unit): EnumInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: EnumInternal.() -> Unit): EnumInternal { 
         val copy = EnumInternal()
         copy.name = name
         copy.enumvalue = enumvalue.map { it.copy() }
@@ -392,7 +395,8 @@ public class EnumValueInternal: com.google.protobuf.kotlin.EnumValue, kotlinx.rp
         }
     }
 
-    public override fun copy(body: EnumValueInternal.() -> Unit): EnumValueInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: EnumValueInternal.() -> Unit): EnumValueInternal { 
         val copy = EnumValueInternal()
         copy.name = name
         copy.number = number
@@ -480,7 +484,8 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
         }
     }
 
-    public override fun copy(body: OptionInternal.() -> Unit): OptionInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: OptionInternal.() -> Unit): OptionInternal { 
         val copy = OptionInternal()
         copy.name = name
         if (presenceMask[0]) { 
@@ -519,34 +524,134 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
     public companion object
 }
 
+/**
+* Constructs a new message.
+* ```
+* val message = Type {
+*    name = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.Type.Companion.invoke(body: com.google.protobuf.kotlin.TypeInternal.() -> Unit): com.google.protobuf.kotlin.Type { 
     val msg = com.google.protobuf.kotlin.TypeInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
 
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    name = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.Type.copy(body: com.google.protobuf.kotlin.TypeInternal.() -> Unit = {}): com.google.protobuf.kotlin.Type { 
+    return this.asInternal().copyInternal(body)
+}
+
+/**
+* Constructs a new message.
+* ```
+* val message = Field {
+*    kind = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.Field.Companion.invoke(body: com.google.protobuf.kotlin.FieldInternal.() -> Unit): com.google.protobuf.kotlin.Field { 
     val msg = com.google.protobuf.kotlin.FieldInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
 
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    kind = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.Field.copy(body: com.google.protobuf.kotlin.FieldInternal.() -> Unit = {}): com.google.protobuf.kotlin.Field { 
+    return this.asInternal().copyInternal(body)
+}
+
+/**
+* Constructs a new message.
+* ```
+* val message = Enum {
+*    name = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.Enum.Companion.invoke(body: com.google.protobuf.kotlin.EnumInternal.() -> Unit): com.google.protobuf.kotlin.Enum { 
     val msg = com.google.protobuf.kotlin.EnumInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
 
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    name = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.Enum.copy(body: com.google.protobuf.kotlin.EnumInternal.() -> Unit = {}): com.google.protobuf.kotlin.Enum { 
+    return this.asInternal().copyInternal(body)
+}
+
+/**
+* Constructs a new message.
+* ```
+* val message = EnumValue {
+*    name = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.EnumValue.Companion.invoke(body: com.google.protobuf.kotlin.EnumValueInternal.() -> Unit): com.google.protobuf.kotlin.EnumValue { 
     val msg = com.google.protobuf.kotlin.EnumValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
 
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    name = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.EnumValue.copy(body: com.google.protobuf.kotlin.EnumValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.EnumValue { 
+    return this.asInternal().copyInternal(body)
+}
+
+/**
+* Constructs a new message.
+* ```
+* val message = Option {
+*    name = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.Option.Companion.invoke(body: com.google.protobuf.kotlin.OptionInternal.() -> Unit): com.google.protobuf.kotlin.Option { 
     val msg = com.google.protobuf.kotlin.OptionInternal().apply(body)
     msg.checkRequiredFields()
     return msg
+}
+
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    name = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.Option.copy(body: com.google.protobuf.kotlin.OptionInternal.() -> Unit = {}): com.google.protobuf.kotlin.Option { 
+    return this.asInternal().copyInternal(body)
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi

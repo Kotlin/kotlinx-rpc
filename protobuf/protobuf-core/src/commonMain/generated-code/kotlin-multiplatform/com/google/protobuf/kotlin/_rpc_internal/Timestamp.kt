@@ -46,7 +46,8 @@ public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rp
         }
     }
 
-    public override fun copy(body: TimestampInternal.() -> Unit): TimestampInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: TimestampInternal.() -> Unit): TimestampInternal { 
         val copy = TimestampInternal()
         copy.seconds = seconds
         copy.nanos = nanos
@@ -82,10 +83,30 @@ public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rp
     public companion object
 }
 
+/**
+* Constructs a new message.
+* ```
+* val message = Timestamp {
+*    seconds = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.Timestamp.Companion.invoke(body: com.google.protobuf.kotlin.TimestampInternal.() -> Unit): com.google.protobuf.kotlin.Timestamp { 
     val msg = com.google.protobuf.kotlin.TimestampInternal().apply(body)
     msg.checkRequiredFields()
     return msg
+}
+
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    seconds = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.Timestamp.copy(body: com.google.protobuf.kotlin.TimestampInternal.() -> Unit = {}): com.google.protobuf.kotlin.Timestamp { 
+    return this.asInternal().copyInternal(body)
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi

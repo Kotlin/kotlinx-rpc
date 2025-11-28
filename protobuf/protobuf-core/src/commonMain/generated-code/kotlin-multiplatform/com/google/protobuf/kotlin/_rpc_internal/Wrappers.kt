@@ -41,7 +41,8 @@ public class DoubleValueInternal: com.google.protobuf.kotlin.DoubleValue, kotlin
         }
     }
 
-    public override fun copy(body: DoubleValueInternal.() -> Unit): DoubleValueInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: DoubleValueInternal.() -> Unit): DoubleValueInternal { 
         val copy = DoubleValueInternal()
         copy.value = value
         copy.apply(body)
@@ -112,7 +113,8 @@ public class FloatValueInternal: com.google.protobuf.kotlin.FloatValue, kotlinx.
         }
     }
 
-    public override fun copy(body: FloatValueInternal.() -> Unit): FloatValueInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: FloatValueInternal.() -> Unit): FloatValueInternal { 
         val copy = FloatValueInternal()
         copy.value = value
         copy.apply(body)
@@ -183,7 +185,8 @@ public class Int64ValueInternal: com.google.protobuf.kotlin.Int64Value, kotlinx.
         }
     }
 
-    public override fun copy(body: Int64ValueInternal.() -> Unit): Int64ValueInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: Int64ValueInternal.() -> Unit): Int64ValueInternal { 
         val copy = Int64ValueInternal()
         copy.value = value
         copy.apply(body)
@@ -254,7 +257,8 @@ public class UInt64ValueInternal: com.google.protobuf.kotlin.UInt64Value, kotlin
         }
     }
 
-    public override fun copy(body: UInt64ValueInternal.() -> Unit): UInt64ValueInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: UInt64ValueInternal.() -> Unit): UInt64ValueInternal { 
         val copy = UInt64ValueInternal()
         copy.value = value
         copy.apply(body)
@@ -325,7 +329,8 @@ public class Int32ValueInternal: com.google.protobuf.kotlin.Int32Value, kotlinx.
         }
     }
 
-    public override fun copy(body: Int32ValueInternal.() -> Unit): Int32ValueInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: Int32ValueInternal.() -> Unit): Int32ValueInternal { 
         val copy = Int32ValueInternal()
         copy.value = value
         copy.apply(body)
@@ -396,7 +401,8 @@ public class UInt32ValueInternal: com.google.protobuf.kotlin.UInt32Value, kotlin
         }
     }
 
-    public override fun copy(body: UInt32ValueInternal.() -> Unit): UInt32ValueInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: UInt32ValueInternal.() -> Unit): UInt32ValueInternal { 
         val copy = UInt32ValueInternal()
         copy.value = value
         copy.apply(body)
@@ -467,7 +473,8 @@ public class BoolValueInternal: com.google.protobuf.kotlin.BoolValue, kotlinx.rp
         }
     }
 
-    public override fun copy(body: BoolValueInternal.() -> Unit): BoolValueInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: BoolValueInternal.() -> Unit): BoolValueInternal { 
         val copy = BoolValueInternal()
         copy.value = value
         copy.apply(body)
@@ -538,7 +545,8 @@ public class StringValueInternal: com.google.protobuf.kotlin.StringValue, kotlin
         }
     }
 
-    public override fun copy(body: StringValueInternal.() -> Unit): StringValueInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: StringValueInternal.() -> Unit): StringValueInternal { 
         val copy = StringValueInternal()
         copy.value = value
         copy.apply(body)
@@ -609,7 +617,8 @@ public class BytesValueInternal: com.google.protobuf.kotlin.BytesValue, kotlinx.
         }
     }
 
-    public override fun copy(body: BytesValueInternal.() -> Unit): BytesValueInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: BytesValueInternal.() -> Unit): BytesValueInternal { 
         val copy = BytesValueInternal()
         copy.value = value.copyOf()
         copy.apply(body)
@@ -644,58 +653,238 @@ public class BytesValueInternal: com.google.protobuf.kotlin.BytesValue, kotlinx.
     public companion object
 }
 
+/**
+* Constructs a new message.
+* ```
+* val message = DoubleValue {
+*    value = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.DoubleValue.Companion.invoke(body: com.google.protobuf.kotlin.DoubleValueInternal.() -> Unit): com.google.protobuf.kotlin.DoubleValue { 
     val msg = com.google.protobuf.kotlin.DoubleValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
 
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    value = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.DoubleValue.copy(body: com.google.protobuf.kotlin.DoubleValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.DoubleValue { 
+    return this.asInternal().copyInternal(body)
+}
+
+/**
+* Constructs a new message.
+* ```
+* val message = FloatValue {
+*    value = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.FloatValue.Companion.invoke(body: com.google.protobuf.kotlin.FloatValueInternal.() -> Unit): com.google.protobuf.kotlin.FloatValue { 
     val msg = com.google.protobuf.kotlin.FloatValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
 
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    value = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.FloatValue.copy(body: com.google.protobuf.kotlin.FloatValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.FloatValue { 
+    return this.asInternal().copyInternal(body)
+}
+
+/**
+* Constructs a new message.
+* ```
+* val message = Int64Value {
+*    value = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.Int64Value.Companion.invoke(body: com.google.protobuf.kotlin.Int64ValueInternal.() -> Unit): com.google.protobuf.kotlin.Int64Value { 
     val msg = com.google.protobuf.kotlin.Int64ValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
 
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    value = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.Int64Value.copy(body: com.google.protobuf.kotlin.Int64ValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.Int64Value { 
+    return this.asInternal().copyInternal(body)
+}
+
+/**
+* Constructs a new message.
+* ```
+* val message = UInt64Value {
+*    value = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.UInt64Value.Companion.invoke(body: com.google.protobuf.kotlin.UInt64ValueInternal.() -> Unit): com.google.protobuf.kotlin.UInt64Value { 
     val msg = com.google.protobuf.kotlin.UInt64ValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
 
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    value = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.UInt64Value.copy(body: com.google.protobuf.kotlin.UInt64ValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.UInt64Value { 
+    return this.asInternal().copyInternal(body)
+}
+
+/**
+* Constructs a new message.
+* ```
+* val message = Int32Value {
+*    value = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.Int32Value.Companion.invoke(body: com.google.protobuf.kotlin.Int32ValueInternal.() -> Unit): com.google.protobuf.kotlin.Int32Value { 
     val msg = com.google.protobuf.kotlin.Int32ValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
 
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    value = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.Int32Value.copy(body: com.google.protobuf.kotlin.Int32ValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.Int32Value { 
+    return this.asInternal().copyInternal(body)
+}
+
+/**
+* Constructs a new message.
+* ```
+* val message = UInt32Value {
+*    value = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.UInt32Value.Companion.invoke(body: com.google.protobuf.kotlin.UInt32ValueInternal.() -> Unit): com.google.protobuf.kotlin.UInt32Value { 
     val msg = com.google.protobuf.kotlin.UInt32ValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
 
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    value = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.UInt32Value.copy(body: com.google.protobuf.kotlin.UInt32ValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.UInt32Value { 
+    return this.asInternal().copyInternal(body)
+}
+
+/**
+* Constructs a new message.
+* ```
+* val message = BoolValue {
+*    value = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.BoolValue.Companion.invoke(body: com.google.protobuf.kotlin.BoolValueInternal.() -> Unit): com.google.protobuf.kotlin.BoolValue { 
     val msg = com.google.protobuf.kotlin.BoolValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
 
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    value = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.BoolValue.copy(body: com.google.protobuf.kotlin.BoolValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.BoolValue { 
+    return this.asInternal().copyInternal(body)
+}
+
+/**
+* Constructs a new message.
+* ```
+* val message = StringValue {
+*    value = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.StringValue.Companion.invoke(body: com.google.protobuf.kotlin.StringValueInternal.() -> Unit): com.google.protobuf.kotlin.StringValue { 
     val msg = com.google.protobuf.kotlin.StringValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
 
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    value = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.StringValue.copy(body: com.google.protobuf.kotlin.StringValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.StringValue { 
+    return this.asInternal().copyInternal(body)
+}
+
+/**
+* Constructs a new message.
+* ```
+* val message = BytesValue {
+*    value = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.BytesValue.Companion.invoke(body: com.google.protobuf.kotlin.BytesValueInternal.() -> Unit): com.google.protobuf.kotlin.BytesValue { 
     val msg = com.google.protobuf.kotlin.BytesValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
+}
+
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    value = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.BytesValue.copy(body: com.google.protobuf.kotlin.BytesValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.BytesValue { 
+    return this.asInternal().copyInternal(body)
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi

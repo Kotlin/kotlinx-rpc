@@ -21,11 +21,6 @@ public interface Struct {
     */
     public val fields: Map<kotlin.String, com.google.protobuf.kotlin.Value>
 
-    /**
-    * Copies the original message, including unknown fields.
-    */
-    public fun copy(body: com.google.protobuf.kotlin.StructInternal.() -> Unit = {}): com.google.protobuf.kotlin.Struct
-
     public companion object
 }
 
@@ -43,11 +38,6 @@ public interface Value {
     * The kind of value.
     */
     public val kind: com.google.protobuf.kotlin.Value.Kind?
-
-    /**
-    * Copies the original message, including unknown fields.
-    */
-    public fun copy(body: com.google.protobuf.kotlin.ValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.Value
 
     /**
     * The kind of value.
@@ -110,11 +100,6 @@ public interface ListValue {
     * Repeated field of dynamically typed values.
     */
     public val values: List<com.google.protobuf.kotlin.Value>
-
-    /**
-    * Copies the original message, including unknown fields.
-    */
-    public fun copy(body: com.google.protobuf.kotlin.ListValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.ListValue
 
     public companion object
 }

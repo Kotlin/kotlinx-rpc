@@ -15,10 +15,5 @@ public interface SourceContext {
     */
     public val fileName: String
 
-    /**
-    * Copies the original message, including unknown fields.
-    */
-    public fun copy(body: com.google.protobuf.kotlin.SourceContextInternal.() -> Unit = {}): com.google.protobuf.kotlin.SourceContext
-
     public companion object
 }

@@ -18,11 +18,6 @@ public interface DoubleValue {
     */
     public val value: Double
 
-    /**
-    * Copies the original message, including unknown fields.
-    */
-    public fun copy(body: com.google.protobuf.kotlin.DoubleValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.DoubleValue
-
     public companion object
 }
 
@@ -40,11 +35,6 @@ public interface FloatValue {
     * The float value.
     */
     public val value: Float
-
-    /**
-    * Copies the original message, including unknown fields.
-    */
-    public fun copy(body: com.google.protobuf.kotlin.FloatValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.FloatValue
 
     public companion object
 }
@@ -64,11 +54,6 @@ public interface Int64Value {
     */
     public val value: Long
 
-    /**
-    * Copies the original message, including unknown fields.
-    */
-    public fun copy(body: com.google.protobuf.kotlin.Int64ValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.Int64Value
-
     public companion object
 }
 
@@ -86,11 +71,6 @@ public interface UInt64Value {
     * The uint64 value.
     */
     public val value: ULong
-
-    /**
-    * Copies the original message, including unknown fields.
-    */
-    public fun copy(body: com.google.protobuf.kotlin.UInt64ValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.UInt64Value
 
     public companion object
 }
@@ -110,11 +90,6 @@ public interface Int32Value {
     */
     public val value: Int
 
-    /**
-    * Copies the original message, including unknown fields.
-    */
-    public fun copy(body: com.google.protobuf.kotlin.Int32ValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.Int32Value
-
     public companion object
 }
 
@@ -132,11 +107,6 @@ public interface UInt32Value {
     * The uint32 value.
     */
     public val value: UInt
-
-    /**
-    * Copies the original message, including unknown fields.
-    */
-    public fun copy(body: com.google.protobuf.kotlin.UInt32ValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.UInt32Value
 
     public companion object
 }
@@ -156,11 +126,6 @@ public interface BoolValue {
     */
     public val value: Boolean
 
-    /**
-    * Copies the original message, including unknown fields.
-    */
-    public fun copy(body: com.google.protobuf.kotlin.BoolValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.BoolValue
-
     public companion object
 }
 
@@ -179,11 +144,6 @@ public interface StringValue {
     */
     public val value: String
 
-    /**
-    * Copies the original message, including unknown fields.
-    */
-    public fun copy(body: com.google.protobuf.kotlin.StringValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.StringValue
-
     public companion object
 }
 
@@ -201,11 +161,6 @@ public interface BytesValue {
     * The bytes value.
     */
     public val value: ByteArray
-
-    /**
-    * Copies the original message, including unknown fields.
-    */
-    public fun copy(body: com.google.protobuf.kotlin.BytesValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.BytesValue
 
     public companion object
 }

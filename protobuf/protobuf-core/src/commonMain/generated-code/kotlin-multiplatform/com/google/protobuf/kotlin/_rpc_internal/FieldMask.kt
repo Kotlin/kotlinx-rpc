@@ -41,7 +41,8 @@ public class FieldMaskInternal: com.google.protobuf.kotlin.FieldMask, kotlinx.rp
         }
     }
 
-    public override fun copy(body: FieldMaskInternal.() -> Unit): FieldMaskInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: FieldMaskInternal.() -> Unit): FieldMaskInternal { 
         val copy = FieldMaskInternal()
         copy.paths = paths.map { it }
         copy.apply(body)
@@ -76,10 +77,30 @@ public class FieldMaskInternal: com.google.protobuf.kotlin.FieldMask, kotlinx.rp
     public companion object
 }
 
+/**
+* Constructs a new message.
+* ```
+* val message = FieldMask {
+*    paths = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.FieldMask.Companion.invoke(body: com.google.protobuf.kotlin.FieldMaskInternal.() -> Unit): com.google.protobuf.kotlin.FieldMask { 
     val msg = com.google.protobuf.kotlin.FieldMaskInternal().apply(body)
     msg.checkRequiredFields()
     return msg
+}
+
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    paths = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.FieldMask.copy(body: com.google.protobuf.kotlin.FieldMaskInternal.() -> Unit = {}): com.google.protobuf.kotlin.FieldMask { 
+    return this.asInternal().copyInternal(body)
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi

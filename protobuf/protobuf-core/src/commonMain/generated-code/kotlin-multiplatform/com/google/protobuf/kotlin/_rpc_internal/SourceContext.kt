@@ -41,7 +41,8 @@ public class SourceContextInternal: com.google.protobuf.kotlin.SourceContext, ko
         }
     }
 
-    public override fun copy(body: SourceContextInternal.() -> Unit): SourceContextInternal { 
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: SourceContextInternal.() -> Unit): SourceContextInternal { 
         val copy = SourceContextInternal()
         copy.fileName = fileName
         copy.apply(body)
@@ -76,10 +77,30 @@ public class SourceContextInternal: com.google.protobuf.kotlin.SourceContext, ko
     public companion object
 }
 
+/**
+* Constructs a new message.
+* ```
+* val message = SourceContext {
+*    fileName = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.SourceContext.Companion.invoke(body: com.google.protobuf.kotlin.SourceContextInternal.() -> Unit): com.google.protobuf.kotlin.SourceContext { 
     val msg = com.google.protobuf.kotlin.SourceContextInternal().apply(body)
     msg.checkRequiredFields()
     return msg
+}
+
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    fileName = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.SourceContext.copy(body: com.google.protobuf.kotlin.SourceContextInternal.() -> Unit = {}): com.google.protobuf.kotlin.SourceContext { 
+    return this.asInternal().copyInternal(body)
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi

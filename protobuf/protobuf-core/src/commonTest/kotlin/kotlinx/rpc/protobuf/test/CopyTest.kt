@@ -6,6 +6,7 @@ package kotlinx.rpc.protobuf.test
 
 import Equals
 import OneOfMsg
+import copy
 import invoke
 import test.submsg.Other
 import test.submsg.invoke
