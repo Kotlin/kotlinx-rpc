@@ -8,6 +8,7 @@ message OneOfMsg {
     fixed64 fixed = 3;
     test.submsg.Other other = 4;
     kotlinx.rpc.protobuf.test.MyEnum enum = 5;
+    bytes bytes = 6;
   }
 }
 

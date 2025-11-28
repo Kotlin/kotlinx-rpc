@@ -82,7 +82,12 @@ class Comment(
                 leading.isEmpty() &&
                 trailing.isEmpty()
     }
+
+    companion object {
+        fun leading(comment: String): Comment = Comment(emptyList(), listOf(comment), emptyList())
+    }
 }
+
 
 fun Descriptors.FileDescriptor.extractComments(): Map<String, Comment> {
     return toProto().sourceCodeInfo.locationList.associate {

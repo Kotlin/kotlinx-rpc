@@ -10,6 +10,7 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.Descriptors
 import kotlinx.rpc.protoc.gen.core.AModelToKotlinCommonGenerator
 import kotlinx.rpc.protoc.gen.core.CodeGenerator
+import kotlinx.rpc.protoc.gen.core.Comment
 import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.INTERNAL_RPC_API_ANNO
 import kotlinx.rpc.protoc.gen.core.PB_PKG
@@ -57,6 +58,7 @@ class ModelToProtobufKotlinCommonGenerator(
         val allMsgs = messages + messages.flatMap(MessageDeclaration::allNestedRecursively)
         allMsgs.forEach {
             generateMessageConstructor(it)
+            generatePublicCopy(it)
         }
         allMsgs.forEach {
             generateRequiredCheck(it)
@@ -179,6 +181,8 @@ class ModelToProtobufKotlinCommonGenerator(
             generateOneOfHashCode(declaration)
             generateEquals(declaration)
             generateToString(declaration)
+            generateInternalCopy(declaration)
+            generateOneOfCopy(declaration)
 
             declaration.nestedDeclarations.forEach { nested ->
                 generateInternalMessage(nested)
@@ -309,7 +313,7 @@ class ModelToProtobufKotlinCommonGenerator(
             is FieldType.IntegralType -> {
                 if (t == FieldType.IntegralType.BYTES) {
                     if (field.nullable) {
-                        addLine("if ($presenceCheck((${field.name} != null && (other.${field.name} == null || !${field.name}!!.contentEquals(other.${field.name}!!))) || other.${field.name} != null)) return false")
+                        addLine("if ($presenceCheck((${field.name} != null && (other.${field.name} == null || !${field.name}!!.contentEquals(other.${field.name}!!))) || ${field.name} == null)) return false")
                     } else {
                         addLine("if ($presenceCheck!${field.name}.contentEquals(other.${field.name})) return false")
                     }
@@ -374,6 +378,120 @@ class ModelToProtobufKotlinCommonGenerator(
                     }
                 }
                 addLine("append(\"\${indentString})\")")
+            }
+        }
+    }
+
+    private fun CodeGenerator.generatePublicCopy(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) {
+            // e.g., internal map entries don't need a copy() method
+            return
+        }
+        val demoField = declaration.actualFields.firstOrNull()?.name
+        val invocation = if (demoField == null) "()" else """
+            | {
+            |    $demoField = ...    
+            |}
+        """.trimMargin()
+        function(
+            name = "copy",
+            contextReceiver = declaration.name.safeFullName(),
+            args = "body: ${declaration.internalClassFullName()}.() -> Unit = {}",
+            returnType = declaration.name.safeFullName(),
+            comment = Comment.leading("""
+                |Copies the original message, including unknown fields.
+                |```
+                |val copy = original.copy$invocation
+                |```
+            """.trimMargin())
+        ) {
+            code("return this.asInternal().copyInternal(body)")
+        }
+    }
+
+    private fun CodeGenerator.generateInternalCopy(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) {
+            // e.g., internal map entries don't need a copy() method
+            return
+        }
+        function(
+            name = "copyInternal",
+            annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
+            args = "body: ${declaration.internalClassName()}.() -> Unit",
+            returnType = declaration.internalClassName(),
+        ) {
+            code("val copy = ${declaration.internalClassName()}()")
+            for (field in declaration.actualFields) {
+                // write each field to the new copy object
+                if (field.presenceIdx != null) {
+                    // if the field has presence, we need to check if it was set in the original object.
+                    // if it was set, we copy it to the new object, otherwise we leave it unset.
+                    ifBranch(condition = "presenceMask[${field.presenceIdx}]", ifBlock = {
+                        code("copy.${field.name} = ${field.type.copyCall(field.name, field.nullable)}")
+                    })
+                } else {
+                    // by default, we copy the field value
+                    code("copy.${field.name} = ${field.type.copyCall(field.name, field.nullable)}")
+                }
+            }
+            code("copy.apply(body)")
+            code("return copy")
+        }
+    }
+
+    private fun FieldType.copyCall(varName: String, nullable: Boolean): String {
+        return when (this) {
+            FieldType.IntegralType.BYTES -> {
+                val optionalPrefix = if (nullable) "?" else ""
+                "$varName$optionalPrefix.copyOf()"
+            }
+            is FieldType.IntegralType -> varName
+            is FieldType.Enum -> varName
+            is FieldType.List -> "$varName.map { ${value.copyCall("it", false)} }"
+            is FieldType.Map -> "$varName.mapValues { ${entry.value.copyCall("it.value", false)} }"
+            is FieldType.Message -> "$varName.copy()"
+            is FieldType.OneOf -> "$varName?.oneOfCopy()"
+        }
+    }
+
+    private fun CodeGenerator.generateOneOfCopy(declaration: MessageDeclaration) {
+        declaration.oneOfDeclarations.forEach { oneOf ->
+            val oneOfFullName = oneOf.name.safeFullName()
+            function(
+                name = "oneOfCopy",
+                annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
+                returnType = oneOfFullName,
+                contextReceiver = oneOfFullName,
+            ) {
+                // check if the type is copy by value (no need for deep copy)
+                val copyByValue = { type: FieldType ->
+                    (type is FieldType.IntegralType && type != FieldType.IntegralType.BYTES) || type is FieldType.Enum
+                }
+
+                // if all variants are integral or enum types, we can just return this directly.
+                val fastPath = oneOf.variants.all { copyByValue(it.type) }
+                if (fastPath) {
+                    code("return this")
+                } else {
+                    // dispatch on all possible variants and copy its value
+                    whenBlock(
+                        prefix = "return",
+                        condition = "this"
+                    ) {
+                        oneOf.variants.forEach { variant ->
+                            val variantName = "$oneOfFullName.${variant.name}"
+                            whenCase("is $variantName") {
+                                if (copyByValue(variant.type)) {
+                                    // no need to reconstruct a new object, we can just return this
+                                    code("this")
+                                } else {
+                                    code("$variantName(${variant.type.copyCall("this.value", false)})")
+                                }
+                            }
+                        }
+                    }
+                }
+
             }
         }
     }
@@ -474,12 +592,24 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun CodeGenerator.generateMessageConstructor(declaration: MessageDeclaration) {
         if (!declaration.isUserFacing) return
 
+        val demoField = declaration.actualFields.firstOrNull()?.name
+        val invocation = if (demoField == null) "{ }" else """
+            |{
+            |    $demoField = ...    
+            |}
+        """.trimMargin()
         function(
             name = "invoke",
             modifiers = "operator",
             args = "body: ${declaration.internalClassFullName()}.() -> Unit",
             contextReceiver = "${declaration.name.safeFullName()}.Companion",
             returnType = declaration.name.safeFullName(),
+            comment = Comment.leading("""
+                |Constructs a new message.
+                |```
+                |val message = ${declaration.name.simpleName} $invocation
+                |```
+            """.trimMargin())
         ) {
             code("val msg = ${declaration.internalClassFullName()}().apply(body)")
             // check if the user set all required fields
@@ -1191,6 +1321,8 @@ class ModelToProtobufKotlinCommonGenerator(
 
                 additionalPublicImports.add("kotlin.jvm.JvmInline")
             }
+
+
         }
     }
 

@@ -42,6 +42,14 @@ public class FieldMaskInternal: com.google.protobuf.kotlin.FieldMask, kotlinx.rp
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: FieldMaskInternal.() -> Unit): FieldMaskInternal { 
+        val copy = FieldMaskInternal()
+        copy.paths = paths.map { it }
+        copy.apply(body)
+        return copy
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.FieldMask> { 
         public override fun encode(value: com.google.protobuf.kotlin.FieldMask): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
@@ -69,10 +77,30 @@ public class FieldMaskInternal: com.google.protobuf.kotlin.FieldMask, kotlinx.rp
     public companion object
 }
 
+/**
+* Constructs a new message.
+* ```
+* val message = FieldMask {
+*    paths = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.FieldMask.Companion.invoke(body: com.google.protobuf.kotlin.FieldMaskInternal.() -> Unit): com.google.protobuf.kotlin.FieldMask { 
     val msg = com.google.protobuf.kotlin.FieldMaskInternal().apply(body)
     msg.checkRequiredFields()
     return msg
+}
+
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    paths = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.FieldMask.copy(body: com.google.protobuf.kotlin.FieldMaskInternal.() -> Unit = {}): com.google.protobuf.kotlin.FieldMask { 
+    return this.asInternal().copyInternal(body)
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
@@ -98,7 +126,6 @@ public fun com.google.protobuf.kotlin.FieldMaskInternal.Companion.decodeWith(msg
                 val elem = decoder.readString()
                 (msg.paths as MutableList).add(elem)
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")

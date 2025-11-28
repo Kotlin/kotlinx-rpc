@@ -126,7 +126,7 @@ open class CodeGenerator(
         condition: String,
         block: (CodeGenerator.() -> Unit),
     ) {
-        scope("$condition ->", block = block)
+        scope("$condition ->", block = block, nlAfterClosed = false)
     }
 
     private fun scopeWithSuffix(

@@ -77,6 +77,23 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: ApiInternal.() -> Unit): ApiInternal { 
+        val copy = ApiInternal()
+        copy.name = name
+        copy.methods = methods.map { it.copy() }
+        copy.options = options.map { it.copy() }
+        copy.version = version
+        if (presenceMask[0]) { 
+            copy.sourceContext = sourceContext.copy()
+        }
+
+        copy.mixins = mixins.map { it.copy() }
+        copy.syntax = syntax
+        copy.apply(body)
+        return copy
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Api> { 
         public override fun encode(value: com.google.protobuf.kotlin.Api): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
@@ -166,6 +183,20 @@ public class MethodInternal: com.google.protobuf.kotlin.Method, kotlinx.rpc.prot
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: MethodInternal.() -> Unit): MethodInternal { 
+        val copy = MethodInternal()
+        copy.name = name
+        copy.requestTypeUrl = requestTypeUrl
+        copy.requestStreaming = requestStreaming
+        copy.responseTypeUrl = responseTypeUrl
+        copy.responseStreaming = responseStreaming
+        copy.options = options.map { it.copy() }
+        copy.syntax = syntax
+        copy.apply(body)
+        return copy
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Method> { 
         public override fun encode(value: com.google.protobuf.kotlin.Method): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
@@ -235,6 +266,15 @@ public class MixinInternal: com.google.protobuf.kotlin.Mixin, kotlinx.rpc.protob
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: MixinInternal.() -> Unit): MixinInternal { 
+        val copy = MixinInternal()
+        copy.name = name
+        copy.root = root
+        copy.apply(body)
+        return copy
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Mixin> { 
         public override fun encode(value: com.google.protobuf.kotlin.Mixin): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
@@ -262,22 +302,82 @@ public class MixinInternal: com.google.protobuf.kotlin.Mixin, kotlinx.rpc.protob
     public companion object
 }
 
+/**
+* Constructs a new message.
+* ```
+* val message = Api {
+*    name = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.Api.Companion.invoke(body: com.google.protobuf.kotlin.ApiInternal.() -> Unit): com.google.protobuf.kotlin.Api { 
     val msg = com.google.protobuf.kotlin.ApiInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
 
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    name = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.Api.copy(body: com.google.protobuf.kotlin.ApiInternal.() -> Unit = {}): com.google.protobuf.kotlin.Api { 
+    return this.asInternal().copyInternal(body)
+}
+
+/**
+* Constructs a new message.
+* ```
+* val message = Method {
+*    name = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.Method.Companion.invoke(body: com.google.protobuf.kotlin.MethodInternal.() -> Unit): com.google.protobuf.kotlin.Method { 
     val msg = com.google.protobuf.kotlin.MethodInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
 
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    name = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.Method.copy(body: com.google.protobuf.kotlin.MethodInternal.() -> Unit = {}): com.google.protobuf.kotlin.Method { 
+    return this.asInternal().copyInternal(body)
+}
+
+/**
+* Constructs a new message.
+* ```
+* val message = Mixin {
+*    name = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.Mixin.Companion.invoke(body: com.google.protobuf.kotlin.MixinInternal.() -> Unit): com.google.protobuf.kotlin.Mixin { 
     val msg = com.google.protobuf.kotlin.MixinInternal().apply(body)
     msg.checkRequiredFields()
     return msg
+}
+
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    name = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.Mixin.copy(body: com.google.protobuf.kotlin.MixinInternal.() -> Unit = {}): com.google.protobuf.kotlin.Mixin { 
+    return this.asInternal().copyInternal(body)
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
@@ -345,23 +445,19 @@ public fun com.google.protobuf.kotlin.ApiInternal.Companion.decodeWith(msg: com.
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.name = decoder.readString()
             }
-
             tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 val elem = com.google.protobuf.kotlin.MethodInternal()
                 decoder.readMessage(elem.asInternal(), com.google.protobuf.kotlin.MethodInternal::decodeWith)
                 (msg.methods as MutableList).add(elem)
             }
-
             tag.fieldNr == 3 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 val elem = com.google.protobuf.kotlin.OptionInternal()
                 decoder.readMessage(elem.asInternal(), com.google.protobuf.kotlin.OptionInternal::decodeWith)
                 (msg.options as MutableList).add(elem)
             }
-
             tag.fieldNr == 4 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.version = decoder.readString()
             }
-
             tag.fieldNr == 5 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 if (!msg.presenceMask[0]) { 
                     msg.sourceContext = com.google.protobuf.kotlin.SourceContextInternal()
@@ -369,17 +465,14 @@ public fun com.google.protobuf.kotlin.ApiInternal.Companion.decodeWith(msg: com.
 
                 decoder.readMessage(msg.sourceContext.asInternal(), com.google.protobuf.kotlin.SourceContextInternal::decodeWith)
             }
-
             tag.fieldNr == 6 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 val elem = com.google.protobuf.kotlin.MixinInternal()
                 decoder.readMessage(elem.asInternal(), com.google.protobuf.kotlin.MixinInternal::decodeWith)
                 (msg.mixins as MutableList).add(elem)
             }
-
             tag.fieldNr == 7 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.syntax = com.google.protobuf.kotlin.Syntax.fromNumber(decoder.readEnum())
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -479,33 +572,26 @@ public fun com.google.protobuf.kotlin.MethodInternal.Companion.decodeWith(msg: c
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.name = decoder.readString()
             }
-
             tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.requestTypeUrl = decoder.readString()
             }
-
             tag.fieldNr == 3 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.requestStreaming = decoder.readBool()
             }
-
             tag.fieldNr == 4 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.responseTypeUrl = decoder.readString()
             }
-
             tag.fieldNr == 5 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.responseStreaming = decoder.readBool()
             }
-
             tag.fieldNr == 6 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 val elem = com.google.protobuf.kotlin.OptionInternal()
                 decoder.readMessage(elem.asInternal(), com.google.protobuf.kotlin.OptionInternal::decodeWith)
                 (msg.options as MutableList).add(elem)
             }
-
             tag.fieldNr == 7 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.syntax = com.google.protobuf.kotlin.Syntax.fromNumber(decoder.readEnum())
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -580,11 +666,9 @@ public fun com.google.protobuf.kotlin.MixinInternal.Companion.decodeWith(msg: co
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.name = decoder.readString()
             }
-
             tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.root = decoder.readString()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
