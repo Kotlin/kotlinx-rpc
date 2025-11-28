@@ -47,6 +47,15 @@ public class DurationInternal: com.google.protobuf.kotlin.Duration, kotlinx.rpc.
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: DurationInternal.() -> Unit): DurationInternal { 
+        val copy = DurationInternal()
+        copy.seconds = seconds
+        copy.nanos = nanos
+        copy.apply(body)
+        return copy
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Duration> { 
         public override fun encode(value: com.google.protobuf.kotlin.Duration): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
@@ -74,10 +83,30 @@ public class DurationInternal: com.google.protobuf.kotlin.Duration, kotlinx.rpc.
     public companion object
 }
 
+/**
+* Constructs a new message.
+* ```
+* val message = Duration {
+*    seconds = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.Duration.Companion.invoke(body: com.google.protobuf.kotlin.DurationInternal.() -> Unit): com.google.protobuf.kotlin.Duration { 
     val msg = com.google.protobuf.kotlin.DurationInternal().apply(body)
     msg.checkRequiredFields()
     return msg
+}
+
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    seconds = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.Duration.copy(body: com.google.protobuf.kotlin.DurationInternal.() -> Unit = {}): com.google.protobuf.kotlin.Duration { 
+    return this.asInternal().copyInternal(body)
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
@@ -104,11 +133,9 @@ public fun com.google.protobuf.kotlin.DurationInternal.Companion.decodeWith(msg:
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.seconds = decoder.readInt64()
             }
-
             tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.nanos = decoder.readInt32()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")

@@ -42,6 +42,14 @@ public class SourceContextInternal: com.google.protobuf.kotlin.SourceContext, ko
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public fun copyInternal(body: SourceContextInternal.() -> Unit): SourceContextInternal { 
+        val copy = SourceContextInternal()
+        copy.fileName = fileName
+        copy.apply(body)
+        return copy
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.SourceContext> { 
         public override fun encode(value: com.google.protobuf.kotlin.SourceContext): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
@@ -69,10 +77,30 @@ public class SourceContextInternal: com.google.protobuf.kotlin.SourceContext, ko
     public companion object
 }
 
+/**
+* Constructs a new message.
+* ```
+* val message = SourceContext {
+*    fileName = ...
+* }
+* ```
+*/
 public operator fun com.google.protobuf.kotlin.SourceContext.Companion.invoke(body: com.google.protobuf.kotlin.SourceContextInternal.() -> Unit): com.google.protobuf.kotlin.SourceContext { 
     val msg = com.google.protobuf.kotlin.SourceContextInternal().apply(body)
     msg.checkRequiredFields()
     return msg
+}
+
+/**
+* Copies the original message, including unknown fields.
+* ```
+* val copy = original.copy {
+*    fileName = ...
+* }
+* ```
+*/
+public fun com.google.protobuf.kotlin.SourceContext.copy(body: com.google.protobuf.kotlin.SourceContextInternal.() -> Unit = {}): com.google.protobuf.kotlin.SourceContext { 
+    return this.asInternal().copyInternal(body)
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
@@ -95,7 +123,6 @@ public fun com.google.protobuf.kotlin.SourceContextInternal.Companion.decodeWith
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.fileName = decoder.readString()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
