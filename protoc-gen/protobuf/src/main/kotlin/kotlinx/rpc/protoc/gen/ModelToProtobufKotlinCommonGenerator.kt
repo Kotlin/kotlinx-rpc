@@ -32,13 +32,18 @@ class ModelToProtobufKotlinCommonGenerator(
 ) : AModelToKotlinCommonGenerator(config, model) {
     override val FileDeclaration.hasPublicGeneratedContent: Boolean
         get() = enumDeclarations.isNotEmpty() || messageDeclarations.isNotEmpty()
-
+    override val FileDeclaration.hasExtensionGeneratedContent: Boolean
+        get() = hasPublicGeneratedContent
     override val FileDeclaration.hasInternalGeneratedContent: Boolean
         get() = hasPublicGeneratedContent
 
     override fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration) {
         fileDeclaration.messageDeclarations.forEach { generatePublicMessage(it) }
         fileDeclaration.enumDeclarations.forEach { generatePublicEnum(it) }
+    }
+
+    override fun CodeGenerator.generateExtensionEntities(fileDeclaration: FileDeclaration) {
+        generateExtensionMessageEntities(fileDeclaration.messageDeclarations)
     }
 
     override fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {
@@ -57,16 +62,20 @@ class ModelToProtobufKotlinCommonGenerator(
         // emit all required functions in the outer scope
         val allMsgs = messages + messages.flatMap(MessageDeclaration::allNestedRecursively)
         allMsgs.forEach {
-            generateMessageConstructor(it)
-            generatePublicCopy(it)
-            generatePublicPresenceGetter(it)
-        }
-        allMsgs.forEach {
             generateRequiredCheck(it)
             generateMessageEncoder(it)
             generateMessageDecoder(it)
             generateInternalComputeSize(it)
             generateInternalCastExtension(it)
+        }
+    }
+
+    private fun CodeGenerator.generateExtensionMessageEntities(message: List<MessageDeclaration>) {
+        val allMsgs = message + message.flatMap(MessageDeclaration::allNestedRecursively)
+        allMsgs.forEach {
+            generateMessageConstructor(it)
+            generatePublicCopy(it)
+            generatePublicPresenceGetter(it)
         }
     }
 
@@ -427,10 +436,10 @@ class ModelToProtobufKotlinCommonGenerator(
         function(
             name = "copyInternal",
             annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
-            args = "body: ${declaration.internalClassName()}.() -> Unit",
-            returnType = declaration.internalClassName(),
+            args = "body: ${declaration.internalClassFullName()}.() -> Unit",
+            returnType = declaration.internalClassFullName(),
         ) {
-            code("val copy = ${declaration.internalClassName()}()")
+            code("val copy = ${declaration.internalClassFullName()}()")
             for (field in declaration.actualFields) {
                 // write each field to the new copy object
                 if (field.presenceIdx != null) {
@@ -526,7 +535,7 @@ class ModelToProtobufKotlinCommonGenerator(
         clazz(
             name = "Presence",
             constructorModifiers = "private",
-            constructorArgs = listOf("val message: ${declaration.internalClassFullName()}" to null),
+            constructorArgs = listOf("private val message: ${declaration.internalClassFullName()}" to null),
         ) {
             declaration.actualFields.forEach { field ->
                 if (field.presenceIdx != null) {
@@ -541,6 +550,7 @@ class ModelToProtobufKotlinCommonGenerator(
             companionObject {
                 function(
                     name = "create",
+                    modifiers = "internal",
                     annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
                     args = "message: ${declaration.internalClassFullName()}",
                     returnType = declaration.presenceClassFullName(),

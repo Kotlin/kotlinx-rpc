@@ -79,8 +79,8 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public fun copyInternal(body: ApiInternal.() -> Unit): ApiInternal { 
-        val copy = ApiInternal()
+    public fun copyInternal(body: com.google.protobuf.kotlin.ApiInternal.() -> Unit): com.google.protobuf.kotlin.ApiInternal { 
+        val copy = com.google.protobuf.kotlin.ApiInternal()
         copy.name = name
         copy.methods = methods.map { it.copy() }
         copy.options = options.map { it.copy() }
@@ -119,12 +119,14 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
         }
     }
 
-    public class Presence private constructor (public val message: com.google.protobuf.kotlin.ApiInternal) { 
+    public class Presence private constructor (
+        private val message: com.google.protobuf.kotlin.ApiInternal,
+    ) { 
         public val hasSourceContext: kotlin.Boolean get() = message.presenceMask[0]
 
         public companion  object { 
             @kotlinx.rpc.internal.utils.InternalRpcApi
-            public fun create(message: com.google.protobuf.kotlin.ApiInternal): com.google.protobuf.kotlin.ApiInternal.Presence { 
+            internal fun create(message: com.google.protobuf.kotlin.ApiInternal): com.google.protobuf.kotlin.ApiInternal.Presence { 
                 return com.google.protobuf.kotlin.ApiInternal.Presence(message)
             }
         }
@@ -196,8 +198,8 @@ public class MethodInternal: com.google.protobuf.kotlin.Method, kotlinx.rpc.prot
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public fun copyInternal(body: MethodInternal.() -> Unit): MethodInternal { 
-        val copy = MethodInternal()
+    public fun copyInternal(body: com.google.protobuf.kotlin.MethodInternal.() -> Unit): com.google.protobuf.kotlin.MethodInternal { 
+        val copy = com.google.protobuf.kotlin.MethodInternal()
         copy.name = name
         copy.requestTypeUrl = requestTypeUrl
         copy.requestStreaming = requestStreaming
@@ -279,8 +281,8 @@ public class MixinInternal: com.google.protobuf.kotlin.Mixin, kotlinx.rpc.protob
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public fun copyInternal(body: MixinInternal.() -> Unit): MixinInternal { 
-        val copy = MixinInternal()
+    public fun copyInternal(body: com.google.protobuf.kotlin.MixinInternal.() -> Unit): com.google.protobuf.kotlin.MixinInternal { 
+        val copy = com.google.protobuf.kotlin.MixinInternal()
         copy.name = name
         copy.root = root
         copy.apply(body)
@@ -313,86 +315,6 @@ public class MixinInternal: com.google.protobuf.kotlin.Mixin, kotlinx.rpc.protob
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
-}
-
-/**
-* Constructs a new message.
-* ```
-* val message = Api {
-*    name = ...
-* }
-* ```
-*/
-public operator fun com.google.protobuf.kotlin.Api.Companion.invoke(body: com.google.protobuf.kotlin.ApiInternal.() -> Unit): com.google.protobuf.kotlin.Api { 
-    val msg = com.google.protobuf.kotlin.ApiInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
-}
-
-/**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy {
-*    name = ...
-* }
-* ```
-*/
-public fun com.google.protobuf.kotlin.Api.copy(body: com.google.protobuf.kotlin.ApiInternal.() -> Unit = {}): com.google.protobuf.kotlin.Api { 
-    return this.asInternal().copyInternal(body)
-}
-
-public val com.google.protobuf.kotlin.Api.presence: com.google.protobuf.kotlin.ApiInternal.Presence get() = this.asInternal()._presence
-
-/**
-* Constructs a new message.
-* ```
-* val message = Method {
-*    name = ...
-* }
-* ```
-*/
-public operator fun com.google.protobuf.kotlin.Method.Companion.invoke(body: com.google.protobuf.kotlin.MethodInternal.() -> Unit): com.google.protobuf.kotlin.Method { 
-    val msg = com.google.protobuf.kotlin.MethodInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
-}
-
-/**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy {
-*    name = ...
-* }
-* ```
-*/
-public fun com.google.protobuf.kotlin.Method.copy(body: com.google.protobuf.kotlin.MethodInternal.() -> Unit = {}): com.google.protobuf.kotlin.Method { 
-    return this.asInternal().copyInternal(body)
-}
-
-/**
-* Constructs a new message.
-* ```
-* val message = Mixin {
-*    name = ...
-* }
-* ```
-*/
-public operator fun com.google.protobuf.kotlin.Mixin.Companion.invoke(body: com.google.protobuf.kotlin.MixinInternal.() -> Unit): com.google.protobuf.kotlin.Mixin { 
-    val msg = com.google.protobuf.kotlin.MixinInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
-}
-
-/**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy {
-*    name = ...
-* }
-* ```
-*/
-public fun com.google.protobuf.kotlin.Mixin.copy(body: com.google.protobuf.kotlin.MixinInternal.() -> Unit = {}): com.google.protobuf.kotlin.Mixin { 
-    return this.asInternal().copyInternal(body)
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi

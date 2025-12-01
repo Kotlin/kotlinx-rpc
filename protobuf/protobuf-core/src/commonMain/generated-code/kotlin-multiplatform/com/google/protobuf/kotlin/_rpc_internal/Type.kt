@@ -79,8 +79,8 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public fun copyInternal(body: TypeInternal.() -> Unit): TypeInternal { 
-        val copy = TypeInternal()
+    public fun copyInternal(body: com.google.protobuf.kotlin.TypeInternal.() -> Unit): com.google.protobuf.kotlin.TypeInternal { 
+        val copy = com.google.protobuf.kotlin.TypeInternal()
         copy.name = name
         copy.fields = fields.map { it.copy() }
         copy.oneofs = oneofs.map { it }
@@ -119,12 +119,14 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
         }
     }
 
-    public class Presence private constructor (public val message: com.google.protobuf.kotlin.TypeInternal) { 
+    public class Presence private constructor (
+        private val message: com.google.protobuf.kotlin.TypeInternal,
+    ) { 
         public val hasSourceContext: kotlin.Boolean get() = message.presenceMask[0]
 
         public companion  object { 
             @kotlinx.rpc.internal.utils.InternalRpcApi
-            public fun create(message: com.google.protobuf.kotlin.TypeInternal): com.google.protobuf.kotlin.TypeInternal.Presence { 
+            internal fun create(message: com.google.protobuf.kotlin.TypeInternal): com.google.protobuf.kotlin.TypeInternal.Presence { 
                 return com.google.protobuf.kotlin.TypeInternal.Presence(message)
             }
         }
@@ -208,8 +210,8 @@ public class FieldInternal: com.google.protobuf.kotlin.Field, kotlinx.rpc.protob
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public fun copyInternal(body: FieldInternal.() -> Unit): FieldInternal { 
-        val copy = FieldInternal()
+    public fun copyInternal(body: com.google.protobuf.kotlin.FieldInternal.() -> Unit): com.google.protobuf.kotlin.FieldInternal { 
+        val copy = com.google.protobuf.kotlin.FieldInternal()
         copy.kind = kind
         copy.cardinality = cardinality
         copy.number = number
@@ -322,8 +324,8 @@ public class EnumInternal: com.google.protobuf.kotlin.Enum, kotlinx.rpc.protobuf
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public fun copyInternal(body: EnumInternal.() -> Unit): EnumInternal { 
-        val copy = EnumInternal()
+    public fun copyInternal(body: com.google.protobuf.kotlin.EnumInternal.() -> Unit): com.google.protobuf.kotlin.EnumInternal { 
+        val copy = com.google.protobuf.kotlin.EnumInternal()
         copy.name = name
         copy.enumvalue = enumvalue.map { it.copy() }
         copy.options = options.map { it.copy() }
@@ -361,12 +363,14 @@ public class EnumInternal: com.google.protobuf.kotlin.Enum, kotlinx.rpc.protobuf
         }
     }
 
-    public class Presence private constructor (public val message: com.google.protobuf.kotlin.EnumInternal) { 
+    public class Presence private constructor (
+        private val message: com.google.protobuf.kotlin.EnumInternal,
+    ) { 
         public val hasSourceContext: kotlin.Boolean get() = message.presenceMask[0]
 
         public companion  object { 
             @kotlinx.rpc.internal.utils.InternalRpcApi
-            public fun create(message: com.google.protobuf.kotlin.EnumInternal): com.google.protobuf.kotlin.EnumInternal.Presence { 
+            internal fun create(message: com.google.protobuf.kotlin.EnumInternal): com.google.protobuf.kotlin.EnumInternal.Presence { 
                 return com.google.protobuf.kotlin.EnumInternal.Presence(message)
             }
         }
@@ -422,8 +426,8 @@ public class EnumValueInternal: com.google.protobuf.kotlin.EnumValue, kotlinx.rp
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public fun copyInternal(body: EnumValueInternal.() -> Unit): EnumValueInternal { 
-        val copy = EnumValueInternal()
+    public fun copyInternal(body: com.google.protobuf.kotlin.EnumValueInternal.() -> Unit): com.google.protobuf.kotlin.EnumValueInternal { 
+        val copy = com.google.protobuf.kotlin.EnumValueInternal()
         copy.name = name
         copy.number = number
         copy.options = options.map { it.copy() }
@@ -513,8 +517,8 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public fun copyInternal(body: OptionInternal.() -> Unit): OptionInternal { 
-        val copy = OptionInternal()
+    public fun copyInternal(body: com.google.protobuf.kotlin.OptionInternal.() -> Unit): com.google.protobuf.kotlin.OptionInternal { 
+        val copy = com.google.protobuf.kotlin.OptionInternal()
         copy.name = name
         if (presenceMask[0]) { 
             copy.value = value.copy()
@@ -549,13 +553,13 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
     }
 
     public class Presence private constructor (
-        public val message: com.google.protobuf.kotlin.OptionInternal,
+        private val message: com.google.protobuf.kotlin.OptionInternal,
     ) { 
         public val hasValue: kotlin.Boolean get() = message.presenceMask[0]
 
         public companion  object { 
             @kotlinx.rpc.internal.utils.InternalRpcApi
-            public fun create(message: com.google.protobuf.kotlin.OptionInternal): com.google.protobuf.kotlin.OptionInternal.Presence { 
+            internal fun create(message: com.google.protobuf.kotlin.OptionInternal): com.google.protobuf.kotlin.OptionInternal.Presence { 
                 return com.google.protobuf.kotlin.OptionInternal.Presence(message)
             }
         }
@@ -564,142 +568,6 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
-
-/**
-* Constructs a new message.
-* ```
-* val message = Type {
-*    name = ...
-* }
-* ```
-*/
-public operator fun com.google.protobuf.kotlin.Type.Companion.invoke(body: com.google.protobuf.kotlin.TypeInternal.() -> Unit): com.google.protobuf.kotlin.Type { 
-    val msg = com.google.protobuf.kotlin.TypeInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
-}
-
-/**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy {
-*    name = ...
-* }
-* ```
-*/
-public fun com.google.protobuf.kotlin.Type.copy(body: com.google.protobuf.kotlin.TypeInternal.() -> Unit = {}): com.google.protobuf.kotlin.Type { 
-    return this.asInternal().copyInternal(body)
-}
-
-public val com.google.protobuf.kotlin.Type.presence: com.google.protobuf.kotlin.TypeInternal.Presence get() = this.asInternal()._presence
-
-/**
-* Constructs a new message.
-* ```
-* val message = Field {
-*    kind = ...
-* }
-* ```
-*/
-public operator fun com.google.protobuf.kotlin.Field.Companion.invoke(body: com.google.protobuf.kotlin.FieldInternal.() -> Unit): com.google.protobuf.kotlin.Field { 
-    val msg = com.google.protobuf.kotlin.FieldInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
-}
-
-/**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy {
-*    kind = ...
-* }
-* ```
-*/
-public fun com.google.protobuf.kotlin.Field.copy(body: com.google.protobuf.kotlin.FieldInternal.() -> Unit = {}): com.google.protobuf.kotlin.Field { 
-    return this.asInternal().copyInternal(body)
-}
-
-/**
-* Constructs a new message.
-* ```
-* val message = Enum {
-*    name = ...
-* }
-* ```
-*/
-public operator fun com.google.protobuf.kotlin.Enum.Companion.invoke(body: com.google.protobuf.kotlin.EnumInternal.() -> Unit): com.google.protobuf.kotlin.Enum { 
-    val msg = com.google.protobuf.kotlin.EnumInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
-}
-
-/**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy {
-*    name = ...
-* }
-* ```
-*/
-public fun com.google.protobuf.kotlin.Enum.copy(body: com.google.protobuf.kotlin.EnumInternal.() -> Unit = {}): com.google.protobuf.kotlin.Enum { 
-    return this.asInternal().copyInternal(body)
-}
-
-public val com.google.protobuf.kotlin.Enum.presence: com.google.protobuf.kotlin.EnumInternal.Presence get() = this.asInternal()._presence
-
-/**
-* Constructs a new message.
-* ```
-* val message = EnumValue {
-*    name = ...
-* }
-* ```
-*/
-public operator fun com.google.protobuf.kotlin.EnumValue.Companion.invoke(body: com.google.protobuf.kotlin.EnumValueInternal.() -> Unit): com.google.protobuf.kotlin.EnumValue { 
-    val msg = com.google.protobuf.kotlin.EnumValueInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
-}
-
-/**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy {
-*    name = ...
-* }
-* ```
-*/
-public fun com.google.protobuf.kotlin.EnumValue.copy(body: com.google.protobuf.kotlin.EnumValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.EnumValue { 
-    return this.asInternal().copyInternal(body)
-}
-
-/**
-* Constructs a new message.
-* ```
-* val message = Option {
-*    name = ...
-* }
-* ```
-*/
-public operator fun com.google.protobuf.kotlin.Option.Companion.invoke(body: com.google.protobuf.kotlin.OptionInternal.() -> Unit): com.google.protobuf.kotlin.Option { 
-    val msg = com.google.protobuf.kotlin.OptionInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
-}
-
-/**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy {
-*    name = ...
-* }
-* ```
-*/
-public fun com.google.protobuf.kotlin.Option.copy(body: com.google.protobuf.kotlin.OptionInternal.() -> Unit = {}): com.google.protobuf.kotlin.Option { 
-    return this.asInternal().copyInternal(body)
-}
-
-public val com.google.protobuf.kotlin.Option.presence: com.google.protobuf.kotlin.OptionInternal.Presence get() = this.asInternal()._presence
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
 public fun com.google.protobuf.kotlin.TypeInternal.checkRequiredFields() { 
