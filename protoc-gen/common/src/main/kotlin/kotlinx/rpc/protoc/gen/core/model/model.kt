@@ -43,6 +43,8 @@ data class MessageDeclaration(
             f.type == Descriptors.FieldDescriptor.Type.GROUP && f.messageType == dec
         }
     }
+
+    val hasPresenceFields by lazy { actualFields.any { it.presenceIdx != null } }
 }
 
 data class EnumDeclaration(

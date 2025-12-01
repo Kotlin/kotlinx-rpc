@@ -59,6 +59,7 @@ class ModelToProtobufKotlinCommonGenerator(
         allMsgs.forEach {
             generateMessageConstructor(it)
             generatePublicCopy(it)
+            generatePublicPresenceGetter(it)
         }
         allMsgs.forEach {
             generateRequiredCheck(it)
@@ -144,6 +145,14 @@ class ModelToProtobufKotlinCommonGenerator(
                 value = "lazy { computeSize() }"
             )
 
+            if (declaration.isUserFacing && declaration.hasPresenceFields) {
+                property(
+                    name = "_presence",
+                    type = declaration.presenceClassFullName(),
+                    value = "Presence.create(this)",
+                )
+            }
+
             val override = if (declaration.isUserFacing) "override" else ""
             declaration.actualFields.forEachIndexed { i, field ->
                 val value = when {
@@ -189,6 +198,7 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             generateCodecObject(declaration)
+            generatePresenceClass(declaration)
 
             // required for decodeWith extension
             clazz(
@@ -492,6 +502,51 @@ class ModelToProtobufKotlinCommonGenerator(
                     }
                 }
 
+            }
+        }
+    }
+
+    private fun CodeGenerator.generatePublicPresenceGetter(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) return
+        if (!declaration.hasPresenceFields) return
+
+        property(
+            name = "presence",
+            type = declaration.presenceClassFullName(),
+            propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
+            contextReceiver = declaration.name.safeFullName(),
+            value = "this.asInternal()._presence",
+        )
+    }
+
+    private fun CodeGenerator.generatePresenceClass(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) return
+        if (!declaration.hasPresenceFields) return
+
+        clazz(
+            name = "Presence",
+            constructorModifiers = "private",
+            constructorArgs = listOf("val message: ${declaration.internalClassFullName()}" to null),
+        ) {
+            declaration.actualFields.forEach { field ->
+                if (field.presenceIdx != null) {
+                    property(
+                        name = "has${field.name.capitalize()}",
+                        type = "kotlin.Boolean",
+                        propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
+                        value = "message.presenceMask[${field.presenceIdx}]"
+                    )
+                }
+            }
+            companionObject {
+                function(
+                    name = "create",
+                    annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
+                    args = "message: ${declaration.internalClassFullName()}",
+                    returnType = declaration.presenceClassFullName(),
+                ) {
+                    code("return ${declaration.presenceClassFullName()}(message)")
+                }
             }
         }
     }
@@ -1388,3 +1443,4 @@ private fun MessageDeclaration.allEnumsRecursively(): List<EnumDeclaration> =
 private fun MessageDeclaration.allNestedRecursively(): List<MessageDeclaration> =
     nestedDeclarations + nestedDeclarations.flatMap(MessageDeclaration::allNestedRecursively)
 
+private fun String.capitalize(): String = replaceFirstChar { it.uppercase() }

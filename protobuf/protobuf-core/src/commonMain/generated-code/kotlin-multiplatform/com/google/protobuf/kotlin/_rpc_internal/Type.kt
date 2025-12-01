@@ -13,6 +13,8 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
+    public val _presence: com.google.protobuf.kotlin.TypeInternal.Presence = Presence.create(this)
+
     public override var name: String by MsgFieldDelegate { "" }
     public override var fields: List<com.google.protobuf.kotlin.Field> by MsgFieldDelegate { mutableListOf() }
     public override var oneofs: List<kotlin.String> by MsgFieldDelegate { mutableListOf() }
@@ -113,6 +115,17 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
                 }
                 msg.checkRequiredFields()
                 return msg
+            }
+        }
+    }
+
+    public class Presence private constructor (public val message: com.google.protobuf.kotlin.TypeInternal) { 
+        public val hasSourceContext: kotlin.Boolean get() = message.presenceMask[0]
+
+        public companion  object { 
+            @kotlinx.rpc.internal.utils.InternalRpcApi
+            public fun create(message: com.google.protobuf.kotlin.TypeInternal): com.google.protobuf.kotlin.TypeInternal.Presence { 
+                return com.google.protobuf.kotlin.TypeInternal.Presence(message)
             }
         }
     }
@@ -247,6 +260,8 @@ public class EnumInternal: com.google.protobuf.kotlin.Enum, kotlinx.rpc.protobuf
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
+    public val _presence: com.google.protobuf.kotlin.EnumInternal.Presence = Presence.create(this)
+
     public override var name: String by MsgFieldDelegate { "" }
     public override var enumvalue: List<com.google.protobuf.kotlin.EnumValue> by MsgFieldDelegate { mutableListOf() }
     public override var options: List<com.google.protobuf.kotlin.Option> by MsgFieldDelegate { mutableListOf() }
@@ -346,6 +361,17 @@ public class EnumInternal: com.google.protobuf.kotlin.Enum, kotlinx.rpc.protobuf
         }
     }
 
+    public class Presence private constructor (public val message: com.google.protobuf.kotlin.EnumInternal) { 
+        public val hasSourceContext: kotlin.Boolean get() = message.presenceMask[0]
+
+        public companion  object { 
+            @kotlinx.rpc.internal.utils.InternalRpcApi
+            public fun create(message: com.google.protobuf.kotlin.EnumInternal): com.google.protobuf.kotlin.EnumInternal.Presence { 
+                return com.google.protobuf.kotlin.EnumInternal.Presence(message)
+            }
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
@@ -441,6 +467,8 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
+    public val _presence: com.google.protobuf.kotlin.OptionInternal.Presence = Presence.create(this)
+
     public override var name: String by MsgFieldDelegate { "" }
     public override var value: com.google.protobuf.kotlin.Any by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf.kotlin.AnyInternal() }
 
@@ -520,6 +548,19 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
         }
     }
 
+    public class Presence private constructor (
+        public val message: com.google.protobuf.kotlin.OptionInternal,
+    ) { 
+        public val hasValue: kotlin.Boolean get() = message.presenceMask[0]
+
+        public companion  object { 
+            @kotlinx.rpc.internal.utils.InternalRpcApi
+            public fun create(message: com.google.protobuf.kotlin.OptionInternal): com.google.protobuf.kotlin.OptionInternal.Presence { 
+                return com.google.protobuf.kotlin.OptionInternal.Presence(message)
+            }
+        }
+    }
+
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
@@ -549,6 +590,8 @@ public operator fun com.google.protobuf.kotlin.Type.Companion.invoke(body: com.g
 public fun com.google.protobuf.kotlin.Type.copy(body: com.google.protobuf.kotlin.TypeInternal.() -> Unit = {}): com.google.protobuf.kotlin.Type { 
     return this.asInternal().copyInternal(body)
 }
+
+public val com.google.protobuf.kotlin.Type.presence: com.google.protobuf.kotlin.TypeInternal.Presence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -602,6 +645,8 @@ public fun com.google.protobuf.kotlin.Enum.copy(body: com.google.protobuf.kotlin
     return this.asInternal().copyInternal(body)
 }
 
+public val com.google.protobuf.kotlin.Enum.presence: com.google.protobuf.kotlin.EnumInternal.Presence get() = this.asInternal()._presence
+
 /**
 * Constructs a new message.
 * ```
@@ -653,6 +698,8 @@ public operator fun com.google.protobuf.kotlin.Option.Companion.invoke(body: com
 public fun com.google.protobuf.kotlin.Option.copy(body: com.google.protobuf.kotlin.OptionInternal.() -> Unit = {}): com.google.protobuf.kotlin.Option { 
     return this.asInternal().copyInternal(body)
 }
+
+public val com.google.protobuf.kotlin.Option.presence: com.google.protobuf.kotlin.OptionInternal.Presence get() = this.asInternal()._presence
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
 public fun com.google.protobuf.kotlin.TypeInternal.checkRequiredFields() { 
