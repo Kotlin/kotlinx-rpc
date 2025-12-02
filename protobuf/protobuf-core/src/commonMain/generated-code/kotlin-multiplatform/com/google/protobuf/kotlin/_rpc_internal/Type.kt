@@ -13,8 +13,6 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
-    public val _presence: com.google.protobuf.kotlin.TypeInternal.Presence = Presence.create(this)
-
     public override var name: String by MsgFieldDelegate { "" }
     public override var fields: List<com.google.protobuf.kotlin.Field> by MsgFieldDelegate { mutableListOf() }
     public override var oneofs: List<kotlin.String> by MsgFieldDelegate { mutableListOf() }
@@ -22,6 +20,11 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
     public override var sourceContext: com.google.protobuf.kotlin.SourceContext by MsgFieldDelegate(PresenceIndices.sourceContext) { com.google.protobuf.kotlin.SourceContextInternal() }
     public override var syntax: com.google.protobuf.kotlin.Syntax by MsgFieldDelegate { com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2 }
     public override var edition: String by MsgFieldDelegate { "" }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public val _presence: com.google.protobuf.kotlin.TypePresence = object : com.google.protobuf.kotlin.TypePresence { 
+        public override val hasSourceContext: kotlin.Boolean get() = presenceMask[0]
+    }
 
     public override fun hashCode(): kotlin.Int { 
         checkRequiredFields()
@@ -115,19 +118,6 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
                 }
                 msg.checkRequiredFields()
                 return msg
-            }
-        }
-    }
-
-    public class Presence private constructor (
-        private val message: com.google.protobuf.kotlin.TypeInternal,
-    ) { 
-        public val hasSourceContext: kotlin.Boolean get() = message.presenceMask[0]
-
-        public companion  object { 
-            @kotlinx.rpc.internal.utils.InternalRpcApi
-            internal fun create(message: com.google.protobuf.kotlin.TypeInternal): com.google.protobuf.kotlin.TypeInternal.Presence { 
-                return com.google.protobuf.kotlin.TypeInternal.Presence(message)
             }
         }
     }
@@ -262,14 +252,17 @@ public class EnumInternal: com.google.protobuf.kotlin.Enum, kotlinx.rpc.protobuf
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
-    public val _presence: com.google.protobuf.kotlin.EnumInternal.Presence = Presence.create(this)
-
     public override var name: String by MsgFieldDelegate { "" }
     public override var enumvalue: List<com.google.protobuf.kotlin.EnumValue> by MsgFieldDelegate { mutableListOf() }
     public override var options: List<com.google.protobuf.kotlin.Option> by MsgFieldDelegate { mutableListOf() }
     public override var sourceContext: com.google.protobuf.kotlin.SourceContext by MsgFieldDelegate(PresenceIndices.sourceContext) { com.google.protobuf.kotlin.SourceContextInternal() }
     public override var syntax: com.google.protobuf.kotlin.Syntax by MsgFieldDelegate { com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2 }
     public override var edition: String by MsgFieldDelegate { "" }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public val _presence: com.google.protobuf.kotlin.EnumPresence = object : com.google.protobuf.kotlin.EnumPresence { 
+        public override val hasSourceContext: kotlin.Boolean get() = presenceMask[0]
+    }
 
     public override fun hashCode(): kotlin.Int { 
         checkRequiredFields()
@@ -359,19 +352,6 @@ public class EnumInternal: com.google.protobuf.kotlin.Enum, kotlinx.rpc.protobuf
                 }
                 msg.checkRequiredFields()
                 return msg
-            }
-        }
-    }
-
-    public class Presence private constructor (
-        private val message: com.google.protobuf.kotlin.EnumInternal,
-    ) { 
-        public val hasSourceContext: kotlin.Boolean get() = message.presenceMask[0]
-
-        public companion  object { 
-            @kotlinx.rpc.internal.utils.InternalRpcApi
-            internal fun create(message: com.google.protobuf.kotlin.EnumInternal): com.google.protobuf.kotlin.EnumInternal.Presence { 
-                return com.google.protobuf.kotlin.EnumInternal.Presence(message)
             }
         }
     }
@@ -471,10 +451,13 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
-    public val _presence: com.google.protobuf.kotlin.OptionInternal.Presence = Presence.create(this)
-
     public override var name: String by MsgFieldDelegate { "" }
     public override var value: com.google.protobuf.kotlin.Any by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf.kotlin.AnyInternal() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public val _presence: com.google.protobuf.kotlin.OptionPresence = object : com.google.protobuf.kotlin.OptionPresence { 
+        public override val hasValue: kotlin.Boolean get() = presenceMask[0]
+    }
 
     public override fun hashCode(): kotlin.Int { 
         checkRequiredFields()
@@ -548,19 +531,6 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
                 }
                 msg.checkRequiredFields()
                 return msg
-            }
-        }
-    }
-
-    public class Presence private constructor (
-        private val message: com.google.protobuf.kotlin.OptionInternal,
-    ) { 
-        public val hasValue: kotlin.Boolean get() = message.presenceMask[0]
-
-        public companion  object { 
-            @kotlinx.rpc.internal.utils.InternalRpcApi
-            internal fun create(message: com.google.protobuf.kotlin.OptionInternal): com.google.protobuf.kotlin.OptionInternal.Presence { 
-                return com.google.protobuf.kotlin.OptionInternal.Presence(message)
             }
         }
     }

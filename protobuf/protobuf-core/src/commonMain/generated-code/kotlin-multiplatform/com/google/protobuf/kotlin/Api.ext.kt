@@ -29,7 +29,10 @@ public fun com.google.protobuf.kotlin.Api.copy(body: com.google.protobuf.kotlin.
     return this.asInternal().copyInternal(body)
 }
 
-public val com.google.protobuf.kotlin.Api.presence: com.google.protobuf.kotlin.ApiInternal.Presence get() = this.asInternal()._presence
+/**
+* Returns the field-presence view for this [com.google.protobuf.kotlin.Api] instance.
+*/
+public val com.google.protobuf.kotlin.Api.presence: com.google.protobuf.kotlin.ApiPresence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -81,4 +84,12 @@ public operator fun com.google.protobuf.kotlin.Mixin.Companion.invoke(body: com.
 */
 public fun com.google.protobuf.kotlin.Mixin.copy(body: com.google.protobuf.kotlin.MixinInternal.() -> Unit = {}): com.google.protobuf.kotlin.Mixin { 
     return this.asInternal().copyInternal(body)
+}
+
+/**
+* Interface providing field-presence information for [com.google.protobuf.kotlin.Api] messages.
+* Retrieve it via the [com.google.protobuf.kotlin.Api.presence] extension property.
+*/
+public interface ApiPresence { 
+    public val hasSourceContext: kotlin.Boolean
 }

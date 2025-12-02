@@ -204,10 +204,6 @@ abstract class AModelToKotlinCommonGenerator(
         return name.safeFullName(MSG_INTERNAL_SUFFIX)
     }
 
-    protected fun MessageDeclaration.presenceClassFullName(): String {
-        return internalClassFullName() + ".Presence"
-    }
-
     protected fun MessageDeclaration.internalClassName(): String {
         return name.simpleName + MSG_INTERNAL_SUFFIX
     }

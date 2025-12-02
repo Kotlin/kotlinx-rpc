@@ -29,7 +29,10 @@ public fun com.google.protobuf.kotlin.Type.copy(body: com.google.protobuf.kotlin
     return this.asInternal().copyInternal(body)
 }
 
-public val com.google.protobuf.kotlin.Type.presence: com.google.protobuf.kotlin.TypeInternal.Presence get() = this.asInternal()._presence
+/**
+* Returns the field-presence view for this [com.google.protobuf.kotlin.Type] instance.
+*/
+public val com.google.protobuf.kotlin.Type.presence: com.google.protobuf.kotlin.TypePresence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -83,7 +86,10 @@ public fun com.google.protobuf.kotlin.Enum.copy(body: com.google.protobuf.kotlin
     return this.asInternal().copyInternal(body)
 }
 
-public val com.google.protobuf.kotlin.Enum.presence: com.google.protobuf.kotlin.EnumInternal.Presence get() = this.asInternal()._presence
+/**
+* Returns the field-presence view for this [com.google.protobuf.kotlin.Enum] instance.
+*/
+public val com.google.protobuf.kotlin.Enum.presence: com.google.protobuf.kotlin.EnumPresence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -137,4 +143,31 @@ public fun com.google.protobuf.kotlin.Option.copy(body: com.google.protobuf.kotl
     return this.asInternal().copyInternal(body)
 }
 
-public val com.google.protobuf.kotlin.Option.presence: com.google.protobuf.kotlin.OptionInternal.Presence get() = this.asInternal()._presence
+/**
+* Returns the field-presence view for this [com.google.protobuf.kotlin.Option] instance.
+*/
+public val com.google.protobuf.kotlin.Option.presence: com.google.protobuf.kotlin.OptionPresence get() = this.asInternal()._presence
+
+/**
+* Interface providing field-presence information for [com.google.protobuf.kotlin.Type] messages.
+* Retrieve it via the [com.google.protobuf.kotlin.Type.presence] extension property.
+*/
+public interface TypePresence { 
+    public val hasSourceContext: kotlin.Boolean
+}
+
+/**
+* Interface providing field-presence information for [com.google.protobuf.kotlin.Enum] messages.
+* Retrieve it via the [com.google.protobuf.kotlin.Enum.presence] extension property.
+*/
+public interface EnumPresence { 
+    public val hasSourceContext: kotlin.Boolean
+}
+
+/**
+* Interface providing field-presence information for [com.google.protobuf.kotlin.Option] messages.
+* Retrieve it via the [com.google.protobuf.kotlin.Option.presence] extension property.
+*/
+public interface OptionPresence { 
+    public val hasValue: kotlin.Boolean
+}

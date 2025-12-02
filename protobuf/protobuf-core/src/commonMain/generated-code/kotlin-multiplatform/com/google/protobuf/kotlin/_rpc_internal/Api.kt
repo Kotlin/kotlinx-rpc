@@ -13,8 +13,6 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
-    public val _presence: com.google.protobuf.kotlin.ApiInternal.Presence = Presence.create(this)
-
     public override var name: String by MsgFieldDelegate { "" }
     public override var methods: List<com.google.protobuf.kotlin.Method> by MsgFieldDelegate { mutableListOf() }
     public override var options: List<com.google.protobuf.kotlin.Option> by MsgFieldDelegate { mutableListOf() }
@@ -22,6 +20,11 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
     public override var sourceContext: com.google.protobuf.kotlin.SourceContext by MsgFieldDelegate(PresenceIndices.sourceContext) { com.google.protobuf.kotlin.SourceContextInternal() }
     public override var mixins: List<com.google.protobuf.kotlin.Mixin> by MsgFieldDelegate { mutableListOf() }
     public override var syntax: com.google.protobuf.kotlin.Syntax by MsgFieldDelegate { com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2 }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public val _presence: com.google.protobuf.kotlin.ApiPresence = object : com.google.protobuf.kotlin.ApiPresence { 
+        public override val hasSourceContext: kotlin.Boolean get() = presenceMask[0]
+    }
 
     public override fun hashCode(): kotlin.Int { 
         checkRequiredFields()
@@ -115,19 +118,6 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
                 }
                 msg.checkRequiredFields()
                 return msg
-            }
-        }
-    }
-
-    public class Presence private constructor (
-        private val message: com.google.protobuf.kotlin.ApiInternal,
-    ) { 
-        public val hasSourceContext: kotlin.Boolean get() = message.presenceMask[0]
-
-        public companion  object { 
-            @kotlinx.rpc.internal.utils.InternalRpcApi
-            internal fun create(message: com.google.protobuf.kotlin.ApiInternal): com.google.protobuf.kotlin.ApiInternal.Presence { 
-                return com.google.protobuf.kotlin.ApiInternal.Presence(message)
             }
         }
     }

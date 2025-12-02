@@ -45,6 +45,7 @@ class PresenceCheckTest {
             assertFalse(message.presence.hasNotinside)
             assertFalse(message.inner.presence.hasInnerSubmsg)
             assertFalse(message.inner.innerSubmsg.presence.hasFlag)
+            assertFalse(message.deep.presence.hasNum)
         }
         val message = NestedOuter {}
         check(message)
