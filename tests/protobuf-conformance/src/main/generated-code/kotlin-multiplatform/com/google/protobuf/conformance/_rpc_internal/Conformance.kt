@@ -51,6 +51,16 @@ class TestStatusInternal: com.google.protobuf.conformance.TestStatus, kotlinx.rp
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    fun copyInternal(body: com.google.protobuf.conformance.TestStatusInternal.() -> Unit): com.google.protobuf.conformance.TestStatusInternal { 
+        val copy = com.google.protobuf.conformance.TestStatusInternal()
+        copy.name = name
+        copy.failureMessage = failureMessage
+        copy.matchedName = matchedName
+        copy.apply(body)
+        return copy
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.TestStatus> { 
         override fun encode(value: com.google.protobuf.conformance.TestStatus): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
@@ -115,6 +125,14 @@ class FailureSetInternal: com.google.protobuf.conformance.FailureSet, kotlinx.rp
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    fun copyInternal(body: com.google.protobuf.conformance.FailureSetInternal.() -> Unit): com.google.protobuf.conformance.FailureSetInternal { 
+        val copy = com.google.protobuf.conformance.FailureSetInternal()
+        copy.test = test.map { it.copy() }
+        copy.apply(body)
+        return copy
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.FailureSet> { 
         override fun encode(value: com.google.protobuf.conformance.FailureSet): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
@@ -156,6 +174,11 @@ class ConformanceRequestInternal: com.google.protobuf.conformance.ConformanceReq
     override var jspbEncodingOptions: com.google.protobuf.conformance.JspbEncodingConfig by MsgFieldDelegate(PresenceIndices.jspbEncodingOptions) { com.google.protobuf.conformance.JspbEncodingConfigInternal() }
     override var printUnknownFields: Boolean by MsgFieldDelegate { false }
     override var payload: com.google.protobuf.conformance.ConformanceRequest.Payload? = null
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    val _presence: com.google.protobuf.conformance.ConformanceRequestPresence = object : com.google.protobuf.conformance.ConformanceRequestPresence { 
+        override val hasJspbEncodingOptions: kotlin.Boolean get() = presenceMask[0]
+    }
 
     override fun hashCode(): kotlin.Int { 
         checkRequiredFields()
@@ -217,6 +240,40 @@ class ConformanceRequestInternal: com.google.protobuf.conformance.ConformanceReq
             appendLine("${nextIndentString}printUnknownFields=${printUnknownFields},")
             appendLine("${nextIndentString}payload=${payload},")
             append("${indentString})")
+        }
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    fun copyInternal(body: com.google.protobuf.conformance.ConformanceRequestInternal.() -> Unit): com.google.protobuf.conformance.ConformanceRequestInternal { 
+        val copy = com.google.protobuf.conformance.ConformanceRequestInternal()
+        copy.requestedOutputFormat = requestedOutputFormat
+        copy.messageType = messageType
+        copy.testCategory = testCategory
+        if (presenceMask[0]) { 
+            copy.jspbEncodingOptions = jspbEncodingOptions.copy()
+        }
+
+        copy.printUnknownFields = printUnknownFields
+        copy.payload = payload?.oneOfCopy()
+        copy.apply(body)
+        return copy
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    fun com.google.protobuf.conformance.ConformanceRequest.Payload.oneOfCopy(): com.google.protobuf.conformance.ConformanceRequest.Payload { 
+        return when (this) { 
+            is com.google.protobuf.conformance.ConformanceRequest.Payload.ProtobufPayload -> { 
+                com.google.protobuf.conformance.ConformanceRequest.Payload.ProtobufPayload(this.value.copyOf())
+            }
+            is com.google.protobuf.conformance.ConformanceRequest.Payload.JsonPayload -> { 
+                this
+            }
+            is com.google.protobuf.conformance.ConformanceRequest.Payload.JspbPayload -> { 
+                this
+            }
+            is com.google.protobuf.conformance.ConformanceRequest.Payload.TextPayload -> { 
+                this
+            }
         }
     }
 
@@ -301,6 +358,47 @@ class ConformanceResponseInternal: com.google.protobuf.conformance.ConformanceRe
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    fun copyInternal(body: com.google.protobuf.conformance.ConformanceResponseInternal.() -> Unit): com.google.protobuf.conformance.ConformanceResponseInternal { 
+        val copy = com.google.protobuf.conformance.ConformanceResponseInternal()
+        copy.result = result?.oneOfCopy()
+        copy.apply(body)
+        return copy
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    fun com.google.protobuf.conformance.ConformanceResponse.Result.oneOfCopy(): com.google.protobuf.conformance.ConformanceResponse.Result { 
+        return when (this) { 
+            is com.google.protobuf.conformance.ConformanceResponse.Result.ParseError -> { 
+                this
+            }
+            is com.google.protobuf.conformance.ConformanceResponse.Result.SerializeError -> { 
+                this
+            }
+            is com.google.protobuf.conformance.ConformanceResponse.Result.TimeoutError -> { 
+                this
+            }
+            is com.google.protobuf.conformance.ConformanceResponse.Result.RuntimeError -> { 
+                this
+            }
+            is com.google.protobuf.conformance.ConformanceResponse.Result.ProtobufPayload -> { 
+                com.google.protobuf.conformance.ConformanceResponse.Result.ProtobufPayload(this.value.copyOf())
+            }
+            is com.google.protobuf.conformance.ConformanceResponse.Result.JsonPayload -> { 
+                this
+            }
+            is com.google.protobuf.conformance.ConformanceResponse.Result.Skipped -> { 
+                this
+            }
+            is com.google.protobuf.conformance.ConformanceResponse.Result.JspbPayload -> { 
+                this
+            }
+            is com.google.protobuf.conformance.ConformanceResponse.Result.TextPayload -> { 
+                this
+            }
+        }
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.ConformanceResponse> { 
         override fun encode(value: com.google.protobuf.conformance.ConformanceResponse): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
@@ -365,6 +463,14 @@ class JspbEncodingConfigInternal: com.google.protobuf.conformance.JspbEncodingCo
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    fun copyInternal(body: com.google.protobuf.conformance.JspbEncodingConfigInternal.() -> Unit): com.google.protobuf.conformance.JspbEncodingConfigInternal { 
+        val copy = com.google.protobuf.conformance.JspbEncodingConfigInternal()
+        copy.useJspbArrayAnyFormat = useJspbArrayAnyFormat
+        copy.apply(body)
+        return copy
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.conformance.JspbEncodingConfig> { 
         override fun encode(value: com.google.protobuf.conformance.JspbEncodingConfig): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
@@ -390,36 +496,6 @@ class JspbEncodingConfigInternal: com.google.protobuf.conformance.JspbEncodingCo
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     companion object
-}
-
-operator fun com.google.protobuf.conformance.TestStatus.Companion.invoke(body: com.google.protobuf.conformance.TestStatusInternal.() -> Unit): com.google.protobuf.conformance.TestStatus { 
-    val msg = com.google.protobuf.conformance.TestStatusInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
-}
-
-operator fun com.google.protobuf.conformance.FailureSet.Companion.invoke(body: com.google.protobuf.conformance.FailureSetInternal.() -> Unit): com.google.protobuf.conformance.FailureSet { 
-    val msg = com.google.protobuf.conformance.FailureSetInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
-}
-
-operator fun com.google.protobuf.conformance.ConformanceRequest.Companion.invoke(body: com.google.protobuf.conformance.ConformanceRequestInternal.() -> Unit): com.google.protobuf.conformance.ConformanceRequest { 
-    val msg = com.google.protobuf.conformance.ConformanceRequestInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
-}
-
-operator fun com.google.protobuf.conformance.ConformanceResponse.Companion.invoke(body: com.google.protobuf.conformance.ConformanceResponseInternal.() -> Unit): com.google.protobuf.conformance.ConformanceResponse { 
-    val msg = com.google.protobuf.conformance.ConformanceResponseInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
-}
-
-operator fun com.google.protobuf.conformance.JspbEncodingConfig.Companion.invoke(body: com.google.protobuf.conformance.JspbEncodingConfigInternal.() -> Unit): com.google.protobuf.conformance.JspbEncodingConfig { 
-    val msg = com.google.protobuf.conformance.JspbEncodingConfigInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
@@ -450,15 +526,12 @@ fun com.google.protobuf.conformance.TestStatusInternal.Companion.decodeWith(msg:
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.name = decoder.readString()
             }
-
             tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.failureMessage = decoder.readString()
             }
-
             tag.fieldNr == 3 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.matchedName = decoder.readString()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -520,7 +593,6 @@ fun com.google.protobuf.conformance.FailureSetInternal.Companion.decodeWith(msg:
                 decoder.readMessage(elem.asInternal(), com.google.protobuf.conformance.TestStatusInternal::decodeWith)
                 (msg.test as MutableList).add(elem)
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -582,15 +654,12 @@ fun com.google.protobuf.conformance.ConformanceRequestInternal.encodeWith(encode
             is com.google.protobuf.conformance.ConformanceRequest.Payload.ProtobufPayload -> { 
                 encoder.writeBytes(fieldNr = 1, value = value.value)
             }
-
             is com.google.protobuf.conformance.ConformanceRequest.Payload.JsonPayload -> { 
                 encoder.writeString(fieldNr = 2, value = value.value)
             }
-
             is com.google.protobuf.conformance.ConformanceRequest.Payload.JspbPayload -> { 
                 encoder.writeString(fieldNr = 7, value = value.value)
             }
-
             is com.google.protobuf.conformance.ConformanceRequest.Payload.TextPayload -> { 
                 encoder.writeString(fieldNr = 8, value = value.value)
             }
@@ -606,15 +675,12 @@ fun com.google.protobuf.conformance.ConformanceRequestInternal.Companion.decodeW
             tag.fieldNr == 3 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.requestedOutputFormat = com.google.protobuf.conformance.WireFormat.fromNumber(decoder.readEnum())
             }
-
             tag.fieldNr == 4 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.messageType = decoder.readString()
             }
-
             tag.fieldNr == 5 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.testCategory = com.google.protobuf.conformance.TestCategory.fromNumber(decoder.readEnum())
             }
-
             tag.fieldNr == 6 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 if (!msg.presenceMask[0]) { 
                     msg.jspbEncodingOptions = com.google.protobuf.conformance.JspbEncodingConfigInternal()
@@ -622,27 +688,21 @@ fun com.google.protobuf.conformance.ConformanceRequestInternal.Companion.decodeW
 
                 decoder.readMessage(msg.jspbEncodingOptions.asInternal(), com.google.protobuf.conformance.JspbEncodingConfigInternal::decodeWith)
             }
-
             tag.fieldNr == 9 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.printUnknownFields = decoder.readBool()
             }
-
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.payload = com.google.protobuf.conformance.ConformanceRequest.Payload.ProtobufPayload(decoder.readBytes())
             }
-
             tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.payload = com.google.protobuf.conformance.ConformanceRequest.Payload.JsonPayload(decoder.readString())
             }
-
             tag.fieldNr == 7 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.payload = com.google.protobuf.conformance.ConformanceRequest.Payload.JspbPayload(decoder.readString())
             }
-
             tag.fieldNr == 8 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.payload = com.google.protobuf.conformance.ConformanceRequest.Payload.TextPayload(decoder.readString())
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -682,15 +742,12 @@ private fun com.google.protobuf.conformance.ConformanceRequestInternal.computeSi
             is com.google.protobuf.conformance.ConformanceRequest.Payload.ProtobufPayload -> { 
                 __result += kotlinx.rpc.protobuf.internal.WireSize.bytes(value.value).let { kotlinx.rpc.protobuf.internal.WireSize.tag(1, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
             }
-
             is com.google.protobuf.conformance.ConformanceRequest.Payload.JsonPayload -> { 
                 __result += kotlinx.rpc.protobuf.internal.WireSize.string(value.value).let { kotlinx.rpc.protobuf.internal.WireSize.tag(2, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
             }
-
             is com.google.protobuf.conformance.ConformanceRequest.Payload.JspbPayload -> { 
                 __result += kotlinx.rpc.protobuf.internal.WireSize.string(value.value).let { kotlinx.rpc.protobuf.internal.WireSize.tag(7, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
             }
-
             is com.google.protobuf.conformance.ConformanceRequest.Payload.TextPayload -> { 
                 __result += kotlinx.rpc.protobuf.internal.WireSize.string(value.value).let { kotlinx.rpc.protobuf.internal.WireSize.tag(8, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
             }
@@ -717,35 +774,27 @@ fun com.google.protobuf.conformance.ConformanceResponseInternal.encodeWith(encod
             is com.google.protobuf.conformance.ConformanceResponse.Result.ParseError -> { 
                 encoder.writeString(fieldNr = 1, value = value.value)
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.SerializeError -> { 
                 encoder.writeString(fieldNr = 6, value = value.value)
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.TimeoutError -> { 
                 encoder.writeString(fieldNr = 9, value = value.value)
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.RuntimeError -> { 
                 encoder.writeString(fieldNr = 2, value = value.value)
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.ProtobufPayload -> { 
                 encoder.writeBytes(fieldNr = 3, value = value.value)
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.JsonPayload -> { 
                 encoder.writeString(fieldNr = 4, value = value.value)
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.Skipped -> { 
                 encoder.writeString(fieldNr = 5, value = value.value)
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.JspbPayload -> { 
                 encoder.writeString(fieldNr = 7, value = value.value)
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.TextPayload -> { 
                 encoder.writeString(fieldNr = 8, value = value.value)
             }
@@ -761,39 +810,30 @@ fun com.google.protobuf.conformance.ConformanceResponseInternal.Companion.decode
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.result = com.google.protobuf.conformance.ConformanceResponse.Result.ParseError(decoder.readString())
             }
-
             tag.fieldNr == 6 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.result = com.google.protobuf.conformance.ConformanceResponse.Result.SerializeError(decoder.readString())
             }
-
             tag.fieldNr == 9 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.result = com.google.protobuf.conformance.ConformanceResponse.Result.TimeoutError(decoder.readString())
             }
-
             tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.result = com.google.protobuf.conformance.ConformanceResponse.Result.RuntimeError(decoder.readString())
             }
-
             tag.fieldNr == 3 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.result = com.google.protobuf.conformance.ConformanceResponse.Result.ProtobufPayload(decoder.readBytes())
             }
-
             tag.fieldNr == 4 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.result = com.google.protobuf.conformance.ConformanceResponse.Result.JsonPayload(decoder.readString())
             }
-
             tag.fieldNr == 5 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.result = com.google.protobuf.conformance.ConformanceResponse.Result.Skipped(decoder.readString())
             }
-
             tag.fieldNr == 7 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.result = com.google.protobuf.conformance.ConformanceResponse.Result.JspbPayload(decoder.readString())
             }
-
             tag.fieldNr == 8 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.result = com.google.protobuf.conformance.ConformanceResponse.Result.TextPayload(decoder.readString())
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -813,35 +853,27 @@ private fun com.google.protobuf.conformance.ConformanceResponseInternal.computeS
             is com.google.protobuf.conformance.ConformanceResponse.Result.ParseError -> { 
                 __result += kotlinx.rpc.protobuf.internal.WireSize.string(value.value).let { kotlinx.rpc.protobuf.internal.WireSize.tag(1, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.SerializeError -> { 
                 __result += kotlinx.rpc.protobuf.internal.WireSize.string(value.value).let { kotlinx.rpc.protobuf.internal.WireSize.tag(6, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.TimeoutError -> { 
                 __result += kotlinx.rpc.protobuf.internal.WireSize.string(value.value).let { kotlinx.rpc.protobuf.internal.WireSize.tag(9, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.RuntimeError -> { 
                 __result += kotlinx.rpc.protobuf.internal.WireSize.string(value.value).let { kotlinx.rpc.protobuf.internal.WireSize.tag(2, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.ProtobufPayload -> { 
                 __result += kotlinx.rpc.protobuf.internal.WireSize.bytes(value.value).let { kotlinx.rpc.protobuf.internal.WireSize.tag(3, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.JsonPayload -> { 
                 __result += kotlinx.rpc.protobuf.internal.WireSize.string(value.value).let { kotlinx.rpc.protobuf.internal.WireSize.tag(4, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.Skipped -> { 
                 __result += kotlinx.rpc.protobuf.internal.WireSize.string(value.value).let { kotlinx.rpc.protobuf.internal.WireSize.tag(5, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.JspbPayload -> { 
                 __result += kotlinx.rpc.protobuf.internal.WireSize.string(value.value).let { kotlinx.rpc.protobuf.internal.WireSize.tag(7, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
             }
-
             is com.google.protobuf.conformance.ConformanceResponse.Result.TextPayload -> { 
                 __result += kotlinx.rpc.protobuf.internal.WireSize.string(value.value).let { kotlinx.rpc.protobuf.internal.WireSize.tag(8, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
             }
@@ -876,7 +908,6 @@ fun com.google.protobuf.conformance.JspbEncodingConfigInternal.Companion.decodeW
             tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.useJspbArrayAnyFormat = decoder.readBool()
             }
-
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -909,23 +940,18 @@ fun com.google.protobuf.conformance.WireFormat.Companion.fromNumber(number: Int)
         0 -> { 
             com.google.protobuf.conformance.WireFormat.UNSPECIFIED
         }
-
         1 -> { 
             com.google.protobuf.conformance.WireFormat.PROTOBUF
         }
-
         2 -> { 
             com.google.protobuf.conformance.WireFormat.JSON
         }
-
         3 -> { 
             com.google.protobuf.conformance.WireFormat.JSPB
         }
-
         4 -> { 
             com.google.protobuf.conformance.WireFormat.TEXT_FORMAT
         }
-
         else -> { 
             com.google.protobuf.conformance.WireFormat.UNRECOGNIZED(number)
         }
@@ -938,27 +964,21 @@ fun com.google.protobuf.conformance.TestCategory.Companion.fromNumber(number: In
         0 -> { 
             com.google.protobuf.conformance.TestCategory.UNSPECIFIED_TEST
         }
-
         1 -> { 
             com.google.protobuf.conformance.TestCategory.BINARY_TEST
         }
-
         2 -> { 
             com.google.protobuf.conformance.TestCategory.JSON_TEST
         }
-
         3 -> { 
             com.google.protobuf.conformance.TestCategory.JSON_IGNORE_UNKNOWN_PARSING_TEST
         }
-
         4 -> { 
             com.google.protobuf.conformance.TestCategory.JSPB_TEST
         }
-
         5 -> { 
             com.google.protobuf.conformance.TestCategory.TEXT_FORMAT_TEST
         }
-
         else -> { 
             com.google.protobuf.conformance.TestCategory.UNRECOGNIZED(number)
         }
