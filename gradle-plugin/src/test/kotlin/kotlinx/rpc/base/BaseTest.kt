@@ -16,35 +16,64 @@ import kotlin.io.path.copyTo
 import kotlin.io.path.copyToRecursively
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
-import kotlinx.rpc.KOTLIN_VERSION
 import kotlinx.rpc.BUILD_REPO
+import org.junit.jupiter.api.DynamicTest
+import java.util.stream.Stream
 import kotlin.io.path.absolute
 import kotlin.io.path.createDirectories
 import kotlin.io.path.deleteRecursively
 
+class VersionsEnv(
+    val gradle: String,
+    val kotlin: String,
+)
+
+private val GradleVersions = listOf(
+    VersionsEnv("9.2.1", "2.2.21"),
+    VersionsEnv("8.14.1", "2.2.0"),
+    VersionsEnv("8.8", "2.0.0"),
+)
+
+internal fun BaseTest.runWithAllGradleVersions(body: (VersionsEnv) -> Unit): Stream<DynamicTest> {
+    return GradleVersions.stream().map {
+        setupTest(it)
+
+        DynamicTest.dynamicTest("Gradle ${it.gradle}, Kotlin ${it.kotlin}") {
+            body(it)
+        }
+    }
+}
+
 @OptIn(ExperimentalPathApi::class)
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 abstract class BaseTest {
+    private lateinit var testClassName: String
+    private lateinit var testMethodName: String
+    private lateinit var baseDir: Path
     private lateinit var projectDir: Path
 
     @BeforeEach
     protected fun setup(testInfo: TestInfo) {
         TEST_KIT_PATH.createDirectories()
 
-        val testClassName = testInfo.testClass.get().simpleName
-        val testMethodName = testInfo.testMethod.get().name
+        testClassName = testInfo.testClass.get().simpleName
+        testMethodName = testInfo.testMethod.get().name
             .replace(nameRegex, "_")
             .lowercase()
 
-        val baseDir = TEST_PROJECTS_PATH
+        baseDir = TEST_PROJECTS_PATH
             .resolve(testClassName)
             .resolve(testMethodName)
 
         baseDir.deleteRecursively()
         baseDir.createDirectories()
+    }
 
-        projectDir = baseDir.resolve(PROJECT_DIR)
-        val buildCacheDir = baseDir.resolve(BUILD_CACHE_DIR)
+    fun setupTest(versions: VersionsEnv) {
+        val versioned = baseDir.resolve(versions.gradle.replace(".", "_"))
+
+        projectDir = versioned.resolve(PROJECT_DIR)
+        val buildCacheDir = versioned.resolve(BUILD_CACHE_DIR)
 
         projectDir.createDirectories()
         buildCacheDir.createDirectories()
@@ -72,7 +101,8 @@ abstract class BaseTest {
         testTemplateDirectory.copyToRecursively(projectDir, followLinks = false, overwrite = true)
 
         val buildScriptFile = projectDir.resolve("build.gradle.kts")
-        buildScriptFile.replace("<kotlin-version>", KOTLIN_VERSION)
+        buildScriptFile
+            .replace("<kotlin-version>", versions.kotlin)
 
         println("""
             Setup project '$projectName'
@@ -83,12 +113,14 @@ abstract class BaseTest {
 
     private fun runGradleInternal(
         task: String,
+        versions: VersionsEnv,
         vararg args: String,
         body: GradleRunner.() -> BuildResult,
     ): BuildResult {
         val gradleRunner = GradleRunner.create()
             .withProjectDir(projectDir.absolute().toFile())
             .withTestKitDir(TEST_KIT_PATH.absolute().toFile())
+            .withGradleVersion(versions.gradle)
             .withPluginClasspath()
             .withArguments(
                 listOfNotNull(
@@ -108,10 +140,6 @@ abstract class BaseTest {
         return gradleRunner.body()
     }
 
-    protected fun runBaseTest(body: TestEnv.() -> Unit) {
-        runTest(TestEnv(), body)
-    }
-
     protected fun <T : TestEnv> runTest(testEnv: T, body: T.() -> Unit) {
         try {
             testEnv.body()
@@ -127,19 +155,27 @@ abstract class BaseTest {
         }
     }
 
-    open inner class TestEnv {
+    open inner class TestEnv(
+        val versions: VersionsEnv,
+    ) {
         val projectDir: Path get() = this@BaseTest.projectDir
         var latestBuild: BuildResult? = null
             private set
 
-        fun runGradle(task: String, vararg args: String): BuildResult {
-            return runGradleInternal(task, *args) {
+        fun runGradle(
+            task: String,
+            vararg args: String,
+        ): BuildResult {
+            return runGradleInternal(task, versions, *args) {
                 build().also { latestBuild = it }
             }
         }
 
-        fun runGradleToFail(task: String, vararg args: String): BuildResult {
-            return runGradleInternal(task, *args) {
+        fun runGradleToFail(
+            task: String,
+            vararg args: String,
+        ): BuildResult {
+            return runGradleInternal(task, versions, *args) {
                 buildAndFail().also { latestBuild = it }
             }
         }
@@ -151,7 +187,7 @@ abstract class BaseTest {
         }
 
         fun BuildResult.assertNoTask(name: String) {
-            assert(output.contains("Task '$name' not found")) {
+            assert(tasks.none { it.path.endsWith(":$name") }) {
                 "Task '$name' should not be present in the project"
             }
         }
