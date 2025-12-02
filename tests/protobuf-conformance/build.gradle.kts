@@ -4,7 +4,6 @@
 
 @file:OptIn(InternalRpcApi::class)
 
-import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
@@ -36,21 +35,21 @@ dependencies {
 setupProtobufConformanceResources()
 configureLocalProtocGenDevelopmentDependency("Main")
 
-rpc {
-    protoc.buf.generate.comments {
-        includeFileLevelComments = false
-    }
-}
-
-val generatedCodeDir = project.layout.projectDirectory
+fun generatedCodeDir(sourceSetName: String): File = project.layout.projectDirectory
     .dir("src")
-    .dir("main")
+    .dir(sourceSetName)
     .dir("generated-code")
     .asFile
 
-tasks.withType<BufGenerateTask>().configureEach {
-    if (name.endsWith("Main")) {
-        outputDirectory = generatedCodeDir
+rpc {
+    protoc {
+        buf.generate.comments {
+            includeFileLevelComments = false
+        }
+
+        buf.generate.allTasks().nonTestTasks().configureEach {
+            outputDirectory = generatedCodeDir(properties.sourceSetName)
+        }
     }
 }
 
