@@ -11,11 +11,7 @@ plugins {
 }
 
 rpc {
-    protoc()
-}
-
-protoSourceSets {
-    main {
+    protoc {
         plugins {
             create("myPlugin") {
                 local {
@@ -25,9 +21,9 @@ protoSourceSets {
                 options.put("hello", "world")
                 options.put("foo", "bar")
 
-                strategy = ProtocPlugin.Strategy.All
-                includeImports = true
-                includeWkt = false
+                strategy.set(ProtocPlugin.Strategy.All)
+                includeImports.set(true)
+                includeWkt.set(false)
                 types = listOf("my.type.Yay")
                 excludeTypes = listOf("my.type.Nope")
             }
@@ -35,7 +31,18 @@ protoSourceSets {
                 remote {
                     locator = "my.remote.plugin"
                 }
+                options.put("hello", "world")
             }
         }
+    }
+}
+
+kotlin.sourceSets {
+    main.proto {
+        plugin { getByName("myPlugin") }
+        plugin({ options.put("only", "in main") }) { getByName("myRemotePlugin") }
+    }
+    test.proto {
+        plugin({ options.put("only", "in test") }) { getByName("myRemotePlugin") }
     }
 }

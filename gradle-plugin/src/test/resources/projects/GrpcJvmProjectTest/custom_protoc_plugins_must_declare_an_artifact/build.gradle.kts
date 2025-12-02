@@ -10,12 +10,12 @@ plugins {
     id("org.jetbrains.kotlinx.rpc.plugin")
 }
 
-rpc {
-    protoc()
+kotlin.sourceSets.main.proto {
+    plugin { getByName("myPlugin") }
 }
 
-protoSourceSets {
-    main {
+rpc {
+    protoc {
         plugins {
             create("myPlugin") {}
         }

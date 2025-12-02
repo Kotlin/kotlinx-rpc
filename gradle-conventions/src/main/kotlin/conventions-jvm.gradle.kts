@@ -20,7 +20,10 @@ java {
     withSourcesJar()
 }
 
-configureJavaCompatibility(8)
+if (project.name != "gradle-plugin") {
+    configureJavaCompatibility(8)
+}
+
 configureKotlinCompatibility("2.0.0")
 
 kotlin {

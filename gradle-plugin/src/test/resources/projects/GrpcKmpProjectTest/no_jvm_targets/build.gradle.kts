@@ -13,9 +13,3 @@ kotlin {
     js()
     macosArm64()
 }
-
-// should nonetheless be available
-protoSourceSets {
-    commonMain {}
-    commonTest {}
-}

@@ -4,31 +4,32 @@
 
 package kotlinx.rpc.protoc
 
-import kotlinx.rpc.buf.BufCommentsExtension
-import kotlinx.rpc.buf.BufGenerateExtension
 import kotlinx.rpc.buf.tasks.BufGenerateTask
-import kotlinx.rpc.protoc.ProtocPlugin.Companion.GRPC_KOTLIN_MULTIPLATFORM
-import kotlinx.rpc.protoc.ProtocPlugin.Companion.KOTLIN_MULTIPLATFORM
 import kotlinx.rpc.rpcExtension
-import kotlinx.rpc.rpcExtensionOrNull
 import kotlinx.rpc.util.findOrCreate
-import kotlinx.rpc.util.withKotlinJvmExtension
-import kotlinx.rpc.util.withKotlinKmpExtension
-import org.gradle.api.*
+import kotlinx.rpc.util.withLazyKotlinJvmExtension
+import kotlinx.rpc.util.withLazyKotlinKmpExtension
+import org.gradle.api.Action
+import org.gradle.api.GradleException
+import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.NamedDomainObjectFactory
+import org.gradle.api.NamedDomainObjectProvider
+import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.add
 import org.gradle.kotlin.dsl.listProperty
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.property
+import org.gradle.kotlin.dsl.setProperty
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
-import org.jetbrains.kotlin.gradle.targets.js.npm.includedRange
+import java.io.File
+import java.util.*
+import java.util.function.Consumer
 import javax.inject.Inject
 
 @Suppress("UNCHECKED_CAST")
@@ -42,75 +43,77 @@ internal class ProtoSourceSetFactory(private val project: Project) : NamedDomain
     }
 }
 
-internal open class DefaultProtoSourceSet @Inject constructor(
+internal open class DefaultProtoSourceSet(
     internal val project: Project,
-    override val name: String,
-) : ProtoSourceSet {
-    override val plugins: NamedDomainObjectContainer<ProtocPlugin> =
-        project.objects.domainObjectContainer(ProtocPlugin::class.java) { name ->
-            ProtocPlugin(name, project)
+    private val sourceDirectorySet: SourceDirectorySet,
+) : ProtoSourceSet, SourceDirectorySet by sourceDirectorySet {
+
+    @Inject
+    constructor(project: Project, protoName: String) : this(
+        project = project,
+        sourceDirectorySet = project.objects.sourceDirectorySet(protoName, "Proto sources for $protoName").apply {
+            srcDirs("src/${protoName}/proto")
+        },
+    )
+
+    private val explicitApiModeEnabled = project.provider {
+        project.the<KotlinBaseExtension>().explicitApi != ExplicitApiMode.Disabled
+    }
+
+    val plugins = project.objects.setProperty<ProtocPlugin>()
+
+    override fun plugin(plugin: ProtocPlugin, configure: Action<ProtocPlugin>?) {
+        plugins.add(plugin.copy().also { initPlugin(it, configure) })
+    }
+
+    override fun plugin(provider: NamedDomainObjectProvider<ProtocPlugin>, configure: Action<ProtocPlugin>?) {
+        plugins.add(provider.map { plugin -> plugin.copy().also { initPlugin(it, configure) } })
+    }
+
+    override fun plugin(provider: Provider<ProtocPlugin>, configure: Action<ProtocPlugin>?) {
+        plugins.add(provider.map { plugin -> plugin.copy().also { initPlugin(it, configure) } })
+    }
+
+    override fun plugin(
+        configure: Action<ProtocPlugin>?,
+        select: NamedDomainObjectContainer<ProtocPlugin>.() -> ProtocPlugin,
+    ) {
+        plugins.add(project.rpcExtension().protoc.map { protoc ->
+            protoc.plugins.select().copy().also { initPlugin(it, configure) }
+        })
+    }
+
+    private fun initPlugin(copy: ProtocPlugin, configure: Action<ProtocPlugin>?) {
+        if (this@DefaultProtoSourceSet.name.lowercase().endsWith("main")) {
+            copy.options.put("explicitApiModeEnabled", explicitApiModeEnabled)
         }
 
-    override fun plugins(action: Action<NamedDomainObjectContainer<ProtocPlugin>>) {
-        action.execute(plugins)
+        configure?.execute(copy)
     }
 
     init {
-        val explicitApiModeEnabled = project.provider {
-            project.the<KotlinBaseExtension>().explicitApi != ExplicitApiMode.Disabled
+        project.rpcExtension().whenProtocApplied {
+            plugin(plugins.kotlinMultiplatform)
+            plugin(plugins.grpcKotlinMultiplatform)
         }
-
-        plugins.create(KOTLIN_MULTIPLATFORM) {
-            local {
-                javaJar(project.kotlinMultiplatformProtocPluginJarPath)
-            }
-
-            defaultOptions(explicitApiModeEnabled)
-        }
-
-        plugins.create(GRPC_KOTLIN_MULTIPLATFORM) {
-            local {
-                javaJar(project.grpcKotlinMultiplatformProtocPluginJarPath)
-            }
-
-            defaultOptions(explicitApiModeEnabled)
-        }
-    }
-
-    private fun ProtocPlugin.defaultOptions(explicitApiModeEnabled: Provider<Boolean>) {
-        options.put("debugOutput", "protoc-gen-$name.log")
-
-        if (this@DefaultProtoSourceSet.name.lowercase().endsWith("main")) {
-            options.put("explicitApiModeEnabled", explicitApiModeEnabled)
-        }
-
-        val comments: Provider<BufGenerateExtension> = project.provider {
-            project.rpcExtensionOrNull()?.run { protoc.buf.generate }
-                ?: project.objects.newInstance<BufGenerateExtension>()
-        }
-
-        options.put("generateComments", comments.flatMap { it.comments.copyComments })
-        options.put("generateFileLevelComments", comments.flatMap { it.comments.includeFileLevelComments })
-        options.put("indentSize", comments.flatMap { it.indentSize })
     }
 
     val languageSourceSets: ListProperty<Any> = project.objects.listProperty<Any>()
     val generateTask: Property<BufGenerateTask> = project.objects.property<BufGenerateTask>()
 
-    override val proto: SourceDirectorySet = project.objects.sourceDirectorySet(
-        PROTO_SOURCE_DIRECTORY_NAME,
-        "Proto sources",
-    ).apply {
-        srcDirs("src/${this@DefaultProtoSourceSet.name}/proto")
+    // Java default methods
+
+    override fun forEach(action: Consumer<in File>?) {
+        sourceDirectorySet.forEach(action)
     }
 
-    override fun proto(action: Action<SourceDirectorySet>) {
-        action.execute(proto)
+    override fun spliterator(): Spliterator<File?> {
+        return sourceDirectorySet.spliterator()
     }
 }
 
 internal fun Project.createProtoExtensions() {
-    fun findOrCreateAndConfigure(languageSourceSetName: String, languageSourceSet: Any?) {
+    fun findOrCreateAndConfigure(languageSourceSetName: String, languageSourceSet: Any?): ProtoSourceSet {
         val container = project.findOrCreate(PROTO_SOURCE_SETS) {
             val container = objects.domainObjectContainer(
                 ProtoSourceSet::class.java,
@@ -125,35 +128,29 @@ internal fun Project.createProtoExtensions() {
         val protoSourceSet = container.maybeCreate(languageSourceSetName) as DefaultProtoSourceSet
 
         languageSourceSet?.let { protoSourceSet.languageSourceSets.add(it) }
+
+        return protoSourceSet
     }
 
-    project.withKotlinJvmExtension {
-        findOrCreateAndConfigure("main", null)
-        findOrCreateAndConfigure("test", null)
-
-        sourceSets.configureEach {
-            if (name == SourceSet.MAIN_SOURCE_SET_NAME || name == SourceSet.TEST_SOURCE_SET_NAME) {
-                findOrCreateAndConfigure(name, this)
-            }
+    project.withLazyKotlinJvmExtension {
+        sourceSets.all {
+            findOrCreateAndConfigure(name, this)
         }
 
         project.extensions.configure<SourceSetContainer>("sourceSets") {
-            configureEach {
-                if (name == SourceSet.MAIN_SOURCE_SET_NAME || name == SourceSet.TEST_SOURCE_SET_NAME) {
-                    findOrCreateAndConfigure(name, this)
+            all {
+                val protoSourceSet = findOrCreateAndConfigure(name, this)
+
+                findOrCreate(PROTO_SOURCE_SET_EXTENSION_NAME) {
+                    extensions.add(PROTO_SOURCE_SET_EXTENSION_NAME, protoSourceSet)
                 }
             }
         }
     }
 
-    project.withKotlinKmpExtension {
-        findOrCreateAndConfigure("commonMain", null)
-        findOrCreateAndConfigure("commonTest", null)
-
-        sourceSets.configureEach {
-            if (name == "commonMain" || name == "commonTest") {
-                findOrCreateAndConfigure(name, this)
-            }
+    project.withLazyKotlinKmpExtension {
+        sourceSets.all {
+            findOrCreateAndConfigure(name, this)
         }
     }
 }

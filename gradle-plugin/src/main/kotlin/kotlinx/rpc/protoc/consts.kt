@@ -17,6 +17,11 @@ public const val PROTO_GROUP: String = "proto"
 public const val PROTO_SOURCE_SETS: String = "protoSourceSets"
 
 /**
+ * Name of the extension that is created for [org.gradle.api.tasks.SourceSet] instances.
+ */
+public const val PROTO_SOURCE_SET_EXTENSION_NAME: String = "proto"
+
+/**
  * Name of the default source directory set for proto files in [PROTO_SOURCE_SETS].
  */
 public const val PROTO_SOURCE_DIRECTORY_NAME: String = "proto"

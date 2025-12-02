@@ -4,15 +4,17 @@
 
 package kotlinx.rpc.buf
 
+import kotlinx.rpc.buf.tasks.BufAllTasks
+import kotlinx.rpc.buf.tasks.BufAllTasksImpl
 import kotlinx.rpc.buf.tasks.BufExecTask
+import kotlinx.rpc.buf.tasks.BufGenerateTask
+import kotlinx.rpc.buf.tasks.BufTasks
+import kotlinx.rpc.buf.tasks.BufTasksImpl
 import kotlinx.rpc.protoc.ProtocPlugin
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.property
 import java.io.File
 import javax.inject.Inject
@@ -24,7 +26,7 @@ import kotlin.time.Duration
  *
  * @see <a href="https://buf.build/docs/reference/cli/buf/">buf commands</a>
  */
-public open class BufExtension @Inject constructor(objects: ObjectFactory) {
+public open class BufExtension @Inject internal constructor(objects: ObjectFactory) {
     /**
      * `--config` argument value.
      *
@@ -101,7 +103,13 @@ public open class BufExtension @Inject constructor(objects: ObjectFactory) {
 /**
  * Allows registering custom Buf tasks that can operate on the generated workspace.
  */
-public open class BufTasksExtension @Inject constructor(internal val project: Project) {
+public open class BufTasksExtension @Inject internal constructor(internal val project: Project) {
+    /**
+     * Returns a collection of all `buf` tasks registered in the project.
+     */
+    public fun all(): BufAllTasks {
+        return BufAllTasksImpl(project, project.tasks.withType(BufExecTask::class.java))
+    }
 
     /**
      * Registers a custom Buf task that operates on the generated workspace.
@@ -109,26 +117,18 @@ public open class BufTasksExtension @Inject constructor(internal val project: Pr
      * Name conventions:
      * `lint` input for [name] will result in tasks
      * named 'bufLintMain' and 'bufLintTest' for Kotlin/JVM projects
-     * and 'bufLintCommonMain' and 'bufLintCommonTest' for Kotlin/Multiplatform projects.
-     *
-     * Note the by default 'test' task doesn't depend on 'main' task.
+     * and 'bufLintCommonMain', 'bufLintCommonTest', 'bufLintNativeMain', etc. for Kotlin/Multiplatform projects.
      */
     public fun <T : BufExecTask> registerWorkspaceTask(
         kClass: KClass<T>,
         name: String,
-        configure: Action<T>,
-    ): TaskProvider<T> {
-        val mainProperty = project.objects.property(kClass)
-        val testProperty = project.objects.property(kClass)
-
-        val provider = TaskProperty(mainProperty, testProperty)
-
+        configure: Action<T> = Action {},
+    ): BufTasks<T> {
         @Suppress("UNCHECKED_CAST")
-        customTasks.add(Definition(name, kClass, configure, provider as TaskProperty<BufExecTask>))
+        customTasks.add(Definition(name, kClass, configure))
 
-        return provider
+        return all().matchingType(kClass)
     }
-
 
     /**
      * Registers a custom Buf task that operates on the generated workspace.
@@ -136,45 +136,22 @@ public open class BufTasksExtension @Inject constructor(internal val project: Pr
      * Name conventions:
      * `lint` input for [name] will result in tasks
      * named 'bufLintMain' and 'bufLintTest' for Kotlin/JVM projects
-     * and 'bufLintCommonMain' and 'bufLintCommonTest' for Kotlin/Multiplatform projects.
-     *
-     * Note the by default 'test' task doesn't depend on 'main' task.
+     * and 'bufLintCommonMain', 'bufLintCommonTest', 'bufLintNativeMain', etc. for Kotlin/Multiplatform projects.
      */
     public inline fun <reified T : BufExecTask> registerWorkspaceTask(
         name: String,
-        configure: Action<T>,
-    ): TaskProvider<T> {
+        configure: Action<T> = Action {},
+    ): BufTasks<T> {
         return registerWorkspaceTask(T::class, name, configure)
     }
 
-    internal val customTasks: ListProperty<Definition<out BufExecTask>> = project.objects.listProperty()
+    internal val customTasks = project.objects.domainObjectContainer(Definition::class.java)
 
     internal class Definition<T : BufExecTask>(
         val name: String,
         val kClass: KClass<T>,
         val configure: Action<T>,
-        val property: TaskProperty<BufExecTask>,
     )
-
-    /**
-     * Container for the main and test Buf tasks created by [BufTasksExtension.registerWorkspaceTask].
-     */
-    public sealed interface TaskProvider<T : BufExecTask> {
-        /**
-         * Task created via [BufTasksExtension.registerWorkspaceTask] and associated with the main source set.
-         */
-        public val mainTask: Provider<T>
-
-        /**
-         * Task created via [BufTasksExtension.registerWorkspaceTask] and associated with the test source set.
-         */
-        public val testTask: Provider<T>
-    }
-
-    internal class TaskProperty<T : BufExecTask>(
-        override val mainTask: Property<T>,
-        override val testTask: Property<T>,
-    ) : TaskProvider<T>
 }
 
 /**
@@ -183,7 +160,14 @@ public open class BufTasksExtension @Inject constructor(internal val project: Pr
  * @see <a href="https://buf.build/docs/reference/cli/buf/generate/">"buf generate" command</a>
  * @see [BUF_GEN_YAML]
  */
-public open class BufGenerateExtension @Inject constructor(internal val project: Project) {
+public open class BufGenerateExtension @Inject internal constructor(internal val project: Project) {
+    /**
+     * Returns a collection of all `buf generate` tasks registered in the project.
+     */
+    public fun allTasks(): BufTasks<BufGenerateTask> {
+        return BufTasksImpl(project, project.tasks.withType(BufGenerateTask::class.java), BufGenerateTask::class)
+    }
+
     /**
      * `--include-imports` option.
      *
@@ -256,7 +240,7 @@ public open class BufGenerateExtension @Inject constructor(internal val project:
 /**
  * Extension for configuring comments in the generated code.
  */
-public open class BufCommentsExtension @Inject constructor(internal val project: Project) {
+public open class BufCommentsExtension @Inject internal constructor(internal val project: Project) {
     /**
      * Whether to copy comments from the original source files.
      */

@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message MacosMain {
+  string content = 1;
+}

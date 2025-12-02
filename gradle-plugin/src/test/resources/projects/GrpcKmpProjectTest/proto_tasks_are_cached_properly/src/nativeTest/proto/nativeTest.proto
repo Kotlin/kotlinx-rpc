@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message NativeTest {
+  string content = 1;
+}
