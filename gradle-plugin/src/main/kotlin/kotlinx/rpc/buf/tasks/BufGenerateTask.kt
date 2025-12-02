@@ -18,13 +18,14 @@ import java.io.File
 import kotlinx.rpc.buf.BufGenerateExtension
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFiles
+import javax.inject.Inject
 
 /**
  * Buf `generate` command.
  *
  * @see <a href="https://buf.build/docs/reference/cli/buf/generate/">buf generate</a>
  */
-public abstract class BufGenerateTask : BufExecTask() {
+public abstract class BufGenerateTask @Inject internal constructor(properties: Properties) : BufExecTask(properties) {
     // unsued, but required for Gradle to properly recognise inputs
     @get:InputDirectory
     internal abstract val protoFilesDir: Property<File>
@@ -117,21 +118,26 @@ public abstract class BufGenerateTask : BufExecTask() {
 }
 
 internal fun Project.registerBufGenerateTask(
-    name: String,
+    sourceSetName: String,
     workingDir: File,
     outputDirectory: File,
     protoFilesDir: File,
     importFilesDir: File,
     configure: BufGenerateTask.() -> Unit = {},
 ): TaskProvider<BufGenerateTask> {
-    val capitalName = name.replaceFirstChar { it.uppercase() }
+    val capitalName = sourceSetName.replaceFirstChar { it.uppercase() }
     val bufGenerateTaskName = "${BufGenerateTask.NAME_PREFIX}$capitalName"
 
-    return registerBufExecTask<BufGenerateTask>(bufGenerateTaskName, provider { workingDir }) {
+    val properties = BufExecTask.Properties(
+        isTest = sourceSetName.lowercase().endsWith("test"),
+        sourceSetName = sourceSetName,
+    )
+
+    return registerBufExecTask<BufGenerateTask>(bufGenerateTaskName, provider { workingDir }, properties) {
         group = PROTO_GROUP
         description = "Generates code from .proto files using 'buf generate'"
 
-        val generate = provider { rpcExtension().protoc.buf.generate }
+        val generate = provider { rpcExtension().protoc.get().buf.generate }
 
         includeImports.set(generate.flatMap { it.includeImports })
         includeWkt.set(generate.flatMap { it.includeWkt })

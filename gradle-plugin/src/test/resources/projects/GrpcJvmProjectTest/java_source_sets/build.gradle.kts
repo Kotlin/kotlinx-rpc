@@ -3,25 +3,23 @@
  */
 
 import org.gradle.kotlin.dsl.version
+import kotlinx.rpc.protoc.proto
 
 plugins {
     kotlin("jvm") version "<kotlin-version>"
     id("org.jetbrains.kotlinx.rpc.plugin")
 }
 
-protoSourceSets {
+sourceSets {
     main {
         proto {
-            exclude("exclude/**")
-            exclude("exclude.proto")
+            exclude("no.proto")
         }
     }
 
     test {
         proto {
-            include("include/**")
-            include("include.proto")
-            include("some/package/hello/world/file.proto")
+            exclude("no2.proto")
         }
     }
 }

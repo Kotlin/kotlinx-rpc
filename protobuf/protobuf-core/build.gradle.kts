@@ -4,15 +4,16 @@
 
 @file:OptIn(InternalRpcApi::class)
 
-import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
+import kotlinx.rpc.protoc.proto
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import util.configureCLibCInterop
 
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.kotlinx.rpc)
+//    id("org.barfuin.gradle.taskinfo") version "2.2.0"
 }
 
 kotlin {
@@ -30,6 +31,10 @@ kotlin {
                 api(projects.grpc.grpcCodec)
 
                 api(libs.kotlinx.io.core)
+            }
+
+            proto {
+                exclude("exclude/**")
             }
         }
 
@@ -64,38 +69,30 @@ kotlin {
     }
 }
 
-protoSourceSets {
-    commonTest {
-        proto {
-            exclude("exclude/**")
-        }
-    }
-}
+fun generatedCodeDir(sourceSetName: String): File = layout.projectDirectory
+    .dir("src")
+    .dir(sourceSetName)
+    .dir("generated-code")
+    .asFile
 
 rpc {
-    protoc.buf.generate.comments {
-        includeFileLevelComments = false
+    protoc {
+        buf.generate.comments {
+            includeFileLevelComments = false
+        }
+
+        buf.generate.allTasks().matchingKotlinSourceSet(kotlin.sourceSets.commonMain).configureEach {
+            includeWkt = true
+            outputDirectory = generatedCodeDir(properties.sourceSetName)
+        }
     }
 }
 
 configureLocalProtocGenDevelopmentDependency("Main", "Test")
 
-val generatedCodeDir = layout.projectDirectory
-    .dir("src")
-    .dir("commonMain")
-    .dir("generated-code")
-    .asFile
-
-tasks.withType<BufGenerateTask>().configureEach {
-    if (name.contains("Main")) {
-        includeWkt = true
-        outputDirectory = generatedCodeDir
-    }
-}
-
 // TODO: What is the correct way to declare this dependency? (KRPC-223)
-//  (without it fails when executing "publishAllPublicationsToBuildRepository")"
-val bufGenerateCommonMain = tasks.named("bufGenerateCommonMain")
+//  (without it fails when executing "publishAllPublicationsToBuildRepository")
+val bufGenerateCommonMain: TaskProvider<Task> = tasks.named("bufGenerateCommonMain")
 
 tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
     // Only for sources jars
