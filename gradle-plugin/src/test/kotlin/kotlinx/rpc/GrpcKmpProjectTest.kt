@@ -14,7 +14,7 @@ import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class GrpcKmpProjectTest : GrpcBaseTest() {
-    override val isKmp: Boolean = true
+    override val type: Type = Type.Kmp
 
     @TestFactory
     fun `Minimal gRPC Configuration`() = runGrpcTest {
@@ -33,15 +33,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `No gRPC`() = runGrpcTest {
-        runNonExistentTask(bufGenerateCommonMain)
-        runNonExistentTask(bufGenerateCommonTest)
-        runNonExistentTask(processCommonMainProtoFiles)
-        runNonExistentTask(processCommonTestProtoFiles)
-        runNonExistentTask(processCommonTestProtoFilesImports)
-        runNonExistentTask(generateBufYamlCommonMain)
-        runNonExistentTask(generateBufYamlCommonTest)
-        runNonExistentTask(generateBufGenYamlCommonMain)
-        runNonExistentTask(generateBufGenYamlCommonTest)
+        SSetsKmp.entries.forEach {
+            runNonExistentTasksForSourceSet(it)
+        }
     }
 
     @TestFactory
@@ -127,171 +121,164 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `KMP Hierarchy`() = runGrpcTest {
-        runKmpAndCheckFiles(
-            SSets.commonMain,
+        runAndCheckFiles(
+            SSetsKmp.commonMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.commonTest,
-            SSets.commonMain,
+        runAndCheckFiles(
+            SSetsKmp.commonTest,
+            SSetsKmp.commonMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.nativeMain,
-            SSets.commonMain,
+        runAndCheckFiles(
+            SSetsKmp.nativeMain,
+            SSetsKmp.commonMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.nativeTest,
-            SSets.commonMain, SSets.nativeMain,
-            SSets.commonTest,
+        runAndCheckFiles(
+            SSetsKmp.nativeTest,
+            SSetsKmp.commonMain, SSetsKmp.nativeMain,
+            SSetsKmp.commonTest,
         )
 
-        runKmpAndCheckFiles(
-            SSets.jvmMain,
-            SSets.commonMain,
+        runAndCheckFiles(
+            SSetsKmp.jvmMain,
+            SSetsKmp.commonMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.jvmTest,
-            SSets.commonMain, SSets.jvmMain,
-            SSets.commonTest,
+        runAndCheckFiles(
+            SSetsKmp.jvmTest,
+            SSetsKmp.commonMain, SSetsKmp.jvmMain,
+            SSetsKmp.commonTest,
         )
 
-        runKmpAndCheckFiles(
-            SSets.jsMain,
-            SSets.commonMain, SSets.webMain,
+        runAndCheckFiles(
+            SSetsKmp.jsMain,
+            SSetsKmp.commonMain, SSetsKmp.webMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.jsTest,
-            SSets.commonMain, SSets.webMain, SSets.jsMain,
-            SSets.commonTest, SSets.webTest
+        runAndCheckFiles(
+            SSetsKmp.jsTest,
+            SSetsKmp.commonMain, SSetsKmp.webMain, SSetsKmp.jsMain,
+            SSetsKmp.commonTest, SSetsKmp.webTest
         )
 
-        runKmpAndCheckFiles(
-            SSets.appleMain,
-            SSets.commonMain, SSets.nativeMain,
+        runAndCheckFiles(
+            SSetsKmp.appleMain,
+            SSetsKmp.commonMain, SSetsKmp.nativeMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.appleTest,
-            SSets.commonMain, SSets.nativeMain, SSets.appleMain,
-            SSets.commonTest, SSets.nativeTest
+        runAndCheckFiles(
+            SSetsKmp.appleTest,
+            SSetsKmp.commonMain, SSetsKmp.nativeMain, SSetsKmp.appleMain,
+            SSetsKmp.commonTest, SSetsKmp.nativeTest
         )
 
-        runKmpAndCheckFiles(
-            SSets.macosMain,
-            SSets.commonMain, SSets.nativeMain, SSets.appleMain,
+        runAndCheckFiles(
+            SSetsKmp.macosMain,
+            SSetsKmp.commonMain, SSetsKmp.nativeMain, SSetsKmp.appleMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.macosTest,
-            SSets.commonMain, SSets.nativeMain, SSets.appleMain, SSets.macosMain,
-            SSets.commonTest, SSets.nativeTest, SSets.appleTest
+        runAndCheckFiles(
+            SSetsKmp.macosTest,
+            SSetsKmp.commonMain, SSetsKmp.nativeMain, SSetsKmp.appleMain, SSetsKmp.macosMain,
+            SSetsKmp.commonTest, SSetsKmp.nativeTest, SSetsKmp.appleTest
         )
 
-        runKmpAndCheckFiles(
-            SSets.macosArm64Main,
-            SSets.commonMain, SSets.nativeMain, SSets.appleMain, SSets.macosMain,
+        runAndCheckFiles(
+            SSetsKmp.macosArm64Main,
+            SSetsKmp.commonMain, SSetsKmp.nativeMain, SSetsKmp.appleMain, SSetsKmp.macosMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.macosArm64Test,
-            SSets.commonMain, SSets.nativeMain, SSets.appleMain, SSets.macosMain, SSets.macosArm64Main,
-            SSets.commonTest, SSets.nativeTest, SSets.appleTest, SSets.macosTest,
-            clean = false,
+        runAndCheckFiles(
+            SSetsKmp.macosArm64Test,
+            SSetsKmp.commonMain, SSetsKmp.nativeMain, SSetsKmp.appleMain, SSetsKmp.macosMain, SSetsKmp.macosArm64Main,
+            SSetsKmp.commonTest, SSetsKmp.nativeTest, SSetsKmp.appleTest, SSetsKmp.macosTest,
         )
     }
 
     @TestFactory
     fun `Proto Tasks Are Cached Properly`() = runGrpcTest {
-        val firstRunCommonMain = runKmp(SSets.commonMain)
+        val firstRunCommonMain = runForSet(SSetsKmp.commonMain)
 
-        assertOutcomes(
-            result = firstRunCommonMain,
-            sourceSet = SSets.commonMain,
+        firstRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.commonMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
-            protoFilesImports = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
         // didn't run
-        assertOutcomes(firstRunCommonMain, SSets.commonTest)
-        assertOutcomes(firstRunCommonMain, SSets.nativeMain)
-        assertOutcomes(firstRunCommonMain, SSets.nativeTest)
-        assertOutcomes(firstRunCommonMain, SSets.jvmMain)
-        assertOutcomes(firstRunCommonMain, SSets.jvmTest)
-        assertOutcomes(firstRunCommonMain, SSets.webMain)
-        assertOutcomes(firstRunCommonMain, SSets.webTest)
-        assertOutcomes(firstRunCommonMain, SSets.jsMain)
-        assertOutcomes(firstRunCommonMain, SSets.jsTest)
-        assertOutcomes(firstRunCommonMain, SSets.appleMain)
-        assertOutcomes(firstRunCommonMain, SSets.appleTest)
-        assertOutcomes(firstRunCommonMain, SSets.macosMain)
-        assertOutcomes(firstRunCommonMain, SSets.macosTest)
-        assertOutcomes(firstRunCommonMain, SSets.macosArm64Main)
-        assertOutcomes(firstRunCommonMain, SSets.macosArm64Test)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.commonTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.nativeMain)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.nativeTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.jvmMain)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.jvmTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.webMain)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.webTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.jsMain)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.jsTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.appleMain)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.appleTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.macosMain)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.macosTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.macosArm64Main)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.macosArm64Test)
 
-        val secondRunCommonMain = runKmp(SSets.commonMain)
+        val secondRunCommonMain = runForSet(SSetsKmp.commonMain)
 
-        assertOutcomes(
-            result = secondRunCommonMain,
-            sourceSet = SSets.commonMain,
+        secondRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.commonMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
         cleanProtoBuildDir()
 
-        val thirdRunCommonMain = runKmp(SSets.commonMain)
+        val thirdRunCommonMain = runForSet(SSetsKmp.commonMain)
 
-        assertOutcomes(
-            result = thirdRunCommonMain,
-            sourceSet = SSets.commonMain,
+        thirdRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.commonMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
-            protoFilesImports = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
-        SSets.commonMain.sourceDir()
+        SSetsKmp.commonMain.sourceDir()
             .resolve("commonMain.proto")
             .replace("content = 1", "content = 2")
 
-        val fourthRunCommonMain = runKmp(SSets.commonMain)
+        val fourthRunCommonMain = runForSet(SSetsKmp.commonMain)
 
-        assertOutcomes(
-            result = fourthRunCommonMain,
-            sourceSet = SSets.commonMain,
+        fourthRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.commonMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
-        val firstRunMacosArm64Main = runKmp(SSets.macosArm64Main)
+        val firstRunMacosArm64Main = runForSet(SSetsKmp.macosArm64Main)
 
-        assertOutcomes(
-            result = firstRunMacosArm64Main,
-            sourceSet = SSets.commonMain,
+        firstRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.commonMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Main,
-            sourceSet = SSets.nativeMain,
+        firstRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.nativeMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -299,9 +286,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.SUCCESS,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Main,
-            sourceSet = SSets.appleMain,
+        firstRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.appleMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -309,9 +295,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.SUCCESS,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Main,
-            sourceSet = SSets.macosMain,
+        firstRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.macosMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -319,9 +304,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.SUCCESS,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Main,
-            sourceSet = SSets.macosArm64Main,
+        firstRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.macosArm64Main,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -330,22 +314,30 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
 
         // didn't run
-        assertOutcomes(firstRunMacosArm64Main, SSets.nativeTest)
-        assertOutcomes(firstRunMacosArm64Main, SSets.jvmMain)
-        assertOutcomes(firstRunMacosArm64Main, SSets.jvmTest)
-        assertOutcomes(firstRunMacosArm64Main, SSets.webMain)
-        assertOutcomes(firstRunMacosArm64Main, SSets.webTest)
-        assertOutcomes(firstRunMacosArm64Main, SSets.jsMain)
-        assertOutcomes(firstRunMacosArm64Main, SSets.jsTest)
-        assertOutcomes(firstRunMacosArm64Main, SSets.appleTest)
-        assertOutcomes(firstRunMacosArm64Main, SSets.macosTest)
-        assertOutcomes(firstRunMacosArm64Main, SSets.macosArm64Test)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.nativeTest)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.jvmMain)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.jvmTest)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.webMain)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.webTest)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.jsMain)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.jsTest)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.appleTest)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.macosTest)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.macosArm64Test)
 
-        val firstRunMacosArm64Test = runKmp(SSets.macosArm64Test)
+        val firstRunMacosArm64Test = runForSet(SSetsKmp.macosArm64Test)
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.commonMain,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.commonMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.nativeMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -353,9 +345,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.nativeMain,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.appleMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -363,9 +354,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.appleMain,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.macosMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -373,9 +363,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.macosMain,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.macosArm64Main,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -383,19 +372,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.macosArm64Main,
-            generate = TaskOutcome.UP_TO_DATE,
-            bufYaml = TaskOutcome.UP_TO_DATE,
-            bufGenYaml = TaskOutcome.UP_TO_DATE,
-            protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
-        )
-
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.nativeTest,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.nativeTest,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -403,9 +381,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.SUCCESS,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.appleTest,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.appleTest,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -413,9 +390,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.SUCCESS,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.macosTest,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.macosTest,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -423,9 +399,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.SUCCESS,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.macosArm64Test,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.macosArm64Test,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -434,51 +409,58 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
 
         // didn't run
-        assertOutcomes(firstRunMacosArm64Test, SSets.jvmMain)
-        assertOutcomes(firstRunMacosArm64Test, SSets.jvmTest)
-        assertOutcomes(firstRunMacosArm64Test, SSets.webMain)
-        assertOutcomes(firstRunMacosArm64Test, SSets.webTest)
-        assertOutcomes(firstRunMacosArm64Test, SSets.jsMain)
-        assertOutcomes(firstRunMacosArm64Test, SSets.jsTest)
+        firstRunMacosArm64Test.assertOutcomes(SSetsKmp.jvmMain)
+        firstRunMacosArm64Test.assertOutcomes(SSetsKmp.jvmTest)
+        firstRunMacosArm64Test.assertOutcomes(SSetsKmp.webMain)
+        firstRunMacosArm64Test.assertOutcomes(SSetsKmp.webTest)
+        firstRunMacosArm64Test.assertOutcomes(SSetsKmp.jsMain)
+        firstRunMacosArm64Test.assertOutcomes(SSetsKmp.jsTest)
 
-        SSets.macosMain.sourceDir()
+        SSetsKmp.macosMain.sourceDir()
             .resolve("macosMain.proto")
             .replace("content = 1", "content = 2")
 
-        val fifthRunCommonMain = runKmp(SSets.commonMain)
+        val fifthRunCommonMain = runForSet(SSetsKmp.commonMain)
 
-        assertOutcomes(
-            result = fifthRunCommonMain,
-            sourceSet = SSets.commonMain,
+        fifthRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.commonMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
         // didn't run
-        assertOutcomes(fifthRunCommonMain, SSets.commonTest)
-        assertOutcomes(fifthRunCommonMain, SSets.nativeMain)
-        assertOutcomes(fifthRunCommonMain, SSets.nativeTest)
-        assertOutcomes(fifthRunCommonMain, SSets.jvmMain)
-        assertOutcomes(fifthRunCommonMain, SSets.jvmTest)
-        assertOutcomes(fifthRunCommonMain, SSets.webMain)
-        assertOutcomes(fifthRunCommonMain, SSets.webTest)
-        assertOutcomes(fifthRunCommonMain, SSets.jsMain)
-        assertOutcomes(fifthRunCommonMain, SSets.jsTest)
-        assertOutcomes(fifthRunCommonMain, SSets.appleMain)
-        assertOutcomes(fifthRunCommonMain, SSets.appleTest)
-        assertOutcomes(fifthRunCommonMain, SSets.macosMain)
-        assertOutcomes(fifthRunCommonMain, SSets.macosTest)
-        assertOutcomes(fifthRunCommonMain, SSets.macosArm64Main)
-        assertOutcomes(fifthRunCommonMain, SSets.macosArm64Test)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.commonTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.nativeMain)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.nativeTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.jvmMain)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.jvmTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.webMain)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.webTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.jsMain)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.jsTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.appleMain)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.appleTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.macosMain)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.macosTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.macosArm64Main)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.macosArm64Test)
 
-        val secondRunMacosArm64Main = runKmp(SSets.macosArm64Main)
+        val secondRunMacosArm64Main = runForSet(SSetsKmp.macosArm64Main)
 
-        assertOutcomes(
-            result = secondRunMacosArm64Main,
-            sourceSet = SSets.commonMain,
+        secondRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.commonMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        secondRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.nativeMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -486,9 +468,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Main,
-            sourceSet = SSets.nativeMain,
+        secondRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.appleMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -496,19 +477,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Main,
-            sourceSet = SSets.appleMain,
-            generate = TaskOutcome.UP_TO_DATE,
-            bufYaml = TaskOutcome.UP_TO_DATE,
-            bufGenYaml = TaskOutcome.UP_TO_DATE,
-            protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
-        )
-
-        assertOutcomes(
-            result = secondRunMacosArm64Main,
-            sourceSet = SSets.macosMain,
+        secondRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.macosMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -516,9 +486,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Main,
-            sourceSet = SSets.macosArm64Main,
+        secondRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.macosArm64Main,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -527,22 +496,30 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
 
         // didn't run
-        assertOutcomes(secondRunMacosArm64Main, SSets.nativeTest)
-        assertOutcomes(secondRunMacosArm64Main, SSets.jvmMain)
-        assertOutcomes(secondRunMacosArm64Main, SSets.jvmTest)
-        assertOutcomes(secondRunMacosArm64Main, SSets.webMain)
-        assertOutcomes(secondRunMacosArm64Main, SSets.webTest)
-        assertOutcomes(secondRunMacosArm64Main, SSets.jsMain)
-        assertOutcomes(secondRunMacosArm64Main, SSets.jsTest)
-        assertOutcomes(secondRunMacosArm64Main, SSets.appleTest)
-        assertOutcomes(secondRunMacosArm64Main, SSets.macosTest)
-        assertOutcomes(secondRunMacosArm64Main, SSets.macosArm64Test)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.nativeTest)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.jvmMain)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.jvmTest)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.webMain)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.webTest)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.jsMain)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.jsTest)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.appleTest)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.macosTest)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.macosArm64Test)
 
-        val secondRunMacosArm64Test = runKmp(SSets.macosArm64Test)
+        val secondRunMacosArm64Test = runForSet(SSetsKmp.macosArm64Test)
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.commonMain,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.commonMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.nativeMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -550,9 +527,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.nativeMain,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.appleMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -560,9 +536,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.appleMain,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.macosMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -570,9 +545,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.macosMain,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.macosArm64Main,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -580,9 +554,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.macosArm64Main,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.nativeTest,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -590,9 +563,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.nativeTest,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.appleTest,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -600,19 +572,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.appleTest,
-            generate = TaskOutcome.UP_TO_DATE,
-            bufYaml = TaskOutcome.UP_TO_DATE,
-            bufGenYaml = TaskOutcome.UP_TO_DATE,
-            protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
-        )
-
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.macosTest,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.macosTest,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -620,9 +581,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.SUCCESS,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.macosArm64Test,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.macosArm64Test,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -631,28 +591,26 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
 
         // didn't run
-        assertOutcomes(secondRunMacosArm64Test, SSets.jvmMain)
-        assertOutcomes(secondRunMacosArm64Test, SSets.jvmTest)
-        assertOutcomes(secondRunMacosArm64Test, SSets.webMain)
-        assertOutcomes(secondRunMacosArm64Test, SSets.webTest)
-        assertOutcomes(secondRunMacosArm64Test, SSets.jsMain)
-        assertOutcomes(secondRunMacosArm64Test, SSets.jsTest)
+        secondRunMacosArm64Test.assertOutcomes(SSetsKmp.jvmMain)
+        secondRunMacosArm64Test.assertOutcomes(SSetsKmp.jvmTest)
+        secondRunMacosArm64Test.assertOutcomes(SSetsKmp.webMain)
+        secondRunMacosArm64Test.assertOutcomes(SSetsKmp.webTest)
+        secondRunMacosArm64Test.assertOutcomes(SSetsKmp.jsMain)
+        secondRunMacosArm64Test.assertOutcomes(SSetsKmp.jsTest)
 
-        val firstRunJvmMain = runKmp(SSets.jvmMain)
+        val firstRunJvmMain = runForSet(SSetsKmp.jvmMain)
 
-        assertOutcomes(
-            result = firstRunJvmMain,
-            sourceSet = SSets.commonMain,
+        firstRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.commonMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
-        assertOutcomes(
-            result = firstRunJvmMain,
-            sourceSet = SSets.jvmMain,
+        firstRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.jvmMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -661,40 +619,38 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
 
         // didn't run
-        assertOutcomes(firstRunJvmMain, SSets.commonTest)
-        assertOutcomes(firstRunJvmMain, SSets.nativeMain)
-        assertOutcomes(firstRunJvmMain, SSets.nativeTest)
-        assertOutcomes(firstRunJvmMain, SSets.jvmTest)
-        assertOutcomes(firstRunJvmMain, SSets.webMain)
-        assertOutcomes(firstRunJvmMain, SSets.webTest)
-        assertOutcomes(firstRunJvmMain, SSets.jsMain)
-        assertOutcomes(firstRunJvmMain, SSets.jsTest)
-        assertOutcomes(firstRunJvmMain, SSets.appleMain)
-        assertOutcomes(firstRunJvmMain, SSets.appleTest)
-        assertOutcomes(firstRunJvmMain, SSets.macosMain)
-        assertOutcomes(firstRunJvmMain, SSets.macosTest)
-        assertOutcomes(firstRunJvmMain, SSets.macosArm64Main)
-        assertOutcomes(firstRunJvmMain, SSets.macosArm64Test)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.commonTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.nativeMain)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.nativeTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.jvmTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.webMain)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.webTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.jsMain)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.jsTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.appleMain)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.appleTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.macosMain)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.macosTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.macosArm64Main)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.macosArm64Test)
 
-        SSets.jvmMain.sourceDir()
+        SSetsKmp.jvmMain.sourceDir()
             .resolve("jvmMain.proto")
             .replace("content = 1", "content = 2")
 
-        val secondRunJvmMain = runKmp(SSets.jvmMain)
+        val secondRunJvmMain = runForSet(SSetsKmp.jvmMain)
 
-        assertOutcomes(
-            result = secondRunJvmMain,
-            sourceSet = SSets.commonMain,
+        secondRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.commonMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
-        assertOutcomes(
-            result = secondRunJvmMain,
-            sourceSet = SSets.jvmMain,
+        secondRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.jvmMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -703,52 +659,20 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
 
         // didn't run
-        assertOutcomes(secondRunJvmMain, SSets.commonTest)
-        assertOutcomes(secondRunJvmMain, SSets.nativeMain)
-        assertOutcomes(secondRunJvmMain, SSets.nativeTest)
-        assertOutcomes(secondRunJvmMain, SSets.jvmTest)
-        assertOutcomes(secondRunJvmMain, SSets.webMain)
-        assertOutcomes(secondRunJvmMain, SSets.webTest)
-        assertOutcomes(secondRunJvmMain, SSets.jsMain)
-        assertOutcomes(secondRunJvmMain, SSets.jsTest)
-        assertOutcomes(secondRunJvmMain, SSets.appleMain)
-        assertOutcomes(secondRunJvmMain, SSets.appleTest)
-        assertOutcomes(secondRunJvmMain, SSets.macosMain)
-        assertOutcomes(secondRunJvmMain, SSets.macosTest)
-        assertOutcomes(secondRunJvmMain, SSets.macosArm64Main)
-        assertOutcomes(secondRunJvmMain, SSets.macosArm64Test)
-    }
-
-    private fun GrpcTestEnv.runKmpAndCheckFiles(
-        sourceSet: SSets,
-        vararg imports: SSets,
-        clean: Boolean = true,
-    ) {
-        runKmp(sourceSet).assertKmpSourceSet(sourceSet, *imports)
-
-        if (clean) {
-            cleanProtoBuildDir()
-        }
-    }
-
-    private fun GrpcTestEnv.runKmp(sourceSet: SSets): BuildResult {
-        return runGradle(bufGenerate(sourceSet))
-    }
-
-    private fun GrpcTestEnv.assertOutcomes(
-        result: BuildResult,
-        sourceSet: SSets,
-        generate: TaskOutcome? = null,
-        bufYaml: TaskOutcome? = null,
-        bufGenYaml: TaskOutcome? = null,
-        protoFiles: TaskOutcome? = null,
-        protoFilesImports: TaskOutcome? = null,
-    ) {
-        assertEquals(generate, result.protoTaskOutcomeOrNull(bufGenerate(sourceSet)))
-        assertEquals(bufYaml, result.protoTaskOutcomeOrNull(generateBufYaml(sourceSet)))
-        assertEquals(bufGenYaml, result.protoTaskOutcomeOrNull(generateBufGenYaml(sourceSet)))
-        assertEquals(protoFiles, result.protoTaskOutcomeOrNull(processProtoFiles(sourceSet)))
-        assertEquals(protoFilesImports, result.protoTaskOutcomeOrNull(processProtoFilesImports(sourceSet)))
+        secondRunJvmMain.assertOutcomes(SSetsKmp.commonTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.nativeMain)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.nativeTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.jvmTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.webMain)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.webTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.jsMain)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.jsTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.appleMain)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.appleTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.macosMain)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.macosTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.macosArm64Main)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.macosArm64Test)
     }
 
     @TestFactory

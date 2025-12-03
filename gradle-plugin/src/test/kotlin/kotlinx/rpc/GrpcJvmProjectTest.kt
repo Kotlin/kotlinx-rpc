@@ -13,7 +13,7 @@ import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class GrpcJvmProjectTest : GrpcBaseTest() {
-    override val isKmp: Boolean = false
+    override val type: Type = Type.Jvm
 
     @TestFactory
     fun `Minimal gRPC Configuration`() = runGrpcTest {
@@ -32,15 +32,9 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `No gRPC`() = runGrpcTest {
-        runNonExistentTask(bufGenerateCommonMain)
-        runNonExistentTask(bufGenerateCommonTest)
-        runNonExistentTask(processCommonMainProtoFiles)
-        runNonExistentTask(processCommonTestProtoFiles)
-        runNonExistentTask(processCommonTestProtoFilesImports)
-        runNonExistentTask(generateBufYamlCommonMain)
-        runNonExistentTask(generateBufYamlCommonTest)
-        runNonExistentTask(generateBufGenYamlCommonMain)
-        runNonExistentTask(generateBufGenYamlCommonTest)
+        SSetsJvm.entries.forEach {
+            runNonExistentTasksForSourceSet(it)
+        }
     }
 
     @TestFactory

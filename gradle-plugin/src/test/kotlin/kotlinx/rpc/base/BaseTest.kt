@@ -21,12 +21,15 @@ import kotlinx.rpc.RPC_VERSION
 import org.junit.jupiter.api.DynamicTest
 import java.util.stream.Stream
 import kotlin.io.path.absolute
+import kotlin.io.path.appendText
 import kotlin.io.path.createDirectories
 import kotlin.io.path.deleteRecursively
+import kotlin.io.path.readLines
 
 class VersionsEnv(
     val gradle: String,
     val kotlin: String,
+    val android: String,
 ) {
     val kotlinSemver = run {
         val (major, minor, patch) = kotlin.split(".").map { it.toInt() }
@@ -40,9 +43,9 @@ internal object KtVersion {
 }
 
 private val GradleVersions = listOf(
-    VersionsEnv("9.2.1", "2.2.21"),
-    VersionsEnv("8.14.1", "2.2.0"),
-    VersionsEnv("8.8", "2.0.0"),
+    VersionsEnv("9.2.1", "2.2.21", "8.13.1"),
+    VersionsEnv("8.14.1", "2.2.0", "8.6.1"),
+    VersionsEnv("8.8", "2.0.0", "8.4.0"),
 )
 
 internal fun BaseTest.runWithAllGradleVersions(body: (VersionsEnv) -> Unit): Stream<DynamicTest> {
@@ -115,6 +118,15 @@ abstract class BaseTest {
         buildScriptFile
             .replace("<kotlin-version>", versions.kotlin)
             .replace("<rpc-version>", RPC_VERSION)
+            .replace("<android-version>", versions.android)
+
+        buildScriptFile.readLines().filter {
+            it.startsWith("// include:")
+        }.map {
+            it.removePrefix("// include:").trim()
+        }.forEach { project ->
+            settingsFile.appendText("\ninclude(\":$project\")")
+        }
 
         println("""
             Setup project '$projectName'
@@ -154,7 +166,7 @@ abstract class BaseTest {
     protected fun <T : TestEnv> runTest(testEnv: T, body: T.() -> Unit) {
         try {
             testEnv.body()
-        } catch (e: Throwable) {
+        } finally {
             val output = testEnv.latestBuild?.output
             if (output != null) {
                 println("Latest gradle build output:")
@@ -162,7 +174,6 @@ abstract class BaseTest {
             } else {
                 println("No gradle build output available")
             }
-            throw e
         }
     }
 

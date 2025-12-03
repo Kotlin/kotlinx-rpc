@@ -2,6 +2,8 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:Suppress("EnumEntryName", "detekt.EnumNaming")
+
 package kotlinx.rpc.base
 
 import org.gradle.testkit.runner.BuildResult
@@ -17,13 +19,44 @@ import kotlin.test.fail
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 abstract class GrpcBaseTest : BaseTest() {
-    abstract val isKmp: Boolean
+    enum class Type {
+        Jvm, Kmp, Android;
+    }
+
+    abstract val type: Type
+
+    protected fun GrpcTestEnv.runNonExistentTasksForSourceSet(set: SSets) {
+        runNonExistentTask(bufGenerate(set))
+        runNonExistentTask(processProtoFiles(set))
+        runNonExistentTask(processProtoFilesImports(set))
+        runNonExistentTask(generateBufYaml(set))
+        runNonExistentTask(generateBufGenYaml(set))
+    }
 
     protected fun runGrpcTest(test: GrpcTestEnv.() -> Unit): Stream<DynamicTest> = runWithAllGradleVersions {
         runTest(GrpcTestEnv(it), test)
     }
 
     inner class GrpcTestEnv(versions: VersionsEnv) : TestEnv(versions) {
+        fun BuildResult.assertOutcomes(
+            sourceSet: SSets,
+            generate: TaskOutcome? = null,
+            bufYaml: TaskOutcome? = null,
+            bufGenYaml: TaskOutcome? = null,
+            protoFiles: TaskOutcome? = null,
+            protoFilesImports: TaskOutcome? = null,
+        ) {
+            assertOutcome(generate, bufGenerate(sourceSet))
+            assertOutcome(bufYaml, generateBufYaml(sourceSet))
+            assertOutcome(bufGenYaml, generateBufGenYaml(sourceSet))
+            assertOutcome(protoFiles, processProtoFiles(sourceSet))
+            assertOutcome(protoFilesImports, processProtoFilesImports(sourceSet))
+        }
+
+        fun BuildResult.assertOutcome(expected: TaskOutcome?, task: String) {
+            assertEquals(expected, protoTaskOutcomeOrNull(task), "Outcome for task $task")
+        }
+
         fun BuildResult.protoTaskOutcome(name: String): TaskOutcome {
             return tasks.find { it.path == ":$name" }?.outcome
                 ?: fail("Task ':$name' was not present in the build result")
@@ -69,6 +102,14 @@ abstract class GrpcBaseTest : BaseTest() {
             val dir = protoBuildDirGenerated.resolve(sourceSet.name).resolve(KOTLIN_MULTIPLATFORM_DIR)
 
             fun Path.doAssert() {
+                if (!exists()) {
+                    if (files.isEmpty()) {
+                        return
+                    }
+
+                    fail("Directory '${this.relativeTo(dir)}' does not exist, but expected files: ${files.toList()}")
+                }
+
                 listDirectoryEntries().forEach { entry ->
                     when {
                         entry.isDirectory() -> {
@@ -84,7 +125,7 @@ abstract class GrpcBaseTest : BaseTest() {
                         }
 
                         else -> {
-                            fail("File '${entry}' in '$this' should not exist")
+                            fail("File '${entry.relativeTo(dir)}' in '${this.relativeTo(dir)}' should not exist")
                         }
                     }
                 }
@@ -159,10 +200,10 @@ abstract class GrpcBaseTest : BaseTest() {
             protoFiles: List<Path>,
             generatedFiles: List<Path>,
         ) {
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(bufGenerateCommonMain))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processCommonMainProtoFiles))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufYamlCommonMain))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufGenYamlCommonMain))
+            assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+            assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
+            assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
+            assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
 
             assertProtoTaskNotExecuted(bufGenerateCommonTest)
             assertProtoTaskNotExecuted(processCommonTestProtoFiles)
@@ -186,11 +227,21 @@ abstract class GrpcBaseTest : BaseTest() {
             generatedFiles: List<Path>,
             importGeneratedFiles: List<Path>,
         ) {
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(bufGenerateCommonTest))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processCommonTestProtoFiles))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processCommonTestProtoFilesImports))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufYamlCommonTest))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufGenYamlCommonTest))
+            assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonTest)
+            val processProtoOutcome = if (protoFiles.isEmpty()) {
+                TaskOutcome.NO_SOURCE
+            } else {
+                TaskOutcome.SUCCESS
+            }
+            assertOutcome(processProtoOutcome, processCommonTestProtoFiles)
+            val processProtoImportsOutcome = if (importProtoFiles.isEmpty()) {
+                TaskOutcome.NO_SOURCE
+            } else {
+                TaskOutcome.SUCCESS
+            }
+            assertOutcome(processProtoImportsOutcome, processCommonTestProtoFilesImports)
+            assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonTest)
+            assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonTest)
 
             val mainGenerateOutcome = if (importProtoFiles.isEmpty()) {
                 TaskOutcome.SKIPPED
@@ -198,10 +249,15 @@ abstract class GrpcBaseTest : BaseTest() {
                 TaskOutcome.SUCCESS
             }
 
-            assertEquals(mainGenerateOutcome, protoTaskOutcome(bufGenerateCommonMain))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processCommonMainProtoFiles))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufYamlCommonMain))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufGenYamlCommonMain))
+            assertOutcome(mainGenerateOutcome, bufGenerateCommonMain)
+            val mainProcessOutcome = if (importProtoFiles.isEmpty()) {
+                TaskOutcome.NO_SOURCE
+            } else {
+                TaskOutcome.SUCCESS
+            }
+            assertOutcome(mainProcessOutcome, processCommonMainProtoFiles)
+            assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
+            assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
 
             assertSourceCodeGenerated(testSourceSet, *generatedFiles.toTypedArray())
             assertSourceCodeNotGenerated(mainSourceSet, *generatedFiles.toTypedArray())
@@ -223,11 +279,29 @@ abstract class GrpcBaseTest : BaseTest() {
             generatedFiles: List<Path>,
             notExecuted: List<SSets>,
         ) {
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(bufGenerate(sourceSet)))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processProtoFiles(sourceSet)))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(processProtoFilesImports(sourceSet)))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufYaml(sourceSet)))
-            assertEquals(TaskOutcome.SUCCESS, protoTaskOutcome(generateBufGenYaml(sourceSet)))
+            val generateOutcome = if (protoFiles.isEmpty()) {
+                TaskOutcome.SKIPPED
+            } else {
+                TaskOutcome.SUCCESS
+            }
+            assertOutcome(generateOutcome, bufGenerate(sourceSet))
+
+            val processProtoOutcome = if (protoFiles.isEmpty()) {
+                TaskOutcome.NO_SOURCE
+            } else {
+                TaskOutcome.SUCCESS
+            }
+            assertOutcome(processProtoOutcome, processProtoFiles(sourceSet))
+
+            val processImportProtoOutcome = if (importProtoFiles.isEmpty()) {
+                TaskOutcome.NO_SOURCE
+            } else {
+                TaskOutcome.SUCCESS
+            }
+            assertOutcome(processImportProtoOutcome, processProtoFilesImports(sourceSet))
+
+            assertOutcome(TaskOutcome.SUCCESS, generateBufYaml(sourceSet))
+            assertOutcome(TaskOutcome.SUCCESS, generateBufGenYaml(sourceSet))
 
             assertSourceCodeGenerated(sourceSet, *generatedFiles.toTypedArray())
             assertSourceCodeNotGeneratedExcept(sourceSet, *generatedFiles.toTypedArray())
@@ -243,16 +317,29 @@ abstract class GrpcBaseTest : BaseTest() {
             }
         }
 
-        fun BuildResult.assertKmpSourceSet(
+        fun GrpcTestEnv.runAndCheckFiles(
             sourceSet: SSets,
             vararg imports: SSets,
+            extended: List<SSets> = emptyList(),
+        ) {
+            cleanProtoBuildDir()
+            runForSet(sourceSet).assertSourceSet(sourceSet, *imports, extendedProto = extended)
+        }
+
+        fun GrpcTestEnv.runForSet(sourceSet: SSets): BuildResult {
+            return runGradle(bufGenerate(sourceSet))
+        }
+
+        fun BuildResult.assertSourceSet(
+            sourceSet: SSets,
+            vararg imports: SSets,
+            extendedProto: List<SSets>,
         ) {
             if (!sourceSet.applicable()) {
                 println("Skipping ${sourceSet.capital} source set because it's not applicable for the current Kotlin version")
                 return
             }
 
-            val ktFile = "${sourceSet.capital}.kt"
             val importsSet = imports
                 .onEach {
                     if (!it.applicable()) {
@@ -262,17 +349,23 @@ abstract class GrpcBaseTest : BaseTest() {
                 .filter { it.applicable() }
                 .toSet()
 
+            val generateFor = extendedProto + sourceSet
+
             assertTaskExecuted(
                 sourceSet = sourceSet,
-                protoFiles = listOf(Path("${sourceSet.name}.proto")),
+                protoFiles = generateFor.map { Path("${it.name}.proto") },
                 importProtoFiles = importsSet.map {
                     Path("${it.name}.proto")
                 },
-                generatedFiles = listOf(
-                    Path(ktFile),
-                    Path(RPC_INTERNAL, ktFile),
-                ),
-                notExecuted = SSets.entries.filter { it != sourceSet && it !in importsSet },
+                generatedFiles = generateFor.flatMap {
+                    val ktFile = "${it.capital}.kt"
+
+                    listOf(
+                        Path(ktFile),
+                        Path(RPC_INTERNAL, ktFile),
+                    )
+                },
+                notExecuted = sourceSet.all().filter { it != sourceSet && it !in importsSet },
             )
         }
 
@@ -282,8 +375,17 @@ abstract class GrpcBaseTest : BaseTest() {
         fun generateBufYaml(sourceSet: SSets) = "generateBufYaml${sourceSet.capital}"
         fun generateBufGenYaml(sourceSet: SSets) = "generateBufGenYaml${sourceSet.capital}"
 
-        val mainSourceSet = if (isKmp) SSets.commonMain else SSets.main
-        val testSourceSet = if (isKmp) SSets.commonTest else SSets.test
+        val mainSourceSet: SSets = when (type) {
+            Type.Kmp -> SSetsKmp.commonMain
+            Type.Jvm -> SSetsJvm.main
+            Type.Android -> SSetsAndroid.Default.main
+        }
+
+        val testSourceSet: SSets = when (type) {
+            Type.Kmp -> SSetsKmp.commonTest
+            Type.Jvm -> SSetsJvm.test
+            Type.Android -> SSetsAndroid.Default.test
+        }
 
         val bufGenerateCommonMain = bufGenerate(mainSourceSet)
         val bufGenerateCommonTest = bufGenerate(testSourceSet)
@@ -337,10 +439,22 @@ abstract class GrpcBaseTest : BaseTest() {
         }
     }
 
-    @Suppress("EnumEntryName", "detekt.EnumNaming")
-    enum class SSets(val minKotlin: KotlinVersion = KtVersion.v2_0_0) {
-        main, test,
+    interface SSets {
+        val minKotlin: KotlinVersion
+        val name: String
+        fun all(): List<SSets>
+    }
 
+    enum class SSetsJvm(override val minKotlin: KotlinVersion = KtVersion.v2_0_0) : SSets {
+        main, test,
+        ;
+
+        override fun all(): List<SSets> {
+            return entries
+        }
+    }
+
+    enum class SSetsKmp(override val minKotlin: KotlinVersion = KtVersion.v2_0_0) : SSets {
         commonMain, commonTest,
         jvmMain, jvmTest,
         androidMain, androidTest,
@@ -350,6 +464,37 @@ abstract class GrpcBaseTest : BaseTest() {
         appleMain, appleTest,
         macosMain, macosTest,
         macosArm64Main, macosArm64Test,
+        ;
+
+        override fun all(): List<SSets> {
+            return entries
+        }
+    }
+
+    sealed interface SSetsAndroid : SSets {
+        enum class Default(override val minKotlin: KotlinVersion = KtVersion.v2_0_0) : SSetsAndroid {
+            main, test,
+            androidTest, testFixtures,
+
+            debug, release,
+            androidTestDebug,
+            testFixturesDebug, testFixturesRelease,
+            testDebug, testRelease,
+            ;
+
+            override fun all(): List<SSets> {
+                return entries
+            }
+        }
+
+        enum class Test(override val minKotlin: KotlinVersion = KtVersion.v2_0_0) : SSetsAndroid {
+            main, debug,
+            ;
+
+            override fun all(): List<SSets> {
+                return entries
+            }
+        }
     }
 
     private val SSets.capital get() = name.replaceFirstChar { it.titlecase() }
