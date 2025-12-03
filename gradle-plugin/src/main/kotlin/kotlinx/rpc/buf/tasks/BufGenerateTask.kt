@@ -16,8 +16,15 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskProvider
 import java.io.File
 import kotlinx.rpc.buf.BufGenerateExtension
+import kotlinx.rpc.protoc.DefaultProtoSourceSet
+import kotlinx.rpc.protoc.bufExecProperties
+import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.OutputDirectories
+import org.gradle.api.tasks.SkipWhenEmpty
+import org.gradle.kotlin.dsl.listProperty
 import javax.inject.Inject
 
 /**
@@ -26,16 +33,12 @@ import javax.inject.Inject
  * @see <a href="https://buf.build/docs/reference/cli/buf/generate/">buf generate</a>
  */
 public abstract class BufGenerateTask @Inject internal constructor(properties: Properties) : BufExecTask(properties) {
-    // unsued, but required for Gradle to properly recognise inputs
-    @get:InputDirectory
-    internal abstract val protoFilesDir: Property<File>
-
-    // unsued, but required for Gradle to properly recognise inputs
-    @get:InputDirectory
-    internal abstract val importFilesDir: Property<File>
+    // used to properly calculate output directories
+    @get:Input
+    internal abstract val pluginNames: ListProperty<String>
 
     /**
-     * List of files used during `buf generate` command execution.
+     * List of executable files used during `buf generate` command execution.
      *
      * @see [ProtocPlugin.Artifact.Local.executableFiles]
      */
@@ -82,10 +85,21 @@ public abstract class BufGenerateTask @Inject internal constructor(properties: P
     public abstract val additionalArgs: ListProperty<String>
 
     /**
-     * The directory to output generated files.
+     * The directory to output generated files to, used as a `buf generate --output` argument,
+     * not the directory for sources. For that see [outputSourceDirectories].
      */
     @get:OutputDirectory
     public abstract val outputDirectory: Property<File>
+
+    private val outputSourceDirectoriesInternal: ListProperty<File> = project.objects.listProperty()
+
+    /**
+     * Generated source directories by plugin name.
+     *
+     * Can be used in [SourceDirectorySet.srcDirs].
+     */
+    @get:OutputDirectories
+    public val outputSourceDirectories: Provider<List<File>> = outputSourceDirectoriesInternal
 
     init {
         command.set("generate")
@@ -110,6 +124,11 @@ public abstract class BufGenerateTask @Inject internal constructor(properties: P
         }
 
         this.args.set(args)
+
+        outputSourceDirectoriesInternal.set(pluginNames.map { plugins ->
+            val out = outputDirectory.get()
+            plugins.map { out.resolve(it) }
+        })
     }
 
     internal companion object {
@@ -118,20 +137,16 @@ public abstract class BufGenerateTask @Inject internal constructor(properties: P
 }
 
 internal fun Project.registerBufGenerateTask(
-    sourceSetName: String,
+    protoSourceSet: DefaultProtoSourceSet,
     workingDir: File,
     outputDirectory: File,
-    protoFilesDir: File,
-    importFilesDir: File,
+    includedPlugins: Provider<Set<ProtocPlugin>>,
     configure: BufGenerateTask.() -> Unit = {},
 ): TaskProvider<BufGenerateTask> {
-    val capitalName = sourceSetName.replaceFirstChar { it.uppercase() }
+    val capitalName = protoSourceSet.name.replaceFirstChar { it.uppercase() }
     val bufGenerateTaskName = "${BufGenerateTask.NAME_PREFIX}$capitalName"
 
-    val properties = BufExecTask.Properties(
-        isTest = sourceSetName.lowercase().endsWith("test"),
-        sourceSetName = sourceSetName,
-    )
+    val properties = protoSourceSet.bufExecProperties()
 
     return registerBufExecTask<BufGenerateTask>(bufGenerateTaskName, provider { workingDir }, properties) {
         group = PROTO_GROUP
@@ -145,8 +160,7 @@ internal fun Project.registerBufGenerateTask(
 
         this.outputDirectory.set(outputDirectory)
 
-        this.protoFilesDir.set(protoFilesDir)
-        this.importFilesDir.set(importFilesDir)
+        this.pluginNames.set(includedPlugins.map { it.map { plugin -> plugin.name } })
 
         configure()
     }

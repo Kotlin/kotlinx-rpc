@@ -333,7 +333,35 @@ public sealed interface BufTasks<BufTask : BufExecTask> : TaskCollection<BufTask
     // android
 
     /**
-     * Filters tasks by where [BufExecTask.AndroidProperties.flavor] matches the given flavor.
+     * Android only.
+     *
+     * Filters tasks by where [BufExecTask.AndroidProperties.isUnitTest] is `true`.
+     *
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all().unitTestTasks()
+     * }
+     * ```
+     */
+    public fun unitTestTasks(): BufTasks<BufTask>
+
+    /**
+     * Android only.
+     *
+     * Filters tasks by where [BufExecTask.AndroidProperties.isAndroidTest] is `true`.
+     *
+     * ```kotlin
+     * rpc.protoc {
+     *     buf.tasks.all().androidTestTasks()
+     * }
+     * ```
+     */
+    public fun androidTestTasks(): BufTasks<BufTask>
+
+    /**
+     * Android only.
+     *
+     * Filters tasks by where [BufExecTask.AndroidProperties.flavors] matches the given flavor.
      *
      * Only returns Android tasks.
      *
@@ -346,6 +374,8 @@ public sealed interface BufTasks<BufTask : BufExecTask> : TaskCollection<BufTask
     public fun matchingFlavor(flavor: String): BufTasks<BufTask>
 
     /**
+     * Android only.
+     *
      * Filters tasks by where [BufExecTask.AndroidProperties.buildType] matches the given buildType.
      *
      * Only returns Android tasks.
@@ -356,9 +386,11 @@ public sealed interface BufTasks<BufTask : BufExecTask> : TaskCollection<BufTask
      * }
      * ```
      */
-    public fun matchingBuildType(buildType: String): BufTasks<BufTask>
+    public fun matchingBuildType(buildType: String?): BufTasks<BufTask>
 
     /**
+     * Android only.
+     *
      * Filters tasks by where [BufExecTask.AndroidProperties.variant] matches the given variant.
      *
      * Only returns Android tasks.
@@ -532,21 +564,53 @@ internal open class BufTasksImpl<BufTask : BufExecTask> internal constructor(
         return BufTasksImpl(project, collection.matching { !it.properties.isTest }, kClass)
     }
 
-    override fun matchingFlavor(flavor: String): BufTasks<BufTask> {
+    override fun unitTestTasks(): BufTasks<BufTask> {
         return BufTasksImpl(
             project = project,
             collection = collection.matching {
-                (it.properties as? BufExecTask.AndroidProperties)?.flavor == flavor
+                val properties = it.properties as? BufExecTask.AndroidProperties
+                    ?: return@matching false
+
+                properties.isUnitTest
             },
             kClass = kClass,
         )
     }
 
-    override fun matchingBuildType(buildType: String): BufTasks<BufTask> {
+    override fun androidTestTasks(): BufTasks<BufTask> {
         return BufTasksImpl(
             project = project,
             collection = collection.matching {
-                (it.properties as? BufExecTask.AndroidProperties)?.buildType == buildType
+                val properties = it.properties as? BufExecTask.AndroidProperties
+                    ?: return@matching false
+
+                properties.isAndroidTest
+            },
+            kClass = kClass,
+        )
+    }
+
+    override fun matchingFlavor(flavor: String): BufTasks<BufTask> {
+        return BufTasksImpl(
+            project = project,
+            collection = collection.matching {
+                val properties = it.properties as? BufExecTask.AndroidProperties
+                    ?: return@matching false
+
+                properties.flavors.contains(flavor)
+            },
+            kClass = kClass,
+        )
+    }
+
+    override fun matchingBuildType(buildType: String?): BufTasks<BufTask> {
+        return BufTasksImpl(
+            project = project,
+            collection = collection.matching {
+                val properties = it.properties as? BufExecTask.AndroidProperties
+                    ?: return@matching false
+
+                properties.buildType == buildType
             },
             kClass = kClass,
         )
@@ -556,7 +620,10 @@ internal open class BufTasksImpl<BufTask : BufExecTask> internal constructor(
         return BufTasksImpl(
             project = project,
             collection = collection.matching {
-                (it.properties as? BufExecTask.AndroidProperties)?.variant == variant
+                val properties = it.properties as? BufExecTask.AndroidProperties
+                    ?: return@matching false
+
+                properties.variant == variant
             },
             kClass = kClass,
         )

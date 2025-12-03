@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.buf.tasks
 
+import com.android.build.api.variant.Variant
 import kotlinx.rpc.buf.BUF_EXECUTABLE_CONFIGURATION
 import kotlinx.rpc.buf.BufExtension
 import kotlinx.rpc.buf.execBuf
@@ -29,7 +30,9 @@ import kotlinx.rpc.buf.BufTasksExtension
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Classpath
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.SkipWhenEmpty
 import javax.inject.Inject
 
 /**
@@ -37,11 +40,20 @@ import javax.inject.Inject
  */
 public abstract class BufExecTask @Inject constructor(
     @Internal
-    public val properties: Properties
+    public val properties: Properties,
 ) : DefaultTask() {
     init {
         group = PROTO_GROUP
     }
+
+    // unsued, but required for Gradle to properly recognise inputs
+    @get:InputFiles
+    @get:SkipWhenEmpty
+    internal abstract val protoFiles: ListProperty<File>
+
+    // unsued, but required for Gradle to properly recognise inputs
+    @get:InputFiles
+    internal abstract val importProtoFiles: ListProperty<File>
 
     // list of buf task dependencies of the same type
     @get:Internal
@@ -78,17 +90,33 @@ public abstract class BufExecTask @Inject constructor(
         isTest: Boolean,
         sourceSetName: String,
         /**
-         * Name of the android flavor this task is associated with.
+         * Name of the android flavors this task is associated with.
+         *
+         * @see [Variant.productFlavors]
          */
-        public val flavor: String,
+        public val flavors: List<String>,
         /**
          * Name of the android build type this task is associated with.
+         *
+         * @see Variant.buildType
          */
-        public val buildType: String,
+        public val buildType: String?,
         /**
          * Name of the android variant this task is associated with.
+         *
+         * @see Variant.name
          */
         public val variant: String,
+
+        /**
+         * Whether the task is for instrumentation tests.
+         */
+        public val isAndroidTest: Boolean,
+
+        /**
+         * Whether the task is for unit tests.
+         */
+        public val isUnitTest: Boolean,
     ) : Properties(isTest, sourceSetName)
 
     /**
@@ -164,8 +192,8 @@ internal fun <T : BufExecTask> Project.registerBufExecTask(
     configuration: T.() -> Unit = {},
 ): TaskProvider<T> = tasks.register(name, clazz, properties).apply {
     configure {
-        val executableConfiguration = configurations.getByName(BUF_EXECUTABLE_CONFIGURATION)
-        bufExecutable.set(executableConfiguration.singleFile)
+        val executableConfiguration = configurations.named(BUF_EXECUTABLE_CONFIGURATION)
+        bufExecutable.set(project.provider { executableConfiguration.get().singleFile })
         this.workingDir.set(workingDir)
 
         val buf = provider { rpcExtension().protoc.get().buf }

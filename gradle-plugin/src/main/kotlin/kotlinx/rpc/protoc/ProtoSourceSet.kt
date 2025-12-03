@@ -7,10 +7,14 @@ package kotlinx.rpc.protoc
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.SourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import java.io.File
 
 public typealias ProtoSourceSets = NamedDomainObjectContainer<ProtoSourceSet>
 
@@ -114,6 +118,22 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
         configure: Action<ProtocPlugin>? = null,
         select: NamedDomainObjectContainer<ProtocPlugin>.() -> ProtocPlugin,
     )
+
+    public val plugins: SetProperty<ProtocPlugin>
+
+    public fun importsFrom(protoSourceSet: ProtoSourceSet)
+
+    public fun importsFrom(protoSourceSet: Provider<ProtoSourceSet>)
+
+    public fun importsAllFrom(protoSourceSet: Provider<List<ProtoSourceSet>>)
+
+    public fun importsFrom(protoSourceSet: NamedDomainObjectProvider<ProtoSourceSet>)
+
+    public val imports: SetProperty<ProtoSourceSet>
+
+    public val fileImports: ConfigurableFileCollection
+
+    public fun extendsFrom(protoSourceSet: ProtoSourceSet)
 }
 
 /**

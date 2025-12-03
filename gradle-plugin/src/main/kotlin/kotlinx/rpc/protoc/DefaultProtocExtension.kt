@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.protoc
 
+import com.android.build.api.variant.Variant
+import com.android.build.gradle.BaseExtension
 import kotlinx.rpc.buf.BufExtension
 import kotlinx.rpc.buf.configureBufExecutable
 import kotlinx.rpc.buf.tasks.BufExecTask
@@ -16,27 +18,23 @@ import kotlinx.rpc.buf.tasks.registerGenerateBufGenYamlTask
 import kotlinx.rpc.buf.tasks.registerGenerateBufYamlTask
 import kotlinx.rpc.protoc.ProtocPlugin.Companion.GRPC_KOTLIN_MULTIPLATFORM
 import kotlinx.rpc.protoc.ProtocPlugin.Companion.KOTLIN_MULTIPLATFORM
+import kotlinx.rpc.protoc.android.AndroidRootSourceSets
+import kotlinx.rpc.protoc.android.sourceSets
 import kotlinx.rpc.util.ensureDirectoryExists
-import kotlinx.rpc.util.kotlinJvmExtensionOrNull
-import kotlinx.rpc.util.kotlinKmpExtensionOrNull
+import kotlinx.rpc.util.withLazyAndroidComponentsExtension
 import org.gradle.api.Action
 import org.gradle.api.GradleException
-import org.gradle.api.Named
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.api.tasks.compile.JavaCompile
-import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.newInstance
-import org.gradle.kotlin.dsl.withType
+import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import java.io.File
 import javax.inject.Inject
 import kotlin.collections.filterIsInstance
@@ -88,15 +86,101 @@ internal open class DefaultProtocExtension @Inject constructor(
         }
 
         project.protoSourceSets.all {
-            if (this !is DefaultProtoSourceSet) {
+            if (this !is DefaultProtoSourceSet || isAndroid) {
                 return@all
             }
 
             project.configureTasks(this)
         }
+
+        project.withLazyAndroidComponentsExtension {
+            val rootSourceSets = AndroidRootSourceSets.entries
+                .mapNotNull { rootName ->
+                    val sourceSet = project.protoSourceSets.findByName(rootName.stringValue)
+                            as? DefaultProtoSourceSet
+
+                    sourceSet?.let { rootName to it }
+                }.toMap()
+
+            val mainRoot = rootSourceSets.getValue(AndroidRootSourceSets.Main)
+            val testRoot = rootSourceSets[AndroidRootSourceSets.Test]
+            val androidTestRoot = rootSourceSets[AndroidRootSourceSets.AndroidTest]
+            val testFixturesRoot = rootSourceSets[AndroidRootSourceSets.TestFixtures]
+
+            // todo KMP imports
+
+            testRoot?.extendsFrom(testFixturesRoot ?: mainRoot)
+            androidTestRoot?.extendsFrom(testFixturesRoot ?: mainRoot)
+            testFixturesRoot?.importsFrom(mainRoot)
+
+            val extension = project.the<BaseExtension>()
+            onVariants { variant: Variant ->
+                val testBuildType = extension.testBuildType
+                rootSourceSets.forEach { (rootName, rootSourceSet) ->
+                    // testFixtures don't have variants
+                    if (rootName == AndroidRootSourceSets.TestFixtures) {
+                        return@forEach
+                    }
+
+                    if (rootName == AndroidRootSourceSets.AndroidTest && variant.buildType != testBuildType) {
+                        return@forEach
+                    }
+
+                    // but testFixtures still have source sets based on flavors
+                    val testFixtureSets = if (rootName != AndroidRootSourceSets.Main) {
+                        variant.sourceSets(AndroidRootSourceSets.TestFixtures)
+                    } else emptyList()
+
+                    val sourceSets = variant.sourceSets(rootName)
+                    val variantSourceSetName = sourceSets.lastOrNull()
+                        ?: throw GradleException("No source sets found for variant ${variant.name}")
+
+                    val variantProtoSourceSet = project.protoSourceSets.named(variantSourceSetName)
+
+                    variantProtoSourceSet.configure {
+                        val default = this as? DefaultProtoSourceSet ?: return@configure
+
+                        default.androidRoot.set(rootSourceSet)
+                        val properties = BufExecTask.AndroidProperties(
+                            isTest = rootName != AndroidRootSourceSets.Main,
+                            isAndroidTest = rootName == AndroidRootSourceSets.AndroidTest,
+                            isUnitTest = rootName == AndroidRootSourceSets.Test,
+                            sourceSetName = variantSourceSetName,
+                            buildType = variant.buildType,
+                            flavors = variant.productFlavors.map { (_, flavor) -> flavor },
+                            variant = variant.name,
+                        )
+                        default.androidProperties.set(properties)
+
+                        (sourceSets + testFixtureSets).forEach { dependency ->
+                            val dependencyProtoSourceSet = project.protoSourceSets.findByName(dependency)
+                                ?: return@forEach
+
+                            if (name != dependency) {
+                                extendsFrom(dependencyProtoSourceSet)
+                            }
+                        }
+
+                        if (rootName != AndroidRootSourceSets.Main) {
+                            val mainVariantProtoSourceSet = project.protoSourceSets.findByName(variant.name)
+                                as? DefaultProtoSourceSet
+
+                            if (mainVariantProtoSourceSet != null) {
+                                default.androidMain.set(mainVariantProtoSourceSet)
+
+                                importsFrom(mainVariantProtoSourceSet)
+                            }
+                        }
+
+                        project.configureTasks(default)
+                    }
+                }
+            }
+        }
     }
 
     private fun ProtocPlugin.defaultOptions() {
+        isKotlin.set(true)
         options.put("debugOutput", "protoc-gen-$name.log")
 
         options.put("generateComments", buf.generate.comments.copyComments)
@@ -118,7 +202,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             .ensureDirectoryExists()
 
         // only resolve in task's 'execute' due to the deferred nature of dependsOn
-        val importsProvider = protoSourceSet.getImports(protoSourceSets)
+        protoSourceSet.setupDefaultImports(protoSourceSets)
 
         val includedProtocPlugins = provider {
             protoSourceSet.plugins.get().also { list ->
@@ -133,18 +217,19 @@ internal open class DefaultProtocExtension @Inject constructor(
             }
         }
 
-        val protoFiles = protoSourceSet as SourceDirectorySet
+        val protoFilesDirectorySet = protoSourceSet as SourceDirectorySet
 
         val processProtoTask = registerProcessProtoFilesTask(
             name = baseName,
             destination = buildSourceSetsProtoDir,
-            protoFiles = protoFiles,
+            protoFilesDirectorySet = protoFilesDirectorySet,
         )
 
         val processImportProtoTask = registerProcessProtoFilesImportsTask(
             name = baseName,
             destination = buildSourceSetsImportDir,
-            importsProvider = importsProvider,
+            importsProvider = protoSourceSet.imports,
+            rawImports = protoSourceSet.fileImports,
         ) {
             dependsOn(processProtoTask)
         }
@@ -154,7 +239,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             buildSourceSetsDir = buildSourceSetsDir,
             buildSourceSetsProtoDir = buildSourceSetsProtoDir,
             buildSourceSetsImportDir = buildSourceSetsImportDir,
-            withImport = importsProvider.map { it.isNotEmpty() },
+            withImport = protoSourceSet.imports.map { it.isNotEmpty() },
         ) {
             dependsOn(processProtoTask)
         }
@@ -170,11 +255,10 @@ internal open class DefaultProtocExtension @Inject constructor(
         val sourceSetsProtoDirFileTree = fileTree(buildSourceSetsProtoDir)
 
         val bufGenerateTask = registerBufGenerateTask(
-            sourceSetName = baseName,
+            protoSourceSet = protoSourceSet,
             workingDir = buildSourceSetsDir,
             outputDirectory = protoBuildDirGenerated.resolve(baseName),
-            protoFilesDir = buildSourceSetsProtoDir,
-            importFilesDir = buildSourceSetsImportDir,
+            includedPlugins = includedProtocPlugins,
         ) {
             executableFiles.addAll(
                 includedProtocPlugins.map { list ->
@@ -190,19 +274,22 @@ internal open class DefaultProtocExtension @Inject constructor(
                 }
             )
 
+            protoFiles.set(processProtoTask.map { it.outputs.files })
+            importProtoFiles.set(processImportProtoTask.map { it.outputs.files })
+
             dependsOn(generateBufGenYamlTask)
             dependsOn(generateBufYamlTask)
             dependsOn(processProtoTask)
             dependsOn(processImportProtoTask)
 
             val dependencies = project.provider {
-                protoSourceSet.getDependsOn(protoSourceSets).map { it.generateTask.get() }
+                protoSourceSet.getDependsOnTasksOf(protoSourceSets).mapNotNull { it.generateTask.orNull }
             }
 
             dependsOn(dependencies)
 
-            bufTaskDependencies.set(importsProvider.map { list ->
-                list.map { it.generateTask.get().name }
+            bufTaskDependencies.set(protoSourceSet.imports.map { list ->
+                list.filterIsInstance<DefaultProtoSourceSet>().mapNotNull { it.generateTask.orNull?.name }
             })
 
             onlyIf { !sourceSetsProtoDirFileTree.filter { it.extension == "proto" }.isEmpty }
@@ -210,54 +297,13 @@ internal open class DefaultProtocExtension @Inject constructor(
 
         protoSourceSet.generateTask.set(bufGenerateTask)
 
-        val compilationNameTestTag = if (baseName.lowercase().endsWith("test")) "Test" else ""
-        val compileTargetName = baseName.replaceFirstChar { it.uppercase() }
-            .removeSuffix("Main")
-            .removeSuffix("Test")
-            .removeSuffix("main")
-            .removeSuffix("test")
-
-        // compileKotlin - main
-        // compileTestKotlin - test
-        // compileKotlinJvm - jvmMain
-        // compileTestKotlinJvm - jvmTest
-        // compileKotlinIosArm64 - iosArm64Main
-        // compileTestKotlinIosArm64 - iosArm64Test
-        val kotlinCompilationName = "compile${compilationNameTestTag}Kotlin${compileTargetName}"
-
-        project.tasks.withType<KotlinCompilationTask<*>>().all {
-            if (name == kotlinCompilationName) {
-                dependsOn(bufGenerateTask)
-            }
-        }
-
-        project.tasks.withType<JavaCompile>().all {
-            // compileJvmTestJava - test (java, kmp)
-            // compileJvmMainJava - main (java, kmp)
-            // compileJava - main (java)
-            // compileTestJava - test (java)
-            val taskNameAsSourceSet = when (name) {
-                "compileJvmTestJava" -> "test"
-                "compileJvmMainJava" -> "main"
-                "compileJava" -> "main"
-                "compileTestJava" -> "test"
-
-                else -> throw GradleException("Unknown java compile task name: $name")
-            }
-
-            if (taskNameAsSourceSet == baseName) {
-                dependsOn(bufGenerateTask)
-            }
-        }
-
         configureSourceDirectories(
-            baseName = baseName,
+            protoSourceSet = protoSourceSet,
             includedProtocPlugins = includedProtocPlugins,
             bufGenerateTask = bufGenerateTask,
         )
 
         configureCustomTasks(
-            baseName = baseName,
             protoSourceSet = protoSourceSet,
             buildSourceSetsDir = buildSourceSetsDir,
             generateBufYamlTask = generateBufYamlTask,
@@ -265,49 +311,47 @@ internal open class DefaultProtocExtension @Inject constructor(
             processProtoTask = processProtoTask,
             processImportProtoTask = processImportProtoTask,
             sourceSetsProtoDirFileTree = sourceSetsProtoDirFileTree,
-            importsProvider = importsProvider,
-        )
+        ) {
+            protoFiles.set(processProtoTask.map { it.outputs.files })
+            importProtoFiles.set(processImportProtoTask.map { it.outputs.files })
+        }
     }
 
-    private fun Project.configureSourceDirectories(
-        baseName: String,
+    private fun configureSourceDirectories(
+        protoSourceSet: DefaultProtoSourceSet,
         includedProtocPlugins: Provider<Set<ProtocPlugin>>,
         bufGenerateTask: TaskProvider<BufGenerateTask>,
     ) {
-        // locates correctly jvmMain, main jvmTest, test
-        extensions.findByType<JavaPluginExtension>()?.sourceSets?.all {
-            val javaSourceSet = this
+        val languageSets = protoSourceSet.languageSourceSets.get()
 
-            if (javaSourceSet.name == baseName) {
-                val javaSourcesProvider = includedProtocPlugins.map { plugins ->
-                    val out = bufGenerateTask.get().outputDirectory.get()
-                    plugins.filter { it.isJava.get() }.map { out.resolve(it.name) }
-                }
+        val javaOutputs = languageOutputs(includedProtocPlugins, bufGenerateTask) { it.isJava.get() }
+        val kotlinOutputs = languageOutputs(includedProtocPlugins, bufGenerateTask) { it.isKotlin.get() }
 
-                javaSourceSet.java.srcDirs(javaSourcesProvider)
-            }
+        languageSets.filterIsInstance<SourceSet>().forEach { sourceSet ->
+            sourceSet.java.srcDirs(javaOutputs)
         }
 
-        val kotlinSourcesProvider = includedProtocPlugins.map { plugins ->
-            val out = bufGenerateTask.get().outputDirectory.get()
-            plugins.filter { !it.isJava.get() }.map { out.resolve(it.name) }
+        languageSets.filterIsInstance<KotlinSourceSet>().forEach { sourceSet ->
+            sourceSet.kotlin.srcDirs(kotlinOutputs)
+        }
+    }
+
+    private fun languageOutputs(
+        includedProtocPlugins: Provider<Set<ProtocPlugin>>,
+        bufGenerateTask: TaskProvider<BufGenerateTask>,
+        pluginFilter: (ProtocPlugin) -> Boolean,
+    ): Provider<List<File>> {
+        val plugins = includedProtocPlugins.map { plugins ->
+            plugins.filter(pluginFilter).map { it.name }.toSet()
         }
 
-        project.kotlinJvmExtensionOrNull?.sourceSets?.all {
-            if (name == baseName) {
-                kotlin.srcDirs(kotlinSourcesProvider)
-            }
-        }
-
-        project.kotlinKmpExtensionOrNull?.sourceSets?.all {
-            if (name == baseName) {
-                kotlin.srcDirs(kotlinSourcesProvider)
-            }
+        return bufGenerateTask.flatMap { task ->
+            val pluginsSet = plugins.get()
+            task.outputSourceDirectories.map { list -> list.filter { it.name in pluginsSet } }
         }
     }
 
     private fun Project.configureCustomTasks(
-        baseName: String,
         protoSourceSet: DefaultProtoSourceSet,
         buildSourceSetsDir: File,
         generateBufYamlTask: TaskProvider<GenerateBufYaml>,
@@ -315,8 +359,10 @@ internal open class DefaultProtocExtension @Inject constructor(
         processProtoTask: TaskProvider<ProcessProtoFiles>,
         processImportProtoTask: TaskProvider<ProcessProtoFiles>,
         sourceSetsProtoDirFileTree: ConfigurableFileTree,
-        importsProvider: Provider<List<DefaultProtoSourceSet>>,
+        configure: BufExecTask.() -> Unit,
     ) {
+        val baseName = protoSourceSet.name
+
         buf.tasks.customTasks.all {
             val taskCapital = name.replaceFirstChar { it.uppercase() }
             fun taskName(baseName: String): String {
@@ -324,15 +370,10 @@ internal open class DefaultProtocExtension @Inject constructor(
                 return "buf$taskCapital$baseCapital"
             }
 
-            val properties = BufExecTask.Properties(
-                isTest = baseName.lowercase().endsWith("test"),
-                sourceSetName = baseName,
-            )
-
             registerBufExecTask(
                 clazz = kClass,
                 workingDir = provider { buildSourceSetsDir },
-                properties = properties,
+                properties = protoSourceSet.bufExecProperties(),
                 name = taskName(baseName),
             ) {
                 dependsOn(generateBufYamlTask)
@@ -341,77 +382,84 @@ internal open class DefaultProtocExtension @Inject constructor(
                 dependsOn(processImportProtoTask)
 
                 val dependencies = project.provider {
-                    protoSourceSet.getDependsOn(protoSourceSets).map { dependency ->
+                    protoSourceSet.getDependsOnTasksOf(protoSourceSets).map { dependency ->
                         project.tasks.named(taskName(dependency.name), kClass.java).get()
                     }
                 }
 
                 dependsOn(dependencies)
 
-                bufTaskDependencies.set(importsProvider.map { list ->
-                    list.map { dependency ->
-                        project.tasks.named(taskName(dependency.name), kClass.java).get().name
+                bufTaskDependencies.set(protoSourceSet.imports.map { list ->
+                    list.mapNotNull { dependency ->
+                        project.tasks.findByName(taskName(dependency.name))?.name
                     }
                 })
+
+                configure()
 
                 onlyIf { !sourceSetsProtoDirFileTree.filter { it.extension == "proto" }.isEmpty }
             }
         }
     }
 
-    private fun DefaultProtoSourceSet.getImports(
-        protoSourceSets: ProtoSourceSets,
-    ): Provider<List<DefaultProtoSourceSet>> {
-        return when {
+    private fun DefaultProtoSourceSet.setupDefaultImports(protoSourceSets: ProtoSourceSets) {
+        if (isAndroid) {
+            // imports are set up on variant
+            return
+        }
+
+        val calculatedImports: Provider<List<ProtoSourceSet>> = when {
             name.lowercase().endsWith("main") -> {
                 getImportsForTestOrMain(protoSourceSets)
             }
 
             name.lowercase().endsWith("test") -> {
-                val main = getImportsForTestOrMain(protoSourceSets)
-                val test = (project.protoSourceSets.findByName(correspondingMainName()) as? DefaultProtoSourceSet)
+                val test = getImportsForTestOrMain(protoSourceSets)
+                val main = (correspondingMainNameSourceSet(name, protoSourceSets) as? DefaultProtoSourceSet)
                     ?.getImportsForTestOrMain(protoSourceSets)
 
-                if (test == null) main else main.zip(test) { a, b -> a + b }
+                if (main == null) test else test.zip(main) { a, b -> a + b }
             }
 
             else -> {
-                throw GradleException("Unknown source set name: $name")
+                project.provider { emptyList() }
             }
         }
+
+        importsAllFrom(calculatedImports)
     }
 
     private fun DefaultProtoSourceSet.getImportsForTestOrMain(
         protoSourceSets: ProtoSourceSets,
-    ): Provider<List<DefaultProtoSourceSet>> {
+    ): Provider<List<ProtoSourceSet>> {
         return languageSourceSets.map { list ->
-            list.filterIsInstance<KotlinSourceSet>().flatMap {
-                it.dependsOn.mapNotNull { dependency ->
-                    (protoSourceSets.getByName(dependency.name) as? DefaultProtoSourceSet)
-                }.flatMap { proto ->
-                    // can't use plus because DefaultProtoSourceSet is Iterable
-                    proto.getImportsForTestOrMain(protoSourceSets).get().toMutableList().apply {
-                        add(proto)
-                    }
-                }
-            } + list.filterIsInstance<KotlinSourceSet>().mapNotNull {
-                if (it.name.endsWith("Test")) {
-                    project.protoSourceSets.findByName(correspondingMainName()) as? DefaultProtoSourceSet
-                } else {
-                    null
-                }
-            } + list.filterIsInstance<SourceSet>().mapNotNull {
-                if (it.name == SourceSet.TEST_SOURCE_SET_NAME) {
-                    project.protoSourceSets.findByName(correspondingMainName()) as? DefaultProtoSourceSet
-                } else {
-                    null
-                }
+            val kotlin = list.filterIsInstance<KotlinSourceSet>()
+            val java = list.filterIsInstance<SourceSet>()
+
+            kotlin.flatMap {
+                it.dependsOn.mapNotNull { dep -> protoSourceSets.getByName(dep.name) }
+            } + kotlin.mapNotNull {
+                correspondingMainNameSourceSet(it.name, protoSourceSets)
+            } + java.mapNotNull {
+                correspondingMainNameSourceSet(it.name, protoSourceSets)
             }
         }
     }
 }
 
-internal fun DefaultProtoSourceSet.getDependsOn(protoSourceSets: ProtoSourceSets): List<DefaultProtoSourceSet> {
+/**
+ * Return a list of [DefaultProtoSourceSet] that have tasks that [this] will depend on.
+ * It's a different list from [DefaultProtoSourceSet.imports],
+ * as not all [DefaultProtoSourceSet] have associated tasks (on Android, for example)
+ */
+internal fun DefaultProtoSourceSet.getDependsOnTasksOf(protoSourceSets: ProtoSourceSets): List<DefaultProtoSourceSet> {
+    // todo check KMP
+    // androidMain/androidTest for KMP are evaluated as usual (they don't have androidRoot prop)
+    // androidRoot.isPresent == this is not androidMain/androidTest
+    if (isAndroid && androidRoot.isPresent) {
+        return listOfNotNull(androidRoot.get(), androidMain.orNull)
+    }
+
     val sourceSets = languageSourceSets.get()
 
     val kmpDependsOn = sourceSets
@@ -424,22 +472,20 @@ internal fun DefaultProtoSourceSet.getDependsOn(protoSourceSets: ProtoSourceSets
             protoSourceSets.getByName(it) as? DefaultProtoSourceSet
         }
 
-    val kmp = if (name.endsWith("Test")) {
-        (protoSourceSets.getByName(correspondingMainName()) as? DefaultProtoSourceSet)
-    } else {
-        null
-    }
+    val main = correspondingMainNameSourceSet(name, protoSourceSets) as? DefaultProtoSourceSet
 
-    val jvm = if (name == SourceSet.TEST_SOURCE_SET_NAME) {
-        (protoSourceSets.getByName(correspondingMainName()) as? DefaultProtoSourceSet)
-    } else {
-        null
-    }
-
-    return (kmpDependsOn + kmp + jvm).filterNotNull()
+    return (kmpDependsOn + main).filterNotNull()
 }
 
-private fun Named.correspondingMainName(): String {
+private fun correspondingMainNameSourceSet(name: String, protoSourceSets: ProtoSourceSets): ProtoSourceSet? {
+    return if (name.lowercase().endsWith("test")) {
+        protoSourceSets.findByName(correspondingMainName(name))
+    } else {
+        null
+    }
+}
+
+private fun correspondingMainName(name: String): String {
     return when {
         name == "test" -> "main"
         name.endsWith("Test") -> name.removeSuffix("Test") + "Main"

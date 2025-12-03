@@ -31,6 +31,7 @@ tasks.withType<KotlinCompile>().configureEach {
 dependencies {
     compileOnly(libs.kotlin.gradle.plugin)
     compileOnly(libs.android.gradle.plugin)
+    compileOnly(libs.android.gradle.plugin.api)
 
     testImplementation(libs.kotlin.gradle.plugin)
     testImplementation(gradleTestKit())
