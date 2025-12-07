@@ -6,8 +6,8 @@ package kotlinx.rpc.protoc.android
 
 import com.android.build.api.variant.Variant
 
-internal enum class AndroidRootSourceSets(val stringValue: String) {
-    // todo KMP?
+// root source sets for 'com.android.(application|library|test|dynamic-feature)'
+internal enum class LegacyAndroidRootSourceSets(val stringValue: String) {
     Main("main"),
     Test("test"),
     AndroidTest("androidTest"),
@@ -17,7 +17,25 @@ internal enum class AndroidRootSourceSets(val stringValue: String) {
     override fun toString(): String = stringValue
 }
 
-internal fun Variant.sourceSets(rootName: AndroidRootSourceSets) = buildList {
+// leaf (not root as above) source sets for 'com.android.kotlin.multiplatform.library'
+internal enum class KmpLibraryAndroidLeafSourceSets(val stringValue: String) {
+    Main("androidMain"),
+    HostTest("androidHostTest"),
+    DeviceTest("androidDeviceTest"),
+    ;
+
+    override fun toString(): String = stringValue
+}
+
+// returns a list of source set names this variant consists
+// for armFreeappDebugTest (where arm is a flavor):
+// - test
+// - testArm
+// - testFreeapp
+// - testArmFreeapp
+// - testDebug
+// - testArmFreeappDebug
+internal fun Variant.dependencySourceSets(rootName: LegacyAndroidRootSourceSets) = buildList {
     fun String.prefixed() = prefixed(rootName)
 
     add(rootName.stringValue)
@@ -38,8 +56,58 @@ internal fun Variant.sourceSets(rootName: AndroidRootSourceSets) = buildList {
     add(name.prefixed())
 }
 
-internal fun String.prefixed(rootName: AndroidRootSourceSets) = if (rootName == AndroidRootSourceSets.Main) {
-    this
-} else {
-    "${rootName.stringValue}${this.replaceFirstChar { it.uppercase() }}"
+// debug -> androidDebug
+// androidTest -> androidInstrumentedTest
+// androidTestDebug -> androidInstrumentedTestDebug
+// main -> androidMain
+// release -> androidRelease
+// test -> androidUnitTest
+// testDebug -> androidUnitTestDebug
+// testRelease -> androidUnitTestRelease
+/**
+ * @see kotlinx.rpc.protoc.DefaultProtoSourceSet.isKotlinProxyLegacyAndroid
+ */
+internal fun String.kotlinProxyFromAndroidOriginSourceSetName(rootName: LegacyAndroidRootSourceSets): String? {
+    return when (rootName) {
+        LegacyAndroidRootSourceSets.Main -> {
+            "android${replaceFirstChar { it.uppercase() }}"
+        }
+
+        LegacyAndroidRootSourceSets.Test -> {
+            "androidUnit${replaceFirstChar { it.uppercase() }}"
+        }
+
+        LegacyAndroidRootSourceSets.AndroidTest -> {
+            "androidInstrumented${removePrefix("android").replaceFirstChar { it.uppercase() }}"
+        }
+
+        LegacyAndroidRootSourceSets.TestFixtures -> null
+    }
 }
+
+// androidDebug -> debug
+// androidInstrumentedTest -> androidTest
+// androidInstrumentedTestDebug -> androidTestDebug
+// androidMain -> main
+// androidRelease -> release
+// androidUnitTest -> test
+// androidUnitTestDebug -> testDebug
+// androidUnitTestRelease -> testRelease
+/**
+ * @see kotlinx.rpc.protoc.DefaultProtoSourceSet.isKotlinProxyLegacyAndroid
+ */
+internal fun String.androidOriginFromKotlinProxySourceSetName(): String? {
+    return when {
+        startsWith("androidUnit") -> removePrefix("androidUnit").replaceFirstChar { it.lowercase() }
+        startsWith("androidInstrumented") -> "android${removePrefix("androidInstrumented")}"
+        startsWith("android") -> removePrefix("android").replaceFirstChar { it.lowercase() }
+        else -> null
+    }
+}
+
+internal fun String.prefixed(rootName: LegacyAndroidRootSourceSets) =
+    if (rootName == LegacyAndroidRootSourceSets.Main) {
+        this
+    } else {
+        "${rootName.stringValue}${this.replaceFirstChar { it.uppercase() }}"
+    }

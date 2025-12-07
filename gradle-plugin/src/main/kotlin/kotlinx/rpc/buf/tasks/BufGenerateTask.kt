@@ -20,10 +20,8 @@ import kotlinx.rpc.protoc.DefaultProtoSourceSet
 import kotlinx.rpc.protoc.bufExecProperties
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectories
-import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.kotlin.dsl.listProperty
 import javax.inject.Inject
 
@@ -32,7 +30,9 @@ import javax.inject.Inject
  *
  * @see <a href="https://buf.build/docs/reference/cli/buf/generate/">buf generate</a>
  */
-public abstract class BufGenerateTask @Inject internal constructor(properties: Properties) : BufExecTask(properties) {
+public abstract class BufGenerateTask @Inject internal constructor(
+    properties: Provider<Properties>,
+) : BufExecTask(properties) {
     // used to properly calculate output directories
     @get:Input
     internal abstract val pluginNames: ListProperty<String>

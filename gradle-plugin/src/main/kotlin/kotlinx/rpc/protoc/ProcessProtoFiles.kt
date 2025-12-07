@@ -32,6 +32,8 @@ internal fun Project.registerProcessProtoFilesTask(
     val capitalName = name.replaceFirstChar { it.uppercase() }
 
     return tasks.register<ProcessProtoFiles>("process${capitalName}ProtoFiles") {
+        duplicatesStrategy = DuplicatesStrategy.FAIL
+
         from(files(protoFilesDirectorySet.sourceDirectories)) {
             include(protoFilesDirectorySet.includes)
             exclude(protoFilesDirectorySet.excludes)

@@ -7,7 +7,11 @@ package kotlinx.rpc.protoc
 import kotlinx.rpc.buf.tasks.BufExecTask
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.rpcExtension
+import kotlinx.rpc.util.KotlinPluginId
 import kotlinx.rpc.util.findOrCreate
+import kotlinx.rpc.util.withAndroid
+import kotlinx.rpc.util.withAndroidSourceSets
+import kotlinx.rpc.util.withKotlin
 import kotlinx.rpc.util.withLazyJavaPluginExtension
 import kotlinx.rpc.util.withKotlinSourceSets
 import org.gradle.api.Action
@@ -29,8 +33,6 @@ import org.gradle.kotlin.dsl.setProperty
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetContainer
-import org.jetbrains.kotlin.tooling.core.extrasKeyOf
 import java.io.File
 import java.util.*
 import java.util.function.Consumer
@@ -45,13 +47,7 @@ internal class ProtoSourceSetFactory(
     private val project: Project,
 ) : NamedDomainObjectFactory<ProtoSourceSet> {
     override fun create(name: String): ProtoSourceSet {
-        val isAndroid = project.the<KotlinSourceSetContainer>()
-            .sourceSets.findByName(name)
-            ?.extras
-            ?.get(isAndroidKey)
-            ?: false
-
-        return project.objects.newInstance(DefaultProtoSourceSet::class.java, project, name, isAndroid)
+        return project.objects.newInstance(DefaultProtoSourceSet::class.java, project, name)
     }
 }
 
@@ -70,16 +66,16 @@ internal fun Project.findOrCreateProtoSourceSets(): NamedDomainObjectContainer<P
 internal open class DefaultProtoSourceSet(
     internal val project: Project,
     internal val sourceDirectorySet: SourceDirectorySet,
-    internal val isAndroid: Boolean,
 ) : ProtoSourceSet, SourceDirectorySet by sourceDirectorySet {
-
     @Inject
-    constructor(project: Project, protoName: String, isAndroid: Boolean) : this(
+    constructor(
+        project: Project,
+        protoName: String,
+    ) : this(
         project = project,
         sourceDirectorySet = project.objects.sourceDirectorySet(protoName, "Proto sources for $protoName").apply {
             srcDirs("src/${protoName}/proto")
         },
-        isAndroid = isAndroid,
     )
 
     private val explicitApiModeEnabled = project.provider {
@@ -124,22 +120,42 @@ internal open class DefaultProtoSourceSet(
         }
     }
 
+    // Collection of AndroidSourceSet, KotlinSourceSet, SourceSet (java) associated with this proto source set
     val languageSourceSets: ListProperty<Any> = project.objects.listProperty<Any>()
     val generateTask: Property<BufGenerateTask?> = project.objects.property<BufGenerateTask?>()
 
-    // main/test for Kotlin/Android, androidMain/androidTest for KMP
-    // only set for variant.name sourceSets
-    val androidRoot: Property<DefaultProtoSourceSet> = project.objects.property()
-    // used to track test tasks' dependencies for main tasks, e.g.:
-    // - bufGenerateTestDebug depends on bufGenerateDebug
+    // source set that is associated with com.android.(application|library|test|dynamic-feature) plugin
     //
-    // so we need to track this dependency using this property
-    val androidMain: Property<DefaultProtoSourceSet> = project.objects.property()
+    // androidMain/androidHostTest/androidDeviceTest source sets for com.android.kotlin.multiplatform.library
+    // are NOT considered to be legacy Android source sets
+    //
+    // androidDebug, androidInstrumentedTest, androidInstrumentedTestDebug, androidMain, etc. from
+    // the combination of com.android.* and kotlin.(multiplatform|android) are considered legacy Android source sets
+    internal val isLegacyAndroid: Property<Boolean> = project.objects.property<Boolean>()
+        .convention(false)
+
+    // when com.android.* (not kotlin.multiplatform.library) is applied - kotlin has proxy source sets:
+    // | AndroidSourceSet | KotlinSourceSet |
+    // | main             | androidMain     |
+    // | test             | androidUnitTest |
+    // | debug            | androidDebug    |
+    // ...
+    //
+    // these kotlin 'proxy' source sets have propper dependsOn values, but should not have tasks configures,
+    // as tasks are configured once for the android source sets
+    internal val isKotlinProxyLegacyAndroid: Property<Boolean> = project.objects.property<Boolean>()
+        .convention(false)
+
+    // used to track tasks' dependencies for main/commonMain/commonTest tasks, e.g.:
+    // - bufGenerateTestDebug depends on bufGenerateDebug
+    // - bufGenerateTestDebug depends on bufGenerateCommonTest and bufGenerateDebug for KMP
+    //
+    // So we need to track this dependency using this property
+    val androidDependencies: SetProperty<DefaultProtoSourceSet> = project.objects.setProperty()
 
     // only set for variant.name sourceSets
     val androidProperties: Property<BufExecTask.AndroidProperties?> =
         project.objects.property<BufExecTask.AndroidProperties?>()
-            .convention(null)
 
     override val imports: SetProperty<ProtoSourceSet> = project.objects.setProperty()
     override val fileImports: ConfigurableFileCollection = project.objects.fileCollection()
@@ -164,7 +180,13 @@ internal open class DefaultProtoSourceSet(
         imports.addAll(protoSourceSet.flatMap { it.imports.checkSelfImport() })
     }
 
+    private val extendsFrom: MutableSet<ProtoSourceSet> = mutableSetOf()
+
     override fun extendsFrom(protoSourceSet: ProtoSourceSet) {
+        if (extendsFrom.contains(protoSourceSet)) {
+            return
+        }
+
         if (this == protoSourceSet) {
             throw IllegalArgumentException("$name proto source set cannot extend from self")
         }
@@ -175,6 +197,8 @@ internal open class DefaultProtoSourceSet(
                         "${protoSourceSet.name} is not a ${DefaultProtoSourceSet::class.simpleName}",
             )
         }
+
+        extendsFrom += protoSourceSet
 
         source(protoSourceSet.sourceDirectorySet)
         imports.addAll(protoSourceSet.imports.checkSelfImport())
@@ -217,7 +241,7 @@ internal fun Project.createProtoExtensions() {
     fun findOrCreateAndConfigure(
         languageSourceSetName: String,
         languageSourceSet: Any?,
-    ): ProtoSourceSet {
+    ): DefaultProtoSourceSet {
         val container = findOrCreateProtoSourceSets()
         val protoSourceSet = container.maybeCreate(languageSourceSetName) as DefaultProtoSourceSet
 
@@ -226,15 +250,30 @@ internal fun Project.createProtoExtensions() {
         return protoSourceSet
     }
 
-    project.withKotlinSourceSets { isAndroid, extension ->
-        extension.sourceSets.all {
-            extras[isAndroidKey] = isAndroid
-            findOrCreateAndConfigure(name, this)
+    // CCE free check for kotlin
+    withKotlin {
+        withKotlinSourceSets { id, extension ->
+            extension.sourceSets.all {
+                findOrCreateAndConfigure(name, this)
+            }
+
+            if (id != KotlinPluginId.MULTIPLATFORM) {
+                return@withKotlinSourceSets
+            }
         }
     }
 
-    project.withLazyJavaPluginExtension {
-        sourceSets.configureEach {
+    // CCE free check for android
+    withAndroid {
+        withAndroidSourceSets { sourceSets ->
+            sourceSets.all {
+                findOrCreateAndConfigure(name, this)
+            }
+        }
+    }
+
+    withLazyJavaPluginExtension {
+        sourceSets.all {
             val protoSourceSet = findOrCreateAndConfigure(name, this)
 
             findOrCreate(PROTO_SOURCE_SET_EXTENSION_NAME) {
@@ -244,17 +283,15 @@ internal fun Project.createProtoExtensions() {
     }
 }
 
-private val isAndroidKey = extrasKeyOf<Boolean>("kxrpc_proto_source_set_is_android")
-
-internal fun DefaultProtoSourceSet.bufExecProperties(): BufExecTask.Properties {
-    // main has androidRoot.isPresent=false and should not be included, although it is an Android source set
-    return if (isAndroid && androidRoot.isPresent) {
-        androidProperties.orNull
-            ?: throw GradleException("Android properties are not set for source set $name")
-    } else {
-        BufExecTask.Properties(
-            isTest = name.lowercase().endsWith("test"),
-            sourceSetName = name,
-        )
+internal fun DefaultProtoSourceSet.bufExecProperties(): Provider<BufExecTask.Properties> {
+    return project.provider {
+        if (androidProperties.isPresent) {
+            androidProperties.get()
+        } else {
+            BufExecTask.Properties(
+                isTest = name.lowercase().endsWith("test"),
+                sourceSetName = name,
+            )
+        }
     }
 }

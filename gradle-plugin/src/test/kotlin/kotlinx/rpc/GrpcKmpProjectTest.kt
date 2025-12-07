@@ -5,12 +5,10 @@
 package kotlinx.rpc
 
 import kotlinx.rpc.base.GrpcBaseTest
-import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
 import kotlin.io.path.Path
-import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class GrpcKmpProjectTest : GrpcBaseTest() {

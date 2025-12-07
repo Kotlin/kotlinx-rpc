@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.buf.tasks
 
-import com.android.build.api.variant.Variant
 import kotlinx.rpc.buf.BUF_EXECUTABLE_CONFIGURATION
 import kotlinx.rpc.buf.BufExtension
 import kotlinx.rpc.buf.execBuf
@@ -40,7 +39,7 @@ import javax.inject.Inject
  */
 public abstract class BufExecTask @Inject constructor(
     @Internal
-    public val properties: Properties,
+    public val properties: Provider<Properties>,
 ) : DefaultTask() {
     init {
         group = PROTO_GROUP
@@ -89,29 +88,36 @@ public abstract class BufExecTask @Inject constructor(
     public class AndroidProperties internal constructor(
         isTest: Boolean,
         sourceSetName: String,
+
         /**
          * Name of the android flavors this task is associated with.
          *
-         * @see [Variant.productFlavors]
+         * Can be empty for 'com.android.kotlin.multiplatform.library' source sets.
+         *
+         * @see com.android.build.api.variant.Variant.productFlavors
          */
         public val flavors: List<String>,
+
         /**
          * Name of the android build type this task is associated with.
          *
-         * @see Variant.buildType
+         * @see com.android.build.api.variant.Variant.buildType
          */
         public val buildType: String?,
+
         /**
          * Name of the android variant this task is associated with.
          *
-         * @see Variant.name
+         * Can be `null` for 'com.android.kotlin.multiplatform.library' source sets.
+         *
+         * @see com.android.build.api.variant.Variant.name
          */
-        public val variant: String,
+        public val variant: String?,
 
         /**
          * Whether the task is for instrumentation tests.
          */
-        public val isAndroidTest: Boolean,
+        public val isInstrumentedTest: Boolean,
 
         /**
          * Whether the task is for unit tests.
@@ -179,7 +185,7 @@ public abstract class BufExecTask @Inject constructor(
 public inline fun <reified T : BufExecTask> Project.registerBufExecTask(
     name: String,
     workingDir: Provider<File>,
-    properties: BufExecTask.Properties,
+    properties: Provider<BufExecTask.Properties>,
     noinline configuration: T.() -> Unit,
 ): TaskProvider<T> = registerBufExecTask(T::class, name, workingDir, properties, configuration)
 
@@ -188,7 +194,7 @@ internal fun <T : BufExecTask> Project.registerBufExecTask(
     clazz: KClass<T>,
     name: String,
     workingDir: Provider<File>,
-    properties: BufExecTask.Properties,
+    properties: Provider<BufExecTask.Properties>,
     configuration: T.() -> Unit = {},
 ): TaskProvider<T> = tasks.register(name, clazz, properties).apply {
     configure {

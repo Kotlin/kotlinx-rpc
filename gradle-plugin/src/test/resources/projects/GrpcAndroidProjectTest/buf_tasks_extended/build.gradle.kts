@@ -38,7 +38,7 @@ android {
     }
 }
 
-public abstract class BufLintTask @Inject constructor(properties: BufExecTask.Properties) : BufExecTask(properties) {
+public abstract class BufLintTask @Inject constructor(properties: Provider<BufExecTask.Properties>) : BufExecTask(properties) {
     init {
         command.set("lint")
         args.set(emptyList())
@@ -128,7 +128,7 @@ tasks.register("test_tasks") {
         )
 
         assertTasks(
-            "testTasks", genTasks.unitTestTasks(),
+            "unit test tasks", genTasks.androidUnitTestTasks(),
             // test arm
             "bufGenerateTestArmFreeappDebug",
             "bufGenerateTestArmFreeappRelease",
@@ -143,7 +143,7 @@ tasks.register("test_tasks") {
         )
 
         assertTasks(
-            "testTasks", genTasks.androidTestTasks(),
+            "instrumented test tasks", genTasks.androidInstrumentedTestTasks(),
             // android test
             "bufGenerateAndroidTestArmFreeappDebug",
             "bufGenerateAndroidTestArmRetailappDebug",
@@ -211,7 +211,7 @@ tasks.register("test_tasks") {
         )
 
         assertTasks(
-            "matchingFlavor freeapp", genTasks.matchingFlavor("freeapp"),
+            "matchingAndroidFlavor freeapp", genTasks.matchingAndroidFlavor("freeapp"),
 
             // android test
             "bufGenerateAndroidTestArmFreeappDebug",
@@ -235,7 +235,7 @@ tasks.register("test_tasks") {
         )
 
         assertTasks(
-            "matchingFlavor arm", genTasks.matchingFlavor("arm"),
+            "matchingAndroidFlavor arm", genTasks.matchingAndroidFlavor("arm"),
 
             // android test
             "bufGenerateAndroidTestArmFreeappDebug",
@@ -255,7 +255,7 @@ tasks.register("test_tasks") {
         )
 
         assertTasks(
-            "matchingBuildType debug", genTasks.matchingBuildType("debug"),
+            "matchingAndroidBuildType debug", genTasks.matchingAndroidBuildType("debug"),
 
             // android test
             "bufGenerateAndroidTestArmFreeappDebug",
@@ -281,7 +281,7 @@ tasks.register("test_tasks") {
         )
 
         assertTasks(
-            "matchingBuildType relase", genTasks.matchingBuildType("release"),
+            "matchingAndroidBuildType relase", genTasks.matchingAndroidBuildType("release"),
 
             // test arm
             "bufGenerateTestArmFreeappRelease",
@@ -301,7 +301,7 @@ tasks.register("test_tasks") {
         )
 
         assertTasks(
-            "matchingVariant armFreeappDebug", genTasks.matchingVariant("armFreeappDebug"),
+            "matchingAndroidVariant armFreeappDebug", genTasks.matchingAndroidVariant("armFreeappDebug"),
 
             // android test
             "bufGenerateAndroidTestArmFreeappDebug",
@@ -314,12 +314,12 @@ tasks.register("test_tasks") {
         )
 
         assertTasks(
-            "matchingVariant armFreeappDebug udet tests", genTasks.matchingVariant("armFreeappDebug").unitTestTasks(),
+            "matchingAndroidVariant armFreeappDebug udet tests", genTasks.matchingAndroidVariant("armFreeappDebug").androidUnitTestTasks(),
             "bufGenerateTestArmFreeappDebug",
         )
 
         assertTasks(
-            "armFreeappDebug armFreeappDebug android tests", genTasks.matchingVariant("armFreeappDebug").androidTestTasks(),
+            "armFreeappDebug armFreeappDebug android tests", genTasks.matchingAndroidVariant("armFreeappDebug").androidInstrumentedTestTasks(),
             "bufGenerateAndroidTestArmFreeappDebug",
         )
 

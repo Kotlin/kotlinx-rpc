@@ -15,7 +15,7 @@ plugins {
     id("org.jetbrains.kotlinx.rpc.plugin") version "<rpc-version>"
 }
 
-public abstract class BufLintTask @Inject constructor(properties: BufExecTask.Properties) : BufExecTask(properties) {
+public abstract class BufLintTask @Inject constructor(properties: Provider<BufExecTask.Properties>) : BufExecTask(properties) {
     init {
         command.set("lint")
         args.set(emptyList())

@@ -7,6 +7,7 @@ import org.gradle.api.GradleException
 import org.gradle.kotlin.dsl.version
 import kotlinx.rpc.buf.tasks.*
 import kotlinx.rpc.buf.*
+import org.gradle.api.provider.Provider
 import javax.inject.Inject
 
 plugins {
@@ -23,7 +24,7 @@ kotlin {
 }
 
 
-public abstract class BufLintTask @Inject constructor(properties: BufExecTask.Properties) : BufExecTask(properties) {
+public abstract class BufLintTask @Inject constructor(properties: Provider<BufExecTask.Properties>) : BufExecTask(properties) {
     init {
         command.set("lint")
         args.set(emptyList())

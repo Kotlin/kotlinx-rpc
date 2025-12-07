@@ -21,7 +21,7 @@ android {
     compileSdk = 34
 }
 
-public abstract class BufLintTask @Inject constructor(properties: BufExecTask.Properties) : BufExecTask(properties) {
+public abstract class BufLintTask @Inject constructor(properties: Provider<BufExecTask.Properties>) : BufExecTask(properties) {
     init {
         command.set("lint")
         args.set(emptyList())
@@ -72,13 +72,13 @@ tasks.register("test_tasks") {
         )
 
         assertTasks(
-            "testTasks", genTasks.unitTestTasks(),
+            "unit test tasks", genTasks.androidUnitTestTasks(),
             "bufGenerateTestDebug",
             "bufGenerateTestRelease",
         )
 
         assertTasks(
-            "testTasks", genTasks.androidTestTasks(),
+            "instrumented test tasks", genTasks.androidInstrumentedTestTasks(),
             "bufGenerateAndroidTestDebug",
         )
 
@@ -133,36 +133,36 @@ tasks.register("test_tasks") {
         )
 
         assertTasks(
-            "matchingFlavor freeapp", genTasks.matchingFlavor("freeapp"),
+            "matchingAndroidFlavor freeapp", genTasks.matchingAndroidFlavor("freeapp"),
         )
 
         assertTasks(
-            "matchingBuildType debug", genTasks.matchingBuildType("debug"),
+            "matchingAndroidBuildType debug", genTasks.matchingAndroidBuildType("debug"),
             "bufGenerateAndroidTestDebug",
             "bufGenerateTestDebug",
             "bufGenerateDebug",
         )
 
         assertTasks(
-            "matchingBuildType release", genTasks.matchingBuildType("release"),
+            "matchingAndroidBuildType release", genTasks.matchingAndroidBuildType("release"),
             "bufGenerateTestRelease",
             "bufGenerateRelease",
         )
 
         assertTasks(
-            "matchingVariant debug", genTasks.matchingVariant("debug"),
+            "matchingAndroidVariant debug", genTasks.matchingAndroidVariant("debug"),
             "bufGenerateAndroidTestDebug",
             "bufGenerateTestDebug",
             "bufGenerateDebug",
         )
 
         assertTasks(
-            "matchingBuildType debug unit tests", genTasks.matchingBuildType("debug").unitTestTasks(),
+            "matchingAndroidBuildType debug unit tests", genTasks.matchingAndroidBuildType("debug").androidUnitTestTasks(),
             "bufGenerateTestDebug",
         )
 
         assertTasks(
-            "matchingBuildType debug android tests", genTasks.matchingBuildType("debug").androidTestTasks(),
+            "matchingAndroidBuildType debug android tests", genTasks.matchingAndroidBuildType("debug").androidInstrumentedTestTasks(),
             "bufGenerateAndroidTestDebug",
         )
 

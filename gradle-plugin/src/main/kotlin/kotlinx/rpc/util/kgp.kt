@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.util
 
+import com.android.build.api.dsl.AndroidSourceSet
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
@@ -11,7 +12,9 @@ import com.android.build.api.variant.DynamicFeatureAndroidComponentsExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.api.variant.TestAndroidComponentsExtension
 import com.android.build.api.variant.Variant
+import com.android.build.gradle.BaseExtension
 import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginExtension
@@ -19,53 +22,86 @@ import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetContainer
 
-private const val KOTLIN_MULTIPLATFORM_PLUGIN_ID = "org.jetbrains.kotlin.multiplatform"
-private const val KOTLIN_JVM_PLUGIN_ID = "org.jetbrains.kotlin.jvm"
-private const val KOTLIN_ANDROID_PLUGIN_ID = "org.jetbrains.kotlin.android"
+internal enum class KotlinPluginId(val id: String) {
+    JVM("org.jetbrains.kotlin.jvm"),
+    MULTIPLATFORM("org.jetbrains.kotlin.multiplatform"),
+    ANDROID("org.jetbrains.kotlin.android")
+}
 
-private const val ANDROID_APPLICATION = "com.android.application"
-private const val ANDROID_LIBRARY = "com.android.library"
-private const val ANDROID_DYNAMIC_FEATURE = "com.android.dynamic-feature"
-private const val ANDROID_TEST = "com.android.test"
+internal const val ANDROID_APPLICATION = "com.android.application"
+internal const val ANDROID_LIBRARY = "com.android.library"
+internal const val ANDROID_DYNAMIC_FEATURE = "com.android.dynamic-feature"
+internal const val ANDROID_TEST = "com.android.test"
+internal const val ANDROID_KOTLIN_MULTIPLATFORM_LIBRARY = "com.android.kotlin.multiplatform.library"
 
-internal fun Project.withKotlinSourceSets(action: (isAndroid: Boolean, KotlinSourceSetContainer) -> Unit) {
-    plugins.withId(KOTLIN_JVM_PLUGIN_ID) {
-        the<KotlinSourceSetContainer>().apply {
-            action(false, this)
-        }
+internal val Project.kotlinPluginId: KotlinPluginId?
+    get() = plugins.findPlugin(KotlinPluginId.JVM.id)?.let { KotlinPluginId.JVM }
+        ?: plugins.findPlugin(KotlinPluginId.MULTIPLATFORM.id)?.let { KotlinPluginId.MULTIPLATFORM }
+        ?: plugins.findPlugin(KotlinPluginId.ANDROID.id)?.let { KotlinPluginId.ANDROID }
+
+internal fun Project.withKotlin(action: (id: KotlinPluginId) -> Unit) {
+    plugins.withId(KotlinPluginId.JVM.id) {
+        action(KotlinPluginId.JVM)
     }
 
-    plugins.withId(KOTLIN_MULTIPLATFORM_PLUGIN_ID) {
-        the<KotlinSourceSetContainer>().apply {
-            // todo huh?
-            action(false, this)
-        }
+    plugins.withId(KotlinPluginId.MULTIPLATFORM.id) {
+        action(KotlinPluginId.MULTIPLATFORM)
     }
 
-    plugins.withId(KOTLIN_ANDROID_PLUGIN_ID) {
-        the<KotlinSourceSetContainer>().apply {
-            action(true, this)
-        }
+    plugins.withId(KotlinPluginId.ANDROID.id) {
+        action(KotlinPluginId.ANDROID)
     }
 }
 
-internal fun Project.withLazyAndroidComponentsExtension(
-    action: Action<AndroidComponentsExtension<out CommonExtension<*, *, *, *, *, *>, *, out Variant>>,
-) {
+internal fun Project.withKotlinSourceSets(action: (id: KotlinPluginId, KotlinSourceSetContainer) -> Unit) {
+    withKotlin { id ->
+        action(id, the())
+    }
+}
+
+internal val Project.hasAndroid: Boolean
+    get() = plugins.hasPlugin(ANDROID_LIBRARY) ||
+            plugins.hasPlugin(ANDROID_APPLICATION) ||
+            plugins.hasPlugin(ANDROID_DYNAMIC_FEATURE) ||
+            plugins.hasPlugin(ANDROID_TEST) ||
+            plugins.hasPlugin(ANDROID_KOTLIN_MULTIPLATFORM_LIBRARY)
+
+internal fun Project.withAndroid(action: AndroidApplied.() -> Unit) {
     plugins.withId(ANDROID_LIBRARY) {
-        the<LibraryAndroidComponentsExtension>().apply { action.execute(this) }
+        action(AndroidApplied(project, ANDROID_LIBRARY))
     }
 
     plugins.withId(ANDROID_APPLICATION) {
-        the<ApplicationAndroidComponentsExtension>().apply { action.execute(this) }
+        action(AndroidApplied(project, ANDROID_APPLICATION))
     }
 
     plugins.withId(ANDROID_DYNAMIC_FEATURE) {
-        the<DynamicFeatureAndroidComponentsExtension>().apply { action.execute(this) }
+        action(AndroidApplied(project, ANDROID_DYNAMIC_FEATURE))
     }
 
     plugins.withId(ANDROID_TEST) {
-        the<TestAndroidComponentsExtension>().apply { action.execute(this) }
+        action(AndroidApplied(project, ANDROID_TEST))
+    }
+
+    plugins.withId(ANDROID_KOTLIN_MULTIPLATFORM_LIBRARY) {
+        action(AndroidApplied(project, ANDROID_KOTLIN_MULTIPLATFORM_LIBRARY))
+    }
+}
+
+internal class AndroidApplied(val project: Project, val id: String)
+
+internal fun AndroidApplied.withAndroidSourceSets(action: (NamedDomainObjectContainer<out AndroidSourceSet>) -> Unit) {
+    action(project.the<BaseExtension>().sourceSets)
+}
+
+internal typealias AndroidComponents = AndroidComponentsExtension<out CommonExtension<*, *, *, *, *, *>, *, out Variant>
+
+internal fun AndroidApplied.withLazyLegacyAndroidComponentsExtension(action: Action<AndroidComponents>) {
+    when (id) {
+        ANDROID_LIBRARY -> action.execute(project.the<LibraryAndroidComponentsExtension>())
+        ANDROID_APPLICATION -> action.execute(project.the<ApplicationAndroidComponentsExtension>())
+        ANDROID_DYNAMIC_FEATURE -> action.execute(project.the<DynamicFeatureAndroidComponentsExtension>())
+        ANDROID_TEST -> action.execute(project.the<TestAndroidComponentsExtension>())
     }
 }
 

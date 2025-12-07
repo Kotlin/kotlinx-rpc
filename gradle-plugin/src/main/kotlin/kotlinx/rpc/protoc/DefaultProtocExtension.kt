@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.protoc
 
+import com.android.build.api.dsl.AndroidSourceSet
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.BaseExtension
 import kotlinx.rpc.buf.BufExtension
@@ -18,10 +19,20 @@ import kotlinx.rpc.buf.tasks.registerGenerateBufGenYamlTask
 import kotlinx.rpc.buf.tasks.registerGenerateBufYamlTask
 import kotlinx.rpc.protoc.ProtocPlugin.Companion.GRPC_KOTLIN_MULTIPLATFORM
 import kotlinx.rpc.protoc.ProtocPlugin.Companion.KOTLIN_MULTIPLATFORM
-import kotlinx.rpc.protoc.android.AndroidRootSourceSets
-import kotlinx.rpc.protoc.android.sourceSets
+import kotlinx.rpc.protoc.android.KmpLibraryAndroidLeafSourceSets
+import kotlinx.rpc.protoc.android.LegacyAndroidRootSourceSets
+import kotlinx.rpc.protoc.android.androidOriginFromKotlinProxySourceSetName
+import kotlinx.rpc.protoc.android.dependencySourceSets
+import kotlinx.rpc.protoc.android.kotlinProxyFromAndroidOriginSourceSetName
+import kotlinx.rpc.util.ANDROID_KOTLIN_MULTIPLATFORM_LIBRARY
+import kotlinx.rpc.util.AndroidComponents
+import kotlinx.rpc.util.KotlinPluginId
 import kotlinx.rpc.util.ensureDirectoryExists
-import kotlinx.rpc.util.withLazyAndroidComponentsExtension
+import kotlinx.rpc.util.hasAndroid
+import kotlinx.rpc.util.kotlinPluginId
+import kotlinx.rpc.util.withAndroid
+import kotlinx.rpc.util.withKotlin
+import kotlinx.rpc.util.withLazyLegacyAndroidComponentsExtension
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
@@ -34,7 +45,10 @@ import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.the
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
+import org.jetbrains.kotlin.gradle.utils.ObservableSet
 import java.io.File
 import javax.inject.Inject
 import kotlin.collections.filterIsInstance
@@ -43,7 +57,7 @@ import kotlin.collections.plus
 
 internal open class DefaultProtocExtension @Inject constructor(
     objects: ObjectFactory,
-    project: Project,
+    private val project: Project,
 ) : ProtocExtension {
     override val buf: BufExtension = project.objects.newInstance<BufExtension>()
     override fun buf(action: Action<BufExtension>) {
@@ -85,95 +99,50 @@ internal open class DefaultProtocExtension @Inject constructor(
             defaultOptions()
         }
 
-        project.protoSourceSets.all {
-            if (this !is DefaultProtoSourceSet || isAndroid) {
-                return@all
+        // no way to configure tasks before evaluation is done
+        project.afterEvaluate {
+            configureMultiplatformAndroidSourceSets configure@{ protoSourceSet ->
+                // done in configureLegacyAndroidVariants
+                if (protoSourceSet.isLegacyAndroid.get()) {
+                    protoSourceSet.setupDefaultImports(protoSourceSets)
+                    val originSourceSetName = protoSourceSet.name.androidOriginFromKotlinProxySourceSetName()
+                        ?: return@configure
+
+                    val originSourceSet = protoSourceSets.findByName(originSourceSetName)
+                        ?: return@configure
+
+                    originSourceSet.extendsFrom(protoSourceSet)
+
+                    return@configure
+                }
+
+                configureTasks(protoSourceSet)
             }
 
-            project.configureTasks(this)
+            protoSourceSets.all {
+                withFullyInitializedProtoSourceSet(this) { protoSourceSet ->
+                    // done in configureLegacyAndroidVariants
+                    if (protoSourceSet.isLegacyAndroid.get()) {
+                        return@withFullyInitializedProtoSourceSet
+                    }
+
+                    configureTasks(protoSourceSet)
+                }
+            }
         }
 
-        project.withLazyAndroidComponentsExtension {
-            val rootSourceSets = AndroidRootSourceSets.entries
-                .mapNotNull { rootName ->
-                    val sourceSet = project.protoSourceSets.findByName(rootName.stringValue)
-                            as? DefaultProtoSourceSet
+        project.withAndroid {
+            if (project.plugins.hasPlugin(ANDROID_KOTLIN_MULTIPLATFORM_LIBRARY)) {
+                configureKmpLibAndroidVariants(project)
+                return@withAndroid
+            }
 
-                    sourceSet?.let { rootName to it }
-                }.toMap()
-
-            val mainRoot = rootSourceSets.getValue(AndroidRootSourceSets.Main)
-            val testRoot = rootSourceSets[AndroidRootSourceSets.Test]
-            val androidTestRoot = rootSourceSets[AndroidRootSourceSets.AndroidTest]
-            val testFixturesRoot = rootSourceSets[AndroidRootSourceSets.TestFixtures]
-
-            // todo KMP imports
-
-            testRoot?.extendsFrom(testFixturesRoot ?: mainRoot)
-            androidTestRoot?.extendsFrom(testFixturesRoot ?: mainRoot)
-            testFixturesRoot?.importsFrom(mainRoot)
-
-            val extension = project.the<BaseExtension>()
-            onVariants { variant: Variant ->
-                val testBuildType = extension.testBuildType
-                rootSourceSets.forEach { (rootName, rootSourceSet) ->
-                    // testFixtures don't have variants
-                    if (rootName == AndroidRootSourceSets.TestFixtures) {
-                        return@forEach
-                    }
-
-                    if (rootName == AndroidRootSourceSets.AndroidTest && variant.buildType != testBuildType) {
-                        return@forEach
-                    }
-
-                    // but testFixtures still have source sets based on flavors
-                    val testFixtureSets = if (rootName != AndroidRootSourceSets.Main) {
-                        variant.sourceSets(AndroidRootSourceSets.TestFixtures)
-                    } else emptyList()
-
-                    val sourceSets = variant.sourceSets(rootName)
-                    val variantSourceSetName = sourceSets.lastOrNull()
-                        ?: throw GradleException("No source sets found for variant ${variant.name}")
-
-                    val variantProtoSourceSet = project.protoSourceSets.named(variantSourceSetName)
-
-                    variantProtoSourceSet.configure {
-                        val default = this as? DefaultProtoSourceSet ?: return@configure
-
-                        default.androidRoot.set(rootSourceSet)
-                        val properties = BufExecTask.AndroidProperties(
-                            isTest = rootName != AndroidRootSourceSets.Main,
-                            isAndroidTest = rootName == AndroidRootSourceSets.AndroidTest,
-                            isUnitTest = rootName == AndroidRootSourceSets.Test,
-                            sourceSetName = variantSourceSetName,
-                            buildType = variant.buildType,
-                            flavors = variant.productFlavors.map { (_, flavor) -> flavor },
-                            variant = variant.name,
-                        )
-                        default.androidProperties.set(properties)
-
-                        (sourceSets + testFixtureSets).forEach { dependency ->
-                            val dependencyProtoSourceSet = project.protoSourceSets.findByName(dependency)
-                                ?: return@forEach
-
-                            if (name != dependency) {
-                                extendsFrom(dependencyProtoSourceSet)
-                            }
-                        }
-
-                        if (rootName != AndroidRootSourceSets.Main) {
-                            val mainVariantProtoSourceSet = project.protoSourceSets.findByName(variant.name)
-                                as? DefaultProtoSourceSet
-
-                            if (mainVariantProtoSourceSet != null) {
-                                default.androidMain.set(mainVariantProtoSourceSet)
-
-                                importsFrom(mainVariantProtoSourceSet)
-                            }
-                        }
-
-                        project.configureTasks(default)
-                    }
+            withLazyLegacyAndroidComponentsExtension {
+                configureLegacyAndroidVariants(
+                    project = project,
+                    isKmp = project.kotlinPluginId == KotlinPluginId.MULTIPLATFORM
+                ) {
+                    configureTasks(it)
                 }
             }
         }
@@ -189,7 +158,7 @@ internal open class DefaultProtocExtension @Inject constructor(
     }
 
     @Suppress("detekt.LongMethod", "detekt.CyclomaticComplexMethod", "detekt.ThrowsCount")
-    private fun Project.configureTasks(protoSourceSet: DefaultProtoSourceSet) {
+    private fun configureTasks(protoSourceSet: DefaultProtoSourceSet) {
         val baseName = protoSourceSet.name
 
         val buildSourceSetsDir = project.protoBuildDirSourceSets.resolve(baseName)
@@ -202,9 +171,9 @@ internal open class DefaultProtocExtension @Inject constructor(
             .ensureDirectoryExists()
 
         // only resolve in task's 'execute' due to the deferred nature of dependsOn
-        protoSourceSet.setupDefaultImports(protoSourceSets)
+        protoSourceSet.setupDefaultImports(project.protoSourceSets)
 
-        val includedProtocPlugins = provider {
+        val includedProtocPlugins = project.provider {
             protoSourceSet.plugins.get().also { list ->
                 list.forEach { plugin ->
                     if (!plugin.artifact.isPresent) {
@@ -219,13 +188,13 @@ internal open class DefaultProtocExtension @Inject constructor(
 
         val protoFilesDirectorySet = protoSourceSet as SourceDirectorySet
 
-        val processProtoTask = registerProcessProtoFilesTask(
+        val processProtoTask = project.registerProcessProtoFilesTask(
             name = baseName,
             destination = buildSourceSetsProtoDir,
             protoFilesDirectorySet = protoFilesDirectorySet,
         )
 
-        val processImportProtoTask = registerProcessProtoFilesImportsTask(
+        val processImportProtoTask = project.registerProcessProtoFilesImportsTask(
             name = baseName,
             destination = buildSourceSetsImportDir,
             importsProvider = protoSourceSet.imports,
@@ -234,7 +203,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             dependsOn(processProtoTask)
         }
 
-        val generateBufYamlTask = registerGenerateBufYamlTask(
+        val generateBufYamlTask = project.registerGenerateBufYamlTask(
             name = baseName,
             buildSourceSetsDir = buildSourceSetsDir,
             buildSourceSetsProtoDir = buildSourceSetsProtoDir,
@@ -244,7 +213,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             dependsOn(processProtoTask)
         }
 
-        val generateBufGenYamlTask = registerGenerateBufGenYamlTask(
+        val generateBufGenYamlTask = project.registerGenerateBufGenYamlTask(
             name = baseName,
             buildSourceSetsDir = buildSourceSetsDir,
             protocPlugins = includedProtocPlugins,
@@ -252,12 +221,12 @@ internal open class DefaultProtocExtension @Inject constructor(
             dependsOn(generateBufYamlTask)
         }
 
-        val sourceSetsProtoDirFileTree = fileTree(buildSourceSetsProtoDir)
+        val sourceSetsProtoDirFileTree = project.fileTree(buildSourceSetsProtoDir)
 
-        val bufGenerateTask = registerBufGenerateTask(
+        val bufGenerateTask = project.registerBufGenerateTask(
             protoSourceSet = protoSourceSet,
             workingDir = buildSourceSetsDir,
-            outputDirectory = protoBuildDirGenerated.resolve(baseName),
+            outputDirectory = project.protoBuildDirGenerated.resolve(baseName),
             includedPlugins = includedProtocPlugins,
         ) {
             executableFiles.addAll(
@@ -283,7 +252,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             dependsOn(processImportProtoTask)
 
             val dependencies = project.provider {
-                protoSourceSet.getDependsOnTasksOf(protoSourceSets).mapNotNull { it.generateTask.orNull }
+                protoSourceSet.getDependsOnTasksOf(project.protoSourceSets).mapNotNull { it.generateTask.orNull }
             }
 
             dependsOn(dependencies)
@@ -331,8 +300,20 @@ internal open class DefaultProtocExtension @Inject constructor(
             sourceSet.java.srcDirs(javaOutputs)
         }
 
-        languageSets.filterIsInstance<KotlinSourceSet>().forEach { sourceSet ->
-            sourceSet.kotlin.srcDirs(kotlinOutputs)
+        project.withKotlin {
+            languageSets.filterIsInstance<KotlinSourceSet>().forEach { sourceSet ->
+                sourceSet.kotlin.srcDirs(kotlinOutputs)
+            }
+        }
+
+        project.withAndroid {
+            languageSets.filterIsInstance<AndroidSourceSet>().forEach { sourceSet ->
+                sourceSet.java.srcDirs(javaOutputs)
+            }
+
+            languageSets.filterIsInstance<AndroidSourceSet>().forEach { sourceSet ->
+                sourceSet.kotlin.srcDirs(kotlinOutputs)
+            }
         }
     }
 
@@ -351,7 +332,7 @@ internal open class DefaultProtocExtension @Inject constructor(
         }
     }
 
-    private fun Project.configureCustomTasks(
+    private fun configureCustomTasks(
         protoSourceSet: DefaultProtoSourceSet,
         buildSourceSetsDir: File,
         generateBufYamlTask: TaskProvider<GenerateBufYaml>,
@@ -370,9 +351,9 @@ internal open class DefaultProtocExtension @Inject constructor(
                 return "buf$taskCapital$baseCapital"
             }
 
-            registerBufExecTask(
+            project.registerBufExecTask(
                 clazz = kClass,
-                workingDir = provider { buildSourceSetsDir },
+                workingDir = project.provider { buildSourceSetsDir },
                 properties = protoSourceSet.bufExecProperties(),
                 name = taskName(baseName),
             ) {
@@ -382,7 +363,7 @@ internal open class DefaultProtocExtension @Inject constructor(
                 dependsOn(processImportProtoTask)
 
                 val dependencies = project.provider {
-                    protoSourceSet.getDependsOnTasksOf(protoSourceSets).map { dependency ->
+                    protoSourceSet.getDependsOnTasksOf(project.protoSourceSets).map { dependency ->
                         project.tasks.named(taskName(dependency.name), kClass.java).get()
                     }
                 }
@@ -403,8 +384,9 @@ internal open class DefaultProtocExtension @Inject constructor(
     }
 
     private fun DefaultProtoSourceSet.setupDefaultImports(protoSourceSets: ProtoSourceSets) {
-        if (isAndroid) {
-            // imports are set up on variant
+        // isKotlinProxyLegacyAndroid -> this source set has proper dependsOn, that need to be set up
+        // isLegacyAndroid -> not a 'com.android.kotlin.multiplatform.library' source set, imports are set up on variant
+        if (!isKotlinProxyLegacyAndroid.get() && isLegacyAndroid.get()) {
             return
         }
 
@@ -447,17 +429,255 @@ internal open class DefaultProtocExtension @Inject constructor(
     }
 }
 
+// todo will return null always on findByName
+private fun configureKmpLibAndroidVariants(project: Project) {
+    // not considered propper variants, they fit kmp source sets and configured as them,
+    // except for androidProperties
+    val sourceSets = KmpLibraryAndroidLeafSourceSets.entries
+        .mapNotNull { rootName ->
+            val sourceSet = project.protoSourceSets.findByName(rootName.stringValue)
+                    as? DefaultProtoSourceSet
+
+            sourceSet?.let { rootName to it }
+        }.toMap()
+
+    val mainRoot = sourceSets.getValue(KmpLibraryAndroidLeafSourceSets.Main)
+    val unitTestRoot = sourceSets[KmpLibraryAndroidLeafSourceSets.HostTest]
+    val instrumentedTestRoot = sourceSets[KmpLibraryAndroidLeafSourceSets.DeviceTest]
+
+    // no testFixtures, because they can have a dependency on commonTest in dependOn section
+    unitTestRoot?.importsFrom(mainRoot)
+    instrumentedTestRoot?.importsFrom(mainRoot)
+
+    sourceSets.forEach { (rootName) ->
+        val protoSourceSet = project.protoSourceSets.findByName(rootName.stringValue)
+                as? DefaultProtoSourceSet ?: return@forEach
+
+        val properties = BufExecTask.AndroidProperties(
+            isTest = rootName != KmpLibraryAndroidLeafSourceSets.Main,
+            isInstrumentedTest = rootName == KmpLibraryAndroidLeafSourceSets.DeviceTest,
+            isUnitTest = rootName == KmpLibraryAndroidLeafSourceSets.HostTest,
+            sourceSetName = protoSourceSet.name,
+            buildType = null,
+            flavors = emptyList(),
+            variant = null,
+        )
+
+        protoSourceSet.androidProperties.set(properties)
+    }
+}
+
+// init isLegacyAndroid, isKotlinProxyLegacyAndroid
+private fun Project.withFullyInitializedProtoSourceSet(
+    sourceSet: ProtoSourceSet,
+    body: (DefaultProtoSourceSet) -> Unit,
+) {
+    if (sourceSet !is DefaultProtoSourceSet) {
+        return
+    }
+
+    val kotlinPluginId = kotlinPluginId
+
+    val languageSets = sourceSet.languageSourceSets.get()
+
+    val anyAndroid = hasAndroid && languageSets.any { it is AndroidSourceSet }
+    val anyKotlin = kotlinPluginId != null && languageSets.any { it is KotlinSourceSet }
+
+    if (anyAndroid && !anyKotlin) {
+        sourceSet.isLegacyAndroid.set(true)
+        sourceSet.isKotlinProxyLegacyAndroid.set(false)
+        body(sourceSet)
+        return
+    }
+
+    when (kotlinPluginId) {
+        KotlinPluginId.ANDROID -> {
+            sourceSet.isLegacyAndroid.set(true)
+            sourceSet.isKotlinProxyLegacyAndroid.set(false)
+            body(sourceSet)
+        }
+
+        KotlinPluginId.JVM -> {
+            sourceSet.isLegacyAndroid.set(false)
+            sourceSet.isKotlinProxyLegacyAndroid.set(false)
+            body(sourceSet)
+        }
+
+        KotlinPluginId.MULTIPLATFORM -> {
+            if (plugins.hasPlugin(ANDROID_KOTLIN_MULTIPLATFORM_LIBRARY) || !hasAndroid || !anyKotlin) {
+                sourceSet.isLegacyAndroid.set(false)
+                sourceSet.isKotlinProxyLegacyAndroid.set(false)
+                body(sourceSet)
+            }
+            // no else here, it is handled by configureMultiplatformAndroidSourceSets
+        }
+
+        null -> {
+            sourceSet.isLegacyAndroid.set(false)
+            sourceSet.isKotlinProxyLegacyAndroid.set(false)
+            body(sourceSet)
+        }
+    }
+}
+
+private fun Project.configureMultiplatformAndroidSourceSets(body: (DefaultProtoSourceSet) -> Unit) {
+    if (!hasAndroid || plugins.hasPlugin(ANDROID_KOTLIN_MULTIPLATFORM_LIBRARY) || kotlinPluginId != KotlinPluginId.MULTIPLATFORM) {
+        return
+    }
+
+    project.the<KotlinMultiplatformExtension>()
+        .targets.all {
+            val target = this
+
+            compilations.all {
+                val compilationSourceSets = allKotlinSourceSets as ObservableSet<KotlinSourceSet>
+
+                compilationSourceSets.forAll {
+                    val protoSourceSet = protoSourceSets.getByName(it.name)
+                            as? DefaultProtoSourceSet ?: return@forAll
+
+                    val isAndroid = target is KotlinAndroidTarget
+                    protoSourceSet.isLegacyAndroid.set(isAndroid)
+                    protoSourceSet.isKotlinProxyLegacyAndroid.set(isAndroid)
+                    body(protoSourceSet)
+                }
+            }
+        }
+}
+
+private fun AndroidComponents.configureLegacyAndroidVariants(
+    project: Project,
+    isKmp: Boolean,
+    configureTasks: (DefaultProtoSourceSet) -> Unit,
+) {
+    val rootSourceSets = LegacyAndroidRootSourceSets.entries
+        .mapNotNull { rootName ->
+            val sourceSet = project.protoSourceSets.findByName(rootName.stringValue)
+                    as? DefaultProtoSourceSet
+
+            sourceSet?.let { rootName to it }
+        }.toMap()
+
+    val mainRoot = rootSourceSets.getValue(LegacyAndroidRootSourceSets.Main)
+    val testRoot = rootSourceSets[LegacyAndroidRootSourceSets.Test]
+    val androidTestRoot = rootSourceSets[LegacyAndroidRootSourceSets.AndroidTest]
+    val testFixturesRoot = rootSourceSets[LegacyAndroidRootSourceSets.TestFixtures]
+
+    testRoot?.extendsFrom(testFixturesRoot ?: mainRoot)
+    androidTestRoot?.extendsFrom(testFixturesRoot ?: mainRoot)
+    testFixturesRoot?.importsFrom(mainRoot)
+
+    val extension = project.the<BaseExtension>()
+    onVariants { variant: Variant ->
+        val testBuildType = extension.testBuildType
+        rootSourceSets.forEach { (rootName) ->
+            // testFixtures don't have variants
+            if (rootName == LegacyAndroidRootSourceSets.TestFixtures) {
+                return@forEach
+            }
+
+            if (rootName == LegacyAndroidRootSourceSets.AndroidTest && variant.buildType != testBuildType) {
+                return@forEach
+            }
+
+            // but testFixtures still have source sets based on flavors
+            val testFixtureSetNames = if (rootName != LegacyAndroidRootSourceSets.Main) {
+                variant.dependencySourceSets(LegacyAndroidRootSourceSets.TestFixtures)
+            } else emptyList()
+
+            val dependencySourceSetNames = variant.dependencySourceSets(rootName)
+            val variantSourceSetName = dependencySourceSetNames.lastOrNull()
+                ?: throw GradleException("No source sets found for variant ${variant.name}")
+
+            val variantProtoSourceSet = project.protoSourceSets.named(variantSourceSetName)
+
+            variantProtoSourceSet.configure {
+                val default = this as? DefaultProtoSourceSet ?: return@configure
+
+                val properties = BufExecTask.AndroidProperties(
+                    isTest = rootName != LegacyAndroidRootSourceSets.Main,
+                    isInstrumentedTest = rootName == LegacyAndroidRootSourceSets.AndroidTest,
+                    isUnitTest = rootName == LegacyAndroidRootSourceSets.Test,
+                    sourceSetName = variantSourceSetName,
+                    buildType = variant.buildType,
+                    flavors = variant.productFlavors.map { (_, flavor) -> flavor },
+                    variant = variant.name,
+                )
+                default.androidProperties.set(properties)
+
+                (dependencySourceSetNames + testFixtureSetNames).forEach { dependencyName ->
+                    val dependencyProtoSourceSet = project.protoSourceSets.findByName(dependencyName)
+                        ?: return@forEach
+
+                    val proxyName = dependencyName.kotlinProxyFromAndroidOriginSourceSetName(rootName)
+                    // can be also null, if not yet configured on the KGP side
+                    val proxyDependency = if (isKmp && proxyName != null) {
+                        project.protoSourceSets.findByName(proxyName) as? DefaultProtoSourceSet
+                    } else {
+                        null
+                    }
+
+                    if (proxyDependency != null) {
+                        default.extendsFrom(proxyDependency)
+                    }
+
+                    if (name != dependencyName) {
+                        default.extendsFrom(dependencyProtoSourceSet)
+                    }
+                }
+
+                if (rootName != LegacyAndroidRootSourceSets.Main) {
+                    val mainVariantProtoSourceSet = project.protoSourceSets.findByName(variant.name)
+                            as? DefaultProtoSourceSet
+
+                    if (mainVariantProtoSourceSet != null) {
+                        default.androidDependencies.add(mainVariantProtoSourceSet)
+
+                        default.importsFrom(mainVariantProtoSourceSet)
+                    }
+                }
+
+                if (isKmp) {
+                    if (rootName == LegacyAndroidRootSourceSets.Main) {
+                        val commonMain = project.protoSourceSets
+                            .findByName(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME)
+                                as? DefaultProtoSourceSet
+
+                        if (commonMain != null) {
+                            default.androidDependencies.add(commonMain)
+                        }
+                    } else {
+                        val commonTest = project.protoSourceSets
+                            .findByName(KotlinSourceSet.COMMON_TEST_SOURCE_SET_NAME)
+                                as? DefaultProtoSourceSet
+
+                        if (commonTest != null) {
+                            default.androidDependencies.add(commonTest)
+                        }
+                    }
+                }
+
+                configureTasks(default)
+            }
+        }
+    }
+}
+
 /**
  * Return a list of [DefaultProtoSourceSet] that have tasks that [this] will depend on.
  * It's a different list from [DefaultProtoSourceSet.imports],
  * as not all [DefaultProtoSourceSet] have associated tasks (on Android, for example)
  */
 internal fun DefaultProtoSourceSet.getDependsOnTasksOf(protoSourceSets: ProtoSourceSets): List<DefaultProtoSourceSet> {
-    // todo check KMP
-    // androidMain/androidTest for KMP are evaluated as usual (they don't have androidRoot prop)
-    // androidRoot.isPresent == this is not androidMain/androidTest
-    if (isAndroid && androidRoot.isPresent) {
-        return listOfNotNull(androidRoot.get(), androidMain.orNull)
+    // isLegacyAndroid -> this is not KMP android library source set ->
+    // -> this is a source set from configureLegacyAndroidVariants -> only two possible dependencies:
+    //  - if pure android - main variant (if this is a test variant: debug for testDebug, release for testRelease, etc.)
+    //  - if KMP - also commonMain or commonTest correspondingly
+    //  (and if commonTest - it will already have a 'dependsOn' commonMain)
+    //
+    // so in both cases we store it in androidDependencies
+    if (isLegacyAndroid.get()) {
+        return androidDependencies.get().toList()
     }
 
     val sourceSets = languageSourceSets.get()
