@@ -7,7 +7,7 @@ import org.gradle.api.GradleException
 import org.gradle.kotlin.dsl.version
 import kotlinx.rpc.buf.tasks.*
 import kotlinx.rpc.buf.*
-import org.gradle.api.provider.Provider
+import kotlinx.rpc.protoc.*
 import javax.inject.Inject
 
 plugins {
@@ -23,8 +23,7 @@ kotlin {
     macosArm64()
 }
 
-
-public abstract class BufLintTask @Inject constructor(properties: Provider<BufExecTask.Properties>) : BufExecTask(properties) {
+public abstract class BufLintTask @Inject constructor(properties: ProtoTask.Properties) : BufExecTask(properties) {
     init {
         command.set("lint")
         args.set(emptyList())
@@ -74,7 +73,7 @@ fun assertTasks(
 
 tasks.register("test_tasks") {
     doLast {
-        val genTasks = rpc.protoc.get().buf.generate.allTasks()
+        val genTasks = protoTasks.buf.generate
 
         assertTasks(
             "gen all", genTasks,
@@ -117,112 +116,7 @@ tasks.register("test_tasks") {
         assertTasks("matchingSourceSet main", genTasks.matchingSourceSet("main"))
         assertTasks("matchingSourceSet test", genTasks.matchingSourceSet("test"))
 
-        assertTasks(
-            "executedForSourceSet commonMain",
-            genTasks.executedForSourceSet("commonMain"),
-            "bufGenerateCommonMain",
-        )
-
-        assertTasks(
-            "executedForSourceSet jvmMain",
-            genTasks.executedForSourceSet("jvmMain"),
-            "bufGenerateCommonMain",
-            "bufGenerateJvmMain",
-        )
-
-        assertTasks(
-            "executedForSourceSet macosArm64Main",
-            genTasks.executedForSourceSet("macosArm64Main"),
-            "bufGenerateCommonMain",
-            "bufGenerateNativeMain",
-            "bufGenerateAppleMain",
-            "bufGenerateMacosMain",
-            "bufGenerateMacosArm64Main",
-        )
-
-        assertTasks(
-            "executedForSourceSet commonTest",
-            genTasks.executedForSourceSet("commonTest"),
-            "bufGenerateCommonMain", "bufGenerateCommonTest",
-        )
-
-        assertTasks(
-            "executedForSourceSet jvmTest",
-            genTasks.executedForSourceSet("jvmTest"),
-            "bufGenerateCommonMain", "bufGenerateCommonTest",
-            "bufGenerateJvmMain", "bufGenerateJvmTest",
-        )
-
-        assertTasks(
-            "executedForSourceSet macosArm64Test",
-            genTasks.executedForSourceSet("macosArm64Test"),
-            "bufGenerateCommonMain", "bufGenerateCommonTest",
-            "bufGenerateNativeMain", "bufGenerateNativeTest",
-            "bufGenerateAppleMain", "bufGenerateAppleTest",
-            "bufGenerateMacosMain", "bufGenerateMacosTest",
-            "bufGenerateMacosArm64Main", "bufGenerateMacosArm64Test",
-        )
-
-        assertTasks(
-            "executedForSourceSet macosArm64Test test tasks",
-            genTasks.executedForSourceSet("macosArm64Test").testTasks(),
-            "bufGenerateCommonTest",
-            "bufGenerateNativeTest",
-            "bufGenerateAppleTest",
-            "bufGenerateMacosTest",
-            "bufGenerateMacosArm64Test",
-        )
-
-        assertTasks(
-            "executedForSourceSet macosArm64Test non test tasks",
-            genTasks.executedForSourceSet("macosArm64Test").nonTestTasks(),
-            "bufGenerateCommonMain",
-            "bufGenerateNativeMain",
-            "bufGenerateAppleMain",
-            "bufGenerateMacosMain",
-            "bufGenerateMacosArm64Main",
-        )
-
-        assertTasks(
-            "executedForSourceSet macosArm64Test non test tasks matching macosMain",
-            genTasks.executedForSourceSet("macosArm64Test").nonTestTasks().matchingSourceSet("macosMain"),
-            "bufGenerateMacosMain",
-        )
-
-        assertTasks(
-            "executedForSourceSet macosArm64Test non test tasks matching jvmMain",
-            genTasks.executedForSourceSet("macosArm64Test").nonTestTasks().matchingSourceSet("jvmMain"),
-        )
-
-        assertTasks(
-            "executedForSourceSet macosArm64Test non test tasks executed for nativeMain",
-            genTasks.executedForSourceSet("macosArm64Test").nonTestTasks().executedForSourceSet("nativeMain"),
-            "bufGenerateCommonMain",
-            "bufGenerateNativeMain",
-        )
-
-        assertTasks("buf depends on commonMain", genTasks.matchingSourceSet("commonMain").single().bufDependsOn())
-        assertTasks(
-            "buf depends on macosMain", genTasks.matchingSourceSet("macosMain").single().bufDependsOn(),
-            "bufGenerateCommonMain",
-            "bufGenerateNativeMain",
-            "bufGenerateAppleMain",
-        )
-        assertTasks(
-            "buf depends on commonTest",
-            genTasks.matchingSourceSet("commonTest").single().bufDependsOn(),
-            "bufGenerateCommonMain",
-        )
-
-        assertTasks(
-            "buf depends on jsTest",
-            genTasks.matchingSourceSet("jsTest").single().bufDependsOn(),
-            "bufGenerateCommonMain", "bufGenerateCommonTest",
-            "bufGenerateWebMain".ifKotlinAtLeast("2.2.20"), "bufGenerateWebTest".ifKotlinAtLeast("2.2.20"),
-            "bufGenerateJsMain",
-        )
-
-        val allTasks = rpc.protoc.get().buf.tasks.all()
+        val allTasks = protoTasks.buf
 
         assertTasks(
             "all", allTasks,
@@ -270,14 +164,6 @@ tasks.register("test_tasks") {
             "bufLintJvmMain", "bufLintJvmTest",
             "bufLintWebMain".ifKotlinAtLeast("2.2.20"), "bufLintWebTest".ifKotlinAtLeast("2.2.20"),
             "bufLintJsMain", "bufLintJsTest",
-        )
-
-        assertTasks(
-            "all by type lint for macosMain", allTasks.matchingType<BufLintTask>().executedForSourceSet("macosMain"),
-            "bufLintCommonMain",
-            "bufLintNativeMain",
-            "bufLintAppleMain",
-            "bufLintMacosMain",
         )
     }
 }

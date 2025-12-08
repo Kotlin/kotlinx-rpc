@@ -19,6 +19,8 @@ kotlin {
     explicitApi()
 
     jvmToolchain(17)
+
+    compilerOptions.optIn.add("kotlinx.rpc.internal.InternalRpcApi")
 }
 
 tasks.withType<KotlinCompile>().configureEach {

@@ -9,12 +9,10 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.SourceDirectorySet
-import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.SourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import java.io.File
 
 public typealias ProtoSourceSets = NamedDomainObjectContainer<ProtoSourceSet>
 

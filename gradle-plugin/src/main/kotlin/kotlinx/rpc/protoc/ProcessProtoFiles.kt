@@ -9,15 +9,20 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.register
 import java.io.File
+import javax.inject.Inject
 
 /**
  * Copy proto files to a temporary directory for Buf to process.
  */
-public abstract class ProcessProtoFiles internal constructor(): Sync() {
+public abstract class ProcessProtoFiles @Inject internal constructor(
+    @get:Internal
+    override val properties: ProtoTask.Properties,
+) : Sync(), ProtoTask {
     init {
         group = PROTO_GROUP
     }
@@ -27,11 +32,14 @@ internal fun Project.registerProcessProtoFilesTask(
     name: String,
     destination: File,
     protoFilesDirectorySet: SourceDirectorySet,
+    properties: ProtoTask.Properties,
     configure: ProcessProtoFiles.() -> Unit = {},
 ): TaskProvider<ProcessProtoFiles> {
     val capitalName = name.replaceFirstChar { it.uppercase() }
 
-    return tasks.register<ProcessProtoFiles>("process${capitalName}ProtoFiles") {
+    val task = tasks.register("process${capitalName}ProtoFiles", ProcessProtoFiles::class, properties)
+
+    task.configure {
         duplicatesStrategy = DuplicatesStrategy.FAIL
 
         from(files(protoFilesDirectorySet.sourceDirectories)) {
@@ -43,6 +51,8 @@ internal fun Project.registerProcessProtoFilesTask(
 
         configure()
     }
+
+    return task
 }
 
 internal fun Project.registerProcessProtoFilesImportsTask(
@@ -50,11 +60,13 @@ internal fun Project.registerProcessProtoFilesImportsTask(
     destination: File,
     importsProvider: Provider<Set<ProtoSourceSet>>,
     rawImports: ConfigurableFileCollection,
+    properties: ProtoTask.Properties,
     configure: ProcessProtoFiles.() -> Unit = {},
 ): TaskProvider<ProcessProtoFiles> {
     val capitalName = name.replaceFirstChar { it.uppercase() }
 
-    return tasks.register<ProcessProtoFiles>("process${capitalName}ProtoFilesImports") {
+    val task = tasks.register("process${capitalName}ProtoFilesImports", ProcessProtoFiles::class, properties)
+    task.configure {
         duplicatesStrategy = DuplicatesStrategy.FAIL
 
         val allImports = importsProvider.map { list ->
@@ -73,4 +85,6 @@ internal fun Project.registerProcessProtoFilesImportsTask(
 
         configure()
     }
+
+    return task
 }

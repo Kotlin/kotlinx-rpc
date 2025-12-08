@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.protoc
 
-import kotlinx.rpc.buf.tasks.BufExecTask
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.rpcExtension
 import kotlinx.rpc.util.KotlinPluginId
@@ -154,8 +153,7 @@ internal open class DefaultProtoSourceSet(
     val androidDependencies: SetProperty<DefaultProtoSourceSet> = project.objects.setProperty()
 
     // only set for variant.name sourceSets
-    val androidProperties: Property<BufExecTask.AndroidProperties?> =
-        project.objects.property<BufExecTask.AndroidProperties?>()
+    val androidProperties: Property<ProtoTask.AndroidProperties?> = project.objects.property()
 
     override val imports: SetProperty<ProtoSourceSet> = project.objects.setProperty()
     override val fileImports: ConfigurableFileCollection = project.objects.fileCollection()
@@ -283,15 +281,9 @@ internal fun Project.createProtoExtensions() {
     }
 }
 
-internal fun DefaultProtoSourceSet.bufExecProperties(): Provider<BufExecTask.Properties> {
-    return project.provider {
-        if (androidProperties.isPresent) {
-            androidProperties.get()
-        } else {
-            BufExecTask.Properties(
-                isTest = name.lowercase().endsWith("test"),
-                sourceSetName = name,
-            )
-        }
-    }
+internal fun DefaultProtoSourceSet.protoTaskProperties(): ProtoTask.Properties {
+    return androidProperties.orNull ?: ProtoTask.Properties(
+        isTest = name.lowercase().endsWith("test"),
+        sourceSetName = name,
+    )
 }

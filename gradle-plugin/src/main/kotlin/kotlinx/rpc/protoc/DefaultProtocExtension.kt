@@ -126,6 +126,10 @@ internal open class DefaultProtocExtension @Inject constructor(
                         return@withFullyInitializedProtoSourceSet
                     }
 
+                    if (project.plugins.hasPlugin(ANDROID_KOTLIN_MULTIPLATFORM_LIBRARY)) {
+                        project.tryConfigureKmpLibAndroidVariant(protoSourceSet)
+                    }
+
                     configureTasks(protoSourceSet)
                 }
             }
@@ -133,7 +137,7 @@ internal open class DefaultProtocExtension @Inject constructor(
 
         project.withAndroid {
             if (project.plugins.hasPlugin(ANDROID_KOTLIN_MULTIPLATFORM_LIBRARY)) {
-                configureKmpLibAndroidVariants(project)
+                // done in tryConfigureKmpLibAndroidVariant
                 return@withAndroid
             }
 
@@ -187,11 +191,13 @@ internal open class DefaultProtocExtension @Inject constructor(
         }
 
         val protoFilesDirectorySet = protoSourceSet as SourceDirectorySet
+        val properties = protoSourceSet.protoTaskProperties()
 
         val processProtoTask = project.registerProcessProtoFilesTask(
             name = baseName,
             destination = buildSourceSetsProtoDir,
             protoFilesDirectorySet = protoFilesDirectorySet,
+            properties = properties,
         )
 
         val processImportProtoTask = project.registerProcessProtoFilesImportsTask(
@@ -199,6 +205,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             destination = buildSourceSetsImportDir,
             importsProvider = protoSourceSet.imports,
             rawImports = protoSourceSet.fileImports,
+            properties = properties,
         ) {
             dependsOn(processProtoTask)
         }
@@ -209,6 +216,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             buildSourceSetsProtoDir = buildSourceSetsProtoDir,
             buildSourceSetsImportDir = buildSourceSetsImportDir,
             withImport = protoSourceSet.imports.map { it.isNotEmpty() },
+            properties = properties,
         ) {
             dependsOn(processProtoTask)
         }
@@ -217,6 +225,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             name = baseName,
             buildSourceSetsDir = buildSourceSetsDir,
             protocPlugins = includedProtocPlugins,
+            properties = properties,
         ) {
             dependsOn(generateBufYamlTask)
         }
@@ -228,6 +237,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             workingDir = buildSourceSetsDir,
             outputDirectory = project.protoBuildDirGenerated.resolve(baseName),
             includedPlugins = includedProtocPlugins,
+            properties = properties,
         ) {
             executableFiles.addAll(
                 includedProtocPlugins.map { list ->
@@ -257,10 +267,6 @@ internal open class DefaultProtocExtension @Inject constructor(
 
             dependsOn(dependencies)
 
-            bufTaskDependencies.set(protoSourceSet.imports.map { list ->
-                list.filterIsInstance<DefaultProtoSourceSet>().mapNotNull { it.generateTask.orNull?.name }
-            })
-
             onlyIf { !sourceSetsProtoDirFileTree.filter { it.extension == "proto" }.isEmpty }
         }
 
@@ -280,6 +286,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             processProtoTask = processProtoTask,
             processImportProtoTask = processImportProtoTask,
             sourceSetsProtoDirFileTree = sourceSetsProtoDirFileTree,
+            properties = properties,
         ) {
             protoFiles.set(processProtoTask.map { it.outputs.files })
             importProtoFiles.set(processImportProtoTask.map { it.outputs.files })
@@ -340,6 +347,7 @@ internal open class DefaultProtocExtension @Inject constructor(
         processProtoTask: TaskProvider<ProcessProtoFiles>,
         processImportProtoTask: TaskProvider<ProcessProtoFiles>,
         sourceSetsProtoDirFileTree: ConfigurableFileTree,
+        properties: ProtoTask.Properties,
         configure: BufExecTask.() -> Unit,
     ) {
         val baseName = protoSourceSet.name
@@ -354,7 +362,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             project.registerBufExecTask(
                 clazz = kClass,
                 workingDir = project.provider { buildSourceSetsDir },
-                properties = protoSourceSet.bufExecProperties(),
+                properties = properties,
                 name = taskName(baseName),
             ) {
                 dependsOn(generateBufYamlTask)
@@ -369,12 +377,6 @@ internal open class DefaultProtocExtension @Inject constructor(
                 }
 
                 dependsOn(dependencies)
-
-                bufTaskDependencies.set(protoSourceSet.imports.map { list ->
-                    list.mapNotNull { dependency ->
-                        project.tasks.findByName(taskName(dependency.name))?.name
-                    }
-                })
 
                 configure()
 
@@ -429,42 +431,43 @@ internal open class DefaultProtocExtension @Inject constructor(
     }
 }
 
-// todo will return null always on findByName
-private fun configureKmpLibAndroidVariants(project: Project) {
-    // not considered propper variants, they fit kmp source sets and configured as them,
-    // except for androidProperties
-    val sourceSets = KmpLibraryAndroidLeafSourceSets.entries
-        .mapNotNull { rootName ->
-            val sourceSet = project.protoSourceSets.findByName(rootName.stringValue)
-                    as? DefaultProtoSourceSet
-
-            sourceSet?.let { rootName to it }
-        }.toMap()
-
-    val mainRoot = sourceSets.getValue(KmpLibraryAndroidLeafSourceSets.Main)
-    val unitTestRoot = sourceSets[KmpLibraryAndroidLeafSourceSets.HostTest]
-    val instrumentedTestRoot = sourceSets[KmpLibraryAndroidLeafSourceSets.DeviceTest]
+// not considered propper variants, they fit kmp source sets and configured as them,
+// except for androidProperties
+private fun Project.tryConfigureKmpLibAndroidVariant(protoSourceSet: DefaultProtoSourceSet) {
+    val sourceSetEntry = KmpLibraryAndroidLeafSourceSets.entries
+        .find { it.sourceSetName == protoSourceSet.name }
+        ?: return
 
     // no testFixtures, because they can have a dependency on commonTest in dependOn section
-    unitTestRoot?.importsFrom(mainRoot)
-    instrumentedTestRoot?.importsFrom(mainRoot)
+    if (sourceSetEntry == KmpLibraryAndroidLeafSourceSets.Main) {
+        val unitTestSourceSet = project.protoSourceSets
+            .findByName(KmpLibraryAndroidLeafSourceSets.HostTest.sourceSetName)
 
-    sourceSets.forEach { (rootName) ->
-        val protoSourceSet = project.protoSourceSets.findByName(rootName.stringValue)
-                as? DefaultProtoSourceSet ?: return@forEach
+        val instrumentedTestSourceSet = project.protoSourceSets
+            .findByName(KmpLibraryAndroidLeafSourceSets.DeviceTest.sourceSetName)
 
-        val properties = BufExecTask.AndroidProperties(
-            isTest = rootName != KmpLibraryAndroidLeafSourceSets.Main,
-            isInstrumentedTest = rootName == KmpLibraryAndroidLeafSourceSets.DeviceTest,
-            isUnitTest = rootName == KmpLibraryAndroidLeafSourceSets.HostTest,
-            sourceSetName = protoSourceSet.name,
-            buildType = null,
-            flavors = emptyList(),
-            variant = null,
-        )
+        unitTestSourceSet?.importsFrom(protoSourceSet)
+        instrumentedTestSourceSet?.importsFrom(protoSourceSet)
+    } else {
+        val mainRoot = project.protoSourceSets
+            .findByName(KmpLibraryAndroidLeafSourceSets.Main.sourceSetName)
 
-        protoSourceSet.androidProperties.set(properties)
+        if (mainRoot != null) {
+            protoSourceSet.importsFrom(mainRoot)
+        }
     }
+
+    val properties = ProtoTask.AndroidProperties(
+        isTest = sourceSetEntry != KmpLibraryAndroidLeafSourceSets.Main,
+        isInstrumentedTest = sourceSetEntry == KmpLibraryAndroidLeafSourceSets.DeviceTest,
+        isUnitTest = sourceSetEntry == KmpLibraryAndroidLeafSourceSets.HostTest,
+        sourceSetName = protoSourceSet.name,
+        buildType = null,
+        flavors = emptyList(),
+        variant = null,
+    )
+
+    protoSourceSet.androidProperties.set(properties)
 }
 
 // init isLegacyAndroid, isKotlinProxyLegacyAndroid
@@ -594,7 +597,7 @@ private fun AndroidComponents.configureLegacyAndroidVariants(
             variantProtoSourceSet.configure {
                 val default = this as? DefaultProtoSourceSet ?: return@configure
 
-                val properties = BufExecTask.AndroidProperties(
+                val properties = ProtoTask.AndroidProperties(
                     isTest = rootName != LegacyAndroidRootSourceSets.Main,
                     isInstrumentedTest = rootName == LegacyAndroidRootSourceSets.AndroidTest,
                     isUnitTest = rootName == LegacyAndroidRootSourceSets.Test,

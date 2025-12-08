@@ -7,7 +7,7 @@ import org.gradle.api.GradleException
 import org.gradle.kotlin.dsl.version
 import kotlinx.rpc.buf.tasks.*
 import kotlinx.rpc.buf.*
-import org.gradle.api.provider.Provider
+import kotlinx.rpc.protoc.*
 import javax.inject.Inject
 
 plugins {
@@ -21,7 +21,7 @@ android {
     compileSdk = 34
 }
 
-public abstract class BufLintTask @Inject constructor(properties: Provider<BufExecTask.Properties>) : BufExecTask(properties) {
+public abstract class BufLintTask @Inject constructor(properties: ProtoTask.Properties) : BufExecTask(properties) {
     init {
         command.set("lint")
         args.set(emptyList())
@@ -53,7 +53,7 @@ fun assertTasks(
 
 tasks.register("test_tasks") {
     doLast {
-        val genTasks = rpc.protoc.get().buf.generate.allTasks()
+        val genTasks = protoTasks.buf.generate
 
         assertTasks(
             "gen all", genTasks,
@@ -91,8 +91,6 @@ tasks.register("test_tasks") {
         assertTasks("nonTestTasks testTasks", genTasks.nonTestTasks().testTasks())
         assertTasks("matchingSourceSet main", genTasks.matchingSourceSet("main"))
         assertTasks("matchingSourceSet test", genTasks.matchingSourceSet("test"))
-        assertTasks("executedForSourceSet main", genTasks.executedForSourceSet("main"))
-        assertTasks("executedForSourceSet test", genTasks.executedForSourceSet("test"))
 
         assertTasks(
             "matchingSourceSet debug",
@@ -109,26 +107,6 @@ tasks.register("test_tasks") {
         assertTasks(
             "matchingSourceSet androidTestDebug",
             genTasks.matchingSourceSet("androidTestDebug"),
-            "bufGenerateAndroidTestDebug",
-        )
-
-        assertTasks(
-            "executedForSourceSet debug",
-            genTasks.executedForSourceSet("debug"),
-            "bufGenerateDebug",
-        )
-
-        assertTasks(
-            "executedForSourceSet testDebug",
-            genTasks.executedForSourceSet("testDebug"),
-            "bufGenerateDebug",
-            "bufGenerateTestDebug",
-        )
-
-        assertTasks(
-            "executedForSourceSet androidTestDebug",
-            genTasks.executedForSourceSet("androidTestDebug"),
-            "bufGenerateDebug",
             "bufGenerateAndroidTestDebug",
         )
 
@@ -166,7 +144,7 @@ tasks.register("test_tasks") {
             "bufGenerateAndroidTestDebug",
         )
 
-        val allTasks = rpc.protoc.get().buf.tasks.all()
+        val allTasks = protoTasks.buf
 
         assertTasks(
             "all", allTasks,

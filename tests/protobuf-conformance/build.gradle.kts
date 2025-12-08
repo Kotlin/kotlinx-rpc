@@ -6,6 +6,9 @@
 
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
+import kotlinx.rpc.protoc.buf
+import kotlinx.rpc.protoc.generate
+import kotlinx.rpc.protoc.protoTasks
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import util.other.localProperties
 import util.tasks.CONFORMANCE_PB
@@ -47,7 +50,7 @@ rpc {
             includeFileLevelComments = false
         }
 
-        buf.generate.allTasks().nonTestTasks().configureEach {
+        protoTasks.buf.generate.nonTestTasks().configureEach {
             outputDirectory = generatedCodeDir(properties.sourceSetName)
         }
     }
@@ -76,7 +79,7 @@ val generateConformanceTests = tasks.register<JavaExec>("generateConformanceTest
     classpath = sourceSets.main.get().runtimeClasspath
 
     dependsOn(mockClientJar)
-    dependsOn(tasks.named("bufGenerateMain"))
+    dependsOn(protoTasks.buf.generate.matchingSourceSet("main"))
 
     args = listOf(
         mockClientJar.get().archiveFile.get().asFile.absolutePath
@@ -96,7 +99,7 @@ tasks.register<JavaExec>("runConformanceTest") {
     classpath = sourceSets.main.get().runtimeClasspath
 
     dependsOn(mockClientJar)
-    dependsOn(tasks.named("bufGenerateMain"))
+    dependsOn(protoTasks.buf.generate.matchingSourceSet("main"))
     dependsOn(generateConformanceFileDescriptorSet)
 
     args = listOfNotNull(

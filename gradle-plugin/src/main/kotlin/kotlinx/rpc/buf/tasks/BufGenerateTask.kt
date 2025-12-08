@@ -17,7 +17,8 @@ import org.gradle.api.tasks.TaskProvider
 import java.io.File
 import kotlinx.rpc.buf.BufGenerateExtension
 import kotlinx.rpc.protoc.DefaultProtoSourceSet
-import kotlinx.rpc.protoc.bufExecProperties
+import kotlinx.rpc.protoc.ProtoTask
+import kotlinx.rpc.protoc.protoTaskProperties
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.InputFiles
@@ -31,7 +32,7 @@ import javax.inject.Inject
  * @see <a href="https://buf.build/docs/reference/cli/buf/generate/">buf generate</a>
  */
 public abstract class BufGenerateTask @Inject internal constructor(
-    properties: Provider<Properties>,
+    properties: ProtoTask.Properties,
 ) : BufExecTask(properties) {
     // used to properly calculate output directories
     @get:Input
@@ -141,12 +142,11 @@ internal fun Project.registerBufGenerateTask(
     workingDir: File,
     outputDirectory: File,
     includedPlugins: Provider<Set<ProtocPlugin>>,
+    properties: ProtoTask.Properties,
     configure: BufGenerateTask.() -> Unit = {},
 ): TaskProvider<BufGenerateTask> {
     val capitalName = protoSourceSet.name.replaceFirstChar { it.uppercase() }
     val bufGenerateTaskName = "${BufGenerateTask.NAME_PREFIX}$capitalName"
-
-    val properties = protoSourceSet.bufExecProperties()
 
     return registerBufExecTask<BufGenerateTask>(bufGenerateTaskName, provider { workingDir }, properties) {
         group = PROTO_GROUP

@@ -7,9 +7,7 @@ package kotlinx.rpc.buf.tasks
 import kotlinx.rpc.buf.BUF_EXECUTABLE_CONFIGURATION
 import kotlinx.rpc.buf.BufExtension
 import kotlinx.rpc.buf.execBuf
-import kotlinx.rpc.protoc.PROTO_GROUP
 import kotlinx.rpc.rpcExtension
-import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -26,11 +24,11 @@ import kotlin.reflect.KClass
 import kotlinx.rpc.buf.BUF_GEN_YAML
 import kotlinx.rpc.buf.BUF_YAML
 import kotlinx.rpc.buf.BufTasksExtension
+import kotlinx.rpc.protoc.DefaultProtoTask
+import kotlinx.rpc.protoc.ProtoTask
 import org.gradle.api.logging.LogLevel
-import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.SkipWhenEmpty
 import javax.inject.Inject
 
@@ -38,13 +36,8 @@ import javax.inject.Inject
  * Abstract base class for `buf` tasks.
  */
 public abstract class BufExecTask @Inject constructor(
-    @Internal
-    public val properties: Provider<Properties>,
-) : DefaultTask() {
-    init {
-        group = PROTO_GROUP
-    }
-
+    properties: ProtoTask.Properties,
+) : DefaultProtoTask(properties) {
     // unsued, but required for Gradle to properly recognise inputs
     @get:InputFiles
     @get:SkipWhenEmpty
@@ -54,76 +47,11 @@ public abstract class BufExecTask @Inject constructor(
     @get:InputFiles
     internal abstract val importProtoFiles: ListProperty<File>
 
-    // list of buf task dependencies of the same type
-    @get:Internal
-    internal abstract val bufTaskDependencies: SetProperty<String>
-
     @get:InputFile
     internal abstract val bufExecutable: Property<File>
 
     @get:Input
     internal abstract val debug: Property<Boolean>
-
-    /**
-     * Properties of the buf task.
-     *
-     * Can be used with [BufTasks] to filter tasks.
-     */
-    public open class Properties internal constructor(
-        /**
-         * Whether the task is for a test source set.
-         */
-        public val isTest: Boolean,
-        /**
-         * Name of the [kotlinx.rpc.protoc.ProtoSourceSet] this task is associated with.
-         */
-        public val sourceSetName: String,
-    )
-
-    /**
-     * Properties of the buf task for android source sets.
-     *
-     * Can be used with [BufTasks] to filter tasks.
-     */
-    public class AndroidProperties internal constructor(
-        isTest: Boolean,
-        sourceSetName: String,
-
-        /**
-         * Name of the android flavors this task is associated with.
-         *
-         * Can be empty for 'com.android.kotlin.multiplatform.library' source sets.
-         *
-         * @see com.android.build.api.variant.Variant.productFlavors
-         */
-        public val flavors: List<String>,
-
-        /**
-         * Name of the android build type this task is associated with.
-         *
-         * @see com.android.build.api.variant.Variant.buildType
-         */
-        public val buildType: String?,
-
-        /**
-         * Name of the android variant this task is associated with.
-         *
-         * Can be `null` for 'com.android.kotlin.multiplatform.library' source sets.
-         *
-         * @see com.android.build.api.variant.Variant.name
-         */
-        public val variant: String?,
-
-        /**
-         * Whether the task is for instrumentation tests.
-         */
-        public val isInstrumentedTest: Boolean,
-
-        /**
-         * Whether the task is for unit tests.
-         */
-        public val isUnitTest: Boolean,
-    ) : Properties(isTest, sourceSetName)
 
     /**
      * The `buf` command to execute.
@@ -185,7 +113,7 @@ public abstract class BufExecTask @Inject constructor(
 public inline fun <reified T : BufExecTask> Project.registerBufExecTask(
     name: String,
     workingDir: Provider<File>,
-    properties: Provider<BufExecTask.Properties>,
+    properties: ProtoTask.Properties,
     noinline configuration: T.() -> Unit,
 ): TaskProvider<T> = registerBufExecTask(T::class, name, workingDir, properties, configuration)
 
@@ -194,7 +122,7 @@ internal fun <T : BufExecTask> Project.registerBufExecTask(
     clazz: KClass<T>,
     name: String,
     workingDir: Provider<File>,
-    properties: Provider<BufExecTask.Properties>,
+    properties: ProtoTask.Properties,
     configuration: T.() -> Unit = {},
 ): TaskProvider<T> = tasks.register(name, clazz, properties).apply {
     configure {

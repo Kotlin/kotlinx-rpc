@@ -18,13 +18,13 @@ internal enum class LegacyAndroidRootSourceSets(val stringValue: String) {
 }
 
 // leaf (not root as above) source sets for 'com.android.kotlin.multiplatform.library'
-internal enum class KmpLibraryAndroidLeafSourceSets(val stringValue: String) {
+internal enum class KmpLibraryAndroidLeafSourceSets(val sourceSetName: String) {
     Main("androidMain"),
     HostTest("androidHostTest"),
     DeviceTest("androidDeviceTest"),
     ;
 
-    override fun toString(): String = stringValue
+    override fun toString(): String = sourceSetName
 }
 
 // returns a list of source set names this variant consists
