@@ -71,6 +71,8 @@ include(":tests:krpc-compatibility-tests")
 include(":tests:krpc-protocol-compatibility-tests")
 include(":tests:krpc-protocol-compatibility-tests:test-api")
 include(":tests:protobuf-conformance")
+include(":tests:test-protos")
+include(":tests:grpc-test-server")
 
 val kotlinMasterBuild = providers.gradleProperty("kotlinx.rpc.kotlinMasterBuild").orNull == "true"
 

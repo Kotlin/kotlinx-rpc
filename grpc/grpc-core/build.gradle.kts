@@ -12,7 +12,6 @@ import util.registerBuildCLibIncludeDirTask
 
 plugins {
     alias(libs.plugins.conventions.kmp)
-    alias(libs.plugins.kotlinx.rpc)
     alias(libs.plugins.atomicfu)
     alias(libs.plugins.serialization) // for tests
 }
@@ -46,6 +45,7 @@ kotlin {
                 implementation(projects.protobuf.protobufCore)
                 implementation(projects.grpc.grpcClient)
                 implementation(projects.grpc.grpcServer)
+                implementation(projects.tests.testProtos)
             }
         }
 
@@ -115,5 +115,3 @@ kotlin {
         }
     }
 }
-
-configureLocalProtocGenDevelopmentDependency()
