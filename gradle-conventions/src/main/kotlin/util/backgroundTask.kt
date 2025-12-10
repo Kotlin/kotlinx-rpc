@@ -4,112 +4,106 @@
 
 package util
 
+import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
 import java.io.File
-import java.io.Serializable
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.ConcurrentHashMap
 
 
-class RunInBackgroundConfig {
-    internal val shellCommands: MutableList<RunShellCommandConfig> = mutableListOf()
+/**
+ * Parameters for the background task BuildService.
+ */
+internal interface BackgroundTaskParameters : BuildServiceParameters {
+    val commands: ListProperty<List<String>>
+    val workingDir: Property<String>
 }
 
-fun Task.doInBackground(
-    configure: RunInBackgroundConfig.() -> Unit = { },
-) {
-    // Extract all configuration at configuration time
-    val config = RunInBackgroundConfig().apply(configure)
-    val taskName = name
-    val ids = config.shellCommands.map { "$taskName-${it.command}-${it.args.joinToString("-")}" }
+/**
+ * BuildService that owns background OS processes. It starts lazily on first use and
+ * stops all processes at the end of the build.
+ */
+internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParameters>, AutoCloseable {
+    @Transient private var started = false
+    @Transient private var processes: MutableList<Process> = mutableListOf()
 
-    // Register (or reuse) a shared build service at configuration time, so task actions
-    // don't need to access Project/Task APIs, which violates configuration cache rules
-    val bgServiceProvider = project.gradle.sharedServices.registerIfAbsent(
-        "backgroundProcessService",
-        BackgroundProcessService::class.java
-    ) { /* no params */ }
+    @Synchronized
+    fun startIfNeeded() {
+        if (started) return
+        started = true
 
-    doFirst {
-        logger.debug("[$taskName] Starting background processes")
-        config.shellCommands.forEachIndexed { index, command ->
-            val process = ShellProcess(command)
-            val processId = ids[index]
-            bgServiceProvider.get().register(processId, process)
-            process.start()
-            logger.debug("[$taskName] Background process '$processId' started")
+        val wd = parameters.workingDir.orNull?.takeIf { it.isNotEmpty() }?.let { File(it) }
+        parameters.commands.get().forEach { cmd ->
+            val pb = ProcessBuilder(cmd)
+                .inheritIO()
+                .apply { if (wd != null) directory(wd) }
+            val p = pb.start()
+            // give each process a short startup window
+            p.waitFor(100, TimeUnit.MILLISECONDS)
+            processes.add(p)
         }
     }
 
-    doLast {
-        logger.debug("[$taskName] Stopping background processes")
-        ids.forEach { id ->
-            bgServiceProvider.get().unregister(id)?.stop()
-        }
-    }
-
-}
-
-data class RunShellCommandConfig(
-    var workingDir: File? = null,
-    var command: String = "",
-    var args: List<String> = emptyList(),
-) : Serializable
-
-fun RunInBackgroundConfig.commandLine(
-    configure : RunShellCommandConfig.() -> Unit = { },
-) {
-   shellCommands.add(RunShellCommandConfig().apply(configure))
-}
-
-internal class ShellProcess(
-    private val config: RunShellCommandConfig,
-) : Serializable {
-    private var process: Process? = null
-
-    fun start() {
-        check(process == null) { "Process is already started" }
-        val command = listOf(config.command) + config.args
-
-        val builder = ProcessBuilder(command)
-            .inheritIO()
-            .apply {
-                if (config.workingDir != null) directory(config.workingDir)
-            }
-
-        process = builder.start()
-        // give process a startup time of 100ms
-        process?.waitFor(1000, TimeUnit.MILLISECONDS)
-    }
-
+    @Synchronized
     fun stop() {
-        val proc = checkNotNull(process) { "Process is not started" }
-        proc.destroy()
-        val terminated = proc.waitFor(3, TimeUnit.SECONDS)
-        if (!terminated) proc.destroyForcibly()
-        process = null
+        processes.forEach { p ->
+            runCatching {
+                p.destroy()
+                if (!p.waitFor(3, TimeUnit.SECONDS)) p.destroyForcibly()
+            }
+        }
+        processes.clear()
+    }
+
+    override fun close() {
+        stop()
+    }
+}
+
+
+class BackgroundTaskConfig {
+    internal val commands: MutableList<List<String>> = mutableListOf()
+    var workingDir: File? = null
+
+    fun commandLine(command: String, vararg args: String) {
+        commands.add(listOf(command) + args)
+    }
+}
+
+private fun stableConfigId(commands: List<List<String>>, workingDir: File?): String {
+    return (commands.flatten() + (workingDir?.absolutePath ?: ""))
+        .joinToString("\u0000")
+}
+
+internal fun Project.registerBackgroundTaskService(
+    namePrefix: String,
+    configure: BackgroundTaskConfig.() -> Unit,
+): Provider<BackgroundTaskService> {
+    val cfg = BackgroundTaskConfig().apply(configure)
+    val id = stableConfigId(cfg.commands, cfg.workingDir)
+    val serviceName = "$namePrefix-$id"
+
+    return gradle.sharedServices.registerIfAbsent(serviceName, BackgroundTaskService::class.java) {
+        parameters.commands.set(cfg.commands)
+        parameters.workingDir.set(cfg.workingDir?.absolutePath ?: "")
     }
 }
 
 /**
- * BuildService-backed registry for background processes, configuration-cache friendly.
+ * Bind a background BuildService to this task.
+ * The service starts lazily before task execution and terminates at the task end.
  */
-internal abstract class BackgroundProcessService : BuildService<BuildServiceParameters.None>, AutoCloseable {
-    private val processes = ConcurrentHashMap<String, ShellProcess>()
+fun Task.doInBackground(
+    configure: BackgroundTaskConfig.() -> Unit = { },
+) {
+    val svc = project.registerBackgroundTaskService(namePrefix = "background-$name", configure)
+    // Inform Gradle about the service usage for proper scheduling
+    usesService(svc)
 
-    fun register(id: String, process: ShellProcess) {
-        check(processes.putIfAbsent(id, process) == null) { "Background process with id '$id' already exists" }
-    }
-
-    fun unregister(id: String): ShellProcess? = processes.remove(id)
-
-    override fun close() {
-        // Ensure all processes are stopped if the service is closed
-        processes.values.forEach {
-            runCatching { it.stop() }
-        }
-        processes.clear()
-    }
+    doFirst { svc.get().startIfNeeded() }
+    doLast  { svc.get().stop() }
 }

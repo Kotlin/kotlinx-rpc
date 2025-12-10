@@ -9,7 +9,6 @@ import util.configureCLibCInterop
 import util.configureCLibDependency
 import util.doInBackground
 import util.registerBuildCLibIncludeDirTask
-import util.commandLine
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -123,9 +122,7 @@ tasks.withType<Test>().configureEach {
 
     val testServerDir = project(":tests:grpc-test-server").projectDir
     doInBackground {
-        commandLine {
-            workingDir = testServerDir
-            command = "./build/install/grpc-test-server/bin/grpc-test-server"
-        }
+        workingDir = testServerDir
+        commandLine("build/install/grpc-test-server/bin/grpc-test-server")
     }
 }
