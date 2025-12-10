@@ -4,6 +4,11 @@
 
 plugins {
     alias(libs.plugins.conventions.jvm)
+    application
+}
+
+application {
+    mainClass = "kotlinx.rpc.grpc.test.server.TestServerKt"
 }
 
 dependencies {

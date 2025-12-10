@@ -5,10 +5,11 @@
 @file:OptIn(InternalRpcApi::class)
 
 import kotlinx.rpc.internal.InternalRpcApi
-import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import util.configureCLibCInterop
 import util.configureCLibDependency
+import util.doInBackground
 import util.registerBuildCLibIncludeDirTask
+import util.commandLine
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -112,6 +113,19 @@ kotlin {
                     org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.RELEASE
                 )
             )
+        }
+    }
+}
+
+// run gRPC test server (from `test/grpc-test-server` module) background while tests are running
+tasks.withType<Test>().configureEach {
+    dependsOn(":tests:grpc-test-server:installDist")
+
+    val testServerDir = project(":tests:grpc-test-server").projectDir
+    doInBackground {
+        commandLine {
+            workingDir = testServerDir
+            command = "./build/install/grpc-test-server/bin/grpc-test-server"
         }
     }
 }

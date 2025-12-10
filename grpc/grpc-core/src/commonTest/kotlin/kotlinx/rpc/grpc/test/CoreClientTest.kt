@@ -36,9 +36,8 @@ private const val PORT = 50051
 
 /**
  * Client tests that use lower level API directly to test that it behaves correctly.
- * Before executing the tests run [GreeterServiceImpl.runServer] on JVM.
+ * To run the tests, you must first start the server with `tests/grpc-test-server`.
  */
-// TODO: Start external service server automatically (KRPC-208)
 class GrpcCoreClientTest {
 
     private fun descriptorFor(fullName: String = "kotlinx.rpc.grpc.test.GreeterService/SayHello"): MethodDescriptor<HelloRequest, HelloReply> =
@@ -261,43 +260,6 @@ class GrpcCoreClientTest {
         }
     }
 }
-
-class GreeterServiceImpl : GreeterService {
-
-    override suspend fun SayHello(message: HelloRequest): HelloReply {
-        delay(message.timeout?.toLong() ?: 0)
-        return HelloReply {
-            this.message = "Hello ${message.name}"
-        }
-    }
-
-
-    /**
-     * Run this on JVM before executing tests.
-     */
-    @Test
-    fun runServer() = runTest {
-        val server = GrpcServer(
-            port = PORT,
-        ) {
-            services {
-                registerService<GreeterService> { GreeterServiceImpl() }
-            }
-        }
-
-        try {
-            server.start()
-            println("Server started")
-            server.awaitTermination()
-        } finally {
-            server.shutdown()
-            server.awaitTermination()
-
-        }
-    }
-
-}
-
 
 private fun <T> createClientCallListener(
     onHeaders: (headers: GrpcMetadata) -> Unit = {},
