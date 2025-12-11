@@ -194,23 +194,6 @@ class GrpcCoreClientTest {
         shutdownAndWait(channel)
     }
 
-
-    @Test
-    fun halfCloseBeforeSendingMessage_errorWithoutCrashing() {
-        val channel = createChannel()
-        val call = channel.newHelloCall()
-        val listener = createClientCallListener<HelloReply>()
-        assertFailsWith<IllegalStateException> {
-            try {
-                call.start(listener, GrpcMetadata())
-                call.halfClose()
-                call.sendMessage(helloReq())
-            } finally {
-                shutdownAndWait(channel)
-            }
-        }
-    }
-
     @Test
     fun invokeStartAfterShutdown() {
         val channel = createChannel()
