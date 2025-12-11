@@ -2,12 +2,12 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import kotlinx.rpc.buf.*
+import kotlinx.rpc.buf.tasks.*
+import kotlinx.rpc.protoc.*
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.kotlin.dsl.version
-import kotlinx.rpc.buf.tasks.*
-import kotlinx.rpc.buf.*
-import kotlinx.rpc.protoc.*
 import javax.inject.Inject
 
 plugins {
@@ -43,11 +43,18 @@ fun Iterable<DefaultTask>.toNames() = map { it.name }.toSet()
 fun assertTasks(
     tag: String,
     tasks: Iterable<DefaultTask>,
-    vararg expected: String,
+    vararg expected: String?,
 ) {
     val names = tasks.toNames()
-    if (expected.toSet() != names) {
-        throw GradleException("[$tag] Expected: ${expected.toSet()}, actual: $names")
+    val expectedSet = expected.filterNotNull().toSet()
+    if (expectedSet != names) {
+        throw GradleException(
+            """
+                [$tag] Expected: ${expectedSet}, actual: $names
+                Missing: ${expectedSet - names}
+                Extra: ${names - expectedSet}
+            """.trimIndent()
+        )
     }
 }
 
@@ -89,8 +96,32 @@ tasks.register("test_tasks") {
         )
 
         assertTasks("nonTestTasks testTasks", genTasks.nonTestTasks().testTasks())
-        assertTasks("matchingSourceSet main", genTasks.matchingSourceSet("main"))
-        assertTasks("matchingSourceSet test", genTasks.matchingSourceSet("test"))
+
+        assertTasks(
+            "matchingSourceSet main", genTasks.matchingSourceSet("main"),
+            "bufGenerateDebug",
+            "bufGenerateRelease",
+        )
+
+        assertTasks(
+            "matchingSourceSet test", genTasks.matchingSourceSet("test"),
+            "bufGenerateTestDebug",
+            "bufGenerateTestRelease",
+        )
+
+        assertTasks(
+            "matchingSourceSet androidTest", genTasks.matchingSourceSet("androidTest"),
+            "bufGenerateAndroidTestDebug",
+        )
+
+        assertTasks(
+            "gen all android", genTasks.androidTasks(),
+            "bufGenerateAndroidTestDebug",
+            "bufGenerateTestDebug",
+            "bufGenerateTestRelease",
+            "bufGenerateDebug",
+            "bufGenerateRelease",
+        )
 
         assertTasks(
             "matchingSourceSet debug",

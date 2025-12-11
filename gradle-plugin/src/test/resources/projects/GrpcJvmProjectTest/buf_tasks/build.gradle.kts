@@ -37,11 +37,18 @@ fun Iterable<DefaultTask>.toNames() = map { it.name }.toSet()
 fun assertTasks(
     tag: String,
     tasks: Iterable<DefaultTask>,
-    vararg expected: String,
+    vararg expected: String?,
 ) {
     val names = tasks.toNames()
-    if (expected.toSet() != names) {
-        throw GradleException("[$tag] Expected: ${expected.toSet()}, actual: $names")
+    val expectedSet = expected.filterNotNull().toSet()
+    if (expectedSet != names) {
+        throw GradleException(
+            """
+                [$tag] Expected: ${expectedSet}, actual: $names
+                Missing: ${expectedSet - names}
+                Extra: ${names - expectedSet}
+            """.trimIndent()
+        )
     }
 }
 

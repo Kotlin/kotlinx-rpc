@@ -33,7 +33,10 @@ abstract class GrpcBaseTest : BaseTest() {
         runNonExistentTask(generateBufGenYaml(set))
     }
 
-    protected fun runGrpcTest(test: GrpcTestEnv.() -> Unit): Stream<DynamicTest> = runWithAllGradleVersions {
+    protected fun runGrpcTest(
+        versionsPredicate: VersionsPredicate = { true },
+        test: GrpcTestEnv.() -> Unit,
+    ): Stream<DynamicTest> = runWithGradleVersions(versionsPredicate) {
         runTest(GrpcTestEnv(it), test)
     }
 
@@ -148,7 +151,7 @@ abstract class GrpcBaseTest : BaseTest() {
             protoSources.walk().forEach {
                 val pathString = it.relativeTo(protoSources).pathString
                 if (it.isRegularFile() && it.extension == "proto" && pathString !in included) {
-                    fail("File '${it}' in '$protoSources' is not expected")
+                    fail("File '${it.relativeTo(protoSources)}' in '$protoSources' is not expected")
                 }
             }
         }
@@ -376,13 +379,13 @@ abstract class GrpcBaseTest : BaseTest() {
         fun generateBufGenYaml(sourceSet: SSets) = "generateBufGenYaml${sourceSet.capital}"
 
         val mainSourceSet: SSets = when (type) {
-            Type.Kmp -> SSetsKmp.commonMain
+            Type.Kmp -> SSetsKmp.Default.commonMain
             Type.Jvm -> SSetsJvm.main
             Type.Android -> SSetsAndroid.Default.main
         }
 
         val testSourceSet: SSets = when (type) {
-            Type.Kmp -> SSetsKmp.commonTest
+            Type.Kmp -> SSetsKmp.Default.commonTest
             Type.Jvm -> SSetsJvm.test
             Type.Android -> SSetsAndroid.Default.test
         }
@@ -454,32 +457,74 @@ abstract class GrpcBaseTest : BaseTest() {
         }
     }
 
-    enum class SSetsKmp(override val minKotlin: KotlinVersion = KtVersion.v2_0_0) : SSets {
-        commonMain, commonTest,
-        jvmMain, jvmTest,
-        androidMain, androidTest,
-        webMain(KtVersion.v2_2_20), webTest(KtVersion.v2_2_20),
-        jsMain, jsTest,
-        nativeMain, nativeTest,
-        appleMain, appleTest,
-        macosMain, macosTest,
-        macosArm64Main, macosArm64Test,
-        ;
+    sealed interface SSetsKmp : SSets {
+        enum class Default(override val minKotlin: KotlinVersion = KtVersion.v2_0_0) : SSetsKmp {
+            commonMain, commonTest,
+            jvmMain, jvmTest,
+            webMain(KtVersion.v2_2_20), webTest(KtVersion.v2_2_20),
+            jsMain, jsTest,
+            nativeMain, nativeTest,
+            appleMain, appleTest,
+            macosMain, macosTest,
+            macosArm64Main, macosArm64Test,
+            ;
 
-        override fun all(): List<SSets> {
-            return entries
+            override fun all(): List<SSets> {
+                return entries
+            }
+        }
+
+        enum class AndroidKmpLib(override val minKotlin: KotlinVersion = KtVersion.v2_0_0) : SSetsKmp {
+            commonMain, commonTest,
+            jvmMain, jvmTest,
+            androidMain, androidHostTest, androidDeviceTest,
+            ;
+
+            override fun all(): List<SSets> {
+                return entries
+            }
+        }
+
+        enum class LegacyAndroid(override val minKotlin: KotlinVersion = KtVersion.v2_0_0) : SSetsKmp {
+            commonMain, commonTest,
+            jvmMain, jvmTest,
+
+            // kmp, non-executable
+            androidMain,
+            androidUnitTest, androidInstrumentedTest,
+
+            // kmp, executable
+            androidDebug, androidRelease,
+            androidUnitTestDebug, androidUnitTestRelease,
+            androidInstrumentedTestDebug,
+
+            // legacy, non-executable
+            main, test,
+            testFixtures, testFixturesDebug, testFixturesRelease,
+            androidTest,
+
+            debug, release,
+            testDebug, testRelease,
+            androidTestDebug,
+            ;
+
+            override fun all(): List<SSets> {
+                return entries
+            }
         }
     }
 
     sealed interface SSetsAndroid : SSets {
         enum class Default(override val minKotlin: KotlinVersion = KtVersion.v2_0_0) : SSetsAndroid {
+            // non-executable
             main, test,
-            androidTest, testFixtures,
+            testFixtures, testFixturesDebug, testFixturesRelease,
+            androidTest,
 
+            // executable
             debug, release,
-            androidTestDebug,
-            testFixturesDebug, testFixturesRelease,
             testDebug, testRelease,
+            androidTestDebug,
             ;
 
             override fun all(): List<SSets> {

@@ -35,6 +35,11 @@ class VersionsEnv(
         val (major, minor, patch) = kotlin.split(".").map { it.toInt() }
         KotlinVersion(major, minor, patch)
     }
+
+    val androidSemver = run {
+        val (major, minor, patch) = android.split(".").map { it.toInt() }
+        KotlinVersion(major, minor, patch)
+    }
 }
 
 internal object KtVersion {
@@ -42,20 +47,31 @@ internal object KtVersion {
     val v2_0_0 = KotlinVersion(2, 0, 0)
 }
 
+typealias VersionsPredicate = VersionsEnv.() -> Boolean
+
+internal fun VersionsEnv.testTestsForAndroidKmpLibExist(): Boolean {
+    return androidSemver.isAtLeast(8, 10, 0)
+}
+
 private val GradleVersions = listOf(
     VersionsEnv("9.2.1", "2.2.21", "8.13.1"),
-    VersionsEnv("8.14.1", "2.2.0", "8.6.1"),
+    VersionsEnv("8.14.1", "2.2.0", "8.10.0"),
     VersionsEnv("8.8", "2.0.0", "8.4.0"),
 )
 
-internal fun BaseTest.runWithAllGradleVersions(body: (VersionsEnv) -> Unit): Stream<DynamicTest> {
-    return GradleVersions.stream().map {
-        setupTest(it)
+internal fun BaseTest.runWithGradleVersions(
+    predicate: VersionsPredicate = { true },
+    body: (VersionsEnv) -> Unit,
+): Stream<DynamicTest> {
+    return GradleVersions.stream()
+        .filter { predicate(it) }
+        .map { versions ->
+            setupTest(versions)
 
-        DynamicTest.dynamicTest("Gradle ${it.gradle}, Kotlin ${it.kotlin}") {
-            body(it)
+            DynamicTest.dynamicTest("Gradle ${versions.gradle}, KGP ${versions.kotlin}, AGP ${versions.android}") {
+                body(versions)
+            }
         }
-    }
 }
 
 @OptIn(ExperimentalPathApi::class)
@@ -65,6 +81,7 @@ abstract class BaseTest {
     private lateinit var testMethodName: String
     private lateinit var baseDir: Path
     private lateinit var projectDir: Path
+    private lateinit var testKitDir: Path
 
     @BeforeEach
     protected fun setup(testInfo: TestInfo) {
@@ -84,7 +101,10 @@ abstract class BaseTest {
     }
 
     fun setupTest(versions: VersionsEnv) {
-        val versioned = baseDir.resolve(versions.gradle.replace(".", "_"))
+        val gradleDir = versions.gradle.replace(".", "_")
+        testKitDir = TEST_KIT_PATH.resolve(gradleDir)
+
+        val versioned = baseDir.resolve(gradleDir)
 
         projectDir = versioned.resolve(PROJECT_DIR)
         val buildCacheDir = versioned.resolve(BUILD_CACHE_DIR)
@@ -128,11 +148,13 @@ abstract class BaseTest {
             settingsFile.appendText("\ninclude(\":$project\")")
         }
 
-        println("""
+        println(
+            """
             Setup project '$projectName'
               - in directory: ${projectDir.absolutePathString()}
               - from directory: ${testTemplateDirectory.absolutePathString()}
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 
     private fun runGradleInternal(
@@ -143,8 +165,9 @@ abstract class BaseTest {
     ): BuildResult {
         val gradleRunner = GradleRunner.create()
             .withProjectDir(projectDir.absolute().toFile())
-            .withTestKitDir(TEST_KIT_PATH.absolute().toFile())
+            .withTestKitDir(testKitDir.absolute().toFile())
             .withGradleVersion(versions.gradle)
+            .forwardOutput()
             .withArguments(
                 listOfNotNull(
                     task,
@@ -153,28 +176,14 @@ abstract class BaseTest {
                     "-Dorg.gradle.kotlin.dsl.scriptCompilationAvoidance=false",
                     *args,
                 )
-            ).apply {
-                if (forwardOutput) {
-                    forwardOutput()
-                }
-            }
+            )
 
         println("Running Gradle task '$task' with arguments: [${args.joinToString()}]")
         return gradleRunner.body()
     }
 
     protected fun <T : TestEnv> runTest(testEnv: T, body: T.() -> Unit) {
-        try {
-            testEnv.body()
-        } finally {
-            val output = testEnv.latestBuild?.output
-            if (output != null) {
-                println("Latest gradle build output:")
-                println(output)
-            } else {
-                println("No gradle build output available")
-            }
-        }
+        testEnv.body()
     }
 
     open inner class TestEnv(
@@ -221,9 +230,6 @@ abstract class BaseTest {
     }
 
     companion object {
-        private val forwardOutput = System.getProperty("gradle.test.forward.output")
-            ?.toBooleanStrictOrNull() ?: false
-
         private val nameRegex = Regex("[ .,-]")
 
         private val TEST_PROJECTS_PATH = Path.of("build", "gradle-test")

@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message AndroidRelease {
+  string content = 1;
+}
