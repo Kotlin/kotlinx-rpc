@@ -6,9 +6,8 @@ package kotlinx.rpc.protoc
 
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.rpcExtension
-import kotlinx.rpc.util.KotlinPluginId
 import kotlinx.rpc.util.findOrCreate
-import kotlinx.rpc.util.withAndroid
+import kotlinx.rpc.util.withLegacyAndroid
 import kotlinx.rpc.util.withAndroidSourceSets
 import kotlinx.rpc.util.withKotlin
 import kotlinx.rpc.util.withLazyJavaPluginExtension
@@ -51,7 +50,7 @@ internal class ProtoSourceSetFactory(
 }
 
 internal fun Project.findOrCreateProtoSourceSets(): NamedDomainObjectContainer<ProtoSourceSet> =
-    project.findOrCreate(PROTO_SOURCE_SETS) {
+    findOrCreate(PROTO_SOURCE_SETS) {
         val container = objects.domainObjectContainer(
             ProtoSourceSet::class.java,
             ProtoSourceSetFactory(project)
@@ -119,6 +118,9 @@ internal open class DefaultProtoSourceSet(
         }
     }
 
+    val tasksConfigured: Property<Boolean> = project.objects.property<Boolean>()
+        .convention(false)
+
     // Collection of AndroidSourceSet, KotlinSourceSet, SourceSet (java) associated with this proto source set
     val languageSourceSets: ListProperty<Any> = project.objects.listProperty<Any>()
     val generateTask: Property<BufGenerateTask?> = project.objects.property<BufGenerateTask?>()
@@ -131,18 +133,6 @@ internal open class DefaultProtoSourceSet(
     // androidDebug, androidInstrumentedTest, androidInstrumentedTestDebug, androidMain, etc. from
     // the combination of com.android.* and kotlin.(multiplatform|android) are considered legacy Android source sets
     internal val isLegacyAndroid: Property<Boolean> = project.objects.property<Boolean>()
-        .convention(false)
-
-    // when com.android.* (not kotlin.multiplatform.library) is applied - kotlin has proxy source sets:
-    // | AndroidSourceSet | KotlinSourceSet |
-    // | main             | androidMain     |
-    // | test             | androidUnitTest |
-    // | debug            | androidDebug    |
-    // ...
-    //
-    // these kotlin 'proxy' source sets have propper dependsOn values, but should not have tasks configures,
-    // as tasks are configured once for the android source sets
-    internal val isKotlinProxyLegacyAndroid: Property<Boolean> = project.objects.property<Boolean>()
         .convention(false)
 
     // used to track tasks' dependencies for main/commonMain/commonTest tasks, e.g.:
@@ -250,19 +240,15 @@ internal fun Project.createProtoExtensions() {
 
     // CCE free check for kotlin
     withKotlin {
-        withKotlinSourceSets { id, extension ->
+        withKotlinSourceSets { extension ->
             extension.sourceSets.all {
                 findOrCreateAndConfigure(name, this)
-            }
-
-            if (id != KotlinPluginId.MULTIPLATFORM) {
-                return@withKotlinSourceSets
             }
         }
     }
 
     // CCE free check for android
-    withAndroid {
+    withLegacyAndroid {
         withAndroidSourceSets { sourceSets ->
             sourceSets.all {
                 findOrCreateAndConfigure(name, this)
@@ -284,6 +270,6 @@ internal fun Project.createProtoExtensions() {
 internal fun DefaultProtoSourceSet.protoTaskProperties(): ProtoTask.Properties {
     return androidProperties.orNull ?: ProtoTask.Properties(
         isTest = name.lowercase().endsWith("test"),
-        sourceSetName = name,
+        sourceSetNames = setOf(name),
     )
 }

@@ -20,15 +20,23 @@ public interface ProtoTask : Task {
      *
      * Can be used with [ProtoTasks] to filter tasks.
      */
-    public open class Properties internal constructor(
+    public open class Properties(
         /**
          * Whether the task is for a test source set.
          */
         public val isTest: Boolean,
         /**
-         * Name of the [kotlinx.rpc.protoc.ProtoSourceSet] this task is associated with.
+         * Names of all [kotlinx.rpc.protoc.ProtoSourceSet]s this task is associated with.
+         *
+         * For Kotlin/JVM it has only one source set (`main`, or `test`, for example).
+         *
+         * For Kotlin/Multiplatform it also has only one source set (`commonMain`, `commonTest`, or `jsMain`, for example).
+         *
+         * For Android, Kotlin/Android, and Kotlin/Multiplatform + Android it can have multiple source sets:
+         * - `["androidMain", "androidDebug", "main", "debug"]`
+         * - `["androidTest", "androidUnitTestDebug", "test", "testDebug"]`
          */
-        public val sourceSetName: String,
+        public val sourceSetNames: Set<String>,
     )
 
     /**
@@ -36,9 +44,16 @@ public interface ProtoTask : Task {
      *
      * Can be used with [ProtoTasks] to filter tasks.
      */
-    public class AndroidProperties internal constructor(
+    public class AndroidProperties(
+        /**
+         * @see Properties.isTest
+         */
         isTest: Boolean,
-        sourceSetName: String,
+
+        /**
+         * @see Properties.sourceSetNames
+         */
+        sourceSetNames: Set<String>,
 
         /**
          * Name of the android flavors this task is associated with.
@@ -74,7 +89,7 @@ public interface ProtoTask : Task {
          * Whether the task is for unit tests.
          */
         public val isUnitTest: Boolean,
-    ) : Properties(isTest, sourceSetName)
+    ) : Properties(isTest, sourceSetNames)
 }
 
 /**

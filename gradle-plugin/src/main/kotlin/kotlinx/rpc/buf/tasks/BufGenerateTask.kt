@@ -18,12 +18,10 @@ import java.io.File
 import kotlinx.rpc.buf.BufGenerateExtension
 import kotlinx.rpc.protoc.DefaultProtoSourceSet
 import kotlinx.rpc.protoc.ProtoTask
-import kotlinx.rpc.protoc.protoTaskProperties
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectories
-import org.gradle.kotlin.dsl.listProperty
 import javax.inject.Inject
 
 /**
@@ -92,15 +90,16 @@ public abstract class BufGenerateTask @Inject internal constructor(
     @get:OutputDirectory
     public abstract val outputDirectory: Property<File>
 
-    private val outputSourceDirectoriesInternal: ListProperty<File> = project.objects.listProperty()
-
     /**
      * Generated source directories by plugin name.
      *
-     * Can be used in [SourceDirectorySet.srcDirs].
+     * Can be used in [SourceDirectorySet.srcDir] or similar `srcDir` functions from other source set directories.
      */
     @get:OutputDirectories
-    public val outputSourceDirectories: Provider<List<File>> = outputSourceDirectoriesInternal
+    public val outputSourceDirectories: Provider<List<File>> = pluginNames.map { plugins ->
+        val out = outputDirectory.get()
+        plugins.map { out.resolve(it) }
+    }
 
     init {
         command.set("generate")
@@ -125,11 +124,6 @@ public abstract class BufGenerateTask @Inject internal constructor(
         }
 
         this.args.set(args)
-
-        outputSourceDirectoriesInternal.set(pluginNames.map { plugins ->
-            val out = outputDirectory.get()
-            plugins.map { out.resolve(it) }
-        })
     }
 
     internal companion object {

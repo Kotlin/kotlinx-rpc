@@ -49,11 +49,11 @@ rpc {
         buf.generate.comments {
             includeFileLevelComments = false
         }
-
-        protoTasks.buf.generate.nonTestTasks().configureEach {
-            outputDirectory = generatedCodeDir(properties.sourceSetName)
-        }
     }
+}
+
+protoTasks.buf.generate.nonTestTasks().configureEach {
+    outputDirectory = generatedCodeDir(properties.sourceSetNames.single())
 }
 
 val mockClientJar = tasks.register<Jar>("mockClientJar") {

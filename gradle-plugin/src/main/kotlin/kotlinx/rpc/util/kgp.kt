@@ -53,50 +53,48 @@ internal fun Project.withKotlin(action: (id: KotlinPluginId) -> Unit) {
     }
 }
 
-internal fun Project.withKotlinSourceSets(action: (id: KotlinPluginId, KotlinSourceSetContainer) -> Unit) {
-    withKotlin { id ->
-        action(id, the())
+internal fun Project.withKotlinSourceSets(action: (KotlinSourceSetContainer) -> Unit) {
+    withKotlin {
+        action(the())
     }
 }
 
-internal val Project.hasAndroid: Boolean
+internal val Project.hasLegacyAndroid: Boolean
     get() = plugins.hasPlugin(ANDROID_LIBRARY) ||
             plugins.hasPlugin(ANDROID_APPLICATION) ||
             plugins.hasPlugin(ANDROID_DYNAMIC_FEATURE) ||
-            plugins.hasPlugin(ANDROID_TEST) ||
-            plugins.hasPlugin(ANDROID_KOTLIN_MULTIPLATFORM_LIBRARY)
+            plugins.hasPlugin(ANDROID_TEST)
 
-internal fun Project.withAndroid(action: AndroidApplied.() -> Unit) {
+internal val Project.hasAndroidKmpLibrary: Boolean
+    get() = plugins.hasPlugin(ANDROID_KOTLIN_MULTIPLATFORM_LIBRARY)
+
+internal fun Project.withLegacyAndroid(action: LegacyAndroidApplied.() -> Unit) {
     plugins.withId(ANDROID_LIBRARY) {
-        action(AndroidApplied(project, ANDROID_LIBRARY))
+        action(LegacyAndroidApplied(project, ANDROID_LIBRARY))
     }
 
     plugins.withId(ANDROID_APPLICATION) {
-        action(AndroidApplied(project, ANDROID_APPLICATION))
+        action(LegacyAndroidApplied(project, ANDROID_APPLICATION))
     }
 
     plugins.withId(ANDROID_DYNAMIC_FEATURE) {
-        action(AndroidApplied(project, ANDROID_DYNAMIC_FEATURE))
+        action(LegacyAndroidApplied(project, ANDROID_DYNAMIC_FEATURE))
     }
 
     plugins.withId(ANDROID_TEST) {
-        action(AndroidApplied(project, ANDROID_TEST))
-    }
-
-    plugins.withId(ANDROID_KOTLIN_MULTIPLATFORM_LIBRARY) {
-        action(AndroidApplied(project, ANDROID_KOTLIN_MULTIPLATFORM_LIBRARY))
+        action(LegacyAndroidApplied(project, ANDROID_TEST))
     }
 }
 
-internal class AndroidApplied(val project: Project, val id: String)
+internal class LegacyAndroidApplied(val project: Project, val id: String)
 
-internal fun AndroidApplied.withAndroidSourceSets(action: (NamedDomainObjectContainer<out AndroidSourceSet>) -> Unit) {
+internal fun LegacyAndroidApplied.withAndroidSourceSets(action: (NamedDomainObjectContainer<out AndroidSourceSet>) -> Unit) {
     action(project.the<BaseExtension>().sourceSets)
 }
 
 internal typealias AndroidComponents = AndroidComponentsExtension<out CommonExtension<*, *, *, *, *, *>, *, out Variant>
 
-internal fun AndroidApplied.withLazyLegacyAndroidComponentsExtension(action: Action<AndroidComponents>) {
+internal fun LegacyAndroidApplied.withLazyLegacyAndroidComponentsExtension(action: Action<AndroidComponents>) {
     when (id) {
         ANDROID_LIBRARY -> action.execute(project.the<LibraryAndroidComponentsExtension>())
         ANDROID_APPLICATION -> action.execute(project.the<ApplicationAndroidComponentsExtension>())

@@ -56,6 +56,17 @@ internal fun Variant.dependencySourceSets(rootName: LegacyAndroidRootSourceSets)
     add(name.prefixed())
 }
 
+// when com.android.* (not kotlin.multiplatform.library) is applied - kotlin has proxy source sets:
+// | AndroidSourceSet | KotlinSourceSet |
+// | main             | androidMain     |
+// | test             | androidUnitTest |
+// | debug            | androidDebug    |
+// ...
+//
+// these kotlin 'proxy' source sets have propper dependsOn values, and should have tasks configured for them
+// instead of tasks being configured for the android source sets
+//
+// Examples:
 // debug -> androidDebug
 // androidTest -> androidInstrumentedTest
 // androidTestDebug -> androidInstrumentedTestDebug
@@ -64,9 +75,6 @@ internal fun Variant.dependencySourceSets(rootName: LegacyAndroidRootSourceSets)
 // test -> androidUnitTest
 // testDebug -> androidUnitTestDebug
 // testRelease -> androidUnitTestRelease
-/**
- * @see kotlinx.rpc.protoc.DefaultProtoSourceSet.isKotlinProxyLegacyAndroid
- */
 internal fun String.kotlinProxyFromAndroidOriginSourceSetName(rootName: LegacyAndroidRootSourceSets): String? {
     return when (rootName) {
         LegacyAndroidRootSourceSets.Main -> {
@@ -82,26 +90,6 @@ internal fun String.kotlinProxyFromAndroidOriginSourceSetName(rootName: LegacyAn
         }
 
         LegacyAndroidRootSourceSets.TestFixtures -> null
-    }
-}
-
-// androidDebug -> debug
-// androidInstrumentedTest -> androidTest
-// androidInstrumentedTestDebug -> androidTestDebug
-// androidMain -> main
-// androidRelease -> release
-// androidUnitTest -> test
-// androidUnitTestDebug -> testDebug
-// androidUnitTestRelease -> testRelease
-/**
- * @see kotlinx.rpc.protoc.DefaultProtoSourceSet.isKotlinProxyLegacyAndroid
- */
-internal fun String.androidOriginFromKotlinProxySourceSetName(): String? {
-    return when {
-        startsWith("androidUnit") -> removePrefix("androidUnit").replaceFirstChar { it.lowercase() }
-        startsWith("androidInstrumented") -> "android${removePrefix("androidInstrumented")}"
-        startsWith("android") -> removePrefix("android").replaceFirstChar { it.lowercase() }
-        else -> null
     }
 }
 

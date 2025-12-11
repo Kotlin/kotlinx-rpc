@@ -84,12 +84,12 @@ rpc {
         buf.generate.comments {
             includeFileLevelComments = false
         }
-
-        protoTasks.buf.generate.matchingKotlinSourceSet(kotlin.sourceSets.commonMain).configureEach {
-            includeWkt = true
-            outputDirectory = generatedCodeDir(properties.sourceSetName)
-        }
     }
+}
+
+protoTasks.buf.generate.matchingKotlinSourceSet(kotlin.sourceSets.commonMain).configureEach {
+    includeWkt = true
+    outputDirectory = generatedCodeDir(properties.sourceSetNames.single())
 }
 
 configureLocalProtocGenDevelopmentDependency("Main", "Test")

@@ -47,11 +47,6 @@ dependencies {
 }
 
 tasks.test {
-    val forwardOutput: Boolean = (properties.getOrDefault("gradle.test.forward.output", "false")
-         as String).toBooleanStrictOrNull() ?: false
-
-    systemProperty("gradle.test.forward.output", forwardOutput)
-
     useJUnitPlatform()
 
     val protocGen = gradle.includedBuild("protoc-gen")

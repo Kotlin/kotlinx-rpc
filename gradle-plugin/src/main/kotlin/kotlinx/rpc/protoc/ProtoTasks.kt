@@ -17,16 +17,46 @@ import kotlin.reflect.KClass
 
 /**
  * Returns a collection of all proto tasks registered in the project.
+ *
+ * Example:
+ * ```kotlin
+ * protoTasks.matchingSourceSet("main")
+ * protoTasks.testTasks()
+ * protoTasks.
+ *     .testTasks()
+ *     .matching { ... }
+ *     .all { ... }
+ * ```
  */
 public val Project.protoTasks: ProtoTasks<ProtoTask> get() = ProtoTasksImpl(this)
 
 /**
  * Returns a collection of all `buf` tasks registered in the project.
+ *
+ * Example:
+ * ```kotlin
+ * protoTasks.buf.matchingSourceSet("main")
+ * protoTasks.buf.testTasks()
+ * protoTasks.buf
+ *     .testTasks()
+ *     .matching { ... }
+ *     .all { ... }
+ * ```
  */
 public val ProtoTasks<ProtoTask>.buf: ProtoTasks<BufExecTask> get() = matchingType(BufExecTask::class)
 
 /**
  * Returns a collection of all `buf generate` tasks registered in the project.
+ *
+ * Example:
+ * ```kotlin
+ * protoTasks.buf.generate.matchingSourceSet("main")
+ * protoTasks.buf.generate.testTasks()
+ * protoTasks.buf.generate
+ *     .testTasks()
+ *     .matching { ... }
+ *     .all { ... }
+ * ```
  */
 public val ProtoTasks<BufExecTask>.generate: ProtoTasks<BufGenerateTask> get() = matchingType(BufGenerateTask::class)
 
@@ -39,7 +69,7 @@ public val ProtoTasks<BufExecTask>.generate: ProtoTasks<BufGenerateTask> get() =
  * ```kotlin
  * protoTasks.matchingSourceSet("main")
  * protoTasks.testTasks()
- * protoTasks.
+ * protoTasks
  *     .testTasks()
  *     .matching { ... }
  *     .all { ... }
@@ -104,9 +134,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * Filters tasks by where [ProtoTask.Properties.isTest] is `true`.
      *
      * ```kotlin
-     * rpc.protoc {
-     *     buf.tasks.all().testTasks()
-     * }
+     * protoTasks.testTasks()
      * ```
      */
     public fun testTasks(): ProtoTasks<ProtoTaskT>
@@ -115,20 +143,33 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * Filters tasks by where [ProtoTask.Properties.isTest] is `false`.
      *
      * ```kotlin
-     * rpc.protoc {
-     *     buf.tasks.all().nonTestTasks()
-     * }
+     * protoTasks.nonTestTasks()
      * ```
      */
     public fun nonTestTasks(): ProtoTasks<ProtoTaskT>
 
     /**
+     * Filters tasks by where [ProtoTask.properties] are of type [ProtoTask.AndroidProperties].
+     *
+     * Takes optional predicate to filter on [ProtoTask.AndroidProperties].
+     *
+     * ```kotlin
+     * protoTasks.androidTasks()
+     *
+     * protoTasks.androidTasks { _, properties ->
+     *     properties.buildType == "debug"
+     * }
+     * ```
+     */
+    public fun androidTasks(
+        predicate: (ProtoTaskT, ProtoTask.AndroidProperties) -> Boolean = { _, _ -> true },
+    ): ProtoTasks<ProtoTaskT>
+
+    /**
      * Filters tasks by where [ProtoTask.AndroidProperties.isUnitTest] is `true`.
      *
      * ```kotlin
-     * rpc.protoc {
-     *     buf.tasks.all().androidUnitTestTasks()
-     * }
+     * protoTasks.androidUnitTestTasks()
      * ```
      */
     public fun androidUnitTestTasks(): ProtoTasks<ProtoTaskT>
@@ -137,9 +178,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * Filters tasks by where [ProtoTask.AndroidProperties.isInstrumentedTest] is `true`.
      *
      * ```kotlin
-     * rpc.protoc {
-     *     buf.tasks.all().androidInstrumentedTestTasks()
-     * }
+     * protoTasks.androidInstrumentedTestTasks()
      * ```
      */
     public fun androidInstrumentedTestTasks(): ProtoTasks<ProtoTaskT>
@@ -152,9 +191,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * Only returns Android tasks.
      *
      * ```kotlin
-     * rpc.protoc {
-     *     buf.tasks.all().matchingAndroidFlavor("freeApp")
-     * }
+     * protoTasks.matchingAndroidFlavor("freeApp")
      * ```
      */
     public fun matchingAndroidFlavor(flavor: String?): ProtoTasks<ProtoTaskT>
@@ -165,9 +202,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * Only returns Android tasks.
      *
      * ```kotlin
-     * rpc.protoc {
-     *     buf.tasks.all().matchingAndroidBuildType("debug")
-     * }
+     * protoTasks.matchingAndroidBuildType("debug")
      * ```
      */
     public fun matchingAndroidBuildType(buildType: String?): ProtoTasks<ProtoTaskT>
@@ -178,9 +213,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * Only returns Android tasks.
      *
      * ```kotlin
-     * rpc.protoc {
-     *     buf.tasks.all().matchingAndroidVariant("freeAppDebug")
-     * }
+     * protoTasks.matchingAndroidVariant("freeAppDebug")
      * ```
      */
     public fun matchingAndroidVariant(variant: String?): ProtoTasks<ProtoTaskT>
@@ -191,9 +224,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
  * Filters tasks by type.
  *
  * ```kotlin
- * rpc.protoc {
- *     buf.tasks.all().matchingType<BufGenerateTask>()
- * }
+ * protoTasks.matchingType<BufGenerateTask>()
  * ```
  */
 public inline fun <reified ProtoTaskT : ProtoTask> ProtoTasks<*>.matchingType(): ProtoTasks<ProtoTaskT> {
@@ -217,7 +248,7 @@ internal open class ProtoTasksImpl<ProtoTaskT : ProtoTask>(
     override fun matchingSourceSet(sourceSetName: String): ProtoTasks<ProtoTaskT> {
         return ProtoTasksImpl(
             project,
-            collection.matching { it.properties.sourceSetName == sourceSetName },
+            collection.matching { sourceSetName in it.properties.sourceSetNames },
             kClass
         )
     }
@@ -246,13 +277,16 @@ internal open class ProtoTasksImpl<ProtoTaskT : ProtoTask>(
         return ProtoTasksImpl(project, collection.matching { !it.properties.isTest }, kClass)
     }
 
+    override fun androidTasks(
+        predicate: (ProtoTaskT, ProtoTask.AndroidProperties) -> Boolean,
+    ): ProtoTasks<ProtoTaskT> {
+        return ProtoTasksImpl(project, collection.matchingAndroid(predicate), kClass)
+    }
+
     override fun androidUnitTestTasks(): ProtoTasks<ProtoTaskT> {
         return ProtoTasksImpl(
             project = project,
-            collection = collection.matching {
-                val properties = it.properties as? ProtoTask.AndroidProperties
-                    ?: return@matching false
-
+            collection = collection.matchingAndroid { _, properties ->
                 properties.isUnitTest
             },
             kClass = kClass,
@@ -262,10 +296,7 @@ internal open class ProtoTasksImpl<ProtoTaskT : ProtoTask>(
     override fun androidInstrumentedTestTasks(): ProtoTasks<ProtoTaskT> {
         return ProtoTasksImpl(
             project = project,
-            collection = collection.matching {
-                val properties = it.properties as? ProtoTask.AndroidProperties
-                    ?: return@matching false
-
+            collection = collection.matchingAndroid { _, properties ->
                 properties.isInstrumentedTest
             },
             kClass = kClass,
@@ -275,12 +306,9 @@ internal open class ProtoTasksImpl<ProtoTaskT : ProtoTask>(
     override fun matchingAndroidFlavor(flavor: String?): ProtoTasks<ProtoTaskT> {
         return ProtoTasksImpl(
             project = project,
-            collection = collection.matching {
-                val properties = it.properties as? ProtoTask.AndroidProperties
-                    ?: return@matching false
-
+            collection = collection.matchingAndroid { _, properties ->
                 if (flavor == null) {
-                    return@matching properties.flavors.isEmpty()
+                    return@matchingAndroid properties.flavors.isEmpty()
                 }
 
                 properties.flavors.contains(flavor)
@@ -292,10 +320,7 @@ internal open class ProtoTasksImpl<ProtoTaskT : ProtoTask>(
     override fun matchingAndroidBuildType(buildType: String?): ProtoTasks<ProtoTaskT> {
         return ProtoTasksImpl(
             project = project,
-            collection = collection.matching {
-                val properties = it.properties as? ProtoTask.AndroidProperties
-                    ?: return@matching false
-
+            collection = collection.matchingAndroid { _, properties ->
                 properties.buildType == buildType
             },
             kClass = kClass,
@@ -305,17 +330,20 @@ internal open class ProtoTasksImpl<ProtoTaskT : ProtoTask>(
     override fun matchingAndroidVariant(variant: String?): ProtoTasks<ProtoTaskT> {
         return ProtoTasksImpl(
             project = project,
-            collection = collection.matching {
-                val properties = it.properties as? ProtoTask.AndroidProperties
-                    ?: return@matching false
-
+            collection = collection.matchingAndroid { _, properties ->
                 properties.variant == variant
             },
             kClass = kClass,
         )
     }
 
-    fun empty() = ProtoTasksImpl(project, matching { false }, kClass)
+    private fun TaskCollection<ProtoTaskT>.matchingAndroid(
+        predicate: (ProtoTaskT, ProtoTask.AndroidProperties) -> Boolean = { _, _ -> true },
+    ): TaskCollection<ProtoTaskT> {
+        return matching {
+            it.properties is ProtoTask.AndroidProperties && predicate(it, it.properties as ProtoTask.AndroidProperties)
+        }
+    }
 
     // Java default method override
     @Deprecated("Deprecated in Java")
