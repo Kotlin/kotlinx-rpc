@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import util.other.generateSource
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.exists
 import kotlin.io.path.readLines
 
 plugins {
@@ -109,9 +110,11 @@ generateSource(
 val globalRootDir: String by extra
 
 val androidHome = System.getenv("ANDROID_HOME")
+    ?: System.getProperty("ANDROID_SDK_HOME")
     ?: Path(globalRootDir, "local.properties")
-        .readLines()
-        .find { it.startsWith("sdk.dir=") }
+        .takeIf { it.exists() }
+        ?.readLines()
+        ?.find { it.startsWith("sdk.dir=") }
         ?.substringAfter("=")
         ?.trim()
     ?: error("ANDROID_HOME is not set")

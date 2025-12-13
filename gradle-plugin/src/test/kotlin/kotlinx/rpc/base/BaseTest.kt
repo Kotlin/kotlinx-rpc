@@ -168,13 +168,11 @@ abstract class BaseTest {
             .withProjectDir(projectDir.absolute().toFile())
             .withTestKitDir(testKitDir.absolute().toFile())
             .withGradleVersion(versions.gradle)
-            .forwardOutput()
             .withEnvironment(mapOf("ANDROID_HOME" to ANDROID_HOME_DIR))
             .withArguments(
                 listOfNotNull(
                     task,
                     "--stacktrace",
-                    "--info",
                     "-Dorg.gradle.kotlin.dsl.scriptCompilationAvoidance=false",
                     *args,
                 )
@@ -192,15 +190,13 @@ abstract class BaseTest {
         val versions: VersionsEnv,
     ) {
         val projectDir: Path get() = this@BaseTest.projectDir
-        var latestBuild: BuildResult? = null
-            private set
 
         fun runGradle(
             task: String,
             vararg args: String,
         ): BuildResult {
             return runGradleInternal(task, versions, *args) {
-                build().also { latestBuild = it }
+                build()
             }
         }
 
@@ -209,7 +205,7 @@ abstract class BaseTest {
             vararg args: String,
         ): BuildResult {
             return runGradleInternal(task, versions, *args) {
-                buildAndFail().also { latestBuild = it }
+                buildAndFail()
             }
         }
 
