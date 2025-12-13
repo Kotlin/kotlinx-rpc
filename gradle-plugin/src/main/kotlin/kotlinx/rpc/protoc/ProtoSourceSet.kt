@@ -117,20 +117,121 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
         select: NamedDomainObjectContainer<ProtocPlugin>.() -> ProtocPlugin,
     )
 
+    /**
+     * Protoc plugins that will be applied to proto files in this source set.
+     *
+     * Combined with the plugins from [extendsFrom] source sets.
+     *
+     * Plugins from [importsFrom] and [importsAllFrom] source sets are not included.
+     */
     public val plugins: SetProperty<ProtocPlugin>
 
+    /**
+     * Proto files from [protoSourceSet] will be available as import, but will not be used for code generation.
+     *
+     * Example:
+     * ```kotlin
+     * kotlin.sourceSets {
+     *     val someProto = create("someProto")
+     *     commonMain {
+     *         proto {
+     *             importsFrom(protoSourceSets.getByName("someProto"))
+     *         }
+     *     }
+     * }
+     * ```
+     */
     public fun importsFrom(protoSourceSet: ProtoSourceSet)
 
+    /**
+     * Proto files from [protoSourceSet] will be available as import, but will not be used for code generation.
+     *
+     * Example:
+     * ```kotlin
+     * kotlin.sourceSets {
+     *     val someProto = create("someProto")
+     *     commonMain {
+     *         proto {
+     *             importsFrom(protoSourceSets.getByName("someProto"))
+     *         }
+     *     }
+     * }
+     * ```
+     */
     public fun importsFrom(protoSourceSet: Provider<ProtoSourceSet>)
 
-    public fun importsAllFrom(protoSourceSet: Provider<List<ProtoSourceSet>>)
-
+    /**
+     * Proto files from [protoSourceSet] will be available as import, but will not be used for code generation.
+     *
+     * Example:
+     * ```kotlin
+     * kotlin.sourceSets {
+     *     val someProto = create("someProto")
+     *     commonMain {
+     *         proto {
+     *             importsFrom(protoSourceSets.getByName("someProto"))
+     *         }
+     *     }
+     * }
+     * ```
+     */
     public fun importsFrom(protoSourceSet: NamedDomainObjectProvider<ProtoSourceSet>)
 
+    /**
+     * Proto files from [protoSourceSets] will be available as import, but will not be used for code generation.
+     *
+     * Example:
+     * ```kotlin
+     * kotlin.sourceSets {
+     *     val someProto = create("someProto")
+     *     commonMain {
+     *         proto {
+     *             importsAllFrom(project.provider { protoSourceSets.filter { it.name == someProto.name } })
+     *         }
+     *     }
+     * }
+     * ```
+     */
+    public fun importsAllFrom(protoSourceSets: Provider<List<ProtoSourceSet>>)
+
+    /**
+     * List of all imported proto source sets.
+     */
     public val imports: SetProperty<ProtoSourceSet>
 
+    /**
+     * A collection of proto files that are imported by this source set but do not belong to any other source set.
+     *
+     * Example:
+     * ```kotlin
+     * kotlin.sourceSets {
+     *     commonMain {
+     *         proto {
+     *             fileImports.from("path/to/proto/file.proto")
+     *         }
+     *     }
+     * }
+     * ```
+     */
     public val fileImports: ConfigurableFileCollection
 
+    /**
+     * Proto source sets that this source set extends from.
+     * All proto files from [protoSourceSet] will be used for code generation.
+     * All imports [protoSourceSet] will be included as well.
+     *
+     * Example:
+     * ```kotlin
+     * kotlin.sourceSets {
+     *     val someProto = create("someProto")
+     *     commonMain {
+     *         proto {
+     *             extendsFrom(protoSourceSets.getByName("someProto"))
+     *         }
+     *     }
+     * }
+     * ```
+     */
     public fun extendsFrom(protoSourceSet: ProtoSourceSet)
 }
 

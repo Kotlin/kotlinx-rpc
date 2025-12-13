@@ -169,13 +169,13 @@ internal fun Project.registerGenerateBufGenYamlTask(
             }
         }
 
-        plugins.set(pluginsProvider)
+        plugins.convention(pluginsProvider)
 
         val bufGenYamlFile = buildSourceSetsDir
             .resolve(BUF_GEN_YAML)
             .ensureRegularFileExists()
 
-        bufGenFile.set(bufGenYamlFile)
+        bufGenFile.convention(bufGenYamlFile)
 
         configure()
     }

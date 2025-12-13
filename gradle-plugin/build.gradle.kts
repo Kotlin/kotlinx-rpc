@@ -4,6 +4,9 @@
 
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import util.other.generateSource
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.readLines
 
 plugins {
     `kotlin-dsl`
@@ -105,6 +108,14 @@ generateSource(
 
 val globalRootDir: String by extra
 
+val androidHome = System.getenv("ANDROID_HOME")
+    ?: Path(globalRootDir, "local.properties")
+        .readLines()
+        .find { it.startsWith("sdk.dir=") }
+        ?.substringAfter("=")
+        ?.trim()
+    ?: error("ANDROID_HOME is not set")
+
 generateSource(
     name = "TestVersions",
     text = """
@@ -112,7 +123,9 @@ generateSource(
         
         const val RPC_VERSION: String = "${libs.versions.kotlinx.rpc.get()}"
         
-        const val BUILD_REPO: String = "${File(globalRootDir).resolve("build/repo").absolutePath}"
+        const val ANDROID_HOME_DIR: String = "$androidHome"
+        
+        const val BUILD_REPO: String = "${Path(globalRootDir, "build", "repo").absolutePathString()}"
     """.trimIndent(),
     chooseSourceSet = { test }
 )

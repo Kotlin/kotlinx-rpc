@@ -289,6 +289,14 @@ public open class ProtocPlugin internal constructor(
         }
     }
 
+    override fun equals(other: Any?): Boolean {
+        return other is ProtocPlugin && name == other.name
+    }
+
+    override fun hashCode(): Int {
+        return name.hashCode()
+    }
+
     internal fun copy(): ProtocPlugin {
         return ProtocPlugin(name, project)
             .also {

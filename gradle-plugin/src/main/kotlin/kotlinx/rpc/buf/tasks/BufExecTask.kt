@@ -50,8 +50,13 @@ public abstract class BufExecTask @Inject constructor(
     @get:InputFile
     internal abstract val bufExecutable: Property<File>
 
+    /**
+     * Whether to enable debug logging for the `buf` command using `--debug` option.
+     *
+     * @see <a href="https://buf.build/docs/reference/cli/buf/#debug">Debugging</a>
+     */
     @get:Input
-    internal abstract val debug: Property<Boolean>
+    public abstract val debug: Property<Boolean>
 
     /**
      * The `buf` command to execute.
@@ -127,14 +132,14 @@ internal fun <T : BufExecTask> Project.registerBufExecTask(
 ): TaskProvider<T> = tasks.register(name, clazz, properties).apply {
     configure {
         val executableConfiguration = configurations.named(BUF_EXECUTABLE_CONFIGURATION)
-        bufExecutable.set(project.provider { executableConfiguration.get().singleFile })
-        this.workingDir.set(workingDir)
+        bufExecutable.convention(project.provider { executableConfiguration.get().singleFile })
+        this.workingDir.convention(workingDir)
 
         val buf = provider { rpcExtension().protoc.get().buf }
-        configFile.set(buf.flatMap { it.configFile })
-        logFormat.set(buf.flatMap { it.logFormat })
-        bufTimeoutInWholeSeconds.set(buf.flatMap { it.timeout.map { duration -> duration.inWholeSeconds } })
-        debug.set(gradle.startParameter.logLevel == LogLevel.DEBUG)
+        configFile.convention(buf.flatMap { it.configFile })
+        logFormat.convention(buf.flatMap { it.logFormat })
+        bufTimeoutInWholeSeconds.convention(buf.flatMap { it.timeout.map { duration -> duration.inWholeSeconds } })
+        debug.convention(gradle.startParameter.logLevel == LogLevel.DEBUG)
 
         configuration()
     }

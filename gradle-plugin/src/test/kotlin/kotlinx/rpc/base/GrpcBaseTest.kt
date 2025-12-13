@@ -6,6 +6,8 @@
 
 package kotlinx.rpc.base
 
+import kotlinx.rpc.base.GrpcBaseTest.CompileTaskMode
+import kotlinx.rpc.base.GrpcBaseTest.SSets
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import org.intellij.lang.annotations.Language
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.TestInstance
 import java.nio.file.Path
 import java.util.stream.Stream
 import kotlin.io.path.*
+import kotlin.io.path.name
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
@@ -326,7 +329,20 @@ abstract class GrpcBaseTest : BaseTest() {
             extended: List<SSets> = emptyList(),
         ) {
             cleanProtoBuildDir()
+
             runForSet(sourceSet).assertSourceSet(sourceSet, *imports, extendedProto = extended)
+
+            dryRunCompilation(sourceSet)
+        }
+
+        fun dryRunCompilation(sourceSet: SSets) {
+            val compileTask = sourceSet.compileTask() ?: return
+
+            val result = runGradle(compileTask, "--dry-run", "--no-configuration-cache")
+
+            assert(result.output.contains(":${bufGenerate(sourceSet)} SKIPPED")) {
+                "${bufGenerate(sourceSet)} task should be present in dry-run mode for $compileTask execution"
+            }
         }
 
         fun GrpcTestEnv.runForSet(sourceSet: SSets): BuildResult {
@@ -444,13 +460,19 @@ abstract class GrpcBaseTest : BaseTest() {
 
     interface SSets {
         val minKotlin: KotlinVersion
+        val mode: CompileTaskMode?
         val name: String
         fun all(): List<SSets>
+        fun compileTask(): String? {
+            return mode?.let { compileTaskName(it) }
+        }
     }
 
     enum class SSetsJvm(override val minKotlin: KotlinVersion = KtVersion.v2_0_0) : SSets {
         main, test,
         ;
+
+        override val mode: CompileTaskMode = ctm.j
 
         override fun all(): List<SSets> {
             return entries
@@ -458,15 +480,18 @@ abstract class GrpcBaseTest : BaseTest() {
     }
 
     sealed interface SSetsKmp : SSets {
-        enum class Default(override val minKotlin: KotlinVersion = KtVersion.v2_0_0) : SSetsKmp {
+        enum class Default(
+            override val mode: CompileTaskMode? = null,
+            override val minKotlin: KotlinVersion = KtVersion.v2_0_0,
+        ) : SSetsKmp {
             commonMain, commonTest,
-            jvmMain, jvmTest,
-            webMain(KtVersion.v2_2_20), webTest(KtVersion.v2_2_20),
-            jsMain, jsTest,
+            jvmMain(ctm.k), jvmTest(ctm.k),
+            webMain(minKotlin = KtVersion.v2_2_20), webTest(minKotlin = KtVersion.v2_2_20),
+            jsMain(ctm.k), jsTest(ctm.k),
             nativeMain, nativeTest,
             appleMain, appleTest,
             macosMain, macosTest,
-            macosArm64Main, macosArm64Test,
+            macosArm64Main(ctm.k), macosArm64Test(ctm.k),
             ;
 
             override fun all(): List<SSets> {
@@ -474,10 +499,13 @@ abstract class GrpcBaseTest : BaseTest() {
             }
         }
 
-        enum class AndroidKmpLib(override val minKotlin: KotlinVersion = KtVersion.v2_0_0) : SSetsKmp {
+        enum class AndroidKmpLib(
+            override val mode: CompileTaskMode? = null,
+            override val minKotlin: KotlinVersion = KtVersion.v2_0_0,
+        ) : SSetsKmp {
             commonMain, commonTest,
-            jvmMain, jvmTest,
-            androidMain, androidHostTest, androidDeviceTest,
+            jvmMain(ctm.k), jvmTest(ctm.k),
+            androidMain(ctm.ak), androidHostTest(ctm.ak), androidDeviceTest(ctm.ak),
             ;
 
             override fun all(): List<SSets> {
@@ -485,18 +513,21 @@ abstract class GrpcBaseTest : BaseTest() {
             }
         }
 
-        enum class LegacyAndroid(override val minKotlin: KotlinVersion = KtVersion.v2_0_0) : SSetsKmp {
+        enum class LegacyAndroid(
+            override val mode: CompileTaskMode? = null,
+            override val minKotlin: KotlinVersion = KtVersion.v2_0_0,
+        ) : SSetsKmp {
             commonMain, commonTest,
-            jvmMain, jvmTest,
+            jvmMain(ctm.k), jvmTest(ctm.k),
 
             // kmp, non-executable
             androidMain,
             androidUnitTest, androidInstrumentedTest,
 
             // kmp, executable
-            androidDebug, androidRelease,
-            androidUnitTestDebug, androidUnitTestRelease,
-            androidInstrumentedTestDebug,
+            androidDebug(ctm.al), androidRelease(ctm.al),
+            androidUnitTestDebug(ctm.al), androidUnitTestRelease(ctm.al),
+            androidInstrumentedTestDebug(ctm.al),
 
             // legacy, non-executable
             main, test,
@@ -515,16 +546,19 @@ abstract class GrpcBaseTest : BaseTest() {
     }
 
     sealed interface SSetsAndroid : SSets {
-        enum class Default(override val minKotlin: KotlinVersion = KtVersion.v2_0_0) : SSetsAndroid {
+        enum class Default(
+            override val mode: CompileTaskMode? = null,
+            override val minKotlin: KotlinVersion = KtVersion.v2_0_0,
+        ) : SSetsAndroid {
             // non-executable
             main, test,
             testFixtures, testFixturesDebug, testFixturesRelease,
             androidTest,
 
             // executable
-            debug, release,
-            testDebug, testRelease,
-            androidTestDebug,
+            debug(ctm.a), release(ctm.a),
+            testDebug(ctm.a), testRelease(ctm.a),
+            androidTestDebug(ctm.a),
             ;
 
             override fun all(): List<SSets> {
@@ -532,8 +566,11 @@ abstract class GrpcBaseTest : BaseTest() {
             }
         }
 
-        enum class Test(override val minKotlin: KotlinVersion = KtVersion.v2_0_0) : SSetsAndroid {
-            main, debug,
+        enum class Test(
+            override val mode: CompileTaskMode? = null,
+            override val minKotlin: KotlinVersion = KtVersion.v2_0_0,
+        ) : SSetsAndroid {
+            main, debug(ctm.a),
             ;
 
             override fun all(): List<SSets> {
@@ -542,10 +579,76 @@ abstract class GrpcBaseTest : BaseTest() {
         }
     }
 
-    private val SSets.capital get() = name.replaceFirstChar { it.titlecase() }
+    enum class CompileTaskMode {
+        Jvm, Kmp, Android, LegacyAndroidKmp, AndroidKmpLib;
+
+        companion object {
+            val j = Jvm
+            val k = Kmp
+            val a = Android
+            val al = LegacyAndroidKmp
+            val ak = AndroidKmpLib
+        }
+    }
 
     companion object {
         private const val KOTLIN_MULTIPLATFORM_DIR = "kotlin-multiplatform"
         const val RPC_INTERNAL = "_rpc_internal"
+    }
+}
+
+typealias ctm = CompileTaskMode
+
+private val SSets.capital get() = name.replaceFirstChar { it.titlecase() }
+
+private fun SSets.compileTaskName(mode: CompileTaskMode): String {
+    return when (mode) {
+        CompileTaskMode.Jvm -> if (name == "main") "compileKotlin" else "compileTestKotlin"
+        CompileTaskMode.Kmp -> {
+            val platform = capital.removeSuffix("Main").removeSuffix("Test")
+            if (name.endsWith("Test")) "compileTestKotlin$platform" else "compileKotlin$platform"
+        }
+
+        CompileTaskMode.Android -> {
+            // compileX86FreeappDebugUnitTestKotlin
+            // compileArmFreeappDebugAndroidTestKotlin
+            // compileArmFreeappDebugKotlin
+            when {
+                name.startsWith("androidTest") -> {
+                    "compile${name.removePrefix("androidTest")}AndroidTestKotlin"
+                }
+
+                name.startsWith("test") -> {
+                    "compile${name.removePrefix("test")}UnitTestKotlin"
+                }
+
+                else -> "compile${capital}Kotlin"
+            }
+        }
+
+        CompileTaskMode.LegacyAndroidKmp -> {
+            // compileDebugAndroidTestKotlinAndroid
+            // compileDebugUnitTestKotlinAndroid
+            // compileDebugKotlinAndroid
+            val withoutPrefix = name.removePrefix("android")
+            when {
+                withoutPrefix.startsWith("InstrumentedTest") -> {
+                    "compile${withoutPrefix.removePrefix("InstrumentedTest")}AndroidTestKotlinAndroid"
+                }
+
+                withoutPrefix.startsWith("UnitTest") -> {
+                    "compile${withoutPrefix.removePrefix("UnitTest")}UnitTestKotlinAndroid"
+                }
+
+                else -> "compile${withoutPrefix}KotlinAndroid"
+            }
+        }
+
+        CompileTaskMode.AndroidKmpLib -> {
+            // compileAndroidDeviceTest
+            // compileAndroidHostTest
+            // compileAndroidMain
+            "compile${capital}"
+        }
     }
 }

@@ -5,7 +5,6 @@
 package kotlinx.rpc.buf.tasks
 
 import kotlinx.rpc.protoc.PROTO_GROUP
-import kotlinx.rpc.rpcExtension
 import kotlinx.rpc.protoc.ProtocPlugin
 import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
@@ -17,6 +16,7 @@ import org.gradle.api.tasks.TaskProvider
 import java.io.File
 import kotlinx.rpc.buf.BufGenerateExtension
 import kotlinx.rpc.protoc.DefaultProtoSourceSet
+import kotlinx.rpc.protoc.DefaultProtocExtension
 import kotlinx.rpc.protoc.ProtoTask
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Provider
@@ -32,16 +32,22 @@ import javax.inject.Inject
 public abstract class BufGenerateTask @Inject internal constructor(
     properties: ProtoTask.Properties,
 ) : BufExecTask(properties) {
-    // used to properly calculate output directories
+    /**
+     * List of plugin names used during `buf generate` command execution.
+     *
+     * @see kotlinx.rpc.protoc.ProtoSourceSet.plugins
+     * @see kotlinx.rpc.protoc.ProtocExtension.plugins
+     * @see ProtocPlugin
+     */
     @get:Input
-    internal abstract val pluginNames: ListProperty<String>
+    public abstract val pluginNames: ListProperty<String>
 
     /**
      * List of executable files used during `buf generate` command execution.
      *
      * @see [ProtocPlugin.Artifact.Local.executableFiles]
      */
-    // unsued, but required for Gradle to properly recognise inputs
+    // unsued, but required for Gradle to properly recognize inputs
     @get:InputFiles
     public abstract val executableFiles: ListProperty<File>
 
@@ -132,6 +138,7 @@ public abstract class BufGenerateTask @Inject internal constructor(
 }
 
 internal fun Project.registerBufGenerateTask(
+    protocExtension: DefaultProtocExtension,
     protoSourceSet: DefaultProtoSourceSet,
     workingDir: File,
     outputDirectory: File,
@@ -146,15 +153,15 @@ internal fun Project.registerBufGenerateTask(
         group = PROTO_GROUP
         description = "Generates code from .proto files using 'buf generate'"
 
-        val generate = provider { rpcExtension().protoc.get().buf.generate }
+        val generate = protocExtension.buf.generate
 
-        includeImports.set(generate.flatMap { it.includeImports })
-        includeWkt.set(generate.flatMap { it.includeWkt })
-        errorFormat.set(generate.flatMap { it.errorFormat })
+        includeImports.convention(generate.includeImports)
+        includeWkt.convention(generate.includeWkt)
+        errorFormat.convention(generate.errorFormat)
 
-        this.outputDirectory.set(outputDirectory)
+        this.outputDirectory.convention(outputDirectory)
 
-        this.pluginNames.set(includedPlugins.map { it.map { plugin -> plugin.name } })
+        pluginNames.convention(includedPlugins.map { it.map { plugin -> plugin.name } })
 
         configure()
     }

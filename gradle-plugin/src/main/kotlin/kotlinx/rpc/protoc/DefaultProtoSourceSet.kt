@@ -77,7 +77,9 @@ internal open class DefaultProtoSourceSet(
     )
 
     private val explicitApiModeEnabled = project.provider {
-        project.the<KotlinProjectExtension>().explicitApi != ExplicitApiMode.Disabled
+        val isMain = androidProperties.orNull?.isTest?.not() ?: name.lowercase().endsWith("main")
+
+        isMain && project.the<KotlinProjectExtension>().explicitApi != ExplicitApiMode.Disabled
     }
 
     override val plugins = project.objects.setProperty<ProtocPlugin>()
@@ -104,9 +106,7 @@ internal open class DefaultProtoSourceSet(
     }
 
     private fun initPlugin(copy: ProtocPlugin, configure: Action<ProtocPlugin>?) {
-        if (this@DefaultProtoSourceSet.name.lowercase().endsWith("main")) {
-            copy.options.put("explicitApiModeEnabled", explicitApiModeEnabled)
-        }
+        copy.options.put("explicitApiModeEnabled", explicitApiModeEnabled)
 
         configure?.execute(copy)
     }
@@ -158,9 +158,9 @@ internal open class DefaultProtoSourceSet(
         imports.addAll(protoSourceSet.flatMap { it.imports.checkSelfImport() })
     }
 
-    override fun importsAllFrom(protoSourceSet: Provider<List<ProtoSourceSet>>) {
-        imports.addAll(protoSourceSet.checkSelfImport())
-        imports.addAll(protoSourceSet.map { list -> list.flatMap { it.imports.checkSelfImport().get() } })
+    override fun importsAllFrom(protoSourceSets: Provider<List<ProtoSourceSet>>) {
+        imports.addAll(protoSourceSets.checkSelfImport())
+        imports.addAll(protoSourceSets.map { list -> list.flatMap { it.imports.checkSelfImport().get() } })
     }
 
     override fun importsFrom(protoSourceSet: NamedDomainObjectProvider<ProtoSourceSet>) {
@@ -190,6 +190,8 @@ internal open class DefaultProtoSourceSet(
 
         source(protoSourceSet.sourceDirectorySet)
         imports.addAll(protoSourceSet.imports.checkSelfImport())
+
+        plugins.addAll(protoSourceSet.plugins)
     }
 
     @JvmName("checkSelfImport_provider")

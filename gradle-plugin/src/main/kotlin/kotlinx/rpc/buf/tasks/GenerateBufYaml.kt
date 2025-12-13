@@ -96,15 +96,15 @@ internal fun Project.registerGenerateBufYamlTask(
     val task = tasks.register("${GenerateBufYaml.NAME_PREFIX}$capitalizeName", GenerateBufYaml::class, properties)
 
     task.configure {
-        protoSourceDir.set(buildSourceSetsProtoDir.name)
-        importSourceDir.set(buildSourceSetsImportDir.name)
-        this.withImport.set(withImport)
+        protoSourceDir.convention(buildSourceSetsProtoDir.name)
+        importSourceDir.convention(buildSourceSetsImportDir.name)
+        this.withImport.convention(withImport)
 
         val bufYamlFile = buildSourceSetsDir
             .resolve(BUF_YAML)
             .ensureRegularFileExists()
 
-        bufFile.set(bufYamlFile)
+        bufFile.convention(bufYamlFile)
 
         configure()
     }

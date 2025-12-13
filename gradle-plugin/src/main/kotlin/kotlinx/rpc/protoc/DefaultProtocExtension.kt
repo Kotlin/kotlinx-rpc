@@ -248,6 +248,7 @@ internal open class DefaultProtocExtension @Inject constructor(
         val sourceSetsProtoDirFileTree = project.fileTree(buildSourceSetsProtoDir)
 
         val bufGenerateTask = project.registerBufGenerateTask(
+            protocExtension = this,
             protoSourceSet = protoSourceSet,
             workingDir = buildSourceSetsDir,
             outputDirectory = project.protoBuildDirGenerated.resolve(baseName),
@@ -268,8 +269,8 @@ internal open class DefaultProtocExtension @Inject constructor(
                 }
             )
 
-            protoFiles.set(processProtoTask.map { it.outputs.files })
-            importProtoFiles.set(processImportProtoTask.map { it.outputs.files })
+            protoFiles.convention(processProtoTask.map { it.outputs.files })
+            importProtoFiles.convention(processImportProtoTask.map { it.outputs.files })
 
             dependsOn(generateBufGenYamlTask)
             dependsOn(generateBufYamlTask)
@@ -303,8 +304,8 @@ internal open class DefaultProtocExtension @Inject constructor(
             sourceSetsProtoDirFileTree = sourceSetsProtoDirFileTree,
             properties = properties,
         ) {
-            protoFiles.set(processProtoTask.map { it.outputs.files })
-            importProtoFiles.set(processImportProtoTask.map { it.outputs.files })
+            protoFiles.convention(processProtoTask.map { it.outputs.files })
+            importProtoFiles.convention(processImportProtoTask.map { it.outputs.files })
         }
 
         protoSourceSet.tasksConfigured.set(true)
@@ -333,7 +334,19 @@ internal open class DefaultProtocExtension @Inject constructor(
         project.withLegacyAndroid {
             // android + kotlin is always done in withKotlin above
             languageSets.filterIsInstance<AndroidSourceSet>().forEach { sourceSet ->
-                sourceSet.java.srcDirs(javaOutputs)
+                // todo fails with
+                //
+                // Caused by: org.gradle.internal.typeconversion.UnsupportedNotationException: Cannot convert the provided notation to a File: [].
+                // The following types/formats are supported:
+                //   - A String or CharSequence path, for example 'src/main/java' or '/usr/include'.
+                //   - A String or CharSequence URI, for example 'file:/usr/include'.
+                //   - A File instance.
+                //   - A Path instance.
+                //   - A Directory instance.
+                //   - A RegularFile instance.
+                //   - A URI or URL instance of file.
+                //   - A TextResource instance.
+//                sourceSet.java.srcDir(javaOutputs)
             }
         }
     }
@@ -347,9 +360,9 @@ internal open class DefaultProtocExtension @Inject constructor(
             plugins.filter(pluginFilter).map { it.name }.toSet()
         }
 
-        return bufGenerateTask.flatMap { task ->
+        return bufGenerateTask.map { task ->
             val pluginsSet = plugins.get()
-            task.outputSourceDirectories.map { list -> list.filter { it.name in pluginsSet } }
+            task.outputSourceDirectories.get().filter { it.name in pluginsSet }
         }
     }
 

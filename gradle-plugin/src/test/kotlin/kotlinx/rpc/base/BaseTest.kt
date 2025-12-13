@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.base
 
+import kotlinx.rpc.ANDROID_HOME_DIR
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
@@ -168,6 +169,7 @@ abstract class BaseTest {
             .withTestKitDir(testKitDir.absolute().toFile())
             .withGradleVersion(versions.gradle)
             .forwardOutput()
+            .withEnvironment(mapOf("ANDROID_HOME" to ANDROID_HOME_DIR))
             .withArguments(
                 listOfNotNull(
                     task,

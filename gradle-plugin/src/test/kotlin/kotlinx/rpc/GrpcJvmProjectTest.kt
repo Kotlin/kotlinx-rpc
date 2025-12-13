@@ -68,6 +68,8 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             )
         )
 
+        dryRunCompilation(SSetsJvm.main)
+
         cleanProtoBuildDir()
 
         val testRun = runGradle(bufGenerateCommonTest)
@@ -88,6 +90,8 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
                 Path(RPC_INTERNAL, "Some.kt"),
             )
         )
+
+        dryRunCompilation(SSetsJvm.test)
     }
 
     @TestFactory
@@ -282,6 +286,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - indentSize=4
+      - explicitApiModeEnabled=false
   - local: [protoc-gen-grpc-kotlin-multiplatform]
     out: grpc-kotlin-multiplatform
     opt:
@@ -289,10 +294,12 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - indentSize=4
+      - explicitApiModeEnabled=false
   - remote: my.remote.plugin
     out: myRemotePlugin
     opt:
       - hello=world
+      - explicitApiModeEnabled=false
       - only=in test
 inputs:
   - directory: proto
