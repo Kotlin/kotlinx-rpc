@@ -257,7 +257,9 @@ internal open class ProtoTasksImpl<ProtoTaskT : ProtoTask>(
         return matchingSourceSet(sourceSet.name)
     }
 
-    override fun matchingKotlinSourceSet(sourceSet: NamedDomainObjectProvider<KotlinSourceSet>): ProtoTasks<ProtoTaskT> {
+    override fun matchingKotlinSourceSet(
+        sourceSet: NamedDomainObjectProvider<KotlinSourceSet>,
+    ): ProtoTasks<ProtoTaskT> {
         return matchingSourceSet(sourceSet.name)
     }
 

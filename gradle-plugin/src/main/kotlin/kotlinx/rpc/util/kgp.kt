@@ -88,7 +88,9 @@ internal fun Project.withLegacyAndroid(action: LegacyAndroidApplied.() -> Unit) 
 
 internal class LegacyAndroidApplied(val project: Project, val id: String)
 
-internal fun LegacyAndroidApplied.withAndroidSourceSets(action: (NamedDomainObjectContainer<out AndroidSourceSet>) -> Unit) {
+internal fun LegacyAndroidApplied.withAndroidSourceSets(
+    action: (NamedDomainObjectContainer<out AndroidSourceSet>) -> Unit,
+) {
     action(project.the<BaseExtension>().sourceSets)
 }
 

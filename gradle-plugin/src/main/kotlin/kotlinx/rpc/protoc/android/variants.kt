@@ -89,7 +89,9 @@ internal fun String.kotlinProxyFromAndroidOriginSourceSetName(rootName: LegacyAn
             "androidInstrumented${removePrefix("android").replaceFirstChar { it.uppercase() }}"
         }
 
-        LegacyAndroidRootSourceSets.TestFixtures -> null
+        LegacyAndroidRootSourceSets.TestFixtures -> {
+            null
+        }
     }
 }
 

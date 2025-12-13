@@ -140,7 +140,11 @@ internal fun Project.registerGenerateBufGenYamlTask(
     configure: GenerateBufGenYaml.() -> Unit = {},
 ): TaskProvider<GenerateBufGenYaml> {
     val capitalizeName = name.replaceFirstChar { it.uppercase() }
-    val task = project.tasks.register("${GenerateBufGenYaml.NAME_PREFIX}$capitalizeName", GenerateBufGenYaml::class, properties)
+    val task = project.tasks.register(
+        "${GenerateBufGenYaml.NAME_PREFIX}$capitalizeName",
+        GenerateBufGenYaml::class,
+        properties,
+    )
 
     task.configure {
         val pluginsProvider = project.provider {

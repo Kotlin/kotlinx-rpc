@@ -175,15 +175,13 @@ internal open class DefaultProtoSourceSet(
             return
         }
 
-        if (this == protoSourceSet) {
-            throw IllegalArgumentException("$name proto source set cannot extend from self")
+        require(this != protoSourceSet) {
+            "$name proto source set cannot extend from self"
         }
 
-        if (protoSourceSet !is DefaultProtoSourceSet) {
-            throw IllegalArgumentException(
-                "$name proto source set can only extend from other default proto source sets." +
-                        "${protoSourceSet.name} is not a ${DefaultProtoSourceSet::class.simpleName}",
-            )
+        require(protoSourceSet is DefaultProtoSourceSet) {
+            "$name proto source set can only extend from other default proto source sets." +
+                    "${protoSourceSet.name} is not a ${DefaultProtoSourceSet::class.simpleName}"
         }
 
         extendsFrom += protoSourceSet
@@ -209,8 +207,8 @@ internal open class DefaultProtoSourceSet(
     }
 
     private fun ProtoSourceSet.checkSelfImport(): ProtoSourceSet {
-        if (this@DefaultProtoSourceSet == this) {
-            throw IllegalArgumentException("${this@DefaultProtoSourceSet.name} proto source set cannot import from itself")
+        require(this@DefaultProtoSourceSet != this) {
+            "${this@DefaultProtoSourceSet.name} proto source set cannot import from itself"
         }
 
         return this

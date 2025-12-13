@@ -336,7 +336,8 @@ internal open class DefaultProtocExtension @Inject constructor(
             languageSets.filterIsInstance<AndroidSourceSet>().forEach { sourceSet ->
                 // todo fails with
                 //
-                // Caused by: org.gradle.internal.typeconversion.UnsupportedNotationException: Cannot convert the provided notation to a File: [].
+                // Caused by: org.gradle.internal.typeconversion.UnsupportedNotationException:
+                // Cannot convert the provided notation to a File: [].
                 // The following types/formats are supported:
                 //   - A String or CharSequence path, for example 'src/main/java' or '/usr/include'.
                 //   - A String or CharSequence URI, for example 'file:/usr/include'.
@@ -366,6 +367,7 @@ internal open class DefaultProtocExtension @Inject constructor(
         }
     }
 
+    @Suppress("detekt.LongParameterList")
     private fun configureCustomTasks(
         protoSourceSet: DefaultProtoSourceSet,
         buildSourceSetsDir: File,
@@ -441,7 +443,9 @@ internal open class DefaultProtocExtension @Inject constructor(
         }
     }
 
-    private fun DefaultProtoSourceSet.getDependsOnImports(protoSourceSets: ProtoSourceSets): Provider<List<ProtoSourceSet>> {
+    private fun DefaultProtoSourceSet.getDependsOnImports(
+        protoSourceSets: ProtoSourceSets,
+    ): Provider<List<ProtoSourceSet>> {
         return languageSourceSets.map { list ->
             val kotlin = list.filterIsInstance<KotlinSourceSet>()
 
@@ -564,6 +568,7 @@ private fun Project.configureMultiplatformWithAndroidSourceSets(body: (DefaultPr
         }
 }
 
+@Suppress("detekt.CyclomaticComplexMethod")
 private fun AndroidComponents.configureLegacyAndroidVariants(
     project: Project,
     isKmp: Boolean,
@@ -603,7 +608,9 @@ private fun AndroidComponents.configureLegacyAndroidVariants(
             // but testFixtures still have source sets based on flavors
             val testFixtureSetNames = if (rootName != LegacyAndroidRootSourceSets.Main) {
                 variant.dependencySourceSets(LegacyAndroidRootSourceSets.TestFixtures)
-            } else emptyList()
+            } else {
+                emptyList()
+            }
 
             val dependencySourceSetNames = variant.dependencySourceSets(rootName)
             val variantSourceSetName = dependencySourceSetNames.lastOrNull()

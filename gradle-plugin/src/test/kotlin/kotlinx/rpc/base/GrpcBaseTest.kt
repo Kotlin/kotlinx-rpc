@@ -355,14 +355,20 @@ abstract class GrpcBaseTest : BaseTest() {
             extendedProto: List<SSets>,
         ) {
             if (!sourceSet.applicable()) {
-                println("Skipping ${sourceSet.capital} source set because it's not applicable for the current Kotlin version")
+                println(
+                    "Skipping ${sourceSet.capital} source set " +
+                            "because it's not applicable for the current Kotlin version"
+                )
                 return
             }
 
             val importsSet = imports
                 .onEach {
                     if (!it.applicable()) {
-                        println("Skipping ${it.capital} import source set because it's not applicable for the current Kotlin version")
+                        println(
+                            "Skipping ${it.capital} import source set " +
+                                    "because it's not applicable for the current Kotlin version"
+                        )
                     }
                 }
                 .filter { it.applicable() }
@@ -603,10 +609,16 @@ private val SSets.capital get() = name.replaceFirstChar { it.titlecase() }
 
 private fun SSets.compileTaskName(mode: CompileTaskMode): String {
     return when (mode) {
-        CompileTaskMode.Jvm -> if (name == "main") "compileKotlin" else "compileTestKotlin"
+        CompileTaskMode.Jvm -> {
+            if (name == "main") "compileKotlin" else "compileTestKotlin"
+        }
         CompileTaskMode.Kmp -> {
             val platform = capital.removeSuffix("Main").removeSuffix("Test")
-            if (name.endsWith("Test")) "compileTestKotlin$platform" else "compileKotlin$platform"
+            if (name.endsWith("Test")) {
+                "compileTestKotlin$platform"
+            } else {
+                "compileKotlin$platform"
+            }
         }
 
         CompileTaskMode.Android -> {
@@ -622,7 +634,9 @@ private fun SSets.compileTaskName(mode: CompileTaskMode): String {
                     "compile${name.removePrefix("test")}UnitTestKotlin"
                 }
 
-                else -> "compile${capital}Kotlin"
+                else -> {
+                    "compile${capital}Kotlin"
+                }
             }
         }
 
@@ -640,7 +654,9 @@ private fun SSets.compileTaskName(mode: CompileTaskMode): String {
                     "compile${withoutPrefix.removePrefix("UnitTest")}UnitTestKotlinAndroid"
                 }
 
-                else -> "compile${withoutPrefix}KotlinAndroid"
+                else -> {
+                    "compile${withoutPrefix}KotlinAndroid"
+                }
             }
         }
 

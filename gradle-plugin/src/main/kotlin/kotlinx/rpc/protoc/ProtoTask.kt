@@ -30,7 +30,8 @@ public interface ProtoTask : Task {
          *
          * For Kotlin/JVM it has only one source set (`main`, or `test`, for example).
          *
-         * For Kotlin/Multiplatform it also has only one source set (`commonMain`, `commonTest`, or `jsMain`, for example).
+         * For Kotlin/Multiplatform it also has only one source set
+         * (`commonMain`, `commonTest`, or `jsMain`, for example).
          *
          * For Android, Kotlin/Android, and Kotlin/Multiplatform + Android it can have multiple source sets:
          * - `["androidMain", "androidDebug", "main", "debug"]`
