@@ -13,6 +13,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
@@ -153,14 +154,19 @@ private fun <Request, Response> GrpcClient.rpcImpl(
     callOptions: GrpcCallOptions,
     headers: GrpcMetadata,
     request: Flow<Request>,
-): Flow<Response> {
+): Flow<Response> = flow {
     val clientCallScope = ClientCallScopeImpl(
-        client = this,
+        client = this@rpcImpl,
         method = descriptor,
         requestHeaders = headers,
         callOptions = callOptions,
     )
-    return clientCallScope.proceed(request)
+    // We must wrap the proceeded flow, because if users try to use
+    // retry or retryWhen on a returned flow, it must produce a new call scope,
+    // with new intercept invocations. This wouldn't be the case otherwise, as
+    // the inner flow (after interceptor invocation and future completion) would be used,
+    // causing unexpected behavior.
+    emitAll(clientCallScope.proceed(request))
 }
 
 private class ClientCallScopeImpl<Request, Response>(
