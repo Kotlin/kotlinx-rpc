@@ -33,6 +33,7 @@ data class MessageDeclaration(
     val doc: Comment?,
     val dec: Descriptors.Descriptor,
     val deprecated: Boolean,
+    val parent: Lazy<MessageDeclaration?>,
 ) {
     val isMapEntry = dec.options.mapEntry
     val isUserFacing = !isMapEntry
@@ -42,6 +43,12 @@ data class MessageDeclaration(
         parent.fields.any { f ->
             f.type == Descriptors.FieldDescriptor.Type.GROUP && f.messageType == dec
         }
+    }
+
+    val hasPresenceFields by lazy { actualFields.any { it.presenceIdx != null } }
+    val presenceInterfaceFullName: String by lazy {
+        parent.value?.let { "${it.presenceInterfaceFullName}.${name.simpleName}" }
+            ?: name.fullName("Presence")
     }
 }
 
