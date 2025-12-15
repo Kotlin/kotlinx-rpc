@@ -8,6 +8,7 @@ import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import kotlinx.rpc.protoc.proto
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 import util.configureCLibCInterop
 
 plugins {
@@ -99,4 +100,9 @@ tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
     if (archiveClassifier.orNull == "sources" || name.endsWith("SourcesJar")) {
         dependsOn(bufGenerateCommonMain)
     }
+}
+
+// TODO @Mr3zee: Remove this task dependency once new gralde plugin version merged
+tasks.withType<KotlinCompileCommon>().configureEach {
+    dependsOn(bufGenerateCommonMain)
 }

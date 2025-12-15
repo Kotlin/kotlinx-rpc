@@ -15,6 +15,7 @@ import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.IntVar
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.convert
@@ -261,6 +262,7 @@ internal class NativeServerCall<Request, Response>(
         }
     }
 
+    @OptIn(UnsafeNumber::class)
     override fun sendHeaders(headers: GrpcMetadata) {
         check(initialized) { internalError("Call not initialized") }
         val arena = Arena()
@@ -309,6 +311,7 @@ internal class NativeServerCall<Request, Response>(
         }
     }
 
+    @OptIn(UnsafeNumber::class)
     override fun close(status: Status, trailers: GrpcMetadata) {
         check(initialized) { internalError("Call not initialized") }
 

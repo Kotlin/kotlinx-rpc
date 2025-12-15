@@ -12,8 +12,8 @@ kotlin {
     
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.rpc.grpc.core)
-            implementation(libs.kotlinx.rpc.protobuf.core)
+            api(libs.kotlinx.rpc.grpc.core)
+            api(libs.kotlinx.rpc.protobuf.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
