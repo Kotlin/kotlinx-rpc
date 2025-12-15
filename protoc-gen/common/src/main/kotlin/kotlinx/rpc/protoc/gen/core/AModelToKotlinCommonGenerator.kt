@@ -23,9 +23,13 @@ abstract class AModelToKotlinCommonGenerator(
     protected val model: Model,
 ) {
     protected abstract fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration)
+
+    protected abstract fun CodeGenerator.generateExtensionEntities(fileDeclaration: FileDeclaration)
+
     protected abstract fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration)
 
     protected abstract val FileDeclaration.hasPublicGeneratedContent: Boolean
+    protected abstract val FileDeclaration.hasExtensionGeneratedContent: Boolean
     protected abstract val FileDeclaration.hasInternalGeneratedContent: Boolean
 
     protected var currentPackage: FqName = FqName.Package.Root
@@ -42,6 +46,7 @@ abstract class AModelToKotlinCommonGenerator(
 
         return listOfNotNull(
             if (hasPublicGeneratedContent) generatePublicKotlinFile() else null,
+            if (hasExtensionGeneratedContent) generateExtensionKotlinFile() else null,
             if (hasInternalGeneratedContent) generateInternalKotlinFile() else null,
         )
     }
@@ -62,6 +67,26 @@ abstract class AModelToKotlinCommonGenerator(
             fileOptIns = listOf("ExperimentalRpcApi::class", "InternalRpcApi::class")
 
             generatePublicDeclaredEntities(this@generatePublicKotlinFile)
+
+            import("kotlinx.rpc.internal.utils.*")
+
+            additionalPublicImports.forEach {
+                import(it)
+            }
+        }
+    }
+
+    private fun FileDeclaration.generateExtensionKotlinFile(): FileGenerator {
+        currentPackage = packageName
+
+        return file(config) {
+            filename = this@generateExtensionKotlinFile.name.removeSuffix(".kt") + ".ext.kt"
+            packageName = this@generateExtensionKotlinFile.packageName.safeFullName()
+            packagePath = this@generateExtensionKotlinFile.packageName.safeFullName()
+
+            fileOptIns = listOf("ExperimentalRpcApi::class", "InternalRpcApi::class")
+
+            generateExtensionEntities(this@generateExtensionKotlinFile)
 
             import("kotlinx.rpc.internal.utils.*")
 
