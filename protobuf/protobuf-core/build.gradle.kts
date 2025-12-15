@@ -101,6 +101,8 @@ tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
         dependsOn(bufGenerateCommonMain)
     }
 }
+
+// TODO @Mr3zee: Remove this task dependency once new gralde plugin version merged
 tasks.withType<KotlinCompileCommon>().configureEach {
     dependsOn(bufGenerateCommonMain)
 }
