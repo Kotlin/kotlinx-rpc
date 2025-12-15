@@ -243,6 +243,11 @@ open class CodeGenerator(
         Class("class"), Interface("interface"), Object("object");
     }
 
+    fun companionObject(modifiers: String = "", block: CodeGenerator.() -> Unit) {
+        val modifiers = if (modifiers.isEmpty()) "companion " else "$modifiers companion "
+        clazz(modifiers = modifiers, name = "", declarationType = DeclarationType.Object , block = block)
+    }
+
     @JvmName("clazz_no_constructorArgs")
     fun clazz(
         name: String,

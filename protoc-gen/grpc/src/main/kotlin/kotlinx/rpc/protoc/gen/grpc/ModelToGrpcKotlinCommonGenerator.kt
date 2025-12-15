@@ -19,11 +19,14 @@ class ModelToGrpcKotlinCommonGenerator(
 ) : AModelToKotlinCommonGenerator(config, model) {
     override val FileDeclaration.hasPublicGeneratedContent: Boolean get() = serviceDeclarations.isNotEmpty()
     override val FileDeclaration.hasInternalGeneratedContent: Boolean get() = false
+    override val FileDeclaration.hasExtensionGeneratedContent: Boolean get() = false
 
     override fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration) {
         additionalPublicImports.add("kotlinx.coroutines.flow.Flow")
         fileDeclaration.serviceDeclarations.forEach { generatePublicService(it, fileDeclaration.packageName) }
     }
+
+    override fun CodeGenerator.generateExtensionEntities(fileDeclaration: FileDeclaration) {}
 
     override fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {}
 

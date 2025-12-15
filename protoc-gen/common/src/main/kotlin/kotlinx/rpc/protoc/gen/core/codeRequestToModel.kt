@@ -173,6 +173,9 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?): MessageDeclarat
         doc = comments.get(),
         dec = this,
         deprecated = options.deprecated,
+        // getting the (already cached) parent declaration.
+        // it must be lazy as it is only available after full model conversion.
+        parent = lazy { containingType?.toModel(null) },
     )
 }
 

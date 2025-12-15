@@ -32,13 +32,18 @@ class ModelToProtobufKotlinCommonGenerator(
 ) : AModelToKotlinCommonGenerator(config, model) {
     override val FileDeclaration.hasPublicGeneratedContent: Boolean
         get() = enumDeclarations.isNotEmpty() || messageDeclarations.isNotEmpty()
-
+    override val FileDeclaration.hasExtensionGeneratedContent: Boolean
+        get() = hasPublicGeneratedContent
     override val FileDeclaration.hasInternalGeneratedContent: Boolean
         get() = hasPublicGeneratedContent
 
     override fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration) {
         fileDeclaration.messageDeclarations.forEach { generatePublicMessage(it) }
         fileDeclaration.enumDeclarations.forEach { generatePublicEnum(it) }
+    }
+
+    override fun CodeGenerator.generateExtensionEntities(fileDeclaration: FileDeclaration) {
+        generateExtensionMessageEntities(fileDeclaration.messageDeclarations)
     }
 
     override fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {
@@ -57,16 +62,25 @@ class ModelToProtobufKotlinCommonGenerator(
         // emit all required functions in the outer scope
         val allMsgs = messages + messages.flatMap(MessageDeclaration::allNestedRecursively)
         allMsgs.forEach {
-            generateMessageConstructor(it)
-            generatePublicCopy(it)
-        }
-        allMsgs.forEach {
             generateRequiredCheck(it)
             generateMessageEncoder(it)
             generateMessageDecoder(it)
             generateInternalComputeSize(it)
             generateInternalCastExtension(it)
         }
+    }
+
+    private fun CodeGenerator.generateExtensionMessageEntities(message: List<MessageDeclaration>) {
+        val allMsgs = message + message.flatMap(MessageDeclaration::allNestedRecursively)
+        allMsgs.forEach {
+            generateMessageConstructor(it)
+            generatePublicCopy(it)
+            generatePublicPresenceGetter(it)
+        }
+
+        // the presence interfaces are not generated in the flattened list
+        // as nested classes are generated as nested presence interfaces
+        message.forEach { generatePresenceInterface(it) }
     }
 
     @Suppress("detekt.CyclomaticComplexMethod")
@@ -177,6 +191,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 )
             }
 
+            generateInternalPresenceObjectProperty(declaration)
             generateHashCode(declaration)
             generateOneOfHashCode(declaration)
             generateEquals(declaration)
@@ -417,10 +432,10 @@ class ModelToProtobufKotlinCommonGenerator(
         function(
             name = "copyInternal",
             annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
-            args = "body: ${declaration.internalClassName()}.() -> Unit",
-            returnType = declaration.internalClassName(),
+            args = "body: ${declaration.internalClassFullName()}.() -> Unit",
+            returnType = declaration.internalClassFullName(),
         ) {
-            code("val copy = ${declaration.internalClassName()}()")
+            code("val copy = ${declaration.internalClassFullName()}()")
             for (field in declaration.actualFields) {
                 // write each field to the new copy object
                 if (field.presenceIdx != null) {
@@ -492,6 +507,83 @@ class ModelToProtobufKotlinCommonGenerator(
                     }
                 }
 
+            }
+        }
+    }
+
+    private fun MessageDeclaration.hasPresenceFieldsRecursive(): Boolean {
+        return hasPresenceFields || nestedDeclarations.any { it.isUserFacing && it.hasPresenceFieldsRecursive() }
+    }
+    private fun CodeGenerator.generatePresenceInterface(declaration: MessageDeclaration, name: String? = null) {
+        if (!declaration.isUserFacing) return
+        // we must generate the interface if any sub message contains presence fields.
+        // this is, because nested messages are inner-interfaces of the outer one.
+        if (!(declaration.hasPresenceFieldsRecursive())) return
+
+        val name = name ?: (declaration.name.simpleName + "Presence")
+
+        val comment = if (declaration.hasPresenceFields)
+            Comment.leading("""
+                Interface providing field-presence information for [${declaration.name.safeFullName()}] messages.
+                Retrieve it via the [${declaration.name.safeFullName()}.presence] extension property.
+            """.trimIndent()) else null
+
+        clazz(
+            name = name,
+            declarationType = CodeGenerator.DeclarationType.Interface,
+            comment = comment
+        ) {
+            declaration.actualFields.forEach { field ->
+                if (field.presenceIdx != null) {
+                    property(
+                        name = "has${field.name.capitalize()}",
+                        type = "kotlin.Boolean",
+                    )
+                }
+            }
+
+            declaration.nestedDeclarations.forEach {
+                generatePresenceInterface(it, name = it.name.simpleName)
+            }
+        }
+    }
+
+    private fun CodeGenerator.generatePublicPresenceGetter(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) return
+        if (!declaration.hasPresenceFields) return
+
+        property(
+            name = "presence",
+            type = declaration.presenceInterfaceFullName,
+            propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
+            contextReceiver = declaration.name.safeFullName(),
+            value = "this.asInternal()._presence",
+            comment = Comment.leading("""
+                Returns the field-presence view for this [${declaration.name.safeFullName()}] instance.
+            """.trimIndent())
+        )
+    }
+
+    private fun CodeGenerator.generateInternalPresenceObjectProperty(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) return
+        if (!declaration.hasPresenceFields) return
+
+        property(
+            name = "_presence",
+            annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
+            type = declaration.presenceInterfaceFullName,
+            value = "object : ${declaration.presenceInterfaceFullName}"
+        ) {
+            declaration.actualFields.forEach { field ->
+                if (field.presenceIdx != null) {
+                    property(
+                        name = "has${field.name.capitalize()}",
+                        modifiers = "override",
+                        type = "kotlin.Boolean",
+                        propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
+                        value = "presenceMask[${field.presenceIdx}]"
+                    )
+                }
             }
         }
     }
@@ -1388,3 +1480,4 @@ private fun MessageDeclaration.allEnumsRecursively(): List<EnumDeclaration> =
 private fun MessageDeclaration.allNestedRecursively(): List<MessageDeclaration> =
     nestedDeclarations + nestedDeclarations.flatMap(MessageDeclaration::allNestedRecursively)
 
+private fun String.capitalize(): String = replaceFirstChar { it.uppercase() }
