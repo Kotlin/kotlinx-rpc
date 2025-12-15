@@ -35,13 +35,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.description
+import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.sample.messages.ChatEntry
@@ -108,7 +109,7 @@ private fun ChatScreen(service: MessageService) {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: StatusException) {
-                error = e.getStatus().getDescription()?.let { "${e.getStatus().statusCode}: $it" } ?: "gRPC error: ${e.getStatus().statusCode}"
+                error = e.status.description?.let { "${e.status.statusCode}: $it" } ?: "gRPC error: ${e.status.statusCode}"
             } catch (e: Throwable) {
                 error = e.message ?: "Unknown error while sending."
             }
@@ -124,7 +125,7 @@ private fun ChatScreen(service: MessageService) {
                 .retryWhen { cause, attempt ->
                     if (cause is CancellationException) false
                     else {
-                        error = (cause as? StatusException)?.getStatus()?.getDescription()?.let { "${cause.getStatus().statusCode}: $it" }
+                        error = (cause as? StatusException)?.status?.description?.let { "${cause.status.statusCode}: $it" }
                             ?: cause.message ?: "Error receiving messages."
                         delay(2.seconds)
                         true
@@ -134,7 +135,7 @@ private fun ChatScreen(service: MessageService) {
         } catch (e: CancellationException) {
             throw e
         } catch (e: StatusException) {
-            error = e.getStatus().getDescription() ?: "gRPC error: ${e.getStatus().statusCode}"
+            error = e.status.description ?: "gRPC error: ${e.status.statusCode}"
         } catch (e: Throwable) {
             error = e.message ?: "Unknown error while receiving."
         }
