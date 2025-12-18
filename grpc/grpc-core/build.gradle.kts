@@ -118,12 +118,13 @@ kotlin {
 }
 
 // run gRPC test server (from `test/grpc-test-server` module) background while tests are running
-tasks.withType<Test>().configureEach {
+tasks.matching { it.name.endsWith("Test") && !it.name.startsWith("clean") }.configureEach {
     dependsOn(":tests:grpc-test-server:installDist")
 
     val testServerDir = project(":tests:grpc-test-server").projectDir
     doInBackground {
         workingDir = testServerDir
         commandLine("build/install/grpc-test-server/bin/grpc-test-server")
+        readyString = "[GRPC-TEST-SERVER] Server started"
     }
 }

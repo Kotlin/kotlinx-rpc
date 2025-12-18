@@ -24,7 +24,7 @@ class GrpcEdgeCaseTest {
     @Test
     fun `test flow retry - should always return the same status code`() {
         // create a client without starting a server
-        val client = GrpcClient("localhost", 1234) {
+        val client = GrpcClient("invalid.host.jetbrains.com", 1234) {
             credentials = plaintext()
         }
         assertGrpcFailure(StatusCode.UNAVAILABLE) {

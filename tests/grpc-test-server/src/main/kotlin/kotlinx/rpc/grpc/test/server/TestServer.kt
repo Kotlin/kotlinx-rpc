@@ -18,7 +18,7 @@ public suspend fun main() {
     }
     try {
         server.start()
-        println("Server started")
+        println("[GRPC-TEST-SERVER] Server started")
         server.awaitTermination()
     } finally {
         server.shutdown()
