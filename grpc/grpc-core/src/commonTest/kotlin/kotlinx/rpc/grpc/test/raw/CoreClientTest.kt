@@ -1,14 +1,12 @@
 /*
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
-package kotlinx.rpc.grpc.test
+package kotlinx.rpc.grpc.test.raw
 
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
@@ -24,9 +22,12 @@ import kotlinx.rpc.grpc.client.internal.createCall
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
-import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.statusCode
-import kotlinx.rpc.registerService
+import kotlinx.rpc.grpc.test.HelloReply
+import kotlinx.rpc.grpc.test.HelloReplyInternal
+import kotlinx.rpc.grpc.test.HelloRequest
+import kotlinx.rpc.grpc.test.HelloRequestInternal
+import kotlinx.rpc.grpc.test.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -61,7 +62,7 @@ class GrpcCoreClientTest {
     ).buildChannel()
 
 
-    private fun helloReq(timeout: UInt = 0u): HelloRequest = HelloRequest {
+    private fun helloReq(timeout: UInt = 0u): HelloRequest = HelloRequest.Companion {
         name = "world"
         this.timeout = timeout
     }

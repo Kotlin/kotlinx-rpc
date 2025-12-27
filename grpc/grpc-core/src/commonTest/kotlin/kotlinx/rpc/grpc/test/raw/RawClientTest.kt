@@ -2,16 +2,12 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.test
+package kotlinx.rpc.grpc.test.raw
 
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.grpc.client.GrpcClient
-import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
 import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
@@ -19,11 +15,13 @@ import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
 import kotlinx.rpc.grpc.client.internal.serverStreamingRpc
 import kotlinx.rpc.grpc.client.internal.unaryRpc
-import kotlinx.rpc.registerService
-import kotlin.test.Ignore
+import kotlinx.rpc.grpc.test.EchoRequest
+import kotlinx.rpc.grpc.test.EchoRequestInternal
+import kotlinx.rpc.grpc.test.EchoResponse
+import kotlinx.rpc.grpc.test.EchoResponseInternal
+import kotlinx.rpc.grpc.test.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.time.Duration
 
 private const val PORT = 50051
 
@@ -40,7 +38,7 @@ class RawClientTest {
         type = MethodType.UNARY,
     ) { client, descriptor ->
         delay(1000)
-        val response = client.unaryRpc(descriptor, EchoRequest { message = "Eccchhooo" })
+        val response = client.unaryRpc(descriptor, EchoRequest.Companion { message = "Eccchhooo" })
         assertEquals("Eccchhooo", response.message)
     }
 
@@ -49,7 +47,7 @@ class RawClientTest {
         methodName = "ServerStreamingEcho",
         type = MethodType.SERVER_STREAMING,
     ) { client, descriptor ->
-        val response = client.serverStreamingRpc(descriptor, EchoRequest { message = "Eccchhooo" })
+        val response = client.serverStreamingRpc(descriptor, EchoRequest.Companion { message = "Eccchhooo" })
         var i = 0
         response.collect {
             println("Received: ${i++}")
@@ -65,7 +63,7 @@ class RawClientTest {
         val response = client.clientStreamingRpc(descriptor, flow {
             repeat(5) {
                 println("Sending: ${it + 1}")
-                emit(EchoRequest { message = "Eccchhooo" })
+                emit(EchoRequest.Companion { message = "Eccchhooo" })
             }
         })
         val expected = "Eccchhooo, Eccchhooo, Eccchhooo, Eccchhooo, Eccchhooo"
@@ -79,7 +77,7 @@ class RawClientTest {
     ) { client, descriptor ->
         val response = client.bidirectionalStreamingRpc(descriptor, flow {
             repeat(5) {
-                emit(EchoRequest { message = "Eccchhooo" })
+                emit(EchoRequest.Companion { message = "Eccchhooo" })
             }
         })
 

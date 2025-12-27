@@ -17,7 +17,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.grpc.grpcServer)
+                api(projects.grpc.grpcCore)
                 api(projects.protobuf.protobufCore)
             }
         }

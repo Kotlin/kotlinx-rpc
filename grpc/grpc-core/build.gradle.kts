@@ -15,16 +15,11 @@ plugins {
     alias(libs.plugins.kotlinx.rpc)
     alias(libs.plugins.atomicfu)
     alias(libs.plugins.serialization) // for tests
-    id("io.github.terrakok.kmp-hierarchy").version("1.1")
 }
 
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
-    }
-
-    printHierarchy {
-        withTestHierarchy = true
     }
 
     applyDefaultHierarchyTemplate()
