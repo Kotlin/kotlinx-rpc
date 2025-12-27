@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.test.proto
+package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.StatusCode
@@ -21,7 +21,7 @@ import kotlin.test.assertNull
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
-class GrpcTimeoutTest : GrpcProtoTest() {
+class GrpcTimeoutTest : GrpcTestBase() {
 
     override fun RpcServer.registerServices() {
         registerService<EchoService> { EchoServiceImpl() }

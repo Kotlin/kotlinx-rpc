@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.test.proto
+package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.test.EchoService
@@ -22,7 +22,7 @@ import kotlin.time.Duration.Companion.seconds
  * actually sent those headers on native. Instead, we capture the grpc trace output (written to stderr)
  * and verify that the client and server actually used the compression algorithm.
  */
-class GrpcKeepAliveTest : GrpcProtoTest() {
+class GrpcKeepAliveTest : GrpcTestBase() {
     override fun RpcServer.registerServices() {
         return registerService<EchoService> { EchoServiceImpl() }
     }
@@ -67,7 +67,7 @@ class GrpcKeepAliveTest : GrpcProtoTest() {
     }
 }
 
-expect fun GrpcProtoTest.testKeepAlive(
+expect fun GrpcTestBase.testKeepAlive(
     time: Duration,
     timeout: Duration,
     withoutCalls: Boolean,

@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.test.proto
+package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.rpc.RpcServer
@@ -24,7 +24,6 @@ import kotlinx.rpc.grpc.test.SERVER_CERT_PEM
 import kotlinx.rpc.grpc.test.SERVER_KEY_PEM
 import kotlinx.rpc.grpc.test.assertGrpcFailure
 import kotlinx.rpc.grpc.test.invoke
-import kotlinx.rpc.grpc.asException
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.coroutines.cancellation.CancellationException
@@ -33,7 +32,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.time.Duration.Companion.milliseconds
 
-class GrpcCallCredentialsTest : GrpcProtoTest() {
+class GrpcCallCredentialsTest : GrpcTestBase() {
     override fun RpcServer.registerServices() {
         return registerService<EchoService> { EchoServiceImpl() }
     }

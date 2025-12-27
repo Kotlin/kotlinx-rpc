@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.test.proto
+package kotlinx.rpc.grpc.test.integration
 
 import hello.HelloRequest
 import hello.HelloService
@@ -29,7 +29,7 @@ import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class GrpcTlsTest : GrpcProtoTest() {
+class GrpcTlsTest : GrpcTestBase() {
 
     override fun RpcServer.registerServices() {
         registerService<EchoService> { EchoServiceImpl() }

@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.test.proto
+package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -31,7 +31,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 
-class ServerInterceptorTest : GrpcProtoTest() {
+class ServerInterceptorTest : GrpcTestBase() {
 
     override fun RpcServer.registerServices() {
         registerService<EchoService> { EchoServiceImpl() }

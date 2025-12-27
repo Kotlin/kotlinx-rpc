@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.test.proto
+package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
@@ -19,7 +19,7 @@ import kotlinx.rpc.grpc.server.ServerCallScope
 import kotlinx.rpc.grpc.server.ServerCredentials
 import kotlinx.rpc.grpc.server.ServerInterceptor
 
-abstract class GrpcProtoTest {
+abstract class GrpcTestBase {
     private val serverMutex = Mutex()
 
     abstract fun RpcServer.registerServices()
