@@ -13,7 +13,7 @@ import kotlinx.rpc.grpc.codec.MessageCodecResolver
 import kotlinx.rpc.withService
 import kotlin.reflect.KClass
 
-abstract class BaseGrpcServiceTest {
+abstract class  BaseGrpcServiceTest {
     protected inline fun <@Grpc reified Service : Any> runServiceTest(
         resolver: MessageCodecResolver,
         impl: Service,

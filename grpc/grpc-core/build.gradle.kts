@@ -15,12 +15,19 @@ plugins {
     alias(libs.plugins.kotlinx.rpc)
     alias(libs.plugins.atomicfu)
     alias(libs.plugins.serialization) // for tests
+    id("io.github.terrakok.kmp-hierarchy").version("1.1")
 }
 
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
+
+    printHierarchy {
+        withTestHierarchy = true
+    }
+
+    applyDefaultHierarchyTemplate()
 
     sourceSets {
         commonMain {
@@ -45,8 +52,19 @@ kotlin {
                 implementation(projects.grpc.grpcCodecKotlinxSerialization)
                 implementation(projects.protobuf.protobufCore)
                 implementation(projects.grpc.grpcClient)
-                implementation(projects.grpc.grpcServer)
                 implementation(projects.tests.testProtos)
+                implementation(projects.tests.testUtils)
+            }
+        }
+
+        // An intermediate sourceSet that bundles all desktop targets (JVM, macOS and linux)
+        // for testing. This allows us to write unit tests that spin up a gRPC server, which is not
+        // possible for native mobile targets.
+        val desktopTest by creating {
+            dependsOn(commonTest.get())
+
+            dependencies {
+                implementation(projects.grpc.grpcServer)
             }
         }
 
@@ -62,6 +80,8 @@ kotlin {
         }
 
         jvmTest {
+            dependsOn(desktopTest)
+
             dependencies {
                 implementation(libs.grpc.netty)
             }
@@ -72,6 +92,14 @@ kotlin {
                 // required for status.proto
                 implementation(projects.protobuf.protobufCore)
             }
+        }
+
+        macosTest {
+            dependsOn(desktopTest)
+        }
+
+        linuxTest {
+            dependsOn(desktopTest)
         }
     }
 

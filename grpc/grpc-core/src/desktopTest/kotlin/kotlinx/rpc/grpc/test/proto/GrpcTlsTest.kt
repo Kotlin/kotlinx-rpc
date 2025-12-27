@@ -25,6 +25,7 @@ import kotlinx.rpc.grpc.test.SERVER_KEY_PEM
 import kotlinx.rpc.grpc.test.assertGrpcFailure
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.registerService
+import kotlinx.rpc.test.IgnoreIos
 import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals
