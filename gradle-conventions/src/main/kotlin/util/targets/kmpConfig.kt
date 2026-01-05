@@ -86,7 +86,7 @@ class KmpConfig(
     private val isAppleOnLinuxByRequirement: Boolean by lazy {
         // Disabling Apple targets on Linux hosts for grpc:* and protobuf:* modules
         // due to missing native libraries/compilers for these targets on Linux.
-        HostManager.hostIsLinux && (path.startsWith(":grpc") || path.startsWith(":protobuf"))
+        HostManager.hostIsLinux
     }
 
     fun nativeTargets(kmp: KotlinMultiplatformExtension) = kmp::class.memberFunctions

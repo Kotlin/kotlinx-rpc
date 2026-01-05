@@ -188,7 +188,7 @@ private fun Project.findKonanHome(): String {
     val hostArch = System.getProperty("os.arch").lowercase().let {
         when {
             it.contains("aarch64") || it.contains("arm64") -> "aarch64"
-            it.contains("x86_64") || it.contains("amd64") -> "x64"
+            it.contains("x86_64") || it.contains("amd64") -> "x86_64"
             else -> error("Unsupported arch: $it")
         }
     }
