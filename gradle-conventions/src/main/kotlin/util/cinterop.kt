@@ -130,10 +130,11 @@ fun Project.registerBuildCLibIncludeDirTask(
         dependsOn(":checkBazel")
         group = "build"
         workingDir = project.cinteropLibDir
+        val konanHome = findKonanHome()
         commandLine(
             "bash",
             "-c",
-            "./extract_include_dir.sh //prebuilt-deps/grpc_fat:grpc_include_dir $includeDir"
+            "./extract_include_dir.sh //prebuilt-deps/grpc_fat:grpc_include_dir $includeDir $konanHome"
         )
         outputs.dir(includeDir.resolve("include"))
     }
