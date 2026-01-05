@@ -145,6 +145,15 @@ def _impl(ctx):
                         "-Wl,--build-id=md5",
                         "-Wl,--hash-style=gnu",
                         "-Wl,-z,relro,-z,now",
+                        "-lstdc++",
+                        "-lm",
+                    ] + (
+                        ["-L" + deps + "/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/lib/gcc/x86_64-unknown-linux-gnu/8.3.0"]
+                        if target == "linux_x64"
+                        else ["-L" + deps + "/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2/lib/gcc/aarch64-unknown-linux-gnu/8.3.0"]
+                    ) + [
+                        "-L" + (deps + "/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/sysroot/lib" if target == "linux_x64" else deps + "/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2/aarch64-unknown-linux-gnu/sysroot/lib"),
+                        "-L" + (deps + "/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/sysroot/lib64" if target == "linux_x64" else deps + "/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2/aarch64-unknown-linux-gnu/sysroot/lib64"),
                     ])],
                 ),
                 # Link-time GC (opt only)
@@ -201,6 +210,7 @@ def _impl(ctx):
             # See the cinterop-c/README.md for more details.
             deps + "/llvm-19-aarch64-macos-essentials-79/lib/clang/19/include",
             deps + "/llvm-19-x86_64-macos-essentials-103/lib/clang/19/include",
+            deps + "/llvm-19-x86_64-linux-essentials-103/lib/clang/19/include",
         ] + includes,
     )
 
