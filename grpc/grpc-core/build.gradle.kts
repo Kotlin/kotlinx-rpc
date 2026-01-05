@@ -63,6 +63,10 @@ kotlin {
             }
         }
 
+        val desktopNativeTest by creating {
+            dependsOn(desktopTest)
+        }
+
         jvmMain {
             dependencies {
                 api(libs.grpc.api)
@@ -90,11 +94,11 @@ kotlin {
         }
 
         macosTest {
-            dependsOn(desktopTest)
+            dependsOn(desktopNativeTest)
         }
 
         linuxTest {
-            dependsOn(desktopTest)
+            dependsOn(desktopNativeTest)
         }
     }
 
