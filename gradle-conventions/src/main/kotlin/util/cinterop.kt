@@ -6,6 +6,7 @@ package util
 
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Exec
@@ -151,6 +152,9 @@ private fun KotlinNativeTarget.canonicalCLibTaskPostfix(buildTargetName: String)
     return "CLib${buildTargetName.capitalized()}_$targetName"
 }
 
+private val TaskContainer.downloadKotlinNativeDistribution: TaskProvider<Task?>
+    get() = named("downloadKotlinNativeDistribution")
+
 private fun TaskContainer.registerBuildClibTask(
     name: String,
     bazelTask: String,
@@ -158,6 +162,8 @@ private fun TaskContainer.registerBuildClibTask(
     target: KotlinNativeTarget,
 ): TaskProvider<Exec> {
     return register<Exec>(name) {
+        dependsOn(downloadKotlinNativeDistribution)
+
         val konanTarget = target.konanTarget.visibleName
         val konanHome = project.findKonanHome()
 
