@@ -24,4 +24,4 @@ kotlin {
     }
 }
 
-configureLocalProtocGenDevelopmentDependency()
+configureLocalProtocGenDevelopmentDependency("Main")
