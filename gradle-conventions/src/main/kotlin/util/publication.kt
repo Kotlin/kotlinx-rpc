@@ -131,7 +131,7 @@ private fun keyValue(key: String, value: String, openValue: Boolean = false): St
 
 private fun String.escapeDots() = replace(".", "\\.")
 
-infix fun <T> Property<T>.by(value: T) {
+infix fun <T : Any> Property<T>.by(value: T) {
     set(value)
 }
 

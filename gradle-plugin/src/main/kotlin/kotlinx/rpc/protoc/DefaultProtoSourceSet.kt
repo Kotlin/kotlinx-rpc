@@ -107,7 +107,7 @@ internal open class DefaultProtoSourceSet(
         sourceDirectorySet.forEach(action)
     }
 
-    override fun spliterator(): Spliterator<File?> {
+    override fun spliterator(): Spliterator<File> {
         return sourceDirectorySet.spliterator()
     }
 }

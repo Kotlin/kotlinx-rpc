@@ -16,72 +16,75 @@ val versionDirs = mapOf(
 
 // DON'T MODIFY BELOW THIS LINE
 
-val globalRootDirValue: String = extra["globalRootDir"] as? String
-    ?: error("globalRootDir property is not set")
-
-val globalRootDir: java.nio.file.Path = java.nio.file.Path.of(globalRootDirValue)
-
-val compatDir: java.nio.file.Path = globalRootDir
-    .resolve("tests")
-    .resolve("krpc-protocol-compatibility-tests")
-
-val libVersion = settings.extra["libVersion"] as? String
-    ?: error("libVersion property is not set")
-
 class CompatVersion(
     val rpc: String,
     val kotlin: String,
 )
 
-versionDirs.forEach { (dir, version) ->
-    val moduleDir = compatDir.resolve(dir)
-    moduleDir.createDirectories()
-    val buildFile = moduleDir.resolve("build.gradle.kts")
-    buildFile.writeText(
-        """
-        /* THIS FILE IS AUTO-GENERATED, DO NOT EDIT! */
+// Only run this logic when applied to the main kotlinx-rpc project, not when gradle-conventions-settings builds itself
+if (settings.rootProject.name == "kotlinx-rpc") {
+    val globalRootDirValue: String = extra["globalRootDir"] as? String
+        ?: error("globalRootDir property is not set")
+
+    val globalRootDir: java.nio.file.Path = java.nio.file.Path.of(globalRootDirValue)
+
+    val compatDir: java.nio.file.Path = globalRootDir
+        .resolve("tests")
+        .resolve("krpc-protocol-compatibility-tests")
+
+    val libVersion = settings.extra["libVersion"] as? String
+        ?: error("libVersion property is not set")
+
+    versionDirs.forEach { (dir, version) ->
+        val moduleDir = compatDir.resolve(dir)
+        moduleDir.createDirectories()
+        val buildFile = moduleDir.resolve("build.gradle.kts")
+        buildFile.writeText(
+            """
+            /* THIS FILE IS AUTO-GENERATED, DO NOT EDIT! */
+    
+            import util.krpc_compat.setupCompat
+    
+            setupCompat("${version.rpc}", "${version.kotlin}")
+    
+        """.trimIndent()
+        )
+        val propertiesFile = moduleDir.resolve("gradle.properties")
+        propertiesFile.writeText(
+            """
+            /* THIS FILE IS AUTO-GENERATED, DO NOT EDIT! */
+            
+            kotlin.compiler.runViaBuildToolsApi=true
         
-        import util.krpc_compat.setupCompat
+        """.trimIndent()
+        )
 
-        setupCompat("${version.rpc}", "${version.kotlin}")
+        logger.debug("Generating {}", globalRootDir.relativize(buildFile))
+        include(":tests:krpc-protocol-compatibility-tests:$dir")
+    }
 
-    """.trimIndent()
-    )
-    val propertiesFile = moduleDir.resolve("gradle.properties")
-    propertiesFile.writeText(
+    val versionsConventionsFile: java.nio.file.Path = globalRootDir
+        .resolve("gradle-conventions")
+        .resolve("src")
+        .resolve("main")
+        .resolve("kotlin")
+        .resolve("util")
+        .resolve("krpc_compat")
+        .resolve("versions.kt")
+
+    logger.debug("Generating {}", globalRootDir.relativize(versionsConventionsFile))
+    versionsConventionsFile.writeText(
         """
-        /* THIS FILE IS AUTO-GENERATED, DO NOT EDIT! */
-
-        kotlin.compiler.runViaBuildToolsApi=true
-        
-    """.trimIndent()
+            |/* THIS FILE IS AUTO-GENERATED, DO NOT EDIT! */
+            |
+            |package util.krpc_compat
+            |
+            |val krpcCompatVersions = mapOf(
+            |    ${versionDirs.entries.joinToString("\n|    ") { "\"${it.key}\" to \"${it.value.rpc}\"," }}
+            |
+            |    "Latest" to "$libVersion", // current version
+            |)
+            |
+        """.trimMargin()
     )
-
-    logger.debug("Generating {}", globalRootDir.relativize(buildFile))
-    include(":tests:krpc-protocol-compatibility-tests:$dir")
 }
-
-val versionsConventionsFile: java.nio.file.Path = globalRootDir
-    .resolve("gradle-conventions")
-    .resolve("src")
-    .resolve("main")
-    .resolve("kotlin")
-    .resolve("util")
-    .resolve("krpc_compat")
-    .resolve("versions.kt")
-
-logger.debug("Generating {}", globalRootDir.relativize(versionsConventionsFile))
-versionsConventionsFile.writeText(
-    """
-        |/* THIS FILE IS AUTO-GENERATED, DO NOT EDIT! */
-        |
-        |package util.krpc_compat
-        |
-        |val krpcCompatVersions = mapOf(
-        |    ${versionDirs.entries.joinToString("\n|    ") { "\"${it.key}\" to \"${it.value.rpc}\"," }}
-        |    
-        |    "Latest" to "$libVersion", // current version
-        |)
-        |
-    """.trimMargin()
-)
