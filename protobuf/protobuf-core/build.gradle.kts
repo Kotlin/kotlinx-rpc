@@ -6,7 +6,10 @@
 
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
+import kotlinx.rpc.protoc.buf
+import kotlinx.rpc.protoc.generate
 import kotlinx.rpc.protoc.proto
+import kotlinx.rpc.protoc.protoTasks
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 import util.configureCLibCInterop
@@ -81,28 +84,12 @@ rpc {
         buf.generate.comments {
             includeFileLevelComments = false
         }
-
-        buf.generate.allTasks().matchingKotlinSourceSet(kotlin.sourceSets.commonMain).configureEach {
-            includeWkt = true
-            outputDirectory = generatedCodeDir(properties.sourceSetName)
-        }
     }
+}
+
+protoTasks.buf.generate.matchingKotlinSourceSet(kotlin.sourceSets.commonMain).configureEach {
+    includeWkt = true
+    outputDirectory = generatedCodeDir(properties.sourceSetNames.single())
 }
 
 configureLocalProtocGenDevelopmentDependency("Main", "Test")
-
-// TODO: What is the correct way to declare this dependency? (KRPC-223)
-//  (without it fails when executing "publishAllPublicationsToBuildRepository")
-val bufGenerateCommonMain: TaskProvider<Task> = tasks.named("bufGenerateCommonMain")
-
-tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
-    // Only for sources jars
-    if (archiveClassifier.orNull == "sources" || name.endsWith("SourcesJar")) {
-        dependsOn(bufGenerateCommonMain)
-    }
-}
-
-// TODO @Mr3zee: Remove this task dependency once new gralde plugin version merged
-tasks.withType<KotlinCompileCommon>().configureEach {
-    dependsOn(bufGenerateCommonMain)
-}

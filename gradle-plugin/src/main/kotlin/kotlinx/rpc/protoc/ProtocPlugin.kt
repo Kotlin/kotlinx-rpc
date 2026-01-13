@@ -68,6 +68,14 @@ public open class ProtocPlugin internal constructor(
     public val isJava: Property<Boolean> = project.objects.property<Boolean>().convention(false)
 
     /**
+     * Whether the plugin generates Kotlin code.
+     *
+     * Plugins that have this property set to `true` will have their output directory
+     * added to the source set's `kotlin` source directory set if present.
+     */
+    public val isKotlin: Property<Boolean> = project.objects.property<Boolean>().convention(false)
+
+    /**
      * Protoc plugins options.
      *
      * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#opt">Buf documentation - opt</a>
@@ -281,10 +289,19 @@ public open class ProtocPlugin internal constructor(
         }
     }
 
+    override fun equals(other: Any?): Boolean {
+        return other is ProtocPlugin && name == other.name
+    }
+
+    override fun hashCode(): Int {
+        return name.hashCode()
+    }
+
     internal fun copy(): ProtocPlugin {
         return ProtocPlugin(name, project)
             .also {
                 it.isJava.set(isJava)
+                it.isKotlin.set(isKotlin)
                 it.options.set(options)
                 it.artifact.set(artifact)
                 it.strategy.set(strategy)
