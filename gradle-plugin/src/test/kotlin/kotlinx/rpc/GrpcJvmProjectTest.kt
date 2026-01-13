@@ -13,7 +13,7 @@ import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class GrpcJvmProjectTest : GrpcBaseTest() {
-    override val isKmp: Boolean = false
+    override val type: Type = Type.Jvm
 
     @TestFactory
     fun `Minimal gRPC Configuration`() = runGrpcTest {
@@ -32,15 +32,9 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `No gRPC`() = runGrpcTest {
-        runNonExistentTask(bufGenerateCommonMain)
-        runNonExistentTask(bufGenerateCommonTest)
-        runNonExistentTask(processCommonMainProtoFiles)
-        runNonExistentTask(processCommonTestProtoFiles)
-        runNonExistentTask(processCommonTestProtoFilesImports)
-        runNonExistentTask(generateBufYamlCommonMain)
-        runNonExistentTask(generateBufYamlCommonTest)
-        runNonExistentTask(generateBufGenYamlCommonMain)
-        runNonExistentTask(generateBufGenYamlCommonTest)
+        SSetsJvm.entries.forEach {
+            runNonExistentTasksForSourceSet(it)
+        }
     }
 
     @TestFactory
@@ -74,6 +68,8 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             )
         )
 
+        dryRunCompilation(SSetsJvm.main)
+
         cleanProtoBuildDir()
 
         val testRun = runGradle(bufGenerateCommonTest)
@@ -94,6 +90,8 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
                 Path(RPC_INTERNAL, "Some.kt"),
             )
         )
+
+        dryRunCompilation(SSetsJvm.test)
     }
 
     @TestFactory
@@ -288,6 +286,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - indentSize=4
+      - explicitApiModeEnabled=false
   - local: [protoc-gen-grpc-kotlin-multiplatform]
     out: grpc-kotlin-multiplatform
     opt:
@@ -295,10 +294,12 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - indentSize=4
+      - explicitApiModeEnabled=false
   - remote: my.remote.plugin
     out: myRemotePlugin
     opt:
       - hello=world
+      - explicitApiModeEnabled=false
       - only=in test
 inputs:
   - directory: proto

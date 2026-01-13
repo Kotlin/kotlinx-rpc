@@ -7,15 +7,15 @@ import org.gradle.api.GradleException
 import org.gradle.kotlin.dsl.version
 import kotlinx.rpc.buf.tasks.*
 import kotlinx.rpc.buf.*
-import org.gradle.api.provider.Provider
+import kotlinx.rpc.protoc.*
 import javax.inject.Inject
 
 plugins {
     kotlin("jvm") version "<kotlin-version>"
-    id("org.jetbrains.kotlinx.rpc.plugin")
+    id("org.jetbrains.kotlinx.rpc.plugin") version "<rpc-version>"
 }
 
-public abstract class BufLintTask @Inject constructor(properties: BufExecTask.Properties) : BufExecTask(properties) {
+public abstract class BufLintTask @Inject constructor(properties: ProtoTask.Properties) : BufExecTask(properties) {
     init {
         command.set("lint")
         args.set(emptyList())
@@ -37,17 +37,24 @@ fun Iterable<DefaultTask>.toNames() = map { it.name }.toSet()
 fun assertTasks(
     tag: String,
     tasks: Iterable<DefaultTask>,
-    vararg expected: String,
+    vararg expected: String?,
 ) {
     val names = tasks.toNames()
-    if (expected.toSet() != names) {
-        throw GradleException("[$tag] Expected: ${expected.toSet()}, actual: $names")
+    val expectedSet = expected.filterNotNull().toSet()
+    if (expectedSet != names) {
+        throw GradleException(
+            """
+                [$tag] Expected: ${expectedSet}, actual: $names
+                Missing: ${expectedSet - names}
+                Extra: ${names - expectedSet}
+            """.trimIndent()
+        )
     }
 }
 
 tasks.register("test_tasks") {
     doLast {
-        val genTasks = rpc.protoc.get().buf.generate.allTasks()
+        val genTasks = protoTasks.buf.generate
 
         assertTasks("gen all", genTasks, "bufGenerateMain", "bufGenerateTest")
         assertTasks("testTasks", genTasks.testTasks(), "bufGenerateTest")
@@ -55,13 +62,8 @@ tasks.register("test_tasks") {
         assertTasks("nonTestTasks testTasks", genTasks.nonTestTasks().testTasks())
         assertTasks("matchingSourceSet main", genTasks.matchingSourceSet("main"), "bufGenerateMain")
         assertTasks("matchingSourceSet test", genTasks.matchingSourceSet("test"), "bufGenerateTest")
-        assertTasks("executedForSourceSet main", genTasks.executedForSourceSet("main"), "bufGenerateMain")
-        assertTasks("executedForSourceSet test", genTasks.executedForSourceSet("test"), "bufGenerateMain", "bufGenerateTest")
 
-        assertTasks("buf depends on main", genTasks.matchingSourceSet("main").single().bufDependsOn())
-        assertTasks("buf depends on test", genTasks.matchingSourceSet("test").single().bufDependsOn(), "bufGenerateMain")
-
-        val allTasks = rpc.protoc.get().buf.tasks.all()
+        val allTasks = protoTasks.buf
 
         assertTasks("all", allTasks, "bufGenerateMain", "bufGenerateTest", "bufLintMain", "bufLintTest")
         assertTasks("all by type generate", allTasks.matchingType<BufGenerateTask>(), "bufGenerateMain", "bufGenerateTest")

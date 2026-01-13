@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message AndroidTestDebug {
+  string content = 1;
+}

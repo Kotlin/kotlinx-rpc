@@ -4,13 +4,10 @@
 
 package kotlinx.rpc.buf
 
-import kotlinx.rpc.buf.tasks.BufAllTasks
-import kotlinx.rpc.buf.tasks.BufAllTasksImpl
 import kotlinx.rpc.buf.tasks.BufExecTask
-import kotlinx.rpc.buf.tasks.BufGenerateTask
-import kotlinx.rpc.buf.tasks.BufTasks
-import kotlinx.rpc.buf.tasks.BufTasksImpl
+import kotlinx.rpc.protoc.ProtoTasks
 import kotlinx.rpc.protoc.ProtocPlugin
+import kotlinx.rpc.protoc.protoTasks
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
@@ -105,13 +102,6 @@ public open class BufExtension @Inject internal constructor(objects: ObjectFacto
  */
 public open class BufTasksExtension @Inject internal constructor(internal val project: Project) {
     /**
-     * Returns a collection of all `buf` tasks registered in the project.
-     */
-    public fun all(): BufAllTasks {
-        return BufAllTasksImpl(project, project.tasks.withType(BufExecTask::class.java))
-    }
-
-    /**
      * Registers a custom Buf task that operates on the generated workspace.
      *
      * Name conventions:
@@ -123,11 +113,11 @@ public open class BufTasksExtension @Inject internal constructor(internal val pr
         kClass: KClass<T>,
         name: String,
         configure: Action<T> = Action {},
-    ): BufTasks<T> {
+    ): ProtoTasks<T> {
         @Suppress("UNCHECKED_CAST")
         customTasks.add(Definition(name, kClass, configure))
 
-        return all().matchingType(kClass)
+        return project.protoTasks.matchingType(kClass)
     }
 
     /**
@@ -141,7 +131,7 @@ public open class BufTasksExtension @Inject internal constructor(internal val pr
     public inline fun <reified T : BufExecTask> registerWorkspaceTask(
         name: String,
         configure: Action<T> = Action {},
-    ): BufTasks<T> {
+    ): ProtoTasks<T> {
         return registerWorkspaceTask(T::class, name, configure)
     }
 
@@ -161,13 +151,6 @@ public open class BufTasksExtension @Inject internal constructor(internal val pr
  * @see [BUF_GEN_YAML]
  */
 public open class BufGenerateExtension @Inject internal constructor(internal val project: Project) {
-    /**
-     * Returns a collection of all `buf generate` tasks registered in the project.
-     */
-    public fun allTasks(): BufTasks<BufGenerateTask> {
-        return BufTasksImpl(project, project.tasks.withType(BufGenerateTask::class.java), BufGenerateTask::class)
-    }
-
     /**
      * `--include-imports` option.
      *

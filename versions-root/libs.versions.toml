@@ -36,6 +36,7 @@ grpc-kotlin = "1.4.1"
 protobuf = "4.31.1"
 protobuf-gradle = "0.9.5"
 buf-tool = "1.55.1"
+agp = "8.4.0"
 
 [libraries]
 # kotlinx.rpc – references to the included builds
@@ -138,6 +139,8 @@ kover-gradle-plugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", ve
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradle-publish-gradle-plugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "gradle-plugin-publish" }
 compat-patrouille-gradle-plugin = { module = "com.gradleup.compat.patrouille:compat-patrouille-gradle-plugin", version.ref = "compat-patrouille" }
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+android-gradle-plugin-api = { module = "com.android.tools.build:gradle-api", version.ref = "agp" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-lang" }
