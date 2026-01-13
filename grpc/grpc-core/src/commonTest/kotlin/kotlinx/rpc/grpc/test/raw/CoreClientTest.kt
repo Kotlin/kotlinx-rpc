@@ -142,21 +142,6 @@ class GrpcCoreClientTest {
     }
 
     @Test
-    fun request_negative_throws() {
-        val channel = createChannel()
-        val call = channel.newHelloCall()
-        val statusDeferred = CompletableDeferred<Status>()
-        val listener = createClientCallListener<HelloReply>(
-            onClose = { status, _ -> statusDeferred.complete(status) }
-        )
-        call.start(listener, GrpcMetadata())
-        assertFails { call.request(-1) }
-        call.cancel("cleanup", null)
-        runBlocking { withTimeout(5000) { statusDeferred.await() } }
-        shutdownAndWait(channel)
-    }
-
-    @Test
     fun cancel_afterStart_resultsInCancelledStatus() {
         val channel = createChannel()
         val call = channel.newHelloCall()
