@@ -3,8 +3,8 @@
 kotlinx-rpc = "0.11.0-SNAPSHOT"
 
 # kotlin
-kotlin-lang = "2.2.21" # or env.KOTLIN_VERSION
-kotlin-compiler = "0.0.0" # default to kotlin-lang or env.KOTLIN_COMPILER_VERSION
+kotlin-lang = "2.3.0" # or env.KOTLIN_VERSION or -Pkotlin.lang=<version>
+kotlin-compiler = "0.0.0" # default to kotlin-lang or env.KOTLIN_COMPILER_VERSION or -Pkotlin.compiler=<version>
 
 # kotlin independent versions
 detekt-analyzer = "1.23.6"
