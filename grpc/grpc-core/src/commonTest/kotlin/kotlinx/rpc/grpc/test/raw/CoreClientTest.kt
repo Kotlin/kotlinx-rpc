@@ -30,7 +30,6 @@ import kotlinx.rpc.grpc.test.HelloRequestInternal
 import kotlinx.rpc.grpc.test.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 
 private const val PORT = 50051
@@ -62,7 +61,7 @@ class GrpcCoreClientTest {
     ).buildChannel()
 
 
-    private fun helloReq(timeout: UInt = 0u): HelloRequest = HelloRequest.Companion {
+    private fun helloReq(timeout: UInt = 0u): HelloRequest = HelloRequest {
         name = "world"
         this.timeout = timeout
     }

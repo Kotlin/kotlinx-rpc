@@ -148,10 +148,12 @@ def _impl(ctx):
                         "-lstdc++",
                         "-lm",
                     ] + (
+                        # Add GCC runtime library path for the target architecture
                         ["-L" + deps + "/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/lib/gcc/x86_64-unknown-linux-gnu/8.3.0"]
                         if target == "linux_x64"
                         else ["-L" + deps + "/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2/lib/gcc/aarch64-unknown-linux-gnu/8.3.0"]
                     ) + [
+                        # Add sysroot library paths for system libraries
                         "-L" + (deps + "/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/sysroot/lib" if target == "linux_x64" else deps + "/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2/aarch64-unknown-linux-gnu/sysroot/lib"),
                         "-L" + (deps + "/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/sysroot/lib64" if target == "linux_x64" else deps + "/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2/aarch64-unknown-linux-gnu/sysroot/lib64"),
                     ])],

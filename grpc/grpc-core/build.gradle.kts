@@ -22,6 +22,8 @@ kotlin {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
+    // we must re-apply the default hierarchy template again, because we added custom default source sets below,
+    // otherwise it wouldn't be applied.
     applyDefaultHierarchyTemplate()
 
     sourceSets {
@@ -151,7 +153,7 @@ tasks.matching { it.name.endsWith("Test") && !it.name.startsWith("clean") }.conf
     val testServerDir = project(":tests:grpc-test-server").projectDir
     doInBackground {
         workingDir = testServerDir
-        commandLine("build/install/grpc-test-server/bin/grpc-test-server")
+        commandLine("${project.layout.buildDirectory}/install/grpc-test-server/bin/grpc-test-server")
         readyString = "[GRPC-TEST-SERVER] Server started"
     }
 }

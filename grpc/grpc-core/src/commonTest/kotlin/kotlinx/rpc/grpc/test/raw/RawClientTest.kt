@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.grpc.test.raw
 
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.grpc.client.GrpcClient
@@ -23,8 +22,6 @@ import kotlinx.rpc.grpc.test.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-private const val PORT = 50051
-
 /**
  * Tests for JVM and Native clients.
  *
@@ -37,8 +34,7 @@ class RawClientTest {
         methodName = "UnaryEcho",
         type = MethodType.UNARY,
     ) { client, descriptor ->
-        delay(1000)
-        val response = client.unaryRpc(descriptor, EchoRequest.Companion { message = "Eccchhooo" })
+        val response = client.unaryRpc(descriptor, EchoRequest { message = "Eccchhooo" })
         assertEquals("Eccchhooo", response.message)
     }
 
@@ -47,7 +43,7 @@ class RawClientTest {
         methodName = "ServerStreamingEcho",
         type = MethodType.SERVER_STREAMING,
     ) { client, descriptor ->
-        val response = client.serverStreamingRpc(descriptor, EchoRequest.Companion { message = "Eccchhooo" })
+        val response = client.serverStreamingRpc(descriptor, EchoRequest { message = "Eccchhooo" })
         var i = 0
         response.collect {
             println("Received: ${i++}")
@@ -63,7 +59,7 @@ class RawClientTest {
         val response = client.clientStreamingRpc(descriptor, flow {
             repeat(5) {
                 println("Sending: ${it + 1}")
-                emit(EchoRequest.Companion { message = "Eccchhooo" })
+                emit(EchoRequest { message = "Eccchhooo" })
             }
         })
         val expected = "Eccchhooo, Eccchhooo, Eccchhooo, Eccchhooo, Eccchhooo"
@@ -77,7 +73,7 @@ class RawClientTest {
     ) { client, descriptor ->
         val response = client.bidirectionalStreamingRpc(descriptor, flow {
             repeat(5) {
-                emit(EchoRequest.Companion { message = "Eccchhooo" })
+                emit(EchoRequest { message = "Eccchhooo" })
             }
         })
 
