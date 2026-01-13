@@ -7,7 +7,7 @@
 import kotlinx.rpc.internal.InternalRpcApi
 import util.configureCLibCInterop
 import util.configureCLibDependency
-import util.doInBackground
+import util.withBackgroundTask
 import util.registerBuildCLibIncludeDirTask
 
 plugins {
@@ -150,10 +150,10 @@ kotlin {
 tasks.matching { it.name.endsWith("Test") && !it.name.startsWith("clean") }.configureEach {
     dependsOn(":tests:grpc-test-server:installDist")
 
-    val testServerDir = project(":tests:grpc-test-server").projectDir
-    doInBackground {
-        workingDir = testServerDir
-        commandLine("${project.layout.buildDirectory}/install/grpc-test-server/bin/grpc-test-server")
+    val testServerBuildDir = project(":tests:grpc-test-server").layout.buildDirectory.get().asFile
+    withBackgroundTask {
+        workingDir = testServerBuildDir
+        commandLine("install/grpc-test-server/bin/grpc-test-server")
         readyString = "[GRPC-TEST-SERVER] Server started"
     }
 }

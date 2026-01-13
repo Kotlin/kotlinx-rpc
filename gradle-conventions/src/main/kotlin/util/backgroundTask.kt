@@ -163,7 +163,7 @@ internal fun Project.registerBackgroundTaskService(
  * Bind a background BuildService to this task.
  * The service starts lazily before task execution and terminates at the task end.
  */
-fun Task.doInBackground(
+fun Task.withBackgroundTask(
     configure: BackgroundTaskConfig.() -> Unit = { },
 ) {
     val svc = project.registerBackgroundTaskService(namePrefix = "background-$name", configure)
