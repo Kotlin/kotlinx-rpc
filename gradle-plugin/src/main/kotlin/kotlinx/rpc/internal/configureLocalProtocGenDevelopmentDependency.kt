@@ -34,9 +34,7 @@ public fun Project.configureLocalProtocGenDevelopmentDependency(
         }
 
         buf.generate.allTasks()
-            .matching { task ->
-                sourceSetSuffix.any { task.name.endsWith(it) }
-            }
+            .matching { task -> sourceSetSuffix.any { task.name.endsWith(it) } }
             .configureEach {
                 val includedBuild = gradle.includedBuild("protoc-gen")
                 dependsOn(includedBuild.task(":grpc:jar"))
