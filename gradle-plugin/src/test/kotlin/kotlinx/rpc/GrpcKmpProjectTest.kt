@@ -2,19 +2,20 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:Suppress("detekt.LongMethod", "detekt.LargeClass")
+
 package kotlinx.rpc
 
 import kotlinx.rpc.base.GrpcBaseTest
-import org.gradle.testkit.runner.BuildResult
+import kotlinx.rpc.base.testTestsForAndroidKmpLibExist
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
 import kotlin.io.path.Path
-import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class GrpcKmpProjectTest : GrpcBaseTest() {
-    override val isKmp: Boolean = true
+    override val type: Type = Type.Kmp
 
     @TestFactory
     fun `Minimal gRPC Configuration`() = runGrpcTest {
@@ -33,15 +34,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `No gRPC`() = runGrpcTest {
-        runNonExistentTask(bufGenerateCommonMain)
-        runNonExistentTask(bufGenerateCommonTest)
-        runNonExistentTask(processCommonMainProtoFiles)
-        runNonExistentTask(processCommonTestProtoFiles)
-        runNonExistentTask(processCommonTestProtoFilesImports)
-        runNonExistentTask(generateBufYamlCommonMain)
-        runNonExistentTask(generateBufYamlCommonTest)
-        runNonExistentTask(generateBufGenYamlCommonMain)
-        runNonExistentTask(generateBufGenYamlCommonTest)
+        SSetsKmp.Default.entries.forEach {
+            runNonExistentTasksForSourceSet(it)
+        }
     }
 
     @TestFactory
@@ -127,171 +122,455 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `KMP Hierarchy`() = runGrpcTest {
-        runKmpAndCheckFiles(
-            SSets.commonMain,
+        runAndCheckFiles(
+            SSetsKmp.Default.commonMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.commonTest,
-            SSets.commonMain,
+        runAndCheckFiles(
+            SSetsKmp.Default.commonTest,
+            SSetsKmp.Default.commonMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.nativeMain,
-            SSets.commonMain,
+        runAndCheckFiles(
+            SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.commonMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.nativeTest,
-            SSets.commonMain, SSets.nativeMain,
-            SSets.commonTest,
+        runAndCheckFiles(
+            SSetsKmp.Default.nativeTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.commonTest,
         )
 
-        runKmpAndCheckFiles(
-            SSets.jvmMain,
-            SSets.commonMain,
+        runAndCheckFiles(
+            SSetsKmp.Default.jvmMain,
+            SSetsKmp.Default.commonMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.jvmTest,
-            SSets.commonMain, SSets.jvmMain,
-            SSets.commonTest,
+        runAndCheckFiles(
+            SSetsKmp.Default.jvmTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.jvmMain,
+            SSetsKmp.Default.commonTest,
         )
 
-        runKmpAndCheckFiles(
-            SSets.jsMain,
-            SSets.commonMain, SSets.webMain,
+        runAndCheckFiles(
+            SSetsKmp.Default.jsMain,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.webMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.jsTest,
-            SSets.commonMain, SSets.webMain, SSets.jsMain,
-            SSets.commonTest, SSets.webTest
+        runAndCheckFiles(
+            SSetsKmp.Default.jsTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.webMain, SSetsKmp.Default.jsMain,
+            SSetsKmp.Default.commonTest, SSetsKmp.Default.webTest
         )
 
-        runKmpAndCheckFiles(
-            SSets.appleMain,
-            SSets.commonMain, SSets.nativeMain,
+        runAndCheckFiles(
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.appleTest,
-            SSets.commonMain, SSets.nativeMain, SSets.appleMain,
-            SSets.commonTest, SSets.nativeTest
+        runAndCheckFiles(
+            SSetsKmp.Default.appleTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain, SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.commonTest, SSetsKmp.Default.nativeTest
         )
 
-        runKmpAndCheckFiles(
-            SSets.macosMain,
-            SSets.commonMain, SSets.nativeMain, SSets.appleMain,
+        runAndCheckFiles(
+            SSetsKmp.Default.macosMain,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain, SSetsKmp.Default.appleMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.macosTest,
-            SSets.commonMain, SSets.nativeMain, SSets.appleMain, SSets.macosMain,
-            SSets.commonTest, SSets.nativeTest, SSets.appleTest
+        runAndCheckFiles(
+            SSetsKmp.Default.macosTest,
+            SSetsKmp.Default.commonMain,
+            SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.macosMain,
+            SSetsKmp.Default.commonTest,
+            SSetsKmp.Default.nativeTest,
+            SSetsKmp.Default.appleTest
         )
 
-        runKmpAndCheckFiles(
-            SSets.macosArm64Main,
-            SSets.commonMain, SSets.nativeMain, SSets.appleMain, SSets.macosMain,
+        runAndCheckFiles(
+            SSetsKmp.Default.macosArm64Main,
+            SSetsKmp.Default.commonMain,
+            SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.macosMain,
         )
 
-        runKmpAndCheckFiles(
-            SSets.macosArm64Test,
-            SSets.commonMain, SSets.nativeMain, SSets.appleMain, SSets.macosMain, SSets.macosArm64Main,
-            SSets.commonTest, SSets.nativeTest, SSets.appleTest, SSets.macosTest,
-            clean = false,
+        runAndCheckFiles(
+            SSetsKmp.Default.macosArm64Test,
+            SSetsKmp.Default.commonMain,
+            SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.macosMain,
+            SSetsKmp.Default.macosArm64Main,
+            SSetsKmp.Default.commonTest,
+            SSetsKmp.Default.nativeTest,
+            SSetsKmp.Default.appleTest,
+            SSetsKmp.Default.macosTest,
+        )
+    }
+
+    @TestFactory
+    fun `KMP Hierarchy Android KMP Library`() = runGrpcTest {
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.jvmTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonTest,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.androidMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+    }
+
+    @TestFactory
+    fun `KMP Hierarchy Android KMP Library With Test Tasks`() = runGrpcTest(
+        versionsPredicate = { testTestsForAndroidKmpLibExist() },
+    ) {
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.jvmTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonTest,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.androidMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.androidHostTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.androidMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.androidDeviceTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.androidMain,
+        )
+    }
+
+    @TestFactory
+    fun `KMP Hierarchy Android KMP Library With Test Tasks Not Wired`() = runGrpcTest(
+        versionsPredicate = { testTestsForAndroidKmpLibExist() },
+    ) {
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.jvmTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonTest,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.androidMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.androidHostTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.androidMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.AndroidKmpLib.androidDeviceTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.androidMain,
+        )
+    }
+
+    @TestFactory
+    fun `KMP Hierarchy Legacy Android`() = runGrpcTest {
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.commonTest,
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.jvmMain,
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.jvmTest,
+            SSetsKmp.LegacyAndroid.commonMain, SSetsKmp.LegacyAndroid.jvmMain,
+            SSetsKmp.LegacyAndroid.commonTest,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.androidDebug,
+            SSetsKmp.LegacyAndroid.commonMain,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,
+                SSetsKmp.LegacyAndroid.debug,
+            ),
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.androidRelease,
+            SSetsKmp.LegacyAndroid.commonMain,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,
+                SSetsKmp.LegacyAndroid.release,
+            )
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.androidUnitTestDebug,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,  SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.debug, SSetsKmp.LegacyAndroid.androidDebug,
+            SSetsKmp.LegacyAndroid.commonTest,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.test,
+                SSetsKmp.LegacyAndroid.androidUnitTest,
+                SSetsKmp.LegacyAndroid.testDebug,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesDebug,
+            )
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.androidUnitTestRelease,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain, SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.release, SSetsKmp.LegacyAndroid.androidRelease,
+            SSetsKmp.LegacyAndroid.commonTest,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.test,
+                SSetsKmp.LegacyAndroid.androidUnitTest,
+                SSetsKmp.LegacyAndroid.testRelease,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesRelease,
+            )
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.androidInstrumentedTestDebug,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain, SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.debug, SSetsKmp.LegacyAndroid.androidDebug,
+            SSetsKmp.LegacyAndroid.commonTest,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.androidTest,
+                SSetsKmp.LegacyAndroid.androidInstrumentedTest,
+                SSetsKmp.LegacyAndroid.androidTestDebug,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesDebug,
+            )
+        )
+    }
+
+    @TestFactory
+    fun `KMP Hierarchy Legacy Android Not Wired`() = runGrpcTest {
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.commonTest,
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.jvmMain,
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.jvmTest,
+            SSetsKmp.LegacyAndroid.commonMain, SSetsKmp.LegacyAndroid.jvmMain,
+            SSetsKmp.LegacyAndroid.commonTest,
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.androidDebug,
+            SSetsKmp.LegacyAndroid.commonMain,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,
+                SSetsKmp.LegacyAndroid.debug,
+            ),
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.androidRelease,
+            SSetsKmp.LegacyAndroid.commonMain,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,
+                SSetsKmp.LegacyAndroid.release,
+            )
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.androidUnitTestDebug,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,  SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.debug, SSetsKmp.LegacyAndroid.androidDebug,
+            SSetsKmp.LegacyAndroid.commonTest,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.test,
+                SSetsKmp.LegacyAndroid.androidUnitTest,
+                SSetsKmp.LegacyAndroid.testDebug,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesDebug,
+            )
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.androidUnitTestRelease,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain, SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.release, SSetsKmp.LegacyAndroid.androidRelease,
+            SSetsKmp.LegacyAndroid.commonTest,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.test,
+                SSetsKmp.LegacyAndroid.androidUnitTest,
+                SSetsKmp.LegacyAndroid.testRelease,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesRelease,
+            )
+        )
+
+        runAndCheckFiles(
+            SSetsKmp.LegacyAndroid.androidInstrumentedTestDebug,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain, SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.debug, SSetsKmp.LegacyAndroid.androidDebug,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.androidTest,
+                SSetsKmp.LegacyAndroid.androidInstrumentedTest,
+                SSetsKmp.LegacyAndroid.androidTestDebug,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesDebug,
+            )
         )
     }
 
     @TestFactory
     fun `Proto Tasks Are Cached Properly`() = runGrpcTest {
-        val firstRunCommonMain = runKmp(SSets.commonMain)
+        val firstRunCommonMain = runForSet(SSetsKmp.Default.commonMain)
 
-        assertOutcomes(
-            result = firstRunCommonMain,
-            sourceSet = SSets.commonMain,
+        firstRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.Default.commonMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
-            protoFilesImports = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
         // didn't run
-        assertOutcomes(firstRunCommonMain, SSets.commonTest)
-        assertOutcomes(firstRunCommonMain, SSets.nativeMain)
-        assertOutcomes(firstRunCommonMain, SSets.nativeTest)
-        assertOutcomes(firstRunCommonMain, SSets.jvmMain)
-        assertOutcomes(firstRunCommonMain, SSets.jvmTest)
-        assertOutcomes(firstRunCommonMain, SSets.webMain)
-        assertOutcomes(firstRunCommonMain, SSets.webTest)
-        assertOutcomes(firstRunCommonMain, SSets.jsMain)
-        assertOutcomes(firstRunCommonMain, SSets.jsTest)
-        assertOutcomes(firstRunCommonMain, SSets.appleMain)
-        assertOutcomes(firstRunCommonMain, SSets.appleTest)
-        assertOutcomes(firstRunCommonMain, SSets.macosMain)
-        assertOutcomes(firstRunCommonMain, SSets.macosTest)
-        assertOutcomes(firstRunCommonMain, SSets.macosArm64Main)
-        assertOutcomes(firstRunCommonMain, SSets.macosArm64Test)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.Default.commonTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.Default.nativeMain)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.Default.nativeTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.Default.jvmMain)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.Default.jvmTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.Default.webMain)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.Default.webTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.Default.jsMain)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.Default.jsTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.Default.appleMain)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.Default.appleTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.Default.macosMain)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.Default.macosTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.Default.macosArm64Main)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.Default.macosArm64Test)
 
-        val secondRunCommonMain = runKmp(SSets.commonMain)
+        val secondRunCommonMain = runForSet(SSetsKmp.Default.commonMain)
 
-        assertOutcomes(
-            result = secondRunCommonMain,
-            sourceSet = SSets.commonMain,
+        secondRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.Default.commonMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
         cleanProtoBuildDir()
 
-        val thirdRunCommonMain = runKmp(SSets.commonMain)
+        val thirdRunCommonMain = runForSet(SSetsKmp.Default.commonMain)
 
-        assertOutcomes(
-            result = thirdRunCommonMain,
-            sourceSet = SSets.commonMain,
+        thirdRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.Default.commonMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
-            protoFilesImports = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
-        SSets.commonMain.sourceDir()
+        SSetsKmp.Default.commonMain.sourceDir()
             .resolve("commonMain.proto")
             .replace("content = 1", "content = 2")
 
-        val fourthRunCommonMain = runKmp(SSets.commonMain)
+        val fourthRunCommonMain = runForSet(SSetsKmp.Default.commonMain)
 
-        assertOutcomes(
-            result = fourthRunCommonMain,
-            sourceSet = SSets.commonMain,
+        fourthRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.Default.commonMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
-        val firstRunMacosArm64Main = runKmp(SSets.macosArm64Main)
+        val firstRunMacosArm64Main = runForSet(SSetsKmp.Default.macosArm64Main)
 
-        assertOutcomes(
-            result = firstRunMacosArm64Main,
-            sourceSet = SSets.commonMain,
+        firstRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.Default.commonMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Main,
-            sourceSet = SSets.nativeMain,
+        firstRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.Default.nativeMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -299,9 +578,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.SUCCESS,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Main,
-            sourceSet = SSets.appleMain,
+        firstRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.Default.appleMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -309,9 +587,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.SUCCESS,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Main,
-            sourceSet = SSets.macosMain,
+        firstRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.Default.macosMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -319,9 +596,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.SUCCESS,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Main,
-            sourceSet = SSets.macosArm64Main,
+        firstRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.Default.macosArm64Main,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -330,22 +606,30 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
 
         // didn't run
-        assertOutcomes(firstRunMacosArm64Main, SSets.nativeTest)
-        assertOutcomes(firstRunMacosArm64Main, SSets.jvmMain)
-        assertOutcomes(firstRunMacosArm64Main, SSets.jvmTest)
-        assertOutcomes(firstRunMacosArm64Main, SSets.webMain)
-        assertOutcomes(firstRunMacosArm64Main, SSets.webTest)
-        assertOutcomes(firstRunMacosArm64Main, SSets.jsMain)
-        assertOutcomes(firstRunMacosArm64Main, SSets.jsTest)
-        assertOutcomes(firstRunMacosArm64Main, SSets.appleTest)
-        assertOutcomes(firstRunMacosArm64Main, SSets.macosTest)
-        assertOutcomes(firstRunMacosArm64Main, SSets.macosArm64Test)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.nativeTest)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.jvmMain)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.jvmTest)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.webMain)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.webTest)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.jsMain)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.jsTest)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.appleTest)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.macosTest)
+        firstRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.macosArm64Test)
 
-        val firstRunMacosArm64Test = runKmp(SSets.macosArm64Test)
+        val firstRunMacosArm64Test = runForSet(SSetsKmp.Default.macosArm64Test)
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.commonMain,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.commonMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.nativeMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -353,9 +637,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.nativeMain,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.appleMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -363,9 +646,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.appleMain,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.macosMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -373,9 +655,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.macosMain,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.macosArm64Main,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -383,19 +664,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.macosArm64Main,
-            generate = TaskOutcome.UP_TO_DATE,
-            bufYaml = TaskOutcome.UP_TO_DATE,
-            bufGenYaml = TaskOutcome.UP_TO_DATE,
-            protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
-        )
-
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.nativeTest,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.nativeTest,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -403,9 +673,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.SUCCESS,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.appleTest,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.appleTest,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -413,9 +682,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.SUCCESS,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.macosTest,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.macosTest,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -423,9 +691,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.SUCCESS,
         )
 
-        assertOutcomes(
-            result = firstRunMacosArm64Test,
-            sourceSet = SSets.macosArm64Test,
+        firstRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.macosArm64Test,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -434,51 +701,58 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
 
         // didn't run
-        assertOutcomes(firstRunMacosArm64Test, SSets.jvmMain)
-        assertOutcomes(firstRunMacosArm64Test, SSets.jvmTest)
-        assertOutcomes(firstRunMacosArm64Test, SSets.webMain)
-        assertOutcomes(firstRunMacosArm64Test, SSets.webTest)
-        assertOutcomes(firstRunMacosArm64Test, SSets.jsMain)
-        assertOutcomes(firstRunMacosArm64Test, SSets.jsTest)
+        firstRunMacosArm64Test.assertOutcomes(SSetsKmp.Default.jvmMain)
+        firstRunMacosArm64Test.assertOutcomes(SSetsKmp.Default.jvmTest)
+        firstRunMacosArm64Test.assertOutcomes(SSetsKmp.Default.webMain)
+        firstRunMacosArm64Test.assertOutcomes(SSetsKmp.Default.webTest)
+        firstRunMacosArm64Test.assertOutcomes(SSetsKmp.Default.jsMain)
+        firstRunMacosArm64Test.assertOutcomes(SSetsKmp.Default.jsTest)
 
-        SSets.macosMain.sourceDir()
+        SSetsKmp.Default.macosMain.sourceDir()
             .resolve("macosMain.proto")
             .replace("content = 1", "content = 2")
 
-        val fifthRunCommonMain = runKmp(SSets.commonMain)
+        val fifthRunCommonMain = runForSet(SSetsKmp.Default.commonMain)
 
-        assertOutcomes(
-            result = fifthRunCommonMain,
-            sourceSet = SSets.commonMain,
+        fifthRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.Default.commonMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
         // didn't run
-        assertOutcomes(fifthRunCommonMain, SSets.commonTest)
-        assertOutcomes(fifthRunCommonMain, SSets.nativeMain)
-        assertOutcomes(fifthRunCommonMain, SSets.nativeTest)
-        assertOutcomes(fifthRunCommonMain, SSets.jvmMain)
-        assertOutcomes(fifthRunCommonMain, SSets.jvmTest)
-        assertOutcomes(fifthRunCommonMain, SSets.webMain)
-        assertOutcomes(fifthRunCommonMain, SSets.webTest)
-        assertOutcomes(fifthRunCommonMain, SSets.jsMain)
-        assertOutcomes(fifthRunCommonMain, SSets.jsTest)
-        assertOutcomes(fifthRunCommonMain, SSets.appleMain)
-        assertOutcomes(fifthRunCommonMain, SSets.appleTest)
-        assertOutcomes(fifthRunCommonMain, SSets.macosMain)
-        assertOutcomes(fifthRunCommonMain, SSets.macosTest)
-        assertOutcomes(fifthRunCommonMain, SSets.macosArm64Main)
-        assertOutcomes(fifthRunCommonMain, SSets.macosArm64Test)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.Default.commonTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.Default.nativeMain)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.Default.nativeTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.Default.jvmMain)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.Default.jvmTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.Default.webMain)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.Default.webTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.Default.jsMain)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.Default.jsTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.Default.appleMain)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.Default.appleTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.Default.macosMain)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.Default.macosTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.Default.macosArm64Main)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.Default.macosArm64Test)
 
-        val secondRunMacosArm64Main = runKmp(SSets.macosArm64Main)
+        val secondRunMacosArm64Main = runForSet(SSetsKmp.Default.macosArm64Main)
 
-        assertOutcomes(
-            result = secondRunMacosArm64Main,
-            sourceSet = SSets.commonMain,
+        secondRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.Default.commonMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        secondRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.Default.nativeMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -486,9 +760,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Main,
-            sourceSet = SSets.nativeMain,
+        secondRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.Default.appleMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -496,19 +769,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Main,
-            sourceSet = SSets.appleMain,
-            generate = TaskOutcome.UP_TO_DATE,
-            bufYaml = TaskOutcome.UP_TO_DATE,
-            bufGenYaml = TaskOutcome.UP_TO_DATE,
-            protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
-        )
-
-        assertOutcomes(
-            result = secondRunMacosArm64Main,
-            sourceSet = SSets.macosMain,
+        secondRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.Default.macosMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -516,9 +778,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Main,
-            sourceSet = SSets.macosArm64Main,
+        secondRunMacosArm64Main.assertOutcomes(
+            sourceSet = SSetsKmp.Default.macosArm64Main,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -527,22 +788,30 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
 
         // didn't run
-        assertOutcomes(secondRunMacosArm64Main, SSets.nativeTest)
-        assertOutcomes(secondRunMacosArm64Main, SSets.jvmMain)
-        assertOutcomes(secondRunMacosArm64Main, SSets.jvmTest)
-        assertOutcomes(secondRunMacosArm64Main, SSets.webMain)
-        assertOutcomes(secondRunMacosArm64Main, SSets.webTest)
-        assertOutcomes(secondRunMacosArm64Main, SSets.jsMain)
-        assertOutcomes(secondRunMacosArm64Main, SSets.jsTest)
-        assertOutcomes(secondRunMacosArm64Main, SSets.appleTest)
-        assertOutcomes(secondRunMacosArm64Main, SSets.macosTest)
-        assertOutcomes(secondRunMacosArm64Main, SSets.macosArm64Test)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.nativeTest)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.jvmMain)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.jvmTest)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.webMain)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.webTest)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.jsMain)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.jsTest)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.appleTest)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.macosTest)
+        secondRunMacosArm64Main.assertOutcomes(SSetsKmp.Default.macosArm64Test)
 
-        val secondRunMacosArm64Test = runKmp(SSets.macosArm64Test)
+        val secondRunMacosArm64Test = runForSet(SSetsKmp.Default.macosArm64Test)
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.commonMain,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.commonMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.nativeMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -550,9 +819,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.nativeMain,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.appleMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -560,9 +828,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.appleMain,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.macosMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -570,9 +837,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.macosMain,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.macosArm64Main,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -580,9 +846,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.macosArm64Main,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.nativeTest,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -590,9 +855,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.nativeTest,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.appleTest,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -600,19 +864,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.UP_TO_DATE,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.appleTest,
-            generate = TaskOutcome.UP_TO_DATE,
-            bufYaml = TaskOutcome.UP_TO_DATE,
-            bufGenYaml = TaskOutcome.UP_TO_DATE,
-            protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
-        )
-
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.macosTest,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.macosTest,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -620,9 +873,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             protoFilesImports = TaskOutcome.SUCCESS,
         )
 
-        assertOutcomes(
-            result = secondRunMacosArm64Test,
-            sourceSet = SSets.macosArm64Test,
+        secondRunMacosArm64Test.assertOutcomes(
+            sourceSet = SSetsKmp.Default.macosArm64Test,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -631,28 +883,26 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
 
         // didn't run
-        assertOutcomes(secondRunMacosArm64Test, SSets.jvmMain)
-        assertOutcomes(secondRunMacosArm64Test, SSets.jvmTest)
-        assertOutcomes(secondRunMacosArm64Test, SSets.webMain)
-        assertOutcomes(secondRunMacosArm64Test, SSets.webTest)
-        assertOutcomes(secondRunMacosArm64Test, SSets.jsMain)
-        assertOutcomes(secondRunMacosArm64Test, SSets.jsTest)
+        secondRunMacosArm64Test.assertOutcomes(SSetsKmp.Default.jvmMain)
+        secondRunMacosArm64Test.assertOutcomes(SSetsKmp.Default.jvmTest)
+        secondRunMacosArm64Test.assertOutcomes(SSetsKmp.Default.webMain)
+        secondRunMacosArm64Test.assertOutcomes(SSetsKmp.Default.webTest)
+        secondRunMacosArm64Test.assertOutcomes(SSetsKmp.Default.jsMain)
+        secondRunMacosArm64Test.assertOutcomes(SSetsKmp.Default.jsTest)
 
-        val firstRunJvmMain = runKmp(SSets.jvmMain)
+        val firstRunJvmMain = runForSet(SSetsKmp.Default.jvmMain)
 
-        assertOutcomes(
-            result = firstRunJvmMain,
-            sourceSet = SSets.commonMain,
+        firstRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.Default.commonMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
-        assertOutcomes(
-            result = firstRunJvmMain,
-            sourceSet = SSets.jvmMain,
+        firstRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.Default.jvmMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
@@ -661,40 +911,38 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
 
         // didn't run
-        assertOutcomes(firstRunJvmMain, SSets.commonTest)
-        assertOutcomes(firstRunJvmMain, SSets.nativeMain)
-        assertOutcomes(firstRunJvmMain, SSets.nativeTest)
-        assertOutcomes(firstRunJvmMain, SSets.jvmTest)
-        assertOutcomes(firstRunJvmMain, SSets.webMain)
-        assertOutcomes(firstRunJvmMain, SSets.webTest)
-        assertOutcomes(firstRunJvmMain, SSets.jsMain)
-        assertOutcomes(firstRunJvmMain, SSets.jsTest)
-        assertOutcomes(firstRunJvmMain, SSets.appleMain)
-        assertOutcomes(firstRunJvmMain, SSets.appleTest)
-        assertOutcomes(firstRunJvmMain, SSets.macosMain)
-        assertOutcomes(firstRunJvmMain, SSets.macosTest)
-        assertOutcomes(firstRunJvmMain, SSets.macosArm64Main)
-        assertOutcomes(firstRunJvmMain, SSets.macosArm64Test)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.Default.commonTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.Default.nativeMain)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.Default.nativeTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.Default.jvmTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.Default.webMain)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.Default.webTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.Default.jsMain)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.Default.jsTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.Default.appleMain)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.Default.appleTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.Default.macosMain)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.Default.macosTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.Default.macosArm64Main)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.Default.macosArm64Test)
 
-        SSets.jvmMain.sourceDir()
+        SSetsKmp.Default.jvmMain.sourceDir()
             .resolve("jvmMain.proto")
             .replace("content = 1", "content = 2")
 
-        val secondRunJvmMain = runKmp(SSets.jvmMain)
+        val secondRunJvmMain = runForSet(SSetsKmp.Default.jvmMain)
 
-        assertOutcomes(
-            result = secondRunJvmMain,
-            sourceSet = SSets.commonMain,
+        secondRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.Default.commonMain,
             generate = TaskOutcome.UP_TO_DATE,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
-            protoFilesImports = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
         )
 
-        assertOutcomes(
-            result = secondRunJvmMain,
-            sourceSet = SSets.jvmMain,
+        secondRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.Default.jvmMain,
             generate = TaskOutcome.SUCCESS,
             bufYaml = TaskOutcome.UP_TO_DATE,
             bufGenYaml = TaskOutcome.UP_TO_DATE,
@@ -703,56 +951,547 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
 
         // didn't run
-        assertOutcomes(secondRunJvmMain, SSets.commonTest)
-        assertOutcomes(secondRunJvmMain, SSets.nativeMain)
-        assertOutcomes(secondRunJvmMain, SSets.nativeTest)
-        assertOutcomes(secondRunJvmMain, SSets.jvmTest)
-        assertOutcomes(secondRunJvmMain, SSets.webMain)
-        assertOutcomes(secondRunJvmMain, SSets.webTest)
-        assertOutcomes(secondRunJvmMain, SSets.jsMain)
-        assertOutcomes(secondRunJvmMain, SSets.jsTest)
-        assertOutcomes(secondRunJvmMain, SSets.appleMain)
-        assertOutcomes(secondRunJvmMain, SSets.appleTest)
-        assertOutcomes(secondRunJvmMain, SSets.macosMain)
-        assertOutcomes(secondRunJvmMain, SSets.macosTest)
-        assertOutcomes(secondRunJvmMain, SSets.macosArm64Main)
-        assertOutcomes(secondRunJvmMain, SSets.macosArm64Test)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.Default.commonTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.Default.nativeMain)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.Default.nativeTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.Default.jvmTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.Default.webMain)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.Default.webTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.Default.jsMain)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.Default.jsTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.Default.appleMain)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.Default.appleTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.Default.macosMain)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.Default.macosTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.Default.macosArm64Main)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.Default.macosArm64Test)
     }
 
-    private fun GrpcTestEnv.runKmpAndCheckFiles(
-        sourceSet: SSets,
-        vararg imports: SSets,
-        clean: Boolean = true,
+    @TestFactory
+    fun `Proto Tasks Are Cached Properly Android KMP Library`() = runGrpcTest(
+        versionsPredicate = { testTestsForAndroidKmpLibExist() }
     ) {
-        runKmp(sourceSet).assertKmpSourceSet(sourceSet, *imports)
+        val firstRunCommonMain = runForSet(SSetsKmp.AndroidKmpLib.commonMain)
 
-        if (clean) {
-            cleanProtoBuildDir()
-        }
+        firstRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.AndroidKmpLib.commonMain,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.SUCCESS,
+            bufGenYaml = TaskOutcome.SUCCESS,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        // didn't run
+        firstRunCommonMain.assertOutcomes(SSetsKmp.AndroidKmpLib.commonTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.AndroidKmpLib.jvmMain)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.AndroidKmpLib.jvmTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.AndroidKmpLib.androidMain)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.AndroidKmpLib.androidHostTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.AndroidKmpLib.androidDeviceTest)
+
+        val secondRunCommonMain = runForSet(SSetsKmp.AndroidKmpLib.commonMain)
+
+        secondRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.AndroidKmpLib.commonMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        cleanProtoBuildDir()
+
+        val thirdRunCommonMain = runForSet(SSetsKmp.AndroidKmpLib.commonMain)
+
+        thirdRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.AndroidKmpLib.commonMain,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.SUCCESS,
+            bufGenYaml = TaskOutcome.SUCCESS,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        SSetsKmp.AndroidKmpLib.commonMain.sourceDir()
+            .resolve("commonMain.proto")
+            .replace("content = 1", "content = 2")
+
+        val fourthRunCommonMain = runForSet(SSetsKmp.AndroidKmpLib.commonMain)
+
+        fourthRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.AndroidKmpLib.commonMain,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        SSetsKmp.AndroidKmpLib.androidMain.sourceDir()
+            .resolve("androidMain.proto")
+            .replace("content = 1", "content = 2")
+
+        val fifthRunCommonMain = runForSet(SSetsKmp.AndroidKmpLib.commonMain)
+
+        fifthRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.AndroidKmpLib.commonMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        // didn't run
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.AndroidKmpLib.commonTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.AndroidKmpLib.jvmMain)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.AndroidKmpLib.jvmTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.AndroidKmpLib.androidMain)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.AndroidKmpLib.androidHostTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.AndroidKmpLib.androidDeviceTest)
+
+        val firstRunAndroidMain = runForSet(SSetsKmp.AndroidKmpLib.androidMain)
+
+        firstRunAndroidMain.assertOutcomes(
+            sourceSet = SSetsKmp.AndroidKmpLib.androidMain,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.SUCCESS,
+            bufGenYaml = TaskOutcome.SUCCESS,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.SUCCESS,
+        )
+
+        val firstRunAndroidHostTest = runForSet(SSetsKmp.AndroidKmpLib.androidHostTest)
+
+        firstRunAndroidHostTest.assertOutcomes(
+            sourceSet = SSetsKmp.AndroidKmpLib.androidMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        firstRunAndroidHostTest.assertOutcomes(
+            sourceSet = SSetsKmp.AndroidKmpLib.androidHostTest,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.SUCCESS,
+            bufGenYaml = TaskOutcome.SUCCESS,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.SUCCESS,
+        )
+
+        SSetsKmp.AndroidKmpLib.androidHostTest.sourceDir()
+            .resolve("androidHostTest.proto")
+            .replace("content = 1", "content = 2")
+
+        val secondRunAndroidHostTest = runForSet(SSetsKmp.AndroidKmpLib.androidHostTest)
+
+        secondRunAndroidHostTest.assertOutcomes(
+            sourceSet = SSetsKmp.AndroidKmpLib.androidMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        secondRunAndroidHostTest.assertOutcomes(
+            sourceSet = SSetsKmp.AndroidKmpLib.androidHostTest,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        val firstRunJvmMain = runForSet(SSetsKmp.AndroidKmpLib.jvmMain)
+
+        firstRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.AndroidKmpLib.commonMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        firstRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.AndroidKmpLib.jvmMain,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.SUCCESS,
+            bufGenYaml = TaskOutcome.SUCCESS,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.SUCCESS,
+        )
+
+        // didn't run
+        firstRunJvmMain.assertOutcomes(SSetsKmp.AndroidKmpLib.commonTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.AndroidKmpLib.jvmTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.AndroidKmpLib.androidMain)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.AndroidKmpLib.androidHostTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.AndroidKmpLib.androidDeviceTest)
+
+        SSetsKmp.AndroidKmpLib.jvmMain.sourceDir()
+            .resolve("jvmMain.proto")
+            .replace("content = 1", "content = 2")
+
+        val secondRunJvmMain = runForSet(SSetsKmp.AndroidKmpLib.jvmMain)
+
+        secondRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.AndroidKmpLib.commonMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        secondRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.AndroidKmpLib.jvmMain,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        // didn't run
+        secondRunJvmMain.assertOutcomes(SSetsKmp.AndroidKmpLib.commonTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.AndroidKmpLib.jvmTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.AndroidKmpLib.androidMain)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.AndroidKmpLib.androidHostTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.AndroidKmpLib.androidDeviceTest)
     }
 
-    private fun GrpcTestEnv.runKmp(sourceSet: SSets): BuildResult {
-        return runGradle(bufGenerate(sourceSet))
-    }
+    @TestFactory
+    fun `Proto Tasks Are Cached Properly Legacy Android`() = runGrpcTest {
+        val firstRunCommonMain = runForSet(SSetsKmp.LegacyAndroid.commonMain)
 
-    private fun GrpcTestEnv.assertOutcomes(
-        result: BuildResult,
-        sourceSet: SSets,
-        generate: TaskOutcome? = null,
-        bufYaml: TaskOutcome? = null,
-        bufGenYaml: TaskOutcome? = null,
-        protoFiles: TaskOutcome? = null,
-        protoFilesImports: TaskOutcome? = null,
-    ) {
-        assertEquals(generate, result.protoTaskOutcomeOrNull(bufGenerate(sourceSet)))
-        assertEquals(bufYaml, result.protoTaskOutcomeOrNull(generateBufYaml(sourceSet)))
-        assertEquals(bufGenYaml, result.protoTaskOutcomeOrNull(generateBufGenYaml(sourceSet)))
-        assertEquals(protoFiles, result.protoTaskOutcomeOrNull(processProtoFiles(sourceSet)))
-        assertEquals(protoFilesImports, result.protoTaskOutcomeOrNull(processProtoFilesImports(sourceSet)))
+        firstRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.commonMain,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.SUCCESS,
+            bufGenYaml = TaskOutcome.SUCCESS,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        // didn't run
+        firstRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.commonTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.jvmMain)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.jvmTest)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidDebug)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidRelease)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidUnitTestDebug)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidUnitTestRelease)
+        firstRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidInstrumentedTestDebug)
+
+        val secondRunCommonMain = runForSet(SSetsKmp.LegacyAndroid.commonMain)
+
+        secondRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.commonMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        cleanProtoBuildDir()
+
+        val thirdRunCommonMain = runForSet(SSetsKmp.LegacyAndroid.commonMain)
+
+        thirdRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.commonMain,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.SUCCESS,
+            bufGenYaml = TaskOutcome.SUCCESS,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        SSetsKmp.LegacyAndroid.commonMain.sourceDir()
+            .resolve("commonMain.proto")
+            .replace("content = 1", "content = 2")
+
+        val fourthRunCommonMain = runForSet(SSetsKmp.LegacyAndroid.commonMain)
+
+        fourthRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.commonMain,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        SSetsKmp.LegacyAndroid.androidMain.sourceDir()
+            .resolve("androidMain.proto")
+            .replace("content = 1", "content = 2")
+
+        val fifthRunCommonMain = runForSet(SSetsKmp.LegacyAndroid.commonMain)
+
+        fifthRunCommonMain.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.commonMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        // didn't run
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.commonTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.jvmMain)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.jvmTest)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidDebug)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidRelease)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidUnitTestDebug)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidUnitTestRelease)
+        fifthRunCommonMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidInstrumentedTestDebug)
+
+        val firstRunAndroidDebug = runForSet(SSetsKmp.LegacyAndroid.androidDebug)
+
+        firstRunAndroidDebug.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.androidDebug,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.SUCCESS,
+            bufGenYaml = TaskOutcome.SUCCESS,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.SUCCESS,
+        )
+
+        SSetsKmp.LegacyAndroid.main.sourceDir()
+            .resolve("main.proto")
+            .replace("content = 1", "content = 2")
+
+        val secondRunAndroidDebug = runForSet(SSetsKmp.LegacyAndroid.androidDebug)
+
+        secondRunAndroidDebug.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.androidDebug,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        SSetsKmp.LegacyAndroid.debug.sourceDir()
+            .resolve("debug.proto")
+            .replace("content = 1", "content = 2")
+
+        val thirdRunAndroidDebug = runForSet(SSetsKmp.LegacyAndroid.androidDebug)
+
+        thirdRunAndroidDebug.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.androidDebug,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        val firstRunAndroidUnitTestDebug = runForSet(SSetsKmp.LegacyAndroid.androidUnitTestDebug)
+
+        firstRunAndroidUnitTestDebug.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.androidDebug,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        firstRunAndroidUnitTestDebug.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.androidUnitTestDebug,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.SUCCESS,
+            bufGenYaml = TaskOutcome.SUCCESS,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.SUCCESS,
+        )
+
+        SSetsKmp.LegacyAndroid.androidUnitTestDebug.sourceDir()
+            .resolve("androidUnitTestDebug.proto")
+            .replace("content = 1", "content = 2")
+
+        val secondRunAndroidUnitTestDebug = runForSet(SSetsKmp.LegacyAndroid.androidUnitTestDebug)
+
+        secondRunAndroidUnitTestDebug.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.androidDebug,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        secondRunAndroidUnitTestDebug.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.androidUnitTestDebug,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        SSetsKmp.LegacyAndroid.testFixtures.sourceDir()
+            .resolve("testFixtures.proto")
+            .replace("content = 1", "content = 2")
+
+        val thirdRunAndroidUnitTestDebug = runForSet(SSetsKmp.LegacyAndroid.androidUnitTestDebug)
+
+        thirdRunAndroidUnitTestDebug.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.androidDebug,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        thirdRunAndroidUnitTestDebug.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.androidUnitTestDebug,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        SSetsKmp.LegacyAndroid.testFixturesRelease.sourceDir()
+            .resolve("testFixturesRelease.proto")
+            .replace("content = 1", "content = 2")
+
+        val fourthRunAndroidUnitTestDebug = runForSet(SSetsKmp.LegacyAndroid.androidUnitTestDebug)
+
+        fourthRunAndroidUnitTestDebug.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.androidDebug,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        fourthRunAndroidUnitTestDebug.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.androidUnitTestDebug,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        SSetsKmp.LegacyAndroid.test.sourceDir()
+            .resolve("test.proto")
+            .replace("content = 1", "content = 2")
+
+        val fifthRunAndroidUnitTestDebug = runForSet(SSetsKmp.LegacyAndroid.androidUnitTestDebug)
+
+        fifthRunAndroidUnitTestDebug.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.androidDebug,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        fifthRunAndroidUnitTestDebug.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.androidUnitTestDebug,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        val firstRunJvmMain = runForSet(SSetsKmp.LegacyAndroid.jvmMain)
+
+        firstRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.commonMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        firstRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.jvmMain,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.SUCCESS,
+            bufGenYaml = TaskOutcome.SUCCESS,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.SUCCESS,
+        )
+
+        // didn't run
+        firstRunJvmMain.assertOutcomes(SSetsKmp.LegacyAndroid.commonTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.LegacyAndroid.jvmTest)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidDebug)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidRelease)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidUnitTestDebug)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidUnitTestRelease)
+        firstRunJvmMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidInstrumentedTestDebug)
+
+        SSetsKmp.LegacyAndroid.jvmMain.sourceDir()
+            .resolve("jvmMain.proto")
+            .replace("content = 1", "content = 2")
+
+        val secondRunJvmMain = runForSet(SSetsKmp.LegacyAndroid.jvmMain)
+
+        secondRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.commonMain,
+            generate = TaskOutcome.UP_TO_DATE,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.UP_TO_DATE,
+            protoFilesImports = TaskOutcome.NO_SOURCE,
+        )
+
+        secondRunJvmMain.assertOutcomes(
+            sourceSet = SSetsKmp.LegacyAndroid.jvmMain,
+            generate = TaskOutcome.SUCCESS,
+            bufYaml = TaskOutcome.UP_TO_DATE,
+            bufGenYaml = TaskOutcome.UP_TO_DATE,
+            protoFiles = TaskOutcome.SUCCESS,
+            protoFilesImports = TaskOutcome.UP_TO_DATE,
+        )
+
+        // didn't run
+        secondRunJvmMain.assertOutcomes(SSetsKmp.LegacyAndroid.commonTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.LegacyAndroid.jvmTest)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidDebug)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidRelease)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidUnitTestDebug)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidUnitTestRelease)
+        secondRunJvmMain.assertOutcomes(SSetsKmp.LegacyAndroid.androidInstrumentedTestDebug)
     }
 
     @TestFactory
     fun `Buf Tasks`() = runGrpcTest {
+        runGradle("test_tasks", "--no-configuration-cache")
+    }
+
+    @TestFactory
+    fun `Buf Tasks Android Kmp Library`() = runGrpcTest {
+        runGradle("test_tasks", "--no-configuration-cache")
+    }
+
+    @TestFactory
+    fun `Buf Tasks Android Kmp Library With Test Tasks`() = runGrpcTest(
+        versionsPredicate = { testTestsForAndroidKmpLibExist() }
+    ) {
+        runGradle("test_tasks", "--no-configuration-cache")
+    }
+
+    @TestFactory
+    fun `Buf Tasks Legacy Android`() = runGrpcTest {
         runGradle("test_tasks", "--no-configuration-cache")
     }
 }

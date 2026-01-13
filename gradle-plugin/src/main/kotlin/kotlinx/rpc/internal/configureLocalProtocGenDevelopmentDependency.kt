@@ -4,8 +4,11 @@
 
 package kotlinx.rpc.internal
 
+import kotlinx.rpc.protoc.buf
+import kotlinx.rpc.protoc.generate
 import kotlinx.rpc.protoc.grpcKotlinMultiplatform
 import kotlinx.rpc.protoc.kotlinMultiplatform
+import kotlinx.rpc.protoc.protoTasks
 import kotlinx.rpc.rpcExtension
 import org.gradle.api.Project
 import org.gradle.internal.extensions.core.extra
@@ -33,8 +36,10 @@ public fun Project.configureLocalProtocGenDevelopmentDependency(
             }
         }
 
-        buf.generate.allTasks()
-            .matching { task -> sourceSetSuffix.any { task.name.endsWith(it) } }
+        protoTasks.buf.generate
+            .matching { task ->
+                sourceSetSuffix.any { task.name.endsWith(it) }
+            }
             .configureEach {
                 val includedBuild = gradle.includedBuild("protoc-gen")
                 dependsOn(includedBuild.task(":grpc:jar"))

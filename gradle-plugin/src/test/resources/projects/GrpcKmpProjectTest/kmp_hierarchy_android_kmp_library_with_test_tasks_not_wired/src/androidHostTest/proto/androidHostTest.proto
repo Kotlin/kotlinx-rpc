@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message AndroidHostTest {
+  string content = 1;
+}

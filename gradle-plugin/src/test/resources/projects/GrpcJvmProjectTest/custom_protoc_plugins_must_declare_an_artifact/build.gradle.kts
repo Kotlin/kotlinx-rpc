@@ -7,7 +7,7 @@ import kotlinx.rpc.protoc.*
 
 plugins {
     kotlin("jvm") version "<kotlin-version>"
-    id("org.jetbrains.kotlinx.rpc.plugin")
+    id("org.jetbrains.kotlinx.rpc.plugin") version "<rpc-version>"
 }
 
 kotlin.sourceSets.main.proto {

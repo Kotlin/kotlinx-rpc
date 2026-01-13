@@ -6,7 +6,7 @@ import org.gradle.kotlin.dsl.version
 
 plugins {
     kotlin("multiplatform") version "<kotlin-version>"
-    id("org.jetbrains.kotlinx.rpc.plugin")
+    id("org.jetbrains.kotlinx.rpc.plugin") version "<rpc-version>"
 }
 
 // should nonetheless be available

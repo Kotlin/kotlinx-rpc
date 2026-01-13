@@ -1,0 +1,235 @@
+/*
+ * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+import kotlinx.rpc.buf.*
+import kotlinx.rpc.buf.tasks.*
+import kotlinx.rpc.protoc.*
+import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.kotlin.dsl.version
+import javax.inject.Inject
+
+plugins {
+    id("com.android.application") version "<android-version>"
+    kotlin("android") version "<kotlin-version>"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "<rpc-version>"
+}
+
+android {
+    namespace = "com.example.myapp"
+    compileSdk = 34
+}
+
+public abstract class BufLintTask @Inject constructor(properties: ProtoTask.Properties) : BufExecTask(properties) {
+    init {
+        command.set("lint")
+        args.set(emptyList())
+    }
+}
+
+rpc {
+    protoc {
+        buf {
+            tasks {
+                registerWorkspaceTask<BufLintTask>("lint")
+            }
+        }
+    }
+}
+
+fun Iterable<DefaultTask>.toNames() = map { it.name }.toSet()
+
+fun assertTasks(
+    tag: String,
+    tasks: Iterable<DefaultTask>,
+    vararg expected: String?,
+) {
+    val names = tasks.toNames()
+    val expectedSet = expected.filterNotNull().toSet()
+    if (expectedSet != names) {
+        throw GradleException(
+            """
+                [$tag] Expected: ${expectedSet}, actual: $names
+                Missing: ${expectedSet - names}
+                Extra: ${names - expectedSet}
+            """.trimIndent()
+        )
+    }
+}
+
+tasks.register("test_tasks") {
+    doLast {
+        val genTasks = protoTasks.buf.generate
+
+        assertTasks(
+            "gen all", genTasks,
+            "bufGenerateAndroidTestDebug",
+            "bufGenerateTestDebug",
+            "bufGenerateTestRelease",
+            "bufGenerateDebug",
+            "bufGenerateRelease",
+        )
+
+        assertTasks(
+            "testTasks", genTasks.testTasks(),
+            "bufGenerateAndroidTestDebug",
+            "bufGenerateTestDebug",
+            "bufGenerateTestRelease",
+        )
+
+        assertTasks(
+            "unit test tasks", genTasks.androidUnitTestTasks(),
+            "bufGenerateTestDebug",
+            "bufGenerateTestRelease",
+        )
+
+        assertTasks(
+            "instrumented test tasks", genTasks.androidInstrumentedTestTasks(),
+            "bufGenerateAndroidTestDebug",
+        )
+
+        assertTasks(
+            "nonTestTasks", genTasks.nonTestTasks(),
+            "bufGenerateDebug",
+            "bufGenerateRelease",
+        )
+
+        assertTasks("nonTestTasks testTasks", genTasks.nonTestTasks().testTasks())
+
+        assertTasks(
+            "matchingSourceSet main", genTasks.matchingSourceSet("main"),
+            "bufGenerateDebug",
+            "bufGenerateRelease",
+        )
+
+        assertTasks(
+            "matchingSourceSet test", genTasks.matchingSourceSet("test"),
+            "bufGenerateTestDebug",
+            "bufGenerateTestRelease",
+        )
+
+        assertTasks(
+            "matchingSourceSet androidTest", genTasks.matchingSourceSet("androidTest"),
+            "bufGenerateAndroidTestDebug",
+        )
+
+        assertTasks(
+            "gen all android", genTasks.androidTasks(),
+            "bufGenerateAndroidTestDebug",
+            "bufGenerateTestDebug",
+            "bufGenerateTestRelease",
+            "bufGenerateDebug",
+            "bufGenerateRelease",
+        )
+
+        assertTasks(
+            "matchingSourceSet debug",
+            genTasks.matchingSourceSet("debug"),
+            "bufGenerateDebug",
+        )
+
+        assertTasks(
+            "matchingSourceSet testDebug",
+            genTasks.matchingSourceSet("testDebug"),
+            "bufGenerateTestDebug",
+        )
+
+        assertTasks(
+            "matchingSourceSet androidTestDebug",
+            genTasks.matchingSourceSet("androidTestDebug"),
+            "bufGenerateAndroidTestDebug",
+        )
+
+        assertTasks(
+            "matchingAndroidFlavor freeapp", genTasks.matchingAndroidFlavor("freeapp"),
+        )
+
+        assertTasks(
+            "matchingAndroidBuildType debug", genTasks.matchingAndroidBuildType("debug"),
+            "bufGenerateAndroidTestDebug",
+            "bufGenerateTestDebug",
+            "bufGenerateDebug",
+        )
+
+        assertTasks(
+            "matchingAndroidBuildType release", genTasks.matchingAndroidBuildType("release"),
+            "bufGenerateTestRelease",
+            "bufGenerateRelease",
+        )
+
+        assertTasks(
+            "matchingAndroidVariant debug", genTasks.matchingAndroidVariant("debug"),
+            "bufGenerateAndroidTestDebug",
+            "bufGenerateTestDebug",
+            "bufGenerateDebug",
+        )
+
+        assertTasks(
+            "matchingAndroidBuildType debug unit tests", genTasks.matchingAndroidBuildType("debug").androidUnitTestTasks(),
+            "bufGenerateTestDebug",
+        )
+
+        assertTasks(
+            "matchingAndroidBuildType debug android tests", genTasks.matchingAndroidBuildType("debug").androidInstrumentedTestTasks(),
+            "bufGenerateAndroidTestDebug",
+        )
+
+        val allTasks = protoTasks.buf
+
+        assertTasks(
+            "all", allTasks,
+            "bufGenerateAndroidTestDebug",
+            "bufGenerateTestDebug",
+            "bufGenerateTestRelease",
+            "bufGenerateDebug",
+            "bufGenerateRelease",
+
+            "bufLintAndroidTestDebug",
+            "bufLintTestDebug",
+            "bufLintTestRelease",
+            "bufLintDebug",
+            "bufLintRelease",
+        )
+
+        assertTasks(
+            "all by type generate", allTasks.matchingType<BufGenerateTask>(),
+            "bufGenerateAndroidTestDebug",
+            "bufGenerateTestDebug",
+            "bufGenerateTestRelease",
+            "bufGenerateDebug",
+            "bufGenerateRelease",
+        )
+
+        assertTasks(
+            "all by type lint", allTasks.matchingType<BufLintTask>(),
+
+            "bufLintAndroidTestDebug",
+            "bufLintTestDebug",
+            "bufLintTestRelease",
+            "bufLintDebug",
+            "bufLintRelease",
+        )
+
+        assertTasks(
+            "all matchingSourceSet debug",
+            allTasks.matchingSourceSet("debug"),
+            "bufGenerateDebug",
+            "bufLintDebug",
+        )
+
+        assertTasks(
+            "all matchingSourceSet testDebug",
+            allTasks.matchingSourceSet("testDebug"),
+            "bufGenerateTestDebug",
+            "bufLintTestDebug",
+        )
+
+        assertTasks(
+            "all matchingSourceSet androidTestDebug",
+            allTasks.matchingSourceSet("androidTestDebug"),
+            "bufGenerateAndroidTestDebug",
+            "bufLintAndroidTestDebug",
+        )
+    }
+}

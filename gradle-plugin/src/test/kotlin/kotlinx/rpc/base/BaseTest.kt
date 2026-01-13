@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.base
 
+import kotlinx.rpc.ANDROID_HOME_DIR
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
@@ -17,31 +18,61 @@ import kotlin.io.path.copyToRecursively
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlinx.rpc.BUILD_REPO
+import kotlinx.rpc.RPC_VERSION
 import org.junit.jupiter.api.DynamicTest
 import java.util.stream.Stream
 import kotlin.io.path.absolute
+import kotlin.io.path.appendText
 import kotlin.io.path.createDirectories
 import kotlin.io.path.deleteRecursively
+import kotlin.io.path.readLines
 
 class VersionsEnv(
     val gradle: String,
     val kotlin: String,
-)
+    val android: String,
+) {
+    val kotlinSemver = run {
+        val (major, minor, patch) = kotlin.split(".").map { it.toInt() }
+        KotlinVersion(major, minor, patch)
+    }
+
+    val androidSemver = run {
+        val (major, minor, patch) = android.split(".").map { it.toInt() }
+        KotlinVersion(major, minor, patch)
+    }
+}
+
+internal object KtVersion {
+    val v2_2_20 = KotlinVersion(2, 2, 20)
+    val v2_0_0 = KotlinVersion(2, 0, 0)
+}
+
+typealias VersionsPredicate = VersionsEnv.() -> Boolean
+
+internal fun VersionsEnv.testTestsForAndroidKmpLibExist(): Boolean {
+    return androidSemver.isAtLeast(8, 10, 0)
+}
 
 private val GradleVersions = listOf(
-    VersionsEnv("9.2.1", "2.2.21"),
-    VersionsEnv("8.14.1", "2.2.0"),
-    VersionsEnv("8.8", "2.0.0"),
+    VersionsEnv("9.2.1", "2.2.21", "8.13.1"),
+    VersionsEnv("8.14.1", "2.2.0", "8.10.0"),
+    VersionsEnv("8.8", "2.0.0", "8.4.0"),
 )
 
-internal fun BaseTest.runWithAllGradleVersions(body: (VersionsEnv) -> Unit): Stream<DynamicTest> {
-    return GradleVersions.stream().map {
-        setupTest(it)
+internal fun BaseTest.runWithGradleVersions(
+    predicate: VersionsPredicate = { true },
+    body: (VersionsEnv) -> Unit,
+): Stream<DynamicTest> {
+    return GradleVersions.stream()
+        .filter { predicate(it) }
+        .map { versions ->
+            setupTest(versions)
 
-        DynamicTest.dynamicTest("Gradle ${it.gradle}, Kotlin ${it.kotlin}") {
-            body(it)
+            DynamicTest.dynamicTest("Gradle ${versions.gradle}, KGP ${versions.kotlin}, AGP ${versions.android}") {
+                body(versions)
+            }
         }
-    }
 }
 
 @OptIn(ExperimentalPathApi::class)
@@ -51,6 +82,7 @@ abstract class BaseTest {
     private lateinit var testMethodName: String
     private lateinit var baseDir: Path
     private lateinit var projectDir: Path
+    private lateinit var testKitDir: Path
 
     @BeforeEach
     protected fun setup(testInfo: TestInfo) {
@@ -70,7 +102,10 @@ abstract class BaseTest {
     }
 
     fun setupTest(versions: VersionsEnv) {
-        val versioned = baseDir.resolve(versions.gradle.replace(".", "_"))
+        val gradleDir = versions.gradle.replace(".", "_")
+        testKitDir = TEST_KIT_PATH.resolve(gradleDir)
+
+        val versioned = baseDir.resolve(gradleDir)
 
         projectDir = versioned.resolve(PROJECT_DIR)
         val buildCacheDir = versioned.resolve(BUILD_CACHE_DIR)
@@ -103,12 +138,24 @@ abstract class BaseTest {
         val buildScriptFile = projectDir.resolve("build.gradle.kts")
         buildScriptFile
             .replace("<kotlin-version>", versions.kotlin)
+            .replace("<rpc-version>", RPC_VERSION)
+            .replace("<android-version>", versions.android)
 
-        println("""
+        buildScriptFile.readLines().filter {
+            it.startsWith("// include:")
+        }.map {
+            it.removePrefix("// include:").trim()
+        }.forEach { project ->
+            settingsFile.appendText("\ninclude(\":$project\")")
+        }
+
+        println(
+            """
             Setup project '$projectName'
               - in directory: ${projectDir.absolutePathString()}
               - from directory: ${testTemplateDirectory.absolutePathString()}
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 
     private fun runGradleInternal(
@@ -119,55 +166,37 @@ abstract class BaseTest {
     ): BuildResult {
         val gradleRunner = GradleRunner.create()
             .withProjectDir(projectDir.absolute().toFile())
-            .withTestKitDir(TEST_KIT_PATH.absolute().toFile())
+            .withTestKitDir(testKitDir.absolute().toFile())
             .withGradleVersion(versions.gradle)
-            .withPluginClasspath()
+            .withEnvironment(mapOf("ANDROID_HOME" to ANDROID_HOME_DIR))
             .withArguments(
                 listOfNotNull(
                     task,
                     "--stacktrace",
-                    "--info",
                     "-Dorg.gradle.kotlin.dsl.scriptCompilationAvoidance=false",
                     *args,
                 )
-            ).apply {
-                if (forwardOutput) {
-                    forwardOutput()
-                }
-            }
+            )
 
         println("Running Gradle task '$task' with arguments: [${args.joinToString()}]")
         return gradleRunner.body()
     }
 
     protected fun <T : TestEnv> runTest(testEnv: T, body: T.() -> Unit) {
-        try {
-            testEnv.body()
-        } catch (e: Throwable) {
-            val output = testEnv.latestBuild?.output
-            if (output != null) {
-                println("Latest gradle build output:")
-                println(output)
-            } else {
-                println("No gradle build output available")
-            }
-            throw e
-        }
+        testEnv.body()
     }
 
     open inner class TestEnv(
         val versions: VersionsEnv,
     ) {
         val projectDir: Path get() = this@BaseTest.projectDir
-        var latestBuild: BuildResult? = null
-            private set
 
         fun runGradle(
             task: String,
             vararg args: String,
         ): BuildResult {
             return runGradleInternal(task, versions, *args) {
-                build().also { latestBuild = it }
+                build()
             }
         }
 
@@ -176,7 +205,7 @@ abstract class BaseTest {
             vararg args: String,
         ): BuildResult {
             return runGradleInternal(task, versions, *args) {
-                buildAndFail().also { latestBuild = it }
+                buildAndFail()
             }
         }
 
@@ -193,14 +222,12 @@ abstract class BaseTest {
         }
     }
 
-    protected fun Path.replace(oldValue: String, newValue: String) {
+    protected fun Path.replace(oldValue: String, newValue: String): Path {
         writeText(readText().replace(oldValue, newValue))
+        return this
     }
 
     companion object {
-        private val forwardOutput = System.getProperty("gradle.test.forward.output")
-            ?.toBooleanStrictOrNull() ?: false
-
         private val nameRegex = Regex("[ .,-]")
 
         private val TEST_PROJECTS_PATH = Path.of("build", "gradle-test")

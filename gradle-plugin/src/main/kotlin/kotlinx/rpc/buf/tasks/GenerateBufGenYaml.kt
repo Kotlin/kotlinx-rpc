@@ -5,12 +5,11 @@
 package kotlinx.rpc.buf.tasks
 
 import kotlinx.rpc.buf.BUF_GEN_YAML
+import kotlinx.rpc.protoc.DefaultProtoTask
 import kotlinx.rpc.protoc.PROTO_FILES_DIR
-import kotlinx.rpc.protoc.PROTO_GROUP
+import kotlinx.rpc.protoc.ProtoTask
 import kotlinx.rpc.protoc.ProtocPlugin
 import kotlinx.rpc.util.ensureRegularFileExists
-import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -22,6 +21,7 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.register
 import java.io.File
 import java.io.Serializable
+import javax.inject.Inject
 
 internal data class ResolvedGrpcPlugin(
     val type: Type,
@@ -49,7 +49,9 @@ internal data class ResolvedGrpcPlugin(
 /**
  * Generates/updates Buf `buf.gen.yaml` file.
  */
-public abstract class GenerateBufGenYaml internal constructor(): DefaultTask() {
+public abstract class GenerateBufGenYaml @Inject internal constructor(
+    properties: ProtoTask.Properties,
+) : DefaultProtoTask(properties) {
     @get:Input
     internal abstract val plugins: ListProperty<ResolvedGrpcPlugin>
 
@@ -58,10 +60,6 @@ public abstract class GenerateBufGenYaml internal constructor(): DefaultTask() {
      */
     @get:OutputFile
     public abstract val bufGenFile: Property<File>
-
-    init {
-        group = PROTO_GROUP
-    }
 
     @TaskAction
     @Suppress("detekt.CyclomaticComplexMethod", "detekt.NestedBlockDepth")
@@ -138,10 +136,17 @@ internal fun Project.registerGenerateBufGenYamlTask(
     name: String,
     buildSourceSetsDir: File,
     protocPlugins: Provider<Set<ProtocPlugin>>,
+    properties: ProtoTask.Properties,
     configure: GenerateBufGenYaml.() -> Unit = {},
 ): TaskProvider<GenerateBufGenYaml> {
     val capitalizeName = name.replaceFirstChar { it.uppercase() }
-    return project.tasks.register<GenerateBufGenYaml>("${GenerateBufGenYaml.NAME_PREFIX}$capitalizeName") {
+    val task = project.tasks.register(
+        "${GenerateBufGenYaml.NAME_PREFIX}$capitalizeName",
+        GenerateBufGenYaml::class,
+        properties,
+    )
+
+    task.configure {
         val pluginsProvider = project.provider {
             protocPlugins.get().map { plugin ->
                 val artifact = plugin.artifact.get()
@@ -168,14 +173,16 @@ internal fun Project.registerGenerateBufGenYamlTask(
             }
         }
 
-        plugins.set(pluginsProvider)
+        plugins.convention(pluginsProvider)
 
         val bufGenYamlFile = buildSourceSetsDir
             .resolve(BUF_GEN_YAML)
             .ensureRegularFileExists()
 
-        bufGenFile.set(bufGenYamlFile)
+        bufGenFile.convention(bufGenYamlFile)
 
         configure()
     }
+
+    return task
 }

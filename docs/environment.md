@@ -61,6 +61,12 @@ Go to `Settings` -> `Build, Execution, Deployment` -> `Build Tools` -> `Gradle` 
 - `Distribution` is set to `Wrapper`
 - `Gradle JVM` is set to `JAVA_HOME` and the value is correct
 
+## Android SDK
+In the root of the project you should create a `local.properties` file with the location of the Android SDK:
+```properties
+sdk.dir=/Users/<user>/Library/Android/sdk
+```
+
 ## Git and GitHub
 
 Make sure your commit signing is set up. Check the

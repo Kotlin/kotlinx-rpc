@@ -83,13 +83,12 @@ public open class RpcExtension @Inject internal constructor(objects: ObjectFacto
     internal val protocApplied = AtomicBoolean(false)
 
     internal val protocInternal by lazy {
-        if (protocApplied.get()) {
+        if (protocApplied.compareAndSet(false, true)) {
+            objects.newInstance<DefaultProtocExtension>().apply {
+                callbacks.forEach { it.execute(this) }
+            }
+        } else {
             error("Illegal access to protoc extension during DefaultProtocExtension.init")
-        }
-
-        protocApplied.set(true)
-        objects.newInstance<DefaultProtocExtension>().apply {
-            callbacks.forEach { it.execute(this) }
         }
     }
 
