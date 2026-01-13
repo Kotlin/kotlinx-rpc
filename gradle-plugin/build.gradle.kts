@@ -4,6 +4,10 @@
 
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import util.other.generateSource
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.exists
+import kotlin.io.path.readLines
 
 plugins {
     `kotlin-dsl`
@@ -19,6 +23,8 @@ kotlin {
     explicitApi()
 
     jvmToolchain(17)
+
+    compilerOptions.optIn.add("kotlinx.rpc.internal.InternalRpcApi")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
@@ -29,7 +35,9 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 dependencies {
-    implementation(libs.kotlin.gradle.plugin)
+    compileOnly(libs.kotlin.gradle.plugin)
+    compileOnly(libs.android.gradle.plugin)
+    compileOnly(libs.android.gradle.plugin.api)
 
     testImplementation(libs.kotlin.gradle.plugin)
     testImplementation(gradleTestKit())
@@ -43,16 +51,19 @@ dependencies {
 }
 
 tasks.test {
-    val forwardOutput: Boolean = (properties.getOrDefault("gradle.test.forward.output", "false")
-         as String).toBooleanStrictOrNull() ?: false
-
-    systemProperty("gradle.test.forward.output", forwardOutput)
-
     useJUnitPlatform()
 
-    val includedBuild = gradle.includedBuild("protoc-gen")
-    dependsOn(includedBuild.task(":grpc:publishAllPublicationsToBuildRepoRepository"))
-    dependsOn(includedBuild.task(":protobuf:publishAllPublicationsToBuildRepoRepository"))
+    val protocGen = gradle.includedBuild("protoc-gen")
+    dependsOn(protocGen.task(":grpc:publishAllPublicationsToBuildRepoRepository"))
+    dependsOn(protocGen.task(":protobuf:publishAllPublicationsToBuildRepoRepository"))
+
+    val compilerPlugin = gradle.includedBuild("compiler-plugin")
+    dependsOn(compilerPlugin.task(":compiler-plugin-cli:publishAllPublicationsToBuildRepoRepository"))
+    dependsOn(compilerPlugin.task(":compiler-plugin-k2:publishAllPublicationsToBuildRepoRepository"))
+    dependsOn(compilerPlugin.task(":compiler-plugin-backend:publishAllPublicationsToBuildRepoRepository"))
+    dependsOn(compilerPlugin.task(":compiler-plugin-common:publishAllPublicationsToBuildRepoRepository"))
+
+    dependsOn(":publishAllPublicationsToBuildRepoRepository")
 }
 
 // This block is needed to show plugin tasks on --dry-run
@@ -98,14 +109,26 @@ generateSource(
 
 val globalRootDir: String by extra
 
+val androidHome = System.getenv("ANDROID_HOME")
+    ?: System.getProperty("ANDROID_SDK_HOME")
+    ?: Path(globalRootDir, "local.properties")
+        .takeIf { it.exists() }
+        ?.readLines()
+        ?.find { it.startsWith("sdk.dir=") }
+        ?.substringAfter("=")
+        ?.trim()
+    ?: error("ANDROID_HOME is not set")
+
 generateSource(
     name = "TestVersions",
     text = """
         package kotlinx.rpc
         
-        const val KOTLIN_VERSION: String = "${libs.versions.kotlin.lang.get()}"
+        const val RPC_VERSION: String = "${libs.versions.kotlinx.rpc.get()}"
         
-        const val BUILD_REPO: String = "${File(globalRootDir).resolve("build/repo").absolutePath}"
+        const val ANDROID_HOME_DIR: String = "$androidHome"
+        
+        const val BUILD_REPO: String = "${Path(globalRootDir, "build", "repo").absolutePathString()}"
     """.trimIndent(),
     chooseSourceSet = { test }
 )
