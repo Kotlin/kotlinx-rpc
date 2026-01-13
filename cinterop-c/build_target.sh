@@ -29,7 +29,9 @@ echo "==> Building $LABEL to $DST" >&2
 echo "==> KONAN_HOME: $KONAN_HOME" >&2
 echo "==> KONAN_TARGET: $KONAN_TARGET" >&2
 KONAN_DEP="--define=KONAN_DEPS=$HOME/.konan/dependencies"
+set -x # set shell tracing
 bazel build "$LABEL" --config="$KONAN_TARGET" --config="$CONFIG" "$KONAN_DEP" "--define=KONAN_HOME=$KONAN_HOME"
+set +x
 
 # Ask Bazel what file(s) this target produced under this platform
 out="$(bazel cquery "$LABEL" --config="$KONAN_TARGET" --config="$CONFIG" "$KONAN_DEP" "--define=KONAN_HOME=$KONAN_HOME" --output=files | head -n1)"
