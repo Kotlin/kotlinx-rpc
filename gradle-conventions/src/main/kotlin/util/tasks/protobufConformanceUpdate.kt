@@ -292,7 +292,7 @@ fun Project.setupProtobufConformanceResources() {
             )
         }
 
-    tasks.matching { it.name == "processMainProtoFiles" || it.name == "processTestImportProtoFiles" }.all {
+    tasks.matching { it.name == "processMainProtoFiles" || it.name == "processTestProtoFilesImports" }.all {
         dependsOn(unzipProtobufConformance)
     }
 

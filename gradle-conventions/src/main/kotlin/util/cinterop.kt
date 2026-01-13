@@ -6,6 +6,7 @@ package util
 
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Exec
@@ -130,10 +131,11 @@ fun Project.registerBuildCLibIncludeDirTask(
         dependsOn(":checkBazel")
         group = "build"
         workingDir = project.cinteropLibDir
+        val konanHome = findKonanHome()
         commandLine(
             "bash",
             "-c",
-            "./extract_include_dir.sh //prebuilt-deps/grpc_fat:grpc_include_dir $includeDir"
+            "./extract_include_dir.sh //prebuilt-deps/grpc_fat:grpc_include_dir $includeDir $konanHome"
         )
         outputs.dir(includeDir.resolve("include"))
     }
@@ -150,6 +152,9 @@ private fun KotlinNativeTarget.canonicalCLibTaskPostfix(buildTargetName: String)
     return "CLib${buildTargetName.capitalized()}_$targetName"
 }
 
+private val TaskContainer.downloadKotlinNativeDistribution: TaskProvider<Task?>
+    get() = named("downloadKotlinNativeDistribution")
+
 private fun TaskContainer.registerBuildClibTask(
     name: String,
     bazelTask: String,
@@ -157,6 +162,8 @@ private fun TaskContainer.registerBuildClibTask(
     target: KotlinNativeTarget,
 ): TaskProvider<Exec> {
     return register<Exec>(name) {
+        dependsOn(downloadKotlinNativeDistribution)
+
         val konanTarget = target.konanTarget.visibleName
         val konanHome = project.findKonanHome()
 
@@ -188,7 +195,7 @@ private fun Project.findKonanHome(): String {
     val hostArch = System.getProperty("os.arch").lowercase().let {
         when {
             it.contains("aarch64") || it.contains("arm64") -> "aarch64"
-            it.contains("x86_64") || it.contains("amd64") -> "x64"
+            it.contains("x86_64") || it.contains("amd64") -> "x86_64"
             else -> error("Unsupported arch: $it")
         }
     }

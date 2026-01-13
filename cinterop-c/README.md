@@ -10,6 +10,13 @@ To build (e.g. ios_arm64) run
 bazel build :protowire_fat --config=ios_arm64 --config=release
 ```
 
+You can manually run a Bazel task e.g., with
+```
+bazel build :protowire_fat --config=linux_x64 --config=release \
+    --define=KONAN_DEPS=/root/.konan/dependencies \
+    --define=KONAN_HOME=/root/.konan/kotlin-native-prebuilt-linux-x86_64-2.2.21
+```
+
 ### KgRPC
 
 We are using the gRPC-core library, which already exports its API with a C ABI.

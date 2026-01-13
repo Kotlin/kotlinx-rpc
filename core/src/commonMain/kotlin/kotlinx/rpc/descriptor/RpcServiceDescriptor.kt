@@ -25,7 +25,8 @@ public fun <@Rpc Service : Any> serviceDescriptorOf(kType: KType): RpcServiceDes
 @ExperimentalRpcApi
 public fun <@Rpc Service : Any> serviceDescriptorOf(kClass: KClass<Service>): RpcServiceDescriptor<Service> {
     val maybeDescriptor = internalServiceDescriptorOf(kClass)
-        ?: internalRpcError("Unable to find a service descriptor of the $kClass")
+        ?: internalRpcError("Unable to find a service descriptor of the $kClass. " +
+                "Check that you have applied the “kotlinx.rpc” plugin to your build module.")
 
     if (maybeDescriptor is RpcServiceDescriptor<*>) {
         @Suppress("UNCHECKED_CAST")

@@ -5,9 +5,9 @@
 @file:OptIn(InternalRpcApi::class)
 
 import kotlinx.rpc.internal.InternalRpcApi
-import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import util.configureCLibCInterop
 import util.configureCLibDependency
+import util.withBackgroundTask
 import util.registerBuildCLibIncludeDirTask
 
 plugins {
@@ -21,6 +21,10 @@ kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
+
+    // we must re-apply the default hierarchy template again, because we added custom default source sets below,
+    // otherwise it wouldn't be applied.
+    applyDefaultHierarchyTemplate()
 
     sourceSets {
         commonMain {
@@ -45,8 +49,24 @@ kotlin {
                 implementation(projects.grpc.grpcCodecKotlinxSerialization)
                 implementation(projects.protobuf.protobufCore)
                 implementation(projects.grpc.grpcClient)
+                implementation(projects.tests.testProtos)
+                implementation(projects.tests.testUtils)
+            }
+        }
+
+        // An intermediate sourceSet that bundles all desktop targets (JVM, macOS and linux)
+        // for testing. This allows us to write unit tests that spin up a gRPC server, which is not
+        // possible for native mobile targets.
+        val desktopTest by creating {
+            dependsOn(commonTest.get())
+
+            dependencies {
                 implementation(projects.grpc.grpcServer)
             }
+        }
+
+        val desktopNativeTest by creating {
+            dependsOn(desktopTest)
         }
 
         jvmMain {
@@ -61,6 +81,8 @@ kotlin {
         }
 
         jvmTest {
+            dependsOn(desktopTest)
+
             dependencies {
                 implementation(libs.grpc.netty)
             }
@@ -71,6 +93,14 @@ kotlin {
                 // required for status.proto
                 implementation(projects.protobuf.protobufCore)
             }
+        }
+
+        macosTest {
+            dependsOn(desktopNativeTest)
+        }
+
+        linuxTest {
+            dependsOn(desktopNativeTest)
         }
     }
 
@@ -116,4 +146,14 @@ kotlin {
     }
 }
 
-configureLocalProtocGenDevelopmentDependency()
+// run gRPC test server (from `test/grpc-test-server` module) background while tests are running
+tasks.matching { it.name.endsWith("Test") && !it.name.startsWith("clean") }.configureEach {
+    dependsOn(":tests:grpc-test-server:installDist")
+
+    val testServerBuildDir = project(":tests:grpc-test-server").layout.buildDirectory.get().asFile
+    withBackgroundTask {
+        workingDir = testServerBuildDir
+        commandLine("install/grpc-test-server/bin/grpc-test-server")
+        readyString = "[GRPC-TEST-SERVER] Server started"
+    }
+}
