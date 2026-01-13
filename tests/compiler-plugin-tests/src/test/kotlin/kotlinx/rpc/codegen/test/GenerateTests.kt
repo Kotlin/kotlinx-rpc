@@ -6,7 +6,7 @@ package kotlinx.rpc.codegen.test
 
 import kotlinx.rpc.codegen.test.runners.AbstractBoxTest
 import kotlinx.rpc.codegen.test.runners.AbstractDiagnosticTest
-import org.jetbrains.kotlin.generators.generateTestGroupSuiteWithJUnit5
+import org.jetbrains.kotlin.generators.dsl.junit5.generateTestGroupSuiteWithJUnit5
 
 fun main() {
     generateTestGroupSuiteWithJUnit5 {

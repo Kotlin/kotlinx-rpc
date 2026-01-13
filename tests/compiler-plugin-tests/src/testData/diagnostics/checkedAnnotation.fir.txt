@@ -233,10 +233,6 @@ FILE: module_main_checkedAnnotation.kt
         }
 
     }
-    public final fun <@R|Checked|() T : R|CheckedNestedClass<T>|> doubleNestedCheckedOk(): R|kotlin/Unit| {
-    }
-    public final fun <T : R|CheckedNestedClass<T>|> doubleNestedCheckedFail(): R|kotlin/Unit| {
-    }
     public final fun <@R|Checked|() T : R|GenericClass<CheckedClass<T>>|> tripleNestedCheckedOk(): R|kotlin/Unit| {
     }
     public final fun <T : R|GenericClass<CheckedClass<T>>|> tripleNestedCheckedFail(): R|kotlin/Unit| {

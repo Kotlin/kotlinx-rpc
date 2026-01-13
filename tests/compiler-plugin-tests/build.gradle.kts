@@ -61,14 +61,19 @@ sourceSets.test.configure {
     runtimeClasspath = testPriorityRuntimeClasspath + sourceSets.test.get().runtimeClasspath
 }
 
+val testArtifacts: Configuration by configurations.creating
+
 dependencies {
     testPriorityRuntimeClasspath(libs.intellij.util) { isTransitive = false }
 
     implementation(projects.core)
 
-    testRuntimeOnly(libs.kotlin.test)
-    testRuntimeOnly(libs.kotlin.script.runtime)
-    testRuntimeOnly(libs.kotlin.annotations.jvm)
+    testArtifacts(libs.kotlin.stdlib)
+    testArtifacts(libs.kotlin.stdlib.jdk8)
+    testArtifacts(libs.kotlin.reflect)
+    testArtifacts(libs.kotlin.test)
+    testArtifacts(libs.kotlin.script.runtime)
+    testArtifacts(libs.kotlin.annotations.jvm)
 
     // uncomment when serialization is needed for testing again
 //    whenForIde {
@@ -164,7 +169,7 @@ fun Test.setJarPathAsProperty(
 ) {
     val includedRegex = "$jarName-\\d.*jar".toRegex()
 
-    val path = testRuntimeClasspath
+    val path = testArtifacts
         .files
         .firstOrNull { includedRegex.matches(it.name) }
         ?: run {

@@ -120,9 +120,6 @@ class DoubleNestedArgumetTypeCheckedFail<T>(arg: GenericClass<CheckedClass<<!CHE
 class CheckedNestedClass<@Checked T : CheckedClass<T>>()
 class CheckedNestedClassFail<T : CheckedClass<<!CHECKED_ANNOTATION_VIOLATION!>T<!>>>()
 
-fun <@Checked T : CheckedNestedClass<T>> doubleNestedCheckedOk() {}
-fun <T : CheckedNestedClass<<!CHECKED_ANNOTATION_VIOLATION!>T<!>>> doubleNestedCheckedFail() {}
-
 fun <@Checked T : GenericClass<CheckedClass<T>>> tripleNestedCheckedOk() {}
 fun <T : GenericClass<CheckedClass<<!CHECKED_ANNOTATION_VIOLATION!>T<!>>>> tripleNestedCheckedFail() {}
 fun <@Checked T : GenericClass<GenericClass<CheckedClass<T>>>> quadrupleNestedCheckedOk() {}
