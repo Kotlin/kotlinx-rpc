@@ -3,7 +3,7 @@ FILE: module_lib_multiModule.kt
     @R|kotlinx/rpc/annotations/Rpc|() public abstract interface BoxService : R|kotlin/Any| {
         public abstract suspend fun simple(): R|kotlin/String|
 
-        public final class $rpcServiceStub : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 
