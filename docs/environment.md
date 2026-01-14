@@ -363,6 +363,12 @@ TODO: write a guide about kRPC API check tests.
 
 Use `./publishLocal.sh` script. All artifacts will be in the local directory of `<REPO_ROOT>/build/repo/` .
 
+### How to add a new public package repository
+
+We have repositories like `https://redirector.kotlinlang.org/maven/kxrpc-for-ide/` that users can comsume from.
+
+Follow KT-A-723 Repository Alias (redirector) guide to add a new repository.
+
 ## Troubleshooting
 
 Nothing works? Well, you are onto a journey!

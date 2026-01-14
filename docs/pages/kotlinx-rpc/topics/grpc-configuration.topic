@@ -16,7 +16,7 @@
             and updated frequently, independent of the main releases.
         </p>
         <p>
-            <a href="https://maven.pkg.jetbrains.space/public/p/krpc/grpc">
+            <a href="https://redirector.kotlinlang.org/maven/kxrpc-grpc">
                 <img alt="Latest dev version"
                      src="https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fmaven.pkg.jetbrains.space%2Fpublic%2Fp%2Fkrpc%2Fgrpc%2Forg%2Fjetbrains%2Fkotlinx%2Fkotlinx-rpc-core%2Fmaven-metadata.xml&amp;query=%2F%2Fmetadata%2Fversioning%2Flatest&amp;label=Latest%20dev%20version&amp;color=forest-green&amp;cacheSeconds=60"/>
             </a>
@@ -26,7 +26,7 @@
     <p>
         <a href="https://grpc.io">gRPC</a> integration is available in an experimental state.
         The artifacts are published separately in our <a
-            href="https://public.jetbrains.space/p/krpc/packages/maven/grpc">Space repository</a>.
+            href="https://redirector.kotlinlang.org/maven/kxrpc-grpc">repository</a>.
     </p>
     <chapter title="Dependencies configuration" id="dependencies-configuration">
         <p>Below is an example of a project setup.</p>
@@ -36,7 +36,7 @@
                 repositories {
                     gradlePluginPortal()
                     mavenCentral()
-                    maven("https://maven.pkg.jetbrains.space/public/p/krpc/grpc")
+                    maven("https://redirector.kotlinlang.org/maven/kxrpc-grpc")
                 }
             }
         </code-block>
@@ -51,7 +51,7 @@
 
             repositories {
                 mavenCentral()
-                maven("https://maven.pkg.jetbrains.space/public/p/krpc/grpc")
+                maven("https://redirector.kotlinlang.org/maven/kxrpc-grpc")
             }
 
             dependencies {

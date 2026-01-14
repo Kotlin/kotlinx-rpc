@@ -232,6 +232,7 @@ gradle.rootProject {
                 maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
 
                 maven("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
+                maven("https://packages.jetbrains.team/maven/p/ktor/eap")
             }
 
             maven("$globalRootDir/lib-kotlin/")
