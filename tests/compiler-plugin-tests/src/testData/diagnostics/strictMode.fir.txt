@@ -138,7 +138,7 @@ FILE: b.kt
 
         public abstract suspend fun complex(filter: R|ComplexFilter|): R|kotlin/String|
 
-        public final class $rpcServiceStub : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 

@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen
 
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
 import org.jetbrains.kotlin.fir.FirSession
@@ -27,6 +28,11 @@ interface FirVersionSpecificApi {
     fun FirTypeRef.toRegularClassSymbolVS(session: FirSession): FirRegularClassSymbol?
 
     fun ConeKotlinType.toRegularClassSymbolVS(session: FirSession): FirRegularClassSymbol?
+
+    fun ConeKotlinType.toFirResolvedTypeRefVS(
+        source: KtSourceElement? = null,
+        delegatedTypeRef: FirTypeRef? = null
+    ): FirResolvedTypeRef
 
     val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
 }

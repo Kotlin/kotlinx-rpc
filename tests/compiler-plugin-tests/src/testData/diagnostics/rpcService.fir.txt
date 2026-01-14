@@ -19,7 +19,7 @@ FILE: rpcService.kt
 
         public abstract suspend fun sameName2(a: R|kotlin/Int|): R|kotlin/Unit|
 
-        public final class $rpcServiceStub : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 
@@ -27,7 +27,7 @@ FILE: rpcService.kt
 
     }
     @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyServiceT<T> : R|kotlin/Any| {
-        public final class $rpcServiceStub : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 
@@ -35,7 +35,7 @@ FILE: rpcService.kt
 
     }
     @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyServiceT2<T, R, A, B> : R|kotlin/Any| {
-        public final class $rpcServiceStub : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 
