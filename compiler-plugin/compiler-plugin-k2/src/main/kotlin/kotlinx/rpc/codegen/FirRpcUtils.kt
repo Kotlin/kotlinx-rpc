@@ -6,18 +6,34 @@ package kotlinx.rpc.codegen
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.declarations.FirClassLikeDeclaration
+import org.jetbrains.kotlin.fir.declarations.getDeprecationsProvider
 import org.jetbrains.kotlin.fir.declarations.toAnnotationClassId
+import org.jetbrains.kotlin.fir.deserialization.toQualifiedPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.expressions.UnresolvedExpressionTypeAccess
+import org.jetbrains.kotlin.fir.expressions.builder.buildAnnotation
+import org.jetbrains.kotlin.fir.expressions.builder.buildAnnotationArgumentMapping
+import org.jetbrains.kotlin.fir.expressions.builder.buildEnumEntryDeserializedAccessExpression
+import org.jetbrains.kotlin.fir.expressions.builder.buildLiteralExpression
 import org.jetbrains.kotlin.fir.extensions.predicate.DeclarationPredicate
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
+import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
+import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
+import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
+import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.ConeClassLikeType
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.coneTypeSafe
 import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.name.StandardClassIds
+import org.jetbrains.kotlin.types.ConstantValueKind
+import kotlin.collections.plus
+import kotlin.collections.set
 
 fun FirBasedSymbol<*>.rpcAnnotationSource(
     session: FirSession,
@@ -50,4 +66,31 @@ fun List<FirAnnotation>.rpcAnnotation(session: FirSession, predicate: Declaratio
 @OptIn(SymbolInternals::class)
 internal fun FirTypeRef.doesMatchesClassId(session: FirSession, classId: ClassId): Boolean {
     return coneTypeSafe<ConeClassLikeType>()?.fullyExpandedType(session)?.lookupTag?.classId == classId
+}
+
+// stolen from kx.serialization
+fun createDeprecatedHiddenAnnotation(session: FirSession): FirAnnotation = buildAnnotation {
+    val deprecatedAnno = session.symbolProvider
+        .getClassLikeSymbolByClassId(StandardClassIds.Annotations.Deprecated) as FirRegularClassSymbol
+
+    annotationTypeRef = deprecatedAnno.defaultType().toFirResolvedTypeRef()
+
+    argumentMapping = buildAnnotationArgumentMapping {
+        mapping[Name.identifier("message")] = buildLiteralExpression(
+            source = null,
+            kind = ConstantValueKind.String,
+            value = "This synthesized declaration should not be used directly",
+            setType = true,
+        )
+
+        mapping[Name.identifier("level")] = buildEnumEntryDeserializedAccessExpression {
+            enumClassId = StandardClassIds.DeprecationLevel
+            enumEntryName = Name.identifier("HIDDEN")
+        }.toQualifiedPropertyAccessExpression(session)
+    }
+}
+
+fun FirClassLikeDeclaration.markAsDeprecatedHidden(session: FirSession) {
+    replaceAnnotations(annotations + listOf(createDeprecatedHiddenAnnotation(session)))
+    replaceDeprecationsProvider(getDeprecationsProvider(session))
 }
