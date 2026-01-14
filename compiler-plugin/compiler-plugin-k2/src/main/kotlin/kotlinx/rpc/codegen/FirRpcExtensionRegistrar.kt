@@ -6,7 +6,6 @@ package kotlinx.rpc.codegen
 
 import kotlinx.rpc.codegen.checkers.FirSerializablePropertiesProvider
 import kotlinx.rpc.codegen.checkers.diagnostics.registerDiagnosticRendererFactories
-import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
@@ -16,7 +15,7 @@ import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent.Factory 
 
 class FirRpcExtensionRegistrar(private val configuration: CompilerConfiguration) : FirExtensionRegistrar() {
     override fun ExtensionRegistrarContext.configurePlugin() {
-        val logger = configuration.get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
+        val logger = configuration.get(vsApi { messageCollectorKey }, MessageCollector.NONE)
 
         +GFactory { FirRpcServiceGenerator(it, logger) }
         +CFactory { FirRpcAdditionalCheckers(it, configuration) }

@@ -24,7 +24,9 @@ fun Path.bufferedReader(
 }
 
 object SettingsConventions {
+    const val KOTLIN_VERSION_PROPERTY_NAME = "kotlin.lang"
     const val KOTLIN_VERSION_ENV_VAR_NAME = "KOTLIN_VERSION"
+    const val KOTLIN_COMPILER_VERSION_PROPERTY_NAME = "kotlin.compiler"
     const val KOTLIN_COMPILER_VERSION_ENV_VAR_NAME = "KOTLIN_COMPILER_VERSION"
     const val LIBRARY_VERSION_ENV_VAR_NAME = "LIBRARY_VERSION"
     const val EAP_VERSION_ENV_VAR_NAME = "EAP_VERSION"
@@ -105,11 +107,21 @@ fun resolveVersionCatalog(rootDir: Path): Map<String, String> {
     return map
 }
 
-// Uses KOTLIN_VERSION env var if present for project's Kotlin version and sets it into Version Catalog.
-// Otherwise uses version from catalog.
-fun VersionCatalogBuilder.resolveKotlinVersion(versionCatalog: Map<String, String>): Pair<String, String> {
-    var kotlinCatalogVersion: String? = System.getenv(SettingsConventions.KOTLIN_VERSION_ENV_VAR_NAME)
-    var kotlinCompilerVersion: String? = System.getenv(SettingsConventions.KOTLIN_COMPILER_VERSION_ENV_VAR_NAME)
+// Uses -Pkotlin.lang or KOTLIN_VERSION env var if present
+// for the project's Kotlin version and sets it into the Version Catalog.
+// Otherwise, uses the version from the catalog.
+// Same for the compiler version
+fun VersionCatalogBuilder.resolveKotlinVersion(
+    versionCatalog: Map<String, String>,
+    providers: ProviderFactory,
+): Pair<String, String> {
+    var kotlinCatalogVersion: String? =
+        providers.gradleProperty(SettingsConventions.KOTLIN_VERSION_PROPERTY_NAME).orNull ?:
+        System.getenv(SettingsConventions.KOTLIN_VERSION_ENV_VAR_NAME)
+
+    var kotlinCompilerVersion: String? =
+        providers.gradleProperty(SettingsConventions.KOTLIN_COMPILER_VERSION_PROPERTY_NAME).orNull ?:
+        System.getenv(SettingsConventions.KOTLIN_COMPILER_VERSION_ENV_VAR_NAME)
 
     if (kotlinCatalogVersion != null) {
         version(SettingsConventions.KOTLIN_VERSION_ALIAS, kotlinCatalogVersion)
@@ -180,7 +192,7 @@ dependencyResolutionManagement {
 
             val versionCatalog = resolveVersionCatalog(rootDir)
 
-            val (kotlinVersion, compilerVersion) = resolveKotlinVersion(versionCatalog)
+            val (kotlinVersion, compilerVersion) = resolveKotlinVersion(versionCatalog, settings.providers)
 
             version(SettingsConventions.LIBRARY_CORE_VERSION_ALIAS, libVersion)
 
