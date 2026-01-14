@@ -24,7 +24,6 @@ import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
-import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.ConeClassLikeType
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.coneTypeSafe
@@ -73,7 +72,7 @@ fun createDeprecatedHiddenAnnotation(session: FirSession): FirAnnotation = build
     val deprecatedAnno = session.symbolProvider
         .getClassLikeSymbolByClassId(StandardClassIds.Annotations.Deprecated) as FirRegularClassSymbol
 
-    annotationTypeRef = deprecatedAnno.defaultType().toFirResolvedTypeRef()
+    annotationTypeRef = vsApi { deprecatedAnno.defaultType().toFirResolvedTypeRefVS() }
 
     argumentMapping = buildAnnotationArgumentMapping {
         mapping[Name.identifier("message")] = buildLiteralExpression(

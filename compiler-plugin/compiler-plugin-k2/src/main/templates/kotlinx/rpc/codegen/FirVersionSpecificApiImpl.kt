@@ -6,6 +6,7 @@ package kotlinx.rpc.codegen
 
 //##csm FirVersionSpecificApiImpl.kt-import
 //##csm specific=[2.0.0...2.0.10]
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
@@ -20,9 +21,11 @@ import org.jetbrains.kotlin.fir.types.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.types.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.toRegularClassSymbol
 //##csm /specific
 //##csm specific=[2.0.11...2.0.21]
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
@@ -36,9 +39,11 @@ import org.jetbrains.kotlin.fir.types.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.toRegularClassSymbol
 //##csm /specific
 //##csm specific=[2.0.22...2.1.21, 2.2.0-ij251-*]
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
@@ -50,11 +55,13 @@ import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
+import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 //##csm /specific
 //##csm specific=[2.1.22...2.2.10]
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
@@ -63,6 +70,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
@@ -72,6 +80,7 @@ import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 //##csm /specific
 //##csm specific=[2.2.20...2.2.*]
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
@@ -80,6 +89,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
@@ -89,6 +99,7 @@ import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 //##csm /specific
 //##csm specific=[2.3.0...2.*]
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
@@ -96,6 +107,7 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
@@ -161,4 +173,11 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
         get() = CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY
     //##csm /specific
     //##csm /messageCollectorKey
+
+    override fun ConeKotlinType.toFirResolvedTypeRefVS(
+        source: KtSourceElement?,
+        delegatedTypeRef: FirTypeRef?,
+    ): FirResolvedTypeRef {
+        return toFirResolvedTypeRef(source, delegatedTypeRef)
+    }
 }
