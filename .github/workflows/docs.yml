@@ -30,7 +30,7 @@ env:
   ALGOLIA_INDEX_NAME: 'prod_kotlin_rpc'
   ALGOLIA_KEY: '${{ secrets.ALGOLIA_KEY }}'
   CONFIG_JSON_PRODUCT: 'kotlinx-rpc'
-  CONFIG_JSON_VERSION: '0.10.1'
+  CONFIG_JSON_VERSION: '0.10.2'
   DOKKA_ARTIFACT: 'dokka.zip'
   ASSEMBLE_DIR: '__docs_assembled'
   ASSEMBLE_ARTIFACT: 'assembled.zip'
