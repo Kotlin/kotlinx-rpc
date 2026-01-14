@@ -67,24 +67,28 @@ internal fun FirTypeRef.doesMatchesClassId(session: FirSession, classId: ClassId
     return coneTypeSafe<ConeClassLikeType>()?.fullyExpandedType(session)?.lookupTag?.classId == classId
 }
 
+private val deprecatedAnnotationMessageName = Name.identifier("message")
+private val deprecatedAnnotationLevelName = Name.identifier("level")
+private val deprecatedLevelHiddenName = Name.identifier("HIDDEN")
+
 // stolen from kx.serialization
-fun createDeprecatedHiddenAnnotation(session: FirSession): FirAnnotation = buildAnnotation {
+private fun createDeprecatedHiddenAnnotation(session: FirSession): FirAnnotation = buildAnnotation {
     val deprecatedAnno = session.symbolProvider
         .getClassLikeSymbolByClassId(StandardClassIds.Annotations.Deprecated) as FirRegularClassSymbol
 
     annotationTypeRef = vsApi { deprecatedAnno.defaultType().toFirResolvedTypeRefVS() }
 
     argumentMapping = buildAnnotationArgumentMapping {
-        mapping[Name.identifier("message")] = buildLiteralExpression(
+        mapping[deprecatedAnnotationMessageName] = buildLiteralExpression(
             source = null,
             kind = ConstantValueKind.String,
             value = "This synthesized declaration should not be used directly",
             setType = true,
         )
 
-        mapping[Name.identifier("level")] = buildEnumEntryDeserializedAccessExpression {
+        mapping[deprecatedAnnotationLevelName] = buildEnumEntryDeserializedAccessExpression {
             enumClassId = StandardClassIds.DeprecationLevel
-            enumEntryName = Name.identifier("HIDDEN")
+            enumEntryName = deprecatedLevelHiddenName
         }.toQualifiedPropertyAccessExpression(session)
     }
 }
