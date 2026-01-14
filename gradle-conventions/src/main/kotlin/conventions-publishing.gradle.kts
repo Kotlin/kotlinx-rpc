@@ -139,7 +139,7 @@ fun RepositoryHandler.configureSpaceEapRepository() {
         username = "SPACE_USERNAME"
         password = "SPACE_PASSWORD"
         name = "space"
-        url = "https://maven.pkg.jetbrains.space/public/p/krpc/eap"
+        url = "https://packages.jetbrains.team/maven/p/krpc/eap"
     }
 }
 
@@ -148,7 +148,7 @@ fun RepositoryHandler.configureSpaceGrpcRepository() {
         username = "SPACE_USERNAME"
         password = "SPACE_PASSWORD"
         name = "grpc"
-        url = "https://maven.pkg.jetbrains.space/public/p/krpc/grpc"
+        url = "https://packages.jetbrains.team/maven/p/krpc/grpc"
     }
 }
 
@@ -157,7 +157,7 @@ fun RepositoryHandler.configureForIdeRepository() {
         username = "SPACE_USERNAME"
         password = "SPACE_PASSWORD"
         name = "forIde"
-        url = "https://maven.pkg.jetbrains.space/public/p/krpc/for-ide"
+        url = "https://packages.jetbrains.team/maven/p/krpc/for-ide"
     }
 }
 
