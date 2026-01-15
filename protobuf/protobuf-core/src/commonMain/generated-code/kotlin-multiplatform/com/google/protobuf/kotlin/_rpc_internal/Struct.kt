@@ -14,7 +14,7 @@ public class StructInternal: com.google.protobuf.kotlin.Struct, kotlinx.rpc.prot
     public override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var fields: Map<kotlin.String, com.google.protobuf.kotlin.Value> by MsgFieldDelegate { mutableMapOf() }
 
@@ -69,7 +69,7 @@ public class StructInternal: com.google.protobuf.kotlin.Struct, kotlinx.rpc.prot
         public override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        public var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         public var key: String by MsgFieldDelegate { "" }
         public var value: com.google.protobuf.kotlin.Value by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf.kotlin.ValueInternal() }
@@ -157,7 +157,7 @@ public class ValueInternal: com.google.protobuf.kotlin.Value, kotlinx.rpc.protob
     public override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var kind: com.google.protobuf.kotlin.Value.Kind? = null
 
@@ -276,7 +276,7 @@ public class ListValueInternal: com.google.protobuf.kotlin.ListValue, kotlinx.rp
     public override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var values: List<com.google.protobuf.kotlin.Value> by MsgFieldDelegate { mutableListOf() }
 

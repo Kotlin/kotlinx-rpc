@@ -36,7 +36,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
     override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var optionalInt32: Int by MsgFieldDelegate { 0 }
     override var optionalInt64: Long by MsgFieldDelegate { 0L }
@@ -1034,7 +1034,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override var a: Int by MsgFieldDelegate { 0 }
         override var corecursive: com.google.protobuf_test_messages.proto3.TestAllTypesProto3 by MsgFieldDelegate(PresenceIndices.corecursive) { com.google.protobuf_test_messages.proto3.TestAllTypesProto3Internal() }
@@ -1136,7 +1136,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate { 0 }
         var value: Int by MsgFieldDelegate { 0 }
@@ -1187,7 +1187,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Long by MsgFieldDelegate { 0L }
         var value: Long by MsgFieldDelegate { 0L }
@@ -1238,7 +1238,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: UInt by MsgFieldDelegate { 0u }
         var value: UInt by MsgFieldDelegate { 0u }
@@ -1289,7 +1289,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: ULong by MsgFieldDelegate { 0uL }
         var value: ULong by MsgFieldDelegate { 0uL }
@@ -1340,7 +1340,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate { 0 }
         var value: Int by MsgFieldDelegate { 0 }
@@ -1391,7 +1391,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Long by MsgFieldDelegate { 0L }
         var value: Long by MsgFieldDelegate { 0L }
@@ -1442,7 +1442,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: UInt by MsgFieldDelegate { 0u }
         var value: UInt by MsgFieldDelegate { 0u }
@@ -1493,7 +1493,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: ULong by MsgFieldDelegate { 0uL }
         var value: ULong by MsgFieldDelegate { 0uL }
@@ -1544,7 +1544,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate { 0 }
         var value: Int by MsgFieldDelegate { 0 }
@@ -1595,7 +1595,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Long by MsgFieldDelegate { 0L }
         var value: Long by MsgFieldDelegate { 0L }
@@ -1646,7 +1646,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate { 0 }
         var value: Float by MsgFieldDelegate { 0.0f }
@@ -1697,7 +1697,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate { 0 }
         var value: Double by MsgFieldDelegate { 0.0 }
@@ -1748,7 +1748,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Boolean by MsgFieldDelegate { false }
         var value: Boolean by MsgFieldDelegate { false }
@@ -1799,7 +1799,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate { "" }
         var value: String by MsgFieldDelegate { "" }
@@ -1850,7 +1850,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate { "" }
         var value: ByteArray by MsgFieldDelegate { byteArrayOf() }
@@ -1905,7 +1905,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate { "" }
         var value: com.google.protobuf_test_messages.proto3.TestAllTypesProto3.NestedMessage by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.proto3.TestAllTypesProto3Internal.NestedMessageInternal() }
@@ -1966,7 +1966,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate { "" }
         var value: com.google.protobuf_test_messages.proto3.ForeignMessage by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.proto3.ForeignMessageInternal() }
@@ -2023,7 +2023,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate { "" }
         var value: com.google.protobuf_test_messages.proto3.TestAllTypesProto3.NestedEnum by MsgFieldDelegate { com.google.protobuf_test_messages.proto3.TestAllTypesProto3.NestedEnum.FOO }
@@ -2074,7 +2074,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.proto3.TestA
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate { "" }
         var value: com.google.protobuf_test_messages.proto3.ForeignEnum by MsgFieldDelegate { com.google.protobuf_test_messages.proto3.ForeignEnum.FOREIGN_FOO }
@@ -2156,7 +2156,7 @@ class ForeignMessageInternal: com.google.protobuf_test_messages.proto3.ForeignMe
     override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var c: Int by MsgFieldDelegate { 0 }
 
@@ -2238,7 +2238,7 @@ class NullHypothesisProto3Internal: com.google.protobuf_test_messages.proto3.Nul
     override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override fun hashCode(): kotlin.Int { 
         checkRequiredFields()
@@ -2315,7 +2315,7 @@ class EnumOnlyProto3Internal: com.google.protobuf_test_messages.proto3.EnumOnlyP
     override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override fun hashCode(): kotlin.Int { 
         checkRequiredFields()

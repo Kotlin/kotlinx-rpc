@@ -18,7 +18,7 @@ class ComplexMessageInternal: com.google.protobuf_test_messages.edition2023.Comp
     override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var d: Int? by MsgFieldDelegate(PresenceIndices.d) { null }
 
@@ -141,7 +141,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
     override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var optionalInt32: Int? by MsgFieldDelegate(PresenceIndices.optionalInt32) { null }
     override var optionalInt64: Long? by MsgFieldDelegate(PresenceIndices.optionalInt64) { null }
@@ -951,7 +951,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override var a: Int? by MsgFieldDelegate(PresenceIndices.a) { null }
         override var corecursive: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023 by MsgFieldDelegate(PresenceIndices.corecursive) { com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal() }
@@ -1068,7 +1068,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
@@ -1135,7 +1135,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
@@ -1202,7 +1202,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: UInt by MsgFieldDelegate(PresenceIndices.key) { 0u }
         var value: UInt by MsgFieldDelegate(PresenceIndices.value) { 0u }
@@ -1269,7 +1269,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: ULong by MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var value: ULong by MsgFieldDelegate(PresenceIndices.value) { 0uL }
@@ -1336,7 +1336,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
@@ -1403,7 +1403,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
@@ -1470,7 +1470,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: UInt by MsgFieldDelegate(PresenceIndices.key) { 0u }
         var value: UInt by MsgFieldDelegate(PresenceIndices.value) { 0u }
@@ -1537,7 +1537,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: ULong by MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var value: ULong by MsgFieldDelegate(PresenceIndices.value) { 0uL }
@@ -1604,7 +1604,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
@@ -1671,7 +1671,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
@@ -1738,7 +1738,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Float by MsgFieldDelegate(PresenceIndices.value) { 0.0f }
@@ -1805,7 +1805,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Double by MsgFieldDelegate(PresenceIndices.value) { 0.0 }
@@ -1872,7 +1872,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Boolean by MsgFieldDelegate(PresenceIndices.key) { false }
         var value: Boolean by MsgFieldDelegate(PresenceIndices.value) { false }
@@ -1939,7 +1939,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: String by MsgFieldDelegate(PresenceIndices.value) { "" }
@@ -2006,7 +2006,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: ByteArray by MsgFieldDelegate(PresenceIndices.value) { byteArrayOf() }
@@ -2073,7 +2073,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal() }
@@ -2140,7 +2140,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023 by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal() }
@@ -2207,7 +2207,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedEnum by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedEnum.FOO }
@@ -2274,7 +2274,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: com.google.protobuf_test_messages.edition2023.ForeignEnumEdition2023 by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.edition2023.ForeignEnumEdition2023.FOREIGN_FOO }
@@ -2341,7 +2341,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
         override val _unknownFields: Buffer = Buffer()
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
-        var _unknownFieldsEncoder: WireEncoder? = null
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override var groupInt32: Int? by MsgFieldDelegate(PresenceIndices.groupInt32) { null }
         override var groupUint32: UInt? by MsgFieldDelegate(PresenceIndices.groupUint32) { null }
@@ -2461,7 +2461,7 @@ class ForeignMessageEdition2023Internal: com.google.protobuf_test_messages.editi
     override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var c: Int? by MsgFieldDelegate(PresenceIndices.c) { null }
 
@@ -2561,7 +2561,7 @@ class GroupLikeTypeInternal: com.google.protobuf_test_messages.edition2023.Group
     override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var c: Int? by MsgFieldDelegate(PresenceIndices.c) { null }
 

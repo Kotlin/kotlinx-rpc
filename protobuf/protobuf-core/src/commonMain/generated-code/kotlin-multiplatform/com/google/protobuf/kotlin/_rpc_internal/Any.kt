@@ -14,7 +14,7 @@ public class AnyInternal: com.google.protobuf.kotlin.Any, kotlinx.rpc.protobuf.i
     public override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var typeUrl: String by MsgFieldDelegate { "" }
     public override var value: ByteArray by MsgFieldDelegate { byteArrayOf() }

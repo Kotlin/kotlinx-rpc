@@ -184,6 +184,7 @@ class ModelToProtobufKotlinCommonGenerator(
             // was any unknown field after decoding (for flushing).
             property(
                 name = "_unknownFieldsEncoder",
+                modifiers = "internal",
                 isVar = true,
                 annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
                 type = "WireEncoder?",

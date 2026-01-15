@@ -18,7 +18,7 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
     public override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var name: String by MsgFieldDelegate { "" }
     public override var fields: List<com.google.protobuf.kotlin.Field> by MsgFieldDelegate { mutableListOf() }
@@ -145,7 +145,7 @@ public class FieldInternal: com.google.protobuf.kotlin.Field, kotlinx.rpc.protob
     public override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var kind: com.google.protobuf.kotlin.Field.Kind by MsgFieldDelegate { com.google.protobuf.kotlin.Field.Kind.TYPE_UNKNOWN }
     public override var cardinality: com.google.protobuf.kotlin.Field.Cardinality by MsgFieldDelegate { com.google.protobuf.kotlin.Field.Cardinality.CARDINALITY_UNKNOWN }
@@ -277,7 +277,7 @@ public class EnumInternal: com.google.protobuf.kotlin.Enum, kotlinx.rpc.protobuf
     public override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var name: String by MsgFieldDelegate { "" }
     public override var enumvalue: List<com.google.protobuf.kotlin.EnumValue> by MsgFieldDelegate { mutableListOf() }
@@ -399,7 +399,7 @@ public class EnumValueInternal: com.google.protobuf.kotlin.EnumValue, kotlinx.rp
     public override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var name: String by MsgFieldDelegate { "" }
     public override var number: Int by MsgFieldDelegate { 0 }
@@ -496,7 +496,7 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
     public override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var name: String by MsgFieldDelegate { "" }
     public override var value: com.google.protobuf.kotlin.Any by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf.kotlin.AnyInternal() }

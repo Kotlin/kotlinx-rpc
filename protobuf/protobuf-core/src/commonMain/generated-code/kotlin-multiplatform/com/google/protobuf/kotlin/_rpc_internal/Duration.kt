@@ -14,7 +14,7 @@ public class DurationInternal: com.google.protobuf.kotlin.Duration, kotlinx.rpc.
     public override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var seconds: Long by MsgFieldDelegate { 0L }
     public override var nanos: Int by MsgFieldDelegate { 0 }

@@ -14,7 +14,7 @@ class TestStatusInternal: com.google.protobuf.conformance.TestStatus, kotlinx.rp
     override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var name: String by MsgFieldDelegate { "" }
     override var failureMessage: String by MsgFieldDelegate { "" }
@@ -107,7 +107,7 @@ class FailureSetInternal: com.google.protobuf.conformance.FailureSet, kotlinx.rp
     override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var test: List<com.google.protobuf.conformance.TestStatus> by MsgFieldDelegate { mutableListOf() }
 
@@ -193,7 +193,7 @@ class ConformanceRequestInternal: com.google.protobuf.conformance.ConformanceReq
     override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var requestedOutputFormat: com.google.protobuf.conformance.WireFormat by MsgFieldDelegate { com.google.protobuf.conformance.WireFormat.UNSPECIFIED }
     override var messageType: String by MsgFieldDelegate { "" }
@@ -344,7 +344,7 @@ class ConformanceResponseInternal: com.google.protobuf.conformance.ConformanceRe
     override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var result: com.google.protobuf.conformance.ConformanceResponse.Result? = null
 
@@ -475,7 +475,7 @@ class JspbEncodingConfigInternal: com.google.protobuf.conformance.JspbEncodingCo
     override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var useJspbArrayAnyFormat: Boolean by MsgFieldDelegate { false }
 

@@ -14,7 +14,7 @@ public class SourceContextInternal: com.google.protobuf.kotlin.SourceContext, ko
     public override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var fileName: String by MsgFieldDelegate { "" }
 

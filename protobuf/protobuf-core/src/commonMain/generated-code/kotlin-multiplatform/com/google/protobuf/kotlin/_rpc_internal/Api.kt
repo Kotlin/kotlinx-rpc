@@ -18,7 +18,7 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
     public override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var name: String by MsgFieldDelegate { "" }
     public override var methods: List<com.google.protobuf.kotlin.Method> by MsgFieldDelegate { mutableListOf() }
@@ -145,7 +145,7 @@ public class MethodInternal: com.google.protobuf.kotlin.Method, kotlinx.rpc.prot
     public override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var name: String by MsgFieldDelegate { "" }
     public override var requestTypeUrl: String by MsgFieldDelegate { "" }
@@ -258,7 +258,7 @@ public class MixinInternal: com.google.protobuf.kotlin.Mixin, kotlinx.rpc.protob
     public override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var name: String by MsgFieldDelegate { "" }
     public override var root: String by MsgFieldDelegate { "" }

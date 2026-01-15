@@ -14,7 +14,7 @@ public class FieldMaskInternal: com.google.protobuf.kotlin.FieldMask, kotlinx.rp
     public override val _unknownFields: Buffer = Buffer()
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
-    public var _unknownFieldsEncoder: WireEncoder? = null
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var paths: List<kotlin.String> by MsgFieldDelegate { mutableListOf() }
 
