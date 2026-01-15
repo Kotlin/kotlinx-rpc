@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, kotlinx.rpc.internal.utils.InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlinx.io.Buffer
 import kotlinx.rpc.internal.utils.*
 import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.internal.*
@@ -12,6 +13,12 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var name: String by MsgFieldDelegate { "" }
     public override var methods: List<com.google.protobuf.kotlin.Method> by MsgFieldDelegate { mutableListOf() }
@@ -84,17 +91,18 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public fun copyInternal(body: com.google.protobuf.kotlin.ApiInternal.() -> Unit): com.google.protobuf.kotlin.ApiInternal { 
         val copy = com.google.protobuf.kotlin.ApiInternal()
-        copy.name = name
-        copy.methods = methods.map { it.copy() }
-        copy.options = options.map { it.copy() }
-        copy.version = version
+        copy.name = this.name
+        copy.methods = this.methods.map { it.copy() }
+        copy.options = this.options.map { it.copy() }
+        copy.version = this.version
         if (presenceMask[0]) { 
-            copy.sourceContext = sourceContext.copy()
+            copy.sourceContext = this.sourceContext.copy()
         }
 
-        copy.mixins = mixins.map { it.copy() }
-        copy.syntax = syntax
+        copy.mixins = this.mixins.map { it.copy() }
+        copy.syntax = this.syntax
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -103,10 +111,12 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
         public override fun encode(value: com.google.protobuf.kotlin.Api): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -117,6 +127,7 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
                     com.google.protobuf.kotlin.ApiInternal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -129,6 +140,12 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
 public class MethodInternal: com.google.protobuf.kotlin.Method, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var name: String by MsgFieldDelegate { "" }
     public override var requestTypeUrl: String by MsgFieldDelegate { "" }
@@ -190,14 +207,15 @@ public class MethodInternal: com.google.protobuf.kotlin.Method, kotlinx.rpc.prot
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public fun copyInternal(body: com.google.protobuf.kotlin.MethodInternal.() -> Unit): com.google.protobuf.kotlin.MethodInternal { 
         val copy = com.google.protobuf.kotlin.MethodInternal()
-        copy.name = name
-        copy.requestTypeUrl = requestTypeUrl
-        copy.requestStreaming = requestStreaming
-        copy.responseTypeUrl = responseTypeUrl
-        copy.responseStreaming = responseStreaming
-        copy.options = options.map { it.copy() }
-        copy.syntax = syntax
+        copy.name = this.name
+        copy.requestTypeUrl = this.requestTypeUrl
+        copy.requestStreaming = this.requestStreaming
+        copy.responseTypeUrl = this.responseTypeUrl
+        copy.responseStreaming = this.responseStreaming
+        copy.options = this.options.map { it.copy() }
+        copy.syntax = this.syntax
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -206,10 +224,12 @@ public class MethodInternal: com.google.protobuf.kotlin.Method, kotlinx.rpc.prot
         public override fun encode(value: com.google.protobuf.kotlin.Method): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -220,6 +240,7 @@ public class MethodInternal: com.google.protobuf.kotlin.Method, kotlinx.rpc.prot
                     com.google.protobuf.kotlin.MethodInternal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -232,6 +253,12 @@ public class MethodInternal: com.google.protobuf.kotlin.Method, kotlinx.rpc.prot
 public class MixinInternal: com.google.protobuf.kotlin.Mixin, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var name: String by MsgFieldDelegate { "" }
     public override var root: String by MsgFieldDelegate { "" }
@@ -273,9 +300,10 @@ public class MixinInternal: com.google.protobuf.kotlin.Mixin, kotlinx.rpc.protob
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public fun copyInternal(body: com.google.protobuf.kotlin.MixinInternal.() -> Unit): com.google.protobuf.kotlin.MixinInternal { 
         val copy = com.google.protobuf.kotlin.MixinInternal()
-        copy.name = name
-        copy.root = root
+        copy.name = this.name
+        copy.root = this.root
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -284,10 +312,12 @@ public class MixinInternal: com.google.protobuf.kotlin.Mixin, kotlinx.rpc.protob
         public override fun encode(value: com.google.protobuf.kotlin.Mixin): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -298,6 +328,7 @@ public class MixinInternal: com.google.protobuf.kotlin.Mixin, kotlinx.rpc.protob
                     com.google.protobuf.kotlin.MixinInternal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -405,8 +436,11 @@ public fun com.google.protobuf.kotlin.ApiInternal.Companion.decodeWith(msg: com.
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -524,8 +558,11 @@ public fun com.google.protobuf.kotlin.MethodInternal.Companion.decodeWith(msg: c
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -601,8 +638,11 @@ public fun com.google.protobuf.kotlin.MixinInternal.Companion.decodeWith(msg: co
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }

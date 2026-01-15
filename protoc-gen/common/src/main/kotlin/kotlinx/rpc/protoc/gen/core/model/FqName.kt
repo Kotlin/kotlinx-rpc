@@ -69,6 +69,16 @@ fun FqName.fullName(classSuffix: String = ""): String {
     }
 }
 
+fun FqName.packageName(): FqName.Package {
+    return when (this) {
+        is FqName.Package -> this
+        is FqName.Declaration -> parent.packageName()
+    }
+}
+
+fun FqName.Package.importPath(import: String): String =
+    if (this == FqName.Package.Root) import else "${fullName()}.$import"
+
 internal fun FqName.fullNestedName(): String {
     val parentName = parent
     return when (parentName) {

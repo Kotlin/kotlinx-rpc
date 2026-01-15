@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, kotlinx.rpc.internal.utils.InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlinx.io.Buffer
 import kotlinx.rpc.internal.utils.*
 import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.internal.*
@@ -8,6 +9,12 @@ import kotlinx.rpc.protobuf.internal.*
 public class FieldMaskInternal: com.google.protobuf.kotlin.FieldMask, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var paths: List<kotlin.String> by MsgFieldDelegate { mutableListOf() }
 
@@ -44,8 +51,9 @@ public class FieldMaskInternal: com.google.protobuf.kotlin.FieldMask, kotlinx.rp
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public fun copyInternal(body: com.google.protobuf.kotlin.FieldMaskInternal.() -> Unit): com.google.protobuf.kotlin.FieldMaskInternal { 
         val copy = com.google.protobuf.kotlin.FieldMaskInternal()
-        copy.paths = paths.map { it }
+        copy.paths = this.paths.map { it }
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -54,10 +62,12 @@ public class FieldMaskInternal: com.google.protobuf.kotlin.FieldMask, kotlinx.rp
         public override fun encode(value: com.google.protobuf.kotlin.FieldMask): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -68,6 +78,7 @@ public class FieldMaskInternal: com.google.protobuf.kotlin.FieldMask, kotlinx.rp
                     com.google.protobuf.kotlin.FieldMaskInternal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -105,8 +116,11 @@ public fun com.google.protobuf.kotlin.FieldMaskInternal.Companion.decodeWith(msg
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
