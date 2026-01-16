@@ -1,3 +1,21 @@
+# 0.10.2
+> Published 15 February 2026
+
+### Features 🎉
+* Kotlin 2.3.0 and 2.3.20-Beta1 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/553
+
+### Bug fixes 🐛
+* Hide compiler generated code by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/555
+
+### Infra 🚧
+* Fixes by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/532
+* Update space links by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/554
+
+### Other Changes 🧹
+* Added KEFS xml to git by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/531
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.10.1...0.10.2
+
 # 0.10.1
 > Published 27 October 2025
 

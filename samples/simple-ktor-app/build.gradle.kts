@@ -3,10 +3,10 @@
  */
 
 plugins {
-    kotlin("jvm") version "2.2.21"
-    kotlin("plugin.serialization") version "2.2.21"
+    kotlin("jvm") version "2.3.0"
+    kotlin("plugin.serialization") version "2.3.0"
     id("io.ktor.plugin") version "3.3.1"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "0.10.1"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.10.2"
 }
 
 group = "kotlinx.rpc.sample"
@@ -28,12 +28,12 @@ kotlin {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-client:0.10.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-server:0.10.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json:0.10.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-client:0.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-server:0.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json:0.10.2")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client:0.10.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server:0.10.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client:0.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server:0.10.2")
 
     implementation("io.ktor:ktor-client-cio")
     implementation("io.ktor:ktor-server-netty-jvm")
