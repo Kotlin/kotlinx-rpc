@@ -76,8 +76,8 @@ fun FqName.packageName(): FqName.Package {
     }
 }
 
-fun FqName.Package.importPath(import: String): String =
-    if (this == FqName.Package.Root) import else "${fullName()}.$import"
+fun FqName.Package.importPath(entity: String): String =
+    if (this == FqName.Package.Root) entity else "${fullName()}.$entity"
 
 internal fun FqName.fullNestedName(): String {
     val parentName = parent
