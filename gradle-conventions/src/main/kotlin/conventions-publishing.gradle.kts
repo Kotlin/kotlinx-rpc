@@ -157,7 +157,7 @@ fun RepositoryHandler.configureLocalDevRepository() {
     }
 }
 
-fun configureEmptyJavadocArtifact(): TaskProvider<Jar?> {
+fun configureEmptyJavadocArtifact(): TaskProvider<Jar> {
     val javadocJar by project.tasks.registering(Jar::class) {
         archiveClassifier.set("javadoc")
         // contents are deliberately left empty

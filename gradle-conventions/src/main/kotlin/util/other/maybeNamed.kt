@@ -7,10 +7,10 @@ package util.other
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.NamedDomainObjectProvider
 
-internal fun <T> NamedDomainObjectCollection<T>.maybeNamed(name: String): NamedDomainObjectProvider<T>? {
+internal fun <T: Any> NamedDomainObjectCollection<T>.maybeNamed(name: String): NamedDomainObjectProvider<T>? {
     return if (name in names) named(name) else null
 }
 
-internal fun <T> NamedDomainObjectCollection<T>.maybeNamed(name: String, configure: T.() -> Unit) {
+internal fun <T: Any> NamedDomainObjectCollection<T>.maybeNamed(name: String, configure: T.() -> Unit) {
     if (name in names) named(name).configure(configure)
 }
