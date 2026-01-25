@@ -31,10 +31,15 @@ public operator fun MessageCodecResolver.plus(other: MessageCodecResolver): Mess
     }
 }
 
+/**
+ * A marker interface for configurations passed to [MessageCodec]s.
+ */
+public interface CodecConfig
+
 @ExperimentalRpcApi
 public interface MessageCodec<T> {
-    public fun encode(value: T): InputStream
-    public fun decode(stream: InputStream): T
+    public fun encode(value: T, config: CodecConfig? = null): InputStream
+    public fun decode(stream: InputStream, config: CodecConfig? = null): T
 }
 
 @ExperimentalRpcApi
@@ -42,11 +47,11 @@ public interface SourcedMessageCodec<T> : MessageCodec<T> {
     public fun encodeToSource(value: T): Source
     public fun decodeFromSource(stream: Source): T
 
-    override fun encode(value: T): InputStream {
+    override fun encode(value: T, config: CodecConfig?): InputStream {
         return encodeToSource(value).asInputStream()
     }
 
-    override fun decode(stream: InputStream): T {
+    override fun decode(stream: InputStream, config: CodecConfig?): T {
         return decodeFromSource(stream.asSource())
     }
 }

@@ -19,6 +19,8 @@ class PresenceCheckTest {
 
     @Test
     fun `test optional fields proto2`() {
+        WithDefaults.codec
+
         val check = { message: WithDefaults ->
             assertTrue(message.presence.hasDouble)
             assertFalse(message.presence.hasFloat)
