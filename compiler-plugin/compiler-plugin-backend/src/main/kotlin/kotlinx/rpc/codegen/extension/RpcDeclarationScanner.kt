@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.util.dumpKotlinLike
 import org.jetbrains.kotlin.ir.util.getAnnotation
 import org.jetbrains.kotlin.ir.util.hasDefaultValue
+import org.jetbrains.kotlin.ir.util.kotlinFqName
 import org.jetbrains.kotlin.ir.util.packageFqName
 
 /**
@@ -35,6 +36,10 @@ internal object RpcDeclarationScanner {
         // if the protoPackage is not set by the annotation, we use the service kotlin package name
         val protoPackage = grpcAnnotation?.arguments?.getOrNull(0)?.asConstString()
             ?: service.packageFqName?.asString() ?: ""
+
+        // if the simpleServiceName is set in the @Grpc annotation, we use it instead of the service's class name
+        val simpleName = grpcAnnotation?.arguments?.getOrNull(1)?.asConstString()
+            ?.takeIf { it.isNotBlank() } ?: service.kotlinFqName.shortName().asString()
 
         val declarations = service.declarations.memoryOptimizedMap { declaration ->
             when (declaration) {
@@ -86,6 +91,7 @@ internal object RpcDeclarationScanner {
             service = service,
             stubClass = stubClassNotNull,
             methods = declarations.filterNotNull(),
+            simpleName = simpleName,
             protoPackage = protoPackage.trim()
         )
     }

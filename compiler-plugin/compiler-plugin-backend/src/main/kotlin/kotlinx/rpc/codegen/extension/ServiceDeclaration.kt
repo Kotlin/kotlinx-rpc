@@ -21,11 +21,11 @@ internal class ServiceDeclaration(
     val service: IrClass,
     val stubClass: IrClass,
     val methods: List<Method>,
-    val protoPackage: String,
+    val simpleName: String,
+    protoPackage: String,
 ) {
     // todo change to extension after KRPC-178
     val isGrpc = service.hasAnnotation(RpcClassId.grpcAnnotation)
-    val simpleName = service.kotlinFqName.shortName().asString()
     val fqName = service.kotlinFqName.asString()
 
     // the name of the service based on the proto file (or @Grpc annotation)
