@@ -6,9 +6,9 @@ package kotlinx.rpc.protobuf.test
 
 import WithDefaults
 import invoke
+import kotlinx.rpc.grpc.codec.codec
 import presence
 import test.nested.NestedOuter
-import test.nested.NestedOuterInternal
 import test.nested.invoke
 import test.nested.presence
 import kotlin.test.Test
@@ -19,8 +19,6 @@ class PresenceCheckTest {
 
     @Test
     fun `test optional fields proto2`() {
-        WithDefaults.codec
-
         val check = { message: WithDefaults ->
             assertTrue(message.presence.hasDouble)
             assertFalse(message.presence.hasFloat)
@@ -35,7 +33,7 @@ class PresenceCheckTest {
         }
         check(message)
 
-        val decoded = message.encodeDecode(WithDefaultsInternal.CODEC)
+        val decoded = message.encodeDecode(codec<WithDefaults>())
         check(decoded)
     }
 
@@ -51,7 +49,7 @@ class PresenceCheckTest {
         }
         val message = NestedOuter {}
         check(message)
-        val decoded = message.encodeDecode(NestedOuterInternal.CODEC)
+        val decoded = message.encodeDecode(codec<NestedOuter>())
         check(decoded)
     }
 
