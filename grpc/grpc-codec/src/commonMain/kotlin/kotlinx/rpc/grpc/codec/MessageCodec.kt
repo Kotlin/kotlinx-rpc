@@ -32,8 +32,31 @@ public operator fun MessageCodecResolver.plus(other: MessageCodecResolver): Mess
 }
 
 /**
- * A marker interface for configurations passed to [MessageCodec]s.
+ * A marker interface for configurations passed to [MessageCodec]s during encoding and decoding operations.
+ *
+ * Implementations of this interface can provide codec-specific configuration options that control
+ * the behavior of message serialization and deserialization. Each codec implementation may support
+ * different configuration options by defining its own [CodecConfig] subtype.
+ *
+ * Configuration can be passed to codecs in two ways:
+ * - Per-operation: directly to [MessageCodec.encode] and [MessageCodec.decode] methods
+ * - As default: when retrieving a codec using [codec], which wraps the codec to use the config by default
+ *
+ * Example:
+ * ```kotlin
+ * // Per-operation config
+ * val codec = codec<MyProtoMessage>()
+ * val encoded = codec.encode(message, ProtobufConfig(discardUnknownFields = true))
+ *
+ * // Default config
+ * val codecWithConfig = codec<MyProtoMessage>(ProtobufConfig(discardUnknownFields = true))
+ * val encoded = codecWithConfig.encode(message) // uses the default config
+ * ```
+ *
+ * @see MessageCodec
+ * @see codec
  */
+@ExperimentalRpcApi
 public interface CodecConfig
 
 @ExperimentalRpcApi
