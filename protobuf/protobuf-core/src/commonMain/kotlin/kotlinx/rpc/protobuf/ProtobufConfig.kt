@@ -6,7 +6,29 @@ package kotlinx.rpc.protobuf
 
 import kotlinx.rpc.grpc.codec.CodecConfig
 
-
+/**
+ * Configuration options for Protocol Buffers message encoding and decoding.
+ *
+ * This class implements [CodecConfig] to provide Protobuf-specific configuration that controls
+ * how messages are serialized and deserialized when using Protocol Buffers codecs generated from
+ * `.proto` files using the `kotlinx-rpc`.
+ *
+ * Example:
+ * ```kotlin
+ * // Create a codec with custom config
+ * val config = ProtobufConfig(discardUnknownFields = true)
+ * val myCodec = codec<MyMessage>(config)
+ *
+ * // Or pass config per-operation
+ * val decoded = codec.decode(stream, ProtobufConfig(discardUnknownFields = true))
+ * ```
+ *
+ * @property discardUnknownFields When `true`, unknown fields encountered during deserialization
+ *   are silently discarded. When `false` (default), unknown fields are preserved.
+ *
+ * @see CodecConfig
+ * @see kotlinx.rpc.grpc.codec.codec
+ */
 public class ProtobufConfig(
     public val discardUnknownFields: Boolean = false
 ): CodecConfig
