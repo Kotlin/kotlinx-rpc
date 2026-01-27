@@ -23,7 +23,7 @@ actual fun GrpcTestBase.testKeepAlive(
         nativeTracers = listOf("pick_first")
     ) {
         runGrpcTest(
-            configure = {
+            clientConfiguration = {
                 keepAlive {
                     this.time = time
                     this.timeout = timeout
