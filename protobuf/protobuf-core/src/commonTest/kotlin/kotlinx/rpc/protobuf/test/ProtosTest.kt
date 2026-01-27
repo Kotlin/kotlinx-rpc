@@ -229,8 +229,8 @@ class ProtosTest {
 
         val buffer = Buffer()
         val encoder = WireEncoder(buffer)
-        part1.asInternal().encodeWith(encoder)
-        part2.asInternal().encodeWith(encoder)
+        part1.asInternal().encodeWith(encoder, null)
+        part2.asInternal().encodeWith(encoder, null)
         encoder.flush()
 
 
@@ -374,9 +374,9 @@ class ProtosTest {
             arg3 = "fourth"
         }
 
-        encoder.writeMessage(1, firstPart as OtherInternal) { encodeWith(encoder) }
+        encoder.writeMessage(1, firstPart as OtherInternal) { encodeWith(encoder, null) }
         encoder.flush()
-        encoder.writeMessage(1, secondPart as OtherInternal) { encodeWith(encoder) }
+        encoder.writeMessage(1, secondPart as OtherInternal) { encodeWith(encoder, null) }
         encoder.flush()
 
         val decoded = codec<Reference>().decode(buffer.asInputStream())

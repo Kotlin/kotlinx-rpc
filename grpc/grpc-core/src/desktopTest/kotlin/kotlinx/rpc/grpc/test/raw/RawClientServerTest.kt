@@ -15,21 +15,22 @@ import kotlinx.io.Source
 import kotlinx.io.readString
 import kotlinx.io.writeString
 import kotlinx.rpc.grpc.client.GrpcClient
-import kotlinx.rpc.grpc.server.Server
-import kotlinx.rpc.grpc.server.ServerBuilder
+import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
+import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
+import kotlinx.rpc.grpc.client.internal.serverStreamingRpc
+import kotlinx.rpc.grpc.client.internal.unaryRpc
+import kotlinx.rpc.grpc.codec.CodecConfig
 import kotlinx.rpc.grpc.codec.SourcedMessageCodec
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
+import kotlinx.rpc.grpc.descriptor.methodDescriptor
+import kotlinx.rpc.grpc.internal.serviceDescriptor
+import kotlinx.rpc.grpc.server.Server
+import kotlinx.rpc.grpc.server.ServerBuilder
 import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.bidiStreamingServerMethodDefinition
-import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
-import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
 import kotlinx.rpc.grpc.server.internal.clientStreamingServerMethodDefinition
-import kotlinx.rpc.grpc.descriptor.methodDescriptor
-import kotlinx.rpc.grpc.client.internal.serverStreamingRpc
 import kotlinx.rpc.grpc.server.internal.serverStreamingServerMethodDefinition
-import kotlinx.rpc.grpc.internal.serviceDescriptor
-import kotlinx.rpc.grpc.client.internal.unaryRpc
 import kotlinx.rpc.grpc.server.internal.unaryServerMethodDefinition
 import kotlinx.rpc.grpc.server.serverServiceDefinition
 import kotlin.reflect.typeOf
@@ -152,11 +153,11 @@ class RawClientServerTest {
         private const val SERVICE_NAME = "TestService"
 
         private val simpleCodec = object : SourcedMessageCodec<String> {
-            override fun encodeToSource(value: String): Source {
+            override fun encodeToSource(value: String, config: CodecConfig?): Source {
                 return Buffer().apply { writeString(value) }
             }
 
-            override fun decodeFromSource(stream: Source): String {
+            override fun decodeFromSource(stream: Source, config: CodecConfig?): String {
                 return stream.readString()
             }
         }
