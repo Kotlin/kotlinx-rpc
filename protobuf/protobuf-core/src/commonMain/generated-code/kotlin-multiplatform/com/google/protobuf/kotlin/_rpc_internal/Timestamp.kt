@@ -2,13 +2,9 @@
 package com.google.protobuf.kotlin
 
 import kotlinx.io.Buffer
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.*
 import kotlinx.rpc.protobuf.input.stream.asInputStream
-import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
-import kotlinx.rpc.protobuf.internal.WireEncoder
-import kotlinx.rpc.protobuf.internal.int32
-import kotlinx.rpc.protobuf.internal.int64
-import kotlinx.rpc.protobuf.internal.tag
+import kotlinx.rpc.protobuf.internal.*
 
 public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
     @kotlinx.rpc.internal.utils.InternalRpcApi
