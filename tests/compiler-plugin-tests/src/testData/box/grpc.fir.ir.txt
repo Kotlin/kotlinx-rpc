@@ -38,16 +38,18 @@ FILE fqName:<root> fileName:/grpc.kt
       FUN name:decode visibility:public modality:OPEN returnType:<root>.Custom
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.Custom.Companion
         VALUE_PARAMETER kind:Regular name:stream index:1 type:java.io.InputStream
+        VALUE_PARAMETER kind:Regular name:config index:2 type:kotlinx.rpc.grpc.codec.CodecConfig?
         overridden:
-          public abstract fun decode (stream: java.io.InputStream): T of kotlinx.rpc.grpc.codec.MessageCodec declared in kotlinx.rpc.grpc.codec.MessageCodec
+          public abstract fun decode (stream: java.io.InputStream, config: kotlinx.rpc.grpc.codec.CodecConfig?): T of kotlinx.rpc.grpc.codec.MessageCodec declared in kotlinx.rpc.grpc.codec.MessageCodec
         BLOCK_BODY
           CALL 'public final fun TODO (reason: kotlin.String): kotlin.Nothing declared in kotlin' type=kotlin.Nothing origin=null
             ARG reason: CONST String type=kotlin.String value="Not yet implemented"
       FUN name:encode visibility:public modality:OPEN returnType:java.io.InputStream
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.Custom.Companion
         VALUE_PARAMETER kind:Regular name:value index:1 type:<root>.Custom
+        VALUE_PARAMETER kind:Regular name:config index:2 type:kotlinx.rpc.grpc.codec.CodecConfig?
         overridden:
-          public abstract fun encode (value: T of kotlinx.rpc.grpc.codec.MessageCodec): java.io.InputStream declared in kotlinx.rpc.grpc.codec.MessageCodec
+          public abstract fun encode (value: T of kotlinx.rpc.grpc.codec.MessageCodec, config: kotlinx.rpc.grpc.codec.CodecConfig?): java.io.InputStream declared in kotlinx.rpc.grpc.codec.MessageCodec
         BLOCK_BODY
           CALL 'public final fun TODO (reason: kotlin.String): kotlin.Nothing declared in kotlin' type=kotlin.Nothing origin=null
             ARG reason: CONST String type=kotlin.String value="Not yet implemented"
@@ -433,10 +435,200 @@ FILE fqName:<root> fileName:/grpc.kt
         FUN name:delegate visibility:public modality:FINAL returnType:kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
           VALUE_PARAMETER kind:Regular name:resolver index:1 type:kotlinx.rpc.grpc.codec.MessageCodecResolver
+          VALUE_PARAMETER kind:Regular name:codecConfig index:2 type:kotlinx.rpc.grpc.codec.CodecConfig?
           overridden:
-            public abstract fun delegate (resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver): kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate declared in kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
+            public abstract fun delegate (resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver, codecConfig: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate declared in kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
           BLOCK_BODY
-            VAR IR_TEMPORARY_VARIABLE name:tmp_0 type:kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> [val]
+            VAR IR_TEMPORARY_VARIABLE name:tmp_0 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> [val]
+              BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> origin=ELVIS
+                VAR IR_TEMPORARY_VARIABLE name:tmp_1 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? [val]
+                  CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
+                    ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
+                    ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                      TYPE_ARG T: kotlin.String
+                WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                      ARG arg0: GET_VAR 'val tmp_1: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
+                      ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                    then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
+                      ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.String"
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: GET_VAR 'val tmp_1: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
+            VAR IR_TEMPORARY_VARIABLE name:tmp_2 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> [val]
+              BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> origin=ELVIS
+                VAR IR_TEMPORARY_VARIABLE name:tmp_3 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? [val]
+                  CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
+                    ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
+                    ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                      TYPE_ARG T: kotlin.String
+                WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                      ARG arg0: GET_VAR 'val tmp_3: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
+                      ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                    then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
+                      ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.String"
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: GET_VAR 'val tmp_3: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
+            VAR IR_TEMPORARY_VARIABLE name:tmp_4 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> [val]
+              BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
+                VAR IR_TEMPORARY_VARIABLE name:tmp_5 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
+                  CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                    ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
+                    ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                      TYPE_ARG T: kotlin.Unit
+                WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                      ARG arg0: GET_VAR 'val tmp_5: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                      ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                    then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
+                      ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: GET_VAR 'val tmp_5: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+            VAR IR_TEMPORARY_VARIABLE name:tmp_6 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> [val]
+              BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
+                VAR IR_TEMPORARY_VARIABLE name:tmp_7 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
+                  CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                    ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
+                    ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                      TYPE_ARG T: kotlin.Unit
+                WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                      ARG arg0: GET_VAR 'val tmp_7: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                      ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                    then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
+                      ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: GET_VAR 'val tmp_7: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+            VAR IR_TEMPORARY_VARIABLE name:tmp_8 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> [val]
+              BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> origin=ELVIS
+                VAR IR_TEMPORARY_VARIABLE name:tmp_9 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? [val]
+                  CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
+                    ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
+                    ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                      TYPE_ARG T: kotlin.String
+                WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                      ARG arg0: GET_VAR 'val tmp_9: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
+                      ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                    then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
+                      ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.String"
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: GET_VAR 'val tmp_9: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
+            VAR IR_TEMPORARY_VARIABLE name:tmp_10 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> [val]
+              BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
+                VAR IR_TEMPORARY_VARIABLE name:tmp_11 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
+                  CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                    ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
+                    ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                      TYPE_ARG T: kotlin.Unit
+                WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                      ARG arg0: GET_VAR 'val tmp_11: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                      ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                    then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
+                      ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: GET_VAR 'val tmp_11: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+            VAR IR_TEMPORARY_VARIABLE name:tmp_12 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> [val]
+              BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
+                VAR IR_TEMPORARY_VARIABLE name:tmp_13 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
+                  CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                    ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
+                    ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                      TYPE_ARG T: kotlin.Unit
+                WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                      ARG arg0: GET_VAR 'val tmp_13: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                      ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                    then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
+                      ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: GET_VAR 'val tmp_13: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+            VAR IR_TEMPORARY_VARIABLE name:tmp_14 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> [val]
+              BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
+                VAR IR_TEMPORARY_VARIABLE name:tmp_15 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
+                  CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                    ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
+                    ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                      TYPE_ARG T: kotlin.Unit
+                WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                      ARG arg0: GET_VAR 'val tmp_15: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                      ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                    then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
+                      ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: GET_VAR 'val tmp_15: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+            VAR IR_TEMPORARY_VARIABLE name:tmp_16 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> [val]
+              BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> origin=ELVIS
+                VAR IR_TEMPORARY_VARIABLE name:tmp_17 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? [val]
+                  CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
+                    ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
+                    ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                      TYPE_ARG T: kotlinx.rpc.codegen.test.Message
+                WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                      ARG arg0: GET_VAR 'val tmp_17: kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
+                      ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                    then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
+                      ARG arg0: CONST String type=kotlin.String value="No codec found for kotlinx.rpc.codegen.test.Message"
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: GET_VAR 'val tmp_17: kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
+            VAR IR_TEMPORARY_VARIABLE name:tmp_18 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> [val]
+              BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> origin=ELVIS
+                VAR IR_TEMPORARY_VARIABLE name:tmp_19 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? [val]
+                  CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
+                    ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
+                    ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                      TYPE_ARG T: kotlinx.rpc.codegen.test.Message
+                WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                      ARG arg0: GET_VAR 'val tmp_19: kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
+                      ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                    then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
+                      ARG arg0: CONST String type=kotlin.String value="No codec found for kotlinx.rpc.codegen.test.Message"
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: GET_VAR 'val tmp_19: kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
+            VAR IR_TEMPORARY_VARIABLE name:tmp_20 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> [val]
+              BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
+                VAR IR_TEMPORARY_VARIABLE name:tmp_21 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
+                  CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                    ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
+                    ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                      TYPE_ARG T: kotlin.Unit
+                WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                      ARG arg0: GET_VAR 'val tmp_21: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                      ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                    then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
+                      ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: GET_VAR 'val tmp_21: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+            VAR IR_TEMPORARY_VARIABLE name:tmp_22 type:<root>.Custom.Companion [val]
+              GET_OBJECT 'CLASS OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.grpc.codec.MessageCodec<<root>.Custom>]' type=<root>.Custom.Companion
+            VAR IR_TEMPORARY_VARIABLE name:tmp_23 type:kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> [val]
               CALL 'public final fun mapOf <K, V> (vararg pairs: kotlin.Pair<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf>): kotlin.collections.Map<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf> declared in kotlin.collections' type=kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> origin=null
                 TYPE_ARG K: kotlin.String
                 TYPE_ARG V: io.grpc.MethodDescriptor<*, *>
@@ -449,38 +641,30 @@ FILE fqName:<root> fileName:/grpc.kt
                       TYPE_ARG Request: kotlin.String
                       TYPE_ARG Response: kotlin.String
                       ARG fullMethodName: CONST String type=kotlin.String value="BoxService/simple"
-                      ARG requestCodec: BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> origin=ELVIS
-                        VAR IR_TEMPORARY_VARIABLE name:tmp_1 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? [val]
-                          CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
-                            ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
-                            ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                              TYPE_ARG T: kotlin.String
-                        WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
-                          BRANCH
-                            if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                              ARG arg0: GET_VAR 'val tmp_1: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
-                              ARG arg1: CONST Null type=kotlin.Nothing? value=null
-                            then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
-                              ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.String"
-                          BRANCH
-                            if: CONST Boolean type=kotlin.Boolean value=true
-                            then: GET_VAR 'val tmp_1: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
-                      ARG responseCodec: BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> origin=ELVIS
-                        VAR IR_TEMPORARY_VARIABLE name:tmp_2 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? [val]
-                          CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
-                            ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
-                            ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                              TYPE_ARG T: kotlin.String
-                        WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
-                          BRANCH
-                            if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                              ARG arg0: GET_VAR 'val tmp_2: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
-                              ARG arg1: CONST Null type=kotlin.Nothing? value=null
-                            then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
-                              ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.String"
-                          BRANCH
-                            if: CONST Boolean type=kotlin.Boolean value=true
-                            then: GET_VAR 'val tmp_2: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
+                      ARG requestCodec: WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> origin=null
+                        BRANCH
+                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                            ARG arg0: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                          then: GET_VAR 'val tmp_0: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> origin=null
+                        BRANCH
+                          if: CONST Boolean type=kotlin.Boolean value=true
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.codec.CodecConfig, delegate: kotlinx.rpc.grpc.codec.MessageCodec<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate>) declared in kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate' type=kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate> origin=null
+                            TYPE_ARG (of class) T: kotlin.String
+                            ARG config: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG delegate: GET_VAR 'val tmp_0: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> origin=null
+                      ARG responseCodec: WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> origin=null
+                        BRANCH
+                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                            ARG arg0: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                          then: GET_VAR 'val tmp_2: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> origin=null
+                        BRANCH
+                          if: CONST Boolean type=kotlin.Boolean value=true
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.codec.CodecConfig, delegate: kotlinx.rpc.grpc.codec.MessageCodec<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate>) declared in kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate' type=kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate> origin=null
+                            TYPE_ARG (of class) T: kotlin.String
+                            ARG config: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG delegate: GET_VAR 'val tmp_2: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> origin=null
                       ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:UNARY' type=kotlinx.rpc.grpc.descriptor.MethodType
                       ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
                       ARG idempotent: CONST Boolean type=kotlin.Boolean value=false
@@ -494,38 +678,30 @@ FILE fqName:<root> fileName:/grpc.kt
                       TYPE_ARG Request: kotlin.Unit
                       TYPE_ARG Response: kotlin.Unit
                       ARG fullMethodName: CONST String type=kotlin.String value="BoxService/unit"
-                      ARG requestCodec: BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
-                        VAR IR_TEMPORARY_VARIABLE name:tmp_3 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
-                          CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                            ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
-                            ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                              TYPE_ARG T: kotlin.Unit
-                        WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                          BRANCH
-                            if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                              ARG arg0: GET_VAR 'val tmp_3: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                              ARG arg1: CONST Null type=kotlin.Nothing? value=null
-                            then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
-                              ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
-                          BRANCH
-                            if: CONST Boolean type=kotlin.Boolean value=true
-                            then: GET_VAR 'val tmp_3: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                      ARG responseCodec: BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
-                        VAR IR_TEMPORARY_VARIABLE name:tmp_4 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
-                          CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                            ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
-                            ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                              TYPE_ARG T: kotlin.Unit
-                        WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                          BRANCH
-                            if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                              ARG arg0: GET_VAR 'val tmp_4: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                              ARG arg1: CONST Null type=kotlin.Nothing? value=null
-                            then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
-                              ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
-                          BRANCH
-                            if: CONST Boolean type=kotlin.Boolean value=true
-                            then: GET_VAR 'val tmp_4: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                      ARG requestCodec: WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                            ARG arg0: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                          then: GET_VAR 'val tmp_4: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CONST Boolean type=kotlin.Boolean value=true
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.codec.CodecConfig, delegate: kotlinx.rpc.grpc.codec.MessageCodec<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate>) declared in kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate' type=kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate> origin=null
+                            TYPE_ARG (of class) T: kotlin.Unit
+                            ARG config: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG delegate: GET_VAR 'val tmp_4: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                      ARG responseCodec: WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                            ARG arg0: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                          then: GET_VAR 'val tmp_6: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CONST Boolean type=kotlin.Boolean value=true
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.codec.CodecConfig, delegate: kotlinx.rpc.grpc.codec.MessageCodec<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate>) declared in kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate' type=kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate> origin=null
+                            TYPE_ARG (of class) T: kotlin.Unit
+                            ARG config: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG delegate: GET_VAR 'val tmp_6: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
                       ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:UNARY' type=kotlinx.rpc.grpc.descriptor.MethodType
                       ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
                       ARG idempotent: CONST Boolean type=kotlin.Boolean value=false
@@ -539,38 +715,30 @@ FILE fqName:<root> fileName:/grpc.kt
                       TYPE_ARG Request: kotlin.String
                       TYPE_ARG Response: kotlin.Unit
                       ARG fullMethodName: CONST String type=kotlin.String value="BoxService/clientStream"
-                      ARG requestCodec: BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> origin=ELVIS
-                        VAR IR_TEMPORARY_VARIABLE name:tmp_5 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? [val]
-                          CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
-                            ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
-                            ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                              TYPE_ARG T: kotlin.String
-                        WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
-                          BRANCH
-                            if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                              ARG arg0: GET_VAR 'val tmp_5: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
-                              ARG arg1: CONST Null type=kotlin.Nothing? value=null
-                            then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
-                              ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.String"
-                          BRANCH
-                            if: CONST Boolean type=kotlin.Boolean value=true
-                            then: GET_VAR 'val tmp_5: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String>? origin=null
-                      ARG responseCodec: BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
-                        VAR IR_TEMPORARY_VARIABLE name:tmp_6 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
-                          CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                            ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
-                            ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                              TYPE_ARG T: kotlin.Unit
-                        WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                          BRANCH
-                            if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                              ARG arg0: GET_VAR 'val tmp_6: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                              ARG arg1: CONST Null type=kotlin.Nothing? value=null
-                            then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
-                              ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
-                          BRANCH
-                            if: CONST Boolean type=kotlin.Boolean value=true
-                            then: GET_VAR 'val tmp_6: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                      ARG requestCodec: WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> origin=null
+                        BRANCH
+                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                            ARG arg0: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                          then: GET_VAR 'val tmp_8: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> origin=null
+                        BRANCH
+                          if: CONST Boolean type=kotlin.Boolean value=true
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.codec.CodecConfig, delegate: kotlinx.rpc.grpc.codec.MessageCodec<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate>) declared in kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate' type=kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate> origin=null
+                            TYPE_ARG (of class) T: kotlin.String
+                            ARG config: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG delegate: GET_VAR 'val tmp_8: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.String> origin=null
+                      ARG responseCodec: WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                            ARG arg0: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                          then: GET_VAR 'val tmp_10: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CONST Boolean type=kotlin.Boolean value=true
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.codec.CodecConfig, delegate: kotlinx.rpc.grpc.codec.MessageCodec<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate>) declared in kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate' type=kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate> origin=null
+                            TYPE_ARG (of class) T: kotlin.Unit
+                            ARG config: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG delegate: GET_VAR 'val tmp_10: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
                       ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:CLIENT_STREAMING' type=kotlinx.rpc.grpc.descriptor.MethodType
                       ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
                       ARG idempotent: CONST Boolean type=kotlin.Boolean value=false
@@ -584,38 +752,30 @@ FILE fqName:<root> fileName:/grpc.kt
                       TYPE_ARG Request: kotlin.Unit
                       TYPE_ARG Response: kotlin.Unit
                       ARG fullMethodName: CONST String type=kotlin.String value="BoxService/serverStream"
-                      ARG requestCodec: BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
-                        VAR IR_TEMPORARY_VARIABLE name:tmp_7 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
-                          CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                            ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
-                            ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                              TYPE_ARG T: kotlin.Unit
-                        WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                          BRANCH
-                            if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                              ARG arg0: GET_VAR 'val tmp_7: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                              ARG arg1: CONST Null type=kotlin.Nothing? value=null
-                            then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
-                              ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
-                          BRANCH
-                            if: CONST Boolean type=kotlin.Boolean value=true
-                            then: GET_VAR 'val tmp_7: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                      ARG responseCodec: BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
-                        VAR IR_TEMPORARY_VARIABLE name:tmp_8 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
-                          CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                            ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
-                            ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                              TYPE_ARG T: kotlin.Unit
-                        WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                          BRANCH
-                            if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                              ARG arg0: GET_VAR 'val tmp_8: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                              ARG arg1: CONST Null type=kotlin.Nothing? value=null
-                            then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
-                              ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
-                          BRANCH
-                            if: CONST Boolean type=kotlin.Boolean value=true
-                            then: GET_VAR 'val tmp_8: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                      ARG requestCodec: WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                            ARG arg0: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                          then: GET_VAR 'val tmp_12: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CONST Boolean type=kotlin.Boolean value=true
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.codec.CodecConfig, delegate: kotlinx.rpc.grpc.codec.MessageCodec<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate>) declared in kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate' type=kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate> origin=null
+                            TYPE_ARG (of class) T: kotlin.Unit
+                            ARG config: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG delegate: GET_VAR 'val tmp_12: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                      ARG responseCodec: WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                            ARG arg0: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                          then: GET_VAR 'val tmp_14: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CONST Boolean type=kotlin.Boolean value=true
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.codec.CodecConfig, delegate: kotlinx.rpc.grpc.codec.MessageCodec<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate>) declared in kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate' type=kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate> origin=null
+                            TYPE_ARG (of class) T: kotlin.Unit
+                            ARG config: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG delegate: GET_VAR 'val tmp_14: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
                       ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:SERVER_STREAMING' type=kotlinx.rpc.grpc.descriptor.MethodType
                       ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
                       ARG idempotent: CONST Boolean type=kotlin.Boolean value=false
@@ -629,38 +789,30 @@ FILE fqName:<root> fileName:/grpc.kt
                       TYPE_ARG Request: kotlinx.rpc.codegen.test.Message
                       TYPE_ARG Response: kotlinx.rpc.codegen.test.Message
                       ARG fullMethodName: CONST String type=kotlin.String value="BoxService/bidiStream"
-                      ARG requestCodec: BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> origin=ELVIS
-                        VAR IR_TEMPORARY_VARIABLE name:tmp_9 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? [val]
-                          CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
-                            ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
-                            ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                              TYPE_ARG T: kotlinx.rpc.codegen.test.Message
-                        WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
-                          BRANCH
-                            if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                              ARG arg0: GET_VAR 'val tmp_9: kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
-                              ARG arg1: CONST Null type=kotlin.Nothing? value=null
-                            then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
-                              ARG arg0: CONST String type=kotlin.String value="No codec found for kotlinx.rpc.codegen.test.Message"
-                          BRANCH
-                            if: CONST Boolean type=kotlin.Boolean value=true
-                            then: GET_VAR 'val tmp_9: kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
-                      ARG responseCodec: BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> origin=ELVIS
-                        VAR IR_TEMPORARY_VARIABLE name:tmp_10 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? [val]
-                          CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
-                            ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
-                            ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                              TYPE_ARG T: kotlinx.rpc.codegen.test.Message
-                        WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
-                          BRANCH
-                            if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                              ARG arg0: GET_VAR 'val tmp_10: kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
-                              ARG arg1: CONST Null type=kotlin.Nothing? value=null
-                            then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
-                              ARG arg0: CONST String type=kotlin.String value="No codec found for kotlinx.rpc.codegen.test.Message"
-                          BRANCH
-                            if: CONST Boolean type=kotlin.Boolean value=true
-                            then: GET_VAR 'val tmp_10: kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message>? origin=null
+                      ARG requestCodec: WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> origin=null
+                        BRANCH
+                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                            ARG arg0: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                          then: GET_VAR 'val tmp_16: kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> origin=null
+                        BRANCH
+                          if: CONST Boolean type=kotlin.Boolean value=true
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.codec.CodecConfig, delegate: kotlinx.rpc.grpc.codec.MessageCodec<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate>) declared in kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate' type=kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate> origin=null
+                            TYPE_ARG (of class) T: kotlinx.rpc.codegen.test.Message
+                            ARG config: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG delegate: GET_VAR 'val tmp_16: kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> origin=null
+                      ARG responseCodec: WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> origin=null
+                        BRANCH
+                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                            ARG arg0: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                          then: GET_VAR 'val tmp_18: kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> origin=null
+                        BRANCH
+                          if: CONST Boolean type=kotlin.Boolean value=true
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.codec.CodecConfig, delegate: kotlinx.rpc.grpc.codec.MessageCodec<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate>) declared in kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate' type=kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate> origin=null
+                            TYPE_ARG (of class) T: kotlinx.rpc.codegen.test.Message
+                            ARG config: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG delegate: GET_VAR 'val tmp_18: kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlinx.rpc.codegen.test.Message> origin=null
                       ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:BIDI_STREAMING' type=kotlinx.rpc.grpc.descriptor.MethodType
                       ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
                       ARG idempotent: CONST Boolean type=kotlin.Boolean value=false
@@ -674,38 +826,45 @@ FILE fqName:<root> fileName:/grpc.kt
                       TYPE_ARG Request: kotlin.Unit
                       TYPE_ARG Response: <root>.Custom
                       ARG fullMethodName: CONST String type=kotlin.String value="BoxService/custom"
-                      ARG requestCodec: BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
-                        VAR IR_TEMPORARY_VARIABLE name:tmp_11 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
-                          CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                            ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
-                            ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                              TYPE_ARG T: kotlin.Unit
-                        WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                          BRANCH
-                            if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                              ARG arg0: GET_VAR 'val tmp_11: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                              ARG arg1: CONST Null type=kotlin.Nothing? value=null
-                            then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
-                              ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
-                          BRANCH
-                            if: CONST Boolean type=kotlin.Boolean value=true
-                            then: GET_VAR 'val tmp_11: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                      ARG responseCodec: GET_OBJECT 'CLASS OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.grpc.codec.MessageCodec<<root>.Custom>]' type=<root>.Custom.Companion
+                      ARG requestCodec: WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                            ARG arg0: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                          then: GET_VAR 'val tmp_20: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CONST Boolean type=kotlin.Boolean value=true
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.codec.CodecConfig, delegate: kotlinx.rpc.grpc.codec.MessageCodec<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate>) declared in kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate' type=kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate> origin=null
+                            TYPE_ARG (of class) T: kotlin.Unit
+                            ARG config: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG delegate: GET_VAR 'val tmp_20: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                      ARG responseCodec: WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<<root>.Custom> origin=null
+                        BRANCH
+                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                            ARG arg0: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                          then: GET_VAR 'val tmp_22: <root>.Custom.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=<root>.Custom.Companion origin=null
+                        BRANCH
+                          if: CONST Boolean type=kotlin.Boolean value=true
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.codec.CodecConfig, delegate: kotlinx.rpc.grpc.codec.MessageCodec<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate>) declared in kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate' type=kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate> origin=null
+                            TYPE_ARG (of class) T: <root>.Custom
+                            ARG config: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG delegate: GET_VAR 'val tmp_22: <root>.Custom.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=<root>.Custom.Companion origin=null
                       ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:UNARY' type=kotlinx.rpc.grpc.descriptor.MethodType
                       ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
                       ARG idempotent: CONST Boolean type=kotlin.Boolean value=false
                       ARG safe: CONST Boolean type=kotlin.Boolean value=false
                       ARG sampledToLocalTracing: CONST Boolean type=kotlin.Boolean value=true
-            VAR IR_TEMPORARY_VARIABLE name:tmp_12 type:io.grpc.ServiceDescriptor [val]
+            VAR IR_TEMPORARY_VARIABLE name:tmp_24 type:io.grpc.ServiceDescriptor [val]
               CALL 'public final fun serviceDescriptor (name: kotlin.String, methods: kotlin.collections.Collection<io.grpc.MethodDescriptor<*, *>>, schemaDescriptor: kotlin.Any?): io.grpc.ServiceDescriptor declared in kotlinx.rpc.grpc.internal' type=io.grpc.ServiceDescriptor origin=null
                 ARG name: CONST String type=kotlin.String value="BoxService"
                 ARG methods: CALL 'public abstract fun <get-values> (): kotlin.collections.Collection<V of kotlin.collections.Map> declared in kotlin.collections.Map' type=kotlin.collections.Collection<V of kotlin.collections.Map> origin=GET_PROPERTY
-                  ARG <this>: GET_VAR 'val tmp_0: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> origin=null
+                  ARG <this>: GET_VAR 'val tmp_23: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> origin=null
                 ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
-            RETURN type=kotlin.Nothing from='public final fun delegate (resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver): kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate declared in <root>.BoxService.$rpcServiceStub.Companion'
+            RETURN type=kotlin.Nothing from='public final fun delegate (resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver, codecConfig: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate declared in <root>.BoxService.$rpcServiceStub.Companion'
               CONSTRUCTOR_CALL 'public constructor <init> (methodDescriptorMap: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>>, serviceDescriptor: io.grpc.ServiceDescriptor) declared in kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate' type=kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate origin=null
-                ARG methodDescriptorMap: GET_VAR 'val tmp_0: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> origin=null
-                ARG serviceDescriptor: GET_VAR 'val tmp_12: io.grpc.ServiceDescriptor declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=io.grpc.ServiceDescriptor origin=null
+                ARG methodDescriptorMap: GET_VAR 'val tmp_23: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> origin=null
+                ARG serviceDescriptor: GET_VAR 'val tmp_24: io.grpc.ServiceDescriptor declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=io.grpc.ServiceDescriptor origin=null
         FUN name:getCallable visibility:public modality:FINAL returnType:kotlinx.rpc.descriptor.RpcCallable?
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
           VALUE_PARAMETER kind:Regular name:name index:1 type:kotlin.String
@@ -1017,10 +1176,45 @@ FILE fqName:<root> fileName:/grpc.kt
         FUN name:delegate visibility:public modality:FINAL returnType:kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub.Companion
           VALUE_PARAMETER kind:Regular name:resolver index:1 type:kotlinx.rpc.grpc.codec.MessageCodecResolver
+          VALUE_PARAMETER kind:Regular name:codecConfig index:2 type:kotlinx.rpc.grpc.codec.CodecConfig?
           overridden:
-            public abstract fun delegate (resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver): kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate declared in kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
+            public abstract fun delegate (resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver, codecConfig: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate declared in kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
           BLOCK_BODY
-            VAR IR_TEMPORARY_VARIABLE name:tmp_13 type:kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> [val]
+            VAR IR_TEMPORARY_VARIABLE name:tmp_25 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> [val]
+              BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
+                VAR IR_TEMPORARY_VARIABLE name:tmp_26 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
+                  CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                    ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
+                    ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                      TYPE_ARG T: kotlin.Unit
+                WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                      ARG arg0: GET_VAR 'val tmp_26: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                      ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                    then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
+                      ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: GET_VAR 'val tmp_26: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+            VAR IR_TEMPORARY_VARIABLE name:tmp_27 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> [val]
+              BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
+                VAR IR_TEMPORARY_VARIABLE name:tmp_28 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
+                  CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                    ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
+                    ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
+                      TYPE_ARG T: kotlin.Unit
+                WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                      ARG arg0: GET_VAR 'val tmp_28: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                      ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                    then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
+                      ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: GET_VAR 'val tmp_28: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+            VAR IR_TEMPORARY_VARIABLE name:tmp_29 type:kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> [val]
               CALL 'public final fun mapOf <K, V> (vararg pairs: kotlin.Pair<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf>): kotlin.collections.Map<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf> declared in kotlin.collections' type=kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> origin=null
                 TYPE_ARG K: kotlin.String
                 TYPE_ARG V: io.grpc.MethodDescriptor<*, *>
@@ -1033,53 +1227,45 @@ FILE fqName:<root> fileName:/grpc.kt
                       TYPE_ARG Request: kotlin.Unit
                       TYPE_ARG Response: kotlin.Unit
                       ARG fullMethodName: CONST String type=kotlin.String value="my.proto.package.ProtoPkgService/unit"
-                      ARG requestCodec: BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
-                        VAR IR_TEMPORARY_VARIABLE name:tmp_14 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
-                          CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                            ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
-                            ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                              TYPE_ARG T: kotlin.Unit
-                        WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                          BRANCH
-                            if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                              ARG arg0: GET_VAR 'val tmp_14: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                              ARG arg1: CONST Null type=kotlin.Nothing? value=null
-                            then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
-                              ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
-                          BRANCH
-                            if: CONST Boolean type=kotlin.Boolean value=true
-                            then: GET_VAR 'val tmp_14: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                      ARG responseCodec: BLOCK type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=ELVIS
-                        VAR IR_TEMPORARY_VARIABLE name:tmp_15 type:kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? [val]
-                          CALL 'public abstract fun resolveOrNull (kType: kotlin.reflect.KType): kotlinx.rpc.grpc.codec.MessageCodec<*>? declared in kotlinx.rpc.grpc.codec.MessageCodecResolver' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                            ARG <this>: GET_VAR 'resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodecResolver origin=null
-                            ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
-                              TYPE_ARG T: kotlin.Unit
-                        WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                          BRANCH
-                            if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                              ARG arg0: GET_VAR 'val tmp_15: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
-                              ARG arg1: CONST Null type=kotlin.Nothing? value=null
-                            then: CALL 'public final fun illegalArgumentException (arg0: kotlin.String): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
-                              ARG arg0: CONST String type=kotlin.String value="No codec found for kotlin.Unit"
-                          BRANCH
-                            if: CONST Boolean type=kotlin.Boolean value=true
-                            then: GET_VAR 'val tmp_15: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit>? origin=null
+                      ARG requestCodec: WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                            ARG arg0: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                          then: GET_VAR 'val tmp_25: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CONST Boolean type=kotlin.Boolean value=true
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.codec.CodecConfig, delegate: kotlinx.rpc.grpc.codec.MessageCodec<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate>) declared in kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate' type=kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate> origin=null
+                            TYPE_ARG (of class) T: kotlin.Unit
+                            ARG config: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG delegate: GET_VAR 'val tmp_25: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                      ARG responseCodec: WHEN type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                            ARG arg0: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG arg1: CONST Null type=kotlin.Nothing? value=null
+                          then: GET_VAR 'val tmp_27: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
+                        BRANCH
+                          if: CONST Boolean type=kotlin.Boolean value=true
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.codec.CodecConfig, delegate: kotlinx.rpc.grpc.codec.MessageCodec<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate>) declared in kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate' type=kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate<T of kotlinx.rpc.grpc.internal.ConfiguredMessageCodecDelegate> origin=null
+                            TYPE_ARG (of class) T: kotlin.Unit
+                            ARG config: GET_VAR 'codecConfig: kotlinx.rpc.grpc.codec.CodecConfig? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.CodecConfig? origin=null
+                            ARG delegate: GET_VAR 'val tmp_27: kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.codec.MessageCodec<kotlin.Unit> origin=null
                       ARG type: GET_ENUM 'ENUM_ENTRY IR_EXTERNAL_DECLARATION_STUB name:UNARY' type=kotlinx.rpc.grpc.descriptor.MethodType
                       ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
                       ARG idempotent: CONST Boolean type=kotlin.Boolean value=false
                       ARG safe: CONST Boolean type=kotlin.Boolean value=false
                       ARG sampledToLocalTracing: CONST Boolean type=kotlin.Boolean value=true
-            VAR IR_TEMPORARY_VARIABLE name:tmp_16 type:io.grpc.ServiceDescriptor [val]
+            VAR IR_TEMPORARY_VARIABLE name:tmp_30 type:io.grpc.ServiceDescriptor [val]
               CALL 'public final fun serviceDescriptor (name: kotlin.String, methods: kotlin.collections.Collection<io.grpc.MethodDescriptor<*, *>>, schemaDescriptor: kotlin.Any?): io.grpc.ServiceDescriptor declared in kotlinx.rpc.grpc.internal' type=io.grpc.ServiceDescriptor origin=null
                 ARG name: CONST String type=kotlin.String value="my.proto.package.ProtoPkgService"
                 ARG methods: CALL 'public abstract fun <get-values> (): kotlin.collections.Collection<V of kotlin.collections.Map> declared in kotlin.collections.Map' type=kotlin.collections.Collection<V of kotlin.collections.Map> origin=GET_PROPERTY
-                  ARG <this>: GET_VAR 'val tmp_13: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> origin=null
+                  ARG <this>: GET_VAR 'val tmp_29: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> origin=null
                 ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
-            RETURN type=kotlin.Nothing from='public final fun delegate (resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver): kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'
+            RETURN type=kotlin.Nothing from='public final fun delegate (resolver: kotlinx.rpc.grpc.codec.MessageCodecResolver, codecConfig: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'
               CONSTRUCTOR_CALL 'public constructor <init> (methodDescriptorMap: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>>, serviceDescriptor: io.grpc.ServiceDescriptor) declared in kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate' type=kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate origin=null
-                ARG methodDescriptorMap: GET_VAR 'val tmp_13: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> origin=null
-                ARG serviceDescriptor: GET_VAR 'val tmp_16: io.grpc.ServiceDescriptor declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=io.grpc.ServiceDescriptor origin=null
+                ARG methodDescriptorMap: GET_VAR 'val tmp_29: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> origin=null
+                ARG serviceDescriptor: GET_VAR 'val tmp_30: io.grpc.ServiceDescriptor declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=io.grpc.ServiceDescriptor origin=null
         FUN name:getCallable visibility:public modality:FINAL returnType:kotlinx.rpc.descriptor.RpcCallable?
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub.Companion
           VALUE_PARAMETER kind:Regular name:name index:1 type:kotlin.String
@@ -1163,7 +1349,7 @@ FILE fqName:<root> fileName:/grpc.kt
                     ARG <this>: GET_VAR 'val delegate: kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate declared in <root>.box' type=kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate origin=null
       TYPE_OP type=kotlin.Unit origin=IMPLICIT_COERCION_TO_UNIT typeOperand=kotlin.Unit
         BLOCK type=kotlin.Nothing? origin=SAFE_CALL
-          VAR IR_TEMPORARY_VARIABLE name:tmp_17 type:kotlin.String? [val]
+          VAR IR_TEMPORARY_VARIABLE name:tmp_31 type:kotlin.String? [val]
             CALL 'public final fun checkMethod (<this>: io.grpc.MethodDescriptor<*, *>, expectedMethodName: kotlin.String, expectedFullMethodName: kotlin.String, expectedMethodType: io.grpc.MethodDescriptor.MethodType, expectedServiceName: kotlin.String, expectedIsSafe: kotlin.Boolean, expectedIsIdempotent: kotlin.Boolean, expectedIsSampledToLocalTracing: kotlin.Boolean): kotlin.String? declared in kotlinx.rpc.codegen.test' type=kotlin.String? origin=null
               ARG <this>: CALL 'public final fun CHECK_NOT_NULL <T0> (arg0: T0 of kotlin.internal.ir.CHECK_NOT_NULL?): {T0 of kotlin.internal.ir.CHECK_NOT_NULL & Any} declared in kotlin.internal.ir' type=io.grpc.MethodDescriptor<*, *> origin=EXCLEXCL
                 TYPE_ARG T0: io.grpc.MethodDescriptor<*, *>
@@ -1177,7 +1363,7 @@ FILE fqName:<root> fileName:/grpc.kt
           WHEN type=kotlin.Nothing? origin=null
             BRANCH
               if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                ARG arg0: GET_VAR 'val tmp_17: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                ARG arg0: GET_VAR 'val tmp_31: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG arg1: CONST Null type=kotlin.Nothing? value=null
               then: CONST Null type=kotlin.Nothing? value=null
             BRANCH
@@ -1186,7 +1372,7 @@ FILE fqName:<root> fileName:/grpc.kt
                 TYPE_ARG T: kotlin.String
                 TYPE_ARG R: kotlin.Nothing
                 ARG <this>: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
-                  GET_VAR 'val tmp_17: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                  GET_VAR 'val tmp_31: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG block: FUN_EXPR type=kotlin.Function1<kotlin.String, kotlin.Nothing> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Nothing
                     VALUE_PARAMETER kind:Regular name:it index:0 type:kotlin.String
@@ -1197,7 +1383,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           GET_VAR 'it: kotlin.String declared in <root>.box.<anonymous>' type=kotlin.String origin=null
       TYPE_OP type=kotlin.Unit origin=IMPLICIT_COERCION_TO_UNIT typeOperand=kotlin.Unit
         BLOCK type=kotlin.Nothing? origin=SAFE_CALL
-          VAR IR_TEMPORARY_VARIABLE name:tmp_18 type:kotlin.String? [val]
+          VAR IR_TEMPORARY_VARIABLE name:tmp_32 type:kotlin.String? [val]
             CALL 'public final fun checkMethod (<this>: io.grpc.MethodDescriptor<*, *>, expectedMethodName: kotlin.String, expectedFullMethodName: kotlin.String, expectedMethodType: io.grpc.MethodDescriptor.MethodType, expectedServiceName: kotlin.String, expectedIsSafe: kotlin.Boolean, expectedIsIdempotent: kotlin.Boolean, expectedIsSampledToLocalTracing: kotlin.Boolean): kotlin.String? declared in kotlinx.rpc.codegen.test' type=kotlin.String? origin=null
               ARG <this>: CALL 'public final fun CHECK_NOT_NULL <T0> (arg0: T0 of kotlin.internal.ir.CHECK_NOT_NULL?): {T0 of kotlin.internal.ir.CHECK_NOT_NULL & Any} declared in kotlin.internal.ir' type=io.grpc.MethodDescriptor<*, *> origin=EXCLEXCL
                 TYPE_ARG T0: io.grpc.MethodDescriptor<*, *>
@@ -1211,7 +1397,7 @@ FILE fqName:<root> fileName:/grpc.kt
           WHEN type=kotlin.Nothing? origin=null
             BRANCH
               if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                ARG arg0: GET_VAR 'val tmp_18: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                ARG arg0: GET_VAR 'val tmp_32: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG arg1: CONST Null type=kotlin.Nothing? value=null
               then: CONST Null type=kotlin.Nothing? value=null
             BRANCH
@@ -1220,7 +1406,7 @@ FILE fqName:<root> fileName:/grpc.kt
                 TYPE_ARG T: kotlin.String
                 TYPE_ARG R: kotlin.Nothing
                 ARG <this>: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
-                  GET_VAR 'val tmp_18: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                  GET_VAR 'val tmp_32: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG block: FUN_EXPR type=kotlin.Function1<kotlin.String, kotlin.Nothing> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Nothing
                     VALUE_PARAMETER kind:Regular name:it index:0 type:kotlin.String
@@ -1231,7 +1417,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           GET_VAR 'it: kotlin.String declared in <root>.box.<anonymous>' type=kotlin.String origin=null
       TYPE_OP type=kotlin.Unit origin=IMPLICIT_COERCION_TO_UNIT typeOperand=kotlin.Unit
         BLOCK type=kotlin.Nothing? origin=SAFE_CALL
-          VAR IR_TEMPORARY_VARIABLE name:tmp_19 type:kotlin.String? [val]
+          VAR IR_TEMPORARY_VARIABLE name:tmp_33 type:kotlin.String? [val]
             CALL 'public final fun checkMethod (<this>: io.grpc.MethodDescriptor<*, *>, expectedMethodName: kotlin.String, expectedFullMethodName: kotlin.String, expectedMethodType: io.grpc.MethodDescriptor.MethodType, expectedServiceName: kotlin.String, expectedIsSafe: kotlin.Boolean, expectedIsIdempotent: kotlin.Boolean, expectedIsSampledToLocalTracing: kotlin.Boolean): kotlin.String? declared in kotlinx.rpc.codegen.test' type=kotlin.String? origin=null
               ARG <this>: CALL 'public final fun CHECK_NOT_NULL <T0> (arg0: T0 of kotlin.internal.ir.CHECK_NOT_NULL?): {T0 of kotlin.internal.ir.CHECK_NOT_NULL & Any} declared in kotlin.internal.ir' type=io.grpc.MethodDescriptor<*, *> origin=EXCLEXCL
                 TYPE_ARG T0: io.grpc.MethodDescriptor<*, *>
@@ -1245,7 +1431,7 @@ FILE fqName:<root> fileName:/grpc.kt
           WHEN type=kotlin.Nothing? origin=null
             BRANCH
               if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                ARG arg0: GET_VAR 'val tmp_19: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                ARG arg0: GET_VAR 'val tmp_33: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG arg1: CONST Null type=kotlin.Nothing? value=null
               then: CONST Null type=kotlin.Nothing? value=null
             BRANCH
@@ -1254,7 +1440,7 @@ FILE fqName:<root> fileName:/grpc.kt
                 TYPE_ARG T: kotlin.String
                 TYPE_ARG R: kotlin.Nothing
                 ARG <this>: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
-                  GET_VAR 'val tmp_19: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                  GET_VAR 'val tmp_33: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG block: FUN_EXPR type=kotlin.Function1<kotlin.String, kotlin.Nothing> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Nothing
                     VALUE_PARAMETER kind:Regular name:it index:0 type:kotlin.String
@@ -1265,7 +1451,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           GET_VAR 'it: kotlin.String declared in <root>.box.<anonymous>' type=kotlin.String origin=null
       TYPE_OP type=kotlin.Unit origin=IMPLICIT_COERCION_TO_UNIT typeOperand=kotlin.Unit
         BLOCK type=kotlin.Nothing? origin=SAFE_CALL
-          VAR IR_TEMPORARY_VARIABLE name:tmp_20 type:kotlin.String? [val]
+          VAR IR_TEMPORARY_VARIABLE name:tmp_34 type:kotlin.String? [val]
             CALL 'public final fun checkMethod (<this>: io.grpc.MethodDescriptor<*, *>, expectedMethodName: kotlin.String, expectedFullMethodName: kotlin.String, expectedMethodType: io.grpc.MethodDescriptor.MethodType, expectedServiceName: kotlin.String, expectedIsSafe: kotlin.Boolean, expectedIsIdempotent: kotlin.Boolean, expectedIsSampledToLocalTracing: kotlin.Boolean): kotlin.String? declared in kotlinx.rpc.codegen.test' type=kotlin.String? origin=null
               ARG <this>: CALL 'public final fun CHECK_NOT_NULL <T0> (arg0: T0 of kotlin.internal.ir.CHECK_NOT_NULL?): {T0 of kotlin.internal.ir.CHECK_NOT_NULL & Any} declared in kotlin.internal.ir' type=io.grpc.MethodDescriptor<*, *> origin=EXCLEXCL
                 TYPE_ARG T0: io.grpc.MethodDescriptor<*, *>
@@ -1279,7 +1465,7 @@ FILE fqName:<root> fileName:/grpc.kt
           WHEN type=kotlin.Nothing? origin=null
             BRANCH
               if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                ARG arg0: GET_VAR 'val tmp_20: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                ARG arg0: GET_VAR 'val tmp_34: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG arg1: CONST Null type=kotlin.Nothing? value=null
               then: CONST Null type=kotlin.Nothing? value=null
             BRANCH
@@ -1288,7 +1474,7 @@ FILE fqName:<root> fileName:/grpc.kt
                 TYPE_ARG T: kotlin.String
                 TYPE_ARG R: kotlin.Nothing
                 ARG <this>: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
-                  GET_VAR 'val tmp_20: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                  GET_VAR 'val tmp_34: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG block: FUN_EXPR type=kotlin.Function1<kotlin.String, kotlin.Nothing> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Nothing
                     VALUE_PARAMETER kind:Regular name:it index:0 type:kotlin.String
@@ -1299,7 +1485,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           GET_VAR 'it: kotlin.String declared in <root>.box.<anonymous>' type=kotlin.String origin=null
       TYPE_OP type=kotlin.Unit origin=IMPLICIT_COERCION_TO_UNIT typeOperand=kotlin.Unit
         BLOCK type=kotlin.Nothing? origin=SAFE_CALL
-          VAR IR_TEMPORARY_VARIABLE name:tmp_21 type:kotlin.String? [val]
+          VAR IR_TEMPORARY_VARIABLE name:tmp_35 type:kotlin.String? [val]
             CALL 'public final fun checkMethod (<this>: io.grpc.MethodDescriptor<*, *>, expectedMethodName: kotlin.String, expectedFullMethodName: kotlin.String, expectedMethodType: io.grpc.MethodDescriptor.MethodType, expectedServiceName: kotlin.String, expectedIsSafe: kotlin.Boolean, expectedIsIdempotent: kotlin.Boolean, expectedIsSampledToLocalTracing: kotlin.Boolean): kotlin.String? declared in kotlinx.rpc.codegen.test' type=kotlin.String? origin=null
               ARG <this>: CALL 'public final fun CHECK_NOT_NULL <T0> (arg0: T0 of kotlin.internal.ir.CHECK_NOT_NULL?): {T0 of kotlin.internal.ir.CHECK_NOT_NULL & Any} declared in kotlin.internal.ir' type=io.grpc.MethodDescriptor<*, *> origin=EXCLEXCL
                 TYPE_ARG T0: io.grpc.MethodDescriptor<*, *>
@@ -1313,7 +1499,7 @@ FILE fqName:<root> fileName:/grpc.kt
           WHEN type=kotlin.Nothing? origin=null
             BRANCH
               if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                ARG arg0: GET_VAR 'val tmp_21: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                ARG arg0: GET_VAR 'val tmp_35: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG arg1: CONST Null type=kotlin.Nothing? value=null
               then: CONST Null type=kotlin.Nothing? value=null
             BRANCH
@@ -1322,7 +1508,7 @@ FILE fqName:<root> fileName:/grpc.kt
                 TYPE_ARG T: kotlin.String
                 TYPE_ARG R: kotlin.Nothing
                 ARG <this>: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
-                  GET_VAR 'val tmp_21: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                  GET_VAR 'val tmp_35: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG block: FUN_EXPR type=kotlin.Function1<kotlin.String, kotlin.Nothing> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Nothing
                     VALUE_PARAMETER kind:Regular name:it index:0 type:kotlin.String
@@ -1333,7 +1519,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           GET_VAR 'it: kotlin.String declared in <root>.box.<anonymous>' type=kotlin.String origin=null
       TYPE_OP type=kotlin.Unit origin=IMPLICIT_COERCION_TO_UNIT typeOperand=kotlin.Unit
         BLOCK type=kotlin.Nothing? origin=SAFE_CALL
-          VAR IR_TEMPORARY_VARIABLE name:tmp_22 type:kotlin.String? [val]
+          VAR IR_TEMPORARY_VARIABLE name:tmp_36 type:kotlin.String? [val]
             CALL 'public final fun checkMethod (<this>: io.grpc.MethodDescriptor<*, *>, expectedMethodName: kotlin.String, expectedFullMethodName: kotlin.String, expectedMethodType: io.grpc.MethodDescriptor.MethodType, expectedServiceName: kotlin.String, expectedIsSafe: kotlin.Boolean, expectedIsIdempotent: kotlin.Boolean, expectedIsSampledToLocalTracing: kotlin.Boolean): kotlin.String? declared in kotlinx.rpc.codegen.test' type=kotlin.String? origin=null
               ARG <this>: CALL 'public final fun CHECK_NOT_NULL <T0> (arg0: T0 of kotlin.internal.ir.CHECK_NOT_NULL?): {T0 of kotlin.internal.ir.CHECK_NOT_NULL & Any} declared in kotlin.internal.ir' type=io.grpc.MethodDescriptor<*, *> origin=EXCLEXCL
                 TYPE_ARG T0: io.grpc.MethodDescriptor<*, *>
@@ -1347,7 +1533,7 @@ FILE fqName:<root> fileName:/grpc.kt
           WHEN type=kotlin.Nothing? origin=null
             BRANCH
               if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                ARG arg0: GET_VAR 'val tmp_22: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                ARG arg0: GET_VAR 'val tmp_36: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG arg1: CONST Null type=kotlin.Nothing? value=null
               then: CONST Null type=kotlin.Nothing? value=null
             BRANCH
@@ -1356,7 +1542,7 @@ FILE fqName:<root> fileName:/grpc.kt
                 TYPE_ARG T: kotlin.String
                 TYPE_ARG R: kotlin.Nothing
                 ARG <this>: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
-                  GET_VAR 'val tmp_22: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                  GET_VAR 'val tmp_36: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG block: FUN_EXPR type=kotlin.Function1<kotlin.String, kotlin.Nothing> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Nothing
                     VALUE_PARAMETER kind:Regular name:it index:0 type:kotlin.String
@@ -1385,7 +1571,7 @@ FILE fqName:<root> fileName:/grpc.kt
                     ARG <this>: GET_VAR 'val protoPkgDelegate: kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate declared in <root>.box' type=kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate origin=null
       TYPE_OP type=kotlin.Unit origin=IMPLICIT_COERCION_TO_UNIT typeOperand=kotlin.Unit
         BLOCK type=kotlin.Nothing? origin=SAFE_CALL
-          VAR IR_TEMPORARY_VARIABLE name:tmp_23 type:kotlin.String? [val]
+          VAR IR_TEMPORARY_VARIABLE name:tmp_37 type:kotlin.String? [val]
             CALL 'public final fun checkMethod (<this>: io.grpc.MethodDescriptor<*, *>, expectedMethodName: kotlin.String, expectedFullMethodName: kotlin.String, expectedMethodType: io.grpc.MethodDescriptor.MethodType, expectedServiceName: kotlin.String, expectedIsSafe: kotlin.Boolean, expectedIsIdempotent: kotlin.Boolean, expectedIsSampledToLocalTracing: kotlin.Boolean): kotlin.String? declared in kotlinx.rpc.codegen.test' type=kotlin.String? origin=null
               ARG <this>: CALL 'public final fun CHECK_NOT_NULL <T0> (arg0: T0 of kotlin.internal.ir.CHECK_NOT_NULL?): {T0 of kotlin.internal.ir.CHECK_NOT_NULL & Any} declared in kotlin.internal.ir' type=io.grpc.MethodDescriptor<*, *> origin=EXCLEXCL
                 TYPE_ARG T0: io.grpc.MethodDescriptor<*, *>
@@ -1399,7 +1585,7 @@ FILE fqName:<root> fileName:/grpc.kt
           WHEN type=kotlin.Nothing? origin=null
             BRANCH
               if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-                ARG arg0: GET_VAR 'val tmp_23: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                ARG arg0: GET_VAR 'val tmp_37: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG arg1: CONST Null type=kotlin.Nothing? value=null
               then: CONST Null type=kotlin.Nothing? value=null
             BRANCH
@@ -1408,7 +1594,7 @@ FILE fqName:<root> fileName:/grpc.kt
                 TYPE_ARG T: kotlin.String
                 TYPE_ARG R: kotlin.Nothing
                 ARG <this>: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
-                  GET_VAR 'val tmp_23: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
+                  GET_VAR 'val tmp_37: kotlin.String? declared in <root>.box' type=kotlin.String? origin=null
                 ARG block: FUN_EXPR type=kotlin.Function1<kotlin.String, kotlin.Nothing> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Nothing
                     VALUE_PARAMETER kind:Regular name:it index:0 type:kotlin.String
