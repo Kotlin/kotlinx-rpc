@@ -44,15 +44,15 @@ public interface MessageCodec<T> {
 
 @ExperimentalRpcApi
 public interface SourcedMessageCodec<T> : MessageCodec<T> {
-    public fun encodeToSource(value: T): Source
-    public fun decodeFromSource(stream: Source): T
+    public fun encodeToSource(value: T, config: CodecConfig?): Source
+    public fun decodeFromSource(stream: Source, config: CodecConfig?): T
 
     override fun encode(value: T, config: CodecConfig?): InputStream {
-        return encodeToSource(value).asInputStream()
+        return encodeToSource(value, config).asInputStream()
     }
 
     override fun decode(stream: InputStream, config: CodecConfig?): T {
-        return decodeFromSource(stream.asSource())
+        return decodeFromSource(stream.asSource(), config)
     }
 }
 
