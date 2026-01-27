@@ -12,6 +12,7 @@ import kotlinx.rpc.codegen.test.grpcDelegate
 import kotlinx.rpc.codegen.test.checkMethod
 import kotlinx.rpc.codegen.test.Message
 import kotlinx.rpc.grpc.annotations.Grpc
+import kotlinx.rpc.grpc.codec.CodecConfig
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.protobuf.input.stream.InputStream
@@ -19,11 +20,11 @@ import kotlinx.rpc.protobuf.input.stream.InputStream
 @WithCodec(Custom.Companion::class)
 class Custom(val content: String) {
     companion object : MessageCodec<Custom> {
-        override fun encode(value: Custom): InputStream {
+        override fun encode(value: Custom, config: CodecConfig?): InputStream {
             TODO("Not yet implemented")
         }
 
-        override fun decode(stream: InputStream): Custom {
+        override fun decode(stream: InputStream, config: CodecConfig?): Custom {
             TODO("Not yet implemented")
         }
     }
