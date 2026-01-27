@@ -11,7 +11,6 @@ import kotlinx.rpc.protoc.generate
 import kotlinx.rpc.protoc.proto
 import kotlinx.rpc.protoc.protoTasks
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 import util.configureCLibCInterop
 
 plugins {

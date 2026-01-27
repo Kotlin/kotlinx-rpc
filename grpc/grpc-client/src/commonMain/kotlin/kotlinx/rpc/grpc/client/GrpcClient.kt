@@ -16,6 +16,7 @@ import kotlinx.rpc.grpc.client.internal.buildChannel
 import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
 import kotlinx.rpc.grpc.client.internal.serverStreamingRpc
 import kotlinx.rpc.grpc.client.internal.unaryRpc
+import kotlinx.rpc.grpc.codec.CodecConfig
 import kotlinx.rpc.grpc.codec.EmptyMessageCodecResolver
 import kotlinx.rpc.grpc.codec.MessageCodecResolver
 import kotlinx.rpc.grpc.codec.ThrowingMessageCodecResolver
@@ -40,6 +41,7 @@ public class GrpcClient internal constructor(
     internal val interceptors: List<ClientInterceptor>,
     // the default call credentials that are automatically attached to all calls made with this client
     internal val callCredentials: GrpcCallCredentials,
+    internal val codecConfig: CodecConfig?,
 ) : RpcClient {
     private val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
     private val messageCodecResolver = messageCodecResolver + ThrowingMessageCodecResolver
@@ -113,7 +115,7 @@ public class GrpcClient internal constructor(
             val grpc = call.descriptor as? GrpcServiceDescriptor<*>
                 ?: error("Expected a gRPC service")
 
-            grpc.delegate(messageCodecResolver)
+            grpc.delegate(messageCodecResolver, codecConfig)
         }
 
         @Suppress("UNCHECKED_CAST")
@@ -183,7 +185,7 @@ private fun GrpcClient(
 ): GrpcClient {
     val channel = builder.applyConfig(config).buildChannel()
     val callCredentials = config.credentials?.realCallCredentials ?: EmptyCallCredentials
-    return GrpcClient(channel, config.messageCodecResolver, config.interceptors, callCredentials)
+    return GrpcClient(channel, config.messageCodecResolver, config.interceptors, callCredentials, config.codecConfig)
 }
 
 
@@ -214,13 +216,14 @@ public class GrpcClientConfiguration internal constructor() {
      */
     public var messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver
 
+    public var codecConfig: CodecConfig? = null
 
     /**
      * Configures the client credentials used for secure gRPC requests made by the client.
      *
      * By default, the client uses default TLS credentials.
      * To use custom TLS credentials, use the [tls] constructor function which returns a
-     * [TlsClientCredentials] instance.
+     * [GrpcTlsClientCredentials] instance.
      *
      * To use plaintext communication, use the [plaintext] constructor function.
      * Should only be used for testing or for APIs where the use of such API or
@@ -271,7 +274,7 @@ public class GrpcClientConfiguration internal constructor() {
      * Typically, this would be used for local development, testing, or other
      * environments where security is not a concern.
      *
-     * @return An insecure [ClientCredentials] instance that must be passed to [credentials].
+     * @return An insecure [GrpcClientCredentials] instance that must be passed to [credentials].
      */
     public fun plaintext(): GrpcClientCredentials = GrpcInsecureClientCredentials()
 
@@ -284,11 +287,11 @@ public class GrpcClientConfiguration internal constructor() {
      * and server, ensuring encrypted transmission of data and mutual authentication
      * if configured.
      *
-     * Alternatively, you can use the [TlsClientCredentials] constructor.
+     * Alternatively, you can use the [GrpcTlsClientCredentials] constructor.
      *
      * @param configure A configuration block that allows setting up the TLS parameters
      * using the [GrpcTlsClientCredentialsBuilder].
-     * @return A secure [ClientCredentials] instance that must be passed to [credentials].
+     * @return A secure [GrpcClientCredentials] instance that must be passed to [credentials].
      *
      * @see credentials
      */

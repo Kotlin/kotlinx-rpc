@@ -20,7 +20,7 @@ actual fun GrpcTestBase.testKeepAlive(
     withoutCalls: Boolean
 ) {
     runGrpcTest(
-        configure = {
+        clientConfiguration = {
             keepAlive {
                 this.time = time
                 this.timeout = timeout

@@ -6,13 +6,14 @@ package kotlinx.rpc.grpc.descriptor
 
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
 import kotlinx.rpc.grpc.annotations.Grpc
+import kotlinx.rpc.grpc.codec.CodecConfig
 import kotlinx.rpc.grpc.codec.MessageCodecResolver
 import kotlinx.rpc.grpc.internal.ServiceDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
 public interface GrpcServiceDescriptor<@Grpc T : Any> : RpcServiceDescriptor<T> {
-    public fun delegate(resolver: MessageCodecResolver): GrpcServiceDelegate
+    public fun delegate(resolver: MessageCodecResolver, codecConfig: CodecConfig?): GrpcServiceDelegate
 }
 
 @InternalRpcApi

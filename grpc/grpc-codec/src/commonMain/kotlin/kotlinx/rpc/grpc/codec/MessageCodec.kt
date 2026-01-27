@@ -53,6 +53,7 @@ public operator fun MessageCodecResolver.plus(other: MessageCodecResolver): Mess
  * val encoded = codecWithConfig.encode(message) // uses the default config
  * ```
  *
+ *
  * @see MessageCodec
  * @see codec
  */

@@ -33,7 +33,7 @@ class GrpcAnnotationsTest {
             val descriptor = serviceDescriptorOf<GrpcAnnotationsService>()
                     as GrpcServiceDescriptor<GrpcAnnotationsService>
 
-            descriptor.delegate(EmptyMessageCodecResolver)
+            descriptor.delegate(EmptyMessageCodecResolver, null)
         }
     }
 
@@ -42,7 +42,7 @@ class GrpcAnnotationsTest {
         val descriptor = serviceDescriptorOf<GrpcAnnotationsService>()
                 as GrpcServiceDescriptor<GrpcAnnotationsService>
         val methodDescriptor = descriptor
-            .delegate(unitCodec)
+            .delegate(unitCodec, null)
             .getMethodDescriptor("Empty")
 
         assertNotNull(methodDescriptor)

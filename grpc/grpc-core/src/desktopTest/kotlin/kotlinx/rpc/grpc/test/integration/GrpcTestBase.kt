@@ -10,11 +10,12 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.client.ClientCallScope
-import kotlinx.rpc.grpc.client.GrpcClientCredentials
 import kotlinx.rpc.grpc.client.ClientInterceptor
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
+import kotlinx.rpc.grpc.client.GrpcClientCredentials
 import kotlinx.rpc.grpc.server.GrpcServer
+import kotlinx.rpc.grpc.server.GrpcServerConfiguration
 import kotlinx.rpc.grpc.server.ServerCallScope
 import kotlinx.rpc.grpc.server.ServerCredentials
 import kotlinx.rpc.grpc.server.ServerInterceptor
@@ -24,13 +25,15 @@ abstract class GrpcTestBase {
 
     abstract fun RpcServer.registerServices()
 
+    @Suppress("LongParameterList")
     fun runGrpcTest(
         serverCreds: ServerCredentials? = null,
         clientCreds: GrpcClientCredentials? = null,
         overrideAuthority: String? = null,
         clientInterceptors: List<ClientInterceptor> = emptyList(),
         serverInterceptors: List<ServerInterceptor> = emptyList(),
-        configure: GrpcClientConfiguration.() -> Unit = {},
+        clientConfiguration: GrpcClientConfiguration.() -> Unit = {},
+        serverConfiguration: GrpcServerConfiguration.() -> Unit = {},
         test: suspend (GrpcClient) -> Unit,
     ) = runBlocking {
         serverMutex.withLock {
@@ -38,7 +41,7 @@ abstract class GrpcTestBase {
                 credentials = clientCreds ?: plaintext()
                 if (overrideAuthority != null) this.overrideAuthority = overrideAuthority
                 clientInterceptors.forEach { intercept(it) }
-                configure()
+                clientConfiguration()
             }
 
             val grpcServer = GrpcServer(
@@ -47,6 +50,7 @@ abstract class GrpcTestBase {
                 credentials = serverCreds
                 serverInterceptors.forEach { intercept(it) }
                 services { registerServices() }
+                serverConfiguration()
             }
 
             grpcServer.start()
