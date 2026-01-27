@@ -7,11 +7,11 @@ package kotlinx.rpc.protobuf
 import kotlinx.rpc.grpc.codec.CodecConfig
 
 /**
- * Configuration options for Protocol Buffers message encoding and decoding.
+ * Configuration options for Protobuf message encoding and decoding.
  *
  * This class implements [CodecConfig] to provide Protobuf-specific configuration that controls
- * how messages are serialized and deserialized when using Protocol Buffers codecs generated from
- * `.proto` files using the `kotlinx-rpc`.
+ * how messages are serialized and deserialized when using Protobuf codecs generated from
+ * `.proto` files using `kotlinx-rpc`.
  *
  * Example:
  * ```kotlin

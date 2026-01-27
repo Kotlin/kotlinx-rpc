@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+import "all_primitives_grpc.proto";
+import "enum_grpc.proto";
+import "repeated_grpc.proto";
+import "test_map_grpc.proto";
+
+package kotlinx.rpc.grpc.test;
+
+// Message with all types of fields that might become unknown
+message UnknownFieldsAll {
+  optional int32 field1 = 1;
+  // All primitive types
+  optional int32 intMissing = 2;
+  optional int64 int64Missing = 3;
+  optional uint32 uint32Missing = 4;
+  optional uint64 uint64Missing = 5;
+  optional sint32 sint32Missing = 6;
+  optional sint64 sint64Missing = 7;
+  optional fixed32 fixed32Missing = 8;
+  optional fixed64 fixed64Missing = 9;
+  optional sfixed32 sfixed32Missing = 10;
+  optional sfixed64 sfixed64Missing = 11;
+  optional bool boolMissing = 12;
+  optional string stringMissing = 13;
+  optional bytes bytesMissing = 14;
+  optional float floatMissing = 15;
+  optional double doubleMissing = 16;
+  optional AllPrimitives allPrimitivesMissing = 17;
+  optional TestMap mapMessageMissing = 20;
+  // Enum from existing proto
+  optional Enum enumMissing = 21;
+  // Repeated fields
+  repeated int32 repeatedIntMissing = 22;
+  repeated string repeatedStringMissing = 23;
+  repeated AllPrimitives repeatedMessageMissing = 24;
+  repeated fixed32 repeatedFixed32Missing = 25 [packed = true];
+  repeated Enum repeatedEnumMissing = 26;
+  // Map fields
+  map<string, int32> mapStringIntMissing = 27;
+  map<int32, string> mapIntStringMissing = 28;
+  map<string, AllPrimitives> mapStringMessageMissing = 29;
+  // Oneof field
+  oneof test_oneof {
+    int32 oneofInt = 30;
+    string oneofString = 31;
+    AllPrimitives oneofMessage = 32;
+    Enum oneofEnum = 33;
+  }
+}
+
+// Message with only a subset of fields - most will be unknown when deserializing UnknownFieldsAll
+message UnknownFieldsSubset {
+  optional int32 field1 = 1;
+}
