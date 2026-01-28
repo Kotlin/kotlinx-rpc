@@ -11,6 +11,7 @@
 import kotlinx.rpc.protobuf.input.stream.InputStream
 import kotlinx.rpc.grpc.codec.CodecConfig
 import kotlinx.rpc.grpc.codec.WithCodec
+import kotlinx.rpc.grpc.codec.codec
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.codec.SourcedMessageCodec
 import kotlinx.io.Source
@@ -113,6 +114,11 @@ object TestCodec9 : CustomCodec4<Test8> {
         error("Not implemented")
     }
 }
+
+class Test10
+val testCodec10 = codec<<!CHECKED_ANNOTATION_VIOLATION!>Test10<!>>()
+
+val testCodec = codec<Test>()
 
 /* GENERATED_FIR_TAGS: annotationUseSiteTargetFile, classDeclaration, classReference, functionDeclaration,
 interfaceDeclaration, nullableType, objectDeclaration, override, stringLiteral, typeParameter */
