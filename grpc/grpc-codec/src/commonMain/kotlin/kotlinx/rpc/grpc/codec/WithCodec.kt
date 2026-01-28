@@ -4,7 +4,9 @@
 
 package kotlinx.rpc.grpc.codec
 
+import kotlinx.rpc.annotations.CheckedTypeAnnotation
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.input.stream.InputStream
 import kotlin.reflect.KClass
 
@@ -37,6 +39,29 @@ import kotlin.reflect.KClass
 public expect annotation class WithCodec(val codec: KClass<out MessageCodec<*>>)
 
 /**
+ * An annotation that marks type parameter that must have a [WithCodec] annotation.
+ *
+ * Example
+ * ```
+ * fun codec<@HasWithCodec T: Any>() { ... }
+ *
+ * @WithCodec(ChatEntryCodec::class)
+ * class ChatEntry(...)
+ *
+ * codec<ChatEntry>() // OK
+ * codec<Int>() // Error
+ * ```
+ *
+ * @see CheckedTypeAnnotation
+ * @see WithCodec
+ * @see codec
+ */
+@InternalRpcApi
+@CheckedTypeAnnotation(WithCodec::class)
+@Target(AnnotationTarget.TYPE_PARAMETER)
+public annotation class HasWithCodec
+
+/**
  * Retrieves the [MessageCodec] for the specified type [T].
  *
  * This function resolves the codec associated with type [T] through the [WithCodec] annotation.
@@ -60,7 +85,7 @@ public expect annotation class WithCodec(val codec: KClass<out MessageCodec<*>>)
  * @see MessageCodec
  * @see CodecConfig
  */
-public inline fun <reified T: Any> codec(config: CodecConfig? = null): MessageCodec<T> {
+public inline fun <reified @HasWithCodec T: Any> codec(config: CodecConfig? = null): MessageCodec<T> {
     return codec(T::class, config)
 }
 
@@ -82,7 +107,7 @@ public inline fun <reified T: Any> codec(config: CodecConfig? = null): MessageCo
  * @see MessageCodec
  * @see CodecConfig
  */
-public fun <T: Any> codec(kClass: KClass<T>, config: CodecConfig? = null): MessageCodec<T> {
+public fun <@HasWithCodec T: Any> codec(kClass: KClass<T>, config: CodecConfig? = null): MessageCodec<T> {
     val codecObj = resolveCodec(kClass) ?: error("No codec object found for ${kClass.qualifiedName}. " +
             "Make sure that the kotlinx.rpc compiler plugin is applied.")
     @Suppress("UNCHECKED_CAST")

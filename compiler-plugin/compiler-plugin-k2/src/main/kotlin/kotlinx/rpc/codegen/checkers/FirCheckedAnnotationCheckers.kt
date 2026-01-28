@@ -9,6 +9,7 @@ import kotlinx.rpc.codegen.FirRpcPredicates
 import kotlinx.rpc.codegen.checkers.FirCheckedAnnotationHelper.checkTypeArguments
 import kotlinx.rpc.codegen.checkers.diagnostics.FirRpcDiagnostics
 import kotlinx.rpc.codegen.common.RpcClassId
+import kotlinx.rpc.codegen.common.RpcNames
 import kotlinx.rpc.codegen.vsApi
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
@@ -22,7 +23,9 @@ import org.jetbrains.kotlin.fir.caches.getValue
 import org.jetbrains.kotlin.fir.declarations.FirClass
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirTypeParameter
+import org.jetbrains.kotlin.fir.declarations.getKClassArgument
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
+import org.jetbrains.kotlin.fir.declarations.toAnnotationClassId
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.references.toResolvedCallableSymbol
@@ -33,6 +36,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.Name
 
 object FirCheckedAnnotationFunctionCallChecker {
     fun check(
@@ -283,11 +287,16 @@ object FirCheckedAnnotationHelper {
     ): List<FirClassSymbol<*>> {
         return symbol.annotations.mapNotNull {
             vsApi { it.resolvedType.toClassSymbolVS(session) }
-        }.filter { annotation ->
+        }.mapNotNull { annotation ->
             when {
-                annotation in visited -> false
-                annotation.hasAnnotation(RpcClassId.checkedTypeAnnotation, session) -> true
-                else -> checkedAnnotations(session, annotation, visited + annotation).isNotEmpty()
+                annotation in visited -> null
+
+                annotation.hasAnnotation(RpcClassId.checkedTypeAnnotation, session) ->
+                    annotation.checkedAnnotationTarget(session)
+
+                checkedAnnotations(session, annotation, visited + annotation).isNotEmpty() -> annotation
+                
+                else -> null
             }
         }
     }
@@ -321,6 +330,20 @@ object FirCheckedAnnotationHelper {
     }
 
     @OptIn(SymbolInternals::class)
+    private fun FirClassSymbol<*>.checkedAnnotationTarget(session: FirSession): FirClassSymbol<*> {
+        val checkForArgument = annotations
+            .firstOrNull { it.toAnnotationClassId(session) == RpcClassId.checkedTypeAnnotation }
+            ?.getKClassArgument(RpcNames.CHECK_FOR_ARGUMENT_NAME, session)
+            ?.let { vsApi { it.toClassSymbolVS(session) } }
+
+        return when {
+            checkForArgument == null -> this
+            checkForArgument.classId == RpcClassId.checkedTypeAnnotation -> this
+            else -> checkForArgument
+        }
+    }
+
+    @OptIn(SymbolInternals::class)
     private fun hasCheckedAnnotation(
         session: FirSession,
         symbol: FirBasedSymbol<*>,
@@ -331,8 +354,11 @@ object FirCheckedAnnotationHelper {
             symbol in visited -> false
             symbol.hasAnnotation(annotationId, session) -> true
             else -> symbol.annotations.any { annotation ->
-                vsApi { annotation.resolvedType.toClassSymbolVS(session) }?.let {
-                    hasCheckedAnnotation(session, it, annotationId, visited + symbol)
+                vsApi { annotation.resolvedType.toClassSymbolVS(session) }?.let { annotationSymbol ->
+                    when {
+                        annotationSymbol.checkedAnnotationTarget(session).classId == annotationId -> true
+                        else -> hasCheckedAnnotation(session, annotationSymbol, annotationId, visited + symbol)
+                    }
                 } == true
             }
         }

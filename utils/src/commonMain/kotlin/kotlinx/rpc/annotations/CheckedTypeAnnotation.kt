@@ -1,8 +1,10 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.annotations
+
+import kotlin.reflect.KClass
 
 /**
  * Meta annotation.
@@ -40,6 +42,26 @@ package kotlinx.rpc.annotations
  * interface MyGrpcService
  *
  * acceptRpcService<MyGrpcService>() // OK
+ * ```
+ *
+ * @property checkFor
  */
 @Target(AnnotationTarget.ANNOTATION_CLASS)
-public annotation class CheckedTypeAnnotation
+public annotation class CheckedTypeAnnotation(
+    /**
+     * By default, checked type annotations (applied via [CheckedTypeAnnotation])
+     * validate the presence of the annotation on the type itself.
+     *
+     * In some cases, however, we need to validate a *different* annotation on the type.
+     * This is necessary when that annotation requires parameters and therefore
+     * cannot be used directly in function declarations.
+     * Example:
+     * ```
+     * @WithCodec(MessageCodec::class)
+     * class Message
+     *
+     * fun <reified @HasWithCodec T : Any> codec(): T { ... }
+     * ```
+     */
+    val checkFor: KClass<*> = CheckedTypeAnnotation::class
+)
