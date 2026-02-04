@@ -1,0 +1,27 @@
+name: Verify List Of Implicit Imports
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-list-of-implicit-imports:
+    name: Run Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Sources
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Update List Of Implicit Imports
+        run: ./updateImplicitImports.sh
+      - name: Check if list is up-to-date
+        run: |
+          if [[ -n "$(git status --porcelain | grep protoc-gen/common/src/main/resources/implicit-imports/)" ]]; then
+            echo "List of implicit imports is not up to date. Please run './updateImplicitImports.sh' and commit changes"
+            git status --porcelain
+            git diff --minimal | cat
+            exit 1
+          fi
