@@ -8,7 +8,6 @@ import kotlinx.rpc.codegen.common.RpcClassId
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.declarations.IrValueParameter
-import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.getAnnotation
@@ -39,6 +38,7 @@ internal class ServiceDeclaration(
     class Method(
         val function: IrSimpleFunction,
         val arguments: List<Argument>,
+        val ctx: RpcIrContext
     ) : Callable {
         override val name: String = function.name.asString()
         val grpcName by lazy {
@@ -48,9 +48,11 @@ internal class ServiceDeclaration(
 
             val nameArgument = grpcMethodAnnotation?.getValueArgument(Name.identifier("name"))
 
-            ((nameArgument as? IrConst)?.value as? String)
-                ?.takeIf { it.isNotBlank() }
-                ?: name
+            ctx.vsApi {
+                nameArgument?.asConstValue(String::class)
+                    ?.takeIf { it.isNotBlank() }
+                    ?: name
+            }
         }
 
         class Argument(

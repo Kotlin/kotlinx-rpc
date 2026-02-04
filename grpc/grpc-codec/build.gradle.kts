@@ -14,7 +14,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.utils)
+                api(projects.core)
                 api(projects.protobuf.protobufInputStream)
                 api(libs.kotlinx.io.core)
             }
