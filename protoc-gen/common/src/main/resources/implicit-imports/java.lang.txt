@@ -45,10 +45,12 @@ InstantiationException
 Integer
 InternalError
 InterruptedException
+IO
 Iterable
 LayerInstantiationException
 LinkageError
 Long
+MatchException
 Math
 Module
 ModuleLayer
@@ -76,9 +78,11 @@ Runtime
 RuntimeException
 RuntimePermission
 SafeVarargs
+ScopedValue
 SecurityException
 SecurityManager
 Short
+StableValue
 StackOverflowError
 StackTraceElement
 StackWalker
@@ -87,6 +91,7 @@ String
 StringBuffer
 StringBuilder
 StringIndexOutOfBoundsException
+StringTemplate
 SuppressWarnings
 System
 Thread
@@ -102,3 +107,4 @@ UnsupportedOperationException
 VerifyError
 VirtualMachineError
 Void
+WrongThreadException

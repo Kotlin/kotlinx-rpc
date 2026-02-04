@@ -55,6 +55,7 @@ Long
 LongArray
 Metadata
 MustUseReturnValue
+MustUseReturnValues
 NoSuchElementException
 Nothing
 NotImplementedError
