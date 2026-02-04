@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.protobuf.internal
 
+import kotlinx.io.Buffer
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -14,6 +15,9 @@ public abstract class InternalMessage(fieldsWithPresence: Int) {
 
     @Suppress("PropertyName")
     public abstract val _size: Int
+
+    @Suppress("PropertyName")
+    public abstract val _unknownFields: Buffer
 }
 
 @InternalRpcApi

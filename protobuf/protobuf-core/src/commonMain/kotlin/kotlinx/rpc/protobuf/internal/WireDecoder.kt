@@ -91,30 +91,12 @@ public interface WireDecoder : AutoCloseable {
         popLimit(limit)
     }
 
-    public fun skipValue(tag: KTag) {
-        when (tag.wireType) {
-            WireType.VARINT -> readInt64()
-            WireType.FIXED32 -> readFixed32()
-            WireType.FIXED64 -> readFixed64()
-            WireType.LENGTH_DELIMITED -> readBytes()
-            WireType.START_GROUP -> skipGroup(tag.fieldNr)
-            WireType.END_GROUP -> {} // nothing to do
-        }
+    public fun skipUnknownField(tag: KTag) {
+        return readOrSkipUnknownField(tag, null)
     }
 
-    private fun skipGroup(startField: Int) {
-        // read until END_GROUP with the same field number
-        while (true) {
-            val t = readTag() ?: throw ProtobufDecodingException.truncatedMessage()
-            if (t.wireType == WireType.END_GROUP) {
-                if (t.fieldNr != startField) {
-                    throw ProtobufDecodingException("Mismatched END_GROUP: got ${t.fieldNr}, want $startField")
-                }
-                return
-            }
-            // recursively skip nested values (groups can nest)
-            skipValue(t)
-        }
+    public fun readUnknownField(tag: KTag, unknownFieldEncoder: WireEncoder) {
+        readOrSkipUnknownField(tag, unknownFieldEncoder)
     }
 }
 
@@ -133,3 +115,39 @@ public expect inline fun checkForPlatformDecodeException(block: () -> Unit)
  */
 @InternalRpcApi
 public expect fun WireDecoder(source: InputStream): WireDecoder
+
+
+private fun WireDecoder.readOrSkipUnknownField(tag: KTag, unknownFieldEncoder: WireEncoder?) {
+    when (tag.wireType) {
+        WireType.VARINT -> readInt64().let {
+            unknownFieldEncoder?.writeInt64(tag.fieldNr, it)
+        }
+        WireType.FIXED32 -> readFixed32().let {
+            unknownFieldEncoder?.writeFixed32(tag.fieldNr, it)
+        }
+        WireType.FIXED64 -> readFixed64().let {
+            unknownFieldEncoder?.writeFixed64(tag.fieldNr, it)
+        }
+        WireType.LENGTH_DELIMITED -> readBytes().let {
+            unknownFieldEncoder?.writeBytes(tag.fieldNr, it)
+        }
+        WireType.START_GROUP -> readOrSkipUnknownGroup(tag, unknownFieldEncoder)
+        WireType.END_GROUP -> throw ProtobufDecodingException("Mismatched END_GROUP tag: ${tag.fieldNr}")
+    }
+}
+
+private fun WireDecoder.readOrSkipUnknownGroup(tag: KTag, unknownFieldEncoder: WireEncoder?) {
+    unknownFieldEncoder?.writeTag(tag)
+    val startField = tag.fieldNr
+    while (true) {
+        val t = readTag() ?: throw ProtobufDecodingException.truncatedMessage()
+        if (t.wireType == WireType.END_GROUP) {
+            if (t.fieldNr != startField) {
+                throw ProtobufDecodingException("Mismatched END_GROUP: got ${t.fieldNr}, want $startField")
+            }
+            unknownFieldEncoder?.writeTag(KTag(startField, WireType.END_GROUP))
+            return
+        }
+        readOrSkipUnknownField(t, unknownFieldEncoder)
+    }
+}

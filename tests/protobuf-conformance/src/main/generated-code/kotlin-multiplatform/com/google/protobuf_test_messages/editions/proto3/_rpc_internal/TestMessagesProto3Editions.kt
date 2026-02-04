@@ -2,6 +2,7 @@
 package com.google.protobuf_test_messages.editions.proto3
 
 import com.google.protobuf.kotlin.*
+import kotlinx.io.Buffer
 import kotlinx.rpc.internal.utils.*
 import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.internal.*
@@ -30,6 +31,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var optionalInt32: Int by MsgFieldDelegate { 0 }
     override var optionalInt64: Long by MsgFieldDelegate { 0L }
@@ -778,203 +785,204 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
     @kotlinx.rpc.internal.utils.InternalRpcApi
     fun copyInternal(body: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.() -> Unit): com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal { 
         val copy = com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal()
-        copy.optionalInt32 = optionalInt32
-        copy.optionalInt64 = optionalInt64
-        copy.optionalUint32 = optionalUint32
-        copy.optionalUint64 = optionalUint64
-        copy.optionalSint32 = optionalSint32
-        copy.optionalSint64 = optionalSint64
-        copy.optionalFixed32 = optionalFixed32
-        copy.optionalFixed64 = optionalFixed64
-        copy.optionalSfixed32 = optionalSfixed32
-        copy.optionalSfixed64 = optionalSfixed64
-        copy.optionalFloat = optionalFloat
-        copy.optionalDouble = optionalDouble
-        copy.optionalBool = optionalBool
-        copy.optionalString = optionalString
-        copy.optionalBytes = optionalBytes.copyOf()
+        copy.optionalInt32 = this.optionalInt32
+        copy.optionalInt64 = this.optionalInt64
+        copy.optionalUint32 = this.optionalUint32
+        copy.optionalUint64 = this.optionalUint64
+        copy.optionalSint32 = this.optionalSint32
+        copy.optionalSint64 = this.optionalSint64
+        copy.optionalFixed32 = this.optionalFixed32
+        copy.optionalFixed64 = this.optionalFixed64
+        copy.optionalSfixed32 = this.optionalSfixed32
+        copy.optionalSfixed64 = this.optionalSfixed64
+        copy.optionalFloat = this.optionalFloat
+        copy.optionalDouble = this.optionalDouble
+        copy.optionalBool = this.optionalBool
+        copy.optionalString = this.optionalString
+        copy.optionalBytes = this.optionalBytes.copyOf()
         if (presenceMask[0]) { 
-            copy.optionalNestedMessage = optionalNestedMessage.copy()
+            copy.optionalNestedMessage = this.optionalNestedMessage.copy()
         }
 
         if (presenceMask[1]) { 
-            copy.optionalForeignMessage = optionalForeignMessage.copy()
+            copy.optionalForeignMessage = this.optionalForeignMessage.copy()
         }
 
-        copy.optionalNestedEnum = optionalNestedEnum
-        copy.optionalForeignEnum = optionalForeignEnum
-        copy.optionalAliasedEnum = optionalAliasedEnum
-        copy.optionalStringPiece = optionalStringPiece
-        copy.optionalCord = optionalCord
+        copy.optionalNestedEnum = this.optionalNestedEnum
+        copy.optionalForeignEnum = this.optionalForeignEnum
+        copy.optionalAliasedEnum = this.optionalAliasedEnum
+        copy.optionalStringPiece = this.optionalStringPiece
+        copy.optionalCord = this.optionalCord
         if (presenceMask[2]) { 
-            copy.recursiveMessage = recursiveMessage.copy()
+            copy.recursiveMessage = this.recursiveMessage.copy()
         }
 
-        copy.repeatedInt32 = repeatedInt32.map { it }
-        copy.repeatedInt64 = repeatedInt64.map { it }
-        copy.repeatedUint32 = repeatedUint32.map { it }
-        copy.repeatedUint64 = repeatedUint64.map { it }
-        copy.repeatedSint32 = repeatedSint32.map { it }
-        copy.repeatedSint64 = repeatedSint64.map { it }
-        copy.repeatedFixed32 = repeatedFixed32.map { it }
-        copy.repeatedFixed64 = repeatedFixed64.map { it }
-        copy.repeatedSfixed32 = repeatedSfixed32.map { it }
-        copy.repeatedSfixed64 = repeatedSfixed64.map { it }
-        copy.repeatedFloat = repeatedFloat.map { it }
-        copy.repeatedDouble = repeatedDouble.map { it }
-        copy.repeatedBool = repeatedBool.map { it }
-        copy.repeatedString = repeatedString.map { it }
-        copy.repeatedBytes = repeatedBytes.map { it.copyOf() }
-        copy.repeatedNestedMessage = repeatedNestedMessage.map { it.copy() }
-        copy.repeatedForeignMessage = repeatedForeignMessage.map { it.copy() }
-        copy.repeatedNestedEnum = repeatedNestedEnum.map { it }
-        copy.repeatedForeignEnum = repeatedForeignEnum.map { it }
-        copy.repeatedStringPiece = repeatedStringPiece.map { it }
-        copy.repeatedCord = repeatedCord.map { it }
-        copy.packedInt32 = packedInt32.map { it }
-        copy.packedInt64 = packedInt64.map { it }
-        copy.packedUint32 = packedUint32.map { it }
-        copy.packedUint64 = packedUint64.map { it }
-        copy.packedSint32 = packedSint32.map { it }
-        copy.packedSint64 = packedSint64.map { it }
-        copy.packedFixed32 = packedFixed32.map { it }
-        copy.packedFixed64 = packedFixed64.map { it }
-        copy.packedSfixed32 = packedSfixed32.map { it }
-        copy.packedSfixed64 = packedSfixed64.map { it }
-        copy.packedFloat = packedFloat.map { it }
-        copy.packedDouble = packedDouble.map { it }
-        copy.packedBool = packedBool.map { it }
-        copy.packedNestedEnum = packedNestedEnum.map { it }
-        copy.unpackedInt32 = unpackedInt32.map { it }
-        copy.unpackedInt64 = unpackedInt64.map { it }
-        copy.unpackedUint32 = unpackedUint32.map { it }
-        copy.unpackedUint64 = unpackedUint64.map { it }
-        copy.unpackedSint32 = unpackedSint32.map { it }
-        copy.unpackedSint64 = unpackedSint64.map { it }
-        copy.unpackedFixed32 = unpackedFixed32.map { it }
-        copy.unpackedFixed64 = unpackedFixed64.map { it }
-        copy.unpackedSfixed32 = unpackedSfixed32.map { it }
-        copy.unpackedSfixed64 = unpackedSfixed64.map { it }
-        copy.unpackedFloat = unpackedFloat.map { it }
-        copy.unpackedDouble = unpackedDouble.map { it }
-        copy.unpackedBool = unpackedBool.map { it }
-        copy.unpackedNestedEnum = unpackedNestedEnum.map { it }
-        copy.mapInt32Int32 = mapInt32Int32.mapValues { it.value }
-        copy.mapInt64Int64 = mapInt64Int64.mapValues { it.value }
-        copy.mapUint32Uint32 = mapUint32Uint32.mapValues { it.value }
-        copy.mapUint64Uint64 = mapUint64Uint64.mapValues { it.value }
-        copy.mapSint32Sint32 = mapSint32Sint32.mapValues { it.value }
-        copy.mapSint64Sint64 = mapSint64Sint64.mapValues { it.value }
-        copy.mapFixed32Fixed32 = mapFixed32Fixed32.mapValues { it.value }
-        copy.mapFixed64Fixed64 = mapFixed64Fixed64.mapValues { it.value }
-        copy.mapSfixed32Sfixed32 = mapSfixed32Sfixed32.mapValues { it.value }
-        copy.mapSfixed64Sfixed64 = mapSfixed64Sfixed64.mapValues { it.value }
-        copy.mapInt32Float = mapInt32Float.mapValues { it.value }
-        copy.mapInt32Double = mapInt32Double.mapValues { it.value }
-        copy.mapBoolBool = mapBoolBool.mapValues { it.value }
-        copy.mapStringString = mapStringString.mapValues { it.value }
-        copy.mapStringBytes = mapStringBytes.mapValues { it.value.copyOf() }
-        copy.mapStringNestedMessage = mapStringNestedMessage.mapValues { it.value.copy() }
-        copy.mapStringForeignMessage = mapStringForeignMessage.mapValues { it.value.copy() }
-        copy.mapStringNestedEnum = mapStringNestedEnum.mapValues { it.value }
-        copy.mapStringForeignEnum = mapStringForeignEnum.mapValues { it.value }
+        copy.repeatedInt32 = this.repeatedInt32.map { it }
+        copy.repeatedInt64 = this.repeatedInt64.map { it }
+        copy.repeatedUint32 = this.repeatedUint32.map { it }
+        copy.repeatedUint64 = this.repeatedUint64.map { it }
+        copy.repeatedSint32 = this.repeatedSint32.map { it }
+        copy.repeatedSint64 = this.repeatedSint64.map { it }
+        copy.repeatedFixed32 = this.repeatedFixed32.map { it }
+        copy.repeatedFixed64 = this.repeatedFixed64.map { it }
+        copy.repeatedSfixed32 = this.repeatedSfixed32.map { it }
+        copy.repeatedSfixed64 = this.repeatedSfixed64.map { it }
+        copy.repeatedFloat = this.repeatedFloat.map { it }
+        copy.repeatedDouble = this.repeatedDouble.map { it }
+        copy.repeatedBool = this.repeatedBool.map { it }
+        copy.repeatedString = this.repeatedString.map { it }
+        copy.repeatedBytes = this.repeatedBytes.map { it.copyOf() }
+        copy.repeatedNestedMessage = this.repeatedNestedMessage.map { it.copy() }
+        copy.repeatedForeignMessage = this.repeatedForeignMessage.map { it.copy() }
+        copy.repeatedNestedEnum = this.repeatedNestedEnum.map { it }
+        copy.repeatedForeignEnum = this.repeatedForeignEnum.map { it }
+        copy.repeatedStringPiece = this.repeatedStringPiece.map { it }
+        copy.repeatedCord = this.repeatedCord.map { it }
+        copy.packedInt32 = this.packedInt32.map { it }
+        copy.packedInt64 = this.packedInt64.map { it }
+        copy.packedUint32 = this.packedUint32.map { it }
+        copy.packedUint64 = this.packedUint64.map { it }
+        copy.packedSint32 = this.packedSint32.map { it }
+        copy.packedSint64 = this.packedSint64.map { it }
+        copy.packedFixed32 = this.packedFixed32.map { it }
+        copy.packedFixed64 = this.packedFixed64.map { it }
+        copy.packedSfixed32 = this.packedSfixed32.map { it }
+        copy.packedSfixed64 = this.packedSfixed64.map { it }
+        copy.packedFloat = this.packedFloat.map { it }
+        copy.packedDouble = this.packedDouble.map { it }
+        copy.packedBool = this.packedBool.map { it }
+        copy.packedNestedEnum = this.packedNestedEnum.map { it }
+        copy.unpackedInt32 = this.unpackedInt32.map { it }
+        copy.unpackedInt64 = this.unpackedInt64.map { it }
+        copy.unpackedUint32 = this.unpackedUint32.map { it }
+        copy.unpackedUint64 = this.unpackedUint64.map { it }
+        copy.unpackedSint32 = this.unpackedSint32.map { it }
+        copy.unpackedSint64 = this.unpackedSint64.map { it }
+        copy.unpackedFixed32 = this.unpackedFixed32.map { it }
+        copy.unpackedFixed64 = this.unpackedFixed64.map { it }
+        copy.unpackedSfixed32 = this.unpackedSfixed32.map { it }
+        copy.unpackedSfixed64 = this.unpackedSfixed64.map { it }
+        copy.unpackedFloat = this.unpackedFloat.map { it }
+        copy.unpackedDouble = this.unpackedDouble.map { it }
+        copy.unpackedBool = this.unpackedBool.map { it }
+        copy.unpackedNestedEnum = this.unpackedNestedEnum.map { it }
+        copy.mapInt32Int32 = this.mapInt32Int32.mapValues { it.value }
+        copy.mapInt64Int64 = this.mapInt64Int64.mapValues { it.value }
+        copy.mapUint32Uint32 = this.mapUint32Uint32.mapValues { it.value }
+        copy.mapUint64Uint64 = this.mapUint64Uint64.mapValues { it.value }
+        copy.mapSint32Sint32 = this.mapSint32Sint32.mapValues { it.value }
+        copy.mapSint64Sint64 = this.mapSint64Sint64.mapValues { it.value }
+        copy.mapFixed32Fixed32 = this.mapFixed32Fixed32.mapValues { it.value }
+        copy.mapFixed64Fixed64 = this.mapFixed64Fixed64.mapValues { it.value }
+        copy.mapSfixed32Sfixed32 = this.mapSfixed32Sfixed32.mapValues { it.value }
+        copy.mapSfixed64Sfixed64 = this.mapSfixed64Sfixed64.mapValues { it.value }
+        copy.mapInt32Float = this.mapInt32Float.mapValues { it.value }
+        copy.mapInt32Double = this.mapInt32Double.mapValues { it.value }
+        copy.mapBoolBool = this.mapBoolBool.mapValues { it.value }
+        copy.mapStringString = this.mapStringString.mapValues { it.value }
+        copy.mapStringBytes = this.mapStringBytes.mapValues { it.value.copyOf() }
+        copy.mapStringNestedMessage = this.mapStringNestedMessage.mapValues { it.value.copy() }
+        copy.mapStringForeignMessage = this.mapStringForeignMessage.mapValues { it.value.copy() }
+        copy.mapStringNestedEnum = this.mapStringNestedEnum.mapValues { it.value }
+        copy.mapStringForeignEnum = this.mapStringForeignEnum.mapValues { it.value }
         if (presenceMask[3]) { 
-            copy.optionalBoolWrapper = optionalBoolWrapper.copy()
+            copy.optionalBoolWrapper = this.optionalBoolWrapper.copy()
         }
 
         if (presenceMask[4]) { 
-            copy.optionalInt32Wrapper = optionalInt32Wrapper.copy()
+            copy.optionalInt32Wrapper = this.optionalInt32Wrapper.copy()
         }
 
         if (presenceMask[5]) { 
-            copy.optionalInt64Wrapper = optionalInt64Wrapper.copy()
+            copy.optionalInt64Wrapper = this.optionalInt64Wrapper.copy()
         }
 
         if (presenceMask[6]) { 
-            copy.optionalUint32Wrapper = optionalUint32Wrapper.copy()
+            copy.optionalUint32Wrapper = this.optionalUint32Wrapper.copy()
         }
 
         if (presenceMask[7]) { 
-            copy.optionalUint64Wrapper = optionalUint64Wrapper.copy()
+            copy.optionalUint64Wrapper = this.optionalUint64Wrapper.copy()
         }
 
         if (presenceMask[8]) { 
-            copy.optionalFloatWrapper = optionalFloatWrapper.copy()
+            copy.optionalFloatWrapper = this.optionalFloatWrapper.copy()
         }
 
         if (presenceMask[9]) { 
-            copy.optionalDoubleWrapper = optionalDoubleWrapper.copy()
+            copy.optionalDoubleWrapper = this.optionalDoubleWrapper.copy()
         }
 
         if (presenceMask[10]) { 
-            copy.optionalStringWrapper = optionalStringWrapper.copy()
+            copy.optionalStringWrapper = this.optionalStringWrapper.copy()
         }
 
         if (presenceMask[11]) { 
-            copy.optionalBytesWrapper = optionalBytesWrapper.copy()
+            copy.optionalBytesWrapper = this.optionalBytesWrapper.copy()
         }
 
-        copy.repeatedBoolWrapper = repeatedBoolWrapper.map { it.copy() }
-        copy.repeatedInt32Wrapper = repeatedInt32Wrapper.map { it.copy() }
-        copy.repeatedInt64Wrapper = repeatedInt64Wrapper.map { it.copy() }
-        copy.repeatedUint32Wrapper = repeatedUint32Wrapper.map { it.copy() }
-        copy.repeatedUint64Wrapper = repeatedUint64Wrapper.map { it.copy() }
-        copy.repeatedFloatWrapper = repeatedFloatWrapper.map { it.copy() }
-        copy.repeatedDoubleWrapper = repeatedDoubleWrapper.map { it.copy() }
-        copy.repeatedStringWrapper = repeatedStringWrapper.map { it.copy() }
-        copy.repeatedBytesWrapper = repeatedBytesWrapper.map { it.copy() }
+        copy.repeatedBoolWrapper = this.repeatedBoolWrapper.map { it.copy() }
+        copy.repeatedInt32Wrapper = this.repeatedInt32Wrapper.map { it.copy() }
+        copy.repeatedInt64Wrapper = this.repeatedInt64Wrapper.map { it.copy() }
+        copy.repeatedUint32Wrapper = this.repeatedUint32Wrapper.map { it.copy() }
+        copy.repeatedUint64Wrapper = this.repeatedUint64Wrapper.map { it.copy() }
+        copy.repeatedFloatWrapper = this.repeatedFloatWrapper.map { it.copy() }
+        copy.repeatedDoubleWrapper = this.repeatedDoubleWrapper.map { it.copy() }
+        copy.repeatedStringWrapper = this.repeatedStringWrapper.map { it.copy() }
+        copy.repeatedBytesWrapper = this.repeatedBytesWrapper.map { it.copy() }
         if (presenceMask[12]) { 
-            copy.optionalDuration = optionalDuration.copy()
+            copy.optionalDuration = this.optionalDuration.copy()
         }
 
         if (presenceMask[13]) { 
-            copy.optionalTimestamp = optionalTimestamp.copy()
+            copy.optionalTimestamp = this.optionalTimestamp.copy()
         }
 
         if (presenceMask[14]) { 
-            copy.optionalFieldMask = optionalFieldMask.copy()
+            copy.optionalFieldMask = this.optionalFieldMask.copy()
         }
 
         if (presenceMask[15]) { 
-            copy.optionalStruct = optionalStruct.copy()
+            copy.optionalStruct = this.optionalStruct.copy()
         }
 
         if (presenceMask[16]) { 
-            copy.optionalAny = optionalAny.copy()
+            copy.optionalAny = this.optionalAny.copy()
         }
 
         if (presenceMask[17]) { 
-            copy.optionalValue = optionalValue.copy()
+            copy.optionalValue = this.optionalValue.copy()
         }
 
-        copy.optionalNullValue = optionalNullValue
-        copy.repeatedDuration = repeatedDuration.map { it.copy() }
-        copy.repeatedTimestamp = repeatedTimestamp.map { it.copy() }
-        copy.repeatedFieldmask = repeatedFieldmask.map { it.copy() }
-        copy.repeatedStruct = repeatedStruct.map { it.copy() }
-        copy.repeatedAny = repeatedAny.map { it.copy() }
-        copy.repeatedValue = repeatedValue.map { it.copy() }
-        copy.repeatedListValue = repeatedListValue.map { it.copy() }
-        copy.fieldname1 = fieldname1
-        copy.fieldName2 = fieldName2
-        copy.FieldName3 = FieldName3
-        copy.field_Name4_ = field_Name4_
-        copy.field0name5 = field0name5
-        copy.field_0Name6 = field_0Name6
-        copy.fieldName7 = fieldName7
-        copy.FieldName8 = FieldName8
-        copy.field_Name9 = field_Name9
-        copy.Field_Name10 = Field_Name10
-        copy.FIELD_NAME11 = FIELD_NAME11
-        copy.FIELDName12 = FIELDName12
-        copy._FieldName13 = _FieldName13
-        copy.__FieldName14 = __FieldName14
-        copy.field_Name15 = field_Name15
-        copy.field__Name16 = field__Name16
-        copy.fieldName17__ = fieldName17__
-        copy.FieldName18__ = FieldName18__
-        copy.oneofField = oneofField?.oneOfCopy()
+        copy.optionalNullValue = this.optionalNullValue
+        copy.repeatedDuration = this.repeatedDuration.map { it.copy() }
+        copy.repeatedTimestamp = this.repeatedTimestamp.map { it.copy() }
+        copy.repeatedFieldmask = this.repeatedFieldmask.map { it.copy() }
+        copy.repeatedStruct = this.repeatedStruct.map { it.copy() }
+        copy.repeatedAny = this.repeatedAny.map { it.copy() }
+        copy.repeatedValue = this.repeatedValue.map { it.copy() }
+        copy.repeatedListValue = this.repeatedListValue.map { it.copy() }
+        copy.fieldname1 = this.fieldname1
+        copy.fieldName2 = this.fieldName2
+        copy.FieldName3 = this.FieldName3
+        copy.field_Name4_ = this.field_Name4_
+        copy.field0name5 = this.field0name5
+        copy.field_0Name6 = this.field_0Name6
+        copy.fieldName7 = this.fieldName7
+        copy.FieldName8 = this.FieldName8
+        copy.field_Name9 = this.field_Name9
+        copy.Field_Name10 = this.Field_Name10
+        copy.FIELD_NAME11 = this.FIELD_NAME11
+        copy.FIELDName12 = this.FIELDName12
+        copy._FieldName13 = this._FieldName13
+        copy.__FieldName14 = this.__FieldName14
+        copy.field_Name15 = this.field_Name15
+        copy.field__Name16 = this.field__Name16
+        copy.fieldName17__ = this.fieldName17__
+        copy.FieldName18__ = this.FieldName18__
+        copy.oneofField = this.oneofField?.oneOfCopy()
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -1021,6 +1029,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override var a: Int by MsgFieldDelegate { 0 }
         override var corecursive: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3 by MsgFieldDelegate(PresenceIndices.corecursive) { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal() }
@@ -1073,12 +1087,13 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         @kotlinx.rpc.internal.utils.InternalRpcApi
         fun copyInternal(body: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.NestedMessageInternal.() -> Unit): com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.NestedMessageInternal { 
             val copy = com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.NestedMessageInternal()
-            copy.a = a
+            copy.a = this.a
             if (presenceMask[0]) { 
-                copy.corecursive = corecursive.copy()
+                copy.corecursive = this.corecursive.copy()
             }
 
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -1087,10 +1102,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
             override fun encode(value: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedMessage): kotlinx.rpc.protobuf.input.stream.InputStream { 
                 val buffer = kotlinx.io.Buffer()
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+                val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    value.asInternal().encodeWith(encoder)
+                    internalMsg.encodeWith(encoder)
                 }
                 encoder.flush()
+                internalMsg._unknownFields.copyTo(buffer)
                 return buffer.asInputStream()
             }
 
@@ -1101,6 +1118,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
                         com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, it)
                     }
                     msg.checkRequiredFields()
+                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -1113,6 +1131,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
     class MapInt32Int32EntryInternal: kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate { 0 }
         var value: Int by MsgFieldDelegate { 0 }
@@ -1159,6 +1183,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: Long by MsgFieldDelegate { 0L }
         var value: Long by MsgFieldDelegate { 0L }
 
@@ -1203,6 +1233,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
     class MapUint32Uint32EntryInternal: kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: UInt by MsgFieldDelegate { 0u }
         var value: UInt by MsgFieldDelegate { 0u }
@@ -1249,6 +1285,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: ULong by MsgFieldDelegate { 0uL }
         var value: ULong by MsgFieldDelegate { 0uL }
 
@@ -1293,6 +1335,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
     class MapSint32Sint32EntryInternal: kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate { 0 }
         var value: Int by MsgFieldDelegate { 0 }
@@ -1339,6 +1387,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: Long by MsgFieldDelegate { 0L }
         var value: Long by MsgFieldDelegate { 0L }
 
@@ -1383,6 +1437,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
     class MapFixed32Fixed32EntryInternal: kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: UInt by MsgFieldDelegate { 0u }
         var value: UInt by MsgFieldDelegate { 0u }
@@ -1429,6 +1489,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: ULong by MsgFieldDelegate { 0uL }
         var value: ULong by MsgFieldDelegate { 0uL }
 
@@ -1473,6 +1539,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
     class MapSfixed32Sfixed32EntryInternal: kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate { 0 }
         var value: Int by MsgFieldDelegate { 0 }
@@ -1519,6 +1591,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: Long by MsgFieldDelegate { 0L }
         var value: Long by MsgFieldDelegate { 0L }
 
@@ -1563,6 +1641,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
     class MapInt32FloatEntryInternal: kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate { 0 }
         var value: Float by MsgFieldDelegate { 0.0f }
@@ -1609,6 +1693,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: Int by MsgFieldDelegate { 0 }
         var value: Double by MsgFieldDelegate { 0.0 }
 
@@ -1653,6 +1743,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
     class MapBoolBoolEntryInternal: kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Boolean by MsgFieldDelegate { false }
         var value: Boolean by MsgFieldDelegate { false }
@@ -1699,6 +1795,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: String by MsgFieldDelegate { "" }
         var value: String by MsgFieldDelegate { "" }
 
@@ -1743,6 +1845,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
     class MapStringBytesEntryInternal: kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate { "" }
         var value: ByteArray by MsgFieldDelegate { byteArrayOf() }
@@ -1792,6 +1900,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate { "" }
         var value: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedMessage by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.NestedMessageInternal() }
@@ -1848,6 +1962,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: String by MsgFieldDelegate { "" }
         var value: com.google.protobuf_test_messages.editions.proto3.ForeignMessage by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.editions.proto3.ForeignMessageInternal() }
 
@@ -1899,6 +2019,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: String by MsgFieldDelegate { "" }
         var value: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum by MsgFieldDelegate { com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedEnum.FOO }
 
@@ -1943,6 +2069,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
     class MapStringForeignEnumEntryInternal: kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate { "" }
         var value: com.google.protobuf_test_messages.editions.proto3.ForeignEnum by MsgFieldDelegate { com.google.protobuf_test_messages.editions.proto3.ForeignEnum.FOREIGN_FOO }
@@ -1990,10 +2122,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
         override fun encode(value: com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -2004,6 +2138,7 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
                     com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -2016,6 +2151,12 @@ class TestAllTypesProto3Internal: com.google.protobuf_test_messages.editions.pro
 class ForeignMessageInternal: com.google.protobuf_test_messages.editions.proto3.ForeignMessage, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var c: Int by MsgFieldDelegate { 0 }
 
@@ -2052,8 +2193,9 @@ class ForeignMessageInternal: com.google.protobuf_test_messages.editions.proto3.
     @kotlinx.rpc.internal.utils.InternalRpcApi
     fun copyInternal(body: com.google.protobuf_test_messages.editions.proto3.ForeignMessageInternal.() -> Unit): com.google.protobuf_test_messages.editions.proto3.ForeignMessageInternal { 
         val copy = com.google.protobuf_test_messages.editions.proto3.ForeignMessageInternal()
-        copy.c = c
+        copy.c = this.c
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -2062,10 +2204,12 @@ class ForeignMessageInternal: com.google.protobuf_test_messages.editions.proto3.
         override fun encode(value: com.google.protobuf_test_messages.editions.proto3.ForeignMessage): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -2076,6 +2220,7 @@ class ForeignMessageInternal: com.google.protobuf_test_messages.editions.proto3.
                     com.google.protobuf_test_messages.editions.proto3.ForeignMessageInternal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -2088,6 +2233,12 @@ class ForeignMessageInternal: com.google.protobuf_test_messages.editions.proto3.
 class NullHypothesisProto3Internal: com.google.protobuf_test_messages.editions.proto3.NullHypothesisProto3, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override fun hashCode(): kotlin.Int { 
         checkRequiredFields()
@@ -2121,6 +2272,7 @@ class NullHypothesisProto3Internal: com.google.protobuf_test_messages.editions.p
     fun copyInternal(body: com.google.protobuf_test_messages.editions.proto3.NullHypothesisProto3Internal.() -> Unit): com.google.protobuf_test_messages.editions.proto3.NullHypothesisProto3Internal { 
         val copy = com.google.protobuf_test_messages.editions.proto3.NullHypothesisProto3Internal()
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -2129,10 +2281,12 @@ class NullHypothesisProto3Internal: com.google.protobuf_test_messages.editions.p
         override fun encode(value: com.google.protobuf_test_messages.editions.proto3.NullHypothesisProto3): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -2143,6 +2297,7 @@ class NullHypothesisProto3Internal: com.google.protobuf_test_messages.editions.p
                     com.google.protobuf_test_messages.editions.proto3.NullHypothesisProto3Internal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -2155,6 +2310,12 @@ class NullHypothesisProto3Internal: com.google.protobuf_test_messages.editions.p
 class EnumOnlyProto3Internal: com.google.protobuf_test_messages.editions.proto3.EnumOnlyProto3, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override fun hashCode(): kotlin.Int { 
         checkRequiredFields()
@@ -2188,6 +2349,7 @@ class EnumOnlyProto3Internal: com.google.protobuf_test_messages.editions.proto3.
     fun copyInternal(body: com.google.protobuf_test_messages.editions.proto3.EnumOnlyProto3Internal.() -> Unit): com.google.protobuf_test_messages.editions.proto3.EnumOnlyProto3Internal { 
         val copy = com.google.protobuf_test_messages.editions.proto3.EnumOnlyProto3Internal()
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -2196,10 +2358,12 @@ class EnumOnlyProto3Internal: com.google.protobuf_test_messages.editions.proto3.
         override fun encode(value: com.google.protobuf_test_messages.editions.proto3.EnumOnlyProto3): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -2210,6 +2374,7 @@ class EnumOnlyProto3Internal: com.google.protobuf_test_messages.editions.proto3.
                     com.google.protobuf_test_messages.editions.proto3.EnumOnlyProto3Internal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -4017,8 +4182,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -4772,8 +4940,11 @@ fun com.google.protobuf_test_messages.editions.proto3.ForeignMessageInternal.Com
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -4813,8 +4984,11 @@ fun com.google.protobuf_test_messages.editions.proto3.NullHypothesisProto3Intern
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -4850,8 +5024,11 @@ fun com.google.protobuf_test_messages.editions.proto3.EnumOnlyProto3Internal.Com
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -4906,8 +5083,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -4963,8 +5143,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5020,8 +5203,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5077,8 +5263,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5134,8 +5323,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5191,8 +5383,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5248,8 +5443,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5305,8 +5503,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5362,8 +5563,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5419,8 +5623,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5476,8 +5683,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5533,8 +5743,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5590,8 +5803,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5647,8 +5863,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5704,8 +5923,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5761,8 +5983,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5825,8 +6050,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5889,8 +6117,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -5946,8 +6177,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -6003,8 +6237,11 @@ fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3Internal
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }

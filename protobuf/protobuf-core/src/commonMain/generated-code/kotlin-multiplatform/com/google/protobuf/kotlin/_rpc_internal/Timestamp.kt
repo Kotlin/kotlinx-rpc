@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, kotlinx.rpc.internal.utils.InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlinx.io.Buffer
 import kotlinx.rpc.internal.utils.*
 import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.internal.*
@@ -8,6 +9,12 @@ import kotlinx.rpc.protobuf.internal.*
 public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var seconds: Long by MsgFieldDelegate { 0L }
     public override var nanos: Int by MsgFieldDelegate { 0 }
@@ -49,9 +56,10 @@ public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rp
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public fun copyInternal(body: com.google.protobuf.kotlin.TimestampInternal.() -> Unit): com.google.protobuf.kotlin.TimestampInternal { 
         val copy = com.google.protobuf.kotlin.TimestampInternal()
-        copy.seconds = seconds
-        copy.nanos = nanos
+        copy.seconds = this.seconds
+        copy.nanos = this.nanos
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -60,10 +68,12 @@ public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rp
         public override fun encode(value: com.google.protobuf.kotlin.Timestamp): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -74,6 +84,7 @@ public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rp
                     com.google.protobuf.kotlin.TimestampInternal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -115,8 +126,11 @@ public fun com.google.protobuf.kotlin.TimestampInternal.Companion.decodeWith(msg
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }

@@ -22,6 +22,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 @OptIn(ExperimentalUnsignedTypes::class)
 public interface WireEncoder {
     public fun flush()
+    public fun writeTag(tag: KTag)
     public fun writeBool(fieldNr: Int, value: Boolean)
     public fun writeInt32(fieldNr: Int, value: Int)
     public fun writeInt64(fieldNr: Int, value: Long)

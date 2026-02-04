@@ -21,19 +21,9 @@ import kotlin.io.path.readLines
 val skippedTests = setOf(
     "Recommended.Proto2.ProtobufInput.ValidMessageSetEncoding.SubmessageEncoding.NotUnknown.ProtobufOutput",
     "Recommended.Proto2.ProtobufInput.ValidMessageSetEncoding.SubmessageEncoding.ProtobufOutput",
-    "Required.Editions.ProtobufInput.ValidDelimitedExtension.GroupLike.ProtobufOutput",
-    "Required.Editions.ProtobufInput.ValidDelimitedExtension.NotGroupLike.ProtobufOutput",
-    "Required.Editions_Proto2.ProtobufInput.UnknownOrdering.ProtobufOutput",
-    "Required.Editions_Proto2.ProtobufInput.UnknownVarint.ProtobufOutput",
-    "Required.Editions_Proto3.ProtobufInput.UnknownOrdering.ProtobufOutput",
-    "Required.Editions_Proto3.ProtobufInput.UnknownVarint.ProtobufOutput",
     "Required.Proto2.ProtobufInput.MessageSetEncoding.UnknownExtension.ProtobufOutput",
-    "Required.Proto2.ProtobufInput.UnknownOrdering.ProtobufOutput",
-    "Required.Proto2.ProtobufInput.UnknownVarint.ProtobufOutput",
     "Required.Proto2.ProtobufInput.ValidMessageSetEncoding.OutOfOrderGroupsEntries.ProtobufOutput",
     "Required.Proto2.ProtobufInput.ValidMessageSetEncoding.ProtobufOutput",
-    "Required.Proto3.ProtobufInput.UnknownOrdering.ProtobufOutput",
-    "Required.Proto3.ProtobufInput.UnknownVarint.ProtobufOutput",
 )
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)

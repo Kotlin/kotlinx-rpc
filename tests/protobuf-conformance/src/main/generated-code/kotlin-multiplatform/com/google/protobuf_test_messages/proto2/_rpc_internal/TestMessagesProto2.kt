@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, kotlinx.rpc.internal.utils.InternalRpcApi::class)
 package com.google.protobuf_test_messages.proto2
 
+import kotlinx.io.Buffer
 import kotlinx.rpc.internal.utils.*
 import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.internal.*
@@ -73,6 +74,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var optionalInt32: Int? by MsgFieldDelegate(PresenceIndices.optionalInt32) { null }
     override var optionalInt64: Long? by MsgFieldDelegate(PresenceIndices.optionalInt64) { null }
@@ -1049,309 +1056,310 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
     fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal { 
         val copy = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal()
         if (presenceMask[0]) { 
-            copy.optionalInt32 = optionalInt32
+            copy.optionalInt32 = this.optionalInt32
         }
 
         if (presenceMask[1]) { 
-            copy.optionalInt64 = optionalInt64
+            copy.optionalInt64 = this.optionalInt64
         }
 
         if (presenceMask[2]) { 
-            copy.optionalUint32 = optionalUint32
+            copy.optionalUint32 = this.optionalUint32
         }
 
         if (presenceMask[3]) { 
-            copy.optionalUint64 = optionalUint64
+            copy.optionalUint64 = this.optionalUint64
         }
 
         if (presenceMask[4]) { 
-            copy.optionalSint32 = optionalSint32
+            copy.optionalSint32 = this.optionalSint32
         }
 
         if (presenceMask[5]) { 
-            copy.optionalSint64 = optionalSint64
+            copy.optionalSint64 = this.optionalSint64
         }
 
         if (presenceMask[6]) { 
-            copy.optionalFixed32 = optionalFixed32
+            copy.optionalFixed32 = this.optionalFixed32
         }
 
         if (presenceMask[7]) { 
-            copy.optionalFixed64 = optionalFixed64
+            copy.optionalFixed64 = this.optionalFixed64
         }
 
         if (presenceMask[8]) { 
-            copy.optionalSfixed32 = optionalSfixed32
+            copy.optionalSfixed32 = this.optionalSfixed32
         }
 
         if (presenceMask[9]) { 
-            copy.optionalSfixed64 = optionalSfixed64
+            copy.optionalSfixed64 = this.optionalSfixed64
         }
 
         if (presenceMask[10]) { 
-            copy.optionalFloat = optionalFloat
+            copy.optionalFloat = this.optionalFloat
         }
 
         if (presenceMask[11]) { 
-            copy.optionalDouble = optionalDouble
+            copy.optionalDouble = this.optionalDouble
         }
 
         if (presenceMask[12]) { 
-            copy.optionalBool = optionalBool
+            copy.optionalBool = this.optionalBool
         }
 
         if (presenceMask[13]) { 
-            copy.optionalString = optionalString
+            copy.optionalString = this.optionalString
         }
 
         if (presenceMask[14]) { 
-            copy.optionalBytes = optionalBytes?.copyOf()
+            copy.optionalBytes = this.optionalBytes?.copyOf()
         }
 
         if (presenceMask[15]) { 
-            copy.optionalNestedMessage = optionalNestedMessage.copy()
+            copy.optionalNestedMessage = this.optionalNestedMessage.copy()
         }
 
         if (presenceMask[16]) { 
-            copy.optionalForeignMessage = optionalForeignMessage.copy()
+            copy.optionalForeignMessage = this.optionalForeignMessage.copy()
         }
 
         if (presenceMask[17]) { 
-            copy.optionalNestedEnum = optionalNestedEnum
+            copy.optionalNestedEnum = this.optionalNestedEnum
         }
 
         if (presenceMask[18]) { 
-            copy.optionalForeignEnum = optionalForeignEnum
+            copy.optionalForeignEnum = this.optionalForeignEnum
         }
 
         if (presenceMask[19]) { 
-            copy.optionalStringPiece = optionalStringPiece
+            copy.optionalStringPiece = this.optionalStringPiece
         }
 
         if (presenceMask[20]) { 
-            copy.optionalCord = optionalCord
+            copy.optionalCord = this.optionalCord
         }
 
         if (presenceMask[21]) { 
-            copy.recursiveMessage = recursiveMessage.copy()
+            copy.recursiveMessage = this.recursiveMessage.copy()
         }
 
-        copy.repeatedInt32 = repeatedInt32.map { it }
-        copy.repeatedInt64 = repeatedInt64.map { it }
-        copy.repeatedUint32 = repeatedUint32.map { it }
-        copy.repeatedUint64 = repeatedUint64.map { it }
-        copy.repeatedSint32 = repeatedSint32.map { it }
-        copy.repeatedSint64 = repeatedSint64.map { it }
-        copy.repeatedFixed32 = repeatedFixed32.map { it }
-        copy.repeatedFixed64 = repeatedFixed64.map { it }
-        copy.repeatedSfixed32 = repeatedSfixed32.map { it }
-        copy.repeatedSfixed64 = repeatedSfixed64.map { it }
-        copy.repeatedFloat = repeatedFloat.map { it }
-        copy.repeatedDouble = repeatedDouble.map { it }
-        copy.repeatedBool = repeatedBool.map { it }
-        copy.repeatedString = repeatedString.map { it }
-        copy.repeatedBytes = repeatedBytes.map { it.copyOf() }
-        copy.repeatedNestedMessage = repeatedNestedMessage.map { it.copy() }
-        copy.repeatedForeignMessage = repeatedForeignMessage.map { it.copy() }
-        copy.repeatedNestedEnum = repeatedNestedEnum.map { it }
-        copy.repeatedForeignEnum = repeatedForeignEnum.map { it }
-        copy.repeatedStringPiece = repeatedStringPiece.map { it }
-        copy.repeatedCord = repeatedCord.map { it }
-        copy.packedInt32 = packedInt32.map { it }
-        copy.packedInt64 = packedInt64.map { it }
-        copy.packedUint32 = packedUint32.map { it }
-        copy.packedUint64 = packedUint64.map { it }
-        copy.packedSint32 = packedSint32.map { it }
-        copy.packedSint64 = packedSint64.map { it }
-        copy.packedFixed32 = packedFixed32.map { it }
-        copy.packedFixed64 = packedFixed64.map { it }
-        copy.packedSfixed32 = packedSfixed32.map { it }
-        copy.packedSfixed64 = packedSfixed64.map { it }
-        copy.packedFloat = packedFloat.map { it }
-        copy.packedDouble = packedDouble.map { it }
-        copy.packedBool = packedBool.map { it }
-        copy.packedNestedEnum = packedNestedEnum.map { it }
-        copy.unpackedInt32 = unpackedInt32.map { it }
-        copy.unpackedInt64 = unpackedInt64.map { it }
-        copy.unpackedUint32 = unpackedUint32.map { it }
-        copy.unpackedUint64 = unpackedUint64.map { it }
-        copy.unpackedSint32 = unpackedSint32.map { it }
-        copy.unpackedSint64 = unpackedSint64.map { it }
-        copy.unpackedFixed32 = unpackedFixed32.map { it }
-        copy.unpackedFixed64 = unpackedFixed64.map { it }
-        copy.unpackedSfixed32 = unpackedSfixed32.map { it }
-        copy.unpackedSfixed64 = unpackedSfixed64.map { it }
-        copy.unpackedFloat = unpackedFloat.map { it }
-        copy.unpackedDouble = unpackedDouble.map { it }
-        copy.unpackedBool = unpackedBool.map { it }
-        copy.unpackedNestedEnum = unpackedNestedEnum.map { it }
-        copy.mapInt32Int32 = mapInt32Int32.mapValues { it.value }
-        copy.mapInt64Int64 = mapInt64Int64.mapValues { it.value }
-        copy.mapUint32Uint32 = mapUint32Uint32.mapValues { it.value }
-        copy.mapUint64Uint64 = mapUint64Uint64.mapValues { it.value }
-        copy.mapSint32Sint32 = mapSint32Sint32.mapValues { it.value }
-        copy.mapSint64Sint64 = mapSint64Sint64.mapValues { it.value }
-        copy.mapFixed32Fixed32 = mapFixed32Fixed32.mapValues { it.value }
-        copy.mapFixed64Fixed64 = mapFixed64Fixed64.mapValues { it.value }
-        copy.mapSfixed32Sfixed32 = mapSfixed32Sfixed32.mapValues { it.value }
-        copy.mapSfixed64Sfixed64 = mapSfixed64Sfixed64.mapValues { it.value }
-        copy.mapInt32Bool = mapInt32Bool.mapValues { it.value }
-        copy.mapInt32Float = mapInt32Float.mapValues { it.value }
-        copy.mapInt32Double = mapInt32Double.mapValues { it.value }
-        copy.mapInt32NestedMessage = mapInt32NestedMessage.mapValues { it.value.copy() }
-        copy.mapBoolBool = mapBoolBool.mapValues { it.value }
-        copy.mapStringString = mapStringString.mapValues { it.value }
-        copy.mapStringBytes = mapStringBytes.mapValues { it.value.copyOf() }
-        copy.mapStringNestedMessage = mapStringNestedMessage.mapValues { it.value.copy() }
-        copy.mapStringForeignMessage = mapStringForeignMessage.mapValues { it.value.copy() }
-        copy.mapStringNestedEnum = mapStringNestedEnum.mapValues { it.value }
-        copy.mapStringForeignEnum = mapStringForeignEnum.mapValues { it.value }
+        copy.repeatedInt32 = this.repeatedInt32.map { it }
+        copy.repeatedInt64 = this.repeatedInt64.map { it }
+        copy.repeatedUint32 = this.repeatedUint32.map { it }
+        copy.repeatedUint64 = this.repeatedUint64.map { it }
+        copy.repeatedSint32 = this.repeatedSint32.map { it }
+        copy.repeatedSint64 = this.repeatedSint64.map { it }
+        copy.repeatedFixed32 = this.repeatedFixed32.map { it }
+        copy.repeatedFixed64 = this.repeatedFixed64.map { it }
+        copy.repeatedSfixed32 = this.repeatedSfixed32.map { it }
+        copy.repeatedSfixed64 = this.repeatedSfixed64.map { it }
+        copy.repeatedFloat = this.repeatedFloat.map { it }
+        copy.repeatedDouble = this.repeatedDouble.map { it }
+        copy.repeatedBool = this.repeatedBool.map { it }
+        copy.repeatedString = this.repeatedString.map { it }
+        copy.repeatedBytes = this.repeatedBytes.map { it.copyOf() }
+        copy.repeatedNestedMessage = this.repeatedNestedMessage.map { it.copy() }
+        copy.repeatedForeignMessage = this.repeatedForeignMessage.map { it.copy() }
+        copy.repeatedNestedEnum = this.repeatedNestedEnum.map { it }
+        copy.repeatedForeignEnum = this.repeatedForeignEnum.map { it }
+        copy.repeatedStringPiece = this.repeatedStringPiece.map { it }
+        copy.repeatedCord = this.repeatedCord.map { it }
+        copy.packedInt32 = this.packedInt32.map { it }
+        copy.packedInt64 = this.packedInt64.map { it }
+        copy.packedUint32 = this.packedUint32.map { it }
+        copy.packedUint64 = this.packedUint64.map { it }
+        copy.packedSint32 = this.packedSint32.map { it }
+        copy.packedSint64 = this.packedSint64.map { it }
+        copy.packedFixed32 = this.packedFixed32.map { it }
+        copy.packedFixed64 = this.packedFixed64.map { it }
+        copy.packedSfixed32 = this.packedSfixed32.map { it }
+        copy.packedSfixed64 = this.packedSfixed64.map { it }
+        copy.packedFloat = this.packedFloat.map { it }
+        copy.packedDouble = this.packedDouble.map { it }
+        copy.packedBool = this.packedBool.map { it }
+        copy.packedNestedEnum = this.packedNestedEnum.map { it }
+        copy.unpackedInt32 = this.unpackedInt32.map { it }
+        copy.unpackedInt64 = this.unpackedInt64.map { it }
+        copy.unpackedUint32 = this.unpackedUint32.map { it }
+        copy.unpackedUint64 = this.unpackedUint64.map { it }
+        copy.unpackedSint32 = this.unpackedSint32.map { it }
+        copy.unpackedSint64 = this.unpackedSint64.map { it }
+        copy.unpackedFixed32 = this.unpackedFixed32.map { it }
+        copy.unpackedFixed64 = this.unpackedFixed64.map { it }
+        copy.unpackedSfixed32 = this.unpackedSfixed32.map { it }
+        copy.unpackedSfixed64 = this.unpackedSfixed64.map { it }
+        copy.unpackedFloat = this.unpackedFloat.map { it }
+        copy.unpackedDouble = this.unpackedDouble.map { it }
+        copy.unpackedBool = this.unpackedBool.map { it }
+        copy.unpackedNestedEnum = this.unpackedNestedEnum.map { it }
+        copy.mapInt32Int32 = this.mapInt32Int32.mapValues { it.value }
+        copy.mapInt64Int64 = this.mapInt64Int64.mapValues { it.value }
+        copy.mapUint32Uint32 = this.mapUint32Uint32.mapValues { it.value }
+        copy.mapUint64Uint64 = this.mapUint64Uint64.mapValues { it.value }
+        copy.mapSint32Sint32 = this.mapSint32Sint32.mapValues { it.value }
+        copy.mapSint64Sint64 = this.mapSint64Sint64.mapValues { it.value }
+        copy.mapFixed32Fixed32 = this.mapFixed32Fixed32.mapValues { it.value }
+        copy.mapFixed64Fixed64 = this.mapFixed64Fixed64.mapValues { it.value }
+        copy.mapSfixed32Sfixed32 = this.mapSfixed32Sfixed32.mapValues { it.value }
+        copy.mapSfixed64Sfixed64 = this.mapSfixed64Sfixed64.mapValues { it.value }
+        copy.mapInt32Bool = this.mapInt32Bool.mapValues { it.value }
+        copy.mapInt32Float = this.mapInt32Float.mapValues { it.value }
+        copy.mapInt32Double = this.mapInt32Double.mapValues { it.value }
+        copy.mapInt32NestedMessage = this.mapInt32NestedMessage.mapValues { it.value.copy() }
+        copy.mapBoolBool = this.mapBoolBool.mapValues { it.value }
+        copy.mapStringString = this.mapStringString.mapValues { it.value }
+        copy.mapStringBytes = this.mapStringBytes.mapValues { it.value.copyOf() }
+        copy.mapStringNestedMessage = this.mapStringNestedMessage.mapValues { it.value.copy() }
+        copy.mapStringForeignMessage = this.mapStringForeignMessage.mapValues { it.value.copy() }
+        copy.mapStringNestedEnum = this.mapStringNestedEnum.mapValues { it.value }
+        copy.mapStringForeignEnum = this.mapStringForeignEnum.mapValues { it.value }
         if (presenceMask[22]) { 
-            copy.data = data.copy()
+            copy.data = this.data.copy()
         }
 
         if (presenceMask[23]) { 
-            copy.multiwordgroupfield = multiwordgroupfield.copy()
+            copy.multiwordgroupfield = this.multiwordgroupfield.copy()
         }
 
         if (presenceMask[24]) { 
-            copy.defaultInt32 = defaultInt32
+            copy.defaultInt32 = this.defaultInt32
         }
 
         if (presenceMask[25]) { 
-            copy.defaultInt64 = defaultInt64
+            copy.defaultInt64 = this.defaultInt64
         }
 
         if (presenceMask[26]) { 
-            copy.defaultUint32 = defaultUint32
+            copy.defaultUint32 = this.defaultUint32
         }
 
         if (presenceMask[27]) { 
-            copy.defaultUint64 = defaultUint64
+            copy.defaultUint64 = this.defaultUint64
         }
 
         if (presenceMask[28]) { 
-            copy.defaultSint32 = defaultSint32
+            copy.defaultSint32 = this.defaultSint32
         }
 
         if (presenceMask[29]) { 
-            copy.defaultSint64 = defaultSint64
+            copy.defaultSint64 = this.defaultSint64
         }
 
         if (presenceMask[30]) { 
-            copy.defaultFixed32 = defaultFixed32
+            copy.defaultFixed32 = this.defaultFixed32
         }
 
         if (presenceMask[31]) { 
-            copy.defaultFixed64 = defaultFixed64
+            copy.defaultFixed64 = this.defaultFixed64
         }
 
         if (presenceMask[32]) { 
-            copy.defaultSfixed32 = defaultSfixed32
+            copy.defaultSfixed32 = this.defaultSfixed32
         }
 
         if (presenceMask[33]) { 
-            copy.defaultSfixed64 = defaultSfixed64
+            copy.defaultSfixed64 = this.defaultSfixed64
         }
 
         if (presenceMask[34]) { 
-            copy.defaultFloat = defaultFloat
+            copy.defaultFloat = this.defaultFloat
         }
 
         if (presenceMask[35]) { 
-            copy.defaultDouble = defaultDouble
+            copy.defaultDouble = this.defaultDouble
         }
 
         if (presenceMask[36]) { 
-            copy.defaultBool = defaultBool
+            copy.defaultBool = this.defaultBool
         }
 
         if (presenceMask[37]) { 
-            copy.defaultString = defaultString
+            copy.defaultString = this.defaultString
         }
 
         if (presenceMask[38]) { 
-            copy.defaultBytes = defaultBytes.copyOf()
+            copy.defaultBytes = this.defaultBytes.copyOf()
         }
 
         if (presenceMask[39]) { 
-            copy.fieldname1 = fieldname1
+            copy.fieldname1 = this.fieldname1
         }
 
         if (presenceMask[40]) { 
-            copy.fieldName2 = fieldName2
+            copy.fieldName2 = this.fieldName2
         }
 
         if (presenceMask[41]) { 
-            copy.FieldName3 = FieldName3
+            copy.FieldName3 = this.FieldName3
         }
 
         if (presenceMask[42]) { 
-            copy.field_Name4_ = field_Name4_
+            copy.field_Name4_ = this.field_Name4_
         }
 
         if (presenceMask[43]) { 
-            copy.field0name5 = field0name5
+            copy.field0name5 = this.field0name5
         }
 
         if (presenceMask[44]) { 
-            copy.field_0Name6 = field_0Name6
+            copy.field_0Name6 = this.field_0Name6
         }
 
         if (presenceMask[45]) { 
-            copy.fieldName7 = fieldName7
+            copy.fieldName7 = this.fieldName7
         }
 
         if (presenceMask[46]) { 
-            copy.FieldName8 = FieldName8
+            copy.FieldName8 = this.FieldName8
         }
 
         if (presenceMask[47]) { 
-            copy.field_Name9 = field_Name9
+            copy.field_Name9 = this.field_Name9
         }
 
         if (presenceMask[48]) { 
-            copy.Field_Name10 = Field_Name10
+            copy.Field_Name10 = this.Field_Name10
         }
 
         if (presenceMask[49]) { 
-            copy.FIELD_NAME11 = FIELD_NAME11
+            copy.FIELD_NAME11 = this.FIELD_NAME11
         }
 
         if (presenceMask[50]) { 
-            copy.FIELDName12 = FIELDName12
+            copy.FIELDName12 = this.FIELDName12
         }
 
         if (presenceMask[51]) { 
-            copy._FieldName13 = _FieldName13
+            copy._FieldName13 = this._FieldName13
         }
 
         if (presenceMask[52]) { 
-            copy.__FieldName14 = __FieldName14
+            copy.__FieldName14 = this.__FieldName14
         }
 
         if (presenceMask[53]) { 
-            copy.field_Name15 = field_Name15
+            copy.field_Name15 = this.field_Name15
         }
 
         if (presenceMask[54]) { 
-            copy.field__Name16 = field__Name16
+            copy.field__Name16 = this.field__Name16
         }
 
         if (presenceMask[55]) { 
-            copy.fieldName17__ = fieldName17__
+            copy.fieldName17__ = this.fieldName17__
         }
 
         if (presenceMask[56]) { 
-            copy.FieldName18__ = FieldName18__
+            copy.FieldName18__ = this.FieldName18__
         }
 
         if (presenceMask[57]) { 
-            copy.messageSetCorrect = messageSetCorrect.copy()
+            copy.messageSetCorrect = this.messageSetCorrect.copy()
         }
 
-        copy.oneofField = oneofField?.oneOfCopy()
+        copy.oneofField = this.oneofField?.oneOfCopy()
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -1396,6 +1404,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override var a: Int? by MsgFieldDelegate(PresenceIndices.a) { null }
         override var corecursive: com.google.protobuf_test_messages.proto2.TestAllTypesProto2 by MsgFieldDelegate(PresenceIndices.corecursive) { com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal() }
@@ -1456,14 +1470,15 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.NestedMessageInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.NestedMessageInternal { 
             val copy = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.NestedMessageInternal()
             if (presenceMask[0]) { 
-                copy.a = a
+                copy.a = this.a
             }
 
             if (presenceMask[1]) { 
-                copy.corecursive = corecursive.copy()
+                copy.corecursive = this.corecursive.copy()
             }
 
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -1472,10 +1487,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage): kotlinx.rpc.protobuf.input.stream.InputStream { 
                 val buffer = kotlinx.io.Buffer()
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+                val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    value.asInternal().encodeWith(encoder)
+                    internalMsg.encodeWith(encoder)
                 }
                 encoder.flush()
+                internalMsg._unknownFields.copyTo(buffer)
                 return buffer.asInputStream()
             }
 
@@ -1486,6 +1503,7 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
                         com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.NestedMessageInternal.decodeWith(msg, it)
                     }
                     msg.checkRequiredFields()
+                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -1503,6 +1521,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
@@ -1565,6 +1589,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
 
@@ -1625,6 +1655,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: UInt by MsgFieldDelegate(PresenceIndices.key) { 0u }
         var value: UInt by MsgFieldDelegate(PresenceIndices.value) { 0u }
@@ -1687,6 +1723,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: ULong by MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var value: ULong by MsgFieldDelegate(PresenceIndices.value) { 0uL }
 
@@ -1747,6 +1789,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
@@ -1809,6 +1857,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
 
@@ -1869,6 +1923,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: UInt by MsgFieldDelegate(PresenceIndices.key) { 0u }
         var value: UInt by MsgFieldDelegate(PresenceIndices.value) { 0u }
@@ -1931,6 +1991,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: ULong by MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var value: ULong by MsgFieldDelegate(PresenceIndices.value) { 0uL }
 
@@ -1991,6 +2057,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
@@ -2053,6 +2125,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
 
@@ -2113,6 +2191,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Boolean by MsgFieldDelegate(PresenceIndices.value) { false }
@@ -2175,6 +2259,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Float by MsgFieldDelegate(PresenceIndices.value) { 0.0f }
 
@@ -2235,6 +2325,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Double by MsgFieldDelegate(PresenceIndices.value) { 0.0 }
@@ -2297,6 +2393,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.NestedMessageInternal() }
 
@@ -2357,6 +2459,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: Boolean by MsgFieldDelegate(PresenceIndices.key) { false }
         var value: Boolean by MsgFieldDelegate(PresenceIndices.value) { false }
@@ -2419,6 +2527,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: String by MsgFieldDelegate(PresenceIndices.value) { "" }
 
@@ -2479,6 +2593,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: ByteArray by MsgFieldDelegate(PresenceIndices.value) { byteArrayOf() }
@@ -2541,6 +2661,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.NestedMessageInternal() }
 
@@ -2601,6 +2727,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: com.google.protobuf_test_messages.proto2.ForeignMessageProto2 by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.proto2.ForeignMessageProto2Internal() }
@@ -2663,6 +2795,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedEnum by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedEnum.FOO }
 
@@ -2723,6 +2861,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: com.google.protobuf_test_messages.proto2.ForeignEnumProto2 by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf_test_messages.proto2.ForeignEnumProto2.FOREIGN_FOO }
@@ -2785,6 +2929,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
         override var groupInt32: Int? by MsgFieldDelegate(PresenceIndices.groupInt32) { null }
         override var groupUint32: UInt? by MsgFieldDelegate(PresenceIndices.groupUint32) { null }
 
@@ -2844,14 +2994,15 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.DataInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.DataInternal { 
             val copy = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.DataInternal()
             if (presenceMask[0]) { 
-                copy.groupInt32 = groupInt32
+                copy.groupInt32 = this.groupInt32
             }
 
             if (presenceMask[1]) { 
-                copy.groupUint32 = groupUint32
+                copy.groupUint32 = this.groupUint32
             }
 
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -2867,6 +3018,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override var groupInt32: Int? by MsgFieldDelegate(PresenceIndices.groupInt32) { null }
         override var groupUint32: UInt? by MsgFieldDelegate(PresenceIndices.groupUint32) { null }
@@ -2927,14 +3084,15 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MultiWordGroupFieldInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MultiWordGroupFieldInternal { 
             val copy = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MultiWordGroupFieldInternal()
             if (presenceMask[0]) { 
-                copy.groupInt32 = groupInt32
+                copy.groupInt32 = this.groupInt32
             }
 
             if (presenceMask[1]) { 
-                copy.groupUint32 = groupUint32
+                copy.groupUint32 = this.groupUint32
             }
 
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -2945,6 +3103,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
     class MessageSetCorrectInternal: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override fun hashCode(): kotlin.Int { 
             checkRequiredFields()
@@ -2978,6 +3142,7 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectInternal { 
             val copy = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectInternal()
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -2986,10 +3151,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect): kotlinx.rpc.protobuf.input.stream.InputStream { 
                 val buffer = kotlinx.io.Buffer()
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+                val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    value.asInternal().encodeWith(encoder)
+                    internalMsg.encodeWith(encoder)
                 }
                 encoder.flush()
+                internalMsg._unknownFields.copyTo(buffer)
                 return buffer.asInputStream()
             }
 
@@ -3000,6 +3167,7 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
                         com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectInternal.decodeWith(msg, it)
                     }
                     msg.checkRequiredFields()
+                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -3016,6 +3184,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override var str: String? by MsgFieldDelegate(PresenceIndices.str) { null }
 
@@ -3064,10 +3238,11 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal { 
             val copy = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal()
             if (presenceMask[0]) { 
-                copy.str = str
+                copy.str = this.str
             }
 
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -3076,10 +3251,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1): kotlinx.rpc.protobuf.input.stream.InputStream { 
                 val buffer = kotlinx.io.Buffer()
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+                val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    value.asInternal().encodeWith(encoder)
+                    internalMsg.encodeWith(encoder)
                 }
                 encoder.flush()
+                internalMsg._unknownFields.copyTo(buffer)
                 return buffer.asInputStream()
             }
 
@@ -3090,6 +3267,7 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
                         com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.decodeWith(msg, it)
                     }
                     msg.checkRequiredFields()
+                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -3106,6 +3284,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override var i: Int? by MsgFieldDelegate(PresenceIndices.i) { null }
 
@@ -3154,10 +3338,11 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal { 
             val copy = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal()
             if (presenceMask[0]) { 
-                copy.i = i
+                copy.i = this.i
             }
 
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -3166,10 +3351,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2): kotlinx.rpc.protobuf.input.stream.InputStream { 
                 val buffer = kotlinx.io.Buffer()
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+                val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    value.asInternal().encodeWith(encoder)
+                    internalMsg.encodeWith(encoder)
                 }
                 encoder.flush()
+                internalMsg._unknownFields.copyTo(buffer)
                 return buffer.asInputStream()
             }
 
@@ -3180,6 +3367,7 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
                         com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.decodeWith(msg, it)
                     }
                     msg.checkRequiredFields()
+                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -3192,6 +3380,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
     class ExtensionWithOneofInternal: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOneof, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override var oneofField: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOneof.OneofField? = null
 
@@ -3237,8 +3431,9 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         @kotlinx.rpc.internal.utils.InternalRpcApi
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.ExtensionWithOneofInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.ExtensionWithOneofInternal { 
             val copy = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.ExtensionWithOneofInternal()
-            copy.oneofField = oneofField?.oneOfCopy()
+            copy.oneofField = this.oneofField?.oneOfCopy()
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -3252,10 +3447,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOneof): kotlinx.rpc.protobuf.input.stream.InputStream { 
                 val buffer = kotlinx.io.Buffer()
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+                val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    value.asInternal().encodeWith(encoder)
+                    internalMsg.encodeWith(encoder)
                 }
                 encoder.flush()
+                internalMsg._unknownFields.copyTo(buffer)
                 return buffer.asInputStream()
             }
 
@@ -3266,6 +3463,7 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
                         com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.ExtensionWithOneofInternal.decodeWith(msg, it)
                     }
                     msg.checkRequiredFields()
+                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -3280,10 +3478,12 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
         override fun encode(value: com.google.protobuf_test_messages.proto2.TestAllTypesProto2): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -3294,6 +3494,7 @@ class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestA
                     com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -3310,6 +3511,12 @@ class ForeignMessageProto2Internal: com.google.protobuf_test_messages.proto2.For
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var c: Int? by MsgFieldDelegate(PresenceIndices.c) { null }
 
@@ -3358,10 +3565,11 @@ class ForeignMessageProto2Internal: com.google.protobuf_test_messages.proto2.For
     fun copyInternal(body: com.google.protobuf_test_messages.proto2.ForeignMessageProto2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.ForeignMessageProto2Internal { 
         val copy = com.google.protobuf_test_messages.proto2.ForeignMessageProto2Internal()
         if (presenceMask[0]) { 
-            copy.c = c
+            copy.c = this.c
         }
 
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -3370,10 +3578,12 @@ class ForeignMessageProto2Internal: com.google.protobuf_test_messages.proto2.For
         override fun encode(value: com.google.protobuf_test_messages.proto2.ForeignMessageProto2): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -3384,6 +3594,7 @@ class ForeignMessageProto2Internal: com.google.protobuf_test_messages.proto2.For
                     com.google.protobuf_test_messages.proto2.ForeignMessageProto2Internal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -3401,6 +3612,12 @@ class GroupFieldInternal: com.google.protobuf_test_messages.proto2.GroupField, k
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var groupInt32: Int? by MsgFieldDelegate(PresenceIndices.groupInt32) { null }
     override var groupUint32: UInt? by MsgFieldDelegate(PresenceIndices.groupUint32) { null }
@@ -3461,14 +3678,15 @@ class GroupFieldInternal: com.google.protobuf_test_messages.proto2.GroupField, k
     fun copyInternal(body: com.google.protobuf_test_messages.proto2.GroupFieldInternal.() -> Unit): com.google.protobuf_test_messages.proto2.GroupFieldInternal { 
         val copy = com.google.protobuf_test_messages.proto2.GroupFieldInternal()
         if (presenceMask[0]) { 
-            copy.groupInt32 = groupInt32
+            copy.groupInt32 = this.groupInt32
         }
 
         if (presenceMask[1]) { 
-            copy.groupUint32 = groupUint32
+            copy.groupUint32 = this.groupUint32
         }
 
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -3477,10 +3695,12 @@ class GroupFieldInternal: com.google.protobuf_test_messages.proto2.GroupField, k
         override fun encode(value: com.google.protobuf_test_messages.proto2.GroupField): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -3491,6 +3711,7 @@ class GroupFieldInternal: com.google.protobuf_test_messages.proto2.GroupField, k
                     com.google.protobuf_test_messages.proto2.GroupFieldInternal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -3511,6 +3732,12 @@ class UnknownToTestAllTypesInternal: com.google.protobuf_test_messages.proto2.Un
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var optionalInt32: Int? by MsgFieldDelegate(PresenceIndices.optionalInt32) { null }
     override var optionalString: String? by MsgFieldDelegate(PresenceIndices.optionalString) { null }
@@ -3608,27 +3835,28 @@ class UnknownToTestAllTypesInternal: com.google.protobuf_test_messages.proto2.Un
     fun copyInternal(body: com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal.() -> Unit): com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal { 
         val copy = com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal()
         if (presenceMask[0]) { 
-            copy.optionalInt32 = optionalInt32
+            copy.optionalInt32 = this.optionalInt32
         }
 
         if (presenceMask[1]) { 
-            copy.optionalString = optionalString
+            copy.optionalString = this.optionalString
         }
 
         if (presenceMask[2]) { 
-            copy.nestedMessage = nestedMessage.copy()
+            copy.nestedMessage = this.nestedMessage.copy()
         }
 
         if (presenceMask[3]) { 
-            copy.optionalgroup = optionalgroup.copy()
+            copy.optionalgroup = this.optionalgroup.copy()
         }
 
         if (presenceMask[4]) { 
-            copy.optionalBool = optionalBool
+            copy.optionalBool = this.optionalBool
         }
 
-        copy.repeatedInt32 = repeatedInt32.map { it }
+        copy.repeatedInt32 = this.repeatedInt32.map { it }
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -3639,6 +3867,12 @@ class UnknownToTestAllTypesInternal: com.google.protobuf_test_messages.proto2.Un
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override var a: Int? by MsgFieldDelegate(PresenceIndices.a) { null }
 
@@ -3687,10 +3921,11 @@ class UnknownToTestAllTypesInternal: com.google.protobuf_test_messages.proto2.Un
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal.OptionalGroupInternal.() -> Unit): com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal.OptionalGroupInternal { 
             val copy = com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal.OptionalGroupInternal()
             if (presenceMask[0]) { 
-                copy.a = a
+                copy.a = this.a
             }
 
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -3703,10 +3938,12 @@ class UnknownToTestAllTypesInternal: com.google.protobuf_test_messages.proto2.Un
         override fun encode(value: com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -3717,6 +3954,7 @@ class UnknownToTestAllTypesInternal: com.google.protobuf_test_messages.proto2.Un
                     com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -3729,6 +3967,12 @@ class UnknownToTestAllTypesInternal: com.google.protobuf_test_messages.proto2.Un
 class NullHypothesisProto2Internal: com.google.protobuf_test_messages.proto2.NullHypothesisProto2, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override fun hashCode(): kotlin.Int { 
         checkRequiredFields()
@@ -3762,6 +4006,7 @@ class NullHypothesisProto2Internal: com.google.protobuf_test_messages.proto2.Nul
     fun copyInternal(body: com.google.protobuf_test_messages.proto2.NullHypothesisProto2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.NullHypothesisProto2Internal { 
         val copy = com.google.protobuf_test_messages.proto2.NullHypothesisProto2Internal()
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -3770,10 +4015,12 @@ class NullHypothesisProto2Internal: com.google.protobuf_test_messages.proto2.Nul
         override fun encode(value: com.google.protobuf_test_messages.proto2.NullHypothesisProto2): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -3784,6 +4031,7 @@ class NullHypothesisProto2Internal: com.google.protobuf_test_messages.proto2.Nul
                     com.google.protobuf_test_messages.proto2.NullHypothesisProto2Internal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -3796,6 +4044,12 @@ class NullHypothesisProto2Internal: com.google.protobuf_test_messages.proto2.Nul
 class EnumOnlyProto2Internal: com.google.protobuf_test_messages.proto2.EnumOnlyProto2, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override fun hashCode(): kotlin.Int { 
         checkRequiredFields()
@@ -3829,6 +4083,7 @@ class EnumOnlyProto2Internal: com.google.protobuf_test_messages.proto2.EnumOnlyP
     fun copyInternal(body: com.google.protobuf_test_messages.proto2.EnumOnlyProto2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.EnumOnlyProto2Internal { 
         val copy = com.google.protobuf_test_messages.proto2.EnumOnlyProto2Internal()
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -3837,10 +4092,12 @@ class EnumOnlyProto2Internal: com.google.protobuf_test_messages.proto2.EnumOnlyP
         override fun encode(value: com.google.protobuf_test_messages.proto2.EnumOnlyProto2): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -3851,6 +4108,7 @@ class EnumOnlyProto2Internal: com.google.protobuf_test_messages.proto2.EnumOnlyP
                     com.google.protobuf_test_messages.proto2.EnumOnlyProto2Internal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -3867,6 +4125,12 @@ class OneStringProto2Internal: com.google.protobuf_test_messages.proto2.OneStrin
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var data: String? by MsgFieldDelegate(PresenceIndices.data) { null }
 
@@ -3915,10 +4179,11 @@ class OneStringProto2Internal: com.google.protobuf_test_messages.proto2.OneStrin
     fun copyInternal(body: com.google.protobuf_test_messages.proto2.OneStringProto2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.OneStringProto2Internal { 
         val copy = com.google.protobuf_test_messages.proto2.OneStringProto2Internal()
         if (presenceMask[0]) { 
-            copy.data = data
+            copy.data = this.data
         }
 
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -3927,10 +4192,12 @@ class OneStringProto2Internal: com.google.protobuf_test_messages.proto2.OneStrin
         override fun encode(value: com.google.protobuf_test_messages.proto2.OneStringProto2): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -3941,6 +4208,7 @@ class OneStringProto2Internal: com.google.protobuf_test_messages.proto2.OneStrin
                     com.google.protobuf_test_messages.proto2.OneStringProto2Internal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -3958,6 +4226,12 @@ class ProtoWithKeywordsInternal: com.google.protobuf_test_messages.proto2.ProtoW
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var inline: Int? by MsgFieldDelegate(PresenceIndices.inline) { null }
     override var concept: String? by MsgFieldDelegate(PresenceIndices.concept) { null }
@@ -4022,15 +4296,16 @@ class ProtoWithKeywordsInternal: com.google.protobuf_test_messages.proto2.ProtoW
     fun copyInternal(body: com.google.protobuf_test_messages.proto2.ProtoWithKeywordsInternal.() -> Unit): com.google.protobuf_test_messages.proto2.ProtoWithKeywordsInternal { 
         val copy = com.google.protobuf_test_messages.proto2.ProtoWithKeywordsInternal()
         if (presenceMask[0]) { 
-            copy.inline = inline
+            copy.inline = this.inline
         }
 
         if (presenceMask[1]) { 
-            copy.concept = concept
+            copy.concept = this.concept
         }
 
-        copy.requires = requires.map { it }
+        copy.requires = this.requires.map { it }
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -4039,10 +4314,12 @@ class ProtoWithKeywordsInternal: com.google.protobuf_test_messages.proto2.ProtoW
         override fun encode(value: com.google.protobuf_test_messages.proto2.ProtoWithKeywords): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -4053,6 +4330,7 @@ class ProtoWithKeywordsInternal: com.google.protobuf_test_messages.proto2.ProtoW
                     com.google.protobuf_test_messages.proto2.ProtoWithKeywordsInternal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -4111,6 +4389,12 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var requiredInt32: Int by MsgFieldDelegate(PresenceIndices.requiredInt32) { 0 }
     override var requiredInt64: Long by MsgFieldDelegate(PresenceIndices.requiredInt64) { 0L }
@@ -4578,162 +4862,163 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
     fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal { 
         val copy = com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal()
         if (presenceMask[0]) { 
-            copy.requiredInt32 = requiredInt32
+            copy.requiredInt32 = this.requiredInt32
         }
 
         if (presenceMask[1]) { 
-            copy.requiredInt64 = requiredInt64
+            copy.requiredInt64 = this.requiredInt64
         }
 
         if (presenceMask[2]) { 
-            copy.requiredUint32 = requiredUint32
+            copy.requiredUint32 = this.requiredUint32
         }
 
         if (presenceMask[3]) { 
-            copy.requiredUint64 = requiredUint64
+            copy.requiredUint64 = this.requiredUint64
         }
 
         if (presenceMask[4]) { 
-            copy.requiredSint32 = requiredSint32
+            copy.requiredSint32 = this.requiredSint32
         }
 
         if (presenceMask[5]) { 
-            copy.requiredSint64 = requiredSint64
+            copy.requiredSint64 = this.requiredSint64
         }
 
         if (presenceMask[6]) { 
-            copy.requiredFixed32 = requiredFixed32
+            copy.requiredFixed32 = this.requiredFixed32
         }
 
         if (presenceMask[7]) { 
-            copy.requiredFixed64 = requiredFixed64
+            copy.requiredFixed64 = this.requiredFixed64
         }
 
         if (presenceMask[8]) { 
-            copy.requiredSfixed32 = requiredSfixed32
+            copy.requiredSfixed32 = this.requiredSfixed32
         }
 
         if (presenceMask[9]) { 
-            copy.requiredSfixed64 = requiredSfixed64
+            copy.requiredSfixed64 = this.requiredSfixed64
         }
 
         if (presenceMask[10]) { 
-            copy.requiredFloat = requiredFloat
+            copy.requiredFloat = this.requiredFloat
         }
 
         if (presenceMask[11]) { 
-            copy.requiredDouble = requiredDouble
+            copy.requiredDouble = this.requiredDouble
         }
 
         if (presenceMask[12]) { 
-            copy.requiredBool = requiredBool
+            copy.requiredBool = this.requiredBool
         }
 
         if (presenceMask[13]) { 
-            copy.requiredString = requiredString
+            copy.requiredString = this.requiredString
         }
 
         if (presenceMask[14]) { 
-            copy.requiredBytes = requiredBytes.copyOf()
+            copy.requiredBytes = this.requiredBytes.copyOf()
         }
 
         if (presenceMask[15]) { 
-            copy.requiredNestedMessage = requiredNestedMessage.copy()
+            copy.requiredNestedMessage = this.requiredNestedMessage.copy()
         }
 
         if (presenceMask[16]) { 
-            copy.requiredForeignMessage = requiredForeignMessage.copy()
+            copy.requiredForeignMessage = this.requiredForeignMessage.copy()
         }
 
         if (presenceMask[17]) { 
-            copy.requiredNestedEnum = requiredNestedEnum
+            copy.requiredNestedEnum = this.requiredNestedEnum
         }
 
         if (presenceMask[18]) { 
-            copy.requiredForeignEnum = requiredForeignEnum
+            copy.requiredForeignEnum = this.requiredForeignEnum
         }
 
         if (presenceMask[19]) { 
-            copy.requiredStringPiece = requiredStringPiece
+            copy.requiredStringPiece = this.requiredStringPiece
         }
 
         if (presenceMask[20]) { 
-            copy.requiredCord = requiredCord
+            copy.requiredCord = this.requiredCord
         }
 
         if (presenceMask[21]) { 
-            copy.recursiveMessage = recursiveMessage.copy()
+            copy.recursiveMessage = this.recursiveMessage.copy()
         }
 
         if (presenceMask[22]) { 
-            copy.optionalRecursiveMessage = optionalRecursiveMessage.copy()
+            copy.optionalRecursiveMessage = this.optionalRecursiveMessage.copy()
         }
 
         if (presenceMask[23]) { 
-            copy.data = data.copy()
+            copy.data = this.data.copy()
         }
 
         if (presenceMask[24]) { 
-            copy.defaultInt32 = defaultInt32
+            copy.defaultInt32 = this.defaultInt32
         }
 
         if (presenceMask[25]) { 
-            copy.defaultInt64 = defaultInt64
+            copy.defaultInt64 = this.defaultInt64
         }
 
         if (presenceMask[26]) { 
-            copy.defaultUint32 = defaultUint32
+            copy.defaultUint32 = this.defaultUint32
         }
 
         if (presenceMask[27]) { 
-            copy.defaultUint64 = defaultUint64
+            copy.defaultUint64 = this.defaultUint64
         }
 
         if (presenceMask[28]) { 
-            copy.defaultSint32 = defaultSint32
+            copy.defaultSint32 = this.defaultSint32
         }
 
         if (presenceMask[29]) { 
-            copy.defaultSint64 = defaultSint64
+            copy.defaultSint64 = this.defaultSint64
         }
 
         if (presenceMask[30]) { 
-            copy.defaultFixed32 = defaultFixed32
+            copy.defaultFixed32 = this.defaultFixed32
         }
 
         if (presenceMask[31]) { 
-            copy.defaultFixed64 = defaultFixed64
+            copy.defaultFixed64 = this.defaultFixed64
         }
 
         if (presenceMask[32]) { 
-            copy.defaultSfixed32 = defaultSfixed32
+            copy.defaultSfixed32 = this.defaultSfixed32
         }
 
         if (presenceMask[33]) { 
-            copy.defaultSfixed64 = defaultSfixed64
+            copy.defaultSfixed64 = this.defaultSfixed64
         }
 
         if (presenceMask[34]) { 
-            copy.defaultFloat = defaultFloat
+            copy.defaultFloat = this.defaultFloat
         }
 
         if (presenceMask[35]) { 
-            copy.defaultDouble = defaultDouble
+            copy.defaultDouble = this.defaultDouble
         }
 
         if (presenceMask[36]) { 
-            copy.defaultBool = defaultBool
+            copy.defaultBool = this.defaultBool
         }
 
         if (presenceMask[37]) { 
-            copy.defaultString = defaultString
+            copy.defaultString = this.defaultString
         }
 
         if (presenceMask[38]) { 
-            copy.defaultBytes = defaultBytes.copyOf()
+            copy.defaultBytes = this.defaultBytes.copyOf()
         }
 
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -4746,6 +5031,12 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override var a: Int by MsgFieldDelegate(PresenceIndices.a) { 0 }
         override var corecursive: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2 by MsgFieldDelegate(PresenceIndices.corecursive) { com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal() }
@@ -4817,18 +5108,19 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.NestedMessageInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.NestedMessageInternal { 
             val copy = com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.NestedMessageInternal()
             if (presenceMask[0]) { 
-                copy.a = a
+                copy.a = this.a
             }
 
             if (presenceMask[1]) { 
-                copy.corecursive = corecursive.copy()
+                copy.corecursive = this.corecursive.copy()
             }
 
             if (presenceMask[2]) { 
-                copy.optionalCorecursive = optionalCorecursive.copy()
+                copy.optionalCorecursive = this.optionalCorecursive.copy()
             }
 
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -4837,10 +5129,12 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMessage): kotlinx.rpc.protobuf.input.stream.InputStream { 
                 val buffer = kotlinx.io.Buffer()
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+                val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    value.asInternal().encodeWith(encoder)
+                    internalMsg.encodeWith(encoder)
                 }
                 encoder.flush()
+                internalMsg._unknownFields.copyTo(buffer)
                 return buffer.asInputStream()
             }
 
@@ -4851,6 +5145,7 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
                         com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.NestedMessageInternal.decodeWith(msg, it)
                     }
                     msg.checkRequiredFields()
+                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -4868,6 +5163,12 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override var groupInt32: Int by MsgFieldDelegate(PresenceIndices.groupInt32) { 0 }
         override var groupUint32: UInt by MsgFieldDelegate(PresenceIndices.groupUint32) { 0u }
@@ -4928,14 +5229,15 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.DataInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.DataInternal { 
             val copy = com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.DataInternal()
             if (presenceMask[0]) { 
-                copy.groupInt32 = groupInt32
+                copy.groupInt32 = this.groupInt32
             }
 
             if (presenceMask[1]) { 
-                copy.groupUint32 = groupUint32
+                copy.groupUint32 = this.groupUint32
             }
 
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -4946,6 +5248,12 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
     class MessageSetCorrectInternal: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override fun hashCode(): kotlin.Int { 
             checkRequiredFields()
@@ -4979,6 +5287,7 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal { 
             val copy = com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal()
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -4987,10 +5296,12 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect): kotlinx.rpc.protobuf.input.stream.InputStream { 
                 val buffer = kotlinx.io.Buffer()
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+                val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    value.asInternal().encodeWith(encoder)
+                    internalMsg.encodeWith(encoder)
                 }
                 encoder.flush()
+                internalMsg._unknownFields.copyTo(buffer)
                 return buffer.asInputStream()
             }
 
@@ -5001,6 +5312,7 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
                         com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.decodeWith(msg, it)
                     }
                     msg.checkRequiredFields()
+                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -5017,6 +5329,12 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override var str: String by MsgFieldDelegate(PresenceIndices.str) { "" }
 
@@ -5065,10 +5383,11 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal { 
             val copy = com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal()
             if (presenceMask[0]) { 
-                copy.str = str
+                copy.str = this.str
             }
 
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -5077,10 +5396,12 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1): kotlinx.rpc.protobuf.input.stream.InputStream { 
                 val buffer = kotlinx.io.Buffer()
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+                val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    value.asInternal().encodeWith(encoder)
+                    internalMsg.encodeWith(encoder)
                 }
                 encoder.flush()
+                internalMsg._unknownFields.copyTo(buffer)
                 return buffer.asInputStream()
             }
 
@@ -5091,6 +5412,7 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
                         com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal.decodeWith(msg, it)
                     }
                     msg.checkRequiredFields()
+                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -5107,6 +5429,12 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override var i: Int by MsgFieldDelegate(PresenceIndices.i) { 0 }
 
@@ -5155,10 +5483,11 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal { 
             val copy = com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal()
             if (presenceMask[0]) { 
-                copy.i = i
+                copy.i = this.i
             }
 
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -5167,10 +5496,12 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2): kotlinx.rpc.protobuf.input.stream.InputStream { 
                 val buffer = kotlinx.io.Buffer()
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+                val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    value.asInternal().encodeWith(encoder)
+                    internalMsg.encodeWith(encoder)
                 }
                 encoder.flush()
+                internalMsg._unknownFields.copyTo(buffer)
                 return buffer.asInputStream()
             }
 
@@ -5181,6 +5512,7 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
                         com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal.decodeWith(msg, it)
                     }
                     msg.checkRequiredFields()
+                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -5195,10 +5527,12 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
         override fun encode(value: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -5209,6 +5543,7 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
                     com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -5221,6 +5556,12 @@ class TestAllRequiredTypesProto2Internal: com.google.protobuf_test_messages.prot
 class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLargeOneof, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     override val _size: Int by lazy { computeSize() }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    override val _unknownFields: Buffer = Buffer()
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var largeOneof: com.google.protobuf_test_messages.proto2.TestLargeOneof.LargeOneof? = null
 
@@ -5269,8 +5610,9 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
     @kotlinx.rpc.internal.utils.InternalRpcApi
     fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestLargeOneofInternal { 
         val copy = com.google.protobuf_test_messages.proto2.TestLargeOneofInternal()
-        copy.largeOneof = largeOneof?.oneOfCopy()
+        copy.largeOneof = this.largeOneof?.oneOfCopy()
         copy.apply(body)
+        this._unknownFields.copyTo(copy._unknownFields)
         return copy
     }
 
@@ -5298,6 +5640,12 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
     class A1Internal: com.google.protobuf_test_messages.proto2.TestLargeOneof.A1, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override fun hashCode(): kotlin.Int { 
             checkRequiredFields()
@@ -5331,6 +5679,7 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A1Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A1Internal { 
             val copy = com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A1Internal()
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -5339,10 +5688,12 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestLargeOneof.A1): kotlinx.rpc.protobuf.input.stream.InputStream { 
                 val buffer = kotlinx.io.Buffer()
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+                val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    value.asInternal().encodeWith(encoder)
+                    internalMsg.encodeWith(encoder)
                 }
                 encoder.flush()
+                internalMsg._unknownFields.copyTo(buffer)
                 return buffer.asInputStream()
             }
 
@@ -5353,6 +5704,7 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
                         com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A1Internal.decodeWith(msg, it)
                     }
                     msg.checkRequiredFields()
+                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -5365,6 +5717,12 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
     class A2Internal: com.google.protobuf_test_messages.proto2.TestLargeOneof.A2, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override fun hashCode(): kotlin.Int { 
             checkRequiredFields()
@@ -5398,6 +5756,7 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A2Internal { 
             val copy = com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A2Internal()
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -5406,10 +5765,12 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestLargeOneof.A2): kotlinx.rpc.protobuf.input.stream.InputStream { 
                 val buffer = kotlinx.io.Buffer()
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+                val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    value.asInternal().encodeWith(encoder)
+                    internalMsg.encodeWith(encoder)
                 }
                 encoder.flush()
+                internalMsg._unknownFields.copyTo(buffer)
                 return buffer.asInputStream()
             }
 
@@ -5420,6 +5781,7 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
                         com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A2Internal.decodeWith(msg, it)
                     }
                     msg.checkRequiredFields()
+                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -5432,6 +5794,12 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
     class A3Internal: com.google.protobuf_test_messages.proto2.TestLargeOneof.A3, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override fun hashCode(): kotlin.Int { 
             checkRequiredFields()
@@ -5465,6 +5833,7 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A3Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A3Internal { 
             val copy = com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A3Internal()
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -5473,10 +5842,12 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestLargeOneof.A3): kotlinx.rpc.protobuf.input.stream.InputStream { 
                 val buffer = kotlinx.io.Buffer()
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+                val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    value.asInternal().encodeWith(encoder)
+                    internalMsg.encodeWith(encoder)
                 }
                 encoder.flush()
+                internalMsg._unknownFields.copyTo(buffer)
                 return buffer.asInputStream()
             }
 
@@ -5487,6 +5858,7 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
                         com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A3Internal.decodeWith(msg, it)
                     }
                     msg.checkRequiredFields()
+                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -5499,6 +5871,12 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
     class A4Internal: com.google.protobuf_test_messages.proto2.TestLargeOneof.A4, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override fun hashCode(): kotlin.Int { 
             checkRequiredFields()
@@ -5532,6 +5910,7 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A4Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A4Internal { 
             val copy = com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A4Internal()
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -5540,10 +5919,12 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestLargeOneof.A4): kotlinx.rpc.protobuf.input.stream.InputStream { 
                 val buffer = kotlinx.io.Buffer()
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+                val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    value.asInternal().encodeWith(encoder)
+                    internalMsg.encodeWith(encoder)
                 }
                 encoder.flush()
+                internalMsg._unknownFields.copyTo(buffer)
                 return buffer.asInputStream()
             }
 
@@ -5554,6 +5935,7 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
                         com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A4Internal.decodeWith(msg, it)
                     }
                     msg.checkRequiredFields()
+                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -5566,6 +5948,12 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
     class A5Internal: com.google.protobuf_test_messages.proto2.TestLargeOneof.A5, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         override val _size: Int by lazy { computeSize() }
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @kotlinx.rpc.internal.utils.InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override fun hashCode(): kotlin.Int { 
             checkRequiredFields()
@@ -5599,6 +5987,7 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
         fun copyInternal(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A5Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A5Internal { 
             val copy = com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A5Internal()
             copy.apply(body)
+            this._unknownFields.copyTo(copy._unknownFields)
             return copy
         }
 
@@ -5607,10 +5996,12 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
             override fun encode(value: com.google.protobuf_test_messages.proto2.TestLargeOneof.A5): kotlinx.rpc.protobuf.input.stream.InputStream { 
                 val buffer = kotlinx.io.Buffer()
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+                val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    value.asInternal().encodeWith(encoder)
+                    internalMsg.encodeWith(encoder)
                 }
                 encoder.flush()
+                internalMsg._unknownFields.copyTo(buffer)
                 return buffer.asInputStream()
             }
 
@@ -5621,6 +6012,7 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
                         com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A5Internal.decodeWith(msg, it)
                     }
                     msg.checkRequiredFields()
+                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -5635,10 +6027,12 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
         override fun encode(value: com.google.protobuf_test_messages.proto2.TestLargeOneof): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+            val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                value.asInternal().encodeWith(encoder)
+                internalMsg.encodeWith(encoder)
             }
             encoder.flush()
+            internalMsg._unknownFields.copyTo(buffer)
             return buffer.asInputStream()
         }
 
@@ -5649,6 +6043,7 @@ class TestLargeOneofInternal: com.google.protobuf_test_messages.proto2.TestLarge
                     com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.decodeWith(msg, it)
                 }
                 msg.checkRequiredFields()
+                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -7191,8 +7586,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.Companio
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -7903,8 +8301,11 @@ fun com.google.protobuf_test_messages.proto2.ForeignMessageProto2Internal.Compan
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -7956,8 +8357,11 @@ fun com.google.protobuf_test_messages.proto2.GroupFieldInternal.Companion.decode
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -8062,8 +8466,11 @@ fun com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal.Compa
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -8123,8 +8530,11 @@ fun com.google.protobuf_test_messages.proto2.NullHypothesisProto2Internal.Compan
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -8160,8 +8570,11 @@ fun com.google.protobuf_test_messages.proto2.EnumOnlyProto2Internal.Companion.de
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -8202,8 +8615,11 @@ fun com.google.protobuf_test_messages.proto2.OneStringProto2Internal.Companion.d
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -8265,8 +8681,11 @@ fun com.google.protobuf_test_messages.proto2.ProtoWithKeywordsInternal.Companion
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -8775,8 +9194,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9040,8 +9462,11 @@ fun com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.Companion.de
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9116,8 +9541,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.NestedMe
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9173,8 +9601,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapInt32
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9230,8 +9661,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapInt64
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9287,8 +9721,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapUint3
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9344,8 +9781,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapUint6
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9401,8 +9841,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapSint3
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9458,8 +9901,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapSint6
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9515,8 +9961,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapFixed
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9572,8 +10021,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapFixed
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9629,8 +10081,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapSfixe
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9686,8 +10141,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapSfixe
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9743,8 +10201,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapInt32
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9800,8 +10261,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapInt32
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9857,8 +10321,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapInt32
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9921,8 +10388,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapInt32
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -9978,8 +10448,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapBoolB
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10035,8 +10508,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapStrin
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10092,8 +10568,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapStrin
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10156,8 +10635,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapStrin
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10220,8 +10702,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapStrin
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10277,8 +10762,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapStrin
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10334,8 +10822,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MapStrin
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10395,8 +10886,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.DataInte
                 msg.groupUint32 = decoder.readUInt32()
             }
             else -> { 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10456,8 +10950,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MultiWor
                 msg.groupUint32 = decoder.readUInt32()
             }
             else -> { 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10501,8 +10998,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageS
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10543,8 +11043,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageS
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10589,8 +11092,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageS
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10645,8 +11151,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.Extensio
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10702,8 +11211,11 @@ fun com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal.Optio
                 msg.a = decoder.readInt32()
             }
             else -> { 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10784,8 +11296,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10855,8 +11370,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.
                 msg.groupUint32 = decoder.readUInt32()
             }
             else -> { 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10900,8 +11418,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10944,8 +11465,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -10992,8 +11516,11 @@ fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -11033,8 +11560,11 @@ fun com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A1Internal.C
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -11070,8 +11600,11 @@ fun com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A2Internal.C
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -11107,8 +11640,11 @@ fun com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A3Internal.C
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -11144,8 +11680,11 @@ fun com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A4Internal.C
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }
@@ -11181,8 +11720,11 @@ fun com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A5Internal.C
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                // we are currently just skipping unknown fields (KRPC-191)
-                decoder.skipValue(tag)
+                if (msg._unknownFieldsEncoder == null) { 
+                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                }
+
+                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
             }
         }
     }

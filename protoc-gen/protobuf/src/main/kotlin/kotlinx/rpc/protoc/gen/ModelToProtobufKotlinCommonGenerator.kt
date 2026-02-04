@@ -15,15 +15,20 @@ import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.INTERNAL_RPC_API_ANNO
 import kotlinx.rpc.protoc.gen.core.PB_PKG
 import kotlinx.rpc.protoc.gen.core.WITH_CODEC_ANNO
+import kotlinx.rpc.protoc.gen.core.file
 import kotlinx.rpc.protoc.gen.core.fqName
 import kotlinx.rpc.protoc.gen.core.model.EnumDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FieldDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FieldType
 import kotlinx.rpc.protoc.gen.core.model.FileDeclaration
+import kotlinx.rpc.protoc.gen.core.model.FqName
 import kotlinx.rpc.protoc.gen.core.model.MessageDeclaration
 import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
 import kotlinx.rpc.protoc.gen.core.model.WireType
+import kotlinx.rpc.protoc.gen.core.model.fullName
+import kotlinx.rpc.protoc.gen.core.model.importPath
+import kotlinx.rpc.protoc.gen.core.model.packageName
 import kotlinx.rpc.protoc.gen.core.model.scalarDefaultSuffix
 
 class ModelToProtobufKotlinCommonGenerator(
@@ -62,6 +67,10 @@ class ModelToProtobufKotlinCommonGenerator(
         // emit all required functions in the outer scope
         val allMsgs = messages + messages.flatMap(MessageDeclaration::allNestedRecursively)
         allMsgs.forEach {
+            // add all required imports of submessage fields
+            // (e.g. asInternal() from messages in different packages)
+            it.addNecessaryInternalImports()
+
             generateRequiredCheck(it)
             generateMessageEncoder(it)
             generateMessageDecoder(it)
@@ -158,6 +167,30 @@ class ModelToProtobufKotlinCommonGenerator(
                 value = "lazy { computeSize() }"
             )
 
+            additionalInternalImports.add("kotlinx.io.Buffer")
+            // unknown fields are currently not stored in a map like structure, but directly in binary form
+            // within a buffer.
+            // creating a Buffer object is inexpensive as there is no dynamic allocation involved.
+            property(
+                name = "_unknownFields",
+                modifiers = "override",
+                annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
+                type = "Buffer",
+                value = "Buffer()"
+            )
+
+            // by setting the encoder to null, we avoid unnecessary creation of the WireEncoder
+            // if there is no unknown field. by checking if it is null, we can also check if there
+            // was any unknown field after decoding (for flushing).
+            property(
+                name = "_unknownFieldsEncoder",
+                modifiers = "internal",
+                isVar = true,
+                annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
+                type = "WireEncoder?",
+                value = "null",
+            )
+
             val override = if (declaration.isUserFacing) "override" else ""
             declaration.actualFields.forEachIndexed { i, field ->
                 val value = when {
@@ -212,6 +245,26 @@ class ModelToProtobufKotlinCommonGenerator(
                 annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
                 declarationType = CodeGenerator.DeclarationType.Object
             )
+        }
+    }
+
+    /**
+     * Adds necessary imports required for this message declaration.
+     * E.g., the `asInternal()` and `copy()` functions of messages in other packages.
+     */
+    private fun MessageDeclaration.addNecessaryInternalImports() {
+        val pkg = name.packageName()
+        actualFields.mapNotNull { (it.type as? FieldType.Message)?.dec?.value }.forEach { subMsg ->
+            val subMsgPkg = subMsg.name.packageName()
+            // if the subMsg is part of some other package and not a well-known type,
+            // we import all necessary functions
+            if (subMsgPkg != pkg && subMsgPkg.fullName() != "com.google.protobuf.kotlin") {
+                additionalInternalImports.add(subMsgPkg.importPath("asInternal"))
+                additionalInternalImports.add(subMsgPkg.importPath("copy"))
+                additionalInternalImports.add(subMsgPkg.importPath("checkRequiredFields"))
+                additionalInternalImports.add(subMsgPkg.importPath("decodeWith"))
+                additionalInternalImports.add(subMsg.internalClassFullName())
+            }
         }
     }
 
@@ -442,14 +495,15 @@ class ModelToProtobufKotlinCommonGenerator(
                     // if the field has presence, we need to check if it was set in the original object.
                     // if it was set, we copy it to the new object, otherwise we leave it unset.
                     ifBranch(condition = "presenceMask[${field.presenceIdx}]", ifBlock = {
-                        code("copy.${field.name} = ${field.type.copyCall(field.name, field.nullable)}")
+                        code("copy.${field.name} = this.${field.type.copyCall(field.name, field.nullable)}")
                     })
                 } else {
                     // by default, we copy the field value
-                    code("copy.${field.name} = ${field.type.copyCall(field.name, field.nullable)}")
+                    code("copy.${field.name} = this.${field.type.copyCall(field.name, field.nullable)}")
                 }
             }
             code("copy.apply(body)")
+            code("this._unknownFields.copyTo(copy._unknownFields)")
             code("return copy")
         }
     }
@@ -659,10 +713,12 @@ class ModelToProtobufKotlinCommonGenerator(
             function("encode", modifiers = "override", args = "value: $msgFqName", returnType = inputStreamFqName) {
                 code("val buffer = $bufferFqName()")
                 code("val encoder = $PB_PKG.WireEncoder(buffer)")
+                code("val internalMsg = value.asInternal()")
                 scope("${PB_PKG}.checkForPlatformEncodeException", nlAfterClosed = false) {
-                    code("value.asInternal().encodeWith(encoder)")
+                    code("internalMsg.encodeWith(encoder)")
                 }
                 code("encoder.flush()")
+                code("internalMsg._unknownFields.copyTo(buffer)")
                 code("return buffer.asInputStream()")
             }
 
@@ -673,6 +729,7 @@ class ModelToProtobufKotlinCommonGenerator(
                         code("${declaration.internalClassFullName()}.decodeWith(msg, it)")
                     }
                     code("msg.checkRequiredFields()")
+                    code("msg._unknownFieldsEncoder?.flush()")
                     code("return msg")
                 }
             }
@@ -745,8 +802,12 @@ class ModelToProtobufKotlinCommonGenerator(
                                 code("throw $PB_PKG.ProtobufDecodingException(\"Unexpected END_GROUP tag.\")")
                             })
                         }
-                        code("// we are currently just skipping unknown fields (KRPC-191)")
-                        code("decoder.skipValue(tag)")
+
+                        // TODO: Use configuration to disable it
+                        ifBranch(condition = "msg._unknownFieldsEncoder == null", ifBlock = {
+                            code("msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)")
+                        })
+                        code("decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)")
                     }
                 }
             }

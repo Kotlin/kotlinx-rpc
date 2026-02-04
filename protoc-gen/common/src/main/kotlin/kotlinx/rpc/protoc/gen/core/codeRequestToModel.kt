@@ -91,7 +91,7 @@ fun Descriptors.GenericDescriptor.fqName(): FqName {
         is Descriptors.OneofDescriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
         is Descriptors.EnumDescriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
         is Descriptors.EnumValueDescriptor -> FqName.Declaration(name, type.fqName())
-        is Descriptors.ServiceDescriptor -> FqName.Declaration(nameCapital, file?.fqName() ?: file.fqName())
+        is Descriptors.ServiceDescriptor -> FqName.Declaration(nameCapital, file.fqName())
         is Descriptors.MethodDescriptor -> FqName.Declaration(nameLower, service?.fqName() ?: file.fqName())
         else -> error("Unknown generic descriptor: $this")
     }
