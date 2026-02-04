@@ -16,6 +16,10 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
         codedOutputStream.flush()
     }
 
+    override fun writeTag(tag: KTag) {
+        codedOutputStream.writeTag(tag.fieldNr, tag.wireType.ordinal)
+    }
+
     override fun writeBool(fieldNr: Int, value: Boolean) {
         codedOutputStream.writeBool(fieldNr, value)
     }
