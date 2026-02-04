@@ -97,6 +97,10 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
         pw_encoder_flush(raw)
     }
 
+    override fun writeTag(tag: KTag) {
+        pw_encoder_write_tag(raw, tag.fieldNr, tag.wireType.ordinal)
+    }
+
     override fun writeBool(fieldNr: Int, value: Boolean) = checked {
         pw_encoder_write_bool(raw, fieldNr, value)
     }
