@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen.extension
 
+import kotlinx.rpc.codegen.VersionSpecificApi
 import kotlinx.rpc.codegen.common.RpcClassId
 import kotlinx.rpc.codegen.common.RpcNames
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
@@ -34,12 +35,13 @@ internal object RpcDeclarationScanner {
 
         val grpcAnnotation = service.getAnnotation(RpcClassId.grpcAnnotation.asSingleFqName())
         // if the protoPackage is not set by the annotation, we use the service kotlin package name
-        val protoPackage = grpcAnnotation?.arguments?.getOrNull(0)?.asConstString()
-            ?: service.packageFqName?.asString() ?: ""
+        val protoPackage = ctx.vsApi { grpcAnnotation?.valueArgumentAt(0)?.assertConstString(this) }
+            ?: service.packageFqName?.asString().orEmpty()
 
         // if the simpleServiceName is set in the @Grpc annotation, we use it instead of the service's class name
-        val simpleName = grpcAnnotation?.arguments?.getOrNull(1)?.asConstString()
-            ?.takeIf { it.isNotBlank() } ?: service.kotlinFqName.shortName().asString()
+        val simpleName = ctx.vsApi { grpcAnnotation?.valueArgumentAt(1)?.assertConstString(this) }
+            ?.takeIf { it.isNotBlank() }
+            ?: service.kotlinFqName.shortName().asString()
 
         val declarations = service.declarations.memoryOptimizedMap { declaration ->
             when (declaration) {
@@ -55,6 +57,7 @@ internal object RpcDeclarationScanner {
                                 ServiceDeclaration.Method.Argument(param, param.type, param.hasDefaultValue())
                             }
                         },
+                        ctx = ctx
                     )
                 }
 
@@ -92,7 +95,7 @@ internal object RpcDeclarationScanner {
             stubClass = stubClassNotNull,
             methods = declarations.filterNotNull(),
             simpleName = simpleName,
-            protoPackage = protoPackage.trim()
+            protoPackage = protoPackage.trim(),
         )
     }
 }
@@ -106,6 +109,6 @@ private fun unsupportedDeclaration(service: IrClass, declaration: IrDeclaration,
     return null
 }
 
-fun IrExpression.asConstString(): String =
-    (this as? IrConst)?.takeIf { it.kind == IrConstKind.String }?.value as? String
-        ?: error("Expected IrConst of kind String, got ${dumpKotlinLike()}")
+private fun IrExpression.assertConstString(vsApi: VersionSpecificApi) = with(vsApi) {
+    asConstValue(String::class)
+} ?: error("Expected IrConst of kind String, got ${dumpKotlinLike()}")

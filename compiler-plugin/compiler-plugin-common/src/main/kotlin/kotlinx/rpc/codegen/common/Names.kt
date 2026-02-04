@@ -27,4 +27,6 @@ object RpcClassId {
 
 object RpcNames {
     val SERVICE_STUB_NAME: Name = Name.identifier("\$rpcServiceStub")
+
+    val CHECK_FOR_ARGUMENT_NAME = Name.identifier("checkFor")
 }

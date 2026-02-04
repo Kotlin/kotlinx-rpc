@@ -8,6 +8,7 @@
 
 @file:OptIn(kotlinx.rpc.internal.utils.ExperimentalRpcApi::class)
 
+import kotlinx.rpc.annotations.CheckedTypeAnnotation
 import kotlinx.rpc.protobuf.input.stream.InputStream
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.grpc.codec.MessageCodec
@@ -112,6 +113,18 @@ object TestCodec9 : CustomCodec4<Test8> {
         error("Not implemented")
     }
 }
+
+// TODO: Remove once we added the actual codec() implementation (KRPC-250)
+@CheckedTypeAnnotation(WithCodec::class)
+@Target(AnnotationTarget.TYPE_PARAMETER)
+annotation class HasWithCodec
+// TODO: Remove once we added the actual codec() implementation (KRPC-250)
+fun <@HasWithCodec T : Any> codec(): MessageCodec<T>? = null
+
+class Test10
+val testCodec10 = codec<<!CHECKED_ANNOTATION_VIOLATION!>Test10<!>>()
+
+val testCodec = codec<Test>()
 
 /* GENERATED_FIR_TAGS: annotationUseSiteTargetFile, classDeclaration, classReference, functionDeclaration,
 interfaceDeclaration, nullableType, objectDeclaration, override, stringLiteral, typeParameter */

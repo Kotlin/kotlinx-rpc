@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.ir.backend.js.utils.valueArguments
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
@@ -35,6 +36,8 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.platform.TargetPlatform
 import org.jetbrains.kotlin.platform.isJs
 import org.jetbrains.kotlin.platform.isWasm
+import kotlin.reflect.KClass
+import kotlin.reflect.safeCast
 //##csm /specific
 //##csm specific=[2.0.11...2.0.21]
 import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
@@ -47,6 +50,7 @@ import org.jetbrains.kotlin.ir.backend.js.utils.valueArguments
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
@@ -66,6 +70,8 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.platform.TargetPlatform
 import org.jetbrains.kotlin.platform.isJs
 import org.jetbrains.kotlin.platform.isWasm
+import kotlin.reflect.KClass
+import kotlin.reflect.safeCast
 //##csm /specific
 //##csm specific=[2.0.22...2.1.10, 2.1.20-ij243-*]
 import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
@@ -79,6 +85,8 @@ import org.jetbrains.kotlin.ir.backend.js.utils.valueArguments
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrConst
+import org.jetbrains.kotlin.ir.expressions.IrConstKind
 import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
@@ -97,6 +105,8 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.platform.TargetPlatform
 import org.jetbrains.kotlin.platform.isJs
 import org.jetbrains.kotlin.platform.isWasm
+import kotlin.reflect.KClass
+import kotlin.reflect.safeCast
 //##csm /specific
 //##csm specific=[2.1.11...2.1.21]
 import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
@@ -109,6 +119,8 @@ import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrConst
+import org.jetbrains.kotlin.ir.expressions.IrConstKind
 import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
@@ -127,6 +139,8 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.platform.TargetPlatform
 import org.jetbrains.kotlin.platform.isJs
 import org.jetbrains.kotlin.platform.isWasm
+import kotlin.reflect.KClass
+import kotlin.reflect.safeCast
 //##csm /specific
 //##csm specific=[2.1.22...2.3.*]
 import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
@@ -169,6 +183,8 @@ import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrAnnotation
 import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrConst
+import org.jetbrains.kotlin.ir.expressions.IrConstKind
 import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
@@ -190,6 +206,9 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.platform.TargetPlatform
 import org.jetbrains.kotlin.platform.isJs
 import org.jetbrains.kotlin.platform.isWasm
+import kotlin.reflect.KClass
+import kotlin.reflect.safeCast
+
 //##csm /specific
 //##csm /VersionSpecificApiImpl.kt-import
 
@@ -210,12 +229,15 @@ object VersionSpecificApiImpl : VersionSpecificApi {
 
     override var IrCall.originVS: IrStatementOrigin?
         get() = origin
-        set(value) { origin = value }
+        set(value) {
+            origin = value
+        }
 
     //##csm IrConstructor.parametersVS
     //##csm specific=[2.0.0...2.1.10, 2.1.20-ij243-*]
     override val IrConstructor.parametersVS: List<IrValueParameter>
         get() = valueParameters
+
     //##csm /specific
     //##csm default
     override val IrConstructor.parametersVS: List<IrValueParameter>
@@ -227,10 +249,12 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     //##csm specific=[2.0.0...2.1.10, 2.1.20-ij243-*]
     override val IrConstructorCall.argumentsVS: List<IrExpression?>
         get() = valueArguments
+
     //##csm /specific
     //##csm specific=[2.1.11...2.1.21]
     override val IrConstructorCall.argumentsVS: List<IrExpression?>
         get() = arguments
+
     //##csm /specific
     //##csm default
     override val IrConstructorCall.argumentsVS: List<IrExpression?>
@@ -273,6 +297,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     //##csm specific=[2.0.0...2.0.10]
     override val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
         get() = CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY
+
     //##csm /specific
     //##csm default
     override val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
@@ -339,6 +364,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     override fun IrFunction.valueParametersVS(): List<IrValueParameter> {
         return valueParameters
     }
+
     //##csm /specific
     //##csm default
     override fun IrFunction.valueParametersVS(): List<IrValueParameter> {
@@ -459,5 +485,27 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         annotations += annotation as IrAnnotationImpl
         //##csm /default
         //##csm /addAnnotationVS
+    }
+
+    override fun IrConstructorCall.valueArgumentAt(index: Int): IrExpression? {
+        //##csm IrConstructorCall.valueArgumentAt
+        //##csm specific=[2.0.0...2.1.10]
+        return getValueArgument(index)
+        //##csm /specific
+        //##csm default
+        return arguments.getOrNull(index)
+        //##csm /default
+        //##csm /IrConstructorCall.valueArgumentAt
+    }
+
+    override fun <T : Any> IrExpression.asConstValue(clazz: KClass<T>): T? {
+        //##csm IrConstructorCall.valueArgumentAt
+        //##csm specific=[2.0.0...2.0.21]
+        return (this as? IrConst<*>)?.value?.let { clazz.safeCast(it) }
+        //##csm /specific
+        //##csm default
+        return (this as? IrConst)?.value?.let { clazz.safeCast(it) }
+        //##csm /default
+        //##csm /IrConstructorCall.valueArgumentAt
     }
 }

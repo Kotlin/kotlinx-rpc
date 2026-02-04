@@ -71,7 +71,7 @@ FILE fqName:<root> fileName:/grpc.kt
         public open fun toString (): kotlin.String declared in kotlin.Any
   CLASS INTERFACE name:BoxService modality:ABSTRACT visibility:public superTypes:[kotlin.Any]
     annotations:
-      Grpc(protoPackage = <null>)
+      Grpc(protoPackage = <null>, protoServiceName = <null>)
     thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:<root>.BoxService
     CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedStubKey] CLASS name:$rpcServiceStub modality:FINAL visibility:public superTypes:[<root>.BoxService]
       thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:<root>.BoxService.$rpcServiceStub
@@ -875,7 +875,7 @@ FILE fqName:<root> fileName:/grpc.kt
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService
   CLASS INTERFACE name:ProtoPkgService modality:ABSTRACT visibility:public superTypes:[kotlin.Any]
     annotations:
-      Grpc(protoPackage = "my.proto.package")
+      Grpc(protoPackage = "my.proto.package", protoServiceName = <null>)
     thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:<root>.ProtoPkgService
     CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedStubKey] CLASS name:$rpcServiceStub modality:FINAL visibility:public superTypes:[<root>.ProtoPkgService]
       thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:<root>.ProtoPkgService.$rpcServiceStub

@@ -316,7 +316,7 @@ internal class RpcIrContext(
             ?: error("Unable to find symbol. Package: $packageName, name: $name")
     }
 
-    private fun <T> vsApi(body: VersionSpecificApi.() -> T): T {
+    fun <T> vsApi(body: VersionSpecificApi.() -> T): T {
         return versionSpecificApi.run(body)
     }
 }
