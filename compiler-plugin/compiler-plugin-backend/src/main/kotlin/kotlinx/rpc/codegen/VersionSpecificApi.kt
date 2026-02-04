@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.platform.TargetPlatform
+import kotlin.reflect.KClass
 
 @Suppress("detekt.LongParameterList")
 interface VersionSpecificApi {
@@ -87,6 +88,10 @@ interface VersionSpecificApi {
     var IrFunction.dispatchReceiverParameterVS: IrValueParameter?
 
     fun IrMemberAccessExpressionData.buildFor(access: IrMemberAccessExpression<*>)
+
+    fun IrConstructorCall.valueArgumentAt(index: Int): IrExpression?
+
+    fun <T : Any> IrExpression.asConstValue(clazz: KClass<T>): T?
 }
 
 @Suppress("unused")
