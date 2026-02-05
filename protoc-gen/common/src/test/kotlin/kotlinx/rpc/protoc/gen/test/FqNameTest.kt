@@ -14,8 +14,8 @@ class FqNameTest {
     @Test
     fun testAsParentsAndSimpleName() {
         assertEquals(listOf<String>() to "Test", "Test".asParentsAndSimpleName())
-        assertEquals(listOf<String>("hello") to "Test", "hello.Test".asParentsAndSimpleName())
-        assertEquals(listOf<String>("hello", "world") to "Test", "hello.world.Test".asParentsAndSimpleName())
+        assertEquals(listOf("hello") to "Test", "hello.Test".asParentsAndSimpleName())
+        assertEquals(listOf("hello", "world") to "Test", "hello.world.Test".asParentsAndSimpleName())
     }
 
     @Test
