@@ -79,17 +79,16 @@ fun FqName.packageName(): FqName.Package {
 fun FqName.Package.importPath(entity: String): String =
     if (this == FqName.Package.Root) entity else "${fullName()}.$entity"
 
-internal fun FqName.fullNestedName(): String {
-    val parentName = parent
-    return when (parentName) {
-        is FqName.Package -> simpleName
-        this -> simpleName
+internal fun FqName.fullNestedNameAsList(): List<String> {
+    return when (val parentName = parent) {
+        is FqName.Package -> listOf(simpleName)
+        this -> listOf(simpleName)
         else -> {
-            val fullParentName = parentName.fullNestedName()
+            val fullParentName = parentName.fullNestedNameAsList()
             if (fullParentName.isEmpty()) {
-                simpleName
+                listOf(simpleName)
             } else {
-                "$fullParentName.$simpleName"
+                fullParentName + simpleName
             }
         }
     }
