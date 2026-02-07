@@ -453,11 +453,11 @@ private fun com.google.protobuf.kotlin.ApiInternal.computeSize(): Int {
     }
 
     if (methods.isNotEmpty()) { 
-        __result += methods.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(2, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += methods.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(2, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (options.isNotEmpty()) { 
-        __result += options.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(3, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += options.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(3, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (version.isNotEmpty()) { 
@@ -469,7 +469,7 @@ private fun com.google.protobuf.kotlin.ApiInternal.computeSize(): Int {
     }
 
     if (mixins.isNotEmpty()) { 
-        __result += mixins.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(6, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += mixins.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(6, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (syntax != com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2) { 
@@ -591,7 +591,7 @@ private fun com.google.protobuf.kotlin.MethodInternal.computeSize(): Int {
     }
 
     if (options.isNotEmpty()) { 
-        __result += options.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(6, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += options.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(6, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (syntax != com.google.protobuf.kotlin.Syntax.SYNTAX_PROTO2) { 

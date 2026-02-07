@@ -1331,11 +1331,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
                     val elementSize = when (value.wireType) {
                         WireType.LENGTH_DELIMITED -> "$valueSize.let { $tagSize + ${int32SizeCall("it")} + it }"
-                        WireType.START_GROUP -> {
-                            val endTagSize = tagSizeCall(number, WireType.END_GROUP)
-                            "($tagSize + $valueSize + $endTagSize)"
-                        }
-
+                        WireType.START_GROUP -> "($tagSize + $valueSize + ${tagSizeCall(number, WireType.END_GROUP)})"
                         else -> "($tagSize + $valueSize)"
                     }
 
