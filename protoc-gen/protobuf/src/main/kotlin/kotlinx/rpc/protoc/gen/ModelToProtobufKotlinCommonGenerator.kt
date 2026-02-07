@@ -1265,7 +1265,7 @@ class ModelToProtobufKotlinCommonGenerator(
             is FieldType.Map -> {
                 scope("__result += ${field.name}.entries.sumOf", paramDecl = "kEntry ->") {
                     generateMapConstruction(field.type as FieldType.Map, "kEntry.key", "kEntry.value")
-                    code("._size")
+                    code("._size.let { $tagSize + ${int32SizeCall("it")} + it }")
                 }
             }
 
@@ -1328,7 +1328,18 @@ class ModelToProtobufKotlinCommonGenerator(
                     // calculate the size of the values within the list.
                     val valueSize = value.valueSizeCall("it", number)
                     val tagSize = tagSizeCall(number, value.wireType)
-                    "$variable.sumOf { $valueSize + $tagSize }"
+
+                    val elementSize = when (value.wireType) {
+                        WireType.LENGTH_DELIMITED -> "$valueSize.let { $tagSize + ${int32SizeCall("it")} + it }"
+                        WireType.START_GROUP -> {
+                            val endTagSize = tagSizeCall(number, WireType.END_GROUP)
+                            "($tagSize + $valueSize + $endTagSize)"
+                        }
+
+                        else -> "($tagSize + $valueSize)"
+                    }
+
+                    "$variable.sumOf { $elementSize }"
                 }
             }
 
