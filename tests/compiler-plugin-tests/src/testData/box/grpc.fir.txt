@@ -13,11 +13,11 @@ FILE: grpc.kt
                 super<R|kotlin/Any|>()
             }
 
-            public open override fun encode(value: R|Custom|): R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream| {
+            public open override fun encode(value: R|Custom|, config: R|kotlinx/rpc/grpc/codec/CodecConfig?|): R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream| {
                 R|kotlin/TODO|(String(Not yet implemented))
             }
 
-            public open override fun decode(stream: R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream|): R|Custom| {
+            public open override fun decode(stream: R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream|, config: R|kotlinx/rpc/grpc/codec/CodecConfig?|): R|Custom| {
                 R|kotlin/TODO|(String(Not yet implemented))
             }
 
@@ -37,7 +37,7 @@ FILE: grpc.kt
 
         public abstract suspend fun custom(): R|Custom|
 
-        public final class $rpcServiceStub : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 
@@ -47,7 +47,7 @@ FILE: grpc.kt
     @R|kotlinx/rpc/grpc/annotations/Grpc|(protoPackage = <strcat>(String(my.proto.), String(package))) public abstract interface ProtoPkgService : R|kotlin/Any| {
         public abstract suspend fun unit(): R|kotlin/Unit|
 
-        public final class $rpcServiceStub : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 
