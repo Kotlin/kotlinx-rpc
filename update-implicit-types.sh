@@ -96,7 +96,7 @@ fetch_kotlin_types_version() {
         grep '%2FClasslikes%2F' | \
         sed -E 's/anchor-label="([^"]+)".*/\1/' | \
         grep -E '^[A-Z]' | \
-        sort -u > "$output_file"
+        LC_ALL=C sort -u > "$output_file"
 }
 
 # Function to extract types from Kotlin API documentation across multiple versions
@@ -120,7 +120,7 @@ fetch_kotlin_types() {
     done
 
     # Merge all versions and remove duplicates
-    cat "${temp_dir}"/*.txt | sort -u > "$output_file"
+    cat "${temp_dir}"/*.txt | LC_ALL=C sort -u > "$output_file"
 
     local total_count
     total_count=$(wc -l < "$output_file" | tr -d ' ')
@@ -154,7 +154,7 @@ fetch_java_types_version() {
         sed 's/.*>//' | \
         grep -vE '\.' | \
         grep -E '^[A-Z]' | \
-        sort -u > "$output_file"
+        LC_ALL=C sort -u > "$output_file"
 }
 
 # Function to extract types from Java API documentation across multiple versions
@@ -177,7 +177,7 @@ fetch_java_types() {
     done
 
     # Merge all versions and remove duplicates
-    cat "${temp_dir}"/*.txt | sort -u > "$output_file"
+    cat "${temp_dir}"/*.txt | LC_ALL=C sort -u > "$output_file"
 
     local total_count
     total_count=$(wc -l < "$output_file" | tr -d ' ')

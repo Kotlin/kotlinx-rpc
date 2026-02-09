@@ -8,6 +8,7 @@ ExperimentalJsFileName
 ExperimentalJsReflectionCreateInstance
 ExperimentalJsStatic
 ExperimentalWasmJsInterop
+JSON
 JsAny
 JsArray
 JsBigInt
@@ -22,13 +23,12 @@ JsModule
 JsName
 JsNonModule
 JsNumber
-Json
-JSON
 JsPromiseError
 JsQualifier
 JsReference
 JsStatic
 JsString
+Json
 Promise
 RegExp
 RegExpMatch

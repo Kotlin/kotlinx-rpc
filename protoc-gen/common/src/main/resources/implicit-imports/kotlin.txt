@@ -57,9 +57,9 @@ Metadata
 MustUseReturnValue
 MustUseReturnValues
 NoSuchElementException
-Nothing
-NotImplementedError
 NoWhenBranchMatchedException
+NotImplementedError
+Nothing
 NullPointerException
 Number
 NumberFormatException
@@ -89,9 +89,9 @@ UInt
 UIntArray
 ULong
 ULongArray
+UShort
+UShortArray
 UninitializedPropertyAccessException
 Unit
 UnsafeVariance
 UnsupportedOperationException
-UShort
-UShortArray

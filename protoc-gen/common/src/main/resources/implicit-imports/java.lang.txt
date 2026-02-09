@@ -8,8 +8,8 @@ AutoCloseable
 Boolean
 BootstrapMethodError
 Byte
-Character
 CharSequence
+Character
 Class
 ClassCastException
 ClassCircularityError
@@ -17,8 +17,8 @@ ClassFormatError
 ClassLoader
 ClassNotFoundException
 ClassValue
-Cloneable
 CloneNotSupportedException
+Cloneable
 Comparable
 Compiler
 Deprecated
@@ -30,6 +30,7 @@ Exception
 ExceptionInInitializerError
 Float
 FunctionalInterface
+IO
 IllegalAccessError
 IllegalAccessException
 IllegalArgumentException
@@ -45,7 +46,6 @@ InstantiationException
 Integer
 InternalError
 InterruptedException
-IO
 Iterable
 LayerInstantiationException
 LinkageError

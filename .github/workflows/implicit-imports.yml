@@ -16,11 +16,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: Update List Of Implicit Imports
-        run: ./updateImplicitImports.sh
+        run: ./update-implicit-types.sh
       - name: Check if list is up-to-date
         run: |
           if [[ -n "$(git status --porcelain | grep protoc-gen/common/src/main/resources/implicit-imports/)" ]]; then
-            echo "List of implicit imports is not up to date. Please run './updateImplicitImports.sh' and commit changes"
+            echo "List of implicit imports is not up to date. Please run './update-implicit-types.sh' and commit changes"
             git status --porcelain
             git diff --minimal | cat
             exit 1
