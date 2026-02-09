@@ -2,16 +2,9 @@
 package com.google.protobuf.conformance
 
 import kotlinx.io.Buffer
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.*
 import kotlinx.rpc.protobuf.input.stream.asInputStream
-import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
-import kotlinx.rpc.protobuf.internal.WireEncoder
-import kotlinx.rpc.protobuf.internal.bool
-import kotlinx.rpc.protobuf.internal.bytes
-import kotlinx.rpc.protobuf.internal.enum
-import kotlinx.rpc.protobuf.internal.int32
-import kotlinx.rpc.protobuf.internal.string
-import kotlinx.rpc.protobuf.internal.tag
+import kotlinx.rpc.protobuf.internal.*
 
 class TestStatusInternal: com.google.protobuf.conformance.TestStatus, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
     @kotlinx.rpc.internal.utils.InternalRpcApi

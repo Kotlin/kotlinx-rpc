@@ -2,42 +2,9 @@
 package com.google.protobuf_test_messages.proto2
 
 import kotlinx.io.Buffer
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.*
 import kotlinx.rpc.protobuf.input.stream.asInputStream
-import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
-import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
-import kotlinx.rpc.protobuf.internal.WireEncoder
-import kotlinx.rpc.protobuf.internal.bool
-import kotlinx.rpc.protobuf.internal.bytes
-import kotlinx.rpc.protobuf.internal.double
-import kotlinx.rpc.protobuf.internal.enum
-import kotlinx.rpc.protobuf.internal.fixed32
-import kotlinx.rpc.protobuf.internal.fixed64
-import kotlinx.rpc.protobuf.internal.float
-import kotlinx.rpc.protobuf.internal.int32
-import kotlinx.rpc.protobuf.internal.int64
-import kotlinx.rpc.protobuf.internal.packedBool
-import kotlinx.rpc.protobuf.internal.packedDouble
-import kotlinx.rpc.protobuf.internal.packedEnum
-import kotlinx.rpc.protobuf.internal.packedFixed32
-import kotlinx.rpc.protobuf.internal.packedFixed64
-import kotlinx.rpc.protobuf.internal.packedFloat
-import kotlinx.rpc.protobuf.internal.packedInt32
-import kotlinx.rpc.protobuf.internal.packedInt64
-import kotlinx.rpc.protobuf.internal.packedSFixed32
-import kotlinx.rpc.protobuf.internal.packedSFixed64
-import kotlinx.rpc.protobuf.internal.packedSInt32
-import kotlinx.rpc.protobuf.internal.packedSInt64
-import kotlinx.rpc.protobuf.internal.packedUInt32
-import kotlinx.rpc.protobuf.internal.packedUInt64
-import kotlinx.rpc.protobuf.internal.sFixed32
-import kotlinx.rpc.protobuf.internal.sFixed64
-import kotlinx.rpc.protobuf.internal.sInt32
-import kotlinx.rpc.protobuf.internal.sInt64
-import kotlinx.rpc.protobuf.internal.string
-import kotlinx.rpc.protobuf.internal.tag
-import kotlinx.rpc.protobuf.internal.uInt32
-import kotlinx.rpc.protobuf.internal.uInt64
+import kotlinx.rpc.protobuf.internal.*
 
 class TestAllTypesProto2Internal: com.google.protobuf_test_messages.proto2.TestAllTypesProto2, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 58) { 
     private object PresenceIndices { 
