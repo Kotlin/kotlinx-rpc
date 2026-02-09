@@ -407,7 +407,7 @@ private fun com.google.protobuf.kotlin.StructInternal.computeSize(): Int {
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(1, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -584,7 +584,7 @@ public fun com.google.protobuf.kotlin.ListValueInternal.Companion.decodeWith(msg
 private fun com.google.protobuf.kotlin.ListValueInternal.computeSize(): Int { 
     var __result = 0
     if (values.isNotEmpty()) { 
-        __result += values.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(1, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += values.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(1, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     return __result

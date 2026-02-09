@@ -4339,19 +4339,19 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
     }
 
     if (repeatedString.isNotEmpty()) { 
-        __result += repeatedString.sumOf { kotlinx.rpc.protobuf.internal.WireSize.string(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(44, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedString.sumOf { kotlinx.rpc.protobuf.internal.WireSize.string(it).let { kotlinx.rpc.protobuf.internal.WireSize.tag(44, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedBytes.isNotEmpty()) { 
-        __result += repeatedBytes.sumOf { kotlinx.rpc.protobuf.internal.WireSize.bytes(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(45, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedBytes.sumOf { kotlinx.rpc.protobuf.internal.WireSize.bytes(it).let { kotlinx.rpc.protobuf.internal.WireSize.tag(45, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedNestedMessage.isNotEmpty()) { 
-        __result += repeatedNestedMessage.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(48, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedNestedMessage.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(48, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedForeignMessage.isNotEmpty()) { 
-        __result += repeatedForeignMessage.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(49, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedForeignMessage.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(49, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedNestedEnum.isNotEmpty()) { 
@@ -4363,11 +4363,11 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
     }
 
     if (repeatedStringPiece.isNotEmpty()) { 
-        __result += repeatedStringPiece.sumOf { kotlinx.rpc.protobuf.internal.WireSize.string(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(54, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedStringPiece.sumOf { kotlinx.rpc.protobuf.internal.WireSize.string(it).let { kotlinx.rpc.protobuf.internal.WireSize.tag(54, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedCord.isNotEmpty()) { 
-        __result += repeatedCord.sumOf { kotlinx.rpc.protobuf.internal.WireSize.string(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(55, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedCord.sumOf { kotlinx.rpc.protobuf.internal.WireSize.string(it).let { kotlinx.rpc.protobuf.internal.WireSize.tag(55, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (packedInt32.isNotEmpty()) { 
@@ -4427,59 +4427,59 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
     }
 
     if (unpackedInt32.isNotEmpty()) { 
-        __result += unpackedInt32.sumOf { kotlinx.rpc.protobuf.internal.WireSize.int32(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(89, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedInt32.sumOf { (kotlinx.rpc.protobuf.internal.WireSize.tag(89, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.int32(it)) }
     }
 
     if (unpackedInt64.isNotEmpty()) { 
-        __result += unpackedInt64.sumOf { kotlinx.rpc.protobuf.internal.WireSize.int64(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(90, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedInt64.sumOf { (kotlinx.rpc.protobuf.internal.WireSize.tag(90, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.int64(it)) }
     }
 
     if (unpackedUint32.isNotEmpty()) { 
-        __result += unpackedUint32.sumOf { kotlinx.rpc.protobuf.internal.WireSize.uInt32(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(91, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedUint32.sumOf { (kotlinx.rpc.protobuf.internal.WireSize.tag(91, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.uInt32(it)) }
     }
 
     if (unpackedUint64.isNotEmpty()) { 
-        __result += unpackedUint64.sumOf { kotlinx.rpc.protobuf.internal.WireSize.uInt64(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(92, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedUint64.sumOf { (kotlinx.rpc.protobuf.internal.WireSize.tag(92, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.uInt64(it)) }
     }
 
     if (unpackedSint32.isNotEmpty()) { 
-        __result += unpackedSint32.sumOf { kotlinx.rpc.protobuf.internal.WireSize.sInt32(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(93, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedSint32.sumOf { (kotlinx.rpc.protobuf.internal.WireSize.tag(93, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.sInt32(it)) }
     }
 
     if (unpackedSint64.isNotEmpty()) { 
-        __result += unpackedSint64.sumOf { kotlinx.rpc.protobuf.internal.WireSize.sInt64(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(94, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedSint64.sumOf { (kotlinx.rpc.protobuf.internal.WireSize.tag(94, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.sInt64(it)) }
     }
 
     if (unpackedFixed32.isNotEmpty()) { 
-        __result += unpackedFixed32.sumOf { kotlinx.rpc.protobuf.internal.WireSize.fixed32(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(95, kotlinx.rpc.protobuf.internal.WireType.FIXED32) }
+        __result += unpackedFixed32.sumOf { (kotlinx.rpc.protobuf.internal.WireSize.tag(95, kotlinx.rpc.protobuf.internal.WireType.FIXED32) + kotlinx.rpc.protobuf.internal.WireSize.fixed32(it)) }
     }
 
     if (unpackedFixed64.isNotEmpty()) { 
-        __result += unpackedFixed64.sumOf { kotlinx.rpc.protobuf.internal.WireSize.fixed64(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(96, kotlinx.rpc.protobuf.internal.WireType.FIXED64) }
+        __result += unpackedFixed64.sumOf { (kotlinx.rpc.protobuf.internal.WireSize.tag(96, kotlinx.rpc.protobuf.internal.WireType.FIXED64) + kotlinx.rpc.protobuf.internal.WireSize.fixed64(it)) }
     }
 
     if (unpackedSfixed32.isNotEmpty()) { 
-        __result += unpackedSfixed32.sumOf { kotlinx.rpc.protobuf.internal.WireSize.sFixed32(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(97, kotlinx.rpc.protobuf.internal.WireType.FIXED32) }
+        __result += unpackedSfixed32.sumOf { (kotlinx.rpc.protobuf.internal.WireSize.tag(97, kotlinx.rpc.protobuf.internal.WireType.FIXED32) + kotlinx.rpc.protobuf.internal.WireSize.sFixed32(it)) }
     }
 
     if (unpackedSfixed64.isNotEmpty()) { 
-        __result += unpackedSfixed64.sumOf { kotlinx.rpc.protobuf.internal.WireSize.sFixed64(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(98, kotlinx.rpc.protobuf.internal.WireType.FIXED64) }
+        __result += unpackedSfixed64.sumOf { (kotlinx.rpc.protobuf.internal.WireSize.tag(98, kotlinx.rpc.protobuf.internal.WireType.FIXED64) + kotlinx.rpc.protobuf.internal.WireSize.sFixed64(it)) }
     }
 
     if (unpackedFloat.isNotEmpty()) { 
-        __result += unpackedFloat.sumOf { kotlinx.rpc.protobuf.internal.WireSize.float(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(99, kotlinx.rpc.protobuf.internal.WireType.FIXED32) }
+        __result += unpackedFloat.sumOf { (kotlinx.rpc.protobuf.internal.WireSize.tag(99, kotlinx.rpc.protobuf.internal.WireType.FIXED32) + kotlinx.rpc.protobuf.internal.WireSize.float(it)) }
     }
 
     if (unpackedDouble.isNotEmpty()) { 
-        __result += unpackedDouble.sumOf { kotlinx.rpc.protobuf.internal.WireSize.double(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(100, kotlinx.rpc.protobuf.internal.WireType.FIXED64) }
+        __result += unpackedDouble.sumOf { (kotlinx.rpc.protobuf.internal.WireSize.tag(100, kotlinx.rpc.protobuf.internal.WireType.FIXED64) + kotlinx.rpc.protobuf.internal.WireSize.double(it)) }
     }
 
     if (unpackedBool.isNotEmpty()) { 
-        __result += unpackedBool.sumOf { kotlinx.rpc.protobuf.internal.WireSize.bool(it) + kotlinx.rpc.protobuf.internal.WireSize.tag(101, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedBool.sumOf { (kotlinx.rpc.protobuf.internal.WireSize.tag(101, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.bool(it)) }
     }
 
     if (unpackedNestedEnum.isNotEmpty()) { 
-        __result += unpackedNestedEnum.sumOf { kotlinx.rpc.protobuf.internal.WireSize.enum(it.number) + kotlinx.rpc.protobuf.internal.WireSize.tag(102, kotlinx.rpc.protobuf.internal.WireType.VARINT) }
+        __result += unpackedNestedEnum.sumOf { (kotlinx.rpc.protobuf.internal.WireSize.tag(102, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.enum(it.number)) }
     }
 
     if (mapInt32Int32.isNotEmpty()) { 
@@ -4488,7 +4488,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(56, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4498,7 +4498,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(57, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4508,7 +4508,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(58, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4518,7 +4518,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(59, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4528,7 +4528,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(60, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4538,7 +4538,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(61, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4548,7 +4548,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(62, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4558,7 +4558,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(63, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4568,7 +4568,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(64, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4578,7 +4578,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(65, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4588,7 +4588,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(66, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4598,7 +4598,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(67, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4608,7 +4608,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(68, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4618,7 +4618,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(69, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4628,7 +4628,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(70, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4638,7 +4638,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(71, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4648,7 +4648,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(72, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4658,7 +4658,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(73, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4668,7 +4668,7 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
                 key = kEntry.key
                 value = kEntry.value
             }
-            ._size
+            ._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(74, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it }
         }
     }
 
@@ -4709,39 +4709,39 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
     }
 
     if (repeatedBoolWrapper.isNotEmpty()) { 
-        __result += repeatedBoolWrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(211, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedBoolWrapper.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(211, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedInt32Wrapper.isNotEmpty()) { 
-        __result += repeatedInt32Wrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(212, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedInt32Wrapper.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(212, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedInt64Wrapper.isNotEmpty()) { 
-        __result += repeatedInt64Wrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(213, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedInt64Wrapper.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(213, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedUint32Wrapper.isNotEmpty()) { 
-        __result += repeatedUint32Wrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(214, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedUint32Wrapper.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(214, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedUint64Wrapper.isNotEmpty()) { 
-        __result += repeatedUint64Wrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(215, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedUint64Wrapper.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(215, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedFloatWrapper.isNotEmpty()) { 
-        __result += repeatedFloatWrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(216, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedFloatWrapper.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(216, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedDoubleWrapper.isNotEmpty()) { 
-        __result += repeatedDoubleWrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(217, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedDoubleWrapper.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(217, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedStringWrapper.isNotEmpty()) { 
-        __result += repeatedStringWrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(218, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedStringWrapper.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(218, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedBytesWrapper.isNotEmpty()) { 
-        __result += repeatedBytesWrapper.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(219, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedBytesWrapper.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(219, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (presenceMask[12]) { 
@@ -4773,31 +4773,31 @@ private fun com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3
     }
 
     if (repeatedDuration.isNotEmpty()) { 
-        __result += repeatedDuration.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(311, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedDuration.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(311, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedTimestamp.isNotEmpty()) { 
-        __result += repeatedTimestamp.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(312, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedTimestamp.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(312, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedFieldmask.isNotEmpty()) { 
-        __result += repeatedFieldmask.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(313, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedFieldmask.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(313, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedStruct.isNotEmpty()) { 
-        __result += repeatedStruct.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(324, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedStruct.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(324, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedAny.isNotEmpty()) { 
-        __result += repeatedAny.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(315, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedAny.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(315, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedValue.isNotEmpty()) { 
-        __result += repeatedValue.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(316, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedValue.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(316, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (repeatedListValue.isNotEmpty()) { 
-        __result += repeatedListValue.sumOf { it.asInternal()._size + kotlinx.rpc.protobuf.internal.WireSize.tag(317, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) }
+        __result += repeatedListValue.sumOf { it.asInternal()._size.let { kotlinx.rpc.protobuf.internal.WireSize.tag(317, kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED) + kotlinx.rpc.protobuf.internal.WireSize.int32(it) + it } }
     }
 
     if (fieldname1 != 0) { 
