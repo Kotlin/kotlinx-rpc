@@ -59,7 +59,7 @@ public class SourceContextInternal: com.google.protobuf.kotlin.SourceContext, ko
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.SourceContext> { 
-        public override fun encode(value: com.google.protobuf.kotlin.SourceContext): kotlinx.rpc.protobuf.input.stream.InputStream { 
+        public override fun encode(value: com.google.protobuf.kotlin.SourceContext, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -71,7 +71,7 @@ public class SourceContextInternal: com.google.protobuf.kotlin.SourceContext, ko
             return buffer.asInputStream()
         }
 
-        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream): com.google.protobuf.kotlin.SourceContext { 
+        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.SourceContext { 
             kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
                 val msg = com.google.protobuf.kotlin.SourceContextInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 

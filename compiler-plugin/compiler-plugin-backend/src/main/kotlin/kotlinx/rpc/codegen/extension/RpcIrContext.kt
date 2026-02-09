@@ -116,6 +116,13 @@ internal class RpcIrContext(
         getIrClassSymbol("kotlinx.rpc.grpc.codec", "MessageCodecResolver")
     }
 
+    val codecConfig by lazy {
+        getIrClassSymbol("kotlinx.rpc.grpc.codec", "CodecConfig")
+    }
+    val configuredMessageCodecDelegate by lazy {
+        getIrClassSymbol("kotlinx.rpc.grpc.codec.internal", "ConfiguredMessageCodecDelegate")
+    }
+
     val withCodecAnnotation by lazy {
         getIrClassSymbol("kotlinx.rpc.grpc.codec", "WithCodec")
     }

@@ -51,7 +51,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
     fun `test simple combined call credentials - should succeed`() {
         var grpcMetadata: GrpcMetadata? = null
         runGrpcTest(
-            configure = {
+            clientConfiguration = {
                 credentials = plaintext() + NoTLSBearerTokenCredentials()
             },
             serverInterceptors = serverInterceptor {
@@ -69,7 +69,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
         var grpcMetadata: GrpcMetadata? = null
         val callCreds = (NoTLSBearerTokenCredentials("token-1") + NoTLSBearerTokenCredentials("token-2"))
         runGrpcTest(
-            configure = {
+            clientConfiguration = {
                 credentials = plaintext() + callCreds
             },
             serverInterceptors = serverInterceptor {
@@ -87,7 +87,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
         var grpcMetadata: GrpcMetadata? = null
         val configCallCreds = (NoTLSBearerTokenCredentials("token-1") + NoTLSBearerTokenCredentials("token-2") + NoTLSBearerTokenCredentials("token-3"))
         runGrpcTest(
-            configure = {
+            clientConfiguration = {
                 credentials = plaintext() + configCallCreds
             },
             clientInterceptors = clientInterceptor {
@@ -109,7 +109,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
     fun `test plaintext call credentials - should fail`() {
         assertGrpcFailure(StatusCode.UNAUTHENTICATED, "Established channel does not have a sufficient security level to transfer call credential.") {
             runGrpcTest(
-                configure = {
+                clientConfiguration = {
                     credentials = plaintext() + TlsBearerTokenCredentials()
                 },
                 test = ::unaryCall
@@ -125,7 +125,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
 
         var grpcMetadata: GrpcMetadata? = null
         runGrpcTest(
-            configure = {
+            clientConfiguration = {
                 credentials = clientCombined
                 overrideAuthority = "foo.test.google.fr"
             },
@@ -144,7 +144,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
     fun `test throw status exception - should fail with status`() {
         assertGrpcFailure(StatusCode.UNAVAILABLE, "This is my custom exception") {
             runGrpcTest(
-                configure = {
+                clientConfiguration = {
                     credentials = plaintext() + ThrowingCallCredentials()
                 },
                 test = ::unaryCall
@@ -156,7 +156,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
     fun `test throw exception - should fail`() {
         assertGrpcFailure(StatusCode.UNAVAILABLE, "This is my custom exception") {
             runGrpcTest(
-                configure = {
+                clientConfiguration = {
                     credentials = plaintext() + ThrowingCallCredentials(IllegalStateException("This is my custom exception"))
                 },
                 test = ::unaryCall
@@ -208,7 +208,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
         }
 
         runGrpcTest(
-            configure = {
+            clientConfiguration = {
                 credentials = plaintext() + contextCapturingCredentials
             },
             test = ::unaryCall
@@ -231,7 +231,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
         }
 
         runGrpcTest(
-            configure = {
+            clientConfiguration = {
                 credentials = plaintext() + contextCapturingCredentials
                 overrideAuthority = "test.example.com"
             },
@@ -264,7 +264,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
         }
         assertGrpcFailure(StatusCode.DEADLINE_EXCEEDED) {
             runGrpcTest(
-                configure = {
+                clientConfiguration = {
                     credentials = plaintext() + slowCredentials
                 },
                 clientInterceptors = clientInterceptor {
@@ -290,7 +290,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
         }
         assertGrpcFailure(StatusCode.UNAVAILABLE) {
             runGrpcTest(
-                configure = {
+                clientConfiguration = {
                     credentials = plaintext() + someCredentials + ThrowingCallCredentials()
                 },
                 test = ::unaryCall
@@ -312,7 +312,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
         }
         assertGrpcFailure(StatusCode.UNAVAILABLE) {
             runGrpcTest(
-                configure = {
+                clientConfiguration = {
                     credentials = plaintext() + ThrowingCallCredentials() + someCredentials
                 },
                 test = ::unaryCall

@@ -19,7 +19,13 @@ import kotlinx.rpc.protobuf.internal.packedSInt32
 import kotlinx.rpc.protobuf.internal.packedSInt64
 import kotlinx.rpc.protobuf.internal.packedUInt32
 import kotlinx.rpc.protobuf.internal.packedUInt64
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @Suppress("unused")
 enum class TestPlatform {

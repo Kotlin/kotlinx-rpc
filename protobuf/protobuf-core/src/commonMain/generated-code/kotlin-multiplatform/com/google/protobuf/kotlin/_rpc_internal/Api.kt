@@ -108,7 +108,7 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Api> { 
-        public override fun encode(value: com.google.protobuf.kotlin.Api): kotlinx.rpc.protobuf.input.stream.InputStream { 
+        public override fun encode(value: com.google.protobuf.kotlin.Api, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -120,7 +120,7 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
             return buffer.asInputStream()
         }
 
-        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream): com.google.protobuf.kotlin.Api { 
+        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.Api { 
             kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
                 val msg = com.google.protobuf.kotlin.ApiInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
@@ -221,7 +221,7 @@ public class MethodInternal: com.google.protobuf.kotlin.Method, kotlinx.rpc.prot
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Method> { 
-        public override fun encode(value: com.google.protobuf.kotlin.Method): kotlinx.rpc.protobuf.input.stream.InputStream { 
+        public override fun encode(value: com.google.protobuf.kotlin.Method, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -233,7 +233,7 @@ public class MethodInternal: com.google.protobuf.kotlin.Method, kotlinx.rpc.prot
             return buffer.asInputStream()
         }
 
-        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream): com.google.protobuf.kotlin.Method { 
+        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.Method { 
             kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
                 val msg = com.google.protobuf.kotlin.MethodInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
@@ -309,7 +309,7 @@ public class MixinInternal: com.google.protobuf.kotlin.Mixin, kotlinx.rpc.protob
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Mixin> { 
-        public override fun encode(value: com.google.protobuf.kotlin.Mixin): kotlinx.rpc.protobuf.input.stream.InputStream { 
+        public override fun encode(value: com.google.protobuf.kotlin.Mixin, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -321,7 +321,7 @@ public class MixinInternal: com.google.protobuf.kotlin.Mixin, kotlinx.rpc.protob
             return buffer.asInputStream()
         }
 
-        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream): com.google.protobuf.kotlin.Mixin { 
+        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.Mixin { 
             kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
                 val msg = com.google.protobuf.kotlin.MixinInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 

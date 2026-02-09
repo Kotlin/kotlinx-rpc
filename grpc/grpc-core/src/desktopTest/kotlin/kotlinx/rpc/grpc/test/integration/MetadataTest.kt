@@ -16,6 +16,7 @@ import kotlinx.rpc.grpc.GrpcMetadataKey
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.appendBinary
 import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.codec.CodecConfig
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.contains
 import kotlinx.rpc.grpc.copy
@@ -437,13 +438,13 @@ class MetadataTest : GrpcTestBase() {
     // ASCII codec - encodes to/from ASCII string (for non-binary methods)
     @OptIn(ExperimentalRpcApi::class)
     private object TestUserAsciiCodec : MessageCodec<TestUser> {
-        override fun encode(value: TestUser): InputStream {
+        override fun encode(value: TestUser, config: CodecConfig?): InputStream {
             // Encode as ASCII string in format "name:age"
             val asciiString = "${value.name}:${value.age}"
             return Buffer().apply { writeString(asciiString) }.asInputStream()
         }
 
-        override fun decode(stream: InputStream): TestUser {
+        override fun decode(stream: InputStream, config: CodecConfig?   ): TestUser {
             // Decode from ASCII string
             val asciiString = Buffer().apply { transferFrom(stream.asSource()) }.readString()
             val parts = asciiString.split(":")

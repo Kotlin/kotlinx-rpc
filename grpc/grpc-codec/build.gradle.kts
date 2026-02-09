@@ -19,5 +19,17 @@ kotlin {
                 api(libs.kotlinx.io.core)
             }
         }
+
+        commonTest {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
+        }
+
+        jvmMain {
+            dependencies {
+                implementation(libs.kotlin.reflect)
+            }
+        }
     }
 }

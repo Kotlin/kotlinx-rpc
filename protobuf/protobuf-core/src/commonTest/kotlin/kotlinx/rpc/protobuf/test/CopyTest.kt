@@ -10,7 +10,6 @@ import copy
 import invoke
 import test.submsg.Other
 import test.submsg.invoke
-import kotlin.collections.iterator
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

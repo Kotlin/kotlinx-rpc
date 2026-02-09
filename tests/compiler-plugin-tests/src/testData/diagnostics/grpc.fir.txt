@@ -18,7 +18,7 @@ FILE: module_main_grpc.kt
 
         public abstract suspend fun innerFlow(withFlow: R|WithFlow|): R|kotlin/Unit|
 
-        public final class $rpcServiceStub : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 
@@ -35,7 +35,7 @@ FILE: module_main_grpc.kt
 
     }
     @R|kotlinx/rpc/grpc/annotations/Grpc|(protoPackage = String(-invalid name)) public abstract interface WrongAnnotations1 : R|kotlin/Any| {
-        public final class $rpcServiceStub : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 
@@ -43,7 +43,7 @@ FILE: module_main_grpc.kt
 
     }
     @R|kotlinx/rpc/grpc/annotations/Grpc|(protoPackage = String(-invalid name)) public abstract interface WrongAnnotations2 : R|kotlin/Any| {
-        public final class $rpcServiceStub : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 
@@ -51,7 +51,7 @@ FILE: module_main_grpc.kt
 
     }
     @R|kotlinx/rpc/grpc/annotations/Grpc|(protoPackage = <strcat>(String(invalid.name), String( ))) public abstract interface WrongAnnotations3 : R|kotlin/Any| {
-        public final class $rpcServiceStub : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 
@@ -69,7 +69,7 @@ FILE: module_main_grpc.kt
 
         @R|kotlinx/rpc/grpc/annotations/Grpc.Method|(safe = Boolean(true)) public abstract suspend fun wrongSafeIdempotent2(): R|kotlin/Unit|
 
-        public final class $rpcServiceStub : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 

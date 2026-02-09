@@ -16,6 +16,7 @@ import kotlinx.rpc.descriptor.flowInvokator
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.descriptor.unaryInvokator
 import kotlinx.rpc.grpc.annotations.Grpc
+import kotlinx.rpc.grpc.codec.CodecConfig
 import kotlinx.rpc.grpc.codec.EmptyMessageCodecResolver
 import kotlinx.rpc.grpc.codec.MessageCodecResolver
 import kotlinx.rpc.grpc.codec.ThrowingMessageCodecResolver
@@ -23,11 +24,11 @@ import kotlinx.rpc.grpc.codec.plus
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
+import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.bidiStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.clientStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.serverStreamingServerMethodDefinition
-import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.server.internal.unaryServerMethodDefinition
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
@@ -43,14 +44,19 @@ private typealias ResponseServer = Any
  * providing the ability to host gRPC services.
  *
  * @property port Specifies the port used by the server to listen for incoming connections.
- * @param parentContext
  * @param serverBuilder exposes platform-specific Server builder.
+ * @param interceptors a list of interceptors that will be applied to all incoming gRPC calls
+ * @param messageCodecResolver a custom [MessageCodecResolver] that will be used to resolve message codecs
+ * @param codecConfig default [CodecConfig] that will be passed applied to all used message resolvers
+ * during message serialization and deserialization.
+ * @param parentContext
  */
 public class GrpcServer internal constructor(
     override val port: Int,
     private val serverBuilder: ServerBuilder<*>,
     private val interceptors: List<ServerInterceptor>,
     messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
+    private val codecConfig: CodecConfig? = null,
     parentContext: CoroutineContext = EmptyCoroutineContext,
 ) : RpcServer, Server {
     private val internalContext = SupervisorJob(parentContext[Job])
@@ -96,7 +102,7 @@ public class GrpcServer internal constructor(
         val descriptor = serviceDescriptorOf(serviceKClass) as? GrpcServiceDescriptor<Service>
             ?: error("Service $serviceKClass is not a gRPC service")
 
-        val delegate = descriptor.delegate(messageCodecResolver)
+        val delegate = descriptor.delegate(messageCodecResolver, codecConfig)
 
         val methods = descriptor.callables.values.map {
             @Suppress("UNCHECKED_CAST")
@@ -235,7 +241,14 @@ public fun GrpcServer(
     val serverBuilder = ServerBuilder(port, config.credentials).apply {
         config.fallbackHandlerRegistry?.let { fallbackHandlerRegistry(it) }
     }
-    return GrpcServer(port, serverBuilder, config.interceptors, config.messageCodecResolver, parentContext)
+    return GrpcServer(
+        port = port,
+        serverBuilder = serverBuilder,
+        interceptors = config.interceptors,
+        messageCodecResolver = config.messageCodecResolver,
+        codecConfig = config.codecConfig,
+        parentContext = parentContext
+    )
         .apply(config.serviceBuilder)
         .apply { build() }
 }
@@ -274,6 +287,7 @@ public class GrpcServerConfiguration internal constructor() {
      */
     public var messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver
 
+    public var codecConfig: CodecConfig? = null
 
     /**
      * Sets a custom [HandlerRegistry] to be used by the gRPC server for resolving service implementations

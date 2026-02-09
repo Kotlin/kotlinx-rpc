@@ -38,7 +38,7 @@ class GrpcKeepAliveTest : GrpcTestBase() {
     fun `test keepalive negative time - should fail`() {
         val error = assertFailsWith<IllegalArgumentException> {
             runGrpcTest(
-                configure = {
+                clientConfiguration = {
                     keepAlive {
                         this.time = (-1).seconds
                     }
@@ -54,7 +54,7 @@ class GrpcKeepAliveTest : GrpcTestBase() {
     fun `test keepalive negative timeout - should fail`() {
         val error = assertFailsWith<IllegalArgumentException> {
             runGrpcTest(
-                configure = {
+                clientConfiguration = {
                     keepAlive {
                         this.timeout = (-1).seconds
                     }

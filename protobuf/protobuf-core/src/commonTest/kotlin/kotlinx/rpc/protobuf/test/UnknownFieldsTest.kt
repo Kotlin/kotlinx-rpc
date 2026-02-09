@@ -6,31 +6,28 @@ package kotlinx.rpc.protobuf.test
 
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
+import kotlinx.rpc.grpc.codec.codec
 import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.input.stream.asSource
-import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
-import test.nested.NestedOuter
-import test.nested.invoke
 import test.submsg.Other
 import test.submsg.asInternal
 import test.submsg.encodeWith
 import test.submsg.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class UnknownFieldsTest {
 
     fun send(msg: UnknownFieldsAll): UnknownFieldsSubset {
-        val encoded = UnknownFieldsAllInternal.CODEC.encode(msg)
-        return UnknownFieldsSubsetInternal.CODEC.decode(encoded)
+        val encoded = codec<UnknownFieldsAll>().encode(msg)
+        return codec<UnknownFieldsSubset>().decode(encoded)
     }
 
     fun send(msg: UnknownFieldsSubset): UnknownFieldsAll {
-        val encoded = UnknownFieldsSubsetInternal.CODEC.encode(msg)
-        return UnknownFieldsAllInternal.CODEC.decode(encoded)
+        val encoded = codec<UnknownFieldsSubset>().encode(msg)
+        return codec<UnknownFieldsAll>().decode(encoded)
     }
 
     @Test

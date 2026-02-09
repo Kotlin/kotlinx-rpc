@@ -61,7 +61,7 @@ FILE: rpcChecked.kt
 
     }
     @R|Grpc|() public abstract interface MyGrpcService : R|kotlin/Any| {
-        public final class $rpcServiceStub : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 

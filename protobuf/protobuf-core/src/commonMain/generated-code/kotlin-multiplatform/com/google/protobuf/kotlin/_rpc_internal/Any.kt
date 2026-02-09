@@ -65,7 +65,7 @@ public class AnyInternal: com.google.protobuf.kotlin.Any, kotlinx.rpc.protobuf.i
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Any> { 
-        public override fun encode(value: com.google.protobuf.kotlin.Any): kotlinx.rpc.protobuf.input.stream.InputStream { 
+        public override fun encode(value: com.google.protobuf.kotlin.Any, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.rpc.protobuf.input.stream.InputStream { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -77,7 +77,7 @@ public class AnyInternal: com.google.protobuf.kotlin.Any, kotlinx.rpc.protobuf.i
             return buffer.asInputStream()
         }
 
-        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream): com.google.protobuf.kotlin.Any { 
+        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.Any { 
             kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
                 val msg = com.google.protobuf.kotlin.AnyInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 

@@ -7,6 +7,7 @@ package kotlinx.rpc.codegen.test
 import io.grpc.MethodDescriptor
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.grpc.annotations.Grpc
+import kotlinx.rpc.grpc.codec.CodecConfig
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.codec.MessageCodecResolver
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
@@ -37,7 +38,7 @@ import kotlin.reflect.KType
 @Suppress("unused")
 inline fun <@Grpc reified T : Any> grpcDelegate(): GrpcServiceDelegate {
     val descriptor = serviceDescriptorOf<T>() as GrpcServiceDescriptor
-    val delegate = descriptor.delegate(SimpleResolver)
+    val delegate = descriptor.delegate(SimpleResolver, null)
 
     return delegate
 }
@@ -75,21 +76,21 @@ object SimpleResolver : MessageCodecResolver {
 }
 
 object StringCodec : MessageCodec<String> {
-    override fun encode(value: String): InputStream {
+    override fun encode(value: String, config: CodecConfig?): InputStream {
         TODO("Not yet implemented")
     }
 
-    override fun decode(stream: InputStream): String {
+    override fun decode(stream: InputStream, config: CodecConfig?): String {
         TODO("Not yet implemented")
     }
 }
 
 object UnitCodec : MessageCodec<String> {
-    override fun encode(value: String): InputStream {
+    override fun encode(value: String, config: CodecConfig?): InputStream {
         TODO("Not yet implemented")
     }
 
-    override fun decode(stream: InputStream): String {
+    override fun decode(stream: InputStream, config: CodecConfig?): String {
         TODO("Not yet implemented")
     }
 }
@@ -98,11 +99,11 @@ object UnitCodec : MessageCodec<String> {
 class Message(val a: Int, val b: String)
 
 object MessageClassCodec : MessageCodec<Message> {
-    override fun encode(value: Message): InputStream {
+    override fun encode(value: Message, config: CodecConfig?): InputStream {
         TODO("Not yet implemented")
     }
 
-    override fun decode(stream: InputStream): Message {
+    override fun decode(stream: InputStream, config: CodecConfig?): Message {
         TODO("Not yet implemented")
     }
 }
