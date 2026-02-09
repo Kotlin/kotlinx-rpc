@@ -703,6 +703,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
         val msgFqName = declaration.name.safeFullName()
         val inputStreamFqName = "kotlinx.rpc.protobuf.input.stream.InputStream"
+        val codecConfigFqName = "kotlinx.rpc.grpc.codec.CodecConfig"
         val bufferFqName = "kotlinx.io.Buffer"
         clazz(
             name = "CODEC",
@@ -710,7 +711,7 @@ class ModelToProtobufKotlinCommonGenerator(
             declarationType = CodeGenerator.DeclarationType.Object,
             superTypes = listOf("kotlinx.rpc.grpc.codec.MessageCodec<$msgFqName>"),
         ) {
-            function("encode", modifiers = "override", args = "value: $msgFqName", returnType = inputStreamFqName) {
+            function("encode", modifiers = "override", args = "value: $msgFqName, config: $codecConfigFqName?", returnType = inputStreamFqName) {
                 code("val buffer = $bufferFqName()")
                 code("val encoder = $PB_PKG.WireEncoder(buffer)")
                 code("val internalMsg = value.asInternal()")
@@ -722,7 +723,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 code("return buffer.asInputStream()")
             }
 
-            function("decode", modifiers = "override", args = "stream: $inputStreamFqName", returnType = msgFqName) {
+            function("decode", modifiers = "override", args = "stream: $inputStreamFqName, config: $codecConfigFqName?", returnType = msgFqName) {
                 scope("$PB_PKG.WireDecoder(stream).use") {
                     code("val msg = ${declaration.internalClassFullName()}()")
                     scope("${PB_PKG}.checkForPlatformDecodeException", nlAfterClosed = false) {

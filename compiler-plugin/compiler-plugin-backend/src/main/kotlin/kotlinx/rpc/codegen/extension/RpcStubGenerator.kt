@@ -30,6 +30,7 @@ import org.jetbrains.kotlin.ir.builders.irCallConstructor
 import org.jetbrains.kotlin.ir.builders.irDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.builders.irEqualsNull
 import org.jetbrains.kotlin.ir.builders.irGet
+import org.jetbrains.kotlin.ir.builders.irIfNull
 import org.jetbrains.kotlin.ir.builders.irReturn
 import org.jetbrains.kotlin.ir.builders.irTemporary
 import org.jetbrains.kotlin.ir.builders.irTrue
@@ -1031,7 +1032,7 @@ internal class RpcStubGenerator(
 
     /**
      * ```kotlin
-     * override fun delegate(resolver: MessageCodecResolver): GrpcServiceDelegate {
+     * override fun delegate(resolver: MessageCodecResolver, codecConfig: CodecConfig?): GrpcServiceDelegate {
      *     val methodDescriptorMap = ...
      *     val serviceDescriptor = ...
      *
@@ -1058,9 +1059,14 @@ internal class RpcStubGenerator(
                 type = ctx.grpcMessageCodecResolver.defaultType
             }
 
+            val codecConfig = addValueParameter {
+                name = Name.identifier("codecConfig")
+                type = ctx.codecConfig.defaultType.makeNullable()
+            }
+
             body = irBuilder(symbol).irBlockBody {
                 val methodDescriptorMap = irTemporary(
-                    value = irMethodDescriptorMap(resolver),
+                    value = irMethodDescriptorMap(resolver, codecConfig),
                     nameHint = "methodDescriptorMap",
                 )
 
@@ -1103,12 +1109,15 @@ internal class RpcStubGenerator(
      * Where:
      *  - `<callable-name-k>` - the name of the k-th callable in the service
      */
-    private fun IrBlockBodyBuilder.irMethodDescriptorMap(resolver: IrValueParameter): IrCallImpl {
+    private fun IrBlockBodyBuilder.irMethodDescriptorMap(
+        resolver: IrValueParameter,
+        codecConfig: IrValueParameter
+    ): IrCallImpl {
         return irMapOf(
             keyType = ctx.irBuiltIns.stringType,
             valueType = ctx.grpcPlatformMethodDescriptor.starProjectedType,
             declaration.methods.memoryOptimizedMap { callable ->
-                stringConst(callable.grpcName) to irMethodDescriptor(callable, resolver)
+                stringConst(callable.grpcName) to irMethodDescriptor(callable, resolver, codecConfig)
             },
         )
     }
@@ -1179,11 +1188,12 @@ internal class RpcStubGenerator(
      *   - <method-name> - the name of the method
      *   - <method-type> - one of MethodType.UNARY, MethodType.SERVER_STREAMING,
      *   MethodType.CLIENT_STREAMING, MethodType.BIDI_STREAMING
-     *   - <request-codec>/<response-codec> - a MessageCodec getter, see [irCodec]
+     *   - <request-codec>/<response-codec> - a MessageCodec getter, see [irCodecWithConfigCheck]
      */
     private fun IrBlockBodyBuilder.irMethodDescriptor(
         callable: ServiceDeclaration.Callable,
         resolver: IrValueParameter,
+        codecConfig: IrValueParameter,
     ): IrCall {
         check(callable is ServiceDeclaration.Method) {
             "Only methods are allowed here"
@@ -1222,10 +1232,10 @@ internal class RpcStubGenerator(
                     +stringConst("${declaration.serviceFqName}/${callable.grpcName}")
 
                     // requestCodec
-                    +irCodec(requestType, resolver)
+                    +irCodecWithConfigCheck(requestType, resolver, codecConfig)
 
                     // responseCodec
-                    +irCodec(responseType, resolver)
+                    +irCodecWithConfigCheck(responseType, resolver, codecConfig)
 
                     // type
                     +IrGetEnumValueImpl(
@@ -1277,6 +1287,52 @@ internal class RpcStubGenerator(
                 }
             }
         }
+    }
+
+    /**
+     * Check if the [codecConfig] is null. If yes, return a wrapped codec that uses the default codec configuration.
+     * Otherwise, return the codec.
+     *
+     * Delegates actual codec resolving to [irCodec].
+     *
+     * ```
+     * if (codecConfig == null) {
+     *    return codec // codec from irCodec
+     * } else {
+     *   return ConfiguredMessageCodecDelegate(config, codec)
+     * }
+     * ```
+     */
+    private fun IrBlockBodyBuilder.irCodecWithConfigCheck(
+        messageType: IrType,
+        resolver: IrValueParameter,
+        codecConfig: IrValueParameter,
+    ): IrExpression {
+
+        val codec = irTemporary(
+            value = irCodec(messageType, resolver),
+            nameHint = "codec",
+            isMutable = false,
+        )
+
+        val resolvedCodec = irCallConstructor(
+            callee = ctx.configuredMessageCodecDelegate.constructors.single(),
+            typeArguments = listOf(messageType),
+        ).apply {
+            arguments {
+                values {
+                    +irGet(codecConfig)
+                    +irGet(codec)
+                }
+            }
+        }
+
+        return irIfNull(
+            type = ctx.grpcMessageCodec.typeWith(messageType),
+            subject = irGet(codecConfig),
+            thenPart = irGet(codec),
+            elsePart = resolvedCodec,
+        )
     }
 
     /**
