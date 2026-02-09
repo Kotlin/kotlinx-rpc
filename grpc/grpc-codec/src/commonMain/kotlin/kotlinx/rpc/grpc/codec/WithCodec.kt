@@ -5,10 +5,12 @@
 package kotlinx.rpc.grpc.codec
 
 import kotlinx.rpc.annotations.CheckedTypeAnnotation
+import kotlinx.rpc.grpc.codec.internal.ConfiguredMessageCodecDelegate
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.input.stream.InputStream
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 
 /**
  * Specifies a custom [MessageCodec] for encoding and decoding a message type in gRPC communication.
@@ -20,7 +22,7 @@ import kotlin.reflect.KClass
  *
  * Example:
  * ```
- * @WithCodec(ChatEntry::class)
+ * @WithCodec(ChatEntryCodec::class)
  * class ChatEntry(...)
  * object ChatEntryCodec : MessageCodec<ChatEntry> { ... }
  *
@@ -90,29 +92,71 @@ public inline fun <@HasWithCodec reified T: Any> codec(config: CodecConfig? = nu
 }
 
 /**
- * Retrieves the [MessageCodec] for the specified [KClass].
+ * Retrieves the [MessageCodec] for the specified [messageType].
  *
- * This is the non-reified version of [codec] that accepts a [KClass] parameter instead of a reified type parameter.
- * It resolves the codec associated with the given class through the [WithCodec] annotation.
+ * This function resolves the codec associated with the [messageType] through the [WithCodec] annotation.
+ * The given [messageType] must match the type argument [T].
  *
  * If a [config] is provided, the returned codec will use it as the default [CodecConfig] for all
  * encode/decode operations unless explicitly overridden.
+ * If the provided [CodecConfig] fits the codec's requirements, depends on the codec implementation.
+ *
+ * Example:
+ * ```kotlin
+ * val chatCodec = codec<ChatEntry>(typeOf<ChatEntry>())
+ * val encoded = chatCodec.encode(chatEntry)
+ * val decoded = chatCodec.decode(buffer)
+ * ```
  *
  * @param T The message type for which to retrieve the codec. Must be annotated with [WithCodec].
- * @param kClass The [KClass] of the message type ([T]) for which to retrieve the codec.
+ * @param messageType The message type [KType] of [T] for which to retrieve the codec.
+ *        Must be annotated with [WithCodec].
  * @param config Optional default [CodecConfig] to use for encoding and decoding operations.
- * @return A [MessageCodec] instance for the specified class.
+ * @return A [MessageCodec] instance for type [T].
  *
  * @see WithCodec
  * @see MessageCodec
  * @see CodecConfig
  */
-public fun <@HasWithCodec T: Any> codec(kClass: KClass<T>, config: CodecConfig? = null): MessageCodec<T> {
-    val codecObj = resolveCodec(kClass) ?: error("No codec object found for ${kClass.qualifiedName}. " +
+@Suppress("UNCHECKED_CAST")
+public fun <@HasWithCodec T: Any> codec(messageType: KType, config: CodecConfig? = null): MessageCodec<T> {
+    val classifier = messageType.classifier ?: error("Expected denotable type, found $messageType")
+    val classifierClass = classifier as? KClass<*> ?: error("Expected class type, found $messageType")
+
+    return codec(classifierClass as KClass<T>, config)
+}
+
+/**
+ * Retrieves the [MessageCodec] for the specified [messageClass].
+ *
+ * This function resolves the codec associated with the [messageClass] through the [WithCodec] annotation.
+ *
+ * If a [config] is provided, the returned codec will use it as the default [CodecConfig] for all
+ * encode/decode operations unless explicitly overridden.
+ * If the provided [CodecConfig] fits the codec's requirements, depends on the codec implementation.
+ *
+ * Example:
+ * ```kotlin
+ * val chatCodec = codec(ChatEntry::class)
+ * val encoded = chatCodec.encode(chatEntry)
+ * val decoded = chatCodec.decode(buffer)
+ * ```
+ *
+ * @param T The message type for which to retrieve the codec.
+ * @param messageClass The message type class [T] for which to retrieve the codec. Must be annotated with [WithCodec].
+ * @param config Optional default [CodecConfig] to use for encoding and decoding operations.
+ * @return A [MessageCodec] instance for the [messageClass].
+ *
+ * @see WithCodec
+ * @see MessageCodec
+ * @see CodecConfig
+ */
+public fun <@HasWithCodec T: Any> codec(messageClass: KClass<T>, config: CodecConfig? = null): MessageCodec<T> {
+    val codecObj = resolveCodec(messageClass) ?: error("No codec object found for ${messageClass.qualifiedName}. " +
             "Make sure that the kotlinx.rpc compiler plugin is applied.")
     @Suppress("UNCHECKED_CAST")
     val codec = codecObj as? MessageCodec<T> ?: error("Internal kotlinx.rpc error: " +
-            "Codec for ${kClass.qualifiedName} is not a MessageCodec but ${codecObj::class.qualifiedName}")
+            "Codec for ${messageClass.qualifiedName} is not a MessageCodec but ${codecObj::class.simpleName}")
 
     if (config == null) {
         // if no default config is specified, we just return the plain codec
@@ -121,17 +165,7 @@ public fun <@HasWithCodec T: Any> codec(kClass: KClass<T>, config: CodecConfig? 
 
     // otherwise, we wrap the codec to pass the default config on every encode/decode
     val defaultConfig = config
-    return object : MessageCodec<T> {
-        override fun encode(
-            value: T,
-            config: CodecConfig?
-        ): InputStream = codec.encode(value, config ?: defaultConfig)
-
-        override fun decode(
-            stream: InputStream,
-            config: CodecConfig?
-        ): T = codec.decode(stream, config ?: defaultConfig)
-    }
+    return ConfiguredMessageCodecDelegate(defaultConfig, codec)
 }
 
 internal expect fun <T: Any> resolveCodec(kClass: KClass<T>): Any?

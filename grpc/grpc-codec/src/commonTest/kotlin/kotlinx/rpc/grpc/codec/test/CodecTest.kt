@@ -12,6 +12,7 @@ import kotlinx.rpc.grpc.codec.CodecConfig
 import kotlinx.rpc.grpc.codec.SourcedMessageCodec
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.grpc.codec.codec
+import kotlin.reflect.typeOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -24,6 +25,7 @@ data class MyMessage(
 class MyCodecConfig(
     val appendHello: Boolean
 ): CodecConfig
+
 object MyMessageCodec: SourcedMessageCodec<MyMessage> {
     override fun encodeToSource(value: MyMessage, config: CodecConfig?): Source = Buffer().apply {
         val appendHello = (config as? MyCodecConfig)?.appendHello ?: false
@@ -41,7 +43,7 @@ class CodecTest {
     @Test
     fun `test custom codec`() {
         val msg = MyMessage("test")
-        val encoded = codec<MyMessage>().encode(msg)
+        val encoded = codec<MyMessage>(typeOf<MyMessage>()).encode(msg)
         val decoded = codec<MyMessage>().decode(encoded)
         assertEquals(msg, decoded)
     }

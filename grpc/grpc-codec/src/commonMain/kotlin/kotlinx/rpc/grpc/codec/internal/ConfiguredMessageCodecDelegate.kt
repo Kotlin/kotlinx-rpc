@@ -2,7 +2,7 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.internal
+package kotlinx.rpc.grpc.codec.internal
 
 import kotlinx.rpc.grpc.codec.CodecConfig
 import kotlinx.rpc.grpc.codec.MessageCodec
@@ -10,12 +10,13 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.input.stream.InputStream
 
 /**
- * A [MessageCodec] that delegates encoding and decoding to another codec,
- * but with a configured default [CodecConfig].
+ * A [kotlinx.rpc.grpc.codec.MessageCodec] that delegates encoding and decoding to another codec,
+ * but with a configured default [kotlinx.rpc.grpc.codec.CodecConfig].
+ *
+ * Used in the compiler plugin when creating/resolving the message codec in the methodDescriptor, to
+ * return construct a message codec that wraps the actual message codec but applies the default config
+ * given during client configuration.
  */
-// Used in the compiler plugin when creating/resolving the message codec in the methodDescriptor, to
-// return construct a message codec that wraps the actual message codec but applies the default config
-// given during client configuration.
 @InternalRpcApi
 public class ConfiguredMessageCodecDelegate<T: Any>(
     private val config: CodecConfig,
