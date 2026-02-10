@@ -14,14 +14,13 @@ import kotlinx.rpc.protoc.gen.core.Comment
 import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.INTERNAL_RPC_API_ANNO
 import kotlinx.rpc.protoc.gen.core.PB_PKG
+import kotlinx.rpc.protoc.gen.core.PB_PKG_INTERNAL
 import kotlinx.rpc.protoc.gen.core.WITH_CODEC_ANNO
-import kotlinx.rpc.protoc.gen.core.file
 import kotlinx.rpc.protoc.gen.core.fqName
 import kotlinx.rpc.protoc.gen.core.model.EnumDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FieldDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FieldType
 import kotlinx.rpc.protoc.gen.core.model.FileDeclaration
-import kotlinx.rpc.protoc.gen.core.model.FqName
 import kotlinx.rpc.protoc.gen.core.model.MessageDeclaration
 import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
@@ -146,7 +145,7 @@ class ModelToProtobufKotlinCommonGenerator(
             if (declaration.isUserFacing) {
                 add(declaration.name.safeFullName())
             }
-            add("$PB_PKG.InternalMessage(fieldsWithPresence = ${declaration.presenceMaskSize})")
+            add("$PB_PKG_INTERNAL.InternalMessage(fieldsWithPresence = ${declaration.presenceMaskSize})")
         }
 
         clazz(
@@ -713,10 +712,10 @@ class ModelToProtobufKotlinCommonGenerator(
         ) {
             function("encode", modifiers = "override", args = "value: $msgFqName, config: $codecConfigFqName?", returnType = inputStreamFqName) {
                 code("val buffer = $bufferFqName()")
-                code("val encoder = $PB_PKG.WireEncoder(buffer)")
+                code("val encoder = $PB_PKG_INTERNAL.WireEncoder(buffer)")
                 code("val internalMsg = value.asInternal()")
-                scope("${PB_PKG}.checkForPlatformEncodeException", nlAfterClosed = false) {
-                    code("internalMsg.encodeWith(encoder)")
+                scope("${PB_PKG_INTERNAL}.checkForPlatformEncodeException", nlAfterClosed = false) {
+                    code("internalMsg.encodeWith(encoder, config as? $PB_PKG.ProtobufConfig)")
                 }
                 code("encoder.flush()")
                 code("internalMsg._unknownFields.copyTo(buffer)")
@@ -724,10 +723,10 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             function("decode", modifiers = "override", args = "stream: $inputStreamFqName, config: $codecConfigFqName?", returnType = msgFqName) {
-                scope("$PB_PKG.WireDecoder(stream).use") {
+                scope("$PB_PKG_INTERNAL.WireDecoder(stream).use") {
                     code("val msg = ${declaration.internalClassFullName()}()")
-                    scope("${PB_PKG}.checkForPlatformDecodeException", nlAfterClosed = false) {
-                        code("${declaration.internalClassFullName()}.decodeWith(msg, it)")
+                    scope("${PB_PKG_INTERNAL}.checkForPlatformDecodeException", nlAfterClosed = false) {
+                        code("${declaration.internalClassFullName()}.decodeWith(msg, it, config as? $PB_PKG.ProtobufConfig)")
                     }
                     code("msg.checkRequiredFields()")
                     code("msg._unknownFieldsEncoder?.flush()")
@@ -769,9 +768,10 @@ class ModelToProtobufKotlinCommonGenerator(
     }
 
     private fun CodeGenerator.generateMessageDecoder(declaration: MessageDeclaration) {
-        var args = "msg: ${declaration.internalClassFullName()}, decoder: $PB_PKG.WireDecoder"
+        var args = "msg: ${declaration.internalClassFullName()}, decoder: $PB_PKG_INTERNAL.WireDecoder" +
+                ", config: $PB_PKG.ProtobufConfig?"
         if (declaration.isGroup) {
-            args += ", startGroup: $PB_PKG.KTag"
+            args += ", startGroup: $PB_PKG_INTERNAL.KTag"
         }
 
         function(
@@ -784,7 +784,7 @@ class ModelToProtobufKotlinCommonGenerator(
             whileBlock("true") {
                 if (declaration.isGroup) {
                     code("val tag = decoder.readTag() ?: throw ProtobufDecodingException(\"Missing END_GROUP tag for field: \${startGroup.fieldNr}.\")")
-                    ifBranch(condition = "tag.wireType == $PB_PKG.WireType.END_GROUP", ifBlock = {
+                    ifBranch(condition = "tag.wireType == $PB_PKG_INTERNAL.WireType.END_GROUP", ifBlock = {
                         ifBranch(condition = "tag.fieldNr != startGroup.fieldNr", ifBlock = {
                             code("throw ProtobufDecodingException(\"Wrong END_GROUP tag. Expected \${startGroup.fieldNr}, got \${tag.fieldNr}.\")")
                         })
@@ -799,16 +799,22 @@ class ModelToProtobufKotlinCommonGenerator(
                     whenCase("else") {
                         if (!declaration.isGroup) {
                             // fail if we come across an END_GROUP in a normal message
-                            ifBranch(condition = "tag.wireType == $PB_PKG.WireType.END_GROUP", ifBlock = {
-                                code("throw $PB_PKG.ProtobufDecodingException(\"Unexpected END_GROUP tag.\")")
+                            ifBranch(condition = "tag.wireType == $PB_PKG_INTERNAL.WireType.END_GROUP", ifBlock = {
+                                code("throw $PB_PKG_INTERNAL.ProtobufDecodingException(\"Unexpected END_GROUP tag.\")")
                             })
                         }
 
-                        // TODO: Use configuration to disable it
-                        ifBranch(condition = "msg._unknownFieldsEncoder == null", ifBlock = {
-                            code("msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)")
+                        ifBranch(condition = "config?.discardUnknownFields ?: false", ifBlock = {
+                            // discard unknown fields if set in the config
+                            code("decoder.skipUnknownField(tag)")
+                        }, elseBlock = {
+                            // we the config is not set, or discardUnknownFields is set to false,
+                            // we will read and store all unknown fields
+                            ifBranch(condition = "msg._unknownFieldsEncoder == null", ifBlock = {
+                                code("msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)")
+                            })
+                            code("decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)")
                         })
-                        code("decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)")
                     }
                 }
             }
@@ -824,7 +830,7 @@ class ModelToProtobufKotlinCommonGenerator(
         beforeValueDecoding: CodeGenerator.() -> Unit = {},
     ) {
         when (val fieldType = field.type) {
-            is FieldType.IntegralType -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.${field.type.wireType.name}") {
+            is FieldType.IntegralType -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG_INTERNAL.WireType.${field.type.wireType.name}") {
                 beforeValueDecoding()
                 generateDecodeFieldValue(fieldType, lvalue, wrapperCtor = wrapperCtor)
             }
@@ -834,19 +840,19 @@ class ModelToProtobufKotlinCommonGenerator(
                 // to parse repeated fields that were compiled as packed as if they were not packed,
                 // and vice versa.
                 if (fieldType.value.isPackable) {
-                    whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.LENGTH_DELIMITED") {
+                    whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG_INTERNAL.WireType.LENGTH_DELIMITED") {
                         beforeValueDecoding()
                         generateDecodeFieldValue(fieldType, lvalue, isPacked = true, wrapperCtor = wrapperCtor)
                     }
                 }
 
-                whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.${fieldType.value.wireType.name}") {
+                whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG_INTERNAL.WireType.${fieldType.value.wireType.name}") {
                     beforeValueDecoding()
                     generateDecodeFieldValue(fieldType, lvalue, isPacked = false, wrapperCtor = wrapperCtor)
                 }
             }
 
-            is FieldType.Enum -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.VARINT") {
+            is FieldType.Enum -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG_INTERNAL.WireType.VARINT") {
                 beforeValueDecoding()
                 generateDecodeFieldValue(fieldType, lvalue, wrapperCtor = wrapperCtor)
             }
@@ -879,7 +885,7 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             is FieldType.Message -> {
-                whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.${fieldType.wireType.name}") {
+                whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG_INTERNAL.WireType.${fieldType.wireType.name}") {
                     if (field.presenceIdx != null) {
                         // check if the current sub message object was already set, if not, set a new one
                         // to set the field's presence tracker to true
@@ -892,7 +898,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 }
             }
 
-            is FieldType.Map -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG.WireType.LENGTH_DELIMITED") {
+            is FieldType.Map -> whenCase("tag.fieldNr == ${field.number} && tag.wireType == $PB_PKG_INTERNAL.WireType.LENGTH_DELIMITED") {
                 beforeValueDecoding()
                 generateDecodeFieldValue(fieldType, lvalue, wrapperCtor = wrapperCtor)
             }
@@ -956,9 +962,9 @@ class ModelToProtobufKotlinCommonGenerator(
                 val msg = fieldType.dec.value
                 val fullClassName = msg.internalClassFullName()
                 if (msg.isGroup) {
-                    code("$fullClassName.decodeWith($lvalue.asInternal(), decoder, tag)")
+                    code("$fullClassName.decodeWith($lvalue.asInternal(), decoder, config, tag)")
                 } else {
-                    code("decoder.readMessage($lvalue.asInternal(), $fullClassName::decodeWith)")
+                    code("decoder.readMessage($lvalue.asInternal(), { msg, decoder -> $fullClassName.decodeWith( msg, decoder, config ) })")
                 }
             }
 
@@ -980,7 +986,7 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun CodeGenerator.generateMessageEncoder(declaration: MessageDeclaration) = function(
         name = "encodeWith",
         annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
-        args = "encoder: $PB_PKG.WireEncoder",
+        args = "encoder: $PB_PKG_INTERNAL.WireEncoder, config: $PB_PKG.ProtobufConfig?",
         contextReceiver = declaration.internalClassFullName(),
         returnType = "Unit",
     ) {
@@ -1091,7 +1097,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
             is FieldType.Message -> {
                 val writeMethod = if (type.dec.value.isGroup) "writeGroupMessage" else "writeMessage"
-                code("encoder.$writeMethod(fieldNr = ${number}, value = $valueVar.asInternal()) { encodeWith(it) }")
+                code("encoder.$writeMethod(fieldNr = ${number}, value = $valueVar.asInternal()) { encodeWith(it, config) }")
             }
         }
 
@@ -1136,7 +1142,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
         requiredFields.forEach { field ->
             ifBranch(condition = "!presenceMask[${field.presenceIdx}]", ifBlock = {
-                code("throw ${PB_PKG}.ProtobufDecodingException.missingRequiredField(\"${declaration.name.simpleName}\", \"${field.name}\")")
+                code("throw ${PB_PKG_INTERNAL}.ProtobufDecodingException.missingRequiredField(\"${declaration.name.simpleName}\", \"${field.name}\")")
             })
         }
 
@@ -1317,7 +1323,7 @@ class ModelToProtobufKotlinCommonGenerator(
             variable
         }
 
-        val sizeFunc = "$PB_PKG.WireSize.$sizeFunName($convertedVariable)"
+        val sizeFunc = "$PB_PKG_INTERNAL.WireSize.$sizeFunName($convertedVariable)"
 
         return when (this) {
             is FieldType.IntegralType -> sizeFunc
@@ -1339,7 +1345,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 }
             }
 
-            is FieldType.Enum -> "$PB_PKG.WireSize.$sizeFunName($variable.number)"
+            is FieldType.Enum -> "$PB_PKG_INTERNAL.WireSize.$sizeFunName($variable.number)"
             is FieldType.Map -> TODO()
             is FieldType.OneOf -> error("OneOf fields have no direct valueSizeCall")
             is FieldType.Message -> "$variable.asInternal()._size"
@@ -1347,12 +1353,12 @@ class ModelToProtobufKotlinCommonGenerator(
     }
 
     private fun tagSizeCall(number: Int, wireType: WireType): String {
-        return "$PB_PKG.WireSize.tag($number, $PB_PKG.WireType.$wireType)"
+        return "$PB_PKG_INTERNAL.WireSize.tag($number, $PB_PKG_INTERNAL.WireType.$wireType)"
     }
 
     @Suppress("SameParameterValue")
     private fun int32SizeCall(number: String): String {
-        return "$PB_PKG.WireSize.int32($number)"
+        return "$PB_PKG_INTERNAL.WireSize.int32($number)"
     }
 
     private fun FieldDeclaration.notDefaultCheck(): String {

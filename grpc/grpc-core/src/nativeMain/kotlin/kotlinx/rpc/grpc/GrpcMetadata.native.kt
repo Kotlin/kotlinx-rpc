@@ -19,6 +19,7 @@ import kotlinx.cinterop.usePinned
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.io.readByteArray
+import kotlinx.rpc.grpc.codec.CodecConfig
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.codec.SourcedMessageCodec
 import kotlinx.rpc.grpc.internal.toByteArray
@@ -309,21 +310,21 @@ private fun <T> GrpcMetadataKey<T>.validateName() {
 }
 
 private val AsciiCodec = object : SourcedMessageCodec<String> {
-    override fun encodeToSource(value: String): Source = Buffer().apply {
+    override fun encodeToSource(value: String, config: CodecConfig?): Source = Buffer().apply {
         write(value.toAsciiBytes())
     }
 
-    override fun decodeFromSource(stream: Source): String = stream.use { buffer ->
+    override fun decodeFromSource(stream: Source, config: CodecConfig?): String = stream.use { buffer ->
         buffer.readByteArray().toAsciiString()
     }
 }
 
 private val BinaryCodec = object : SourcedMessageCodec<ByteArray> {
-    override fun encodeToSource(value: ByteArray): Source = Buffer().apply {
+    override fun encodeToSource(value: ByteArray, config: CodecConfig?): Source = Buffer().apply {
         write(value)
     }
 
-    override fun decodeFromSource(stream: Source): ByteArray = stream.readByteArray()
+    override fun decodeFromSource(stream: Source, config: CodecConfig?): ByteArray = stream.readByteArray()
 }
 
 private fun String.toAsciiKey() = GrpcMetadataKey(this, AsciiCodec)

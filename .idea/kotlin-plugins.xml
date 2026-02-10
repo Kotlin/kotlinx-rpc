@@ -5,7 +5,7 @@
       <map>
         <entry key="Local Build Repo" value="$PROJECT_DIR$/build/repo;PATH" />
         <entry key="Maven Central" value="https://repo1.maven.org/maven2;URL" />
-        <entry key="kotlinx-rpc for IDE" value="https://maven.pkg.jetbrains.space/public/p/krpc/for-ide;URL" />
+        <entry key="kotlinx-rpc for IDE" value="https://redirector.kotlinlang.org/maven/kxrpc-for-ide;URL" />
       </map>
     </option>
     <option name="plugins">

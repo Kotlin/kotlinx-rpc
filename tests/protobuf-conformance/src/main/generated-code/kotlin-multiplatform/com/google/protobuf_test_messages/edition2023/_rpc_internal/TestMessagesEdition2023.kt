@@ -82,7 +82,7 @@ class ComplexMessageInternal: com.google.protobuf_test_messages.edition2023.Comp
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
             val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                internalMsg.encodeWith(encoder)
+                internalMsg.encodeWith(encoder, config as? kotlinx.rpc.protobuf.ProtobufConfig)
             }
             encoder.flush()
             internalMsg._unknownFields.copyTo(buffer)
@@ -93,7 +93,7 @@ class ComplexMessageInternal: com.google.protobuf_test_messages.edition2023.Comp
             kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
                 val msg = com.google.protobuf_test_messages.edition2023.ComplexMessageInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
-                    com.google.protobuf_test_messages.edition2023.ComplexMessageInternal.decodeWith(msg, it)
+                    com.google.protobuf_test_messages.edition2023.ComplexMessageInternal.decodeWith(msg, it, config as? kotlinx.rpc.protobuf.ProtobufConfig)
                 }
                 msg.checkRequiredFields()
                 msg._unknownFieldsEncoder?.flush()
@@ -1031,7 +1031,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
                 val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
                 val internalMsg = value.asInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                    internalMsg.encodeWith(encoder)
+                    internalMsg.encodeWith(encoder, config as? kotlinx.rpc.protobuf.ProtobufConfig)
                 }
                 encoder.flush()
                 internalMsg._unknownFields.copyTo(buffer)
@@ -1042,7 +1042,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
                 kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
                     val msg = com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal()
                     kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
-                        com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal.decodeWith(msg, it)
+                        com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal.decodeWith(msg, it, config as? kotlinx.rpc.protobuf.ProtobufConfig)
                     }
                     msg.checkRequiredFields()
                     msg._unknownFieldsEncoder?.flush()
@@ -2425,7 +2425,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
             val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                internalMsg.encodeWith(encoder)
+                internalMsg.encodeWith(encoder, config as? kotlinx.rpc.protobuf.ProtobufConfig)
             }
             encoder.flush()
             internalMsg._unknownFields.copyTo(buffer)
@@ -2436,7 +2436,7 @@ class TestAllTypesEdition2023Internal: com.google.protobuf_test_messages.edition
             kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
                 val msg = com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
-                    com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.decodeWith(msg, it)
+                    com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.decodeWith(msg, it, config as? kotlinx.rpc.protobuf.ProtobufConfig)
                 }
                 msg.checkRequiredFields()
                 msg._unknownFieldsEncoder?.flush()
@@ -2525,7 +2525,7 @@ class ForeignMessageEdition2023Internal: com.google.protobuf_test_messages.editi
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
             val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                internalMsg.encodeWith(encoder)
+                internalMsg.encodeWith(encoder, config as? kotlinx.rpc.protobuf.ProtobufConfig)
             }
             encoder.flush()
             internalMsg._unknownFields.copyTo(buffer)
@@ -2536,7 +2536,7 @@ class ForeignMessageEdition2023Internal: com.google.protobuf_test_messages.editi
             kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
                 val msg = com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
-                    com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal.decodeWith(msg, it)
+                    com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal.decodeWith(msg, it, config as? kotlinx.rpc.protobuf.ProtobufConfig)
                 }
                 msg.checkRequiredFields()
                 msg._unknownFieldsEncoder?.flush()
@@ -2625,7 +2625,7 @@ class GroupLikeTypeInternal: com.google.protobuf_test_messages.edition2023.Group
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
             val internalMsg = value.asInternal()
             kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                internalMsg.encodeWith(encoder)
+                internalMsg.encodeWith(encoder, config as? kotlinx.rpc.protobuf.ProtobufConfig)
             }
             encoder.flush()
             internalMsg._unknownFields.copyTo(buffer)
@@ -2636,7 +2636,7 @@ class GroupLikeTypeInternal: com.google.protobuf_test_messages.edition2023.Group
             kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
                 val msg = com.google.protobuf_test_messages.edition2023.GroupLikeTypeInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
-                    com.google.protobuf_test_messages.edition2023.GroupLikeTypeInternal.decodeWith(msg, it)
+                    com.google.protobuf_test_messages.edition2023.GroupLikeTypeInternal.decodeWith(msg, it, config as? kotlinx.rpc.protobuf.ProtobufConfig)
                 }
                 msg.checkRequiredFields()
                 msg._unknownFieldsEncoder?.flush()
@@ -2655,14 +2655,14 @@ fun com.google.protobuf_test_messages.edition2023.ComplexMessageInternal.checkRe
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.ComplexMessageInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.ComplexMessageInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     d?.also { 
         encoder.writeInt32(fieldNr = 1, value = it)
     }
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.ComplexMessageInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.ComplexMessageInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.ComplexMessageInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.ComplexMessageInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -2674,11 +2674,15 @@ fun com.google.protobuf_test_messages.edition2023.ComplexMessageInternal.Compani
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -2747,7 +2751,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     optionalInt32?.also { 
         encoder.writeInt32(fieldNr = 1, value = it)
     }
@@ -2809,11 +2813,11 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
     }
 
     if (presenceMask[15]) { 
-        encoder.writeMessage(fieldNr = 18, value = optionalNestedMessage.asInternal()) { encodeWith(it) }
+        encoder.writeMessage(fieldNr = 18, value = optionalNestedMessage.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[16]) { 
-        encoder.writeMessage(fieldNr = 19, value = optionalForeignMessage.asInternal()) { encodeWith(it) }
+        encoder.writeMessage(fieldNr = 19, value = optionalForeignMessage.asInternal()) { encodeWith(it, config) }
     }
 
     optionalNestedEnum?.also { 
@@ -2833,7 +2837,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
     }
 
     if (presenceMask[21]) { 
-        encoder.writeMessage(fieldNr = 27, value = recursiveMessage.asInternal()) { encodeWith(it) }
+        encoder.writeMessage(fieldNr = 27, value = recursiveMessage.asInternal()) { encodeWith(it, config) }
     }
 
     if (repeatedInt32.isNotEmpty()) { 
@@ -2902,13 +2906,13 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 
     if (repeatedNestedMessage.isNotEmpty()) { 
         repeatedNestedMessage.forEach { 
-            encoder.writeMessage(fieldNr = 48, value = it.asInternal()) { encodeWith(it) }
+            encoder.writeMessage(fieldNr = 48, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
     if (repeatedForeignMessage.isNotEmpty()) { 
         repeatedForeignMessage.forEach { 
-            encoder.writeMessage(fieldNr = 49, value = it.asInternal()) { encodeWith(it) }
+            encoder.writeMessage(fieldNr = 49, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
@@ -3079,7 +3083,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 56, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 56, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3091,7 +3095,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 57, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 57, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3103,7 +3107,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 58, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 58, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3115,7 +3119,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 59, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 59, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3127,7 +3131,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 60, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 60, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3139,7 +3143,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 61, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 61, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3151,7 +3155,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 62, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 62, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3163,7 +3167,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 63, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 63, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3175,7 +3179,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 64, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 64, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3187,7 +3191,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 65, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 65, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3199,7 +3203,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 66, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 66, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3211,7 +3215,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 67, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 67, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3223,7 +3227,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 68, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 68, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3235,7 +3239,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 69, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 69, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3247,7 +3251,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 70, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 70, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3259,7 +3263,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 71, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 71, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3271,7 +3275,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 72, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 72, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3283,7 +3287,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 73, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 73, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
@@ -3295,17 +3299,17 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 74, value = entry.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 74, value = entry.asInternal()) { encodeWith(it, config) }
             }
         }
     }
 
     if (presenceMask[22]) { 
-        encoder.writeGroupMessage(fieldNr = 201, value = groupliketype.asInternal()) { encodeWith(it) }
+        encoder.writeGroupMessage(fieldNr = 201, value = groupliketype.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[23]) { 
-        encoder.writeGroupMessage(fieldNr = 202, value = delimitedField.asInternal()) { encodeWith(it) }
+        encoder.writeGroupMessage(fieldNr = 202, value = delimitedField.asInternal()) { encodeWith(it, config) }
     }
 
     oneofField?.also { 
@@ -3314,7 +3318,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 encoder.writeUInt32(fieldNr = 111, value = value.value)
             }
             is com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.OneofField.OneofNestedMessage -> { 
-                encoder.writeMessage(fieldNr = 112, value = value.value.asInternal()) { encodeWith(it) }
+                encoder.writeMessage(fieldNr = 112, value = value.value.asInternal()) { encodeWith(it, config) }
             }
             is com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.OneofField.OneofString -> { 
                 encoder.writeString(fieldNr = 113, value = value.value)
@@ -3342,7 +3346,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -3396,14 +3400,14 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     msg.optionalNestedMessage = com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal()
                 }
 
-                decoder.readMessage(msg.optionalNestedMessage.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal::decodeWith)
+                decoder.readMessage(msg.optionalNestedMessage.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal.decodeWith( msg, decoder, config ) })
             }
             tag.fieldNr == 19 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 if (!msg.presenceMask[16]) { 
                     msg.optionalForeignMessage = com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal()
                 }
 
-                decoder.readMessage(msg.optionalForeignMessage.asInternal(), com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal::decodeWith)
+                decoder.readMessage(msg.optionalForeignMessage.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal.decodeWith( msg, decoder, config ) })
             }
             tag.fieldNr == 21 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.optionalNestedEnum = com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedEnum.fromNumber(decoder.readEnum())
@@ -3422,7 +3426,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     msg.recursiveMessage = com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal()
                 }
 
-                decoder.readMessage(msg.recursiveMessage.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal::decodeWith)
+                decoder.readMessage(msg.recursiveMessage.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.decodeWith( msg, decoder, config ) })
             }
             tag.fieldNr == 31 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.repeatedInt32 += decoder.readPackedInt32()
@@ -3525,12 +3529,12 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
             }
             tag.fieldNr == 48 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 val elem = com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal()
-                decoder.readMessage(elem.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal::decodeWith)
+                decoder.readMessage(elem.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal.decodeWith( msg, decoder, config ) })
                 (msg.repeatedNestedMessage as MutableList).add(elem)
             }
             tag.fieldNr == 49 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 val elem = com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal()
-                decoder.readMessage(elem.asInternal(), com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal::decodeWith)
+                decoder.readMessage(elem.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal.decodeWith( msg, decoder, config ) })
                 (msg.repeatedForeignMessage as MutableList).add(elem)
             }
             tag.fieldNr == 51 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
@@ -3753,115 +3757,115 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
             }
             tag.fieldNr == 56 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapInt32Int32 as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 57 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapInt64Int64 as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 58 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapUint32Uint32 as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 59 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapUint64Uint64 as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 60 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapSint32Sint32 as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 61 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapSint64Sint64 as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 62 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapFixed32Fixed32 as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 63 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapFixed64Fixed64 as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 64 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapSfixed32Sfixed32 as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 65 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapSfixed64Sfixed64 as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 66 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapInt32Float as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 67 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapInt32Double as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 68 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapBoolBool as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 69 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringStringEntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringStringEntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringStringEntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapStringString as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 70 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringBytesEntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringBytesEntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapStringBytes as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 71 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapStringNestedMessage as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 72 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapStringForeignMessage as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 73 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapStringNestedEnum as MutableMap)[key] = value
                 }
             }
             tag.fieldNr == 74 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 with(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal()) { 
-                    decoder.readMessage(this.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal::decodeWith)
+                    decoder.readMessage(this.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.decodeWith( msg, decoder, config ) })
                     (msg.mapStringForeignEnum as MutableMap)[key] = value
                 }
             }
@@ -3870,14 +3874,14 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     msg.groupliketype = com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.GroupLikeTypeInternal()
                 }
 
-                com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.GroupLikeTypeInternal.decodeWith(msg.groupliketype.asInternal(), decoder, tag)
+                com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.GroupLikeTypeInternal.decodeWith(msg.groupliketype.asInternal(), decoder, config, tag)
             }
             tag.fieldNr == 202 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.START_GROUP -> { 
                 if (!msg.presenceMask[23]) { 
                     msg.delimitedField = com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.GroupLikeTypeInternal()
                 }
 
-                com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.GroupLikeTypeInternal.decodeWith(msg.delimitedField.asInternal(), decoder, tag)
+                com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.GroupLikeTypeInternal.decodeWith(msg.delimitedField.asInternal(), decoder, config, tag)
             }
             tag.fieldNr == 111 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
                 msg.oneofField = com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.OneofField.OneofUint32(decoder.readUInt32())
@@ -3887,7 +3891,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     msg.oneofField = it
                 }
 
-                decoder.readMessage(field.value.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal::decodeWith)
+                decoder.readMessage(field.value.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal.decodeWith( msg, decoder, config ) })
             }
             tag.fieldNr == 113 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.LENGTH_DELIMITED -> { 
                 msg.oneofField = com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.OneofField.OneofString(decoder.readString())
@@ -3915,11 +3919,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -4455,14 +4463,14 @@ fun com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Inter
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     c?.also { 
         encoder.writeInt32(fieldNr = 1, value = it)
     }
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -4474,11 +4482,15 @@ fun com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Inter
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -4504,14 +4516,14 @@ fun com.google.protobuf_test_messages.edition2023.GroupLikeTypeInternal.checkReq
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.GroupLikeTypeInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.GroupLikeTypeInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     c?.also { 
         encoder.writeInt32(fieldNr = 1, value = it)
     }
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.GroupLikeTypeInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.GroupLikeTypeInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.GroupLikeTypeInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.GroupLikeTypeInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -4523,11 +4535,15 @@ fun com.google.protobuf_test_messages.edition2023.GroupLikeTypeInternal.Companio
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -4556,18 +4572,18 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     a?.also { 
         encoder.writeInt32(fieldNr = 1, value = it)
     }
 
     if (presenceMask[1]) { 
-        encoder.writeMessage(fieldNr = 2, value = corecursive.asInternal()) { encodeWith(it) }
+        encoder.writeMessage(fieldNr = 2, value = corecursive.asInternal()) { encodeWith(it, config) }
     }
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -4579,18 +4595,22 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     msg.corecursive = com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal()
                 }
 
-                decoder.readMessage(msg.corecursive.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal::decodeWith)
+                decoder.readMessage(msg.corecursive.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.decodeWith( msg, decoder, config ) })
             }
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -4620,7 +4640,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeInt32(fieldNr = 1, value = key)
     }
@@ -4631,7 +4651,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -4646,11 +4666,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -4680,7 +4704,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeInt64(fieldNr = 1, value = key)
     }
@@ -4691,7 +4715,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -4706,11 +4730,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -4740,7 +4768,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeUInt32(fieldNr = 1, value = key)
     }
@@ -4751,7 +4779,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -4766,11 +4794,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -4800,7 +4832,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeUInt64(fieldNr = 1, value = key)
     }
@@ -4811,7 +4843,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -4826,11 +4858,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -4860,7 +4896,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeSInt32(fieldNr = 1, value = key)
     }
@@ -4871,7 +4907,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -4886,11 +4922,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -4920,7 +4960,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeSInt64(fieldNr = 1, value = key)
     }
@@ -4931,7 +4971,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -4946,11 +4986,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -4980,7 +5024,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeFixed32(fieldNr = 1, value = key)
     }
@@ -4991,7 +5035,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -5006,11 +5050,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -5040,7 +5088,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeFixed64(fieldNr = 1, value = key)
     }
@@ -5051,7 +5099,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -5066,11 +5114,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -5100,7 +5152,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeSFixed32(fieldNr = 1, value = key)
     }
@@ -5111,7 +5163,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -5126,11 +5178,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -5160,7 +5216,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeSFixed64(fieldNr = 1, value = key)
     }
@@ -5171,7 +5227,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -5186,11 +5242,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -5220,7 +5280,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeInt32(fieldNr = 1, value = key)
     }
@@ -5231,7 +5291,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -5246,11 +5306,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -5280,7 +5344,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeInt32(fieldNr = 1, value = key)
     }
@@ -5291,7 +5355,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -5306,11 +5370,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -5340,7 +5408,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeBool(fieldNr = 1, value = key)
     }
@@ -5351,7 +5419,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -5366,11 +5434,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -5400,7 +5472,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringStringEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringStringEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeString(fieldNr = 1, value = key)
     }
@@ -5411,7 +5483,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringStringEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringStringEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringStringEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringStringEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -5426,11 +5498,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -5460,7 +5536,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeString(fieldNr = 1, value = key)
     }
@@ -5471,7 +5547,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringBytesEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringBytesEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -5486,11 +5562,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -5523,18 +5603,18 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeString(fieldNr = 1, value = key)
     }
 
     if (presenceMask[1]) { 
-        encoder.writeMessage(fieldNr = 2, value = value.asInternal()) { encodeWith(it) }
+        encoder.writeMessage(fieldNr = 2, value = value.asInternal()) { encodeWith(it, config) }
     }
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -5546,18 +5626,22 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     msg.value = com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal()
                 }
 
-                decoder.readMessage(msg.value.asInternal(), com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal::decodeWith)
+                decoder.readMessage(msg.value.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal.decodeWith( msg, decoder, config ) })
             }
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -5590,18 +5674,18 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeString(fieldNr = 1, value = key)
     }
 
     if (presenceMask[1]) { 
-        encoder.writeMessage(fieldNr = 2, value = value.asInternal()) { encodeWith(it) }
+        encoder.writeMessage(fieldNr = 2, value = value.asInternal()) { encodeWith(it, config) }
     }
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -5613,18 +5697,22 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     msg.value = com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal()
                 }
 
-                decoder.readMessage(msg.value.asInternal(), com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal::decodeWith)
+                decoder.readMessage(msg.value.asInternal(), { msg, decoder -> com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal.decodeWith( msg, decoder, config ) })
             }
             else -> { 
                 if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -5654,7 +5742,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeString(fieldNr = 1, value = key)
     }
@@ -5665,7 +5753,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -5680,11 +5768,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -5714,7 +5806,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     if (presenceMask[0]) { 
         encoder.writeString(fieldNr = 1, value = key)
     }
@@ -5725,7 +5817,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     while (true) { 
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when { 
@@ -5740,11 +5832,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                     throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
@@ -5774,7 +5870,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.GroupLikeTypeInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.GroupLikeTypeInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
     groupInt32?.also { 
         encoder.writeInt32(fieldNr = 202, value = it)
     }
@@ -5785,7 +5881,7 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
 }
 
 @kotlinx.rpc.internal.utils.InternalRpcApi
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.GroupLikeTypeInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.GroupLikeTypeInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, startGroup: kotlinx.rpc.protobuf.internal.KTag) { 
+fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.GroupLikeTypeInternal.Companion.decodeWith(msg: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.GroupLikeTypeInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?, startGroup: kotlinx.rpc.protobuf.internal.KTag) { 
     while (true) { 
         val tag = decoder.readTag() ?: throw ProtobufDecodingException("Missing END_GROUP tag for field: ${startGroup.fieldNr}.")
         if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
@@ -5804,11 +5900,15 @@ fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Interna
                 msg.groupUint32 = decoder.readUInt32()
             }
             else -> { 
-                if (msg._unknownFieldsEncoder == null) { 
-                    msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                }
+                if (config?.discardUnknownFields ?: false) { 
+                    decoder.skipUnknownField(tag)
+                } else { 
+                    if (msg._unknownFieldsEncoder == null) { 
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
 
-                decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
             }
         }
     }
