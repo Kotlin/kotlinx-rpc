@@ -115,5 +115,4 @@ class GrpcCodecConfigTest : GrpcTestBase() {
         assertEquals(message, decoded)
     }
 
-
 }

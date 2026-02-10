@@ -20,7 +20,7 @@ import kotlinx.rpc.grpc.codec.CodecConfig
  * val myCodec = codec<MyMessage>(config)
  *
  * // Or pass config per-operation
- * val decoded = codec.decode(stream, ProtobufConfig(discardUnknownFields = true))
+ * val decoded = codec.decode(stream, config)
  * ```
  *
  * @property discardUnknownFields When `true`, unknown fields encountered during deserialization
