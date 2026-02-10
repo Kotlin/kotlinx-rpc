@@ -4,14 +4,13 @@
 
 package kotlinx.rpc.grpc.descriptor
 
-import kotlinx.io.Source
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 public actual class MethodDescriptor<Request, Response> internal constructor(
     private val fullMethodName: String,
-    @InternalRpcApi public val requestMarshaller: Marshaller<Request>,
-    @InternalRpcApi public val responseMarshaller: Marshaller<Response>,
+    @InternalRpcApi public val requestCodec: MessageCodec<Request>,
+    @InternalRpcApi public val responseCodec: MessageCodec<Response>,
     @InternalRpcApi public val methodType: MethodType,
     private val schemaDescriptor: Any?,
     private val idempotent: Boolean,
@@ -33,12 +32,6 @@ public actual class MethodDescriptor<Request, Response> internal constructor(
     public actual fun isSafe(): Boolean = safe
 
     public actual fun isSampledToLocalTracing(): Boolean = sampledToLocalTracing
-
-    @InternalRpcApi
-    public interface Marshaller<T> {
-        public fun stream(value: T): Source
-        public fun parse(source: Source): T
-    }
 
     public companion object {
         public fun extractFullServiceName(fullMethodName: String): String? {
@@ -66,30 +59,10 @@ public actual fun <Request, Response> methodDescriptor(
     safe: Boolean,
     sampledToLocalTracing: Boolean,
 ): MethodDescriptor<Request, Response> {
-    val requestMarshaller = object : MethodDescriptor.Marshaller<Request> {
-        override fun stream(value: Request): Source {
-            return requestCodec.encode(value)
-        }
-
-        override fun parse(source: Source): Request {
-            return requestCodec.decode(source)
-        }
-    }
-
-    val responseMarshaller = object : MethodDescriptor.Marshaller<Response> {
-        override fun stream(value: Response): Source {
-            return responseCodec.encode(value)
-        }
-
-        override fun parse(source: Source): Response {
-            return responseCodec.decode(source)
-        }
-    }
-
     return MethodDescriptor(
         fullMethodName = fullMethodName,
-        requestMarshaller = requestMarshaller,
-        responseMarshaller = responseMarshaller,
+        requestCodec = requestCodec,
+        responseCodec = responseCodec,
         methodType = type,
         schemaDescriptor = schemaDescriptor,
         idempotent = idempotent,

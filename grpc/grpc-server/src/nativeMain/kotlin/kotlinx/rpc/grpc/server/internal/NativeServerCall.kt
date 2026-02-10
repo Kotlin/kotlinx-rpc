@@ -28,7 +28,6 @@ import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
-import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.internal.BatchResult
 import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.destroyEntries
@@ -247,8 +246,8 @@ internal class NativeServerCall<Request, Response>(
                 }
             } else {
                 try {
-                    val msg = methodDescriptor.requestMarshaller
-                        .parse(buf.toKotlin())
+                    val msg = methodDescriptor.requestCodec
+                        .decode(buf.toKotlin())
                     // Mark that we have received at least one request message
                     receivedFirstMessage = true
                     callbackMutex.withLock {
@@ -292,7 +291,7 @@ internal class NativeServerCall<Request, Response>(
 
         val arena = Arena()
         tryRun {
-            val source = methodDescriptor.responseMarshaller.stream(message)
+            val source = methodDescriptor.responseCodec.encode(message)
             val byteBuffer = source.toGrpcByteBuffer()
             ready.value = false
 
