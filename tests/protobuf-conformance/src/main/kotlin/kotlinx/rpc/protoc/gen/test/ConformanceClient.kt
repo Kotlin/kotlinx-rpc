@@ -13,6 +13,8 @@ import com.google.protobuf.conformance.FailureSetInternal
 import com.google.protobuf.conformance.TestCategory
 import com.google.protobuf.conformance.WireFormat.*
 import com.google.protobuf.conformance.invoke
+import kotlinx.io.Buffer
+import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.protobuf.internal.InternalMessage
@@ -108,7 +110,7 @@ internal class ConformanceClient {
 
                     val binary = (request.payload as ConformanceRequest.Payload.ProtobufPayload).value
 
-                    testMessage = codec.decode(binary.inputStream() /*extensions*/) as InternalMessage
+                    testMessage = codec.decode(binary.buffered()) as InternalMessage
                 } catch (e: ProtobufException) {
                     return ConformanceResponse {
                         result = ConformanceResponse.Result.ParseError(
@@ -171,7 +173,7 @@ internal class ConformanceClient {
             UNSPECIFIED -> error("Unspecified output format.")
 
             PROTOBUF -> {
-                val messageString: ByteArray = codec.encode(testMessage).readBytes()
+                val messageString: ByteArray = codec.encode(testMessage).readByteArray()
 
                 ConformanceResponse {
                     result = ConformanceResponse.Result.ProtobufPayload(messageString)
@@ -233,7 +235,7 @@ internal class ConformanceClient {
         dumpConfig.dumpConformanceInputFile?.writeBytes(serializedInput)
 
         val request: ConformanceRequest = ConformanceRequestInternal.CODEC
-            .decode(serializedInput.inputStream())
+            .decode(serializedInput.buffered())
 
         // The conformance runner will request a list of failures as the first request.
         // This will be known by message_type == "conformance.FailureSet", a conformance
@@ -243,7 +245,7 @@ internal class ConformanceClient {
                 result = ConformanceResponse.Result.ProtobufPayload(
                     FailureSetInternal.CODEC.encode(
                         FailureSet {}
-                    ).readBytes()
+                    ).readByteArray()
                 )
             }
         } else {
@@ -251,7 +253,7 @@ internal class ConformanceClient {
         }
 
         val serializedOutput = ConformanceResponseInternal.CODEC
-            .encode(response).readBytes()
+            .encode(response).readByteArray()
 
         dumpConfig.dumpConformanceOutputFile?.writeBytes(serializedOutput)
 
@@ -409,3 +411,5 @@ private fun getDumpFile(propName: String): Path? {
         null
     }
 }
+
+private fun ByteArray.buffered() = Buffer().apply { write(this@buffered) }

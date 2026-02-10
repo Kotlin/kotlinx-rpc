@@ -4,6 +4,9 @@
 
 package kotlinx.rpc.grpc.descriptor
 
+import kotlinx.io.asInputStream
+import kotlinx.io.asSource
+import kotlinx.io.buffered
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.io.InputStream
@@ -31,11 +34,13 @@ internal val MethodType.asJvm: io.grpc.MethodDescriptor.MethodType
 private fun <T> MessageCodec<T>.toJvm(): io.grpc.MethodDescriptor.Marshaller<T> {
     return object : io.grpc.MethodDescriptor.Marshaller<T> {
         override fun stream(value: T): InputStream {
-            return encode(value)
+            // wraps the source in a stream
+            return encode(value).asInputStream()
         }
 
         override fun parse(stream: InputStream): T {
-            return decode(stream)
+            // wraps the stream in a buffered source
+            return decode(stream.asSource().buffered())
         }
     }
 }

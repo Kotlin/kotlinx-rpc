@@ -11,6 +11,7 @@ import platform.posix.setenv
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.IntVar
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.get
@@ -42,6 +43,7 @@ fun clearNativeEnv(key: String) {
     unsetenv(key)
 }
 
+@OptIn(UnsafeNumber::class)
 actual suspend fun captureStdErr(block: suspend () -> Unit): String = coroutineScope {
     memScoped {
         val pipeErr = allocArray<IntVar>(2)
@@ -58,7 +60,7 @@ actual suspend fun captureStdErr(block: suspend () -> Unit): String = coroutineS
             val buf = ByteArray(4096)
             var r: Long
             do {
-                r = read(pipeErr[0], buf.refTo(0), buf.size.convert())
+                r = read(pipeErr[0], buf.refTo(0), buf.size.convert()).convert()
                 if (r > 0) outputBuf.append(buf.decodeToString(0, r.convert()))
             } while (r > 0)
             close(pipeErr[0])

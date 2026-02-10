@@ -3,7 +3,6 @@ package com.google.protobuf.kotlin
 
 import kotlinx.io.Buffer
 import kotlinx.rpc.internal.utils.*
-import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.internal.*
 
 public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 1) { 
@@ -108,7 +107,7 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Type> { 
-        public override fun encode(value: com.google.protobuf.kotlin.Type, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.rpc.protobuf.input.stream.InputStream { 
+        public override fun encode(value: com.google.protobuf.kotlin.Type, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.io.Source { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -117,11 +116,11 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
             }
             encoder.flush()
             internalMsg._unknownFields.copyTo(buffer)
-            return buffer.asInputStream()
+            return buffer
         }
 
-        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.Type { 
-            kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
+        public override fun decode(source: kotlinx.io.Source, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.Type { 
+            kotlinx.rpc.protobuf.internal.WireDecoder(source).use { 
                 val msg = com.google.protobuf.kotlin.TypeInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.TypeInternal.decodeWith(msg, it, config as? kotlinx.rpc.protobuf.ProtobufConfig)
@@ -236,7 +235,7 @@ public class FieldInternal: com.google.protobuf.kotlin.Field, kotlinx.rpc.protob
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Field> { 
-        public override fun encode(value: com.google.protobuf.kotlin.Field, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.rpc.protobuf.input.stream.InputStream { 
+        public override fun encode(value: com.google.protobuf.kotlin.Field, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.io.Source { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -245,11 +244,11 @@ public class FieldInternal: com.google.protobuf.kotlin.Field, kotlinx.rpc.protob
             }
             encoder.flush()
             internalMsg._unknownFields.copyTo(buffer)
-            return buffer.asInputStream()
+            return buffer
         }
 
-        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.Field { 
-            kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
+        public override fun decode(source: kotlinx.io.Source, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.Field { 
+            kotlinx.rpc.protobuf.internal.WireDecoder(source).use { 
                 val msg = com.google.protobuf.kotlin.FieldInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.FieldInternal.decodeWith(msg, it, config as? kotlinx.rpc.protobuf.ProtobufConfig)
@@ -362,7 +361,7 @@ public class EnumInternal: com.google.protobuf.kotlin.Enum, kotlinx.rpc.protobuf
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Enum> { 
-        public override fun encode(value: com.google.protobuf.kotlin.Enum, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.rpc.protobuf.input.stream.InputStream { 
+        public override fun encode(value: com.google.protobuf.kotlin.Enum, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.io.Source { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -371,11 +370,11 @@ public class EnumInternal: com.google.protobuf.kotlin.Enum, kotlinx.rpc.protobuf
             }
             encoder.flush()
             internalMsg._unknownFields.copyTo(buffer)
-            return buffer.asInputStream()
+            return buffer
         }
 
-        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.Enum { 
-            kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
+        public override fun decode(source: kotlinx.io.Source, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.Enum { 
+            kotlinx.rpc.protobuf.internal.WireDecoder(source).use { 
                 val msg = com.google.protobuf.kotlin.EnumInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.EnumInternal.decodeWith(msg, it, config as? kotlinx.rpc.protobuf.ProtobufConfig)
@@ -455,7 +454,7 @@ public class EnumValueInternal: com.google.protobuf.kotlin.EnumValue, kotlinx.rp
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.EnumValue> { 
-        public override fun encode(value: com.google.protobuf.kotlin.EnumValue, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.rpc.protobuf.input.stream.InputStream { 
+        public override fun encode(value: com.google.protobuf.kotlin.EnumValue, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.io.Source { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -464,11 +463,11 @@ public class EnumValueInternal: com.google.protobuf.kotlin.EnumValue, kotlinx.rp
             }
             encoder.flush()
             internalMsg._unknownFields.copyTo(buffer)
-            return buffer.asInputStream()
+            return buffer
         }
 
-        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.EnumValue { 
-            kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
+        public override fun decode(source: kotlinx.io.Source, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.EnumValue { 
+            kotlinx.rpc.protobuf.internal.WireDecoder(source).use { 
                 val msg = com.google.protobuf.kotlin.EnumValueInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.EnumValueInternal.decodeWith(msg, it, config as? kotlinx.rpc.protobuf.ProtobufConfig)
@@ -561,7 +560,7 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Option> { 
-        public override fun encode(value: com.google.protobuf.kotlin.Option, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.rpc.protobuf.input.stream.InputStream { 
+        public override fun encode(value: com.google.protobuf.kotlin.Option, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.io.Source { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -570,11 +569,11 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
             }
             encoder.flush()
             internalMsg._unknownFields.copyTo(buffer)
-            return buffer.asInputStream()
+            return buffer
         }
 
-        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.Option { 
-            kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
+        public override fun decode(source: kotlinx.io.Source, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.Option { 
+            kotlinx.rpc.protobuf.internal.WireDecoder(source).use { 
                 val msg = com.google.protobuf.kotlin.OptionInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.OptionInternal.decodeWith(msg, it, config as? kotlinx.rpc.protobuf.ProtobufConfig)

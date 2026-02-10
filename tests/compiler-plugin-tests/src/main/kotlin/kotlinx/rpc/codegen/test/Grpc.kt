@@ -5,6 +5,7 @@
 package kotlinx.rpc.codegen.test
 
 import io.grpc.MethodDescriptor
+import kotlinx.io.Source
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.codec.CodecConfig
@@ -76,21 +77,21 @@ object SimpleResolver : MessageCodecResolver {
 }
 
 object StringCodec : MessageCodec<String> {
-    override fun encode(value: String, config: CodecConfig?): InputStream {
+    override fun encode(value: String, config: CodecConfig?): Source {
         TODO("Not yet implemented")
     }
 
-    override fun decode(stream: InputStream, config: CodecConfig?): String {
+    override fun decode(source: Source, config: CodecConfig?): String {
         TODO("Not yet implemented")
     }
 }
 
 object UnitCodec : MessageCodec<String> {
-    override fun encode(value: String, config: CodecConfig?): InputStream {
+    override fun encode(value: String, config: CodecConfig?): Source {
         TODO("Not yet implemented")
     }
 
-    override fun decode(stream: InputStream, config: CodecConfig?): String {
+    override fun decode(source: Source, config: CodecConfig?): String {
         TODO("Not yet implemented")
     }
 }
@@ -99,11 +100,11 @@ object UnitCodec : MessageCodec<String> {
 class Message(val a: Int, val b: String)
 
 object MessageClassCodec : MessageCodec<Message> {
-    override fun encode(value: Message, config: CodecConfig?): InputStream {
+    override fun encode(value: Message, config: CodecConfig?): Source {
         TODO("Not yet implemented")
     }
 
-    override fun decode(stream: InputStream, config: CodecConfig?): Message {
+    override fun decode(source: Source, config: CodecConfig?): Message {
         TODO("Not yet implemented")
     }
 }

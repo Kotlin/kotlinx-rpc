@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalRpcApi::class)
 
 package kotlinx.rpc.grpc.client.internal
 
@@ -28,6 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.internal.BatchResult
@@ -406,8 +407,8 @@ internal class NativeClientCall<Request, Response>(
             }) {
                 // if the call was successful, but no message was received, we reached the end-of-stream.
                 val buf = recvPtr.value ?: return@runBatch
-                val msg = methodDescriptor.getResponseMarshaller()
-                    .parse(buf.toKotlin().asInputStream())
+                val msg = methodDescriptor.responseMarshaller
+                    .parse(buf.toKotlin())
                 safeUserCode("Failed to call onClose.") {
                     listener.onMessage(msg)
                 }
@@ -466,8 +467,8 @@ internal class NativeClientCall<Request, Response>(
         ready.value = false
 
         val arena = Arena()
-        val inputStream = methodDescriptor.getRequestMarshaller().stream(message)
-        val byteBuffer = inputStream.asSource().toGrpcByteBuffer()
+        val source = methodDescriptor.requestMarshaller.stream(message)
+        val byteBuffer = source.toGrpcByteBuffer()
 
         val op = arena.alloc<grpc_op> {
             op = GRPC_OP_SEND_MESSAGE

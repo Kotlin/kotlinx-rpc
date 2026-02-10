@@ -3,7 +3,6 @@ package com.google.protobuf.kotlin
 
 import kotlinx.io.Buffer
 import kotlinx.rpc.internal.utils.*
-import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.internal.*
 
 public class AnyInternal: com.google.protobuf.kotlin.Any, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
@@ -65,7 +64,7 @@ public class AnyInternal: com.google.protobuf.kotlin.Any, kotlinx.rpc.protobuf.i
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Any> { 
-        public override fun encode(value: com.google.protobuf.kotlin.Any, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.rpc.protobuf.input.stream.InputStream { 
+        public override fun encode(value: com.google.protobuf.kotlin.Any, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.io.Source { 
             val buffer = kotlinx.io.Buffer()
             val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -74,11 +73,11 @@ public class AnyInternal: com.google.protobuf.kotlin.Any, kotlinx.rpc.protobuf.i
             }
             encoder.flush()
             internalMsg._unknownFields.copyTo(buffer)
-            return buffer.asInputStream()
+            return buffer
         }
 
-        public override fun decode(stream: kotlinx.rpc.protobuf.input.stream.InputStream, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.Any { 
-            kotlinx.rpc.protobuf.internal.WireDecoder(stream).use { 
+        public override fun decode(source: kotlinx.io.Source, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.Any { 
+            kotlinx.rpc.protobuf.internal.WireDecoder(source).use { 
                 val msg = com.google.protobuf.kotlin.AnyInternal()
                 kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
                     com.google.protobuf.kotlin.AnyInternal.decodeWith(msg, it, config as? kotlinx.rpc.protobuf.ProtobufConfig)
