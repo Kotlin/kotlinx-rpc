@@ -40,8 +40,6 @@ import kotlinx.rpc.grpc.internal.toKotlin
 import kotlinx.rpc.grpc.internal.toRaw
 import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.statusCode
-import kotlinx.rpc.protobuf.input.stream.asInputStream
-import kotlinx.rpc.protobuf.input.stream.asSource
 import libkgrpc.GRPC_OP_RECV_CLOSE_ON_SERVER
 import libkgrpc.GRPC_OP_RECV_MESSAGE
 import libkgrpc.GRPC_OP_SEND_INITIAL_METADATA

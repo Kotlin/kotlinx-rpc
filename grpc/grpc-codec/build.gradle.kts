@@ -15,7 +15,6 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.core)
-                api(projects.protobuf.protobufInputStream)
                 api(libs.kotlinx.io.core)
             }
         }

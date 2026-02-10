@@ -24,7 +24,6 @@ import kotlinx.cinterop.toKString
 import kotlinx.cinterop.value
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableJob
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.Status
 import kotlinx.rpc.grpc.StatusCode
@@ -38,8 +37,6 @@ import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.grpc.internal.toByteArray
 import kotlinx.rpc.grpc.internal.toGrpcByteBuffer
 import kotlinx.rpc.grpc.internal.toKotlin
-import kotlinx.rpc.protobuf.input.stream.asInputStream
-import kotlinx.rpc.protobuf.input.stream.asSource
 import kotlinx.rpc.grpc.GrpcCompression
 import kotlinx.rpc.grpc.client.EmptyCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions

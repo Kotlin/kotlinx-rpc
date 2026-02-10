@@ -30,7 +30,6 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.utils)
-                api(projects.protobuf.protobufInputStream)
                 api(projects.grpc.grpcCodec)
 
                 api(libs.kotlinx.io.core)
