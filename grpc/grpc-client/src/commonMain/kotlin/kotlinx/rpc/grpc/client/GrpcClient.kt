@@ -211,7 +211,6 @@ public class GrpcClientConfiguration internal constructor() {
      * For custom types prefer using the [kotlinx.rpc.grpc.codec.WithCodec] annotation.
      *
      * @see MessageCodecResolver
-     * @see kotlinx.rpc.grpc.codec.SourcedMessageCodec
      * @see kotlinx.rpc.grpc.codec.WithCodec
      */
     public var messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver

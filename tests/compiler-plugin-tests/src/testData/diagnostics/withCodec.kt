@@ -8,12 +8,10 @@
 
 @file:OptIn(kotlinx.rpc.internal.utils.ExperimentalRpcApi::class)
 
-import kotlinx.rpc.protobuf.input.stream.InputStream
 import kotlinx.rpc.grpc.codec.codec
 import kotlinx.rpc.grpc.codec.CodecConfig
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.grpc.codec.MessageCodec
-import kotlinx.rpc.grpc.codec.SourcedMessageCodec
 import kotlinx.io.Source
 
 @WithCodec(TestCodec::class)
@@ -26,11 +24,11 @@ class Test1
 class Test2 : Test()
 
 object TestCodec : MessageCodec<Test> {
-    override fun encode(value: Test, config: CodecConfig?): InputStream {
+    override fun encode(value: Test, config: CodecConfig?): Source {
         error("Not implemented")
     }
 
-    override fun decode(stream: InputStream, config: CodecConfig?): Test {
+    override fun decode(source: Source, config: CodecConfig?): Test {
         error("Not implemented")
     }
 }
@@ -39,11 +37,11 @@ object TestCodec : MessageCodec<Test> {
 class Test3
 
 class TestCodec3 : MessageCodec<Test3> {
-    override fun encode(value: Test3, config: CodecConfig?): InputStream {
+    override fun encode(value: Test3, config: CodecConfig?): Source {
         error("Not implemented")
     }
 
-    override fun decode(stream: InputStream, config: CodecConfig?): Test3 {
+    override fun decode(source: Source, config: CodecConfig?): Test3 {
         error("Not implemented")
     }
 }
@@ -56,33 +54,17 @@ object TestCodec4 : ATestCodec4(), Whatever
 interface Whatever
 
 abstract class ATestCodec4 : MessageCodec<Test4> {
-    override fun encode(value: Test4, config: CodecConfig?): InputStream {
+    override fun encode(value: Test4, config: CodecConfig?): Source {
         error("Not implemented")
     }
 
-    override fun decode(stream: InputStream, config: CodecConfig?): Test4 {
+    override fun decode(source: Source, config: CodecConfig?): Test4 {
         error("Not implemented")
     }
 }
 
 @WithCodec(<!CODEC_TYPE_MISMATCH!>TestCodec4::class<!>)
 class Test5
-
-@WithCodec(TestCodec6::class)
-class Test6
-
-object TestCodec6 : SourcedMessageCodec<Test6> {
-    override fun encodeToSource(value: Test6, config: CodecConfig?): Source {
-        error("Not implemented")
-    }
-
-    override fun decodeFromSource(stream: Source, config: CodecConfig?): Test6 {
-        error("Not implemented")
-    }
-}
-
-@WithCodec(<!CODEC_TYPE_MISMATCH!>TestCodec6::class<!>)
-class Test7
 
 interface CustomCodec1<A> : MessageCodec<A>
 interface CustomCodec2<B> : MessageCodec<B>
@@ -93,11 +75,11 @@ interface CustomCodec4<D> : CustomCodec3<D>, CustomCodec1<D>
 class Test8
 
 object TestCodec8 : CustomCodec4<Test8> {
-    override fun encode(value: Test8, config: CodecConfig?): InputStream {
+    override fun encode(value: Test8, config: CodecConfig?): Source {
         error("Not implemented")
     }
 
-    override fun decode(stream: InputStream, config: CodecConfig?): Test8 {
+    override fun decode(source: Source, config: CodecConfig?): Test8 {
         error("Not implemented")
     }
 }
@@ -106,11 +88,11 @@ object TestCodec8 : CustomCodec4<Test8> {
 class Test9
 
 object TestCodec9 : CustomCodec4<Test8> {
-    override fun encode(value: Test8, config: CodecConfig?): InputStream {
+    override fun encode(value: Test8, config: CodecConfig?): Source {
         error("Not implemented")
     }
 
-    override fun decode(stream: InputStream, config: CodecConfig?): Test8 {
+    override fun decode(source: Source, config: CodecConfig?): Test8 {
         error("Not implemented")
     }
 }
