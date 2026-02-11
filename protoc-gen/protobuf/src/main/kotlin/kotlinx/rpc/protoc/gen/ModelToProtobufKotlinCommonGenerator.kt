@@ -104,6 +104,8 @@ class ModelToProtobufKotlinCommonGenerator(
             annotations.add(
                 "@%T(%T::class)".scoped(FqName.Annotations.WithCodec, declaration.codecObjectName)
             )
+            // TODO: Use new scoped function
+            annotations.add("@$PROTO_MESSAGE_ANNO")
         }
 
         clazz(
@@ -253,6 +255,7 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             generateCodecObject(declaration)
+            generateDescriptorObject(declaration)
 
             // required for decodeWith extension
             clazz(
@@ -508,11 +511,11 @@ class ModelToProtobufKotlinCommonGenerator(
             returnType = declaration.name.scoped(),
             comment = Comment.leading(
                 """
-                    |Copies the original message, including unknown fields.
-                    |```
-                    |val copy = original.copy$invocation
-                    |```
-                """.trimMargin()
+                |Copies the original message, including unknown fields.
+                |```
+                |val copy = original.copy$invocation
+                |```
+            """.trimMargin()
             )
         ) {
             code("return this.asInternal().copyInternal(body)".scoped())
@@ -640,9 +643,9 @@ class ModelToProtobufKotlinCommonGenerator(
             // TODO KRPC-252 protoc-gen: Support type resolution in comments
             Comment.leading(
                 """
-                    Interface providing field-presence information for [${declaration.name.fullName()}] messages.
+                Interface providing field-presence information for [${declaration.name.fullName()}] messages.
                     Retrieve it via the [${declaration.name.fullName()}.presence] extension property.
-                """.trimIndent()
+            """.trimIndent()
             )
         } else {
             null
@@ -681,8 +684,8 @@ class ModelToProtobufKotlinCommonGenerator(
             // TODO KRPC-252 protoc-gen: Support type resolution in comments
             comment = Comment.leading(
                 """
-                    Returns the field-presence view for this [${declaration.name.fullName()}] instance.
-                """.trimIndent()
+                Returns the field-presence view for this [${declaration.name.fullName()}] instance.
+            """.trimIndent()
             )
         )
     }
@@ -820,6 +823,26 @@ class ModelToProtobufKotlinCommonGenerator(
 
             internalImports.add("kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException")
             internalImports.add("kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException")
+        }
+    }
+
+    private fun CodeGenerator.generateDescriptorObject(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) return
+        if (declaration.isGroup) return
+
+        val msgFqName = declaration.name.safeFullName()
+        clazz(
+            name = "DESCRIPTOR",
+            annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
+            declarationType = CodeGenerator.DeclarationType.Object,
+            superTypes = listOf("kotlinx.rpc.protobuf.internal.ProtoDescriptor<$msgFqName>"),
+        ) {
+            property(
+                name = "fullName",
+                modifiers = "override",
+                type = "kotlin.String",
+                value = "\"${declaration.dec.fullName}\""
+            )
         }
     }
 
