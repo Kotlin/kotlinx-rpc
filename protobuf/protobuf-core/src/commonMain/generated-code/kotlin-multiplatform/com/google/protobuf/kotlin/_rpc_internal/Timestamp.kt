@@ -91,6 +91,11 @@ public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rp
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Timestamp> { 
+        public override val fullName: kotlin.String = "google.protobuf.Timestamp"
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
 

@@ -134,6 +134,11 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Type> { 
+        public override val fullName: kotlin.String = "google.protobuf.Type"
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
 
@@ -259,6 +264,11 @@ public class FieldInternal: com.google.protobuf.kotlin.Field, kotlinx.rpc.protob
                 return msg
             }
         }
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Field> { 
+        public override val fullName: kotlin.String = "google.protobuf.Field"
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
@@ -388,6 +398,11 @@ public class EnumInternal: com.google.protobuf.kotlin.Enum, kotlinx.rpc.protobuf
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Enum> { 
+        public override val fullName: kotlin.String = "google.protobuf.Enum"
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
 
@@ -478,6 +493,11 @@ public class EnumValueInternal: com.google.protobuf.kotlin.EnumValue, kotlinx.rp
                 return msg
             }
         }
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.EnumValue> { 
+        public override val fullName: kotlin.String = "google.protobuf.EnumValue"
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
@@ -584,6 +604,11 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
                 return msg
             }
         }
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Option> { 
+        public override val fullName: kotlin.String = "google.protobuf.Option"
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi

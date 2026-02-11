@@ -8,6 +8,7 @@ import kotlinx.rpc.internal.utils.*
 * protobuf element, like the file in which it is defined.
 */
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.SourceContextInternal.CODEC::class)
+@kotlinx.rpc.protobuf.ProtoMessage
 public interface SourceContext { 
     /**
     * The path-qualified name of the .proto file that contained the associated

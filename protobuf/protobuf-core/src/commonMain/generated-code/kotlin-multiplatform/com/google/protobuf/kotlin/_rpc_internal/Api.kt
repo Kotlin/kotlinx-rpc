@@ -134,6 +134,11 @@ public class ApiInternal: com.google.protobuf.kotlin.Api, kotlinx.rpc.protobuf.i
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Api> { 
+        public override val fullName: kotlin.String = "google.protobuf.Api"
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
 
@@ -247,6 +252,11 @@ public class MethodInternal: com.google.protobuf.kotlin.Method, kotlinx.rpc.prot
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Method> { 
+        public override val fullName: kotlin.String = "google.protobuf.Method"
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
 
@@ -332,6 +342,11 @@ public class MixinInternal: com.google.protobuf.kotlin.Mixin, kotlinx.rpc.protob
                 return msg
             }
         }
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Mixin> { 
+        public override val fullName: kotlin.String = "google.protobuf.Mixin"
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi

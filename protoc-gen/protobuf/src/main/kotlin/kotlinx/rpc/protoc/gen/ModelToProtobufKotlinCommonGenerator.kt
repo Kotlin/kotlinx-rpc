@@ -15,6 +15,7 @@ import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.INTERNAL_RPC_API_ANNO
 import kotlinx.rpc.protoc.gen.core.PB_PKG
 import kotlinx.rpc.protoc.gen.core.PB_PKG_INTERNAL
+import kotlinx.rpc.protoc.gen.core.PROTO_MESSAGE_ANNO
 import kotlinx.rpc.protoc.gen.core.WITH_CODEC_ANNO
 import kotlinx.rpc.protoc.gen.core.fqName
 import kotlinx.rpc.protoc.gen.core.model.EnumDeclaration
@@ -98,6 +99,7 @@ class ModelToProtobufKotlinCommonGenerator(
         val annotations = mutableListOf<String>()
         if (!declaration.isGroup) {
             annotations.add("@$WITH_CODEC_ANNO(${declaration.internalClassFullName()}.CODEC::class)")
+            annotations.add("@$PROTO_MESSAGE_ANNO")
         }
 
         clazz(
@@ -236,6 +238,7 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             generateCodecObject(declaration)
+            generateDescriptorObject(declaration)
 
             // required for decodeWith extension
             clazz(
@@ -303,6 +306,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     FieldType.IntegralType.BYTES -> {
                         if (nullable) "(${name}?.contentHashCode() ?: 0)" else "${name}.contentHashCode()"
                     }
+
                     else -> {
                         if (nullable) "(${name}?.hashCode() ?: 0)" else "${name}.hashCode()"
                     }
@@ -388,6 +392,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     addLine("if ($presenceCheck${field.name} != other.${field.name}) return false")
                 }
             }
+
             is FieldType.Message,
             is FieldType.Enum,
             is FieldType.OneOf,
@@ -422,9 +427,11 @@ class ModelToProtobufKotlinCommonGenerator(
                         FieldType.IntegralType.BYTES -> {
                             ".contentToString()"
                         }
+
                         is FieldType.Message -> {
                             ".asInternal().asString(indent = indent + ${config.indentSize})"
                         }
+
                         else -> {
                             ""
                         }
@@ -465,12 +472,14 @@ class ModelToProtobufKotlinCommonGenerator(
             contextReceiver = declaration.name.safeFullName(),
             args = "body: ${declaration.internalClassFullName()}.() -> Unit = {}",
             returnType = declaration.name.safeFullName(),
-            comment = Comment.leading("""
+            comment = Comment.leading(
+                """
                 |Copies the original message, including unknown fields.
                 |```
                 |val copy = original.copy$invocation
                 |```
-            """.trimMargin())
+            """.trimMargin()
+            )
         ) {
             code("return this.asInternal().copyInternal(body)")
         }
@@ -513,6 +522,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 val optionalPrefix = if (nullable) "?" else ""
                 "$varName$optionalPrefix.copyOf()"
             }
+
             is FieldType.IntegralType -> varName
             is FieldType.Enum -> varName
             is FieldType.List -> "$varName.map { ${value.copyCall("it", false)} }"
@@ -567,6 +577,7 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun MessageDeclaration.hasPresenceFieldsRecursive(): Boolean {
         return hasPresenceFields || nestedDeclarations.any { it.isUserFacing && it.hasPresenceFieldsRecursive() }
     }
+
     private fun CodeGenerator.generatePresenceInterface(declaration: MessageDeclaration, name: String? = null) {
         if (!declaration.isUserFacing) return
         // we must generate the interface if any sub message contains presence fields.
@@ -576,10 +587,12 @@ class ModelToProtobufKotlinCommonGenerator(
         val name = name ?: (declaration.name.simpleName + "Presence")
 
         val comment = if (declaration.hasPresenceFields)
-            Comment.leading("""
+            Comment.leading(
+                """
                 Interface providing field-presence information for [${declaration.name.safeFullName()}] messages.
                 Retrieve it via the [${declaration.name.safeFullName()}.presence] extension property.
-            """.trimIndent()) else null
+            """.trimIndent()
+            ) else null
 
         clazz(
             name = name,
@@ -611,9 +624,11 @@ class ModelToProtobufKotlinCommonGenerator(
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
             contextReceiver = declaration.name.safeFullName(),
             value = "this.asInternal()._presence",
-            comment = Comment.leading("""
+            comment = Comment.leading(
+                """
                 Returns the field-presence view for this [${declaration.name.safeFullName()}] instance.
-            """.trimIndent())
+            """.trimIndent()
+            )
         )
     }
 
@@ -736,6 +751,26 @@ class ModelToProtobufKotlinCommonGenerator(
         }
 
         additionalInternalImports.add("kotlinx.rpc.protobuf.input.stream.asInputStream")
+    }
+
+    private fun CodeGenerator.generateDescriptorObject(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) return
+        if (declaration.isGroup) return
+
+        val msgFqName = declaration.name.safeFullName()
+        clazz(
+            name = "DESCRIPTOR",
+            annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
+            declarationType = CodeGenerator.DeclarationType.Object,
+            superTypes = listOf("kotlinx.rpc.protobuf.internal.ProtoDescriptor<$msgFqName>"),
+        ) {
+            property(
+                name = "fullName",
+                modifiers = "override",
+                type = "kotlin.String",
+                value = "\"${declaration.dec.fullName}\""
+            )
+        }
     }
 
     private fun CodeGenerator.generateMessageConstructor(declaration: MessageDeclaration) {

@@ -85,6 +85,11 @@ public class DoubleValueInternal: com.google.protobuf.kotlin.DoubleValue, kotlin
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.DoubleValue> { 
+        public override val fullName: kotlin.String = "google.protobuf.DoubleValue"
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
 
@@ -164,6 +169,11 @@ public class FloatValueInternal: com.google.protobuf.kotlin.FloatValue, kotlinx.
                 return msg
             }
         }
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.FloatValue> { 
+        public override val fullName: kotlin.String = "google.protobuf.FloatValue"
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
@@ -249,6 +259,11 @@ public class Int64ValueInternal: com.google.protobuf.kotlin.Int64Value, kotlinx.
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Int64Value> { 
+        public override val fullName: kotlin.String = "google.protobuf.Int64Value"
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
 
@@ -328,6 +343,11 @@ public class UInt64ValueInternal: com.google.protobuf.kotlin.UInt64Value, kotlin
                 return msg
             }
         }
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.UInt64Value> { 
+        public override val fullName: kotlin.String = "google.protobuf.UInt64Value"
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
@@ -413,6 +433,11 @@ public class Int32ValueInternal: com.google.protobuf.kotlin.Int32Value, kotlinx.
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Int32Value> { 
+        public override val fullName: kotlin.String = "google.protobuf.Int32Value"
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
 
@@ -492,6 +517,11 @@ public class UInt32ValueInternal: com.google.protobuf.kotlin.UInt32Value, kotlin
                 return msg
             }
         }
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.UInt32Value> { 
+        public override val fullName: kotlin.String = "google.protobuf.UInt32Value"
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
@@ -577,6 +607,11 @@ public class BoolValueInternal: com.google.protobuf.kotlin.BoolValue, kotlinx.rp
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.BoolValue> { 
+        public override val fullName: kotlin.String = "google.protobuf.BoolValue"
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
 
@@ -659,6 +694,11 @@ public class StringValueInternal: com.google.protobuf.kotlin.StringValue, kotlin
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.StringValue> { 
+        public override val fullName: kotlin.String = "google.protobuf.StringValue"
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
 
@@ -738,6 +778,11 @@ public class BytesValueInternal: com.google.protobuf.kotlin.BytesValue, kotlinx.
                 return msg
             }
         }
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.BytesValue> { 
+        public override val fullName: kotlin.String = "google.protobuf.BytesValue"
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi

@@ -91,6 +91,11 @@ public class DurationInternal: com.google.protobuf.kotlin.Duration, kotlinx.rpc.
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Duration> { 
+        public override val fullName: kotlin.String = "google.protobuf.Duration"
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
 

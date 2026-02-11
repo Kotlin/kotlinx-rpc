@@ -205,6 +205,7 @@ import kotlinx.rpc.internal.utils.*
 * `INVALID_ARGUMENT` error if any path is unmappable.
 */
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.FieldMaskInternal.CODEC::class)
+@kotlinx.rpc.protobuf.ProtoMessage
 public interface FieldMask { 
     /**
     * The set of field mask paths.

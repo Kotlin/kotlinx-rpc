@@ -34,6 +34,8 @@ kotlin {
                 api(projects.grpc.grpcCodec)
 
                 api(libs.kotlinx.io.core)
+
+                implementation(libs.kotlin.reflect)
             }
 
             proto {

@@ -146,6 +146,11 @@ public class StructInternal: com.google.protobuf.kotlin.Struct, kotlinx.rpc.prot
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Struct> { 
+        public override val fullName: kotlin.String = "google.protobuf.Struct"
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
 
@@ -265,6 +270,11 @@ public class ValueInternal: com.google.protobuf.kotlin.Value, kotlinx.rpc.protob
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Value> { 
+        public override val fullName: kotlin.String = "google.protobuf.Value"
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
 
@@ -344,6 +354,11 @@ public class ListValueInternal: com.google.protobuf.kotlin.ListValue, kotlinx.rp
                 return msg
             }
         }
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.ListValue> { 
+        public override val fullName: kotlin.String = "google.protobuf.ListValue"
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi

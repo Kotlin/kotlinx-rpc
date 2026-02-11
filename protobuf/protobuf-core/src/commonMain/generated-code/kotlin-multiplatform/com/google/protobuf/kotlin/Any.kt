@@ -91,6 +91,7 @@ import kotlinx.rpc.internal.utils.*
 *     }
 */
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.AnyInternal.CODEC::class)
+@kotlinx.rpc.protobuf.ProtoMessage
 public interface Any { 
     /**
     * A URL/resource name that uniquely identifies the type of the serialized

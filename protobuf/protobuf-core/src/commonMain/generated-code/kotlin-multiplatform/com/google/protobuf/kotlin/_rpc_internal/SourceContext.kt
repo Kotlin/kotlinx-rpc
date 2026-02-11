@@ -85,6 +85,11 @@ public class SourceContextInternal: com.google.protobuf.kotlin.SourceContext, ko
     }
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
+    public object DESCRIPTOR: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.SourceContext> { 
+        public override val fullName: kotlin.String = "google.protobuf.SourceContext"
+    }
+
+    @kotlinx.rpc.internal.utils.InternalRpcApi
     public companion object
 }
 

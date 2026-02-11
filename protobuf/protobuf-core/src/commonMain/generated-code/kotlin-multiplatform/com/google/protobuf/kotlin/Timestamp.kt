@@ -95,6 +95,7 @@ import kotlinx.rpc.internal.utils.*
 * ) to obtain a formatter capable of generating timestamps in this format.
 */
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.TimestampInternal.CODEC::class)
+@kotlinx.rpc.protobuf.ProtoMessage
 public interface Timestamp { 
     /**
     * Represents seconds of UTC time since Unix epoch
