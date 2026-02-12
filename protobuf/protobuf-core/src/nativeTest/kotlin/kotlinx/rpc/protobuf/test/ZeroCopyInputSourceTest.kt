@@ -8,8 +8,10 @@ import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointerVar
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.IntVar
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
+import kotlinx.cinterop.convert
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.usePinned
@@ -314,7 +316,7 @@ private fun assertNBytesLeft(source: ZeroCopyInputSource, n: Long): Buffer {
     return combined
 }
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, UnsafeNumber::class)
 private fun ZeroCopyInputSource.nextIntoArray(): ByteArray = memScoped {
     val data = alloc<CPointerVar<ByteVar>>()
     val size = alloc<IntVar>()
@@ -325,7 +327,7 @@ private fun ZeroCopyInputSource.nextIntoArray(): ByteArray = memScoped {
 
     val result = ByteArray(size.value)
     result.usePinned {
-        memcpy(it.addressOf(0), data.value, size.value.toULong())
+        memcpy(it.addressOf(0), data.value, size.value.convert())
     }
     result
 }

@@ -6,13 +6,12 @@ package kotlinx.rpc.grpc.descriptor
 
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.input.stream.InputStream
 
 public actual class MethodDescriptor<Request, Response> internal constructor(
     private val fullMethodName: String,
-    private val requestMarshaller: Marshaller<Request>,
-    private val responseMarshaller: Marshaller<Response>,
-    internal val methodType: MethodType,
+    public val requestCodec: MessageCodec<Request>,
+    public val responseCodec: MessageCodec<Response>,
+    public val methodType: MethodType,
     private val schemaDescriptor: Any?,
     private val idempotent: Boolean,
     private val safe: Boolean,
@@ -26,10 +25,6 @@ public actual class MethodDescriptor<Request, Response> internal constructor(
 
     public actual fun getServiceName(): String? = serviceName
 
-    public actual fun getRequestMarshaller(): Marshaller<Request> = requestMarshaller
-
-    public actual fun getResponseMarshaller(): Marshaller<Response> = responseMarshaller
-
     public actual fun getSchemaDescriptor(): Any? = schemaDescriptor
 
     public actual fun isIdempotent(): Boolean = idempotent
@@ -37,11 +32,6 @@ public actual class MethodDescriptor<Request, Response> internal constructor(
     public actual fun isSafe(): Boolean = safe
 
     public actual fun isSampledToLocalTracing(): Boolean = sampledToLocalTracing
-
-    public actual interface Marshaller<T> {
-        public actual fun stream(value: T): InputStream
-        public actual fun parse(stream: InputStream): T
-    }
 
     public companion object {
         public fun extractFullServiceName(fullMethodName: String): String? {
@@ -69,30 +59,10 @@ public actual fun <Request, Response> methodDescriptor(
     safe: Boolean,
     sampledToLocalTracing: Boolean,
 ): MethodDescriptor<Request, Response> {
-    val requestMarshaller = object : MethodDescriptor.Marshaller<Request> {
-        override fun stream(value: Request): InputStream {
-            return requestCodec.encode(value)
-        }
-
-        override fun parse(stream: InputStream): Request {
-            return requestCodec.decode(stream)
-        }
-    }
-
-    val responseMarshaller = object : MethodDescriptor.Marshaller<Response> {
-        override fun stream(value: Response): InputStream {
-            return responseCodec.encode(value)
-        }
-
-        override fun parse(stream: InputStream): Response {
-            return responseCodec.decode(stream)
-        }
-    }
-
     return MethodDescriptor(
         fullMethodName = fullMethodName,
-        requestMarshaller = requestMarshaller,
-        responseMarshaller = responseMarshaller,
+        requestCodec = requestCodec,
+        responseCodec = responseCodec,
         methodType = type,
         schemaDescriptor = schemaDescriptor,
         idempotent = idempotent,
