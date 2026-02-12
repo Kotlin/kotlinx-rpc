@@ -9,9 +9,9 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 
 public actual class MethodDescriptor<Request, Response> internal constructor(
     private val fullMethodName: String,
-    @InternalRpcApi public val requestCodec: MessageCodec<Request>,
-    @InternalRpcApi public val responseCodec: MessageCodec<Response>,
-    @InternalRpcApi public val methodType: MethodType,
+    public val requestCodec: MessageCodec<Request>,
+    public val responseCodec: MessageCodec<Response>,
+    public val methodType: MethodType,
     private val schemaDescriptor: Any?,
     private val idempotent: Boolean,
     private val safe: Boolean,

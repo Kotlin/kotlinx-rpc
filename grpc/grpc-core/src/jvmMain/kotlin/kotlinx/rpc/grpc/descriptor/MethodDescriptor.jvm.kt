@@ -31,7 +31,7 @@ internal val MethodType.asJvm: io.grpc.MethodDescriptor.MethodType
         MethodType.UNKNOWN -> io.grpc.MethodDescriptor.MethodType.UNKNOWN
     }
 
-private fun <T> MessageCodec<T>.toJvm(): io.grpc.MethodDescriptor.Marshaller<T> {
+private fun <T> MessageCodec<T>.toMarshaller(): io.grpc.MethodDescriptor.Marshaller<T> {
     return object : io.grpc.MethodDescriptor.Marshaller<T> {
         override fun stream(value: T): InputStream {
             // wraps the source in a stream
@@ -58,8 +58,8 @@ public actual fun <Request, Response> methodDescriptor(
 ): MethodDescriptor<Request, Response> {
     return MethodDescriptor.newBuilder<Request, Response>()
         .setFullMethodName(fullMethodName)
-        .setRequestMarshaller(requestCodec.toJvm())
-        .setResponseMarshaller(responseCodec.toJvm())
+        .setRequestMarshaller(requestCodec.toMarshaller())
+        .setResponseMarshaller(responseCodec.toMarshaller())
         .setType(type.asJvm)
         .setSchemaDescriptor(schemaDescriptor)
         .setIdempotent(idempotent)
