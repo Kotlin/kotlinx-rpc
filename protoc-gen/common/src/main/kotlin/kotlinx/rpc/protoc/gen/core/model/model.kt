@@ -6,9 +6,11 @@ package kotlinx.rpc.protoc.gen.core.model
 
 import com.google.protobuf.Descriptors
 import kotlinx.rpc.protoc.gen.core.Comment
+import kotlinx.rpc.protoc.gen.core.FqNameTable
 
 data class Model(
     val files: List<FileDeclaration>,
+    val nameTable: FqNameTable,
 )
 
 data class FileDeclaration(

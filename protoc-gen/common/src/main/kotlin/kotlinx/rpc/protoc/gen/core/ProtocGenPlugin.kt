@@ -27,6 +27,7 @@ class Config(
     val generateComments: Boolean,
     val generateFileLevelComments: Boolean,
     val indentSize: Int,
+    val platform: Platform,
 )
 
 abstract class ProtocGenPlugin {
@@ -36,6 +37,7 @@ abstract class ProtocGenPlugin {
         private const val GENERATE_COMMENTS_OPTION = "generateComments"
         private const val GENERATE_FILE_LEVEL_COMMENTS_OPTION = "generateFileLevelComments"
         private const val INDENT_SIZE_OPTION = "indentSize"
+        private const val PLATFORM_OPTION = "platform"
     }
 
     private var debugOutput: String? = null
@@ -78,11 +80,14 @@ abstract class ProtocGenPlugin {
 
         val indentSize = parameters[INDENT_SIZE_OPTION]?.toIntOrNull() ?: 4
 
+        val platform = parameters[PLATFORM_OPTION]?.takeIf { it.isNotBlank() } ?: "jvm"
+
         val config = Config(
             explicitApiModeEnabled = explicitApiModeEnabled,
             generateComments = generateComments,
             generateFileLevelComments = generateFileLevelComments,
             indentSize = indentSize,
+            platform = Platform.fromString(platform),
         )
 
         globalLogger = logger
@@ -96,7 +101,7 @@ abstract class ProtocGenPlugin {
                             ?.plus(File.separatorChar)
                             ?: ""
 
-                        // some filename already contain package (true for Google's default .proto files)
+                        // some filename already contains package (true for Google's default .proto files)
                         val filename = file.filename?.removePrefix(dir) ?: error("File name can not be null")
                         name = "$dir$filename"
                         content = file.build()
@@ -124,7 +129,7 @@ abstract class ProtocGenPlugin {
         return try {
             generateKotlinByModel(
                 config = config,
-                model = this.toModel(),
+                model = this.toModel(config),
             )
         } finally {
             (logger as ch.qos.logback.classic.Logger).detachAndStopAllAppenders()

@@ -16,9 +16,17 @@ import kotlinx.rpc.protoc.gen.core.model.packageName
 enum class Platform {
     Common,
     Jvm,
+    Android,
     Js,
     Native,
     Wasm,
+    ;
+
+    companion object {
+        fun fromString(platform: String): Platform = Platform.entries.first {
+            it.name.equals(platform, ignoreCase = true)
+        }
+    }
 }
 
 /**
