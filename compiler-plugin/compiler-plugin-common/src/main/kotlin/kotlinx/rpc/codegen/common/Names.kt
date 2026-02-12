@@ -32,7 +32,7 @@ object RpcNames {
 }
 
 object ProtoClassId {
-    val protoMessageAnnotation = ClassId(FqName("kotlinx.rpc.protobuf"), Name.identifier("ProtoMessage"))
+    val protoMessageAnnotation = ClassId(FqName("kotlinx.rpc.protobuf"), Name.identifier("GeneratedProtoMessage"))
 }
 
 object ProtoNames {

@@ -4,9 +4,9 @@
 
 package kotlinx.rpc.protobuf.test
 
-import kotlinx.rpc.protobuf.ProtoMessage
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 
-@ProtoMessage
+@GeneratedProtoMessage
 class protoMessage {
 
 }

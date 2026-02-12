@@ -120,6 +120,7 @@ tasks.test {
     dependsOn(project(":core").tasks.getByName("jvmJar"))
     dependsOn(project(":utils").tasks.getByName("jvmJar"))
     dependsOn(project(":krpc:krpc-core").tasks.getByName("jvmJar"))
+    dependsOn(project(":protobuf:protobuf-core").tasks.getByName("jvmJar"))
     dependsOn("generateTests")
 
     inputs.dir("src/testData")

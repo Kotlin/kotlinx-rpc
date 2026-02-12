@@ -10,4 +10,4 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 @InternalRpcApi
 @CheckedTypeAnnotation
 @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE_PARAMETER)
-public annotation class ProtoMessage()
+public annotation class GeneratedProtoMessage
