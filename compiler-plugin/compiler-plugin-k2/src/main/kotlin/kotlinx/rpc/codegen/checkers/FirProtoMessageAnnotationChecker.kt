@@ -62,16 +62,23 @@ object FirProtoMessageAnnotationChecker {
             listOf()
         )?.filterIsInstance<FirRegularClass>()?.toList()?.reversed() ?: emptyList()
 
-        val fullClassHierarchy = parentClasses + listOf(declaration)
-        val internalTopLevelName = fullClassHierarchy.joinToString(".") { it.name.asString() + "Internal" }
-            .let { Name.identifier(it) }
+        val topLevelNames = (parentClasses + listOf(declaration))
+            .map { Name.identifier(it.name.asString() + "Internal") }
 
-        val internalClassId = ClassId(declaration.symbol.classId.packageFqName, internalTopLevelName)
+        // for nested classes, we need to construct ClassId properly using createNestedClassId for each level
+        val internalClassId = ClassId(
+            declaration.symbol.classId.packageFqName,
+            topLevelNames.first()
+        ).let {
+            topLevelNames.drop(1).fold(it) { acc, name ->
+                acc.createNestedClassId(name)
+            }
+        }
+
         val internalDeclaration = context.session.getRegularClassSymbolByClassId(internalClassId)
             // although this is not safe in general, at the point when the FirRegularClassChecker runs
             // the symbol should already have been resolved to its FirDeclaration
             ?.fir
-
 
         if (internalDeclaration == null) {
             // an internal message class does not exist, so this is not a generated message
