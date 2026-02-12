@@ -11,8 +11,8 @@ import kotlinx.rpc.internal.utils.*
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.DoubleValueInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.DoubleValueInternal.CODEC::class)
 public interface DoubleValue { 
     /**
     * The double value.
@@ -30,8 +30,8 @@ public interface DoubleValue {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.FloatValueInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.FloatValueInternal.CODEC::class)
 public interface FloatValue { 
     /**
     * The float value.
@@ -49,8 +49,8 @@ public interface FloatValue {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.Int64ValueInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.Int64ValueInternal.CODEC::class)
 public interface Int64Value { 
     /**
     * The int64 value.
@@ -68,8 +68,8 @@ public interface Int64Value {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.UInt64ValueInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.UInt64ValueInternal.CODEC::class)
 public interface UInt64Value { 
     /**
     * The uint64 value.
@@ -87,8 +87,8 @@ public interface UInt64Value {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.Int32ValueInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.Int32ValueInternal.CODEC::class)
 public interface Int32Value { 
     /**
     * The int32 value.
@@ -106,8 +106,8 @@ public interface Int32Value {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.UInt32ValueInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.UInt32ValueInternal.CODEC::class)
 public interface UInt32Value { 
     /**
     * The uint32 value.
@@ -125,8 +125,8 @@ public interface UInt32Value {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.BoolValueInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.BoolValueInternal.CODEC::class)
 public interface BoolValue { 
     /**
     * The bool value.
@@ -144,8 +144,8 @@ public interface BoolValue {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.StringValueInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.StringValueInternal.CODEC::class)
 public interface StringValue { 
     /**
     * The string value.
@@ -163,8 +163,8 @@ public interface StringValue {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.BytesValueInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.BytesValueInternal.CODEC::class)
 public interface BytesValue { 
     /**
     * The bytes value.

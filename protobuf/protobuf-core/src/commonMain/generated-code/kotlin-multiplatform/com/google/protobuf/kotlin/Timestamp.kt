@@ -94,8 +94,8 @@ import kotlinx.rpc.internal.utils.*
 * http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
 * ) to obtain a formatter capable of generating timestamps in this format.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.TimestampInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.TimestampInternal.CODEC::class)
 public interface Timestamp { 
     /**
     * Represents seconds of UTC time since Unix epoch

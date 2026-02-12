@@ -19,6 +19,7 @@ const val PB_PKG_INTERNAL = "$PB_PKG.internal"
 const val INTERNAL_RPC_API_ANNO = "kotlinx.rpc.internal.utils.InternalRpcApi"
 const val WITH_CODEC_ANNO = "kotlinx.rpc.grpc.codec.WithCodec"
 const val PROTO_MESSAGE_ANNO = "$PB_PKG.GeneratedProtoMessage"
+const val PROTO_DESCRIPTOR = "$PB_PKG_INTERNAL.ProtoDescriptor"
 
 abstract class AModelToKotlinCommonGenerator(
     protected val config: Config,

@@ -14,8 +14,8 @@ import kotlinx.rpc.internal.utils.*
 * 
 * The JSON representation for `Struct` is JSON object.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.StructInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.StructInternal.CODEC::class)
 public interface Struct { 
     /**
     * Unordered map of dynamically typed values.
@@ -33,8 +33,8 @@ public interface Struct {
 * 
 * The JSON representation for `Value` is JSON value.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.ValueInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.ValueInternal.CODEC::class)
 public interface Value { 
     /**
     * The kind of value.
@@ -96,8 +96,8 @@ public interface Value {
 * 
 * The JSON representation for `ListValue` is JSON array.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.ListValueInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.ListValueInternal.CODEC::class)
 public interface ListValue { 
     /**
     * Repeated field of dynamically typed values.

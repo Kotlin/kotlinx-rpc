@@ -6,8 +6,8 @@ import kotlinx.rpc.internal.utils.*
 /**
 * A protocol buffer message type.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.TypeInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.TypeInternal.CODEC::class)
 public interface Type { 
     /**
     * The fully qualified message name.
@@ -44,8 +44,8 @@ public interface Type {
 /**
 * A single field of a message type.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.FieldInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.FieldInternal.CODEC::class)
 public interface Field { 
     /**
     * The field type.
@@ -233,8 +233,8 @@ public interface Field {
 /**
 * Enum type definition.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.EnumInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.EnumInternal.CODEC::class)
 public interface Enum { 
     /**
     * Enum type name.
@@ -267,8 +267,8 @@ public interface Enum {
 /**
 * Enum value definition.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.EnumValueInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.EnumValueInternal.CODEC::class)
 public interface EnumValue { 
     /**
     * Enum value name.
@@ -290,8 +290,8 @@ public interface EnumValue {
 * A protocol buffer option, which can be attached to a message, field,
 * enumeration, etc.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.OptionInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.OptionInternal.CODEC::class)
 public interface Option { 
     /**
     * The option's name. For protobuf built-in options (options defined in

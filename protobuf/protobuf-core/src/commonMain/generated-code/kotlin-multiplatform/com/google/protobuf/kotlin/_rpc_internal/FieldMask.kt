@@ -16,6 +16,8 @@ public class FieldMaskInternal: com.google.protobuf.kotlin.FieldMask, kotlinx.rp
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.FieldMask> get() = DESCRIPTOR
+
     public override var paths: List<kotlin.String> by MsgFieldDelegate { mutableListOf() }
 
     public override fun hashCode(): kotlin.Int { 

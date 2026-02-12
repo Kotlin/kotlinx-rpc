@@ -16,6 +16,8 @@ public class EmptyInternal: com.google.protobuf.kotlin.Empty, kotlinx.rpc.protob
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Empty> get() = DESCRIPTOR
+
     public override fun hashCode(): kotlin.Int { 
         checkRequiredFields()
         return this::class.hashCode()

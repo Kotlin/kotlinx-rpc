@@ -63,8 +63,8 @@ import kotlinx.rpc.internal.utils.*
 * be expressed in JSON format as "3.000000001s", and 3 seconds and 1
 * microsecond should be expressed in JSON format as "3.000001s".
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.DurationInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.DurationInternal.CODEC::class)
 public interface Duration { 
     /**
     * Signed seconds of the span of time. Must be from -315,576,000,000

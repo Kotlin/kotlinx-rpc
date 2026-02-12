@@ -12,8 +12,8 @@ import kotlinx.rpc.internal.utils.*
 *       rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);
 *     }
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.EmptyInternal.CODEC::class)
 @kotlinx.rpc.protobuf.GeneratedProtoMessage
+@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.EmptyInternal.CODEC::class)
 public interface Empty { 
     public companion object
 }

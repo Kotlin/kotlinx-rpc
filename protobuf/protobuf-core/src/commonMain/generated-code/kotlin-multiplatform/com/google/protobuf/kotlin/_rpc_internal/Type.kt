@@ -20,6 +20,8 @@ public class TypeInternal: com.google.protobuf.kotlin.Type, kotlinx.rpc.protobuf
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Type> get() = DESCRIPTOR
+
     public override var name: String by MsgFieldDelegate { "" }
     public override var fields: List<com.google.protobuf.kotlin.Field> by MsgFieldDelegate { mutableListOf() }
     public override var oneofs: List<kotlin.String> by MsgFieldDelegate { mutableListOf() }
@@ -151,6 +153,8 @@ public class FieldInternal: com.google.protobuf.kotlin.Field, kotlinx.rpc.protob
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
+
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Field> get() = DESCRIPTOR
 
     public override var kind: com.google.protobuf.kotlin.Field.Kind by MsgFieldDelegate { com.google.protobuf.kotlin.Field.Kind.TYPE_UNKNOWN }
     public override var cardinality: com.google.protobuf.kotlin.Field.Cardinality by MsgFieldDelegate { com.google.protobuf.kotlin.Field.Cardinality.CARDINALITY_UNKNOWN }
@@ -289,6 +293,8 @@ public class EnumInternal: com.google.protobuf.kotlin.Enum, kotlinx.rpc.protobuf
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Enum> get() = DESCRIPTOR
+
     public override var name: String by MsgFieldDelegate { "" }
     public override var enumvalue: List<com.google.protobuf.kotlin.EnumValue> by MsgFieldDelegate { mutableListOf() }
     public override var options: List<com.google.protobuf.kotlin.Option> by MsgFieldDelegate { mutableListOf() }
@@ -416,6 +422,8 @@ public class EnumValueInternal: com.google.protobuf.kotlin.EnumValue, kotlinx.rp
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.EnumValue> get() = DESCRIPTOR
+
     public override var name: String by MsgFieldDelegate { "" }
     public override var number: Int by MsgFieldDelegate { 0 }
     public override var options: List<com.google.protobuf.kotlin.Option> by MsgFieldDelegate { mutableListOf() }
@@ -517,6 +525,8 @@ public class OptionInternal: com.google.protobuf.kotlin.Option, kotlinx.rpc.prot
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
+
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Option> get() = DESCRIPTOR
 
     public override var name: String by MsgFieldDelegate { "" }
     public override var value: com.google.protobuf.kotlin.Any by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf.kotlin.AnyInternal() }

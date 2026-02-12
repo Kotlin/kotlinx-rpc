@@ -16,6 +16,8 @@ public class SourceContextInternal: com.google.protobuf.kotlin.SourceContext, ko
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.SourceContext> get() = DESCRIPTOR
+
     public override var fileName: String by MsgFieldDelegate { "" }
 
     public override fun hashCode(): kotlin.Int { 

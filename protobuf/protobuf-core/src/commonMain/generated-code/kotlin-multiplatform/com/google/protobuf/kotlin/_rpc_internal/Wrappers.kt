@@ -16,6 +16,8 @@ public class DoubleValueInternal: com.google.protobuf.kotlin.DoubleValue, kotlin
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.DoubleValue> get() = DESCRIPTOR
+
     public override var value: Double by MsgFieldDelegate { 0.0 }
 
     public override fun hashCode(): kotlin.Int { 
@@ -102,6 +104,8 @@ public class FloatValueInternal: com.google.protobuf.kotlin.FloatValue, kotlinx.
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
+
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.FloatValue> get() = DESCRIPTOR
 
     public override var value: Float by MsgFieldDelegate { 0.0f }
 
@@ -190,6 +194,8 @@ public class Int64ValueInternal: com.google.protobuf.kotlin.Int64Value, kotlinx.
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Int64Value> get() = DESCRIPTOR
+
     public override var value: Long by MsgFieldDelegate { 0L }
 
     public override fun hashCode(): kotlin.Int { 
@@ -276,6 +282,8 @@ public class UInt64ValueInternal: com.google.protobuf.kotlin.UInt64Value, kotlin
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
+
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.UInt64Value> get() = DESCRIPTOR
 
     public override var value: ULong by MsgFieldDelegate { 0uL }
 
@@ -364,6 +372,8 @@ public class Int32ValueInternal: com.google.protobuf.kotlin.Int32Value, kotlinx.
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Int32Value> get() = DESCRIPTOR
+
     public override var value: Int by MsgFieldDelegate { 0 }
 
     public override fun hashCode(): kotlin.Int { 
@@ -450,6 +460,8 @@ public class UInt32ValueInternal: com.google.protobuf.kotlin.UInt32Value, kotlin
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
+
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.UInt32Value> get() = DESCRIPTOR
 
     public override var value: UInt by MsgFieldDelegate { 0u }
 
@@ -538,6 +550,8 @@ public class BoolValueInternal: com.google.protobuf.kotlin.BoolValue, kotlinx.rp
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.BoolValue> get() = DESCRIPTOR
+
     public override var value: Boolean by MsgFieldDelegate { false }
 
     public override fun hashCode(): kotlin.Int { 
@@ -625,6 +639,8 @@ public class StringValueInternal: com.google.protobuf.kotlin.StringValue, kotlin
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.StringValue> get() = DESCRIPTOR
+
     public override var value: String by MsgFieldDelegate { "" }
 
     public override fun hashCode(): kotlin.Int { 
@@ -711,6 +727,8 @@ public class BytesValueInternal: com.google.protobuf.kotlin.BytesValue, kotlinx.
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
+
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.BytesValue> get() = DESCRIPTOR
 
     public override var value: ByteArray by MsgFieldDelegate { byteArrayOf() }
 

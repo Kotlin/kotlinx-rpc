@@ -16,6 +16,8 @@ public class StructInternal: com.google.protobuf.kotlin.Struct, kotlinx.rpc.prot
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Struct> get() = DESCRIPTOR
+
     public override var fields: Map<kotlin.String, com.google.protobuf.kotlin.Value> by MsgFieldDelegate { mutableMapOf() }
 
     public override fun hashCode(): kotlin.Int { 
@@ -70,6 +72,8 @@ public class StructInternal: com.google.protobuf.kotlin.Struct, kotlinx.rpc.prot
 
         @kotlinx.rpc.internal.utils.InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
+
+        public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<*> get() = error("Descriptor not available for non user-facing messages")
 
         public var key: String by MsgFieldDelegate { "" }
         public var value: com.google.protobuf.kotlin.Value by MsgFieldDelegate(PresenceIndices.value) { com.google.protobuf.kotlin.ValueInternal() }
@@ -163,6 +167,8 @@ public class ValueInternal: com.google.protobuf.kotlin.Value, kotlinx.rpc.protob
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
+
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Value> get() = DESCRIPTOR
 
     public override var kind: com.google.protobuf.kotlin.Value.Kind? = null
 
@@ -287,6 +293,8 @@ public class ListValueInternal: com.google.protobuf.kotlin.ListValue, kotlinx.rp
 
     @kotlinx.rpc.internal.utils.InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
+
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.ListValue> get() = DESCRIPTOR
 
     public override var values: List<com.google.protobuf.kotlin.Value> by MsgFieldDelegate { mutableListOf() }
 

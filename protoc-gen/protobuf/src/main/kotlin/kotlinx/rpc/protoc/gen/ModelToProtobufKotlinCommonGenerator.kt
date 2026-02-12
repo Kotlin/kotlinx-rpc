@@ -15,6 +15,7 @@ import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.INTERNAL_RPC_API_ANNO
 import kotlinx.rpc.protoc.gen.core.PB_PKG
 import kotlinx.rpc.protoc.gen.core.PB_PKG_INTERNAL
+import kotlinx.rpc.protoc.gen.core.PROTO_DESCRIPTOR
 import kotlinx.rpc.protoc.gen.core.PROTO_MESSAGE_ANNO
 import kotlinx.rpc.protoc.gen.core.WITH_CODEC_ANNO
 import kotlinx.rpc.protoc.gen.core.fqName
@@ -98,8 +99,8 @@ class ModelToProtobufKotlinCommonGenerator(
 
         val annotations = mutableListOf<String>()
         if (!declaration.isGroup) {
-            annotations.add("@$WITH_CODEC_ANNO(${declaration.internalClassFullName()}.CODEC::class)")
             annotations.add("@$PROTO_MESSAGE_ANNO")
+            annotations.add("@$WITH_CODEC_ANNO(${declaration.internalClassFullName()}.CODEC::class)")
         }
 
         clazz(
@@ -190,6 +191,23 @@ class ModelToProtobufKotlinCommonGenerator(
                 annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
                 type = "WireEncoder?",
                 value = "null",
+            )
+
+            // generate the descriptor getter.
+            // only user-facing messages that are no group have such a descriptor, so message like map entries
+            // throw an error on access (can't be accessed anyway, but must implement the getter)
+            var descriptorValue = "DESCRIPTOR"
+            var descriptorTypeArg = declaration.name.safeFullName()
+            if (!declaration.isUserFacing || declaration.isGroup) {
+                descriptorValue = "error(\"Descriptor not available for non user-facing messages\")"
+                descriptorTypeArg = "*"
+            }
+            property(
+                name = "_descriptor",
+                modifiers = "override",
+                type = "$PROTO_DESCRIPTOR<$descriptorTypeArg>",
+                value = descriptorValue,
+                propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
             )
 
             val override = if (declaration.isUserFacing) "override" else ""
