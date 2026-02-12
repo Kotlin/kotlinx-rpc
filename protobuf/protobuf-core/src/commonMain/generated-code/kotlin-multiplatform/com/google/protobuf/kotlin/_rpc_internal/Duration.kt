@@ -36,6 +36,8 @@ public class DurationInternal: Duration, InternalMessage(fieldsWithPresence = 0)
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
+    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Duration> get() = DESCRIPTOR
+
     public override var seconds: Long by MsgFieldDelegate { 0L }
     public override var nanos: Int by MsgFieldDelegate { 0 }
 
