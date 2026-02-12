@@ -6,22 +6,14 @@ package kotlinx.rpc.grpc.descriptor
 
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.input.stream.InputStream
 
 public expect class MethodDescriptor<Request, Response> {
     public fun getFullMethodName(): String
     public fun getServiceName(): String?
-    public fun getRequestMarshaller(): Marshaller<Request>
-    public fun getResponseMarshaller(): Marshaller<Response>
     public fun getSchemaDescriptor(): Any?
     public fun isIdempotent(): Boolean
     public fun isSafe(): Boolean
     public fun isSampledToLocalTracing(): Boolean
-
-    public interface Marshaller<T> {
-        public fun stream(value: T): InputStream
-        public fun parse(stream: InputStream): T
-    }
 }
 
 public expect val MethodDescriptor<*, *>.methodType: MethodType

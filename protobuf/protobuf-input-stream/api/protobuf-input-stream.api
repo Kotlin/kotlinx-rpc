@@ -1,5 +1,0 @@
-public final class kotlinx/rpc/protobuf/input/stream/InputStream_jvmKt {
-	public static final fun asInputStream (Lkotlinx/io/Source;)Ljava/io/InputStream;
-	public static final fun asSource (Ljava/io/InputStream;)Lkotlinx/io/Source;
-}
-

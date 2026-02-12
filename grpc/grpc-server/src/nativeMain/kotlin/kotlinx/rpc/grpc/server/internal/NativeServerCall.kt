@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalRpcApi::class)
 
 package kotlinx.rpc.grpc.server.internal
 
@@ -28,19 +28,17 @@ import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.StatusException
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
-import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.internal.BatchResult
 import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.destroyEntries
 import kotlinx.rpc.grpc.internal.internalError
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.grpc.internal.toGrpcByteBuffer
 import kotlinx.rpc.grpc.internal.toGrpcSlice
 import kotlinx.rpc.grpc.internal.toKotlin
 import kotlinx.rpc.grpc.internal.toRaw
 import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.statusCode
-import kotlinx.rpc.protobuf.input.stream.asInputStream
-import kotlinx.rpc.protobuf.input.stream.asSource
 import libkgrpc.GRPC_OP_RECV_CLOSE_ON_SERVER
 import libkgrpc.GRPC_OP_RECV_MESSAGE
 import libkgrpc.GRPC_OP_SEND_INITIAL_METADATA
@@ -248,8 +246,8 @@ internal class NativeServerCall<Request, Response>(
                 }
             } else {
                 try {
-                    val msg = methodDescriptor.getRequestMarshaller()
-                        .parse(buf.toKotlin().asInputStream())
+                    val msg = methodDescriptor.requestCodec
+                        .decode(buf.toKotlin())
                     // Mark that we have received at least one request message
                     receivedFirstMessage = true
                     callbackMutex.withLock {
@@ -293,8 +291,8 @@ internal class NativeServerCall<Request, Response>(
 
         val arena = Arena()
         tryRun {
-            val inputStream = methodDescriptor.getResponseMarshaller().stream(message)
-            val byteBuffer = inputStream.asSource().toGrpcByteBuffer()
+            val source = methodDescriptor.responseCodec.encode(message)
+            val byteBuffer = source.toGrpcByteBuffer()
             ready.value = false
 
             val op = arena.alloc<grpc_op> {

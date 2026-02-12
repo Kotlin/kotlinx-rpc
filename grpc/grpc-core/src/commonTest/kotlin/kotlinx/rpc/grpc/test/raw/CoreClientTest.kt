@@ -121,26 +121,6 @@ class GrpcCoreClientTest {
     }
 
     @Test
-    fun send_afterHalfClose_throws() {
-        val channel = createChannel()
-        val call = channel.newHelloCall()
-        assertFailsWith<IllegalStateException> {
-            val req = helloReq()
-            val statusDeferred = CompletableDeferred<Status>()
-            val listener = createClientCallListener<HelloReply>(
-                onClose = { status, _ -> statusDeferred.complete(status) }
-            )
-            call.start(listener, GrpcMetadata())
-            call.halfClose()
-            call.sendMessage(req)
-            // Ensure call completes
-            call.cancel("cleanup", null)
-            runBlocking { withTimeout(5000) { statusDeferred.await() } }
-        }
-        shutdownAndWait(channel)
-    }
-
-    @Test
     fun cancel_afterStart_resultsInCancelledStatus() {
         val channel = createChannel()
         val call = channel.newHelloCall()

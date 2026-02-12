@@ -7,6 +7,7 @@ package kotlinx.rpc.grpc.test.integration
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.Buffer
+import kotlinx.io.Source
 import kotlinx.io.readByteArray
 import kotlinx.io.readString
 import kotlinx.io.writeString
@@ -38,9 +39,6 @@ import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
-import kotlinx.rpc.protobuf.input.stream.InputStream
-import kotlinx.rpc.protobuf.input.stream.asInputStream
-import kotlinx.rpc.protobuf.input.stream.asSource
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.Test
@@ -69,7 +67,7 @@ class MetadataTest : GrpcTestBase() {
             appendBinary("my-key-bin", byteArrayOf(4, 5, 6))
             append("my-multi-key", "my-value1")
             val protoMsg = EchoRequest { message = "My Proto Header" }
-            appendBinary("my-proto-bin", EchoRequestInternal.CODEC.encode(protoMsg).asSource().readByteArray())
+            appendBinary("my-proto-bin", EchoRequestInternal.CODEC.encode(protoMsg).readByteArray())
             append("my-multi-key", "my-value2")
             append("my-multi-key", "my-value3")
         }
@@ -111,7 +109,7 @@ class MetadataTest : GrpcTestBase() {
             val proto = Buffer().apply {
                 write(getBinary("my-proto-bin")!!)
             }
-            val decodedProto = EchoRequestInternal.CODEC.decode(proto.asInputStream())
+            val decodedProto = EchoRequestInternal.CODEC.decode(proto)
             assertEquals("My Proto Header", decodedProto.message)
         }
 
@@ -438,15 +436,15 @@ class MetadataTest : GrpcTestBase() {
     // ASCII codec - encodes to/from ASCII string (for non-binary methods)
     @OptIn(ExperimentalRpcApi::class)
     private object TestUserAsciiCodec : MessageCodec<TestUser> {
-        override fun encode(value: TestUser, config: CodecConfig?): InputStream {
+        override fun encode(value: TestUser, config: CodecConfig?): Source {
             // Encode as ASCII string in format "name:age"
             val asciiString = "${value.name}:${value.age}"
-            return Buffer().apply { writeString(asciiString) }.asInputStream()
+            return Buffer().apply { writeString(asciiString) }
         }
 
-        override fun decode(stream: InputStream, config: CodecConfig?   ): TestUser {
+        override fun decode(source: Source, config: CodecConfig?   ): TestUser {
             // Decode from ASCII string
-            val asciiString = Buffer().apply { transferFrom(stream.asSource()) }.readString()
+            val asciiString = Buffer().apply { transferFrom(source) }.readString()
             val parts = asciiString.split(":")
             return TestUser(parts[0], parts[1].toInt())
         }
