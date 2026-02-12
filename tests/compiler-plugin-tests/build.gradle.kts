@@ -108,6 +108,7 @@ dependencies {
     testDataClasspath(projects.utils)
     testDataClasspath(projects.grpc.grpcCodec)
     testDataClasspath(projects.grpc.grpcCore)
+    testDataClasspath(projects.protobuf.protobufCore)
     testDataClasspath(libs.kotlinx.io.core)
     testDataClasspath(libs.coroutines.core)
 }

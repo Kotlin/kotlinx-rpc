@@ -1,0 +1,61 @@
+FILE: module_main_protoMessage.kt
+    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/InternalRpcApi|)))
+    @R|kotlinx/rpc/protobuf/ProtoMessage|() public abstract interface MyMessage1 : R|kotlin/Any| {
+    }
+    public final class MyMessage1Internal : R|MyMessage1| {
+        public constructor(): R|MyMessage1Internal| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final object DESCRIPTOR : R|kotlin/Any| {
+            private constructor(): R|MyMessage1Internal.DESCRIPTOR| {
+                super<R|kotlin/Any|>()
+            }
+
+        }
+
+    }
+    @R|kotlinx/rpc/protobuf/ProtoMessage|() public open class MyMessage2 : R|kotlin/Any| {
+        public constructor(): R|MyMessage2| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class MyMessage2Internal : R|MyMessage2| {
+        public constructor(): R|MyMessage2Internal| {
+            super<R|MyMessage2|>()
+        }
+
+        public final object DESCRIPTOR : R|kotlin/Any| {
+            private constructor(): R|MyMessage2Internal.DESCRIPTOR| {
+                super<R|kotlin/Any|>()
+            }
+
+        }
+
+    }
+    @R|kotlinx/rpc/protobuf/ProtoMessage|() public abstract interface MyMessage3 : R|kotlin/Any| {
+    }
+    @R|kotlinx/rpc/protobuf/ProtoMessage|() public abstract interface MyMessage4 : R|kotlin/Any| {
+    }
+    public final class MyMessage4Internal : R|MyMessage4| {
+        public constructor(): R|MyMessage4Internal| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|kotlinx/rpc/protobuf/ProtoMessage|() public abstract interface MyMessage5 : R|kotlin/Any| {
+    }
+    public final class MyMessage5Internal : R|kotlin/Any| {
+        public constructor(): R|MyMessage5Internal| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final object DESCRIPTOR : R|kotlin/Any| {
+            private constructor(): R|MyMessage5Internal.DESCRIPTOR| {
+                super<R|kotlin/Any|>()
+            }
+
+        }
+
+    }

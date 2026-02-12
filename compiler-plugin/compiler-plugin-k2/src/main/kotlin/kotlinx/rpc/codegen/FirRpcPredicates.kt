@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen
 
+import kotlinx.rpc.codegen.common.ProtoClassId
 import kotlinx.rpc.codegen.common.RpcClassId
 import org.jetbrains.kotlin.fir.extensions.predicate.DeclarationPredicate
 
@@ -22,5 +23,9 @@ object FirRpcPredicates {
 
     internal val checkedAnnotationMeta = DeclarationPredicate.create {
         metaAnnotated(RpcClassId.checkedTypeAnnotation.asSingleFqName(), includeItself = false)
+    }
+
+    internal val generatedProtoMessage = DeclarationPredicate.create {
+        annotated(ProtoClassId.protoMessageAnnotation.asSingleFqName())
     }
 }

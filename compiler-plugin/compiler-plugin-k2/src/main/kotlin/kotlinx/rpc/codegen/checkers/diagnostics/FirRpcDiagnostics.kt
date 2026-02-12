@@ -65,3 +65,12 @@ object FirGrpcDiagnostics : RpcKtDiagnosticsContainer() {
         return GrpcDiagnosticRendererFactory
     }
 }
+
+object FirProtoDiagnostics : RpcKtDiagnosticsContainer() {
+    val PROTO_MESSAGE_IS_GENERATED_ONLY by error0<KtElement>()
+
+    override fun getRendererFactoryVs(): BaseDiagnosticRendererFactory {
+        return GrpcDiagnosticRendererFactory
+    }
+
+}

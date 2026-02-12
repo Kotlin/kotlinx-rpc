@@ -33,6 +33,7 @@ internal class RpcIrProtoProcessor(
 
     private fun processMessage(message: IrClass, context: RpcIrContext) {
         val packageFqName = message.getPackageFragment().packageFqName
+        // transforms Outer.Nested to OuterInternal.NestedInternal
         val relativeName = generateSequence(message) { it.parent as? IrClass }
             .toList()
             .asReversed()
