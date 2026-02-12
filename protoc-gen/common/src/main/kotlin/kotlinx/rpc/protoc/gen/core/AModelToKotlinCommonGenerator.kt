@@ -55,10 +55,8 @@ abstract class AModelToKotlinCommonGenerator(
     private fun FileDeclaration.generatePublicKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(config) {
+        return file(config, this@generatePublicKotlinFile.packageName, model.nameTable) {
             filename = this@generatePublicKotlinFile.name
-            packageName = this@generatePublicKotlinFile.packageName.safeFullName()
-            packagePath = this@generatePublicKotlinFile.packageName.safeFullName()
             comments = this@generatePublicKotlinFile.doc
 
             dependencies.forEach { dependency ->
@@ -80,10 +78,8 @@ abstract class AModelToKotlinCommonGenerator(
     private fun FileDeclaration.generateExtensionKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(config) {
+        return file(config, this@generateExtensionKotlinFile.packageName, model.nameTable) {
             filename = this@generateExtensionKotlinFile.name.removeSuffix(".kt") + ".ext.kt"
-            packageName = this@generateExtensionKotlinFile.packageName.safeFullName()
-            packagePath = this@generateExtensionKotlinFile.packageName.safeFullName()
 
             fileOptIns = listOf("ExperimentalRpcApi::class", "InternalRpcApi::class")
 
@@ -100,12 +96,10 @@ abstract class AModelToKotlinCommonGenerator(
     private fun FileDeclaration.generateInternalKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(config) {
+        return file(config, this@generateInternalKotlinFile.packageName, model.nameTable) {
             filename = this@generateInternalKotlinFile.name
-            packageName = this@generateInternalKotlinFile.packageName.safeFullName()
-            packagePath =
-                this@generateInternalKotlinFile.packageName.safeFullName()
-                    .packageNameSuffixed(RPC_INTERNAL_PACKAGE_SUFFIX)
+            packagePath = this@generateInternalKotlinFile.packageName.safeFullName()
+                .packageNameSuffixed(RPC_INTERNAL_PACKAGE_SUFFIX)
 
             fileOptIns = listOf("ExperimentalRpcApi::class", "$INTERNAL_RPC_API_ANNO::class")
 

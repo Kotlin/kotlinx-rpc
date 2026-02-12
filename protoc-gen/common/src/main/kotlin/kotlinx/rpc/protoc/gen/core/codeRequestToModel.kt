@@ -29,16 +29,25 @@ private val modelCache = mutableMapOf<Descriptors.GenericDescriptor, Any>()
  * @return a [Model] instance containing a list of [FileDeclaration]s that represent
  *         the converted protobuf files.
  */
-fun CodeGeneratorRequest.toModel(): Model {
+fun CodeGeneratorRequest.toModel(config: Config): Model {
     val protoFileMap = protoFileList.associateBy { it.name }
     val fileDescriptors = mutableMapOf<String, Descriptors.FileDescriptor>()
 
     val files = fileToGenerateList.map { protoFileMap[it]!! }
         .map { protoFile -> protoFile.toDescriptor(protoFileMap, fileDescriptors) }
 
-    return Model(
-        files = files.map { it.toModel() }
-    )
+    return Model(files.map { it.toModel() }, FqNameTable(config.platform)).also { model ->
+        val typeNames = nameCache
+            .filterKeys {
+                it !is Descriptors.FieldDescriptor &&
+                        it !is Descriptors.MethodDescriptor &&
+                        it !is Descriptors.FileDescriptor
+            }
+            .values
+            .filterIsInstance<FqName.Declaration>()
+
+        model.nameTable.registerAll(typeNames)
+    }
 }
 
 
@@ -74,12 +83,16 @@ private fun DescriptorProtos.FileDescriptorProto.toDescriptor(
  * Depending on the type of the descriptor, the fully qualified name is computed recursively,
  * using the containing type or file, and appropriately converting names.
  *
- * @return The fully qualified name represented as an instance of FqName, specific to the descriptor's context.
+ * @return The fully qualified name represented as an instance of [FqName], specific to the descriptor's context.
  */
 fun Descriptors.GenericDescriptor.fqName(): FqName {
-    if (nameCache.containsKey(this)) return nameCache[this]!!
+    if (nameCache.containsKey(this)) {
+        return nameCache[this]!!
+    }
+
     val nameCapital = name.simpleProtoNameToKotlin(firstLetterUpper = true)
     val nameLower = name.simpleProtoNameToKotlin()
+
     val fqName = when (this) {
         is Descriptors.FileDescriptor -> FqName.Package.fromString(kotlinPackage())
         is Descriptors.Descriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
@@ -95,7 +108,9 @@ fun Descriptors.GenericDescriptor.fqName(): FqName {
         is Descriptors.MethodDescriptor -> FqName.Declaration(nameLower, service?.fqName() ?: file.fqName())
         else -> error("Unknown generic descriptor: $this")
     }
+
     nameCache[this] = fqName
+
     return fqName
 }
 
@@ -339,7 +354,7 @@ private fun String.fullProtoNameToKotlin(firstLetterUpper: Boolean = false): Str
     val lastDelimiterIndex = indexOfLast { it == '.' || it == '/' }
     return if (lastDelimiterIndex != -1) {
         val name = substring(lastDelimiterIndex + 1)
-        return name.simpleProtoNameToKotlin(firstLetterUpper = true)
+        name.simpleProtoNameToKotlin(firstLetterUpper = true)
     } else {
         simpleProtoNameToKotlin(firstLetterUpper)
     }
@@ -360,4 +375,3 @@ private fun String.simpleProtoNameToKotlin(firstLetterUpper: Boolean = false): S
         }
     }
 }
-
