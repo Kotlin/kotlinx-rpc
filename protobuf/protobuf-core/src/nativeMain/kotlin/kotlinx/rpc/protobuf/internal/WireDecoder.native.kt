@@ -7,8 +7,7 @@ package kotlinx.rpc.protobuf.internal
 import kotlinx.cinterop.*
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.io.Buffer
-import kotlinx.rpc.protobuf.input.stream.BufferInputStream
-import kotlinx.rpc.protobuf.input.stream.InputStream
+import kotlinx.io.Source
 import libprotowire.*
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.math.min
@@ -301,10 +300,10 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
 }
 
 /**
- * This constructor takes an [BufferInputStream.buffer] and its [Buffer] instead of a [kotlinx.io.Source] because
+ * This constructor takes a [Source] (which must be a [Buffer]) because
  * the implementation ([WireDecoderNative]) depends on [Buffer]'s internal structure.
  */
-public actual fun WireDecoder(source: InputStream): WireDecoder = WireDecoderNative(source.buffer)
+public actual fun WireDecoder(source: Source): WireDecoder = WireDecoderNative(source as Buffer)
 
 public actual inline fun checkForPlatformDecodeException(block: () -> Unit) {
     block()

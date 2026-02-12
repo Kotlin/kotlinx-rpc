@@ -8,8 +8,6 @@ import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.codec.codec
 import kotlinx.rpc.protobuf.ProtobufConfig
-import kotlinx.rpc.protobuf.input.stream.asInputStream
-import kotlinx.rpc.protobuf.input.stream.asSource
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import test.submsg.Other
 import test.submsg.asInternal
@@ -423,14 +421,14 @@ class UnknownFieldsTest {
         val originalBytes = originalCopy.readByteArray()
 
         // decode with UnknownFieldsSubset (which doesn't know about the group fields)
-        val subset = codec<UnknownFieldsSubset>().decode(originalBuffer.asInputStream())
+        val subset = codec<UnknownFieldsSubset>().decode(originalBuffer)
 
         // the unknown fields should be preserved
         val unknownFields = subset.asInternal()._unknownFields
         assertTrue(unknownFields.size > 0L, "Unknown fields should contain the group data")
 
         // re-encode and check that the buffer contains the same data
-        val reencodedBuffer = codec<UnknownFieldsSubset>().encode(subset).asSource()
+        val reencodedBuffer = codec<UnknownFieldsSubset>().encode(subset)
         val reencodedBytes = reencodedBuffer.readByteArray()
 
         // the buffers should be identical

@@ -14,8 +14,8 @@ import kotlinx.io.readString
 import kotlinx.io.writeString
 import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.codec.CodecConfig
+import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.codec.MessageCodecResolver
-import kotlinx.rpc.grpc.codec.SourcedMessageCodec
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -23,13 +23,13 @@ import kotlin.test.assertEquals
 
 @WithCodec(CustomResolverMessage.Companion::class)
 class CustomResolverMessage(val value: String) {
-    companion object Companion : SourcedMessageCodec<CustomResolverMessage> {
-        override fun encodeToSource(value: CustomResolverMessage, config: CodecConfig?): Source {
+    companion object Companion : MessageCodec<CustomResolverMessage> {
+        override fun encode(value: CustomResolverMessage, config: CodecConfig?): Source {
             return Buffer().apply { writeString(value.value) }
         }
 
-        override fun decodeFromSource(stream: Source, config: CodecConfig?): CustomResolverMessage {
-            return CustomResolverMessage(stream.readString())
+        override fun decode(source: Source, config: CodecConfig?): CustomResolverMessage {
+            return CustomResolverMessage(source.readString())
         }
     }
 }
@@ -137,22 +137,22 @@ class CustomResolverGrpcServiceTest : BaseGrpcServiceTest() {
             }
         }
 
-        val stringCodec = object : SourcedMessageCodec<String> {
-            override fun encodeToSource(value: String, config: CodecConfig?): Source {
+        val stringCodec = object : MessageCodec<String> {
+            override fun encode(value: String, config: CodecConfig?): Source {
                 return Buffer().apply { writeString(value) }
             }
 
-            override fun decodeFromSource(stream: Source, config: CodecConfig?): String {
-                return stream.readString()
+            override fun decode(source: Source, config: CodecConfig?): String {
+                return source.readString()
             }
         }
 
-        val unitCodec = object : SourcedMessageCodec<Unit> {
-            override fun encodeToSource(value: Unit, config: CodecConfig?): Source {
+        val unitCodec = object : MessageCodec<Unit> {
+            override fun encode(value: Unit, config: CodecConfig?): Source {
                 return Buffer()
             }
 
-            override fun decodeFromSource(stream: Source, config: CodecConfig?) {
+            override fun decode(stream: Source, config: CodecConfig?) {
                 check(stream.exhausted())
             }
         }

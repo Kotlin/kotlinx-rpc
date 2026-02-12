@@ -13,11 +13,11 @@ FILE: grpc.kt
                 super<R|kotlin/Any|>()
             }
 
-            public open override fun encode(value: R|Custom|, config: R|kotlinx/rpc/grpc/codec/CodecConfig?|): R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream| {
+            public open override fun encode(value: R|Custom|, config: R|kotlinx/rpc/grpc/codec/CodecConfig?|): R|kotlinx/io/Source| {
                 R|kotlin/TODO|(String(Not yet implemented))
             }
 
-            public open override fun decode(stream: R|{kotlinx/rpc/protobuf/input/stream/InputStream=} java/io/InputStream|, config: R|kotlinx/rpc/grpc/codec/CodecConfig?|): R|Custom| {
+            public open override fun decode(stream: R|kotlinx/io/Source|, config: R|kotlinx/rpc/grpc/codec/CodecConfig?|): R|Custom| {
                 R|kotlin/TODO|(String(Not yet implemented))
             }
 

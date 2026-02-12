@@ -8,7 +8,6 @@ import kotlinx.rpc.annotations.CheckedTypeAnnotation
 import kotlinx.rpc.grpc.codec.internal.ConfiguredMessageCodecDelegate
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.input.stream.InputStream
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 

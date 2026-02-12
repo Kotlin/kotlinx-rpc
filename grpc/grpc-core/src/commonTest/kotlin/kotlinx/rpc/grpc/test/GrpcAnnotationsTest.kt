@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.grpc.test
 
+import kotlinx.io.Source
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.codec.CodecConfig
@@ -11,7 +12,6 @@ import kotlinx.rpc.grpc.codec.EmptyMessageCodecResolver
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.codec.MessageCodecResolver
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
-import kotlinx.rpc.protobuf.input.stream.InputStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -56,11 +56,11 @@ class GrpcAnnotationsTest {
 
 private val unitCodec = MessageCodecResolver {
     object : MessageCodec<Unit> {
-        override fun encode(value: Unit, config: CodecConfig?): InputStream {
+        override fun encode(value: Unit, config: CodecConfig?): Source {
             TODO("Not yet implemented")
         }
 
-        override fun decode(stream: InputStream, config: CodecConfig?) {
+        override fun decode(source: Source, config: CodecConfig?) {
             TODO("Not yet implemented")
         }
     }

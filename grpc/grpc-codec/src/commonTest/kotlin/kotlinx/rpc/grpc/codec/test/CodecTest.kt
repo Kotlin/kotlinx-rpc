@@ -9,7 +9,7 @@ import kotlinx.io.Source
 import kotlinx.io.readString
 import kotlinx.io.writeString
 import kotlinx.rpc.grpc.codec.CodecConfig
-import kotlinx.rpc.grpc.codec.SourcedMessageCodec
+import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.grpc.codec.codec
 import kotlin.reflect.typeOf
@@ -26,14 +26,14 @@ class MyCodecConfig(
     val appendHello: Boolean
 ): CodecConfig
 
-object MyMessageCodec: SourcedMessageCodec<MyMessage> {
-    override fun encodeToSource(value: MyMessage, config: CodecConfig?): Source = Buffer().apply {
+object MyMessageCodec: MessageCodec<MyMessage> {
+    override fun encode(value: MyMessage, config: CodecConfig?): Source = Buffer().apply {
         val appendHello = (config as? MyCodecConfig)?.appendHello ?: false
         writeString(value.value + if (appendHello) "Hello" else "")
     }
 
-    override fun decodeFromSource(stream: Source, config: CodecConfig?): MyMessage {
-        return MyMessage(stream.readString())
+    override fun decode(source: Source, config: CodecConfig?): MyMessage {
+        return MyMessage(source.readString())
     }
 }
 

@@ -701,7 +701,7 @@ class ModelToProtobufKotlinCommonGenerator(
         if (declaration.isGroup) return
 
         val msgFqName = declaration.name.safeFullName()
-        val inputStreamFqName = "kotlinx.rpc.protobuf.input.stream.InputStream"
+        val sourceFqName = "kotlinx.io.Source"
         val codecConfigFqName = "kotlinx.rpc.grpc.codec.CodecConfig"
         val bufferFqName = "kotlinx.io.Buffer"
         clazz(
@@ -710,7 +710,7 @@ class ModelToProtobufKotlinCommonGenerator(
             declarationType = CodeGenerator.DeclarationType.Object,
             superTypes = listOf("kotlinx.rpc.grpc.codec.MessageCodec<$msgFqName>"),
         ) {
-            function("encode", modifiers = "override", args = "value: $msgFqName, config: $codecConfigFqName?", returnType = inputStreamFqName) {
+            function("encode", modifiers = "override", args = "value: $msgFqName, config: $codecConfigFqName?", returnType = sourceFqName) {
                 code("val buffer = $bufferFqName()")
                 code("val encoder = $PB_PKG_INTERNAL.WireEncoder(buffer)")
                 code("val internalMsg = value.asInternal()")
@@ -719,11 +719,11 @@ class ModelToProtobufKotlinCommonGenerator(
                 }
                 code("encoder.flush()")
                 code("internalMsg._unknownFields.copyTo(buffer)")
-                code("return buffer.asInputStream()")
+                code("return buffer")
             }
 
-            function("decode", modifiers = "override", args = "stream: $inputStreamFqName, config: $codecConfigFqName?", returnType = msgFqName) {
-                scope("$PB_PKG_INTERNAL.WireDecoder(stream).use") {
+            function("decode", modifiers = "override", args = "source: $sourceFqName, config: $codecConfigFqName?", returnType = msgFqName) {
+                scope("$PB_PKG_INTERNAL.WireDecoder(source).use") {
                     code("val msg = ${declaration.internalClassFullName()}()")
                     scope("${PB_PKG_INTERNAL}.checkForPlatformDecodeException", nlAfterClosed = false) {
                         code("${declaration.internalClassFullName()}.decodeWith(msg, it, config as? $PB_PKG.ProtobufConfig)")
@@ -734,8 +734,6 @@ class ModelToProtobufKotlinCommonGenerator(
                 }
             }
         }
-
-        additionalInternalImports.add("kotlinx.rpc.protobuf.input.stream.asInputStream")
     }
 
     private fun CodeGenerator.generateMessageConstructor(declaration: MessageDeclaration) {

@@ -5,7 +5,6 @@
 package kotlinx.rpc.protobuf.test
 
 import kotlinx.io.Buffer
-import kotlinx.rpc.protobuf.input.stream.asInputStream
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
@@ -35,7 +34,7 @@ enum class TestPlatform {
 expect val testPlatform: TestPlatform
 
 @Suppress("TestFunctionName")
-private fun WireDecoder(buffer: Buffer) = WireDecoder(buffer.asInputStream())
+private fun WireDecoder(buffer: Buffer) = WireDecoder(buffer)
 
 class WireCodecTest {
 

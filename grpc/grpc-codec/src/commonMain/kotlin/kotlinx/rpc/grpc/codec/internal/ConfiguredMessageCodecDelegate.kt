@@ -4,10 +4,10 @@
 
 package kotlinx.rpc.grpc.codec.internal
 
+import kotlinx.io.Source
 import kotlinx.rpc.grpc.codec.CodecConfig
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.input.stream.InputStream
 
 /**
  * A [kotlinx.rpc.grpc.codec.MessageCodec] that delegates encoding and decoding to another codec,
@@ -25,10 +25,10 @@ public class ConfiguredMessageCodecDelegate<T: Any>(
     override fun encode(
         value: T,
         config: CodecConfig?
-    ): InputStream = delegate.encode(value, config ?: this.config)
+    ): Source = delegate.encode(value, config ?: this.config)
 
     override fun decode(
-        stream: InputStream,
+        source: Source,
         config: CodecConfig?
-    ): T = delegate.decode(stream, config ?: this.config)
+    ): T = delegate.decode(source, config ?: this.config)
 }

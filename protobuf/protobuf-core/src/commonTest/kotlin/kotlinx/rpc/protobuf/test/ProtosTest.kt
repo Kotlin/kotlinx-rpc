@@ -13,8 +13,6 @@ import invoke
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.codec.MessageCodec
 import kotlinx.rpc.grpc.codec.codec
-import kotlinx.rpc.protobuf.input.stream.asInputStream
-import kotlinx.rpc.protobuf.input.stream.asSource
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import test.groups.WithGroups
@@ -59,7 +57,7 @@ class ProtosTest {
         encoder.writeFixed32(9, 1234u)
         encoder.flush()
 
-        val decoded = codec<AllPrimitives>().decode(buffer.asInputStream())
+        val decoded = codec<AllPrimitives>().decode(buffer)
         assertEquals(12, decoded.sint32)
         assertNull(decoded.sint64)
         assertEquals(1234u, decoded.fixed32)
@@ -140,7 +138,7 @@ class ProtosTest {
         encoder.flush()
 
         assertFailsWith<ProtobufDecodingException> {
-            codec<PresenceCheck>().decode(buffer.asInputStream())
+            codec<PresenceCheck>().decode(buffer)
         }
     }
 
@@ -152,7 +150,7 @@ class ProtosTest {
         encoder.writeEnum(1, 50)
         encoder.flush()
 
-        val decodedMsg = codec<UsingEnum>().decode(buffer.asInputStream())
+        val decodedMsg = codec<UsingEnum>().decode(buffer)
         assertEquals(MyEnum.UNRECOGNIZED(50), decodedMsg.enum)
     }
 
@@ -172,11 +170,11 @@ class ProtosTest {
         // create message without enum field set
         val msg = UsingEnum {}
 
-        val buffer = codec<UsingEnum>().encode(msg).asSource()
+        val buffer = codec<UsingEnum>().encode(msg)
         // buffer should be empty (default is not in wire)
         assertTrue(buffer.exhausted())
 
-        val decoded = codec<UsingEnum>().decode(buffer.asInputStream())
+        val decoded = codec<UsingEnum>().decode(buffer)
         assertEquals(MyEnum.ZERO, decoded.enum)
     }
 
@@ -234,7 +232,7 @@ class ProtosTest {
         encoder.flush()
 
 
-        val decoded = codec<OneOfMsg>().decode(buffer.asInputStream())
+        val decoded = codec<OneOfMsg>().decode(buffer)
         assertIs<OneOfMsg.Field.Other>(decoded.field)
         val decodedOther = (decoded.field as OneOfMsg.Field.Other).value
         assertEquals("arg2", decodedOther.arg2)
@@ -252,7 +250,7 @@ class ProtosTest {
         encoder.writeFixed64(3, 123u)
         encoder.flush()
 
-        val decoded = codec<OneOfMsg>().decode(buffer.asInputStream())
+        val decoded = codec<OneOfMsg>().decode(buffer)
         assertEquals(OneOfMsg.Field.Fixed(123u), decoded.field)
     }
 
@@ -272,7 +270,7 @@ class ProtosTest {
         // write two values on the oneOf field.
         // the second value must be the one stored during decoding.
         val buffer = Buffer()
-        val decoded = codec<OneOfMsg>().decode(buffer.asInputStream())
+        val decoded = codec<OneOfMsg>().decode(buffer)
         assertNull(decoded.field)
     }
 
@@ -379,7 +377,7 @@ class ProtosTest {
         encoder.writeMessage(1, secondPart as OtherInternal) { encodeWith(encoder, null) }
         encoder.flush()
 
-        val decoded = codec<Reference>().decode(buffer.asInputStream())
+        val decoded = codec<Reference>().decode(buffer)
         assertEquals("first", decoded.other.arg1)
         assertEquals("third", decoded.other.arg2)
         assertEquals("fourth", decoded.other.arg3)

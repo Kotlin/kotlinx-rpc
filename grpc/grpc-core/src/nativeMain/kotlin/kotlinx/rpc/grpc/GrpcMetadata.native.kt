@@ -21,10 +21,8 @@ import kotlinx.io.Source
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.codec.CodecConfig
 import kotlinx.rpc.grpc.codec.MessageCodec
-import kotlinx.rpc.grpc.codec.SourcedMessageCodec
 import kotlinx.rpc.grpc.internal.toByteArray
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.input.stream.asInputStream
 import libkgrpc.grpc_metadata
 import libkgrpc.grpc_metadata_array
 import libkgrpc.grpc_metadata_array_init
@@ -41,10 +39,13 @@ public actual class GrpcMetadataKey<T> actual constructor(name: String, public v
     public val name: String = name.lowercase()
     internal val isBinary get() = name.endsWith("-bin")
 
-    internal fun encode(value: T): ByteArray = codec.encode(value).buffer.readByteArray()
+    internal fun encode(value: T): ByteArray {
+        val source = codec.encode(value)
+        return source.readByteArray()
+    }
     internal fun decode(value: ByteArray): T = Buffer().let { buffer ->
         buffer.write(value)
-        codec.decode(buffer.asInputStream())
+        codec.decode(buffer)
     }
 
     internal fun validateForString() {
@@ -309,22 +310,22 @@ private fun <T> GrpcMetadataKey<T>.validateName() {
     }
 }
 
-private val AsciiCodec = object : SourcedMessageCodec<String> {
-    override fun encodeToSource(value: String, config: CodecConfig?): Source = Buffer().apply {
+private val AsciiCodec = object : MessageCodec<String> {
+    override fun encode(value: String, config: CodecConfig?): Source = Buffer().apply {
         write(value.toAsciiBytes())
     }
 
-    override fun decodeFromSource(stream: Source, config: CodecConfig?): String = stream.use { buffer ->
+    override fun decode(source: Source, config: CodecConfig?): String = source.use { buffer ->
         buffer.readByteArray().toAsciiString()
     }
 }
 
-private val BinaryCodec = object : SourcedMessageCodec<ByteArray> {
-    override fun encodeToSource(value: ByteArray, config: CodecConfig?): Source = Buffer().apply {
+private val BinaryCodec = object : MessageCodec<ByteArray> {
+    override fun encode(value: ByteArray, config: CodecConfig?): Source = Buffer().apply {
         write(value)
     }
 
-    override fun decodeFromSource(stream: Source, config: CodecConfig?): ByteArray = stream.readByteArray()
+    override fun decode(source: Source, config: CodecConfig?): ByteArray = source.readByteArray()
 }
 
 private fun String.toAsciiKey() = GrpcMetadataKey(this, AsciiCodec)

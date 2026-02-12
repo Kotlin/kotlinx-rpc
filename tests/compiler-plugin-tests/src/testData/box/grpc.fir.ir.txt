@@ -37,19 +37,19 @@ FILE fqName:<root> fileName:/grpc.kt
           public open fun toString (): kotlin.String declared in kotlinx.rpc.grpc.codec.MessageCodec
       FUN name:decode visibility:public modality:OPEN returnType:<root>.Custom
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.Custom.Companion
-        VALUE_PARAMETER kind:Regular name:stream index:1 type:java.io.InputStream
+        VALUE_PARAMETER kind:Regular name:stream index:1 type:kotlinx.io.Source
         VALUE_PARAMETER kind:Regular name:config index:2 type:kotlinx.rpc.grpc.codec.CodecConfig?
         overridden:
-          public abstract fun decode (stream: java.io.InputStream, config: kotlinx.rpc.grpc.codec.CodecConfig?): T of kotlinx.rpc.grpc.codec.MessageCodec declared in kotlinx.rpc.grpc.codec.MessageCodec
+          public abstract fun decode (source: kotlinx.io.Source, config: kotlinx.rpc.grpc.codec.CodecConfig?): T of kotlinx.rpc.grpc.codec.MessageCodec declared in kotlinx.rpc.grpc.codec.MessageCodec
         BLOCK_BODY
           CALL 'public final fun TODO (reason: kotlin.String): kotlin.Nothing declared in kotlin' type=kotlin.Nothing origin=null
             ARG reason: CONST String type=kotlin.String value="Not yet implemented"
-      FUN name:encode visibility:public modality:OPEN returnType:java.io.InputStream
+      FUN name:encode visibility:public modality:OPEN returnType:kotlinx.io.Source
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.Custom.Companion
         VALUE_PARAMETER kind:Regular name:value index:1 type:<root>.Custom
         VALUE_PARAMETER kind:Regular name:config index:2 type:kotlinx.rpc.grpc.codec.CodecConfig?
         overridden:
-          public abstract fun encode (value: T of kotlinx.rpc.grpc.codec.MessageCodec, config: kotlinx.rpc.grpc.codec.CodecConfig?): java.io.InputStream declared in kotlinx.rpc.grpc.codec.MessageCodec
+          public abstract fun encode (value: T of kotlinx.rpc.grpc.codec.MessageCodec, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.io.Source declared in kotlinx.rpc.grpc.codec.MessageCodec
         BLOCK_BODY
           CALL 'public final fun TODO (reason: kotlin.String): kotlin.Nothing declared in kotlin' type=kotlin.Nothing origin=null
             ARG reason: CONST String type=kotlin.String value="Not yet implemented"
