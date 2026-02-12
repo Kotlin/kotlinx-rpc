@@ -13,7 +13,7 @@ import kotlinx.rpc.internal.utils.*
 *     }
 */
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.EmptyInternal.CODEC::class)
-@kotlinx.rpc.protobuf.ProtoMessage
+@kotlinx.rpc.protobuf.GeneratedProtoMessage
 public interface Empty { 
     public companion object
 }

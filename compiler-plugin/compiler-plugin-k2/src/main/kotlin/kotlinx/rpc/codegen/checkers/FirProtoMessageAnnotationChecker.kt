@@ -8,6 +8,7 @@ import kotlinx.rpc.codegen.FirRpcPredicates
 import kotlinx.rpc.codegen.checkers.diagnostics.FirProtoDiagnostics
 import kotlinx.rpc.codegen.common.ProtoClassId
 import kotlinx.rpc.codegen.common.ProtoNames
+import kotlinx.rpc.codegen.doesMatchesClassId
 import kotlinx.rpc.codegen.vsApi
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
@@ -77,8 +78,12 @@ object FirProtoMessageAnnotationChecker {
             reportNonGeneratedMessage()
         } else {
             // check if the internal class extends the message interface
-
-
+            val implementsMessage = internalDeclaration.superTypeRefs.any {
+                it.doesMatchesClassId(context.session, declaration.symbol.classId)
+            }
+            if (!implementsMessage) {
+                reportNonGeneratedMessage()
+            }
 
             // check if an internal class has a DESCRIPTOR object declaration
             val descriptorObject = vsApi {

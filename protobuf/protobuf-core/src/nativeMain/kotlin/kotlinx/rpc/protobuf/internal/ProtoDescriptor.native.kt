@@ -6,7 +6,7 @@ package kotlinx.rpc.protobuf.internal
 
 import kotlinx.rpc.internal.WithServiceDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.ProtoMessage
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 import kotlin.reflect.AssociatedObjectKey
 import kotlin.reflect.ExperimentalAssociatedObjects
 import kotlin.reflect.KClass
@@ -22,6 +22,6 @@ public actual annotation class WithProtoDescriptor(
 )
 
 @OptIn(ExperimentalAssociatedObjects::class)
-internal actual fun <@ProtoMessage T : Any> findProtoDescriptorOf(kClass: KClass<T>): Any? {
+internal actual fun <@GeneratedProtoMessage T : Any> findProtoDescriptorOf(kClass: KClass<T>): Any? {
     return kClass.findAssociatedObject<WithServiceDescriptor>()
 }

@@ -6,7 +6,7 @@ package kotlinx.rpc.protobuf.internal
 
 import kotlinx.rpc.internal.internalRpcError
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.ProtoMessage
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 import kotlin.reflect.KClass
 
 @InternalRpcApi
@@ -17,13 +17,13 @@ expect public annotation class WithProtoDescriptor(
 )
 
 @InternalRpcApi
-public interface ProtoDescriptor<@ProtoMessage Message: Any> {
+public interface ProtoDescriptor<@GeneratedProtoMessage Message: Any> {
     public val fullName: String
 }
 
-internal inline fun <@ProtoMessage reified T: Any> protoDescriptorOf(): ProtoDescriptor<T> = protoDescriptorOf(T::class)
+internal inline fun <@GeneratedProtoMessage reified T: Any> protoDescriptorOf(): ProtoDescriptor<T> = protoDescriptorOf(T::class)
 
-internal fun <@ProtoMessage T: Any> protoDescriptorOf(clazz: KClass<T>): ProtoDescriptor<T> {
+internal fun <@GeneratedProtoMessage T: Any> protoDescriptorOf(clazz: KClass<T>): ProtoDescriptor<T> {
     val maybeDescriptor = findProtoDescriptorOf(clazz)
         ?: internalRpcError("Unable to find a proto descriptor of the $clazz. " +
             "Check that you have applied the “kotlinx.rpc” plugin to your build module.")
@@ -36,5 +36,5 @@ internal fun <@ProtoMessage T: Any> protoDescriptorOf(clazz: KClass<T>): ProtoDe
                 "instead found $maybeDescriptor of the class ${maybeDescriptor::class}")
 }
 
-internal expect fun <@ProtoMessage T: Any> findProtoDescriptorOf(kClass: KClass<T>): Any?
+internal expect fun <@GeneratedProtoMessage T: Any> findProtoDescriptorOf(kClass: KClass<T>): Any?
 

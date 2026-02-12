@@ -64,7 +64,7 @@ import kotlinx.rpc.internal.utils.*
 * microsecond should be expressed in JSON format as "3.000001s".
 */
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.DurationInternal.CODEC::class)
-@kotlinx.rpc.protobuf.ProtoMessage
+@kotlinx.rpc.protobuf.GeneratedProtoMessage
 public interface Duration { 
     /**
     * Signed seconds of the span of time. Must be from -315,576,000,000

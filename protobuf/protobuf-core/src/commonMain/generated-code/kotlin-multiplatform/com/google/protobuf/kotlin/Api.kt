@@ -15,7 +15,7 @@ import kotlinx.rpc.internal.utils.*
 * detailed terminology.
 */
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.ApiInternal.CODEC::class)
-@kotlinx.rpc.protobuf.ProtoMessage
+@kotlinx.rpc.protobuf.GeneratedProtoMessage
 public interface Api { 
     /**
     * The fully qualified name of this interface, including package name
@@ -73,7 +73,7 @@ public interface Api {
 * Method represents a method of an API interface.
 */
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.MethodInternal.CODEC::class)
-@kotlinx.rpc.protobuf.ProtoMessage
+@kotlinx.rpc.protobuf.GeneratedProtoMessage
 public interface Method { 
     /**
     * The simple name of this method.
@@ -188,7 +188,7 @@ public interface Method {
 *     }
 */
 @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.MixinInternal.CODEC::class)
-@kotlinx.rpc.protobuf.ProtoMessage
+@kotlinx.rpc.protobuf.GeneratedProtoMessage
 public interface Mixin { 
     /**
     * The fully qualified name of the interface which is included.

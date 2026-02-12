@@ -4,15 +4,15 @@
 
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.protobuf.ProtoMessage
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 import kotlin.reflect.KClass
 
-public inline fun <@ProtoMessage reified T: kotlin.Any> Any.isA(): Boolean = this.isA(T::class)
+public inline fun <@GeneratedProtoMessage reified T: kotlin.Any> Any.isA(): Boolean = this.isA(T::class)
 
 /**
  * Check if the given Protobuf Any instance is of type [messageClass].
  */
-public fun <@ProtoMessage T: kotlin.Any> Any.isA(messageClass: KClass<T>): Boolean {
+public fun <@GeneratedProtoMessage T: kotlin.Any> Any.isA(messageClass: KClass<T>): Boolean {
     TODO("Implement")
     //    protoDescriptorOf(messageClass)
 }
