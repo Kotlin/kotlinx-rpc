@@ -5,7 +5,6 @@
 package kotlinx.rpc.protoc.gen.core
 
 import kotlinx.rpc.protoc.gen.core.model.FqName
-import kotlinx.rpc.protoc.gen.core.model.fullName
 
 class ScopedName(val name: String)
 
@@ -21,6 +20,83 @@ fun FqName.scopedAnnotation(): ScopedFormattedString {
     return ScopedFormattedString("@%T", listOf(this))
 }
 
+/**
+ * ## No references
+ * Before:
+ * ```kotlin
+ * "return 0"
+ * ```
+ * After:
+ * ```kotlin
+ * "return 0".scoped()
+ * ```
+ * ## Simple reference
+ * Before:
+ * ```kotlin
+ * "val name: Int"
+ * ```
+ * After:
+ * ```kotlin
+ * "val name: %T".scoped(FqName.Implicits.Int)
+ * ```
+ * ## Simple multiple references
+ * Before:
+ * ```kotlin
+ * "val a = MyClass(name: Int, string: String)"
+ * ```
+ * After:
+ * ```kotlin
+ * "val a = %T(name: %T, string: %T)".scoped(
+ *     myClass.name,
+ *     FqName.Implicits.Int,
+ *     FqName.Implicits.String,
+ * )
+ * ```
+ * ## Wrapping
+ * Before:
+ * ```kotlin
+ * val inner = if (condition) {
+ *     "val a: Int"
+ * } else {
+ *     "val b: String"
+ * }
+ * val result = "return $inner"
+ * ```
+ * After:
+ * ```kotlin
+ * val inner = if (condition) {
+ *     "val a: %T".scoped(FqName.Implicits.Int)
+ * } else {
+ *     "val b: %T".scoped(FqName.Implicits.String)
+ * }
+ * val result = inner.wrapIn { inner -> "return $inner" }
+ * ```
+ * ## Wrapping multiple references
+ * Before:
+ * ```kotlin
+ * val ctor = "MyClass"
+ * val inner = if (condition) {
+ *     "val a: Int"
+ * } else {
+ *     "val b: String"
+ * }
+ * val result = "return $ctor($inner)"
+ * ```
+ * After:
+ * ```kotlin
+ * val ctor = myClass.name.scoped()
+ * val inner = if (condition) {
+ *     "val a: %T".scoped(FqName.Implicits.Int)
+ * } else {
+ *     "val b: %T".scoped(FqName.Implicits.String)
+ * }
+ * // Mind the order in merge function!
+ * // if ctor is before inner
+ * // then in the interpolated string the 'ctor' parameter
+ * // must be before the 'inner' parameter
+ * val result = ctor.merge(inner).wrapIn { ctor, inner -> "return $ctor($inner)" }
+ * ```
+ */
 class ScopedFormattedString(val value: String, val args: List<Any>) {
     fun resolve(nameTable: ScopedFqNameTable): String = formatCode(this, nameTable)
 
