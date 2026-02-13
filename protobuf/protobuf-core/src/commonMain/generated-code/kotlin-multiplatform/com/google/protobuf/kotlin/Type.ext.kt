@@ -1,7 +1,8 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * Constructs a new message.
@@ -11,8 +12,8 @@ import kotlinx.rpc.internal.utils.*
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.Type.Companion.invoke(body: com.google.protobuf.kotlin.TypeInternal.() -> Unit): com.google.protobuf.kotlin.Type { 
-    val msg = com.google.protobuf.kotlin.TypeInternal().apply(body)
+public operator fun Type.Companion.invoke(body: TypeInternal.() -> Unit): Type {
+    val msg = TypeInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -25,14 +26,14 @@ public operator fun com.google.protobuf.kotlin.Type.Companion.invoke(body: com.g
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.Type.copy(body: com.google.protobuf.kotlin.TypeInternal.() -> Unit = {}): com.google.protobuf.kotlin.Type { 
+public fun Type.copy(body: TypeInternal.() -> Unit = {}): Type {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf.kotlin.Type] instance.
 */
-public val com.google.protobuf.kotlin.Type.presence: com.google.protobuf.kotlin.TypePresence get() = this.asInternal()._presence
+public val Type.presence: TypePresence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -42,8 +43,8 @@ public val com.google.protobuf.kotlin.Type.presence: com.google.protobuf.kotlin.
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.Field.Companion.invoke(body: com.google.protobuf.kotlin.FieldInternal.() -> Unit): com.google.protobuf.kotlin.Field { 
-    val msg = com.google.protobuf.kotlin.FieldInternal().apply(body)
+public operator fun Field.Companion.invoke(body: FieldInternal.() -> Unit): Field {
+    val msg = FieldInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -56,7 +57,7 @@ public operator fun com.google.protobuf.kotlin.Field.Companion.invoke(body: com.
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.Field.copy(body: com.google.protobuf.kotlin.FieldInternal.() -> Unit = {}): com.google.protobuf.kotlin.Field { 
+public fun Field.copy(body: FieldInternal.() -> Unit = {}): Field {
     return this.asInternal().copyInternal(body)
 }
 
@@ -68,8 +69,8 @@ public fun com.google.protobuf.kotlin.Field.copy(body: com.google.protobuf.kotli
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.Enum.Companion.invoke(body: com.google.protobuf.kotlin.EnumInternal.() -> Unit): com.google.protobuf.kotlin.Enum { 
-    val msg = com.google.protobuf.kotlin.EnumInternal().apply(body)
+public operator fun Enum.Companion.invoke(body: EnumInternal.() -> Unit): Enum {
+    val msg = EnumInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -82,14 +83,14 @@ public operator fun com.google.protobuf.kotlin.Enum.Companion.invoke(body: com.g
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.Enum.copy(body: com.google.protobuf.kotlin.EnumInternal.() -> Unit = {}): com.google.protobuf.kotlin.Enum { 
+public fun Enum.copy(body: EnumInternal.() -> Unit = {}): Enum {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf.kotlin.Enum] instance.
 */
-public val com.google.protobuf.kotlin.Enum.presence: com.google.protobuf.kotlin.EnumPresence get() = this.asInternal()._presence
+public val Enum.presence: EnumPresence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -99,8 +100,8 @@ public val com.google.protobuf.kotlin.Enum.presence: com.google.protobuf.kotlin.
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.EnumValue.Companion.invoke(body: com.google.protobuf.kotlin.EnumValueInternal.() -> Unit): com.google.protobuf.kotlin.EnumValue { 
-    val msg = com.google.protobuf.kotlin.EnumValueInternal().apply(body)
+public operator fun EnumValue.Companion.invoke(body: EnumValueInternal.() -> Unit): EnumValue {
+    val msg = EnumValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -113,7 +114,7 @@ public operator fun com.google.protobuf.kotlin.EnumValue.Companion.invoke(body: 
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.EnumValue.copy(body: com.google.protobuf.kotlin.EnumValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.EnumValue { 
+public fun EnumValue.copy(body: EnumValueInternal.() -> Unit = {}): EnumValue {
     return this.asInternal().copyInternal(body)
 }
 
@@ -125,8 +126,8 @@ public fun com.google.protobuf.kotlin.EnumValue.copy(body: com.google.protobuf.k
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.Option.Companion.invoke(body: com.google.protobuf.kotlin.OptionInternal.() -> Unit): com.google.protobuf.kotlin.Option { 
-    val msg = com.google.protobuf.kotlin.OptionInternal().apply(body)
+public operator fun Option.Companion.invoke(body: OptionInternal.() -> Unit): Option {
+    val msg = OptionInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -139,35 +140,35 @@ public operator fun com.google.protobuf.kotlin.Option.Companion.invoke(body: com
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.Option.copy(body: com.google.protobuf.kotlin.OptionInternal.() -> Unit = {}): com.google.protobuf.kotlin.Option { 
+public fun Option.copy(body: OptionInternal.() -> Unit = {}): Option {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf.kotlin.Option] instance.
 */
-public val com.google.protobuf.kotlin.Option.presence: com.google.protobuf.kotlin.OptionPresence get() = this.asInternal()._presence
+public val Option.presence: OptionPresence get() = this.asInternal()._presence
 
 /**
 * Interface providing field-presence information for [com.google.protobuf.kotlin.Type] messages.
 * Retrieve it via the [com.google.protobuf.kotlin.Type.presence] extension property.
 */
-public interface TypePresence { 
-    public val hasSourceContext: kotlin.Boolean
+public interface TypePresence {
+    public val hasSourceContext: Boolean
 }
 
 /**
 * Interface providing field-presence information for [com.google.protobuf.kotlin.Enum] messages.
 * Retrieve it via the [com.google.protobuf.kotlin.Enum.presence] extension property.
 */
-public interface EnumPresence { 
-    public val hasSourceContext: kotlin.Boolean
+public interface EnumPresence {
+    public val hasSourceContext: Boolean
 }
 
 /**
 * Interface providing field-presence information for [com.google.protobuf.kotlin.Option] messages.
 * Retrieve it via the [com.google.protobuf.kotlin.Option.presence] extension property.
 */
-public interface OptionPresence { 
-    public val hasValue: kotlin.Boolean
+public interface OptionPresence {
+    public val hasValue: Boolean
 }

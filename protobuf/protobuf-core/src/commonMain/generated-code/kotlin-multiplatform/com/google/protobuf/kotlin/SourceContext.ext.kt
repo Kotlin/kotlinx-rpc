@@ -1,7 +1,8 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * Constructs a new message.
@@ -11,8 +12,8 @@ import kotlinx.rpc.internal.utils.*
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.SourceContext.Companion.invoke(body: com.google.protobuf.kotlin.SourceContextInternal.() -> Unit): com.google.protobuf.kotlin.SourceContext { 
-    val msg = com.google.protobuf.kotlin.SourceContextInternal().apply(body)
+public operator fun SourceContext.Companion.invoke(body: SourceContextInternal.() -> Unit): SourceContext {
+    val msg = SourceContextInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -25,6 +26,6 @@ public operator fun com.google.protobuf.kotlin.SourceContext.Companion.invoke(bo
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.SourceContext.copy(body: com.google.protobuf.kotlin.SourceContextInternal.() -> Unit = {}): com.google.protobuf.kotlin.SourceContext { 
+public fun SourceContext.copy(body: SourceContextInternal.() -> Unit = {}): SourceContext {
     return this.asInternal().copyInternal(body)
 }

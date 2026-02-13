@@ -1,7 +1,8 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * Constructs a new message.
@@ -11,8 +12,8 @@ import kotlinx.rpc.internal.utils.*
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.Api.Companion.invoke(body: com.google.protobuf.kotlin.ApiInternal.() -> Unit): com.google.protobuf.kotlin.Api { 
-    val msg = com.google.protobuf.kotlin.ApiInternal().apply(body)
+public operator fun Api.Companion.invoke(body: ApiInternal.() -> Unit): Api {
+    val msg = ApiInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -25,14 +26,14 @@ public operator fun com.google.protobuf.kotlin.Api.Companion.invoke(body: com.go
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.Api.copy(body: com.google.protobuf.kotlin.ApiInternal.() -> Unit = {}): com.google.protobuf.kotlin.Api { 
+public fun Api.copy(body: ApiInternal.() -> Unit = {}): Api {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf.kotlin.Api] instance.
 */
-public val com.google.protobuf.kotlin.Api.presence: com.google.protobuf.kotlin.ApiPresence get() = this.asInternal()._presence
+public val Api.presence: ApiPresence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -42,8 +43,8 @@ public val com.google.protobuf.kotlin.Api.presence: com.google.protobuf.kotlin.A
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.Method.Companion.invoke(body: com.google.protobuf.kotlin.MethodInternal.() -> Unit): com.google.protobuf.kotlin.Method { 
-    val msg = com.google.protobuf.kotlin.MethodInternal().apply(body)
+public operator fun Method.Companion.invoke(body: MethodInternal.() -> Unit): Method {
+    val msg = MethodInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -56,7 +57,7 @@ public operator fun com.google.protobuf.kotlin.Method.Companion.invoke(body: com
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.Method.copy(body: com.google.protobuf.kotlin.MethodInternal.() -> Unit = {}): com.google.protobuf.kotlin.Method { 
+public fun Method.copy(body: MethodInternal.() -> Unit = {}): Method {
     return this.asInternal().copyInternal(body)
 }
 
@@ -68,8 +69,8 @@ public fun com.google.protobuf.kotlin.Method.copy(body: com.google.protobuf.kotl
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.Mixin.Companion.invoke(body: com.google.protobuf.kotlin.MixinInternal.() -> Unit): com.google.protobuf.kotlin.Mixin { 
-    val msg = com.google.protobuf.kotlin.MixinInternal().apply(body)
+public operator fun Mixin.Companion.invoke(body: MixinInternal.() -> Unit): Mixin {
+    val msg = MixinInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -82,7 +83,7 @@ public operator fun com.google.protobuf.kotlin.Mixin.Companion.invoke(body: com.
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.Mixin.copy(body: com.google.protobuf.kotlin.MixinInternal.() -> Unit = {}): com.google.protobuf.kotlin.Mixin { 
+public fun Mixin.copy(body: MixinInternal.() -> Unit = {}): Mixin {
     return this.asInternal().copyInternal(body)
 }
 
@@ -90,6 +91,6 @@ public fun com.google.protobuf.kotlin.Mixin.copy(body: com.google.protobuf.kotli
 * Interface providing field-presence information for [com.google.protobuf.kotlin.Api] messages.
 * Retrieve it via the [com.google.protobuf.kotlin.Api.presence] extension property.
 */
-public interface ApiPresence { 
-    public val hasSourceContext: kotlin.Boolean
+public interface ApiPresence {
+    public val hasSourceContext: Boolean
 }
