@@ -1,0 +1,122 @@
+syntax = "proto3";
+
+package name_shadowing;
+
+// Shadow Kotlin built-in types
+message String {
+  string value = 1;
+  Int nested_int = 2;
+}
+
+message Int {
+  int32 value = 1;
+  String nested_string = 2;
+}
+
+message List {
+  repeated string items = 1;
+  Map nested_map = 2;
+}
+
+message Map {
+  map<string, string> entries = 1;
+  List nested_list = 2;
+}
+
+// Complex nesting scenarios
+message ComplexNesting {
+  String shadowed_string = 1;
+
+  message Nested {
+    Int shadowed_int = 1;
+
+    message DeeplyNested {
+      List shadowed_list = 1;
+
+      message VeryDeep {
+        Map shadowed_map = 1;
+        String outer_string = 2;
+      }
+
+      VeryDeep very_deep = 2;
+    }
+
+    DeeplyNested deeply_nested = 2;
+  }
+
+  Nested nested = 2;
+  repeated String string_list = 3;
+  map<string, Int> int_map = 4;
+}
+
+// Shadow with enum
+enum Collection {
+  COLLECTION_UNSPECIFIED = 0;
+  COLLECTION_LIST = 1;
+  COLLECTION_MAP = 2;
+}
+
+// Oneof with shadowed types
+message ShadowedOneof {
+  oneof value {
+    String string = 1;
+    Int int = 2;
+    List list = 4;
+    Map map = 5;
+  }
+}
+
+// Message with self-reference using shadowed types
+message RecursiveWithShadowing {
+  String name = 1;
+  repeated RecursiveWithShadowing children = 2;
+  Map metadata = 3;
+
+  message Iterator {
+    Int current = 1;
+    String status = 2;
+  }
+
+  Iterator iterator = 4;
+}
+
+// Arbitrary complex nesting with name shadowing at multiple levels
+message MyClass1 {
+  message String {
+    message String {
+      string primitive = 1;
+      String ref = 2;
+    }
+
+    string primitive = 1;
+    String ref = 2;
+  }
+
+  string primitive = 1;
+  String ref = 2;
+  String.String nestedRef = 3;
+}
+
+message MyClass2 {
+  message A {
+    message B {}
+  }
+
+  message Int {
+    message String {
+      message Inner {
+        int32 primitive = 1;
+        Int ref = 2;
+      }
+
+      message Int {}
+    }
+
+    int32 primitive = 1;
+    Int ref = 2;
+    A.B sibling = 3;
+  }
+
+  string primitive = 1;
+  Int.String nested = 2;
+}
