@@ -1,7 +1,8 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * Constructs a new message.
@@ -11,8 +12,8 @@ import kotlinx.rpc.internal.utils.*
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.DoubleValue.Companion.invoke(body: com.google.protobuf.kotlin.DoubleValueInternal.() -> Unit): com.google.protobuf.kotlin.DoubleValue { 
-    val msg = com.google.protobuf.kotlin.DoubleValueInternal().apply(body)
+public operator fun DoubleValue.Companion.invoke(body: DoubleValueInternal.() -> Unit): DoubleValue {
+    val msg = DoubleValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -25,7 +26,7 @@ public operator fun com.google.protobuf.kotlin.DoubleValue.Companion.invoke(body
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.DoubleValue.copy(body: com.google.protobuf.kotlin.DoubleValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.DoubleValue { 
+public fun DoubleValue.copy(body: DoubleValueInternal.() -> Unit = {}): DoubleValue {
     return this.asInternal().copyInternal(body)
 }
 
@@ -37,8 +38,8 @@ public fun com.google.protobuf.kotlin.DoubleValue.copy(body: com.google.protobuf
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.FloatValue.Companion.invoke(body: com.google.protobuf.kotlin.FloatValueInternal.() -> Unit): com.google.protobuf.kotlin.FloatValue { 
-    val msg = com.google.protobuf.kotlin.FloatValueInternal().apply(body)
+public operator fun FloatValue.Companion.invoke(body: FloatValueInternal.() -> Unit): FloatValue {
+    val msg = FloatValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -51,7 +52,7 @@ public operator fun com.google.protobuf.kotlin.FloatValue.Companion.invoke(body:
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.FloatValue.copy(body: com.google.protobuf.kotlin.FloatValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.FloatValue { 
+public fun FloatValue.copy(body: FloatValueInternal.() -> Unit = {}): FloatValue {
     return this.asInternal().copyInternal(body)
 }
 
@@ -63,8 +64,8 @@ public fun com.google.protobuf.kotlin.FloatValue.copy(body: com.google.protobuf.
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.Int64Value.Companion.invoke(body: com.google.protobuf.kotlin.Int64ValueInternal.() -> Unit): com.google.protobuf.kotlin.Int64Value { 
-    val msg = com.google.protobuf.kotlin.Int64ValueInternal().apply(body)
+public operator fun Int64Value.Companion.invoke(body: Int64ValueInternal.() -> Unit): Int64Value {
+    val msg = Int64ValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -77,7 +78,7 @@ public operator fun com.google.protobuf.kotlin.Int64Value.Companion.invoke(body:
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.Int64Value.copy(body: com.google.protobuf.kotlin.Int64ValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.Int64Value { 
+public fun Int64Value.copy(body: Int64ValueInternal.() -> Unit = {}): Int64Value {
     return this.asInternal().copyInternal(body)
 }
 
@@ -89,8 +90,8 @@ public fun com.google.protobuf.kotlin.Int64Value.copy(body: com.google.protobuf.
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.UInt64Value.Companion.invoke(body: com.google.protobuf.kotlin.UInt64ValueInternal.() -> Unit): com.google.protobuf.kotlin.UInt64Value { 
-    val msg = com.google.protobuf.kotlin.UInt64ValueInternal().apply(body)
+public operator fun UInt64Value.Companion.invoke(body: UInt64ValueInternal.() -> Unit): UInt64Value {
+    val msg = UInt64ValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -103,7 +104,7 @@ public operator fun com.google.protobuf.kotlin.UInt64Value.Companion.invoke(body
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.UInt64Value.copy(body: com.google.protobuf.kotlin.UInt64ValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.UInt64Value { 
+public fun UInt64Value.copy(body: UInt64ValueInternal.() -> Unit = {}): UInt64Value {
     return this.asInternal().copyInternal(body)
 }
 
@@ -115,8 +116,8 @@ public fun com.google.protobuf.kotlin.UInt64Value.copy(body: com.google.protobuf
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.Int32Value.Companion.invoke(body: com.google.protobuf.kotlin.Int32ValueInternal.() -> Unit): com.google.protobuf.kotlin.Int32Value { 
-    val msg = com.google.protobuf.kotlin.Int32ValueInternal().apply(body)
+public operator fun Int32Value.Companion.invoke(body: Int32ValueInternal.() -> Unit): Int32Value {
+    val msg = Int32ValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -129,7 +130,7 @@ public operator fun com.google.protobuf.kotlin.Int32Value.Companion.invoke(body:
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.Int32Value.copy(body: com.google.protobuf.kotlin.Int32ValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.Int32Value { 
+public fun Int32Value.copy(body: Int32ValueInternal.() -> Unit = {}): Int32Value {
     return this.asInternal().copyInternal(body)
 }
 
@@ -141,8 +142,8 @@ public fun com.google.protobuf.kotlin.Int32Value.copy(body: com.google.protobuf.
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.UInt32Value.Companion.invoke(body: com.google.protobuf.kotlin.UInt32ValueInternal.() -> Unit): com.google.protobuf.kotlin.UInt32Value { 
-    val msg = com.google.protobuf.kotlin.UInt32ValueInternal().apply(body)
+public operator fun UInt32Value.Companion.invoke(body: UInt32ValueInternal.() -> Unit): UInt32Value {
+    val msg = UInt32ValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -155,7 +156,7 @@ public operator fun com.google.protobuf.kotlin.UInt32Value.Companion.invoke(body
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.UInt32Value.copy(body: com.google.protobuf.kotlin.UInt32ValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.UInt32Value { 
+public fun UInt32Value.copy(body: UInt32ValueInternal.() -> Unit = {}): UInt32Value {
     return this.asInternal().copyInternal(body)
 }
 
@@ -167,8 +168,8 @@ public fun com.google.protobuf.kotlin.UInt32Value.copy(body: com.google.protobuf
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.BoolValue.Companion.invoke(body: com.google.protobuf.kotlin.BoolValueInternal.() -> Unit): com.google.protobuf.kotlin.BoolValue { 
-    val msg = com.google.protobuf.kotlin.BoolValueInternal().apply(body)
+public operator fun BoolValue.Companion.invoke(body: BoolValueInternal.() -> Unit): BoolValue {
+    val msg = BoolValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -181,7 +182,7 @@ public operator fun com.google.protobuf.kotlin.BoolValue.Companion.invoke(body: 
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.BoolValue.copy(body: com.google.protobuf.kotlin.BoolValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.BoolValue { 
+public fun BoolValue.copy(body: BoolValueInternal.() -> Unit = {}): BoolValue {
     return this.asInternal().copyInternal(body)
 }
 
@@ -193,8 +194,8 @@ public fun com.google.protobuf.kotlin.BoolValue.copy(body: com.google.protobuf.k
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.StringValue.Companion.invoke(body: com.google.protobuf.kotlin.StringValueInternal.() -> Unit): com.google.protobuf.kotlin.StringValue { 
-    val msg = com.google.protobuf.kotlin.StringValueInternal().apply(body)
+public operator fun StringValue.Companion.invoke(body: StringValueInternal.() -> Unit): StringValue {
+    val msg = StringValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -207,7 +208,7 @@ public operator fun com.google.protobuf.kotlin.StringValue.Companion.invoke(body
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.StringValue.copy(body: com.google.protobuf.kotlin.StringValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.StringValue { 
+public fun StringValue.copy(body: StringValueInternal.() -> Unit = {}): StringValue {
     return this.asInternal().copyInternal(body)
 }
 
@@ -219,8 +220,8 @@ public fun com.google.protobuf.kotlin.StringValue.copy(body: com.google.protobuf
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.BytesValue.Companion.invoke(body: com.google.protobuf.kotlin.BytesValueInternal.() -> Unit): com.google.protobuf.kotlin.BytesValue { 
-    val msg = com.google.protobuf.kotlin.BytesValueInternal().apply(body)
+public operator fun BytesValue.Companion.invoke(body: BytesValueInternal.() -> Unit): BytesValue {
+    val msg = BytesValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -233,6 +234,6 @@ public operator fun com.google.protobuf.kotlin.BytesValue.Companion.invoke(body:
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.BytesValue.copy(body: com.google.protobuf.kotlin.BytesValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.BytesValue { 
+public fun BytesValue.copy(body: BytesValueInternal.() -> Unit = {}): BytesValue {
     return this.asInternal().copyInternal(body)
 }
