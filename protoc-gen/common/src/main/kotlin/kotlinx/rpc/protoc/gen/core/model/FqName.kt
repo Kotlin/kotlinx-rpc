@@ -51,7 +51,67 @@ sealed interface FqName {
             }
         }
     }
+
+    object Implicits {
+        val Unit = fq("kotlin", "Unit")
+        val Any = fq("kotlin", "Any")
+        val String = fq("kotlin", "String")
+        val Int = fq("kotlin", "Int")
+        val Float = fq("kotlin", "Float")
+        val Float_Nan = Float.nested("Nan")
+        val Double = fq("kotlin", "Double")
+        val Double_Nan = Double.nested("Nan")
+        val Boolean = fq("kotlin", "Boolean")
+        val ByteArray = fq("kotlin", "ByteArray")
+        val List = fq("kotlin.collections", "List")
+        val MutableList = fq("kotlin.collections", "MutableList")
+        val Map = fq("kotlin.collections", "Map")
+        val MutableMap = fq("kotlin.collections", "MutableMap")
+        val Deprecated = fq("kotlin", "Deprecated")
+        val DeprecationLevel = fq("kotlin", "DeprecationLevel")
+        val OptIn = fq("kotlin", "OptIn")
+    }
+
+    object Annotations {
+        val ExperimentalRpcApi = fqDec("kotlinx.rpc.internal.utils", "ExperimentalRpcApi")
+        val InternalRpcApi = fqDec("kotlinx.rpc.internal.utils", "InternalRpcApi")
+        val Grpc = fqDec("kotlinx.rpc.grpc.annotations", "Grpc")
+        val GrpcMethod = fqDec("kotlinx.rpc.grpc.annotations", "Grpc.Method")
+        val WithCodec = fqDec("kotlinx.rpc.grpc.codec", "WithCodec")
+    }
+
+    @Suppress("unused")
+    object RpcClasses {
+        val InternalMessage = fqDec("kotlinx.rpc.protobuf.internal", "InternalMessage")
+        val WireEncoder = fqDec("kotlinx.rpc.protobuf.internal", "WireEncoder")
+        val WireDecoder = fqDec("kotlinx.rpc.protobuf.internal", "WireDecoder")
+        val MsgFieldDelegate = fqDec("kotlinx.rpc.protobuf.internal", "MsgFieldDelegate")
+        val MessageCodec = fqDec("kotlinx.rpc.grpc.codec", "MessageCodec")
+        val KTag = fqDec("kotlinx.rpc.protobuf.internal", "KTag")
+        val ProtobufDecodingException = fqDec("kotlinx.rpc.protobuf.internal", "ProtobufDecodingException")
+        val CodecConfig = fqDec("kotlinx.rpc.grpc.codec", "CodecConfig")
+        val ProtobufConfig = fqDec("kotlinx.rpc.protobuf", "ProtobufConfig")
+        val WireSize = fqDec("kotlinx.rpc.protobuf.internal", "WireSize")
+        val WireType = fqDec("kotlinx.rpc.protobuf.internal", "WireType")
+        val WireType_END_GROUP = WireType.nested("END_GROUP")
+        val WireType_LENGTH_DELIMITED = WireType.nested("LENGTH_DELIMITED")
+        val WireType_VARINT = WireType.nested("VARINT")
+        val WireType_FIXED32 = WireType.nested("FIXED32")
+        val WireType_START_GROUP = WireType.nested("START_GROUP")
+        val WireType_FIXED64 = WireType.nested("FIXED64")
+    }
+
+    object KotlinLibs {
+        val Buffer = fqDec("kotlinx.io", "Buffer")
+        val Source = fqDec("kotlinx.io", "Source")
+        val Flow = fqDec("kotlinx.coroutines.flow", "Flow")
+        val JvmInline = fqDec("kotlin.jvm", "JvmInline")
+    }
 }
+
+fun FqName.nested(name: String): FqName.Declaration = FqName.Declaration(name, this)
+
+fun FqName.suffixed(suffix: String): FqName.Declaration = FqName.Declaration("$simpleName$suffix", parent)
 
 fun FqName.fullName(classSuffix: String = ""): String {
     val parentName = parent
@@ -97,3 +157,21 @@ internal fun FqName.fullNestedNameAsList(): List<String> {
 internal fun String.asParentsAndSimpleName(): Pair<List<String>, String> =
     split(".").takeIf { it.size > 1 }?.run { dropLast(1) to last() }
         ?: (emptyList<String>() to this)
+
+fun fq(packages: String, classes: String): FqName {
+    return classFq(classes.split(".").filter { it.isNotBlank() }, packages)
+}
+
+fun fqDec(packages: String, classes: String): FqName.Declaration {
+    require(classes.isNotBlank()) { "Classes name must not be blank" }
+
+    return fq(packages, classes) as FqName.Declaration
+}
+
+private fun classFq(parts: List<String>, packages: String): FqName {
+    if (parts.isEmpty()) {
+        return FqName.Package.fromString(packages)
+    }
+
+    return FqName.Declaration(parts.last(), classFq(parts.dropLast(1), packages))
+}

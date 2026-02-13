@@ -60,11 +60,26 @@ class FqNameTable(
      * @param fqName The fully qualified name to register.
      */
     fun register(fqName: FqName.Declaration) {
+        val maybeImplicit = implicitTypesBySimpleName[fqName.simpleName]
+        if (maybeImplicit != null && maybeImplicit == fqName) {
+            // skip implicits
+            return
+        }
+
         var current: FqName = fqName
         while (current is FqName.Declaration) {
             registeredNames.add(current)
             current = current.parent
         }
+    }
+
+    private val lazyNames = mutableListOf<() -> FqName.Declaration>()
+
+    /**
+     * Same as [register] but computes on first [scoped] call. [fqNameGetter] will be called only once.
+     */
+    fun register(fqNameGetter: () -> FqName.Declaration) {
+        lazyNames.add(fqNameGetter)
     }
 
     /**
@@ -94,6 +109,10 @@ class FqNameTable(
      * @return A scoped table for name resolution in the given package.
      */
     fun scoped(currentPackage: FqName.Package, importsContainer: MutableSet<String>): ScopedFqNameTable {
+        val currentLazyNames = this.lazyNames.toList()
+        lazyNames.clear()
+        currentLazyNames.forEach { getter -> register(getter()) }
+
         return ScopedFqNameTable(this, currentPackage, emptyList(), importsContainer)
     }
 }

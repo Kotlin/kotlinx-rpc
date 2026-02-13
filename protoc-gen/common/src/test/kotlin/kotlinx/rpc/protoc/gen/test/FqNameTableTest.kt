@@ -7,6 +7,7 @@ package kotlinx.rpc.protoc.gen.test
 import kotlinx.rpc.protoc.gen.core.FqNameTable
 import kotlinx.rpc.protoc.gen.core.Platform
 import kotlinx.rpc.protoc.gen.core.model.FqName
+import kotlinx.rpc.protoc.gen.core.model.fq
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -1038,7 +1039,7 @@ class FqNameTableTest {
     }
 }
 
-private fun FqNameTable.register(fqName: FqName) {
+fun FqNameTable.register(fqName: FqName) {
     require(fqName is FqName.Declaration) { "Only declaration names can be registered" }
     register(fqName)
 }
