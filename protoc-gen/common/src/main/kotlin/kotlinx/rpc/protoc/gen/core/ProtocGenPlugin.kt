@@ -92,22 +92,6 @@ abstract class ProtocGenPlugin {
 
         globalLogger = logger
         val files = input.runGeneration(config)
-            .map { file ->
-                CodeGeneratorResponse.File.newBuilder()
-                    .apply {
-                        val dir = file.packagePath
-                            ?.takeIf { it.isNotEmpty() }
-                            ?.replace('.', File.separatorChar)
-                            ?.plus(File.separatorChar)
-                            ?: ""
-
-                        // some filename already contains package (true for Google's default .proto files)
-                        val filename = file.filename?.removePrefix(dir) ?: error("File name can not be null")
-                        name = "$dir$filename"
-                        content = file.build()
-                    }
-                    .build()
-            }
 
         return CodeGeneratorResponse.newBuilder()
             .apply {
@@ -125,12 +109,27 @@ abstract class ProtocGenPlugin {
             .build()
     }
 
-    private fun CodeGeneratorRequest.runGeneration(config: Config): List<FileGenerator> {
+    private fun CodeGeneratorRequest.runGeneration(config: Config): List<CodeGeneratorResponse.File?> {
         return try {
             generateKotlinByModel(
                 config = config,
                 model = this.toModel(config),
-            )
+            ).map { file ->
+                CodeGeneratorResponse.File.newBuilder()
+                    .apply {
+                        val dir = file.packagePath
+                            ?.takeIf { it.isNotEmpty() }
+                            ?.replace('.', File.separatorChar)
+                            ?.plus(File.separatorChar)
+                            ?: ""
+
+                        // some filename already contains package (true for Google's default .proto files)
+                        val filename = file.filename?.removePrefix(dir) ?: error("File name can not be null")
+                        name = "$dir$filename"
+                        content = file.build()
+                    }
+                    .build()
+            }
         } finally {
             (logger as ch.qos.logback.classic.Logger).detachAndStopAllAppenders()
         }

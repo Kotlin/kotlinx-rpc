@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.protoc.gen.core.model
 
+import com.google.protobuf.ByteString
 import com.google.protobuf.Descriptors
 import kotlinx.rpc.protoc.gen.core.Comment
 import kotlinx.rpc.protoc.gen.core.FqNameTable
@@ -48,9 +49,35 @@ data class MessageDeclaration(
     }
 
     val hasPresenceFields by lazy { actualFields.any { it.presenceIdx != null } }
-    val presenceInterfaceFullName: String by lazy {
-        parent.value?.let { "${it.presenceInterfaceFullName}.${name.simpleName}" }
-            ?: name.fullName("Presence")
+
+    val presenceInterfaceName: FqName.Declaration by lazy {
+        parent.value?.presenceInterfaceName?.nested(name.simpleName)
+            ?: name.suffixed("Presence")
+    }
+
+    val companionName: FqName.Declaration by lazy { name.nested("Companion") }
+
+    val internalClassName: FqName.Declaration by lazy {
+        parent.value?.internalClassName?.nested(name.simpleName)?.suffixed("Internal")
+            ?: name.suffixed("Internal")
+    }
+
+    val internalCompanionName: FqName.Declaration by lazy { internalClassName.nested("Companion") }
+    val presenceIndicesName: FqName.Declaration by lazy { internalClassName.nested("PresenceIndices") }
+    val codecObjectName: FqName.Declaration by lazy { internalClassName.nested("CODEC") }
+    val bytesDefaultsName: FqName.Declaration by lazy { internalClassName.nested("BytesDefaults") }
+
+    fun hasPresenceFieldsRecursive(): Boolean {
+        return hasPresenceFields || nestedDeclarations.any { it.isUserFacing && it.hasPresenceFieldsRecursive() }
+    }
+
+    fun nonDefaultByteFields(): List<FieldDeclaration> {
+        return actualFields
+            .filter {
+                it.type == FieldType.IntegralType.BYTES &&
+                        it.dec.hasDefaultValue() &&
+                        !(it.dec.defaultValue as ByteString).isEmpty
+            }
     }
 }
 
@@ -62,6 +89,8 @@ data class EnumDeclaration(
     val dec: Descriptors.EnumDescriptor,
     val deprecated: Boolean,
 ) {
+    val companionName: FqName.Declaration by lazy { name.nested("Companion") }
+    val unrecognisedName: FqName.Declaration by lazy { name.nested("UNRECOGNIZED") }
 
     fun defaultEntry(): Entry {
         // In proto3 and editions:
@@ -95,6 +124,7 @@ data class OneOfDeclaration(
 )
 
 data class FieldDeclaration(
+    // todo usages of that into resolver before interpolation
     val name: String,
     val type: FieldType,
     val doc: Comment?,
