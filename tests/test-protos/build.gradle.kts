@@ -7,6 +7,7 @@
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -22,6 +23,8 @@ kotlin {
             }
         }
     }
+
+    explicitApi = ExplicitApiMode.Disabled
 }
 
 configureLocalProtocGenDevelopmentDependency("Main")
