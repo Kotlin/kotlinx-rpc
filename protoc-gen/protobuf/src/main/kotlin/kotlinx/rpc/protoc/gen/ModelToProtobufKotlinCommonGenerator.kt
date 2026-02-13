@@ -500,6 +500,7 @@ class ModelToProtobufKotlinCommonGenerator(
             |    $demoField = ...    
             |}
         """.trimMargin()
+
         function(
             name = "copy",
             contextReceiver = declaration.name.scoped(),
@@ -507,11 +508,11 @@ class ModelToProtobufKotlinCommonGenerator(
             returnType = declaration.name.scoped(),
             comment = Comment.leading(
                 """
-                |Copies the original message, including unknown fields.
-                |```
-                |val copy = original.copy$invocation
-                |```
-            """.trimMargin()
+                    |Copies the original message, including unknown fields.
+                    |```
+                    |val copy = original.copy$invocation
+                    |```
+                """.trimMargin()
             )
         ) {
             code("return this.asInternal().copyInternal(body)".scoped())
@@ -804,7 +805,12 @@ class ModelToProtobufKotlinCommonGenerator(
                 scope("%T(source).use".scoped(FqName.RpcClasses.WireDecoder)) {
                     code("val msg = %T()".scoped(declaration.internalClassName))
                     scope("checkForPlatformDecodeException".scoped(), nlAfterClosed = false) {
-                        code("%T.decodeWith(msg, it, config as? %T)".scoped(declaration.internalClassName, FqName.RpcClasses.ProtobufConfig))
+                        code(
+                            "%T.decodeWith(msg, it, config as? %T)".scoped(
+                                declaration.internalClassName,
+                                FqName.RpcClasses.ProtobufConfig,
+                            )
+                        )
                     }
                     code("msg.checkRequiredFields()".scoped())
                     code("msg._unknownFieldsEncoder?.flush()".scoped())
@@ -1455,7 +1461,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 }
 
                 else -> {
-                    code(valueSize.wrapIn { valueSize -> "__result += $valueSize" } )
+                    code(valueSize.wrapIn { valueSize -> "__result += $valueSize" })
                 }
             }
 
@@ -1572,13 +1578,19 @@ class ModelToProtobufKotlinCommonGenerator(
 
                     val elementSize = when (value.wireType) {
                         WireType.LENGTH_DELIMITED -> {
-                            valueSize.merge(tagSize, int32SizeCall("it".scoped())) { valueSize, tagSize, int32SizeCall ->
+                            valueSize.merge(
+                                tagSize,
+                                int32SizeCall("it".scoped())
+                            ) { valueSize, tagSize, int32SizeCall ->
                                 "$valueSize.let { $tagSize + $int32SizeCall + it }"
                             }
                         }
 
                         WireType.START_GROUP -> {
-                            tagSize.merge(valueSize, tagSizeCall(number, WireType.END_GROUP)) { tagSize, valueSize, tagSizeCall ->
+                            tagSize.merge(
+                                other = valueSize,
+                                another = tagSizeCall(number, WireType.END_GROUP),
+                            ) { tagSize, valueSize, tagSizeCall ->
                                 "$tagSize + $valueSize + $tagSizeCall"
                             }
                         }

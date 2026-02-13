@@ -20,6 +20,8 @@ import kotlinx.rpc.protoc.gen.core.model.ServiceDeclaration
 import kotlinx.rpc.protoc.gen.core.model.nested
 import kotlin.Boolean
 import kotlin.collections.plus
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 private val nameCache = mutableMapOf<Descriptors.GenericDescriptor, FqName>()
 private val modelCache = mutableMapOf<Descriptors.GenericDescriptor, Any>()
@@ -173,8 +175,8 @@ private fun Descriptors.FileDescriptor.toModel(nameTable: FqNameTable): FileDecl
         dependencies = dependencies.map { it.toModel(nameTable) },
         messageDeclarations = messageTypes.map {
             it.toModel(
-                comments + Paths.messageCommentPath + it.index,
-                nameTable
+                comments = comments + Paths.messageCommentPath + it.index,
+                nameTable = nameTable,
             )
         },
         enumDeclarations = enumTypes.map { it.toModel(comments + Paths.enumCommentPath + it.index, nameTable) },
@@ -190,9 +192,7 @@ private fun Descriptors.FileDescriptor.toModel(nameTable: FqNameTable): FileDecl
 }
 
 private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNameTable): MessageDeclaration = cached {
-    requireNotNull(comments) {
-        "Comments are missing for message declaration: ${fqName()}"
-    }
+    ensureCommentsPresent(fqName(), comments)
 
     var currPresenceIdx = 0
     var regularFields = fields
@@ -259,6 +259,19 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNam
     }
 }
 
+@OptIn(ExperimentalContracts::class)
+private fun ensureCommentsPresent(declaration: FqName, comments: Comments?) {
+    contract {
+        returns() implies (comments != null)
+    }
+
+    requireNotNull(comments) {
+        "Comments are missing for message declaration: $declaration. " +
+                "This likely because the lazy declaration value was access before the whole model was composed. " +
+                "Check that you don't access lazy values during resolution."
+    }
+}
+
 private fun Descriptors.FieldDescriptor.toModel(
     comments: Comments,
     nameTable: FqNameTable,
@@ -292,9 +305,7 @@ private fun Descriptors.OneofDescriptor.toModel(
 }
 
 private fun Descriptors.EnumDescriptor.toModel(comments: Comments?, nameTable: FqNameTable): EnumDeclaration = cached {
-    requireNotNull(comments) {
-        "Comments are missing for enum declaration: ${fqName()}"
-    }
+    ensureCommentsPresent(fqName(), comments)
 
     val entriesMap = mutableMapOf<Int, EnumDeclaration.Entry>()
     val aliases = mutableListOf<EnumDeclaration.Alias>()

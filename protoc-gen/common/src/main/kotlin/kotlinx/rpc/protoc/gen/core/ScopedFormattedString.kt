@@ -94,7 +94,7 @@ fun FqName.scopedAnnotation(): ScopedFormattedString {
  * // if ctor is before inner
  * // then in the interpolated string the 'ctor' parameter
  * // must be before the 'inner' parameter
- * val result = ctor.merge(inner).wrapIn { ctor, inner -> "return $ctor($inner)" }
+ * val result = ctor.merge(inner) { ctor, inner -> "return $ctor($inner)" }
  * ```
  */
 class ScopedFormattedString(val value: String, val args: List<Any>) {
@@ -105,7 +105,7 @@ class ScopedFormattedString(val value: String, val args: List<Any>) {
     }
 
     override fun toString(): String {
-        error("Scoped strings must not be strigified directly, use wrapIn() or merge() instead.")
+        error("Scoped strings must not be stringified directly, use wrapIn() or merge() instead.")
     }
 
     override fun equals(other: Any?): Boolean {
@@ -127,6 +127,9 @@ class ScopedFormattedString(val value: String, val args: List<Any>) {
     }
 }
 
+/**
+ * IMPORTANT TO USE THE ARGUMENT ONLY ONCE
+ */
 fun ScopedFormattedString.wrapIn(block: (String) -> String): ScopedFormattedString {
     return ScopedFormattedString(block(value), args)
 }
