@@ -4,9 +4,11 @@
 
 package util
 
+// marker-imports
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
+// /marker-imports
 
 private val excludedProjects = setOf(
     "krpc-test",
@@ -17,6 +19,7 @@ private val excludedProjects = setOf(
 
 val Project.enableAbiValidation get() = name !in excludedProjects
 
+// marker-configureAbiFilters
 @OptIn(ExperimentalAbiValidation::class)
 fun AbiValidationVariantSpec.configureAbiFilters() {
     filters {
@@ -28,3 +31,4 @@ fun AbiValidationVariantSpec.configureAbiFilters() {
         }
     }
 }
+// /marker-configureAbiFilters

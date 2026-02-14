@@ -1,11 +1,10 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:OptIn(ExperimentalAbiValidation::class)
 
 import compat.patrouille.configureJavaCompatibility
-import compat.patrouille.configureKotlinCompatibility
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import util.*
 import util.targets.configureJs
@@ -25,9 +24,11 @@ kotlin {
     abiValidation {
         enabled = enableAbiValidation
 
+        // marker-klib
         klib {
             enabled = enableAbiValidation
         }
+        // /marker-klib
 
         configureAbiFilters()
     }
