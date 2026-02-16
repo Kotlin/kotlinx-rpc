@@ -36,6 +36,7 @@ fun Project.setupCompat(rpcVersion: String, kotlinVersion: String) {
     withKotlinJvmExtension {
         @OptIn(ExperimentalBuildToolsApi::class, ExperimentalKotlinGradlePluginApi::class)
         compilerVersion.set(kotlinVersion)
+        coreLibrariesVersion = kotlinVersion
 
         sourceSets.named("main") {
             kotlin.srcDirs(layout.buildDirectory.dir("generated-sources").map { it.asFile.resolve("csm") })

@@ -78,7 +78,6 @@ val conventions_kmp = settingsDir
 //  remove apiValidation_kt
 //  remote everything after 2.4.0
 if (kotlinVersion.isAtLeast(2, 4, 0)) {
-    println("rewrite 2.4.0")
     rewrite(
         file = apiValidation_kt,
         markers = mapOf(
