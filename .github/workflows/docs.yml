@@ -53,7 +53,7 @@ jobs:
           location: docs/pages/kotlinx-rpc/
 
       - name: Save artifact with build results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: kotlinx-rpc
           path: |
@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: kotlinx-rpc
           path: artifacts
@@ -88,7 +88,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download Writerside artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: kotlinx-rpc
 
@@ -124,7 +124,7 @@ jobs:
         run: cd ${{ env.ASSEMBLE_DIR }} && zip -r ../${{ env.ASSEMBLE_ARTIFACT }} .
 
       - name: Save assembled artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: kotlinx-rpc-assembled
           path: |
@@ -140,7 +140,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: kotlinx-rpc-assembled
 
@@ -167,7 +167,7 @@ jobs:
       image: registry.jetbrains.team/p/writerside/builder/algolia-publisher:2.0.32-3
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: kotlinx-rpc
       - name: Unzip artifact
