@@ -5,6 +5,8 @@
 @file:Suppress("PropertyName")
 @file:OptIn(ExperimentalAbiValidation::class)
 
+import org.jetbrains.kotlin.buildtools.api.ExperimentalBuildToolsApi
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 
@@ -19,6 +21,12 @@ dependencies {
 }
 
 kotlin {
+    @OptIn(ExperimentalBuildToolsApi::class, ExperimentalKotlinGradlePluginApi::class)
+    // THIS IS AUTO-GENERATED, DON'T MODIFY, BEGIN
+    compilerVersion.set("2.2.0")
+    coreLibrariesVersion = "2.2.0"
+    // END
+
     explicitApi = ExplicitApiMode.Disabled
 
     abiValidation {
