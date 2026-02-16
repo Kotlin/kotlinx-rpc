@@ -1057,8 +1057,8 @@ internal class RpcStubGenerator(
     private fun addAssociatedObjectAnnotation() {
         val service = declaration.service
 
-        service.annotations += vsApi {
-            IrConstructorCallImplVS(
+        val annotation = vsApi {
+            IrAnnotationVS(
                 startOffset = service.startOffset,
                 endOffset = service.endOffset,
                 type = ctx.withServiceDescriptor.defaultType,
@@ -1080,6 +1080,10 @@ internal class RpcStubGenerator(
                     )
                 }
             }
+        }
+
+        vsApi {
+            service.addAnnotationVS(annotation)
         }
     }
 

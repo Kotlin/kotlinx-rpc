@@ -128,7 +128,7 @@ import org.jetbrains.kotlin.platform.TargetPlatform
 import org.jetbrains.kotlin.platform.isJs
 import org.jetbrains.kotlin.platform.isWasm
 //##csm /specific
-//##csm specific=[2.1.22...2.*]
+//##csm specific=[2.1.22...2.3.*]
 import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -144,6 +144,39 @@ import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
+import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
+import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
+import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
+import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.util.copyTo
+import org.jetbrains.kotlin.ir.util.isNullable
+import org.jetbrains.kotlin.name.CallableId
+import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.platform.TargetPlatform
+import org.jetbrains.kotlin.platform.isJs
+import org.jetbrains.kotlin.platform.isWasm
+//##csm /specific
+//##csm specific=[2.4.0...2.*]
+import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
+import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.config.CommonConfigurationKeys
+import org.jetbrains.kotlin.config.CompilerConfigurationKey
+import org.jetbrains.kotlin.descriptors.SourceElement
+import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
+import org.jetbrains.kotlin.ir.declarations.*
+import org.jetbrains.kotlin.ir.expressions.IrAnnotation
+import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
+import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
+import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
+import org.jetbrains.kotlin.ir.expressions.impl.IrAnnotationImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
+import org.jetbrains.kotlin.ir.expressions.impl.fromSymbolOwner
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
@@ -383,5 +416,48 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         }
         //##csm /default
         //##csm /IrMemberAccessExpressionData.buildFor
+    }
+
+    override fun IrAnnotationVS(
+        startOffset: Int,
+        endOffset: Int,
+        type: IrType,
+        symbol: IrConstructorSymbol,
+        typeArgumentsCount: Int,
+        valueArgumentsCount: Int,
+        constructorTypeArgumentsCount: Int,
+    ): IrMemberAccessExpression<*> {
+        //##csm IrAnnotationVS
+        //##csm specific=[2.0.0...2.3.99]
+        return IrConstructorCallImplVS(
+            startOffset = startOffset,
+            endOffset = endOffset,
+            type = type,
+            symbol = symbol,
+            typeArgumentsCount = typeArgumentsCount,
+            constructorTypeArgumentsCount = constructorTypeArgumentsCount,
+            valueArgumentsCount = valueArgumentsCount,
+        )
+        //##csm /specific
+        //##csm default
+        return IrAnnotationImpl.fromSymbolOwner(
+            startOffset = startOffset,
+            endOffset = endOffset,
+            type = type,
+            constructorSymbol = symbol,
+        )
+        //##csm /default
+        //##csm /IrAnnotationVS
+    }
+
+    override fun IrMutableAnnotationContainer.addAnnotationVS(annotation: IrMemberAccessExpression<*>) {
+        //##csm addAnnotationVS
+        //##csm specific=[2.0.0...2.3.99]
+        annotations += annotation as IrConstructorCallImpl
+        //##csm /specific
+        //##csm default
+        annotations += annotation as IrAnnotationImpl
+        //##csm /default
+        //##csm /addAnnotationVS
     }
 }

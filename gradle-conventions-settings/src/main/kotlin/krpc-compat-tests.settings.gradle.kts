@@ -5,16 +5,22 @@
 @file:Suppress("LoggingSimilarMessage")
 
 import kotlin.io.path.createDirectories
+import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 // ADD NEW VERSIONS HERE
 val versionDirs = mapOf(
     "v0_8" to CompatVersion("0.8.1", "2.2.0"),
     "v0_9" to CompatVersion("0.9.1", "2.2.0"),
-    "v0_10" to CompatVersion("0.10.0", "2.2.20"),
+    "v0_10" to CompatVersion("0.10.1", "2.2.20"),
 )
 
 // DON'T MODIFY BELOW THIS LINE
+
+fun java.nio.file.Path.replace(regex: Regex, replacement: String): java.nio.file.Path {
+    writeText(readText().replace(regex, replacement))
+    return this
+}
 
 val globalRootDirValue: String = extra["globalRootDir"] as? String
     ?: error("globalRootDir property is not set")
@@ -50,7 +56,7 @@ versionDirs.forEach { (dir, version) ->
     val propertiesFile = moduleDir.resolve("gradle.properties")
     propertiesFile.writeText(
         """
-        /* THIS FILE IS AUTO-GENERATED, DO NOT EDIT! */
+        # THIS FILE IS AUTO-GENERATED, DO NOT EDIT!
 
         kotlin.compiler.runViaBuildToolsApi=true
         
@@ -60,6 +66,19 @@ versionDirs.forEach { (dir, version) ->
     logger.debug("Generating {}", globalRootDir.relativize(buildFile))
     include(":tests:krpc-protocol-compatibility-tests:$dir")
 }
+
+val testApiBuildFile: java.nio.file.Path = compatDir
+    .resolve("test-api")
+    .resolve("build.gradle.kts")
+
+val minimalKotlinVersion = versionDirs.values.first().kotlin
+
+val compilerVersion = "compilerVersion\\.set.+".toRegex()
+val coreLibrariesVersion = "coreLibrariesVersion = .+".toRegex()
+
+testApiBuildFile
+    .replace(compilerVersion, "compilerVersion.set(\"$minimalKotlinVersion\")")
+    .replace(coreLibrariesVersion, "coreLibrariesVersion = \"$minimalKotlinVersion\"")
 
 val versionsConventionsFile: java.nio.file.Path = globalRootDir
     .resolve("gradle-conventions")

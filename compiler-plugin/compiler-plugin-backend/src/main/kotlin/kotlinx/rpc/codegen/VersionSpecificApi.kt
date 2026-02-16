@@ -83,6 +83,18 @@ interface VersionSpecificApi {
         source: SourceElement = SourceElement.NO_SOURCE,
     ): IrConstructorCallImpl
 
+    fun IrAnnotationVS(
+        startOffset: Int,
+        endOffset: Int,
+        type: IrType,
+        symbol: IrConstructorSymbol,
+        typeArgumentsCount: Int,
+        valueArgumentsCount: Int,
+        constructorTypeArgumentsCount: Int,
+    ): IrMemberAccessExpression<*>
+
+    fun IrMutableAnnotationContainer.addAnnotationVS(annotation: IrMemberAccessExpression<*>)
+
     fun IrFunction.valueParametersVS(): List<IrValueParameter>
     var IrFunction.dispatchReceiverParameterVS: IrValueParameter?
 
