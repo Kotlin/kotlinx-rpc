@@ -9,9 +9,12 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.GeneratedProtoMessage
 import kotlin.reflect.KClass
 
+/**
+ * Added by the compiler plugin to proto message classes to associate them with their descriptor.
+ */
 @InternalRpcApi
 @Target(AnnotationTarget.CLASS)
-expect public annotation class WithProtoDescriptor(
+public expect annotation class WithProtoDescriptor(
     @Suppress("unused")
     val descriptor: KClass<out ProtoDescriptor<*>>,
 )

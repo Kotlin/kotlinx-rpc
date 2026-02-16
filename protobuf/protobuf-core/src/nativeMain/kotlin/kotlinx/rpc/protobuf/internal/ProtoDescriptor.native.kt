@@ -23,5 +23,5 @@ public actual annotation class WithProtoDescriptor(
 
 @OptIn(ExperimentalAssociatedObjects::class)
 internal actual fun <@GeneratedProtoMessage T : Any> findProtoDescriptorOf(kClass: KClass<T>): Any? {
-    return kClass.findAssociatedObject<WithServiceDescriptor>()
+    return kClass.findAssociatedObject<WithProtoDescriptor>()
 }
