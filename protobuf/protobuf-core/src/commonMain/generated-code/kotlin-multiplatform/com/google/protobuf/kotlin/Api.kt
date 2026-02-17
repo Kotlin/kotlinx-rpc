@@ -1,7 +1,9 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.grpc.codec.WithCodec
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * Api is a light-weight descriptor for an API Interface.
@@ -14,8 +16,8 @@ import kotlinx.rpc.internal.utils.*
 * this message itself. See https://cloud.google.com/apis/design/glossary for
 * detailed terminology.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.ApiInternal.CODEC::class)
-public interface Api { 
+@WithCodec(ApiInternal.CODEC::class)
+public interface Api {
     /**
     * The fully qualified name of this interface, including package name
     * followed by the interface's simple name.
@@ -24,11 +26,11 @@ public interface Api {
     /**
     * The methods of this interface, in unspecified order.
     */
-    public val methods: List<com.google.protobuf.kotlin.Method>
+    public val methods: List<Method>
     /**
     * Any metadata attached to the interface.
     */
-    public val options: List<com.google.protobuf.kotlin.Option>
+    public val options: List<Option>
     /**
     * A version string for this interface. If specified, must have the form
     * `major-version.minor-version`, as in `1.10`. If the minor version is
@@ -55,15 +57,15 @@ public interface Api {
     * Source context for the protocol buffer service represented by this
     * message.
     */
-    public val sourceContext: com.google.protobuf.kotlin.SourceContext
+    public val sourceContext: SourceContext
     /**
     * Included interfaces. See [Mixin][].
     */
-    public val mixins: List<com.google.protobuf.kotlin.Mixin>
+    public val mixins: List<Mixin>
     /**
     * The source syntax of the service.
     */
-    public val syntax: com.google.protobuf.kotlin.Syntax
+    public val syntax: Syntax
 
     public companion object
 }
@@ -71,8 +73,8 @@ public interface Api {
 /**
 * Method represents a method of an API interface.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.MethodInternal.CODEC::class)
-public interface Method { 
+@WithCodec(MethodInternal.CODEC::class)
+public interface Method {
     /**
     * The simple name of this method.
     */
@@ -96,11 +98,11 @@ public interface Method {
     /**
     * Any metadata attached to the method.
     */
-    public val options: List<com.google.protobuf.kotlin.Option>
+    public val options: List<Option>
     /**
     * The source syntax of this method.
     */
-    public val syntax: com.google.protobuf.kotlin.Syntax
+    public val syntax: Syntax
 
     public companion object
 }
@@ -185,8 +187,8 @@ public interface Method {
 *       ...
 *     }
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.MixinInternal.CODEC::class)
-public interface Mixin { 
+@WithCodec(MixinInternal.CODEC::class)
+public interface Mixin {
     /**
     * The fully qualified name of the interface which is included.
     */

@@ -1,31 +1,51 @@
-@file:OptIn(ExperimentalRpcApi::class, kotlinx.rpc.internal.utils.InternalRpcApi::class)
+@file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
 import kotlinx.io.Buffer
-import kotlinx.rpc.internal.utils.*
-import kotlinx.rpc.protobuf.internal.*
+import kotlinx.io.Source
+import kotlinx.rpc.grpc.codec.CodecConfig
+import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.protobuf.internal.InternalMessage
+import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
+import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
+import kotlinx.rpc.protobuf.internal.WireDecoder
+import kotlinx.rpc.protobuf.internal.WireEncoder
+import kotlinx.rpc.protobuf.internal.WireSize
+import kotlinx.rpc.protobuf.internal.WireType
+import kotlinx.rpc.protobuf.internal.bool
+import kotlinx.rpc.protobuf.internal.bytes
+import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
+import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
+import kotlinx.rpc.protobuf.internal.enum
+import kotlinx.rpc.protobuf.internal.int32
+import kotlinx.rpc.protobuf.internal.int64
+import kotlinx.rpc.protobuf.internal.string
+import kotlinx.rpc.protobuf.internal.tag
 
-public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rpc.protobuf.internal.InternalMessage(fieldsWithPresence = 0) { 
-    @kotlinx.rpc.internal.utils.InternalRpcApi
+public class TimestampInternal: Timestamp, InternalMessage(fieldsWithPresence = 0) {
+    @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
-    @kotlinx.rpc.internal.utils.InternalRpcApi
+    @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @kotlinx.rpc.internal.utils.InternalRpcApi
+    @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var seconds: Long by MsgFieldDelegate { 0L }
     public override var nanos: Int by MsgFieldDelegate { 0 }
 
-    public override fun hashCode(): kotlin.Int { 
+    public override fun hashCode(): Int {
         checkRequiredFields()
         var result = seconds.hashCode()
         result = 31 * result + nanos.hashCode()
         return result
     }
 
-    public override fun equals(other: kotlin.Any?): kotlin.Boolean { 
+    public override fun equals(other: kotlin.Any?): Boolean {
         checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
@@ -36,25 +56,25 @@ public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rp
         return true
     }
 
-    public override fun toString(): kotlin.String { 
+    public override fun toString(): String {
         return asString()
     }
 
-    public fun asString(indent: kotlin.Int = 0): kotlin.String { 
+    public fun asString(indent: Int = 0): String {
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString { 
-            appendLine("com.google.protobuf.kotlin.Timestamp(")
+        return buildString {
+            appendLine("Timestamp(")
             appendLine("${nextIndentString}seconds=${seconds},")
             appendLine("${nextIndentString}nanos=${nanos},")
             append("${indentString})")
         }
     }
 
-    @kotlinx.rpc.internal.utils.InternalRpcApi
-    public fun copyInternal(body: com.google.protobuf.kotlin.TimestampInternal.() -> Unit): com.google.protobuf.kotlin.TimestampInternal { 
-        val copy = com.google.protobuf.kotlin.TimestampInternal()
+    @InternalRpcApi
+    public fun copyInternal(body: TimestampInternal.() -> Unit): TimestampInternal {
+        val copy = TimestampInternal()
         copy.seconds = this.seconds
         copy.nanos = this.nanos
         copy.apply(body)
@@ -62,25 +82,25 @@ public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rp
         return copy
     }
 
-    @kotlinx.rpc.internal.utils.InternalRpcApi
-    public object CODEC: kotlinx.rpc.grpc.codec.MessageCodec<com.google.protobuf.kotlin.Timestamp> { 
-        public override fun encode(value: com.google.protobuf.kotlin.Timestamp, config: kotlinx.rpc.grpc.codec.CodecConfig?): kotlinx.io.Source { 
-            val buffer = kotlinx.io.Buffer()
-            val encoder = kotlinx.rpc.protobuf.internal.WireEncoder(buffer)
+    @InternalRpcApi
+    public object CODEC: MessageCodec<Timestamp> {
+        public override fun encode(value: Timestamp, config: CodecConfig?): Source {
+            val buffer = Buffer()
+            val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
-            kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException { 
-                internalMsg.encodeWith(encoder, config as? kotlinx.rpc.protobuf.ProtobufConfig)
+            checkForPlatformEncodeException {
+                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
             internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
-        public override fun decode(source: kotlinx.io.Source, config: kotlinx.rpc.grpc.codec.CodecConfig?): com.google.protobuf.kotlin.Timestamp { 
-            kotlinx.rpc.protobuf.internal.WireDecoder(source).use { 
-                val msg = com.google.protobuf.kotlin.TimestampInternal()
-                kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException { 
-                    com.google.protobuf.kotlin.TimestampInternal.decodeWith(msg, it, config as? kotlinx.rpc.protobuf.ProtobufConfig)
+        public override fun decode(source: Source, config: CodecConfig?): Timestamp {
+            WireDecoder(source).use {
+                val msg = TimestampInternal()
+                checkForPlatformDecodeException {
+                    TimestampInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
                 msg._unknownFieldsEncoder?.flush()
@@ -89,46 +109,46 @@ public class TimestampInternal: com.google.protobuf.kotlin.Timestamp, kotlinx.rp
         }
     }
 
-    @kotlinx.rpc.internal.utils.InternalRpcApi
+    @InternalRpcApi
     public companion object
 }
 
-@kotlinx.rpc.internal.utils.InternalRpcApi
-public fun com.google.protobuf.kotlin.TimestampInternal.checkRequiredFields() { 
+@InternalRpcApi
+public fun TimestampInternal.checkRequiredFields() {
     // no required fields to check
 }
 
-@kotlinx.rpc.internal.utils.InternalRpcApi
-public fun com.google.protobuf.kotlin.TimestampInternal.encodeWith(encoder: kotlinx.rpc.protobuf.internal.WireEncoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
-    if (seconds != 0L) { 
+@InternalRpcApi
+public fun TimestampInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+    if (seconds != 0L) {
         encoder.writeInt64(fieldNr = 1, value = seconds)
     }
 
-    if (nanos != 0) { 
+    if (nanos != 0) {
         encoder.writeInt32(fieldNr = 2, value = nanos)
     }
 }
 
-@kotlinx.rpc.internal.utils.InternalRpcApi
-public fun com.google.protobuf.kotlin.TimestampInternal.Companion.decodeWith(msg: com.google.protobuf.kotlin.TimestampInternal, decoder: kotlinx.rpc.protobuf.internal.WireDecoder, config: kotlinx.rpc.protobuf.ProtobufConfig?) { 
-    while (true) { 
+@InternalRpcApi
+public fun TimestampInternal.Companion.decodeWith(msg: TimestampInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when { 
-            tag.fieldNr == 1 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+        when {
+            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
                 msg.seconds = decoder.readInt64()
             }
-            tag.fieldNr == 2 && tag.wireType == kotlinx.rpc.protobuf.internal.WireType.VARINT -> { 
+            tag.fieldNr == 2 && tag.wireType == WireType.VARINT -> {
                 msg.nanos = decoder.readInt32()
             }
-            else -> { 
-                if (tag.wireType == kotlinx.rpc.protobuf.internal.WireType.END_GROUP) { 
-                    throw kotlinx.rpc.protobuf.internal.ProtobufDecodingException("Unexpected END_GROUP tag.")
+            else -> {
+                if (tag.wireType == WireType.END_GROUP) {
+                    throw ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
 
-                if (config?.discardUnknownFields ?: false) { 
+                if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
-                } else { 
-                    if (msg._unknownFieldsEncoder == null) { 
+                } else {
+                    if (msg._unknownFieldsEncoder == null) {
                         msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
                     }
 
@@ -139,20 +159,20 @@ public fun com.google.protobuf.kotlin.TimestampInternal.Companion.decodeWith(msg
     }
 }
 
-private fun com.google.protobuf.kotlin.TimestampInternal.computeSize(): Int { 
+private fun TimestampInternal.computeSize(): Int {
     var __result = 0
-    if (seconds != 0L) { 
-        __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(1, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.int64(seconds))
+    if (seconds != 0L) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int64(seconds))
     }
 
-    if (nanos != 0) { 
-        __result += (kotlinx.rpc.protobuf.internal.WireSize.tag(2, kotlinx.rpc.protobuf.internal.WireType.VARINT) + kotlinx.rpc.protobuf.internal.WireSize.int32(nanos))
+    if (nanos != 0) {
+        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int32(nanos))
     }
 
     return __result
 }
 
-@kotlinx.rpc.internal.utils.InternalRpcApi
-public fun com.google.protobuf.kotlin.Timestamp.asInternal(): com.google.protobuf.kotlin.TimestampInternal { 
-    return this as? com.google.protobuf.kotlin.TimestampInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
+@InternalRpcApi
+public fun Timestamp.asInternal(): TimestampInternal {
+    return this as? TimestampInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
 }

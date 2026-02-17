@@ -1,16 +1,17 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.conformance
 
-import kotlin.jvm.JvmInline
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.grpc.codec.WithCodec
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * Meant to encapsulate all types of tests: successes, skips, failures, etc.
 * Therefore, this may or may not have a failure message. Failure messages
 * may be truncated for our failure lists.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.conformance.TestStatusInternal.CODEC::class)
-interface TestStatus { 
+@WithCodec(TestStatusInternal.CODEC::class)
+interface TestStatus {
     val name: String
     val failureMessage: String
     /**
@@ -27,9 +28,9 @@ interface TestStatus {
 * This will be known by message_type == "conformance.FailureSet", a conformance
 * test should return a serialized FailureSet in protobuf_payload.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.conformance.FailureSetInternal.CODEC::class)
-interface FailureSet { 
-    val test: List<com.google.protobuf.conformance.TestStatus>
+@WithCodec(FailureSetInternal.CODEC::class)
+interface FailureSet {
+    val test: List<TestStatus>
 
     companion object
 }
@@ -41,12 +42,12 @@ interface FailureSet {
 *   2. parse the protobuf or JSON payload in "payload" (which may fail)
 *   3. if the parse succeeded, serialize the message in the requested format.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.conformance.ConformanceRequestInternal.CODEC::class)
-interface ConformanceRequest { 
+@WithCodec(ConformanceRequestInternal.CODEC::class)
+interface ConformanceRequest {
     /**
     * Which format should the testee serialize its message to?
     */
-    val requestedOutputFormat: com.google.protobuf.conformance.WireFormat
+    val requestedOutputFormat: WireFormat
     /**
     * The full name for the test message to use; for the moment, either:
     * protobuf_test_messages.proto3.TestAllTypesProto3 or
@@ -61,11 +62,11 @@ interface ConformanceRequest {
     * specific support in testee programs. Refer to the definition of
     * TestCategory for more information.
     */
-    val testCategory: com.google.protobuf.conformance.TestCategory
+    val testCategory: TestCategory
     /**
     * Specify details for how to encode jspb.
     */
-    val jspbEncodingOptions: com.google.protobuf.conformance.JspbEncodingConfig
+    val jspbEncodingOptions: JspbEncodingConfig
     /**
     * This can be used in json and text format. If true, testee should print
     * unknown fields instead of ignore. This feature is optional.
@@ -76,14 +77,14 @@ interface ConformanceRequest {
     * protobuf_test_messages.proto3.TestAllTypes proto (as defined in
     * src/google/protobuf/proto3_test_messages.proto).
     */
-    val payload: com.google.protobuf.conformance.ConformanceRequest.Payload?
+    val payload: Payload?
 
     /**
     * The payload (whether protobuf of JSON) is always for a
     * protobuf_test_messages.proto3.TestAllTypes proto (as defined in
     * src/google/protobuf/proto3_test_messages.proto).
     */
-    sealed interface Payload { 
+    sealed interface Payload {
         @JvmInline
         value class ProtobufPayload(val value: ByteArray): Payload
 
@@ -106,11 +107,11 @@ interface ConformanceRequest {
 /**
 * Represents a single test case's output.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.conformance.ConformanceResponseInternal.CODEC::class)
-interface ConformanceResponse { 
-    val result: com.google.protobuf.conformance.ConformanceResponse.Result?
+@WithCodec(ConformanceResponseInternal.CODEC::class)
+interface ConformanceResponse {
+    val result: Result?
 
-    sealed interface Result { 
+    sealed interface Result {
         /**
         * This string should be set to indicate parsing failed.  The string can
         * provide more information about the parse error if it is available.
@@ -188,8 +189,8 @@ interface ConformanceResponse {
 /**
 * Encoding options for jspb format.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.conformance.JspbEncodingConfigInternal.CODEC::class)
-interface JspbEncodingConfig { 
+@WithCodec(JspbEncodingConfigInternal.CODEC::class)
+interface JspbEncodingConfig {
     /**
     * Encode the value field of Any as jspb array if true, otherwise binary.
     */
@@ -218,7 +219,7 @@ interface JspbEncodingConfig {
 *   - running as a sub-process may be more tricky in unusual environments like
 *     iOS apps, where fork/stdin/stdout are not available.
 */
-sealed class WireFormat(open val number: Int) { 
+sealed class WireFormat(open val number: Int) {
     data object UNSPECIFIED: WireFormat(number = 0)
 
     data object PROTOBUF: WireFormat(number = 1)
@@ -234,12 +235,12 @@ sealed class WireFormat(open val number: Int) {
 
     data class UNRECOGNIZED(override val number: Int): WireFormat(number)
 
-    companion object { 
+    companion object {
         val entries: List<WireFormat> by lazy { listOf(UNSPECIFIED, PROTOBUF, JSON, JSPB, TEXT_FORMAT) }
     }
 }
 
-sealed class TestCategory(open val number: Int) { 
+sealed class TestCategory(open val number: Int) {
     data object UNSPECIFIED_TEST: TestCategory(number = 0)
 
     /**
@@ -275,7 +276,7 @@ sealed class TestCategory(open val number: Int) {
 
     data class UNRECOGNIZED(override val number: Int): TestCategory(number)
 
-    companion object { 
+    companion object {
         val entries: List<TestCategory> by lazy { listOf(UNSPECIFIED_TEST, BINARY_TEST, JSON_TEST, JSON_IGNORE_UNKNOWN_PARSING_TEST, JSPB_TEST, TEXT_FORMAT_TEST) }
     }
 }

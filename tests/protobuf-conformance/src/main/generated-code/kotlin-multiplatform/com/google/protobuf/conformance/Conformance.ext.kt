@@ -1,8 +1,8 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.conformance
 
-import kotlin.jvm.JvmInline
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * Constructs a new message.
@@ -12,8 +12,8 @@ import kotlinx.rpc.internal.utils.*
 * }
 * ```
 */
-operator fun com.google.protobuf.conformance.TestStatus.Companion.invoke(body: com.google.protobuf.conformance.TestStatusInternal.() -> Unit): com.google.protobuf.conformance.TestStatus { 
-    val msg = com.google.protobuf.conformance.TestStatusInternal().apply(body)
+operator fun TestStatus.Companion.invoke(body: TestStatusInternal.() -> Unit): TestStatus {
+    val msg = TestStatusInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -26,7 +26,7 @@ operator fun com.google.protobuf.conformance.TestStatus.Companion.invoke(body: c
 * }
 * ```
 */
-fun com.google.protobuf.conformance.TestStatus.copy(body: com.google.protobuf.conformance.TestStatusInternal.() -> Unit = {}): com.google.protobuf.conformance.TestStatus { 
+fun TestStatus.copy(body: TestStatusInternal.() -> Unit = {}): TestStatus {
     return this.asInternal().copyInternal(body)
 }
 
@@ -38,8 +38,8 @@ fun com.google.protobuf.conformance.TestStatus.copy(body: com.google.protobuf.co
 * }
 * ```
 */
-operator fun com.google.protobuf.conformance.FailureSet.Companion.invoke(body: com.google.protobuf.conformance.FailureSetInternal.() -> Unit): com.google.protobuf.conformance.FailureSet { 
-    val msg = com.google.protobuf.conformance.FailureSetInternal().apply(body)
+operator fun FailureSet.Companion.invoke(body: FailureSetInternal.() -> Unit): FailureSet {
+    val msg = FailureSetInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -52,7 +52,7 @@ operator fun com.google.protobuf.conformance.FailureSet.Companion.invoke(body: c
 * }
 * ```
 */
-fun com.google.protobuf.conformance.FailureSet.copy(body: com.google.protobuf.conformance.FailureSetInternal.() -> Unit = {}): com.google.protobuf.conformance.FailureSet { 
+fun FailureSet.copy(body: FailureSetInternal.() -> Unit = {}): FailureSet {
     return this.asInternal().copyInternal(body)
 }
 
@@ -64,8 +64,8 @@ fun com.google.protobuf.conformance.FailureSet.copy(body: com.google.protobuf.co
 * }
 * ```
 */
-operator fun com.google.protobuf.conformance.ConformanceRequest.Companion.invoke(body: com.google.protobuf.conformance.ConformanceRequestInternal.() -> Unit): com.google.protobuf.conformance.ConformanceRequest { 
-    val msg = com.google.protobuf.conformance.ConformanceRequestInternal().apply(body)
+operator fun ConformanceRequest.Companion.invoke(body: ConformanceRequestInternal.() -> Unit): ConformanceRequest {
+    val msg = ConformanceRequestInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -78,14 +78,14 @@ operator fun com.google.protobuf.conformance.ConformanceRequest.Companion.invoke
 * }
 * ```
 */
-fun com.google.protobuf.conformance.ConformanceRequest.copy(body: com.google.protobuf.conformance.ConformanceRequestInternal.() -> Unit = {}): com.google.protobuf.conformance.ConformanceRequest { 
+fun ConformanceRequest.copy(body: ConformanceRequestInternal.() -> Unit = {}): ConformanceRequest {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf.conformance.ConformanceRequest] instance.
 */
-val com.google.protobuf.conformance.ConformanceRequest.presence: com.google.protobuf.conformance.ConformanceRequestPresence get() = this.asInternal()._presence
+val ConformanceRequest.presence: ConformanceRequestPresence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -95,8 +95,8 @@ val com.google.protobuf.conformance.ConformanceRequest.presence: com.google.prot
 * }
 * ```
 */
-operator fun com.google.protobuf.conformance.ConformanceResponse.Companion.invoke(body: com.google.protobuf.conformance.ConformanceResponseInternal.() -> Unit): com.google.protobuf.conformance.ConformanceResponse { 
-    val msg = com.google.protobuf.conformance.ConformanceResponseInternal().apply(body)
+operator fun ConformanceResponse.Companion.invoke(body: ConformanceResponseInternal.() -> Unit): ConformanceResponse {
+    val msg = ConformanceResponseInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -109,7 +109,7 @@ operator fun com.google.protobuf.conformance.ConformanceResponse.Companion.invok
 * }
 * ```
 */
-fun com.google.protobuf.conformance.ConformanceResponse.copy(body: com.google.protobuf.conformance.ConformanceResponseInternal.() -> Unit = {}): com.google.protobuf.conformance.ConformanceResponse { 
+fun ConformanceResponse.copy(body: ConformanceResponseInternal.() -> Unit = {}): ConformanceResponse {
     return this.asInternal().copyInternal(body)
 }
 
@@ -121,8 +121,8 @@ fun com.google.protobuf.conformance.ConformanceResponse.copy(body: com.google.pr
 * }
 * ```
 */
-operator fun com.google.protobuf.conformance.JspbEncodingConfig.Companion.invoke(body: com.google.protobuf.conformance.JspbEncodingConfigInternal.() -> Unit): com.google.protobuf.conformance.JspbEncodingConfig { 
-    val msg = com.google.protobuf.conformance.JspbEncodingConfigInternal().apply(body)
+operator fun JspbEncodingConfig.Companion.invoke(body: JspbEncodingConfigInternal.() -> Unit): JspbEncodingConfig {
+    val msg = JspbEncodingConfigInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -135,7 +135,7 @@ operator fun com.google.protobuf.conformance.JspbEncodingConfig.Companion.invoke
 * }
 * ```
 */
-fun com.google.protobuf.conformance.JspbEncodingConfig.copy(body: com.google.protobuf.conformance.JspbEncodingConfigInternal.() -> Unit = {}): com.google.protobuf.conformance.JspbEncodingConfig { 
+fun JspbEncodingConfig.copy(body: JspbEncodingConfigInternal.() -> Unit = {}): JspbEncodingConfig {
     return this.asInternal().copyInternal(body)
 }
 
@@ -143,6 +143,6 @@ fun com.google.protobuf.conformance.JspbEncodingConfig.copy(body: com.google.pro
 * Interface providing field-presence information for [com.google.protobuf.conformance.ConformanceRequest] messages.
 * Retrieve it via the [com.google.protobuf.conformance.ConformanceRequest.presence] extension property.
 */
-interface ConformanceRequestPresence { 
-    val hasJspbEncodingOptions: kotlin.Boolean
+interface ConformanceRequestPresence {
+    val hasJspbEncodingOptions: Boolean
 }

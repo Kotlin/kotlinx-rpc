@@ -119,7 +119,7 @@ class CopyTest {
 
     @Test
     fun `copy nested sub-message - deep copy and lambda modification`() {
-        val equals = Equals.Companion {
+        val equals = Equals {
             str1 = "root"
             bytes1 = byteArrayOf(1, 2, 3)
             someEnum2 = Equals.SomeEnum.VALUE1

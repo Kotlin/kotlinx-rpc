@@ -4,6 +4,9 @@
 
 package kotlinx.rpc.protoc.gen.core.model
 
+import kotlinx.rpc.protoc.gen.core.ScopedFormattedString
+import kotlinx.rpc.protoc.gen.core.scoped
+
 enum class WireType {
     VARINT,
     FIXED64,
@@ -14,43 +17,45 @@ enum class WireType {
 }
 
 sealed interface FieldType {
-    val defaultValue: String?
+    val defaultValue: ScopedFormattedString?
     val wireType: WireType
 
     val isPackable: Boolean get() = false
 
     data class List(val value: FieldType) : FieldType {
-        override val defaultValue: String = "mutableListOf()"
+        override val defaultValue: ScopedFormattedString = "mutableListOf()".scoped()
         override val wireType: WireType by lazy { value.wireType }
         override val isPackable: Boolean = value.isPackable
     }
 
     data class Map(val entry: Entry) : FieldType {
-        override val defaultValue: String = "mutableMapOf()"
+        override val defaultValue: ScopedFormattedString = "mutableMapOf()".scoped()
         override val wireType: WireType = WireType.LENGTH_DELIMITED
 
         data class Entry(val dec: Lazy<MessageDeclaration>, val key: FieldType, val value: FieldType)
     }
 
     data class Enum(val dec: Lazy<EnumDeclaration>) : FieldType {
-        override val defaultValue by lazy { dec.value.defaultEntry().name.fullName() }
+        override val defaultValue by lazy {
+            dec.value.defaultEntry().name.scoped()
+        }
         override val wireType: WireType = WireType.VARINT
         override val isPackable: Boolean = true
     }
 
     data class Message(val dec: Lazy<MessageDeclaration>) : FieldType {
-        override val defaultValue: String? = null
+        override val defaultValue: ScopedFormattedString? = null
         override val wireType: WireType by lazy { if (dec.value.isGroup) WireType.START_GROUP else WireType.LENGTH_DELIMITED }
     }
 
     data class OneOf(val dec: OneOfDeclaration) : FieldType {
-        override val defaultValue: String = "null"
+        override val defaultValue: ScopedFormattedString = "null".scoped()
         override val wireType: WireType = WireType.LENGTH_DELIMITED
     }
 
     enum class IntegralType(
         simpleName: String,
-        override val defaultValue: String,
+        stringDefaultValue: String,
         override val wireType: WireType,
         override val isPackable: Boolean = true,
     ) : FieldType {
@@ -71,6 +76,7 @@ sealed interface FieldType {
         SFIXED64("Long", "0L", WireType.FIXED64);
 
         val fqName: FqName = FqName.Declaration(simpleName, FqName.Package.fromString("kotlin"))
+        override val defaultValue: ScopedFormattedString = stringDefaultValue.scoped()
     }
 }
 

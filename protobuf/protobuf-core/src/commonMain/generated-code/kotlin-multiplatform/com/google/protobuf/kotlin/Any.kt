@@ -1,7 +1,9 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.grpc.codec.WithCodec
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * `Any` contains an arbitrary serialized protocol buffer message along with a
@@ -90,8 +92,8 @@ import kotlinx.rpc.internal.utils.*
 *       "value": "1.212s"
 *     }
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.AnyInternal.CODEC::class)
-public interface Any { 
+@WithCodec(AnyInternal.CODEC::class)
+public interface Any {
     /**
     * A URL/resource name that uniquely identifies the type of the serialized
     * protocol buffer message. This string must contain at least

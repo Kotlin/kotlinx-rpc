@@ -172,7 +172,7 @@ internal object ImplicitImports {
     fun getImplicitTypes(platform: Platform): Set<FqName> {
         return when (platform) {
             Platform.Common -> COMMON_IMPLICIT_TYPES
-            Platform.Jvm -> COMMON_IMPLICIT_TYPES + JAVA_LANG_IMPLICIT_TYPES + KOTLIN_JVM_IMPLICIT_TYPES
+            Platform.Jvm, Platform.Android -> JAVA_LANG_IMPLICIT_TYPES + COMMON_IMPLICIT_TYPES + KOTLIN_JVM_IMPLICIT_TYPES
             Platform.Js -> COMMON_IMPLICIT_TYPES + KOTLIN_JS_IMPLICIT_TYPES
             Platform.Native -> COMMON_IMPLICIT_TYPES
             Platform.Wasm -> COMMON_IMPLICIT_TYPES

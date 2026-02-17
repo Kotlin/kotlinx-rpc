@@ -1,7 +1,9 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.grpc.codec.WithCodec
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * `FieldMask` represents a set of symbolic field paths, for example:
@@ -204,12 +206,12 @@ import kotlinx.rpc.internal.utils.*
 * request should verify the included field paths, and return an
 * `INVALID_ARGUMENT` error if any path is unmappable.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.FieldMaskInternal.CODEC::class)
-public interface FieldMask { 
+@WithCodec(FieldMaskInternal.CODEC::class)
+public interface FieldMask {
     /**
     * The set of field mask paths.
     */
-    public val paths: List<kotlin.String>
+    public val paths: List<String>
 
     public companion object
 }

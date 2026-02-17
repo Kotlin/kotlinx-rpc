@@ -2,7 +2,9 @@
 package com.google.protobuf.kotlin
 
 import kotlin.jvm.JvmInline
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.grpc.codec.WithCodec
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * `Struct` represents a structured data value, consisting of fields
@@ -14,12 +16,12 @@ import kotlinx.rpc.internal.utils.*
 * 
 * The JSON representation for `Struct` is JSON object.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.StructInternal.CODEC::class)
-public interface Struct { 
+@WithCodec(StructInternal.CODEC::class)
+public interface Struct {
     /**
     * Unordered map of dynamically typed values.
     */
-    public val fields: Map<kotlin.String, com.google.protobuf.kotlin.Value>
+    public val fields: Map<String, Value>
 
     public companion object
 }
@@ -32,24 +34,22 @@ public interface Struct {
 * 
 * The JSON representation for `Value` is JSON value.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.ValueInternal.CODEC::class)
-public interface Value { 
+@WithCodec(ValueInternal.CODEC::class)
+public interface Value {
     /**
     * The kind of value.
     */
-    public val kind: com.google.protobuf.kotlin.Value.Kind?
+    public val kind: Kind?
 
     /**
     * The kind of value.
     */
-    public sealed interface Kind { 
+    public sealed interface Kind {
         /**
         * Represents a null value.
         */
         @JvmInline
-        public value class NullValue(
-            public val value: com.google.protobuf.kotlin.NullValue,
-        ): Kind
+        public value class NullValue(public val value: com.google.protobuf.kotlin.NullValue): Kind
 
         /**
         * Represents a double value.
@@ -73,17 +73,13 @@ public interface Value {
         * Represents a structured value.
         */
         @JvmInline
-        public value class StructValue(
-            public val value: com.google.protobuf.kotlin.Struct,
-        ): Kind
+        public value class StructValue(public val value: Struct): Kind
 
         /**
         * Represents a repeated `Value`.
         */
         @JvmInline
-        public value class ListValue(
-            public val value: com.google.protobuf.kotlin.ListValue,
-        ): Kind
+        public value class ListValue(public val value: com.google.protobuf.kotlin.ListValue): Kind
     }
 
     public companion object
@@ -94,12 +90,12 @@ public interface Value {
 * 
 * The JSON representation for `ListValue` is JSON array.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.ListValueInternal.CODEC::class)
-public interface ListValue { 
+@WithCodec(ListValueInternal.CODEC::class)
+public interface ListValue {
     /**
     * Repeated field of dynamically typed values.
     */
-    public val values: List<com.google.protobuf.kotlin.Value>
+    public val values: List<Value>
 
     public companion object
 }
@@ -110,7 +106,7 @@ public interface ListValue {
 * 
 * The JSON representation for `NullValue` is JSON `null`.
 */
-public sealed class NullValue(public open val number: Int) { 
+public sealed class NullValue(public open val number: Int) {
     /**
     * Null value.
     */
@@ -118,7 +114,7 @@ public sealed class NullValue(public open val number: Int) {
 
     public data class UNRECOGNIZED(override val number: Int): NullValue(number)
 
-    public companion object { 
+    public companion object {
         public val entries: List<NullValue> by lazy { listOf(NULL_VALUE) }
     }
 }

@@ -1,7 +1,8 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * Constructs a new message.
@@ -11,8 +12,8 @@ import kotlinx.rpc.internal.utils.*
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.Duration.Companion.invoke(body: com.google.protobuf.kotlin.DurationInternal.() -> Unit): com.google.protobuf.kotlin.Duration { 
-    val msg = com.google.protobuf.kotlin.DurationInternal().apply(body)
+public operator fun Duration.Companion.invoke(body: DurationInternal.() -> Unit): Duration {
+    val msg = DurationInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -25,6 +26,6 @@ public operator fun com.google.protobuf.kotlin.Duration.Companion.invoke(body: c
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.Duration.copy(body: com.google.protobuf.kotlin.DurationInternal.() -> Unit = {}): com.google.protobuf.kotlin.Duration { 
+public fun Duration.copy(body: DurationInternal.() -> Unit = {}): Duration {
     return this.asInternal().copyInternal(body)
 }

@@ -1,8 +1,8 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf_test_messages.edition2023
 
-import kotlin.jvm.JvmInline
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * Constructs a new message.
@@ -12,8 +12,8 @@ import kotlinx.rpc.internal.utils.*
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.edition2023.ComplexMessage.Companion.invoke(body: com.google.protobuf_test_messages.edition2023.ComplexMessageInternal.() -> Unit): com.google.protobuf_test_messages.edition2023.ComplexMessage { 
-    val msg = com.google.protobuf_test_messages.edition2023.ComplexMessageInternal().apply(body)
+operator fun ComplexMessage.Companion.invoke(body: ComplexMessageInternal.() -> Unit): ComplexMessage {
+    val msg = ComplexMessageInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -26,14 +26,14 @@ operator fun com.google.protobuf_test_messages.edition2023.ComplexMessage.Compan
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.edition2023.ComplexMessage.copy(body: com.google.protobuf_test_messages.edition2023.ComplexMessageInternal.() -> Unit = {}): com.google.protobuf_test_messages.edition2023.ComplexMessage { 
+fun ComplexMessage.copy(body: ComplexMessageInternal.() -> Unit = {}): ComplexMessage {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.edition2023.ComplexMessage] instance.
 */
-val com.google.protobuf_test_messages.edition2023.ComplexMessage.presence: com.google.protobuf_test_messages.edition2023.ComplexMessagePresence get() = this.asInternal()._presence
+val ComplexMessage.presence: ComplexMessagePresence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -43,8 +43,8 @@ val com.google.protobuf_test_messages.edition2023.ComplexMessage.presence: com.g
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.Companion.invoke(body: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.() -> Unit): com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023 { 
-    val msg = com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal().apply(body)
+operator fun TestAllTypesEdition2023.Companion.invoke(body: TestAllTypesEdition2023Internal.() -> Unit): TestAllTypesEdition2023 {
+    val msg = TestAllTypesEdition2023Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -57,14 +57,14 @@ operator fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition20
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.copy(body: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.() -> Unit = {}): com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023 { 
+fun TestAllTypesEdition2023.copy(body: TestAllTypesEdition2023Internal.() -> Unit = {}): TestAllTypesEdition2023 {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023] instance.
 */
-val com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.presence: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Presence get() = this.asInternal()._presence
+val TestAllTypesEdition2023.presence: TestAllTypesEdition2023Presence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -74,8 +74,8 @@ val com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.presen
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023.Companion.invoke(body: com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal.() -> Unit): com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023 { 
-    val msg = com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal().apply(body)
+operator fun ForeignMessageEdition2023.Companion.invoke(body: ForeignMessageEdition2023Internal.() -> Unit): ForeignMessageEdition2023 {
+    val msg = ForeignMessageEdition2023Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -88,14 +88,14 @@ operator fun com.google.protobuf_test_messages.edition2023.ForeignMessageEdition
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023.copy(body: com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal.() -> Unit = {}): com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023 { 
+fun ForeignMessageEdition2023.copy(body: ForeignMessageEdition2023Internal.() -> Unit = {}): ForeignMessageEdition2023 {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023] instance.
 */
-val com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023.presence: com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Presence get() = this.asInternal()._presence
+val ForeignMessageEdition2023.presence: ForeignMessageEdition2023Presence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -105,8 +105,8 @@ val com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023.pres
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.edition2023.GroupLikeType.Companion.invoke(body: com.google.protobuf_test_messages.edition2023.GroupLikeTypeInternal.() -> Unit): com.google.protobuf_test_messages.edition2023.GroupLikeType { 
-    val msg = com.google.protobuf_test_messages.edition2023.GroupLikeTypeInternal().apply(body)
+operator fun GroupLikeType.Companion.invoke(body: GroupLikeTypeInternal.() -> Unit): GroupLikeType {
+    val msg = GroupLikeTypeInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -119,14 +119,14 @@ operator fun com.google.protobuf_test_messages.edition2023.GroupLikeType.Compani
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.edition2023.GroupLikeType.copy(body: com.google.protobuf_test_messages.edition2023.GroupLikeTypeInternal.() -> Unit = {}): com.google.protobuf_test_messages.edition2023.GroupLikeType { 
+fun GroupLikeType.copy(body: GroupLikeTypeInternal.() -> Unit = {}): GroupLikeType {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.edition2023.GroupLikeType] instance.
 */
-val com.google.protobuf_test_messages.edition2023.GroupLikeType.presence: com.google.protobuf_test_messages.edition2023.GroupLikeTypePresence get() = this.asInternal()._presence
+val GroupLikeType.presence: GroupLikeTypePresence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -136,8 +136,8 @@ val com.google.protobuf_test_messages.edition2023.GroupLikeType.presence: com.go
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage.Companion.invoke(body: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal.() -> Unit): com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage { 
-    val msg = com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal().apply(body)
+operator fun TestAllTypesEdition2023.NestedMessage.Companion.invoke(body: TestAllTypesEdition2023Internal.NestedMessageInternal.() -> Unit): TestAllTypesEdition2023.NestedMessage {
+    val msg = TestAllTypesEdition2023Internal.NestedMessageInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -150,14 +150,14 @@ operator fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition20
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage.copy(body: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal.() -> Unit = {}): com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage { 
+fun TestAllTypesEdition2023.NestedMessage.copy(body: TestAllTypesEdition2023Internal.NestedMessageInternal.() -> Unit = {}): TestAllTypesEdition2023.NestedMessage {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage] instance.
 */
-val com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage.presence: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Presence.NestedMessage get() = this.asInternal()._presence
+val TestAllTypesEdition2023.NestedMessage.presence: TestAllTypesEdition2023Presence.NestedMessage get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -167,8 +167,8 @@ val com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.Nested
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.GroupLikeType.Companion.invoke(body: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.GroupLikeTypeInternal.() -> Unit): com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.GroupLikeType { 
-    val msg = com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.GroupLikeTypeInternal().apply(body)
+operator fun TestAllTypesEdition2023.GroupLikeType.Companion.invoke(body: TestAllTypesEdition2023Internal.GroupLikeTypeInternal.() -> Unit): TestAllTypesEdition2023.GroupLikeType {
+    val msg = TestAllTypesEdition2023Internal.GroupLikeTypeInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -181,94 +181,94 @@ operator fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition20
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.GroupLikeType.copy(body: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.GroupLikeTypeInternal.() -> Unit = {}): com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.GroupLikeType { 
+fun TestAllTypesEdition2023.GroupLikeType.copy(body: TestAllTypesEdition2023Internal.GroupLikeTypeInternal.() -> Unit = {}): TestAllTypesEdition2023.GroupLikeType {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.GroupLikeType] instance.
 */
-val com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.GroupLikeType.presence: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Presence.GroupLikeType get() = this.asInternal()._presence
+val TestAllTypesEdition2023.GroupLikeType.presence: TestAllTypesEdition2023Presence.GroupLikeType get() = this.asInternal()._presence
 
 /**
 * Interface providing field-presence information for [com.google.protobuf_test_messages.edition2023.ComplexMessage] messages.
 * Retrieve it via the [com.google.protobuf_test_messages.edition2023.ComplexMessage.presence] extension property.
 */
-interface ComplexMessagePresence { 
-    val hasD: kotlin.Boolean
+interface ComplexMessagePresence {
+    val hasD: Boolean
 }
 
 /**
 * Interface providing field-presence information for [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023] messages.
 * Retrieve it via the [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.presence] extension property.
 */
-interface TestAllTypesEdition2023Presence { 
-    val hasOptionalInt32: kotlin.Boolean
+interface TestAllTypesEdition2023Presence {
+    val hasOptionalInt32: Boolean
 
-    val hasOptionalInt64: kotlin.Boolean
+    val hasOptionalInt64: Boolean
 
-    val hasOptionalUint32: kotlin.Boolean
+    val hasOptionalUint32: Boolean
 
-    val hasOptionalUint64: kotlin.Boolean
+    val hasOptionalUint64: Boolean
 
-    val hasOptionalSint32: kotlin.Boolean
+    val hasOptionalSint32: Boolean
 
-    val hasOptionalSint64: kotlin.Boolean
+    val hasOptionalSint64: Boolean
 
-    val hasOptionalFixed32: kotlin.Boolean
+    val hasOptionalFixed32: Boolean
 
-    val hasOptionalFixed64: kotlin.Boolean
+    val hasOptionalFixed64: Boolean
 
-    val hasOptionalSfixed32: kotlin.Boolean
+    val hasOptionalSfixed32: Boolean
 
-    val hasOptionalSfixed64: kotlin.Boolean
+    val hasOptionalSfixed64: Boolean
 
-    val hasOptionalFloat: kotlin.Boolean
+    val hasOptionalFloat: Boolean
 
-    val hasOptionalDouble: kotlin.Boolean
+    val hasOptionalDouble: Boolean
 
-    val hasOptionalBool: kotlin.Boolean
+    val hasOptionalBool: Boolean
 
-    val hasOptionalString: kotlin.Boolean
+    val hasOptionalString: Boolean
 
-    val hasOptionalBytes: kotlin.Boolean
+    val hasOptionalBytes: Boolean
 
-    val hasOptionalNestedMessage: kotlin.Boolean
+    val hasOptionalNestedMessage: Boolean
 
-    val hasOptionalForeignMessage: kotlin.Boolean
+    val hasOptionalForeignMessage: Boolean
 
-    val hasOptionalNestedEnum: kotlin.Boolean
+    val hasOptionalNestedEnum: Boolean
 
-    val hasOptionalForeignEnum: kotlin.Boolean
+    val hasOptionalForeignEnum: Boolean
 
-    val hasOptionalStringPiece: kotlin.Boolean
+    val hasOptionalStringPiece: Boolean
 
-    val hasOptionalCord: kotlin.Boolean
+    val hasOptionalCord: Boolean
 
-    val hasRecursiveMessage: kotlin.Boolean
+    val hasRecursiveMessage: Boolean
 
-    val hasGroupliketype: kotlin.Boolean
+    val hasGroupliketype: Boolean
 
-    val hasDelimitedField: kotlin.Boolean
+    val hasDelimitedField: Boolean
 
     /**
     * Interface providing field-presence information for [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage] messages.
     * Retrieve it via the [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage.presence] extension property.
     */
-    interface NestedMessage { 
-        val hasA: kotlin.Boolean
+    interface NestedMessage {
+        val hasA: Boolean
 
-        val hasCorecursive: kotlin.Boolean
+        val hasCorecursive: Boolean
     }
 
     /**
     * Interface providing field-presence information for [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.GroupLikeType] messages.
     * Retrieve it via the [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.GroupLikeType.presence] extension property.
     */
-    interface GroupLikeType { 
-        val hasGroupInt32: kotlin.Boolean
+    interface GroupLikeType {
+        val hasGroupInt32: Boolean
 
-        val hasGroupUint32: kotlin.Boolean
+        val hasGroupUint32: Boolean
     }
 }
 
@@ -276,14 +276,14 @@ interface TestAllTypesEdition2023Presence {
 * Interface providing field-presence information for [com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023] messages.
 * Retrieve it via the [com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023.presence] extension property.
 */
-interface ForeignMessageEdition2023Presence { 
-    val hasC: kotlin.Boolean
+interface ForeignMessageEdition2023Presence {
+    val hasC: Boolean
 }
 
 /**
 * Interface providing field-presence information for [com.google.protobuf_test_messages.edition2023.GroupLikeType] messages.
 * Retrieve it via the [com.google.protobuf_test_messages.edition2023.GroupLikeType.presence] extension property.
 */
-interface GroupLikeTypePresence { 
-    val hasC: kotlin.Boolean
+interface GroupLikeTypePresence {
+    val hasC: Boolean
 }

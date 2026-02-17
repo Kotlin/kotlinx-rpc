@@ -1,18 +1,19 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf_test_messages.edition2023
 
-import kotlin.jvm.JvmInline
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.grpc.codec.WithCodec
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf_test_messages.edition2023.ComplexMessageInternal.CODEC::class)
-interface ComplexMessage { 
+@WithCodec(ComplexMessageInternal.CODEC::class)
+interface ComplexMessage {
     val d: Int?
 
     companion object
 }
 
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.CODEC::class)
-interface TestAllTypesEdition2023 { 
+@WithCodec(TestAllTypesEdition2023Internal.CODEC::class)
+interface TestAllTypesEdition2023 {
     /**
     * Singular
     */
@@ -31,105 +32,103 @@ interface TestAllTypesEdition2023 {
     val optionalBool: Boolean?
     val optionalString: String?
     val optionalBytes: ByteArray?
-    val optionalNestedMessage: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage
-    val optionalForeignMessage: com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023
-    val optionalNestedEnum: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedEnum?
-    val optionalForeignEnum: com.google.protobuf_test_messages.edition2023.ForeignEnumEdition2023?
+    val optionalNestedMessage: NestedMessage
+    val optionalForeignMessage: ForeignMessageEdition2023
+    val optionalNestedEnum: NestedEnum?
+    val optionalForeignEnum: ForeignEnumEdition2023?
     val optionalStringPiece: String?
     val optionalCord: String?
-    val recursiveMessage: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023
+    val recursiveMessage: TestAllTypesEdition2023
     /**
     * Repeated
     */
-    val repeatedInt32: List<kotlin.Int>
-    val repeatedInt64: List<kotlin.Long>
-    val repeatedUint32: List<kotlin.UInt>
-    val repeatedUint64: List<kotlin.ULong>
-    val repeatedSint32: List<kotlin.Int>
-    val repeatedSint64: List<kotlin.Long>
-    val repeatedFixed32: List<kotlin.UInt>
-    val repeatedFixed64: List<kotlin.ULong>
-    val repeatedSfixed32: List<kotlin.Int>
-    val repeatedSfixed64: List<kotlin.Long>
-    val repeatedFloat: List<kotlin.Float>
-    val repeatedDouble: List<kotlin.Double>
-    val repeatedBool: List<kotlin.Boolean>
-    val repeatedString: List<kotlin.String>
-    val repeatedBytes: List<kotlin.ByteArray>
-    val repeatedNestedMessage: List<com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage>
-    val repeatedForeignMessage: List<com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023>
-    val repeatedNestedEnum: List<com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedEnum>
-    val repeatedForeignEnum: List<com.google.protobuf_test_messages.edition2023.ForeignEnumEdition2023>
-    val repeatedStringPiece: List<kotlin.String>
-    val repeatedCord: List<kotlin.String>
+    val repeatedInt32: List<Int>
+    val repeatedInt64: List<Long>
+    val repeatedUint32: List<UInt>
+    val repeatedUint64: List<ULong>
+    val repeatedSint32: List<Int>
+    val repeatedSint64: List<Long>
+    val repeatedFixed32: List<UInt>
+    val repeatedFixed64: List<ULong>
+    val repeatedSfixed32: List<Int>
+    val repeatedSfixed64: List<Long>
+    val repeatedFloat: List<Float>
+    val repeatedDouble: List<Double>
+    val repeatedBool: List<Boolean>
+    val repeatedString: List<String>
+    val repeatedBytes: List<ByteArray>
+    val repeatedNestedMessage: List<NestedMessage>
+    val repeatedForeignMessage: List<ForeignMessageEdition2023>
+    val repeatedNestedEnum: List<NestedEnum>
+    val repeatedForeignEnum: List<ForeignEnumEdition2023>
+    val repeatedStringPiece: List<String>
+    val repeatedCord: List<String>
     /**
     * Packed
     */
-    val packedInt32: List<kotlin.Int>
-    val packedInt64: List<kotlin.Long>
-    val packedUint32: List<kotlin.UInt>
-    val packedUint64: List<kotlin.ULong>
-    val packedSint32: List<kotlin.Int>
-    val packedSint64: List<kotlin.Long>
-    val packedFixed32: List<kotlin.UInt>
-    val packedFixed64: List<kotlin.ULong>
-    val packedSfixed32: List<kotlin.Int>
-    val packedSfixed64: List<kotlin.Long>
-    val packedFloat: List<kotlin.Float>
-    val packedDouble: List<kotlin.Double>
-    val packedBool: List<kotlin.Boolean>
-    val packedNestedEnum: List<com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedEnum>
+    val packedInt32: List<Int>
+    val packedInt64: List<Long>
+    val packedUint32: List<UInt>
+    val packedUint64: List<ULong>
+    val packedSint32: List<Int>
+    val packedSint64: List<Long>
+    val packedFixed32: List<UInt>
+    val packedFixed64: List<ULong>
+    val packedSfixed32: List<Int>
+    val packedSfixed64: List<Long>
+    val packedFloat: List<Float>
+    val packedDouble: List<Double>
+    val packedBool: List<Boolean>
+    val packedNestedEnum: List<NestedEnum>
     /**
     * Unpacked
     */
-    val unpackedInt32: List<kotlin.Int>
-    val unpackedInt64: List<kotlin.Long>
-    val unpackedUint32: List<kotlin.UInt>
-    val unpackedUint64: List<kotlin.ULong>
-    val unpackedSint32: List<kotlin.Int>
-    val unpackedSint64: List<kotlin.Long>
-    val unpackedFixed32: List<kotlin.UInt>
-    val unpackedFixed64: List<kotlin.ULong>
-    val unpackedSfixed32: List<kotlin.Int>
-    val unpackedSfixed64: List<kotlin.Long>
-    val unpackedFloat: List<kotlin.Float>
-    val unpackedDouble: List<kotlin.Double>
-    val unpackedBool: List<kotlin.Boolean>
-    val unpackedNestedEnum: List<com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedEnum>
+    val unpackedInt32: List<Int>
+    val unpackedInt64: List<Long>
+    val unpackedUint32: List<UInt>
+    val unpackedUint64: List<ULong>
+    val unpackedSint32: List<Int>
+    val unpackedSint64: List<Long>
+    val unpackedFixed32: List<UInt>
+    val unpackedFixed64: List<ULong>
+    val unpackedSfixed32: List<Int>
+    val unpackedSfixed64: List<Long>
+    val unpackedFloat: List<Float>
+    val unpackedDouble: List<Double>
+    val unpackedBool: List<Boolean>
+    val unpackedNestedEnum: List<NestedEnum>
     /**
     * Map
     */
-    val mapInt32Int32: Map<kotlin.Int, kotlin.Int>
-    val mapInt64Int64: Map<kotlin.Long, kotlin.Long>
-    val mapUint32Uint32: Map<kotlin.UInt, kotlin.UInt>
-    val mapUint64Uint64: Map<kotlin.ULong, kotlin.ULong>
-    val mapSint32Sint32: Map<kotlin.Int, kotlin.Int>
-    val mapSint64Sint64: Map<kotlin.Long, kotlin.Long>
-    val mapFixed32Fixed32: Map<kotlin.UInt, kotlin.UInt>
-    val mapFixed64Fixed64: Map<kotlin.ULong, kotlin.ULong>
-    val mapSfixed32Sfixed32: Map<kotlin.Int, kotlin.Int>
-    val mapSfixed64Sfixed64: Map<kotlin.Long, kotlin.Long>
-    val mapInt32Float: Map<kotlin.Int, kotlin.Float>
-    val mapInt32Double: Map<kotlin.Int, kotlin.Double>
-    val mapBoolBool: Map<kotlin.Boolean, kotlin.Boolean>
-    val mapStringString: Map<kotlin.String, kotlin.String>
-    val mapStringBytes: Map<kotlin.String, kotlin.ByteArray>
-    val mapStringNestedMessage: Map<kotlin.String, com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage>
-    val mapStringForeignMessage: Map<kotlin.String, com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023>
-    val mapStringNestedEnum: Map<kotlin.String, com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedEnum>
-    val mapStringForeignEnum: Map<kotlin.String, com.google.protobuf_test_messages.edition2023.ForeignEnumEdition2023>
-    val groupliketype: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.GroupLikeType
-    val delimitedField: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.GroupLikeType
-    val oneofField: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.OneofField?
+    val mapInt32Int32: Map<Int, Int>
+    val mapInt64Int64: Map<Long, Long>
+    val mapUint32Uint32: Map<UInt, UInt>
+    val mapUint64Uint64: Map<ULong, ULong>
+    val mapSint32Sint32: Map<Int, Int>
+    val mapSint64Sint64: Map<Long, Long>
+    val mapFixed32Fixed32: Map<UInt, UInt>
+    val mapFixed64Fixed64: Map<ULong, ULong>
+    val mapSfixed32Sfixed32: Map<Int, Int>
+    val mapSfixed64Sfixed64: Map<Long, Long>
+    val mapInt32Float: Map<Int, Float>
+    val mapInt32Double: Map<Int, Double>
+    val mapBoolBool: Map<Boolean, Boolean>
+    val mapStringString: Map<String, String>
+    val mapStringBytes: Map<String, ByteArray>
+    val mapStringNestedMessage: Map<String, NestedMessage>
+    val mapStringForeignMessage: Map<String, ForeignMessageEdition2023>
+    val mapStringNestedEnum: Map<String, NestedEnum>
+    val mapStringForeignEnum: Map<String, ForeignEnumEdition2023>
+    val groupliketype: GroupLikeType
+    val delimitedField: GroupLikeType
+    val oneofField: OneofField?
 
-    sealed interface OneofField { 
+    sealed interface OneofField {
         @JvmInline
         value class OneofUint32(val value: UInt): OneofField
 
         @JvmInline
-        value class OneofNestedMessage(
-            val value: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage,
-        ): OneofField
+        value class OneofNestedMessage(val value: NestedMessage): OneofField
 
         @JvmInline
         value class OneofString(val value: String): OneofField
@@ -150,15 +149,13 @@ interface TestAllTypesEdition2023 {
         value class OneofDouble(val value: Double): OneofField
 
         @JvmInline
-        value class OneofEnum(
-            val value: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedEnum,
-        ): OneofField
+        value class OneofEnum(val value: NestedEnum): OneofField
     }
 
-    @kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal.NestedMessageInternal.CODEC::class)
-    interface NestedMessage { 
+    @WithCodec(TestAllTypesEdition2023Internal.NestedMessageInternal.CODEC::class)
+    interface NestedMessage {
         val a: Int?
-        val corecursive: com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023
+        val corecursive: TestAllTypesEdition2023
 
         companion object
     }
@@ -166,14 +163,14 @@ interface TestAllTypesEdition2023 {
     /**
     * groups
     */
-    interface GroupLikeType { 
+    interface GroupLikeType {
         val groupInt32: Int?
         val groupUint32: UInt?
 
         companion object
     }
 
-    sealed class NestedEnum(open val number: Int) { 
+    sealed class NestedEnum(open val number: Int) {
         data object FOO: NestedEnum(number = 0)
 
         data object BAR: NestedEnum(number = 1)
@@ -187,7 +184,7 @@ interface TestAllTypesEdition2023 {
 
         data class UNRECOGNIZED(override val number: Int): NestedEnum(number)
 
-        companion object { 
+        companion object {
             val entries: List<NestedEnum> by lazy { listOf(NEG, FOO, BAR, BAZ) }
         }
     }
@@ -195,21 +192,21 @@ interface TestAllTypesEdition2023 {
     companion object
 }
 
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023Internal.CODEC::class)
-interface ForeignMessageEdition2023 { 
+@WithCodec(ForeignMessageEdition2023Internal.CODEC::class)
+interface ForeignMessageEdition2023 {
     val c: Int?
 
     companion object
 }
 
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf_test_messages.edition2023.GroupLikeTypeInternal.CODEC::class)
-interface GroupLikeType { 
+@WithCodec(GroupLikeTypeInternal.CODEC::class)
+interface GroupLikeType {
     val c: Int?
 
     companion object
 }
 
-sealed class ForeignEnumEdition2023(open val number: Int) { 
+sealed class ForeignEnumEdition2023(open val number: Int) {
     data object FOREIGN_FOO: ForeignEnumEdition2023(number = 0)
 
     data object FOREIGN_BAR: ForeignEnumEdition2023(number = 1)
@@ -218,7 +215,7 @@ sealed class ForeignEnumEdition2023(open val number: Int) {
 
     data class UNRECOGNIZED(override val number: Int): ForeignEnumEdition2023(number)
 
-    companion object { 
+    companion object {
         val entries: List<ForeignEnumEdition2023> by lazy { listOf(FOREIGN_FOO, FOREIGN_BAR, FOREIGN_BAZ) }
     }
 }
