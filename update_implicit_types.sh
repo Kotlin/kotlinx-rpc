@@ -216,6 +216,9 @@ fetch_kotlin_types "kotlin.sequences" "$RESOURCES_DIR/kotlin.sequences.txt"
 echo ""
 fetch_kotlin_types "kotlin.text" "$RESOURCES_DIR/kotlin.text.txt"
 
+echo ""
+fetch_kotlin_types "kotlin.math" "$RESOURCES_DIR/kotlin.math.txt"
+
 # JVM-specific packages
 echo ""
 fetch_kotlin_types "kotlin.jvm" "$RESOURCES_DIR/kotlin.jvm.txt"
