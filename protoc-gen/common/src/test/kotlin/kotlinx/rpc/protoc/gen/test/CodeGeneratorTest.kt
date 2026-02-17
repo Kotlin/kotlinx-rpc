@@ -8,7 +8,6 @@ import kotlinx.rpc.protoc.gen.core.CodeGenerator
 import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.FqNameTable
 import kotlinx.rpc.protoc.gen.core.Platform
-import kotlinx.rpc.protoc.gen.core.file
 import kotlinx.rpc.protoc.gen.core.merge
 import kotlinx.rpc.protoc.gen.core.model.FqName
 import kotlinx.rpc.protoc.gen.core.model.fq
@@ -20,7 +19,7 @@ import kotlin.test.assertTrue
 
 class CodeGeneratorTest {
     @Test
-    fun testString() = codeGeneratorTest { table ->
+    fun testString() = codeGeneratorTest {
         val (imports, generated) = generate {
             code("%T".scoped(FqName.Implicits.String))
         }
@@ -142,28 +141,6 @@ class CodeGeneratorTest {
             nameTable = nameTable.scoped(packageFqName, mutableSetOf()),
             indent = "",
         )
-
-        Env(generator).body(nameTable)
-    }
-
-    private fun fileGeneratorTest(
-        packageFqName: FqName.Package = fq("com.example", "") as FqName.Package,
-        platform: Platform = Platform.Common,
-        body: Env.(FqNameTable) -> Unit,
-    ) {
-        val nameTable = FqNameTable(platform)
-        val generator = file(
-            config = Config(
-                explicitApiModeEnabled = false,
-                generateComments = false,
-                generateFileLevelComments = false,
-                indentSize = 4,
-                platform = platform,
-            ),
-            packageName = packageFqName,
-            nameTable = nameTable,
-            name = "Test.kt",
-        ) { }
 
         Env(generator).body(nameTable)
     }
