@@ -1,0 +1,14 @@
+Appendable
+CharCategory
+CharDirectionality
+CharacterCodingException
+Charsets
+HexFormat
+MatchGroup
+MatchGroupCollection
+MatchNamedGroupCollection
+MatchResult
+Regex
+RegexOption
+StringBuilder
+Typography
