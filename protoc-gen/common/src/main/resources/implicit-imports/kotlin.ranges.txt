@@ -1,0 +1,13 @@
+CharProgression
+CharRange
+ClosedFloatingPointRange
+ClosedRange
+IntProgression
+IntRange
+LongProgression
+LongRange
+OpenEndRange
+UIntProgression
+UIntRange
+ULongProgression
+ULongRange
