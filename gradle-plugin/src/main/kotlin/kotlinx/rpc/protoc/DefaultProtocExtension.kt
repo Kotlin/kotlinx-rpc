@@ -46,13 +46,19 @@ import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.js.KotlinWasmTargetType
+import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.gradle.utils.ObservableSet
 import java.io.File
 import javax.inject.Inject
 import kotlin.collections.filterIsInstance
 import kotlin.collections.filterNotNull
 import kotlin.collections.plus
+import kotlin.reflect.KClass
 
 internal open class DefaultProtocExtension @Inject constructor(
     objects: ObjectFactory,
@@ -100,6 +106,8 @@ internal open class DefaultProtocExtension @Inject constructor(
 
         // no way to configure tasks before evaluation is done
         project.afterEvaluate {
+            configurePlatformOptions()
+
             configureMultiplatformWithAndroidSourceSets configure@{ protoSourceSet ->
                 // configureTasks is done in configureLegacyAndroidVariants even for KMP
                 if (protoSourceSet.isLegacyAndroid.get()) {
@@ -450,7 +458,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             val kotlin = list.filterIsInstance<KotlinSourceSet>()
 
             kotlin.flatMap {
-                it.dependsOn.mapNotNull { dep -> protoSourceSets.getByName(dep.name) }
+                it.dependsOn.map { dep -> protoSourceSets.getByName(dep.name) }
             }
         }
     }
@@ -538,6 +546,77 @@ private fun Project.withFullyInitializedProtoSourceSet(
             sourceSet.isLegacyAndroid.set(false)
             body(sourceSet)
         }
+    }
+}
+
+private fun Project.configurePlatformOptions() {
+    val kotlinPluginId = kotlinPluginId
+    val isJvmLike = kotlinPluginId == KotlinPluginId.JVM || kotlinPluginId == KotlinPluginId.ANDROID
+
+    if (isJvmLike) {
+        val jvmLikePlatformOption = when (kotlinPluginId) {
+            KotlinPluginId.ANDROID -> PlatformOption.ANDROID
+            KotlinPluginId.JVM -> PlatformOption.JVM
+            else -> error("unreachable")
+        }
+
+        protoSourceSets.all {
+            if (this !is DefaultProtoSourceSet) {
+                return@all
+            }
+
+            platformOption.set(jvmLikePlatformOption)
+        }
+        return
+    }
+
+    project.the<KotlinMultiplatformExtension>()
+        .targets.all {
+            val target = this
+
+            compilations.all {
+                val compilationSourceSets = allKotlinSourceSets as ObservableSet<KotlinSourceSet>
+
+                compilationSourceSets.forAll {
+                    val protoSourceSet = protoSourceSets.getByName(it.name)
+                            as? DefaultProtoSourceSet ?: return@forAll
+
+                    updatePlatform(protoSourceSet, target)
+                }
+            }
+        }
+}
+
+private fun updatePlatform(protoSourceSet: DefaultProtoSourceSet, target: KotlinTarget) {
+    val current = protoSourceSet.platformOption.get()
+    val new = when (target) {
+        is KotlinJvmTarget -> PlatformOption.JVM
+        is KotlinAndroidTarget -> PlatformOption.ANDROID
+        is KotlinJsIrTarget -> when (target.wasmTargetType) {
+            KotlinWasmTargetType.WASI -> PlatformOption.WASM
+            KotlinWasmTargetType.JS, null -> PlatformOption.JS
+        }
+
+        is KotlinNativeTarget -> PlatformOption.NATIVE
+        else -> when {
+            // otherwise fails IDEA import with NoClassDefFoundError
+            target::class.simpleName == "KotlinMultiplatformAndroidTarget" || target::class.supertypes.any {
+                (it.classifier as? KClass<*>)?.simpleName == "KotlinMultiplatformAndroidTarget"
+            } -> PlatformOption.ANDROID
+
+            else -> PlatformOption.COMMON
+        }
+    }
+
+    when {
+        current.isEmpty() -> {
+            protoSourceSet.platformOption.set(new)
+        }
+
+        current != new -> {
+            protoSourceSet.platformOption.set(PlatformOption.COMMON)
+        }
+        // else it's already set to the same
     }
 }
 

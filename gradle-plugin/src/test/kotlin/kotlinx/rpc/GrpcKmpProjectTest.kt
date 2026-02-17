@@ -7,7 +7,8 @@
 package kotlinx.rpc
 
 import kotlinx.rpc.base.GrpcBaseTest
-import kotlinx.rpc.base.testTestsForAndroidKmpLibExist
+import kotlinx.rpc.base.versionsWhereAndroidKmpLibExist
+import kotlinx.rpc.protoc.PlatformOption
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
@@ -243,7 +244,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `KMP Hierarchy Android KMP Library With Test Tasks`() = runGrpcTest(
-        versionsPredicate = { testTestsForAndroidKmpLibExist() },
+        versionsPredicate = { versionsWhereAndroidKmpLibExist() },
     ) {
         runAndCheckFiles(
             SSetsKmp.AndroidKmpLib.commonMain,
@@ -285,7 +286,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `KMP Hierarchy Android KMP Library With Test Tasks Not Wired`() = runGrpcTest(
-        versionsPredicate = { testTestsForAndroidKmpLibExist() },
+        versionsPredicate = { versionsWhereAndroidKmpLibExist() },
     ) {
         runAndCheckFiles(
             SSetsKmp.AndroidKmpLib.commonMain,
@@ -969,7 +970,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Proto Tasks Are Cached Properly Android KMP Library`() = runGrpcTest(
-        versionsPredicate = { testTestsForAndroidKmpLibExist() }
+        versionsPredicate = { versionsWhereAndroidKmpLibExist() }
     ) {
         val firstRunCommonMain = runForSet(SSetsKmp.AndroidKmpLib.commonMain)
 
@@ -1474,6 +1475,35 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
+    fun `Platform Options`() = runGrpcTest {
+        runPlatformOptionTest(SSetsKmp.Default.commonMain, PlatformOption.COMMON)
+        runPlatformOptionTest(SSetsKmp.Default.jvmMain, PlatformOption.JVM)
+        runPlatformOptionTest(SSetsKmp.Default.wasmJsMain, PlatformOption.JS)
+        runPlatformOptionTest(SSetsKmp.Default.wasmJsMain, PlatformOption.JS)
+        runPlatformOptionTest(SSetsKmp.Default.wasmWasiMain, PlatformOption.WASM)
+        runPlatformOptionTest(SSetsKmp.Default.nativeMain, PlatformOption.NATIVE)
+    }
+
+    @TestFactory
+    fun `Platform Options Android KMP Library`() = runGrpcTest(
+        versionsPredicate = { versionsWhereAndroidKmpLibExist() }
+    ) {
+        runPlatformOptionTest(SSetsKmp.AndroidKmpLib.commonMain, PlatformOption.COMMON)
+        runPlatformOptionTest(SSetsKmp.AndroidKmpLib.jvmMain, PlatformOption.JVM)
+        runPlatformOptionTest(SSetsKmp.AndroidKmpLib.androidMain, PlatformOption.ANDROID)
+        runPlatformOptionTest(SSetsKmp.AndroidKmpLib.androidHostTest, PlatformOption.ANDROID)
+        runPlatformOptionTest(SSetsKmp.AndroidKmpLib.androidDeviceTest, PlatformOption.ANDROID)
+    }
+
+    @TestFactory
+    fun `Platform Options Legacy Android`() = runGrpcTest {
+        runPlatformOptionTest(SSetsKmp.LegacyAndroid.commonMain, PlatformOption.COMMON)
+        runPlatformOptionTest(SSetsKmp.LegacyAndroid.jvmMain, PlatformOption.JVM)
+        runPlatformOptionTest(SSetsKmp.LegacyAndroid.androidDebug, PlatformOption.ANDROID)
+        runPlatformOptionTest(SSetsKmp.LegacyAndroid.androidInstrumentedTestDebug, PlatformOption.ANDROID)
+    }
+
+    @TestFactory
     fun `Buf Tasks`() = runGrpcTest {
         runGradle("test_tasks", "--no-configuration-cache")
     }
@@ -1485,7 +1515,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Buf Tasks Android Kmp Library With Test Tasks`() = runGrpcTest(
-        versionsPredicate = { testTestsForAndroidKmpLibExist() }
+        versionsPredicate = { versionsWhereAndroidKmpLibExist() }
     ) {
         runGradle("test_tasks", "--no-configuration-cache")
     }

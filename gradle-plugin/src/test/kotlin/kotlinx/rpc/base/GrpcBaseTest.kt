@@ -394,6 +394,39 @@ abstract class GrpcBaseTest : BaseTest() {
             )
         }
 
+        fun runPlatformOptionTest(sourceSet: SSets, platformOption: String) {
+            runGradle(generateBufGenYaml(sourceSet))
+
+            assertBufGenYaml(
+                sourceSet = sourceSet,
+                content = """
+version: v2
+clean: true
+plugins:
+  - local: [protoc-gen-kotlin-multiplatform]
+    out: kotlin-multiplatform
+    opt:
+      - debugOutput=protoc-gen-kotlin-multiplatform.log
+      - generateComments=true
+      - generateFileLevelComments=true
+      - indentSize=4
+      - explicitApiModeEnabled=false
+      - platform=${platformOption}
+  - local: [protoc-gen-grpc-kotlin-multiplatform]
+    out: grpc-kotlin-multiplatform
+    opt:
+      - debugOutput=protoc-gen-grpc-kotlin-multiplatform.log
+      - generateComments=true
+      - generateFileLevelComments=true
+      - indentSize=4
+      - explicitApiModeEnabled=false
+      - platform=${platformOption}
+inputs:
+  - directory: proto
+            """.trimIndent()
+            )
+        }
+
         fun bufGenerate(sourceSet: SSets) = "bufGenerate${sourceSet.capital}"
         fun processProtoFiles(sourceSet: SSets) = "process${sourceSet.capital}ProtoFiles"
         fun processProtoFilesImports(sourceSet: SSets) = "process${sourceSet.capital}ProtoFilesImports"
@@ -494,6 +527,8 @@ abstract class GrpcBaseTest : BaseTest() {
             jvmMain(ctm.k), jvmTest(ctm.k),
             webMain(minKotlin = KtVersion.v2_2_20), webTest(minKotlin = KtVersion.v2_2_20),
             jsMain(ctm.k), jsTest(ctm.k),
+            wasmJsMain(ctm.k), wasmJsTest(ctm.k),
+            wasmWasiMain(ctm.k), wasmWasiTest(ctm.k),
             nativeMain, nativeTest,
             appleMain, appleTest,
             macosMain, macosTest,
