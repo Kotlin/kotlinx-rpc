@@ -21,6 +21,7 @@ data class FileDeclaration(
     val messageDeclarations: List<MessageDeclaration>,
     val enumDeclarations: List<EnumDeclaration>,
     val serviceDeclarations: List<ServiceDeclaration>,
+    val extensions: List<FieldDeclaration>,
     val doc: List<Comment>,
     val dec: Descriptors.FileDescriptor,
     val deprecated: Boolean,
@@ -33,6 +34,7 @@ data class MessageDeclaration(
     val oneOfDeclarations: List<OneOfDeclaration>,
     val enumDeclarations: List<EnumDeclaration>,
     val nestedDeclarations: List<MessageDeclaration>,
+    val extensions: List<FieldDeclaration>,
     val doc: Comment?,
     val dec: Descriptors.Descriptor,
     val deprecated: Boolean,
@@ -83,6 +85,11 @@ data class MessageDeclaration(
                         !(it.dec.defaultValue as ByteString).isEmpty
             }
     }
+
+    val extensionRanges: List<IntRange> by lazy {
+        dec.toProto().extensionRangeList.map { it.start..it.end }
+    }
+
 }
 
 data class EnumDeclaration(
@@ -139,6 +146,8 @@ data class FieldDeclaration(
     // defines the index in the presenceMask of the Message.
     // this cannot be the number, as only fields with hasPresence == true are part of the presenceMask
     val presenceIdx: Int? = null,
+    // the message of the field (also for extension fields)
+    val containingType: Lazy<MessageDeclaration>,
 ) {
     val packedFixedSize by lazy { type.wireType == WireType.FIXED64 || type.wireType == WireType.FIXED32 }
 
@@ -155,6 +164,8 @@ data class FieldDeclaration(
             )
             || type is FieldType.OneOf // all OneOf fields are nullable
     val number: Int = dec.number
+
+    val isExtension = dec.isExtension
 }
 
 data class ServiceDeclaration(

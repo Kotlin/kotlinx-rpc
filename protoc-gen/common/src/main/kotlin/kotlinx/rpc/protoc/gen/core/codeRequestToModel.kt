@@ -182,6 +182,7 @@ private fun Descriptors.FileDescriptor.toModel(nameTable: FqNameTable): FileDecl
         },
         enumDeclarations = enumTypes.map { it.toModel(comments + Paths.enumCommentPath + it.index, nameTable) },
         serviceDeclarations = services.map { it.toModel(comments + Paths.serviceCommentPath + it.index, nameTable) },
+        extensions = extensions.map { it.toModel(comments + Paths.extensionCommentPath + it.index, nameTable) },
         doc = listOfNotNull(
             (comments + Paths.syntaxCommentPath).get(),
             (comments + Paths.editionsCommentPath).get(),
@@ -218,6 +219,7 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNam
             doc = it.doc,
             dec = it.variants.first().dec,
             deprecated = options.deprecated,
+            containingType = lazy { modelCache[containingType]!! as MessageDeclaration }
         )
     }
 
@@ -234,6 +236,7 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNam
                 nameTable = nameTable,
             )
         },
+        extensions = extensions.map { it.toModel(comments + Paths.messageExtensionCommentPath + it.index, nameTable) },
         doc = comments.get(),
         dec = this,
         deprecated = options.deprecated,
@@ -296,6 +299,7 @@ private fun Descriptors.FieldDescriptor.toModel(
             doc = comments.get(),
             dec = this,
             deprecated = options.deprecated,
+            containingType = lazy { modelCache[containingType]!! as MessageDeclaration }
         )
     }
 

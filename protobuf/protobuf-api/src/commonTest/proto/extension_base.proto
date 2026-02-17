@@ -1,0 +1,6 @@
+package kotlinx.rpc.protobuf.test;
+
+message ExtensionBase {
+  optional int32 intField = 1;
+  extensions 6 to 100;
+}

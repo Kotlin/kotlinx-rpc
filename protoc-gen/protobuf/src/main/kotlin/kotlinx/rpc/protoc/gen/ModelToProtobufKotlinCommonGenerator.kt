@@ -54,9 +54,9 @@ class ModelToProtobufKotlinCommonGenerator(
     override val FileDeclaration.hasPublicGeneratedContent: Boolean
         get() = enumDeclarations.isNotEmpty() || messageDeclarations.isNotEmpty()
     override val FileDeclaration.hasExtensionGeneratedContent: Boolean
-        get() = hasPublicGeneratedContent
+        get() = hasPublicGeneratedContent || allExtensions().isNotEmpty()
     override val FileDeclaration.hasInternalGeneratedContent: Boolean
-        get() = hasPublicGeneratedContent
+        get() = hasPublicGeneratedContent || allExtensions().isNotEmpty()
 
     override fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration) {
         fileDeclaration.messageDeclarations.forEach { generatePublicMessage(it) }
@@ -65,6 +65,11 @@ class ModelToProtobufKotlinCommonGenerator(
 
     override fun CodeGenerator.generateExtensionEntities(fileDeclaration: FileDeclaration) {
         generateExtensionMessageEntities(fileDeclaration.messageDeclarations)
+
+        val allExtensions = fileDeclaration.extensions + fileDeclaration.allNestedExtensions()
+        allExtensions.forEach { extension ->
+            generateProtoExtensionProperty(extension)
+        }
     }
 
     override fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {
@@ -75,6 +80,8 @@ class ModelToProtobufKotlinCommonGenerator(
         allEnums.forEach { enum ->
             generateInternalEnumConstructor(enum)
         }
+
+        generateExtensionObject(fileDeclaration)
     }
 
     private fun CodeGenerator.generateInternalMessageEntities(messages: List<MessageDeclaration>) {
@@ -264,14 +271,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
             generateMarshallerObject(declaration)
             generateDescriptorObject(declaration)
-
-            // required for decodeWith extension
-            clazz(
-                name = "",
-                modifiers = "companion",
-                annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
-                declarationType = CodeGenerator.DeclarationType.Object
-            )
+            generateCompanionObject(declaration)
         }
     }
 
@@ -291,6 +291,23 @@ class ModelToProtobufKotlinCommonGenerator(
                 internalImports.add(subMsgPkg.importPath("checkRequiredFields"))
                 internalImports.add(subMsgPkg.importPath("decodeWith"))
             }
+        }
+    }
+
+    private fun CodeGenerator.generateCompanionObject(declaration: MessageDeclaration) {
+        clazz(
+            name = "",
+            modifiers = "companion",
+            annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
+            declarationType = CodeGenerator.DeclarationType.Object
+        ) {
+            // knownExtension registry
+            property(
+                name = "KNOWN_EXTENSIONS",
+                modifiers = "internal",
+                type = "MutableMap<Int, ExtensionDescriptor<${declaration.name.safeFullName()}, *>>",
+                value = "mutableMapOf()"
+            )
         }
     }
 
@@ -818,6 +835,29 @@ class ModelToProtobufKotlinCommonGenerator(
         )
     }
 
+    //var ExtensionBase.test: Int?
+    //    get() {
+    //        val extension = checkNotNull(ExtensionBaseInternal.KNOWN_EXTENSIONS[1]) { "Extension not registered yet." }
+    //        check(extension == ExtensionExtendExtensions.extensionBaseTest) { "Wrong extension." }
+    //        val value = asInternal()._extensions[1] ?: return null
+    //        check(value.descriptor == extension) { "Wrong extension." }
+    //        return value.value as Int?
+    //    }
+    //    set(value) {
+    //        if (value == null) { return }
+    //        val extension = checkNotNull(ExtensionBaseInternal.KNOWN_EXTENSIONS[1]) { "Extension not registered yet." }
+    //        check(extension == ExtensionExtendExtensions.extensionBaseTest) { "Wrong extension." }
+    //        asInternal()._extensions[1] = ExtensionValue(value, extension)
+    //    }
+    private fun CodeGenerator.generateProtoExtensionProperty(declaration: FieldDeclaration) {
+        property(
+            name = declaration.name,
+            contextReceiver = declaration.containingType.value.name.safeFullName(),
+            type = declaration.typeFqName(),
+            propertyInitializer = CodeGenerator.PropertyInitializer.DELEGATE
+        )
+    }
+
     private fun CodeGenerator.generateInternalPresenceObjectProperty(declaration: MessageDeclaration) {
         if (!declaration.isUserFacing) return
         if (!declaration.hasPresenceFields) return
@@ -1064,6 +1104,14 @@ class ModelToProtobufKotlinCommonGenerator(
                 whenBlock {
                     declaration.actualFields.forEach { field -> readMatchCase(field) }
                     whenCase("else".scoped()) {
+                        // check if it is an extension
+                        if (declaration.extensionRanges.isNotEmpty()) {
+                            code("val extension = KNOWN_EXTENSIONS[tag.fieldNr]")
+                            ifBranch(condition = "extension != null && tag.wireType == extension.wireType", ifBlock = {
+                                code("msg._extensions[tag.fieldNr] = ExtensionValue(extension.decode(decoder), extension)")
+                                code("continue // with next tag")
+                            })
+                        }
                         if (!declaration.isGroup) {
                             // fail if we come across an END_GROUP in a normal message
                             ifBranch(
@@ -1077,6 +1125,7 @@ class ModelToProtobufKotlinCommonGenerator(
                             )
                         }
 
+                        // handle unknown fields
                         ifBranch(condition = "config?.discardUnknownFields ?: false".scoped(), ifBlock = {
                             // discard unknown fields if set in the config
                             code("decoder.skipUnknownField(tag)".scoped())
@@ -1347,6 +1396,16 @@ class ModelToProtobufKotlinCommonGenerator(
                 })
             }
         }
+
+        // encode all extension values
+        scope("_extensions.forEach", paramDecl = "(key, value) ->") {
+            scope("value.descriptor.let", paramDecl = "descriptor ->") {
+                // TODO: Move this once we merged the scoped name PR
+                additionalInternalImports.add("kotlin.reflect.cast")
+                code("descriptor.encode(encoder, key, descriptor.valueType.cast(value))")
+            }
+        }
+
     }
 
     private fun CodeGenerator.generateEncodeFieldValue(
@@ -2012,6 +2071,50 @@ class ModelToProtobufKotlinCommonGenerator(
             }
         }
     }
+
+    private fun CodeGenerator.generateExtensionObject(fileDeclaration: FileDeclaration) {
+        val extensions = fileDeclaration.allExtensions()
+        if (extensions.isEmpty()) return
+
+        clazz(
+            name = fileDeclaration.asDeclName() + "Extensions",
+            declarationType = CodeGenerator.DeclarationType.Object,
+        ) {
+            extensions.forEach { extension ->
+                val messageName = extension.containingType.value.name.safeFullName()
+                val typeNonNull = extension.typeFqName().removeSuffix("?")
+                property(
+                    // extensions fields must be unique per package, so the name is enough
+                    name = extension.name,
+                    type = "ExtensionDescriptor<$messageName, $typeNonNull>",
+                    value = extension.generateExtensionValue(),
+                )
+            }
+        }
+    }
+
+    private fun FieldDeclaration.generateExtensionValue(): String {
+        val extendee = containingType.value.name.safeFullName()
+        return when (val type = type) {
+            is FieldType.IntegralType -> {
+                val funcName = type.name.lowercase()
+                "ExtensionDescriptor.$funcName($number, \"$name\", $extendee::class)"
+            }
+            is FieldType.Enum -> {
+                val function = "ExtensionDescriptor.enum"
+                val typeFq = type.dec.value.name.safeFullName()
+                val encodeValue = "{ it.number }"
+                val decodeValue = "{ $typeFq.fromNumber(it) }"
+                "$function($number, \"$name\", $extendee::class, $typeFq::class, $encodeValue, $decodeValue)"
+            }
+            is FieldType.Message -> {
+                "// TODO"
+            }
+            is FieldType.OneOf -> TODO()
+            is FieldType.List -> TODO()
+            is FieldType.Map -> TODO()
+        }
+    }
 }
 
 private fun MessageDeclaration.allEnumsRecursively(): List<EnumDeclaration> =
@@ -2019,5 +2122,15 @@ private fun MessageDeclaration.allEnumsRecursively(): List<EnumDeclaration> =
 
 private fun MessageDeclaration.allNestedRecursively(): List<MessageDeclaration> =
     nestedDeclarations + nestedDeclarations.flatMap(MessageDeclaration::allNestedRecursively)
+
+private fun FileDeclaration.allExtensions(): List<FieldDeclaration> =
+    extensions + allNestedExtensions()
+
+private fun FileDeclaration.allNestedExtensions(): List<FieldDeclaration> =
+    (messageDeclarations + messageDeclarations.flatMap(MessageDeclaration::allNestedRecursively))
+        .flatMap { it.extensions }
+
+private fun FileDeclaration.asDeclName() = name.replace(".", "")
+private fun FqName.asDeclName() = toString().replace(".", "")
 
 private fun String.capitalize(): String = replaceFirstChar { it.uppercase() }

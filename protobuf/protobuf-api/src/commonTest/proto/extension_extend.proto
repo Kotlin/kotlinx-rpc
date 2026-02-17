@@ -1,0 +1,23 @@
+package kotlinx.rpc.protobuf.test;
+
+import "extension_base.proto";
+import "enum.proto";
+import "all_primitives.proto";
+
+extend ExtensionBase {
+  optional int32 int32 = 10;
+}
+
+extend ExtensionBase {
+  optional MyEnum enum = 11;
+}
+
+extend ExtensionBase {
+  optional AllPrimitives msg = 12;
+}
+
+//extend ExtensionBase {
+//  repeated group Test = 12 {
+//    optional int32 int = 1;
+//  }
+//}

@@ -6,12 +6,15 @@ package kotlinx.rpc.protobuf.internal
 
 import kotlinx.io.Buffer
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 @InternalRpcApi
-public abstract class InternalMessage(fieldsWithPresence: Int) {
+public abstract class InternalMessage(fieldsWithPresence: Int, extensionRegister: Map<Int, ExtensionDescriptor<*, *>>) {
     public val presenceMask: BitSet = BitSet(fieldsWithPresence)
+
+    public val _extensions: MutableMap<Int, ExtensionValue> = mutableMapOf()
 
     @Suppress("PropertyName")
     public abstract val _size: Int
@@ -48,3 +51,9 @@ public class MsgFieldDelegate<T>(
         valueSet = true
     }
 }
+
+@InternalRpcApi
+public class ExtensionValue(
+    public val value: Any,
+    public val descriptor: ExtensionDescriptor<*, *>
+)
