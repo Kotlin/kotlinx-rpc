@@ -6,6 +6,7 @@ package kotlinx.rpc.protoc.gen.test
 
 import kotlinx.rpc.protoc.gen.core.model.FqName
 import kotlinx.rpc.protoc.gen.core.model.NameResolver
+import kotlinx.rpc.protoc.gen.core.model.fq
 import org.junit.jupiter.api.assertThrows
 import org.slf4j.helpers.NOPLogger
 import kotlin.test.Test

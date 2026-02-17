@@ -4,8 +4,8 @@
 
 package kotlinx.rpc.protoc.gen.test
 
-import kotlinx.rpc.protoc.gen.core.model.FqName
 import kotlinx.rpc.protoc.gen.core.model.asParentsAndSimpleName
+import kotlinx.rpc.protoc.gen.core.model.fq
 import kotlinx.rpc.protoc.gen.core.model.fullName
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,8 +14,8 @@ class FqNameTest {
     @Test
     fun testAsParentsAndSimpleName() {
         assertEquals(listOf<String>() to "Test", "Test".asParentsAndSimpleName())
-        assertEquals(listOf<String>("hello") to "Test", "hello.Test".asParentsAndSimpleName())
-        assertEquals(listOf<String>("hello", "world") to "Test", "hello.world.Test".asParentsAndSimpleName())
+        assertEquals(listOf("hello") to "Test", "hello.Test".asParentsAndSimpleName())
+        assertEquals(listOf("hello", "world") to "Test", "hello.world.Test".asParentsAndSimpleName())
     }
 
     @Test
@@ -27,16 +27,4 @@ class FqNameTest {
         assertEquals("parent", fq("parent", "").fullName())
         assertEquals("parent.test", fq("parent.test", "").fullName())
     }
-}
-
-fun fq(packages: String, classes: String): FqName {
-    return classFq(classes.split(".").filter { it.isNotBlank() }, packages)
-}
-
-private fun classFq(parts: List<String>, packages: String): FqName {
-    if (parts.isEmpty()) {
-        return FqName.Package.fromString(packages)
-    }
-
-    return FqName.Declaration(parts.last(), classFq(parts.dropLast(1), packages))
 }

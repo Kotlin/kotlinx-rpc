@@ -8,16 +8,11 @@ import kotlinx.rpc.protoc.gen.core.model.FieldDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FieldType
 import kotlinx.rpc.protoc.gen.core.model.FileDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FqName
-import kotlinx.rpc.protoc.gen.core.model.MessageDeclaration
 import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.fullName
+import kotlinx.rpc.protoc.gen.core.model.packageName
 
 const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
-const val MSG_INTERNAL_SUFFIX = "Internal"
-const val PB_PKG = "kotlinx.rpc.protobuf"
-const val PB_PKG_INTERNAL = "$PB_PKG.internal"
-const val INTERNAL_RPC_API_ANNO = "kotlinx.rpc.internal.utils.InternalRpcApi"
-const val WITH_CODEC_ANNO = "kotlinx.rpc.grpc.codec.WithCodec"
 
 abstract class AModelToKotlinCommonGenerator(
     protected val config: Config,
@@ -34,16 +29,26 @@ abstract class AModelToKotlinCommonGenerator(
     protected abstract val FileDeclaration.hasInternalGeneratedContent: Boolean
 
     protected var currentPackage: FqName = FqName.Package.Root
-    protected val additionalPublicImports = mutableSetOf<String>()
-    protected val additionalInternalImports = mutableSetOf<String>()
+    protected val internalImports = mutableSetOf<String>()
+
+    /**
+     * If the key is imported and not referenced by its FQ name, import all from the set.
+     */
+    protected val conditionalInternalImports = mutableMapOf<FqName, Set<String>>()
+
+    // todo this actually has to be tied to the resolution in scope
+    protected fun referenceExtension(receiver: FqName, extensionName: String) {
+        conditionalInternalImports.merge(receiver, setOf("${receiver.packageName()}.$extensionName")) {
+            old, new -> old + new
+        }
+    }
 
     fun generateKotlinFiles(): List<FileGenerator> {
         return model.files.flatMap { it.generateKotlinFiles() }
     }
 
     private fun FileDeclaration.generateKotlinFiles(): List<FileGenerator> {
-        additionalPublicImports.clear()
-        additionalInternalImports.clear()
+        internalImports.clear()
 
         return listOfNotNull(
             if (hasPublicGeneratedContent) generatePublicKotlinFile() else null,
@@ -55,87 +60,77 @@ abstract class AModelToKotlinCommonGenerator(
     private fun FileDeclaration.generatePublicKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(config) {
+        return file(config, this@generatePublicKotlinFile.packageName, model.nameTable) {
             filename = this@generatePublicKotlinFile.name
-            packageName = this@generatePublicKotlinFile.packageName.safeFullName()
-            packagePath = this@generatePublicKotlinFile.packageName.safeFullName()
             comments = this@generatePublicKotlinFile.doc
 
             dependencies.forEach { dependency ->
-                importPackage(dependency.packageName.safeFullName())
+                importPackage(dependency.packageName.fullName())
             }
 
-            fileOptIns = listOf("ExperimentalRpcApi::class", "InternalRpcApi::class")
+            fileOptIns = listOf(
+                "%T::class".scoped(FqName.Annotations.ExperimentalRpcApi),
+                "%T::class".scoped(FqName.Annotations.InternalRpcApi),
+            )
 
             generatePublicDeclaredEntities(this@generatePublicKotlinFile)
-
-            import("kotlinx.rpc.internal.utils.*")
-
-            additionalPublicImports.forEach {
-                import(it)
-            }
         }
     }
 
     private fun FileDeclaration.generateExtensionKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(config) {
+        return file(config, this@generateExtensionKotlinFile.packageName, model.nameTable) {
             filename = this@generateExtensionKotlinFile.name.removeSuffix(".kt") + ".ext.kt"
-            packageName = this@generateExtensionKotlinFile.packageName.safeFullName()
-            packagePath = this@generateExtensionKotlinFile.packageName.safeFullName()
 
-            fileOptIns = listOf("ExperimentalRpcApi::class", "InternalRpcApi::class")
+            fileOptIns = listOf(
+                "%T::class".scoped(FqName.Annotations.ExperimentalRpcApi),
+                "%T::class".scoped(FqName.Annotations.InternalRpcApi),
+            )
 
             generateExtensionEntities(this@generateExtensionKotlinFile)
-
-            import("kotlinx.rpc.internal.utils.*")
-
-            additionalPublicImports.forEach {
-                import(it)
-            }
         }
     }
 
     private fun FileDeclaration.generateInternalKotlinFile(): FileGenerator {
         currentPackage = packageName
 
-        return file(config) {
+        return file(config, this@generateInternalKotlinFile.packageName, model.nameTable) {
             filename = this@generateInternalKotlinFile.name
-            packageName = this@generateInternalKotlinFile.packageName.safeFullName()
-            packagePath =
-                this@generateInternalKotlinFile.packageName.safeFullName()
-                    .packageNameSuffixed(RPC_INTERNAL_PACKAGE_SUFFIX)
+            packagePath = this@generateInternalKotlinFile.packageName.fullName()
+                .packageNameSuffixed(RPC_INTERNAL_PACKAGE_SUFFIX)
 
-            fileOptIns = listOf("ExperimentalRpcApi::class", "$INTERNAL_RPC_API_ANNO::class")
+            fileOptIns = listOf(
+                "%T::class".scoped(FqName.Annotations.ExperimentalRpcApi),
+                "%T::class".scoped(FqName.Annotations.InternalRpcApi),
+            )
 
             dependencies.forEach { dependency ->
-                importPackage(dependency.packageName.safeFullName())
+                importPackage(dependency.packageName.fullName())
             }
 
             generateInternalDeclaredEntities(this@generateInternalKotlinFile)
 
-            import("$PB_PKG_INTERNAL.*")
-            import("kotlinx.rpc.internal.utils.*")
-
-            additionalInternalImports.forEach {
+            internalImports.forEach {
                 import(it)
             }
+
+            importConditionally(conditionalInternalImports)
         }
     }
 
-    protected fun FieldDeclaration.typeFqName(): String {
+    protected fun FieldDeclaration.typeFqName(): ScopedFormattedString {
         return when (type) {
             is FieldType.Message -> {
-                type.dec.value.name.safeFullName()
+                type.dec.value.name.scoped()
             }
 
-            is FieldType.Enum -> type.dec.value.name.safeFullName()
+            is FieldType.Enum -> type.dec.value.name.scoped()
 
-            is FieldType.OneOf -> type.dec.name.safeFullName()
+            is FieldType.OneOf -> type.dec.name.scoped()
 
             is FieldType.IntegralType -> {
-                type.fqName.simpleName
+                type.fqName.scoped()
             }
 
             is FieldType.List -> {
@@ -146,7 +141,7 @@ abstract class AModelToKotlinCommonGenerator(
                     else -> error("Unsupported type: $value")
                 }
 
-                "List<${fqValue.safeFullName()}>"
+                "%T<%T>".scoped(FqName.Implicits.List, fqValue)
             }
 
             is FieldType.Map -> {
@@ -165,52 +160,23 @@ abstract class AModelToKotlinCommonGenerator(
                     else -> error("Unsupported type: $value")
                 }
 
-                "Map<${fqKey.safeFullName()}, ${fqValue.safeFullName()}>"
+                "%T<%T, %T>".scoped(FqName.Implicits.Map, fqKey, fqValue)
             }
-
         }.withNullability(nullable)
     }
 
-    protected fun String.wrapInFlowIf(condition: Boolean): String {
-        return if (condition) "Flow<$this>" else this
-    }
-
-    protected fun FqName.safeFullName(classSuffix: String = ""): String {
-        importRootDeclarationIfNeeded(this)
-
-        return fullName(classSuffix)
-    }
-
-    protected fun importRootDeclarationIfNeeded(
-        declaration: FqName,
-        nameToImport: String = declaration.simpleName,
-        internalOnly: Boolean = false,
-    ) {
-        if (declaration is FqName.Package) {
-            return
-        }
-
-        if (declaration.parent == FqName.Package.Root && currentPackage != FqName.Package.Root && nameToImport.isNotBlank()) {
-            additionalInternalImports.add(nameToImport)
-            if (!internalOnly) {
-                additionalPublicImports.add(nameToImport)
+    protected fun ScopedFormattedString.wrapInFlowIf(condition: Boolean): ScopedFormattedString {
+        return if (condition) {
+            FqName.KotlinLibs.Flow.scoped().merge(this) { flow, original ->
+                "$flow<$original>"
             }
+        } else {
+            this
         }
     }
 
-    protected fun FieldType.Message.internalConstructor() =
-        dec.value.internalClassFullName() + "()"
-
-    protected fun MessageDeclaration.internalClassFullName(): String {
-        return name.safeFullName(MSG_INTERNAL_SUFFIX)
-    }
-
-    protected fun MessageDeclaration.internalClassName(): String {
-        return name.simpleName + MSG_INTERNAL_SUFFIX
-    }
-
-    protected fun String.withNullability(nullable: Boolean): String {
-        return "$this${if (nullable) "?" else ""}"
+    protected fun ScopedFormattedString.withNullability(nullable: Boolean): ScopedFormattedString {
+        return wrapIn { "$it${if (nullable) "?" else ""}" }
     }
 
     protected fun String.packageNameSuffixed(suffix: String): String {

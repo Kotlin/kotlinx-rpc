@@ -1,13 +1,15 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.grpc.codec.WithCodec
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * A protocol buffer message type.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.TypeInternal.CODEC::class)
-public interface Type { 
+@WithCodec(TypeInternal.CODEC::class)
+public interface Type {
     /**
     * The fully qualified message name.
     */
@@ -15,23 +17,23 @@ public interface Type {
     /**
     * The list of fields.
     */
-    public val fields: List<com.google.protobuf.kotlin.Field>
+    public val fields: List<Field>
     /**
     * The list of types appearing in `oneof` definitions in this type.
     */
-    public val oneofs: List<kotlin.String>
+    public val oneofs: List<String>
     /**
     * The protocol buffer options.
     */
-    public val options: List<com.google.protobuf.kotlin.Option>
+    public val options: List<Option>
     /**
     * The source context.
     */
-    public val sourceContext: com.google.protobuf.kotlin.SourceContext
+    public val sourceContext: SourceContext
     /**
     * The source syntax.
     */
-    public val syntax: com.google.protobuf.kotlin.Syntax
+    public val syntax: Syntax
     /**
     * The source edition string, only valid when syntax is SYNTAX_EDITIONS.
     */
@@ -43,16 +45,16 @@ public interface Type {
 /**
 * A single field of a message type.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.FieldInternal.CODEC::class)
-public interface Field { 
+@WithCodec(FieldInternal.CODEC::class)
+public interface Field {
     /**
     * The field type.
     */
-    public val kind: com.google.protobuf.kotlin.Field.Kind
+    public val kind: Kind
     /**
     * The field cardinality.
     */
-    public val cardinality: com.google.protobuf.kotlin.Field.Cardinality
+    public val cardinality: Cardinality
     /**
     * The field number.
     */
@@ -78,7 +80,7 @@ public interface Field {
     /**
     * The protocol buffer options.
     */
-    public val options: List<com.google.protobuf.kotlin.Option>
+    public val options: List<Option>
     /**
     * The field JSON name.
     */
@@ -91,7 +93,7 @@ public interface Field {
     /**
     * Basic field types.
     */
-    public sealed class Kind(public open val number: Int) { 
+    public sealed class Kind(public open val number: Int) {
         /**
         * Field type unknown.
         */
@@ -189,7 +191,7 @@ public interface Field {
 
         public data class UNRECOGNIZED(override val number: Int): Kind(number)
 
-        public companion object { 
+        public companion object {
             public val entries: List<Kind> by lazy { listOf(TYPE_UNKNOWN, TYPE_DOUBLE, TYPE_FLOAT, TYPE_INT64, TYPE_UINT64, TYPE_INT32, TYPE_FIXED64, TYPE_FIXED32, TYPE_BOOL, TYPE_STRING, TYPE_GROUP, TYPE_MESSAGE, TYPE_BYTES, TYPE_UINT32, TYPE_ENUM, TYPE_SFIXED32, TYPE_SFIXED64, TYPE_SINT32, TYPE_SINT64) }
         }
     }
@@ -197,7 +199,7 @@ public interface Field {
     /**
     * Whether a field is optional, required, or repeated.
     */
-    public sealed class Cardinality(public open val number: Int) { 
+    public sealed class Cardinality(public open val number: Int) {
         /**
         * For fields with unknown cardinality.
         */
@@ -220,7 +222,7 @@ public interface Field {
 
         public data class UNRECOGNIZED(override val number: Int): Cardinality(number)
 
-        public companion object { 
+        public companion object {
             public val entries: List<Cardinality> by lazy { listOf(CARDINALITY_UNKNOWN, CARDINALITY_OPTIONAL, CARDINALITY_REQUIRED, CARDINALITY_REPEATED) }
         }
     }
@@ -231,8 +233,8 @@ public interface Field {
 /**
 * Enum type definition.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.EnumInternal.CODEC::class)
-public interface Enum { 
+@WithCodec(EnumInternal.CODEC::class)
+public interface Enum {
     /**
     * Enum type name.
     */
@@ -240,19 +242,19 @@ public interface Enum {
     /**
     * Enum value definitions.
     */
-    public val enumvalue: List<com.google.protobuf.kotlin.EnumValue>
+    public val enumvalue: List<EnumValue>
     /**
     * Protocol buffer options.
     */
-    public val options: List<com.google.protobuf.kotlin.Option>
+    public val options: List<Option>
     /**
     * The source context.
     */
-    public val sourceContext: com.google.protobuf.kotlin.SourceContext
+    public val sourceContext: SourceContext
     /**
     * The source syntax.
     */
-    public val syntax: com.google.protobuf.kotlin.Syntax
+    public val syntax: Syntax
     /**
     * The source edition string, only valid when syntax is SYNTAX_EDITIONS.
     */
@@ -264,8 +266,8 @@ public interface Enum {
 /**
 * Enum value definition.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.EnumValueInternal.CODEC::class)
-public interface EnumValue { 
+@WithCodec(EnumValueInternal.CODEC::class)
+public interface EnumValue {
     /**
     * Enum value name.
     */
@@ -277,7 +279,7 @@ public interface EnumValue {
     /**
     * Protocol buffer options.
     */
-    public val options: List<com.google.protobuf.kotlin.Option>
+    public val options: List<Option>
 
     public companion object
 }
@@ -286,8 +288,8 @@ public interface EnumValue {
 * A protocol buffer option, which can be attached to a message, field,
 * enumeration, etc.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.OptionInternal.CODEC::class)
-public interface Option { 
+@WithCodec(OptionInternal.CODEC::class)
+public interface Option {
     /**
     * The option's name. For protobuf built-in options (options defined in
     * descriptor.proto), this is the short name. For example, `"map_entry"`.
@@ -301,7 +303,7 @@ public interface Option {
     * should be used. If the value is an enum, it should be stored as an int32
     * value using the google.protobuf.Int32Value type.
     */
-    public val value: com.google.protobuf.kotlin.Any
+    public val value: Any
 
     public companion object
 }
@@ -309,7 +311,7 @@ public interface Option {
 /**
 * The syntax in which a protocol buffer element is defined.
 */
-public sealed class Syntax(public open val number: Int) { 
+public sealed class Syntax(public open val number: Int) {
     /**
     * Syntax `proto2`.
     */
@@ -327,7 +329,7 @@ public sealed class Syntax(public open val number: Int) {
 
     public data class UNRECOGNIZED(override val number: Int): Syntax(number)
 
-    public companion object { 
+    public companion object {
         public val entries: List<Syntax> by lazy { listOf(SYNTAX_PROTO2, SYNTAX_PROTO3, SYNTAX_EDITIONS) }
     }
 }

@@ -8,7 +8,6 @@ import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.FileGenerator
 import kotlinx.rpc.protoc.gen.core.ProtocGenPlugin
 import kotlinx.rpc.protoc.gen.core.model.Model
-import org.slf4j.Logger
 
 object GrpcProtocGenPlugin : ProtocGenPlugin() {
     override fun generateKotlinByModel(

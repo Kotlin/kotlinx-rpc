@@ -1,7 +1,9 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.grpc.codec.WithCodec
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * A Timestamp represents a point in time independent of any time zone or local
@@ -94,8 +96,8 @@ import kotlinx.rpc.internal.utils.*
 * http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
 * ) to obtain a formatter capable of generating timestamps in this format.
 */
-@kotlinx.rpc.grpc.codec.WithCodec(com.google.protobuf.kotlin.TimestampInternal.CODEC::class)
-public interface Timestamp { 
+@WithCodec(TimestampInternal.CODEC::class)
+public interface Timestamp {
     /**
     * Represents seconds of UTC time since Unix epoch
     * 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to

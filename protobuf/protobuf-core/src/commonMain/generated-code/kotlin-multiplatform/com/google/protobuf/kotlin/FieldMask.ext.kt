@@ -1,7 +1,8 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * Constructs a new message.
@@ -11,8 +12,8 @@ import kotlinx.rpc.internal.utils.*
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.FieldMask.Companion.invoke(body: com.google.protobuf.kotlin.FieldMaskInternal.() -> Unit): com.google.protobuf.kotlin.FieldMask { 
-    val msg = com.google.protobuf.kotlin.FieldMaskInternal().apply(body)
+public operator fun FieldMask.Companion.invoke(body: FieldMaskInternal.() -> Unit): FieldMask {
+    val msg = FieldMaskInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -25,6 +26,6 @@ public operator fun com.google.protobuf.kotlin.FieldMask.Companion.invoke(body: 
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.FieldMask.copy(body: com.google.protobuf.kotlin.FieldMaskInternal.() -> Unit = {}): com.google.protobuf.kotlin.FieldMask { 
+public fun FieldMask.copy(body: FieldMaskInternal.() -> Unit = {}): FieldMask {
     return this.asInternal().copyInternal(body)
 }

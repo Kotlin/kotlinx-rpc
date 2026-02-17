@@ -17,8 +17,11 @@ import kotlinx.rpc.protoc.gen.core.model.MethodDeclaration
 import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
 import kotlinx.rpc.protoc.gen.core.model.ServiceDeclaration
+import kotlinx.rpc.protoc.gen.core.model.nested
 import kotlin.Boolean
 import kotlin.collections.plus
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 private val nameCache = mutableMapOf<Descriptors.GenericDescriptor, FqName>()
 private val modelCache = mutableMapOf<Descriptors.GenericDescriptor, Any>()
@@ -29,18 +32,62 @@ private val modelCache = mutableMapOf<Descriptors.GenericDescriptor, Any>()
  * @return a [Model] instance containing a list of [FileDeclaration]s that represent
  *         the converted protobuf files.
  */
-fun CodeGeneratorRequest.toModel(): Model {
+fun CodeGeneratorRequest.toModel(config: Config): Model {
     val protoFileMap = protoFileList.associateBy { it.name }
     val fileDescriptors = mutableMapOf<String, Descriptors.FileDescriptor>()
 
     val files = fileToGenerateList.map { protoFileMap[it]!! }
         .map { protoFile -> protoFile.toDescriptor(protoFileMap, fileDescriptors) }
 
-    return Model(
-        files = files.map { it.toModel() }
-    )
+    val nameTable = FqNameTable(config.platform)
+    initNameTable(nameTable)
+
+    return Model(files.map { it.toModel(nameTable) }, nameTable).also { model ->
+        val typeNames = nameCache
+            .filterKeys {
+                it !is Descriptors.FieldDescriptor &&
+                        it !is Descriptors.MethodDescriptor &&
+                        it !is Descriptors.FileDescriptor
+            }
+            .values
+            .filterIsInstance<FqName.Declaration>()
+
+        model.nameTable.registerAll(typeNames)
+    }
 }
 
+private fun initNameTable(nameTable: FqNameTable) {
+    nameTable.registerAll(
+        FqName.RpcClasses.InternalMessage,
+        FqName.RpcClasses.WireEncoder,
+        FqName.RpcClasses.WireDecoder,
+        FqName.RpcClasses.MsgFieldDelegate,
+        FqName.RpcClasses.MessageCodec,
+        FqName.RpcClasses.KTag,
+        FqName.RpcClasses.ProtobufDecodingException,
+        FqName.RpcClasses.ProtobufConfig,
+        FqName.RpcClasses.CodecConfig,
+        FqName.RpcClasses.WireSize,
+        FqName.RpcClasses.WireType,
+        FqName.RpcClasses.WireType_END_GROUP,
+        FqName.RpcClasses.WireType_LENGTH_DELIMITED,
+        FqName.RpcClasses.WireType_VARINT,
+        FqName.RpcClasses.WireType_FIXED32,
+        FqName.RpcClasses.WireType_START_GROUP,
+        FqName.RpcClasses.WireType_FIXED64,
+
+        FqName.Annotations.ExperimentalRpcApi,
+        FqName.Annotations.InternalRpcApi,
+        FqName.Annotations.Grpc,
+        FqName.Annotations.GrpcMethod,
+        FqName.Annotations.WithCodec,
+
+        FqName.KotlinLibs.Flow,
+        FqName.KotlinLibs.Buffer,
+        FqName.KotlinLibs.Source,
+        FqName.KotlinLibs.JvmInline,
+    )
+}
 
 /**
  * Converts a [DescriptorProtos.FileDescriptorProto] instance to a [Descriptors.FileDescriptor],
@@ -74,12 +121,16 @@ private fun DescriptorProtos.FileDescriptorProto.toDescriptor(
  * Depending on the type of the descriptor, the fully qualified name is computed recursively,
  * using the containing type or file, and appropriately converting names.
  *
- * @return The fully qualified name represented as an instance of FqName, specific to the descriptor's context.
+ * @return The fully qualified name represented as an instance of [FqName], specific to the descriptor's context.
  */
 fun Descriptors.GenericDescriptor.fqName(): FqName {
-    if (nameCache.containsKey(this)) return nameCache[this]!!
+    if (nameCache.containsKey(this)) {
+        return nameCache[this]!!
+    }
+
     val nameCapital = name.simpleProtoNameToKotlin(firstLetterUpper = true)
     val nameLower = name.simpleProtoNameToKotlin()
+
     val fqName = when (this) {
         is Descriptors.FileDescriptor -> FqName.Package.fromString(kotlinPackage())
         is Descriptors.Descriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
@@ -95,7 +146,9 @@ fun Descriptors.GenericDescriptor.fqName(): FqName {
         is Descriptors.MethodDescriptor -> FqName.Declaration(nameLower, service?.fqName() ?: file.fqName())
         else -> error("Unknown generic descriptor: $this")
     }
+
     nameCache[this] = fqName
+
     return fqName
 }
 
@@ -113,16 +166,21 @@ private inline fun <D, reified T> D.cached(crossinline block: (D) -> T): T
     return declaration
 }
 
-private fun Descriptors.FileDescriptor.toModel(): FileDeclaration = cached {
+private fun Descriptors.FileDescriptor.toModel(nameTable: FqNameTable): FileDeclaration = cached {
     val comments = Comments(extractComments(), ObjectPath.empty)
 
     FileDeclaration(
         name = kotlinFileName(),
         packageName = FqName.Package.fromString(kotlinPackage()),
-        dependencies = dependencies.map { it.toModel() },
-        messageDeclarations = messageTypes.map { it.toModel(comments + Paths.messageCommentPath + it.index) },
-        enumDeclarations = enumTypes.map { it.toModel(comments + Paths.enumCommentPath + it.index) },
-        serviceDeclarations = services.map { it.toModel(comments + Paths.serviceCommentPath + it.index) },
+        dependencies = dependencies.map { it.toModel(nameTable) },
+        messageDeclarations = messageTypes.map {
+            it.toModel(
+                comments = comments + Paths.messageCommentPath + it.index,
+                nameTable = nameTable,
+            )
+        },
+        enumDeclarations = enumTypes.map { it.toModel(comments + Paths.enumCommentPath + it.index, nameTable) },
+        serviceDeclarations = services.map { it.toModel(comments + Paths.serviceCommentPath + it.index, nameTable) },
         doc = listOfNotNull(
             (comments + Paths.syntaxCommentPath).get(),
             (comments + Paths.editionsCommentPath).get(),
@@ -133,10 +191,8 @@ private fun Descriptors.FileDescriptor.toModel(): FileDeclaration = cached {
     )
 }
 
-private fun Descriptors.Descriptor.toModel(comments: Comments?): MessageDeclaration = cached {
-    requireNotNull(comments) {
-        "Comments are missing for message declaration: ${fqName()}"
-    }
+private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNameTable): MessageDeclaration = cached {
+    ensureCommentsPresent(fqName(), comments)
 
     var currPresenceIdx = 0
     var regularFields = fields
@@ -144,12 +200,12 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?): MessageDeclarat
         .filter { field -> field.realContainingOneof == null }
         .map {
             val presenceIdx = if (it.hasPresence()) currPresenceIdx++ else null
-            it.toModel(comments + Paths.messageFieldCommentPath + it.index, presenceIdx = presenceIdx)
+            it.toModel(comments + Paths.messageFieldCommentPath + it.index, nameTable, presenceIdx = presenceIdx)
         }
 
     val oneOfs = oneofs
         .filter { it.fields[0].realContainingOneof != null }
-        .map { it.toModel(comments) }
+        .map { it.toModel(comments, nameTable) }
 
     regularFields = regularFields + oneOfs.map {
         FieldDeclaration(
@@ -168,22 +224,63 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?): MessageDeclarat
         actualFields = regularFields,
         // get all oneof declarations that are not created from an optional in proto3 https://github.com/googleapis/api-linter/issues/1323
         oneOfDeclarations = oneOfs,
-        enumDeclarations = enumTypes.map { it.toModel(comments + Paths.messageEnumCommentPath + it.index) },
-        nestedDeclarations = nestedTypes.map { it.toModel(comments + Paths.messageMessageCommentPath + it.index) },
+        enumDeclarations = enumTypes.map { it.toModel(comments + Paths.messageEnumCommentPath + it.index, nameTable) },
+        nestedDeclarations = nestedTypes.map {
+            it.toModel(
+                comments = comments + Paths.messageMessageCommentPath + it.index,
+                nameTable = nameTable,
+            )
+        },
         doc = comments.get(),
         dec = this,
         deprecated = options.deprecated,
         // getting the (already cached) parent declaration.
         // it must be lazy as it is only available after full model conversion.
-        parent = lazy { containingType?.toModel(null) },
-    )
+        parent = lazy { containingType?.toModel(null, nameTable) },
+    ).also { declaration ->
+        nameTable.register { declaration.companionName }
+        nameTable.register { declaration.internalClassName }
+        nameTable.register { declaration.internalCompanionName }
+
+        if (declaration.isUserFacing && declaration.hasPresenceFieldsRecursive()) {
+            nameTable.register { declaration.presenceInterfaceName }
+        }
+        if (declaration.presenceMaskSize != 0) {
+            nameTable.register { declaration.presenceIndicesName }
+        }
+
+        if (declaration.isUserFacing && !declaration.isGroup) {
+            nameTable.register { declaration.codecObjectName }
+        }
+
+        if (declaration.nonDefaultByteFields().isNotEmpty()) {
+            nameTable.register { declaration.bytesDefaultsName }
+        }
+    }
 }
 
-private fun Descriptors.FieldDescriptor.toModel(comments: Comments, presenceIdx: Int? = null): FieldDeclaration =
+@OptIn(ExperimentalContracts::class)
+private fun ensureCommentsPresent(declaration: FqName, comments: Comments?) {
+    contract {
+        returns() implies (comments != null)
+    }
+
+    requireNotNull(comments) {
+        "Comments are missing for message declaration: $declaration. " +
+                "This likely because the lazy declaration value was access before the whole model was composed. " +
+                "Check that you don't access lazy values during resolution."
+    }
+}
+
+private fun Descriptors.FieldDescriptor.toModel(
+    comments: Comments,
+    nameTable: FqNameTable,
+    presenceIdx: Int? = null,
+): FieldDeclaration =
     cached {
         FieldDeclaration(
             name = fqName().simpleName,
-            type = modelType(),
+            type = modelType(nameTable),
             presenceIdx = presenceIdx,
             doc = comments.get(),
             dec = this,
@@ -191,19 +288,24 @@ private fun Descriptors.FieldDescriptor.toModel(comments: Comments, presenceIdx:
         )
     }
 
-private fun Descriptors.OneofDescriptor.toModel(parentComments: Comments): OneOfDeclaration = cached {
+private fun Descriptors.OneofDescriptor.toModel(
+    parentComments: Comments,
+    nameTable: FqNameTable,
+): OneOfDeclaration = cached {
     OneOfDeclaration(
         name = fqName(),
-        variants = fields.map { it.toModel(parentComments + Paths.messageFieldCommentPath + it.index) },
+        variants = fields.map { it.toModel(parentComments + Paths.messageFieldCommentPath + it.index, nameTable) },
         doc = (parentComments + Paths.messageOneOfCommentPath + index).get(),
         dec = this,
-    )
+    ).also { declaration ->
+        declaration.variants.forEach { variant ->
+            nameTable.register { declaration.name.nested(variant.name) }
+        }
+    }
 }
 
-private fun Descriptors.EnumDescriptor.toModel(comments: Comments?): EnumDeclaration = cached {
-    requireNotNull(comments) {
-        "Comments are missing for enum declaration: ${fqName()}"
-    }
+private fun Descriptors.EnumDescriptor.toModel(comments: Comments?, nameTable: FqNameTable): EnumDeclaration = cached {
+    ensureCommentsPresent(fqName(), comments)
 
     val entriesMap = mutableMapOf<Int, EnumDeclaration.Entry>()
     val aliases = mutableListOf<EnumDeclaration.Alias>()
@@ -228,7 +330,10 @@ private fun Descriptors.EnumDescriptor.toModel(comments: Comments?): EnumDeclara
         doc = comments.get(),
         dec = this,
         deprecated = options.deprecated,
-    )
+    ).also { declaration ->
+        nameTable.register { declaration.companionName }
+        nameTable.register { declaration.unrecognisedName }
+    }
 }
 
 private fun Descriptors.EnumValueDescriptor.toModel(comments: Comments): EnumDeclaration.Entry = cached {
@@ -241,7 +346,10 @@ private fun Descriptors.EnumValueDescriptor.toModel(comments: Comments): EnumDec
 }
 
 // no caching, as it would conflict with .toModel
-private fun Descriptors.EnumValueDescriptor.toAliasModel(enumComments: Comments, original: EnumDeclaration.Entry): EnumDeclaration.Alias = cached {
+private fun Descriptors.EnumValueDescriptor.toAliasModel(
+    enumComments: Comments,
+    original: EnumDeclaration.Entry,
+): EnumDeclaration.Alias = cached {
     EnumDeclaration.Alias(
         name = fqName(),
         original = original,
@@ -251,30 +359,32 @@ private fun Descriptors.EnumValueDescriptor.toAliasModel(enumComments: Comments,
     )
 }
 
-private fun Descriptors.ServiceDescriptor.toModel(comments: Comments): ServiceDeclaration = cached {
-    ServiceDeclaration(
-        name = fqName(),
-        methods = methods.map { it.toModel(comments + Paths.serviceMethodCommentPath + it.index) },
-        dec = this,
-        doc = comments.get(),
-        deprecated = options.deprecated,
-    )
-}
+private fun Descriptors.ServiceDescriptor.toModel(comments: Comments, nameTable: FqNameTable): ServiceDeclaration =
+    cached {
+        ServiceDeclaration(
+            name = fqName(),
+            methods = methods.map { it.toModel(comments + Paths.serviceMethodCommentPath + it.index, nameTable) },
+            dec = this,
+            doc = comments.get(),
+            deprecated = options.deprecated,
+        )
+    }
 
-private fun Descriptors.MethodDescriptor.toModel(comments: Comments): MethodDeclaration = cached {
-    MethodDeclaration(
-        name = name,
-        inputType = lazy { inputType.toModel(null) },
-        outputType = lazy { outputType.toModel(null) },
-        dec = this,
-        doc = comments.get(),
-        deprecated = options.deprecated,
-    )
-}
+private fun Descriptors.MethodDescriptor.toModel(comments: Comments, nameTable: FqNameTable): MethodDeclaration =
+    cached {
+        MethodDeclaration(
+            name = name,
+            inputType = lazy { inputType.toModel(null, nameTable) },
+            outputType = lazy { outputType.toModel(null, nameTable) },
+            dec = this,
+            doc = comments.get(),
+            deprecated = options.deprecated,
+        )
+    }
 
 //// Type Conversion Extension ////
 
-private fun Descriptors.FieldDescriptor.modelType(): FieldType {
+private fun Descriptors.FieldDescriptor.modelType(nameTable: FqNameTable): FieldType {
     val baseType = when (type) {
         Descriptors.FieldDescriptor.Type.DOUBLE -> FieldType.IntegralType.DOUBLE
         Descriptors.FieldDescriptor.Type.FLOAT -> FieldType.IntegralType.FLOAT
@@ -291,15 +401,15 @@ private fun Descriptors.FieldDescriptor.modelType(): FieldType {
         Descriptors.FieldDescriptor.Type.SFIXED64 -> FieldType.IntegralType.SFIXED64
         Descriptors.FieldDescriptor.Type.SINT32 -> FieldType.IntegralType.SINT32
         Descriptors.FieldDescriptor.Type.SINT64 -> FieldType.IntegralType.SINT64
-        Descriptors.FieldDescriptor.Type.ENUM -> FieldType.Enum(lazy { enumType.toModel(null) })
-        Descriptors.FieldDescriptor.Type.MESSAGE -> FieldType.Message(lazy { messageType!!.toModel(null) })
-        Descriptors.FieldDescriptor.Type.GROUP -> FieldType.Message(lazy { messageType!!.toModel(null) })
+        Descriptors.FieldDescriptor.Type.ENUM -> FieldType.Enum(lazy { enumType.toModel(null, nameTable) })
+        Descriptors.FieldDescriptor.Type.MESSAGE -> FieldType.Message(lazy { messageType!!.toModel(null, nameTable) })
+        Descriptors.FieldDescriptor.Type.GROUP -> FieldType.Message(lazy { messageType!!.toModel(null, nameTable) })
     }
 
     if (isMapField) {
-        val keyType = messageType.findFieldByName("key").modelType()
-        val valType = messageType.findFieldByName("value").modelType()
-        val mapEntryDec = lazy { messageType.toModel(null) }
+        val keyType = messageType.findFieldByName("key").modelType(nameTable)
+        val valType = messageType.findFieldByName("value").modelType(nameTable)
+        val mapEntryDec = lazy { messageType.toModel(null, nameTable) }
         val mapEntry = FieldType.Map.Entry(mapEntryDec, keyType, valType)
         return FieldType.Map(mapEntry)
     }
@@ -339,7 +449,7 @@ private fun String.fullProtoNameToKotlin(firstLetterUpper: Boolean = false): Str
     val lastDelimiterIndex = indexOfLast { it == '.' || it == '/' }
     return if (lastDelimiterIndex != -1) {
         val name = substring(lastDelimiterIndex + 1)
-        return name.simpleProtoNameToKotlin(firstLetterUpper = true)
+        name.simpleProtoNameToKotlin(firstLetterUpper = true)
     } else {
         simpleProtoNameToKotlin(firstLetterUpper)
     }
@@ -360,4 +470,3 @@ private fun String.simpleProtoNameToKotlin(firstLetterUpper: Boolean = false): S
         }
     }
 }
-

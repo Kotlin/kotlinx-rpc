@@ -1,8 +1,8 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlin.jvm.JvmInline
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * Constructs a new message.
@@ -12,8 +12,8 @@ import kotlinx.rpc.internal.utils.*
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.Struct.Companion.invoke(body: com.google.protobuf.kotlin.StructInternal.() -> Unit): com.google.protobuf.kotlin.Struct { 
-    val msg = com.google.protobuf.kotlin.StructInternal().apply(body)
+public operator fun Struct.Companion.invoke(body: StructInternal.() -> Unit): Struct {
+    val msg = StructInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -26,7 +26,7 @@ public operator fun com.google.protobuf.kotlin.Struct.Companion.invoke(body: com
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.Struct.copy(body: com.google.protobuf.kotlin.StructInternal.() -> Unit = {}): com.google.protobuf.kotlin.Struct { 
+public fun Struct.copy(body: StructInternal.() -> Unit = {}): Struct {
     return this.asInternal().copyInternal(body)
 }
 
@@ -38,8 +38,8 @@ public fun com.google.protobuf.kotlin.Struct.copy(body: com.google.protobuf.kotl
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.Value.Companion.invoke(body: com.google.protobuf.kotlin.ValueInternal.() -> Unit): com.google.protobuf.kotlin.Value { 
-    val msg = com.google.protobuf.kotlin.ValueInternal().apply(body)
+public operator fun Value.Companion.invoke(body: ValueInternal.() -> Unit): Value {
+    val msg = ValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -52,7 +52,7 @@ public operator fun com.google.protobuf.kotlin.Value.Companion.invoke(body: com.
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.Value.copy(body: com.google.protobuf.kotlin.ValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.Value { 
+public fun Value.copy(body: ValueInternal.() -> Unit = {}): Value {
     return this.asInternal().copyInternal(body)
 }
 
@@ -64,8 +64,8 @@ public fun com.google.protobuf.kotlin.Value.copy(body: com.google.protobuf.kotli
 * }
 * ```
 */
-public operator fun com.google.protobuf.kotlin.ListValue.Companion.invoke(body: com.google.protobuf.kotlin.ListValueInternal.() -> Unit): com.google.protobuf.kotlin.ListValue { 
-    val msg = com.google.protobuf.kotlin.ListValueInternal().apply(body)
+public operator fun ListValue.Companion.invoke(body: ListValueInternal.() -> Unit): ListValue {
+    val msg = ListValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -78,6 +78,6 @@ public operator fun com.google.protobuf.kotlin.ListValue.Companion.invoke(body: 
 * }
 * ```
 */
-public fun com.google.protobuf.kotlin.ListValue.copy(body: com.google.protobuf.kotlin.ListValueInternal.() -> Unit = {}): com.google.protobuf.kotlin.ListValue { 
+public fun ListValue.copy(body: ListValueInternal.() -> Unit = {}): ListValue {
     return this.asInternal().copyInternal(body)
 }

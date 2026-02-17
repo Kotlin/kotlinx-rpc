@@ -1,8 +1,8 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf_test_messages.proto2
 
-import kotlin.jvm.JvmInline
-import kotlinx.rpc.internal.utils.*
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
 * Constructs a new message.
@@ -12,8 +12,8 @@ import kotlinx.rpc.internal.utils.*
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2 { 
-    val msg = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal().apply(body)
+operator fun TestAllTypesProto2.Companion.invoke(body: TestAllTypesProto2Internal.() -> Unit): TestAllTypesProto2 {
+    val msg = TestAllTypesProto2Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -26,14 +26,14 @@ operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Compani
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.copy(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestAllTypesProto2 { 
+fun TestAllTypesProto2.copy(body: TestAllTypesProto2Internal.() -> Unit = {}): TestAllTypesProto2 {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllTypesProto2] instance.
 */
-val com.google.protobuf_test_messages.proto2.TestAllTypesProto2.presence: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Presence get() = this.asInternal()._presence
+val TestAllTypesProto2.presence: TestAllTypesProto2Presence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -43,8 +43,8 @@ val com.google.protobuf_test_messages.proto2.TestAllTypesProto2.presence: com.go
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.ForeignMessageProto2.Companion.invoke(body: com.google.protobuf_test_messages.proto2.ForeignMessageProto2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.ForeignMessageProto2 { 
-    val msg = com.google.protobuf_test_messages.proto2.ForeignMessageProto2Internal().apply(body)
+operator fun ForeignMessageProto2.Companion.invoke(body: ForeignMessageProto2Internal.() -> Unit): ForeignMessageProto2 {
+    val msg = ForeignMessageProto2Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -57,14 +57,14 @@ operator fun com.google.protobuf_test_messages.proto2.ForeignMessageProto2.Compa
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.ForeignMessageProto2.copy(body: com.google.protobuf_test_messages.proto2.ForeignMessageProto2Internal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.ForeignMessageProto2 { 
+fun ForeignMessageProto2.copy(body: ForeignMessageProto2Internal.() -> Unit = {}): ForeignMessageProto2 {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.ForeignMessageProto2] instance.
 */
-val com.google.protobuf_test_messages.proto2.ForeignMessageProto2.presence: com.google.protobuf_test_messages.proto2.ForeignMessageProto2Presence get() = this.asInternal()._presence
+val ForeignMessageProto2.presence: ForeignMessageProto2Presence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -74,8 +74,8 @@ val com.google.protobuf_test_messages.proto2.ForeignMessageProto2.presence: com.
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.GroupField.Companion.invoke(body: com.google.protobuf_test_messages.proto2.GroupFieldInternal.() -> Unit): com.google.protobuf_test_messages.proto2.GroupField { 
-    val msg = com.google.protobuf_test_messages.proto2.GroupFieldInternal().apply(body)
+operator fun GroupField.Companion.invoke(body: GroupFieldInternal.() -> Unit): GroupField {
+    val msg = GroupFieldInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -88,14 +88,14 @@ operator fun com.google.protobuf_test_messages.proto2.GroupField.Companion.invok
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.GroupField.copy(body: com.google.protobuf_test_messages.proto2.GroupFieldInternal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.GroupField { 
+fun GroupField.copy(body: GroupFieldInternal.() -> Unit = {}): GroupField {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.GroupField] instance.
 */
-val com.google.protobuf_test_messages.proto2.GroupField.presence: com.google.protobuf_test_messages.proto2.GroupFieldPresence get() = this.asInternal()._presence
+val GroupField.presence: GroupFieldPresence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -105,8 +105,8 @@ val com.google.protobuf_test_messages.proto2.GroupField.presence: com.google.pro
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.Companion.invoke(body: com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal.() -> Unit): com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes { 
-    val msg = com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal().apply(body)
+operator fun UnknownToTestAllTypes.Companion.invoke(body: UnknownToTestAllTypesInternal.() -> Unit): UnknownToTestAllTypes {
+    val msg = UnknownToTestAllTypesInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -119,14 +119,14 @@ operator fun com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.Comp
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.copy(body: com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes { 
+fun UnknownToTestAllTypes.copy(body: UnknownToTestAllTypesInternal.() -> Unit = {}): UnknownToTestAllTypes {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes] instance.
 */
-val com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.presence: com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesPresence get() = this.asInternal()._presence
+val UnknownToTestAllTypes.presence: UnknownToTestAllTypesPresence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -134,8 +134,8 @@ val com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.presence: com
 * val message = NullHypothesisProto2 { }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.NullHypothesisProto2.Companion.invoke(body: com.google.protobuf_test_messages.proto2.NullHypothesisProto2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.NullHypothesisProto2 { 
-    val msg = com.google.protobuf_test_messages.proto2.NullHypothesisProto2Internal().apply(body)
+operator fun NullHypothesisProto2.Companion.invoke(body: NullHypothesisProto2Internal.() -> Unit): NullHypothesisProto2 {
+    val msg = NullHypothesisProto2Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -146,7 +146,7 @@ operator fun com.google.protobuf_test_messages.proto2.NullHypothesisProto2.Compa
 * val copy = original.copy()
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.NullHypothesisProto2.copy(body: com.google.protobuf_test_messages.proto2.NullHypothesisProto2Internal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.NullHypothesisProto2 { 
+fun NullHypothesisProto2.copy(body: NullHypothesisProto2Internal.() -> Unit = {}): NullHypothesisProto2 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -156,8 +156,8 @@ fun com.google.protobuf_test_messages.proto2.NullHypothesisProto2.copy(body: com
 * val message = EnumOnlyProto2 { }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.EnumOnlyProto2.Companion.invoke(body: com.google.protobuf_test_messages.proto2.EnumOnlyProto2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.EnumOnlyProto2 { 
-    val msg = com.google.protobuf_test_messages.proto2.EnumOnlyProto2Internal().apply(body)
+operator fun EnumOnlyProto2.Companion.invoke(body: EnumOnlyProto2Internal.() -> Unit): EnumOnlyProto2 {
+    val msg = EnumOnlyProto2Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -168,7 +168,7 @@ operator fun com.google.protobuf_test_messages.proto2.EnumOnlyProto2.Companion.i
 * val copy = original.copy()
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.EnumOnlyProto2.copy(body: com.google.protobuf_test_messages.proto2.EnumOnlyProto2Internal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.EnumOnlyProto2 { 
+fun EnumOnlyProto2.copy(body: EnumOnlyProto2Internal.() -> Unit = {}): EnumOnlyProto2 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -180,8 +180,8 @@ fun com.google.protobuf_test_messages.proto2.EnumOnlyProto2.copy(body: com.googl
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.OneStringProto2.Companion.invoke(body: com.google.protobuf_test_messages.proto2.OneStringProto2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.OneStringProto2 { 
-    val msg = com.google.protobuf_test_messages.proto2.OneStringProto2Internal().apply(body)
+operator fun OneStringProto2.Companion.invoke(body: OneStringProto2Internal.() -> Unit): OneStringProto2 {
+    val msg = OneStringProto2Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -194,14 +194,14 @@ operator fun com.google.protobuf_test_messages.proto2.OneStringProto2.Companion.
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.OneStringProto2.copy(body: com.google.protobuf_test_messages.proto2.OneStringProto2Internal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.OneStringProto2 { 
+fun OneStringProto2.copy(body: OneStringProto2Internal.() -> Unit = {}): OneStringProto2 {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.OneStringProto2] instance.
 */
-val com.google.protobuf_test_messages.proto2.OneStringProto2.presence: com.google.protobuf_test_messages.proto2.OneStringProto2Presence get() = this.asInternal()._presence
+val OneStringProto2.presence: OneStringProto2Presence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -211,8 +211,8 @@ val com.google.protobuf_test_messages.proto2.OneStringProto2.presence: com.googl
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.ProtoWithKeywords.Companion.invoke(body: com.google.protobuf_test_messages.proto2.ProtoWithKeywordsInternal.() -> Unit): com.google.protobuf_test_messages.proto2.ProtoWithKeywords { 
-    val msg = com.google.protobuf_test_messages.proto2.ProtoWithKeywordsInternal().apply(body)
+operator fun ProtoWithKeywords.Companion.invoke(body: ProtoWithKeywordsInternal.() -> Unit): ProtoWithKeywords {
+    val msg = ProtoWithKeywordsInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -225,14 +225,14 @@ operator fun com.google.protobuf_test_messages.proto2.ProtoWithKeywords.Companio
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.ProtoWithKeywords.copy(body: com.google.protobuf_test_messages.proto2.ProtoWithKeywordsInternal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.ProtoWithKeywords { 
+fun ProtoWithKeywords.copy(body: ProtoWithKeywordsInternal.() -> Unit = {}): ProtoWithKeywords {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.ProtoWithKeywords] instance.
 */
-val com.google.protobuf_test_messages.proto2.ProtoWithKeywords.presence: com.google.protobuf_test_messages.proto2.ProtoWithKeywordsPresence get() = this.asInternal()._presence
+val ProtoWithKeywords.presence: ProtoWithKeywordsPresence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -242,8 +242,8 @@ val com.google.protobuf_test_messages.proto2.ProtoWithKeywords.presence: com.goo
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2 { 
-    val msg = com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal().apply(body)
+operator fun TestAllRequiredTypesProto2.Companion.invoke(body: TestAllRequiredTypesProto2Internal.() -> Unit): TestAllRequiredTypesProto2 {
+    val msg = TestAllRequiredTypesProto2Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -256,14 +256,14 @@ operator fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.copy(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2 { 
+fun TestAllRequiredTypesProto2.copy(body: TestAllRequiredTypesProto2Internal.() -> Unit = {}): TestAllRequiredTypesProto2 {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2] instance.
 */
-val com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.presence: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Presence get() = this.asInternal()._presence
+val TestAllRequiredTypesProto2.presence: TestAllRequiredTypesProto2Presence get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -273,8 +273,8 @@ val com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.presence
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestLargeOneof.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestLargeOneof { 
-    val msg = com.google.protobuf_test_messages.proto2.TestLargeOneofInternal().apply(body)
+operator fun TestLargeOneof.Companion.invoke(body: TestLargeOneofInternal.() -> Unit): TestLargeOneof {
+    val msg = TestLargeOneofInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -287,7 +287,7 @@ operator fun com.google.protobuf_test_messages.proto2.TestLargeOneof.Companion.i
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestLargeOneof.copy(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestLargeOneof { 
+fun TestLargeOneof.copy(body: TestLargeOneofInternal.() -> Unit = {}): TestLargeOneof {
     return this.asInternal().copyInternal(body)
 }
 
@@ -299,8 +299,8 @@ fun com.google.protobuf_test_messages.proto2.TestLargeOneof.copy(body: com.googl
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.NestedMessageInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage { 
-    val msg = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.NestedMessageInternal().apply(body)
+operator fun TestAllTypesProto2.NestedMessage.Companion.invoke(body: TestAllTypesProto2Internal.NestedMessageInternal.() -> Unit): TestAllTypesProto2.NestedMessage {
+    val msg = TestAllTypesProto2Internal.NestedMessageInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -313,14 +313,14 @@ operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedM
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage.copy(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.NestedMessageInternal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage { 
+fun TestAllTypesProto2.NestedMessage.copy(body: TestAllTypesProto2Internal.NestedMessageInternal.() -> Unit = {}): TestAllTypesProto2.NestedMessage {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage] instance.
 */
-val com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage.presence: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Presence.NestedMessage get() = this.asInternal()._presence
+val TestAllTypesProto2.NestedMessage.presence: TestAllTypesProto2Presence.NestedMessage get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -330,8 +330,8 @@ val com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage.pr
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Data.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.DataInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Data { 
-    val msg = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.DataInternal().apply(body)
+operator fun TestAllTypesProto2.Data.Companion.invoke(body: TestAllTypesProto2Internal.DataInternal.() -> Unit): TestAllTypesProto2.Data {
+    val msg = TestAllTypesProto2Internal.DataInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -344,14 +344,14 @@ operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Data.Co
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Data.copy(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.DataInternal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Data { 
+fun TestAllTypesProto2.Data.copy(body: TestAllTypesProto2Internal.DataInternal.() -> Unit = {}): TestAllTypesProto2.Data {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Data] instance.
 */
-val com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Data.presence: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Presence.Data get() = this.asInternal()._presence
+val TestAllTypesProto2.Data.presence: TestAllTypesProto2Presence.Data get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -361,8 +361,8 @@ val com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Data.presence: c
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MultiWordGroupField.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MultiWordGroupFieldInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MultiWordGroupField { 
-    val msg = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MultiWordGroupFieldInternal().apply(body)
+operator fun TestAllTypesProto2.MultiWordGroupField.Companion.invoke(body: TestAllTypesProto2Internal.MultiWordGroupFieldInternal.() -> Unit): TestAllTypesProto2.MultiWordGroupField {
+    val msg = TestAllTypesProto2Internal.MultiWordGroupFieldInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -375,14 +375,14 @@ operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MultiWo
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MultiWordGroupField.copy(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MultiWordGroupFieldInternal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MultiWordGroupField { 
+fun TestAllTypesProto2.MultiWordGroupField.copy(body: TestAllTypesProto2Internal.MultiWordGroupFieldInternal.() -> Unit = {}): TestAllTypesProto2.MultiWordGroupField {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MultiWordGroupField] instance.
 */
-val com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MultiWordGroupField.presence: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Presence.MultiWordGroupField get() = this.asInternal()._presence
+val TestAllTypesProto2.MultiWordGroupField.presence: TestAllTypesProto2Presence.MultiWordGroupField get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -390,8 +390,8 @@ val com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MultiWordGroupFi
 * val message = MessageSetCorrect { }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect { 
-    val msg = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectInternal().apply(body)
+operator fun TestAllTypesProto2.MessageSetCorrect.Companion.invoke(body: TestAllTypesProto2Internal.MessageSetCorrectInternal.() -> Unit): TestAllTypesProto2.MessageSetCorrect {
+    val msg = TestAllTypesProto2Internal.MessageSetCorrectInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -402,7 +402,7 @@ operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Message
 * val copy = original.copy()
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect.copy(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectInternal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect { 
+fun TestAllTypesProto2.MessageSetCorrect.copy(body: TestAllTypesProto2Internal.MessageSetCorrectInternal.() -> Unit = {}): TestAllTypesProto2.MessageSetCorrect {
     return this.asInternal().copyInternal(body)
 }
 
@@ -414,8 +414,8 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrec
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1 { 
-    val msg = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal().apply(body)
+operator fun TestAllTypesProto2.MessageSetCorrectExtension1.Companion.invoke(body: TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.() -> Unit): TestAllTypesProto2.MessageSetCorrectExtension1 {
+    val msg = TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -428,14 +428,14 @@ operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Message
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1.copy(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1 { 
+fun TestAllTypesProto2.MessageSetCorrectExtension1.copy(body: TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.() -> Unit = {}): TestAllTypesProto2.MessageSetCorrectExtension1 {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1] instance.
 */
-val com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1.presence: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Presence.MessageSetCorrectExtension1 get() = this.asInternal()._presence
+val TestAllTypesProto2.MessageSetCorrectExtension1.presence: TestAllTypesProto2Presence.MessageSetCorrectExtension1 get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -445,8 +445,8 @@ val com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrec
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2 { 
-    val msg = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal().apply(body)
+operator fun TestAllTypesProto2.MessageSetCorrectExtension2.Companion.invoke(body: TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.() -> Unit): TestAllTypesProto2.MessageSetCorrectExtension2 {
+    val msg = TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -459,14 +459,14 @@ operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Message
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2.copy(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2 { 
+fun TestAllTypesProto2.MessageSetCorrectExtension2.copy(body: TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.() -> Unit = {}): TestAllTypesProto2.MessageSetCorrectExtension2 {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2] instance.
 */
-val com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2.presence: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Presence.MessageSetCorrectExtension2 get() = this.asInternal()._presence
+val TestAllTypesProto2.MessageSetCorrectExtension2.presence: TestAllTypesProto2Presence.MessageSetCorrectExtension2 get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -476,8 +476,8 @@ val com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrec
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOneof.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.ExtensionWithOneofInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOneof { 
-    val msg = com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.ExtensionWithOneofInternal().apply(body)
+operator fun TestAllTypesProto2.ExtensionWithOneof.Companion.invoke(body: TestAllTypesProto2Internal.ExtensionWithOneofInternal.() -> Unit): TestAllTypesProto2.ExtensionWithOneof {
+    val msg = TestAllTypesProto2Internal.ExtensionWithOneofInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -490,7 +490,7 @@ operator fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Extensi
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOneof.copy(body: com.google.protobuf_test_messages.proto2.TestAllTypesProto2Internal.ExtensionWithOneofInternal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOneof { 
+fun TestAllTypesProto2.ExtensionWithOneof.copy(body: TestAllTypesProto2Internal.ExtensionWithOneofInternal.() -> Unit = {}): TestAllTypesProto2.ExtensionWithOneof {
     return this.asInternal().copyInternal(body)
 }
 
@@ -502,8 +502,8 @@ fun com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOne
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.OptionalGroup.Companion.invoke(body: com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal.OptionalGroupInternal.() -> Unit): com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.OptionalGroup { 
-    val msg = com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal.OptionalGroupInternal().apply(body)
+operator fun UnknownToTestAllTypes.OptionalGroup.Companion.invoke(body: UnknownToTestAllTypesInternal.OptionalGroupInternal.() -> Unit): UnknownToTestAllTypes.OptionalGroup {
+    val msg = UnknownToTestAllTypesInternal.OptionalGroupInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -516,14 +516,14 @@ operator fun com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.Opti
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.OptionalGroup.copy(body: com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesInternal.OptionalGroupInternal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.OptionalGroup { 
+fun UnknownToTestAllTypes.OptionalGroup.copy(body: UnknownToTestAllTypesInternal.OptionalGroupInternal.() -> Unit = {}): UnknownToTestAllTypes.OptionalGroup {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.OptionalGroup] instance.
 */
-val com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.OptionalGroup.presence: com.google.protobuf_test_messages.proto2.UnknownToTestAllTypesPresence.OptionalGroup get() = this.asInternal()._presence
+val UnknownToTestAllTypes.OptionalGroup.presence: UnknownToTestAllTypesPresence.OptionalGroup get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -533,8 +533,8 @@ val com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.OptionalGroup
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMessage.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.NestedMessageInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMessage { 
-    val msg = com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.NestedMessageInternal().apply(body)
+operator fun TestAllRequiredTypesProto2.NestedMessage.Companion.invoke(body: TestAllRequiredTypesProto2Internal.NestedMessageInternal.() -> Unit): TestAllRequiredTypesProto2.NestedMessage {
+    val msg = TestAllRequiredTypesProto2Internal.NestedMessageInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -547,14 +547,14 @@ operator fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMessage.copy(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.NestedMessageInternal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMessage { 
+fun TestAllRequiredTypesProto2.NestedMessage.copy(body: TestAllRequiredTypesProto2Internal.NestedMessageInternal.() -> Unit = {}): TestAllRequiredTypesProto2.NestedMessage {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMessage] instance.
 */
-val com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMessage.presence: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Presence.NestedMessage get() = this.asInternal()._presence
+val TestAllRequiredTypesProto2.NestedMessage.presence: TestAllRequiredTypesProto2Presence.NestedMessage get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -564,8 +564,8 @@ val com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMe
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.Data.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.DataInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.Data { 
-    val msg = com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.DataInternal().apply(body)
+operator fun TestAllRequiredTypesProto2.Data.Companion.invoke(body: TestAllRequiredTypesProto2Internal.DataInternal.() -> Unit): TestAllRequiredTypesProto2.Data {
+    val msg = TestAllRequiredTypesProto2Internal.DataInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -578,14 +578,14 @@ operator fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.Data.copy(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.DataInternal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.Data { 
+fun TestAllRequiredTypesProto2.Data.copy(body: TestAllRequiredTypesProto2Internal.DataInternal.() -> Unit = {}): TestAllRequiredTypesProto2.Data {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.Data] instance.
 */
-val com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.Data.presence: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Presence.Data get() = this.asInternal()._presence
+val TestAllRequiredTypesProto2.Data.presence: TestAllRequiredTypesProto2Presence.Data get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -593,8 +593,8 @@ val com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.Data.pre
 * val message = MessageSetCorrect { }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect { 
-    val msg = com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal().apply(body)
+operator fun TestAllRequiredTypesProto2.MessageSetCorrect.Companion.invoke(body: TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.() -> Unit): TestAllRequiredTypesProto2.MessageSetCorrect {
+    val msg = TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -605,7 +605,7 @@ operator fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2
 * val copy = original.copy()
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect.copy(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect { 
+fun TestAllRequiredTypesProto2.MessageSetCorrect.copy(body: TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.() -> Unit = {}): TestAllRequiredTypesProto2.MessageSetCorrect {
     return this.asInternal().copyInternal(body)
 }
 
@@ -617,8 +617,8 @@ fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageS
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1 { 
-    val msg = com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal().apply(body)
+operator fun TestAllRequiredTypesProto2.MessageSetCorrectExtension1.Companion.invoke(body: TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal.() -> Unit): TestAllRequiredTypesProto2.MessageSetCorrectExtension1 {
+    val msg = TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -631,14 +631,14 @@ operator fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.copy(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1 { 
+fun TestAllRequiredTypesProto2.MessageSetCorrectExtension1.copy(body: TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal.() -> Unit = {}): TestAllRequiredTypesProto2.MessageSetCorrectExtension1 {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1] instance.
 */
-val com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.presence: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension1 get() = this.asInternal()._presence
+val TestAllRequiredTypesProto2.MessageSetCorrectExtension1.presence: TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension1 get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -648,8 +648,8 @@ val com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageS
 * }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2 { 
-    val msg = com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal().apply(body)
+operator fun TestAllRequiredTypesProto2.MessageSetCorrectExtension2.Companion.invoke(body: TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal.() -> Unit): TestAllRequiredTypesProto2.MessageSetCorrectExtension2 {
+    val msg = TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -662,14 +662,14 @@ operator fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2
 * }
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.copy(body: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2 { 
+fun TestAllRequiredTypesProto2.MessageSetCorrectExtension2.copy(body: TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal.() -> Unit = {}): TestAllRequiredTypesProto2.MessageSetCorrectExtension2 {
     return this.asInternal().copyInternal(body)
 }
 
 /**
 * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2] instance.
 */
-val com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.presence: com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension2 get() = this.asInternal()._presence
+val TestAllRequiredTypesProto2.MessageSetCorrectExtension2.presence: TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension2 get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -677,8 +677,8 @@ val com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageS
 * val message = A1 { }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A1.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A1Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestLargeOneof.A1 { 
-    val msg = com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A1Internal().apply(body)
+operator fun TestLargeOneof.A1.Companion.invoke(body: TestLargeOneofInternal.A1Internal.() -> Unit): TestLargeOneof.A1 {
+    val msg = TestLargeOneofInternal.A1Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -689,7 +689,7 @@ operator fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A1.Companio
 * val copy = original.copy()
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A1.copy(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A1Internal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestLargeOneof.A1 { 
+fun TestLargeOneof.A1.copy(body: TestLargeOneofInternal.A1Internal.() -> Unit = {}): TestLargeOneof.A1 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -699,8 +699,8 @@ fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A1.copy(body: com.go
 * val message = A2 { }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A2.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A2Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestLargeOneof.A2 { 
-    val msg = com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A2Internal().apply(body)
+operator fun TestLargeOneof.A2.Companion.invoke(body: TestLargeOneofInternal.A2Internal.() -> Unit): TestLargeOneof.A2 {
+    val msg = TestLargeOneofInternal.A2Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -711,7 +711,7 @@ operator fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A2.Companio
 * val copy = original.copy()
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A2.copy(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A2Internal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestLargeOneof.A2 { 
+fun TestLargeOneof.A2.copy(body: TestLargeOneofInternal.A2Internal.() -> Unit = {}): TestLargeOneof.A2 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -721,8 +721,8 @@ fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A2.copy(body: com.go
 * val message = A3 { }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A3.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A3Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestLargeOneof.A3 { 
-    val msg = com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A3Internal().apply(body)
+operator fun TestLargeOneof.A3.Companion.invoke(body: TestLargeOneofInternal.A3Internal.() -> Unit): TestLargeOneof.A3 {
+    val msg = TestLargeOneofInternal.A3Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -733,7 +733,7 @@ operator fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A3.Companio
 * val copy = original.copy()
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A3.copy(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A3Internal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestLargeOneof.A3 { 
+fun TestLargeOneof.A3.copy(body: TestLargeOneofInternal.A3Internal.() -> Unit = {}): TestLargeOneof.A3 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -743,8 +743,8 @@ fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A3.copy(body: com.go
 * val message = A4 { }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A4.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A4Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestLargeOneof.A4 { 
-    val msg = com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A4Internal().apply(body)
+operator fun TestLargeOneof.A4.Companion.invoke(body: TestLargeOneofInternal.A4Internal.() -> Unit): TestLargeOneof.A4 {
+    val msg = TestLargeOneofInternal.A4Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -755,7 +755,7 @@ operator fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A4.Companio
 * val copy = original.copy()
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A4.copy(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A4Internal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestLargeOneof.A4 { 
+fun TestLargeOneof.A4.copy(body: TestLargeOneofInternal.A4Internal.() -> Unit = {}): TestLargeOneof.A4 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -765,8 +765,8 @@ fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A4.copy(body: com.go
 * val message = A5 { }
 * ```
 */
-operator fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A5.Companion.invoke(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A5Internal.() -> Unit): com.google.protobuf_test_messages.proto2.TestLargeOneof.A5 { 
-    val msg = com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A5Internal().apply(body)
+operator fun TestLargeOneof.A5.Companion.invoke(body: TestLargeOneofInternal.A5Internal.() -> Unit): TestLargeOneof.A5 {
+    val msg = TestLargeOneofInternal.A5Internal().apply(body)
     msg.checkRequiredFields()
     return msg
 }
@@ -777,7 +777,7 @@ operator fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A5.Companio
 * val copy = original.copy()
 * ```
 */
-fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A5.copy(body: com.google.protobuf_test_messages.proto2.TestLargeOneofInternal.A5Internal.() -> Unit = {}): com.google.protobuf_test_messages.proto2.TestLargeOneof.A5 { 
+fun TestLargeOneof.A5.copy(body: TestLargeOneofInternal.A5Internal.() -> Unit = {}): TestLargeOneof.A5 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -785,167 +785,167 @@ fun com.google.protobuf_test_messages.proto2.TestLargeOneof.A5.copy(body: com.go
 * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllTypesProto2] messages.
 * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.presence] extension property.
 */
-interface TestAllTypesProto2Presence { 
-    val hasOptionalInt32: kotlin.Boolean
+interface TestAllTypesProto2Presence {
+    val hasOptionalInt32: Boolean
 
-    val hasOptionalInt64: kotlin.Boolean
+    val hasOptionalInt64: Boolean
 
-    val hasOptionalUint32: kotlin.Boolean
+    val hasOptionalUint32: Boolean
 
-    val hasOptionalUint64: kotlin.Boolean
+    val hasOptionalUint64: Boolean
 
-    val hasOptionalSint32: kotlin.Boolean
+    val hasOptionalSint32: Boolean
 
-    val hasOptionalSint64: kotlin.Boolean
+    val hasOptionalSint64: Boolean
 
-    val hasOptionalFixed32: kotlin.Boolean
+    val hasOptionalFixed32: Boolean
 
-    val hasOptionalFixed64: kotlin.Boolean
+    val hasOptionalFixed64: Boolean
 
-    val hasOptionalSfixed32: kotlin.Boolean
+    val hasOptionalSfixed32: Boolean
 
-    val hasOptionalSfixed64: kotlin.Boolean
+    val hasOptionalSfixed64: Boolean
 
-    val hasOptionalFloat: kotlin.Boolean
+    val hasOptionalFloat: Boolean
 
-    val hasOptionalDouble: kotlin.Boolean
+    val hasOptionalDouble: Boolean
 
-    val hasOptionalBool: kotlin.Boolean
+    val hasOptionalBool: Boolean
 
-    val hasOptionalString: kotlin.Boolean
+    val hasOptionalString: Boolean
 
-    val hasOptionalBytes: kotlin.Boolean
+    val hasOptionalBytes: Boolean
 
-    val hasOptionalNestedMessage: kotlin.Boolean
+    val hasOptionalNestedMessage: Boolean
 
-    val hasOptionalForeignMessage: kotlin.Boolean
+    val hasOptionalForeignMessage: Boolean
 
-    val hasOptionalNestedEnum: kotlin.Boolean
+    val hasOptionalNestedEnum: Boolean
 
-    val hasOptionalForeignEnum: kotlin.Boolean
+    val hasOptionalForeignEnum: Boolean
 
-    val hasOptionalStringPiece: kotlin.Boolean
+    val hasOptionalStringPiece: Boolean
 
-    val hasOptionalCord: kotlin.Boolean
+    val hasOptionalCord: Boolean
 
-    val hasRecursiveMessage: kotlin.Boolean
+    val hasRecursiveMessage: Boolean
 
-    val hasData: kotlin.Boolean
+    val hasData: Boolean
 
-    val hasMultiwordgroupfield: kotlin.Boolean
+    val hasMultiwordgroupfield: Boolean
 
-    val hasDefaultInt32: kotlin.Boolean
+    val hasDefaultInt32: Boolean
 
-    val hasDefaultInt64: kotlin.Boolean
+    val hasDefaultInt64: Boolean
 
-    val hasDefaultUint32: kotlin.Boolean
+    val hasDefaultUint32: Boolean
 
-    val hasDefaultUint64: kotlin.Boolean
+    val hasDefaultUint64: Boolean
 
-    val hasDefaultSint32: kotlin.Boolean
+    val hasDefaultSint32: Boolean
 
-    val hasDefaultSint64: kotlin.Boolean
+    val hasDefaultSint64: Boolean
 
-    val hasDefaultFixed32: kotlin.Boolean
+    val hasDefaultFixed32: Boolean
 
-    val hasDefaultFixed64: kotlin.Boolean
+    val hasDefaultFixed64: Boolean
 
-    val hasDefaultSfixed32: kotlin.Boolean
+    val hasDefaultSfixed32: Boolean
 
-    val hasDefaultSfixed64: kotlin.Boolean
+    val hasDefaultSfixed64: Boolean
 
-    val hasDefaultFloat: kotlin.Boolean
+    val hasDefaultFloat: Boolean
 
-    val hasDefaultDouble: kotlin.Boolean
+    val hasDefaultDouble: Boolean
 
-    val hasDefaultBool: kotlin.Boolean
+    val hasDefaultBool: Boolean
 
-    val hasDefaultString: kotlin.Boolean
+    val hasDefaultString: Boolean
 
-    val hasDefaultBytes: kotlin.Boolean
+    val hasDefaultBytes: Boolean
 
-    val hasFieldname1: kotlin.Boolean
+    val hasFieldname1: Boolean
 
-    val hasFieldName2: kotlin.Boolean
+    val hasFieldName2: Boolean
 
-    val hasFieldName3: kotlin.Boolean
+    val hasFieldName3: Boolean
 
-    val hasField_Name4_: kotlin.Boolean
+    val hasField_Name4_: Boolean
 
-    val hasField0name5: kotlin.Boolean
+    val hasField0name5: Boolean
 
-    val hasField_0Name6: kotlin.Boolean
+    val hasField_0Name6: Boolean
 
-    val hasFieldName7: kotlin.Boolean
+    val hasFieldName7: Boolean
 
-    val hasFieldName8: kotlin.Boolean
+    val hasFieldName8: Boolean
 
-    val hasField_Name9: kotlin.Boolean
+    val hasField_Name9: Boolean
 
-    val hasField_Name10: kotlin.Boolean
+    val hasField_Name10: Boolean
 
-    val hasFIELD_NAME11: kotlin.Boolean
+    val hasFIELD_NAME11: Boolean
 
-    val hasFIELDName12: kotlin.Boolean
+    val hasFIELDName12: Boolean
 
-    val has_FieldName13: kotlin.Boolean
+    val has_FieldName13: Boolean
 
-    val has__FieldName14: kotlin.Boolean
+    val has__FieldName14: Boolean
 
-    val hasField_Name15: kotlin.Boolean
+    val hasField_Name15: Boolean
 
-    val hasField__Name16: kotlin.Boolean
+    val hasField__Name16: Boolean
 
-    val hasFieldName17__: kotlin.Boolean
+    val hasFieldName17__: Boolean
 
-    val hasFieldName18__: kotlin.Boolean
+    val hasFieldName18__: Boolean
 
-    val hasMessageSetCorrect: kotlin.Boolean
+    val hasMessageSetCorrect: Boolean
 
     /**
     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage] messages.
     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage.presence] extension property.
     */
-    interface NestedMessage { 
-        val hasA: kotlin.Boolean
+    interface NestedMessage {
+        val hasA: Boolean
 
-        val hasCorecursive: kotlin.Boolean
+        val hasCorecursive: Boolean
     }
 
     /**
     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Data] messages.
     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Data.presence] extension property.
     */
-    interface Data { 
-        val hasGroupInt32: kotlin.Boolean
+    interface Data {
+        val hasGroupInt32: Boolean
 
-        val hasGroupUint32: kotlin.Boolean
+        val hasGroupUint32: Boolean
     }
 
     /**
     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MultiWordGroupField] messages.
     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MultiWordGroupField.presence] extension property.
     */
-    interface MultiWordGroupField { 
-        val hasGroupInt32: kotlin.Boolean
+    interface MultiWordGroupField {
+        val hasGroupInt32: Boolean
 
-        val hasGroupUint32: kotlin.Boolean
+        val hasGroupUint32: Boolean
     }
 
     /**
     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1] messages.
     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1.presence] extension property.
     */
-    interface MessageSetCorrectExtension1 { 
-        val hasStr: kotlin.Boolean
+    interface MessageSetCorrectExtension1 {
+        val hasStr: Boolean
     }
 
     /**
     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2] messages.
     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2.presence] extension property.
     */
-    interface MessageSetCorrectExtension2 { 
-        val hasI: kotlin.Boolean
+    interface MessageSetCorrectExtension2 {
+        val hasI: Boolean
     }
 }
 
@@ -953,41 +953,41 @@ interface TestAllTypesProto2Presence {
 * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.ForeignMessageProto2] messages.
 * Retrieve it via the [com.google.protobuf_test_messages.proto2.ForeignMessageProto2.presence] extension property.
 */
-interface ForeignMessageProto2Presence { 
-    val hasC: kotlin.Boolean
+interface ForeignMessageProto2Presence {
+    val hasC: Boolean
 }
 
 /**
 * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.GroupField] messages.
 * Retrieve it via the [com.google.protobuf_test_messages.proto2.GroupField.presence] extension property.
 */
-interface GroupFieldPresence { 
-    val hasGroupInt32: kotlin.Boolean
+interface GroupFieldPresence {
+    val hasGroupInt32: Boolean
 
-    val hasGroupUint32: kotlin.Boolean
+    val hasGroupUint32: Boolean
 }
 
 /**
 * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes] messages.
 * Retrieve it via the [com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.presence] extension property.
 */
-interface UnknownToTestAllTypesPresence { 
-    val hasOptionalInt32: kotlin.Boolean
+interface UnknownToTestAllTypesPresence {
+    val hasOptionalInt32: Boolean
 
-    val hasOptionalString: kotlin.Boolean
+    val hasOptionalString: Boolean
 
-    val hasNestedMessage: kotlin.Boolean
+    val hasNestedMessage: Boolean
 
-    val hasOptionalgroup: kotlin.Boolean
+    val hasOptionalgroup: Boolean
 
-    val hasOptionalBool: kotlin.Boolean
+    val hasOptionalBool: Boolean
 
     /**
     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.OptionalGroup] messages.
     * Retrieve it via the [com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.OptionalGroup.presence] extension property.
     */
-    interface OptionalGroup { 
-        val hasA: kotlin.Boolean
+    interface OptionalGroup {
+        val hasA: Boolean
     }
 }
 
@@ -995,138 +995,138 @@ interface UnknownToTestAllTypesPresence {
 * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.OneStringProto2] messages.
 * Retrieve it via the [com.google.protobuf_test_messages.proto2.OneStringProto2.presence] extension property.
 */
-interface OneStringProto2Presence { 
-    val hasData: kotlin.Boolean
+interface OneStringProto2Presence {
+    val hasData: Boolean
 }
 
 /**
 * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.ProtoWithKeywords] messages.
 * Retrieve it via the [com.google.protobuf_test_messages.proto2.ProtoWithKeywords.presence] extension property.
 */
-interface ProtoWithKeywordsPresence { 
-    val hasInline: kotlin.Boolean
+interface ProtoWithKeywordsPresence {
+    val hasInline: Boolean
 
-    val hasConcept: kotlin.Boolean
+    val hasConcept: Boolean
 }
 
 /**
 * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2] messages.
 * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.presence] extension property.
 */
-interface TestAllRequiredTypesProto2Presence { 
-    val hasRequiredInt32: kotlin.Boolean
+interface TestAllRequiredTypesProto2Presence {
+    val hasRequiredInt32: Boolean
 
-    val hasRequiredInt64: kotlin.Boolean
+    val hasRequiredInt64: Boolean
 
-    val hasRequiredUint32: kotlin.Boolean
+    val hasRequiredUint32: Boolean
 
-    val hasRequiredUint64: kotlin.Boolean
+    val hasRequiredUint64: Boolean
 
-    val hasRequiredSint32: kotlin.Boolean
+    val hasRequiredSint32: Boolean
 
-    val hasRequiredSint64: kotlin.Boolean
+    val hasRequiredSint64: Boolean
 
-    val hasRequiredFixed32: kotlin.Boolean
+    val hasRequiredFixed32: Boolean
 
-    val hasRequiredFixed64: kotlin.Boolean
+    val hasRequiredFixed64: Boolean
 
-    val hasRequiredSfixed32: kotlin.Boolean
+    val hasRequiredSfixed32: Boolean
 
-    val hasRequiredSfixed64: kotlin.Boolean
+    val hasRequiredSfixed64: Boolean
 
-    val hasRequiredFloat: kotlin.Boolean
+    val hasRequiredFloat: Boolean
 
-    val hasRequiredDouble: kotlin.Boolean
+    val hasRequiredDouble: Boolean
 
-    val hasRequiredBool: kotlin.Boolean
+    val hasRequiredBool: Boolean
 
-    val hasRequiredString: kotlin.Boolean
+    val hasRequiredString: Boolean
 
-    val hasRequiredBytes: kotlin.Boolean
+    val hasRequiredBytes: Boolean
 
-    val hasRequiredNestedMessage: kotlin.Boolean
+    val hasRequiredNestedMessage: Boolean
 
-    val hasRequiredForeignMessage: kotlin.Boolean
+    val hasRequiredForeignMessage: Boolean
 
-    val hasRequiredNestedEnum: kotlin.Boolean
+    val hasRequiredNestedEnum: Boolean
 
-    val hasRequiredForeignEnum: kotlin.Boolean
+    val hasRequiredForeignEnum: Boolean
 
-    val hasRequiredStringPiece: kotlin.Boolean
+    val hasRequiredStringPiece: Boolean
 
-    val hasRequiredCord: kotlin.Boolean
+    val hasRequiredCord: Boolean
 
-    val hasRecursiveMessage: kotlin.Boolean
+    val hasRecursiveMessage: Boolean
 
-    val hasOptionalRecursiveMessage: kotlin.Boolean
+    val hasOptionalRecursiveMessage: Boolean
 
-    val hasData: kotlin.Boolean
+    val hasData: Boolean
 
-    val hasDefaultInt32: kotlin.Boolean
+    val hasDefaultInt32: Boolean
 
-    val hasDefaultInt64: kotlin.Boolean
+    val hasDefaultInt64: Boolean
 
-    val hasDefaultUint32: kotlin.Boolean
+    val hasDefaultUint32: Boolean
 
-    val hasDefaultUint64: kotlin.Boolean
+    val hasDefaultUint64: Boolean
 
-    val hasDefaultSint32: kotlin.Boolean
+    val hasDefaultSint32: Boolean
 
-    val hasDefaultSint64: kotlin.Boolean
+    val hasDefaultSint64: Boolean
 
-    val hasDefaultFixed32: kotlin.Boolean
+    val hasDefaultFixed32: Boolean
 
-    val hasDefaultFixed64: kotlin.Boolean
+    val hasDefaultFixed64: Boolean
 
-    val hasDefaultSfixed32: kotlin.Boolean
+    val hasDefaultSfixed32: Boolean
 
-    val hasDefaultSfixed64: kotlin.Boolean
+    val hasDefaultSfixed64: Boolean
 
-    val hasDefaultFloat: kotlin.Boolean
+    val hasDefaultFloat: Boolean
 
-    val hasDefaultDouble: kotlin.Boolean
+    val hasDefaultDouble: Boolean
 
-    val hasDefaultBool: kotlin.Boolean
+    val hasDefaultBool: Boolean
 
-    val hasDefaultString: kotlin.Boolean
+    val hasDefaultString: Boolean
 
-    val hasDefaultBytes: kotlin.Boolean
+    val hasDefaultBytes: Boolean
 
     /**
     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMessage] messages.
     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMessage.presence] extension property.
     */
-    interface NestedMessage { 
-        val hasA: kotlin.Boolean
+    interface NestedMessage {
+        val hasA: Boolean
 
-        val hasCorecursive: kotlin.Boolean
+        val hasCorecursive: Boolean
 
-        val hasOptionalCorecursive: kotlin.Boolean
+        val hasOptionalCorecursive: Boolean
     }
 
     /**
     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.Data] messages.
     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.Data.presence] extension property.
     */
-    interface Data { 
-        val hasGroupInt32: kotlin.Boolean
+    interface Data {
+        val hasGroupInt32: Boolean
 
-        val hasGroupUint32: kotlin.Boolean
+        val hasGroupUint32: Boolean
     }
 
     /**
     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1] messages.
     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.presence] extension property.
     */
-    interface MessageSetCorrectExtension1 { 
-        val hasStr: kotlin.Boolean
+    interface MessageSetCorrectExtension1 {
+        val hasStr: Boolean
     }
 
     /**
     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2] messages.
     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.presence] extension property.
     */
-    interface MessageSetCorrectExtension2 { 
-        val hasI: kotlin.Boolean
+    interface MessageSetCorrectExtension2 {
+        val hasI: Boolean
     }
 }
