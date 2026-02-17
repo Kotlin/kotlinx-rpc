@@ -79,7 +79,7 @@ internal open class DefaultProtoSourceSet(
     private val explicitApiModeEnabled = project.provider {
         val isMain = androidProperties.orNull?.isTest?.not() ?: name.lowercase().endsWith("main")
 
-        isMain && project.the<KotlinProjectExtension>().explicitApi != ExplicitApiMode.Disabled
+        isMain && project.the<KotlinProjectExtension>().explicitApi == ExplicitApiMode.Strict
     }
 
     override val plugins = project.objects.setProperty<ProtocPlugin>()
@@ -105,8 +105,11 @@ internal open class DefaultProtoSourceSet(
         })
     }
 
+    internal val platformOption = project.objects.property<String>().convention("")
+
     private fun initPlugin(copy: ProtocPlugin, configure: Action<ProtocPlugin>?) {
         copy.options.put("explicitApiModeEnabled", explicitApiModeEnabled)
+        copy.options.put("platform", platformOption)
 
         configure?.execute(copy)
     }
@@ -272,4 +275,14 @@ internal fun DefaultProtoSourceSet.protoTaskProperties(): ProtoTask.Properties {
         isTest = name.lowercase().endsWith("test"),
         sourceSetNames = setOf(name),
     )
+}
+
+internal object PlatformOption {
+    const val JVM = "jvm"
+    const val ANDROID = "android"
+    const val ANDROID_NATIVE = "android-native"
+    const val JS = "js"
+    const val NATIVE = "native"
+    const val COMMON = "common"
+    const val WASM = "wasm"
 }

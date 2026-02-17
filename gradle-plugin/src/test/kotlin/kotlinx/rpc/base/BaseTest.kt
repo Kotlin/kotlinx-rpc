@@ -50,7 +50,7 @@ internal object KtVersion {
 
 typealias VersionsPredicate = VersionsEnv.() -> Boolean
 
-internal fun VersionsEnv.testTestsForAndroidKmpLibExist(): Boolean {
+internal fun VersionsEnv.versionsWhereAndroidKmpLibExist(): Boolean {
     return androidSemver.isAtLeast(8, 10, 0)
 }
 
@@ -183,12 +183,18 @@ abstract class BaseTest {
     }
 
     protected fun <T : TestEnv> runTest(testEnv: T, body: T.() -> Unit) {
-        testEnv.body()
+        try {
+            testEnv.body()
+        } catch (e: Throwable) {
+            testEnv.lastResult?.output?.let { println(it) }
+            throw e
+        }
     }
 
     open inner class TestEnv(
         val versions: VersionsEnv,
     ) {
+        var lastResult: BuildResult? = null
         val projectDir: Path get() = this@BaseTest.projectDir
 
         fun runGradle(
@@ -197,7 +203,7 @@ abstract class BaseTest {
         ): BuildResult {
             return runGradleInternal(task, versions, *args) {
                 build()
-            }
+            }.also { lastResult = it }
         }
 
         fun runGradleToFail(
@@ -206,7 +212,7 @@ abstract class BaseTest {
         ): BuildResult {
             return runGradleInternal(task, versions, *args) {
                 buildAndFail()
-            }
+            }.also { lastResult = it }
         }
 
         fun runNonExistentTask(task: String): BuildResult {

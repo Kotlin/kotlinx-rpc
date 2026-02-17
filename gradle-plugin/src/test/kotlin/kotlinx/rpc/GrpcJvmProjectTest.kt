@@ -5,6 +5,7 @@
 package kotlinx.rpc
 
 import kotlinx.rpc.base.GrpcBaseTest
+import kotlinx.rpc.protoc.PlatformOption
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
@@ -150,10 +151,12 @@ plugins:
     out: myPlugin
     opt:
       - explicitApiModeEnabled=true
+      - platform=${PlatformOption.JVM}
   - local: some2
     out: myPlugin2
     opt:
       - explicitApiModeEnabled=true
+      - platform=${PlatformOption.JVM}
   - local: [protoc-gen-kotlin-multiplatform]
     out: kotlin-multiplatform
     opt:
@@ -162,6 +165,7 @@ plugins:
       - generateFileLevelComments=true
       - indentSize=4
       - explicitApiModeEnabled=true
+      - platform=${PlatformOption.JVM}
   - local: [protoc-gen-grpc-kotlin-multiplatform]
     out: grpc-kotlin-multiplatform
     opt:
@@ -170,6 +174,7 @@ plugins:
       - generateFileLevelComments=true
       - indentSize=4
       - explicitApiModeEnabled=true
+      - platform=${PlatformOption.JVM}
 inputs:
   - directory: proto
             """.trimIndent()
@@ -239,6 +244,7 @@ plugins:
       - generateFileLevelComments=true
       - indentSize=4
       - explicitApiModeEnabled=true
+      - platform=${PlatformOption.JVM}
   - local: [protoc-gen-grpc-kotlin-multiplatform]
     out: grpc-kotlin-multiplatform
     opt:
@@ -247,12 +253,14 @@ plugins:
       - generateFileLevelComments=true
       - indentSize=4
       - explicitApiModeEnabled=true
+      - platform=${PlatformOption.JVM}
   - local: [path, to, protoc-gen-myplugin.exe]
     out: myPlugin
     opt:
       - hello=world
       - foo=bar
       - explicitApiModeEnabled=true
+      - platform=${PlatformOption.JVM}
     strategy: all
     include_imports: true
     include_wkt: false
@@ -265,6 +273,7 @@ plugins:
     opt:
       - hello=world
       - explicitApiModeEnabled=true
+      - platform=${PlatformOption.JVM}
       - only=in main
 inputs:
   - directory: proto
@@ -287,6 +296,7 @@ plugins:
       - generateFileLevelComments=true
       - indentSize=4
       - explicitApiModeEnabled=false
+      - platform=jvm
   - local: [protoc-gen-grpc-kotlin-multiplatform]
     out: grpc-kotlin-multiplatform
     opt:
@@ -295,11 +305,13 @@ plugins:
       - generateFileLevelComments=true
       - indentSize=4
       - explicitApiModeEnabled=false
+      - platform=jvm
   - remote: my.remote.plugin
     out: myRemotePlugin
     opt:
       - hello=world
       - explicitApiModeEnabled=false
+      - platform=jvm
       - only=in test
 inputs:
   - directory: proto

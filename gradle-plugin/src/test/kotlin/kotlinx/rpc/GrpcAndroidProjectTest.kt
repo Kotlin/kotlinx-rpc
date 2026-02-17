@@ -7,6 +7,7 @@
 package kotlinx.rpc
 
 import kotlinx.rpc.base.GrpcBaseTest
+import kotlinx.rpc.protoc.PlatformOption
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
@@ -339,6 +340,12 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
         firstRunDebug.assertOutcomes(SSetsAndroid.Default.release)
         firstRunDebug.assertOutcomes(SSetsAndroid.Default.androidTestDebug)
         firstRunDebug.assertOutcomes(SSetsAndroid.Default.testRelease)
+    }
+
+    @TestFactory
+    fun `Android Platform Option`() = runGrpcTest {
+        runPlatformOptionTest(SSetsAndroid.Default.debug, PlatformOption.ANDROID)
+        runPlatformOptionTest(SSetsAndroid.Default.testDebug, PlatformOption.ANDROID)
     }
 
     @TestFactory
