@@ -4,11 +4,13 @@ package com.google.protobuf.kotlin
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 
 /**
 * `SourceContext` represents information about the source of a
 * protobuf element, like the file in which it is defined.
 */
+@GeneratedProtoMessage
 @WithCodec(SourceContextInternal.CODEC::class)
 public interface SourceContext {
     /**

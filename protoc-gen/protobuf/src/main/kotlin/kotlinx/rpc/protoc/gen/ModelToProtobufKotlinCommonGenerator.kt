@@ -102,10 +102,11 @@ class ModelToProtobufKotlinCommonGenerator(
         val annotations = mutableListOf<ScopedFormattedString>()
         if (!declaration.isGroup) {
             annotations.add(
+                "@%T".scoped(FqName.Annotations.GeneratedProtoMessage)
+            )
+            annotations.add(
                 "@%T(%T::class)".scoped(FqName.Annotations.WithCodec, declaration.codecObjectName)
             )
-            // TODO: Use new scoped function
-            annotations.add("@$PROTO_MESSAGE_ANNO")
         }
 
         clazz(
@@ -642,9 +643,9 @@ class ModelToProtobufKotlinCommonGenerator(
         val comment = if (declaration.hasPresenceFields) {
             // TODO KRPC-252 protoc-gen: Support type resolution in comments
             Comment.leading(
-                """
+            """
                 Interface providing field-presence information for [${declaration.name.fullName()}] messages.
-                    Retrieve it via the [${declaration.name.fullName()}.presence] extension property.
+                Retrieve it via the [${declaration.name.fullName()}.presence] extension property.
             """.trimIndent()
             )
         } else {
@@ -830,18 +831,17 @@ class ModelToProtobufKotlinCommonGenerator(
         if (!declaration.isUserFacing) return
         if (declaration.isGroup) return
 
-        val msgFqName = declaration.name.safeFullName()
         clazz(
             name = "DESCRIPTOR",
-            annotations = listOf("@$INTERNAL_RPC_API_ANNO"),
+            annotations = listOf("@%T".scoped(FqName.Annotations.InternalRpcApi)),
             declarationType = CodeGenerator.DeclarationType.Object,
-            superTypes = listOf("kotlinx.rpc.protobuf.internal.ProtoDescriptor<$msgFqName>"),
+            superTypes = listOf("%T<%T>".scoped(FqName.RpcClasses.ProtoDescriptor, declaration.name)),
         ) {
             property(
                 name = "fullName",
                 modifiers = "override",
-                type = "kotlin.String",
-                value = "\"${declaration.dec.fullName}\""
+                type = FqName.Implicits.String.scoped(),
+                value = "\"${declaration.dec.fullName}\"".scoped()
             )
         }
     }

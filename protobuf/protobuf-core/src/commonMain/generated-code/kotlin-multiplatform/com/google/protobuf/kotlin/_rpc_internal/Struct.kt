@@ -10,6 +10,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
+import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
@@ -169,6 +170,11 @@ public class StructInternal: Struct, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<Struct> {
+        public override val fullName: String = "google.protobuf.Struct"
+    }
+
+    @InternalRpcApi
     public companion object
 }
 
@@ -288,6 +294,11 @@ public class ValueInternal: Value, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<Value> {
+        public override val fullName: String = "google.protobuf.Value"
+    }
+
+    @InternalRpcApi
     public companion object
 }
 
@@ -367,6 +378,11 @@ public class ListValueInternal: ListValue, InternalMessage(fieldsWithPresence = 
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<ListValue> {
+        public override val fullName: String = "google.protobuf.ListValue"
     }
 
     @InternalRpcApi

@@ -10,6 +10,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
+import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
@@ -108,6 +109,11 @@ public class DoubleValueInternal: DoubleValue, InternalMessage(fieldsWithPresenc
     }
 
     @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<DoubleValue> {
+        public override val fullName: String = "google.protobuf.DoubleValue"
+    }
+
+    @InternalRpcApi
     public companion object
 }
 
@@ -187,6 +193,11 @@ public class FloatValueInternal: FloatValue, InternalMessage(fieldsWithPresence 
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<FloatValue> {
+        public override val fullName: String = "google.protobuf.FloatValue"
     }
 
     @InternalRpcApi
@@ -272,6 +283,11 @@ public class Int64ValueInternal: Int64Value, InternalMessage(fieldsWithPresence 
     }
 
     @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<Int64Value> {
+        public override val fullName: String = "google.protobuf.Int64Value"
+    }
+
+    @InternalRpcApi
     public companion object
 }
 
@@ -351,6 +367,11 @@ public class UInt64ValueInternal: UInt64Value, InternalMessage(fieldsWithPresenc
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<UInt64Value> {
+        public override val fullName: String = "google.protobuf.UInt64Value"
     }
 
     @InternalRpcApi
@@ -436,6 +457,11 @@ public class Int32ValueInternal: Int32Value, InternalMessage(fieldsWithPresence 
     }
 
     @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<Int32Value> {
+        public override val fullName: String = "google.protobuf.Int32Value"
+    }
+
+    @InternalRpcApi
     public companion object
 }
 
@@ -515,6 +541,11 @@ public class UInt32ValueInternal: UInt32Value, InternalMessage(fieldsWithPresenc
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<UInt32Value> {
+        public override val fullName: String = "google.protobuf.UInt32Value"
     }
 
     @InternalRpcApi
@@ -600,6 +631,11 @@ public class BoolValueInternal: BoolValue, InternalMessage(fieldsWithPresence = 
     }
 
     @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<BoolValue> {
+        public override val fullName: String = "google.protobuf.BoolValue"
+    }
+
+    @InternalRpcApi
     public companion object
 }
 
@@ -682,6 +718,11 @@ public class StringValueInternal: StringValue, InternalMessage(fieldsWithPresenc
     }
 
     @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<StringValue> {
+        public override val fullName: String = "google.protobuf.StringValue"
+    }
+
+    @InternalRpcApi
     public companion object
 }
 
@@ -761,6 +802,11 @@ public class BytesValueInternal: BytesValue, InternalMessage(fieldsWithPresence 
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<BytesValue> {
+        public override val fullName: String = "google.protobuf.BytesValue"
     }
 
     @InternalRpcApi

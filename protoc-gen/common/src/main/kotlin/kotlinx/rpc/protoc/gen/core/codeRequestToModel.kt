@@ -59,6 +59,7 @@ fun CodeGeneratorRequest.toModel(config: Config): Model {
 private fun initNameTable(nameTable: FqNameTable) {
     nameTable.registerAll(
         FqName.RpcClasses.InternalMessage,
+        FqName.RpcClasses.ProtoDescriptor,
         FqName.RpcClasses.WireEncoder,
         FqName.RpcClasses.WireDecoder,
         FqName.RpcClasses.MsgFieldDelegate,
@@ -81,6 +82,7 @@ private fun initNameTable(nameTable: FqNameTable) {
         FqName.Annotations.Grpc,
         FqName.Annotations.GrpcMethod,
         FqName.Annotations.WithCodec,
+        FqName.Annotations.GeneratedProtoMessage,
 
         FqName.KotlinLibs.Flow,
         FqName.KotlinLibs.Buffer,

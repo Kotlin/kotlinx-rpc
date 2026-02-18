@@ -11,6 +11,7 @@ import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.KTag
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
+import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
@@ -1551,6 +1552,11 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
                     return msg
                 }
             }
+        }
+
+        @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestAllTypesProto2.NestedMessage> {
+            override val fullName: String = "protobuf_test_messages.editions.proto2.TestAllTypesProto2.NestedMessage"
         }
 
         @InternalRpcApi
@@ -3218,6 +3224,11 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         }
 
         @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestAllTypesProto2.MessageSetCorrect> {
+            override val fullName: String = "protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect"
+        }
+
+        @InternalRpcApi
         companion object
     }
 
@@ -3315,6 +3326,11 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
                     return msg
                 }
             }
+        }
+
+        @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestAllTypesProto2.MessageSetCorrectExtension1> {
+            override val fullName: String = "protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrectExtension1"
         }
 
         @InternalRpcApi
@@ -3418,6 +3434,11 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         }
 
         @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestAllTypesProto2.MessageSetCorrectExtension2> {
+            override val fullName: String = "protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrectExtension2"
+        }
+
+        @InternalRpcApi
         companion object
     }
 
@@ -3514,6 +3535,11 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         }
 
         @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestAllTypesProto2.ExtensionWithOneof> {
+            override val fullName: String = "protobuf_test_messages.editions.proto2.TestAllTypesProto2.ExtensionWithOneof"
+        }
+
+        @InternalRpcApi
         companion object
     }
 
@@ -3542,6 +3568,11 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<TestAllTypesProto2> {
+        override val fullName: String = "protobuf_test_messages.editions.proto2.TestAllTypesProto2"
     }
 
     @InternalRpcApi
@@ -3642,6 +3673,11 @@ class ForeignMessageProto2Internal: ForeignMessageProto2, InternalMessage(fields
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<ForeignMessageProto2> {
+        override val fullName: String = "protobuf_test_messages.editions.proto2.ForeignMessageProto2"
     }
 
     @InternalRpcApi
@@ -3759,6 +3795,11 @@ class GroupFieldInternal: GroupField, InternalMessage(fieldsWithPresence = 2) {
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<GroupField> {
+        override val fullName: String = "protobuf_test_messages.editions.proto2.GroupField"
     }
 
     @InternalRpcApi
@@ -4005,6 +4046,11 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes, InternalMessage(fiel
     }
 
     @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<UnknownToTestAllTypes> {
+        override val fullName: String = "protobuf_test_messages.editions.proto2.UnknownToTestAllTypes"
+    }
+
+    @InternalRpcApi
     companion object
 }
 
@@ -4082,6 +4128,11 @@ class NullHypothesisProto2Internal: NullHypothesisProto2, InternalMessage(fields
     }
 
     @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<NullHypothesisProto2> {
+        override val fullName: String = "protobuf_test_messages.editions.proto2.NullHypothesisProto2"
+    }
+
+    @InternalRpcApi
     companion object
 }
 
@@ -4156,6 +4207,11 @@ class EnumOnlyProto2Internal: EnumOnlyProto2, InternalMessage(fieldsWithPresence
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<EnumOnlyProto2> {
+        override val fullName: String = "protobuf_test_messages.editions.proto2.EnumOnlyProto2"
     }
 
     @InternalRpcApi
@@ -4256,6 +4312,11 @@ class OneStringProto2Internal: OneStringProto2, InternalMessage(fieldsWithPresen
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<OneStringProto2> {
+        override val fullName: String = "protobuf_test_messages.editions.proto2.OneStringProto2"
     }
 
     @InternalRpcApi
@@ -4378,6 +4439,11 @@ class ProtoWithKeywordsInternal: ProtoWithKeywords, InternalMessage(fieldsWithPr
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<ProtoWithKeywords> {
+        override val fullName: String = "protobuf_test_messages.editions.proto2.ProtoWithKeywords"
     }
 
     @InternalRpcApi
@@ -5196,6 +5262,11 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         }
 
         @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestAllRequiredTypesProto2.NestedMessage> {
+            override val fullName: String = "protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.NestedMessage"
+        }
+
+        @InternalRpcApi
         companion object
     }
 
@@ -5363,6 +5434,11 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         }
 
         @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestAllRequiredTypesProto2.MessageSetCorrect> {
+            override val fullName: String = "protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrect"
+        }
+
+        @InternalRpcApi
         companion object
     }
 
@@ -5460,6 +5536,11 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
                     return msg
                 }
             }
+        }
+
+        @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestAllRequiredTypesProto2.MessageSetCorrectExtension1> {
+            override val fullName: String = "protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1"
         }
 
         @InternalRpcApi
@@ -5563,6 +5644,11 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         }
 
         @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestAllRequiredTypesProto2.MessageSetCorrectExtension2> {
+            override val fullName: String = "protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2"
+        }
+
+        @InternalRpcApi
         companion object
     }
 
@@ -5591,6 +5677,11 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<TestAllRequiredTypesProto2> {
+        override val fullName: String = "protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2"
     }
 
     @InternalRpcApi
@@ -5755,6 +5846,11 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         }
 
         @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestLargeOneof.A1> {
+            override val fullName: String = "protobuf_test_messages.editions.proto2.TestLargeOneof.A1"
+        }
+
+        @InternalRpcApi
         companion object
     }
 
@@ -5829,6 +5925,11 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
                     return msg
                 }
             }
+        }
+
+        @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestLargeOneof.A2> {
+            override val fullName: String = "protobuf_test_messages.editions.proto2.TestLargeOneof.A2"
         }
 
         @InternalRpcApi
@@ -5909,6 +6010,11 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         }
 
         @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestLargeOneof.A3> {
+            override val fullName: String = "protobuf_test_messages.editions.proto2.TestLargeOneof.A3"
+        }
+
+        @InternalRpcApi
         companion object
     }
 
@@ -5983,6 +6089,11 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
                     return msg
                 }
             }
+        }
+
+        @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestLargeOneof.A4> {
+            override val fullName: String = "protobuf_test_messages.editions.proto2.TestLargeOneof.A4"
         }
 
         @InternalRpcApi
@@ -6063,6 +6174,11 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         }
 
         @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestLargeOneof.A5> {
+            override val fullName: String = "protobuf_test_messages.editions.proto2.TestLargeOneof.A5"
+        }
+
+        @InternalRpcApi
         companion object
     }
 
@@ -6091,6 +6207,11 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<TestLargeOneof> {
+        override val fullName: String = "protobuf_test_messages.editions.proto2.TestLargeOneof"
     }
 
     @InternalRpcApi

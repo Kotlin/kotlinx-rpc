@@ -78,11 +78,13 @@ sealed interface FqName {
         val Grpc = fqDec("kotlinx.rpc.grpc.annotations", "Grpc")
         val GrpcMethod = fqDec("kotlinx.rpc.grpc.annotations", "Grpc.Method")
         val WithCodec = fqDec("kotlinx.rpc.grpc.codec", "WithCodec")
+        val GeneratedProtoMessage = fqDec("kotlinx.rpc.protobuf", "GeneratedProtoMessage")
     }
 
     @Suppress("unused")
     object RpcClasses {
         val InternalMessage = fqDec("kotlinx.rpc.protobuf.internal", "InternalMessage")
+        val ProtoDescriptor = fqDec("kotlinx.rpc.protobuf.internal", "ProtoDescriptor")
         val WireEncoder = fqDec("kotlinx.rpc.protobuf.internal", "WireEncoder")
         val WireDecoder = fqDec("kotlinx.rpc.protobuf.internal", "WireDecoder")
         val MsgFieldDelegate = fqDec("kotlinx.rpc.protobuf.internal", "MsgFieldDelegate")
