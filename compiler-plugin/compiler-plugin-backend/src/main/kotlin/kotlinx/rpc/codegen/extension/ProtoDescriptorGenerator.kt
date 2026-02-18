@@ -5,12 +5,18 @@
 package kotlinx.rpc.codegen.extension
 
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.expressions.impl.IrClassReferenceImpl
 import org.jetbrains.kotlin.ir.types.defaultType
 import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.constructors
 import org.jetbrains.kotlin.ir.util.defaultType
 
+internal class ProtoDeclaration(
+    val message: IrClass,
+    val messageInternal: IrClass,
+    val descriptor: IrClass,
+)
 
 /**
  * Currently, this only generates the @WithProtoDescriptor annotation for the message interface.

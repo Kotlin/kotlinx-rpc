@@ -57,9 +57,9 @@ object FirProtoMessageAnnotationChecker {
         }
 
         val parentClasses = declaration.parentDeclarationSequence(
-            context.session,
-            null,
-            listOf()
+            session = context.session,
+            dispatchReceiver = null,
+            containingDeclarations = listOf()
         )?.filterIsInstance<FirRegularClass>()?.toList()?.reversed() ?: emptyList()
 
         val topLevelNames = (parentClasses + listOf(declaration))
@@ -67,8 +67,8 @@ object FirProtoMessageAnnotationChecker {
 
         // for nested classes, we need to construct ClassId properly using createNestedClassId for each level
         val internalClassId = ClassId(
-            declaration.symbol.classId.packageFqName,
-            topLevelNames.first()
+            packageFqName = declaration.symbol.classId.packageFqName,
+            topLevelName = topLevelNames.first()
         ).let {
             topLevelNames.drop(1).fold(it) { acc, name ->
                 acc.createNestedClassId(name)
@@ -76,16 +76,13 @@ object FirProtoMessageAnnotationChecker {
         }
 
         val internalDeclaration = context.session.getRegularClassSymbolByClassId(internalClassId)
-            // although this is not safe in general, at the point when the FirRegularClassChecker runs
-            // the symbol should already have been resolved to its FirDeclaration
-            ?.fir
 
         if (internalDeclaration == null) {
             // an internal message class does not exist, so this is not a generated message
             reportNonGeneratedMessage()
         } else {
             // check if the internal class extends the message interface
-            val implementsMessage = internalDeclaration.superTypeRefs.any {
+            val implementsMessage = internalDeclaration.resolvedSuperTypeRefs.any {
                 it.doesMatchesClassId(context.session, declaration.symbol.classId)
             }
             if (!implementsMessage) {
@@ -96,7 +93,12 @@ object FirProtoMessageAnnotationChecker {
             val descriptorObject = vsApi {
                 internalDeclaration.declarationsVS(context.session)
                     .filterIsInstance<FirRegularClassSymbol>()
-                    .find { it.name == ProtoNames.DESCRIPTOR_NAME && it.classKind == ClassKind.OBJECT }
+                    .find { it.name == ProtoNames.DESCRIPTOR_NAME
+                            && it.classKind == ClassKind.OBJECT
+                            && it.resolvedSuperTypeRefs.any {
+                                superType -> superType.doesMatchesClassId(context.session, ProtoClassId.protoDescriptor)
+                            }
+                    }
             }
             if (descriptorObject == null) {
                 reportNonGeneratedMessage()

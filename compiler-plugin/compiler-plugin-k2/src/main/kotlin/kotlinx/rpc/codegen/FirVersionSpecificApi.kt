@@ -20,8 +20,8 @@ interface FirVersionSpecificApi {
     fun ConeKotlinType.toClassSymbolVS(
         session: FirSession,
     ): FirClassSymbol<*>?
-
-    fun FirRegularClass.declarationsVS(session: FirSession): List<FirBasedSymbol<*>>
+    fun FirRegularClass.declarationsVS(session: FirSession): List<FirBasedSymbol<*>> = symbol.declarationsVS(session)
+    fun FirRegularClassSymbol.declarationsVS(session: FirSession): List<FirBasedSymbol<*>>
 
     val FirResolvedTypeRef.coneTypeVS: ConeKotlinType
 

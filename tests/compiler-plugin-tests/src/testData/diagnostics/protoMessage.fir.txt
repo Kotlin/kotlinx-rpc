@@ -7,10 +7,13 @@ FILE: module_main_protoMessage.kt
             super<R|kotlin/Any|>()
         }
 
-        public final object DESCRIPTOR : R|kotlin/Any| {
+        public final object DESCRIPTOR : R|kotlinx/rpc/protobuf/internal/ProtoDescriptor<MyMessage1>| {
             private constructor(): R|MyMessage1Internal.DESCRIPTOR| {
                 super<R|kotlin/Any|>()
             }
+
+            public open override val fullName: R|kotlin/String| = String(fullName)
+                public get(): R|kotlin/String|
 
         }
 
@@ -26,10 +29,13 @@ FILE: module_main_protoMessage.kt
             super<R|MyMessage2|>()
         }
 
-        public final object DESCRIPTOR : R|kotlin/Any| {
+        public final object DESCRIPTOR : R|kotlinx/rpc/protobuf/internal/ProtoDescriptor<MyMessage2>| {
             private constructor(): R|MyMessage2Internal.DESCRIPTOR| {
                 super<R|kotlin/Any|>()
             }
+
+            public open override val fullName: R|kotlin/String| = String(fullName)
+                public get(): R|kotlin/String|
 
         }
 
@@ -51,8 +57,26 @@ FILE: module_main_protoMessage.kt
             super<R|kotlin/Any|>()
         }
 
-        public final object DESCRIPTOR : R|kotlin/Any| {
+        public final object DESCRIPTOR : R|kotlinx/rpc/protobuf/internal/ProtoDescriptor<MyMessage5>| {
             private constructor(): R|MyMessage5Internal.DESCRIPTOR| {
+                super<R|kotlin/Any|>()
+            }
+
+            public open override val fullName: R|kotlin/String| = String(fullName)
+                public get(): R|kotlin/String|
+
+        }
+
+    }
+    @R|kotlinx/rpc/protobuf/GeneratedProtoMessage|() public abstract interface MyMessage6 : R|kotlin/Any| {
+    }
+    public final class MyMessage6Internal : R|MyMessage6| {
+        public constructor(): R|MyMessage6Internal| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final object DESCRIPTOR : R|kotlin/Any| {
+            private constructor(): R|MyMessage6Internal.DESCRIPTOR| {
                 super<R|kotlin/Any|>()
             }
 

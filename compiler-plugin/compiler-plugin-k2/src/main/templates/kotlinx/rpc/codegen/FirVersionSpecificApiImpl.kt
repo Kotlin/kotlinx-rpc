@@ -131,7 +131,7 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
         //##csm /ConeKotlinType.toClassSymbolVS
     }
 
-    override fun FirRegularClass.declarationsVS(session: FirSession): List<FirBasedSymbol<*>> {
+    override fun FirRegularClassSymbol.declarationsVS(session: FirSession): List<FirBasedSymbol<*>> {
         //##csm FirRegularClass.declarationsVS
         //##csm default
         val declarations = mutableListOf<FirBasedSymbol<*>>()
