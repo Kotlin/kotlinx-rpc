@@ -54,8 +54,8 @@ internal class ProtoDescriptorGenerator(
     private fun addObjectAnnotation() {
         val message = declaration.message
 
-        message.annotations += ctx.vsApi {
-            IrConstructorCallImplVS(
+        ctx.vsApi {
+            val annotation = IrAnnotationVS(
                 startOffset = message.startOffset,
                 endOffset = message.endOffset,
                 type = ctx.withProtoDescriptor.defaultType,
@@ -77,6 +77,8 @@ internal class ProtoDescriptorGenerator(
                     }
                 }
             }
+
+            message.addAnnotationVS(annotation)
         }
     }
 
