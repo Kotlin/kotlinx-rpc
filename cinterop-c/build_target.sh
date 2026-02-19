@@ -28,13 +28,20 @@ mkdir -p "$(dirname "$DST")"
 echo "==> Building $LABEL to $DST" >&2
 echo "==> KONAN_HOME: $KONAN_HOME" >&2
 echo "==> KONAN_TARGET: $KONAN_TARGET" >&2
-KONAN_DEP="--define=KONAN_DEPS=$HOME/.konan/dependencies"
+KONAN_DEPS="${KONAN_DEPS:-$KONAN_HOME/../dependencies}"
+# Resolve the version-pinned clang resource include path for the active KONAN_HOME.
+KONAN_LLVM_RESOURCE_DIR="$(KONAN_DEPS="$KONAN_DEPS" python3 ./toolchain/resolve_konan_llvm_resource_dir.py "$KONAN_HOME")"
+echo "==> KONAN_DEPS: $KONAN_DEPS" >&2
+echo "==> KONAN_LLVM_RESOURCE_DIR: $KONAN_LLVM_RESOURCE_DIR" >&2
+
+KONAN_DEP="--define=KONAN_DEPS=$KONAN_DEPS"
+KONAN_LLVM_DEF="--define=KONAN_LLVM_RESOURCE_DIR=$KONAN_LLVM_RESOURCE_DIR"
 set -x # set shell tracing
-bazel build "$LABEL" --config="$KONAN_TARGET" --config="$CONFIG" "$KONAN_DEP" "--define=KONAN_HOME=$KONAN_HOME"
+bazel build "$LABEL" --config="$KONAN_TARGET" --config="$CONFIG" "$KONAN_DEP" "$KONAN_LLVM_DEF" "--define=KONAN_HOME=$KONAN_HOME"
 set +x
 
 # Ask Bazel what file(s) this target produced under this platform
-out="$(bazel cquery "$LABEL" --config="$KONAN_TARGET" --config="$CONFIG" "$KONAN_DEP" "--define=KONAN_HOME=$KONAN_HOME" --output=files | head -n1)"
+out="$(bazel cquery "$LABEL" --config="$KONAN_TARGET" --config="$CONFIG" "$KONAN_DEP" "$KONAN_LLVM_DEF" "--define=KONAN_HOME=$KONAN_HOME" --output=files | head -n1)"
 [[ -n "$out" ]] || { echo "No output for $LABEL ($SHORT)"; exit 1; }
 
 cp -f "$out" "$DST"

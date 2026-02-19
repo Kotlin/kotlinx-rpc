@@ -29,7 +29,8 @@ def _impl(ctx):
     home = ctx.var.get("KONAN_HOME")
     if not home:
         fail("Set --define=KONAN_HOME=/path/to/.konan/kotlin-native-prebuilt-*")
-    deps = home + "/../dependencies"
+    deps = ctx.var.get("KONAN_DEPS", home + "/../dependencies")
+    llvm_resource_dir = ctx.var.get("KONAN_LLVM_RESOURCE_DIR")
 
     if target == "linux_x64":
         cpu = "x86_64"
@@ -192,6 +193,18 @@ def _impl(ctx):
             deps + "/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2/aarch64-unknown-linux-gnu/sysroot/usr/include",
         ]
 
+    llvm_builtin_include_dirs = []
+    if llvm_resource_dir:
+        llvm_builtin_include_dirs.append(llvm_resource_dir)
+    else:
+        # Fallback for direct/manual Bazel invocations. Primary path should be passed
+        # via --define=KONAN_LLVM_RESOURCE_DIR and resolved by toolchain scripts.
+        llvm_builtin_include_dirs += [
+            deps + "/llvm-19-aarch64-macos-essentials-79/lib/clang/19/include",
+            deps + "/llvm-19-x86_64-macos-essentials-103/lib/clang/19/include",
+            deps + "/llvm-19-x86_64-linux-essentials-103/lib/clang/19/include",
+        ]
+
     return cc_common.create_cc_toolchain_config_info(
         ctx = ctx,
         toolchain_identifier = "konan_" + target,
@@ -203,17 +216,7 @@ def _impl(ctx):
         target_system_name = "linux",
         tool_paths = tool_paths,
         features = features,
-        cxx_builtin_include_directories = [
-            # Built-in include directories from the toolchain.
-            # Only one will be available on the host (x64 or arm64).
-            # These paths must be updated after each upgrade of the project's Kotlin compiler version.
-            # After upgrading the Kotlin compiler, the C compiler will throw an error that certain includes are not
-            # are not part of the built-in include paths. In this case, replace the below path with the printed one.
-            # See the cinterop-c/README.md for more details.
-            deps + "/llvm-19-aarch64-macos-essentials-79/lib/clang/19/include",
-            deps + "/llvm-19-x86_64-macos-essentials-103/lib/clang/19/include",
-            deps + "/llvm-19-x86_64-linux-essentials-103/lib/clang/19/include",
-        ] + includes,
+        cxx_builtin_include_directories = llvm_builtin_include_dirs + includes,
     )
 
 cc_toolchain_config = rule(
