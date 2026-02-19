@@ -18,11 +18,13 @@ import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.toClassSymbol
+import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.types.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.toRegularClassSymbol
+import org.jetbrains.kotlin.name.ClassId
 //##csm /specific
 //##csm specific=[2.0.11...2.0.21]
 import org.jetbrains.kotlin.KtSourceElement
@@ -36,11 +38,13 @@ import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.toClassSymbol
+import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.toRegularClassSymbol
+import org.jetbrains.kotlin.name.ClassId
 //##csm /specific
 //##csm specific=[2.0.22...2.1.21, 2.2.0-ij251-*]
 import org.jetbrains.kotlin.KtSourceElement
@@ -54,11 +58,13 @@ import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
+import org.jetbrains.kotlin.name.ClassId
 //##csm /specific
 //##csm specific=[2.1.22...2.2.10]
 import org.jetbrains.kotlin.KtSourceElement
@@ -77,7 +83,9 @@ import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
+import org.jetbrains.kotlin.fir.resolve.providers.getRegularClassSymbolByClassId
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.name.ClassId
 //##csm /specific
 //##csm specific=[2.2.20...2.2.*]
 import org.jetbrains.kotlin.KtSourceElement
@@ -96,7 +104,9 @@ import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
+import org.jetbrains.kotlin.fir.resolve.providers.getRegularClassSymbolByClassId
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.name.ClassId
 //##csm /specific
 //##csm specific=[2.3.0...2.*]
 import org.jetbrains.kotlin.KtSourceElement
@@ -114,8 +124,10 @@ import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
+import org.jetbrains.kotlin.fir.resolve.providers.getRegularClassSymbolByClassId
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.types.toRegularClassSymbol
+import org.jetbrains.kotlin.name.ClassId
 //##csm /specific
 //##csm /FirVersionSpecificApiImpl.kt-import
 
@@ -131,20 +143,23 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
         //##csm /ConeKotlinType.toClassSymbolVS
     }
 
+    //##csm FirRegularClass.declarationsVS
+    //##csm default
     override fun FirRegularClassSymbol.declarationsVS(session: FirSession): List<FirBasedSymbol<*>> {
-        //##csm FirRegularClass.declarationsVS
-        //##csm default
         val declarations = mutableListOf<FirBasedSymbol<*>>()
         processAllDeclarations(session) { symbol ->
             declarations.add(symbol)
         }
         return declarations
-        //##csm /default
-        //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
-        return declarations.map { it.symbol }
-        //##csm /specific
-        //##csm /FirRegularClass.declarationsVS
     }
+    //##csm /default
+    //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
+    @org.jetbrains.kotlin.fir.symbols.SymbolInternals
+    override fun FirRegularClassSymbol.declarationsVS(session: FirSession): List<FirBasedSymbol<*>> {
+        return fir.declarations.map { it.symbol }
+    }
+    //##csm /specific
+    //##csm /FirRegularClass.declarationsVS
 
     //##csm FirResolvedTypeRef.coneTypeVS
     //##csm default
@@ -180,4 +195,17 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
     ): FirResolvedTypeRef {
         return toFirResolvedTypeRef(source, delegatedTypeRef)
     }
+
+    override fun FirSession.getRegularClassSymbolByClassIdVS(classId: ClassId): FirRegularClassSymbol? {
+        //##csm ConeKotlinType.toClassSymbolVS
+        //##csm default
+        return getRegularClassSymbolByClassId(classId)
+        //##csm /default
+        //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
+        // this is the same implementation as getRegularClassSymbolByClassId() in 2.1.22+
+        return symbolProvider.getClassLikeSymbolByClassId(classId) as? FirRegularClassSymbol
+        //##csm /specific
+        //##csm /ConeKotlinType.toClassSymbolVS
+    }
+
 }

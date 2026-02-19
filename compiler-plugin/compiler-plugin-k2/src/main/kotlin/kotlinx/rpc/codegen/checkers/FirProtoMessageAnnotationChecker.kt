@@ -19,14 +19,12 @@ import org.jetbrains.kotlin.fir.declarations.getAnnotationByClassId
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.parentDeclarationSequence
-import org.jetbrains.kotlin.fir.resolve.providers.getRegularClassSymbolByClassId
-import org.jetbrains.kotlin.fir.symbols.SymbolInternals
+import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 
 object FirProtoMessageAnnotationChecker {
-    @OptIn(SymbolInternals::class)
     fun check(
         declaration: FirRegularClass,
         context: CheckerContext,
@@ -75,7 +73,11 @@ object FirProtoMessageAnnotationChecker {
             }
         }
 
-        val internalDeclaration = context.session.getRegularClassSymbolByClassId(internalClassId)
+        val internalDeclaration = vsApi {
+            context.session.getRegularClassSymbolByClassIdVS(internalClassId)
+        }
+
+        context.session.symbolProvider
 
         if (internalDeclaration == null) {
             // an internal message class does not exist, so this is not a generated message

@@ -15,12 +15,15 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
+import org.jetbrains.kotlin.name.ClassId
 
 interface FirVersionSpecificApi {
     fun ConeKotlinType.toClassSymbolVS(
         session: FirSession,
     ): FirClassSymbol<*>?
+
     fun FirRegularClass.declarationsVS(session: FirSession): List<FirBasedSymbol<*>> = symbol.declarationsVS(session)
+
     fun FirRegularClassSymbol.declarationsVS(session: FirSession): List<FirBasedSymbol<*>>
 
     val FirResolvedTypeRef.coneTypeVS: ConeKotlinType
@@ -35,6 +38,8 @@ interface FirVersionSpecificApi {
     ): FirResolvedTypeRef
 
     val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
+
+    fun FirSession.getRegularClassSymbolByClassIdVS(classId: ClassId): FirRegularClassSymbol?
 }
 
 inline fun <T> vsApi(body: FirVersionSpecificApi.() -> T): T {
