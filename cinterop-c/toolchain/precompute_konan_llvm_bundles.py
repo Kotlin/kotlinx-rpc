@@ -6,6 +6,11 @@ Usage:
   ./toolchain/precompute_konan_llvm_bundles.py
   ./toolchain/precompute_konan_llvm_bundles.py 2.3.0
   ./toolchain/precompute_konan_llvm_bundles.py --update-all-known
+
+Context:
+  - Writes toolchain/konan_llvm_bundles.json consumed by resolve_konan_llvm_resource_dir.py.
+  - Verified in CI by .github/workflows/verify-konan-llvm-bundles.yml.
+  - Used indirectly by cinterop-c/build_target.sh and cinterop-c/extract_include_dir.sh.
 """
 
 from __future__ import annotations
@@ -25,6 +30,7 @@ SOURCE_TEMPLATE = "https://raw.githubusercontent.com/JetBrains/kotlin/v{version}
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse CLI arguments for version selection and update mode."""
     parser = argparse.ArgumentParser(
         description="Precompute LLVM bundle mapping for Kotlin compiler version(s)."
     )
@@ -42,8 +48,11 @@ def parse_args() -> argparse.Namespace:
 
 
 def parse_versions_file(path: Path) -> tuple[str | None, str | None]:
+    """Extract kotlin-lang and kotlin-compiler values from versions-root/libs.versions.toml."""
     kotlin_lang: str | None = None
     kotlin_compiler: str | None = None
+    # Keep parsing intentionally narrow to avoid requiring a TOML dependency:
+    # this script only needs two values from versions-root/libs.versions.toml.
     kotlin_lang_re = re.compile(r'^\s*kotlin-lang\s*=\s*"([^"]+)"\s*$')
     kotlin_compiler_re = re.compile(r'^\s*kotlin-compiler\s*=\s*"([^"]+)"\s*$')
 
@@ -65,6 +74,7 @@ def parse_versions_file(path: Path) -> tuple[str | None, str | None]:
 
 
 def resolve_default_kotlin_compiler_version(repo_root: Path) -> str:
+    """Resolve the default compiler version, honoring env overrides and project fallback rules."""
     versions_file = repo_root / "versions-root" / "libs.versions.toml"
     parsed_kotlin_lang, parsed_kotlin_compiler = parse_versions_file(versions_file)
 
@@ -74,12 +84,14 @@ def resolve_default_kotlin_compiler_version(repo_root: Path) -> str:
     if not kotlin_lang:
         raise RuntimeError("Unable to resolve kotlin-lang version")
     if not kotlin_compiler or kotlin_compiler == "0.0.0":
+        # Match Gradle conventions: 0.0.0 means "use kotlin-lang as compiler version".
         kotlin_compiler = kotlin_lang
 
     return kotlin_compiler
 
 
 def fetch_llvm_bundles(version: str) -> dict[str, str]:
+    """Fetch Kotlin Native gradle.properties for a version and map host tuples to llvm bundle names."""
     url = SOURCE_TEMPLATE.format(version=version)
     try:
         with urlopen(url) as response:
@@ -93,9 +105,11 @@ def fetch_llvm_bundles(version: str) -> dict[str, str]:
         match = re.match(r"llvm-\d+-(aarch64|x86_64)-(macos|linux)-essentials-\d+", bundle)
         if not match:
             continue
+        # Use the same "<os>-<arch>" tuple format used by KONAN_HOME parsing.
         host_key = f"{match.group(2)}-{match.group(1)}"
         current = bundles.get(host_key)
         if current and current != bundle:
+            # Do not silently pick one if upstream format changes and yields conflicts.
             raise RuntimeError(
                 f"Multiple LLVM bundles found for {host_key} in Kotlin {version}: {current}, {bundle}"
             )
@@ -111,6 +125,7 @@ def fetch_llvm_bundles(version: str) -> dict[str, str]:
 
 
 def main() -> int:
+    """Entry point: compute/update konan_llvm_bundles.json for requested Kotlin versions."""
     args = parse_args()
     script_dir = Path(__file__).resolve().parent
     repo_root = script_dir.parent.parent
@@ -147,6 +162,7 @@ def main() -> int:
             print(f"Updated version: {version}")
 
     metadata = dict(data.get("_metadata", {}))
+    # Keep source metadata in-file so updates are auditable without checking CI logs.
     metadata["source"] = "https://raw.githubusercontent.com/JetBrains/kotlin/v<kotlin-version>/kotlin-native/gradle.properties"
     metadata["supported_hosts"] = SUPPORTED_HOSTS
     if changed or "generated_at" not in metadata:
