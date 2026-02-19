@@ -8,6 +8,7 @@ import kotlinx.rpc.internal.internalRpcError
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.GeneratedProtoMessage
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 
 /**
  * Added by the compiler plugin to proto message classes to associate them with their descriptor.
@@ -25,6 +26,14 @@ public interface ProtoDescriptor<@GeneratedProtoMessage Message: Any> {
 }
 
 internal inline fun <@GeneratedProtoMessage reified T: Any> protoDescriptorOf(): ProtoDescriptor<T> = protoDescriptorOf(T::class)
+
+internal fun <@GeneratedProtoMessage T: Any> protoDescriptorOf(kType: KType): ProtoDescriptor<T> {
+    val classifier = kType.classifier ?: error("Expected denotable type, found $kType")
+    val classifierClass = classifier as? KClass<*> ?: error("Expected class type, found $kType")
+
+    @Suppress("UNCHECKED_CAST")
+    return protoDescriptorOf(classifierClass as KClass<T>)
+}
 
 internal fun <@GeneratedProtoMessage T: Any> protoDescriptorOf(clazz: KClass<T>): ProtoDescriptor<T> {
     val maybeDescriptor = findProtoDescriptorOf(clazz)
