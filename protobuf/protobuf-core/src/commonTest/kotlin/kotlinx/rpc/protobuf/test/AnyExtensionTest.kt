@@ -7,6 +7,7 @@ package kotlinx.rpc.protobuf.test
 import Outer
 import com.google.protobuf.kotlin.pack
 import com.google.protobuf.kotlin.unpack
+import com.google.protobuf.kotlin.unpackOrNull
 import com.google.protobuf.kotlin.Any
 import com.google.protobuf.kotlin.Duration
 import com.google.protobuf.kotlin.Empty
@@ -24,6 +25,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class AnyExtensionTest {
@@ -193,5 +196,25 @@ class AnyExtensionTest {
         val innerUnpacked = innerPacked.unpack<NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.CantBelieveItsSoInner>()
         assertEquals(987654, innerUnpacked.num)
         assertEquals("type.googleapis.com/test.nested.NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.CantBelieveItsSoInner", innerPacked.typeUrl)
+    }
+
+    @Test
+    fun testUnpackOrNull() {
+        val original = AllPrimitives {
+            int32 = 42
+            string = "test"
+        }
+
+        val packed = Any.pack(original)
+
+        // Test successful unpack
+        val unpacked = packed.unpackOrNull<AllPrimitives>()
+        assertNotNull(unpacked)
+        assertEquals(original.int32, unpacked.int32)
+        assertEquals(original.string, unpacked.string)
+
+        // Test failed unpack returns null instead of throwing
+        val wrongType = packed.unpackOrNull<Timestamp>()
+        assertNull(wrongType)
     }
 }

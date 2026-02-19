@@ -6,12 +6,12 @@ package com.google.protobuf.kotlin
 
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
-import kotlinx.rpc.grpc.codec.HasWithCodec
 import kotlinx.rpc.grpc.codec.codec
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.GeneratedProtoMessage
 import kotlinx.rpc.protobuf.internal.protoDescriptorOf
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 
 /**
  * Checks if this [Any] message contains a message of type [T].
@@ -62,6 +62,32 @@ public fun <@GeneratedProtoMessage T: kotlin.Any> Any.contains(messageClass: KCl
 }
 
 /**
+ * Checks if this [Any] message contains a message of the specified [messageType] type.
+ *
+ * This method examines the type URL [Any.typeUrl] and compares it against
+ * the fully qualified protobuf message type name of [T]. The check is performed
+ * by verifying that the type URL ends with `"/<fully.qualified.message.name>"`.
+ *
+ * Example:
+ * ```kotlin
+ * val any = Any.pack(Duration { seconds = 60 })
+ * if (any.contains<Duration>(typeOf<Duration>)) {
+ *     val duration = any.unpack<Duration>()
+ * }
+ * ```
+ *
+ * @param T the protobuf message type to check for
+ * @param messageType the message [KType] to check
+ * @return `true` if this [Any] contains a message of type [messageType], `false` otherwise
+ * @see pack
+ * @see unpack
+ */
+public fun <@GeneratedProtoMessage T: kotlin.Any> Any.contains(messageType: KType): Boolean {
+    val fullName = protoDescriptorOf<T>(messageType).fullName
+    return typeUrl.endsWith("/$fullName")
+}
+
+/**
  * Packs a protobuf message into an [Any] message.
  *
  * This method serializes the given [value] and wraps it in an [Any] message with a type URL ([Any.typeUrl])
@@ -91,7 +117,7 @@ public fun <@GeneratedProtoMessage T: kotlin.Any> Any.contains(messageClass: KCl
  * @see contains
  * @see unpack
  */
-public inline fun <@GeneratedProtoMessage @HasWithCodec reified T : kotlin.Any> Any.Companion.pack(
+public inline fun <@GeneratedProtoMessage reified T : kotlin.Any> Any.Companion.pack(
     value: T,
     urlPrefix: String = "type.googleapis.com",
 ): Any {
@@ -103,7 +129,7 @@ public inline fun <@GeneratedProtoMessage @HasWithCodec reified T : kotlin.Any> 
  * which makes it possible to use the internal [protoDescriptorOf] function.
  */
 @InternalRpcApi
-public fun <@GeneratedProtoMessage @HasWithCodec T : kotlin.Any> Any.Companion.pack(
+public fun <@GeneratedProtoMessage T : kotlin.Any> Any.Companion.pack(
     value: T,
     valueClass: KClass<T>,
     urlPrefix: String = "type.googleapis.com",
@@ -128,13 +154,6 @@ public fun <@GeneratedProtoMessage @HasWithCodec T : kotlin.Any> Any.Companion.p
  *
  * Example:
  * ```kotlin
- * val any = Any.pack(Duration { seconds = 3600 })
- * val duration = any.unpack<Duration>()
- * println(duration.seconds) // 3600
- * ```
- *
- * Example with type checking:
- * ```kotlin
  * val any: Any = receiveFromNetwork()
  * if (any.contains<Timestamp>()) {
  *     val timestamp = any.unpack<Timestamp>()
@@ -148,7 +167,7 @@ public fun <@GeneratedProtoMessage @HasWithCodec T : kotlin.Any> Any.Companion.p
  * @see pack
  * @see contains
  */
-public inline fun <@GeneratedProtoMessage @HasWithCodec reified T : kotlin.Any> Any.unpack(): T {
+public inline fun <@GeneratedProtoMessage reified T : kotlin.Any> Any.unpack(): T {
     return unpack(T::class)
 }
 
@@ -161,16 +180,9 @@ public inline fun <@GeneratedProtoMessage @HasWithCodec reified T : kotlin.Any> 
  *
  * Example:
  * ```kotlin
- * val any = Any.pack(Duration { seconds = 3600 })
- * val duration = any.unpack<Duration>()
- * println(duration.seconds) // 3600
- * ```
- *
- * Example with type checking:
- * ```kotlin
  * val any: Any = receiveFromNetwork()
  * if (any.contains<Timestamp>()) {
- *     val timestamp = any.unpack<Timestamp>()
+ *     val timestamp = any.unpack(Timestamp::class)
  *     processTimestamp(timestamp)
  * }
  * ```
@@ -181,8 +193,115 @@ public inline fun <@GeneratedProtoMessage @HasWithCodec reified T : kotlin.Any> 
  * @see pack
  * @see contains
  */
-public fun <@GeneratedProtoMessage @HasWithCodec T : kotlin.Any> Any.unpack(kClass: KClass<T>): T {
+public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpack(kClass: KClass<T>): T {
     require(contains(kClass)) { "Cannot unpack Any message of type $typeUrl to ${kClass.qualifiedName}" }
     val source = Buffer().apply { write(value) }
     return codec(kClass).decode(source)
+}
+
+/**
+ * Unpacks this [Any] message into a message of type [kType].
+ *
+ * This method deserializes the content of this [Any] message and returns it as an instance
+ * of type [kType]. Before unpacking, it verifies that the type URL matches the expected message
+ * type. If the type URL does not match, an [IllegalArgumentException] is thrown.
+ *
+ * Example:
+ * ```kotlin
+ * val any: Any = receiveFromNetwork()
+ * if (any.contains<Timestamp>()) {
+ *     val timestamp = any.unpack<Timestamp>(typeOf<Timestamp>())
+ *     processTimestamp(timestamp)
+ * }
+ * ```
+ *
+ * @param kType the protobuf message type to unpack to
+ * @return the unpacked message of type [T]
+ * @throws IllegalArgumentException if this [Any] does not contain a message of type [kType]
+ * @see pack
+ * @see contains
+ */
+public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpack(kType: KType): T {
+    require(contains<T>(kType)) { "Cannot unpack Any message of type $typeUrl to ${kType.classifier}" }
+    val source = Buffer().apply { write(value) }
+    return codec<T>(kType).decode(source)
+}
+
+
+/**
+ * Unpacks this [Any] message into a message of type [T], or returns `null` if the type does not match.
+ *
+ * This method deserializes the content of this [Any] message and returns it as an instance
+ * of type [T]. Before unpacking, it verifies that the type URL matches the expected message
+ * type. If the type URL does not match, `null` is returned instead of throwing an exception.
+ *
+ * Example:
+ * ```kotlin
+ * val any: Any = receiveFromNetwork()
+ * val timestamp = any.unpackOrNull<Timestamp>()
+ * if (timestamp != null) {
+ *     processTimestamp(timestamp)
+ * }
+ * ```
+ *
+ * @param T the protobuf message type to unpack to
+ * @return the unpacked message of type [T], or `null` if this [Any] does not contain a message of type [T]
+ * @see pack
+ * @see contains
+ * @see unpack
+ */
+public inline fun <@GeneratedProtoMessage reified T : kotlin.Any> Any.unpackOrNull(): T? {
+    return unpackOrNull(T::class)
+}
+
+/**
+ * Unpacks this [Any] message into a message of type [kType], or returns `null` if the type does not match.
+ *
+ * This method deserializes the content of this [Any] message and returns it as an instance
+ * of type [kType]. Before unpacking, it verifies that the type URL matches the expected message
+ * type. If the type URL does not match, `null` is returned instead of throwing an exception.
+ *
+ * Example:
+ * ```kotlin
+ * val any: Any = receiveFromNetwork()
+ * val timestamp = any.unpackOrNull<Timestamp>(typeOf<Timestamp>())
+ * if (timestamp != null) {
+ *     processTimestamp(timestamp)
+ * }
+ * ```
+ *
+ * @param kType the protobuf message type to unpack to
+ * @return the unpacked message of type [T], or `null` if this [Any] does not contain a message of type [kType]
+ * @see pack
+ * @see contains
+ * @see unpack
+ */
+public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpackOrNull(kType: KType): T? {
+    return if (contains<T>(kType)) unpack(kType) else null
+}
+
+/**
+ * Unpacks this [Any] message into a message of class [kClass], or returns `null` if the type does not match.
+ *
+ * This method deserializes the content of this [Any] message and returns it as an instance
+ * of class [kClass]. Before unpacking, it verifies that the type URL matches the expected message
+ * type. If the type URL does not match, `null` is returned instead of throwing an exception.
+ *
+ * Example:
+ * ```kotlin
+ * val any: Any = receiveFromNetwork()
+ * val timestamp = any.unpackOrNull(Timestamp::class)
+ * if (timestamp != null) {
+ *     processTimestamp(timestamp)
+ * }
+ * ```
+ *
+ * @param kClass the protobuf message class to unpack to
+ * @return the unpacked message of type [T], or `null` if this [Any] does not contain a message of class [kClass]
+ * @see pack
+ * @see contains
+ * @see unpack
+ */
+public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpackOrNull(kClass: KClass<T>): T? {
+    return if (contains(kClass)) unpack(kClass) else null
 }

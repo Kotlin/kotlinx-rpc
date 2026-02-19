@@ -59,7 +59,7 @@ public expect annotation class WithCodec(val codec: KClass<out MessageCodec<*>>)
  */
 @InternalRpcApi
 @CheckedTypeAnnotation(WithCodec::class)
-@Target(AnnotationTarget.TYPE_PARAMETER)
+@Target(AnnotationTarget.TYPE_PARAMETER, AnnotationTarget.CLASS)
 public annotation class HasWithCodec
 
 /**
@@ -117,11 +117,11 @@ public inline fun <@HasWithCodec reified T: Any> codec(config: CodecConfig? = nu
  * @see MessageCodec
  * @see CodecConfig
  */
-@Suppress("UNCHECKED_CAST")
 public fun <@HasWithCodec T: Any> codec(messageType: KType, config: CodecConfig? = null): MessageCodec<T> {
     val classifier = messageType.classifier ?: error("Expected denotable type, found $messageType")
     val classifierClass = classifier as? KClass<*> ?: error("Expected class type, found $messageType")
 
+    @Suppress("UNCHECKED_CAST")
     return codec(classifierClass as KClass<T>, config)
 }
 
