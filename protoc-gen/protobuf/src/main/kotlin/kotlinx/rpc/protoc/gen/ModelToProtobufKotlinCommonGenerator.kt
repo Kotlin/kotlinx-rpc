@@ -512,11 +512,11 @@ class ModelToProtobufKotlinCommonGenerator(
             returnType = declaration.name.scoped(),
             comment = Comment.leading(
                 """
-                |Copies the original message, including unknown fields.
-                |```
-                |val copy = original.copy$invocation
-                |```
-            """.trimMargin()
+                    |Copies the original message, including unknown fields.
+                    |```
+                    |val copy = original.copy$invocation
+                    |```
+                """.trimMargin()
             )
         ) {
             code("return this.asInternal().copyInternal(body)".scoped())
@@ -643,10 +643,10 @@ class ModelToProtobufKotlinCommonGenerator(
         val comment = if (declaration.hasPresenceFields) {
             // TODO KRPC-252 protoc-gen: Support type resolution in comments
             Comment.leading(
-            """
-                Interface providing field-presence information for [${declaration.name.fullName()}] messages.
-                Retrieve it via the [${declaration.name.fullName()}.presence] extension property.
-            """.trimIndent()
+                """
+                    Interface providing field-presence information for [${declaration.name.fullName()}] messages.
+                    Retrieve it via the [${declaration.name.fullName()}.presence] extension property.
+                """.trimIndent()
             )
         } else {
             null
