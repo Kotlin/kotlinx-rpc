@@ -4,6 +4,7 @@ package com.google.protobuf.kotlin
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 
 /**
 * Api is a light-weight descriptor for an API Interface.
@@ -16,6 +17,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * this message itself. See https://cloud.google.com/apis/design/glossary for
 * detailed terminology.
 */
+@GeneratedProtoMessage
 @WithCodec(ApiInternal.CODEC::class)
 public interface Api {
     /**
@@ -73,6 +75,7 @@ public interface Api {
 /**
 * Method represents a method of an API interface.
 */
+@GeneratedProtoMessage
 @WithCodec(MethodInternal.CODEC::class)
 public interface Method {
     /**
@@ -187,6 +190,7 @@ public interface Method {
 *       ...
 *     }
 */
+@GeneratedProtoMessage
 @WithCodec(MixinInternal.CODEC::class)
 public interface Mixin {
     /**

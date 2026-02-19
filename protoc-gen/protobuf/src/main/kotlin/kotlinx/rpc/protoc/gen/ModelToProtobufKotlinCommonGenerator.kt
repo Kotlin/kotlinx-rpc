@@ -102,6 +102,9 @@ class ModelToProtobufKotlinCommonGenerator(
         val annotations = mutableListOf<ScopedFormattedString>()
         if (!declaration.isGroup) {
             annotations.add(
+                FqName.Annotations.GeneratedProtoMessage.scopedAnnotation()
+            )
+            annotations.add(
                 "@%T(%T::class)".scoped(FqName.Annotations.WithCodec, declaration.codecObjectName)
             )
         }
@@ -253,6 +256,7 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             generateCodecObject(declaration)
+            generateDescriptorObject(declaration)
 
             // required for decodeWith extension
             clazz(
@@ -681,8 +685,8 @@ class ModelToProtobufKotlinCommonGenerator(
             // TODO KRPC-252 protoc-gen: Support type resolution in comments
             comment = Comment.leading(
                 """
-                    Returns the field-presence view for this [${declaration.name.fullName()}] instance.
-                """.trimIndent()
+                Returns the field-presence view for this [${declaration.name.fullName()}] instance.
+            """.trimIndent()
             )
         )
     }
@@ -820,6 +824,25 @@ class ModelToProtobufKotlinCommonGenerator(
 
             internalImports.add("kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException")
             internalImports.add("kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException")
+        }
+    }
+
+    private fun CodeGenerator.generateDescriptorObject(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) return
+        if (declaration.isGroup) return
+
+        clazz(
+            name = "DESCRIPTOR",
+            annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
+            declarationType = CodeGenerator.DeclarationType.Object,
+            superTypes = listOf("%T<%T>".scoped(FqName.RpcClasses.ProtoDescriptor, declaration.name)),
+        ) {
+            property(
+                name = "fullName",
+                modifiers = "override",
+                type = FqName.Implicits.String.scoped(),
+                value = "\"${declaration.dec.fullName}\"".scoped()
+            )
         }
     }
 

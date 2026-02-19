@@ -33,6 +33,12 @@ public class DiagnosticTestGenerated extends AbstractDiagnosticTest {
   }
 
   @Test
+  @TestMetadata("protoMessage.kt")
+  public void testProtoMessage() {
+    runTest("src/testData/diagnostics/protoMessage.kt");
+  }
+
+  @Test
   @TestMetadata("rpcChecked.kt")
   public void testRpcChecked() {
     runTest("src/testData/diagnostics/rpcChecked.kt");

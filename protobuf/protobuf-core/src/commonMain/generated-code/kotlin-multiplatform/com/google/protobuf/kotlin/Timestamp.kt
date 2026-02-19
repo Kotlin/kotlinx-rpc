@@ -4,6 +4,7 @@ package com.google.protobuf.kotlin
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 
 /**
 * A Timestamp represents a point in time independent of any time zone or local
@@ -96,6 +97,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
 * ) to obtain a formatter capable of generating timestamps in this format.
 */
+@GeneratedProtoMessage
 @WithCodec(TimestampInternal.CODEC::class)
 public interface Timestamp {
     /**

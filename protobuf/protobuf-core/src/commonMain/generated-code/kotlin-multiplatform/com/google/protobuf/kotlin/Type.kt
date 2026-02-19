@@ -4,10 +4,12 @@ package com.google.protobuf.kotlin
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 
 /**
 * A protocol buffer message type.
 */
+@GeneratedProtoMessage
 @WithCodec(TypeInternal.CODEC::class)
 public interface Type {
     /**
@@ -45,6 +47,7 @@ public interface Type {
 /**
 * A single field of a message type.
 */
+@GeneratedProtoMessage
 @WithCodec(FieldInternal.CODEC::class)
 public interface Field {
     /**
@@ -233,6 +236,7 @@ public interface Field {
 /**
 * Enum type definition.
 */
+@GeneratedProtoMessage
 @WithCodec(EnumInternal.CODEC::class)
 public interface Enum {
     /**
@@ -266,6 +270,7 @@ public interface Enum {
 /**
 * Enum value definition.
 */
+@GeneratedProtoMessage
 @WithCodec(EnumValueInternal.CODEC::class)
 public interface EnumValue {
     /**
@@ -288,6 +293,7 @@ public interface EnumValue {
 * A protocol buffer option, which can be attached to a message, field,
 * enumeration, etc.
 */
+@GeneratedProtoMessage
 @WithCodec(OptionInternal.CODEC::class)
 public interface Option {
     /**

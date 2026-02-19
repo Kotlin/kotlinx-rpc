@@ -94,6 +94,7 @@ if (kotlinVersion.isAtLeast(2, 4, 0)) {
                             annotatedWith.add("kotlinx.rpc.internal.utils.InternalRpcApi")
                             byNames.add("kotlinx.rpc.internal.**")
                             byNames.add("kotlinx.rpc.krpc.internal.**")
+                            byNames.add("kotlinx.rpc.grpc.internal.**")
                         }
                     }
                 }
@@ -124,6 +125,7 @@ if (kotlinVersion.isAtLeast(2, 4, 0)) {
                             annotatedWith.add("kotlinx.rpc.internal.utils.InternalRpcApi")
                             byNames.add("kotlinx.rpc.internal.**")
                             byNames.add("kotlinx.rpc.krpc.internal.**")
+                            byNames.add("kotlinx.rpc.grpc.internal.**")
                         }
                     }
                 }

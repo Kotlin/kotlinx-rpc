@@ -4,6 +4,7 @@ package com.google.protobuf.kotlin
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 
 /**
 * `FieldMask` represents a set of symbolic field paths, for example:
@@ -206,6 +207,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * request should verify the included field paths, and return an
 * `INVALID_ARGUMENT` error if any path is unmappable.
 */
+@GeneratedProtoMessage
 @WithCodec(FieldMaskInternal.CODEC::class)
 public interface FieldMask {
     /**

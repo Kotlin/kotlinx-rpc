@@ -4,6 +4,7 @@ package com.google.protobuf_test_messages.editions.proto2
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 
 /**
 * This proto includes every type of field in both singular and repeated
@@ -14,6 +15,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * could trigger bugs that occur in any message type in this file.  We verify
 * this stays true in a unit test.
 */
+@GeneratedProtoMessage
 @WithCodec(TestAllTypesProto2Internal.CODEC::class)
 interface TestAllTypesProto2 {
     /**
@@ -197,6 +199,7 @@ interface TestAllTypesProto2 {
         value class OneofEnum(val value: NestedEnum): OneofField
     }
 
+    @GeneratedProtoMessage
     @WithCodec(TestAllTypesProto2Internal.NestedMessageInternal.CODEC::class)
     interface NestedMessage {
         val a: Int?
@@ -225,11 +228,13 @@ interface TestAllTypesProto2 {
     /**
     * message_set test case.
     */
+    @GeneratedProtoMessage
     @WithCodec(TestAllTypesProto2Internal.MessageSetCorrectInternal.CODEC::class)
     interface MessageSetCorrect {
         companion object
     }
 
+    @GeneratedProtoMessage
     @WithCodec(TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.CODEC::class)
     interface MessageSetCorrectExtension1 {
         val str: String?
@@ -237,6 +242,7 @@ interface TestAllTypesProto2 {
         companion object
     }
 
+    @GeneratedProtoMessage
     @WithCodec(TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.CODEC::class)
     interface MessageSetCorrectExtension2 {
         val i: Int?
@@ -244,6 +250,7 @@ interface TestAllTypesProto2 {
         companion object
     }
 
+    @GeneratedProtoMessage
     @WithCodec(TestAllTypesProto2Internal.ExtensionWithOneofInternal.CODEC::class)
     interface ExtensionWithOneof {
         val oneofField: OneofField?
@@ -281,6 +288,7 @@ interface TestAllTypesProto2 {
     companion object
 }
 
+@GeneratedProtoMessage
 @WithCodec(ForeignMessageProto2Internal.CODEC::class)
 interface ForeignMessageProto2 {
     val c: Int?
@@ -288,6 +296,7 @@ interface ForeignMessageProto2 {
     companion object
 }
 
+@GeneratedProtoMessage
 @WithCodec(GroupFieldInternal.CODEC::class)
 interface GroupField {
     val groupInt32: Int?
@@ -296,6 +305,7 @@ interface GroupField {
     companion object
 }
 
+@GeneratedProtoMessage
 @WithCodec(UnknownToTestAllTypesInternal.CODEC::class)
 interface UnknownToTestAllTypes {
     val optionalInt32: Int?
@@ -314,11 +324,13 @@ interface UnknownToTestAllTypes {
     companion object
 }
 
+@GeneratedProtoMessage
 @WithCodec(NullHypothesisProto2Internal.CODEC::class)
 interface NullHypothesisProto2 {
     companion object
 }
 
+@GeneratedProtoMessage
 @WithCodec(EnumOnlyProto2Internal.CODEC::class)
 interface EnumOnlyProto2 {
     sealed class Bool(open val number: Int) {
@@ -336,6 +348,7 @@ interface EnumOnlyProto2 {
     companion object
 }
 
+@GeneratedProtoMessage
 @WithCodec(OneStringProto2Internal.CODEC::class)
 interface OneStringProto2 {
     val data: String?
@@ -343,6 +356,7 @@ interface OneStringProto2 {
     companion object
 }
 
+@GeneratedProtoMessage
 @WithCodec(ProtoWithKeywordsInternal.CODEC::class)
 interface ProtoWithKeywords {
     val inline: Int?
@@ -352,6 +366,7 @@ interface ProtoWithKeywords {
     companion object
 }
 
+@GeneratedProtoMessage
 @WithCodec(TestAllRequiredTypesProto2Internal.CODEC::class)
 interface TestAllRequiredTypesProto2 {
     /**
@@ -400,6 +415,7 @@ interface TestAllRequiredTypesProto2 {
     val defaultString: String
     val defaultBytes: ByteArray
 
+    @GeneratedProtoMessage
     @WithCodec(TestAllRequiredTypesProto2Internal.NestedMessageInternal.CODEC::class)
     interface NestedMessage {
         val a: Int
@@ -422,11 +438,13 @@ interface TestAllRequiredTypesProto2 {
     /**
     * message_set test case.
     */
+    @GeneratedProtoMessage
     @WithCodec(TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.CODEC::class)
     interface MessageSetCorrect {
         companion object
     }
 
+    @GeneratedProtoMessage
     @WithCodec(TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal.CODEC::class)
     interface MessageSetCorrectExtension1 {
         val str: String
@@ -434,6 +452,7 @@ interface TestAllRequiredTypesProto2 {
         companion object
     }
 
+    @GeneratedProtoMessage
     @WithCodec(TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal.CODEC::class)
     interface MessageSetCorrectExtension2 {
         val i: Int
@@ -463,6 +482,7 @@ interface TestAllRequiredTypesProto2 {
     companion object
 }
 
+@GeneratedProtoMessage
 @WithCodec(TestLargeOneofInternal.CODEC::class)
 interface TestLargeOneof {
     val largeOneof: LargeOneof?
@@ -484,26 +504,31 @@ interface TestLargeOneof {
         value class A5(val value: TestLargeOneof.A5): LargeOneof
     }
 
+    @GeneratedProtoMessage
     @WithCodec(TestLargeOneofInternal.A1Internal.CODEC::class)
     interface A1 {
         companion object
     }
 
+    @GeneratedProtoMessage
     @WithCodec(TestLargeOneofInternal.A2Internal.CODEC::class)
     interface A2 {
         companion object
     }
 
+    @GeneratedProtoMessage
     @WithCodec(TestLargeOneofInternal.A3Internal.CODEC::class)
     interface A3 {
         companion object
     }
 
+    @GeneratedProtoMessage
     @WithCodec(TestLargeOneofInternal.A4Internal.CODEC::class)
     interface A4 {
         companion object
     }
 
+    @GeneratedProtoMessage
     @WithCodec(TestLargeOneofInternal.A5Internal.CODEC::class)
     interface A5 {
         companion object
