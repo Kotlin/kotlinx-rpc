@@ -5,8 +5,10 @@
 package kotlinx.rpc.protobuf
 
 import kotlinx.rpc.annotations.CheckedTypeAnnotation
+import kotlinx.rpc.grpc.codec.HasWithCodec
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
+@HasWithCodec
 @InternalRpcApi
 @CheckedTypeAnnotation
 @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE_PARAMETER)
