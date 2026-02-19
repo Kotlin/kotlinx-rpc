@@ -4,6 +4,7 @@ package com.google.protobuf.kotlin
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 
 /**
 * `Any` contains an arbitrary serialized protocol buffer message along with a
@@ -92,6 +93,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 *       "value": "1.212s"
 *     }
 */
+@GeneratedProtoMessage
 @WithCodec(AnyInternal.CODEC::class)
 public interface Any {
     /**

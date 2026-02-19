@@ -108,6 +108,7 @@ dependencies {
     testDataClasspath(projects.utils)
     testDataClasspath(projects.grpc.grpcCodec)
     testDataClasspath(projects.grpc.grpcCore)
+    testDataClasspath(projects.protobuf.protobufCore)
     testDataClasspath(libs.kotlinx.io.core)
     testDataClasspath(libs.coroutines.core)
 }
@@ -119,6 +120,7 @@ tasks.test {
     dependsOn(project(":core").tasks.getByName("jvmJar"))
     dependsOn(project(":utils").tasks.getByName("jvmJar"))
     dependsOn(project(":krpc:krpc-core").tasks.getByName("jvmJar"))
+    dependsOn(project(":protobuf:protobuf-core").tasks.getByName("jvmJar"))
     dependsOn("generateTests")
 
     inputs.dir("src/testData")

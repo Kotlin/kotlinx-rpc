@@ -26,6 +26,7 @@ class FirRpcAdditionalCheckers(
         register(FirRpcPredicates.grpc)
         register(FirRpcPredicates.withCodec)
         register(FirRpcPredicates.checkedAnnotationMeta)
+        register(FirRpcPredicates.generatedProtoMessage)
     }
 
     private val ctx = FirCheckersContext(

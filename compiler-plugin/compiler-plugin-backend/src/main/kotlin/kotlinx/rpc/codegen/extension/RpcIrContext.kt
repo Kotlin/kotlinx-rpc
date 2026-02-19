@@ -56,6 +56,10 @@ internal class RpcIrContext(
         getRpcIrClassSymbol("RpcCall")
     }
 
+    val withProtoDescriptor by lazy {
+        getRpcIrClassSymbol("WithProtoDescriptor", "protobuf.internal")
+    }
+
     val withServiceDescriptor by lazy {
         getRpcIrClassSymbol("WithServiceDescriptor", "internal")
     }

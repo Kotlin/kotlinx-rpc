@@ -10,6 +10,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
+import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
@@ -152,6 +153,11 @@ public class TypeInternal: Type, InternalMessage(fieldsWithPresence = 1) {
     }
 
     @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<Type> {
+        public override val fullName: String = "google.protobuf.Type"
+    }
+
+    @InternalRpcApi
     public companion object
 }
 
@@ -277,6 +283,11 @@ public class FieldInternal: Field, InternalMessage(fieldsWithPresence = 0) {
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<Field> {
+        public override val fullName: String = "google.protobuf.Field"
     }
 
     @InternalRpcApi
@@ -406,6 +417,11 @@ public class EnumInternal: Enum, InternalMessage(fieldsWithPresence = 1) {
     }
 
     @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<Enum> {
+        public override val fullName: String = "google.protobuf.Enum"
+    }
+
+    @InternalRpcApi
     public companion object
 }
 
@@ -496,6 +512,11 @@ public class EnumValueInternal: EnumValue, InternalMessage(fieldsWithPresence = 
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<EnumValue> {
+        public override val fullName: String = "google.protobuf.EnumValue"
     }
 
     @InternalRpcApi
@@ -602,6 +623,11 @@ public class OptionInternal: Option, InternalMessage(fieldsWithPresence = 1) {
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<Option> {
+        public override val fullName: String = "google.protobuf.Option"
     }
 
     @InternalRpcApi

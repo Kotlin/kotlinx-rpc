@@ -152,3 +152,12 @@ object GrpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
         )
     }
 }
+
+object ProtoDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
+    override val MAP by RpcKtDiagnosticFactoryToRendererMap("Proto") { map ->
+        map.put(
+            factory = FirProtoDiagnostics.PROTO_MESSAGE_IS_GENERATED_ONLY,
+            message = "@GeneratedProtoMessage annotation can only be applied to generated message classes.",
+        )
+    }
+}

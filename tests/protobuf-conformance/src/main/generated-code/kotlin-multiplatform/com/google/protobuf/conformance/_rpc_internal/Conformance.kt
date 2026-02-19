@@ -10,6 +10,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
+import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
@@ -114,6 +115,11 @@ class TestStatusInternal: TestStatus, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<TestStatus> {
+        override val fullName: String = "conformance.TestStatus"
+    }
+
+    @InternalRpcApi
     companion object
 }
 
@@ -193,6 +199,11 @@ class FailureSetInternal: FailureSet, InternalMessage(fieldsWithPresence = 0) {
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<FailureSet> {
+        override val fullName: String = "conformance.FailureSet"
     }
 
     @InternalRpcApi
@@ -351,6 +362,11 @@ class ConformanceRequestInternal: ConformanceRequest, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<ConformanceRequest> {
+        override val fullName: String = "conformance.ConformanceRequest"
+    }
+
+    @InternalRpcApi
     companion object
 }
 
@@ -482,6 +498,11 @@ class ConformanceResponseInternal: ConformanceResponse, InternalMessage(fieldsWi
     }
 
     @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<ConformanceResponse> {
+        override val fullName: String = "conformance.ConformanceResponse"
+    }
+
+    @InternalRpcApi
     companion object
 }
 
@@ -561,6 +582,11 @@ class JspbEncodingConfigInternal: JspbEncodingConfig, InternalMessage(fieldsWith
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<JspbEncodingConfig> {
+        override val fullName: String = "conformance.JspbEncodingConfig"
     }
 
     @InternalRpcApi

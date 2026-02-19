@@ -21,6 +21,7 @@ import com.google.protobuf.kotlin.Value
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 
 /**
 * This proto includes every type of field in both singular and repeated
@@ -31,6 +32,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * could trigger bugs that occur in any message type in this file.  We verify
 * this stays true in a unit test.
 */
+@GeneratedProtoMessage
 @WithCodec(TestAllTypesProto3Internal.CODEC::class)
 interface TestAllTypesProto3 {
     /**
@@ -231,6 +233,7 @@ interface TestAllTypesProto3 {
         value class OneofNullValue(val value: NullValue): OneofField
     }
 
+    @GeneratedProtoMessage
     @WithCodec(TestAllTypesProto3Internal.NestedMessageInternal.CODEC::class)
     interface NestedMessage {
         val a: Int
@@ -281,6 +284,7 @@ interface TestAllTypesProto3 {
     companion object
 }
 
+@GeneratedProtoMessage
 @WithCodec(ForeignMessageInternal.CODEC::class)
 interface ForeignMessage {
     val c: Int
@@ -288,11 +292,13 @@ interface ForeignMessage {
     companion object
 }
 
+@GeneratedProtoMessage
 @WithCodec(NullHypothesisProto3Internal.CODEC::class)
 interface NullHypothesisProto3 {
     companion object
 }
 
+@GeneratedProtoMessage
 @WithCodec(EnumOnlyProto3Internal.CODEC::class)
 interface EnumOnlyProto3 {
     sealed class Bool(open val number: Int) {

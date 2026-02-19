@@ -43,6 +43,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
+import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
@@ -1200,6 +1201,11 @@ class TestAllTypesProto3Internal: TestAllTypesProto3, InternalMessage(fieldsWith
         }
 
         @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestAllTypesProto3.NestedMessage> {
+            override val fullName: String = "protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedMessage"
+        }
+
+        @InternalRpcApi
         companion object
     }
 
@@ -2220,6 +2226,11 @@ class TestAllTypesProto3Internal: TestAllTypesProto3, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<TestAllTypesProto3> {
+        override val fullName: String = "protobuf_test_messages.editions.proto3.TestAllTypesProto3"
+    }
+
+    @InternalRpcApi
     companion object
 }
 
@@ -2302,6 +2313,11 @@ class ForeignMessageInternal: ForeignMessage, InternalMessage(fieldsWithPresence
     }
 
     @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<ForeignMessage> {
+        override val fullName: String = "protobuf_test_messages.editions.proto3.ForeignMessage"
+    }
+
+    @InternalRpcApi
     companion object
 }
 
@@ -2379,6 +2395,11 @@ class NullHypothesisProto3Internal: NullHypothesisProto3, InternalMessage(fields
     }
 
     @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<NullHypothesisProto3> {
+        override val fullName: String = "protobuf_test_messages.editions.proto3.NullHypothesisProto3"
+    }
+
+    @InternalRpcApi
     companion object
 }
 
@@ -2453,6 +2474,11 @@ class EnumOnlyProto3Internal: EnumOnlyProto3, InternalMessage(fieldsWithPresence
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<EnumOnlyProto3> {
+        override val fullName: String = "protobuf_test_messages.editions.proto3.EnumOnlyProto3"
     }
 
     @InternalRpcApi

@@ -10,6 +10,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
+import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
@@ -107,6 +108,11 @@ public class DurationInternal: Duration, InternalMessage(fieldsWithPresence = 0)
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<Duration> {
+        public override val fullName: String = "google.protobuf.Duration"
     }
 
     @InternalRpcApi

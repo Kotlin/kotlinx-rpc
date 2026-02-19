@@ -4,7 +4,9 @@ package com.google.protobuf_test_messages.edition2023
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 
+@GeneratedProtoMessage
 @WithCodec(ComplexMessageInternal.CODEC::class)
 interface ComplexMessage {
     val d: Int?
@@ -12,6 +14,7 @@ interface ComplexMessage {
     companion object
 }
 
+@GeneratedProtoMessage
 @WithCodec(TestAllTypesEdition2023Internal.CODEC::class)
 interface TestAllTypesEdition2023 {
     /**
@@ -152,6 +155,7 @@ interface TestAllTypesEdition2023 {
         value class OneofEnum(val value: NestedEnum): OneofField
     }
 
+    @GeneratedProtoMessage
     @WithCodec(TestAllTypesEdition2023Internal.NestedMessageInternal.CODEC::class)
     interface NestedMessage {
         val a: Int?
@@ -192,6 +196,7 @@ interface TestAllTypesEdition2023 {
     companion object
 }
 
+@GeneratedProtoMessage
 @WithCodec(ForeignMessageEdition2023Internal.CODEC::class)
 interface ForeignMessageEdition2023 {
     val c: Int?
@@ -199,6 +204,7 @@ interface ForeignMessageEdition2023 {
     companion object
 }
 
+@GeneratedProtoMessage
 @WithCodec(GroupLikeTypeInternal.CODEC::class)
 interface GroupLikeType {
     val c: Int?

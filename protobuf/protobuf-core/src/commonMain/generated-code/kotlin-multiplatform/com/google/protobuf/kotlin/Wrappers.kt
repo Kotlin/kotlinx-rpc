@@ -4,6 +4,7 @@ package com.google.protobuf.kotlin
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 
 /**
 * Wrapper message for `double`.
@@ -13,6 +14,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
+@GeneratedProtoMessage
 @WithCodec(DoubleValueInternal.CODEC::class)
 public interface DoubleValue {
     /**
@@ -31,6 +33,7 @@ public interface DoubleValue {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
+@GeneratedProtoMessage
 @WithCodec(FloatValueInternal.CODEC::class)
 public interface FloatValue {
     /**
@@ -49,6 +52,7 @@ public interface FloatValue {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
+@GeneratedProtoMessage
 @WithCodec(Int64ValueInternal.CODEC::class)
 public interface Int64Value {
     /**
@@ -67,6 +71,7 @@ public interface Int64Value {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
+@GeneratedProtoMessage
 @WithCodec(UInt64ValueInternal.CODEC::class)
 public interface UInt64Value {
     /**
@@ -85,6 +90,7 @@ public interface UInt64Value {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
+@GeneratedProtoMessage
 @WithCodec(Int32ValueInternal.CODEC::class)
 public interface Int32Value {
     /**
@@ -103,6 +109,7 @@ public interface Int32Value {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
+@GeneratedProtoMessage
 @WithCodec(UInt32ValueInternal.CODEC::class)
 public interface UInt32Value {
     /**
@@ -121,6 +128,7 @@ public interface UInt32Value {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
+@GeneratedProtoMessage
 @WithCodec(BoolValueInternal.CODEC::class)
 public interface BoolValue {
     /**
@@ -139,6 +147,7 @@ public interface BoolValue {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
+@GeneratedProtoMessage
 @WithCodec(StringValueInternal.CODEC::class)
 public interface StringValue {
     /**
@@ -157,6 +166,7 @@ public interface StringValue {
 * Not recommended for use in new APIs, but still useful for legacy APIs and
 * has no plan to be removed.
 */
+@GeneratedProtoMessage
 @WithCodec(BytesValueInternal.CODEC::class)
 public interface BytesValue {
     /**

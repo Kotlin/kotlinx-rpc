@@ -172,3 +172,20 @@ class FirWithCodecDeclarationCheckerVS : FirRegularClassChecker(MppCheckerKind.C
     //##csm /default
     //##csm /FirWithCodecDeclarationChecker_context
 }
+
+class FirProtoMessageAnnotationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
+    //##csm FirWithCodecDeclarationChecker_context
+    //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
+    override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
+        FirProtoMessageAnnotationChecker.check(declaration, context, reporter)
+    }
+    //##csm /specific
+    //##csm default
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    override fun check(declaration: FirRegularClass) {
+        FirProtoMessageAnnotationChecker.check(declaration, context, reporter)
+    }
+    //##csm /default
+    //##csm /FirWithCodecDeclarationChecker_context
+}
+

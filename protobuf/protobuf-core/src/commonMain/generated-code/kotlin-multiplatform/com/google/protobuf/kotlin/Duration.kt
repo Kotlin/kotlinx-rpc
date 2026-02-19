@@ -4,6 +4,7 @@ package com.google.protobuf.kotlin
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 
 /**
 * A Duration represents a signed, fixed-length span of time represented
@@ -65,6 +66,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * be expressed in JSON format as "3.000000001s", and 3 seconds and 1
 * microsecond should be expressed in JSON format as "3.000001s".
 */
+@GeneratedProtoMessage
 @WithCodec(DurationInternal.CODEC::class)
 public interface Duration {
     /**

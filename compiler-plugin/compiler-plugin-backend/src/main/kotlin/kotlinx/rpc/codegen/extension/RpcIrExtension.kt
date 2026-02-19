@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen.extension
 
+import kotlinx.rpc.codegen.RpcIrProtoProcessorDelegate
 import kotlinx.rpc.codegen.RpcIrServiceProcessorDelegate
 import kotlinx.rpc.codegen.VersionSpecificApi
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
@@ -21,7 +22,10 @@ class RpcIrExtension(configuration: CompilerConfiguration) : IrGenerationExtensi
     ) {
         val context = RpcIrContext(pluginContext, VersionSpecificApi.INSTANCE)
 
-        val processor = RpcIrServiceProcessorDelegate(RpcIrServiceProcessor(logger))
-        moduleFragment.transform(processor, context)
+        val serviceProcessor = RpcIrServiceProcessorDelegate(RpcIrServiceProcessor(logger))
+        moduleFragment.transform(serviceProcessor, context)
+
+        val protoProcessor = RpcIrProtoProcessorDelegate(RpcIrProtoProcessor(logger))
+        moduleFragment.transform(protoProcessor, context)
     }
 }

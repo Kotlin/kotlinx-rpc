@@ -30,3 +30,12 @@ object RpcNames {
 
     val CHECK_FOR_ARGUMENT_NAME = Name.identifier("checkFor")
 }
+
+object ProtoClassId {
+    val protoMessageAnnotation = ClassId(FqName("kotlinx.rpc.protobuf"), Name.identifier("GeneratedProtoMessage"))
+    val protoDescriptor = ClassId(FqName("kotlinx.rpc.protobuf.internal"), Name.identifier("ProtoDescriptor"))
+}
+
+object ProtoNames {
+    val DESCRIPTOR_NAME = Name.identifier("DESCRIPTOR")
+}

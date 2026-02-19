@@ -20,6 +20,7 @@ class FirRpcDeclarationCheckers(ctx: FirCheckersContext) : DeclarationCheckers()
         FirRpcServiceDeclarationCheckerVS(ctx),
         FirGrpcServiceDeclarationCheckerVS(),
         FirWithCodecDeclarationCheckerVS(),
+        FirProtoMessageAnnotationCheckerVS(),
     )
 
     override val classCheckers: Set<FirClassChecker> = setOf(

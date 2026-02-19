@@ -5,6 +5,7 @@ import kotlin.jvm.JvmInline
 import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.GeneratedProtoMessage
 
 /**
 * `Struct` represents a structured data value, consisting of fields
@@ -16,6 +17,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * 
 * The JSON representation for `Struct` is JSON object.
 */
+@GeneratedProtoMessage
 @WithCodec(StructInternal.CODEC::class)
 public interface Struct {
     /**
@@ -34,6 +36,7 @@ public interface Struct {
 * 
 * The JSON representation for `Value` is JSON value.
 */
+@GeneratedProtoMessage
 @WithCodec(ValueInternal.CODEC::class)
 public interface Value {
     /**
@@ -90,6 +93,7 @@ public interface Value {
 * 
 * The JSON representation for `ListValue` is JSON array.
 */
+@GeneratedProtoMessage
 @WithCodec(ListValueInternal.CODEC::class)
 public interface ListValue {
     /**

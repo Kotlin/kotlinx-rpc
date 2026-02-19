@@ -11,6 +11,7 @@ import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.KTag
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
+import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
@@ -144,6 +145,11 @@ class ComplexMessageInternal: ComplexMessage, InternalMessage(fieldsWithPresence
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<ComplexMessage> {
+        override val fullName: String = "protobuf_test_messages.editions.ComplexMessage"
     }
 
     @InternalRpcApi
@@ -1093,6 +1099,11 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023, InternalMessage(
                     return msg
                 }
             }
+        }
+
+        @InternalRpcApi
+        object DESCRIPTOR: ProtoDescriptor<TestAllTypesEdition2023.NestedMessage> {
+            override val fullName: String = "protobuf_test_messages.editions.TestAllTypesEdition2023.NestedMessage"
         }
 
         @InternalRpcApi
@@ -2490,6 +2501,11 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023, InternalMessage(
     }
 
     @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<TestAllTypesEdition2023> {
+        override val fullName: String = "protobuf_test_messages.editions.TestAllTypesEdition2023"
+    }
+
+    @InternalRpcApi
     companion object
 }
 
@@ -2590,6 +2606,11 @@ class ForeignMessageEdition2023Internal: ForeignMessageEdition2023, InternalMess
     }
 
     @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<ForeignMessageEdition2023> {
+        override val fullName: String = "protobuf_test_messages.editions.ForeignMessageEdition2023"
+    }
+
+    @InternalRpcApi
     companion object
 }
 
@@ -2687,6 +2708,11 @@ class GroupLikeTypeInternal: GroupLikeType, InternalMessage(fieldsWithPresence =
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    object DESCRIPTOR: ProtoDescriptor<GroupLikeType> {
+        override val fullName: String = "protobuf_test_messages.editions.GroupLikeType"
     }
 
     @InternalRpcApi

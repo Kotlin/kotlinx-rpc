@@ -24,6 +24,7 @@ kotlin {
     compilerOptions {
         apiVersion = KotlinVersion.KOTLIN_2_1
         languageVersion = KotlinVersion.KOTLIN_2_1
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
     sourceSets {
@@ -33,6 +34,8 @@ kotlin {
                 api(projects.grpc.grpcCodec)
 
                 api(libs.kotlinx.io.core)
+
+                implementation(libs.kotlin.reflect)
             }
 
             proto {

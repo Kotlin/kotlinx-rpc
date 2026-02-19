@@ -10,6 +10,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
+import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
@@ -152,6 +153,11 @@ public class ApiInternal: Api, InternalMessage(fieldsWithPresence = 1) {
     }
 
     @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<Api> {
+        public override val fullName: String = "google.protobuf.Api"
+    }
+
+    @InternalRpcApi
     public companion object
 }
 
@@ -265,6 +271,11 @@ public class MethodInternal: Method, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<Method> {
+        public override val fullName: String = "google.protobuf.Method"
+    }
+
+    @InternalRpcApi
     public companion object
 }
 
@@ -350,6 +361,11 @@ public class MixinInternal: Mixin, InternalMessage(fieldsWithPresence = 0) {
                 return msg
             }
         }
+    }
+
+    @InternalRpcApi
+    public object DESCRIPTOR: ProtoDescriptor<Mixin> {
+        public override val fullName: String = "google.protobuf.Mixin"
     }
 
     @InternalRpcApi
