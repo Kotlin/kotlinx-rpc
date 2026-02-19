@@ -18,8 +18,6 @@ public abstract class InternalMessage(fieldsWithPresence: Int) {
 
     @Suppress("PropertyName")
     public abstract val _unknownFields: Buffer
-
-    public abstract val _descriptor: ProtoDescriptor<*>
 }
 
 @InternalRpcApi

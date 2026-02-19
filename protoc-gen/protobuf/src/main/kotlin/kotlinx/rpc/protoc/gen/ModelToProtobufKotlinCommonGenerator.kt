@@ -195,23 +195,6 @@ class ModelToProtobufKotlinCommonGenerator(
                 value = "null".scoped(),
             )
 
-            // generate the descriptor getter.
-            // only user-facing messages that are no group have such a descriptor, so message like map entries
-            // throw an error on access (can't be accessed anyway, but must implement the getter)
-            var descriptorValue = "DESCRIPTOR"
-            var descriptorTypeArg = declaration.name.safeFullName()
-            if (!declaration.isUserFacing || declaration.isGroup) {
-                descriptorValue = "error(\"Descriptor not available for non user-facing messages\")"
-                descriptorTypeArg = "*"
-            }
-            property(
-                name = "_descriptor",
-                modifiers = "override",
-                type = "$PROTO_DESCRIPTOR<$descriptorTypeArg>",
-                value = descriptorValue,
-                propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
-            )
-
             val override = if (declaration.isUserFacing) "override" else ""
             declaration.actualFields.forEachIndexed { i, field ->
                 val value = when {

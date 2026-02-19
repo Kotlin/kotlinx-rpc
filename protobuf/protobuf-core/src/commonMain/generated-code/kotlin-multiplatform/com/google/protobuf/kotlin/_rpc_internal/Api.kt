@@ -39,8 +39,6 @@ public class ApiInternal: Api, InternalMessage(fieldsWithPresence = 1) {
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Api> get() = DESCRIPTOR
-
     public override var name: String by MsgFieldDelegate { "" }
     public override var methods: List<Method> by MsgFieldDelegate { mutableListOf() }
     public override var options: List<Option> by MsgFieldDelegate { mutableListOf() }
@@ -173,8 +171,6 @@ public class MethodInternal: Method, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Method> get() = DESCRIPTOR
-
     public override var name: String by MsgFieldDelegate { "" }
     public override var requestTypeUrl: String by MsgFieldDelegate { "" }
     public override var requestStreaming: Boolean by MsgFieldDelegate { false }
@@ -292,8 +288,6 @@ public class MixinInternal: Mixin, InternalMessage(fieldsWithPresence = 0) {
 
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
-
-    public override val _descriptor: kotlinx.rpc.protobuf.internal.ProtoDescriptor<com.google.protobuf.kotlin.Mixin> get() = DESCRIPTOR
 
     public override var name: String by MsgFieldDelegate { "" }
     public override var root: String by MsgFieldDelegate { "" }

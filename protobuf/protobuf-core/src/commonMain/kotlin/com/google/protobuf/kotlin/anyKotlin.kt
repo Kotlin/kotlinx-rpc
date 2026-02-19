@@ -8,9 +8,8 @@ import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.codec.HasWithCodec
 import kotlinx.rpc.grpc.codec.codec
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.GeneratedProtoMessage
-import kotlinx.rpc.protobuf.input.stream.asInputStream
-import kotlinx.rpc.protobuf.input.stream.asSource
 import kotlinx.rpc.protobuf.internal.protoDescriptorOf
 import kotlin.reflect.KClass
 
@@ -96,11 +95,23 @@ public inline fun <@GeneratedProtoMessage @HasWithCodec reified T : kotlin.Any> 
     value: T,
     urlPrefix: String = "type.googleapis.com",
 ): Any {
-    val internal = value as kotlinx.rpc.protobuf.internal.InternalMessage
-    val typeUrl = "$urlPrefix/${internal._descriptor.fullName}"
-    val encoded = codec<T>()
+    return pack(value, T::class, urlPrefix)
+}
+
+/**
+ * This is a helper function of the `pack(T, String)` variant to allow specifying the message class explicitly,
+ * which makes it possible to use the internal [protoDescriptorOf] function.
+ */
+@InternalRpcApi
+public fun <@GeneratedProtoMessage @HasWithCodec T : kotlin.Any> Any.Companion.pack(
+    value: T,
+    valueClass: KClass<T>,
+    urlPrefix: String = "type.googleapis.com",
+): Any {
+    val descriptor = protoDescriptorOf(valueClass)
+    val typeUrl = "$urlPrefix/${descriptor.fullName}"
+    val encoded = codec(valueClass)
         .encode(value)
-        .asSource()
 
     return Any {
         this.typeUrl = typeUrl
@@ -173,5 +184,5 @@ public inline fun <@GeneratedProtoMessage @HasWithCodec reified T : kotlin.Any> 
 public fun <@GeneratedProtoMessage @HasWithCodec T : kotlin.Any> Any.unpack(kClass: KClass<T>): T {
     require(contains(kClass)) { "Cannot unpack Any message of type $typeUrl to ${kClass.qualifiedName}" }
     val source = Buffer().apply { write(value) }
-    return codec(kClass).decode(source.asInputStream())
+    return codec(kClass).decode(source)
 }
