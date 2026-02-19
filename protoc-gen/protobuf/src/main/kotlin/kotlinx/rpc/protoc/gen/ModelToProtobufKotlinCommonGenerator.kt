@@ -102,7 +102,7 @@ class ModelToProtobufKotlinCommonGenerator(
         val annotations = mutableListOf<ScopedFormattedString>()
         if (!declaration.isGroup) {
             annotations.add(
-                "@%T".scoped(FqName.Annotations.GeneratedProtoMessage)
+                FqName.Annotations.GeneratedProtoMessage.scopedAnnotation()
             )
             annotations.add(
                 "@%T(%T::class)".scoped(FqName.Annotations.WithCodec, declaration.codecObjectName)
@@ -833,7 +833,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
         clazz(
             name = "DESCRIPTOR",
-            annotations = listOf("@%T".scoped(FqName.Annotations.InternalRpcApi)),
+            annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
             declarationType = CodeGenerator.DeclarationType.Object,
             superTypes = listOf("%T<%T>".scoped(FqName.RpcClasses.ProtoDescriptor, declaration.name)),
         ) {
