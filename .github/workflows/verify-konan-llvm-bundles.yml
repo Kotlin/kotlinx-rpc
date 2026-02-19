@@ -1,0 +1,33 @@
+name: Verify Konan LLVM Bundle Mapping is Up-to-Date
+
+on:
+  pull_request:
+    paths:
+      - 'versions-root/libs.versions.toml'
+      - 'cinterop-c/toolchain/konan_llvm_bundles.json'
+      - 'cinterop-c/toolchain/precompute_konan_llvm_bundles.py'
+      - 'cinterop-c/toolchain/resolve_konan_llvm_resource_dir.py'
+      - '.github/workflows/verify-konan-llvm-bundles.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-konan-llvm-bundles:
+    name: Verify mapping
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Sources
+        uses: actions/checkout@v4
+
+      - name: Generate Konan LLVM bundle mapping
+        run: |
+          cd cinterop-c
+          ./toolchain/precompute_konan_llvm_bundles.py
+      - name: Check if Konan LLVM bundle mapping is up-to-date
+        run: |
+          if [[ -n "$(git status --porcelain | grep cinterop-c/toolchain/konan_llvm_bundles.json)" ]]; then
+            echo "Konan LLVM bundle mapping is not up to date. Please run './cinterop-c/toolchain/precompute_konan_llvm_bundles.py' and commit changes"
+            exit 1
+          fi
