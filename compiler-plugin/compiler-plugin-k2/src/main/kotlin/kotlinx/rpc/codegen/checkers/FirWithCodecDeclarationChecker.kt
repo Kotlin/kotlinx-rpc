@@ -16,7 +16,6 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.findArgumentByName
 import org.jetbrains.kotlin.fir.declarations.getAnnotationByClassId
-import org.jetbrains.kotlin.fir.declarations.getKClassArgument
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.resolve.getSuperTypes
@@ -42,11 +41,12 @@ object FirWithCodecDeclarationChecker {
                         "for declaration: ${declaration.symbol.classId.asSingleFqName()}"
             )
 
-        val kClassValue = withCodec.getKClassArgument(CODEC_ARGUMENT_NAME, context.session)
-            ?: error(
-                "Unexpected unresolved 'codec' argument for @WithCodec annotation " +
-                        "for declaration: ${declaration.symbol.classId.asSingleFqName()}"
-            )
+        val kClassValue = vsApi {
+            withCodec.getKClassArgumentVS(CODEC_ARGUMENT_NAME, context.session)
+        } ?: error(
+            "Unexpected unresolved 'codec' argument for @WithCodec annotation " +
+                    "for declaration: ${declaration.symbol.classId.asSingleFqName()}"
+        )
 
         val codecClassSymbol = vsApi { kClassValue.toClassSymbolVS(context.session) }
             ?: error(

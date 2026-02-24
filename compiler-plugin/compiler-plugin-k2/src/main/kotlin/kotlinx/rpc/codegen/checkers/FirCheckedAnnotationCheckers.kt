@@ -23,7 +23,6 @@ import org.jetbrains.kotlin.fir.caches.getValue
 import org.jetbrains.kotlin.fir.declarations.FirClass
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirTypeParameter
-import org.jetbrains.kotlin.fir.declarations.getKClassArgument
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.fir.declarations.toAnnotationClassId
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
@@ -36,7 +35,6 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.name.Name
 
 object FirCheckedAnnotationFunctionCallChecker {
     fun check(
@@ -331,10 +329,12 @@ object FirCheckedAnnotationHelper {
 
     @OptIn(SymbolInternals::class)
     private fun FirClassSymbol<*>.checkedAnnotationTarget(session: FirSession): FirClassSymbol<*> {
-        val checkForArgument = annotations
-            .firstOrNull { it.toAnnotationClassId(session) == RpcClassId.checkedTypeAnnotation }
-            ?.getKClassArgument(RpcNames.CHECK_FOR_ARGUMENT_NAME, session)
-            ?.let { vsApi { it.toClassSymbolVS(session) } }
+        val checkForArgument = vsApi {
+            annotations
+                .firstOrNull { it.toAnnotationClassId(session) == RpcClassId.checkedTypeAnnotation }
+                ?.getKClassArgumentVS(RpcNames.CHECK_FOR_ARGUMENT_NAME, session)
+                ?.toClassSymbolVS(session)
+        }
 
         return when {
             checkForArgument == null -> this

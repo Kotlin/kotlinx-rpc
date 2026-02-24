@@ -211,16 +211,15 @@ import org.jetbrains.kotlin.platform.isJs
 import org.jetbrains.kotlin.platform.isWasm
 import kotlin.reflect.KClass
 import kotlin.reflect.safeCast
-
 //##csm /specific
 //##csm /VersionSpecificApiImpl.kt-import
 
 object VersionSpecificApiImpl : VersionSpecificApi {
-    override fun isJs(platform: TargetPlatform?): Boolean {
+    override fun isJsVS(platform: TargetPlatform?): Boolean {
         return platform.isJs()
     }
 
-    override fun isWasm(platform: TargetPlatform?): Boolean {
+    override fun isWasmVS(platform: TargetPlatform?): Boolean {
         return platform.isWasm()
     }
 
@@ -269,8 +268,19 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         return isNullable()
     }
 
-    override fun referenceClass(context: IrPluginContext, packageName: String, name: String): IrClassSymbol? {
+    override fun referenceBuiltinClassVS(
+        context: IrPluginContext,
+        packageName: String,
+        name: String
+    ): IrClassSymbol? {
+        //##csm referenceBuiltInClass
+        //##csm specific=[2.0.0...2.3.99]
         return context.referenceClass(
+        //##csm /specific
+        //##csm default
+        return context.finderForBuiltins().findClass(
+        //##csm /default
+        //##csm /referenceBuiltInClass
             ClassId(
                 FqName(packageName),
                 FqName(name),
@@ -279,12 +289,62 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         )
     }
 
-    override fun referenceFunctions(
+    override fun referenceClassVS(
         context: IrPluginContext,
         packageName: String,
-        name: String
+        name: String,
+        from: IrFile,
+    ): IrClassSymbol? {
+        //##csm referenceClass
+        //##csm specific=[2.0.0...2.3.99]
+        return context.referenceClass(
+        //##csm /specific
+        //##csm default
+        return context.finderForSource(from).findClass(
+        //##csm /default
+        //##csm /referenceClass
+            ClassId(
+                FqName(packageName),
+                FqName(name),
+                false
+            )
+        )
+    }
+
+    override fun referenceBuiltinFunctionsVS(
+        context: IrPluginContext,
+        packageName: String,
+        name: String,
     ): Collection<IrSimpleFunctionSymbol> {
+        //##csm referenceBuiltinFunctions
+        //##csm specific=[2.0.0...2.3.99]
         return context.referenceFunctions(
+        //##csm /specific
+        //##csm default
+        return context.finderForBuiltins().findFunctions(
+        //##csm /default
+        //##csm /referenceBuiltinFunctions
+            CallableId(
+                FqName(packageName),
+                Name.identifier(name),
+            )
+        )
+    }
+
+    override fun referenceFunctionsVS(
+        context: IrPluginContext,
+        packageName: String,
+        name: String,
+        from: IrFile,
+    ): Collection<IrSimpleFunctionSymbol> {
+        //##csm referenceFunctions
+        //##csm specific=[2.0.0...2.3.99]
+        return context.referenceFunctions(
+        //##csm /specific
+        //##csm default
+        return context.finderForSource(from).findFunctions(
+        //##csm /default
+        //##csm /referenceFunctions
             CallableId(
                 FqName(packageName),
                 Name.identifier(name),
@@ -298,12 +358,12 @@ object VersionSpecificApiImpl : VersionSpecificApi {
 
     //##csm messageCollectorKey
     //##csm specific=[2.0.0...2.0.10]
-    override val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
+    override val messageCollectorKeyVS: CompilerConfigurationKey<MessageCollector>
         get() = CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY
 
     //##csm /specific
     //##csm default
-    override val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
+    override val messageCollectorKeyVS: CompilerConfigurationKey<MessageCollector>
         get() = CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY
     //##csm /default
     //##csm /messageCollectorKey
@@ -391,7 +451,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
             //##csm /IrFunction.extensionReceiverParameterVS
         }
 
-    override fun IrMemberAccessExpressionData.buildFor(access: IrMemberAccessExpression<*>) {
+    override fun IrMemberAccessExpressionData.buildForVS(access: IrMemberAccessExpression<*>) {
         //##csm IrMemberAccessExpressionData.buildFor
         //##csm specific=[2.0.0...2.0.21]
         access.dispatchReceiver = dispatchReceiver
@@ -490,7 +550,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         //##csm /addAnnotationVS
     }
 
-    override fun IrConstructorCall.valueArgumentAt(index: Int): IrExpression? {
+    override fun IrConstructorCall.valueArgumentAtVS(index: Int): IrExpression? {
         //##csm IrConstructorCall.valueArgumentAt
         //##csm specific=[2.0.0...2.1.10]
         return getValueArgument(index)
@@ -501,7 +561,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         //##csm /IrConstructorCall.valueArgumentAt
     }
 
-    override fun <T : Any> IrExpression.asConstValue(clazz: KClass<T>): T? {
+    override fun <T : Any> IrExpression.asConstValueVS(clazz: KClass<T>): T? {
         //##csm IrConstructorCall.valueArgumentAt
         //##csm specific=[2.0.0...2.0.21]
         return (this as? IrConst<*>)?.value?.let { clazz.safeCast(it) }
