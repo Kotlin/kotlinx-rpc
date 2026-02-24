@@ -24,10 +24,16 @@ CONFIG=release
 mkdir -p $(dirname "$DST")
 
 KH_DEFINE="--define=KONAN_HOME=$KONAN_HOME"
-bazel build "$LABEL" $KH_DEFINE >/dev/null
+KONAN_DEPS="${KONAN_DEPS:-$KONAN_HOME/../dependencies}"
+# Resolve the version-pinned clang resource include path for the active KONAN_HOME.
+KONAN_LLVM_RESOURCE_DIR="$(KONAN_DEPS="$KONAN_DEPS" python3 ./toolchain/resolve_konan_llvm_resource_dir.py "$KONAN_HOME")"
+KD_DEFINE="--define=KONAN_DEPS=$KONAN_DEPS"
+KLLVM_DEFINE="--define=KONAN_LLVM_RESOURCE_DIR=$KONAN_LLVM_RESOURCE_DIR"
+
+bazel build "$LABEL" $KH_DEFINE $KD_DEFINE $KLLVM_DEFINE >/dev/null
 
 # Ask Bazel what file(s) this target produced
-out="$(bazel cquery "$LABEL" $KH_DEFINE --output=files | head -n1)"
+out="$(bazel cquery "$LABEL" $KH_DEFINE $KD_DEFINE $KLLVM_DEFINE --output=files | head -n1)"
 [[ -n "$out/include" ]] || { echo "No output for $LABEL"; exit 1; }
 
 SRC_INCLUDE="$out/include"
