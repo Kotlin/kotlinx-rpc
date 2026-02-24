@@ -45,30 +45,39 @@ The Bazel toolchain is specified in `toolchain/` and requires the user to specif
 `KONAN_HOME` variable like
 
 ```bash
-bazel build //:protowire --config=linux_arm64 --define=KONAN_HOME=$HOME/.konan/kotlin-native-prebuilt-macos-aarch64-2.2.10
+bazel build //:protowire --config=linux_arm64 \
+  --define=KONAN_HOME=$HOME/.konan/kotlin-native-prebuilt-macos-aarch64-2.3.0 \
+  --define=KONAN_DEPS=$HOME/.konan/dependencies \
+  --define=KONAN_LLVM_RESOURCE_DIR=$HOME/.konan/dependencies/llvm-19-aarch64-macos-essentials-79/lib/clang/19/include
 ```
 
 #### Upgrading the Kotlin Compiler Version
 
-When we upgrade the project's Kotlin compiler version, compilation for Linux will fail.
-Bazel will throw an error like
+LLVM bundle names are pinned per Kotlin compiler version in
+`toolchain/konan_llvm_bundles.json`.
+Do not manually edit `toolchain/cc_toolchain_config.bzl` when Kotlin compiler changes.
 
-```
-[1,351 / 1,353] Compiling src/kgrpc.cpp; 1s darwin-sandbox
-ERROR: /Users/jozott/development/jetbrains/kotlinx-rpc/cinterop-c/BUILD.bazel:11:11: Compiling src/kgrpc.cpp failed: absolute path inclusion(s) found in rule '//:kgrpc_lib':
-the source file 'src/kgrpc.cpp' includes the following non-builtin files with absolute paths (if these are builtin files, make sure these paths are in your toolchain):
-/Users/jozott/development/jetbrains/kotlinx-rpc/cinterop-c/BUILD.bazel:11:11: Compiling src/kgrpc.cpp failed: absolute path inclusion(s) found in rule '//:kgrpc_lib':
+When Kotlin compiler version changes, refresh the mapping:
 
-/Users/jozott/.konan/dependencies/llvm-19-aarch64-macos-essentials-79/bin/clang ... -c src/kgrpc.cpp -o bazel-out/linux_arm64-opt/bin/_objs/kgrpc_lib/kgrpc.o
-  '/Users/jozott/.konan/dependencies/llvm-19-aarch64-macos-essentials-79/lib/clang/19/include/stdbool.h'
-  '/Users/jozott/.konan/dependencies/llvm-19-aarch64-macos-essentials-79/lib/clang/19/include/stdint.h'
-  ...
+```bash
+cd cinterop-c
+./toolchain/precompute_konan_llvm_bundles.py
 ```
 
-To fix this, we need to adjust the clang built-in include paths defined in the `toolchain/cc_toolchain_config.bzl` file.
-In the case above, the path at `cxx_builtin_include_directories` must be replaced by   
-`deps + "llvm-19-aarch64-macos-essentials-79/lib/clang/19/include"`.
-This must be done for aarch64 and x86_64 separately.
-The current LLVM toolchain bundle paths can be found in
-[kotlin/kotlin-native/gradle.properties](https://github.com/JetBrains/kotlin/blob/master/kotlin-native/gradle.properties)
-of the Kotlin repository.
+This script reads upstream Kotlin metadata from
+`https://raw.githubusercontent.com/JetBrains/kotlin/v<kotlin-version>/kotlin-native/gradle.properties`
+and updates `toolchain/konan_llvm_bundles.json`.
+
+A GitHub workflow verifies the mapping for the current project Kotlin compiler version.
+If the mapping is stale, run the script and commit the updated JSON file.
+
+#### Troubleshooting
+
+- `Missing precomputed LLVM mapping for Kotlin compiler version ...` \
+  : run `./toolchain/precompute_konan_llvm_bundles.py <kotlin-version>` and commit the resulting JSON update.
+
+- `Expected LLVM bundle directory is not installed ...`
+  : refresh Kotlin/Native dependencies (e.g. via `./gradlew`) and ensure `KONAN_HOME`/`KONAN_DEPS` point to the same installation.
+
+- For direct manual `bazel build` invocations on Linux targets, always pass:
+  : `--define=KONAN_HOME=... --define=KONAN_DEPS=... --define=KONAN_LLVM_RESOURCE_DIR=...`.
