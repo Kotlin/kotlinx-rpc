@@ -324,24 +324,3 @@ fun Project.registerDumpPlatformTableTask() {
         output.set(PLATFORM_TOPIC_PATH)
     }
 }
-
-fun Project.registerVerifyPlatformTableTask() {
-    tasks.register<DumpPlatformsTask>("verifyPlatformTable") {
-        val tempFile = Files.createTempFile("platform-table-temp", ".topic").toFile()
-
-        input.set(PLATFORM_TOPIC_PATH)
-        output.set(tempFile)
-
-        doLast {
-            val input = input.get()
-            val output = output.get()
-
-            if (input.readText() != output.readText()) {
-                throw GradleException(
-                    "Platform table is not up-to-date. " +
-                            "Run `./gradlew dumpPlatformTable --no-configuration-cache` to update it."
-                )
-            }
-        }
-    }
-}

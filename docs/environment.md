@@ -528,7 +528,7 @@ Former BCV: https://github.com/Kotlin/binary-compatibility-validator
 usually after Kotlin version update.
 - `updateDocsChangelog` - put modified [CONTRIBUTING.md](../CONTRIBUTING.md) into [topics](pages/kotlinx-rpc/topics)
 - `detekt` - run detekt checks.
-- `verifyPlatformTable` / `dumpPlatformTable` - Update [platforms.topic](pages/kotlinx-rpc/topics/platforms.topic)
+- `dumpPlatformTable` - Update [platforms.topic](pages/kotlinx-rpc/topics/platforms.topic)
 - `generateTests` - see [complier plugin tests](#compiler-tests)
 - `clean` / `cleanTest` / `cleanAllTests` - clean tasks.
   - `clean` - everything
