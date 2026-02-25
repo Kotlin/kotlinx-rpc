@@ -68,7 +68,6 @@ dependencies {
 configureNpm()
 
 registerDumpPlatformTableTask()
-registerVerifyPlatformTableTask()
 registerChangelogTask()
 
 fun Project.forEachIncludedProject(action: (String, Path, Path) -> Unit) {

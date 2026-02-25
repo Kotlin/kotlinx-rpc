@@ -17,5 +17,13 @@ jobs:
           fetch-depth: 0
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-      - name: Check Platforms Table
-        run: ./gradlew verifyPlatformTable --no-configuration-cache --info --stacktrace
+      - name: Dump Platforms Table
+        run: ./gradlew dumpPlatformTable --no-configuration-cache --info --stacktrace
+      - name: Verify Platforms Table
+        run: |
+          if [[ -n "$(git status --porcelain | grep docs/pages/kotlinx-rpc/topics/platforms.topic)" ]]; then
+            echo "Platform table is not up-to-date. Please run `./gradlew dumpPlatformTable --no-configuration-cache` and commit changes"
+            git status --porcelain
+            git diff --minimal | cat
+            exit 1
+          fi

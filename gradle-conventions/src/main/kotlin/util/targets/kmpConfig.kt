@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.konan.target.HostManager
 import util.kotlinVersionParsed
 import util.other.optionalProperty
 import util.other.optionalPropertyValue
+import util.tasks.DumpPlatformsTask
 import java.io.File
 import kotlin.reflect.full.memberFunctions
 
@@ -100,7 +101,11 @@ class KmpConfig(
                     lookupTable = nativeLookup,
                 ) &&
                 !optionalPropertyValue(targetFunction.name, "exclude") &&
-                !(isAppleOnLinuxByRequirement && isApple)
+                    // shenanigans explanation:
+                    // DumpPlatformsTask must collect all targets.
+                    // But we can't enable all targets on Linux because compilation will fail.
+                    // But we don't run compilation when we run DumpPlatformsTask, so it works lol
+                !(isAppleOnLinuxByRequirement && isApple && !gradle.startParameter.taskNames.contains(DumpPlatformsTask.NAME))
         }.map { function ->
             function.call(kmp) as KotlinTarget
         }
