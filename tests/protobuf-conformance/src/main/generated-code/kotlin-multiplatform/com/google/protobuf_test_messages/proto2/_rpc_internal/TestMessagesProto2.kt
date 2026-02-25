@@ -1528,7 +1528,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestAllTypesProto2.NestedMessage> {
+        object MARSHALLER: MessageMarshaller<TestAllTypesProto2.NestedMessage> {
             override fun encode(value: TestAllTypesProto2.NestedMessage, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -3197,7 +3197,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestAllTypesProto2.MessageSetCorrect> {
+        object MARSHALLER: MessageMarshaller<TestAllTypesProto2.MessageSetCorrect> {
             override fun encode(value: TestAllTypesProto2.MessageSetCorrect, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -3302,7 +3302,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestAllTypesProto2.MessageSetCorrectExtension1> {
+        object MARSHALLER: MessageMarshaller<TestAllTypesProto2.MessageSetCorrectExtension1> {
             override fun encode(value: TestAllTypesProto2.MessageSetCorrectExtension1, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -3407,7 +3407,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestAllTypesProto2.MessageSetCorrectExtension2> {
+        object MARSHALLER: MessageMarshaller<TestAllTypesProto2.MessageSetCorrectExtension2> {
             override fun encode(value: TestAllTypesProto2.MessageSetCorrectExtension2, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -3508,7 +3508,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestAllTypesProto2.ExtensionWithOneof> {
+        object MARSHALLER: MessageMarshaller<TestAllTypesProto2.ExtensionWithOneof> {
             override fun encode(value: TestAllTypesProto2.ExtensionWithOneof, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -3544,7 +3544,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<TestAllTypesProto2> {
+    object MARSHALLER: MessageMarshaller<TestAllTypesProto2> {
         override fun encode(value: TestAllTypesProto2, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -3649,7 +3649,7 @@ class ForeignMessageProto2Internal: ForeignMessageProto2, InternalMessage(fields
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<ForeignMessageProto2> {
+    object MARSHALLER: MessageMarshaller<ForeignMessageProto2> {
         override fun encode(value: ForeignMessageProto2, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -3771,7 +3771,7 @@ class GroupFieldInternal: GroupField, InternalMessage(fieldsWithPresence = 2) {
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<GroupField> {
+    object MARSHALLER: MessageMarshaller<GroupField> {
         override fun encode(value: GroupField, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -4019,7 +4019,7 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes, InternalMessage(fiel
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<UnknownToTestAllTypes> {
+    object MARSHALLER: MessageMarshaller<UnknownToTestAllTypes> {
         override fun encode(value: UnknownToTestAllTypes, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -4101,7 +4101,7 @@ class NullHypothesisProto2Internal: NullHypothesisProto2, InternalMessage(fields
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<NullHypothesisProto2> {
+    object MARSHALLER: MessageMarshaller<NullHypothesisProto2> {
         override fun encode(value: NullHypothesisProto2, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -4183,7 +4183,7 @@ class EnumOnlyProto2Internal: EnumOnlyProto2, InternalMessage(fieldsWithPresence
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<EnumOnlyProto2> {
+    object MARSHALLER: MessageMarshaller<EnumOnlyProto2> {
         override fun encode(value: EnumOnlyProto2, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -4288,7 +4288,7 @@ class OneStringProto2Internal: OneStringProto2, InternalMessage(fieldsWithPresen
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<OneStringProto2> {
+    object MARSHALLER: MessageMarshaller<OneStringProto2> {
         override fun encode(value: OneStringProto2, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -4415,7 +4415,7 @@ class ProtoWithKeywordsInternal: ProtoWithKeywords, InternalMessage(fieldsWithPr
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<ProtoWithKeywords> {
+    object MARSHALLER: MessageMarshaller<ProtoWithKeywords> {
         override fun encode(value: ProtoWithKeywords, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -5235,7 +5235,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestAllRequiredTypesProto2.NestedMessage> {
+        object MARSHALLER: MessageMarshaller<TestAllRequiredTypesProto2.NestedMessage> {
             override fun encode(value: TestAllRequiredTypesProto2.NestedMessage, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -5407,7 +5407,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestAllRequiredTypesProto2.MessageSetCorrect> {
+        object MARSHALLER: MessageMarshaller<TestAllRequiredTypesProto2.MessageSetCorrect> {
             override fun encode(value: TestAllRequiredTypesProto2.MessageSetCorrect, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -5512,7 +5512,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestAllRequiredTypesProto2.MessageSetCorrectExtension1> {
+        object MARSHALLER: MessageMarshaller<TestAllRequiredTypesProto2.MessageSetCorrectExtension1> {
             override fun encode(value: TestAllRequiredTypesProto2.MessageSetCorrectExtension1, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -5617,7 +5617,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestAllRequiredTypesProto2.MessageSetCorrectExtension2> {
+        object MARSHALLER: MessageMarshaller<TestAllRequiredTypesProto2.MessageSetCorrectExtension2> {
             override fun encode(value: TestAllRequiredTypesProto2.MessageSetCorrectExtension2, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -5653,7 +5653,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<TestAllRequiredTypesProto2> {
+    object MARSHALLER: MessageMarshaller<TestAllRequiredTypesProto2> {
         override fun encode(value: TestAllRequiredTypesProto2, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -5819,7 +5819,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestLargeOneof.A1> {
+        object MARSHALLER: MessageMarshaller<TestLargeOneof.A1> {
             override fun encode(value: TestLargeOneof.A1, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -5901,7 +5901,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestLargeOneof.A2> {
+        object MARSHALLER: MessageMarshaller<TestLargeOneof.A2> {
             override fun encode(value: TestLargeOneof.A2, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -5983,7 +5983,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestLargeOneof.A3> {
+        object MARSHALLER: MessageMarshaller<TestLargeOneof.A3> {
             override fun encode(value: TestLargeOneof.A3, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -6065,7 +6065,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestLargeOneof.A4> {
+        object MARSHALLER: MessageMarshaller<TestLargeOneof.A4> {
             override fun encode(value: TestLargeOneof.A4, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -6147,7 +6147,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestLargeOneof.A5> {
+        object MARSHALLER: MessageMarshaller<TestLargeOneof.A5> {
             override fun encode(value: TestLargeOneof.A5, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -6183,7 +6183,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<TestLargeOneof> {
+    object MARSHALLER: MessageMarshaller<TestLargeOneof> {
         override fun encode(value: TestLargeOneof, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)

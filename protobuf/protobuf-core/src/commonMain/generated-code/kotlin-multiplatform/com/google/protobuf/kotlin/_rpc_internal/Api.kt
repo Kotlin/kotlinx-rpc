@@ -17,6 +17,7 @@ import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
 import kotlinx.rpc.protobuf.internal.bool
+import kotlinx.rpc.protobuf.internal.bytes
 import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.enum
@@ -125,7 +126,7 @@ public class ApiInternal: Api, InternalMessage(fieldsWithPresence = 1) {
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<Api> {
+    public object MARSHALLER: MessageMarshaller<Api> {
         public override fun encode(value: Api, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -243,7 +244,7 @@ public class MethodInternal: Method, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<Method> {
+    public object MARSHALLER: MessageMarshaller<Method> {
         public override fun encode(value: Method, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -336,7 +337,7 @@ public class MixinInternal: Mixin, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<Mixin> {
+    public object MARSHALLER: MessageMarshaller<Mixin> {
         public override fun encode(value: Mixin, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)

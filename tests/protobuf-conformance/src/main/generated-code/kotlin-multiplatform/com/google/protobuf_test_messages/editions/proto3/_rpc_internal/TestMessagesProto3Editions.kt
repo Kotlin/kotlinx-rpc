@@ -1174,7 +1174,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3, InternalMessage(fieldsWith
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestAllTypesProto3.NestedMessage> {
+        object MARSHALLER: MessageMarshaller<TestAllTypesProto3.NestedMessage> {
             override fun encode(value: TestAllTypesProto3.NestedMessage, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -2199,7 +2199,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<TestAllTypesProto3> {
+    object MARSHALLER: MessageMarshaller<TestAllTypesProto3> {
         override fun encode(value: TestAllTypesProto3, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -2286,7 +2286,7 @@ class ForeignMessageInternal: ForeignMessage, InternalMessage(fieldsWithPresence
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<ForeignMessage> {
+    object MARSHALLER: MessageMarshaller<ForeignMessage> {
         override fun encode(value: ForeignMessage, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -2368,7 +2368,7 @@ class NullHypothesisProto3Internal: NullHypothesisProto3, InternalMessage(fields
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<NullHypothesisProto3> {
+    object MARSHALLER: MessageMarshaller<NullHypothesisProto3> {
         override fun encode(value: NullHypothesisProto3, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -2450,7 +2450,7 @@ class EnumOnlyProto3Internal: EnumOnlyProto3, InternalMessage(fieldsWithPresence
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<EnumOnlyProto3> {
+    object MARSHALLER: MessageMarshaller<EnumOnlyProto3> {
         override fun encode(value: EnumOnlyProto3, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)

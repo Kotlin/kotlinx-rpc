@@ -17,6 +17,7 @@ import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
 import kotlinx.rpc.protobuf.internal.bool
+import kotlinx.rpc.protobuf.internal.bytes
 import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.enum
@@ -125,7 +126,7 @@ public class TypeInternal: Type, InternalMessage(fieldsWithPresence = 1) {
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<Type> {
+    public object MARSHALLER: MessageMarshaller<Type> {
         public override fun encode(value: Type, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -258,7 +259,7 @@ public class FieldInternal: Field, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<Field> {
+    public object MARSHALLER: MessageMarshaller<Field> {
         public override fun encode(value: Field, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -389,7 +390,7 @@ public class EnumInternal: Enum, InternalMessage(fieldsWithPresence = 1) {
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<Enum> {
+    public object MARSHALLER: MessageMarshaller<Enum> {
         public override fun encode(value: Enum, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -487,7 +488,7 @@ public class EnumValueInternal: EnumValue, InternalMessage(fieldsWithPresence = 
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<EnumValue> {
+    public object MARSHALLER: MessageMarshaller<EnumValue> {
         public override fun encode(value: EnumValue, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -598,7 +599,7 @@ public class OptionInternal: Option, InternalMessage(fieldsWithPresence = 1) {
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<Option> {
+    public object MARSHALLER: MessageMarshaller<Option> {
         public override fun encode(value: Option, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)

@@ -16,10 +16,14 @@ import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
+import kotlinx.rpc.protobuf.internal.bool
+import kotlinx.rpc.protobuf.internal.bytes
 import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
+import kotlinx.rpc.protobuf.internal.enum
 import kotlinx.rpc.protobuf.internal.int32
 import kotlinx.rpc.protobuf.internal.int64
+import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 
 public class TimestampInternal: Timestamp, InternalMessage(fieldsWithPresence = 0) {
@@ -80,7 +84,7 @@ public class TimestampInternal: Timestamp, InternalMessage(fieldsWithPresence = 
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<Timestamp> {
+    public object MARSHALLER: MessageMarshaller<Timestamp> {
         public override fun encode(value: Timestamp, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)

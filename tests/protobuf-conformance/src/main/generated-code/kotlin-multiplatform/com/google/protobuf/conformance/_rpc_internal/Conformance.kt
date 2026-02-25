@@ -88,7 +88,7 @@ class TestStatusInternal: TestStatus, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<TestStatus> {
+    object MARSHALLER: MessageMarshaller<TestStatus> {
         override fun encode(value: TestStatus, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -175,7 +175,7 @@ class FailureSetInternal: FailureSet, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<FailureSet> {
+    object MARSHALLER: MessageMarshaller<FailureSet> {
         override fun encode(value: FailureSet, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -335,7 +335,7 @@ class ConformanceRequestInternal: ConformanceRequest, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<ConformanceRequest> {
+    object MARSHALLER: MessageMarshaller<ConformanceRequest> {
         override fun encode(value: ConformanceRequest, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -471,7 +471,7 @@ class ConformanceResponseInternal: ConformanceResponse, InternalMessage(fieldsWi
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<ConformanceResponse> {
+    object MARSHALLER: MessageMarshaller<ConformanceResponse> {
         override fun encode(value: ConformanceResponse, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -558,7 +558,7 @@ class JspbEncodingConfigInternal: JspbEncodingConfig, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<JspbEncodingConfig> {
+    object MARSHALLER: MessageMarshaller<JspbEncodingConfig> {
         override fun encode(value: JspbEncodingConfig, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)

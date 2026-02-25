@@ -121,7 +121,7 @@ class ComplexMessageInternal: ComplexMessage, InternalMessage(fieldsWithPresence
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<ComplexMessage> {
+    object MARSHALLER: MessageMarshaller<ComplexMessage> {
         override fun encode(value: ComplexMessage, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -1075,7 +1075,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023, InternalMessage(
         }
 
         @InternalRpcApi
-        object CODEC: MessageMarshaller<TestAllTypesEdition2023.NestedMessage> {
+        object MARSHALLER: MessageMarshaller<TestAllTypesEdition2023.NestedMessage> {
             override fun encode(value: TestAllTypesEdition2023.NestedMessage, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
@@ -2474,7 +2474,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023, InternalMessage(
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<TestAllTypesEdition2023> {
+    object MARSHALLER: MessageMarshaller<TestAllTypesEdition2023> {
         override fun encode(value: TestAllTypesEdition2023, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -2579,7 +2579,7 @@ class ForeignMessageEdition2023Internal: ForeignMessageEdition2023, InternalMess
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<ForeignMessageEdition2023> {
+    object MARSHALLER: MessageMarshaller<ForeignMessageEdition2023> {
         override fun encode(value: ForeignMessageEdition2023, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -2684,7 +2684,7 @@ class GroupLikeTypeInternal: GroupLikeType, InternalMessage(fieldsWithPresence =
     }
 
     @InternalRpcApi
-    object CODEC: MessageMarshaller<GroupLikeType> {
+    object MARSHALLER: MessageMarshaller<GroupLikeType> {
         override fun encode(value: GroupLikeType, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)

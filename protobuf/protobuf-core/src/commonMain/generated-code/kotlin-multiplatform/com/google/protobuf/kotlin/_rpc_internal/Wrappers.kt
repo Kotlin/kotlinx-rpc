@@ -21,6 +21,7 @@ import kotlinx.rpc.protobuf.internal.bytes
 import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.double
+import kotlinx.rpc.protobuf.internal.enum
 import kotlinx.rpc.protobuf.internal.float
 import kotlinx.rpc.protobuf.internal.int32
 import kotlinx.rpc.protobuf.internal.int64
@@ -81,7 +82,7 @@ public class DoubleValueInternal: DoubleValue, InternalMessage(fieldsWithPresenc
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<DoubleValue> {
+    public object MARSHALLER: MessageMarshaller<DoubleValue> {
         public override fun encode(value: DoubleValue, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -168,7 +169,7 @@ public class FloatValueInternal: FloatValue, InternalMessage(fieldsWithPresence 
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<FloatValue> {
+    public object MARSHALLER: MessageMarshaller<FloatValue> {
         public override fun encode(value: FloatValue, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -255,7 +256,7 @@ public class Int64ValueInternal: Int64Value, InternalMessage(fieldsWithPresence 
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<Int64Value> {
+    public object MARSHALLER: MessageMarshaller<Int64Value> {
         public override fun encode(value: Int64Value, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -342,7 +343,7 @@ public class UInt64ValueInternal: UInt64Value, InternalMessage(fieldsWithPresenc
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<UInt64Value> {
+    public object MARSHALLER: MessageMarshaller<UInt64Value> {
         public override fun encode(value: UInt64Value, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -429,7 +430,7 @@ public class Int32ValueInternal: Int32Value, InternalMessage(fieldsWithPresence 
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<Int32Value> {
+    public object MARSHALLER: MessageMarshaller<Int32Value> {
         public override fun encode(value: Int32Value, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -516,7 +517,7 @@ public class UInt32ValueInternal: UInt32Value, InternalMessage(fieldsWithPresenc
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<UInt32Value> {
+    public object MARSHALLER: MessageMarshaller<UInt32Value> {
         public override fun encode(value: UInt32Value, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -603,7 +604,7 @@ public class BoolValueInternal: BoolValue, InternalMessage(fieldsWithPresence = 
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<BoolValue> {
+    public object MARSHALLER: MessageMarshaller<BoolValue> {
         public override fun encode(value: BoolValue, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -690,7 +691,7 @@ public class StringValueInternal: StringValue, InternalMessage(fieldsWithPresenc
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<StringValue> {
+    public object MARSHALLER: MessageMarshaller<StringValue> {
         public override fun encode(value: StringValue, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
@@ -777,7 +778,7 @@ public class BytesValueInternal: BytesValue, InternalMessage(fieldsWithPresence 
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<BytesValue> {
+    public object MARSHALLER: MessageMarshaller<BytesValue> {
         public override fun encode(value: BytesValue, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)

@@ -16,6 +16,7 @@ import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
+import kotlinx.rpc.protobuf.internal.bytes
 import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.int32
@@ -74,7 +75,7 @@ public class SourceContextInternal: SourceContext, InternalMessage(fieldsWithPre
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<SourceContext> {
+    public object MARSHALLER: MessageMarshaller<SourceContext> {
         public override fun encode(value: SourceContext, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)

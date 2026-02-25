@@ -16,11 +16,19 @@ import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
+import kotlinx.rpc.protobuf.internal.bool
+import kotlinx.rpc.protobuf.internal.bytes
 import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
+import kotlinx.rpc.protobuf.internal.double
+import kotlinx.rpc.protobuf.internal.enum
+import kotlinx.rpc.protobuf.internal.float
 import kotlinx.rpc.protobuf.internal.int32
+import kotlinx.rpc.protobuf.internal.int64
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
+import kotlinx.rpc.protobuf.internal.uInt32
+import kotlinx.rpc.protobuf.internal.uInt64
 
 public class FieldMaskInternal: FieldMask, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
@@ -74,7 +82,7 @@ public class FieldMaskInternal: FieldMask, InternalMessage(fieldsWithPresence = 
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<FieldMask> {
+    public object MARSHALLER: MessageMarshaller<FieldMask> {
         public override fun encode(value: FieldMask, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)

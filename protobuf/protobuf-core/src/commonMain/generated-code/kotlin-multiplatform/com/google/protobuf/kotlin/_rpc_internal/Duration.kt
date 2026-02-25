@@ -16,10 +16,14 @@ import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
+import kotlinx.rpc.protobuf.internal.bool
+import kotlinx.rpc.protobuf.internal.bytes
 import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
+import kotlinx.rpc.protobuf.internal.enum
 import kotlinx.rpc.protobuf.internal.int32
 import kotlinx.rpc.protobuf.internal.int64
+import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 
 public class DurationInternal: Duration, InternalMessage(fieldsWithPresence = 0) {
@@ -80,7 +84,7 @@ public class DurationInternal: Duration, InternalMessage(fieldsWithPresence = 0)
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<Duration> {
+    public object MARSHALLER: MessageMarshaller<Duration> {
         public override fun encode(value: Duration, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)

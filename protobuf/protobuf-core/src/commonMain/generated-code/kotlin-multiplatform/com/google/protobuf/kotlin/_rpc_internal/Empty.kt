@@ -64,7 +64,7 @@ public class EmptyInternal: Empty, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
-    public object CODEC: MessageMarshaller<Empty> {
+    public object MARSHALLER: MessageMarshaller<Empty> {
         public override fun encode(value: Empty, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
