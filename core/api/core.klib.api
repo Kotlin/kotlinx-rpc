@@ -7,7 +7,10 @@
 
 // Library unique name: <org.jetbrains.kotlinx:core>
 open annotation class kotlinx.rpc.annotations/CheckedTypeAnnotation : kotlin/Annotation { // kotlinx.rpc.annotations/CheckedTypeAnnotation|null[0]
-    constructor <init>() // kotlinx.rpc.annotations/CheckedTypeAnnotation.<init>|<init>(){}[0]
+    constructor <init>(kotlin.reflect/KClass<*> = ...) // kotlinx.rpc.annotations/CheckedTypeAnnotation.<init>|<init>(kotlin.reflect.KClass<*>){}[0]
+
+    final val checkFor // kotlinx.rpc.annotations/CheckedTypeAnnotation.checkFor|{}checkFor[0]
+        final fun <get-checkFor>(): kotlin.reflect/KClass<*> // kotlinx.rpc.annotations/CheckedTypeAnnotation.checkFor.<get-checkFor>|<get-checkFor>(){}[0]
 }
 
 open annotation class kotlinx.rpc.annotations/Rpc : kotlin/Annotation { // kotlinx.rpc.annotations/Rpc|null[0]

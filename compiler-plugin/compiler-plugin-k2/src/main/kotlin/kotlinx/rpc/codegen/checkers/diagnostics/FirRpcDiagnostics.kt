@@ -58,8 +58,8 @@ object FirGrpcDiagnostics : RpcKtDiagnosticsContainer() {
     val NULLABLE_RETURN_TYPE_IN_GRPC_SERVICE by error0<KtElement>()
     val NON_TOP_LEVEL_CLIENT_STREAMING_IN_RPC_SERVICE by error0<KtElement>()
     val MULTIPLE_PARAMETERS_IN_GRPC_SERVICE by error0<KtElement>()
-    val NOT_AN_OBJECT_REFERENCE_IN_WITH_CODEC_ANNOTATION by error0<KtElement>()
-    val CODEC_TYPE_MISMATCH by error2<KtElement, ConeClassLikeType, ConeKotlinType>()
+    val NOT_AN_OBJECT_REFERENCE_IN_WITH_MARSHALLER_ANNOTATION by error0<KtElement>()
+    val MARSHALLER_TYPE_MISMATCH by error2<KtElement, ConeClassLikeType, ConeKotlinType>()
 
     override fun getRendererFactoryVs(): BaseDiagnosticRendererFactory {
         return GrpcDiagnosticRendererFactory

@@ -17,6 +17,8 @@ private val excludedProjects = setOf(
     "compiler-plugin-tests",
     "protobuf-conformance",
     "protobuf-plugin",
+    "grpc-test-server",
+    "test-protos",
 )
 
 val Project.enableAbiValidation get() = name !in excludedProjects

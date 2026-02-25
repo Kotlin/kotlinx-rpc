@@ -6,7 +6,7 @@ package com.google.protobuf.kotlin
 
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
-import kotlinx.rpc.grpc.codec.codec
+import kotlinx.rpc.grpc.marshaller.marshallerOf
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 import kotlinx.rpc.protobuf.internal.protoDescriptorOf
@@ -136,7 +136,7 @@ public fun <@GeneratedProtoMessage T : kotlin.Any> Any.Companion.pack(
 ): Any {
     val descriptor = protoDescriptorOf(valueClass)
     val typeUrl = "$urlPrefix/${descriptor.fullName}"
-    val encoded = codec(valueClass)
+    val encoded = marshallerOf(valueClass)
         .encode(value)
 
     return Any {
@@ -196,7 +196,7 @@ public inline fun <@GeneratedProtoMessage reified T : kotlin.Any> Any.unpack(): 
 public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpack(kClass: KClass<T>): T {
     require(contains(kClass)) { "Cannot unpack Any message of type $typeUrl to ${kClass.qualifiedName}" }
     val source = Buffer().apply { write(value) }
-    return codec(kClass).decode(source)
+    return marshallerOf(kClass).decode(source)
 }
 
 /**
@@ -224,7 +224,7 @@ public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpack(kClass: KClass<T>)
 public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpack(kType: KType): T {
     require(contains<T>(kType)) { "Cannot unpack Any message of type $typeUrl to ${kType.classifier}" }
     val source = Buffer().apply { write(value) }
-    return codec<T>(kType).decode(source)
+    return marshallerOf<T>(kType).decode(source)
 }
 
 

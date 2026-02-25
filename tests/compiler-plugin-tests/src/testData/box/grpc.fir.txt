@@ -1,6 +1,6 @@
 FILE: grpc.kt
     @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|), <getClass>(Q|kotlinx/rpc/internal/utils/InternalRpcApi|)))
-    @R|kotlinx/rpc/grpc/codec/WithCodec|(codec = <getClass>(Q|Custom.Companion|)) public final class Custom : R|kotlin/Any| {
+    @R|kotlinx/rpc/grpc/marshaller/WithMarshaller|(marshaller = <getClass>(Q|Custom.Companion|)) public final class Custom : R|kotlin/Any| {
         public constructor(content: R|kotlin/String|): R|Custom| {
             super<R|kotlin/Any|>()
         }
@@ -8,16 +8,16 @@ FILE: grpc.kt
         public final val content: R|kotlin/String| = R|<local>/content|
             public get(): R|kotlin/String|
 
-        public final companion object Companion : R|kotlinx/rpc/grpc/codec/MessageCodec<Custom>| {
+        public final companion object Companion : R|kotlinx/rpc/grpc/marshaller/MessageMarshaller<Custom>| {
             private constructor(): R|Custom.Companion| {
                 super<R|kotlin/Any|>()
             }
 
-            public open override fun encode(value: R|Custom|, config: R|kotlinx/rpc/grpc/codec/CodecConfig?|): R|kotlinx/io/Source| {
+            public open override fun encode(value: R|Custom|, config: R|kotlinx/rpc/grpc/marshaller/MarshallerConfig?|): R|kotlinx/io/Source| {
                 R|kotlin/TODO|(String(Not yet implemented))
             }
 
-            public open override fun decode(stream: R|kotlinx/io/Source|, config: R|kotlinx/rpc/grpc/codec/CodecConfig?|): R|Custom| {
+            public open override fun decode(stream: R|kotlinx/io/Source|, config: R|kotlinx/rpc/grpc/marshaller/MarshallerConfig?|): R|Custom| {
                 R|kotlin/TODO|(String(Not yet implemented))
             }
 

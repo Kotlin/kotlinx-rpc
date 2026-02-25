@@ -1,5 +1,5 @@
 // Klib ABI Dump
-// Targets: [iosArm64, iosSimulatorArm64, iosX64, macosArm64, macosX64]
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, linuxArm64, linuxX64, macosArm64, macosX64, tvosArm64, tvosSimulatorArm64, tvosX64, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
 // Rendering settings:
 // - Signature version: 2
 // - Show manifest properties: true
@@ -7,10 +7,12 @@
 
 // Library unique name: <org.jetbrains.kotlinx:grpc-core>
 open annotation class kotlinx.rpc.grpc.annotations/Grpc : kotlin/Annotation { // kotlinx.rpc.grpc.annotations/Grpc|null[0]
-    constructor <init>(kotlin/String = ...) // kotlinx.rpc.grpc.annotations/Grpc.<init>|<init>(kotlin.String){}[0]
+    constructor <init>(kotlin/String = ..., kotlin/String = ...) // kotlinx.rpc.grpc.annotations/Grpc.<init>|<init>(kotlin.String;kotlin.String){}[0]
 
     final val protoPackage // kotlinx.rpc.grpc.annotations/Grpc.protoPackage|{}protoPackage[0]
         final fun <get-protoPackage>(): kotlin/String // kotlinx.rpc.grpc.annotations/Grpc.protoPackage.<get-protoPackage>|<get-protoPackage>(){}[0]
+    final val protoServiceName // kotlinx.rpc.grpc.annotations/Grpc.protoServiceName|{}protoServiceName[0]
+        final fun <get-protoServiceName>(): kotlin/String // kotlinx.rpc.grpc.annotations/Grpc.protoServiceName.<get-protoServiceName>|<get-protoServiceName>(){}[0]
 
     open annotation class Method : kotlin/Annotation { // kotlinx.rpc.grpc.annotations/Grpc.Method|null[0]
         constructor <init>(kotlin/String = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // kotlinx.rpc.grpc.annotations/Grpc.Method.<init>|<init>(kotlin.String;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
@@ -66,34 +68,61 @@ final enum class kotlinx.rpc.grpc/StatusCode : kotlin/Enum<kotlinx.rpc.grpc/Stat
     final val valueAscii // kotlinx.rpc.grpc/StatusCode.valueAscii|{}valueAscii[0]
         final fun <get-valueAscii>(): kotlin/ByteArray // kotlinx.rpc.grpc/StatusCode.valueAscii.<get-valueAscii>|<get-valueAscii>(){}[0]
 
+    final fun asException(kotlin/String? = ..., kotlinx.rpc.grpc/GrpcMetadata? = ...): kotlinx.rpc.grpc/StatusException // kotlinx.rpc.grpc/StatusCode.asException|asException(kotlin.String?;kotlinx.rpc.grpc.GrpcMetadata?){}[0]
+    final fun asStatus(kotlin/String? = ...): kotlinx.rpc.grpc/Status // kotlinx.rpc.grpc/StatusCode.asStatus|asStatus(kotlin.String?){}[0]
     final fun valueOf(kotlin/String): kotlinx.rpc.grpc/StatusCode // kotlinx.rpc.grpc/StatusCode.valueOf|valueOf#static(kotlin.String){}[0]
     final fun values(): kotlin/Array<kotlinx.rpc.grpc/StatusCode> // kotlinx.rpc.grpc/StatusCode.values|values#static(){}[0]
 }
 
+abstract interface kotlinx.rpc.grpc/GrpcCompression { // kotlinx.rpc.grpc/GrpcCompression|null[0]
+    abstract val name // kotlinx.rpc.grpc/GrpcCompression.name|{}name[0]
+        abstract fun <get-name>(): kotlin/String // kotlinx.rpc.grpc/GrpcCompression.name.<get-name>|<get-name>(){}[0]
+
+    final object Gzip : kotlinx.rpc.grpc/GrpcCompression { // kotlinx.rpc.grpc/GrpcCompression.Gzip|null[0]
+        final val name // kotlinx.rpc.grpc/GrpcCompression.Gzip.name|{}name[0]
+            final fun <get-name>(): kotlin/String // kotlinx.rpc.grpc/GrpcCompression.Gzip.name.<get-name>|<get-name>(){}[0]
+    }
+
+    final object None : kotlinx.rpc.grpc/GrpcCompression { // kotlinx.rpc.grpc/GrpcCompression.None|null[0]
+        final val name // kotlinx.rpc.grpc/GrpcCompression.None.name|{}name[0]
+            final fun <get-name>(): kotlin/String // kotlinx.rpc.grpc/GrpcCompression.None.name.<get-name>|<get-name>(){}[0]
+    }
+}
+
 final class <#A: kotlin/Any?, #B: kotlin/Any?> kotlinx.rpc.grpc.descriptor/MethodDescriptor { // kotlinx.rpc.grpc.descriptor/MethodDescriptor|null[0]
+    final val methodType // kotlinx.rpc.grpc.descriptor/MethodDescriptor.methodType|{}methodType[0]
+        final fun <get-methodType>(): kotlinx.rpc.grpc.descriptor/MethodType // kotlinx.rpc.grpc.descriptor/MethodDescriptor.methodType.<get-methodType>|<get-methodType>(){}[0]
+    final val requestMarshaller // kotlinx.rpc.grpc.descriptor/MethodDescriptor.requestMarshaller|{}requestMarshaller[0]
+        final fun <get-requestMarshaller>(): kotlinx.rpc.grpc.marshaller/MessageMarshaller<#A> // kotlinx.rpc.grpc.descriptor/MethodDescriptor.requestMarshaller.<get-requestMarshaller>|<get-requestMarshaller>(){}[0]
+    final val responseMarshaller // kotlinx.rpc.grpc.descriptor/MethodDescriptor.responseMarshaller|{}responseMarshaller[0]
+        final fun <get-responseMarshaller>(): kotlinx.rpc.grpc.marshaller/MessageMarshaller<#B> // kotlinx.rpc.grpc.descriptor/MethodDescriptor.responseMarshaller.<get-responseMarshaller>|<get-responseMarshaller>(){}[0]
+
     final fun getFullMethodName(): kotlin/String // kotlinx.rpc.grpc.descriptor/MethodDescriptor.getFullMethodName|getFullMethodName(){}[0]
-    final fun getRequestMarshaller(): kotlinx.rpc.grpc.descriptor/MethodDescriptor.Marshaller<#A> // kotlinx.rpc.grpc.descriptor/MethodDescriptor.getRequestMarshaller|getRequestMarshaller(){}[0]
-    final fun getResponseMarshaller(): kotlinx.rpc.grpc.descriptor/MethodDescriptor.Marshaller<#B> // kotlinx.rpc.grpc.descriptor/MethodDescriptor.getResponseMarshaller|getResponseMarshaller(){}[0]
     final fun getSchemaDescriptor(): kotlin/Any? // kotlinx.rpc.grpc.descriptor/MethodDescriptor.getSchemaDescriptor|getSchemaDescriptor(){}[0]
     final fun getServiceName(): kotlin/String? // kotlinx.rpc.grpc.descriptor/MethodDescriptor.getServiceName|getServiceName(){}[0]
     final fun isIdempotent(): kotlin/Boolean // kotlinx.rpc.grpc.descriptor/MethodDescriptor.isIdempotent|isIdempotent(){}[0]
     final fun isSafe(): kotlin/Boolean // kotlinx.rpc.grpc.descriptor/MethodDescriptor.isSafe|isSafe(){}[0]
     final fun isSampledToLocalTracing(): kotlin/Boolean // kotlinx.rpc.grpc.descriptor/MethodDescriptor.isSampledToLocalTracing|isSampledToLocalTracing(){}[0]
 
-    abstract interface <#A1: kotlin/Any?> Marshaller { // kotlinx.rpc.grpc.descriptor/MethodDescriptor.Marshaller|null[0]
-        abstract fun parse(kotlinx.rpc.protobuf.input.stream/BufferInputStream): #A1 // kotlinx.rpc.grpc.descriptor/MethodDescriptor.Marshaller.parse|parse(kotlinx.rpc.protobuf.input.stream.BufferInputStream){}[0]
-        abstract fun stream(#A1): kotlinx.rpc.protobuf.input.stream/BufferInputStream // kotlinx.rpc.grpc.descriptor/MethodDescriptor.Marshaller.stream|stream(1:0){}[0]
-    }
-
     final object Companion { // kotlinx.rpc.grpc.descriptor/MethodDescriptor.Companion|null[0]
         final fun extractFullServiceName(kotlin/String): kotlin/String? // kotlinx.rpc.grpc.descriptor/MethodDescriptor.Companion.extractFullServiceName|extractFullServiceName(kotlin.String){}[0]
     }
 }
 
+final class <#A: kotlin/Any?> kotlinx.rpc.grpc/GrpcMetadataKey { // kotlinx.rpc.grpc/GrpcMetadataKey|null[0]
+    constructor <init>(kotlin/String, kotlinx.rpc.grpc.marshaller/MessageMarshaller<#A>) // kotlinx.rpc.grpc/GrpcMetadataKey.<init>|<init>(kotlin.String;kotlinx.rpc.grpc.marshaller.MessageMarshaller<1:0>){}[0]
+
+    final val marshaller // kotlinx.rpc.grpc/GrpcMetadataKey.marshaller|{}marshaller[0]
+        final fun <get-marshaller>(): kotlinx.rpc.grpc.marshaller/MessageMarshaller<#A> // kotlinx.rpc.grpc/GrpcMetadataKey.marshaller.<get-marshaller>|<get-marshaller>(){}[0]
+    final val name // kotlinx.rpc.grpc/GrpcMetadataKey.name|{}name[0]
+        final fun <get-name>(): kotlin/String // kotlinx.rpc.grpc/GrpcMetadataKey.name.<get-name>|<get-name>(){}[0]
+}
+
 final class kotlinx.rpc.grpc/GrpcMetadata { // kotlinx.rpc.grpc/GrpcMetadata|null[0]
     constructor <init>() // kotlinx.rpc.grpc/GrpcMetadata.<init>|<init>(){}[0]
+    constructor <init>(libkgrpc/grpc_metadata_array) // kotlinx.rpc.grpc/GrpcMetadata.<init>|<init>(libkgrpc.grpc_metadata_array){}[0]
 
-    final fun merge(kotlinx.rpc.grpc/GrpcMetadata) // kotlinx.rpc.grpc/GrpcMetadata.merge|merge(kotlinx.rpc.grpc.GrpcMetadata){}[0]
+    final fun toString(): kotlin/String // kotlinx.rpc.grpc/GrpcMetadata.toString|toString(){}[0]
 }
 
 final class kotlinx.rpc.grpc/Status { // kotlinx.rpc.grpc/Status|null[0]
@@ -105,22 +134,47 @@ final class kotlinx.rpc.grpc/Status { // kotlinx.rpc.grpc/Status|null[0]
 final class kotlinx.rpc.grpc/StatusException : kotlin/Exception { // kotlinx.rpc.grpc/StatusException|null[0]
     constructor <init>(kotlinx.rpc.grpc/Status) // kotlinx.rpc.grpc/StatusException.<init>|<init>(kotlinx.rpc.grpc.Status){}[0]
     constructor <init>(kotlinx.rpc.grpc/Status, kotlinx.rpc.grpc/GrpcMetadata?) // kotlinx.rpc.grpc/StatusException.<init>|<init>(kotlinx.rpc.grpc.Status;kotlinx.rpc.grpc.GrpcMetadata?){}[0]
-
-    final fun getStatus(): kotlinx.rpc.grpc/Status // kotlinx.rpc.grpc/StatusException.getStatus|getStatus(){}[0]
-    final fun getTrailers(): kotlinx.rpc.grpc/GrpcMetadata? // kotlinx.rpc.grpc/StatusException.getTrailers|getTrailers(){}[0]
 }
 
-final class kotlinx.rpc.grpc/StatusRuntimeException : kotlin/RuntimeException { // kotlinx.rpc.grpc/StatusRuntimeException|null[0]
-    constructor <init>(kotlinx.rpc.grpc/Status) // kotlinx.rpc.grpc/StatusRuntimeException.<init>|<init>(kotlinx.rpc.grpc.Status){}[0]
-    constructor <init>(kotlinx.rpc.grpc/Status, kotlinx.rpc.grpc/GrpcMetadata?) // kotlinx.rpc.grpc/StatusRuntimeException.<init>|<init>(kotlinx.rpc.grpc.Status;kotlinx.rpc.grpc.GrpcMetadata?){}[0]
-
-    final fun getStatus(): kotlinx.rpc.grpc/Status // kotlinx.rpc.grpc/StatusRuntimeException.getStatus|getStatus(){}[0]
-    final fun getTrailers(): kotlinx.rpc.grpc/GrpcMetadata? // kotlinx.rpc.grpc/StatusRuntimeException.getTrailers|getTrailers(){}[0]
-}
+final class kotlinx.rpc.grpc/StatusRuntimeException : kotlin/RuntimeException // kotlinx.rpc.grpc/StatusRuntimeException|null[0]
 
 final val kotlinx.rpc.grpc.descriptor/methodType // kotlinx.rpc.grpc.descriptor/methodType|@kotlinx.rpc.grpc.descriptor.MethodDescriptor<*,*>{}methodType[0]
     final fun (kotlinx.rpc.grpc.descriptor/MethodDescriptor<*, *>).<get-methodType>(): kotlinx.rpc.grpc.descriptor/MethodType // kotlinx.rpc.grpc.descriptor/methodType.<get-methodType>|<get-methodType>@kotlinx.rpc.grpc.descriptor.MethodDescriptor<*,*>(){}[0]
+final val kotlinx.rpc.grpc/description // kotlinx.rpc.grpc/description|@kotlinx.rpc.grpc.Status{}description[0]
+    final fun (kotlinx.rpc.grpc/Status).<get-description>(): kotlin/String? // kotlinx.rpc.grpc/description.<get-description>|<get-description>@kotlinx.rpc.grpc.Status(){}[0]
+final val kotlinx.rpc.grpc/status // kotlinx.rpc.grpc/status|@kotlinx.rpc.grpc.StatusException{}status[0]
+    final fun (kotlinx.rpc.grpc/StatusException).<get-status>(): kotlinx.rpc.grpc/Status // kotlinx.rpc.grpc/status.<get-status>|<get-status>@kotlinx.rpc.grpc.StatusException(){}[0]
 final val kotlinx.rpc.grpc/statusCode // kotlinx.rpc.grpc/statusCode|@kotlinx.rpc.grpc.Status{}statusCode[0]
     final fun (kotlinx.rpc.grpc/Status).<get-statusCode>(): kotlinx.rpc.grpc/StatusCode // kotlinx.rpc.grpc/statusCode.<get-statusCode>|<get-statusCode>@kotlinx.rpc.grpc.Status(){}[0]
+final val kotlinx.rpc.grpc/trailers // kotlinx.rpc.grpc/trailers|@kotlinx.rpc.grpc.StatusException{}trailers[0]
+    final fun (kotlinx.rpc.grpc/StatusException).<get-trailers>(): kotlinx.rpc.grpc/GrpcMetadata? // kotlinx.rpc.grpc/trailers.<get-trailers>|<get-trailers>@kotlinx.rpc.grpc.StatusException(){}[0]
 
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/append(kotlin/String, kotlin/String) // kotlinx.rpc.grpc/append|append@kotlinx.rpc.grpc.GrpcMetadata(kotlin.String;kotlin.String){}[0]
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/appendBinary(kotlin/String, kotlin/ByteArray) // kotlinx.rpc.grpc/appendBinary|appendBinary@kotlinx.rpc.grpc.GrpcMetadata(kotlin.String;kotlin.ByteArray){}[0]
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/contains(kotlin/String): kotlin/Boolean // kotlinx.rpc.grpc/contains|contains@kotlinx.rpc.grpc.GrpcMetadata(kotlin.String){}[0]
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/copy(): kotlinx.rpc.grpc/GrpcMetadata // kotlinx.rpc.grpc/copy|copy@kotlinx.rpc.grpc.GrpcMetadata(){}[0]
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/get(kotlin/String): kotlin/String? // kotlinx.rpc.grpc/get|get@kotlinx.rpc.grpc.GrpcMetadata(kotlin.String){}[0]
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/getAll(kotlin/String): kotlin.collections/List<kotlin/String> // kotlinx.rpc.grpc/getAll|getAll@kotlinx.rpc.grpc.GrpcMetadata(kotlin.String){}[0]
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/getAllBinary(kotlin/String): kotlin.collections/List<kotlin/ByteArray> // kotlinx.rpc.grpc/getAllBinary|getAllBinary@kotlinx.rpc.grpc.GrpcMetadata(kotlin.String){}[0]
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/getBinary(kotlin/String): kotlin/ByteArray? // kotlinx.rpc.grpc/getBinary|getBinary@kotlinx.rpc.grpc.GrpcMetadata(kotlin.String){}[0]
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/keys(): kotlin.collections/Set<kotlin/String> // kotlinx.rpc.grpc/keys|keys@kotlinx.rpc.grpc.GrpcMetadata(){}[0]
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/merge(kotlinx.rpc.grpc/GrpcMetadata) // kotlinx.rpc.grpc/merge|merge@kotlinx.rpc.grpc.GrpcMetadata(kotlinx.rpc.grpc.GrpcMetadata){}[0]
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/plus(kotlinx.rpc.grpc/GrpcMetadata): kotlinx.rpc.grpc/GrpcMetadata // kotlinx.rpc.grpc/plus|plus@kotlinx.rpc.grpc.GrpcMetadata(kotlinx.rpc.grpc.GrpcMetadata){}[0]
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/plusAssign(kotlinx.rpc.grpc/GrpcMetadata) // kotlinx.rpc.grpc/plusAssign|plusAssign@kotlinx.rpc.grpc.GrpcMetadata(kotlinx.rpc.grpc.GrpcMetadata){}[0]
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/remove(kotlin/String, kotlin/String): kotlin/Boolean // kotlinx.rpc.grpc/remove|remove@kotlinx.rpc.grpc.GrpcMetadata(kotlin.String;kotlin.String){}[0]
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/removeAll(kotlin/String): kotlin.collections/List<kotlin/String> // kotlinx.rpc.grpc/removeAll|removeAll@kotlinx.rpc.grpc.GrpcMetadata(kotlin.String){}[0]
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/removeAllBinary(kotlin/String): kotlin.collections/List<kotlin/ByteArray> // kotlinx.rpc.grpc/removeAllBinary|removeAllBinary@kotlinx.rpc.grpc.GrpcMetadata(kotlin.String){}[0]
+final fun (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/removeBinary(kotlin/String, kotlin/ByteArray): kotlin/Boolean // kotlinx.rpc.grpc/removeBinary|removeBinary@kotlinx.rpc.grpc.GrpcMetadata(kotlin.String;kotlin.ByteArray){}[0]
+final fun (kotlinx.rpc.grpc/Status).kotlinx.rpc.grpc/asException(kotlinx.rpc.grpc/GrpcMetadata? = ...): kotlinx.rpc.grpc/StatusException // kotlinx.rpc.grpc/asException|asException@kotlinx.rpc.grpc.Status(kotlinx.rpc.grpc.GrpcMetadata?){}[0]
+final fun <#A: kotlin/Any?> (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/append(kotlinx.rpc.grpc/GrpcMetadataKey<#A>, #A) // kotlinx.rpc.grpc/append|append@kotlinx.rpc.grpc.GrpcMetadata(kotlinx.rpc.grpc.GrpcMetadataKey<0:0>;0:0){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/appendBinary(kotlinx.rpc.grpc/GrpcMetadataKey<#A>, #A) // kotlinx.rpc.grpc/appendBinary|appendBinary@kotlinx.rpc.grpc.GrpcMetadata(kotlinx.rpc.grpc.GrpcMetadataKey<0:0>;0:0){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/get(kotlinx.rpc.grpc/GrpcMetadataKey<#A>): #A? // kotlinx.rpc.grpc/get|get@kotlinx.rpc.grpc.GrpcMetadata(kotlinx.rpc.grpc.GrpcMetadataKey<0:0>){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/getAll(kotlinx.rpc.grpc/GrpcMetadataKey<#A>): kotlin.collections/List<#A> // kotlinx.rpc.grpc/getAll|getAll@kotlinx.rpc.grpc.GrpcMetadata(kotlinx.rpc.grpc.GrpcMetadataKey<0:0>){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/getAllBinary(kotlinx.rpc.grpc/GrpcMetadataKey<#A>): kotlin.collections/List<#A> // kotlinx.rpc.grpc/getAllBinary|getAllBinary@kotlinx.rpc.grpc.GrpcMetadata(kotlinx.rpc.grpc.GrpcMetadataKey<0:0>){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/getBinary(kotlinx.rpc.grpc/GrpcMetadataKey<#A>): #A? // kotlinx.rpc.grpc/getBinary|getBinary@kotlinx.rpc.grpc.GrpcMetadata(kotlinx.rpc.grpc.GrpcMetadataKey<0:0>){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/remove(kotlinx.rpc.grpc/GrpcMetadataKey<#A>, #A): kotlin/Boolean // kotlinx.rpc.grpc/remove|remove@kotlinx.rpc.grpc.GrpcMetadata(kotlinx.rpc.grpc.GrpcMetadataKey<0:0>;0:0){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/removeAll(kotlinx.rpc.grpc/GrpcMetadataKey<#A>): kotlin.collections/List<#A> // kotlinx.rpc.grpc/removeAll|removeAll@kotlinx.rpc.grpc.GrpcMetadata(kotlinx.rpc.grpc.GrpcMetadataKey<0:0>){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/removeAllBinary(kotlinx.rpc.grpc/GrpcMetadataKey<#A>): kotlin.collections/List<#A> // kotlinx.rpc.grpc/removeAllBinary|removeAllBinary@kotlinx.rpc.grpc.GrpcMetadata(kotlinx.rpc.grpc.GrpcMetadataKey<0:0>){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (kotlinx.rpc.grpc/GrpcMetadata).kotlinx.rpc.grpc/removeBinary(kotlinx.rpc.grpc/GrpcMetadataKey<#A>, #A): kotlin/Boolean // kotlinx.rpc.grpc/removeBinary|removeBinary@kotlinx.rpc.grpc.GrpcMetadata(kotlinx.rpc.grpc.GrpcMetadataKey<0:0>;0:0){0§<kotlin.Any?>}[0]
 final fun kotlinx.rpc.grpc/Status(kotlinx.rpc.grpc/StatusCode, kotlin/String? = ..., kotlin/Throwable? = ...): kotlinx.rpc.grpc/Status // kotlinx.rpc.grpc/Status|Status(kotlinx.rpc.grpc.StatusCode;kotlin.String?;kotlin.Throwable?){}[0]
+final fun kotlinx.rpc.grpc/buildGrpcMetadata(kotlin/Function1<kotlinx.rpc.grpc/GrpcMetadata, kotlin/Unit>): kotlinx.rpc.grpc/GrpcMetadata // kotlinx.rpc.grpc/buildGrpcMetadata|buildGrpcMetadata(kotlin.Function1<kotlinx.rpc.grpc.GrpcMetadata,kotlin.Unit>){}[0]

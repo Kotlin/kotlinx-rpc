@@ -19,8 +19,8 @@ import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
 import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
 import kotlinx.rpc.grpc.client.internal.serverStreamingRpc
 import kotlinx.rpc.grpc.client.internal.unaryRpc
-import kotlinx.rpc.grpc.codec.CodecConfig
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
@@ -116,8 +116,8 @@ class RawClientServerTest {
 
         val descriptor = methodDescriptor(
             fullMethodName = "${SERVICE_NAME}/$methodName",
-            requestCodec = simpleCodec,
-            responseCodec = simpleCodec,
+            requestMarshaller = simpleMarshaller,
+            responseMarshaller = simpleMarshaller,
             type = type,
             schemaDescriptor = Unit,
             idempotent = true,
@@ -152,12 +152,12 @@ class RawClientServerTest {
     companion object {
         private const val SERVICE_NAME = "TestService"
 
-        private val simpleCodec = object : MessageCodec<String> {
-            override fun encode(value: String, config: CodecConfig?): Source {
+        private val simpleMarshaller = object : MessageMarshaller<String> {
+            override fun encode(value: String, config: MarshallerConfig?): Source {
                 return Buffer().apply { writeString(value) }
             }
 
-            override fun decode(source: Source, config: CodecConfig?): String {
+            override fun decode(source: Source, config: MarshallerConfig?): String {
                 return source.readString()
             }
         }

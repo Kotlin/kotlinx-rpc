@@ -4,31 +4,31 @@
 
 package kotlinx.rpc.protobuf
 
-import kotlinx.rpc.grpc.codec.CodecConfig
+import kotlinx.rpc.grpc.marshaller.MarshallerConfig
 
 /**
  * Configuration options for Protobuf message encoding and decoding.
  *
- * This class implements [CodecConfig] to provide Protobuf-specific configuration that controls
- * how messages are serialized and deserialized when using Protobuf codecs generated from
+ * This class implements [MarshallerConfig] to provide Protobuf-specific configuration that controls
+ * how messages are serialized and deserialized when using Protobuf marshallers generated from
  * `.proto` files using `kotlinx-rpc`.
  *
  * Example:
  * ```kotlin
- * // Create a codec with custom config
+ * // Create a marshaller with custom config
  * val config = ProtobufConfig(discardUnknownFields = true)
- * val myCodec = codec<MyMessage>(config)
+ * val myMarshaller = marshallerOf<MyMessage>(config)
  *
  * // Or pass config per-operation
- * val decoded = codec.decode(stream, config)
+ * val decoded = marshaller.decode(stream, config)
  * ```
  *
  * @property discardUnknownFields When `true`, unknown fields encountered during deserialization
  *   are silently discarded. When `false` (default), unknown fields are preserved.
  *
- * @see CodecConfig
- * @see kotlinx.rpc.grpc.codec.codec
+ * @see MarshallerConfig
+ * @see kotlinx.rpc.grpc.marshaller.marshallerOf
  */
 public class ProtobufConfig(
     public val discardUnknownFields: Boolean = false
-): CodecConfig
+): MarshallerConfig

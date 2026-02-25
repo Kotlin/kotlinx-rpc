@@ -64,7 +64,7 @@ data class MessageDeclaration(
 
     val internalCompanionName: FqName.Declaration by lazy { internalClassName.nested("Companion") }
     val presenceIndicesName: FqName.Declaration by lazy { internalClassName.nested("PresenceIndices") }
-    val codecObjectName: FqName.Declaration by lazy { internalClassName.nested("CODEC") }
+    val marshallerObjectName: FqName.Declaration by lazy { internalClassName.nested("MARSHALLER") }
     val bytesDefaultsName: FqName.Declaration by lazy { internalClassName.nested("BytesDefaults") }
 
     fun hasPresenceFieldsRecursive(): Boolean {

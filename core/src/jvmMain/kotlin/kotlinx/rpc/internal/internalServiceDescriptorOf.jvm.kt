@@ -17,6 +17,6 @@ public actual annotation class WithServiceDescriptor(
 )
 
 internal actual fun <@Rpc T : Any> internalServiceDescriptorOf(kClass: KClass<T>): Any? {
-    val codecClass = kClass.findAnnotation<WithServiceDescriptor>()?.stub ?: return null
-    return codecClass.objectInstance
+    val stubClass = kClass.findAnnotation<WithServiceDescriptor>()?.stub ?: return null
+    return stubClass.objectInstance
 }

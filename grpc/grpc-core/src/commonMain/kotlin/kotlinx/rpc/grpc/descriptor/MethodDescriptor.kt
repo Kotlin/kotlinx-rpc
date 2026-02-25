@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc.descriptor
 
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 public expect class MethodDescriptor<Request, Response> {
@@ -35,8 +35,8 @@ public enum class MethodType {
 @InternalRpcApi
 public expect fun <Request, Response> methodDescriptor(
     fullMethodName: String,
-    requestCodec: MessageCodec<Request>,
-    responseCodec: MessageCodec<Response>,
+    requestMarshaller: MessageMarshaller<Request>,
+    responseMarshaller: MessageMarshaller<Response>,
     type: MethodType,
     schemaDescriptor: Any?,
     idempotent: Boolean,

@@ -16,11 +16,11 @@ import kotlinx.rpc.grpc.client.internal.buildChannel
 import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
 import kotlinx.rpc.grpc.client.internal.serverStreamingRpc
 import kotlinx.rpc.grpc.client.internal.unaryRpc
-import kotlinx.rpc.grpc.codec.CodecConfig
-import kotlinx.rpc.grpc.codec.EmptyMessageCodecResolver
-import kotlinx.rpc.grpc.codec.MessageCodecResolver
-import kotlinx.rpc.grpc.codec.ThrowingMessageCodecResolver
-import kotlinx.rpc.grpc.codec.plus
+import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.EmptyMessageMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.ThrowingMessageMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.plus
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
@@ -37,14 +37,14 @@ private typealias RequestClient = Any
  */
 public class GrpcClient internal constructor(
     internal val channel: ManagedChannel,
-    messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
+    messageMarshallerResolver: MessageMarshallerResolver = EmptyMessageMarshallerResolver,
     internal val interceptors: List<ClientInterceptor>,
     // the default call credentials that are automatically attached to all calls made with this client
     internal val callCredentials: GrpcCallCredentials,
-    internal val codecConfig: CodecConfig?,
+    internal val marshallerConfig: MarshallerConfig?,
 ) : RpcClient {
     private val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
-    private val messageCodecResolver = messageCodecResolver + ThrowingMessageCodecResolver
+    private val messageMarshallerResolver = messageMarshallerResolver + ThrowingMessageMarshallerResolver
 
     public fun shutdown() {
         delegates.clear()
@@ -115,7 +115,7 @@ public class GrpcClient internal constructor(
             val grpc = call.descriptor as? GrpcServiceDescriptor<*>
                 ?: error("Expected a gRPC service")
 
-            grpc.delegate(messageCodecResolver, codecConfig)
+            grpc.delegate(messageMarshallerResolver, marshallerConfig)
         }
 
         @Suppress("UNCHECKED_CAST")
@@ -138,7 +138,7 @@ public class GrpcClient internal constructor(
  * @param hostname The gRPC server hostname to connect to.
  * @param port The gRPC server port to connect to.
  * @param configure An optional configuration block to customize the [GrpcClientConfiguration].
- * This can include setting up interceptors, specifying credentials, customizing message codec
+ * This can include setting up interceptors, specifying credentials, customizing message marshaller
  * resolution, and overriding default authority.
  *
  * @return A new instance of [GrpcClient] configured with the specified target and options.
@@ -164,7 +164,7 @@ public fun GrpcClient(
  * @param target The gRPC server endpoint to connect to, typically specified in
  * the format `hostname:port`.
  * @param configure An optional configuration block to customize the [GrpcClientConfiguration].
- * This can include setting up interceptors, specifying credentials, customizing message codec
+ * This can include setting up interceptors, specifying credentials, customizing message marshaller
  * resolution, and overriding default authority.
  *
  * @return A new instance of [GrpcClient] configured with the specified target and options.
@@ -185,13 +185,13 @@ private fun GrpcClient(
 ): GrpcClient {
     val channel = builder.applyConfig(config).buildChannel()
     val callCredentials = config.credentials?.realCallCredentials ?: EmptyCallCredentials
-    return GrpcClient(channel, config.messageCodecResolver, config.interceptors, callCredentials, config.codecConfig)
+    return GrpcClient(channel, config.messageMarshallerResolver, config.interceptors, callCredentials, config.marshallerConfig)
 }
 
 
 /**
  * Configuration class for a gRPC client, providing customization options
- * for client behavior, including interceptors, credentials, codec resolution,
+ * for client behavior, including interceptors, credentials, marshaller resolution,
  * and authority overrides.
  *
  * @see credentials
@@ -203,19 +203,19 @@ public class GrpcClientConfiguration internal constructor() {
     internal var keepAlive: KeepAlive? = null
 
     /**
-     * Configurable resolver used to determine the appropriate codec for a given Kotlin type
+     * Configurable resolver used to determine the appropriate marshaller for a given Kotlin type
      * during message serialization and deserialization in gRPC calls.
      *
-     * Custom implementations of [MessageCodecResolver] can be provided to handle specific serialization
+     * Custom implementations of [MessageMarshallerResolver] can be provided to handle specific serialization
      * for arbitrary types.
-     * For custom types prefer using the [kotlinx.rpc.grpc.codec.WithCodec] annotation.
+     * For custom types prefer using the [kotlinx.rpc.grpc.marshaller.WithMarshaller] annotation.
      *
-     * @see MessageCodecResolver
-     * @see kotlinx.rpc.grpc.codec.WithCodec
+     * @see MessageMarshallerResolver
+     * @see kotlinx.rpc.grpc.marshaller.WithMarshaller
      */
-    public var messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver
+    public var messageMarshallerResolver: MessageMarshallerResolver = EmptyMessageMarshallerResolver
 
-    public var codecConfig: CodecConfig? = null
+    public var marshallerConfig: MarshallerConfig? = null
 
     /**
      * Configures the client credentials used for secure gRPC requests made by the client.

@@ -1,0 +1,15 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, linuxArm64, linuxX64, macosArm64, macosX64, tvosArm64, tvosSimulatorArm64, tvosX64, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <org.jetbrains.kotlinx:grpc-marshaller-kotlinx-serialization>
+final class kotlinx.rpc.grpc.marshaller.kotlinx.serialization/KotlinxSerializationMarshallerResolver : kotlinx.rpc.grpc.marshaller/MessageMarshallerResolver { // kotlinx.rpc.grpc.marshaller.kotlinx.serialization/KotlinxSerializationMarshallerResolver|null[0]
+    constructor <init>(kotlinx.serialization/SerialFormat) // kotlinx.rpc.grpc.marshaller.kotlinx.serialization/KotlinxSerializationMarshallerResolver.<init>|<init>(kotlinx.serialization.SerialFormat){}[0]
+
+    final fun resolveOrNull(kotlin.reflect/KType): kotlinx.rpc.grpc.marshaller/MessageMarshaller<*>? // kotlinx.rpc.grpc.marshaller.kotlinx.serialization/KotlinxSerializationMarshallerResolver.resolveOrNull|resolveOrNull(kotlin.reflect.KType){}[0]
+}
+
+final fun (kotlinx.serialization/SerialFormat).kotlinx.rpc.grpc.marshaller.kotlinx.serialization/asMarshallerResolver(): kotlinx.rpc.grpc.marshaller/MessageMarshallerResolver // kotlinx.rpc.grpc.marshaller.kotlinx.serialization/asMarshallerResolver|asMarshallerResolver@kotlinx.serialization.SerialFormat(){}[0]

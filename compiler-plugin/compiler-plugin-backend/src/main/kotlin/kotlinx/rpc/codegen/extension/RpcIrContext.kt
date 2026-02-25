@@ -119,23 +119,23 @@ internal class RpcIrContext(
         grpcPlatformMethodType.enumEntry("BIDI_STREAMING")
     }
 
-    val grpcMessageCodec by lazy {
-        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.codec", "MessageCodec")
+    val grpcMessageMarshaller by lazy {
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller", "MessageMarshaller")
     }
 
-    val grpcMessageCodecResolver by lazy {
-        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.codec", "MessageCodecResolver")
+    val grpcMessageMarshallerResolver by lazy {
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller", "MessageMarshallerResolver")
     }
 
-    val codecConfig by lazy {
-        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.codec", "CodecConfig")
+    val marshallerConfig by lazy {
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller", "MarshallerConfig")
     }
-    val configuredMessageCodecDelegate by lazy {
-        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.codec.internal", "ConfiguredMessageCodecDelegate")
+    val configuredMessageMarshallerDelegate by lazy {
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller.internal", "ConfiguredMessageMarshallerDelegate")
     }
 
-    val withCodecAnnotation by lazy {
-        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.codec", "WithCodec")
+    val withMarshallerAnnotation by lazy {
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller", "WithMarshaller")
     }
 
     val rpcType by lazy {
@@ -261,8 +261,8 @@ internal class RpcIrContext(
             grpcServiceDescriptor.namedFunction("delegate")
         }
 
-        val grpcMessageCodecResolverResolveOrNull by lazy {
-            grpcMessageCodecResolver.namedFunction("resolveOrNull")
+        val grpcMessageMarshallerResolverResolveOrNull by lazy {
+            grpcMessageMarshallerResolver.namedFunction("resolveOrNull")
         }
 
         private fun IrClassSymbol.namedFunction(name: String): IrSimpleFunction {

@@ -13,22 +13,22 @@ import kotlinx.io.Source
 import kotlinx.io.readString
 import kotlinx.io.writeString
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.codec.CodecConfig
-import kotlinx.rpc.grpc.codec.MessageCodec
-import kotlinx.rpc.grpc.codec.MessageCodecResolver
-import kotlinx.rpc.grpc.codec.WithCodec
+import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.WithMarshaller
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
-@WithCodec(CustomResolverMessage.Companion::class)
+@WithMarshaller(CustomResolverMessage.Companion::class)
 class CustomResolverMessage(val value: String) {
-    companion object Companion : MessageCodec<CustomResolverMessage> {
-        override fun encode(value: CustomResolverMessage, config: CodecConfig?): Source {
+    companion object Companion : MessageMarshaller<CustomResolverMessage> {
+        override fun encode(value: CustomResolverMessage, config: MarshallerConfig?): Source {
             return Buffer().apply { writeString(value.value) }
         }
 
-        override fun decode(source: Source, config: CodecConfig?): CustomResolverMessage {
+        override fun decode(source: Source, config: MarshallerConfig?): CustomResolverMessage {
             return CustomResolverMessage(source.readString())
         }
     }
@@ -78,7 +78,7 @@ class GrpcServiceImpl : GrpcService {
 
 class CustomResolverGrpcServiceTest : BaseGrpcServiceTest() {
     @Test
-    fun testCodecResolver() = runServiceTest<GrpcService>(
+    fun testMarshallerResolver() = runServiceTest<GrpcService>(
         resolver = simpleResolver,
         impl = GrpcServiceImpl(),
     ) { service ->
@@ -86,7 +86,7 @@ class CustomResolverGrpcServiceTest : BaseGrpcServiceTest() {
     }
 
     @Test
-    fun testAnnotationCodec() = runServiceTest<GrpcService>(
+    fun testAnnotationMarshaller() = runServiceTest<GrpcService>(
         resolver = simpleResolver,
         impl = GrpcServiceImpl(),
     ) { service ->
@@ -129,30 +129,30 @@ class CustomResolverGrpcServiceTest : BaseGrpcServiceTest() {
     }
 
     companion object {
-        private val simpleResolver = MessageCodecResolver { kType ->
+        private val simpleResolver = MessageMarshallerResolver { kType ->
             when (kType.classifier) {
-                Unit::class -> unitCodec
-                String::class -> stringCodec
+                Unit::class -> unitMarshaller
+                String::class -> stringMarshaller
                 else -> null
             }
         }
 
-        val stringCodec = object : MessageCodec<String> {
-            override fun encode(value: String, config: CodecConfig?): Source {
+        val stringMarshaller = object : MessageMarshaller<String> {
+            override fun encode(value: String, config: MarshallerConfig?): Source {
                 return Buffer().apply { writeString(value) }
             }
 
-            override fun decode(source: Source, config: CodecConfig?): String {
+            override fun decode(source: Source, config: MarshallerConfig?): String {
                 return source.readString()
             }
         }
 
-        val unitCodec = object : MessageCodec<Unit> {
-            override fun encode(value: Unit, config: CodecConfig?): Source {
+        val unitMarshaller = object : MessageMarshaller<Unit> {
+            override fun encode(value: Unit, config: MarshallerConfig?): Source {
                 return Buffer()
             }
 
-            override fun decode(stream: Source, config: CodecConfig?) {
+            override fun decode(stream: Source, config: MarshallerConfig?) {
                 check(stream.exhausted())
             }
         }

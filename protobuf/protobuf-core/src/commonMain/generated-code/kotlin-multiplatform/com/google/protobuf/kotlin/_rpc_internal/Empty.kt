@@ -3,8 +3,8 @@ package com.google.protobuf.kotlin
 
 import kotlinx.io.Buffer
 import kotlinx.io.Source
-import kotlinx.rpc.grpc.codec.CodecConfig
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
@@ -64,8 +64,8 @@ public class EmptyInternal: Empty, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
-    public object CODEC: MessageCodec<Empty> {
-        public override fun encode(value: Empty, config: CodecConfig?): Source {
+    public object MARSHALLER: MessageMarshaller<Empty> {
+        public override fun encode(value: Empty, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -77,7 +77,7 @@ public class EmptyInternal: Empty, InternalMessage(fieldsWithPresence = 0) {
             return buffer
         }
 
-        public override fun decode(source: Source, config: CodecConfig?): Empty {
+        public override fun decode(source: Source, config: MarshallerConfig?): Empty {
             WireDecoder(source).use {
                 val msg = EmptyInternal()
                 checkForPlatformDecodeException {
