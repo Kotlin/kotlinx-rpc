@@ -29,15 +29,33 @@ import kotlin.reflect.KClass
 
 @Suppress("detekt.LongParameterList")
 interface VersionSpecificApi {
-    fun isJs(platform: TargetPlatform?): Boolean
-    fun isWasm(platform: TargetPlatform?): Boolean
+    fun isJsVS(platform: TargetPlatform?): Boolean
+    fun isWasmVS(platform: TargetPlatform?): Boolean
 
-    fun referenceClass(context: IrPluginContext, packageName: String, name: String): IrClassSymbol?
-
-    fun referenceFunctions(
+    fun referenceBuiltinClassVS(
         context: IrPluginContext,
         packageName: String,
         name: String,
+    ): IrClassSymbol?
+
+    fun referenceClassVS(
+        context: IrPluginContext,
+        packageName: String,
+        name: String,
+        from: IrFile,
+    ): IrClassSymbol?
+
+    fun referenceBuiltinFunctionsVS(
+        context: IrPluginContext,
+        packageName: String,
+        name: String,
+    ): Collection<IrSimpleFunctionSymbol>
+
+    fun referenceFunctionsVS(
+        context: IrPluginContext,
+        packageName: String,
+        name: String,
+        from: IrFile,
     ): Collection<IrSimpleFunctionSymbol>
 
     fun IrValueParameter.copyToVS(
@@ -55,7 +73,7 @@ interface VersionSpecificApi {
 
     fun IrType.isNullableVS(): Boolean
 
-    val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
+    val messageCollectorKeyVS: CompilerConfigurationKey<MessageCollector>
 
     companion object {
         lateinit var INSTANCE: VersionSpecificApi
@@ -99,11 +117,11 @@ interface VersionSpecificApi {
     fun IrFunction.valueParametersVS(): List<IrValueParameter>
     var IrFunction.dispatchReceiverParameterVS: IrValueParameter?
 
-    fun IrMemberAccessExpressionData.buildFor(access: IrMemberAccessExpression<*>)
+    fun IrMemberAccessExpressionData.buildForVS(access: IrMemberAccessExpression<*>)
 
-    fun IrConstructorCall.valueArgumentAt(index: Int): IrExpression?
+    fun IrConstructorCall.valueArgumentAtVS(index: Int): IrExpression?
 
-    fun <T : Any> IrExpression.asConstValue(clazz: KClass<T>): T?
+    fun <T : Any> IrExpression.asConstValueVS(clazz: KClass<T>): T?
 }
 
 @Suppress("unused")

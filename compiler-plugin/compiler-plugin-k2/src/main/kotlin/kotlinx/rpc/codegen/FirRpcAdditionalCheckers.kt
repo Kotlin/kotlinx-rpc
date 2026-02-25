@@ -31,7 +31,7 @@ class FirRpcAdditionalCheckers(
 
     private val ctx = FirCheckersContext(
         session = session,
-        annotationTypeSafetyEnabled = configuration.get(RpcFirConfigurationKeys.ANNOTATION_TYPE_SAFETY, true),
+        annotationTypeSafetyEnabled = configuration[RpcFirConfigurationKeys.ANNOTATION_TYPE_SAFETY, true],
     )
 
     override val declarationCheckers: DeclarationCheckers = FirRpcDeclarationCheckers(ctx)

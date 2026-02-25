@@ -21,10 +21,15 @@ import org.jetbrains.kotlin.fir.types.toClassSymbol
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.declarations.getBooleanArgument
+import org.jetbrains.kotlin.fir.declarations.getStringArgument
+import org.jetbrains.kotlin.fir.declarations.getKClassArgument
+import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.types.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.toRegularClassSymbol
 import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.Name
 //##csm /specific
 //##csm specific=[2.0.11...2.0.21]
 import org.jetbrains.kotlin.KtSourceElement
@@ -41,10 +46,15 @@ import org.jetbrains.kotlin.fir.types.toClassSymbol
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.declarations.getBooleanArgument
+import org.jetbrains.kotlin.fir.declarations.getStringArgument
+import org.jetbrains.kotlin.fir.declarations.getKClassArgument
+import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.toRegularClassSymbol
 import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.Name
 //##csm /specific
 //##csm specific=[2.0.22...2.1.21, 2.2.0-ij251-*]
 import org.jetbrains.kotlin.KtSourceElement
@@ -54,6 +64,10 @@ import org.jetbrains.kotlin.config.CompilerConfigurationKey
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.declarations.getBooleanArgument
+import org.jetbrains.kotlin.fir.declarations.getStringArgument
+import org.jetbrains.kotlin.fir.declarations.getKClassArgument
+import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
@@ -65,6 +79,7 @@ import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.Name
 //##csm /specific
 //##csm specific=[2.1.22...2.2.10]
 import org.jetbrains.kotlin.KtSourceElement
@@ -83,9 +98,14 @@ import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
+import org.jetbrains.kotlin.fir.declarations.getBooleanArgument
+import org.jetbrains.kotlin.fir.declarations.getStringArgument
+import org.jetbrains.kotlin.fir.declarations.getKClassArgument
+import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.resolve.providers.getRegularClassSymbolByClassId
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.Name
 //##csm /specific
 //##csm specific=[2.2.20...2.2.*]
 import org.jetbrains.kotlin.KtSourceElement
@@ -104,9 +124,14 @@ import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
+import org.jetbrains.kotlin.fir.declarations.getBooleanArgument
+import org.jetbrains.kotlin.fir.declarations.getStringArgument
+import org.jetbrains.kotlin.fir.declarations.getKClassArgument
+import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.resolve.providers.getRegularClassSymbolByClassId
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.Name
 //##csm /specific
 //##csm specific=[2.3.0...2.*]
 import org.jetbrains.kotlin.KtSourceElement
@@ -124,10 +149,15 @@ import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
+import org.jetbrains.kotlin.fir.declarations.getBooleanArgument
+import org.jetbrains.kotlin.fir.declarations.getStringArgument
+import org.jetbrains.kotlin.fir.declarations.getKClassArgument
+import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.resolve.providers.getRegularClassSymbolByClassId
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.types.toRegularClassSymbol
 import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.Name
 //##csm /specific
 //##csm /FirVersionSpecificApiImpl.kt-import
 
@@ -208,4 +238,36 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
         //##csm /ConeKotlinType.toClassSymbolVS
     }
 
+    override fun FirAnnotation.getKClassArgumentVS(name: Name, session: FirSession): ConeKotlinType? {
+        //##csm FirAnnotation.getKClassArgumentVS
+        //##csm default
+        return getKClassArgument(name)
+        //##csm /default
+        //##csm specific=[2.0.0...2.3.99]
+        return getKClassArgument(name, session)
+        //##csm /specific
+        //##csm /FirAnnotation.getKClassArgumentVS
+    }
+
+    override fun FirAnnotation.getBooleanArgumentVS(name: Name, session: FirSession): Boolean? {
+        //##csm FirAnnotation.getBooleanArgumentVS
+        //##csm default
+        return getBooleanArgument(name)
+        //##csm /default
+        //##csm specific=[2.0.0...2.3.99]
+        return getBooleanArgument(name, session)
+        //##csm /specific
+        //##csm /FirAnnotation.getBooleanArgumentVS
+    }
+
+    override fun FirAnnotation.getStringArgumentVS(name: Name, session: FirSession): String? {
+        //##csm FirAnnotation.getStringArgumentVS
+        //##csm default
+        return getStringArgument(name)
+        //##csm /default
+        //##csm specific=[2.0.0...2.3.99]
+        return getStringArgument(name, session)
+        //##csm /specific
+        //##csm /FirAnnotation.getStringArgumentVS
+    }
 }
