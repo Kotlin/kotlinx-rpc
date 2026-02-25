@@ -21,9 +21,8 @@ import kotlin.reflect.findAssociatedObject
 @AssociatedObjectKey
 @OptIn(ExperimentalAssociatedObjects::class)
 @Target(AnnotationTarget.CLASS)
-public annotation class WithServiceDescriptor(
-    @Suppress("unused")
-    val stub: KClass<out RpcServiceDescriptor<*>>,
+public actual annotation class WithServiceDescriptor(
+    actual val stub: KClass<out RpcServiceDescriptor<*>>,
 )
 
 internal actual fun <@Rpc T : Any> internalServiceDescriptorOf(kClass: KClass<T>): Any? {

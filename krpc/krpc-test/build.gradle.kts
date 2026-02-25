@@ -3,7 +3,6 @@
  */
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
 import java.nio.file.Files
@@ -16,19 +15,6 @@ plugins {
 }
 
 kotlin {
-    targets.all {
-        compilations.matching {
-            it.name.lowercase().endsWith("test")
-        }.all {
-            compileTaskProvider.configure {
-                compilerOptions {
-                    languageVersion.set(KotlinVersion.KOTLIN_2_1)
-                    apiVersion.set(KotlinVersion.KOTLIN_2_1)
-                }
-            }
-        }
-    }
-
     sourceSets {
         commonMain {
             dependencies {

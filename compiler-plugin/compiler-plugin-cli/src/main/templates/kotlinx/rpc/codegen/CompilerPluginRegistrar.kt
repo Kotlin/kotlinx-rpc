@@ -13,7 +13,7 @@ class RpcCompilerPlugin : CompilerPluginRegistrar() {
     override val supportsK2: Boolean = true
 
 //##csm RpcCompilerPlugin.pluginId
-//##csm specific=[2.0.0...2.2.99]
+//##csm specific=[2.1.0...2.2.99]
 //##csm /specific
 //##csm default
     override val pluginId: String = PLUGIN_ID

@@ -4,9 +4,7 @@
 
 package kotlinx.rpc.protobuf.internal
 
-import kotlinx.rpc.internal.WithServiceDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.GeneratedProtoMessage
 import kotlin.reflect.AssociatedObjectKey
 import kotlin.reflect.ExperimentalAssociatedObjects
 import kotlin.reflect.KClass

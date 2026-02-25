@@ -57,7 +57,7 @@ internal fun VersionsEnv.versionsWhereAndroidKmpLibExist(): Boolean {
 private val GradleVersions = listOf(
     VersionsEnv("9.2.1", "2.2.21", "8.13.1"),
     VersionsEnv("8.14.1", "2.2.0", "8.10.0"),
-    VersionsEnv("8.8", "2.0.0", "8.4.0"),
+    VersionsEnv("8.8", "2.1.0", "8.4.0"),
 )
 
 internal fun BaseTest.runWithGradleVersions(

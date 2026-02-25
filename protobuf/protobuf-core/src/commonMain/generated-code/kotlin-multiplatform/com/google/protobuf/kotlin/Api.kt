@@ -1,10 +1,9 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.GeneratedProtoMessage
+import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
 * Api is a light-weight descriptor for an API Interface.
@@ -18,7 +17,6 @@ import kotlinx.rpc.protobuf.GeneratedProtoMessage
 * detailed terminology.
 */
 @GeneratedProtoMessage
-@WithCodec(ApiInternal.CODEC::class)
 public interface Api {
     /**
     * The fully qualified name of this interface, including package name
@@ -76,7 +74,6 @@ public interface Api {
 * Method represents a method of an API interface.
 */
 @GeneratedProtoMessage
-@WithCodec(MethodInternal.CODEC::class)
 public interface Method {
     /**
     * The simple name of this method.
@@ -191,7 +188,6 @@ public interface Method {
 *     }
 */
 @GeneratedProtoMessage
-@WithCodec(MixinInternal.CODEC::class)
 public interface Mixin {
     /**
     * The fully qualified name of the interface which is included.

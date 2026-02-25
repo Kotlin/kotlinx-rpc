@@ -104,9 +104,6 @@ class ModelToProtobufKotlinCommonGenerator(
             annotations.add(
                 FqName.Annotations.GeneratedProtoMessage.scopedAnnotation()
             )
-            annotations.add(
-                "@%T(%T::class)".scoped(FqName.Annotations.WithCodec, declaration.codecObjectName)
-            )
         }
 
         clazz(

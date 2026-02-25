@@ -7,7 +7,7 @@
 
 [![Kotlin Experimental](https://kotl.in/badges/experimental.svg)](https://kotlinlang.org/docs/components-stability.html)
 [![Official JetBrains project](http://jb.gg/badges/official.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
-[![Kotlin](https://img.shields.io/badge/kotlin-2.0.0--2.3.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.1.0--2.3.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![GitHub License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
 
 [//]: # ([![TeamCity build]&#40;https://img.shields.io/teamcity/build/s/Build_kRPC_All.svg?server=http%3A%2F%2Fkrpc.teamcity.com&#41;]&#40;https://teamcity.jetbrains.com/viewType.html?buildTypeId=Build_kRPC_All&guest=1&#41;)
@@ -99,8 +99,7 @@ To ensure that all IDE features of our compiler plugin work properly on IntelliJ
 [Kotlin External FIR Support](https://plugins.jetbrains.com/plugin/26480-kotlin-external-fir-support?noRedirect=true) plugin.
 
 ## Kotlin compatibility
-We support all stable Kotlin versions starting from 2.0.0:
-- 2.0.0, 2.0.10, 2.0.20, 2.0.21
+We support all stable Kotlin versions starting from 2.1.0:
 - 2.1.0, 2.1.10, 2.1.20, 2.1.21
 - 2.2.0, 2.2.10, 2.2.20, 2.2.21
 - 2.3.0
