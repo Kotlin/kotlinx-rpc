@@ -21,12 +21,14 @@ public final class kotlinx/rpc/grpc/server/GrpcServer : kotlinx/rpc/RpcServer, k
 public final class kotlinx/rpc/grpc/server/GrpcServerConfiguration {
 	public final fun getCredentials ()Lio/grpc/ServerCredentials;
 	public final fun getFallbackHandlerRegistry ()Lio/grpc/HandlerRegistry;
-	public final fun getMessageCodecResolver ()Lkotlinx/rpc/grpc/codec/MessageCodecResolver;
+	public final fun getMarshallerConfig ()Lkotlinx/rpc/grpc/marshaller/MarshallerConfig;
+	public final fun getMessageMarshallerResolver ()Lkotlinx/rpc/grpc/marshaller/MessageMarshallerResolver;
 	public final fun intercept ([Lkotlinx/rpc/grpc/server/ServerInterceptor;)V
 	public final fun services (Lkotlin/jvm/functions/Function1;)V
 	public final fun setCredentials (Lio/grpc/ServerCredentials;)V
 	public final fun setFallbackHandlerRegistry (Lio/grpc/HandlerRegistry;)V
-	public final fun setMessageCodecResolver (Lkotlinx/rpc/grpc/codec/MessageCodecResolver;)V
+	public final fun setMarshallerConfig (Lkotlinx/rpc/grpc/marshaller/MarshallerConfig;)V
+	public final fun setMessageMarshallerResolver (Lkotlinx/rpc/grpc/marshaller/MessageMarshallerResolver;)V
 	public final fun tls (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lio/grpc/ServerCredentials;
 }
 

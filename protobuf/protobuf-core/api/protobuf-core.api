@@ -20,7 +20,18 @@ public final class com/google/protobuf/kotlin/AnyInternal : kotlinx/rpc/protobuf
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/AnyKt {
+public final class com/google/protobuf/kotlin/AnyKotlinKt {
+	public static final fun contains (Lcom/google/protobuf/kotlin/Any;Lkotlin/reflect/KClass;)Z
+	public static final fun contains (Lcom/google/protobuf/kotlin/Any;Lkotlin/reflect/KType;)Z
+	public static final fun unpack (Lcom/google/protobuf/kotlin/Any;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public static final fun unpack (Lcom/google/protobuf/kotlin/Any;Lkotlin/reflect/KType;)Ljava/lang/Object;
+	public static final fun unpackOrNull (Lcom/google/protobuf/kotlin/Any;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public static final fun unpackOrNull (Lcom/google/protobuf/kotlin/Any;Lkotlin/reflect/KType;)Ljava/lang/Object;
+}
+
+public final class com/google/protobuf/kotlin/Any_extKt {
+	public static final fun copy (Lcom/google/protobuf/kotlin/Any;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Any;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Any;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Any;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Any$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Any;
 }
 
@@ -61,7 +72,18 @@ public final class com/google/protobuf/kotlin/ApiInternal : kotlinx/rpc/protobuf
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/ApiKt {
+public abstract interface class com/google/protobuf/kotlin/ApiPresence {
+	public abstract fun getHasSourceContext ()Z
+}
+
+public final class com/google/protobuf/kotlin/Api_extKt {
+	public static final fun copy (Lcom/google/protobuf/kotlin/Api;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Api;
+	public static final fun copy (Lcom/google/protobuf/kotlin/Method;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Method;
+	public static final fun copy (Lcom/google/protobuf/kotlin/Mixin;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Mixin;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Api;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Api;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Method;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Method;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Mixin;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Mixin;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/Api;)Lcom/google/protobuf/kotlin/ApiPresence;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Api$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Api;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Method$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Method;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Mixin$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Mixin;
@@ -151,7 +173,9 @@ public final class com/google/protobuf/kotlin/DurationKotlinKt {
 	public static final fun toProtobufDuration-LRDsOJo (J)Lcom/google/protobuf/kotlin/Duration;
 }
 
-public final class com/google/protobuf/kotlin/DurationKt {
+public final class com/google/protobuf/kotlin/Duration_extKt {
+	public static final fun copy (Lcom/google/protobuf/kotlin/Duration;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Duration;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Duration;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Duration;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Duration$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Duration;
 }
 
@@ -171,7 +195,9 @@ public final class com/google/protobuf/kotlin/EmptyInternal : kotlinx/rpc/protob
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/EmptyKt {
+public final class com/google/protobuf/kotlin/Empty_extKt {
+	public static final fun copy (Lcom/google/protobuf/kotlin/Empty;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Empty;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Empty;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Empty;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Empty$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Empty;
 }
 
@@ -207,6 +233,10 @@ public final class com/google/protobuf/kotlin/EnumInternal : kotlinx/rpc/protobu
 	public fun setSourceContext (Lcom/google/protobuf/kotlin/SourceContext;)V
 	public fun setSyntax (Lcom/google/protobuf/kotlin/Syntax;)V
 	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/EnumPresence {
+	public abstract fun getHasSourceContext ()Z
 }
 
 public abstract interface class com/google/protobuf/kotlin/EnumValue {
@@ -502,7 +532,9 @@ public final class com/google/protobuf/kotlin/FieldMaskInternal : kotlinx/rpc/pr
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldMaskKt {
+public final class com/google/protobuf/kotlin/FieldMask_extKt {
+	public static final fun copy (Lcom/google/protobuf/kotlin/FieldMask;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldMask;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FieldMask;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FieldMask;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/FieldMask$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldMask;
 }
 
@@ -691,6 +723,10 @@ public final class com/google/protobuf/kotlin/OptionInternal : kotlinx/rpc/proto
 	public fun toString ()Ljava/lang/String;
 }
 
+public abstract interface class com/google/protobuf/kotlin/OptionPresence {
+	public abstract fun getHasValue ()Z
+}
+
 public abstract interface class com/google/protobuf/kotlin/SourceContext {
 	public static final field Companion Lcom/google/protobuf/kotlin/SourceContext$Companion;
 	public abstract fun getFileName ()Ljava/lang/String;
@@ -710,7 +746,9 @@ public final class com/google/protobuf/kotlin/SourceContextInternal : kotlinx/rp
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/SourceContextKt {
+public final class com/google/protobuf/kotlin/SourceContext_extKt {
+	public static final fun copy (Lcom/google/protobuf/kotlin/SourceContext;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/SourceContext;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/SourceContext;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/SourceContext;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/SourceContext$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/SourceContext;
 }
 
@@ -765,7 +803,13 @@ public final class com/google/protobuf/kotlin/StructInternal$FieldsEntryInternal
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/StructKt {
+public final class com/google/protobuf/kotlin/Struct_extKt {
+	public static final fun copy (Lcom/google/protobuf/kotlin/ListValue;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ListValue;
+	public static final fun copy (Lcom/google/protobuf/kotlin/Struct;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Struct;
+	public static final fun copy (Lcom/google/protobuf/kotlin/Value;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Value;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/ListValue;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/ListValue;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Struct;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Struct;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Value;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Value;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/ListValue$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ListValue;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Struct$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Struct;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Value$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Value;
@@ -840,7 +884,9 @@ public final class com/google/protobuf/kotlin/TimestampKotlinKt {
 	public static final fun toTimestamp (Lkotlin/time/Instant;)Lcom/google/protobuf/kotlin/Timestamp;
 }
 
-public final class com/google/protobuf/kotlin/TimestampKt {
+public final class com/google/protobuf/kotlin/Timestamp_extKt {
+	public static final fun copy (Lcom/google/protobuf/kotlin/Timestamp;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Timestamp;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Timestamp;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Timestamp;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Timestamp$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Timestamp;
 }
 
@@ -881,7 +927,24 @@ public final class com/google/protobuf/kotlin/TypeInternal : kotlinx/rpc/protobu
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/TypeKt {
+public abstract interface class com/google/protobuf/kotlin/TypePresence {
+	public abstract fun getHasSourceContext ()Z
+}
+
+public final class com/google/protobuf/kotlin/Type_extKt {
+	public static final fun copy (Lcom/google/protobuf/kotlin/Enum;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Enum;
+	public static final fun copy (Lcom/google/protobuf/kotlin/EnumValue;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumValue;
+	public static final fun copy (Lcom/google/protobuf/kotlin/Field;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Field;
+	public static final fun copy (Lcom/google/protobuf/kotlin/Option;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Option;
+	public static final fun copy (Lcom/google/protobuf/kotlin/Type;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Type;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Enum;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Enum;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/EnumValue;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/EnumValue;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Field;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Field;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Option;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Option;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Type;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Type;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/Enum;)Lcom/google/protobuf/kotlin/EnumPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/Option;)Lcom/google/protobuf/kotlin/OptionPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/Type;)Lcom/google/protobuf/kotlin/TypePresence;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Enum$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Enum;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/EnumValue$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumValue;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Field$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Field;
@@ -1034,7 +1097,25 @@ public final class com/google/protobuf/kotlin/ValueInternal : kotlinx/rpc/protob
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/WrappersKt {
+public final class com/google/protobuf/kotlin/Wrappers_extKt {
+	public static final fun copy (Lcom/google/protobuf/kotlin/BoolValue;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/BoolValue;
+	public static final fun copy (Lcom/google/protobuf/kotlin/BytesValue;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/BytesValue;
+	public static final fun copy (Lcom/google/protobuf/kotlin/DoubleValue;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DoubleValue;
+	public static final fun copy (Lcom/google/protobuf/kotlin/FloatValue;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FloatValue;
+	public static final fun copy (Lcom/google/protobuf/kotlin/Int32Value;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Int32Value;
+	public static final fun copy (Lcom/google/protobuf/kotlin/Int64Value;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Int64Value;
+	public static final fun copy (Lcom/google/protobuf/kotlin/StringValue;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/StringValue;
+	public static final fun copy (Lcom/google/protobuf/kotlin/UInt32Value;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UInt32Value;
+	public static final fun copy (Lcom/google/protobuf/kotlin/UInt64Value;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UInt64Value;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/BoolValue;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/BoolValue;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/BytesValue;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/BytesValue;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/DoubleValue;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/DoubleValue;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FloatValue;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FloatValue;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Int32Value;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Int32Value;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Int64Value;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Int64Value;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/StringValue;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/StringValue;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/UInt32Value;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/UInt32Value;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/UInt64Value;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/UInt64Value;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/BoolValue$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/BoolValue;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/BytesValue$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/BytesValue;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/DoubleValue$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DoubleValue;
@@ -1044,6 +1125,13 @@ public final class com/google/protobuf/kotlin/WrappersKt {
 	public static final fun invoke (Lcom/google/protobuf/kotlin/StringValue$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/StringValue;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/UInt32Value$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UInt32Value;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/UInt64Value$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UInt64Value;
+}
+
+public final class kotlinx/rpc/protobuf/ProtobufConfig : kotlinx/rpc/grpc/marshaller/MarshallerConfig {
+	public fun <init> ()V
+	public fun <init> (Z)V
+	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getDiscardUnknownFields ()Z
 }
 
 public final class kotlinx/rpc/protobuf/internal/ProtobufDecodingException : kotlinx/rpc/protobuf/internal/ProtobufException {
@@ -1066,7 +1154,7 @@ public abstract class kotlinx/rpc/protobuf/internal/ProtobufException : java/lan
 }
 
 public final class kotlinx/rpc/protobuf/internal/WireDecoder_jvmKt {
-	public static final fun WireDecoder (Ljava/io/InputStream;)Lkotlinx/rpc/protobuf/internal/WireDecoder;
+	public static final fun WireDecoder (Lkotlinx/io/Source;)Lkotlinx/rpc/protobuf/internal/WireDecoder;
 	public static final fun checkForPlatformDecodeException (Lkotlin/jvm/functions/Function0;)V
 }
 
