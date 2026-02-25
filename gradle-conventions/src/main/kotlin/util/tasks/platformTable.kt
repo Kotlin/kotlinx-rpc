@@ -316,32 +316,15 @@ abstract class DumpPlatformsTask : DefaultTask() {
             }
         }
     }
-}
 
-fun Project.registerDumpPlatformTableTask() {
-    tasks.register<DumpPlatformsTask>("dumpPlatformTable") {
-        input.set(PLATFORM_TOPIC_PATH)
-        output.set(PLATFORM_TOPIC_PATH)
+    companion object {
+        const val NAME = "dumpPlatformTable"
     }
 }
 
-fun Project.registerVerifyPlatformTableTask() {
-    tasks.register<DumpPlatformsTask>("verifyPlatformTable") {
-        val tempFile = Files.createTempFile("platform-table-temp", ".topic").toFile()
-
+fun Project.registerDumpPlatformTableTask() {
+    tasks.register<DumpPlatformsTask>(DumpPlatformsTask.NAME) {
         input.set(PLATFORM_TOPIC_PATH)
-        output.set(tempFile)
-
-        doLast {
-            val input = input.get()
-            val output = output.get()
-
-            if (input.readText() != output.readText()) {
-                throw GradleException(
-                    "Platform table is not up-to-date. " +
-                            "Run `./gradlew dumpPlatformTable --no-configuration-cache` to update it."
-                )
-            }
-        }
+        output.set(PLATFORM_TOPIC_PATH)
     }
 }
