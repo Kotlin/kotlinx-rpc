@@ -4,11 +4,11 @@
 
 package kotlinx.rpc.protobuf.test
 
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 
 internal fun <M> M.encodeDecode(
-    codec: MessageCodec<M>,
+    marshaller: MessageMarshaller<M>,
 ): M {
-    val source = codec.encode(this)
-    return codec.decode(source)
+    val source = marshaller.encode(this)
+    return marshaller.decode(source)
 }

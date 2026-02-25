@@ -1,6 +1,6 @@
 public abstract interface class kotlinx/rpc/grpc/client/ClientCallScope {
 	public abstract fun cancel (Ljava/lang/String;Ljava/lang/Throwable;)Ljava/lang/Void;
-	public abstract fun getCallOptions ()Lio/grpc/CallOptions;
+	public abstract fun getCallOptions ()Lkotlinx/rpc/grpc/client/GrpcCallOptions;
 	public abstract fun getMethod ()Lio/grpc/MethodDescriptor;
 	public abstract fun getRequestHeaders ()Lio/grpc/Metadata;
 	public abstract fun onClose (Lkotlin/jvm/functions/Function2;)V
@@ -17,8 +17,51 @@ public abstract interface class kotlinx/rpc/grpc/client/ClientInterceptor {
 }
 
 public final class kotlinx/rpc/grpc/client/CredentialsKt {
-	public static final fun TlsClientCredentials (Lkotlin/jvm/functions/Function1;)Lio/grpc/ChannelCredentials;
-	public static synthetic fun TlsClientCredentials$default (Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lio/grpc/ChannelCredentials;
+	public static final fun combine (Lkotlinx/rpc/grpc/client/GrpcClientCredentials;Lkotlinx/rpc/grpc/client/GrpcCallCredentials;)Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
+	public static final fun plus (Lkotlinx/rpc/grpc/client/GrpcClientCredentials;Lkotlinx/rpc/grpc/client/GrpcCallCredentials;)Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
+}
+
+public final class kotlinx/rpc/grpc/client/EmptyCallCredentials : kotlinx/rpc/grpc/client/GrpcCallCredentials {
+	public static final field INSTANCE Lkotlinx/rpc/grpc/client/EmptyCallCredentials;
+	public fun getRequestMetadata (Lkotlinx/rpc/grpc/client/GrpcCallCredentials$Context;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getRequiresTransportSecurity ()Z
+}
+
+public abstract interface class kotlinx/rpc/grpc/client/GrpcCallCredentials {
+	public abstract fun getRequestMetadata (Lkotlinx/rpc/grpc/client/GrpcCallCredentials$Context;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getRequiresTransportSecurity ()Z
+}
+
+public final class kotlinx/rpc/grpc/client/GrpcCallCredentials$Context {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lkotlinx/rpc/grpc/client/GrpcCallCredentials$Context;
+	public static synthetic fun copy$default (Lkotlinx/rpc/grpc/client/GrpcCallCredentials$Context;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lkotlinx/rpc/grpc/client/GrpcCallCredentials$Context;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAuthority ()Ljava/lang/String;
+	public final fun getMethodName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class kotlinx/rpc/grpc/client/GrpcCallCredentials$DefaultImpls {
+	public static fun getRequiresTransportSecurity (Lkotlinx/rpc/grpc/client/GrpcCallCredentials;)Z
+}
+
+public final class kotlinx/rpc/grpc/client/GrpcCallCredentialsKt {
+	public static final fun combine (Lkotlinx/rpc/grpc/client/GrpcCallCredentials;Lkotlinx/rpc/grpc/client/GrpcCallCredentials;)Lkotlinx/rpc/grpc/client/GrpcCallCredentials;
+	public static final fun plus (Lkotlinx/rpc/grpc/client/GrpcCallCredentials;Lkotlinx/rpc/grpc/client/GrpcCallCredentials;)Lkotlinx/rpc/grpc/client/GrpcCallCredentials;
+}
+
+public final class kotlinx/rpc/grpc/client/GrpcCallOptions {
+	public fun <init> ()V
+	public final fun getCallCredentials ()Lkotlinx/rpc/grpc/client/GrpcCallCredentials;
+	public final fun getCompression ()Lkotlinx/rpc/grpc/GrpcCompression;
+	public final fun getTimeout-FghU774 ()Lkotlin/time/Duration;
+	public final fun setCallCredentials (Lkotlinx/rpc/grpc/client/GrpcCallCredentials;)V
+	public final fun setCompression (Lkotlinx/rpc/grpc/GrpcCompression;)V
+	public final fun setTimeout-BwNAW2A (Lkotlin/time/Duration;)V
 }
 
 public final class kotlinx/rpc/grpc/client/GrpcClient : kotlinx/rpc/RpcClient {
@@ -31,15 +74,30 @@ public final class kotlinx/rpc/grpc/client/GrpcClient : kotlinx/rpc/RpcClient {
 }
 
 public final class kotlinx/rpc/grpc/client/GrpcClientConfiguration {
-	public final fun getCredentials ()Lio/grpc/ChannelCredentials;
-	public final fun getMessageCodecResolver ()Lkotlinx/rpc/grpc/codec/MessageCodecResolver;
+	public final fun getCredentials ()Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
+	public final fun getMarshallerConfig ()Lkotlinx/rpc/grpc/marshaller/MarshallerConfig;
+	public final fun getMessageMarshallerResolver ()Lkotlinx/rpc/grpc/marshaller/MessageMarshallerResolver;
 	public final fun getOverrideAuthority ()Ljava/lang/String;
 	public final fun intercept ([Lkotlinx/rpc/grpc/client/ClientInterceptor;)V
-	public final fun plaintext ()Lio/grpc/ChannelCredentials;
-	public final fun setCredentials (Lio/grpc/ChannelCredentials;)V
-	public final fun setMessageCodecResolver (Lkotlinx/rpc/grpc/codec/MessageCodecResolver;)V
+	public final fun keepAlive (Lkotlin/jvm/functions/Function1;)V
+	public final fun plaintext ()Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
+	public final fun setCredentials (Lkotlinx/rpc/grpc/client/GrpcClientCredentials;)V
+	public final fun setMarshallerConfig (Lkotlinx/rpc/grpc/marshaller/MarshallerConfig;)V
+	public final fun setMessageMarshallerResolver (Lkotlinx/rpc/grpc/marshaller/MessageMarshallerResolver;)V
 	public final fun setOverrideAuthority (Ljava/lang/String;)V
-	public final fun tls (Lkotlin/jvm/functions/Function1;)Lio/grpc/ChannelCredentials;
+	public final fun tls (Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
+}
+
+public final class kotlinx/rpc/grpc/client/GrpcClientConfiguration$KeepAlive {
+	public final fun getTime-UwyO8pc ()J
+	public final fun getTimeout-UwyO8pc ()J
+	public final fun getWithoutCalls ()Z
+	public final fun setTime-LRDsOJo (J)V
+	public final fun setTimeout-LRDsOJo (J)V
+	public final fun setWithoutCalls (Z)V
+}
+
+public abstract interface class kotlinx/rpc/grpc/client/GrpcClientCredentials {
 }
 
 public final class kotlinx/rpc/grpc/client/GrpcClientKt {
@@ -49,9 +107,19 @@ public final class kotlinx/rpc/grpc/client/GrpcClientKt {
 	public static synthetic fun GrpcClient$default (Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/client/GrpcClient;
 }
 
-public abstract interface class kotlinx/rpc/grpc/client/TlsClientCredentialsBuilder {
-	public abstract fun keyManager (Ljava/lang/String;Ljava/lang/String;)Lkotlinx/rpc/grpc/client/TlsClientCredentialsBuilder;
-	public abstract fun trustManager (Ljava/lang/String;)Lkotlinx/rpc/grpc/client/TlsClientCredentialsBuilder;
+public final class kotlinx/rpc/grpc/client/GrpcInsecureClientCredentials : kotlinx/rpc/grpc/client/GrpcClientCredentials {
+	public fun <init> ()V
+}
+
+public final class kotlinx/rpc/grpc/client/GrpcTlsClientCredentials : kotlinx/rpc/grpc/client/GrpcClientCredentials {
+	public fun <init> ()V
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract interface class kotlinx/rpc/grpc/client/GrpcTlsClientCredentialsBuilder {
+	public abstract fun keyManager (Ljava/lang/String;Ljava/lang/String;)Lkotlinx/rpc/grpc/client/GrpcTlsClientCredentialsBuilder;
+	public abstract fun trustManager (Ljava/lang/String;)Lkotlinx/rpc/grpc/client/GrpcTlsClientCredentialsBuilder;
 }
 
 public final class kotlinx/rpc/grpc/client/internal/ManagedChannel_jvmKt {

@@ -59,16 +59,16 @@ private fun computeProtoDeclaration(
         ?: error("Expected generated ${ProtoNames.DESCRIPTOR_NAME} class to be present in ${internalMessage.name}. " +
                 "The Proto generation plugin failed to do so.")
 
-    val codecObject = internalMessage.declarations.filterIsInstance<IrClass>()
-        .find { it.name == ProtoNames.CODEC_NAME }
-        ?: error("Expected generated ${ProtoNames.CODEC_NAME} class to be present in ${internalMessage.name}. " +
+    val marshallerObject = internalMessage.declarations.filterIsInstance<IrClass>()
+        .find { it.name == ProtoNames.MARSHALLER_NAME }
+        ?: error("Expected generated ${ProtoNames.MARSHALLER_NAME} class to be present in ${internalMessage.name}. " +
                 "The Proto generation plugin failed to do so.")
 
     val declaration = ProtoDeclaration(
         message = messageClass,
         messageInternal = internalMessage,
         descriptor = descriptorObject,
-        codec = codecObject,
+        marshaller = marshallerObject,
     )
     messageClass.protoDeclarationOrNull = declaration
     return declaration

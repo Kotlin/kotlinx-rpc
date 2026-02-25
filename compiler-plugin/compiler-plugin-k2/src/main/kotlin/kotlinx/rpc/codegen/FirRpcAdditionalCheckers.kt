@@ -24,7 +24,7 @@ class FirRpcAdditionalCheckers(
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
         register(FirRpcPredicates.rpc)
         register(FirRpcPredicates.grpc)
-        register(FirRpcPredicates.withCodec)
+        register(FirRpcPredicates.withMarshaller)
         register(FirRpcPredicates.checkedAnnotationMeta)
         register(FirRpcPredicates.generatedProtoMessage)
     }

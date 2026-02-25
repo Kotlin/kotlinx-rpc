@@ -19,8 +19,8 @@ import kotlinx.cinterop.usePinned
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.io.readByteArray
-import kotlinx.rpc.grpc.codec.CodecConfig
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 import kotlinx.rpc.grpc.internal.toByteArray
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import libkgrpc.grpc_metadata
@@ -35,17 +35,17 @@ import kotlin.experimental.ExperimentalNativeApi
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-public actual class GrpcMetadataKey<T> actual constructor(name: String, public val codec: MessageCodec<T>) {
+public actual class GrpcMetadataKey<T> actual constructor(name: String, public val marshaller: MessageMarshaller<T>) {
     public val name: String = name.lowercase()
     internal val isBinary get() = name.endsWith("-bin")
 
     internal fun encode(value: T): ByteArray {
-        val source = codec.encode(value)
+        val source = marshaller.encode(value)
         return source.readByteArray()
     }
     internal fun decode(value: ByteArray): T = Buffer().let { buffer ->
         buffer.write(value)
-        codec.decode(buffer)
+        marshaller.decode(buffer)
     }
 
     internal fun validateForString() {
@@ -310,24 +310,24 @@ private fun <T> GrpcMetadataKey<T>.validateName() {
     }
 }
 
-private val AsciiCodec = object : MessageCodec<String> {
-    override fun encode(value: String, config: CodecConfig?): Source = Buffer().apply {
+private val AsciiMarshaller = object : MessageMarshaller<String> {
+    override fun encode(value: String, config: MarshallerConfig?): Source = Buffer().apply {
         write(value.toAsciiBytes())
     }
 
-    override fun decode(source: Source, config: CodecConfig?): String = source.use { buffer ->
+    override fun decode(source: Source, config: MarshallerConfig?): String = source.use { buffer ->
         buffer.readByteArray().toAsciiString()
     }
 }
 
-private val BinaryCodec = object : MessageCodec<ByteArray> {
-    override fun encode(value: ByteArray, config: CodecConfig?): Source = Buffer().apply {
+private val BinaryMarshaller = object : MessageMarshaller<ByteArray> {
+    override fun encode(value: ByteArray, config: MarshallerConfig?): Source = Buffer().apply {
         write(value)
     }
 
-    override fun decode(source: Source, config: CodecConfig?): ByteArray = source.readByteArray()
+    override fun decode(source: Source, config: MarshallerConfig?): ByteArray = source.readByteArray()
 }
 
-private fun String.toAsciiKey() = GrpcMetadataKey(this, AsciiCodec)
-private fun String.toBinaryKey() = GrpcMetadataKey(this, BinaryCodec)
+private fun String.toAsciiKey() = GrpcMetadataKey(this, AsciiMarshaller)
+private fun String.toBinaryKey() = GrpcMetadataKey(this, BinaryMarshaller)
 

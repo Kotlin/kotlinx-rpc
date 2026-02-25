@@ -28,7 +28,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.utils)
-                api(projects.grpc.grpcCodec)
+                api(projects.grpc.grpcMarshaller)
 
                 api(libs.kotlinx.io.core)
 

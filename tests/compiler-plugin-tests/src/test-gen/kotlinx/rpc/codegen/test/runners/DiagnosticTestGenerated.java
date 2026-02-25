@@ -57,8 +57,8 @@ public class DiagnosticTestGenerated extends AbstractDiagnosticTest {
   }
 
   @Test
-  @TestMetadata("withCodec.kt")
-  public void testWithCodec() {
-    runTest("src/testData/diagnostics/withCodec.kt");
+  @TestMetadata("withMarshaller.kt")
+  public void testWithMarshaller() {
+    runTest("src/testData/diagnostics/withMarshaller.kt");
   }
 }

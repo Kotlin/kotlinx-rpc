@@ -12,7 +12,7 @@ object RpcClassId {
     val rpcAnnotation = ClassId(FqName("kotlinx.rpc.annotations"), Name.identifier("Rpc"))
     val grpcAnnotation = ClassId(FqName("kotlinx.rpc.grpc.annotations"), Name.identifier("Grpc"))
     val grpcMethodAnnotation = ClassId(FqName("kotlinx.rpc.grpc.annotations"), Name.identifier("Grpc.Method"))
-    val withCodecAnnotation = ClassId(FqName("kotlinx.rpc.grpc.codec"), Name.identifier("WithCodec"))
+    val withMarshallerAnnotation = ClassId(FqName("kotlinx.rpc.grpc.marshaller"), Name.identifier("WithMarshaller"))
     val checkedTypeAnnotation = ClassId(FqName("kotlinx.rpc.annotations"), Name.identifier("CheckedTypeAnnotation"))
 
     val serializableAnnotation = ClassId(FqName("kotlinx.serialization"), Name.identifier("Serializable"))
@@ -22,7 +22,7 @@ object RpcClassId {
     val sharedFlow = ClassId(FqName("kotlinx.coroutines.flow"), Name.identifier("SharedFlow"))
     val stateFlow = ClassId(FqName("kotlinx.coroutines.flow"), Name.identifier("StateFlow"))
 
-    val messageCodec = ClassId(FqName("kotlinx.rpc.grpc.codec"), Name.identifier("MessageCodec"))
+    val messageMarshaller = ClassId(FqName("kotlinx.rpc.grpc.marshaller"), Name.identifier("MessageMarshaller"))
 }
 
 object RpcNames {
@@ -38,5 +38,5 @@ object ProtoClassId {
 
 object ProtoNames {
     val DESCRIPTOR_NAME = Name.identifier("DESCRIPTOR")
-    val CODEC_NAME = Name.identifier("CODEC")
+    val MARSHALLER_NAME = Name.identifier("MARSHALLER")
 }

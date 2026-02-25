@@ -1,5 +1,5 @@
 // Klib ABI Dump
-// Targets: [macosArm64]
+// Targets: [linuxArm64, linuxX64, macosArm64, macosX64]
 // Rendering settings:
 // - Signature version: 2
 // - Show manifest properties: true

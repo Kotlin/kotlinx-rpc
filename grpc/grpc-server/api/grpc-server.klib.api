@@ -1,5 +1,5 @@
 // Klib ABI Dump
-// Targets: [iosArm64, iosSimulatorArm64, iosX64, macosArm64, macosX64]
+// Targets: [linuxArm64, linuxX64, macosArm64, macosX64]
 // Rendering settings:
 // - Signature version: 2
 // - Show manifest properties: true
@@ -104,9 +104,12 @@ final class kotlinx.rpc.grpc.server/GrpcServerConfiguration { // kotlinx.rpc.grp
     final var fallbackHandlerRegistry // kotlinx.rpc.grpc.server/GrpcServerConfiguration.fallbackHandlerRegistry|{}fallbackHandlerRegistry[0]
         final fun <get-fallbackHandlerRegistry>(): kotlinx.rpc.grpc.server/HandlerRegistry? // kotlinx.rpc.grpc.server/GrpcServerConfiguration.fallbackHandlerRegistry.<get-fallbackHandlerRegistry>|<get-fallbackHandlerRegistry>(){}[0]
         final fun <set-fallbackHandlerRegistry>(kotlinx.rpc.grpc.server/HandlerRegistry?) // kotlinx.rpc.grpc.server/GrpcServerConfiguration.fallbackHandlerRegistry.<set-fallbackHandlerRegistry>|<set-fallbackHandlerRegistry>(kotlinx.rpc.grpc.server.HandlerRegistry?){}[0]
-    final var messageCodecResolver // kotlinx.rpc.grpc.server/GrpcServerConfiguration.messageCodecResolver|{}messageCodecResolver[0]
-        final fun <get-messageCodecResolver>(): kotlinx.rpc.grpc.codec/MessageCodecResolver // kotlinx.rpc.grpc.server/GrpcServerConfiguration.messageCodecResolver.<get-messageCodecResolver>|<get-messageCodecResolver>(){}[0]
-        final fun <set-messageCodecResolver>(kotlinx.rpc.grpc.codec/MessageCodecResolver) // kotlinx.rpc.grpc.server/GrpcServerConfiguration.messageCodecResolver.<set-messageCodecResolver>|<set-messageCodecResolver>(kotlinx.rpc.grpc.codec.MessageCodecResolver){}[0]
+    final var marshallerConfig // kotlinx.rpc.grpc.server/GrpcServerConfiguration.marshallerConfig|{}marshallerConfig[0]
+        final fun <get-marshallerConfig>(): kotlinx.rpc.grpc.marshaller/MarshallerConfig? // kotlinx.rpc.grpc.server/GrpcServerConfiguration.marshallerConfig.<get-marshallerConfig>|<get-marshallerConfig>(){}[0]
+        final fun <set-marshallerConfig>(kotlinx.rpc.grpc.marshaller/MarshallerConfig?) // kotlinx.rpc.grpc.server/GrpcServerConfiguration.marshallerConfig.<set-marshallerConfig>|<set-marshallerConfig>(kotlinx.rpc.grpc.marshaller.MarshallerConfig?){}[0]
+    final var messageMarshallerResolver // kotlinx.rpc.grpc.server/GrpcServerConfiguration.messageMarshallerResolver|{}messageMarshallerResolver[0]
+        final fun <get-messageMarshallerResolver>(): kotlinx.rpc.grpc.marshaller/MessageMarshallerResolver // kotlinx.rpc.grpc.server/GrpcServerConfiguration.messageMarshallerResolver.<get-messageMarshallerResolver>|<get-messageMarshallerResolver>(){}[0]
+        final fun <set-messageMarshallerResolver>(kotlinx.rpc.grpc.marshaller/MessageMarshallerResolver) // kotlinx.rpc.grpc.server/GrpcServerConfiguration.messageMarshallerResolver.<set-messageMarshallerResolver>|<set-messageMarshallerResolver>(kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver){}[0]
 
     final fun intercept(kotlin/Array<out kotlinx.rpc.grpc.server/ServerInterceptor>...) // kotlinx.rpc.grpc.server/GrpcServerConfiguration.intercept|intercept(kotlin.Array<out|kotlinx.rpc.grpc.server.ServerInterceptor>...){}[0]
     final fun services(kotlin/Function1<kotlinx.rpc/RpcServer, kotlin/Unit>) // kotlinx.rpc.grpc.server/GrpcServerConfiguration.services|services(kotlin.Function1<kotlinx.rpc.RpcServer,kotlin.Unit>){}[0]

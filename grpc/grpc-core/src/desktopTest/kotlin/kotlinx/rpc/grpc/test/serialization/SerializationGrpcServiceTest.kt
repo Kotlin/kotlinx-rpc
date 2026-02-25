@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.codec.kotlinx.serialization.asCodecResolver
+import kotlinx.rpc.grpc.marshaller.kotlinx.serialization.asMarshallerResolver
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
@@ -62,8 +62,8 @@ class GrpcServiceSerializableImpl : GrpcServiceSerializable {
 
 class SerializationGrpcServiceTest : BaseGrpcServiceTest() {
     @Test
-    fun testSerializationCodec() = runServiceTest<GrpcServiceSerializable>(
-        resolver = Json.asCodecResolver(),
+    fun testSerializationMarshaller() = runServiceTest<GrpcServiceSerializable>(
+        resolver = Json.asMarshallerResolver(),
         impl = GrpcServiceSerializableImpl(),
     ) { service ->
         assertEquals("test test", service.plainString("test"))
@@ -73,7 +73,7 @@ class SerializationGrpcServiceTest : BaseGrpcServiceTest() {
 
     @Test
     fun krpc173() = runServiceTest<GrpcServiceSerializable>(
-        resolver = Json.asCodecResolver(),
+        resolver = Json.asMarshallerResolver(),
         impl = GrpcServiceSerializableImpl(),
     ) { service ->
         assertEquals(Unit, service.krpc173())
@@ -81,7 +81,7 @@ class SerializationGrpcServiceTest : BaseGrpcServiceTest() {
 
     @Test
     fun clientStreaming() = runServiceTest<GrpcService>(
-        resolver = Json.asCodecResolver(),
+        resolver = Json.asMarshallerResolver(),
         impl = GrpcServiceImpl(),
     ) { service ->
         assertEquals("test test", service.clientStreaming(flowOf("test", "test")))
@@ -89,7 +89,7 @@ class SerializationGrpcServiceTest : BaseGrpcServiceTest() {
 
     @Test
     fun serverStreaming() = runServiceTest<GrpcService>(
-        resolver = Json.asCodecResolver(),
+        resolver = Json.asMarshallerResolver(),
         impl = GrpcServiceImpl(),
     ) { service ->
         assertEquals(listOf("test", "test"), service.serverStreaming("test").toList())
@@ -97,7 +97,7 @@ class SerializationGrpcServiceTest : BaseGrpcServiceTest() {
 
     @Test
     fun bidiStreaming() = runServiceTest<GrpcService>(
-        resolver = Json.asCodecResolver(),
+        resolver = Json.asMarshallerResolver(),
         impl = GrpcServiceImpl(),
     ) { service ->
         assertContentEquals(

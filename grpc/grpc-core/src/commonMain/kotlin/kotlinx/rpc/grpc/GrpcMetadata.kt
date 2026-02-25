@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc
 
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 
 /**
  * Provides access to read and write metadata values to be exchanged during a gRPC call.
@@ -62,23 +62,23 @@ public expect class GrpcMetadata constructor()
 public fun buildGrpcMetadata(block: GrpcMetadata.() -> Unit): GrpcMetadata = GrpcMetadata().apply(block)
 
 /**
- * A typed key for metadata entries that uses a [MessageCodec] to encode and decode values.
+ * A typed key for metadata entries that uses a [MessageMarshaller] to encode and decode values.
  *
  * Typed keys provide type-safe access to metadata values with automatic serialization and
- * deserialization using the provided codec. The key name follows the same requirements as
+ * deserialization using the provided marshaller. The key name follows the same requirements as
  * string-based keys (case-insensitive, ASCII characters only).
  *
- * For non-binary methods ([get], [getAll], [append], [remove], [removeAll]), the codec must
+ * For non-binary methods ([get], [getAll], [append], [remove], [removeAll]), the marshaller must
  * encode values as ASCII strings and assume an ASCII string from the passed stream.
  * For binary methods ([getBinary], [getAllBinary], [appendBinary], [removeBinary], [removeAllBinary]),
- * the codec encodes values as raw bytes.
+ * the marshaller encodes values as raw bytes.
  *
  * @param T the type of values associated with this key
  * @param name the key name (case-insensitive). Must contain only digits (0-9), lowercase
  *   letters (a-z), and special characters (`-`, `_`, `.`). Binary keys must end with `-bin`.
- * @param codec the codec used to encode and decode values of type [T]
+ * @param marshaller the marshaller used to encode and decode values of type [T]
  */
-public expect class GrpcMetadataKey<T> public constructor(name: String, codec: MessageCodec<T>) {}
+public expect class GrpcMetadataKey<T> public constructor(name: String, marshaller: MessageMarshaller<T>) {}
 
 /**
  * Returns the last metadata entry added with the given [key], or `null` if there are no entries.
@@ -93,12 +93,12 @@ public expect operator fun GrpcMetadata.get(key: String): String?
 /**
  * Returns the last metadata entry added with the given typed [key], or `null` if there are no entries.
  *
- * The value is decoded using the codec associated with the key.
- * The codec must encode values as ASCII strings (not raw bytes).
+ * The value is decoded using the marshaller associated with the key.
+ * The marshaller must encode values as ASCII strings (not raw bytes).
  *
  * @param T the type of value associated with the key
  * @param key the typed metadata key. The key name must not end with `-bin`.
- * @return the last value associated with the key, decoded using the key's codec, or `null` if no values exist
+ * @return the last value associated with the key, decoded using the key's marshaller, or `null` if no values exist
  * @throws IllegalArgumentException if the key name ends with `-bin` or contains invalid characters
  */
 public expect operator fun <T> GrpcMetadata.get(key: GrpcMetadataKey<T>): T?
@@ -120,11 +120,11 @@ public expect fun GrpcMetadata.getBinary(key: String): ByteArray?
  * Returns the last binary metadata entry added with the given typed [key], or `null` if there are no entries.
  *
  * Binary keys must end with the "-bin" suffix according to gRPC specification. The value is
- * decoded using the codec associated with the key, which encodes values as raw bytes.
+ * decoded using the marshaller associated with the key, which encodes values as raw bytes.
  *
  * @param T the type of value associated with the key
  * @param key the typed metadata key. The key name must end with `-bin`.
- * @return the last binary value associated with the key, decoded using the key's codec, or `null` if no values exist
+ * @return the last binary value associated with the key, decoded using the key's marshaller, or `null` if no values exist
  * @throws IllegalArgumentException if the key name does not end with `-bin` or contains invalid characters
  */
 public expect fun <T> GrpcMetadata.getBinary(key: GrpcMetadataKey<T>): T?
@@ -143,12 +143,12 @@ public expect fun GrpcMetadata.getAll(key: String): List<String>
 /**
  * Returns all metadata entries with the given typed [key], in the order they were added.
  *
- * Each value is decoded using the codec associated with the key. The codec must encode values
+ * Each value is decoded using the marshaller associated with the key. The marshaller must encode values
  * as ASCII strings (not raw bytes).
  *
  * @param T the type of values associated with the key
  * @param key the typed metadata key. The key name must not end with `-bin`.
- * @return a list of all values associated with the key, decoded using the key's codec, or an empty list if no values exist
+ * @return a list of all values associated with the key, decoded using the key's marshaller, or an empty list if no values exist
  * @throws IllegalArgumentException if the key name ends with `-bin` or contains invalid characters
  */
 public expect fun <T> GrpcMetadata.getAll(key: GrpcMetadataKey<T>): List<T>
@@ -170,11 +170,11 @@ public expect fun GrpcMetadata.getAllBinary(key: String): List<ByteArray>
  * Returns all binary metadata entries with the given typed [key], in the order they were added.
  *
  * Binary keys must end with the "-bin" suffix according to gRPC specification. Each value is
- * decoded using the codec associated with the key, which encodes values as raw bytes.
+ * decoded using the marshaller associated with the key, which encodes values as raw bytes.
  *
  * @param T the type of values associated with the key
  * @param key the typed metadata key. The key name must end with `-bin`.
- * @return a list of all binary values associated with the key, decoded using the key's codec, or an empty list if no values exist
+ * @return a list of all binary values associated with the key, decoded using the key's marshaller, or an empty list if no values exist
  * @throws IllegalArgumentException if the key name does not end with `-bin` or contains invalid characters
  */
 public expect fun <T> GrpcMetadata.getAllBinary(key: GrpcMetadataKey<T>): List<T>
@@ -214,13 +214,13 @@ public expect fun GrpcMetadata.append(key: String, value: String)
 /**
  * Appends a metadata entry with the given typed [key] and [value].
  *
- * The value is encoded using the codec associated with the key. The codec must encode values
+ * The value is encoded using the marshaller associated with the key. The marshaller must encode values
  * as ASCII strings (not raw bytes). If the key already has values, the new value is added to
  * the end of the list. Duplicate values for the same key are permitted.
  *
  * @param T the type of value associated with the key
  * @param key the typed metadata key. The key name must not end with `-bin`.
- * @param value the value to add, which will be encoded using the key's codec
+ * @param value the value to add, which will be encoded using the key's marshaller
  * @throws IllegalArgumentException if the key name contains invalid characters or ends with `-bin`
  */
 public expect fun <T> GrpcMetadata.append(key: GrpcMetadataKey<T>, value: T)
@@ -243,13 +243,13 @@ public expect fun GrpcMetadata.appendBinary(key: String, value: ByteArray)
  * Appends a binary metadata entry with the given typed [key] and [value].
  *
  * Binary keys must end with the "-bin" suffix according to gRPC specification. The value is
- * encoded using the codec associated with the key, which encodes values as raw bytes. If the
+ * encoded using the marshaller associated with the key, which encodes values as raw bytes. If the
  * key already has values, the new value is added to the end of the list. Duplicate values for
  * the same key are permitted.
  *
  * @param T the type of value associated with the key
  * @param key the typed metadata key. The key name must end with `-bin`.
- * @param value the value to add, which will be encoded using the key's codec
+ * @param value the value to add, which will be encoded using the key's marshaller
  * @throws IllegalArgumentException if the key name contains invalid characters or does not end with `-bin`
  */
 public expect fun <T> GrpcMetadata.appendBinary(key: GrpcMetadataKey<T>, value: T)
@@ -269,8 +269,8 @@ public expect fun GrpcMetadata.remove(key: String, value: String): Boolean
 /**
  * Removes the first occurrence of the specified [value] for the given typed [key].
  *
- * The value is compared using the decoded form (after decoding with the key's codec).
- * The codec must encode values as ASCII strings (not raw bytes).
+ * The value is compared using the decoded form (after decoding with the key's marshaller).
+ * The marshaller must encode values as ASCII strings (not raw bytes).
  *
  * @param T the type of value associated with the key
  * @param key the typed metadata key. The key name must not end with `-bin`.
@@ -299,7 +299,7 @@ public expect fun GrpcMetadata.removeBinary(key: String, value: ByteArray): Bool
  * Removes the first occurrence of the specified binary [value] for the given typed [key].
  *
  * Binary keys must end with the "-bin" suffix according to gRPC specification. The value is
- * compared using the decoded form (after decoding with the key's codec), which encodes values
+ * compared using the decoded form (after decoding with the key's marshaller), which encodes values
  * as raw bytes.
  *
  * @param T the type of value associated with the key
@@ -324,12 +324,12 @@ public expect fun GrpcMetadata.removeAll(key: String): List<String>
 /**
  * Removes all values for the given typed [key] and returns them.
  *
- * Each value is decoded using the codec associated with the key. The codec must encode values
+ * Each value is decoded using the marshaller associated with the key. The marshaller must encode values
  * as ASCII strings (not raw bytes).
  *
  * @param T the type of values associated with the key
  * @param key the typed metadata key. The key name must not end with `-bin`.
- * @return a list of all values that were removed, decoded using the key's codec, or an empty list if there were no values
+ * @return a list of all values that were removed, decoded using the key's marshaller, or an empty list if there were no values
  * @throws IllegalArgumentException if the key name ends with `-bin` or contains invalid characters
  */
 public expect fun <T> GrpcMetadata.removeAll(key: GrpcMetadataKey<T>): List<T>

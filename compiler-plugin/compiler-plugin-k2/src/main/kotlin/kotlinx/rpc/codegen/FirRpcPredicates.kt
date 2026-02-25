@@ -17,8 +17,8 @@ object FirRpcPredicates {
         metaAnnotated(RpcClassId.grpcAnnotation.asSingleFqName(), includeItself = true)
     }
 
-    internal val withCodec = DeclarationPredicate.create {
-        annotated(RpcClassId.withCodecAnnotation.asSingleFqName())
+    internal val withMarshaller = DeclarationPredicate.create {
+        annotated(RpcClassId.withMarshallerAnnotation.asSingleFqName())
     }
 
     internal val checkedAnnotationMeta = DeclarationPredicate.create {

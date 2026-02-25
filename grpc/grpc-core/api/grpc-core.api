@@ -1,3 +1,54 @@
+public abstract interface class kotlinx/rpc/grpc/GrpcCompression {
+	public abstract fun getName ()Ljava/lang/String;
+}
+
+public final class kotlinx/rpc/grpc/GrpcCompression$Gzip : kotlinx/rpc/grpc/GrpcCompression {
+	public static final field INSTANCE Lkotlinx/rpc/grpc/GrpcCompression$Gzip;
+	public fun getName ()Ljava/lang/String;
+}
+
+public final class kotlinx/rpc/grpc/GrpcCompression$None : kotlinx/rpc/grpc/GrpcCompression {
+	public static final field INSTANCE Lkotlinx/rpc/grpc/GrpcCompression$None;
+	public fun getName ()Ljava/lang/String;
+}
+
+public final class kotlinx/rpc/grpc/GrpcMetadataKey {
+	public fun <init> (Ljava/lang/String;Lkotlinx/rpc/grpc/marshaller/MessageMarshaller;)V
+}
+
+public final class kotlinx/rpc/grpc/GrpcMetadataKt {
+	public static final fun buildGrpcMetadata (Lkotlin/jvm/functions/Function1;)Lio/grpc/Metadata;
+	public static final fun copy (Lio/grpc/Metadata;)Lio/grpc/Metadata;
+	public static final fun plus (Lio/grpc/Metadata;Lio/grpc/Metadata;)Lio/grpc/Metadata;
+	public static final fun plusAssign (Lio/grpc/Metadata;Lio/grpc/Metadata;)V
+}
+
+public final class kotlinx/rpc/grpc/GrpcMetadata_jvmKt {
+	public static final fun append (Lio/grpc/Metadata;Ljava/lang/String;Ljava/lang/String;)V
+	public static final fun append (Lio/grpc/Metadata;Lkotlinx/rpc/grpc/GrpcMetadataKey;Ljava/lang/Object;)V
+	public static final fun appendBinary (Lio/grpc/Metadata;Ljava/lang/String;[B)V
+	public static final fun appendBinary (Lio/grpc/Metadata;Lkotlinx/rpc/grpc/GrpcMetadataKey;Ljava/lang/Object;)V
+	public static final fun contains (Lio/grpc/Metadata;Ljava/lang/String;)Z
+	public static final fun get (Lio/grpc/Metadata;Ljava/lang/String;)Ljava/lang/String;
+	public static final fun get (Lio/grpc/Metadata;Lkotlinx/rpc/grpc/GrpcMetadataKey;)Ljava/lang/Object;
+	public static final fun getAll (Lio/grpc/Metadata;Ljava/lang/String;)Ljava/util/List;
+	public static final fun getAll (Lio/grpc/Metadata;Lkotlinx/rpc/grpc/GrpcMetadataKey;)Ljava/util/List;
+	public static final fun getAllBinary (Lio/grpc/Metadata;Ljava/lang/String;)Ljava/util/List;
+	public static final fun getAllBinary (Lio/grpc/Metadata;Lkotlinx/rpc/grpc/GrpcMetadataKey;)Ljava/util/List;
+	public static final fun getBinary (Lio/grpc/Metadata;Ljava/lang/String;)[B
+	public static final fun getBinary (Lio/grpc/Metadata;Lkotlinx/rpc/grpc/GrpcMetadataKey;)Ljava/lang/Object;
+	public static final fun keys (Lio/grpc/Metadata;)Ljava/util/Set;
+	public static final fun merge (Lio/grpc/Metadata;Lio/grpc/Metadata;)V
+	public static final fun remove (Lio/grpc/Metadata;Ljava/lang/String;Ljava/lang/String;)Z
+	public static final fun remove (Lio/grpc/Metadata;Lkotlinx/rpc/grpc/GrpcMetadataKey;Ljava/lang/Object;)Z
+	public static final fun removeAll (Lio/grpc/Metadata;Ljava/lang/String;)Ljava/util/List;
+	public static final fun removeAll (Lio/grpc/Metadata;Lkotlinx/rpc/grpc/GrpcMetadataKey;)Ljava/util/List;
+	public static final fun removeAllBinary (Lio/grpc/Metadata;Ljava/lang/String;)Ljava/util/List;
+	public static final fun removeAllBinary (Lio/grpc/Metadata;Lkotlinx/rpc/grpc/GrpcMetadataKey;)Ljava/util/List;
+	public static final fun removeBinary (Lio/grpc/Metadata;Ljava/lang/String;[B)Z
+	public static final fun removeBinary (Lio/grpc/Metadata;Lkotlinx/rpc/grpc/GrpcMetadataKey;Ljava/lang/Object;)Z
+}
+
 public final class kotlinx/rpc/grpc/StatusCode : java/lang/Enum {
 	public static final field ABORTED Lkotlinx/rpc/grpc/StatusCode;
 	public static final field ALREADY_EXISTS Lkotlinx/rpc/grpc/StatusCode;
@@ -16,11 +67,26 @@ public final class kotlinx/rpc/grpc/StatusCode : java/lang/Enum {
 	public static final field UNAVAILABLE Lkotlinx/rpc/grpc/StatusCode;
 	public static final field UNIMPLEMENTED Lkotlinx/rpc/grpc/StatusCode;
 	public static final field UNKNOWN Lkotlinx/rpc/grpc/StatusCode;
+	public final fun asException (Ljava/lang/String;Lio/grpc/Metadata;)Lio/grpc/StatusException;
+	public static synthetic fun asException$default (Lkotlinx/rpc/grpc/StatusCode;Ljava/lang/String;Lio/grpc/Metadata;ILjava/lang/Object;)Lio/grpc/StatusException;
+	public final fun asStatus (Ljava/lang/String;)Lio/grpc/Status;
+	public static synthetic fun asStatus$default (Lkotlinx/rpc/grpc/StatusCode;Ljava/lang/String;ILjava/lang/Object;)Lio/grpc/Status;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun getValue ()I
 	public final fun getValueAscii ()[B
 	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/grpc/StatusCode;
 	public static fun values ()[Lkotlinx/rpc/grpc/StatusCode;
+}
+
+public final class kotlinx/rpc/grpc/StatusExceptionKt {
+	public static final fun getStatus (Lio/grpc/StatusException;)Lio/grpc/Status;
+	public static final fun getTrailers (Lio/grpc/StatusException;)Lio/grpc/Metadata;
+}
+
+public final class kotlinx/rpc/grpc/StatusKt {
+	public static final fun asException (Lio/grpc/Status;Lio/grpc/Metadata;)Lio/grpc/StatusException;
+	public static synthetic fun asException$default (Lio/grpc/Status;Lio/grpc/Metadata;ILjava/lang/Object;)Lio/grpc/StatusException;
+	public static final fun getDescription (Lio/grpc/Status;)Ljava/lang/String;
 }
 
 public final class kotlinx/rpc/grpc/Status_jvmKt {
@@ -31,6 +97,7 @@ public final class kotlinx/rpc/grpc/Status_jvmKt {
 
 public abstract interface annotation class kotlinx/rpc/grpc/annotations/Grpc : java/lang/annotation/Annotation {
 	public abstract fun protoPackage ()Ljava/lang/String;
+	public abstract fun protoServiceName ()Ljava/lang/String;
 }
 
 public abstract interface annotation class kotlinx/rpc/grpc/annotations/Grpc$Method : java/lang/annotation/Annotation {

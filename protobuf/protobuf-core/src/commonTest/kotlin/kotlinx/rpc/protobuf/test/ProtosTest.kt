@@ -11,8 +11,8 @@ import asInternal
 import encodeWith
 import invoke
 import kotlinx.io.Buffer
-import kotlinx.rpc.grpc.codec.MessageCodec
-import kotlinx.rpc.grpc.codec.codec
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.marshallerOf
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import test.groups.WithGroups
@@ -39,10 +39,10 @@ class ProtosTest {
 
     private fun <M> encodeDecode(
         msg: M,
-        codec: MessageCodec<M>,
+        marshaller: MessageMarshaller<M>,
     ): M {
-        val source = codec.encode(msg)
-        return codec.decode(source)
+        val source = marshaller.encode(msg)
+        return marshaller.decode(source)
     }
 
     @Test
@@ -57,7 +57,7 @@ class ProtosTest {
         encoder.writeFixed32(9, 1234u)
         encoder.flush()
 
-        val decoded = codec<AllPrimitives>().decode(buffer)
+        val decoded = marshallerOf<AllPrimitives>().decode(buffer)
         assertEquals(12, decoded.sint32)
         assertNull(decoded.sint64)
         assertEquals(1234u, decoded.fixed32)
@@ -85,7 +85,7 @@ class ProtosTest {
 
         val msgObj = msg
 
-        val decoded = encodeDecode(msgObj, codec<AllPrimitives>())
+        val decoded = encodeDecode(msgObj, marshallerOf<AllPrimitives>())
 
         assertEquals(msg.double, decoded.double)
     }
@@ -102,7 +102,7 @@ class ProtosTest {
             listMessage = listOf(elem(1), elem(2), elem(3))
         }
 
-        val decoded = encodeDecode(msg, codec<Repeated>())
+        val decoded = encodeDecode(msg, marshallerOf<Repeated>())
 
         assertEquals(msg.listInt32, decoded.listInt32)
         assertEquals(msg.listFixed32, decoded.listFixed32)
@@ -138,7 +138,7 @@ class ProtosTest {
         encoder.flush()
 
         assertFailsWith<ProtobufDecodingException> {
-            codec<PresenceCheck>().decode(buffer)
+            marshallerOf<PresenceCheck>().decode(buffer)
         }
     }
 
@@ -150,7 +150,7 @@ class ProtosTest {
         encoder.writeEnum(1, 50)
         encoder.flush()
 
-        val decodedMsg = codec<UsingEnum>().decode(buffer)
+        val decodedMsg = marshallerOf<UsingEnum>().decode(buffer)
         assertEquals(MyEnum.UNRECOGNIZED(50), decodedMsg.enum)
     }
 
@@ -160,7 +160,7 @@ class ProtosTest {
             enum = MyEnum.ONE_SECOND
         }
 
-        val decodedMsg = encodeDecode(msg, codec<UsingEnum>())
+        val decodedMsg = encodeDecode(msg, marshallerOf<UsingEnum>())
         assertEquals(MyEnum.ONE, decodedMsg.enum)
         assertEquals(MyEnum.ONE_SECOND, decodedMsg.enum)
     }
@@ -170,11 +170,11 @@ class ProtosTest {
         // create message without enum field set
         val msg = UsingEnum {}
 
-        val buffer = codec<UsingEnum>().encode(msg)
+        val buffer = marshallerOf<UsingEnum>().encode(msg)
         // buffer should be empty (default is not in wire)
         assertTrue(buffer.exhausted())
 
-        val decoded = codec<UsingEnum>().decode(buffer)
+        val decoded = marshallerOf<UsingEnum>().decode(buffer)
         assertEquals(MyEnum.ZERO, decoded.enum)
     }
 
@@ -184,7 +184,7 @@ class ProtosTest {
             val msg = OneOfMsg {
                 field = OneOfMsg.Field.Sint(23)
             }
-            val decoded = encodeDecode(msg, codec<OneOfMsg>())
+            val decoded = encodeDecode(msg, marshallerOf<OneOfMsg>())
             assertEquals(OneOfMsg.Field.Sint(23), decoded.field)
         }
 
@@ -192,7 +192,7 @@ class ProtosTest {
             val msg = OneOfMsg {
                 field = OneOfMsg.Field.Fixed(21u)
             }
-            val decoded = encodeDecode(msg, codec<OneOfMsg>())
+            val decoded = encodeDecode(msg, marshallerOf<OneOfMsg>())
             assertEquals(OneOfMsg.Field.Fixed(21u), decoded.field)
         }
 
@@ -200,7 +200,7 @@ class ProtosTest {
             val msg = OneOfMsg {
                 field = OneOfMsg.Field.Other(Other { arg2 = "test" })
             }
-            val decoded = encodeDecode(msg, codec<OneOfMsg>())
+            val decoded = encodeDecode(msg, marshallerOf<OneOfMsg>())
             assertIs<OneOfMsg.Field.Other>(decoded.field)
             assertNull((decoded.field as OneOfMsg.Field.Other).value.arg1)
             assertEquals("test", (decoded.field as OneOfMsg.Field.Other).value.arg2)
@@ -211,7 +211,7 @@ class ProtosTest {
             val msg = OneOfMsg {
                 field = OneOfMsg.Field.Enum(MyEnum.ONE_SECOND)
             }
-            val decoded = encodeDecode(msg, codec<OneOfMsg>())
+            val decoded = encodeDecode(msg, marshallerOf<OneOfMsg>())
             assertEquals(MyEnum.ONE, (decoded.field as OneOfMsg.Field.Enum).value)
         }
     }
@@ -232,7 +232,7 @@ class ProtosTest {
         encoder.flush()
 
 
-        val decoded = codec<OneOfMsg>().decode(buffer)
+        val decoded = marshallerOf<OneOfMsg>().decode(buffer)
         assertIs<OneOfMsg.Field.Other>(decoded.field)
         val decodedOther = (decoded.field as OneOfMsg.Field.Other).value
         assertEquals("arg2", decodedOther.arg2)
@@ -250,7 +250,7 @@ class ProtosTest {
         encoder.writeFixed64(3, 123u)
         encoder.flush()
 
-        val decoded = codec<OneOfMsg>().decode(buffer)
+        val decoded = marshallerOf<OneOfMsg>().decode(buffer)
         assertEquals(OneOfMsg.Field.Fixed(123u), decoded.field)
     }
 
@@ -270,7 +270,7 @@ class ProtosTest {
         // write two values on the oneOf field.
         // the second value must be the one stored during decoding.
         val buffer = Buffer()
-        val decoded = codec<OneOfMsg>().decode(buffer)
+        val decoded = marshallerOf<OneOfMsg>().decode(buffer)
         assertNull(decoded.field)
     }
 
@@ -281,7 +281,7 @@ class ProtosTest {
                 field = 12345678
             }
         }
-        val decoded = encodeDecode(msg, codec<Outer>())
+        val decoded = encodeDecode(msg, marshallerOf<Outer>())
         assertEquals(msg.inner.field, decoded.inner.field)
     }
 
@@ -311,7 +311,7 @@ class ProtosTest {
         assertEquals(null, msg.rec.rec.rec.rec.num)
         assertEquals(3, msg.rec.num)
 
-        val decoded = encodeDecode(msg, codec<Recursive>())
+        val decoded = encodeDecode(msg, marshallerOf<Recursive>())
 
         assertEquals(3, decoded.rec.num)
         assertEquals(null, decoded.rec.rec.rec.rec.num)
@@ -339,7 +339,7 @@ class ProtosTest {
         )
         assertEquals(-12, notInside.num)
 
-        val decodedOuter = encodeDecode(outer, codec<NestedOuter>())
+        val decodedOuter = encodeDecode(outer, marshallerOf<NestedOuter>())
         assertEquals(123456789, decodedOuter.deep.num)
         assertEquals(
             NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.JustWayTooInner.JUST_WAY_TOO_INNER_UNSPECIFIED,
@@ -347,12 +347,12 @@ class ProtosTest {
         )
         assertEquals(-12, notInside.num)
 
-        val decodedNotInside = encodeDecode(notInside, codec<NotInside>())
+        val decodedNotInside = encodeDecode(notInside, marshallerOf<NotInside>())
         assertEquals(-12, decodedNotInside.num)
 
         val decodedInner = encodeDecode(
             inner,
-            codec<NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.CantBelieveItsSoInner>()
+            marshallerOf<NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.CantBelieveItsSoInner>()
         )
         assertEquals(123456789, decodedInner.num)
     }
@@ -377,7 +377,7 @@ class ProtosTest {
         encoder.writeMessage(1, secondPart as OtherInternal) { encodeWith(encoder, null) }
         encoder.flush()
 
-        val decoded = codec<Reference>().decode(buffer)
+        val decoded = marshallerOf<Reference>().decode(buffer)
         assertEquals("first", decoded.other.arg1)
         assertEquals("third", decoded.other.arg2)
         assertEquals("fourth", decoded.other.arg3)
@@ -394,7 +394,7 @@ class ProtosTest {
             )
         }
 
-        val decoded = encodeDecode(msg, codec<TestMap>())
+        val decoded = encodeDecode(msg, marshallerOf<TestMap>())
         assertEquals(msg.primitives, decoded.primitives)
         assertEquals(msg.messages.size, decoded.messages.size)
         for ((key, value) in msg.messages) {
@@ -435,7 +435,7 @@ class ProtosTest {
             })
         }
 
-        val decoded = encodeDecode(msg, codec<WithGroups>())
+        val decoded = encodeDecode(msg, marshallerOf<WithGroups>())
         assertEquals(msg.firstgroup.value, decoded.firstgroup.value)
         for ((i, group) in msg.secondgroup.withIndex()) {
             assertEquals(group.value, decoded.secondgroup[i].value)

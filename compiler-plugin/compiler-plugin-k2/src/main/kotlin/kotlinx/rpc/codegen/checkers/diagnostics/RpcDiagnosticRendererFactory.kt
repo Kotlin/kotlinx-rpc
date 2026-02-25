@@ -140,13 +140,13 @@ object GrpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
         )
 
         map.put(
-            factory = FirGrpcDiagnostics.NOT_AN_OBJECT_REFERENCE_IN_WITH_CODEC_ANNOTATION,
-            message = "'codec' parameter must reference an object, not a class or an interface.",
+            factory = FirGrpcDiagnostics.NOT_AN_OBJECT_REFERENCE_IN_WITH_MARSHALLER_ANNOTATION,
+            message = "'marshaller' parameter must reference an object, not a class or an interface.",
         )
 
         map.put(
-            factory = FirGrpcDiagnostics.CODEC_TYPE_MISMATCH,
-            message = "Codec type mismatch. Expected {0}, got {1}.",
+            factory = FirGrpcDiagnostics.MARSHALLER_TYPE_MISMATCH,
+            message = "Marshaller type mismatch. Expected {0}, got {1}.",
             rendererA = FirDiagnosticRenderers.RENDER_TYPE,
             rendererB = FirDiagnosticRenderers.RENDER_TYPE,
         )

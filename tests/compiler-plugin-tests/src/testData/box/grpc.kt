@@ -13,18 +13,18 @@ import kotlinx.rpc.codegen.test.grpcDelegate
 import kotlinx.rpc.codegen.test.checkMethod
 import kotlinx.rpc.codegen.test.Message
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.codec.CodecConfig
-import kotlinx.rpc.grpc.codec.WithCodec
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.WithMarshaller
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 
-@WithCodec(Custom.Companion::class)
+@WithMarshaller(Custom.Companion::class)
 class Custom(val content: String) {
-    companion object : MessageCodec<Custom> {
-        override fun encode(value: Custom, config: CodecConfig?): Source {
+    companion object : MessageMarshaller<Custom> {
+        override fun encode(value: Custom, config: MarshallerConfig?): Source {
             TODO("Not yet implemented")
         }
 
-        override fun decode(stream: Source, config: CodecConfig?): Custom {
+        override fun decode(stream: Source, config: MarshallerConfig?): Custom {
             TODO("Not yet implemented")
         }
     }

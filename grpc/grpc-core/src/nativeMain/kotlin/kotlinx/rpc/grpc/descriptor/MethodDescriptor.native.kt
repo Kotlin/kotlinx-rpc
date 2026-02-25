@@ -4,13 +4,13 @@
 
 package kotlinx.rpc.grpc.descriptor
 
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 public actual class MethodDescriptor<Request, Response> internal constructor(
     private val fullMethodName: String,
-    public val requestCodec: MessageCodec<Request>,
-    public val responseCodec: MessageCodec<Response>,
+    public val requestMarshaller: MessageMarshaller<Request>,
+    public val responseMarshaller: MessageMarshaller<Response>,
     public val methodType: MethodType,
     private val schemaDescriptor: Any?,
     private val idempotent: Boolean,
@@ -51,8 +51,8 @@ public actual val MethodDescriptor<*, *>.methodType: MethodType
 @InternalRpcApi
 public actual fun <Request, Response> methodDescriptor(
     fullMethodName: String,
-    requestCodec: MessageCodec<Request>,
-    responseCodec: MessageCodec<Response>,
+    requestMarshaller: MessageMarshaller<Request>,
+    responseMarshaller: MessageMarshaller<Response>,
     type: MethodType,
     schemaDescriptor: Any?,
     idempotent: Boolean,
@@ -61,8 +61,8 @@ public actual fun <Request, Response> methodDescriptor(
 ): MethodDescriptor<Request, Response> {
     return MethodDescriptor(
         fullMethodName = fullMethodName,
-        requestCodec = requestCodec,
-        responseCodec = responseCodec,
+        requestMarshaller = requestMarshaller,
+        responseMarshaller = responseMarshaller,
         methodType = type,
         schemaDescriptor = schemaDescriptor,
         idempotent = idempotent,

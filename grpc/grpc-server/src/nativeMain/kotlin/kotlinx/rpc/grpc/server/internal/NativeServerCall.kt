@@ -246,7 +246,7 @@ internal class NativeServerCall<Request, Response>(
                 }
             } else {
                 try {
-                    val msg = methodDescriptor.requestCodec
+                    val msg = methodDescriptor.requestMarshaller
                         .decode(buf.toKotlin())
                     // Mark that we have received at least one request message
                     receivedFirstMessage = true
@@ -291,7 +291,7 @@ internal class NativeServerCall<Request, Response>(
 
         val arena = Arena()
         tryRun {
-            val source = methodDescriptor.responseCodec.encode(message)
+            val source = methodDescriptor.responseMarshaller.encode(message)
             val byteBuffer = source.toGrpcByteBuffer()
             ready.value = false
 

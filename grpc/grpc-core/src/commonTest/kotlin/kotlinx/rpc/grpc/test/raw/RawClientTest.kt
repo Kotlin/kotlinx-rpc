@@ -96,8 +96,8 @@ class RawClientTest {
 
         val methodDescriptor = methodDescriptor(
             fullMethodName = "kotlinx.rpc.grpc.test.EchoService/$methodName",
-            requestCodec = EchoRequestInternal.CODEC,
-            responseCodec = EchoResponseInternal.CODEC,
+            requestMarshaller = EchoRequestInternal.MARSHALLER,
+            responseMarshaller = EchoResponseInternal.MARSHALLER,
             type = type,
             schemaDescriptor = Unit,
             idempotent = true,
