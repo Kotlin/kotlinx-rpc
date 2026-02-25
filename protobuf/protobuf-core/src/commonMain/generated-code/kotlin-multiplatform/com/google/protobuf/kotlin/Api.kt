@@ -66,8 +66,6 @@ public interface Api {
     * The source syntax of the service.
     */
     public val syntax: Syntax
-
-    public companion object
 }
 
 /**
@@ -103,8 +101,6 @@ public interface Method {
     * The source syntax of this method.
     */
     public val syntax: Syntax
-
-    public companion object
 }
 
 /**
@@ -198,6 +194,4 @@ public interface Mixin {
     * are rooted.
     */
     public val root: String
-
-    public companion object
 }

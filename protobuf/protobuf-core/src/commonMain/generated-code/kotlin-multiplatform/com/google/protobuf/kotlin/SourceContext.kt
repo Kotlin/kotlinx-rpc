@@ -16,6 +16,4 @@ public interface SourceContext {
     * protobuf element.  For example: `"google/protobuf/source_context.proto"`.
     */
     public val fileName: String
-
-    public companion object
 }

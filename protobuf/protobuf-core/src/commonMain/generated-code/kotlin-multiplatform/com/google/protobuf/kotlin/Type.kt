@@ -38,8 +38,6 @@ public interface Type {
     * The source edition string, only valid when syntax is SYNTAX_EDITIONS.
     */
     public val edition: String
-
-    public companion object
 }
 
 /**
@@ -226,8 +224,6 @@ public interface Field {
             public val entries: List<Cardinality> by lazy { listOf(CARDINALITY_UNKNOWN, CARDINALITY_OPTIONAL, CARDINALITY_REQUIRED, CARDINALITY_REPEATED) }
         }
     }
-
-    public companion object
 }
 
 /**
@@ -259,8 +255,6 @@ public interface Enum {
     * The source edition string, only valid when syntax is SYNTAX_EDITIONS.
     */
     public val edition: String
-
-    public companion object
 }
 
 /**
@@ -280,8 +274,6 @@ public interface EnumValue {
     * Protocol buffer options.
     */
     public val options: List<Option>
-
-    public companion object
 }
 
 /**
@@ -304,8 +296,6 @@ public interface Option {
     * value using the google.protobuf.Int32Value type.
     */
     public val value: Any
-
-    public companion object
 }
 
 /**

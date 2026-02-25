@@ -201,8 +201,6 @@ interface TestAllTypesProto2 {
     interface NestedMessage {
         val a: Int?
         val corecursive: TestAllTypesProto2
-
-        companion object
     }
 
     /**
@@ -211,37 +209,27 @@ interface TestAllTypesProto2 {
     interface Data {
         val groupInt32: Int?
         val groupUint32: UInt?
-
-        companion object
     }
 
     interface MultiWordGroupField {
         val groupInt32: Int?
         val groupUint32: UInt?
-
-        companion object
     }
 
     /**
     * message_set test case.
     */
     @GeneratedProtoMessage
-    interface MessageSetCorrect {
-        companion object
-    }
+    interface MessageSetCorrect
 
     @GeneratedProtoMessage
     interface MessageSetCorrectExtension1 {
         val str: String?
-
-        companion object
     }
 
     @GeneratedProtoMessage
     interface MessageSetCorrectExtension2 {
         val i: Int?
-
-        companion object
     }
 
     @GeneratedProtoMessage
@@ -255,8 +243,6 @@ interface TestAllTypesProto2 {
             @JvmInline
             value class B(val value: Int): OneofField
         }
-
-        companion object
     }
 
     sealed class NestedEnum(open val number: Int) {
@@ -277,23 +263,17 @@ interface TestAllTypesProto2 {
             val entries: List<NestedEnum> by lazy { listOf(NEG, FOO, BAR, BAZ) }
         }
     }
-
-    companion object
 }
 
 @GeneratedProtoMessage
 interface ForeignMessageProto2 {
     val c: Int?
-
-    companion object
 }
 
 @GeneratedProtoMessage
 interface GroupField {
     val groupInt32: Int?
     val groupUint32: UInt?
-
-    companion object
 }
 
 @GeneratedProtoMessage
@@ -307,17 +287,11 @@ interface UnknownToTestAllTypes {
 
     interface OptionalGroup {
         val a: Int?
-
-        companion object
     }
-
-    companion object
 }
 
 @GeneratedProtoMessage
-interface NullHypothesisProto2 {
-    companion object
-}
+interface NullHypothesisProto2
 
 @GeneratedProtoMessage
 interface EnumOnlyProto2 {
@@ -332,15 +306,11 @@ interface EnumOnlyProto2 {
             val entries: List<Bool> by lazy { listOf(kFalse, kTrue) }
         }
     }
-
-    companion object
 }
 
 @GeneratedProtoMessage
 interface OneStringProto2 {
     val data: String?
-
-    companion object
 }
 
 @GeneratedProtoMessage
@@ -348,8 +318,6 @@ interface ProtoWithKeywords {
     val inline: Int?
     val concept: String?
     val requires: List<String>
-
-    companion object
 }
 
 @GeneratedProtoMessage
@@ -405,8 +373,6 @@ interface TestAllRequiredTypesProto2 {
         val a: Int
         val corecursive: TestAllRequiredTypesProto2
         val optionalCorecursive: TestAllRequiredTypesProto2
-
-        companion object
     }
 
     /**
@@ -415,30 +381,22 @@ interface TestAllRequiredTypesProto2 {
     interface Data {
         val groupInt32: Int
         val groupUint32: UInt
-
-        companion object
     }
 
     /**
     * message_set test case.
     */
     @GeneratedProtoMessage
-    interface MessageSetCorrect {
-        companion object
-    }
+    interface MessageSetCorrect
 
     @GeneratedProtoMessage
     interface MessageSetCorrectExtension1 {
         val str: String
-
-        companion object
     }
 
     @GeneratedProtoMessage
     interface MessageSetCorrectExtension2 {
         val i: Int
-
-        companion object
     }
 
     sealed class NestedEnum(open val number: Int) {
@@ -459,8 +417,6 @@ interface TestAllRequiredTypesProto2 {
             val entries: List<NestedEnum> by lazy { listOf(NEG, FOO, BAR, BAZ) }
         }
     }
-
-    companion object
 }
 
 @GeneratedProtoMessage
@@ -485,31 +441,19 @@ interface TestLargeOneof {
     }
 
     @GeneratedProtoMessage
-    interface A1 {
-        companion object
-    }
+    interface A1
 
     @GeneratedProtoMessage
-    interface A2 {
-        companion object
-    }
+    interface A2
 
     @GeneratedProtoMessage
-    interface A3 {
-        companion object
-    }
+    interface A3
 
     @GeneratedProtoMessage
-    interface A4 {
-        companion object
-    }
+    interface A4
 
     @GeneratedProtoMessage
-    interface A5 {
-        companion object
-    }
-
-    companion object
+    interface A5
 }
 
 sealed class ForeignEnumProto2(open val number: Int) {

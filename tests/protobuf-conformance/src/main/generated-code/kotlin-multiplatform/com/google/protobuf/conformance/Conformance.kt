@@ -19,8 +19,6 @@ interface TestStatus {
     * an exact match without wildcards.
     */
     val matchedName: String
-
-    companion object
 }
 
 /**
@@ -31,8 +29,6 @@ interface TestStatus {
 @GeneratedProtoMessage
 interface FailureSet {
     val test: List<TestStatus>
-
-    companion object
 }
 
 /**
@@ -100,8 +96,6 @@ interface ConformanceRequest {
         @JvmInline
         value class TextPayload(val value: String): Payload
     }
-
-    companion object
 }
 
 /**
@@ -182,8 +176,6 @@ interface ConformanceResponse {
         @JvmInline
         value class TextPayload(val value: String): Result
     }
-
-    companion object
 }
 
 /**
@@ -195,8 +187,6 @@ interface JspbEncodingConfig {
     * Encode the value field of Any as jspb array if true, otherwise binary.
     */
     val useJspbArrayAnyFormat: Boolean
-
-    companion object
 }
 
 /**

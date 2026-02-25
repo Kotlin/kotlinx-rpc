@@ -22,8 +22,6 @@ public interface Struct {
     * Unordered map of dynamically typed values.
     */
     public val fields: Map<String, Value>
-
-    public companion object
 }
 
 /**
@@ -81,8 +79,6 @@ public interface Value {
         @JvmInline
         public value class ListValue(public val value: com.google.protobuf.kotlin.ListValue): Kind
     }
-
-    public companion object
 }
 
 /**
@@ -96,8 +92,6 @@ public interface ListValue {
     * Repeated field of dynamically typed values.
     */
     public val values: List<Value>
-
-    public companion object
 }
 
 /**

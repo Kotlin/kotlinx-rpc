@@ -82,6 +82,4 @@ public interface Duration {
     * to +999,999,999 inclusive.
     */
     public val nanos: Int
-
-    public companion object
 }
