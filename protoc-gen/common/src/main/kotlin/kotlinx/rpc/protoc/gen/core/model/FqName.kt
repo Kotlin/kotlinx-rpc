@@ -77,8 +77,7 @@ sealed interface FqName {
         val InternalRpcApi = fqDec("kotlinx.rpc.internal.utils", "InternalRpcApi")
         val Grpc = fqDec("kotlinx.rpc.grpc.annotations", "Grpc")
         val GrpcMethod = fqDec("kotlinx.rpc.grpc.annotations", "Grpc.Method")
-        val WithCodec = fqDec("kotlinx.rpc.grpc.codec", "WithCodec")
-        val GeneratedProtoMessage = fqDec("kotlinx.rpc.protobuf", "GeneratedProtoMessage")
+        val GeneratedProtoMessage = fqDec("kotlinx.rpc.protobuf.internal", "GeneratedProtoMessage")
     }
 
     @Suppress("unused")

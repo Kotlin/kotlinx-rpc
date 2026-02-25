@@ -1,10 +1,9 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.GeneratedProtoMessage
+import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
 * A Timestamp represents a point in time independent of any time zone or local
@@ -98,7 +97,6 @@ import kotlinx.rpc.protobuf.GeneratedProtoMessage
 * ) to obtain a formatter capable of generating timestamps in this format.
 */
 @GeneratedProtoMessage
-@WithCodec(TimestampInternal.CODEC::class)
 public interface Timestamp {
     /**
     * Represents seconds of UTC time since Unix epoch

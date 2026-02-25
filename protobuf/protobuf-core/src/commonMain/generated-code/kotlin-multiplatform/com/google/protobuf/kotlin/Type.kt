@@ -1,16 +1,14 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.GeneratedProtoMessage
+import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
 * A protocol buffer message type.
 */
 @GeneratedProtoMessage
-@WithCodec(TypeInternal.CODEC::class)
 public interface Type {
     /**
     * The fully qualified message name.
@@ -48,7 +46,6 @@ public interface Type {
 * A single field of a message type.
 */
 @GeneratedProtoMessage
-@WithCodec(FieldInternal.CODEC::class)
 public interface Field {
     /**
     * The field type.
@@ -237,7 +234,6 @@ public interface Field {
 * Enum type definition.
 */
 @GeneratedProtoMessage
-@WithCodec(EnumInternal.CODEC::class)
 public interface Enum {
     /**
     * Enum type name.
@@ -271,7 +267,6 @@ public interface Enum {
 * Enum value definition.
 */
 @GeneratedProtoMessage
-@WithCodec(EnumValueInternal.CODEC::class)
 public interface EnumValue {
     /**
     * Enum value name.
@@ -294,7 +289,6 @@ public interface EnumValue {
 * enumeration, etc.
 */
 @GeneratedProtoMessage
-@WithCodec(OptionInternal.CODEC::class)
 public interface Option {
     /**
     * The option's name. For protobuf built-in options (options defined in

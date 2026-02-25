@@ -7,6 +7,7 @@ package kotlinx.rpc.codegen.extension
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.expressions.impl.IrClassReferenceImpl
+import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.types.defaultType
 import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.constructors
@@ -16,6 +17,7 @@ internal class ProtoDeclaration(
     val message: IrClass,
     val messageInternal: IrClass,
     val descriptor: IrClass,
+    val codec: IrClass,
 )
 
 /**
@@ -38,7 +40,8 @@ internal class ProtoDescriptorGenerator(
 ) {
 
     fun generate() {
-        addObjectAnnotation()
+        addWithProtoDescriptorAnnotation()
+        addWithCodecAnnotation()
     }
 
     /**
@@ -47,31 +50,61 @@ internal class ProtoDescriptorGenerator(
      * The java implementation uses reflection to find the descriptor object.
      *
      * ```
-     * @WithProtoDescriptor(MyMessageInternal.$protoDescriptor::class)
+     * @WithProtoDescriptor(MyMessageInternal.DESCRIPTOR::class)
      * interface MyMessage {}
      * ```
      */
-    private fun addObjectAnnotation() {
+    private fun addWithProtoDescriptorAnnotation() {
+        addWithSomethingAnnotation(ctx.withProtoDescriptor, ProtoDeclaration::descriptor)
+    }
+
+    /**
+     * Add the @WithCodec annotation to the message interface.
+     * This is used by `codec()` to get the MessageCodec object.
+     * The java implementation uses reflection to find the descriptor object.
+     *
+     * ```
+     * @WithCodec(MyMessageInternal.CODEC::class)
+     * interface MyMessage {}
+     * ```
+     */
+    private fun addWithCodecAnnotation() {
+        addWithSomethingAnnotation(ctx.withCodecAnnotation, ProtoDeclaration::codec)
+    }
+
+    /**
+     * Add the @With<Something> annotation to the message interface.
+     *
+     * ```
+     * @With<Codec>(MyMessageInternal.<SOMETHING>::class)
+     * interface MyMessage {}
+     * ```
+     */
+    private fun addWithSomethingAnnotation(
+        withSomethingAnnotation: IrClassSymbol,
+        somethingClass: ProtoDeclaration.() -> IrClass,
+    ) {
         val message = declaration.message
 
         ctx.vsApi {
             val annotation = IrAnnotationVS(
                 startOffset = message.startOffset,
                 endOffset = message.endOffset,
-                type = ctx.withProtoDescriptor.defaultType,
-                symbol = ctx.withProtoDescriptor.constructors.single(),
+                type = withSomethingAnnotation.defaultType,
+                symbol = withSomethingAnnotation.constructors.single(),
                 typeArgumentsCount = 0,
                 constructorTypeArgumentsCount = 0,
                 valueArgumentsCount = 1,
             ).apply {
-                val descriptorObjectType = declaration.descriptor.defaultType
+                val clazz = declaration.somethingClass()
+                val descriptorObjectType = clazz.defaultType
                 arguments(this@vsApi) {
                     values {
                         +IrClassReferenceImpl(
                             startOffset = startOffset,
                             endOffset = endOffset,
                             type = ctx.irBuiltIns.kClassClass.typeWith(descriptorObjectType),
-                            symbol = declaration.descriptor.symbol,
+                            symbol = clazz.symbol,
                             classType = descriptorObjectType,
                         )
                     }
@@ -81,6 +114,4 @@ internal class ProtoDescriptorGenerator(
             message.addAnnotationVS(annotation)
         }
     }
-
-
 }

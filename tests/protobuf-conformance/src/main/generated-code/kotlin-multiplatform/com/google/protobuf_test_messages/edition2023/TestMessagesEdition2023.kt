@@ -1,13 +1,11 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf_test_messages.edition2023
 
-import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.GeneratedProtoMessage
+import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 @GeneratedProtoMessage
-@WithCodec(ComplexMessageInternal.CODEC::class)
 interface ComplexMessage {
     val d: Int?
 
@@ -15,7 +13,6 @@ interface ComplexMessage {
 }
 
 @GeneratedProtoMessage
-@WithCodec(TestAllTypesEdition2023Internal.CODEC::class)
 interface TestAllTypesEdition2023 {
     /**
     * Singular
@@ -156,7 +153,6 @@ interface TestAllTypesEdition2023 {
     }
 
     @GeneratedProtoMessage
-    @WithCodec(TestAllTypesEdition2023Internal.NestedMessageInternal.CODEC::class)
     interface NestedMessage {
         val a: Int?
         val corecursive: TestAllTypesEdition2023
@@ -197,7 +193,6 @@ interface TestAllTypesEdition2023 {
 }
 
 @GeneratedProtoMessage
-@WithCodec(ForeignMessageEdition2023Internal.CODEC::class)
 interface ForeignMessageEdition2023 {
     val c: Int?
 
@@ -205,7 +200,6 @@ interface ForeignMessageEdition2023 {
 }
 
 @GeneratedProtoMessage
-@WithCodec(GroupLikeTypeInternal.CODEC::class)
 interface GroupLikeType {
     val c: Int?
 

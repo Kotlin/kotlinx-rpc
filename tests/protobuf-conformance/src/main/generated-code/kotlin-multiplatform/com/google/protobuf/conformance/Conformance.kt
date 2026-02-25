@@ -1,10 +1,9 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.conformance
 
-import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.GeneratedProtoMessage
+import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
 * Meant to encapsulate all types of tests: successes, skips, failures, etc.
@@ -12,7 +11,6 @@ import kotlinx.rpc.protobuf.GeneratedProtoMessage
 * may be truncated for our failure lists.
 */
 @GeneratedProtoMessage
-@WithCodec(TestStatusInternal.CODEC::class)
 interface TestStatus {
     val name: String
     val failureMessage: String
@@ -31,7 +29,6 @@ interface TestStatus {
 * test should return a serialized FailureSet in protobuf_payload.
 */
 @GeneratedProtoMessage
-@WithCodec(FailureSetInternal.CODEC::class)
 interface FailureSet {
     val test: List<TestStatus>
 
@@ -46,7 +43,6 @@ interface FailureSet {
 *   3. if the parse succeeded, serialize the message in the requested format.
 */
 @GeneratedProtoMessage
-@WithCodec(ConformanceRequestInternal.CODEC::class)
 interface ConformanceRequest {
     /**
     * Which format should the testee serialize its message to?
@@ -112,7 +108,6 @@ interface ConformanceRequest {
 * Represents a single test case's output.
 */
 @GeneratedProtoMessage
-@WithCodec(ConformanceResponseInternal.CODEC::class)
 interface ConformanceResponse {
     val result: Result?
 
@@ -195,7 +190,6 @@ interface ConformanceResponse {
 * Encoding options for jspb format.
 */
 @GeneratedProtoMessage
-@WithCodec(JspbEncodingConfigInternal.CODEC::class)
 interface JspbEncodingConfig {
     /**
     * Encode the value field of Any as jspb array if true, otherwise binary.

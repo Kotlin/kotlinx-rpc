@@ -332,6 +332,7 @@ object FirCheckedAnnotationHelper {
         val checkForArgument = vsApi {
             annotations
                 .firstOrNull { it.toAnnotationClassId(session) == RpcClassId.checkedTypeAnnotation }
+                // todo this can throw
                 ?.getKClassArgumentVS(RpcNames.CHECK_FOR_ARGUMENT_NAME, session)
                 ?.toClassSymbolVS(session)
         }

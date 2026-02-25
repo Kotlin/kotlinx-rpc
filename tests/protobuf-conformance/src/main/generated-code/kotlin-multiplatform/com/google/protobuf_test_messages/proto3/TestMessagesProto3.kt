@@ -18,10 +18,9 @@ import com.google.protobuf.kotlin.Timestamp
 import com.google.protobuf.kotlin.UInt32Value
 import com.google.protobuf.kotlin.UInt64Value
 import com.google.protobuf.kotlin.Value
-import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.GeneratedProtoMessage
+import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
 * This proto includes every type of field in both singular and repeated
@@ -33,7 +32,6 @@ import kotlinx.rpc.protobuf.GeneratedProtoMessage
 * this stays true in a unit test.
 */
 @GeneratedProtoMessage
-@WithCodec(TestAllTypesProto3Internal.CODEC::class)
 interface TestAllTypesProto3 {
     /**
     * Singular
@@ -234,7 +232,6 @@ interface TestAllTypesProto3 {
     }
 
     @GeneratedProtoMessage
-    @WithCodec(TestAllTypesProto3Internal.NestedMessageInternal.CODEC::class)
     interface NestedMessage {
         val a: Int
         val corecursive: TestAllTypesProto3
@@ -285,7 +282,6 @@ interface TestAllTypesProto3 {
 }
 
 @GeneratedProtoMessage
-@WithCodec(ForeignMessageInternal.CODEC::class)
 interface ForeignMessage {
     val c: Int
 
@@ -293,13 +289,11 @@ interface ForeignMessage {
 }
 
 @GeneratedProtoMessage
-@WithCodec(NullHypothesisProto3Internal.CODEC::class)
 interface NullHypothesisProto3 {
     companion object
 }
 
 @GeneratedProtoMessage
-@WithCodec(EnumOnlyProto3Internal.CODEC::class)
 interface EnumOnlyProto3 {
     sealed class Bool(open val number: Int) {
         data object kFalse: Bool(number = 0)
