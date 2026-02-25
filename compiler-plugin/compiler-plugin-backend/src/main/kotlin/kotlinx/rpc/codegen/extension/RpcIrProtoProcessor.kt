@@ -23,7 +23,9 @@ internal fun computeProtoDeclarationIfNeeded(messageClass: IrClass, context: Rpc
     return null
 }
 
-private var IrClass.protoDeclarationOrNull: ProtoDeclaration? by irAttribute(copyByDefault = false)
+private var IrClass.protoDeclarationOrNull: ProtoDeclaration? by irAttribute(
+    /* followAttributeOwner|copyByDefault = */false,
+)
 
 private fun computeProtoDeclaration(
     messageClass: IrClass,

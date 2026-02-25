@@ -9,7 +9,7 @@ import kotlinx.rpc.codegen.extension.RpcIrProtoProcessor
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.IrClass
 //##csm RpcIrProtoProcessorDelegate.kt-import
-//##csm specific=[2.0.0...2.1.21]
+//##csm specific=[2.1.0...2.1.21]
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
 //##csm /specific
 //##csm default
@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.ir.visitors.IrTransformer
 //##csm /RpcIrProtoProcessorDelegate.kt-import
 
 //##csm RpcIrProtoProcessorDelegate
-//##csm specific=[2.0.0...2.1.21]
+//##csm specific=[2.1.0...2.1.21]
 internal class RpcIrProtoProcessorDelegate(
     val processor: RpcIrProtoProcessor,
 ) : IrElementTransformer<RpcIrContext> {

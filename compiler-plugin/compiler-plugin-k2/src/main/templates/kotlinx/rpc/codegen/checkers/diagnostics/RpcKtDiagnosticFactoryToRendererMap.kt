@@ -11,7 +11,7 @@ fun RpcKtDiagnosticFactoryToRendererMap(
     init: (KtDiagnosticFactoryToRendererMap) -> Unit,
 ): Lazy<KtDiagnosticFactoryToRendererMap> {
     //##csm RpcKtDiagnosticFactoryToRendererMap
-    //##csm specific=[2.0.0...2.2.10]
+    //##csm specific=[2.1.0...2.2.10]
     return lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         KtDiagnosticFactoryToRendererMap(name).also(init)
     }
