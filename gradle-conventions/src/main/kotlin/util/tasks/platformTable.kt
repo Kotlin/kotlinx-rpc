@@ -316,10 +316,14 @@ abstract class DumpPlatformsTask : DefaultTask() {
             }
         }
     }
+
+    companion object {
+        const val NAME = "dumpPlatformTable"
+    }
 }
 
 fun Project.registerDumpPlatformTableTask() {
-    tasks.register<DumpPlatformsTask>("dumpPlatformTable") {
+    tasks.register<DumpPlatformsTask>(DumpPlatformsTask.NAME) {
         input.set(PLATFORM_TOPIC_PATH)
         output.set(PLATFORM_TOPIC_PATH)
     }
