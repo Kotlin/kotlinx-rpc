@@ -7,10 +7,10 @@ package kotlinx.rpc.grpc.test
 import kotlinx.io.Source
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.codec.CodecConfig
-import kotlinx.rpc.grpc.codec.EmptyMessageCodecResolver
-import kotlinx.rpc.grpc.codec.MessageCodec
-import kotlinx.rpc.grpc.codec.MessageCodecResolver
+import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.EmptyMessageMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -28,12 +28,12 @@ interface GrpcAnnotationsService {
 
 class GrpcAnnotationsTest {
     @Test
-    fun nullCodec() {
+    fun nullMarshaller() {
         assertFailsWith<IllegalArgumentException> {
             val descriptor = serviceDescriptorOf<GrpcAnnotationsService>()
                     as GrpcServiceDescriptor<GrpcAnnotationsService>
 
-            descriptor.delegate(EmptyMessageCodecResolver, null)
+            descriptor.delegate(EmptyMessageMarshallerResolver, null)
         }
     }
 
@@ -42,7 +42,7 @@ class GrpcAnnotationsTest {
         val descriptor = serviceDescriptorOf<GrpcAnnotationsService>()
                 as GrpcServiceDescriptor<GrpcAnnotationsService>
         val methodDescriptor = descriptor
-            .delegate(unitCodec, null)
+            .delegate(unitMarshaller, null)
             .getMethodDescriptor("Empty")
 
         assertNotNull(methodDescriptor)
@@ -54,13 +54,13 @@ class GrpcAnnotationsTest {
     }
 }
 
-private val unitCodec = MessageCodecResolver {
-    object : MessageCodec<Unit> {
-        override fun encode(value: Unit, config: CodecConfig?): Source {
+private val unitMarshaller = MessageMarshallerResolver {
+    object : MessageMarshaller<Unit> {
+        override fun encode(value: Unit, config: MarshallerConfig?): Source {
             TODO("Not yet implemented")
         }
 
-        override fun decode(source: Source, config: CodecConfig?) {
+        override fun decode(source: Source, config: MarshallerConfig?) {
             TODO("Not yet implemented")
         }
     }

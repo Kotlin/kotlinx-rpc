@@ -9,13 +9,13 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.codec.MessageCodecResolver
+import kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver
 import kotlinx.rpc.withService
 import kotlin.reflect.KClass
 
 abstract class  BaseGrpcServiceTest {
     protected inline fun <@Grpc reified Service : Any> runServiceTest(
-        resolver: MessageCodecResolver,
+        resolver: MessageMarshallerResolver,
         impl: Service,
         noinline block: suspend (Service) -> Unit,
     ) {
@@ -24,7 +24,7 @@ abstract class  BaseGrpcServiceTest {
 
     protected fun <@Grpc Service : Any> runServiceTest(
         kClass: KClass<Service>,
-        resolver: MessageCodecResolver,
+        resolver: MessageMarshallerResolver,
         impl: Service,
         block: suspend (Service) -> Unit,
     ) = runTest {
@@ -32,7 +32,7 @@ abstract class  BaseGrpcServiceTest {
             port = PORT,
             parentContext = coroutineContext,
         ) {
-            messageCodecResolver = resolver
+            messageMarshallerResolver = resolver
             services {
                 registerService(kClass) { impl }
             }
@@ -41,7 +41,7 @@ abstract class  BaseGrpcServiceTest {
         server.start()
 
         val client = GrpcClient("localhost", PORT) {
-            messageCodecResolver = resolver
+            messageMarshallerResolver = resolver
             credentials = plaintext()
         }
 

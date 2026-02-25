@@ -24,7 +24,7 @@ class ProtobufSizeCalculationTest {
         val internalMessage = msg as RepeatedInternal
         val declaredSize = internalMessage._size
 
-        val bytes = RepeatedInternal.CODEC.encode(msg).readByteArray()
+        val bytes = RepeatedInternal.MARSHALLER.encode(msg).readByteArray()
         val actualSize = bytes.size
 
         assertEquals(
@@ -43,7 +43,7 @@ class ProtobufSizeCalculationTest {
         val internalMessage = msg as RepeatedInternal
         val declaredSize = internalMessage._size
 
-        val bytes = RepeatedInternal.CODEC.encode(msg).readByteArray()
+        val bytes = RepeatedInternal.MARSHALLER.encode(msg).readByteArray()
         val actualSize = bytes.size
 
         assertEquals(
@@ -62,7 +62,7 @@ class ProtobufSizeCalculationTest {
         val internalMessage = msg as TestMapInternal
         val declaredSize = internalMessage._size
 
-        val bytes = TestMapInternal.CODEC.encode(msg).readByteArray()
+        val bytes = TestMapInternal.MARSHALLER.encode(msg).readByteArray()
         val actualSize = bytes.size
 
         assertEquals(

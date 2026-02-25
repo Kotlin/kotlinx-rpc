@@ -1033,7 +1033,7 @@ internal class RpcStubGenerator(
 
     /**
      * ```kotlin
-     * override fun delegate(resolver: MessageCodecResolver, codecConfig: CodecConfig?): GrpcServiceDelegate {
+     * override fun delegate(resolver: MessageMarshallerResolver, marshallerConfig: MarshallerConfig?): GrpcServiceDelegate {
      *     val methodDescriptorMap = ...
      *     val serviceDescriptor = ...
      *
@@ -1057,17 +1057,17 @@ internal class RpcStubGenerator(
 
             val resolver = addValueParameter {
                 name = Name.identifier("resolver")
-                type = ctx.grpcMessageCodecResolver.defaultType
+                type = ctx.grpcMessageMarshallerResolver.defaultType
             }
 
-            val codecConfig = addValueParameter {
-                name = Name.identifier("codecConfig")
-                type = ctx.codecConfig.defaultType.makeNullable()
+            val marshallerConfig = addValueParameter {
+                name = Name.identifier("marshallerConfig")
+                type = ctx.marshallerConfig.defaultType.makeNullable()
             }
 
             body = irBuilder(symbol).irBlockBody {
                 val methodDescriptorMap = irTemporary(
-                    value = irMethodDescriptorMap(resolver, codecConfig),
+                    value = irMethodDescriptorMap(resolver, marshallerConfig),
                     nameHint = "methodDescriptorMap",
                 )
 
@@ -1112,13 +1112,13 @@ internal class RpcStubGenerator(
      */
     private fun IrBlockBodyBuilder.irMethodDescriptorMap(
         resolver: IrValueParameter,
-        codecConfig: IrValueParameter
+        marshallerConfig: IrValueParameter
     ): IrCallImpl {
         return irMapOf(
             keyType = ctx.irBuiltIns.stringType,
             valueType = ctx.grpcPlatformMethodDescriptor(declaration.stubClass.file).starProjectedType,
             declaration.methods.memoryOptimizedMap { callable ->
-                stringConst(callable.grpcName) to irMethodDescriptor(callable, resolver, codecConfig)
+                stringConst(callable.grpcName) to irMethodDescriptor(callable, resolver, marshallerConfig)
             },
         )
     }
@@ -1169,12 +1169,12 @@ internal class RpcStubGenerator(
      * gRPC Platform MethodDescriptor call
      *
      * ```kotlin
-     * // In scope: resolver: MessageCodecResolver
+     * // In scope: resolver: MessageMarshallerResolver
      *
      * methodDescriptor<<request-type>, <response-type>>(
      *     fullMethodName = "${descriptor.serviceFqName}/${<from Grpc.Method annotation> ?: callable.name}",
-     *     requestCodec = <request-codec>,
-     *     responseCodec = <response-codec>,
+     *     requestMarshaller = <request-marshaller>,
+     *     responseMarshaller = <response-marshaller>,
      *     type = MethodType.<method-type>,
      *     schemaDescriptor = null, // null for now
      *     idempotent = <from Grpc.Method annotation>,
@@ -1189,12 +1189,12 @@ internal class RpcStubGenerator(
      *   - <method-name> - the name of the method
      *   - <method-type> - one of MethodType.UNARY, MethodType.SERVER_STREAMING,
      *   MethodType.CLIENT_STREAMING, MethodType.BIDI_STREAMING
-     *   - <request-codec>/<response-codec> - a MessageCodec getter, see [irCodecWithConfigCheck]
+     *   - <request-marshaller>/<response-marshaller> - a MessageMarshaller getter, see [irMarshallerWithConfigCheck]
      */
     private fun IrBlockBodyBuilder.irMethodDescriptor(
         callable: ServiceDeclaration.Callable,
         resolver: IrValueParameter,
-        codecConfig: IrValueParameter,
+        marshallerConfig: IrValueParameter,
     ): IrCall {
         check(callable is ServiceDeclaration.Method) {
             "Only methods are allowed here"
@@ -1233,11 +1233,11 @@ internal class RpcStubGenerator(
                     // fullMethodName
                     +stringConst("${declaration.serviceFqName}/${callable.grpcName}")
 
-                    // requestCodec
-                    +irCodecWithConfigCheck(requestType, resolver, codecConfig)
+                    // requestMarshaller
+                    +irMarshallerWithConfigCheck(requestType, resolver, marshallerConfig)
 
-                    // responseCodec
-                    +irCodecWithConfigCheck(responseType, resolver, codecConfig)
+                    // responseMarshaller
+                    +irMarshallerWithConfigCheck(responseType, resolver, marshallerConfig)
 
                     val flow = ctx.flow(declaration.stubClass.file)
                     // type
@@ -1293,76 +1293,76 @@ internal class RpcStubGenerator(
     }
 
     /**
-     * Check if the [codecConfig] is null. If yes, return a wrapped codec that uses the default codec configuration.
-     * Otherwise, return the codec.
+     * Check if the [marshallerConfig] is null. If yes, return a wrapped marshaller that uses the default marshaller configuration.
+     * Otherwise, return the marshaller.
      *
-     * Delegates actual codec resolving to [irCodec].
+     * Delegates actual marshaller resolving to [irMarshaller].
      *
      * ```
-     * if (codecConfig == null) {
-     *    return codec // codec from irCodec
+     * if (marshallerConfig == null) {
+     *    return marshaller // marshaller from irMarshaller
      * } else {
-     *   return ConfiguredMessageCodecDelegate(config, codec)
+     *   return ConfiguredMessageMarshallerDelegate(config, marshaller)
      * }
      * ```
      */
-    private fun IrBlockBodyBuilder.irCodecWithConfigCheck(
+    private fun IrBlockBodyBuilder.irMarshallerWithConfigCheck(
         messageType: IrType,
         resolver: IrValueParameter,
-        codecConfig: IrValueParameter,
+        marshallerConfig: IrValueParameter,
     ): IrExpression {
 
-        val codec = irTemporary(
-            value = irCodec(messageType, resolver),
-            nameHint = "codec",
+        val marshaller = irTemporary(
+            value = irMarshaller(messageType, resolver),
+            nameHint = "marshaller",
             isMutable = false,
         )
 
-        val resolvedCodec = irCallConstructor(
-            callee = ctx.configuredMessageCodecDelegate.constructors.single(),
+        val resolvedMarshaller = irCallConstructor(
+            callee = ctx.configuredMessageMarshallerDelegate.constructors.single(),
             typeArguments = listOf(messageType),
         ).apply {
             arguments {
                 values {
-                    +irGet(codecConfig)
-                    +irGet(codec)
+                    +irGet(marshallerConfig)
+                    +irGet(marshaller)
                 }
             }
         }
 
         return irIfNull(
-            type = ctx.grpcMessageCodec.typeWith(messageType),
-            subject = irGet(codecConfig),
-            thenPart = irGet(codec),
-            elsePart = resolvedCodec,
+            type = ctx.grpcMessageMarshaller.typeWith(messageType),
+            subject = irGet(marshallerConfig),
+            thenPart = irGet(marshaller),
+            elsePart = resolvedMarshaller,
         )
     }
 
     /**
-     * If [messageType] is annotated with [RpcIrContext.withCodecAnnotation],
-     * we use its codec object
+     * If [messageType] is annotated with [RpcIrContext.withMarshallerAnnotation],
+     * we use its marshaller object
      *
      * If not, use [resolver].resolveOrNull()
      */
-    private fun IrBlockBodyBuilder.irCodec(messageType: IrType, resolver: IrValueParameter): IrExpression {
+    private fun IrBlockBodyBuilder.irMarshaller(messageType: IrType, resolver: IrValueParameter): IrExpression {
         val owner = messageType.classOrFail.owner
-        val codecClassSymbol = computeProtoDeclarationIfNeeded(owner, ctx)
-            ?.codec?.symbol
-            ?: owner.extractCodecReference()
+        val marshallerClassSymbol = computeProtoDeclarationIfNeeded(owner, ctx)
+            ?.marshaller?.symbol
+            ?: owner.extractMarshallerReference()
 
-        return if (codecClassSymbol != null) {
+        return if (marshallerClassSymbol != null) {
             IrGetObjectValueImpl(
                 startOffset = UNDEFINED_OFFSET,
                 endOffset = UNDEFINED_OFFSET,
-                type = codecClassSymbol.defaultType,
-                symbol = codecClassSymbol,
+                type = marshallerClassSymbol.defaultType,
+                symbol = marshallerClassSymbol,
             )
         } else {
-            val codecType = ctx.grpcMessageCodec.typeWith(messageType)
-            val codecCall = vsApi {
+            val marshallerType = ctx.grpcMessageMarshaller.typeWith(messageType)
+            val marshallerCall = vsApi {
                 irCall(
-                    type = codecType.makeNullable(),
-                    callee = ctx.functions.grpcMessageCodecResolverResolveOrNull.symbol,
+                    type = marshallerType.makeNullable(),
+                    callee = ctx.functions.grpcMessageMarshallerResolverResolveOrNull.symbol,
                     typeArgumentsCount = 0,
                 )
             }.apply {
@@ -1381,11 +1381,11 @@ internal class RpcStubGenerator(
             }
 
             irElvis(
-                expression = codecCall,
+                expression = marshallerCall,
                 ifNull = irCall(ctx.irBuiltIns.illegalArgumentExceptionSymbol).apply {
                     arguments {
                         values {
-                            +stringConst("No codec found for ${messageType.classFqName}")
+                            +stringConst("No marshaller found for ${messageType.classFqName}")
                         }
                     }
                 },
@@ -1393,12 +1393,12 @@ internal class RpcStubGenerator(
         }
     }
 
-    private fun IrClass.extractCodecReference(): IrClassSymbol? {
-        val withCodecAnnotation = getAnnotation(ctx.withCodecAnnotation.owner.kotlinFqName)
+    private fun IrClass.extractMarshallerReference(): IrClassSymbol? {
+        val withMarshallerAnnotation = getAnnotation(ctx.withMarshallerAnnotation.owner.kotlinFqName)
 
-        if (withCodecAnnotation != null) {
-            val classReference = vsApi { withCodecAnnotation.argumentsVS }.single() as? IrClassReference
-                ?: error("Expected IrClassReference for ${ctx.withCodecAnnotation.owner.kotlinFqName} parameter")
+        if (withMarshallerAnnotation != null) {
+            val classReference = vsApi { withMarshallerAnnotation.argumentsVS }.single() as? IrClassReference
+                ?: error("Expected IrClassReference for ${ctx.withMarshallerAnnotation.owner.kotlinFqName} parameter")
 
             return classReference.classType.classOrFail
         }

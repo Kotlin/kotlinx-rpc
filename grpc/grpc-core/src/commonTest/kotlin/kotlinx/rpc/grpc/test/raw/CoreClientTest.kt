@@ -43,8 +43,8 @@ class GrpcCoreClientTest {
     private fun descriptorFor(fullName: String = "kotlinx.rpc.grpc.test.GreeterService/SayHello"): MethodDescriptor<HelloRequest, HelloReply> =
         methodDescriptor(
             fullMethodName = fullName,
-            requestCodec = HelloRequestInternal.CODEC,
-            responseCodec = HelloReplyInternal.CODEC,
+            requestMarshaller = HelloRequestInternal.MARSHALLER,
+            responseMarshaller = HelloReplyInternal.MARSHALLER,
             type = MethodType.UNARY,
             schemaDescriptor = Unit,
             idempotent = true,

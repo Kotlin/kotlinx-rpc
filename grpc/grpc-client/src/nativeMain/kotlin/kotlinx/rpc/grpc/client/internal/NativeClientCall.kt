@@ -404,7 +404,7 @@ internal class NativeClientCall<Request, Response>(
             }) {
                 // if the call was successful, but no message was received, we reached the end-of-stream.
                 val buf = recvPtr.value ?: return@runBatch
-                val msg = methodDescriptor.responseCodec
+                val msg = methodDescriptor.responseMarshaller
                     .decode(buf.toKotlin())
                 safeUserCode("Failed to call onClose.") {
                     listener.onMessage(msg)
@@ -464,7 +464,7 @@ internal class NativeClientCall<Request, Response>(
         ready.value = false
 
         val arena = Arena()
-        val source = methodDescriptor.requestCodec.encode(message)
+        val source = methodDescriptor.requestMarshaller.encode(message)
         val byteBuffer = source.toGrpcByteBuffer()
 
         val op = arena.alloc<grpc_op> {

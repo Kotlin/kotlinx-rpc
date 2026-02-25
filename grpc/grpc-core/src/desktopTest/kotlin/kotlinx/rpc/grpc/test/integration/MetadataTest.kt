@@ -17,8 +17,8 @@ import kotlinx.rpc.grpc.GrpcMetadataKey
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.appendBinary
 import kotlinx.rpc.grpc.client.GrpcClient
-import kotlinx.rpc.grpc.codec.CodecConfig
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 import kotlinx.rpc.grpc.contains
 import kotlinx.rpc.grpc.copy
 import kotlinx.rpc.grpc.get
@@ -67,7 +67,7 @@ class MetadataTest : GrpcTestBase() {
             appendBinary("my-key-bin", byteArrayOf(4, 5, 6))
             append("my-multi-key", "my-value1")
             val protoMsg = EchoRequest { message = "My Proto Header" }
-            appendBinary("my-proto-bin", EchoRequestInternal.CODEC.encode(protoMsg).readByteArray())
+            appendBinary("my-proto-bin", EchoRequestInternal.MARSHALLER.encode(protoMsg).readByteArray())
             append("my-multi-key", "my-value2")
             append("my-multi-key", "my-value3")
         }
@@ -109,7 +109,7 @@ class MetadataTest : GrpcTestBase() {
             val proto = Buffer().apply {
                 write(getBinary("my-proto-bin")!!)
             }
-            val decodedProto = EchoRequestInternal.CODEC.decode(proto)
+            val decodedProto = EchoRequestInternal.MARSHALLER.decode(proto)
             assertEquals("My Proto Header", decodedProto.message)
         }
 
@@ -428,21 +428,21 @@ class MetadataTest : GrpcTestBase() {
         assertEquals("Echo", response.message)
     }
 
-    // Helper codecs and types for testing typed keys
+    // Helper marshaller and types for testing typed keys
 
     // Custom test type for ASCII encoding (non-binary methods)
     data class TestUser(val name: String, val age: Int)
 
-    // ASCII codec - encodes to/from ASCII string (for non-binary methods)
+    // ASCII marshaller - encodes to/from ASCII string (for non-binary methods)
     @OptIn(ExperimentalRpcApi::class)
-    private object TestUserAsciiCodec : MessageCodec<TestUser> {
-        override fun encode(value: TestUser, config: CodecConfig?): Source {
+    private object TestUserAsciiMarshaller : MessageMarshaller<TestUser> {
+        override fun encode(value: TestUser, config: MarshallerConfig?): Source {
             // Encode as ASCII string in format "name:age"
             val asciiString = "${value.name}:${value.age}"
             return Buffer().apply { writeString(asciiString) }
         }
 
-        override fun decode(source: Source, config: CodecConfig?   ): TestUser {
+        override fun decode(source: Source, config: MarshallerConfig?   ): TestUser {
             // Decode from ASCII string
             val asciiString = Buffer().apply { transferFrom(source) }.readString()
             val parts = asciiString.split(":")
@@ -455,7 +455,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key get returns last value`() {
-        val key = GrpcMetadataKey("my-key", TestUserAsciiCodec)
+        val key = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
         val metadata = GrpcMetadata().apply {
             append(key, TestUser("Alice", 30))
             append(key, TestUser("Bob", 25))
@@ -467,7 +467,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key get returns null for non-existent key`() {
-        val key = GrpcMetadataKey("my-key", TestUserAsciiCodec)
+        val key = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
         val metadata = GrpcMetadata()
 
         assertEquals(null, metadata.get(key))
@@ -475,8 +475,8 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key get works with multiple keys`() {
-        val key1 = GrpcMetadataKey("user-key", TestUserAsciiCodec)
-        val key2 = GrpcMetadataKey("other-key", TestUserAsciiCodec)
+        val key1 = GrpcMetadataKey("user-key", TestUserAsciiMarshaller)
+        val key2 = GrpcMetadataKey("other-key", TestUserAsciiMarshaller)
         val metadata = GrpcMetadata().apply {
             append(key1, TestUser("Alice", 30))
             append(key2, TestUser("Bob", 25))
@@ -488,7 +488,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key getAll returns all values in order`() {
-        val key = GrpcMetadataKey("my-key", TestUserAsciiCodec)
+        val key = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
         val metadata = GrpcMetadata().apply {
             append(key, TestUser("Alice", 30))
             append(key, TestUser("Bob", 25))
@@ -503,7 +503,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key getAll returns empty list for non-existent key`() {
-        val key = GrpcMetadataKey("my-key", TestUserAsciiCodec)
+        val key = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
         val metadata = GrpcMetadata()
 
         assertEquals(emptyList(), metadata.getAll(key))
@@ -511,7 +511,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key append adds value`() {
-        val key = GrpcMetadataKey("my-key", TestUserAsciiCodec)
+        val key = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
         val metadata = GrpcMetadata()
 
         metadata.append(key, TestUser("Alice", 30))
@@ -522,7 +522,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key append adds multiple values in order`() {
-        val key = GrpcMetadataKey("my-key", TestUserAsciiCodec)
+        val key = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
         val metadata = GrpcMetadata()
 
         metadata.append(key, TestUser("Alice", 30))
@@ -537,7 +537,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key append allows duplicate values`() {
-        val key = GrpcMetadataKey("my-key", TestUserAsciiCodec)
+        val key = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
         val metadata = GrpcMetadata()
         val user = TestUser("Alice", 30)
 
@@ -550,7 +550,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key remove removes first occurrence`() {
-        val key = GrpcMetadataKey("my-key", TestUserAsciiCodec)
+        val key = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
         val alice = TestUser("Alice", 30)
         val bob = TestUser("Bob", 25)
         val metadata = GrpcMetadata().apply {
@@ -567,7 +567,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key remove returns false for non-existent value`() {
-        val key = GrpcMetadataKey("my-key", TestUserAsciiCodec)
+        val key = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
         val metadata = GrpcMetadata().apply {
             append(key, TestUser("Alice", 30))
         }
@@ -580,7 +580,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key remove returns false for non-existent key`() {
-        val key = GrpcMetadataKey("my-key", TestUserAsciiCodec)
+        val key = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
         val metadata = GrpcMetadata()
 
         val result = metadata.remove(key, TestUser("Alice", 30))
@@ -590,7 +590,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key removeAll removes all values and returns them`() {
-        val key = GrpcMetadataKey("my-key", TestUserAsciiCodec)
+        val key = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
         val users = listOf(TestUser("Alice", 30), TestUser("Bob", 25), TestUser("Charlie", 35))
         val metadata = GrpcMetadata().apply {
             users.forEach { append(key, it) }
@@ -605,7 +605,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key removeAll returns empty list for non-existent key`() {
-        val key = GrpcMetadataKey("my-key", TestUserAsciiCodec)
+        val key = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
         val metadata = GrpcMetadata()
 
         val removed = metadata.removeAll(key)
@@ -617,7 +617,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key getBinary returns last value`() {
-        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.MARSHALLER)
         val metadata = GrpcMetadata().apply {
             appendBinary(key, AllPrimitives { int32 = 1; string = "first" })
             appendBinary(key, AllPrimitives { int32 = 2; string = "second" })
@@ -631,7 +631,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key getBinary returns null for non-existent key`() {
-        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.MARSHALLER)
         val metadata = GrpcMetadata()
 
         assertEquals(null, metadata.getBinary(key))
@@ -639,7 +639,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key getBinary works with different data`() {
-        val key = GrpcMetadataKey("data-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("data-bin", AllPrimitivesInternal.MARSHALLER)
         val metadata = GrpcMetadata().apply {
             appendBinary(key, AllPrimitives {
                 int32 = 42
@@ -660,7 +660,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key getAllBinary returns all values in order`() {
-        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.MARSHALLER)
         val metadata = GrpcMetadata().apply {
             appendBinary(key, AllPrimitives { int32 = 1 })
             appendBinary(key, AllPrimitives { int32 = 2 })
@@ -676,7 +676,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key getAllBinary returns empty list for non-existent key`() {
-        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.MARSHALLER)
         val metadata = GrpcMetadata()
 
         assertEquals(emptyList(), metadata.getAllBinary(key))
@@ -684,7 +684,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key appendBinary adds value`() {
-        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.MARSHALLER)
         val metadata = GrpcMetadata()
         val value = AllPrimitives { int32 = 42; string = "test" }
 
@@ -697,7 +697,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key appendBinary adds multiple values in order`() {
-        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.MARSHALLER)
         val metadata = GrpcMetadata()
 
         metadata.appendBinary(key, AllPrimitives { int32 = 1 })
@@ -710,7 +710,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key appendBinary with complex data`() {
-        val key = GrpcMetadataKey("complex-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("complex-bin", AllPrimitivesInternal.MARSHALLER)
         val metadata = GrpcMetadata()
 
         val complexValue = AllPrimitives {
@@ -741,7 +741,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key removeBinary removes first occurrence`() {
-        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.MARSHALLER)
         val value1 = AllPrimitives { int32 = 1 }
         val value2 = AllPrimitives { int32 = 2 }
         val metadata = GrpcMetadata().apply {
@@ -761,7 +761,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key removeBinary returns false for non-existent value`() {
-        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.MARSHALLER)
         val metadata = GrpcMetadata().apply {
             appendBinary(key, AllPrimitives { int32 = 1 })
         }
@@ -773,7 +773,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key removeBinary returns false for non-existent key`() {
-        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.MARSHALLER)
         val metadata = GrpcMetadata()
 
         val result = metadata.removeBinary(key, AllPrimitives { int32 = 1 })
@@ -783,7 +783,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key removeAllBinary removes all values and returns them`() {
-        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.MARSHALLER)
         val metadata = GrpcMetadata().apply {
             appendBinary(key, AllPrimitives { int32 = 1 })
             appendBinary(key, AllPrimitives { int32 = 2 })
@@ -800,7 +800,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key removeAllBinary returns empty list for non-existent key`() {
-        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.MARSHALLER)
         val metadata = GrpcMetadata()
 
         val removed = metadata.removeAllBinary(key)
@@ -812,9 +812,9 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key case insensitivity`() {
-        val key1 = GrpcMetadataKey("My-Key", TestUserAsciiCodec)
-        val key2 = GrpcMetadataKey("my-key", TestUserAsciiCodec)
-        val key3 = GrpcMetadataKey("MY-KEY", TestUserAsciiCodec)
+        val key1 = GrpcMetadataKey("My-Key", TestUserAsciiMarshaller)
+        val key2 = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
+        val key3 = GrpcMetadataKey("MY-KEY", TestUserAsciiMarshaller)
         val metadata = GrpcMetadata()
         val user = TestUser("Alice", 30)
 
@@ -830,9 +830,9 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key case insensitivity`() {
-        val key1 = GrpcMetadataKey("My-Key-bin", AllPrimitivesInternal.CODEC)
-        val key2 = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.CODEC)
-        val key3 = GrpcMetadataKey("MY-KEY-bin", AllPrimitivesInternal.CODEC)
+        val key1 = GrpcMetadataKey("My-Key-bin", AllPrimitivesInternal.MARSHALLER)
+        val key2 = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.MARSHALLER)
+        val key3 = GrpcMetadataKey("MY-KEY-bin", AllPrimitivesInternal.MARSHALLER)
         val metadata = GrpcMetadata()
         val value = AllPrimitives { int32 = 42 }
 
@@ -845,7 +845,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key with copy operation`() {
-        val key = GrpcMetadataKey("my-key", TestUserAsciiCodec)
+        val key = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
         val original = GrpcMetadata().apply {
             append(key, TestUser("Alice", 30))
             append(key, TestUser("Bob", 25))
@@ -866,7 +866,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key with copy operation`() {
-        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.MARSHALLER)
         val original = GrpcMetadata().apply {
             appendBinary(key, AllPrimitives { int32 = 1 })
             appendBinary(key, AllPrimitives { int32 = 2 })
@@ -884,7 +884,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key with merge operation`() {
-        val key = GrpcMetadataKey("my-key", TestUserAsciiCodec)
+        val key = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
         val md1 = GrpcMetadata().apply {
             append(key, TestUser("Alice", 30))
         }
@@ -904,7 +904,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key with merge operation`() {
-        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.MARSHALLER)
         val md1 = GrpcMetadata().apply {
             appendBinary(key, AllPrimitives { int32 = 1 })
         }
@@ -921,7 +921,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed key preserves value order across operations`() {
-        val key = GrpcMetadataKey("my-key", TestUserAsciiCodec)
+        val key = GrpcMetadataKey("my-key", TestUserAsciiMarshaller)
         val metadata = GrpcMetadata()
 
         // Add values in specific order
@@ -950,7 +950,7 @@ class MetadataTest : GrpcTestBase() {
 
     @Test
     fun `test typed binary key preserves value order across operations`() {
-        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.CODEC)
+        val key = GrpcMetadataKey("my-key-bin", AllPrimitivesInternal.MARSHALLER)
         val metadata = GrpcMetadata()
 
         // Add values in specific order
@@ -976,12 +976,12 @@ class MetadataTest : GrpcTestBase() {
     @Test
     fun `test send and receive typed key headers and trailers`() = runTest {
         // Define typed keys for ASCII metadata
-        val userKey = GrpcMetadataKey("user-metadata", TestUserAsciiCodec)
-        val multiUserKey = GrpcMetadataKey("multi-user-metadata", TestUserAsciiCodec)
+        val userKey = GrpcMetadataKey("user-metadata", TestUserAsciiMarshaller)
+        val multiUserKey = GrpcMetadataKey("multi-user-metadata", TestUserAsciiMarshaller)
 
         // Define typed keys for binary metadata
-        val dataBinKey = GrpcMetadataKey("data-metadata-bin", AllPrimitivesInternal.CODEC)
-        val multiDataBinKey = GrpcMetadataKey("multi-data-metadata-bin", AllPrimitivesInternal.CODEC)
+        val dataBinKey = GrpcMetadataKey("data-metadata-bin", AllPrimitivesInternal.MARSHALLER)
+        val multiDataBinKey = GrpcMetadataKey("multi-data-metadata-bin", AllPrimitivesInternal.MARSHALLER)
 
         var clientHeaders: GrpcMetadata? = null
         val responseHeadersDef = CompletableDeferred<GrpcMetadata>()

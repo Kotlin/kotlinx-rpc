@@ -16,11 +16,11 @@ import kotlinx.rpc.descriptor.flowInvokator
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.descriptor.unaryInvokator
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.codec.CodecConfig
-import kotlinx.rpc.grpc.codec.EmptyMessageCodecResolver
-import kotlinx.rpc.grpc.codec.MessageCodecResolver
-import kotlinx.rpc.grpc.codec.ThrowingMessageCodecResolver
-import kotlinx.rpc.grpc.codec.plus
+import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.EmptyMessageMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.ThrowingMessageMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.plus
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.descriptor.MethodType
@@ -46,8 +46,8 @@ private typealias ResponseServer = Any
  * @property port Specifies the port used by the server to listen for incoming connections.
  * @param serverBuilder exposes platform-specific Server builder.
  * @param interceptors a list of interceptors that will be applied to all incoming gRPC calls
- * @param messageCodecResolver a custom [MessageCodecResolver] that will be used to resolve message codecs
- * @param codecConfig default [CodecConfig] that will be passed applied to all used message resolvers
+ * @param messageMarshallerResolver a custom [MessageMarshallerResolver] that will be used to resolve message marshallers
+ * @param marshallerConfig default [MarshallerConfig] that will be passed applied to all used message resolvers
  * during message serialization and deserialization.
  * @param parentContext
  */
@@ -55,14 +55,14 @@ public class GrpcServer internal constructor(
     override val port: Int,
     private val serverBuilder: ServerBuilder<*>,
     private val interceptors: List<ServerInterceptor>,
-    messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver,
-    private val codecConfig: CodecConfig? = null,
+    messageMarshallerResolver: MessageMarshallerResolver = EmptyMessageMarshallerResolver,
+    private val marshallerConfig: MarshallerConfig? = null,
     parentContext: CoroutineContext = EmptyCoroutineContext,
 ) : RpcServer, Server {
     private val internalContext = SupervisorJob(parentContext[Job])
     private val internalScope = CoroutineScope(parentContext + internalContext)
 
-    private val messageCodecResolver = messageCodecResolver + ThrowingMessageCodecResolver
+    private val messageMarshallerResolver = messageMarshallerResolver + ThrowingMessageMarshallerResolver
 
     private var isBuilt = false
     private lateinit var internalServer: Server
@@ -102,7 +102,7 @@ public class GrpcServer internal constructor(
         val descriptor = serviceDescriptorOf(serviceKClass) as? GrpcServiceDescriptor<Service>
             ?: error("Service $serviceKClass is not a gRPC service")
 
-        val delegate = descriptor.delegate(messageCodecResolver, codecConfig)
+        val delegate = descriptor.delegate(messageMarshallerResolver, marshallerConfig)
 
         val methods = descriptor.callables.values.map {
             @Suppress("UNCHECKED_CAST")
@@ -229,7 +229,7 @@ public class GrpcServer internal constructor(
  *                      Defaults to an empty coroutine context if not specified.
  * @param configure A configuration lambda receiver,
  *                  allowing customization of server behavior such as credentials, interceptors,
- *                  codecs, and service registration logic.
+ *                  marshallers, and service registration logic.
  * @return A fully configured `GrpcServer` instance, which must be started explicitly to handle requests.
  */
 public fun GrpcServer(
@@ -245,8 +245,8 @@ public fun GrpcServer(
         port = port,
         serverBuilder = serverBuilder,
         interceptors = config.interceptors,
-        messageCodecResolver = config.messageCodecResolver,
-        codecConfig = config.codecConfig,
+        messageMarshallerResolver = config.messageMarshallerResolver,
+        marshallerConfig = config.marshallerConfig,
         parentContext = parentContext
     )
         .apply(config.serviceBuilder)
@@ -256,7 +256,7 @@ public fun GrpcServer(
 /**
  * A configuration class for setting up a gRPC server.
  *
- * This class provides an API to configure various server parameters, such as message codecs,
+ * This class provides an API to configure various server parameters, such as message marshallers,
  * security credentials, server-side interceptors, and service registration.
  */
 public class GrpcServerConfiguration internal constructor() {
@@ -278,16 +278,16 @@ public class GrpcServerConfiguration internal constructor() {
     public var credentials: ServerCredentials? = null
 
     /**
-     * Sets a custom [MessageCodecResolver] to be used by the gRPC server for resolving the appropriate
-     * codec for message serialization and deserialization.
+     * Sets a custom [MessageMarshallerResolver] to be used by the gRPC server for resolving the appropriate
+     * marshaller for message serialization and deserialization.
      *
-     * When not explicitly set, a default [EmptyMessageCodecResolver] is used, which may not perform
+     * When not explicitly set, a default [EmptyMessageMarshallerResolver] is used, which may not perform
      * any specific resolution.
-     * Provide a custom [MessageCodecResolver] to resolve codecs based on the message's `KType`.
+     * Provide a custom [MessageMarshallerResolver] to resolve marshallers based on the message's `KType`.
      */
-    public var messageCodecResolver: MessageCodecResolver = EmptyMessageCodecResolver
+    public var messageMarshallerResolver: MessageMarshallerResolver = EmptyMessageMarshallerResolver
 
-    public var codecConfig: CodecConfig? = null
+    public var marshallerConfig: MarshallerConfig? = null
 
     /**
      * Sets a custom [HandlerRegistry] to be used by the gRPC server for resolving service implementations

@@ -3,8 +3,8 @@ package com.google.protobuf.kotlin
 
 import kotlinx.io.Buffer
 import kotlinx.io.Source
-import kotlinx.rpc.grpc.codec.CodecConfig
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
@@ -17,18 +17,13 @@ import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
 import kotlinx.rpc.protobuf.internal.bool
-import kotlinx.rpc.protobuf.internal.bytes
 import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.double
 import kotlinx.rpc.protobuf.internal.enum
-import kotlinx.rpc.protobuf.internal.float
 import kotlinx.rpc.protobuf.internal.int32
-import kotlinx.rpc.protobuf.internal.int64
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
-import kotlinx.rpc.protobuf.internal.uInt32
-import kotlinx.rpc.protobuf.internal.uInt64
 
 public class StructInternal: Struct, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
@@ -143,8 +138,8 @@ public class StructInternal: Struct, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
-    public object CODEC: MessageCodec<Struct> {
-        public override fun encode(value: Struct, config: CodecConfig?): Source {
+    public object CODEC: MessageMarshaller<Struct> {
+        public override fun encode(value: Struct, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -156,7 +151,7 @@ public class StructInternal: Struct, InternalMessage(fieldsWithPresence = 0) {
             return buffer
         }
 
-        public override fun decode(source: Source, config: CodecConfig?): Struct {
+        public override fun decode(source: Source, config: MarshallerConfig?): Struct {
             WireDecoder(source).use {
                 val msg = StructInternal()
                 checkForPlatformDecodeException {
@@ -267,8 +262,8 @@ public class ValueInternal: Value, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
-    public object CODEC: MessageCodec<Value> {
-        public override fun encode(value: Value, config: CodecConfig?): Source {
+    public object CODEC: MessageMarshaller<Value> {
+        public override fun encode(value: Value, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -280,7 +275,7 @@ public class ValueInternal: Value, InternalMessage(fieldsWithPresence = 0) {
             return buffer
         }
 
-        public override fun decode(source: Source, config: CodecConfig?): Value {
+        public override fun decode(source: Source, config: MarshallerConfig?): Value {
             WireDecoder(source).use {
                 val msg = ValueInternal()
                 checkForPlatformDecodeException {
@@ -354,8 +349,8 @@ public class ListValueInternal: ListValue, InternalMessage(fieldsWithPresence = 
     }
 
     @InternalRpcApi
-    public object CODEC: MessageCodec<ListValue> {
-        public override fun encode(value: ListValue, config: CodecConfig?): Source {
+    public object CODEC: MessageMarshaller<ListValue> {
+        public override fun encode(value: ListValue, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -367,7 +362,7 @@ public class ListValueInternal: ListValue, InternalMessage(fieldsWithPresence = 
             return buffer
         }
 
-        public override fun decode(source: Source, config: CodecConfig?): ListValue {
+        public override fun decode(source: Source, config: MarshallerConfig?): ListValue {
             WireDecoder(source).use {
                 val msg = ListValueInternal()
                 checkForPlatformDecodeException {

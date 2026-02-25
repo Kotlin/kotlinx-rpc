@@ -15,8 +15,8 @@ import com.google.protobuf.conformance.WireFormat.*
 import com.google.protobuf.conformance.invoke
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
-import kotlinx.rpc.grpc.codec.MessageCodec
-import kotlinx.rpc.grpc.codec.WithCodec
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.WithMarshaller
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.ProtobufException
 import java.nio.file.Path
@@ -87,7 +87,7 @@ internal class ConformanceClient {
 
     private fun doTest(request: ConformanceRequest): ConformanceResponse {
         val testMessage: InternalMessage
-        val codec: MessageCodec<Any?>
+        val marshaller: MessageMarshaller<Any?>
         val messageType: String = request.messageType
 
         // todo support extensions
@@ -100,17 +100,17 @@ internal class ConformanceClient {
             is ConformanceRequest.Payload.ProtobufPayload -> {
                 try {
                     @Suppress("UNCHECKED_CAST")
-                    codec = testMessageKClassOf(messageType)
+                    marshaller = testMessageKClassOf(messageType)
                         .annotations
-                        .filterIsInstance<WithCodec>()
+                        .filterIsInstance<WithMarshaller>()
                         .singleOrNull()
-                        ?.codec
-                        ?.objectInstance as? MessageCodec<Any?>
-                        ?: error("Codec must be an object for $messageType")
+                        ?.marshaller
+                        ?.objectInstance as? MessageMarshaller<Any?>
+                        ?: error("Marshaller must be an object for $messageType")
 
                     val binary = (request.payload as ConformanceRequest.Payload.ProtobufPayload).value
 
-                    testMessage = codec.decode(binary.buffered()) as InternalMessage
+                    testMessage = marshaller.decode(binary.buffered()) as InternalMessage
                 } catch (e: ProtobufException) {
                     return ConformanceResponse {
                         result = ConformanceResponse.Result.ParseError(
@@ -173,7 +173,7 @@ internal class ConformanceClient {
             UNSPECIFIED -> error("Unspecified output format.")
 
             PROTOBUF -> {
-                val messageString: ByteArray = codec.encode(testMessage).readByteArray()
+                val messageString: ByteArray = marshaller.encode(testMessage).readByteArray()
 
                 ConformanceResponse {
                     result = ConformanceResponse.Result.ProtobufPayload(messageString)
@@ -234,7 +234,7 @@ internal class ConformanceClient {
 
         dumpConfig.dumpConformanceInputFile?.writeBytes(serializedInput)
 
-        val request: ConformanceRequest = ConformanceRequestInternal.CODEC
+        val request: ConformanceRequest = ConformanceRequestInternal.MARSHALLER
             .decode(serializedInput.buffered())
 
         // The conformance runner will request a list of failures as the first request.
@@ -243,7 +243,7 @@ internal class ConformanceClient {
         val response = if (request.messageType == "conformance.FailureSet") {
             ConformanceResponse {
                 result = ConformanceResponse.Result.ProtobufPayload(
-                    FailureSetInternal.CODEC.encode(
+                    FailureSetInternal.MARSHALLER.encode(
                         FailureSet {}
                     ).readByteArray()
                 )
@@ -252,7 +252,7 @@ internal class ConformanceClient {
             test(request)
         }
 
-        val serializedOutput = ConformanceResponseInternal.CODEC
+        val serializedOutput = ConformanceResponseInternal.MARSHALLER
             .encode(response).readByteArray()
 
         dumpConfig.dumpConformanceOutputFile?.writeBytes(serializedOutput)

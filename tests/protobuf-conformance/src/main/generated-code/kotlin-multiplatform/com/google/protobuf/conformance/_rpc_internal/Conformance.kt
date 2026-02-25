@@ -3,8 +3,8 @@ package com.google.protobuf.conformance
 
 import kotlinx.io.Buffer
 import kotlinx.io.Source
-import kotlinx.rpc.grpc.codec.CodecConfig
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
@@ -88,8 +88,8 @@ class TestStatusInternal: TestStatus, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
-    object CODEC: MessageCodec<TestStatus> {
-        override fun encode(value: TestStatus, config: CodecConfig?): Source {
+    object CODEC: MessageMarshaller<TestStatus> {
+        override fun encode(value: TestStatus, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -101,7 +101,7 @@ class TestStatusInternal: TestStatus, InternalMessage(fieldsWithPresence = 0) {
             return buffer
         }
 
-        override fun decode(source: Source, config: CodecConfig?): TestStatus {
+        override fun decode(source: Source, config: MarshallerConfig?): TestStatus {
             WireDecoder(source).use {
                 val msg = TestStatusInternal()
                 checkForPlatformDecodeException {
@@ -175,8 +175,8 @@ class FailureSetInternal: FailureSet, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
-    object CODEC: MessageCodec<FailureSet> {
-        override fun encode(value: FailureSet, config: CodecConfig?): Source {
+    object CODEC: MessageMarshaller<FailureSet> {
+        override fun encode(value: FailureSet, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -188,7 +188,7 @@ class FailureSetInternal: FailureSet, InternalMessage(fieldsWithPresence = 0) {
             return buffer
         }
 
-        override fun decode(source: Source, config: CodecConfig?): FailureSet {
+        override fun decode(source: Source, config: MarshallerConfig?): FailureSet {
             WireDecoder(source).use {
                 val msg = FailureSetInternal()
                 checkForPlatformDecodeException {
@@ -335,8 +335,8 @@ class ConformanceRequestInternal: ConformanceRequest, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    object CODEC: MessageCodec<ConformanceRequest> {
-        override fun encode(value: ConformanceRequest, config: CodecConfig?): Source {
+    object CODEC: MessageMarshaller<ConformanceRequest> {
+        override fun encode(value: ConformanceRequest, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -348,7 +348,7 @@ class ConformanceRequestInternal: ConformanceRequest, InternalMessage(fieldsWith
             return buffer
         }
 
-        override fun decode(source: Source, config: CodecConfig?): ConformanceRequest {
+        override fun decode(source: Source, config: MarshallerConfig?): ConformanceRequest {
             WireDecoder(source).use {
                 val msg = ConformanceRequestInternal()
                 checkForPlatformDecodeException {
@@ -471,8 +471,8 @@ class ConformanceResponseInternal: ConformanceResponse, InternalMessage(fieldsWi
     }
 
     @InternalRpcApi
-    object CODEC: MessageCodec<ConformanceResponse> {
-        override fun encode(value: ConformanceResponse, config: CodecConfig?): Source {
+    object CODEC: MessageMarshaller<ConformanceResponse> {
+        override fun encode(value: ConformanceResponse, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -484,7 +484,7 @@ class ConformanceResponseInternal: ConformanceResponse, InternalMessage(fieldsWi
             return buffer
         }
 
-        override fun decode(source: Source, config: CodecConfig?): ConformanceResponse {
+        override fun decode(source: Source, config: MarshallerConfig?): ConformanceResponse {
             WireDecoder(source).use {
                 val msg = ConformanceResponseInternal()
                 checkForPlatformDecodeException {
@@ -558,8 +558,8 @@ class JspbEncodingConfigInternal: JspbEncodingConfig, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    object CODEC: MessageCodec<JspbEncodingConfig> {
-        override fun encode(value: JspbEncodingConfig, config: CodecConfig?): Source {
+    object CODEC: MessageMarshaller<JspbEncodingConfig> {
+        override fun encode(value: JspbEncodingConfig, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -571,7 +571,7 @@ class JspbEncodingConfigInternal: JspbEncodingConfig, InternalMessage(fieldsWith
             return buffer
         }
 
-        override fun decode(source: Source, config: CodecConfig?): JspbEncodingConfig {
+        override fun decode(source: Source, config: MarshallerConfig?): JspbEncodingConfig {
             WireDecoder(source).use {
                 val msg = JspbEncodingConfigInternal()
                 checkForPlatformDecodeException {

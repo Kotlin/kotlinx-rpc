@@ -7,7 +7,7 @@ package kotlinx.rpc.grpc.descriptor
 import kotlinx.io.asInputStream
 import kotlinx.io.asSource
 import kotlinx.io.buffered
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.io.InputStream
 
@@ -31,7 +31,7 @@ internal val MethodType.asJvm: io.grpc.MethodDescriptor.MethodType
         MethodType.UNKNOWN -> io.grpc.MethodDescriptor.MethodType.UNKNOWN
     }
 
-private fun <T> MessageCodec<T>.toMarshaller(): io.grpc.MethodDescriptor.Marshaller<T> {
+private fun <T> MessageMarshaller<T>.toMarshaller(): io.grpc.MethodDescriptor.Marshaller<T> {
     return object : io.grpc.MethodDescriptor.Marshaller<T> {
         override fun stream(value: T): InputStream {
             // wraps the source in a stream
@@ -48,8 +48,8 @@ private fun <T> MessageCodec<T>.toMarshaller(): io.grpc.MethodDescriptor.Marshal
 @InternalRpcApi
 public actual fun <Request, Response> methodDescriptor(
     fullMethodName: String,
-    requestCodec: MessageCodec<Request>,
-    responseCodec: MessageCodec<Response>,
+    requestMarshaller: MessageMarshaller<Request>,
+    responseMarshaller: MessageMarshaller<Response>,
     type: MethodType,
     schemaDescriptor: Any?,
     idempotent: Boolean,
@@ -58,8 +58,8 @@ public actual fun <Request, Response> methodDescriptor(
 ): MethodDescriptor<Request, Response> {
     return MethodDescriptor.newBuilder<Request, Response>()
         .setFullMethodName(fullMethodName)
-        .setRequestMarshaller(requestCodec.toMarshaller())
-        .setResponseMarshaller(responseCodec.toMarshaller())
+        .setRequestMarshaller(requestMarshaller.toMarshaller())
+        .setResponseMarshaller(responseMarshaller.toMarshaller())
         .setType(type.asJvm)
         .setSchemaDescriptor(schemaDescriptor)
         .setIdempotent(idempotent)

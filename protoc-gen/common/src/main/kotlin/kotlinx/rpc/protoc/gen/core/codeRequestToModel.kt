@@ -63,11 +63,11 @@ private fun initNameTable(nameTable: FqNameTable) {
         FqName.RpcClasses.WireEncoder,
         FqName.RpcClasses.WireDecoder,
         FqName.RpcClasses.MsgFieldDelegate,
-        FqName.RpcClasses.MessageCodec,
+        FqName.RpcClasses.MessageMarshaller,
         FqName.RpcClasses.KTag,
         FqName.RpcClasses.ProtobufDecodingException,
         FqName.RpcClasses.ProtobufConfig,
-        FqName.RpcClasses.CodecConfig,
+        FqName.RpcClasses.MarshallerConfig,
         FqName.RpcClasses.WireSize,
         FqName.RpcClasses.WireType,
         FqName.RpcClasses.WireType_END_GROUP,
@@ -251,7 +251,7 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNam
         }
 
         if (declaration.isUserFacing && !declaration.isGroup) {
-            nameTable.register { declaration.codecObjectName }
+            nameTable.register { declaration.marshallerObjectName }
         }
 
         if (declaration.nonDefaultByteFields().isNotEmpty()) {

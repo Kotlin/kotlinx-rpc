@@ -32,7 +32,7 @@ kotlin {
                 api(projects.core)
                 api(projects.utils)
                 api(libs.coroutines.core)
-                api(projects.grpc.grpcCodec)
+                api(projects.grpc.grpcMarshaller)
 
                 implementation(libs.atomicfu)
                 implementation(libs.kotlinx.io.core)
@@ -46,7 +46,7 @@ kotlin {
                 implementation(libs.atomicfu)
                 implementation(libs.serialization.json)
 
-                implementation(projects.grpc.grpcCodecKotlinxSerialization)
+                implementation(projects.grpc.grpcMarshallerKotlinxSerialization)
                 implementation(projects.protobuf.protobufCore)
                 implementation(projects.grpc.grpcClient)
                 implementation(projects.tests.testProtos)

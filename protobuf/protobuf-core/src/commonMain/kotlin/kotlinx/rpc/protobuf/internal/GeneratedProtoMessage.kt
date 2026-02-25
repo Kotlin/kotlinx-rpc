@@ -4,10 +4,10 @@
 
 package kotlinx.rpc.protobuf.internal
 
-import kotlinx.rpc.grpc.codec.HasWithCodec
+import kotlinx.rpc.grpc.marshaller.HasWithMarshaller
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
-@HasWithCodec
+@HasWithMarshaller
 @InternalRpcApi
 @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE_PARAMETER)
 public annotation class GeneratedProtoMessage

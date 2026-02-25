@@ -8,9 +8,9 @@ import io.grpc.MethodDescriptor
 import kotlinx.io.Source
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.codec.CodecConfig
-import kotlinx.rpc.grpc.codec.MessageCodec
-import kotlinx.rpc.grpc.codec.MessageCodecResolver
+import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlin.reflect.KType
@@ -64,33 +64,33 @@ fun MethodDescriptor<*, *>.checkMethod(
     }
 }
 
-object SimpleResolver : MessageCodecResolver {
-    override fun resolveOrNull(kType: KType): MessageCodec<*>? {
+object SimpleResolver : MessageMarshallerResolver {
+    override fun resolveOrNull(kType: KType): MessageMarshaller<*>? {
         return when (kType.classifier) {
-            String::class -> StringCodec
-            Unit::class -> UnitCodec
-            Message::class -> MessageClassCodec
+            String::class -> StringMarshaller
+            Unit::class -> UnitMarshaller
+            Message::class -> MessageClassMarshaller
             else -> null
         }
     }
 }
 
-object StringCodec : MessageCodec<String> {
-    override fun encode(value: String, config: CodecConfig?): Source {
+object StringMarshaller : MessageMarshaller<String> {
+    override fun encode(value: String, config: MarshallerConfig?): Source {
         TODO("Not yet implemented")
     }
 
-    override fun decode(source: Source, config: CodecConfig?): String {
+    override fun decode(source: Source, config: MarshallerConfig?): String {
         TODO("Not yet implemented")
     }
 }
 
-object UnitCodec : MessageCodec<String> {
-    override fun encode(value: String, config: CodecConfig?): Source {
+object UnitMarshaller : MessageMarshaller<String> {
+    override fun encode(value: String, config: MarshallerConfig?): Source {
         TODO("Not yet implemented")
     }
 
-    override fun decode(source: Source, config: CodecConfig?): String {
+    override fun decode(source: Source, config: MarshallerConfig?): String {
         TODO("Not yet implemented")
     }
 }
@@ -98,12 +98,12 @@ object UnitCodec : MessageCodec<String> {
 @Suppress("unused")
 class Message(val a: Int, val b: String)
 
-object MessageClassCodec : MessageCodec<Message> {
-    override fun encode(value: Message, config: CodecConfig?): Source {
+object MessageClassMarshaller : MessageMarshaller<Message> {
+    override fun encode(value: Message, config: MarshallerConfig?): Source {
         TODO("Not yet implemented")
     }
 
-    override fun decode(source: Source, config: CodecConfig?): Message {
+    override fun decode(source: Source, config: MarshallerConfig?): Message {
         TODO("Not yet implemented")
     }
 }

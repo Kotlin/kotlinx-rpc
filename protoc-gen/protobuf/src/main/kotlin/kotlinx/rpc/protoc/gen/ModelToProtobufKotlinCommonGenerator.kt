@@ -252,7 +252,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 generateInternalMessage(nested)
             }
 
-            generateCodecObject(declaration)
+            generateMarshallerObject(declaration)
             generateDescriptorObject(declaration)
 
             // required for decodeWith extension
@@ -769,21 +769,21 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
-    private fun CodeGenerator.generateCodecObject(declaration: MessageDeclaration) {
+    private fun CodeGenerator.generateMarshallerObject(declaration: MessageDeclaration) {
         if (!declaration.isUserFacing) return
-        // the CODEC object is not necessary for groups, as they are inlined messages
+        // the MARSHALLER object is not necessary for groups, as they are inlined messages
         if (declaration.isGroup) return
 
         clazz(
-            name = declaration.codecObjectName.simpleName,
+            name = declaration.marshallerObjectName.simpleName,
             annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
             declarationType = CodeGenerator.DeclarationType.Object,
-            superTypes = listOf("%T<%T>".scoped(FqName.RpcClasses.MessageCodec, declaration.name)),
+            superTypes = listOf("%T<%T>".scoped(FqName.RpcClasses.MessageMarshaller, declaration.name)),
         ) {
             function(
                 name = "encode",
                 modifiers = "override",
-                args = "value: %T, config: %T?".scoped(declaration.name, FqName.RpcClasses.CodecConfig),
+                args = "value: %T, config: %T?".scoped(declaration.name, FqName.RpcClasses.MarshallerConfig),
                 returnType = FqName.KotlinLibs.Source.scoped(),
             ) {
                 code("val buffer = %T()".scoped(FqName.KotlinLibs.Buffer))
@@ -800,7 +800,7 @@ class ModelToProtobufKotlinCommonGenerator(
             function(
                 name = "decode",
                 modifiers = "override",
-                args = "source: %T, config: %T?".scoped(FqName.KotlinLibs.Source, FqName.RpcClasses.CodecConfig),
+                args = "source: %T, config: %T?".scoped(FqName.KotlinLibs.Source, FqName.RpcClasses.MarshallerConfig),
                 returnType = declaration.name.scoped(),
             ) {
                 scope("%T(source).use".scoped(FqName.RpcClasses.WireDecoder)) {

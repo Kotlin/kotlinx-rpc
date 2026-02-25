@@ -36,8 +36,8 @@ class JavaPackageOptionTest : GrpcTestBase() {
     fun testJavaPackageOptionRaw() = runGrpcTest { client ->
         val descriptor = methodDescriptor(
             fullMethodName = "protopackage.TheService/TheMethod",
-            requestCodec = EmptyInternal.CODEC,
-            responseCodec = EmptyInternal.CODEC,
+            requestMarshaller = EmptyInternal.MARSHALLER,
+            responseMarshaller = EmptyInternal.MARSHALLER,
             type = MethodType.UNARY,
             schemaDescriptor = Unit,
             idempotent = true,

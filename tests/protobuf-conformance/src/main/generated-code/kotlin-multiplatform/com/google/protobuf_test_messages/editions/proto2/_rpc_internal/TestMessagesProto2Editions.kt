@@ -3,8 +3,8 @@ package com.google.protobuf_test_messages.editions.proto2
 
 import kotlinx.io.Buffer
 import kotlinx.io.Source
-import kotlinx.rpc.grpc.codec.CodecConfig
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
@@ -1528,8 +1528,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         }
 
         @InternalRpcApi
-        object CODEC: MessageCodec<TestAllTypesProto2.NestedMessage> {
-            override fun encode(value: TestAllTypesProto2.NestedMessage, config: CodecConfig?): Source {
+        object CODEC: MessageMarshaller<TestAllTypesProto2.NestedMessage> {
+            override fun encode(value: TestAllTypesProto2.NestedMessage, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
                 val internalMsg = value.asInternal()
@@ -1541,7 +1541,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
                 return buffer
             }
 
-            override fun decode(source: Source, config: CodecConfig?): TestAllTypesProto2.NestedMessage {
+            override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto2.NestedMessage {
                 WireDecoder(source).use {
                     val msg = NestedMessageInternal()
                     checkForPlatformDecodeException {
@@ -3197,8 +3197,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         }
 
         @InternalRpcApi
-        object CODEC: MessageCodec<TestAllTypesProto2.MessageSetCorrect> {
-            override fun encode(value: TestAllTypesProto2.MessageSetCorrect, config: CodecConfig?): Source {
+        object CODEC: MessageMarshaller<TestAllTypesProto2.MessageSetCorrect> {
+            override fun encode(value: TestAllTypesProto2.MessageSetCorrect, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
                 val internalMsg = value.asInternal()
@@ -3210,7 +3210,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
                 return buffer
             }
 
-            override fun decode(source: Source, config: CodecConfig?): TestAllTypesProto2.MessageSetCorrect {
+            override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto2.MessageSetCorrect {
                 WireDecoder(source).use {
                     val msg = MessageSetCorrectInternal()
                     checkForPlatformDecodeException {
@@ -3302,8 +3302,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         }
 
         @InternalRpcApi
-        object CODEC: MessageCodec<TestAllTypesProto2.MessageSetCorrectExtension1> {
-            override fun encode(value: TestAllTypesProto2.MessageSetCorrectExtension1, config: CodecConfig?): Source {
+        object CODEC: MessageMarshaller<TestAllTypesProto2.MessageSetCorrectExtension1> {
+            override fun encode(value: TestAllTypesProto2.MessageSetCorrectExtension1, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
                 val internalMsg = value.asInternal()
@@ -3315,7 +3315,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
                 return buffer
             }
 
-            override fun decode(source: Source, config: CodecConfig?): TestAllTypesProto2.MessageSetCorrectExtension1 {
+            override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto2.MessageSetCorrectExtension1 {
                 WireDecoder(source).use {
                     val msg = MessageSetCorrectExtension1Internal()
                     checkForPlatformDecodeException {
@@ -3407,8 +3407,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         }
 
         @InternalRpcApi
-        object CODEC: MessageCodec<TestAllTypesProto2.MessageSetCorrectExtension2> {
-            override fun encode(value: TestAllTypesProto2.MessageSetCorrectExtension2, config: CodecConfig?): Source {
+        object CODEC: MessageMarshaller<TestAllTypesProto2.MessageSetCorrectExtension2> {
+            override fun encode(value: TestAllTypesProto2.MessageSetCorrectExtension2, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
                 val internalMsg = value.asInternal()
@@ -3420,7 +3420,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
                 return buffer
             }
 
-            override fun decode(source: Source, config: CodecConfig?): TestAllTypesProto2.MessageSetCorrectExtension2 {
+            override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto2.MessageSetCorrectExtension2 {
                 WireDecoder(source).use {
                     val msg = MessageSetCorrectExtension2Internal()
                     checkForPlatformDecodeException {
@@ -3508,8 +3508,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         }
 
         @InternalRpcApi
-        object CODEC: MessageCodec<TestAllTypesProto2.ExtensionWithOneof> {
-            override fun encode(value: TestAllTypesProto2.ExtensionWithOneof, config: CodecConfig?): Source {
+        object CODEC: MessageMarshaller<TestAllTypesProto2.ExtensionWithOneof> {
+            override fun encode(value: TestAllTypesProto2.ExtensionWithOneof, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
                 val internalMsg = value.asInternal()
@@ -3521,7 +3521,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
                 return buffer
             }
 
-            override fun decode(source: Source, config: CodecConfig?): TestAllTypesProto2.ExtensionWithOneof {
+            override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto2.ExtensionWithOneof {
                 WireDecoder(source).use {
                     val msg = ExtensionWithOneofInternal()
                     checkForPlatformDecodeException {
@@ -3544,8 +3544,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    object CODEC: MessageCodec<TestAllTypesProto2> {
-        override fun encode(value: TestAllTypesProto2, config: CodecConfig?): Source {
+    object CODEC: MessageMarshaller<TestAllTypesProto2> {
+        override fun encode(value: TestAllTypesProto2, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -3557,7 +3557,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
             return buffer
         }
 
-        override fun decode(source: Source, config: CodecConfig?): TestAllTypesProto2 {
+        override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto2 {
             WireDecoder(source).use {
                 val msg = TestAllTypesProto2Internal()
                 checkForPlatformDecodeException {
@@ -3649,8 +3649,8 @@ class ForeignMessageProto2Internal: ForeignMessageProto2, InternalMessage(fields
     }
 
     @InternalRpcApi
-    object CODEC: MessageCodec<ForeignMessageProto2> {
-        override fun encode(value: ForeignMessageProto2, config: CodecConfig?): Source {
+    object CODEC: MessageMarshaller<ForeignMessageProto2> {
+        override fun encode(value: ForeignMessageProto2, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -3662,7 +3662,7 @@ class ForeignMessageProto2Internal: ForeignMessageProto2, InternalMessage(fields
             return buffer
         }
 
-        override fun decode(source: Source, config: CodecConfig?): ForeignMessageProto2 {
+        override fun decode(source: Source, config: MarshallerConfig?): ForeignMessageProto2 {
             WireDecoder(source).use {
                 val msg = ForeignMessageProto2Internal()
                 checkForPlatformDecodeException {
@@ -3771,8 +3771,8 @@ class GroupFieldInternal: GroupField, InternalMessage(fieldsWithPresence = 2) {
     }
 
     @InternalRpcApi
-    object CODEC: MessageCodec<GroupField> {
-        override fun encode(value: GroupField, config: CodecConfig?): Source {
+    object CODEC: MessageMarshaller<GroupField> {
+        override fun encode(value: GroupField, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -3784,7 +3784,7 @@ class GroupFieldInternal: GroupField, InternalMessage(fieldsWithPresence = 2) {
             return buffer
         }
 
-        override fun decode(source: Source, config: CodecConfig?): GroupField {
+        override fun decode(source: Source, config: MarshallerConfig?): GroupField {
             WireDecoder(source).use {
                 val msg = GroupFieldInternal()
                 checkForPlatformDecodeException {
@@ -4019,8 +4019,8 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes, InternalMessage(fiel
     }
 
     @InternalRpcApi
-    object CODEC: MessageCodec<UnknownToTestAllTypes> {
-        override fun encode(value: UnknownToTestAllTypes, config: CodecConfig?): Source {
+    object CODEC: MessageMarshaller<UnknownToTestAllTypes> {
+        override fun encode(value: UnknownToTestAllTypes, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -4032,7 +4032,7 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes, InternalMessage(fiel
             return buffer
         }
 
-        override fun decode(source: Source, config: CodecConfig?): UnknownToTestAllTypes {
+        override fun decode(source: Source, config: MarshallerConfig?): UnknownToTestAllTypes {
             WireDecoder(source).use {
                 val msg = UnknownToTestAllTypesInternal()
                 checkForPlatformDecodeException {
@@ -4101,8 +4101,8 @@ class NullHypothesisProto2Internal: NullHypothesisProto2, InternalMessage(fields
     }
 
     @InternalRpcApi
-    object CODEC: MessageCodec<NullHypothesisProto2> {
-        override fun encode(value: NullHypothesisProto2, config: CodecConfig?): Source {
+    object CODEC: MessageMarshaller<NullHypothesisProto2> {
+        override fun encode(value: NullHypothesisProto2, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -4114,7 +4114,7 @@ class NullHypothesisProto2Internal: NullHypothesisProto2, InternalMessage(fields
             return buffer
         }
 
-        override fun decode(source: Source, config: CodecConfig?): NullHypothesisProto2 {
+        override fun decode(source: Source, config: MarshallerConfig?): NullHypothesisProto2 {
             WireDecoder(source).use {
                 val msg = NullHypothesisProto2Internal()
                 checkForPlatformDecodeException {
@@ -4183,8 +4183,8 @@ class EnumOnlyProto2Internal: EnumOnlyProto2, InternalMessage(fieldsWithPresence
     }
 
     @InternalRpcApi
-    object CODEC: MessageCodec<EnumOnlyProto2> {
-        override fun encode(value: EnumOnlyProto2, config: CodecConfig?): Source {
+    object CODEC: MessageMarshaller<EnumOnlyProto2> {
+        override fun encode(value: EnumOnlyProto2, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -4196,7 +4196,7 @@ class EnumOnlyProto2Internal: EnumOnlyProto2, InternalMessage(fieldsWithPresence
             return buffer
         }
 
-        override fun decode(source: Source, config: CodecConfig?): EnumOnlyProto2 {
+        override fun decode(source: Source, config: MarshallerConfig?): EnumOnlyProto2 {
             WireDecoder(source).use {
                 val msg = EnumOnlyProto2Internal()
                 checkForPlatformDecodeException {
@@ -4288,8 +4288,8 @@ class OneStringProto2Internal: OneStringProto2, InternalMessage(fieldsWithPresen
     }
 
     @InternalRpcApi
-    object CODEC: MessageCodec<OneStringProto2> {
-        override fun encode(value: OneStringProto2, config: CodecConfig?): Source {
+    object CODEC: MessageMarshaller<OneStringProto2> {
+        override fun encode(value: OneStringProto2, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -4301,7 +4301,7 @@ class OneStringProto2Internal: OneStringProto2, InternalMessage(fieldsWithPresen
             return buffer
         }
 
-        override fun decode(source: Source, config: CodecConfig?): OneStringProto2 {
+        override fun decode(source: Source, config: MarshallerConfig?): OneStringProto2 {
             WireDecoder(source).use {
                 val msg = OneStringProto2Internal()
                 checkForPlatformDecodeException {
@@ -4415,8 +4415,8 @@ class ProtoWithKeywordsInternal: ProtoWithKeywords, InternalMessage(fieldsWithPr
     }
 
     @InternalRpcApi
-    object CODEC: MessageCodec<ProtoWithKeywords> {
-        override fun encode(value: ProtoWithKeywords, config: CodecConfig?): Source {
+    object CODEC: MessageMarshaller<ProtoWithKeywords> {
+        override fun encode(value: ProtoWithKeywords, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -4428,7 +4428,7 @@ class ProtoWithKeywordsInternal: ProtoWithKeywords, InternalMessage(fieldsWithPr
             return buffer
         }
 
-        override fun decode(source: Source, config: CodecConfig?): ProtoWithKeywords {
+        override fun decode(source: Source, config: MarshallerConfig?): ProtoWithKeywords {
             WireDecoder(source).use {
                 val msg = ProtoWithKeywordsInternal()
                 checkForPlatformDecodeException {
@@ -5235,8 +5235,8 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         }
 
         @InternalRpcApi
-        object CODEC: MessageCodec<TestAllRequiredTypesProto2.NestedMessage> {
-            override fun encode(value: TestAllRequiredTypesProto2.NestedMessage, config: CodecConfig?): Source {
+        object CODEC: MessageMarshaller<TestAllRequiredTypesProto2.NestedMessage> {
+            override fun encode(value: TestAllRequiredTypesProto2.NestedMessage, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
                 val internalMsg = value.asInternal()
@@ -5248,7 +5248,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
                 return buffer
             }
 
-            override fun decode(source: Source, config: CodecConfig?): TestAllRequiredTypesProto2.NestedMessage {
+            override fun decode(source: Source, config: MarshallerConfig?): TestAllRequiredTypesProto2.NestedMessage {
                 WireDecoder(source).use {
                     val msg = NestedMessageInternal()
                     checkForPlatformDecodeException {
@@ -5407,8 +5407,8 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         }
 
         @InternalRpcApi
-        object CODEC: MessageCodec<TestAllRequiredTypesProto2.MessageSetCorrect> {
-            override fun encode(value: TestAllRequiredTypesProto2.MessageSetCorrect, config: CodecConfig?): Source {
+        object CODEC: MessageMarshaller<TestAllRequiredTypesProto2.MessageSetCorrect> {
+            override fun encode(value: TestAllRequiredTypesProto2.MessageSetCorrect, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
                 val internalMsg = value.asInternal()
@@ -5420,7 +5420,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
                 return buffer
             }
 
-            override fun decode(source: Source, config: CodecConfig?): TestAllRequiredTypesProto2.MessageSetCorrect {
+            override fun decode(source: Source, config: MarshallerConfig?): TestAllRequiredTypesProto2.MessageSetCorrect {
                 WireDecoder(source).use {
                     val msg = MessageSetCorrectInternal()
                     checkForPlatformDecodeException {
@@ -5512,8 +5512,8 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         }
 
         @InternalRpcApi
-        object CODEC: MessageCodec<TestAllRequiredTypesProto2.MessageSetCorrectExtension1> {
-            override fun encode(value: TestAllRequiredTypesProto2.MessageSetCorrectExtension1, config: CodecConfig?): Source {
+        object CODEC: MessageMarshaller<TestAllRequiredTypesProto2.MessageSetCorrectExtension1> {
+            override fun encode(value: TestAllRequiredTypesProto2.MessageSetCorrectExtension1, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
                 val internalMsg = value.asInternal()
@@ -5525,7 +5525,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
                 return buffer
             }
 
-            override fun decode(source: Source, config: CodecConfig?): TestAllRequiredTypesProto2.MessageSetCorrectExtension1 {
+            override fun decode(source: Source, config: MarshallerConfig?): TestAllRequiredTypesProto2.MessageSetCorrectExtension1 {
                 WireDecoder(source).use {
                     val msg = MessageSetCorrectExtension1Internal()
                     checkForPlatformDecodeException {
@@ -5617,8 +5617,8 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         }
 
         @InternalRpcApi
-        object CODEC: MessageCodec<TestAllRequiredTypesProto2.MessageSetCorrectExtension2> {
-            override fun encode(value: TestAllRequiredTypesProto2.MessageSetCorrectExtension2, config: CodecConfig?): Source {
+        object CODEC: MessageMarshaller<TestAllRequiredTypesProto2.MessageSetCorrectExtension2> {
+            override fun encode(value: TestAllRequiredTypesProto2.MessageSetCorrectExtension2, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
                 val internalMsg = value.asInternal()
@@ -5630,7 +5630,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
                 return buffer
             }
 
-            override fun decode(source: Source, config: CodecConfig?): TestAllRequiredTypesProto2.MessageSetCorrectExtension2 {
+            override fun decode(source: Source, config: MarshallerConfig?): TestAllRequiredTypesProto2.MessageSetCorrectExtension2 {
                 WireDecoder(source).use {
                     val msg = MessageSetCorrectExtension2Internal()
                     checkForPlatformDecodeException {
@@ -5653,8 +5653,8 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
     }
 
     @InternalRpcApi
-    object CODEC: MessageCodec<TestAllRequiredTypesProto2> {
-        override fun encode(value: TestAllRequiredTypesProto2, config: CodecConfig?): Source {
+    object CODEC: MessageMarshaller<TestAllRequiredTypesProto2> {
+        override fun encode(value: TestAllRequiredTypesProto2, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -5666,7 +5666,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
             return buffer
         }
 
-        override fun decode(source: Source, config: CodecConfig?): TestAllRequiredTypesProto2 {
+        override fun decode(source: Source, config: MarshallerConfig?): TestAllRequiredTypesProto2 {
             WireDecoder(source).use {
                 val msg = TestAllRequiredTypesProto2Internal()
                 checkForPlatformDecodeException {
@@ -5819,8 +5819,8 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         }
 
         @InternalRpcApi
-        object CODEC: MessageCodec<TestLargeOneof.A1> {
-            override fun encode(value: TestLargeOneof.A1, config: CodecConfig?): Source {
+        object CODEC: MessageMarshaller<TestLargeOneof.A1> {
+            override fun encode(value: TestLargeOneof.A1, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
                 val internalMsg = value.asInternal()
@@ -5832,7 +5832,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
                 return buffer
             }
 
-            override fun decode(source: Source, config: CodecConfig?): TestLargeOneof.A1 {
+            override fun decode(source: Source, config: MarshallerConfig?): TestLargeOneof.A1 {
                 WireDecoder(source).use {
                     val msg = A1Internal()
                     checkForPlatformDecodeException {
@@ -5901,8 +5901,8 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         }
 
         @InternalRpcApi
-        object CODEC: MessageCodec<TestLargeOneof.A2> {
-            override fun encode(value: TestLargeOneof.A2, config: CodecConfig?): Source {
+        object CODEC: MessageMarshaller<TestLargeOneof.A2> {
+            override fun encode(value: TestLargeOneof.A2, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
                 val internalMsg = value.asInternal()
@@ -5914,7 +5914,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
                 return buffer
             }
 
-            override fun decode(source: Source, config: CodecConfig?): TestLargeOneof.A2 {
+            override fun decode(source: Source, config: MarshallerConfig?): TestLargeOneof.A2 {
                 WireDecoder(source).use {
                     val msg = A2Internal()
                     checkForPlatformDecodeException {
@@ -5983,8 +5983,8 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         }
 
         @InternalRpcApi
-        object CODEC: MessageCodec<TestLargeOneof.A3> {
-            override fun encode(value: TestLargeOneof.A3, config: CodecConfig?): Source {
+        object CODEC: MessageMarshaller<TestLargeOneof.A3> {
+            override fun encode(value: TestLargeOneof.A3, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
                 val internalMsg = value.asInternal()
@@ -5996,7 +5996,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
                 return buffer
             }
 
-            override fun decode(source: Source, config: CodecConfig?): TestLargeOneof.A3 {
+            override fun decode(source: Source, config: MarshallerConfig?): TestLargeOneof.A3 {
                 WireDecoder(source).use {
                     val msg = A3Internal()
                     checkForPlatformDecodeException {
@@ -6065,8 +6065,8 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         }
 
         @InternalRpcApi
-        object CODEC: MessageCodec<TestLargeOneof.A4> {
-            override fun encode(value: TestLargeOneof.A4, config: CodecConfig?): Source {
+        object CODEC: MessageMarshaller<TestLargeOneof.A4> {
+            override fun encode(value: TestLargeOneof.A4, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
                 val internalMsg = value.asInternal()
@@ -6078,7 +6078,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
                 return buffer
             }
 
-            override fun decode(source: Source, config: CodecConfig?): TestLargeOneof.A4 {
+            override fun decode(source: Source, config: MarshallerConfig?): TestLargeOneof.A4 {
                 WireDecoder(source).use {
                     val msg = A4Internal()
                     checkForPlatformDecodeException {
@@ -6147,8 +6147,8 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         }
 
         @InternalRpcApi
-        object CODEC: MessageCodec<TestLargeOneof.A5> {
-            override fun encode(value: TestLargeOneof.A5, config: CodecConfig?): Source {
+        object CODEC: MessageMarshaller<TestLargeOneof.A5> {
+            override fun encode(value: TestLargeOneof.A5, config: MarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
                 val internalMsg = value.asInternal()
@@ -6160,7 +6160,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
                 return buffer
             }
 
-            override fun decode(source: Source, config: CodecConfig?): TestLargeOneof.A5 {
+            override fun decode(source: Source, config: MarshallerConfig?): TestLargeOneof.A5 {
                 WireDecoder(source).use {
                     val msg = A5Internal()
                     checkForPlatformDecodeException {
@@ -6183,8 +6183,8 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
     }
 
     @InternalRpcApi
-    object CODEC: MessageCodec<TestLargeOneof> {
-        override fun encode(value: TestLargeOneof, config: CodecConfig?): Source {
+    object CODEC: MessageMarshaller<TestLargeOneof> {
+        override fun encode(value: TestLargeOneof, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -6196,7 +6196,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
             return buffer
         }
 
-        override fun decode(source: Source, config: CodecConfig?): TestLargeOneof {
+        override fun decode(source: Source, config: MarshallerConfig?): TestLargeOneof {
             WireDecoder(source).use {
                 val msg = TestLargeOneofInternal()
                 checkForPlatformDecodeException {

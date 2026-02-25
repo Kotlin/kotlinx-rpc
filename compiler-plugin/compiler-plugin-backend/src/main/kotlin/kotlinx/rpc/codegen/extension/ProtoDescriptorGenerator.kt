@@ -17,13 +17,13 @@ internal class ProtoDeclaration(
     val message: IrClass,
     val messageInternal: IrClass,
     val descriptor: IrClass,
-    val codec: IrClass,
+    val marshaller: IrClass,
 )
 
 /**
  * Currently, this only generates the @WithProtoDescriptor annotation for the message interface.
  * The proto-gen plugin generates the actual descriptor as part of the internal message class,
- * similar to CODEC.
+ * similar to MARSHALLER.
  *
  * ```
  * class MyMessageInternal : MyMessage {
@@ -41,7 +41,7 @@ internal class ProtoDescriptorGenerator(
 
     fun generate() {
         addWithProtoDescriptorAnnotation()
-        addWithCodecAnnotation()
+        addWithMarshallerAnnotation()
     }
 
     /**
@@ -59,24 +59,24 @@ internal class ProtoDescriptorGenerator(
     }
 
     /**
-     * Add the @WithCodec annotation to the message interface.
-     * This is used by `codec()` to get the MessageCodec object.
+     * Add the @WithMarshaller annotation to the message interface.
+     * This is used by `marshallerOf()` to get the MessageMarshaller object.
      * The java implementation uses reflection to find the descriptor object.
      *
      * ```
-     * @WithCodec(MyMessageInternal.CODEC::class)
+     * @WithMarshaller(MyMessageInternal.MARSHALLER::class)
      * interface MyMessage {}
      * ```
      */
-    private fun addWithCodecAnnotation() {
-        addWithSomethingAnnotation(ctx.withCodecAnnotation, ProtoDeclaration::codec)
+    private fun addWithMarshallerAnnotation() {
+        addWithSomethingAnnotation(ctx.withMarshallerAnnotation, ProtoDeclaration::marshaller)
     }
 
     /**
      * Add the @With<Something> annotation to the message interface.
      *
      * ```
-     * @With<Codec>(MyMessageInternal.<SOMETHING>::class)
+     * @With<Something>(MyMessageInternal.<SOMETHING>::class)
      * interface MyMessage {}
      * ```
      */

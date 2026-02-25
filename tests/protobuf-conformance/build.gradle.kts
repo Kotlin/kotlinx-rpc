@@ -28,7 +28,7 @@ kotlin {
 dependencies {
     implementation(libs.coroutines.core)
     implementation(libs.kotlin.reflect)
-    implementation(projects.grpc.grpcCodec)
+    implementation(projects.grpc.grpcMarshaller)
     implementation(projects.protobuf.protobufCore)
 
     testImplementation(libs.kotlin.test.junit5)

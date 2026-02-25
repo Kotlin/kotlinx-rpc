@@ -3,8 +3,8 @@ package com.google.protobuf.kotlin
 
 import kotlinx.io.Buffer
 import kotlinx.io.Source
-import kotlinx.rpc.grpc.codec.CodecConfig
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
@@ -17,7 +17,6 @@ import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
 import kotlinx.rpc.protobuf.internal.bool
-import kotlinx.rpc.protobuf.internal.bytes
 import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.enum
@@ -126,8 +125,8 @@ public class TypeInternal: Type, InternalMessage(fieldsWithPresence = 1) {
     }
 
     @InternalRpcApi
-    public object CODEC: MessageCodec<Type> {
-        public override fun encode(value: Type, config: CodecConfig?): Source {
+    public object CODEC: MessageMarshaller<Type> {
+        public override fun encode(value: Type, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -139,7 +138,7 @@ public class TypeInternal: Type, InternalMessage(fieldsWithPresence = 1) {
             return buffer
         }
 
-        public override fun decode(source: Source, config: CodecConfig?): Type {
+        public override fun decode(source: Source, config: MarshallerConfig?): Type {
             WireDecoder(source).use {
                 val msg = TypeInternal()
                 checkForPlatformDecodeException {
@@ -259,8 +258,8 @@ public class FieldInternal: Field, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
-    public object CODEC: MessageCodec<Field> {
-        public override fun encode(value: Field, config: CodecConfig?): Source {
+    public object CODEC: MessageMarshaller<Field> {
+        public override fun encode(value: Field, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -272,7 +271,7 @@ public class FieldInternal: Field, InternalMessage(fieldsWithPresence = 0) {
             return buffer
         }
 
-        public override fun decode(source: Source, config: CodecConfig?): Field {
+        public override fun decode(source: Source, config: MarshallerConfig?): Field {
             WireDecoder(source).use {
                 val msg = FieldInternal()
                 checkForPlatformDecodeException {
@@ -390,8 +389,8 @@ public class EnumInternal: Enum, InternalMessage(fieldsWithPresence = 1) {
     }
 
     @InternalRpcApi
-    public object CODEC: MessageCodec<Enum> {
-        public override fun encode(value: Enum, config: CodecConfig?): Source {
+    public object CODEC: MessageMarshaller<Enum> {
+        public override fun encode(value: Enum, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -403,7 +402,7 @@ public class EnumInternal: Enum, InternalMessage(fieldsWithPresence = 1) {
             return buffer
         }
 
-        public override fun decode(source: Source, config: CodecConfig?): Enum {
+        public override fun decode(source: Source, config: MarshallerConfig?): Enum {
             WireDecoder(source).use {
                 val msg = EnumInternal()
                 checkForPlatformDecodeException {
@@ -488,8 +487,8 @@ public class EnumValueInternal: EnumValue, InternalMessage(fieldsWithPresence = 
     }
 
     @InternalRpcApi
-    public object CODEC: MessageCodec<EnumValue> {
-        public override fun encode(value: EnumValue, config: CodecConfig?): Source {
+    public object CODEC: MessageMarshaller<EnumValue> {
+        public override fun encode(value: EnumValue, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -501,7 +500,7 @@ public class EnumValueInternal: EnumValue, InternalMessage(fieldsWithPresence = 
             return buffer
         }
 
-        public override fun decode(source: Source, config: CodecConfig?): EnumValue {
+        public override fun decode(source: Source, config: MarshallerConfig?): EnumValue {
             WireDecoder(source).use {
                 val msg = EnumValueInternal()
                 checkForPlatformDecodeException {
@@ -599,8 +598,8 @@ public class OptionInternal: Option, InternalMessage(fieldsWithPresence = 1) {
     }
 
     @InternalRpcApi
-    public object CODEC: MessageCodec<Option> {
-        public override fun encode(value: Option, config: CodecConfig?): Source {
+    public object CODEC: MessageMarshaller<Option> {
+        public override fun encode(value: Option, config: MarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -612,7 +611,7 @@ public class OptionInternal: Option, InternalMessage(fieldsWithPresence = 1) {
             return buffer
         }
 
-        public override fun decode(source: Source, config: CodecConfig?): Option {
+        public override fun decode(source: Source, config: MarshallerConfig?): Option {
             WireDecoder(source).use {
                 val msg = OptionInternal()
                 checkForPlatformDecodeException {

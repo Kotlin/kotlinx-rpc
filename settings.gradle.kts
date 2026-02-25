@@ -37,8 +37,8 @@ includePublic(":grpc:grpc-core")
 includePublic(":grpc:grpc-client")
 includePublic(":grpc:grpc-server")
 includePublic(":grpc:grpc-ktor-server")
-includePublic(":grpc:grpc-codec")
-includePublic(":grpc:grpc-codec-kotlinx-serialization")
+includePublic(":grpc:grpc-marshaller")
+includePublic(":grpc:grpc-marshaller-kotlinx-serialization")
 
 includePublic(":bom")
 

@@ -7,7 +7,7 @@ package kotlinx.rpc.grpc
 import io.grpc.Metadata
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
-import kotlinx.rpc.grpc.codec.MessageCodec
+import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
@@ -15,16 +15,16 @@ public actual typealias GrpcMetadata = io.grpc.Metadata
 
 public actual class GrpcMetadataKey<T> public actual constructor(
     private val name: String,
-    private val codec: MessageCodec<T>,
+    private val marshaller: MessageMarshaller<T>,
 ) {
 
     internal fun encode(value: T): ByteArray {
-        val source = codec.encode(value)
+        val source = marshaller.encode(value)
         return source.readByteArray()
     }
     internal fun decode(value: ByteArray): T = Buffer().let { buffer ->
         buffer.write(value)
-        codec.decode(buffer)
+        marshaller.decode(buffer)
     }
 
     internal fun toAsciiKey(): Metadata.Key<T> = Metadata.Key.of(name, AsciiMarshaller(this))

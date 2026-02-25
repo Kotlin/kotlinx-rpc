@@ -6,7 +6,7 @@ package kotlinx.rpc.protobuf.test
 
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
-import kotlinx.rpc.grpc.codec.codec
+import kotlinx.rpc.grpc.marshaller.marshallerOf
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import test.submsg.Other
@@ -21,13 +21,13 @@ import kotlin.test.assertTrue
 class UnknownFieldsTest {
 
     fun send(msg: UnknownFieldsAll): UnknownFieldsSubset {
-        val encoded = codec<UnknownFieldsAll>().encode(msg)
-        return codec<UnknownFieldsSubset>().decode(encoded)
+        val encoded = marshallerOf<UnknownFieldsAll>().encode(msg)
+        return marshallerOf<UnknownFieldsSubset>().decode(encoded)
     }
 
     fun send(msg: UnknownFieldsSubset): UnknownFieldsAll {
-        val encoded = codec<UnknownFieldsSubset>().encode(msg)
-        return codec<UnknownFieldsAll>().decode(encoded)
+        val encoded = marshallerOf<UnknownFieldsSubset>().encode(msg)
+        return marshallerOf<UnknownFieldsAll>().decode(encoded)
     }
 
     @Test
@@ -42,14 +42,14 @@ class UnknownFieldsTest {
             testOneof = UnknownFieldsAll.TestOneof.OneofString("oneof value")
         }
 
-        val encoded = codec<UnknownFieldsAll>().encode(all)
-        val discardCodec = codec<UnknownFieldsSubset>(ProtobufConfig(discardUnknownFields = true))
+        val encoded = marshallerOf<UnknownFieldsAll>().encode(all)
+        val discardMarshaller = marshallerOf<UnknownFieldsSubset>(ProtobufConfig(discardUnknownFields = true))
 
-        val subsetDiscarded = discardCodec.decode(encoded)
+        val subsetDiscarded = discardMarshaller.decode(encoded)
         assertEquals(0L, subsetDiscarded.asInternal()._unknownFields.size)
         assertEquals(all.field1, subsetDiscarded.field1)
 
-        val roundTrippedDiscarded = codec<UnknownFieldsAll>().decode(discardCodec.encode(subsetDiscarded))
+        val roundTrippedDiscarded = marshallerOf<UnknownFieldsAll>().decode(discardMarshaller.encode(subsetDiscarded))
         assertEquals(null, roundTrippedDiscarded.intMissing)
         assertEquals(all.field1, roundTrippedDiscarded.field1)
         assertEquals(AllPrimitives {}, roundTrippedDiscarded.allPrimitivesMissing)
@@ -421,14 +421,14 @@ class UnknownFieldsTest {
         val originalBytes = originalCopy.readByteArray()
 
         // decode with UnknownFieldsSubset (which doesn't know about the group fields)
-        val subset = codec<UnknownFieldsSubset>().decode(originalBuffer)
+        val subset = marshallerOf<UnknownFieldsSubset>().decode(originalBuffer)
 
         // the unknown fields should be preserved
         val unknownFields = subset.asInternal()._unknownFields
         assertTrue(unknownFields.size > 0L, "Unknown fields should contain the group data")
 
         // re-encode and check that the buffer contains the same data
-        val reencodedBuffer = codec<UnknownFieldsSubset>().encode(subset)
+        val reencodedBuffer = marshallerOf<UnknownFieldsSubset>().encode(subset)
         val reencodedBytes = reencodedBuffer.readByteArray()
 
         // the buffers should be identical

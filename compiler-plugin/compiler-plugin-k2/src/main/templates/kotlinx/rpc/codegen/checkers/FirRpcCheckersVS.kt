@@ -157,24 +157,24 @@ class FirGrpcServiceDeclarationCheckerVS : FirRegularClassChecker(MppCheckerKind
     //##csm /FirGrpcServiceDeclarationCheckerVS_context
 }
 
-class FirWithCodecDeclarationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
-    //##csm FirWithCodecDeclarationChecker_context
+class FirWithMarshallerDeclarationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
+    //##csm FirWithMarshallerDeclarationChecker_context
     //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
     override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
-        FirWithCodecDeclarationChecker.check(declaration, context, reporter)
+        FirWithMarshallerDeclarationChecker.check(declaration, context, reporter)
     }
     //##csm /specific
     //##csm default
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirRegularClass) {
-        FirWithCodecDeclarationChecker.check(declaration, context, reporter)
+        FirWithMarshallerDeclarationChecker.check(declaration, context, reporter)
     }
     //##csm /default
-    //##csm /FirWithCodecDeclarationChecker_context
+    //##csm /FirWithMarshallerDeclarationChecker_context
 }
 
 class FirProtoMessageAnnotationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
-    //##csm FirWithCodecDeclarationChecker_context
+    //##csm FirWithMarshallerDeclarationChecker_context
     //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
     override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         FirProtoMessageAnnotationChecker.check(declaration, context, reporter)
@@ -186,6 +186,6 @@ class FirProtoMessageAnnotationCheckerVS : FirRegularClassChecker(MppCheckerKind
         FirProtoMessageAnnotationChecker.check(declaration, context, reporter)
     }
     //##csm /default
-    //##csm /FirWithCodecDeclarationChecker_context
+    //##csm /FirWithMarshallerDeclarationChecker_context
 }
 
