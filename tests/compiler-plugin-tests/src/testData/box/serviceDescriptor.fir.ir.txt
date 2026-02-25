@@ -2,6 +2,7 @@ FILE fqName:<root> fileName:/serviceDescriptor.kt
   CLASS INTERFACE name:BoxService modality:ABSTRACT visibility:public superTypes:[kotlin.Any]
     annotations:
       Rpc
+      WithServiceDescriptor(stub = CLASS_REFERENCE 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<<root>.BoxService>]' type=kotlin.reflect.KClass<<root>.BoxService.$rpcServiceStub.Companion>)
     thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:<root>.BoxService
     CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedStubKey] CLASS name:$rpcServiceStub modality:FINAL visibility:public superTypes:[<root>.BoxService]
       thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:<root>.BoxService.$rpcServiceStub
