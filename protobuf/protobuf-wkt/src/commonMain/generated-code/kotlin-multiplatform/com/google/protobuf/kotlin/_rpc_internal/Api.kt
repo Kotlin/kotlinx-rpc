@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.grpc.marshaller.MarshallerConfig
@@ -9,6 +10,7 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
+import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
@@ -47,8 +49,12 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
     public override var mixins: List<Mixin> by MsgFieldDelegate { mutableListOf() }
     public override var syntax: Syntax by MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }
 
+    private val _owner: ApiInternal = this
+
     @InternalRpcApi
-    public val _presence: ApiPresence = object : ApiPresence {
+    public val _presence: ApiPresence = object : ApiPresence, InternalPresenceObject {
+        public override val _message: ApiInternal get() = _owner
+
         public override val hasSourceContext: Boolean get() = presenceMask[0]
     }
 
@@ -105,6 +111,10 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
         builder.appendLine("${nextIndentString}syntax=${this.syntax},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): ApiInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -180,6 +190,8 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
     public override var options: List<Option> by MsgFieldDelegate { mutableListOf() }
     public override var syntax: Syntax by MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }
 
+    private val _owner: MethodInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = name.hashCode()
@@ -227,6 +239,10 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
         builder.appendLine("${nextIndentString}syntax=${this.syntax},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): MethodInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -294,6 +310,8 @@ public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 
     public override var name: String by MsgFieldDelegate { "" }
     public override var root: String by MsgFieldDelegate { "" }
 
+    private val _owner: MixinInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = name.hashCode()
@@ -326,6 +344,10 @@ public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 
         builder.appendLine("${nextIndentString}root=${this.root},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): MixinInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -430,10 +452,17 @@ public fun ApiInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
     if (this.syntax != Syntax.SYNTAX_PROTO2) {
         encoder.writeEnum(fieldNr = 7, value = this.syntax.number)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun ApiInternal.Companion.decodeWith(msg: ApiInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(Api::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -564,10 +593,17 @@ public fun MethodInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfi
     if (this.syntax != Syntax.SYNTAX_PROTO2) {
         encoder.writeEnum(fieldNr = 7, value = this.syntax.number)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun MethodInternal.Companion.decodeWith(msg: MethodInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(Method::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -665,10 +701,17 @@ public fun MixinInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig
     if (this.root.isNotEmpty()) {
         encoder.writeString(fieldNr = 2, value = this.root)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun MixinInternal.Companion.decodeWith(msg: MixinInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(Mixin::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

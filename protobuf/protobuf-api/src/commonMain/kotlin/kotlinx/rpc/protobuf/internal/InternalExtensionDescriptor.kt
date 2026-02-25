@@ -4,310 +4,326 @@
 
 package kotlinx.rpc.protobuf.internal
 
-import com.google.protobuf.kotlin.asInternal
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.ProtoExtensionDescriptor
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 import kotlin.reflect.safeCast
 
 @InternalRpcApi
-public class ExtensionDescriptor<T : Any, V : Any> private constructor(
-    public val extendee: KClass<T>,
+public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any> private constructor(
+    public override val messageType: KClass<T>,
     public val valueType: KClass<V>,
-    public val fieldNumber: Int,
+    public override val fieldNumber: Int,
     public val name: String,
     public val wireType: WireType,
     public val isRepeated: Boolean,
     public val isPacked: Boolean,
     public val defaultValue: V?,
     public val encode: (WireEncoder, Int, Any) -> Unit,
-    public val decode: (Any?, WireDecoder) -> V
-) {
+    public val decode: (Any?, WireDecoder) -> V,
+    public val copy: (Any) -> V
+): ProtoExtensionDescriptor<T, V> {
     public companion object {
 
-        public fun <T : Any> bool(
+        public fun <@GeneratedProtoMessage T : Any> bool(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             defaultValue: Boolean = false,
-        ): ExtensionDescriptor<T, Boolean> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, Boolean> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.VARINT,
-            extendee = extendee,
+            messageType = extendee,
             valueType = Boolean::class,
             isRepeated = false,
             isPacked = false,
             defaultValue = defaultValue,
             encode = { enc, fieldNr, value -> enc.writeBool(fieldNr, value.encodingCast<Boolean>()) },
-            decode = { _, dec -> dec.readBool() }
+            decode = { _, dec -> dec.readBool() },
+            copy = { it as Boolean }
         )
 
-        public fun <T : Any> int32(
+        public fun <@GeneratedProtoMessage T : Any> int32(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             defaultValue: Int = 0,
-        ): ExtensionDescriptor<T, Int> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, Int> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.VARINT,
-            extendee = extendee,
+            messageType = extendee,
             valueType = Int::class,
             isRepeated = false,
             isPacked = false,
             defaultValue = defaultValue,
             encode = { enc, fieldNr, value -> enc.writeInt32(fieldNr, value.encodingCast<Int>()) },
-            decode = { _, dec -> dec.readInt32() }
+            decode = { _, dec -> dec.readInt32() },
+            copy = { it as Int },
         )
 
-        public fun <T : Any> int64(
+        public fun <@GeneratedProtoMessage T : Any> int64(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             defaultValue: Long = 0L,
-        ): ExtensionDescriptor<T, Long> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, Long> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.VARINT,
-            extendee = extendee,
+            messageType = extendee,
             valueType = Long::class,
             isRepeated = false,
             isPacked = false,
             defaultValue = defaultValue,
             encode = { enc, fieldNr, value -> enc.writeInt64(fieldNr, value.encodingCast<Long>()) },
-            decode = { _, dec -> dec.readInt64() }
+            decode = { _, dec -> dec.readInt64() },
+            copy = { it as Long },
         )
 
-        public fun <T : Any> uint32(
+        public fun <@GeneratedProtoMessage T : Any> uint32(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             defaultValue: UInt = 0u,
-        ): ExtensionDescriptor<T, UInt> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, UInt> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.VARINT,
-            extendee = extendee,
+            messageType = extendee,
             valueType = UInt::class,
             isRepeated = false,
             isPacked = false,
             defaultValue = defaultValue,
             encode = { enc, fieldNr, value -> enc.writeUInt32(fieldNr, value.encodingCast<UInt>()) },
-            decode = { _, dec -> dec.readUInt32() }
+            decode = { _, dec -> dec.readUInt32() },
+            copy = { it as UInt },
         )
 
-        public fun <T : Any> uint64(
+        public fun <@GeneratedProtoMessage T : Any> uint64(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             defaultValue: ULong = 0uL,
-        ): ExtensionDescriptor<T, ULong> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, ULong> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.VARINT,
-            extendee = extendee,
+            messageType = extendee,
             valueType = ULong::class,
             isRepeated = false,
             isPacked = false,
             defaultValue = defaultValue,
             encode = { enc, fieldNr, value -> enc.writeUInt64(fieldNr, value.encodingCast<ULong>()) },
-            decode = { _, dec -> dec.readUInt64() }
+            decode = { _, dec -> dec.readUInt64() },
+            copy = { it as ULong },
         )
 
-        public fun <T : Any> sint32(
+        public fun <@GeneratedProtoMessage T : Any> sint32(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             defaultValue: Int = 0,
-        ): ExtensionDescriptor<T, Int> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, Int> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.VARINT,
-            extendee = extendee,
+            messageType = extendee,
             valueType = Int::class,
             isRepeated = false,
             isPacked = false,
             defaultValue = defaultValue,
             encode = { enc, fieldNr, value -> enc.writeSInt32(fieldNr, value.encodingCast<Int>()) },
-            decode = { _, dec -> dec.readSInt32() }
+            decode = { _, dec -> dec.readSInt32() },
+            copy = { it as Int },
         )
 
-        public fun <T : Any> sint64(
+        public fun <@GeneratedProtoMessage T : Any> sint64(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             defaultValue: Long = 0L,
-        ): ExtensionDescriptor<T, Long> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, Long> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.VARINT,
-            extendee = extendee,
+            messageType = extendee,
             valueType = Long::class,
             isRepeated = false,
             isPacked = false,
             defaultValue = defaultValue,
             encode = { enc, fieldNr, value -> enc.writeSInt64(fieldNr, value.encodingCast<Long>()) },
-            decode = { _, dec -> dec.readSInt64() }
+            decode = { _, dec -> dec.readSInt64() },
+            copy = { it as Long },
         )
 
-        public fun <T : Any> fixed32(
+        public fun <@GeneratedProtoMessage T : Any> fixed32(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             defaultValue: UInt = 0u,
-        ): ExtensionDescriptor<T, UInt> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, UInt> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.FIXED32,
-            extendee = extendee,
+            messageType = extendee,
             valueType = UInt::class,
             isRepeated = false,
             isPacked = false,
             defaultValue = defaultValue,
             encode = { enc, fieldNr, value -> enc.writeFixed32(fieldNr, value.encodingCast<UInt>()) },
-            decode = { _, dec -> dec.readFixed32() }
+            decode = { _, dec -> dec.readFixed32() },
+            copy = { it as UInt },
         )
 
-        public fun <T : Any> fixed64(
+        public fun <@GeneratedProtoMessage T : Any> fixed64(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             defaultValue: ULong = 0uL,
-        ): ExtensionDescriptor<T, ULong> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, ULong> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.FIXED64,
-            extendee = extendee,
+            messageType = extendee,
             valueType = ULong::class,
             isRepeated = false,
             isPacked = false,
             defaultValue = defaultValue,
             encode = { enc, fieldNr, value -> enc.writeFixed64(fieldNr, value.encodingCast<ULong>()) },
-            decode = { _, dec -> dec.readFixed64() }
+            decode = { _, dec -> dec.readFixed64() },
+            copy = { it as ULong },
         )
 
-        public fun <T : Any> sfixed32(
+        public fun <@GeneratedProtoMessage T : Any> sfixed32(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             defaultValue: Int = 0,
-        ): ExtensionDescriptor<T, Int> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, Int> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.FIXED32,
-            extendee = extendee,
+            messageType = extendee,
             valueType = Int::class,
             isRepeated = false,
             isPacked = false,
             defaultValue = defaultValue,
             encode = { enc, fieldNr, value -> enc.writeSFixed32(fieldNr, value.encodingCast<Int>()) },
-            decode = { _, dec -> dec.readSFixed32() }
+            decode = { _, dec -> dec.readSFixed32() },
+            copy = { it as Int },
         )
 
-        public fun <T : Any> sfixed64(
+        public fun <@GeneratedProtoMessage T : Any> sfixed64(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             defaultValue: Long = 0L,
-        ): ExtensionDescriptor<T, Long> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, Long> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.FIXED64,
-            extendee = extendee,
+            messageType = extendee,
             valueType = Long::class,
             isRepeated = false,
             isPacked = false,
             defaultValue = defaultValue,
             encode = { enc, fieldNr, value -> enc.writeSFixed64(fieldNr, value.encodingCast<Long>()) },
-            decode = { _, dec -> dec.readSFixed64() }
+            decode = { _, dec -> dec.readSFixed64() },
+            copy = { it as Long },
         )
 
-        public fun <T : Any> float(
+        public fun <@GeneratedProtoMessage T : Any> float(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             defaultValue: Float = 0f,
-        ): ExtensionDescriptor<T, Float> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, Float> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.FIXED32,
-            extendee = extendee,
+            messageType = extendee,
             isRepeated = false,
             isPacked = false,
             valueType = Float::class,
             defaultValue = defaultValue,
             encode = { enc, fieldNr, value -> enc.writeFloat(fieldNr, value.encodingCast<Float>()) },
-            decode = { _, dec -> dec.readFloat() }
+            decode = { _, dec -> dec.readFloat() },
+            copy = { it as Float },
         )
 
-        public fun <T : Any> double(
+        public fun <@GeneratedProtoMessage T : Any> double(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             defaultValue: Double = 0.0,
-        ): ExtensionDescriptor<T, Double> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, Double> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.FIXED64,
-            extendee = extendee,
+            messageType = extendee,
             isRepeated = false,
             isPacked = false,
             valueType = Double::class,
             defaultValue = defaultValue,
             encode = { enc, fieldNr, value -> enc.writeDouble(fieldNr, value.encodingCast<Double>()) },
-            decode = { _, dec -> dec.readDouble() }
+            decode = { _, dec -> dec.readDouble() },
+            copy = { it as Double },
         )
 
-        public fun <T : Any> bytes(
+        public fun <@GeneratedProtoMessage T : Any> bytes(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             defaultValue: ByteArray = byteArrayOf(),
-        ): ExtensionDescriptor<T, ByteArray> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, ByteArray> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.LENGTH_DELIMITED,
-            extendee = extendee,
+            messageType = extendee,
             valueType = ByteArray::class,
             isRepeated = false,
             isPacked = false,
             defaultValue = defaultValue,
             encode = { enc, fieldNr, value -> enc.writeBytes(fieldNr, value.encodingCast<ByteArray>()) },
-            decode = { _, dec -> dec.readBytes() }
+            decode = { _, dec -> dec.readBytes() },
+            copy = { (it as ByteArray).copyOf() },
         )
 
-        public fun <T : Any> string(
+        public fun <@GeneratedProtoMessage T : Any> string(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             defaultValue: String = "",
-        ): ExtensionDescriptor<T, String> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, String> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.LENGTH_DELIMITED,
-            extendee = extendee,
+            messageType = extendee,
             valueType = String::class,
             isRepeated = false,
             isPacked = false,
             defaultValue = defaultValue,
             encode = { enc, fieldNr, value -> enc.writeString(fieldNr, value.encodingCast<String>()) },
-            decode = { _, dec -> dec.readString() }
+            decode = { _, dec -> dec.readString() },
+            copy = { it as String },
         )
 
-        public fun <T : Any, V : Any> enum(
+        public fun <@GeneratedProtoMessage T : Any, V : Any> enum(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
             valueType: KClass<V>,
             encodeValue: (V) -> Int,
             decodeValue: (Int) -> V
-        ): ExtensionDescriptor<T, V> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, V> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.VARINT,
-            extendee = extendee,
+            messageType = extendee,
             valueType = valueType,
             isRepeated = false,
             isPacked = false,
@@ -318,11 +334,12 @@ public class ExtensionDescriptor<T : Any, V : Any> private constructor(
                     value = encodeValue(value.encodingCast(valueType))
                 )
             },
-            decode = { _, dec -> decodeValue(dec.readEnum()) }
+            decode = { _, dec -> decodeValue(dec.readEnum()) },
+            copy = { valueType.cast(it) }
         )
 
         // TODO: Annotate V with @GeneratedProtoMessage
-        public fun <T : Any, V : Any> message(
+        public fun <@GeneratedProtoMessage T : Any, V : Any> message(
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
@@ -331,11 +348,11 @@ public class ExtensionDescriptor<T : Any, V : Any> private constructor(
             asInternal: (V) -> InternalMessage,
             encodeWith: (InternalMessage, WireEncoder, ProtobufConfig?) -> Unit,
             decodeWith: (V, WireDecoder) -> Unit
-        ): ExtensionDescriptor<T, V> = ExtensionDescriptor(
+        ): InternalExtensionDescriptor<T, V> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.LENGTH_DELIMITED,
-            extendee = extendee,
+            messageType = extendee,
             valueType = valueType,
             isRepeated = false,
             isPacked = false,
@@ -347,7 +364,11 @@ public class ExtensionDescriptor<T : Any, V : Any> private constructor(
             decode = { currentMessage, dec ->
                 val msg = currentMessage?.let { valueType.cast(it) } ?: run { default() }
                 decodeWith(msg, dec)
-                return msg
+                msg
+            },
+            copy = {
+                @Suppress("UNCHECKED_CAST")
+                asInternal(it.encodingCast(valueType)).copyInternal() as V
             }
         )
 

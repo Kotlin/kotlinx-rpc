@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.grpc.marshaller.MarshallerConfig
@@ -42,9 +43,12 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
 
     public override var fields: Map<String, Value> by MsgFieldDelegate { mutableMapOf() }
 
+    private val _owner: StructInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return fields.hashCode()
+        var result = fields.hashCode()
+        return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -72,6 +76,10 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
         return builder.toString()
     }
 
+    public override fun copyInternal(): StructInternal {
+        return copyInternal { }
+    }
+
     @InternalRpcApi
     public fun copyInternal(body: StructInternal.() -> Unit): StructInternal {
         val copy = StructInternal()
@@ -97,6 +105,8 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
 
         public var key: String by MsgFieldDelegate { "" }
         public var value: Value by MsgFieldDelegate(PresenceIndices.value) { ValueInternal() }
+
+        private val _owner: FieldsEntryInternal = this
 
         public override fun hashCode(): Int {
             checkRequiredFields()
@@ -136,6 +146,10 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
 
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        public override fun copyInternal(): FieldsEntryInternal {
+            return this
         }
 
         @InternalRpcApi
@@ -191,9 +205,12 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
 
     public override var kind: Value.Kind? = null
 
+    private val _owner: ValueInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return (kind?.oneOfHashCode() ?: 0)
+        var result = (kind?.oneOfHashCode() ?: 0)
+        return result
     }
 
     public fun Value.Kind.oneOfHashCode(): Int {
@@ -244,6 +261,10 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
         builder.appendLine("${nextIndentString}kind=${this.kind},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): ValueInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -328,9 +349,12 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
 
     public override var values: List<Value> by MsgFieldDelegate { mutableListOf() }
 
+    private val _owner: ListValueInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return values.hashCode()
+        var result = values.hashCode()
+        return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -356,6 +380,10 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
         builder.appendLine("${nextIndentString}values=${this.values},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): ListValueInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -425,10 +453,17 @@ public fun StructInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfi
             }
         }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun StructInternal.Companion.decodeWith(msg: StructInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(Struct::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -516,10 +551,17 @@ public fun ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig
             }
         }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun ValueInternal.Companion.decodeWith(msg: ValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(Value::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -616,10 +658,17 @@ public fun ListValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
             encoder.writeMessage(fieldNr = 1, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun ListValueInternal.Companion.decodeWith(msg: ListValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(ListValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -677,6 +726,12 @@ public fun StructInternal.FieldsEntryInternal.encodeWith(encoder: WireEncoder, c
 
     if (presenceMask[0]) {
         encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
     }
 }
 

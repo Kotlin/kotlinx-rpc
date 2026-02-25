@@ -6,12 +6,14 @@ package kotlinx.rpc.protobuf.internal
 
 import kotlinx.io.Buffer
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+import kotlin.reflect.cast
 
 @InternalRpcApi
-public abstract class InternalMessage(fieldsWithPresence: Int, extensionRegister: Map<Int, ExtensionDescriptor<*, *>>) {
+public abstract class InternalMessage(
+    fieldsWithPresence: Int
+) {
     public val presenceMask: BitSet = BitSet(fieldsWithPresence)
 
     public val _extensions: MutableMap<Int, ExtensionValue> = mutableMapOf()
@@ -21,6 +23,55 @@ public abstract class InternalMessage(fieldsWithPresence: Int, extensionRegister
 
     @Suppress("PropertyName")
     public abstract val _unknownFields: Buffer
+
+    internal abstract fun copyInternal(): InternalMessage
+
+    public fun <V: Any> getExtensionValue(descriptor: InternalExtensionDescriptor<*, V>): V? {
+        val value = _extensions[descriptor.fieldNumber] ?: return null
+        if (value.descriptor != descriptor) return null
+        @Suppress("UNCHECKED_CAST")
+        return value.value as V
+    }
+
+    public fun <V: Any> setExtensionValue(descriptor: InternalExtensionDescriptor<*, V>, value: V?) {
+        if (value == null) {
+            _extensions.remove(descriptor.fieldNumber)
+        } else {
+            _extensions[descriptor.fieldNumber] = ExtensionValue(value, descriptor)
+        }
+    }
+
+    protected fun extensionsEqual(other: InternalMessage): Boolean {
+        _extensions.entries.forEach { (key, value) ->
+            val otherValue = other._extensions[key] ?: return false
+            if (value.value != otherValue.value) return false
+        }
+        return true
+    }
+
+    protected fun extensionsHashCode(): Int {
+        var result = 0
+        _extensions.values.forEach { value ->
+            result = 31 * result + value.value.hashCode()
+        }
+        return result
+    }
+
+    protected fun StringBuilder.appendExtensions(nextIndentString: String) {
+        _extensions.values.forEach { value ->
+            appendLine("${nextIndentString}${value.descriptor.name}=${value.value},")
+        }
+    }
+
+    protected fun copyExtensionsFrom(other: InternalMessage) {
+        // we don't have to copy the value's themself, as they
+        other._extensions.forEach { (key, value) ->
+            val descriptor = value.descriptor
+            val castedValue = descriptor.valueType.cast(value.value)
+            val valueCopy = descriptor.copy(castedValue)
+            _extensions[key] = ExtensionValue(valueCopy, value.descriptor)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -55,5 +106,15 @@ public class MsgFieldDelegate<T>(
 @InternalRpcApi
 public class ExtensionValue(
     public val value: Any,
-    public val descriptor: ExtensionDescriptor<*, *>
+    public val descriptor: InternalExtensionDescriptor<*, *>
 )
+
+@InternalRpcApi
+public interface InternalPresenceObject {
+    public val _message: InternalMessage
+
+    public fun hasExtension(descriptor: InternalExtensionDescriptor<*, *>): Boolean {
+        val extension = _message._extensions[descriptor.fieldNumber] ?: return false
+        return extension.descriptor == descriptor
+    }
+}

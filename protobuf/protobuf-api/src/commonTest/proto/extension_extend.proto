@@ -1,3 +1,4 @@
+syntax = "proto2";
 package kotlinx.rpc.protobuf.test;
 
 import "extension_base.proto";
@@ -12,9 +13,9 @@ extend ExtensionBase {
   optional MyEnum enum = 11;
 }
 
-extend ExtensionBase {
-  optional AllPrimitives msg = 12;
-}
+//extend ExtensionBase {
+//  optional AllPrimitives msg = 12;
+//}
 
 //extend ExtensionBase {
 //  repeated group Test = 12 {

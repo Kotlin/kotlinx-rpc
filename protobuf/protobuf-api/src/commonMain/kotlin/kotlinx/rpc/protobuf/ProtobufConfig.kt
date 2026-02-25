@@ -35,6 +35,7 @@ import kotlinx.rpc.grpc.marshaller.MarshallerConfig
 public class ProtobufConfig(
     public val discardUnknownFields: Boolean = false,
     public val recursionLimit: Int = DEFAULT_RECURSION_LIMIT,
+    public val extensionRegistry: ProtoExtensionRegistry? = null
 ): MarshallerConfig {
     public companion object {
         /**

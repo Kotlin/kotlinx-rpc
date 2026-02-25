@@ -59,7 +59,11 @@ fun CodeGeneratorRequest.toModel(config: Config): Model {
 private fun initNameTable(nameTable: FqNameTable) {
     nameTable.registerAll(
         FqName.RpcClasses.InternalMessage,
+        FqName.RpcClasses.InternalPresenceObject,
         FqName.RpcClasses.ProtoDescriptor,
+        FqName.RpcClasses.ProtoExtensionDescriptor,
+        FqName.RpcClasses.InternalExtensionDescriptor,
+        FqName.RpcClasses.ExtensionValue,
         FqName.RpcClasses.WireEncoder,
         FqName.RpcClasses.WireDecoder,
         FqName.RpcClasses.MsgFieldDelegate,
@@ -170,9 +174,11 @@ private inline fun <D, reified T> D.cached(crossinline block: (D) -> T): T
 private fun Descriptors.FileDescriptor.toModel(nameTable: FqNameTable): FileDeclaration = cached {
     val comments = Comments(extractComments(), ObjectPath.empty)
 
+    val ktPackage = FqName.Package.fromString(kotlinPackage())
+
     FileDeclaration(
         name = kotlinFileName(),
-        packageName = FqName.Package.fromString(kotlinPackage()),
+        packageName = ktPackage,
         dependencies = dependencies.map { it.toModel(nameTable) },
         messageDeclarations = messageTypes.map {
             it.toModel(
@@ -190,7 +196,13 @@ private fun Descriptors.FileDescriptor.toModel(nameTable: FqNameTable): FileDecl
         ),
         deprecated = options.deprecated,
         dec = this,
-    )
+        internalExtensionDescriptorObject = FqName.Declaration(
+            simpleName = protoFileNameToKotlinName() + "KtExtensions",
+            parent = ktPackage
+        )
+    ).also {
+        nameTable.register { it.internalExtensionDescriptorObject }
+    }
 }
 
 private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNameTable): MessageDeclaration = cached {

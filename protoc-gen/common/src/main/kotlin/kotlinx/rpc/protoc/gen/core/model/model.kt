@@ -25,6 +25,10 @@ data class FileDeclaration(
     val doc: List<Comment>,
     val dec: Descriptors.FileDescriptor,
     val deprecated: Boolean,
+
+    // the object that stores internal extension descriptors for
+    // extensions registered in this proto file
+    val internalExtensionDescriptorObject: FqName.Declaration,
 )
 
 data class MessageDeclaration(
@@ -88,6 +92,10 @@ data class MessageDeclaration(
 
     val extensionRanges: List<IntRange> by lazy {
         dec.toProto().extensionRangeList.map { it.start..it.end }
+    }
+
+    val mayHaveExtensions: Boolean by lazy {
+        extensionRanges.isNotEmpty()
     }
 
 }

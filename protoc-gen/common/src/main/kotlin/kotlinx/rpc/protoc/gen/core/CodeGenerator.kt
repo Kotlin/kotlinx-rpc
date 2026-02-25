@@ -245,10 +245,15 @@ open class CodeGenerator(
         type: ScopedFormattedString,
         propertyInitializer: PropertyInitializer = PropertyInitializer.PLAIN,
         value: ScopedFormattedString = ScopedFormattedString.empty,
+        setter: ScopedFormattedString = ScopedFormattedString.empty,
         isVar: Boolean = false,
         needsNewLineAfterDeclaration: Boolean = true,
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
+        require((isVar && propertyInitializer == PropertyInitializer.GETTER) == (setter != ScopedFormattedString.empty)) {
+            "If property is mutable, with a PropertyInitializer.GETTER, it should have a setter as well"
+        }
+
         appendComment(comment)
         for (annotation in annotations) {
             selectNames {
@@ -267,13 +272,24 @@ open class CodeGenerator(
         }.takeIf { value.value.isNotEmpty() } ?: ""
         val varString = if (isVar) "var" else "val"
 
-        scope(
-            prefix = contextString.merge(typeString, value) { contextString, typeString, value ->
-                "${modifiersString}$varString $contextString$name$typeString$initializer$value"
-            },
-            scopeNestedClassName = null,
-            block = block,
-        )
+        if (setter.value.isEmpty()) {
+            scope(
+                prefix = contextString.merge(typeString, value) { contextString, typeString, value ->
+                    "${modifiersString}$varString $contextString$name$typeString$initializer$value"
+                },
+                scopeNestedClassName = null,
+                block = block,
+            )
+        } else {
+            addLine(contextString.merge(typeString) { contextString, typeString ->
+                "${modifiersString}$varString $contextString$name$typeString"
+            })
+            withNextIndent {
+                addLine(value.wrapIn { "get() = $it" })
+                addLine(setter.wrapIn { "set(value) { $it }" })
+                newLine()
+            }
+        }
 
         this.needsNewLineAfterDeclaration = needsNewLineAfterDeclaration
     }

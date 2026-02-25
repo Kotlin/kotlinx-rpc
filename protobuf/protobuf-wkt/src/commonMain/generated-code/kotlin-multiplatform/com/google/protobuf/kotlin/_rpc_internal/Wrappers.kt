@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.grpc.marshaller.MarshallerConfig
@@ -42,9 +43,12 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
 
     public override var value: Double by MsgFieldDelegate { 0.0 }
 
+    private val _owner: DoubleValueInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return value.toBits().hashCode()
+        var result = value.toBits().hashCode()
+        return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -70,6 +74,10 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
         builder.appendLine("${nextIndentString}value=${this.value},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): DoubleValueInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -130,9 +138,12 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
 
     public override var value: Float by MsgFieldDelegate { 0.0f }
 
+    private val _owner: FloatValueInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return value.toBits().hashCode()
+        var result = value.toBits().hashCode()
+        return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -158,6 +169,10 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
         builder.appendLine("${nextIndentString}value=${this.value},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): FloatValueInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -218,9 +233,12 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
 
     public override var value: Long by MsgFieldDelegate { 0L }
 
+    private val _owner: Int64ValueInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return value.hashCode()
+        var result = value.hashCode()
+        return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -246,6 +264,10 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
         builder.appendLine("${nextIndentString}value=${this.value},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): Int64ValueInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -306,9 +328,12 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
 
     public override var value: ULong by MsgFieldDelegate { 0uL }
 
+    private val _owner: UInt64ValueInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return value.hashCode()
+        var result = value.hashCode()
+        return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -334,6 +359,10 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
         builder.appendLine("${nextIndentString}value=${this.value},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): UInt64ValueInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -394,9 +423,12 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
 
     public override var value: Int by MsgFieldDelegate { 0 }
 
+    private val _owner: Int32ValueInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return value.hashCode()
+        var result = value.hashCode()
+        return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -422,6 +454,10 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
         builder.appendLine("${nextIndentString}value=${this.value},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): Int32ValueInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -482,9 +518,12 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
 
     public override var value: UInt by MsgFieldDelegate { 0u }
 
+    private val _owner: UInt32ValueInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return value.hashCode()
+        var result = value.hashCode()
+        return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -510,6 +549,10 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
         builder.appendLine("${nextIndentString}value=${this.value},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): UInt32ValueInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -570,9 +613,12 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
 
     public override var value: Boolean by MsgFieldDelegate { false }
 
+    private val _owner: BoolValueInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return value.hashCode()
+        var result = value.hashCode()
+        return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -598,6 +644,10 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
         builder.appendLine("${nextIndentString}value=${this.value},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): BoolValueInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -658,9 +708,12 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
 
     public override var value: String by MsgFieldDelegate { "" }
 
+    private val _owner: StringValueInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return value.hashCode()
+        var result = value.hashCode()
+        return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -686,6 +739,10 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
         builder.appendLine("${nextIndentString}value=${this.value},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): StringValueInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -746,9 +803,12 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
 
     public override var value: ByteArray by MsgFieldDelegate { byteArrayOf() }
 
+    private val _owner: BytesValueInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return value.contentHashCode()
+        var result = value.contentHashCode()
+        return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -774,6 +834,10 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
         builder.appendLine("${nextIndentString}value=${this.value.contentToString()},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): BytesValueInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -832,10 +896,17 @@ public fun DoubleValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
     if (this.value != 0.0) {
         encoder.writeDouble(fieldNr = 1, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun DoubleValueInternal.Companion.decodeWith(msg: DoubleValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(DoubleValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -885,10 +956,17 @@ public fun FloatValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
     if (this.value != 0.0f) {
         encoder.writeFloat(fieldNr = 1, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun FloatValueInternal.Companion.decodeWith(msg: FloatValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(FloatValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -938,10 +1016,17 @@ public fun Int64ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
     if (this.value != 0L) {
         encoder.writeInt64(fieldNr = 1, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun Int64ValueInternal.Companion.decodeWith(msg: Int64ValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(Int64Value::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -991,10 +1076,17 @@ public fun UInt64ValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
     if (this.value != 0uL) {
         encoder.writeUInt64(fieldNr = 1, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun UInt64ValueInternal.Companion.decodeWith(msg: UInt64ValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(UInt64Value::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1044,10 +1136,17 @@ public fun Int32ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
     if (this.value != 0) {
         encoder.writeInt32(fieldNr = 1, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun Int32ValueInternal.Companion.decodeWith(msg: Int32ValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(Int32Value::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1097,10 +1196,17 @@ public fun UInt32ValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
     if (this.value != 0u) {
         encoder.writeUInt32(fieldNr = 1, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun UInt32ValueInternal.Companion.decodeWith(msg: UInt32ValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(UInt32Value::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1150,10 +1256,17 @@ public fun BoolValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
     if (this.value != false) {
         encoder.writeBool(fieldNr = 1, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun BoolValueInternal.Companion.decodeWith(msg: BoolValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(BoolValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1203,10 +1316,17 @@ public fun StringValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
     if (this.value.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun StringValueInternal.Companion.decodeWith(msg: StringValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(StringValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1256,10 +1376,17 @@ public fun BytesValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
     if (this.value.isNotEmpty()) {
         encoder.writeBytes(fieldNr = 1, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun BytesValueInternal.Companion.decodeWith(msg: BytesValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(BytesValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

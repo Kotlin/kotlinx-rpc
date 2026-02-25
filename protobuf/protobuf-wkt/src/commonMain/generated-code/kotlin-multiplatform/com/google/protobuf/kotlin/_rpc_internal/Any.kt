@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.grpc.marshaller.MarshallerConfig
@@ -36,6 +37,8 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
     public override var typeUrl: String by MsgFieldDelegate { "" }
     public override var value: ByteArray by MsgFieldDelegate { byteArrayOf() }
 
+    private val _owner: AnyInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = typeUrl.hashCode()
@@ -68,6 +71,10 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
         builder.appendLine("${nextIndentString}value=${this.value.contentToString()},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): AnyInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -131,10 +138,17 @@ public fun AnyInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
     if (this.value.isNotEmpty()) {
         encoder.writeBytes(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun AnyInternal.Companion.decodeWith(msg: AnyInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(Any::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

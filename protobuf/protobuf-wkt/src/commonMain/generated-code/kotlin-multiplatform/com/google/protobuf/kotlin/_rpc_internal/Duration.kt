@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.grpc.marshaller.MarshallerConfig
@@ -39,6 +40,8 @@ public class DurationInternal: Duration.Builder, InternalMessage(fieldsWithPrese
     public override var seconds: Long by MsgFieldDelegate { 0L }
     public override var nanos: Int by MsgFieldDelegate { 0 }
 
+    private val _owner: DurationInternal = this
+
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = seconds.hashCode()
@@ -71,6 +74,10 @@ public class DurationInternal: Duration.Builder, InternalMessage(fieldsWithPrese
         builder.appendLine("${nextIndentString}nanos=${this.nanos},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): DurationInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -134,10 +141,17 @@ public fun DurationInternal.encodeWith(encoder: WireEncoder, config: ProtobufCon
     if (this.nanos != 0) {
         encoder.writeInt32(fieldNr = 2, value = this.nanos)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+        }
+    }
 }
 
 @InternalRpcApi
 public fun DurationInternal.Companion.decodeWith(msg: DurationInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(Duration::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

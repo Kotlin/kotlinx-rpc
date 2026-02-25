@@ -1,6 +1,7 @@
+syntax = "proto2";
 package kotlinx.rpc.protobuf.test;
 
 message ExtensionBase {
-  optional int32 intField = 1;
+  optional int32 baseField = 1;
   extensions 6 to 100;
 }
