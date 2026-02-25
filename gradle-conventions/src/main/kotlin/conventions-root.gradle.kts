@@ -95,22 +95,6 @@ val updateProperties = tasks.register("updateProperties") {
     }
 }
 
-gradle.afterProject {
-    if (gradle.startParameter.taskNames.singleOrNull() == updateProperties.name) {
-        return@afterProject
-    }
-
-    forEachIncludedProject { rootProperties, parent, subProjectProperties ->
-        if (!subProjectProperties.exists() || subProjectProperties.readText() != rootProperties) {
-            throw GradleException(
-                "'gradle.properties' file in ${parent.name} included project is not up-to-date with root. " +
-                        "Please, run `./gradlew ${updateProperties.name}"
-            )
-        }
-    }
-}
-
-
 tasks.register<CheckExecutableTask>("checkBazel") {
     exec = "bazel"
     helpMessage = "Install Bazel: https://bazel.build/"
