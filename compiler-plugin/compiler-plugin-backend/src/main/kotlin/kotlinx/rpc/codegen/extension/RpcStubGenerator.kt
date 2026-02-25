@@ -134,7 +134,7 @@ internal class RpcStubGenerator(
     fun generate() {
         generateStubClass()
 
-        addAssociatedObjectAnnotationIfPossible()
+        addWithServiceDescriptorAnnotation()
     }
 
     private fun generateStubClass() {
@@ -1346,19 +1346,16 @@ internal class RpcStubGenerator(
      */
     private fun IrBlockBodyBuilder.irCodec(messageType: IrType, resolver: IrValueParameter): IrExpression {
         val owner = messageType.classOrFail.owner
-        val protobufMessage = owner.getAnnotation(ctx.withCodecAnnotation.owner.kotlinFqName)
+        val codecClassSymbol = computeProtoDeclarationIfNeeded(owner, ctx)
+            ?.codec?.symbol
+            ?: owner.extractCodecReference()
 
-        return if (protobufMessage != null) {
-            val classReference = vsApi { protobufMessage.argumentsVS }.single() as? IrClassReference
-                ?: error("Expected IrClassReference for ${ctx.withCodecAnnotation.owner.kotlinFqName} parameter")
-
-            val codec = classReference.classType
-
+        return if (codecClassSymbol != null) {
             IrGetObjectValueImpl(
                 startOffset = UNDEFINED_OFFSET,
                 endOffset = UNDEFINED_OFFSET,
-                type = codec,
-                symbol = codec.classOrFail,
+                type = codecClassSymbol.defaultType,
+                symbol = codecClassSymbol,
             )
         } else {
             val codecType = ctx.grpcMessageCodec.typeWith(messageType)
@@ -1396,15 +1393,20 @@ internal class RpcStubGenerator(
         }
     }
 
-    // Associated object annotation works on JS, WASM, and Native platforms.
-    // See https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/find-associated-object.html
-    private fun addAssociatedObjectAnnotationIfPossible() {
-        if (ctx.isJsTarget() || ctx.isNativeTarget() || ctx.isWasmTarget()) {
-            addAssociatedObjectAnnotation()
+    private fun IrClass.extractCodecReference(): IrClassSymbol? {
+        val withCodecAnnotation = getAnnotation(ctx.withCodecAnnotation.owner.kotlinFqName)
+
+        if (withCodecAnnotation != null) {
+            val classReference = vsApi { withCodecAnnotation.argumentsVS }.single() as? IrClassReference
+                ?: error("Expected IrClassReference for ${ctx.withCodecAnnotation.owner.kotlinFqName} parameter")
+
+            return classReference.classType.classOrFail
         }
+
+        return null
     }
 
-    private fun addAssociatedObjectAnnotation() {
+    private fun addWithServiceDescriptorAnnotation() {
         val service = declaration.service
 
         val annotation = vsApi {

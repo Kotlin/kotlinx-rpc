@@ -1,10 +1,9 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.GeneratedProtoMessage
+import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
 * Wrapper message for `double`.
@@ -15,7 +14,6 @@ import kotlinx.rpc.protobuf.GeneratedProtoMessage
 * has no plan to be removed.
 */
 @GeneratedProtoMessage
-@WithCodec(DoubleValueInternal.CODEC::class)
 public interface DoubleValue {
     /**
     * The double value.
@@ -34,7 +32,6 @@ public interface DoubleValue {
 * has no plan to be removed.
 */
 @GeneratedProtoMessage
-@WithCodec(FloatValueInternal.CODEC::class)
 public interface FloatValue {
     /**
     * The float value.
@@ -53,7 +50,6 @@ public interface FloatValue {
 * has no plan to be removed.
 */
 @GeneratedProtoMessage
-@WithCodec(Int64ValueInternal.CODEC::class)
 public interface Int64Value {
     /**
     * The int64 value.
@@ -72,7 +68,6 @@ public interface Int64Value {
 * has no plan to be removed.
 */
 @GeneratedProtoMessage
-@WithCodec(UInt64ValueInternal.CODEC::class)
 public interface UInt64Value {
     /**
     * The uint64 value.
@@ -91,7 +86,6 @@ public interface UInt64Value {
 * has no plan to be removed.
 */
 @GeneratedProtoMessage
-@WithCodec(Int32ValueInternal.CODEC::class)
 public interface Int32Value {
     /**
     * The int32 value.
@@ -110,7 +104,6 @@ public interface Int32Value {
 * has no plan to be removed.
 */
 @GeneratedProtoMessage
-@WithCodec(UInt32ValueInternal.CODEC::class)
 public interface UInt32Value {
     /**
     * The uint32 value.
@@ -129,7 +122,6 @@ public interface UInt32Value {
 * has no plan to be removed.
 */
 @GeneratedProtoMessage
-@WithCodec(BoolValueInternal.CODEC::class)
 public interface BoolValue {
     /**
     * The bool value.
@@ -148,7 +140,6 @@ public interface BoolValue {
 * has no plan to be removed.
 */
 @GeneratedProtoMessage
-@WithCodec(StringValueInternal.CODEC::class)
 public interface StringValue {
     /**
     * The string value.
@@ -167,7 +158,6 @@ public interface StringValue {
 * has no plan to be removed.
 */
 @GeneratedProtoMessage
-@WithCodec(BytesValueInternal.CODEC::class)
 public interface BytesValue {
     /**
     * The bytes value.

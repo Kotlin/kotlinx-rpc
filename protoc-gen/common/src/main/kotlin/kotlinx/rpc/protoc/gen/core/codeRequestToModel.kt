@@ -81,7 +81,6 @@ private fun initNameTable(nameTable: FqNameTable) {
         FqName.Annotations.InternalRpcApi,
         FqName.Annotations.Grpc,
         FqName.Annotations.GrpcMethod,
-        FqName.Annotations.WithCodec,
         FqName.Annotations.GeneratedProtoMessage,
 
         FqName.KotlinLibs.Flow,

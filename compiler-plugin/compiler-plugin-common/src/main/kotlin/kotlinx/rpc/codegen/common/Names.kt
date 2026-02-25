@@ -32,10 +32,11 @@ object RpcNames {
 }
 
 object ProtoClassId {
-    val protoMessageAnnotation = ClassId(FqName("kotlinx.rpc.protobuf"), Name.identifier("GeneratedProtoMessage"))
+    val protoMessageAnnotation = ClassId(FqName("kotlinx.rpc.protobuf.internal"), Name.identifier("GeneratedProtoMessage"))
     val protoDescriptor = ClassId(FqName("kotlinx.rpc.protobuf.internal"), Name.identifier("ProtoDescriptor"))
 }
 
 object ProtoNames {
     val DESCRIPTOR_NAME = Name.identifier("DESCRIPTOR")
+    val CODEC_NAME = Name.identifier("CODEC")
 }

@@ -21,7 +21,6 @@ import org.jetbrains.kotlin.ir.util.isVararg
 import org.jetbrains.kotlin.ir.util.nestedClasses
 import org.jetbrains.kotlin.ir.util.properties
 import org.jetbrains.kotlin.platform.jvm.isJvm
-import org.jetbrains.kotlin.platform.konan.isNative
 import org.jetbrains.kotlin.types.Variance
 
 /**
@@ -191,20 +190,8 @@ internal class RpcIrContext(
         return irBuiltIns.kClassClass.typeWith(kSerializerAnyNullable(from))
     }
 
-    fun isJsTarget(): Boolean {
-        return versionSpecificApi.isJsVS(pluginContext.platform)
-    }
-
-    fun isNativeTarget(): Boolean {
-        return pluginContext.platform.isNative()
-    }
-
     fun isJvmTarget(): Boolean {
         return pluginContext.platform.isJvm()
-    }
-
-    fun isWasmTarget(): Boolean {
-        return versionSpecificApi.isWasmVS(pluginContext.platform)
     }
 
     val functions = Functions()

@@ -7,6 +7,8 @@ package kotlinx.rpc.grpc.test.integration
 import StreamingTestService
 import kotlinx.coroutines.flow.*
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.test.Other
+import kotlinx.rpc.grpc.test.References
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
@@ -14,15 +16,15 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class StreamingTestServiceImpl : StreamingTestService {
-    override fun Server(message: kotlinx.rpc.grpc.test.References): Flow<kotlinx.rpc.grpc.test.References> {
+    override fun Server(message: References): Flow<References> {
         return flow { emit(message); emit(message); emit(message) }
     }
 
-    override suspend fun Client(message: Flow<kotlinx.rpc.grpc.test.References>): kotlinx.rpc.grpc.test.References {
+    override suspend fun Client(message: Flow<References>): References {
         return message.last()
     }
 
-    override fun Bidi(message: Flow<kotlinx.rpc.grpc.test.References>): Flow<kotlinx.rpc.grpc.test.References> {
+    override fun Bidi(message: Flow<References>): Flow<References> {
         return message
     }
 }
@@ -35,8 +37,8 @@ class StreamingTest : GrpcTestBase() {
     @Test
     fun testServerStreaming() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<StreamingTestService>()
-        service.Server(kotlinx.rpc.grpc.test.References {
-            other = kotlinx.rpc.grpc.test.Other {
+        service.Server(References {
+            other = Other {
                 field = 42
             }
         }).toList().run {
@@ -53,8 +55,8 @@ class StreamingTest : GrpcTestBase() {
         val service = grpcClient.withService<StreamingTestService>()
         val result = service.Client(flow {
             repeat(3) {
-                emit(kotlinx.rpc.grpc.test.References {
-                    other = kotlinx.rpc.grpc.test.Other {
+                emit(References {
+                    other = Other {
                         field = 42 + it
                     }
                 })
@@ -69,8 +71,8 @@ class StreamingTest : GrpcTestBase() {
         val service = grpcClient.withService<StreamingTestService>()
         service.Bidi(flow {
             repeat(3) {
-                emit(kotlinx.rpc.grpc.test.References {
-                    other = kotlinx.rpc.grpc.test.Other {
+                emit(References {
+                    other = Other {
                         field = 42 + it
                     }
                 })

@@ -5,20 +5,18 @@
 package kotlinx.rpc.internal
 
 import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.descriptor.RpcServiceDescriptor
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KClass
-import kotlin.reflect.full.companionObjectInstance
+import kotlin.reflect.full.findAnnotation
 
-private const val RPC_SERVICE_STUB_SIMPLE_NAME = "\$rpcServiceStub"
+@InternalRpcApi
+@Target(AnnotationTarget.CLASS)
+public actual annotation class WithServiceDescriptor(
+    actual val stub: KClass<out RpcServiceDescriptor<*>>,
+)
 
 internal actual fun <@Rpc T : Any> internalServiceDescriptorOf(kClass: KClass<T>): Any? {
-    val className = "${kClass.qualifiedName}\$$RPC_SERVICE_STUB_SIMPLE_NAME"
-
-    return try {
-        return kClass.java.classLoader
-            .loadClass(className)
-            ?.kotlin
-            ?.companionObjectInstance
-    } catch (_: ClassNotFoundException) {
-        null
-    }
+    val codecClass = kClass.findAnnotation<WithServiceDescriptor>()?.stub ?: return null
+    return codecClass.objectInstance
 }

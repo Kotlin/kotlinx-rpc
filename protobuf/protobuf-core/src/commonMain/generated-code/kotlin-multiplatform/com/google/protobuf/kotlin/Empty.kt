@@ -1,10 +1,9 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.GeneratedProtoMessage
+import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
 * A generic empty message that you can re-use to avoid defining duplicated
@@ -16,7 +15,6 @@ import kotlinx.rpc.protobuf.GeneratedProtoMessage
 *     }
 */
 @GeneratedProtoMessage
-@WithCodec(EmptyInternal.CODEC::class)
 public interface Empty {
     public companion object
 }

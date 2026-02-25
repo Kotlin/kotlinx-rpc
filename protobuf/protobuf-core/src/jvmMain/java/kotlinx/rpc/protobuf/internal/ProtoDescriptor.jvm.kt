@@ -14,7 +14,7 @@ public actual annotation class WithProtoDescriptor(
     actual val descriptor: KClass<out ProtoDescriptor<*>>
 )
 
-internal actual fun <@kotlinx.rpc.protobuf.GeneratedProtoMessage T : Any> findProtoDescriptorOf(kClass: KClass<T>): Any? {
+internal actual fun <@GeneratedProtoMessage T : Any> findProtoDescriptorOf(kClass: KClass<T>): Any? {
     val descriptorClass = kClass.findAnnotation<WithProtoDescriptor>()?.descriptor ?: return null
     return descriptorClass.objectInstance
 }

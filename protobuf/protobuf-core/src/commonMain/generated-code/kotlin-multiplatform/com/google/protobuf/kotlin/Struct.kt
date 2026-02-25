@@ -2,10 +2,9 @@
 package com.google.protobuf.kotlin
 
 import kotlin.jvm.JvmInline
-import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.GeneratedProtoMessage
+import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
 * `Struct` represents a structured data value, consisting of fields
@@ -18,7 +17,6 @@ import kotlinx.rpc.protobuf.GeneratedProtoMessage
 * The JSON representation for `Struct` is JSON object.
 */
 @GeneratedProtoMessage
-@WithCodec(StructInternal.CODEC::class)
 public interface Struct {
     /**
     * Unordered map of dynamically typed values.
@@ -37,7 +35,6 @@ public interface Struct {
 * The JSON representation for `Value` is JSON value.
 */
 @GeneratedProtoMessage
-@WithCodec(ValueInternal.CODEC::class)
 public interface Value {
     /**
     * The kind of value.
@@ -94,7 +91,6 @@ public interface Value {
 * The JSON representation for `ListValue` is JSON array.
 */
 @GeneratedProtoMessage
-@WithCodec(ListValueInternal.CODEC::class)
 public interface ListValue {
     /**
     * Repeated field of dynamically typed values.

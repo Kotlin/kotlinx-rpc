@@ -5,6 +5,14 @@
 package kotlinx.rpc.internal
 
 import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.descriptor.RpcServiceDescriptor
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KClass
+
+@InternalRpcApi
+@Target(AnnotationTarget.CLASS)
+public expect annotation class WithServiceDescriptor(
+    val stub: KClass<out RpcServiceDescriptor<*>>,
+)
 
 internal expect fun <@Rpc T : Any> internalServiceDescriptorOf(kClass: KClass<T>): Any?

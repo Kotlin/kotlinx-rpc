@@ -7,7 +7,7 @@
 // MODULE: main
 @file:OptIn(InternalRpcApi::class)
 
-import kotlinx.rpc.protobuf.GeneratedProtoMessage
+import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 

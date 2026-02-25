@@ -6,7 +6,6 @@ package kotlinx.rpc.protobuf.internal
 
 import kotlinx.rpc.internal.internalRpcError
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.GeneratedProtoMessage
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 

@@ -23,7 +23,7 @@ class FirCheckedAnnotationFunctionCallCheckerVS(
     private val ctx: FirCheckersContext,
 ) : FirFunctionCallChecker(MppCheckerKind.Common) {
     //##csm FirCheckedAnnotationFunctionCallCheckerVS_context
-    //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
+    //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
     override fun check(expression: FirFunctionCall, context: CheckerContext, reporter: DiagnosticReporter) {
         FirCheckedAnnotationFunctionCallChecker.check(ctx, expression, context, reporter)
     }
@@ -41,7 +41,7 @@ class FirCheckedAnnotationTypeParameterCheckerVS(
     private val ctx: FirCheckersContext,
 ) : FirTypeParameterChecker(MppCheckerKind.Common) {
     //##csm FirCheckedAnnotationTypeParameterCheckerVS_context
-    //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
+    //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
     override fun check(declaration: FirTypeParameter, context: CheckerContext, reporter: DiagnosticReporter) {
         FirCheckedAnnotationTypeParameterChecker.check(ctx, declaration, context, reporter)
     }
@@ -59,7 +59,7 @@ class FirCheckedAnnotationFirClassCheckerVS(
     private val ctx: FirCheckersContext,
 ) : FirClassChecker(MppCheckerKind.Common) {
     //##csm FirCheckedAnnotationFirClassCheckerVS_context
-    //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
+    //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
     override fun check(declaration: FirClass, context: CheckerContext, reporter: DiagnosticReporter) {
         FirCheckedAnnotationFirClassChecker.check(ctx, declaration, context, reporter)
     }
@@ -77,7 +77,7 @@ class FirCheckedAnnotationFirFunctionCheckerVS(
     private val ctx: FirCheckersContext,
 ) : FirFunctionChecker(MppCheckerKind.Common) {
     //##csm FirCheckedAnnotationFirFunctionCheckerVS_context
-    //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
+    //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
     override fun check(declaration: FirFunction, context: CheckerContext, reporter: DiagnosticReporter) {
         FirCheckedAnnotationFirFunctionChecker.check(ctx, declaration, context, reporter)
     }
@@ -93,7 +93,7 @@ class FirCheckedAnnotationFirFunctionCheckerVS(
 
 class FirRpcAnnotationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
     //##csm FirRpcAnnotationCheckerVS_context
-    //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
+    //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
     override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         FirRpcAnnotationChecker.check(declaration, context, reporter)
     }
@@ -111,7 +111,7 @@ class FirRpcServiceDeclarationCheckerVS(
     private val ctx: FirCheckersContext,
 ) : FirRegularClassChecker(MppCheckerKind.Common) {
     //##csm FirRpcServiceDeclarationCheckerVS_context
-    //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
+    //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
     override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         FirRpcServiceDeclarationChecker.check(ctx, declaration, context, reporter)
     }
@@ -127,7 +127,7 @@ class FirRpcServiceDeclarationCheckerVS(
 
 class FirRpcStrictModeClassCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
     //##csm FirRpcStrictModeClassCheckerVS_context
-    //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
+    //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
     override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         FirRpcStrictModeClassChecker.check(declaration, context, reporter)
     }
@@ -143,7 +143,7 @@ class FirRpcStrictModeClassCheckerVS : FirRegularClassChecker(MppCheckerKind.Com
 
 class FirGrpcServiceDeclarationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
     //##csm FirGrpcServiceDeclarationCheckerVS_context
-    //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
+    //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
     override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         FirGrpcServiceDeclarationChecker.check(declaration, context, reporter)
     }
@@ -159,7 +159,7 @@ class FirGrpcServiceDeclarationCheckerVS : FirRegularClassChecker(MppCheckerKind
 
 class FirWithCodecDeclarationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
     //##csm FirWithCodecDeclarationChecker_context
-    //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
+    //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
     override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         FirWithCodecDeclarationChecker.check(declaration, context, reporter)
     }
@@ -175,7 +175,7 @@ class FirWithCodecDeclarationCheckerVS : FirRegularClassChecker(MppCheckerKind.C
 
 class FirProtoMessageAnnotationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
     //##csm FirWithCodecDeclarationChecker_context
-    //##csm specific=[2.0.0...2.1.21, 2.2.0-ij251-*]
+    //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
     override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         FirProtoMessageAnnotationChecker.check(declaration, context, reporter)
     }

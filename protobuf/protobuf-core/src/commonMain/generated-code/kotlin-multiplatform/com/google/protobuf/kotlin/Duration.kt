@@ -1,10 +1,9 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.grpc.codec.WithCodec
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.GeneratedProtoMessage
+import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
 * A Duration represents a signed, fixed-length span of time represented
@@ -67,7 +66,6 @@ import kotlinx.rpc.protobuf.GeneratedProtoMessage
 * microsecond should be expressed in JSON format as "3.000001s".
 */
 @GeneratedProtoMessage
-@WithCodec(DurationInternal.CODEC::class)
 public interface Duration {
     /**
     * Signed seconds of the span of time. Must be from -315,576,000,000

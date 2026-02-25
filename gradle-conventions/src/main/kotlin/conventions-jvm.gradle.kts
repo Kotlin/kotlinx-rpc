@@ -24,7 +24,7 @@ if (project.name != "gradle-plugin") {
     configureJavaCompatibility(8)
 }
 
-configureKotlinCompatibility("2.0.0")
+configureKotlinCompatibility("2.1.0")
 
 kotlin {
     explicitApi()
